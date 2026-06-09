@@ -54,7 +54,7 @@ class Goal4131CurrentRouteDecisionAfterWarmOneShotProbeTest(unittest.TestCase):
     def test_route_registry_records_one_shot_evidence_without_auto_promotion(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4135.v1", route["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4139.v1", route["version"])
         self.assertEqual("mixed_explicit", route["decision_kind"])
         self.assertEqual("mixed_explicit_user_choice", route["partner_policy"])
         for fragment in ("Goal4130", "one-shot", "1.819x", "3.410x", "Do not auto-select"):
@@ -77,7 +77,7 @@ class Goal4131CurrentRouteDecisionAfterWarmOneShotProbeTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4135.v1", summary["version"])
+        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4139.v1", summary["version"])
         self.assertFalse(summary["automatic_partner_selection_authorized"])
         self.assertFalse(summary["release_authorized"])
         self.assertFalse(summary["public_speedup_claim_authorized"])

@@ -36,12 +36,14 @@ RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTOR_OPTIONS = {
         {"point_count": 131072, "factor": 0.25, "replay_speedup": 3.211, "one_shot_total_speedup": 3.110, "evidence_refs": ("Goal4122", "Goal4130")},
         {"point_count": 262144, "factor": 0.25, "replay_speedup": 3.118, "one_shot_total_speedup": 3.192, "evidence_refs": ("Goal4126", "Goal4130")},
         {"point_count": 524288, "factor": 0.25, "replay_speedup": 3.291, "one_shot_total_speedup": 3.250, "evidence_refs": ("Goal4134",)},
+        {"point_count": 1048576, "factor": 0.25, "replay_speedup": 3.430, "one_shot_total_speedup": 3.383, "evidence_refs": ("Goal4138",)},
     ),
     "road3d": (
         {"point_count": 65536, "factor": 0.25, "replay_speedup": 1.866, "one_shot_total_speedup": 2.609, "evidence_refs": ("Goal4117", "Goal4130")},
         {"point_count": 131072, "factor": 0.25, "replay_speedup": 1.545, "one_shot_total_speedup": 2.606, "evidence_refs": ("Goal4122", "Goal4130")},
         {"point_count": 262144, "factor": 0.25, "replay_speedup": 1.428, "one_shot_total_speedup": 2.272, "evidence_refs": ("Goal4126", "Goal4130")},
         {"point_count": 524288, "factor": 0.25, "replay_speedup": 1.367, "one_shot_total_speedup": 1.910, "evidence_refs": ("Goal4134",)},
+        {"point_count": 1048576, "factor": 0.25, "replay_speedup": 1.396, "one_shot_total_speedup": 1.705, "evidence_refs": ("Goal4138",)},
     ),
     "ngsim_dense": (
         {"point_count": 65536, "factor": 0.25, "replay_speedup": 0.969, "one_shot_total_speedup": 3.679, "evidence_refs": ("Goal4130",)},
@@ -49,6 +51,7 @@ RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTOR_OPTIONS = {
         {"point_count": 131072, "factor": 0.25, "replay_speedup": 1.399, "one_shot_total_speedup": 3.410, "evidence_refs": ("Goal4122", "Goal4130")},
         {"point_count": 262144, "factor": 0.25, "replay_speedup": 1.642, "one_shot_total_speedup": 2.939, "evidence_refs": ("Goal4126", "Goal4130")},
         {"point_count": 524288, "factor": 0.25, "replay_speedup": 1.769, "one_shot_total_speedup": 2.489, "evidence_refs": ("Goal4134",)},
+        {"point_count": 1048576, "factor": 0.25, "replay_speedup": 1.790, "one_shot_total_speedup": 2.432, "evidence_refs": ("Goal4138",)},
     ),
 }
 RT_DBSCAN_DIRECT_STATUS_APP_MODE = "partner_cupy_prepared_direct_status_union_component_signature_3d"
