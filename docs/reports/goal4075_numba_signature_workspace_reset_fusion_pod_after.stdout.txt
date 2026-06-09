@@ -1,0 +1,572 @@
+BOTTLENECK_START clustered3d_65536 recommended_unblocked optix_rt_core_grouped_stream_numba_column_signature_3d {}
+BOTTLENECK_DONE {"component_size_signature": [16384, 16384, 16384, 16384], "count_native_elapsed_sec": 0.005004890263080597, "elapsed_sec": 0.09361211210489273, "native_elapsed_sec": 0.08797638863325119, "profile": "clustered3d_65536", "variant": "recommended_unblocked"}
+BOTTLENECK_START clustered3d_65536 direct_side_effect optix_rt_core_grouped_stream_numba_column_signature_3d {"grouped_union_direct_side_effect": true}
+BOTTLENECK_DONE {"component_size_signature": [16384, 16384, 16384, 16384], "count_native_elapsed_sec": 0.004830263555049896, "elapsed_sec": 0.09375322982668877, "native_elapsed_sec": 0.08831139653921127, "profile": "clustered3d_65536", "variant": "direct_side_effect"}
+BOTTLENECK_START clustered3d_65536 blocked_32768 optix_rt_core_grouped_stream_blocked_numba_column_signature_3d {"grouped_union_query_block_size": 32768}
+BOTTLENECK_DONE {"component_size_signature": [16384, 16384, 16384, 16384], "count_native_elapsed_sec": 0.0042319148778915405, "elapsed_sec": 0.11756928637623787, "native_elapsed_sec": 0.11122041940689087, "profile": "clustered3d_65536", "variant": "blocked_32768"}
+BOTTLENECK_START clustered3d_65536 no_same_root_culling optix_rt_core_grouped_stream_numba_column_signature_3d {"grouped_union_same_root_culling": false}
+BOTTLENECK_DONE {"component_size_signature": [16384, 16384, 16384, 16384], "count_native_elapsed_sec": 0.004862017929553986, "elapsed_sec": 0.11346961557865143, "native_elapsed_sec": 0.1079963818192482, "profile": "clustered3d_65536", "variant": "no_same_root_culling"}
+BOTTLENECK_START road3d_65536 recommended_unblocked optix_rt_core_grouped_stream_numba_column_signature_3d {}
+BOTTLENECK_DONE {"component_size_signature": [65536], "count_native_elapsed_sec": 0.003985002636909485, "elapsed_sec": 0.03512256219983101, "native_elapsed_sec": 0.029681295156478882, "profile": "road3d_65536", "variant": "recommended_unblocked"}
+BOTTLENECK_START road3d_65536 direct_side_effect optix_rt_core_grouped_stream_numba_column_signature_3d {"grouped_union_direct_side_effect": true}
+BOTTLENECK_DONE {"component_size_signature": [65536], "count_native_elapsed_sec": 0.003563985228538513, "elapsed_sec": 0.03545502945780754, "native_elapsed_sec": 0.029791459441184998, "profile": "road3d_65536", "variant": "direct_side_effect"}
+BOTTLENECK_START road3d_65536 blocked_32768 optix_rt_core_grouped_stream_blocked_numba_column_signature_3d {"grouped_union_query_block_size": 32768}
+BOTTLENECK_DONE {"component_size_signature": [65536], "count_native_elapsed_sec": 0.004379101097583771, "elapsed_sec": 0.04394543915987015, "native_elapsed_sec": 0.03839314728975296, "profile": "road3d_65536", "variant": "blocked_32768"}
+BOTTLENECK_START road3d_65536 no_same_root_culling optix_rt_core_grouped_stream_numba_column_signature_3d {"grouped_union_same_root_culling": false}
+BOTTLENECK_DONE {"component_size_signature": [65536], "count_native_elapsed_sec": 0.003405258059501648, "elapsed_sec": 0.040485888719558716, "native_elapsed_sec": 0.035070449113845825, "profile": "road3d_65536", "variant": "no_same_root_culling"}
+{
+  "claim_boundary": "Internal RT-DBSCAN grouped-stream bottleneck telemetry. It does not authorize release, paper, public speedup, broad RT-core, whole-app, hidden-dispatch, automatic partner selection, app-specific engine logic, native ABI addition, or true-zero-copy claims.",
+  "goal": "Goal4074",
+  "native_abi_added": false,
+  "paper_speedup_claim_authorized": false,
+  "profiles": [
+    "clustered3d_65536",
+    "road3d_65536"
+  ],
+  "public_speedup_claim_authorized": false,
+  "recommended_elapsed_sec_median": 0.06436733715236187,
+  "release_authorized": false,
+  "repeat": 6,
+  "rows": [
+    {
+      "all_core_flags_true": true,
+      "column_signature_strategy": "numba_direct_component_signature_counts",
+      "component_size_signature": [
+        16384,
+        16384,
+        16384,
+        16384
+      ],
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.005004890263080597,
+      "dataset": "clustered3d",
+      "derived_sec": {
+        "adapter_non_native_estimated_sec": 0.00020825862884521484,
+        "count_native_current_run_sec": 0.0,
+        "elapsed_sec": 0.09361211210489273,
+        "grouped_native_sec": 0.08797638863325119,
+        "known_host_phase_sec": 1.1057088561356068,
+        "known_native_current_run_sec": 0.08797638863325119,
+        "unattributed_elapsed_sec": 0.0
+      },
+      "elapsed_sec": 0.09361211210489273,
+      "grouped_union_direct_side_effect_enabled": false,
+      "grouped_union_query_block_count": 1,
+      "grouped_union_query_block_size": null,
+      "grouped_union_query_blocked_candidate": false,
+      "grouped_union_same_root_culling_enabled": true,
+      "host_observed_sec": {
+        "adapter_run_sec": 0.0881846472620964,
+        "column_signature_sec": 0.005361851304769516,
+        "prepare_sec": 1.0121623575687408
+      },
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "native_elapsed_sec": 0.08797638863325119,
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+      "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "partner": "numba",
+      "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "point_count": 65536,
+      "prepared_grouped_stream_reused": true,
+      "prepared_query_repeat_protocol": {
+        "elapsed_sec_median": 0.09361211210489273,
+        "elapsed_sec_total": 0.37414125353097916,
+        "measured_run_count": 4,
+        "repeat": 6,
+        "signatures_stable": true,
+        "warmup": 2
+      },
+      "profile": "clustered3d_65536",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "same_component_size_signature_as_recommended": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "time_ratio_over_recommended": 1.0,
+      "true_zero_copy_claim_authorized": false,
+      "variant": "recommended_unblocked",
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "all_core_flags_true": true,
+      "column_signature_strategy": "numba_direct_component_signature_counts",
+      "component_size_signature": [
+        16384,
+        16384,
+        16384,
+        16384
+      ],
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.004830263555049896,
+      "dataset": "clustered3d",
+      "derived_sec": {
+        "adapter_non_native_estimated_sec": 0.000340975821018219,
+        "count_native_current_run_sec": 0.0,
+        "elapsed_sec": 0.09375322982668877,
+        "grouped_native_sec": 0.08831139653921127,
+        "known_host_phase_sec": 0.27865899726748466,
+        "known_native_current_run_sec": 0.08831139653921127,
+        "unattributed_elapsed_sec": 0.0
+      },
+      "elapsed_sec": 0.09375322982668877,
+      "grouped_union_direct_side_effect_enabled": true,
+      "grouped_union_query_block_count": 1,
+      "grouped_union_query_block_size": null,
+      "grouped_union_query_blocked_candidate": false,
+      "grouped_union_same_root_culling_enabled": true,
+      "host_observed_sec": {
+        "adapter_run_sec": 0.08865237236022949,
+        "column_signature_sec": 0.005067173391580582,
+        "prepare_sec": 0.1849394515156746
+      },
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "native_elapsed_sec": 0.08831139653921127,
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+      "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_execution_options",
+      "partner": "numba",
+      "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "point_count": 65536,
+      "prepared_grouped_stream_reused": true,
+      "prepared_query_repeat_protocol": {
+        "elapsed_sec_median": 0.09375322982668877,
+        "elapsed_sec_total": 0.37505508959293365,
+        "measured_run_count": 4,
+        "repeat": 6,
+        "signatures_stable": true,
+        "warmup": 2
+      },
+      "profile": "clustered3d_65536",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "same_component_size_signature_as_recommended": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "time_ratio_over_recommended": 1.0015074728966473,
+      "true_zero_copy_claim_authorized": false,
+      "variant": "direct_side_effect",
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "all_core_flags_true": true,
+      "column_signature_strategy": "numba_direct_component_signature_counts",
+      "component_size_signature": [
+        16384,
+        16384,
+        16384,
+        16384
+      ],
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.0042319148778915405,
+      "dataset": "clustered3d",
+      "derived_sec": {
+        "adapter_non_native_estimated_sec": 0.0009381473064422607,
+        "count_native_current_run_sec": 0.0,
+        "elapsed_sec": 0.11756928637623787,
+        "grouped_native_sec": 0.11122041940689087,
+        "known_host_phase_sec": 0.299844603985548,
+        "known_native_current_run_sec": 0.11122041940689087,
+        "unattributed_elapsed_sec": 0.0
+      },
+      "elapsed_sec": 0.11756928637623787,
+      "grouped_union_direct_side_effect_enabled": false,
+      "grouped_union_query_block_count": 2,
+      "grouped_union_query_block_size": 32768,
+      "grouped_union_query_blocked_candidate": true,
+      "grouped_union_same_root_culling_enabled": true,
+      "host_observed_sec": {
+        "adapter_run_sec": 0.11215856671333313,
+        "column_signature_sec": 0.005504477769136429,
+        "prepare_sec": 0.18218155950307846
+      },
+      "mode": "optix_rt_core_grouped_stream_blocked_numba_column_signature_3d",
+      "native_elapsed_sec": 0.11122041940689087,
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_blocked_ranges",
+      "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs",
+      "partner": "numba",
+      "path": "optix_rt_grouped_stream_blocked_numba_radius_graph_column_signature_3d",
+      "point_count": 65536,
+      "prepared_grouped_stream_reused": true,
+      "prepared_query_repeat_protocol": {
+        "elapsed_sec_median": 0.11756928637623787,
+        "elapsed_sec_total": 0.47044745832681656,
+        "measured_run_count": 4,
+        "repeat": 6,
+        "signatures_stable": true,
+        "warmup": 2
+      },
+      "profile": "clustered3d_65536",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "same_component_size_signature_as_recommended": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "time_ratio_over_recommended": 1.2559195998537138,
+      "true_zero_copy_claim_authorized": false,
+      "variant": "blocked_32768",
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "all_core_flags_true": true,
+      "column_signature_strategy": "numba_direct_component_signature_counts",
+      "component_size_signature": [
+        16384,
+        16384,
+        16384,
+        16384
+      ],
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.004862017929553986,
+      "dataset": "clustered3d",
+      "derived_sec": {
+        "adapter_non_native_estimated_sec": 0.0003703683614730835,
+        "count_native_current_run_sec": 0.0,
+        "elapsed_sec": 0.11346961557865143,
+        "grouped_native_sec": 0.1079963818192482,
+        "known_host_phase_sec": 0.29261086508631706,
+        "known_native_current_run_sec": 0.1079963818192482,
+        "unattributed_elapsed_sec": 0.0
+      },
+      "elapsed_sec": 0.11346961557865143,
+      "grouped_union_direct_side_effect_enabled": false,
+      "grouped_union_query_block_count": 1,
+      "grouped_union_query_block_size": null,
+      "grouped_union_query_blocked_candidate": false,
+      "grouped_union_same_root_culling_enabled": false,
+      "host_observed_sec": {
+        "adapter_run_sec": 0.10836675018072128,
+        "column_signature_sec": 0.005115289241075516,
+        "prepare_sec": 0.17912882566452026
+      },
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "native_elapsed_sec": 0.1079963818192482,
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+      "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_options",
+      "partner": "numba",
+      "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "point_count": 65536,
+      "prepared_grouped_stream_reused": true,
+      "prepared_query_repeat_protocol": {
+        "elapsed_sec_median": 0.11346961557865143,
+        "elapsed_sec_total": 0.45373111963272095,
+        "measured_run_count": 4,
+        "repeat": 6,
+        "signatures_stable": true,
+        "warmup": 2
+      },
+      "profile": "clustered3d_65536",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "same_component_size_signature_as_recommended": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "time_ratio_over_recommended": 1.212125365267993,
+      "true_zero_copy_claim_authorized": false,
+      "variant": "no_same_root_culling",
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "all_core_flags_true": true,
+      "column_signature_strategy": "numba_direct_component_signature_counts",
+      "component_size_signature": [
+        65536
+      ],
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.003985002636909485,
+      "dataset": "road3d",
+      "derived_sec": {
+        "adapter_non_native_estimated_sec": 0.0003907307982444763,
+        "count_native_current_run_sec": 0.0,
+        "elapsed_sec": 0.03512256219983101,
+        "grouped_native_sec": 0.029681295156478882,
+        "known_host_phase_sec": 0.21979566663503647,
+        "known_native_current_run_sec": 0.029681295156478882,
+        "unattributed_elapsed_sec": 0.0
+      },
+      "elapsed_sec": 0.03512256219983101,
+      "grouped_union_direct_side_effect_enabled": false,
+      "grouped_union_query_block_count": 1,
+      "grouped_union_query_block_size": null,
+      "grouped_union_query_blocked_candidate": false,
+      "grouped_union_same_root_culling_enabled": true,
+      "host_observed_sec": {
+        "adapter_run_sec": 0.030072025954723358,
+        "column_signature_sec": 0.004881970584392548,
+        "prepare_sec": 0.18484167009592056
+      },
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "native_elapsed_sec": 0.029681295156478882,
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+      "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "partner": "numba",
+      "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "point_count": 65536,
+      "prepared_grouped_stream_reused": true,
+      "prepared_query_repeat_protocol": {
+        "elapsed_sec_median": 0.03512256219983101,
+        "elapsed_sec_total": 0.14046885818243027,
+        "measured_run_count": 4,
+        "repeat": 6,
+        "signatures_stable": true,
+        "warmup": 2
+      },
+      "profile": "road3d_65536",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "same_component_size_signature_as_recommended": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "time_ratio_over_recommended": 1.0,
+      "true_zero_copy_claim_authorized": false,
+      "variant": "recommended_unblocked",
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "all_core_flags_true": true,
+      "column_signature_strategy": "numba_direct_component_signature_counts",
+      "component_size_signature": [
+        65536
+      ],
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.003563985228538513,
+      "dataset": "road3d",
+      "derived_sec": {
+        "adapter_non_native_estimated_sec": 0.0005346834659576416,
+        "count_native_current_run_sec": 0.0,
+        "elapsed_sec": 0.03545502945780754,
+        "grouped_native_sec": 0.029791459441184998,
+        "known_host_phase_sec": 0.20233577862381935,
+        "known_native_current_run_sec": 0.029791459441184998,
+        "unattributed_elapsed_sec": 0.0
+      },
+      "elapsed_sec": 0.03545502945780754,
+      "grouped_union_direct_side_effect_enabled": true,
+      "grouped_union_query_block_count": 1,
+      "grouped_union_query_block_size": null,
+      "grouped_union_query_blocked_candidate": false,
+      "grouped_union_same_root_culling_enabled": true,
+      "host_observed_sec": {
+        "adapter_run_sec": 0.03032614290714264,
+        "column_signature_sec": 0.004992533475160599,
+        "prepare_sec": 0.1670171022415161
+      },
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "native_elapsed_sec": 0.029791459441184998,
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+      "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_execution_options",
+      "partner": "numba",
+      "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "point_count": 65536,
+      "prepared_grouped_stream_reused": true,
+      "prepared_query_repeat_protocol": {
+        "elapsed_sec_median": 0.03545502945780754,
+        "elapsed_sec_total": 0.14159191399812698,
+        "measured_run_count": 4,
+        "repeat": 6,
+        "signatures_stable": true,
+        "warmup": 2
+      },
+      "profile": "road3d_65536",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "same_component_size_signature_as_recommended": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "time_ratio_over_recommended": 1.0094659169819373,
+      "true_zero_copy_claim_authorized": false,
+      "variant": "direct_side_effect",
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "all_core_flags_true": true,
+      "column_signature_strategy": "numba_direct_component_signature_counts",
+      "component_size_signature": [
+        65536
+      ],
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.004379101097583771,
+      "dataset": "road3d",
+      "derived_sec": {
+        "adapter_non_native_estimated_sec": 0.00027262046933174133,
+        "count_native_current_run_sec": 0.0,
+        "elapsed_sec": 0.04394543915987015,
+        "grouped_native_sec": 0.03839314728975296,
+        "known_host_phase_sec": 0.16548603773117065,
+        "known_native_current_run_sec": 0.03839314728975296,
+        "unattributed_elapsed_sec": 0.0
+      },
+      "elapsed_sec": 0.04394543915987015,
+      "grouped_union_direct_side_effect_enabled": false,
+      "grouped_union_query_block_count": 2,
+      "grouped_union_query_block_size": 32768,
+      "grouped_union_query_blocked_candidate": true,
+      "grouped_union_same_root_culling_enabled": true,
+      "host_observed_sec": {
+        "adapter_run_sec": 0.0386657677590847,
+        "column_signature_sec": 0.005274880677461624,
+        "prepare_sec": 0.12154538929462433
+      },
+      "mode": "optix_rt_core_grouped_stream_blocked_numba_column_signature_3d",
+      "native_elapsed_sec": 0.03839314728975296,
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_blocked_ranges",
+      "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs",
+      "partner": "numba",
+      "path": "optix_rt_grouped_stream_blocked_numba_radius_graph_column_signature_3d",
+      "point_count": 65536,
+      "prepared_grouped_stream_reused": true,
+      "prepared_query_repeat_protocol": {
+        "elapsed_sec_median": 0.04394543915987015,
+        "elapsed_sec_total": 0.1758420616388321,
+        "measured_run_count": 4,
+        "repeat": 6,
+        "signatures_stable": true,
+        "warmup": 2
+      },
+      "profile": "road3d_65536",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "same_component_size_signature_as_recommended": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "time_ratio_over_recommended": 1.251202543534298,
+      "true_zero_copy_claim_authorized": false,
+      "variant": "blocked_32768",
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "all_core_flags_true": true,
+      "column_signature_strategy": "numba_direct_component_signature_counts",
+      "component_size_signature": [
+        65536
+      ],
+      "core_flag_cache_reused": true,
+      "count_native_elapsed_sec": 0.003405258059501648,
+      "dataset": "road3d",
+      "derived_sec": {
+        "adapter_non_native_estimated_sec": 0.00032775476574897766,
+        "count_native_current_run_sec": 0.0,
+        "elapsed_sec": 0.040485888719558716,
+        "grouped_native_sec": 0.035070449113845825,
+        "known_host_phase_sec": 0.15605942532420158,
+        "known_native_current_run_sec": 0.035070449113845825,
+        "unattributed_elapsed_sec": 0.0
+      },
+      "elapsed_sec": 0.040485888719558716,
+      "grouped_union_direct_side_effect_enabled": false,
+      "grouped_union_query_block_count": 1,
+      "grouped_union_query_block_size": null,
+      "grouped_union_query_blocked_candidate": false,
+      "grouped_union_same_root_culling_enabled": false,
+      "host_observed_sec": {
+        "adapter_run_sec": 0.0353982038795948,
+        "column_signature_sec": 0.005086846649646759,
+        "prepare_sec": 0.11557437479496002
+      },
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "native_elapsed_sec": 0.035070449113845825,
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+      "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_options",
+      "partner": "numba",
+      "path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "point_count": 65536,
+      "prepared_grouped_stream_reused": true,
+      "prepared_query_repeat_protocol": {
+        "elapsed_sec_median": 0.040485888719558716,
+        "elapsed_sec_total": 0.1621493101119995,
+        "measured_run_count": 4,
+        "repeat": 6,
+        "signatures_stable": true,
+        "warmup": 2
+      },
+      "profile": "road3d_65536",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "same_component_size_signature_as_recommended": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "time_ratio_over_recommended": 1.1527031681006892,
+      "true_zero_copy_claim_authorized": false,
+      "variant": "no_same_root_culling",
+      "whole_app_speedup_claim_authorized": false
+    }
+  ],
+  "rt_core_speedup_claim_authorized": false,
+  "schema": "rtdl.goal4074.rt_dbscan_grouped_stream_bottleneck_refresh.v1",
+  "source_commit": "d30ab7b3",
+  "true_zero_copy_claim_authorized": false,
+  "variants": [
+    "recommended_unblocked",
+    "direct_side_effect",
+    "blocked_32768",
+    "no_same_root_culling"
+  ],
+  "warmup": 2,
+  "whole_app_speedup_claim_authorized": false
+}

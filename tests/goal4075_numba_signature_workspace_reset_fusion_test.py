@@ -7,6 +7,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PARTNER_ADAPTERS = ROOT / "src" / "rtdsl" / "partner_adapters.py"
 REPORT = ROOT / "docs" / "reports" / "goal4075_numba_signature_workspace_reset_fusion_2026-06-09.md"
+SUMMARY = ROOT / "docs" / "reports" / "goal4075_numba_signature_workspace_reset_fusion_pod_summary.json"
 
 
 class Goal4075NumbaSignatureWorkspaceResetFusionTest(unittest.TestCase):
@@ -30,6 +31,24 @@ class Goal4075NumbaSignatureWorkspaceResetFusionTest(unittest.TestCase):
             "native ABI",
         ):
             self.assertIn(fragment, text)
+
+    def test_pod_summary_records_warning_removed_without_claims(self) -> None:
+        if not SUMMARY.exists():
+            self.skipTest("Goal4075 pod summary has not been produced yet")
+        import json
+
+        payload = json.loads(SUMMARY.read_text(encoding="utf-8"))
+        self.assertEqual(payload["goal"], "Goal4075")
+        self.assertEqual(payload["schema"], "rtdl.goal4075.numba_signature_workspace_reset_fusion_pod_summary.v1")
+        self.assertFalse(payload["numba_grid_size_1_warning_present_after"])
+        self.assertFalse(payload["claim_boundary"]["release_authorized"])
+        self.assertFalse(payload["claim_boundary"]["public_speedup_claim_authorized"])
+        self.assertFalse(payload["claim_boundary"]["rt_core_speedup_claim_authorized"])
+        self.assertFalse(payload["claim_boundary"]["whole_app_speedup_claim_authorized"])
+        self.assertFalse(payload["claim_boundary"]["true_zero_copy_claim_authorized"])
+        self.assertFalse(payload["claim_boundary"]["native_abi_added"])
+        for row in payload["rows"]:
+            self.assertTrue(row["same_component_size_signature"])
 
 
 if __name__ == "__main__":

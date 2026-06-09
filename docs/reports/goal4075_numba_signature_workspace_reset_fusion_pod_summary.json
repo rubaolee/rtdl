@@ -1,0 +1,43 @@
+{
+  "after_commit": "d30ab7b3",
+  "before_commit": "183c80d3",
+  "before_goal": "Goal4074",
+  "claim_boundary": {
+    "native_abi_added": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": "Goal4075",
+  "interpretation": "The fused reset removes the one-block Numba warning but does not materially change the route; native grouped-union remains dominant.",
+  "numba_grid_size_1_warning_present_after": false,
+  "rows": [
+    {
+      "after_elapsed_sec": 0.09361211210489273,
+      "after_native_sec": 0.08797638863325119,
+      "after_signature_sec": 0.005361851304769516,
+      "before_elapsed_sec": 0.09332139417529106,
+      "before_native_sec": 0.08785880357027054,
+      "before_signature_sec": 0.005205366760492325,
+      "elapsed_ratio_after_over_before": 1.0031152334592817,
+      "profile": "clustered3d_65536",
+      "same_component_size_signature": true,
+      "signature_ratio_after_over_before": 1.0300621553633602
+    },
+    {
+      "after_elapsed_sec": 0.03512256219983101,
+      "after_native_sec": 0.029681295156478882,
+      "after_signature_sec": 0.004881970584392548,
+      "before_elapsed_sec": 0.03624499961733818,
+      "before_native_sec": 0.030176132917404175,
+      "before_signature_sec": 0.005428466945886612,
+      "elapsed_ratio_after_over_before": 0.9690319373883993,
+      "profile": "road3d_65536",
+      "same_component_size_signature": true,
+      "signature_ratio_after_over_before": 0.8993276799984627
+    }
+  ],
+  "schema": "rtdl.goal4075.numba_signature_workspace_reset_fusion_pod_summary.v1"
+}

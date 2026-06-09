@@ -4,7 +4,7 @@ Date: 2026-06-09
 
 ## Status
 
-Implemented locally; pod validation pending.
+Implemented, RTX 4000 Ada pod probe recorded, tests pass.
 
 ## Purpose
 
@@ -21,7 +21,28 @@ This is a generic partner-continuation cleanup. It does not alter the native gro
 
 This should remove the one-block Numba reset warning and slightly reduce the signature-continuation overhead. Goal4074 already showed that the main bottleneck is still native grouped-union traversal, so this is not expected to produce a large whole-route speedup.
 
+## Pod Evidence
+
+Artifacts:
+
+- `docs/reports/goal4075_numba_signature_workspace_reset_fusion_pod_after.json`
+- `docs/reports/goal4075_numba_signature_workspace_reset_fusion_pod_after.stdout.txt`
+- `docs/reports/goal4075_numba_signature_workspace_reset_fusion_pod_summary.json`
+
+Before/after comparison against the Goal4074 pre-fusion artifact:
+
+| Profile | before elapsed sec | after elapsed sec | after/before | before signature sec | after signature sec | warning after |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| `clustered3d_65536` | 0.093321 | 0.093612 | 1.003x | 0.005205 | 0.005362 | absent |
+| `road3d_65536` | 0.036245 | 0.035123 | 0.969x | 0.005428 | 0.004882 | absent |
+
+Interpretation:
+
+- The one-block Numba warning is gone.
+- Correctness remains stable by component-size signature.
+- This does not materially change the recommended route; clustered timing is within noise and road timing improves modestly.
+- Goal4074's main conclusion still holds: native grouped-union traversal remains the real bottleneck.
+
 ## Boundary
 
 This change does not authorize release, public speedup, broad RT-core speedup, whole-app acceleration, true-zero-copy, automatic partner selection, app-specific native-engine logic, or native ABI claims.
-
