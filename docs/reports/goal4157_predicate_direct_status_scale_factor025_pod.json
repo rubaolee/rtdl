@@ -1,0 +1,937 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "route_promotion_authorized": false,
+    "whole_app_claim_authorized": false
+  },
+  "comparisons": [
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.16310718655586243,
+      "candidate_final_changed_flag": 0,
+      "current_elapsed_sec": 0.10056176781654358,
+      "dataset": "clustered3d",
+      "point_count": 65536,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.6165379339806237
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.0964885950088501,
+      "candidate_final_changed_flag": 1,
+      "current_elapsed_sec": 0.10056176781654358,
+      "dataset": "clustered3d",
+      "point_count": 65536,
+      "same_signature": true,
+      "speedup_current_over_candidate": 1.042214033765544
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.6563682705163956,
+      "candidate_final_changed_flag": 0,
+      "current_elapsed_sec": 0.34596528112888336,
+      "dataset": "clustered3d",
+      "point_count": 131072,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.5270901971795442
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.39503609389066696,
+      "candidate_final_changed_flag": 1,
+      "current_elapsed_sec": 0.34596528112888336,
+      "dataset": "clustered3d",
+      "point_count": 131072,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.8757814449852149
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 2.302715264260769,
+      "candidate_final_changed_flag": 0,
+      "current_elapsed_sec": 1.2815240025520325,
+      "dataset": "clustered3d",
+      "point_count": 262144,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.5565273407623998
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 1.6464647501707077,
+      "candidate_final_changed_flag": 1,
+      "current_elapsed_sec": 1.2815240025520325,
+      "dataset": "clustered3d",
+      "point_count": 262144,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.7783488850393926
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.021414242684841156,
+      "candidate_final_changed_flag": 0,
+      "current_elapsed_sec": 0.015892282128334045,
+      "dataset": "ngsim_dense",
+      "point_count": 65536,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.7421360802819317
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.012657396495342255,
+      "candidate_final_changed_flag": 1,
+      "current_elapsed_sec": 0.015892282128334045,
+      "dataset": "ngsim_dense",
+      "point_count": 65536,
+      "same_signature": true,
+      "speedup_current_over_candidate": 1.2555727502241225
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.047766126692295074,
+      "candidate_final_changed_flag": 0,
+      "current_elapsed_sec": 0.04606162756681442,
+      "dataset": "ngsim_dense",
+      "point_count": 131072,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.9643157349462125
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.025618024170398712,
+      "candidate_final_changed_flag": 1,
+      "current_elapsed_sec": 0.04606162756681442,
+      "dataset": "ngsim_dense",
+      "point_count": 131072,
+      "same_signature": true,
+      "speedup_current_over_candidate": 1.7980163989398537
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.1498829424381256,
+      "candidate_final_changed_flag": 0,
+      "current_elapsed_sec": 0.15567971020936966,
+      "dataset": "ngsim_dense",
+      "point_count": 262144,
+      "same_signature": true,
+      "speedup_current_over_candidate": 1.0386753000504847
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.08319505304098129,
+      "candidate_final_changed_flag": 1,
+      "current_elapsed_sec": 0.15567971020936966,
+      "dataset": "ngsim_dense",
+      "point_count": 262144,
+      "same_signature": true,
+      "speedup_current_over_candidate": 1.871261625768577
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.08241166174411774,
+      "candidate_final_changed_flag": 0,
+      "current_elapsed_sec": 0.0373535081744194,
+      "dataset": "road3d",
+      "point_count": 65536,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.4532551265669093
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.041965290904045105,
+      "candidate_final_changed_flag": 1,
+      "current_elapsed_sec": 0.0373535081744194,
+      "dataset": "road3d",
+      "point_count": 65536,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.8901048311527094
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 0.3351760357618332,
+      "candidate_final_changed_flag": 0,
+      "current_elapsed_sec": 0.128586083650589,
+      "dataset": "road3d",
+      "point_count": 131072,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.38363746190362696
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.16958577930927277,
+      "candidate_final_changed_flag": 1,
+      "current_elapsed_sec": 0.128586083650589,
+      "dataset": "road3d",
+      "point_count": 131072,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.7582362399390056
+    },
+    {
+      "candidate": "predicate_direct_status_until_stable",
+      "candidate_convergence_proven": true,
+      "candidate_elapsed_sec": 1.3791830092668533,
+      "candidate_final_changed_flag": 0,
+      "current_elapsed_sec": 0.46719561517238617,
+      "dataset": "road3d",
+      "point_count": 262144,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.338748093641857
+    },
+    {
+      "candidate": "predicate_direct_status_single_pass",
+      "candidate_convergence_proven": false,
+      "candidate_elapsed_sec": 0.7005498930811882,
+      "candidate_final_changed_flag": 1,
+      "current_elapsed_sec": 0.46719561517238617,
+      "dataset": "road3d",
+      "point_count": 262144,
+      "same_signature": true,
+      "speedup_current_over_candidate": 0.6668984176381023
+    }
+  ],
+  "elapsed_wall_sec": 85.42624727636576,
+  "factor": 0.25,
+  "git_commit": "",
+  "goal": "Goal4157",
+  "repeat": 4,
+  "rows": [
+    {
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.10056176781654358,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.16310718655586243,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.16273261606693268,
+        "prepare_predicate_direct_status_sec": 0.3904983848333359
+      }
+    },
+    {
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.0964885950088501,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.09615357220172882,
+        "prepare_predicate_direct_status_sec": 0.04277697950601578
+      }
+    },
+    {
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.0373535081744194,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.08241166174411774,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.0820675864815712,
+        "prepare_predicate_direct_status_sec": 0.04087089002132416
+      }
+    },
+    {
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.041965290904045105,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.041634701192379,
+        "prepare_predicate_direct_status_sec": 0.09880144149065018
+      }
+    },
+    {
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.015892282128334045,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.021414242684841156,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.018870174884796143,
+        "prepare_predicate_direct_status_sec": 0.045508190989494324
+      }
+    },
+    {
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.012657396495342255,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 65536,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.010239258408546448,
+        "prepare_predicate_direct_status_sec": 0.041548848152160645
+      }
+    },
+    {
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.34596528112888336,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "point_count": 131072,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "signature": {
+        "cluster_sizes": {
+          "1": 32768,
+          "2": 32768,
+          "3": 32768,
+          "4": 32768
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.6563682705163956,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 131072,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 32768,
+          "2": 32768,
+          "3": 32768,
+          "4": 32768
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.6559502482414246,
+        "prepare_predicate_direct_status_sec": 0.10331761091947556
+      }
+    },
+    {
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.39503609389066696,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 131072,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 32768,
+          "2": 32768,
+          "3": 32768,
+          "4": 32768
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.39463338255882263,
+        "prepare_predicate_direct_status_sec": 0.1008884459733963
+      }
+    },
+    {
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.128586083650589,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "point_count": 131072,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.3351760357618332,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 131072,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.3347878009080887,
+        "prepare_predicate_direct_status_sec": 0.09149829298257828
+      }
+    },
+    {
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.16958577930927277,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 131072,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.16917117685079575,
+        "prepare_predicate_direct_status_sec": 0.09472230076789856
+      }
+    },
+    {
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.04606162756681442,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "point_count": 131072,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.047766126692295074,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 131072,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.04483196139335632,
+        "prepare_predicate_direct_status_sec": 0.10031568259000778
+      }
+    },
+    {
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.025618024170398712,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 131072,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072
+        },
+        "core_count": 131072,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.022684648633003235,
+        "prepare_predicate_direct_status_sec": 0.10162290185689926
+      }
+    },
+    {
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 1.2815240025520325,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "point_count": 262144,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536,
+          "2": 65536,
+          "3": 65536,
+          "4": 65536
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 2.302715264260769,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 262144,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536,
+          "2": 65536,
+          "3": 65536,
+          "4": 65536
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 2.30224572122097,
+        "prepare_predicate_direct_status_sec": 0.2208545058965683
+      }
+    },
+    {
+      "dataset": "clustered3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 1.6464647501707077,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 262144,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536,
+          "2": 65536,
+          "3": 65536,
+          "4": 65536
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 1.6460008397698402,
+        "prepare_predicate_direct_status_sec": 0.21827001124620438
+      }
+    },
+    {
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.46719561517238617,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "point_count": 262144,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "signature": {
+        "cluster_sizes": {
+          "1": 262144
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 1.3791830092668533,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 262144,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 262144
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 1.3787481486797333,
+        "prepare_predicate_direct_status_sec": 0.18750285357236862
+      }
+    },
+    {
+      "dataset": "road3d",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.7005498930811882,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 262144,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 262144
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.700113520026207,
+        "prepare_predicate_direct_status_sec": 0.18965893983840942
+      }
+    },
+    {
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": null,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": null,
+      "direct_status_final_changed_flag": null,
+      "elapsed_sec": 0.15567971020936966,
+      "label": "current_grouped_stream_numba",
+      "metadata_path": "optix_rt_grouped_stream_numba_radius_graph_column_signature_3d",
+      "mode": "optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "point_count": 262144,
+      "predicate_direct_status_candidate": null,
+      "predicate_direct_status_promoted": null,
+      "signature": {
+        "cluster_sizes": {
+          "1": 262144
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": null
+    },
+    {
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "until_stable",
+      "direct_status_convergence_proven": true,
+      "direct_status_final_changed_flag": 0,
+      "elapsed_sec": 0.1498829424381256,
+      "label": "predicate_direct_status_until_stable",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 262144,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 262144
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.14673248678445816,
+        "prepare_predicate_direct_status_sec": 0.21362212300300598
+      }
+    },
+    {
+      "dataset": "ngsim_dense",
+      "dbscan_core_border_noise_semantics": true,
+      "direct_status_convergence_mode": "single_pass_candidate",
+      "direct_status_convergence_proven": false,
+      "direct_status_final_changed_flag": 1,
+      "elapsed_sec": 0.08319505304098129,
+      "label": "predicate_direct_status_single_pass",
+      "metadata_path": "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d",
+      "mode": "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+      "point_count": 262144,
+      "predicate_direct_status_candidate": true,
+      "predicate_direct_status_promoted": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 262144
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "status": "ok",
+      "timing_breakdown_sec": {
+        "optix_rt_count_threshold_sec": 0.0,
+        "predicate_direct_status_signature_sec": 0.07995020598173141,
+        "prepare_predicate_direct_status_sec": 0.21886324137449265
+      }
+    }
+  ],
+  "warmup": 1
+}
