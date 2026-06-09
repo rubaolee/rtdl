@@ -1868,11 +1868,15 @@ def _run_direct_status_union_signature_from_prepared_columns_cupy_3d(
     radius: float,
     cell_factor: float,
     max_iterations: int,
+    convergence_mode: str = "until_stable",
 ) -> tuple[tuple[int, ...], dict[str, Any]]:
     import cupy
 
     radius = float(radius)
     cell_factor = float(cell_factor)
+    convergence_mode = str(convergence_mode)
+    if convergence_mode not in {"until_stable", "single_pass_candidate"}:
+        raise ValueError("convergence_mode must be 'until_stable' or 'single_pass_candidate'")
     radius_sq = radius * radius
     classification_tol = 1.0e-5 * max(1.0, radius_sq)
     partition_count = int(prepare_metadata["partition_count"])
@@ -1884,6 +1888,8 @@ def _run_direct_status_union_signature_from_prepared_columns_cupy_3d(
         ambiguous_pairs,
         ambiguous_point_comparisons,
         ambiguous_positive_edges,
+        final_changed_flag,
+        convergence_proven,
     ) = _cupy_direct_partition_status_union_component_roots(
         cupy,
         partition_count=partition_count,
@@ -1905,6 +1911,7 @@ def _run_direct_status_union_signature_from_prepared_columns_cupy_3d(
         radius_sq=radius_sq,
         classification_tol=classification_tol,
         max_iterations=int(max_iterations),
+        convergence_mode=convergence_mode,
     )
     point_partition_ids = runtime_columns["point_partition_ids"]
     component_roots = partition_parents_device[point_partition_ids]
@@ -1947,6 +1954,10 @@ def _run_direct_status_union_signature_from_prepared_columns_cupy_3d(
         "ambiguous_point_comparisons": int(ambiguous_point_comparisons),
         "ambiguous_positive_edges": int(ambiguous_positive_edges),
         "union_iterations": int(union_iterations),
+        "direct_status_convergence_mode": convergence_mode,
+        "direct_status_final_changed_flag": int(final_changed_flag),
+        "direct_status_convergence_proven": bool(convergence_proven),
+        "direct_status_single_pass_candidate": convergence_mode == "single_pass_candidate",
         "complete_candidate_coverage": True,
         "label_materialization": "component_size_signature_only",
         "native_abi_added": False,
@@ -2016,6 +2027,7 @@ class V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D:
         self,
         *,
         max_iterations: int = 64,
+        convergence_mode: str = "until_stable",
         validate_against_materialized_signature: bool = False,
     ) -> dict[str, Any]:
         self._ensure_open()
@@ -2026,6 +2038,7 @@ class V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D:
             radius=self.radius,
             cell_factor=self.cell_factor,
             max_iterations=max_iterations,
+            convergence_mode=convergence_mode,
         )
         same_contract = None
         materialized_signature = None
@@ -2101,10 +2114,12 @@ def run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepare
     prepared: V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D,
     *,
     max_iterations: int = 64,
+    convergence_mode: str = "until_stable",
     validate_against_materialized_signature: bool = False,
 ) -> dict[str, Any]:
     return prepared.run_component_signature(
         max_iterations=max_iterations,
+        convergence_mode=convergence_mode,
         validate_against_materialized_signature=validate_against_materialized_signature,
     )
 
@@ -2677,6 +2692,7 @@ def build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_direc
     radius: float,
     cell_factor: float = 0.125,
     max_iterations: int = 64,
+    convergence_mode: str = "until_stable",
     validate_against_materialized_signature: bool = False,
 ) -> dict[str, Any]:
     """Preview component-size signatures without materializing partition-pair rows."""
@@ -2693,6 +2709,9 @@ def build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_direc
         raise ValueError("radius must be positive")
     if cell_factor <= 0.0:
         raise ValueError("cell_factor must be positive")
+    convergence_mode = str(convergence_mode)
+    if convergence_mode not in {"until_stable", "single_pass_candidate"}:
+        raise ValueError("convergence_mode must be 'until_stable' or 'single_pass_candidate'")
     cell_size = radius * cell_factor
     radius_sq = radius * radius
 
@@ -2749,6 +2768,8 @@ def build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_direc
         ambiguous_pairs,
         ambiguous_point_comparisons,
         ambiguous_positive_edges,
+        final_changed_flag,
+        convergence_proven,
     ) = _cupy_direct_partition_status_union_component_roots(
         cupy,
         partition_count=partition_count,
@@ -2770,6 +2791,7 @@ def build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_direc
         radius_sq=radius_sq,
         classification_tol=classification_tol,
         max_iterations=max_iterations,
+        convergence_mode=convergence_mode,
     )
     component_roots = partition_parents_device[point_partition_ids]
     _, component_counts = cupy.unique(component_roots, return_counts=True)
@@ -2833,6 +2855,10 @@ def build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_direc
             "ambiguous_point_comparisons": int(ambiguous_point_comparisons),
             "ambiguous_positive_edges": int(ambiguous_positive_edges),
             "union_iterations": int(union_iterations),
+            "direct_status_convergence_mode": convergence_mode,
+            "direct_status_final_changed_flag": int(final_changed_flag),
+            "direct_status_convergence_proven": bool(convergence_proven),
+            "direct_status_single_pass_candidate": convergence_mode == "single_pass_candidate",
             "same_contract_against_materialized_signature": same_contract,
             "materialized_reference_signature": materialized_signature,
             "complete_candidate_coverage": True,
@@ -2874,7 +2900,11 @@ def _cupy_direct_partition_status_union_component_roots(
     radius_sq: float,
     classification_tol: float,
     max_iterations: int = 64,
+    convergence_mode: str = "until_stable",
 ):
+    convergence_mode = str(convergence_mode)
+    if convergence_mode not in {"until_stable", "single_pass_candidate"}:
+        raise ValueError("convergence_mode must be 'until_stable' or 'single_pass_candidate'")
     union_kernel = cupy.RawKernel(
         r'''
         extern "C" __device__
@@ -3073,7 +3103,9 @@ def _cupy_direct_partition_status_union_component_roots(
     pair_blocks = ((total + threads - 1) // threads,)
     parent_blocks = (max(1, (partition_count + threads - 1) // threads),)
     iterations = 0
-    for iteration in range(int(max_iterations)):
+    final_changed_flag = 0
+    iteration_limit = 1 if convergence_mode == "single_pass_candidate" else int(max_iterations)
+    for iteration in range(iteration_limit):
         changed.fill(0)
         union_kernel(
             pair_blocks,
@@ -3109,10 +3141,14 @@ def _cupy_direct_partition_status_union_component_roots(
         )
         compress_kernel(parent_blocks, (threads,), (parents, cupy.uint32(partition_count)))
         iterations = iteration + 1
-        if int(changed[0].item()) == 0:
+        final_changed_flag = int(changed[0].item())
+        if convergence_mode == "single_pass_candidate":
+            break
+        if final_changed_flag == 0:
             break
     else:
         raise RuntimeError("direct partition status union did not converge")
+    convergence_proven = convergence_mode == "until_stable" and final_changed_flag == 0
     return (
         parents,
         iterations,
@@ -3121,6 +3157,8 @@ def _cupy_direct_partition_status_union_component_roots(
         int(ambiguous_count[0].item()),
         int(comparison_count[0].item()),
         int(positive_count[0].item()),
+        final_changed_flag,
+        convergence_proven,
     )
 
 

@@ -1114,6 +1114,7 @@ def run_rt_dbscan_benchmark(
     grouped_union_direct_side_effect: bool = False,
     partition_pair_enumeration: str = "mode_default",
     partition_cell_factor: float = 0.125,
+    direct_status_convergence_mode: str = "until_stable",
     repeat: int = 1,
     warmup: int = 0,
 ) -> dict[str, object]:
@@ -1139,6 +1140,11 @@ def run_rt_dbscan_benchmark(
     resolved_partition_cell_factor = float(partition_cell_factor)
     if resolved_partition_cell_factor <= 0.0:
         raise ValueError("partition_cell_factor must be positive")
+    direct_status_convergence_mode = str(direct_status_convergence_mode)
+    if direct_status_convergence_mode not in {"until_stable", "single_pass_candidate"}:
+        raise ValueError(
+            "direct_status_convergence_mode must be 'until_stable' or 'single_pass_candidate'"
+        )
     if partition_pair_enumeration not in {
         "mode_default",
         "host",
@@ -1528,6 +1534,7 @@ def run_rt_dbscan_benchmark(
             signature_start = time.perf_counter()
             result = rt.run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_direct_status_union_preview_3d(
                 prepared_direct_status,
+                convergence_mode=direct_status_convergence_mode,
                 validate_against_materialized_signature=validate,
             )
             component_signature_sec = time.perf_counter() - signature_start
@@ -1576,6 +1583,10 @@ def run_rt_dbscan_benchmark(
                 "partition_pair_enumeration_explicit_override": partition_pair_enumeration != "mode_default",
                 "partition_pair_enumeration_ignored_by_direct_status_union": partition_pair_enumeration != "mode_default",
                 "partition_pair_enumeration_default_route_changed": False,
+                "direct_status_convergence_mode_user_selection": direct_status_convergence_mode,
+                "direct_status_convergence_mode_default_route_changed": False,
+                "direct_status_single_pass_candidate": direct_status_convergence_mode == "single_pass_candidate",
+                "direct_status_single_pass_promoted": False,
                 "optix_backend_used": False,
                 "rt_core_accelerated": False,
                 "materializes_neighbor_summaries": False,
@@ -2376,6 +2387,15 @@ def main(argv: list[str] | None = None) -> int:
             "This is advisory/user-controlled and does not authorize hidden auto-tuning."
         ),
     )
+    parser.add_argument(
+        "--direct-status-convergence-mode",
+        choices=("until_stable", "single_pass_candidate"),
+        default="until_stable",
+        help=(
+            "Only for prepared direct-status mode: keep the convergence-proven stable loop "
+            "or explicitly test the single-pass candidate. The candidate is not promoted."
+        ),
+    )
     parser.add_argument("--repeat", type=int, default=1)
     parser.add_argument("--warmup", type=int, default=0)
     args = parser.parse_args(argv)
@@ -2413,6 +2433,7 @@ def main(argv: list[str] | None = None) -> int:
                 grouped_union_direct_side_effect=args.enable_grouped_union_direct_side_effect,
                 partition_pair_enumeration=args.partition_pair_enumeration,
                 partition_cell_factor=args.partition_cell_factor,
+                direct_status_convergence_mode=args.direct_status_convergence_mode,
                 repeat=args.repeat,
                 warmup=args.warmup,
             ),

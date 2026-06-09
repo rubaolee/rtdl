@@ -17,7 +17,8 @@ class Goal4146DirectStatusRedundantSyncRemovalTest(unittest.TestCase):
             source.index("def _cupy_union_partition_pairs_with_ambiguous_points")
         ]
 
-        self.assertIn("if int(changed[0].item()) == 0:", helper)
+        self.assertIn("final_changed_flag = int(changed[0].item())", helper)
+        self.assertIn("if final_changed_flag == 0:", helper)
         self.assertNotIn("cupy.cuda.get_current_stream().synchronize()", helper)
 
     def test_report_blocks_performance_claim_until_pod_timing(self) -> None:
