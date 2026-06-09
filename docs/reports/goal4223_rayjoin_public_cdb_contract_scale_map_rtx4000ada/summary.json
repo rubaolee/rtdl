@@ -1,0 +1,392 @@
+{
+  "artifact_root": "/root/goal4177.dpBIx4/repo/docs/reports/goal4223_rayjoin_public_cdb_contract_scale_map_rtx4000ada",
+  "block_size": 128,
+  "boundary": "Internal RayJoin public-CDB contract scale map. This is route-policy evidence over bounded slices, not a RayJoin paper reproduction, not automatic dispatch, not public speedup evidence, and not release evidence.",
+  "cases": [
+    "pip_county512",
+    "lsi_county256_soil256_count128",
+    "lsi_county256_soil256_count256",
+    "lsi_county256_soil256_count512",
+    "overlay_county128_soil128",
+    "overlay_county256_soil256",
+    "overlay_county512_soil512"
+  ],
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "internal_results_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "release_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "data_dir": "/root/rtdl/data/rayjoin_public_cdb",
+  "elapsed_sec": 9.60281652957201,
+  "goal": "Goal4223",
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.08",
+  "recommended_route_counts": {
+    "numba_cuda_jit_scalar_count": 1,
+    "rtdl_optix_prepared_segment_pair_count": 3,
+    "rtdl_optix_prepared_shape_pair_active_count": 3
+  },
+  "repeat": 20,
+  "rows": [
+    {
+      "case_id": "pip_county512",
+      "claim_boundary": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_match": true,
+      "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start0_count512.cdb",
+      "elapsed_outer_sec": 2.0303791984915733,
+      "numba_candidate_pair_count": 246272,
+      "numba_hot_median_sec": 0.0005269385874271393,
+      "numba_input_counts": {
+        "point_count": 512,
+        "shape_count": 481
+      },
+      "numba_rawkernel_required": false,
+      "numba_row_count": 1430,
+      "recommended_route": "numba_cuda_jit_scalar_count",
+      "rtdl_execution_route": "prepared_optix_cupy_refined_pip",
+      "rtdl_optix_hot_median_sec": 0.001884113997220993,
+      "rtdl_optix_row_count": 1430,
+      "rtdl_optix_speedup_vs_numba": 0.27967447203532086,
+      "rtdl_rt_core_accelerated": true,
+      "workload": "pip"
+    },
+    {
+      "case_id": "lsi_county256_soil256_count128",
+      "claim_boundary": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_match": true,
+      "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count128.cdb + /root/rtdl/data/rayjoin_public_cdb/br_soil_start256_count128.cdb",
+      "elapsed_outer_sec": 0.9104442968964577,
+      "numba_candidate_pair_count": 12334176,
+      "numba_hot_median_sec": 0.002301398664712906,
+      "numba_input_counts": {
+        "left_segment_count": 6064,
+        "right_segment_count": 2034
+      },
+      "numba_rawkernel_required": false,
+      "numba_row_count": 56,
+      "recommended_route": "rtdl_optix_prepared_segment_pair_count",
+      "rtdl_execution_route": "prepared_optix_left_id_dense_count_loaded_case_reuse",
+      "rtdl_optix_hot_median_sec": 9.036436676979065e-05,
+      "rtdl_optix_row_count": 56,
+      "rtdl_optix_speedup_vs_numba": 25.46798862184112,
+      "rtdl_rt_core_accelerated": true,
+      "workload": "lsi"
+    },
+    {
+      "case_id": "lsi_county256_soil256_count256",
+      "claim_boundary": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_match": true,
+      "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count256.cdb + /root/rtdl/data/rayjoin_public_cdb/br_soil_start256_count256.cdb",
+      "elapsed_outer_sec": 0.2938079908490181,
+      "numba_candidate_pair_count": 44938225,
+      "numba_hot_median_sec": 0.008146774023771286,
+      "numba_input_counts": {
+        "left_segment_count": 12295,
+        "right_segment_count": 3655
+      },
+      "numba_rawkernel_required": false,
+      "numba_row_count": 88,
+      "recommended_route": "rtdl_optix_prepared_segment_pair_count",
+      "rtdl_execution_route": "prepared_optix_left_id_dense_count_loaded_case_reuse",
+      "rtdl_optix_hot_median_sec": 8.665397763252258e-05,
+      "rtdl_optix_row_count": 88,
+      "rtdl_optix_speedup_vs_numba": 94.01500365418512,
+      "rtdl_rt_core_accelerated": true,
+      "workload": "lsi"
+    },
+    {
+      "case_id": "lsi_county256_soil256_count512",
+      "claim_boundary": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_match": true,
+      "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "elapsed_outer_sec": 0.6131867170333862,
+      "numba_candidate_pair_count": 136411275,
+      "numba_hot_median_sec": 0.023322846740484238,
+      "numba_input_counts": {
+        "left_segment_count": 19987,
+        "right_segment_count": 6825
+      },
+      "numba_rawkernel_required": false,
+      "numba_row_count": 269,
+      "recommended_route": "rtdl_optix_prepared_segment_pair_count",
+      "rtdl_execution_route": "prepared_optix_left_id_dense_count_loaded_case_reuse",
+      "rtdl_optix_hot_median_sec": 8.900091052055359e-05,
+      "rtdl_optix_row_count": 269,
+      "rtdl_optix_speedup_vs_numba": 262.05177681972293,
+      "rtdl_rt_core_accelerated": true,
+      "workload": "lsi"
+    },
+    {
+      "case_id": "overlay_county128_soil128",
+      "claim_boundary": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_match": true,
+      "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start0_count128.cdb + /root/rtdl/data/rayjoin_public_cdb/br_soil_start0_count128.cdb",
+      "elapsed_outer_sec": 1.6527015566825867,
+      "numba_candidate_pair_count": 14036,
+      "numba_hot_median_sec": 0.006501935422420502,
+      "numba_input_counts": {
+        "left_shape_count": 121,
+        "right_shape_count": 116
+      },
+      "numba_rawkernel_required": false,
+      "numba_row_count": 1,
+      "recommended_route": "rtdl_optix_prepared_shape_pair_active_count",
+      "rtdl_execution_route": "prepared_optix_shape_pair_active_count_loaded_case_reuse",
+      "rtdl_optix_hot_median_sec": 9.74014401435852e-05,
+      "rtdl_optix_row_count": 1,
+      "rtdl_optix_speedup_vs_numba": 66.75399678727148,
+      "rtdl_rt_core_accelerated": true,
+      "workload": "overlay_seed"
+    },
+    {
+      "case_id": "overlay_county256_soil256",
+      "claim_boundary": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_match": true,
+      "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start0_count256.cdb + /root/rtdl/data/rayjoin_public_cdb/br_soil_start0_count256.cdb",
+      "elapsed_outer_sec": 0.749354287981987,
+      "numba_candidate_pair_count": 56876,
+      "numba_hot_median_sec": 0.029695145785808563,
+      "numba_input_counts": {
+        "left_shape_count": 241,
+        "right_shape_count": 236
+      },
+      "numba_rawkernel_required": false,
+      "numba_row_count": 9,
+      "recommended_route": "rtdl_optix_prepared_shape_pair_active_count",
+      "rtdl_execution_route": "prepared_optix_shape_pair_active_count_loaded_case_reuse",
+      "rtdl_optix_hot_median_sec": 9.445846080780029e-05,
+      "rtdl_optix_row_count": 9,
+      "rtdl_optix_speedup_vs_numba": 314.37253510017354,
+      "rtdl_rt_core_accelerated": true,
+      "workload": "overlay_seed"
+    },
+    {
+      "case_id": "overlay_county512_soil512",
+      "claim_boundary": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_speedup_claim_authorized": false,
+        "internal_results_only": true,
+        "paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_match": true,
+      "dataset": "/root/rtdl/data/rayjoin_public_cdb/br_county_start0_count512.cdb + /root/rtdl/data/rayjoin_public_cdb/br_soil_start0_count512.cdb",
+      "elapsed_outer_sec": 1.4397596269845963,
+      "numba_candidate_pair_count": 233766,
+      "numba_hot_median_sec": 0.05244101211428642,
+      "numba_input_counts": {
+        "left_shape_count": 481,
+        "right_shape_count": 486
+      },
+      "numba_rawkernel_required": false,
+      "numba_row_count": 121,
+      "recommended_route": "rtdl_optix_prepared_shape_pair_active_count",
+      "rtdl_execution_route": "prepared_optix_shape_pair_active_count_loaded_case_reuse",
+      "rtdl_optix_hot_median_sec": 0.0005517676472663879,
+      "rtdl_optix_row_count": 121,
+      "rtdl_optix_speedup_vs_numba": 95.04183939398031,
+      "rtdl_rt_core_accelerated": true,
+      "workload": "overlay_seed"
+    }
+  ],
+  "schema": "rtdl.goal4223.rayjoin_public_cdb_contract_scale_map.v1",
+  "slice_manifest": {
+    "county_0_128": {
+      "bytes": 186939,
+      "chains": 128,
+      "count": 128,
+      "path": "/root/rtdl/data/rayjoin_public_cdb/br_county_start0_count128.cdb",
+      "segments": 4981,
+      "source": "br_county",
+      "start": 0
+    },
+    "county_0_256": {
+      "bytes": 468574,
+      "chains": 256,
+      "count": 256,
+      "path": "/root/rtdl/data/rayjoin_public_cdb/br_county_start0_count256.cdb",
+      "segments": 12585,
+      "source": "br_county",
+      "start": 0
+    },
+    "county_0_512": {
+      "bytes": 924476,
+      "chains": 512,
+      "count": 512,
+      "path": "/root/rtdl/data/rayjoin_public_cdb/br_county_start0_count512.cdb",
+      "segments": 24880,
+      "source": "br_county",
+      "start": 0
+    },
+    "county_256_128": {
+      "bytes": 223955,
+      "chains": 128,
+      "count": 128,
+      "path": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count128.cdb",
+      "segments": 6064,
+      "source": "br_county",
+      "start": 256
+    },
+    "county_256_256": {
+      "bytes": 455902,
+      "chains": 256,
+      "count": 256,
+      "path": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count256.cdb",
+      "segments": 12295,
+      "source": "br_county",
+      "start": 256
+    },
+    "county_256_512": {
+      "bytes": 746884,
+      "chains": 512,
+      "count": 512,
+      "path": "/root/rtdl/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+      "segments": 19987,
+      "source": "br_county",
+      "start": 256
+    },
+    "soil_0_128": {
+      "bytes": 109524,
+      "chains": 128,
+      "count": 128,
+      "path": "/root/rtdl/data/rayjoin_public_cdb/br_soil_start0_count128.cdb",
+      "segments": 2885,
+      "source": "br_soil",
+      "start": 0
+    },
+    "soil_0_256": {
+      "bytes": 190086,
+      "chains": 256,
+      "count": 256,
+      "path": "/root/rtdl/data/rayjoin_public_cdb/br_soil_start0_count256.cdb",
+      "segments": 4964,
+      "source": "br_soil",
+      "start": 0
+    },
+    "soil_0_512": {
+      "bytes": 333363,
+      "chains": 512,
+      "count": 512,
+      "path": "/root/rtdl/data/rayjoin_public_cdb/br_soil_start0_count512.cdb",
+      "segments": 8619,
+      "source": "br_soil",
+      "start": 0
+    },
+    "soil_256_128": {
+      "bytes": 78719,
+      "chains": 128,
+      "count": 128,
+      "path": "/root/rtdl/data/rayjoin_public_cdb/br_soil_start256_count128.cdb",
+      "segments": 2034,
+      "source": "br_soil",
+      "start": 256
+    },
+    "soil_256_256": {
+      "bytes": 143277,
+      "chains": 256,
+      "count": 256,
+      "path": "/root/rtdl/data/rayjoin_public_cdb/br_soil_start256_count256.cdb",
+      "segments": 3655,
+      "source": "br_soil",
+      "start": 256
+    },
+    "soil_256_512": {
+      "bytes": 272430,
+      "chains": 512,
+      "count": 512,
+      "path": "/root/rtdl/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "segments": 6825,
+      "source": "br_soil",
+      "start": 256
+    }
+  },
+  "source_commit": "63289bbc",
+  "source_dirty": [],
+  "status": "pass",
+  "warmup": 3
+}

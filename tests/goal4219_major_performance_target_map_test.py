@@ -7,7 +7,7 @@ import rtdsl as rt
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT = ROOT / "docs" / "reports" / "goal4219_major_performance_target_map_after_goal4218_2026-06-09.md"
+REPORT = ROOT / "docs" / "reports" / "goal4224_major_performance_target_map_after_goal4223_2026-06-09.md"
 
 
 class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
@@ -15,7 +15,7 @@ class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
         self.assertTrue(REPORT.is_file())
         self.assertEqual(
             rt.CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION,
-            "rtdl.v2_10.current_major_performance_targets.goal4219.v1",
+            "rtdl.v2_10.current_major_performance_targets.goal4224.v1",
         )
         self.assertTrue(callable(rt.current_major_performance_targets))
         self.assertTrue(callable(rt.summarize_current_major_performance_targets))
@@ -27,7 +27,7 @@ class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
         summary = rt.summarize_current_major_performance_targets(rows)
         self.assertEqual(validation["status"], "accept")
         self.assertEqual(validation["errors"], ())
-        self.assertEqual(summary["target_count"], 6)
+        self.assertEqual(summary["target_count"], 7)
 
         statuses = {row["target_status"] for row in rows}
         self.assertIn("done_internal_evidence", statuses)
@@ -42,8 +42,11 @@ class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
             rows["ten_app_current_route_health"]["evidence_refs"],
             ("Goal4215", "Goal4216", "Goal4217"),
         )
+        self.assertEqual(rows["rayjoin_contract_split_route_policy"]["target_status"], "done_internal_evidence")
+        self.assertEqual(rows["rtdbscan_profile_aware_boundary_policy"]["target_status"], "done_internal_evidence")
         self.assertIn("contract", rows["rayjoin_contract_split_route_policy"]["theme"])
         self.assertIn("profile-aware", rows["rtdbscan_profile_aware_boundary_policy"]["theme"])
+        self.assertTrue(rows["release_grade_long_run_packet"]["pod_needed_next"])
         self.assertFalse(rows["prepared_session_residency_surface"]["pod_needed_next"])
         self.assertTrue(rows["amd_hiprt_functional_parity"]["amd_hardware_needed"])
 

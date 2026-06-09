@@ -4,11 +4,12 @@ from dataclasses import dataclass
 from typing import Any
 
 
-CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4219.v1"
+CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4224.v1"
 CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS = "internal_direction_map_not_release_authorization"
 CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY = (
-    "Goal4219 summarizes the major performance direction after Goal4215 and "
-    "Goal4218. It is a route/runtime planning map, not a release packet, not "
+    "Goal4224 summarizes the major performance direction after Goal4215, "
+    "Goal4218, Goal4222, and Goal4223. It is a route/runtime planning map, not "
+    "a release packet, not "
     "a public speedup claim, not a whole-app acceleration claim, not a broad "
     "RT-core claim, not a paper-reproduction claim, not a true-zero-copy claim, "
     "not automatic partner selection, not AMD performance evidence, and not "
@@ -109,35 +110,37 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
     CurrentMajorPerformanceTarget(
         target_id="rayjoin_contract_split_route_policy",
         theme="explicit mixed-route policy for RayJoin-style contracts",
-        status="needs_broader_evidence",
+        status="done_internal_evidence",
         current_reading=(
-            "Goal4218 confirms the split: bounded one-shot PIP favors Numba, repeated PIP "
-            "benefits from RTDL/OptiX batching, and LSI/overlay strongly favor fused "
-            "RTDL/OptiX primitives on the public-CDB slice."
+            "Goal4218 confirms the route split, and Goal4223 broadens it across "
+            "seven public-CDB contract/scale rows: bounded PIP one-shot favors "
+            "Numba, while LSI and overlay scalar-count contracts favor prepared "
+            "RTDL/OptiX primitives by large margins."
         ),
         next_action=(
-            "If more NVIDIA pod time is spent here, use larger/non-dense same-contract route "
-            "evidence and keep the result contract-by-contract; do not chase app-only tricks "
-            "or claim whole RayJoin reproduction."
+            "Use the split as internal route-policy evidence only. Future work should "
+            "improve generic primitives or run a formal release packet; do not collapse "
+            "the contracts into one RayJoin paper-reproduction number."
         ),
-        evidence_refs=("Goal4218", "Goal4039", "Goal3936"),
-        pod_needed_next=True,
+        evidence_refs=("Goal4218", "Goal4220", "Goal4221", "Goal4223"),
+        pod_needed_next=False,
     ),
     CurrentMajorPerformanceTarget(
         target_id="rtdbscan_profile_aware_boundary_policy",
         theme="profile-aware fixed-radius component route policy",
-        status="needs_broader_evidence",
+        status="done_internal_evidence",
         current_reading=(
-            "Goal4218 shows the unblocked canonical single-pass grouped stream is about "
-            "4.5x faster than the blocked stream on the current 65k clustered3d profile, "
-            "while Goals4205-4212 prove canonical policy parity."
+            "Goals4205-4212 prove canonical policy parity, while Goal4222 shows "
+            "the unblocked single-pass grouped stream beats the blocked grouped "
+            "variant on clustered3d, road3d, and ngsim_dense at 65k and 262k."
         ),
         next_action=(
-            "Spend future NVIDIA pod time only on broader profile/scale evidence or advisor "
-            "logic; do not promote blocked/partitioned variants by default without shape-specific proof."
+            "Keep unblocked single-pass as the current default route shape, and keep "
+            "blocked grouped stream explicit/profile-specific unless future evidence "
+            "shows a shape where it wins."
         ),
-        evidence_refs=("Goal4205", "Goal4206", "Goal4212", "Goal4218"),
-        pod_needed_next=True,
+        evidence_refs=("Goal4205", "Goal4206", "Goal4212", "Goal4222"),
+        pod_needed_next=False,
     ),
     CurrentMajorPerformanceTarget(
         target_id="prepared_session_residency_surface",
@@ -154,6 +157,23 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
         ),
         evidence_refs=("Goal3872", "Goal3877", "Goal3884", "Goal4215"),
         pod_needed_next=False,
+    ),
+    CurrentMajorPerformanceTarget(
+        target_id="release_grade_long_run_packet",
+        theme="release-grade long-run and cross-profile evidence",
+        status="needs_broader_evidence",
+        current_reading=(
+            "The current RTX 4000 Ada evidence is strong internal route-policy evidence, "
+            "but it is not a formal long-run release matrix across all benchmark apps, "
+            "hardware classes, and claim wording."
+        ),
+        next_action=(
+            "Before any formal major release, run an explicit release-grade packet with "
+            "longer per-row timing, exact artifact provenance, docs audit, and fresh "
+            "multi-AI consensus over the exact public claims."
+        ),
+        evidence_refs=("Goal4215", "Goal4222", "Goal4223"),
+        pod_needed_next=True,
     ),
     CurrentMajorPerformanceTarget(
         target_id="amd_hiprt_functional_parity",
