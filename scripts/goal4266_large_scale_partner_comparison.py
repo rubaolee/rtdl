@@ -197,12 +197,15 @@ def _calibrate_equal_repeat_count(
     modules: dict[str, Any],
     warmup: int,
     calibration_repeat: int,
+    calibration_safety_factor: float,
     target_hot_total_sec: float,
     max_repeat: int,
     progress_every: int,
 ) -> tuple[int, dict[str, Any]]:
     if calibration_repeat <= 0:
         raise ValueError("calibration_repeat must be positive")
+    if calibration_safety_factor < 1.0:
+        raise ValueError("calibration_safety_factor must be at least 1.0")
     medians: dict[str, float] = {}
     details: dict[str, Any] = {}
     for partner in PARTNERS:
@@ -223,13 +226,14 @@ def _calibrate_equal_repeat_count(
             "hot_total_sec": timing["hot_total_sec"],
         }
     fastest_median = min(value for value in medians.values() if value > 0.0)
-    repeat = int(math.ceil(float(target_hot_total_sec) / fastest_median))
+    repeat = int(math.ceil(float(target_hot_total_sec) * float(calibration_safety_factor) / fastest_median))
     repeat = max(calibration_repeat, min(int(max_repeat), repeat))
     return repeat, {
         "calibration_label": label,
         "partner_medians_sec": medians,
         "calibrated_equal_repeat": repeat,
         "target_hot_total_sec": float(target_hot_total_sec),
+        "calibration_safety_factor": float(calibration_safety_factor),
         "max_repeat": int(max_repeat),
         "max_repeat_exhausted": bool(repeat == int(max_repeat)),
         "details": details,
@@ -397,6 +401,7 @@ def _run_grouped_suite(args: argparse.Namespace, modules: dict[str, Any]) -> dic
             modules=modules,
             warmup=args.warmup,
             calibration_repeat=args.calibration_repeat,
+            calibration_safety_factor=args.calibration_safety_factor,
             target_hot_total_sec=args.target_hot_total_sec,
             max_repeat=args.max_repeat,
             progress_every=args.progress_every,
@@ -536,6 +541,7 @@ def _run_compact_suite(args: argparse.Namespace, modules: dict[str, Any]) -> dic
         modules=modules,
         warmup=args.warmup,
         calibration_repeat=args.calibration_repeat,
+        calibration_safety_factor=args.calibration_safety_factor,
         target_hot_total_sec=args.target_hot_total_sec,
         max_repeat=args.max_repeat,
         progress_every=args.progress_every,
@@ -660,6 +666,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "warmup": int(args.warmup),
         "max_repeat": int(args.max_repeat),
         "calibration_repeat": int(args.calibration_repeat),
+        "calibration_safety_factor": float(args.calibration_safety_factor),
         "block_size": int(args.block_size),
         "grouped_suite": grouped,
         "compact_mask_suite": compact,
@@ -688,6 +695,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--target-hot-total-sec", type=float, default=1.25)
     parser.add_argument("--warmup", type=int, default=2)
     parser.add_argument("--calibration-repeat", type=int, default=10)
+    parser.add_argument("--calibration-safety-factor", type=float, default=1.15)
     parser.add_argument("--max-repeat", type=int, default=5000)
     parser.add_argument("--progress-every", type=int, default=10)
     parser.add_argument("--block-size", type=int, default=256)

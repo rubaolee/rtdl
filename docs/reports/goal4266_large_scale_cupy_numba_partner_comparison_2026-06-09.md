@@ -102,6 +102,8 @@ python3 scripts/goal4266_large_scale_partner_comparison.py \
   --compact-rows 8000000 \
   --target-hot-total-sec 1.25 \
   --warmup 2 \
+  --calibration-repeat 10 \
+  --calibration-safety-factor 1.15 \
   --max-repeat 5000 \
   --progress-every 10 \
   --output docs/reports/goal4266_large_scale_partner_comparison/summary.json
