@@ -71,11 +71,16 @@ for that row.
 
 | Partner-needed contract | Current lesson |
 | --- | --- |
-| RayDB-style unfused grouped continuation | Prefer fused RTDL primitive summaries when available; use Numba only for custom grouped min/max/count/sum/avg continuations that are not already fused. There is no current same-contract CuPy timing row for this unfused table, so do not publish a CuPy-vs-Numba speedup for it. |
+| RayDB-style unfused grouped continuation | Prefer fused RTDL primitive summaries when available. When the user really needs custom grouped min/max/count/sum/avg continuation, Goal4266 gives large-scale same-contract RTX 3090 evidence for both CuPy and Numba: CuPy is currently faster on grouped count/sum/min/max and average-as-sum-plus-count, while Numba remains the correct no-RawKernel Python-source reference. |
 | Spatial RayJoin-style joins | Prefer RTDL scalar count/parity or first-hit/nearest-boundary primitives when they express the answer; Numba now covers the PIP/LSI/overlay scalar-count reference rows for users who need Python-source custom CUDA logic. On the one-shot bounded public-CDB PIP scalar-count row, CuPy is still the faster current partner baseline; resident repeated PIP uses the RTDL/OptiX prepared batch executor, and RTDL/OptiX is about `260x` faster than dense partners for the LSI/overlay scalar-count rows. |
-| Triangle candidate-row compaction | The scalar answer is a primitive-first graph relationship-count composition. Numba compact-mask is useful only when the user explicitly wants candidate rows for app-owned interpretation. There is no current same-contract CuPy compact-mask timing row, so do not publish a CuPy-vs-Numba speedup for it. |
+| Triangle candidate-row compaction | The scalar answer is a primitive-first graph relationship-count composition. Partner code is useful only when the user explicitly wants candidate rows for app-owned interpretation. Goal4266 gives large-scale same-contract RTX 3090 compact-mask evidence for both partners: CuPy is much faster, while Numba remains the correct no-RawKernel Python-source reference. |
 | Barnes-Hut-style force studies | CuPy remains the faster measured force-vector partner path overall; Numba now provides a no-RawKernel block-reduction reference for the exact-force continuation. |
 | RT-DBSCAN-style clustering | RTDL provides fixed-radius/core-summary primitives; Numba now has measured prepared-repeat component-continuation coverage, while CuPy remains a useful baseline/opponent. |
+
+Goal4266 rows are decision-grade only because both partners use the same
+contract, same repeat count, CPU-oracle validation, and more than one second of
+aggregate hot time. They remain partner-continuation evidence, not whole-app,
+RT-core, or universal CuPy-vs-Numba claims.
 
 ## Primitive-First Rows
 
