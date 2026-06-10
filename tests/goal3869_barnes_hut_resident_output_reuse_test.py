@@ -7,7 +7,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 ADAPTER = ROOT / "src/rtdsl/app_adapters/barnes_hut.py"
-APP = ROOT / "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py"
+APP = ROOT / "examples/current/apps/simulation/rtdl_barnes_hut_force_app.py"
 SCRIPT = ROOT / "scripts/goal3869_barnes_hut_resident_output_reuse_probe.py"
 REPORT = ROOT / "docs/reports/goal3869_barnes_hut_resident_output_reuse_2026-06-08.md"
 ARTIFACT = ROOT / "docs/reports/goal3869_barnes_hut_resident_output_reuse_a5000/summary.json"

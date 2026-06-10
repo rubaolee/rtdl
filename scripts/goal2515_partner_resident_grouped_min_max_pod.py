@@ -28,7 +28,7 @@ def main() -> int:
 
     import torch
     import rtdsl as rt
-    from examples.v2_0.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
+    from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
 
     output_path = repo / "docs/reports/goal2515_partner_resident_grouped_min_max_pod_2026-05-22.json"
     payload: dict[str, object] = {

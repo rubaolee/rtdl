@@ -13,13 +13,13 @@ from .goal114_segment_polygon_postgis import connect_postgis
 
 
 def _kernel():
-    from examples.v2_0.features.spatial.rtdl_polygon_pair_overlap_area_rows import polygon_pair_overlap_area_rows_reference
+    from examples.current.features.spatial.rtdl_polygon_pair_overlap_area_rows import polygon_pair_overlap_area_rows_reference
 
     return polygon_pair_overlap_area_rows_reference
 
 
 def _case():
-    from examples.v2_0.features.spatial.rtdl_polygon_pair_overlap_area_rows import make_authored_polygon_pair_overlap_case
+    from examples.current.features.spatial.rtdl_polygon_pair_overlap_area_rows import make_authored_polygon_pair_overlap_case
 
     return make_authored_polygon_pair_overlap_case()
 

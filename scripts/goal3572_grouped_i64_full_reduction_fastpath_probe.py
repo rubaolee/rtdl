@@ -53,7 +53,7 @@ def _run_case(
     env["RTDL_OPTIX_LIB"] = str(lib)
     command = [
         sys.executable,
-        "examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+        "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
         "--mode",
         mode,
         "--backend",

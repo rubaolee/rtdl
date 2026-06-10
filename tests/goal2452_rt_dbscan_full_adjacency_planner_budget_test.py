@@ -4,7 +4,7 @@ import json
 import pathlib
 import unittest
 
-from examples.v2_0.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
+from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
     DEFAULT_DIRECTED_ADJACENCY_EDGE_BUDGET,
     plan_rt_dbscan_continuation_execution,
 )

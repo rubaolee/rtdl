@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt  # noqa: E402
-from examples.v2_0.research_benchmarks.raydb_style import (  # noqa: E402
+from examples.current.research_benchmarks.raydb_style import (  # noqa: E402
     rtdl_raydb_style_benchmark_app as raydb,
 )
 

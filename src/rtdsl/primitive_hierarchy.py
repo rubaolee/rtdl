@@ -1035,7 +1035,7 @@ PRIMITIVE_HIERARCHY = (
                             "reduce ray triangle primitive hits by caller supplied group id",
                             "count or sum primitive payloads per group after ray triangle traversal",
                         ),
-                        reference_path="examples/v2_0/research_benchmarks/raydb_style/README.md",
+                        reference_path="examples/current/research_benchmarks/raydb_style/README.md",
                         backends=("cpu_python_reference", "optix"),
                         considered_alternatives=("traversal.count_hits", "reduction.grouped", "rows.ray_triangle_hit_stream_3d"),
                         distinct_from=(

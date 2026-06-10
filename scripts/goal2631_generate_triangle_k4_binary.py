@@ -9,7 +9,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from examples.v2_0.research_benchmarks.triangle_counting.rt_graph_contract import (  # noqa: E402
+from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import (  # noqa: E402
     write_binary_edges,
 )
 

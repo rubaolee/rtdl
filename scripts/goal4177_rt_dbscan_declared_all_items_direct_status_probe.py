@@ -7,7 +7,7 @@ import subprocess
 import time
 from typing import Any
 
-from examples.v2_0.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
+from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
     RT_DBSCAN_DECLARED_ALL_TRUE_DIRECT_STATUS_APP_MODE,
     RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE,
     RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE,

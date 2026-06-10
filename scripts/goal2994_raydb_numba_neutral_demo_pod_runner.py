@@ -17,7 +17,7 @@ if str(SRC) not in sys.path:
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from examples.v2_0.research_benchmarks.raydb_style import (  # noqa: E402
+from examples.current.research_benchmarks.raydb_style import (  # noqa: E402
     rtdl_raydb_style_benchmark_app as raydb,
 )
 

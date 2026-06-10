@@ -96,5 +96,5 @@ if __name__ == "__main__":
 OPTIX_RUNTIME = ROOT / "src/rtdsl/optix_runtime.py"
 PRELUDE = ROOT / "src/native/optix/rtdl_optix_prelude.h"
 API = ROOT / "src/native/optix/rtdl_optix_api.cpp"
-README = ROOT / "examples/v2_0/research_benchmarks/raydb_style/README.md"
+README = ROOT / "examples/current/research_benchmarks/raydb_style/README.md"
 CLOSEOUT = ROOT / "docs/reports/goal2528_raydb_style_benchmark_app_closeout_2026-05-23.md"

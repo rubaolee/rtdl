@@ -15,7 +15,7 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
-from examples.v2_0.apps.robotics import rtdl_robot_collision_screening_app as app  # noqa: E402
+from examples.current.apps.robotics import rtdl_robot_collision_screening_app as app  # noqa: E402
 
 
 SCHEMA = "rtdl.goal3765.robot_collision_hiprt_prepared_group_flags_probe.v1"
@@ -25,7 +25,7 @@ SCOPED_SOURCE_PATHS = (
     "src/native/hiprt/rtdl_hiprt_api.cpp",
     "src/rtdsl/hiprt_runtime.py",
     "src/rtdsl/generic_primitives.py",
-    "examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py",
+    "examples/current/apps/robotics/rtdl_robot_collision_screening_app.py",
     "scripts/goal3765_robot_collision_hiprt_prepared_group_flags_probe.py",
     "tests/goal3765_hiprt_prepared_grouped_anyhit_flags_test.py",
 )

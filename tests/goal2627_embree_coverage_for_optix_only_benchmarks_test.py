@@ -4,7 +4,7 @@ import importlib.util
 from pathlib import Path
 import unittest
 
-from examples.v2_0.research_benchmarks.rt_dbscan import (
+from examples.current.research_benchmarks.rt_dbscan import (
     rtdl_rt_dbscan_benchmark_app as dbscan_app,
 )
 from tests._embree_support import embree_available

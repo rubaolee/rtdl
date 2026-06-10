@@ -2,10 +2,10 @@ import unittest
 from pathlib import Path
 
 import rtdsl as rt
-from examples.v2_0.research_benchmarks.librts_spatial_index import (
+from examples.current.research_benchmarks.librts_spatial_index import (
     rtdl_librts_spatial_index_benchmark_app as librts,
 )
-from examples.v2_0.research_benchmarks.spatial_rayjoin import (
+from examples.current.research_benchmarks.spatial_rayjoin import (
     rtdl_rayjoin_v2_spatial_join_app as rayjoin,
 )
 

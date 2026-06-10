@@ -3,7 +3,7 @@ import inspect
 import unittest
 
 import rtdsl as rt
-from examples.v2_0.research_benchmarks.raydb_style import (
+from examples.current.research_benchmarks.raydb_style import (
     rtdl_raydb_style_benchmark_app as raydb_app,
 )
 
@@ -85,7 +85,7 @@ class Goal2676V25TritonPartnerPivotTest(unittest.TestCase):
         self.assertFalse(result["metadata"]["replaces_rt_traversal"])
 
     def test_raydb_v2_5_preview_runner_uses_public_triton_front_door(self):
-        source = (ROOT / "examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py").read_text()
+        source = (ROOT / "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py").read_text()
 
         self.assertIn("partner_group_count_by_key(group_ids, group_count, partner=\"triton\")", source)
         self.assertIn("partner_group_sum_by_key(group_ids, values, group_count, partner=\"triton\")", source)

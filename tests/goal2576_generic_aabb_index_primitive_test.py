@@ -9,7 +9,7 @@ from tests._embree_support import embree_available
 
 
 APP = importlib.import_module(
-    "examples.v2_0.research_benchmarks.librts_spatial_index.rtdl_librts_spatial_index_benchmark_app"
+    "examples.current.research_benchmarks.librts_spatial_index.rtdl_librts_spatial_index_benchmark_app"
 )
 ROOT = Path(__file__).resolve().parents[1]
 

@@ -28,7 +28,7 @@ def _cmd(app: str, *args: str, scale: str = "goal1660") -> dict[str, Any]:
 RECOVERABLE_ROWS: list[dict[str, Any]] = [
     _cmd(
         "service_coverage_gaps",
-        "examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py",
+        "examples/current/apps/geospatial/rtdl_service_coverage_gaps.py",
         "--backend",
         "embree",
         "--copies",
@@ -38,7 +38,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "event_hotspot_screening",
-        "examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py",
+        "examples/current/apps/geospatial/rtdl_event_hotspot_screening.py",
         "--backend",
         "embree",
         "--copies",
@@ -48,7 +48,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "facility_knn_assignment",
-        "examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py",
+        "examples/current/apps/geospatial/rtdl_facility_knn_assignment.py",
         "--backend",
         "embree",
         "--copies",
@@ -58,7 +58,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "road_hazard_screening",
-        "examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py",
+        "examples/current/apps/geospatial/rtdl_road_hazard_screening.py",
         "--backend",
         "embree",
         "--copies",
@@ -68,7 +68,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "segment_polygon_hitcount",
-        "examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py",
+        "examples/current/features/spatial/rtdl_segment_polygon_hitcount.py",
         "--backend",
         "embree",
         "--copies",
@@ -76,7 +76,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "segment_polygon_anyhit_rows",
-        "examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py",
+        "examples/current/features/spatial/rtdl_segment_polygon_anyhit_rows.py",
         "--backend",
         "embree",
         "--copies",
@@ -88,7 +88,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "graph_visibility_edges",
-        "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",
+        "examples/current/apps/analytics/rtdl_graph_analytics_app.py",
         "--backend",
         "embree",
         "--scenario",
@@ -100,7 +100,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "graph_bfs",
-        "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",
+        "examples/current/apps/analytics/rtdl_graph_analytics_app.py",
         "--backend",
         "embree",
         "--scenario",
@@ -112,7 +112,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "graph_triangle_count",
-        "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",
+        "examples/current/apps/analytics/rtdl_graph_analytics_app.py",
         "--backend",
         "embree",
         "--scenario",
@@ -124,7 +124,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "hausdorff_distance",
-        "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
         "--backend",
         "embree",
         "--copies",
@@ -134,7 +134,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "ann_candidate_search",
-        "examples/v2_0/apps/ml/rtdl_ann_candidate_app.py",
+        "examples/current/apps/ml/rtdl_ann_candidate_app.py",
         "--backend",
         "embree",
         "--copies",
@@ -144,7 +144,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "barnes_hut_force_app",
-        "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py",
+        "examples/current/apps/simulation/rtdl_barnes_hut_force_app.py",
         "--backend",
         "embree",
         "--body-count",
@@ -154,7 +154,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "polygon_pair_overlap_area_rows",
-        "examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py",
+        "examples/current/features/spatial/rtdl_polygon_pair_overlap_area_rows.py",
         "--backend",
         "embree",
         "--copies",
@@ -164,7 +164,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "polygon_set_jaccard",
-        "examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py",
+        "examples/current/features/spatial/rtdl_polygon_set_jaccard.py",
         "--backend",
         "embree",
         "--copies",

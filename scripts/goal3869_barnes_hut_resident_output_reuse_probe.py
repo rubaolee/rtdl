@@ -17,7 +17,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
 import rtdsl as rt  # noqa: E402
-from examples.v2_0.apps.simulation import rtdl_barnes_hut_force_app as app  # noqa: E402
+from examples.current.apps.simulation import rtdl_barnes_hut_force_app as app  # noqa: E402
 
 
 SCHEMA = "rtdl.goal3869.barnes_hut_resident_output_reuse_probe.v1"
@@ -30,7 +30,7 @@ DEFAULT_OUTPUT = (
 )
 SCOPED_SOURCE_PATHS = (
     "src/rtdsl/app_adapters/barnes_hut.py",
-    "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py",
+    "examples/current/apps/simulation/rtdl_barnes_hut_force_app.py",
     "scripts/goal3869_barnes_hut_resident_output_reuse_probe.py",
     "tests/goal3869_barnes_hut_resident_output_reuse_test.py",
 )

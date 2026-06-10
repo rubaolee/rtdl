@@ -14,28 +14,28 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 APP_COMMANDS = (
-    ("database_analytics", ("examples/v2_0/apps/analytics/rtdl_database_analytics_app.py",)),
-    ("graph_analytics", ("examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",)),
-    ("service_coverage_gaps", ("examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py", "--copies", "16")),
-    ("event_hotspot_screening", ("examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py", "--copies", "16")),
-    ("facility_knn_assignment", ("examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py", "--copies", "16")),
-    ("road_hazard_screening", ("examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py",)),
-    ("segment_polygon_hitcount", ("examples/v2_0/features/spatial/rtdl_segment_polygon_hitcount.py",)),
+    ("database_analytics", ("examples/current/apps/analytics/rtdl_database_analytics_app.py",)),
+    ("graph_analytics", ("examples/current/apps/analytics/rtdl_graph_analytics_app.py",)),
+    ("service_coverage_gaps", ("examples/current/apps/geospatial/rtdl_service_coverage_gaps.py", "--copies", "16")),
+    ("event_hotspot_screening", ("examples/current/apps/geospatial/rtdl_event_hotspot_screening.py", "--copies", "16")),
+    ("facility_knn_assignment", ("examples/current/apps/geospatial/rtdl_facility_knn_assignment.py", "--copies", "16")),
+    ("road_hazard_screening", ("examples/current/apps/geospatial/rtdl_road_hazard_screening.py",)),
+    ("segment_polygon_hitcount", ("examples/current/features/spatial/rtdl_segment_polygon_hitcount.py",)),
     (
         "segment_polygon_anyhit_rows",
-        ("examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py", "--output-mode", "segment_counts"),
+        ("examples/current/features/spatial/rtdl_segment_polygon_anyhit_rows.py", "--output-mode", "segment_counts"),
     ),
-    ("polygon_pair_overlap_area_rows", ("examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py",)),
-    ("polygon_set_jaccard", ("examples/v2_0/features/spatial/rtdl_polygon_set_jaccard.py",)),
-    ("hausdorff_distance", ("examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--copies", "16")),
-    ("ann_candidate_search", ("examples/v2_0/apps/ml/rtdl_ann_candidate_app.py", "--copies", "16")),
-    ("outlier_detection", ("examples/v2_0/apps/ml/rtdl_outlier_detection_app.py", "--copies", "16")),
-    ("dbscan_clustering", ("examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py", "--copies", "16")),
+    ("polygon_pair_overlap_area_rows", ("examples/current/features/spatial/rtdl_polygon_pair_overlap_area_rows.py",)),
+    ("polygon_set_jaccard", ("examples/current/features/spatial/rtdl_polygon_set_jaccard.py",)),
+    ("hausdorff_distance", ("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--copies", "16")),
+    ("ann_candidate_search", ("examples/current/apps/ml/rtdl_ann_candidate_app.py", "--copies", "16")),
+    ("outlier_detection", ("examples/current/apps/ml/rtdl_outlier_detection_app.py", "--copies", "16")),
+    ("dbscan_clustering", ("examples/current/apps/ml/rtdl_dbscan_clustering_app.py", "--copies", "16")),
     (
         "robot_collision_screening",
-        ("examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py", "--output-mode", "hit_count"),
+        ("examples/current/apps/robotics/rtdl_robot_collision_screening_app.py", "--output-mode", "hit_count"),
     ),
-    ("barnes_hut_force", ("examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py",)),
+    ("barnes_hut_force", ("examples/current/apps/simulation/rtdl_barnes_hut_force_app.py",)),
 )
 
 

@@ -12,19 +12,19 @@ GEMINI_REVIEW = ROOT / "docs" / "reviews" / "goal2343_gemini_review_goal2342_v2_
 
 
 APP_SCRIPTS = (
-    "examples/v2_0/apps/analytics/rtdl_database_analytics_app.py",
-    "examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py",
-    "examples/v2_0/apps/geospatial/rtdl_event_hotspot_screening.py",
-    "examples/v2_0/apps/geospatial/rtdl_facility_knn_assignment.py",
-    "examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py",
-    "examples/v2_0/apps/geospatial/rtdl_sales_risk_screening.py",
-    "examples/v2_0/apps/geospatial/rtdl_service_coverage_gaps.py",
-    "examples/v2_0/apps/ml/rtdl_ann_candidate_app.py",
-    "examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py",
-    "examples/v2_0/apps/ml/rtdl_outlier_detection_app.py",
-    "examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py",
-    "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py",
-    "examples/v2_0/apps/trajectory/rtdl_continuous_frechet_distance_app.py",
+    "examples/current/apps/analytics/rtdl_database_analytics_app.py",
+    "examples/current/apps/analytics/rtdl_graph_analytics_app.py",
+    "examples/current/apps/geospatial/rtdl_event_hotspot_screening.py",
+    "examples/current/apps/geospatial/rtdl_facility_knn_assignment.py",
+    "examples/current/apps/geospatial/rtdl_road_hazard_screening.py",
+    "examples/current/apps/geospatial/rtdl_sales_risk_screening.py",
+    "examples/current/apps/geospatial/rtdl_service_coverage_gaps.py",
+    "examples/current/apps/ml/rtdl_ann_candidate_app.py",
+    "examples/current/apps/ml/rtdl_dbscan_clustering_app.py",
+    "examples/current/apps/ml/rtdl_outlier_detection_app.py",
+    "examples/current/apps/robotics/rtdl_robot_collision_screening_app.py",
+    "examples/current/apps/simulation/rtdl_barnes_hut_force_app.py",
+    "examples/current/apps/trajectory/rtdl_continuous_frechet_distance_app.py",
 )
 
 

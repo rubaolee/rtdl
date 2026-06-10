@@ -19,7 +19,7 @@ class Goal3159RTDBSCANFrontDoorChainReviewPacketTest(unittest.TestCase):
             "Goal3157",
             "Goal3158",
             "src/rtdsl/v2_8_fixed_radius_graph_component_front_door.py",
-            "examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+            "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
             "tests/goal3158_fixed_radius_graph_typed_producer_metadata_test.py",
         ):
             self.assertIn(phrase, packet)

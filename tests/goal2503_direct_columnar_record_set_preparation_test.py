@@ -3,12 +3,12 @@ from pathlib import Path
 import unittest
 
 import rtdsl as rt
-from examples.v2_0.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
+from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs/reports/goal2503_direct_columnar_record_set_preparation_2026-05-22.md"
-APP = ROOT / "examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py"
+APP = ROOT / "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py"
 POD_APP = ROOT / "docs/reports/goal2503_direct_columnar_optix_app_pod_2026-05-22.json"
 POD_MATRIX = ROOT / "docs/reports/goal2503_direct_columnar_optix_backend_matrix_pod_2026-05-22.json"
 

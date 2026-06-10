@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 APP = importlib.import_module(
-    "examples.v2_0.research_benchmarks.librts_spatial_index.rtdl_librts_spatial_index_benchmark_app"
+    "examples.current.research_benchmarks.librts_spatial_index.rtdl_librts_spatial_index_benchmark_app"
 )
 RUNNER = importlib.import_module("scripts.goal2574_librts_external_runner")
 ROOT = Path(__file__).resolve().parents[1]
@@ -90,7 +90,7 @@ class LibRTSSpatialIndexBenchmarkAppTest(unittest.TestCase):
         self.assertEqual(parsed["results"], 42)
 
     def test_readme_and_intake_keep_claim_boundary(self) -> None:
-        readme = (ROOT / "examples/v2_0/research_benchmarks/librts_spatial_index/README.md").read_text(
+        readme = (ROOT / "examples/current/research_benchmarks/librts_spatial_index/README.md").read_text(
             encoding="utf-8"
         )
         report = (ROOT / "docs/reports/goal2574_librts_spatial_index_benchmark_intake_2026-05-24.md").read_text(

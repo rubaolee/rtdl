@@ -8,7 +8,7 @@ import time
 from pathlib import Path
 from typing import Iterable
 
-from examples.v2_0.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
+from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
 
 
 def _percentile(sorted_values: list[float], fraction: float) -> float:

@@ -15,13 +15,13 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
-from examples.v2_0.apps.robotics import rtdl_robot_collision_screening_app as app  # noqa: E402
+from examples.current.apps.robotics import rtdl_robot_collision_screening_app as app  # noqa: E402
 
 
 SCHEMA = "rtdl.goal3764.robot_collision_hiprt_cuda_path_app_smoke.v1"
 DEFAULT_OUTPUT = ROOT / "docs" / "reports" / "goal3764_robot_collision_hiprt_cuda_path_app_smoke_a5000.json"
 SCOPED_SOURCE_PATHS = (
-    "examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py",
+    "examples/current/apps/robotics/rtdl_robot_collision_screening_app.py",
     "scripts/goal3764_robot_collision_hiprt_cuda_path_app_smoke.py",
     "tests/goal3764_robot_collision_hiprt_cuda_path_app_smoke_test.py",
 )

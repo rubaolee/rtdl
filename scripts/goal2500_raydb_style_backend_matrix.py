@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
-from examples.v2_0.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
+from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
 
 
 DEFAULT_BACKENDS = ("cpu_python_reference", "embree", "optix")

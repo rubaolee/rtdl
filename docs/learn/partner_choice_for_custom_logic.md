@@ -135,4 +135,4 @@ chooses a partner.
 - [Benchmark Partner Reference Matrix](benchmark_partner_reference_matrix.md)
 - [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md)
 - [Backend Maturity](../backend_maturity.md)
-- [Research Benchmark Apps](../../examples/v2_0/research_benchmarks/README.md)
+- [Research Benchmark Apps](../../examples/current/research_benchmarks/README.md)

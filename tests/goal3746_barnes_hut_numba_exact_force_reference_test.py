@@ -5,16 +5,16 @@ import json
 import unittest
 
 import rtdsl as rt
-from examples.v2_0.apps.simulation import rtdl_barnes_hut_force_app as app
-from examples.v2_0.research_benchmarks.barnes_hut import rtdl_barnes_hut_benchmark_app as benchmark
+from examples.current.apps.simulation import rtdl_barnes_hut_force_app as app
+from examples.current.research_benchmarks.barnes_hut import rtdl_barnes_hut_benchmark_app as benchmark
 
 
 ROOT = Path(__file__).resolve().parents[1]
 ADAPTER = ROOT / "src/rtdsl/app_adapters/barnes_hut.py"
 PARTNER_ADAPTERS = ROOT / "src/rtdsl/partner_adapters.py"
-APP = ROOT / "examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py"
-BENCHMARK = ROOT / "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
-README = ROOT / "examples/v2_0/research_benchmarks/barnes_hut/README.md"
+APP = ROOT / "examples/current/apps/simulation/rtdl_barnes_hut_force_app.py"
+BENCHMARK = ROOT / "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
+README = ROOT / "examples/current/research_benchmarks/barnes_hut/README.md"
 REPORT = ROOT / "docs/reports/goal3746_barnes_hut_numba_exact_force_reference_2026-06-07.md"
 ARTIFACT = ROOT / "docs/reports/goal3746_barnes_hut_numba_exact_force_a5000/summary.json"
 

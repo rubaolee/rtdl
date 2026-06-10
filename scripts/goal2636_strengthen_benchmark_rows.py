@@ -53,7 +53,7 @@ def _case_json_path(artifact_dir: Path, case_id: str) -> Path:
 
 
 def _hausdorff_cases(tier: str, artifact_dir: Path) -> list[BenchmarkCase]:
-    app = "examples/v2_0/research_benchmarks/hausdorff_xhd"
+    app = "examples/current/research_benchmarks/hausdorff_xhd"
     cases: list[BenchmarkCase] = []
     for copies in _values(
         tier,
@@ -145,7 +145,7 @@ def _hausdorff_cases(tier: str, artifact_dir: Path) -> list[BenchmarkCase]:
 
 
 def _rayjoin_cases(tier: str, _artifact_dir: Path) -> list[BenchmarkCase]:
-    app = "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
+    app = "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
     tile_suffix = {"smoke": "x64", "standard": "x512", "stress": "x2048"}[tier]
     workloads = (
         ("pip", f"derived/authored_pip_square_tiled_{tile_suffix}"),
@@ -298,7 +298,7 @@ def _rtnn_cases(tier: str, artifact_dir: Path) -> list[BenchmarkCase]:
 
 
 def _barnes_hut_cases(tier: str, _artifact_dir: Path) -> list[BenchmarkCase]:
-    app = "examples/v2_0/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
+    app = "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
     cases: list[BenchmarkCase] = []
     for body_count in _values(tier, smoke=(1024,), standard=(8192, 32768), stress=(32768, 131072)):
         group = f"barnes_hut_node_coverage_bodies_{body_count}"
@@ -345,7 +345,7 @@ def _barnes_hut_cases(tier: str, _artifact_dir: Path) -> list[BenchmarkCase]:
 
 
 def _triangle_cases(tier: str, artifact_dir: Path) -> list[BenchmarkCase]:
-    app = "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
+    app = "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
     cases: list[BenchmarkCase] = []
     for cliques in _values(tier, smoke=(16,), standard=(5000, 20000), stress=(20000, 80000)):
         edge_file = artifact_dir / f"triangle_k4_cliques_{cliques}.edge"

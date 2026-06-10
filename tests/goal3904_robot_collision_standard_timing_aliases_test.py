@@ -18,7 +18,7 @@ REPORT = ROOT / "docs" / "reports" / "goal3904_robot_collision_standard_timing_a
 
 class Goal3904RobotCollisionStandardTimingAliasesTest(unittest.TestCase):
     def test_prepared_payload_emits_standard_timing_aliases(self) -> None:
-        from examples.v2_0.research_benchmarks.robot_collision.rtdl_robot_collision_benchmark_app import (
+        from examples.current.research_benchmarks.robot_collision.rtdl_robot_collision_benchmark_app import (
             run_prepared_reuse_probe,
         )
         from scripts.goal3828_current_benchmark_scale_profile_runner import _payload_timing_summary

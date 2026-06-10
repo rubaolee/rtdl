@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 
 import rtdsl as rt
-from examples.v2_0.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
+from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -12,7 +12,7 @@ MATRIX_SCRIPT = ROOT / "scripts/goal2500_raydb_style_backend_matrix.py"
 POD_SCRIPT = ROOT / "scripts/goal2512_raydb_style_partner_resident_backend_pod.py"
 POD_ARTIFACT = ROOT / "docs/reports/goal2512_raydb_style_partner_resident_backend_pod_2026-05-22.json"
 REPORT = ROOT / "docs/reports/goal2512_raydb_style_partner_resident_experimental_backend_2026-05-22.md"
-README = ROOT / "examples/v2_0/research_benchmarks/raydb_style/README.md"
+README = ROOT / "examples/current/research_benchmarks/raydb_style/README.md"
 
 
 def _load_matrix():

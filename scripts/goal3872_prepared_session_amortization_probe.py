@@ -181,7 +181,7 @@ def _case_definitions(repeat: int, warmup: int) -> tuple[dict[str, Any], ...]:
             "timeout_sec": 240,
             "command": [
                 py,
-                "examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+                "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
                 "--backend",
                 "optix",
                 "--require-rt-core",
@@ -203,7 +203,7 @@ def _case_definitions(repeat: int, warmup: int) -> tuple[dict[str, Any], ...]:
             "timeout_sec": 240,
             "command": [
                 py,
-                "examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+                "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
                 "--mode",
                 "optix_aabb_index",
                 "--dataset",
@@ -226,7 +226,7 @@ def _case_definitions(repeat: int, warmup: int) -> tuple[dict[str, Any], ...]:
             "timeout_sec": 240,
             "command": [
                 py,
-                "examples/v2_0/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py",
+                "examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py",
                 "--mode",
                 "prepared_optix_ranked_summary",
                 "--point-count",
@@ -249,7 +249,7 @@ def _case_definitions(repeat: int, warmup: int) -> tuple[dict[str, Any], ...]:
             "timeout_sec": 240,
             "command": [
                 py,
-                "examples/v2_0/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+                "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
                 "--mode",
                 "rt_graph_2a1_generic_rt",
                 "--backend",

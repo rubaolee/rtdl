@@ -4,7 +4,7 @@ import sys
 import unittest
 
 import rtdsl as rt
-from examples.v2_0.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
+from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -52,7 +52,7 @@ class Goal2497RaydbStyleEmbreeCountSumParityTest(unittest.TestCase):
         proc = subprocess.run(
             [
                 sys.executable,
-                "examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+                "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
                 "--backend",
                 "embree",
                 "--mode",

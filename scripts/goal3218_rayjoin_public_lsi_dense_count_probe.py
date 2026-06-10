@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.v2_0.research_benchmarks.spatial_rayjoin import rtdl_rayjoin_v2_spatial_join_app as rayjoin
+from examples.current.research_benchmarks.spatial_rayjoin import rtdl_rayjoin_v2_spatial_join_app as rayjoin
 from scripts.goal2159_rayjoin_public_cdb_runner import CASES
 from scripts.goal2159_rayjoin_public_cdb_runner import DEFAULT_DATA_DIR
 from scripts.goal2159_rayjoin_public_cdb_runner import _materialize_slices

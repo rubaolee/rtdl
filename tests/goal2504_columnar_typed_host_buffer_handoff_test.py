@@ -6,7 +6,7 @@ import rtdsl as rt
 from rtdsl.embree_runtime import _columnar_record_set_to_column_mapping
 from rtdsl.embree_runtime import _encode_all_db_text_column_mapping
 from rtdsl.embree_runtime import _encode_db_column_mapping_columnar_with_metadata
-from examples.v2_0.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
+from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]

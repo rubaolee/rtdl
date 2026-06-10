@@ -77,7 +77,7 @@ class Goal2046CuPyWitnessContinuationSurfaceTest(unittest.TestCase):
         self.assertEqual(result["metadata"]["target_id"], 11)
         self.assertTrue(np.isclose(result["metadata"]["distance"], 1.0))
 
-        from examples.v2_0.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_distance_app as hausdorff
+        from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_distance_app as hausdorff
 
         payload = hausdorff.run_app("partner_cupy_witness_exact", copies=2)
         self.assertTrue(payload["matches_oracle"])

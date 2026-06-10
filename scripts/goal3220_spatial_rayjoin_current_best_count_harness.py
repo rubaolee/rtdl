@@ -15,7 +15,7 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.v2_0.research_benchmarks.spatial_rayjoin import rtdl_rayjoin_v2_spatial_join_app as rayjoin_app
+from examples.current.research_benchmarks.spatial_rayjoin import rtdl_rayjoin_v2_spatial_join_app as rayjoin_app
 
 
 GOAL3220_HARNESS_VERSION = "rtdl.goal3220.spatial_rayjoin_current_best_count_harness.v2"

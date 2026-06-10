@@ -6,7 +6,7 @@ import unittest
 from unittest import mock
 
 import rtdsl as rt
-from examples.v2_0.research_benchmarks.contact_manifold import (
+from examples.current.research_benchmarks.contact_manifold import (
     rtdl_contact_manifold_benchmark_app as app,
 )
 

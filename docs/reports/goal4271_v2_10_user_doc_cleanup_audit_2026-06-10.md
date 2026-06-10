@@ -31,7 +31,7 @@ Audited current-doc paths:
 - `docs/rtdl/**`
 - current research doors under `docs/research/**` excluding `archive/` and
   `future_version_to_do_list.md`
-- `examples/v2_0/**/README.md`
+- `examples/current/**/README.md`
 
 Excluded as intentionally historical or planning material:
 
@@ -107,12 +107,12 @@ OK
 | `docs/tutorials/partner_optix_column_anyhit.md` | OptiX partner-column tutorial still described PyTorch/CuPy tensors and continuation. | Reworded to CuPy-owned arrays and CuPy continuation for the current tutorial path. |
 | `docs/tutorials/v2_app_building.md` | App-building tutorial still listed PyTorch and a `torch-cuda` command. | Removed PyTorch from the current partner layer and command examples. |
 | `docs/vision.md` | Vision page used "old" release evidence wording. | Reworded to archived release evidence and archived milestones. |
-| `examples/v2_0/README.md` | Examples index needed v2.10 alignment. | Updated learner-facing status to v2.10. |
-| `examples/v2_0/getting_started/README.md` | Getting-started index needed v2.10 alignment. | Updated learner-facing status to v2.10. |
-| `examples/v2_0/research_benchmarks/barnes_hut/README.md` | Barnes-Hut benchmark README still advertised Torch in the current partner exact-force row. | Reworded to CuPy or Numba. |
-| `examples/v2_0/research_benchmarks/raydb_style/README.md` | RayDB README still named PyTorch CUDA tensors, Torch/CuPy columns, and Triton continuation as visible current-path prose. | Reworded to generic current CUDA partner columns and archived continuation material. |
-| `examples/v2_0/research_benchmarks/rt_dbscan/README.md` | RT-DBSCAN README still said CuPy or PyTorch installed and had an awkward compatibility-name sentence. | Narrowed the current partner run to CuPy and cleaned compatibility wording. |
-| `examples/v2_0/research_benchmarks/rtnn/README.md` | RTNN README described a helper as older and called evidence historical. | Reworded helper/evidence language for current benchmark docs. |
+| `examples/current/README.md` | Examples index needed v2.10 alignment. | Updated learner-facing status to v2.10. |
+| `examples/current/getting_started/README.md` | Getting-started index needed v2.10 alignment. | Updated learner-facing status to v2.10. |
+| `examples/current/research_benchmarks/barnes_hut/README.md` | Barnes-Hut benchmark README still advertised Torch in the current partner exact-force row. | Reworded to CuPy or Numba. |
+| `examples/current/research_benchmarks/raydb_style/README.md` | RayDB README still named PyTorch CUDA tensors, Torch/CuPy columns, and Triton continuation as visible current-path prose. | Reworded to generic current CUDA partner columns and archived continuation material. |
+| `examples/current/research_benchmarks/rt_dbscan/README.md` | RT-DBSCAN README still said CuPy or PyTorch installed and had an awkward compatibility-name sentence. | Narrowed the current partner run to CuPy and cleaned compatibility wording. |
+| `examples/current/research_benchmarks/rtnn/README.md` | RTNN README described a helper as older and called evidence historical. | Reworded helper/evidence language for current benchmark docs. |
 | `src/rtdsl/primitive_catalog.py` | Source renderer generated v2.7-specific prose into the current primitive catalog. | Reworded generated catalog text to current discovery/planner language. |
 | `src/rtdsl/primitive_discovery.py` | Discovery boundary string still said v2.7. | Reworded to current semantic primitive search. |
 | `src/rtdsl/primitive_planner.py` | Planner claim-boundary string still said v2.7. | Reworded to current primitive advisory plans. |
@@ -157,23 +157,24 @@ OK
 | `docs/tutorials/rendering_and_visual_demos.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
 | `docs/tutorials/segment_polygon_workloads.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
 | `docs/tutorials/sorting_demo.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
-| `examples/v2_0/apps/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
-| `examples/v2_0/features/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
-| `examples/v2_0/learner_apps/gpu_rmq/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
-| `examples/v2_0/learner_apps/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
-| `examples/v2_0/partners/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
-| `examples/v2_0/research_benchmarks/contact_manifold/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
-| `examples/v2_0/research_benchmarks/hausdorff_xhd/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
-| `examples/v2_0/research_benchmarks/librts_spatial_index/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
-| `examples/v2_0/research_benchmarks/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
-| `examples/v2_0/research_benchmarks/robot_collision/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
-| `examples/v2_0/research_benchmarks/spatial_rayjoin/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
-| `examples/v2_0/research_benchmarks/triangle_counting/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
+| `examples/current/apps/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
+| `examples/current/features/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
+| `examples/current/learner_apps/gpu_rmq/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
+| `examples/current/learner_apps/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
+| `examples/current/partners/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
+| `examples/current/research_benchmarks/contact_manifold/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
+| `examples/current/research_benchmarks/hausdorff_xhd/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
+| `examples/current/research_benchmarks/librts_spatial_index/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
+| `examples/current/research_benchmarks/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
+| `examples/current/research_benchmarks/robot_collision/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
+| `examples/current/research_benchmarks/spatial_rayjoin/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
+| `examples/current/research_benchmarks/triangle_counting/README.md` | checked | No stale current-surface terms or broken local links found; left unchanged. |
 
 ## Notes
 
-- The directory name `examples/v2_0/` remains unchanged because it is a stable
-  repository path, not learner-facing version guidance.
+- Goal4272 supersedes the earlier examples-path note: the learner-facing tree is
+  now `examples/current/`, and the old version-named examples directory is
+  removed from the current GitHub surface.
 - Report, review, handoff, release-report, history, and audit files remain
   intentionally historical. They are excluded from the current-doc stale-term
   gate so the project does not rewrite evidence history.

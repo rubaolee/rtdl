@@ -7,10 +7,10 @@ import unittest
 from pathlib import Path
 
 import rtdsl as rt
-from examples.v2_0.research_benchmarks.contact_manifold import (
+from examples.current.research_benchmarks.contact_manifold import (
     rtdl_contact_manifold_benchmark_app as contact,
 )
-from examples.v2_0.research_benchmarks.librts_spatial_index import (
+from examples.current.research_benchmarks.librts_spatial_index import (
     rtdl_librts_spatial_index_benchmark_app as librts,
 )
 

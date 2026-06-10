@@ -16,7 +16,7 @@ sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt  # noqa: E402
 from scripts.goal2147_rayjoin_v2_scale_perf import make_case  # noqa: E402
-from examples.v2_0.research_benchmarks.spatial_rayjoin import (  # noqa: E402
+from examples.current.research_benchmarks.spatial_rayjoin import (  # noqa: E402
     rtdl_rayjoin_v2_spatial_join_app as rayjoin_app,
 )
 from rtdsl.optix_runtime import pack_points  # noqa: E402

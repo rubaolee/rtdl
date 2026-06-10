@@ -37,7 +37,7 @@ CURRENT_PUBLIC_DOCS = (
     "docs/release_facing_examples.md",
     "docs/tutorials/README.md",
     "examples/README.md",
-    "examples/v2_0/README.md",
+    "examples/current/README.md",
 )
 
 

@@ -36,7 +36,7 @@ class Goal503RobotCollisionScreeningAppTest(unittest.TestCase):
         completed = subprocess.run(
             [
                 PYTHON,
-                "examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py",
+                "examples/current/apps/robotics/rtdl_robot_collision_screening_app.py",
                 "--backend",
                 "cpu_python_reference",
             ],

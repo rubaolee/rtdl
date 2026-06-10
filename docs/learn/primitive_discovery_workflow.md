@@ -15,14 +15,14 @@ readiness.
 From the repository root:
 
 ```bash
-PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_primitive_discovery_workflow.py
+PYTHONPATH=src:. python examples/current/getting_started/rtdl_primitive_discovery_workflow.py
 ```
 
 Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-python examples/v2_0/getting_started/rtdl_primitive_discovery_workflow.py
+python examples/current/getting_started/rtdl_primitive_discovery_workflow.py
 ```
 
 The output is JSON with three layers:

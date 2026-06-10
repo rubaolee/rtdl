@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
-from examples.v2_0.apps.simulation import rtdl_barnes_hut_force_app as app
+from examples.current.apps.simulation import rtdl_barnes_hut_force_app as app
 
 
 def _parse_sizes(text: str) -> tuple[int, ...]:

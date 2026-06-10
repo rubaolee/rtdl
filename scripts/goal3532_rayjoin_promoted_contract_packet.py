@@ -120,7 +120,7 @@ def _dataset_arg(args: argparse.Namespace) -> str:
 
 
 def _count_parity_specs(args: argparse.Namespace) -> tuple[dict[str, Any], ...]:
-    app = "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
+    app = "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
     return (
         {
             "row_id": "rayjoin_count_parity_pip_prepared_optix",

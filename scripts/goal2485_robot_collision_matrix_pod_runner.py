@@ -82,7 +82,7 @@ def _optix_header_candidates() -> list[str]:
 
 
 def _collect_matrix(*, pose_count: int, obstacle_count: int, link_count: int, repeats: int, warmup: int) -> dict[str, object]:
-    from examples.v2_0.research_benchmarks.robot_collision.rtdl_robot_collision_benchmark_app import (
+    from examples.current.research_benchmarks.robot_collision.rtdl_robot_collision_benchmark_app import (
         run_performance_matrix,
     )
 
@@ -136,7 +136,7 @@ def collect_goal2485_pod_evidence(
             sys.executable,
             "-m",
             "py_compile",
-            "examples/v2_0/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+            "examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
             "scripts/goal2485_robot_collision_matrix_pod_runner.py",
             "tests/goal2484_robot_collision_prepared_reuse_test.py",
             "tests/goal2485_robot_collision_performance_matrix_test.py",

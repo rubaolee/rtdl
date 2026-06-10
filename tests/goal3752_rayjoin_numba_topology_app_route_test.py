@@ -5,14 +5,14 @@ from pathlib import Path
 import unittest
 
 import rtdsl as rt
-from examples.v2_0.research_benchmarks.spatial_rayjoin import rtdl_rayjoin_v2_spatial_join_app as app
+from examples.current.research_benchmarks.spatial_rayjoin import rtdl_rayjoin_v2_spatial_join_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
+APP = ROOT / "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
 REPORT = ROOT / "docs/reports/goal3752_rayjoin_numba_topology_app_route_2026-06-07.md"
 A5000_ARTIFACT = ROOT / "docs/reports/goal3752_rayjoin_numba_topology_app_route_a5000.json"
-README = ROOT / "examples/v2_0/research_benchmarks/spatial_rayjoin/README.md"
+README = ROOT / "examples/current/research_benchmarks/spatial_rayjoin/README.md"
 
 
 class Goal3752RayjoinNumbaTopologyAppRouteTest(unittest.TestCase):

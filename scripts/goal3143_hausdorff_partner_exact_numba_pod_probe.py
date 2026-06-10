@@ -13,7 +13,7 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.v2_0.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_distance_app as hausdorff
+from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_distance_app as hausdorff
 
 
 def _git_commit() -> str:

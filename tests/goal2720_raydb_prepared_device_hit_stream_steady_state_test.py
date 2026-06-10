@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from examples.v2_0.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as raydb
+from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as raydb
 
 
 ROOT = Path(__file__).resolve().parents[1]

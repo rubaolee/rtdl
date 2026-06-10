@@ -15,7 +15,7 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
-from examples.v2_0.apps.simulation import rtdl_barnes_hut_force_app as app  # noqa: E402
+from examples.current.apps.simulation import rtdl_barnes_hut_force_app as app  # noqa: E402
 
 
 SCHEMA = "rtdl.goal3762.barnes_hut_numba_block_reduce_force_probe.v1"

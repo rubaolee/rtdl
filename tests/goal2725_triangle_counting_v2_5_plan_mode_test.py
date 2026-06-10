@@ -4,7 +4,7 @@ import sys
 import unittest
 from pathlib import Path
 
-from examples.v2_0.research_benchmarks.triangle_counting import (
+from examples.current.research_benchmarks.triangle_counting import (
     rtdl_triangle_counting_benchmark_app as triangle,
 )
 

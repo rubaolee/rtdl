@@ -1,11 +1,11 @@
 from pathlib import Path
 import unittest
 
-from examples.v2_0.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as raydb
+from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as raydb
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RAYDB_APP = ROOT / "examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py"
+RAYDB_APP = ROOT / "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py"
 
 
 class Goal2690PostGoal2689ContractHonestyTest(unittest.TestCase):

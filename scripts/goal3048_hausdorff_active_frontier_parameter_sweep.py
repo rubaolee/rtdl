@@ -8,7 +8,7 @@ import time
 from pathlib import Path
 from typing import Iterable
 
-from examples.v2_0.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
+from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
 from scripts import goal3046_hausdorff_active_frontier_dataset_diversity as diversity
 
 

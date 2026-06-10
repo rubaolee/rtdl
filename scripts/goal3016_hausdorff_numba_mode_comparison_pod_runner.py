@@ -77,7 +77,7 @@ def main() -> int:
         raise ValueError("copies and warmup-copies must be positive")
 
     _activate_numba_redirector()
-    from examples.v2_0.research_benchmarks.hausdorff_xhd import (
+    from examples.current.research_benchmarks.hausdorff_xhd import (
         rtdl_hausdorff_distance_app as app,
     )
 

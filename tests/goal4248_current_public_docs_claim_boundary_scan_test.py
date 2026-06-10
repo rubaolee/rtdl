@@ -38,8 +38,8 @@ class Goal4248CurrentPublicDocsClaimBoundaryScanTest(unittest.TestCase):
         self.assertIn("examples/README.md", public_files)
         self.assertIn("docs/learn/partner_choice_for_custom_logic.md", public_files)
         self.assertIn("docs/tutorials/nearest_neighbor_workloads.md", public_files)
-        self.assertIn("examples/v2_0/research_benchmarks/spatial_rayjoin/README.md", public_files)
-        self.assertIn("examples/v2_0/research_benchmarks/rt_dbscan/README.md", public_files)
+        self.assertIn("examples/current/research_benchmarks/spatial_rayjoin/README.md", public_files)
+        self.assertIn("examples/current/research_benchmarks/rt_dbscan/README.md", public_files)
 
     def test_all_claim_boundary_authorizations_remain_false(self) -> None:
         payload = json.loads(ARTIFACT.read_text(encoding="utf-8"))

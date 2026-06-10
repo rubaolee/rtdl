@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 import unittest
 
-from examples.v2_0.research_benchmarks.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
+from examples.current.research_benchmarks.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]

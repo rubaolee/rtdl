@@ -7,7 +7,7 @@ import platform
 import subprocess
 from typing import Any
 
-from examples.v2_0.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
+from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
     DEFAULT_DATASET_CONFIG,
     run_rt_dbscan_benchmark,
 )

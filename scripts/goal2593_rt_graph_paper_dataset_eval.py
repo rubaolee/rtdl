@@ -15,7 +15,7 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.v2_0.research_benchmarks.triangle_counting import (  # noqa: E402
+from examples.current.research_benchmarks.triangle_counting import (  # noqa: E402
     rtdl_triangle_counting_benchmark_app as app,
 )
 from scripts import goal2592_rt_graph_cugraph_baseline as cugraph_baseline  # noqa: E402

@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 
 import rtdsl as rt
-from examples.v2_0.apps.robotics import rtdl_robot_collision_screening_app as robot_app
+from examples.current.apps.robotics import rtdl_robot_collision_screening_app as robot_app
 from rtdsl import hiprt_runtime
 
 

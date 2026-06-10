@@ -38,7 +38,7 @@ class Goal3207PackedLeftRayJoinCompactRouteTest(unittest.TestCase):
         self.assertIn('"query_pack_paid_in_call": True', body)
 
     def test_packed_left_accepts_canonical_segment_records(self) -> None:
-        from examples.v2_0.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (
+        from examples.current.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (
             pack_rayjoin_optix_compact_grouped_count_left_segments,
         )
         from rtdsl.reference import Segment

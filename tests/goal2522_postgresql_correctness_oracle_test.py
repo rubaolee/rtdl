@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/goal2522_postgresql_correctness_oracle.py"
 REPORT = ROOT / "docs/reports/goal2522_postgresql_correctness_oracle_2026-05-23.md"
 ARTIFACT = ROOT / "docs/reports/goal2522_postgresql_correctness_oracle_2026-05-23.json"
-README = ROOT / "examples/v2_0/research_benchmarks/raydb_style/README.md"
+README = ROOT / "examples/current/research_benchmarks/raydb_style/README.md"
 
 
 EXPECTED_ROWS = {

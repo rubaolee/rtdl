@@ -80,7 +80,7 @@ invokes the same helper twice and prints the visible `miss`, `put`, `hit`
 event log:
 
 ```bash
-PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py \
+PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py \
   --mode prepared_session_reuse_idiom \
   --point-count 16 \
   --radius 0.02 \

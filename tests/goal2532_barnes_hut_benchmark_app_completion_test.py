@@ -37,8 +37,8 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 sys.path.insert(0, str(REPO_ROOT))
 
 import rtdsl as rt
-from examples.v2_0.apps.simulation import rtdl_barnes_hut_force_app as app
-from examples.v2_0.research_benchmarks.barnes_hut import rtdl_barnes_hut_benchmark_app as bench
+from examples.current.apps.simulation import rtdl_barnes_hut_force_app as app
+from examples.current.research_benchmarks.barnes_hut import rtdl_barnes_hut_benchmark_app as bench
 
 
 class Goal2532BarnesHutBenchmarkAppCompletionTest(unittest.TestCase):

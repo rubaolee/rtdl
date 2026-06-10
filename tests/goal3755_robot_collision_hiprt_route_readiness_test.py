@@ -51,7 +51,7 @@ class Goal3755RobotCollisionHiprtRouteReadinessTest(unittest.TestCase):
     def test_public_matrix_doc_matches_machine_readable_hiprt_row(self) -> None:
         text = (ROOT / "docs" / "app_engine_support_matrix.md").read_text(encoding="utf-8")
         expected = (
-            "| `examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py` | "
+            "| `examples/current/apps/robotics/rtdl_robot_collision_screening_app.py` | "
             "`portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | "
             "`not_exposed_by_app_cli` | `direct_cli_native` | `not_exposed_by_app_cli` |"
         )

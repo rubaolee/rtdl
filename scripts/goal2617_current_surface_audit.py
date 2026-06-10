@@ -54,7 +54,7 @@ CURRENT_DOC_PREFIXES = (
     "docs/rtdl/",
     "docs/tutorials/",
     "docs/release_reports/v2_3/",
-    "examples/v2_0/",
+    "examples/current/",
 )
 
 CURRENT_EXAMPLE_DOCS = {"examples/README.md"}
@@ -132,7 +132,7 @@ def _text_without_code(text: str) -> str:
 def stale_versions(text: str) -> list[str]:
     cleaned = _text_without_code(text)
     # Do not flag current directory names or links after code stripping.
-    cleaned = cleaned.replace("examples/v2_0", "")
+    cleaned = cleaned.replace("examples/current", "")
     return sorted(set(match.group(0) for match in STALE_VERSION_RE.finditer(cleaned)))
 
 

@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt  # noqa: E402
-from examples.v2_0.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (  # noqa: E402
+from examples.current.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (  # noqa: E402
     pack_rayjoin_optix_shape_pair_active_count_left_shapes,
     prepare_rayjoin_optix_shape_pair_active_count,
 )

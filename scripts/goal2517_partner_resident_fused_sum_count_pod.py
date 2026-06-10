@@ -23,7 +23,7 @@ def main() -> int:
     sys.path.insert(0, str(repo))
 
     import rtdsl as rt
-    from examples.v2_0.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
+    from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
 
     output_path = repo / "docs/reports/goal2517_partner_resident_fused_sum_count_pod_2026-05-23.json"
     native_text = "\n".join(

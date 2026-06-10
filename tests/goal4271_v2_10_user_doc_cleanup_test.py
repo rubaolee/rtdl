@@ -31,6 +31,9 @@ STALE_PATTERNS = (
     "v2.7",
     "v2.8",
     "v2.9",
+    "examples/" + "v2_0",
+    "examples\\" + "v2_0",
+    "examples." + "v2_0",
     "stale backend",
     "old Python",
 )
@@ -41,7 +44,7 @@ HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
 
 def _current_doc_files() -> list[Path]:
     files: list[Path] = [REPO_ROOT / "README.md"]
-    for root in (REPO_ROOT / "docs", REPO_ROOT / "examples" / "v2_0"):
+    for root in (REPO_ROOT / "docs", REPO_ROOT / "examples" / "current"):
         for path in root.rglob("*.md"):
             rel = path.relative_to(REPO_ROOT).as_posix()
             if rel in EXCLUDED_FILES or any(rel.startswith(prefix) for prefix in EXCLUDED_PREFIXES):
@@ -129,7 +132,7 @@ class Goal4271V210UserDocCleanupTest(unittest.TestCase):
             "docs/current_architecture.md",
             "docs/partner_acceleration_boundaries.md",
             "docs/learn/partner_choice_for_custom_logic.md",
-            "examples/v2_0/README.md",
+            "examples/current/README.md",
         )
         missing: list[str] = []
         for rel in key_files:

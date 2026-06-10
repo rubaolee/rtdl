@@ -9,7 +9,7 @@ WORKLOADS = ROOT / "src/native/optix/rtdl_optix_workloads.cpp"
 API = ROOT / "src/native/optix/rtdl_optix_api.cpp"
 PRELUDE = ROOT / "src/native/optix/rtdl_optix_prelude.h"
 RUNTIME = ROOT / "src/rtdsl/optix_runtime.py"
-APP = ROOT / "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
+APP = ROOT / "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
 COMPOSITE = ROOT / "scripts/goal3612_rayjoin_safe_mixed_route_composite.py"
 REPORT = ROOT / "docs/reports/goal3704_segment_pair_prepared_left_exact_count_route_2026-06-07.md"
 

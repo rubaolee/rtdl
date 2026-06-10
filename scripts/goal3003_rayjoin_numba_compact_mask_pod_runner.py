@@ -18,7 +18,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt  # noqa: E402
-from examples.v2_0.research_benchmarks.spatial_rayjoin import (  # noqa: E402
+from examples.current.research_benchmarks.spatial_rayjoin import (  # noqa: E402
     rtdl_rayjoin_v2_spatial_join_app as rayjoin,
 )
 

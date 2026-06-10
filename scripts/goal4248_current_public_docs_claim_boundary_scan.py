@@ -15,7 +15,7 @@ PUBLIC_DOC_ROOTS = (
     "docs/learn",
     "docs/tutorials",
     "examples/README.md",
-    "examples/v2_0/research_benchmarks",
+    "examples/current/research_benchmarks",
 )
 
 CLAIM_PATTERNS = (

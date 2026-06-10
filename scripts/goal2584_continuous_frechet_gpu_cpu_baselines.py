@@ -15,7 +15,7 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.v2_0.apps.trajectory import rtdl_continuous_frechet_distance_app as app
+from examples.current.apps.trajectory import rtdl_continuous_frechet_distance_app as app
 
 
 def _median(values: list[float]) -> float:

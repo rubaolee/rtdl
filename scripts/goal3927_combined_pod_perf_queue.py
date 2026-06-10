@@ -164,7 +164,7 @@ def _rayjoin_command(args: argparse.Namespace) -> list[str]:
 def _rtdbscan_command(args: argparse.Namespace, mode: str) -> list[str]:
     return [
         args.python,
-        "examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+        "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
         "--mode",
         mode,
         "--dataset",

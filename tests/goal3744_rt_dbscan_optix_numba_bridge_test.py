@@ -5,8 +5,8 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
-README = ROOT / "examples/v2_0/research_benchmarks/rt_dbscan/README.md"
+APP = ROOT / "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
+README = ROOT / "examples/current/research_benchmarks/rt_dbscan/README.md"
 REPORT = ROOT / "docs/reports/goal3744_rt_dbscan_optix_numba_bridge_2026-06-07.md"
 ARTIFACT = ROOT / "docs/reports/goal3744_rt_dbscan_optix_numba_bridge_a5000/summary.json"
 

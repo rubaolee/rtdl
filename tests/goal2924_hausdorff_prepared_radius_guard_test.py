@@ -5,7 +5,7 @@ from unittest import mock
 
 import numpy as np
 
-from examples.v2_0.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
+from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
 
 
 class _FakePointGroupPrepared:

@@ -21,7 +21,7 @@ from goal3474_shape_pair_exact_overlay_area_shapely_oracle import (  # noqa: E40
     _claim_boundary,
     _import_shapely,
 )
-from examples.v2_0.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (  # noqa: E402
+from examples.current.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (  # noqa: E402
     pack_rayjoin_optix_shape_pair_active_count_left_shapes,
     prepare_rayjoin_optix_shape_pair_active_count,
 )

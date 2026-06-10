@@ -10,7 +10,7 @@ WORKLOADS = ROOT / "src/native/optix/rtdl_optix_workloads.cpp"
 API = ROOT / "src/native/optix/rtdl_optix_api.cpp"
 PRELUDE = ROOT / "src/native/optix/rtdl_optix_prelude.h"
 RUNTIME = ROOT / "src/rtdsl/optix_runtime.py"
-APP = ROOT / "examples/v2_0/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
+APP = ROOT / "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
 REPORT = ROOT / "docs/reports/goal3734_shape_pair_prepared_left_active_count_2026-06-07.md"
 DIRECT_ARTIFACT = (
     ROOT / "docs/reports/goal3734_shape_pair_prepared_left_active_count_a5000_overlay_direct_summary.json"

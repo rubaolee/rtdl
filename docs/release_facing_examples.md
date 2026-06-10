@@ -24,23 +24,23 @@ Run examples from the repository root with `PYTHONPATH=src:.`.
 ## Portable First Runs
 
 ```bash
-PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world.py
-PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_hello_world_backends.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/v2_0/getting_started/rtdl_feature_quickstart_cookbook.py
+PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world.py
+PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world_backends.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/current/getting_started/rtdl_feature_quickstart_cookbook.py
 ```
 
 ## App Examples
 
 ```bash
-PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/v2_0/apps/ml/rtdl_ann_candidate_app.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/v2_0/apps/ml/rtdl_outlier_detection_app.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/v2_0/apps/ml/rtdl_dbscan_clustering_app.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_graph_analytics_app.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/v2_0/apps/analytics/rtdl_database_analytics_app.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/v2_0/apps/geospatial/rtdl_road_hazard_screening.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/current/apps/ml/rtdl_ann_candidate_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/current/apps/ml/rtdl_outlier_detection_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/current/apps/ml/rtdl_dbscan_clustering_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/current/apps/robotics/rtdl_robot_collision_screening_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/current/apps/simulation/rtdl_barnes_hut_force_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/current/apps/analytics/rtdl_graph_analytics_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/current/apps/analytics/rtdl_database_analytics_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/current/apps/geospatial/rtdl_road_hazard_screening.py --backend cpu_python_reference
 ```
 
 ## Embree And OptiX Examples
@@ -55,19 +55,19 @@ make build-optix
 Then use the app's documented backend flags:
 
 ```bash
-PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend embree
-PYTHONPATH=src:. python examples/v2_0/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend optix
-PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend embree --output-mode segment_counts
-PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts
-PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py --backend embree --output-mode summary
-PYTHONPATH=src:. python examples/v2_0/features/spatial/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary
+PYTHONPATH=src:. python examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend embree
+PYTHONPATH=src:. python examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend optix
+PYTHONPATH=src:. python examples/current/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend embree --output-mode segment_counts
+PYTHONPATH=src:. python examples/current/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts
+PYTHONPATH=src:. python examples/current/features/spatial/rtdl_polygon_pair_overlap_area_rows.py --backend embree --output-mode summary
+PYTHONPATH=src:. python examples/current/features/spatial/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary
 ```
 
 ## Partner Candidate Examples
 
 ```bash
-PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner numpy --backend embree
-PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner cupy-cuda --backend optix
+PYTHONPATH=src:. python examples/current/partners/rtdl_partner_anyhit.py --partner numpy --backend embree
+PYTHONPATH=src:. python examples/current/partners/rtdl_partner_anyhit.py --partner cupy-cuda --backend optix
 ```
 
 Partner commands are part of the v2.10 release surface. They do not imply

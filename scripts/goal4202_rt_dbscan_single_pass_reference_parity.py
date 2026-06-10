@@ -10,7 +10,7 @@ import subprocess
 from pathlib import Path
 
 import rtdsl as rt
-from examples.v2_0.research_benchmarks.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
+from examples.current.research_benchmarks.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
 
 
 SCHEMA = "rtdl.goal4202.rt_dbscan_single_pass_reference_parity.v1"

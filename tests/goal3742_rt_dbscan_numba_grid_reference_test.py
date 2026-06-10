@@ -6,12 +6,12 @@ import unittest
 
 import rtdsl as rt
 from rtdsl import partner as rtdl_partner
-from examples.v2_0.research_benchmarks.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
+from examples.current.research_benchmarks.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
-README = ROOT / "examples/v2_0/research_benchmarks/rt_dbscan/README.md"
+APP = ROOT / "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
+README = ROOT / "examples/current/research_benchmarks/rt_dbscan/README.md"
 REPORT = ROOT / "docs/reports/goal3742_rt_dbscan_numba_grid_reference_2026-06-07.md"
 
 

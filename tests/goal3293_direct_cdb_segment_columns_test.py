@@ -7,7 +7,7 @@ import unittest
 
 import numpy as np
 import rtdsl as rt
-from examples.v2_0.research_benchmarks.spatial_rayjoin import (
+from examples.current.research_benchmarks.spatial_rayjoin import (
     rtdl_rayjoin_v2_spatial_join_app as rayjoin_app,
 )
 from rtdsl import embree_runtime

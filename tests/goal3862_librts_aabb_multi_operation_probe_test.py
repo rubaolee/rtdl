@@ -15,7 +15,7 @@ NATIVE_API = ROOT / "src/native/optix/rtdl_optix_api.cpp"
 NATIVE_PRELUDE = ROOT / "src/native/optix/rtdl_optix_prelude.h"
 NATIVE_WORKLOADS = ROOT / "src/native/optix/rtdl_optix_workloads.cpp"
 PY_RUNTIME = ROOT / "src/rtdsl/optix_runtime.py"
-APP = ROOT / "examples/v2_0/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py"
+APP = ROOT / "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py"
 
 
 def _load(path: Path) -> dict:

@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 
 import rtdsl as rt
-from examples.v2_0.research_benchmarks.rtnn import rtdl_rtnn_benchmark_app as rtnn
+from examples.current.research_benchmarks.rtnn import rtdl_rtnn_benchmark_app as rtnn
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]

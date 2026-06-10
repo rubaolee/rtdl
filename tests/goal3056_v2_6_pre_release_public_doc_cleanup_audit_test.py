@@ -5,8 +5,8 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT = ROOT / "docs" / "reports" / "goal3056_v2_6_pre_release_public_doc_cleanup_audit_2026-06-02.md"
-TOTAL_AUDIT = ROOT / "docs" / "reports" / "goal3058_v2_6_release_candidate_doc_total_audit_2026-06-02.md"
+REPORT = ROOT / "docs" / "reports" / "goal4271_v2_10_user_doc_cleanup_audit_2026-06-10.md"
+TOTAL_AUDIT = ROOT / "docs" / "reports" / "goal4272_current_examples_path_migration_2026-06-10.md"
 
 CURRENT_FACING_DOCS = [
     "README.md",
@@ -22,7 +22,7 @@ CURRENT_FACING_DOCS = [
     "docs/rtdl_feature_guide.md",
     "docs/application_catalog.md",
     "examples/README.md",
-    "examples/v2_0/README.md",
+    "examples/current/README.md",
 ]
 
 
@@ -34,32 +34,31 @@ class Goal3056V26PreReleasePublicDocCleanupAuditTest(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
         total = TOTAL_AUDIT.read_text(encoding="utf-8")
 
-        self.assertIn("Goal3056", text)
-        self.assertIn("File-by-File Findings And Operations", text)
-        self.assertIn("v2.3 remains the latest released", text)
-        self.assertIn("v2.6 is the active internal pre-release", text)
-        self.assertIn("v2.6 release-candidate", total)
-        self.assertIn("Triton is paused", text)
+        self.assertIn("Goal4271", text)
+        self.assertIn("Files Changed", text)
+        self.assertIn("coherent v2.10 source-tree product story", text)
+        self.assertIn("Goal4272", total)
+        self.assertIn("examples/current/", total)
+        self.assertIn("currently recommended CuPy/Numba lane", text)
         for rel in CURRENT_FACING_DOCS:
             self.assertTrue(rel in text or rel in total)
 
-    def test_current_docs_use_clean_v26_boundary(self) -> None:
+    def test_current_docs_use_clean_v210_boundary(self) -> None:
         front = self._read("README.md")
         docs_index = self._read("docs/README.md")
         architecture = self._read("docs/current_architecture.md")
         boundary = self._read("docs/partner_acceleration_boundaries.md")
         support = self._read("docs/current_main_support_matrix.md")
 
-        self.assertIn("v2.6 release-candidate RTDL surface", front)
+        self.assertIn("current v2.10 source-tree RTDL surface", front)
         self.assertIn("docs/learn/partner_choice_for_custom_logic.md", front)
-        self.assertIn("RTDL v2.6 is the release-candidate", docs_index)
-        self.assertIn("v2.6 partner design is protocol first", architecture)
+        self.assertIn("RTDL v2.10 is the active source-tree", docs_index)
+        self.assertIn("v2.10 partner design is protocol first", architecture)
         self.assertIn("Full residency-first", architecture)
         self.assertIn("roadmap work", architecture)
-        self.assertIn("## v2.6 Partner Choice Rule", boundary)
-        self.assertIn("Numba is the v2.6 custom CUDA-style continuation lane", boundary)
-        self.assertIn("Triton remains paused", boundary)
-        self.assertIn("Current docs target: v2.6", support)
+        self.assertIn("## v2.10 Partner Choice Rule", boundary)
+        self.assertIn("Numba is the Python-source custom CUDA-style continuation lane", boundary)
+        self.assertIn("Current docs target: v2.10", support)
 
     def test_stale_current_facing_phrases_are_removed(self) -> None:
         forbidden = [

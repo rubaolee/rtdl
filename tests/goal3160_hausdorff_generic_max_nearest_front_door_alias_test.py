@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 import rtdsl as rt
-from examples.v2_0.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_distance_app as hausdorff
+from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_distance_app as hausdorff
 from rtdsl.reference import Point
 
 
