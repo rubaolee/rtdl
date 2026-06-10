@@ -2,7 +2,7 @@
 
 Date: 2026-06-09
 
-Status: runner and validation gates ready; GPU evidence pending because all currently known GPU endpoints were unavailable.
+Status: RTX 3090 large-scale partner evidence collected for the two partner-needed contract families.
 
 ## Purpose
 
@@ -74,9 +74,52 @@ OK (skipped=1)
 
 The skipped test is an existing CUDA-gated path on this Windows host.
 
+## RTX 3090 Evidence
+
+Artifact:
+
+`docs/reports/goal4266_large_scale_partner_comparison/summary.json`
+
+Hardware and source:
+
+| Field | Value |
+| --- | --- |
+| GPU | NVIDIA GeForce RTX 3090 |
+| Driver | 580.159.03 |
+| Source commit | `9c628b46eefa...` |
+| CuPy | 14.1.1 |
+| Numba | 0.65.1 |
+| NumPy | 2.4.6 |
+
+All rows below use the same repeat count for CuPy and Numba within that contract. All rows match the CPU oracle. No row has less than one second of aggregate hot time.
+
+| Contract | Scale | Equal repeats | CuPy total sec | Numba total sec | CuPy speedup vs Numba | CuPy median ms | Numba median ms | User reading |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `segmented_count_i64` | 4,000,000 rows / 4,096 groups | 2,043 | 1.534 | 2.361 | 1.54x | 0.7000 | 1.0829 | CuPy is faster |
+| `segmented_sum_f64` | 4,000,000 rows / 4,096 groups | 3,671 | 1.149 | 4.626 | 4.03x | 0.2949 | 1.1914 | CuPy is faster |
+| `segmented_min_f64` | 4,000,000 rows / 4,096 groups | 759 | 1.513 | 2.497 | 1.65x | 1.8852 | 3.0781 | CuPy is faster |
+| `segmented_max_f64` | 4,000,000 rows / 4,096 groups | 623 | 1.276 | 2.077 | 1.63x | 1.9014 | 3.1098 | CuPy is faster |
+| `compact_mask_i64` | 8,000,000 rows | 3,034 | 1.463 | 34.324 | 23.45x | 0.4595 | 10.9947 | CuPy is much faster |
+
+Suite summaries:
+
+| Suite | CuPy total sec | Numba total sec | CuPy speedup vs Numba | User reading |
+| --- | ---: | ---: | ---: | --- |
+| RayDB-style unfused grouped reductions | 5.472 | 11.562 | 2.11x | Choose CuPy for performance on these grouped contracts |
+| Triangle/RayJoin-style compact mask | 1.463 | 34.324 | 23.45x | Choose CuPy unless no-RawKernel/no-CuPy policy is more important |
+
+## User-Facing Conclusion
+
+For the two benchmark contract families where users really need a partner:
+
+- If the user wants maximum performance on this RTX 3090-class NVIDIA GPU, choose CuPy for grouped reductions and compact-mask continuation.
+- If the user strongly wants "no hand-written RawKernel" reference code, Numba remains useful and correct, but it is not the fastest path in this packet.
+- If the app can be answered by a fused RTDL primitive, do not force either partner. Primitive-first still wins the design rule.
+- These rows are partner-continuation timings only. They are not whole-app speedups, RT-core speedups, release authorization, or universal CuPy-vs-Numba results.
+
 ## Hardware Status
 
-No accepted timing evidence has been produced yet.
+Accepted same-contract timing evidence has now been produced on the RTX 3090 pod above.
 
 Checked endpoints:
 
@@ -86,6 +129,7 @@ Checked endpoints:
 | `root@69.30.85.203 -p 22057` | connection refused |
 | `root@157.157.221.29 -p 24101` | key rejected |
 | Windows local | no CuPy and no Numba installed |
+| `root@213.192.2.91 -p 40030` | RTX 3090 run completed with the repo-local RTDL pod key |
 
 ## Pod Command
 
