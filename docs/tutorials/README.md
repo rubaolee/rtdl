@@ -1,7 +1,9 @@
 # RTDL v2.10 Tutorials
 
-Start here if you want to write RTDL programs with the current v2.10-facing
-Python+partner+RTDL surface.
+Start with the [Current RTDL Tutorial Track](current/README.md) if you are new.
+It is the ordered path from first run to a Python+RTDL+CuPy/Numba benchmark app.
+
+Use the rest of this page as reference navigation after you finish that track.
 
 RTDL is a Python eDSL. You write the surrounding Python application, describe
 the traversal-heavy kernel in RTDL, and choose a backend such as the portable
@@ -13,7 +15,19 @@ This page is intentionally single-surface. Runtime examples teach the current
 v2.10 source-tree surface; primitive discovery and prepared execution are current
 source-tree guidance and do not change release or performance claim boundaries.
 
-## Start Here
+## Guided Track
+
+| Step | Tutorial | What you learn |
+| --- | --- | --- |
+| 1 | [Run From The Source Tree](current/01_source_tree_first_run.md) | Source-tree setup and first example run |
+| 2 | [Kernel Shape And Backends](current/02_kernel_shape_and_backends.md) | Input, traversal, refine, emit, and backend choice |
+| 3 | [Primitive Discovery](current/03_primitives_and_discovery.md) | Search before creating new app code |
+| 4 | [Python App Structure](current/04_python_app_structure.md) | Keep app meaning in Python and engine contracts generic |
+| 5 | [Partner Columns With CuPy Or Numba](current/05_partner_columns_cupy_numba.md) | Explicit partner choice for custom continuation |
+| 6 | [Prepared Execution And Measurement](current/06_prepared_execution_measurement.md) | Setup, prepare, warmup, steady-state, validation |
+| 7 | [Benchmark App Walkthrough](current/07_benchmark_app_python_rtdl_partner.md) | CPU oracle, RTDL rows, CuPy, Numba, and optional OptiX |
+
+## Reference Tutorials
 
 | Step | Tutorial | What you learn |
 | --- | --- | --- |
