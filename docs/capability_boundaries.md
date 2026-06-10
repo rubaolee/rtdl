@@ -6,7 +6,7 @@ users. Older release history is kept separately in
 
 ## Current Status
 
-RTDL v2.10 is the current released source-tree
+RTDL v2.10 is the current source-tree
 Python+partner+RTDL surface. It preserves the v2.x language boundary and
 provides the cleaned benchmark-vs-learner app portfolio.
 

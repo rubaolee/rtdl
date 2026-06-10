@@ -98,7 +98,8 @@ the explicit `examples/current/...` paths.
 
 - `--backend optix` is not by itself a broad NVIDIA RT-core speedup claim.
 - Partner examples show user-owned continuation around RTDL outputs; RTDL does
-  not claim to accelerate arbitrary NumPy, PyTorch, CuPy, or Numba programs.
+  not claim to accelerate arbitrary NumPy, CuPy, Numba, or user-owned extension
+  programs.
 - `legacy_or_backend_proofs/`, `generated/`, `reference/`, and `internal/` are
   not first-run learner directories.
 

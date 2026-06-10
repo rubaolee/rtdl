@@ -26,7 +26,7 @@ PRIMITIVE_ADVISORY_PLANNER_CLAIM_BOUNDARY = (
     "Current primitive advisory plans are explain-only metadata. They do not "
     "execute, dispatch, auto-select partners, authorize release readiness, "
     "authorize public speedup wording, authorize broad RT-core wording, "
-    "authorize true zero-copy wording, or promote internal/candidate primitive "
+    "authorize general zero-copy or device-residency wording, or promote internal/candidate primitive "
     "steps to stable public primitives."
 )
 

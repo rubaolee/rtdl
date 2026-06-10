@@ -44,7 +44,7 @@ print(report.to_dict()["summary_sec"])
 ```
 
 The report keeps the source artifact's claim flags and refuses to validate if a
-source artifact authorizes release, public speedup wording, true zero-copy
+source artifact authorizes release, public speedup wording, general zero-copy
 wording, hidden partner selection, or app-specific native-engine behavior.
 
 ## Current Prepared Example
@@ -72,7 +72,7 @@ Prepared execution does not authorize:
 - release;
 - broad RT-core speedup wording;
 - whole-app speedup wording;
-- true zero-copy wording;
+- general zero-copy or device-residency wording;
 - paper reproduction wording;
 - hidden partner selection;
 - app-specific native engine behavior.

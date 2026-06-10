@@ -50,7 +50,7 @@ The `--mode prepared_session_reuse_idiom` command is a non-performance teaching
 path. It invokes `get_or_prepare_explicit_session` twice against a caller-owned
 `ExplicitPreparedSessionCache` and returns the visible `miss`/`put`/`hit` event
 log. It does not run the OptiX benchmark path and does not authorize speedup,
-true-zero-copy, or automatic partner/backend-selection claims.
+general zero-copy/device-residency, or automatic partner/backend-selection claims.
 
 The important boundary is that the RTDL-vs-CuPy rows are same-contract; the
 official RTNN rows are diagnostic unless a future goal proves output-contract

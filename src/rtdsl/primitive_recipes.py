@@ -281,7 +281,7 @@ COMPOSITION_RECIPES = (
         ),
         claim_boundary=(
             "Candidate recipe only. It does not authorize release, paper-reproduction, "
-            "RT-core speedup, true-zero-copy, or whole-app speedup claims."
+            "RT-core speedup, zero-copy/device-residency, or whole-app speedup claims."
         ),
         boundary=(
             "Boundary-event interpretation, parity policy, entity lookup, and final app "

@@ -123,7 +123,7 @@ This workflow does not authorize:
 - package-install promises;
 - public speedup wording;
 - broad RT-core speedup wording;
-- true zero-copy wording;
+- general zero-copy or device-residency wording;
 - automatic partner selection;
 - paper-system reproduction claims;
 - app-specific native engine logic.

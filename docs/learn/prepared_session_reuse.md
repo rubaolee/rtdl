@@ -11,7 +11,7 @@ make a stable key -> prepare once on a miss -> reuse the prepared handle -> inva
 
 This is caller-owned reuse. RTDL does not choose a backend, does not choose a
 partner, does not create a hidden global cache, and does not turn the pattern
-into a public speedup or true-zero-copy claim.
+into a public speedup or general zero-copy/device-residency claim.
 
 ## When To Use It
 
@@ -126,7 +126,7 @@ for:
 | `cache_enabled_by_default` | Whether the app enables explicit reuse automatically. |
 | `cold_hot_phase_split_required` | Whether timing must separate cold preparation from hot query. |
 | `automatic_partner_selection_authorized` | Must remain `False`; the user chooses. |
-| `true_zero_copy_claim_authorized` | Must remain `False` unless a separate reviewed path proves that exact claim. |
+| `true_zero_copy_claim_authorized` | Must remain `False` unless a separate reviewed path proves that exact zero-copy/device-residency claim. |
 | `public_speedup_claim_authorized` | Must remain `False` unless reviewed release evidence authorizes that wording. |
 
 ## Claim Boundary
@@ -136,7 +136,7 @@ Prepared-session reuse is a useful programming pattern. It does not authorize:
 - release action;
 - public speedup wording;
 - broad RT-core speedup wording;
-- true-zero-copy wording;
+- general zero-copy or device-residency wording;
 - automatic partner or backend selection;
 - app-specific native-engine logic.
 

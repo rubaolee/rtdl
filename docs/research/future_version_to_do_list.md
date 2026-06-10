@@ -16,9 +16,9 @@ This file catches design ideas that should not interrupt the current release or 
   stable cache keys, visible lifetime/invalidation policy, backend/partner
   ownership, memory-pressure behavior, and no hidden automatic partner/backend
   selection. A cache hit may be a resident-session optimization, but it is not a
-  true-zero-copy or public speedup claim by itself.
+  general zero-copy/device-residency or public speedup claim by itself.
 - Guardrail phrase for future audits: no hidden automatic partner/backend selection.
-- Guardrail phrase for future audits: not a true-zero-copy or public speedup claim.
+- Guardrail phrase for future audits: not a general zero-copy/device-residency or public speedup claim.
 - Keep the primitive boundary generic. Prepared session concepts are things
   like fixed-radius threshold, AABB index query, ranked neighbor summary, and
   ray/triangle weighted sum. App-specific interpretation remains in Python

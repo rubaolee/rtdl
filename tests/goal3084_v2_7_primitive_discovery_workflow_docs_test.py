@@ -9,7 +9,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "examples" / "v2_0" / "getting_started" / "rtdl_primitive_discovery_workflow.py"
+EXAMPLE = ROOT / "examples" / "current" / "getting_started" / "rtdl_primitive_discovery_workflow.py"
 LEARN_DOC = ROOT / "docs" / "learn" / "primitive_discovery_workflow.md"
 
 
@@ -67,8 +67,8 @@ class Goal3084V27PrimitiveDiscoveryWorkflowDocsTest(unittest.TestCase):
             ROOT / "docs" / "app_example_quickstart.md",
             ROOT / "docs" / "application_catalog.md",
             ROOT / "examples" / "README.md",
-            ROOT / "examples" / "v2_0" / "getting_started" / "README.md",
-            ROOT / "examples" / "v2_0" / "README.md",
+            ROOT / "examples" / "current" / "getting_started" / "README.md",
+            ROOT / "examples" / "current" / "README.md",
         )
         for path in paths:
             with self.subTest(path=path):
