@@ -102,12 +102,12 @@ python3 scripts/goal4266_large_scale_partner_comparison.py \
   --compact-rows 8000000 \
   --target-hot-total-sec 1.25 \
   --warmup 2 \
-  --max-repeat 200 \
+  --max-repeat 5000 \
   --progress-every 10 \
   --output docs/reports/goal4266_large_scale_partner_comparison/summary.json
 ```
 
-If the pod is fast enough that any contract still fails the one-second floor after 200 repeats, increase `--max-repeat` or increase row counts and rerun. Do not publish a winner table with any non-empty `subsecond_hot_total_rows`.
+If the pod is fast enough that any contract still fails the one-second floor after 5000 repeats, increase `--max-repeat` or increase row counts and rerun. Do not publish a winner table with any non-empty `subsecond_hot_total_rows`.
 
 ## Claim Boundary
 

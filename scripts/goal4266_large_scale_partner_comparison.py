@@ -135,7 +135,7 @@ def _make_grouped_host_columns(row_count: int, group_count: int, modules: dict[s
     np = modules["numpy"]
     indices = np.arange(row_count, dtype=np.int64)
     group_ids = ((indices * 31 + 11) % group_count).astype(np.int64, copy=False)
-    values = (((indices % 1009).astype(np.float64) + 0.25) / 17.0).astype(np.float64, copy=False)
+    values = ((indices % 1009).astype(np.float64) + 1.0).astype(np.float64, copy=False)
     return group_ids, values
 
 
@@ -516,7 +516,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--compact-rows", type=int, default=8_000_000)
     parser.add_argument("--target-hot-total-sec", type=float, default=1.25)
     parser.add_argument("--warmup", type=int, default=2)
-    parser.add_argument("--max-repeat", type=int, default=200)
+    parser.add_argument("--max-repeat", type=int, default=5000)
     parser.add_argument("--progress-every", type=int, default=10)
     parser.add_argument("--block-size", type=int, default=256)
     parser.add_argument("--dry-run", action="store_true")
