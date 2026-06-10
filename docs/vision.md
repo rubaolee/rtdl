@@ -62,9 +62,9 @@ The current direction is:
 - make Python+RTDL a usable language surface;
 - make Python+partner+RTDL useful for high-performance continuation work;
 - document exact backend support instead of implying universal acceleration;
-- preserve old release evidence in the audit/history archive rather than mixing
+- preserve archived release evidence in the audit/history archive rather than mixing
   it into learner docs.
 
 For the active user path, start with [Learn RTDL](learn/README.md). For
-release evidence and older milestones, use [Audit](audit/README.md) and
+release evidence and archived milestones, use [Audit](audit/README.md) and
 [History](history/README.md).

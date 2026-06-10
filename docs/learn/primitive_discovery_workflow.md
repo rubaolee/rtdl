@@ -124,7 +124,7 @@ This workflow does not authorize:
 - public speedup wording;
 - broad RT-core speedup wording;
 - true zero-copy wording;
-- automatic Triton or automatic partner selection;
+- automatic partner selection;
 - paper-system reproduction claims;
 - app-specific native engine logic.
 

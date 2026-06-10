@@ -23,7 +23,7 @@ contracts.
 | Layer | Owner | Typical work |
 | --- | --- | --- |
 | Python app | you | load data, choose scenario, call RTDL, compute final labels or reports |
-| Partner framework | NumPy, PyTorch, CuPy, or selected Numba continuations | hold columns, run array math, perform reductions or custom continuations where useful |
+| Partner framework | NumPy, CuPy, or selected Numba continuations | hold columns, run array math, perform reductions or custom continuations where useful |
 | RTDL | RTDL runtime and backend | traverse, refine, and emit documented primitive outputs |
 
 In the current v2.10 source tree, the important upgrade is not that RTDL
@@ -45,12 +45,11 @@ developer path on a local Linux or Windows machine.
 
 ## Move To GPU Partner Columns
 
-On a configured NVIDIA host with CuPy or PyTorch CUDA available, the same
+On a configured NVIDIA host with CuPy available, the same
 programming idea can use GPU-owned input columns:
 
 ```bash
 PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner cupy-cuda --backend optix
-PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner torch-cuda --backend optix
 ```
 
 For larger app-level examples, use the application catalog, the current
@@ -61,7 +60,7 @@ problem size, output shape, and hardware all matter.
 ## Continuation Work
 
 RTDL does not need to own every operation after traversal. A current RTDL
-program can continue in normal Python, NumPy, PyTorch, CuPy, or selected Numba
+program can continue in normal Python, NumPy, CuPy, or selected Numba
 kernels.
 
 Examples:

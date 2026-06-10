@@ -11,7 +11,7 @@ seen the partner descriptor shape.
 The supported shape is:
 
 ```text
-CuPy or PyTorch owns input columns
+CuPy owns input columns
   -> RTDL runs a prepared OptiX any-hit primitive
   -> RTDL writes documented output columns
   -> Python or the partner framework continues from those columns
@@ -26,7 +26,7 @@ or streaming output contract is available.
 | Part | Owner |
 | --- | --- |
 | app data and policy | Python |
-| input/output tensors | PyTorch or CuPy |
+| input/output arrays | CuPy |
 | RT-shaped primitive | RTDL |
 | native traversal | OptiX |
 | post-processing | user Python or partner code |
@@ -37,11 +37,11 @@ Allowed:
 
 - prepared OptiX partner-column primitive under documented contracts;
 - partner-owned input and output columns for the supported path;
-- continuation with normal PyTorch or CuPy code after RTDL returns.
+- continuation with normal CuPy code after RTDL returns.
 
 Not allowed:
 
-- arbitrary PyTorch, CuPy, or Numba acceleration;
+- arbitrary CuPy or Numba acceleration;
 - a general zero-copy product guarantee;
 - broad RT-core speedup or acceleration;
 - package-install support;

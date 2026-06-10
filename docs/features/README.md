@@ -1,6 +1,6 @@
 # RTDL Feature Homes
 
-Status: current v2.6 released feature index.
+Status: current v2.10 source-tree feature index.
 
 Use these pages when you want to answer practical questions:
 
@@ -39,5 +39,5 @@ Use these pages when you want to answer practical questions:
 ## Boundary
 
 Feature homes describe current APIs. They should not carry release-history
-notes, old goal logs, or old benchmark claims. Older context belongs in the
+notes, archive goal logs, or archived benchmark claims. Archived context belongs in the
 archive and release-report areas.

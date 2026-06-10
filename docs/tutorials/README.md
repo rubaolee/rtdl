@@ -5,9 +5,9 @@ Python+partner+RTDL surface.
 
 RTDL is a Python eDSL. You write the surrounding Python application, describe
 the traversal-heavy kernel in RTDL, and choose a backend such as the portable
-CPU reference path, Embree, or OptiX. In the v2.10 track, partner frameworks such
-as NumPy, PyTorch, CuPy, and selected Numba continuations can own or continue
-columns around supported RTDL primitives.
+CPU reference path, Embree, or OptiX. In the v2.10 track, NumPy, CuPy, and
+selected Numba continuations can own or continue columns around supported RTDL
+primitives.
 
 This page is intentionally single-surface. Runtime examples teach the current
 v2.10 source-tree surface; primitive discovery and prepared execution are current
@@ -77,7 +77,7 @@ Not allowed:
 
 - package-install promises;
 - broad RT-core speedup claims;
-- arbitrary PyTorch/CuPy/Numba acceleration claims;
+- arbitrary CuPy/Numba acceleration claims;
 - arbitrary polygon overlay, graph analytics, or database acceleration claims;
 - universal speedup wording beyond reviewed evidence.
 

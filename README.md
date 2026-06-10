@@ -139,7 +139,7 @@ Promoted benchmarks are reconstruction instruments for RTDL language/runtime
 design, not broad paper-reproduction or whole-application speedup claims.
 
 Do not read v2.10 as a package-install promise, broad RT-core claim, arbitrary
-PyTorch/CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof
+CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof
 that every user program is faster. For the exact positive and negative rule, read
 [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md).
 
@@ -147,17 +147,14 @@ The v2.10 partner rule is user-chosen and evidence-gated:
 
 - use fused RTDL primitives first when they exactly express the work;
 - choose a partner explicitly when custom continuation logic is needed;
-- prefer CuPy for mature CUDA-array/library continuations;
-- use Numba for measured custom CUDA-style continuations such as selected
-  compact-mask and grouped-reduction rows;
-- keep Triton paused for recommended paths until same-contract timing proves it
-  should return.
+- prefer CuPy for mature CUDA-array/library continuations where current
+  same-contract evidence says it wins;
+- use Numba when users need Python-source custom continuation logic without
+  writing a CuPy RawKernel.
 
 For the current partner-choice guide, read
 [Choosing A Partner For Custom Logic](docs/learn/partner_choice_for_custom_logic.md)
 and the [Benchmark Partner Reference Matrix](docs/learn/benchmark_partner_reference_matrix.md).
-For the historical v2.8 10-app matrix, see
-[Goal3518](docs/reports/goal3518_v2_8_benchmark_matrix_refresh_2026-06-05.md).
 For the current v2.10 benchmark adequacy and AMD/HIPRT readiness position, see
 [Goal3786](docs/reports/goal3786_current_benchmark_adequacy_after_hiprt_closeout_2026-06-07.md).
 
@@ -199,8 +196,6 @@ release evidence, review records, and goal archives live separately:
 
 - [History Index](docs/history/README.md)
 - [Version Archive Notes](docs/history/version_archive_notes.md)
-- [Historical v2.6 Evidence Archive](docs/release_reports/v2_6/README.md)
-- [Historical v2.3 Evidence Archive](docs/release_reports/v2_3/README.md)
 - [Release Reports](docs/release_reports/)
 - [Benchmark And Audit Reports](docs/reports/)
 

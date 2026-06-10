@@ -1,6 +1,6 @@
 # RTDL Runtime Overhead Architecture
 
-Status: current v2.6 released architecture note.
+Status: current v2.10 source-tree architecture note.
 
 RTDL uses Python as the authoring and orchestration layer. That is the right
 shape for a learner-facing eDSL, but it also means performance depends on which
@@ -31,14 +31,14 @@ reductions.
 | `ctypes` marshaling | Host copies and struct packing can dominate short kernels. | Reuse prepared buffers where possible. |
 | Row materialization | Returning dictionaries is convenient but slow at scale. | Use compact summaries or streaming witness pages. |
 | Partner handoff | Copying CPU rows into GPU tensors can erase traversal wins. | Keep data in arrays and use DLPack-compatible handoff where available. |
-| Post-processing | Ranking, grouping, filtering, and reductions may dominate. | Use PyTorch, CuPy, NumPy, or app-owned native extensions outside the RTDL engine. |
+| Post-processing | Ranking, grouping, filtering, and reductions may dominate. | Use CuPy, Numba, NumPy, or app-owned native extensions outside the RTDL engine. |
 
 ## Design Rule
 
 Python remains the control plane. The hot data plane should be RTDL engine work
 or partner-side array work.
 
-That rule is why v2.x allows PyTorch/CuPy continuation and CuPy RawKernel app
+That rule is why v2.x allows CuPy/Numba continuation and CuPy RawKernel app
 code, while still keeping the native RTDL engine app-agnostic. User-authored
 partner kernels are allowed app code; app-customized native engine entry points
 are not.

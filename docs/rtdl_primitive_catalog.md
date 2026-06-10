@@ -54,7 +54,7 @@ rtdsl.primitive_layer_map()
 rtdsl.validate_primitive_hierarchy()
 ```
 
-For v2.7 discovery work, the same node data also carries a metadata overlay
+For the current discovery workflow, the same node data also carries a metadata overlay
 for user-intent search. The hierarchy remains the governance/dependency
 source of truth; the discovery API is only an index over those nodes:
 
@@ -398,7 +398,7 @@ Recipe discovery metadata:
 
 ## Advisory Planner
 
-The v2.7 planner is an explain-only layer over primitive discovery and
+The current planner is an explain-only layer over primitive discovery and
 composition recipes:
 
 ```python
@@ -411,7 +411,7 @@ rtdsl.validate_primitive_advisory_planner()
 | Planner version | `rtdl.primitive_advisory_planner.v1` |
 | Executes or dispatches | `False` |
 | Auto-selects partners | `False` |
-| Claim boundary | v2.7 primitive advisory plans are explain-only metadata. They do not execute, dispatch, auto-select partners, authorize release readiness, authorize public speedup wording, authorize broad RT-core wording, authorize true zero-copy wording, or promote internal/candidate primitive steps to stable public primitives. |
+| Claim boundary | Current primitive advisory plans are explain-only metadata. They do not execute, dispatch, auto-select partners, authorize release readiness, authorize public speedup wording, authorize broad RT-core wording, authorize true zero-copy wording, or promote internal/candidate primitive steps to stable public primitives. |
 
 Every returned plan exposes the matched recipe, each primitive step, each
 step's primitive status, non-stable step warnings, optional partner-support

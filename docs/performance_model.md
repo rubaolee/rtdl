@@ -17,7 +17,7 @@ The current model is:
 - Python is the authoring and control plane.
 - RTDL describes traversal, refinement, row emission, and supported reductions.
 - Native backends must remain app-agnostic.
-- Partner libraries such as NumPy, PyTorch, and CuPy can own tensor-side
+- Partner libraries such as NumPy, CuPy, and Numba can own tensor-side
   continuation when the app needs GPU or vectorized compute.
 - Convenience row output is useful for learning and debugging, but it is not
   always the serious performance path.
@@ -104,7 +104,7 @@ RTDL owns app-agnostic RT-shaped traversal.
 The partner owns tensor/vector/GPU continuation when the app asks for it.
 ```
 
-That means a v2.x app may use NumPy, PyTorch, CuPy, or user-controlled extension
+That means a v2.x app may use NumPy, CuPy, Numba, or user-controlled extension
 code around RTDL. Those choices can be valid app implementations, but public
 claims must say exactly which layer produced the speedup.
 

@@ -58,7 +58,7 @@ PYTHONPATH=src:. .venv-rtdl-scipy/bin/python examples/v2_0/research_benchmarks/b
 | `materialization_pressure_bucketized_cpu` | Estimate contribution-row memory pressure from the opening frontier summary | Planning guard for materialized vs streamed/native execution |
 | `fused_frontier_force_sum_bucketized_cpu` | Generic aggregate-tree opening traversal fused directly into weighted vector sums | Reference contract for native/partner fused lowering; avoids frontier and contribution rows |
 | `optix_node_coverage_prepared` | Prepared OptiX fixed-radius threshold traversal for node coverage | RT-core decision subpath |
-| `partner_exact_force` | Generic weighted-point pairwise inverse-square force via CuPy, Torch, or Numba CUDA JIT | Partner force-vector reference |
+| `partner_exact_force` | Generic weighted-point pairwise inverse-square force via CuPy or Numba CUDA JIT | Partner force-vector reference |
 
 ## Example Commands
 

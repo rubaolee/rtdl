@@ -1,6 +1,6 @@
 # RTDL Engine Feature Support Contract
 
-Status: public API contract for the v2.6 released source tree.
+Status: public API contract for the v2.10 source tree.
 
 Every public RTDL feature that a developer can intentionally choose should have
 a defined behavior on every RTDL engine. The behavior must be one of four
@@ -56,5 +56,5 @@ The machine-readable source of truth is
 - HIPRT-on-NVIDIA/Orochi evidence is not AMD GPU validation.
 - `reduce_rows` is a Python standard-library helper over emitted rows, not a
   native backend reduction.
-- Stale backend libraries may reject a feature or use an older compatibility
-  path until rebuilt from the current source.
+- Local backend libraries may reject a feature or use a compatibility path until
+  rebuilt from the current source.

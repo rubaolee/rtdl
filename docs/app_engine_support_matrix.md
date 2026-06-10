@@ -1,6 +1,6 @@
 # RTDL App Engine Support Matrix
 
-Status: public app-level support map for the v2.6 released source
+Status: public app-level support map for the v2.10 released source
 tree.
 
 This matrix answers which engines each public app entry point exposes today.
@@ -45,15 +45,15 @@ For OptiX performance classification, use
 | `examples/v2_0/apps/robotics/rtdl_robot_collision_screening_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `direct_cli_native` | `not_exposed_by_app_cli` |
 | `examples/v2_0/apps/simulation/rtdl_barnes_hut_force_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 
-## v2.6 Reading Guide
+## v2.10 Reading Guide
 
 - Embree rows are the CPU RT implementation path.
 - OptiX rows are the NVIDIA RT implementation path, but only reviewed
   traversal-heavy subpaths should use RT-core wording.
 - Vulkan, HIPRT, and Apple RT rows document preserved public app exposure; they
   are not the release-performance focus.
-- Partner acceleration is app code layered on top of RTDL outputs. PyTorch,
-  CuPy, NumPy, or app-owned native extensions can implement non-RT work without
+- Partner acceleration is app code layered on top of RTDL outputs. NumPy, CuPy,
+  Numba, or app-owned native extensions can implement non-RT work without
   becoming RTDL engine customization.
 - Full witness rows, compact summaries, and streaming witness pages are
   different contracts. Compare performance only when the contracts match.

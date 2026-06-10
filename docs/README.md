@@ -57,7 +57,6 @@ Read these in order:
 | Runtime overhead | [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
 | Release Reports | [Release Reports](release_reports/) |
-| Historical internal matrix | [Goal3518 v2.8 Benchmark Matrix](reports/goal3518_v2_8_benchmark_matrix_refresh_2026-06-05.md) |
 | Current benchmark adequacy | [Goal3786 v2.10 Benchmark Adequacy](reports/goal3786_current_benchmark_adequacy_after_hiprt_closeout_2026-06-07.md) |
 | History Index | [History Index](history/README.md) |
 
@@ -75,7 +74,7 @@ Read these in order:
 | `reports/` | Detailed benchmark, implementation, and audit reports. |
 | `reviews/` | External AI and human-style review records. |
 | `handoff/` | Handoff files used for external review and continuation. |
-| `history/` | Archived docs, release archive entry points, root-level logs, old version notes, and preserved project history. |
+| `history/` | Archived docs, release archive entry points, root-level logs, version notes, and preserved project history. |
 
 ## Rule
 

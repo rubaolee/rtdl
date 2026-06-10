@@ -23,7 +23,7 @@ PRIMITIVE_ADVISORY_PLANNER_VERSION = "rtdl.primitive_advisory_planner.v1"
 PRIMITIVE_ADVISORY_PLANNER_EXECUTES = False
 PRIMITIVE_ADVISORY_PLANNER_AUTO_PARTNER_SELECTION_ALLOWED = False
 PRIMITIVE_ADVISORY_PLANNER_CLAIM_BOUNDARY = (
-    "v2.7 primitive advisory plans are explain-only metadata. They do not "
+    "Current primitive advisory plans are explain-only metadata. They do not "
     "execute, dispatch, auto-select partners, authorize release readiness, "
     "authorize public speedup wording, authorize broad RT-core wording, "
     "authorize true zero-copy wording, or promote internal/candidate primitive "

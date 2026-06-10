@@ -1,6 +1,6 @@
 # RTDL Backend Maturity
 
-Status: v2.6 released backend maturity guide.
+Status: v2.10 source-tree backend maturity guide.
 
 This page separates three claims that are easy to mix up:
 
@@ -26,10 +26,9 @@ machine-readable feature source is `rtdsl.engine_feature_support_matrix()`.
 | Vulkan | Proof/portability backend | Preserved support surface; not the main current performance target. |
 | HIPRT | Proof backend | Preserved support surface; no AMD performance claim without AMD evidence. |
 | Apple RT | Proof/native-assisted backend | Preserved support surface; not a current release performance target. |
-| PyTorch partner | Reference partner direction | Current v2.x partner model for tensor-side work where PyTorch can express it. |
-| CuPy partner | Conformance and GPU escape-hatch partner | Current v2.x partner model for device arrays and explicit user kernels where needed. |
-| Numba partner | v2.6 custom-continuation lane | Recommended only for measured custom CUDA-style continuation rows; never auto-selected. |
-| Triton partner | Paused recommendation lane | Preview/history surface only until same-contract timing proves a useful path. |
+| NumPy partner | CPU/reference continuation | Useful for portable examples and correctness checks. |
+| CuPy partner | Current measured CUDA continuation performance lane | Recommended for the measured large-scale grouped-reduction and compact-mask custom continuations when performance is the priority. |
+| Numba partner | Current no-RawKernel custom-continuation lane | Recommended when users need Python-source custom CUDA-style continuation rows; never auto-selected. |
 
 ## How To Read This
 
@@ -40,7 +39,7 @@ release-facing performance tables should not lean on them.
 
 The partner layer is separate from the engine ABI. RTDL owns traversal,
 candidate discovery, compact rows, bounded witness pages, and app-agnostic
-runtime contracts. PyTorch, CuPy, Numba, or user code own tensor-side filtering,
+runtime contracts. NumPy, CuPy, Numba, or user code own tensor-side filtering,
 reductions, ranking, grouping, or user-authored GPU code when the app needs work
 after RTDL returns candidates or witnesses.
 
@@ -63,7 +62,7 @@ after RTDL returns candidates or witnesses.
 | CPU performance | Embree | Mature CPU BVH path with all-thread testing. |
 | NVIDIA RT experiments | OptiX | Primary RT-core-facing backend. |
 | CUDA-array continuation | CuPy partner | Mature CUDA-array/library continuation and RawKernel-friendly user path. |
-| Custom CUDA-style continuation | Numba partner | v2.6 lane for selected measured custom compact-mask and grouped-reduction rows. |
+| Custom CUDA-style continuation | Numba partner | Current lane for selected measured custom compact-mask and grouped-reduction rows when Python-source no-RawKernel code matters. |
 | Portability research | Vulkan, HIPRT, Apple RT | Preserved proof paths with bounded claims. |
 
 ## Evidence Links

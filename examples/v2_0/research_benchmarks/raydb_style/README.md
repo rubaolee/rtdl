@@ -29,7 +29,7 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb
 ```
 
 Experimental partner-resident OptiX count/sum/min/max/stats parity plus
-composite avg-as-sum-count lowering, when PyTorch CUDA tensors and the current
+composite avg-as-sum-count lowering, when CUDA partner columns and the current
 OptiX backend are available:
 
 ```bash
@@ -54,9 +54,9 @@ Paper-shaped RayDB RT OptiX path, after rebuilding `librtdl_optix` on a CUDA pod
 PYTHONPATH=src:. RTDL_OPTIX_LIB=build/librtdl_optix.so python examples/v2_0/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py --backend paper_rt_optix --mode all
 ```
 
-Archived experimental hit-stream plus Triton continuation material remains in
-the report archive. It is not the recommended current path because same-contract
-timing did not justify Triton as a default recommendation.
+Archived experimental hit-stream continuation material remains in the report
+archive. It is not the recommended current path because same-contract timing
+did not justify a partner continuation as the default recommendation.
 
 This path follows the authors' `RayDB-i0` execution shape at the contract level:
 one row becomes one `Triangle3D`, scan predicates are encoded on `Z`, group ids
@@ -110,8 +110,8 @@ work, and use partners only for unfused continuation or explicit user choice.
   `Triangle3D`/`Ray3D` object construction on the measured path;
 - prepared primitive payloads and prepared ray batches for repeated-query
   timing;
-- partner-owned CUDA query-ray columns through Torch or CuPy, packed on device
-  into a generic prepared ray batch;
+- partner-owned CUDA query-ray columns through the current CUDA partner path,
+  packed on device into a generic prepared ray batch;
 - explicit lowering metadata showing that no path authorizes zero-copy,
   SQL/DBMS, whole-app, or public speedup wording;
 - no authors-code timing, SQL engine, DBMS behavior, or row
@@ -134,7 +134,7 @@ unnecessary native Embree ray pre-copy. Goal2651 adds an app-owned reusable
 table descriptor so dense scan/group encoding can be shared across query modes
 without adding RayDB semantics to the engine.
 Goal2652 adds 10s-level prepared-query timing for Embree host rays, OptiX host
-rays, and OptiX Torch partner-owned query-ray columns.
+rays, and OptiX partner-owned query-ray columns.
 Goal2684 added the generic RT hit-stream handoff. It is preserved as a boundary
 and implementation milestone, but the current v2.10 recommendation is
 primitive-first native RTDL unless a partner continuation wins same-contract

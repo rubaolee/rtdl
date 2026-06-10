@@ -18,7 +18,7 @@ PRIMITIVE_SEMANTIC_SEARCH_EXECUTES = False
 PRIMITIVE_SEMANTIC_SEARCH_USES_EMBEDDINGS = False
 PRIMITIVE_SEMANTIC_SEARCH_AUTO_PARTNER_SELECTION_ALLOWED = False
 PRIMITIVE_SEMANTIC_SEARCH_CLAIM_BOUNDARY = (
-    "v2.7 semantic primitive search is opt-in deterministic metadata search. "
+    "Current semantic primitive search is opt-in deterministic metadata search. "
     "It does not execute, dispatch, use embeddings, auto-select partners, "
     "authorize release readiness, authorize public speedup wording, authorize "
     "broad RT-core wording, authorize true zero-copy wording, or promote "

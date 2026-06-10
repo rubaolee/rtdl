@@ -4,7 +4,7 @@ This directory is the formal front door for the existing RTNN benchmark
 campaign. It wraps the RTNN scripts and evidence into the research-benchmark
 tree.
 
-The older ANN candidate-quality example is exposed only as a helper submode
+The ANN candidate-quality example is exposed only as a helper submode
 because it shares top-k quality and candidate-threshold contracts. It is not
 the benchmark identity.
 
@@ -44,7 +44,7 @@ OptiX fixed-radius ranked-summary aggregate through the existing RTNN runner.
 It generates a deterministic synthetic point set and returns pure JSON with the
 runner progress captured in `runner_progress`. This is the command to use when
 you want an executable current RTDL/OptiX ranked-summary app route, not just the
-historical evidence summary.
+evidence summary.
 
 The `--mode prepared_session_reuse_idiom` command is a non-performance teaching
 path. It invokes `get_or_prepare_explicit_session` twice against a caller-owned

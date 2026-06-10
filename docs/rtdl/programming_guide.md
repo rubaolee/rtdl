@@ -111,7 +111,7 @@ Use `rt.run_cpu(...)` when:
 - you are validating a new kernel
 - you need the project ground truth
 
-The old Python reference path is still available as:
+The portable Python reference path is still available as:
 
 - `rt.run_cpu_python_reference(...)`
 

@@ -6,7 +6,7 @@ users. Older release history is kept separately in
 
 ## Current Status
 
-RTDL v2.6 is the current released source-tree
+RTDL v2.10 is the current released source-tree
 Python+partner+RTDL surface. It preserves the v2.x language boundary and
 provides the cleaned benchmark-vs-learner app portfolio.
 
@@ -17,7 +17,7 @@ provides the cleaned benchmark-vs-learner app portfolio.
 | RTDL is for | RT-shaped query kernels inside Python applications |
 | RTDL owns | typed inputs, traversal, refinement, emitted rows/device columns, backend dispatch |
 | Python owns | app semantics, labels, policies, files, presentation, final decisions |
-| Partners own | NumPy/PyTorch/CuPy arrays and normal framework continuations |
+| Partners own | NumPy/CuPy/Numba arrays and normal framework continuations |
 | Native engines own | generic primitive execution, not app-specific products |
 
 ## Intended Workloads
@@ -47,7 +47,7 @@ RTDL should not become:
 - a GIS overlay engine;
 - a robotics planner;
 - a physics simulator;
-- a general PyTorch/CuPy optimizer;
+- a general CuPy/Numba optimizer;
 - a package-install promise.
 
 Users can combine RTDL with any of those systems in Python. The boundary is
@@ -71,7 +71,7 @@ Allowed performance wording names the exact:
 
 When any of those are missing, use candidate or preview wording.
 
-## v2.6 Release Boundaries
+## v2.10 Release Boundaries
 
 Allowed:
 
@@ -82,7 +82,7 @@ Allowed:
 
 Not allowed:
 
-- arbitrary PyTorch/CuPy acceleration;
+- arbitrary CuPy/Numba acceleration;
 - broad RT-core acceleration;
 - arbitrary polygon overlay;
 - package-install support;

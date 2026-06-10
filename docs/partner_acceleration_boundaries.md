@@ -10,7 +10,7 @@ RTDL accelerates the RTDL primitive call you explicitly make.
 
 For the current v2.x source-tree surface, the supported shape is:
 
-1. You build columns in Python with NumPy, PyTorch, CuPy, or Numba-compatible
+1. You build columns in Python with NumPy, CuPy, or Numba-compatible
    arrays.
 2. You call an RTDL partner API for a supported primitive.
 3. RTDL executes the primitive on the selected backend, such as Embree or OptiX.
@@ -26,7 +26,7 @@ Examples of valid narrow wording:
 
 ## What RTDL Does Not Accelerate
 
-RTDL does not accelerate arbitrary PyTorch, CuPy, or Numba programs.
+RTDL does not accelerate arbitrary CuPy or Numba programs.
 
 If your Python code runs a neural network, tensor expression, optimizer step,
 DataFrame operation, custom CuPy kernel, or custom Numba kernel, RTDL does not
@@ -35,7 +35,6 @@ through the RTDL API.
 
 Blocked wording:
 
-- RTDL accelerates arbitrary PyTorch code.
 - RTDL accelerates arbitrary CuPy code.
 - RTDL accelerates arbitrary Numba code.
 - RTDL optimizes partner programs automatically.
@@ -45,7 +44,7 @@ Blocked wording:
 ## Partner-Owned Columns Are Not Whole-Program Acceleration
 
 Partner-owned columns mean the input or output arrays are owned by a partner
-runtime such as PyTorch, CuPy, or Numba-compatible CUDA arrays. That can reduce
+runtime such as CuPy or Numba-compatible CUDA arrays. That can reduce
 copies for a supported RTDL primitive path, but it does not mean the rest of the
 partner program is accelerated by RTDL.
 
@@ -57,8 +56,7 @@ contract, and evidence artifact.
 RTDL does not restrict users from doing normal partner work after an RTDL
 primitive returns. If the partner is CuPy, users may continue with ordinary CuPy
 operations, including `cupy.RawKernel`. If the partner is Numba, users may
-continue with their own Numba CUDA kernels. If the partner is PyTorch, users may
-continue with ordinary PyTorch tensor operations.
+continue with their own Numba CUDA kernels.
 
 That user continuation belongs to the user's application unless RTDL ships,
 measures, and reviews that exact continuation contract.
@@ -100,11 +98,11 @@ For app continuations, the intended interpretation is:
   semantics, and final reports in Python or user partner code unless RTDL has
   shipped a reviewed generic primitive for that exact contract.
 
-## v2.6 Release Boundary
+## v2.10 Release Boundary
 
-v2.6 is the current released source-tree Python+partner+RTDL evidence
-package. It provides user-chosen partner guidance and selected Numba
-custom-continuation support. It does not authorize package-install wording,
+v2.10 is the current source-tree Python+partner+RTDL milestone. It provides
+user-chosen partner guidance across primitive-first RTDL, CuPy reference paths,
+and selected Numba custom-continuation support. It does not authorize package-install wording,
 broad speedup wording, automatic partner selection, or a general zero-copy
 product claim.
 
@@ -124,7 +122,7 @@ of performance wording.
 Copilot supplemental review may be useful engineering signal, but it does not
 replace Claude or Gemini under the strict 3-AI consensus rule.
 
-## v2.6 Partner Choice Rule
+## v2.10 Partner Choice Rule
 
 The current rule is intentionally simple:
 
@@ -133,11 +131,8 @@ The current rule is intentionally simple:
 - Users choose supported partners explicitly. RTDL guidance may recommend a
   partner only when same-contract evidence supports that recommendation.
 - CuPy is the mature CUDA-array and library-continuation partner.
-- Numba is the v2.6 custom CUDA-style continuation lane for selected measured
+- Numba is the Python-source custom CUDA-style continuation lane for selected measured
   contracts such as compact masks and grouped reductions.
-- PyTorch remains useful for tensor interop and reference paths where measured.
-- Triton remains paused for recommended paths until same-contract timing proves
-  it should return.
 
 The benchmark reference implementations document recommendations, not hidden
 dispatch defaults. If a user chooses a different partner, that choice is allowed
@@ -148,10 +143,10 @@ Current guidance lives in:
 
 - [Choosing A Partner For Custom Logic](learn/partner_choice_for_custom_logic.md)
 - [Benchmark Partner Reference Matrix](learn/benchmark_partner_reference_matrix.md)
-- `docs/reports/goal3050_partner_choice_for_custom_logic_docs_and_benchmark_matrix_2026-06-02.md`
-- `docs/reports/goal3052_partner_choice_pod_refresh_2026-06-02.md`
-- `docs/reports/goal3054_v2_6_machine_readable_partner_choice_guidance_2026-06-02.md`
+- `docs/reports/goal4266_cupy_numba_user_partner_decision_matrix_2026-06-10.md`
+- `docs/reports/goal4267_v2_10_milestone_release_readiness_2026-06-10.md`
+- `docs/reports/goal4270_v2_10_public_release_tag_push_2026-06-10.md`
 
 Historical partner-continuation reports remain in `docs/reports/` for
-reviewers. They explain how the project reached the current v2.6 rule; they do
+reviewers. They explain how the project reached the current v2.10 rule; they do
 not override this learner-facing boundary.

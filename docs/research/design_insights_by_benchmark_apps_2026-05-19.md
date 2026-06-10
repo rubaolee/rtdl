@@ -112,7 +112,7 @@ The three apps converge on the same runtime design:
 2. Output contracts must be explicit: witness rows, compact positives, counts,
    summaries, first hits, ranked summaries, and grouped reductions are different
    primitives.
-3. Partner code is not a side detail. CuPy/PyTorch-style partners are how users
+3. Partner code is not a side detail. CuPy/Numba-style partners are how users
    continue work on GPU-resident or reduced data without forcing app semantics
    into the RTDL engine.
 4. Benchmark apps should pressure generic primitives, not introduce app-shaped

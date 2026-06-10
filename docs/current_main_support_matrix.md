@@ -1,6 +1,6 @@
 # RTDL Current Support Matrix
 
-Status: live support matrix for the v2.6 released source tree.
+Status: live support matrix for the v2.10 source tree.
 
 This page is the current learner-facing matrix. Older release matrices remain
 under `docs/release_reports/` for audit work, but normal users should read this
@@ -14,9 +14,9 @@ cells and silent CPU fallback are not allowed.
 
 ## Boundary
 
-- Current docs target: v2.6 source-tree partner-choice guidance.
+- Current docs target: v2.10 source-tree partner-choice guidance.
 - Active release engines: Embree for CPU RT, OptiX for NVIDIA RT.
-- Active v2.6 direction: primitive-first native RTDL when a fused generic
+- Active v2.10 direction: primitive-first native RTDL when a fused generic
   primitive exactly expresses the work; explicit partner continuation only for
   unfused work or app choice; users choose supported partners explicitly, while
   benchmark recommendations must be backed by same-contract evidence and never
@@ -39,7 +39,7 @@ cells and silent CPU fallback are not allowed.
 | Bounded polygon summaries | supported | native-assisted | native-assisted | not a release target | not a release target | not a release target |
 | DB-style compact summaries | supported | native | native | proof path | proof path | proof path |
 | Graph traversal rows | supported | native | native | proof path | proof path | proof path |
-| Partner tensor/custom continuation | Python-owned | CPU partner path | explicit user/app-chosen partner path for unfused continuations; CuPy is the mature CUDA-array lane, Numba is the current v2.6 custom-kernel lane, Triton remains paused until same-contract timing wins | not a release target | not a release target | not a release target |
+| Partner tensor/custom continuation | Python-owned | CPU partner path | explicit user/app-chosen partner path for unfused continuations; CuPy is the mature CUDA-array lane, and Numba is the current Python-source custom-kernel lane | not a release target | not a release target | not a release target |
 
 ## Current Performance Reading
 
@@ -52,7 +52,7 @@ backend ranking. The useful reading is:
 - A fast compact summary does not imply full witness-row output is equally
   fast.
 - A CuPy RawKernel or Numba CUDA continuation is allowed as partner/user code
-  and should be documented as such. New v2.6 continuation work should first ask
+  and should be documented as such. New continuation work should first ask
   whether a fused native RTDL primitive already expresses the continuation; if
   not, the partner is an explicit user/app choice. Benchmark reference
   implementations can recommend a partner only when same-contract evidence
@@ -66,7 +66,7 @@ Do not use this matrix to claim:
 - package-install support;
 - AMD GPU performance;
 - Apple RT performance for the current release target;
-- that partner-side RawKernel, PyTorch, or NumPy code is part of the native
+- that partner-side RawKernel, Numba, or NumPy code is part of the native
   app-agnostic RTDL engine;
 - zero-copy unless the exact measured path proves device-resident handoff.
 

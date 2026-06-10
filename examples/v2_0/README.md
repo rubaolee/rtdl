@@ -1,9 +1,9 @@
 # RTDL v2.x Examples
 
-This is the current learner-facing example tree for the RTDL v2.6
+This is the current learner-facing example tree for the RTDL v2.10
 released Python+partner+RTDL source-tree surface. The directory name
 `v2_0/` is retained as a stable v2.x compatibility path; the docs in this tree
-describe the current v2.6 behavior.
+describe the current v2.10 behavior.
 
 | Directory | Purpose |
 | --- | --- |

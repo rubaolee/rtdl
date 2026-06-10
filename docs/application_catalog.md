@@ -159,8 +159,8 @@ For performance-oriented v2.x apps, prefer compact or partner-owned outputs:
 - counts instead of pair tables when only totals are needed;
 - streaming witness columns instead of Python dictionaries for large witness
   output;
-- partner-owned arrays when the next computation will run in PyTorch, CuPy, or
-  a measured Numba continuation.
+- partner-owned arrays when the next computation will run in CuPy or a measured
+  Numba continuation.
 
 Use Python row dictionaries when clarity or inspection matters more than
 throughput.

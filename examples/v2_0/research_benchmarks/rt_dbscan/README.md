@@ -69,7 +69,7 @@ PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbsc
 
 ## Partner Run
 
-On a CUDA machine with CuPy or PyTorch installed:
+On a CUDA machine with CuPy installed:
 
 ```bash
 PYTHONPATH=src:. python examples/v2_0/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode partner_spatial_bucket_3d --dataset clustered3d --point-count 4096 --partner cupy --no-validation
@@ -387,8 +387,8 @@ reader-facing default boundary policy is:
 This means RTDL uses one prepared RT traversal to collect predicate-aware
 candidate roots and the partner continuation resolves those candidates through
 final component roots before producing labels or component-size signatures. The
-older name `lowest_candidate_then_root` is still accepted as a compatibility
-alias, but new examples and probes should use the canonical name.
+compatibility name `lowest_candidate_then_root` is still accepted as an alias,
+but new examples and probes should use the canonical name.
 
 The explicit `lowest_component_root_two_pass` policy is available for
 reference/debug validation. It is not the performance default because pod timing

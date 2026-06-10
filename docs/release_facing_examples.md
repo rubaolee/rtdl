@@ -1,6 +1,6 @@
 # Release-Facing Example Command Archive
 
-Status: current v2.6 released source-tree command archive.
+Status: current v2.10 source-tree command archive.
 
 This page is for reviewers who need a compact command list for the public
 example surface. If you are learning RTDL for the first time, start with:
@@ -70,8 +70,8 @@ PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner 
 PYTHONPATH=src:. python examples/v2_0/partners/rtdl_partner_anyhit.py --partner cupy-cuda --backend optix
 ```
 
-Partner commands are part of the v2.6 release surface. They do not imply
-arbitrary PyTorch/CuPy acceleration, package-install support, or whole-program
+Partner commands are part of the v2.10 release surface. They do not imply
+arbitrary CuPy/Numba acceleration, package-install support, or whole-program
 speedup.
 
 ## Claim Boundary
@@ -80,7 +80,7 @@ speedup.
 performance claim. Public wording must name the exact app, backend, partner,
 hardware, command shape, output contract, and artifact.
 
-Older command archives and old release-specific example notes live under:
+Archived command lists and release-specific example notes live under:
 
 - [Audit Door](audit/README.md)
 - [Root Archive](history/root_archive/README.md)
