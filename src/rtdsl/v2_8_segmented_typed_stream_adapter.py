@@ -1343,7 +1343,7 @@ def _execute_partner_front_door(
 
         return (
             {"counts": partner_group_count_by_key(mapped_columns["group_ids"], group_count, partner=partner)},
-            _partner_bridge_metadata(operation, partner, group_count, len(_adapter_like(mapped_columns["group_ids"]))),
+            _partner_bridge_metadata(operation, partner, group_count, _partner_column_length(mapped_columns["group_ids"])),
         )
     if operation == "segmented_sum_f64":
         from .partner_adapters import partner_group_sum_by_key
@@ -1357,7 +1357,7 @@ def _execute_partner_front_door(
                     partner=partner,
                 )
             },
-            _partner_bridge_metadata(operation, partner, group_count, len(_adapter_like(mapped_columns["group_ids"]))),
+            _partner_bridge_metadata(operation, partner, group_count, _partner_column_length(mapped_columns["group_ids"])),
         )
     if operation in {"segmented_min_f64", "segmented_max_f64"}:
         from .partner_adapters import partner_group_count_by_key
@@ -1373,7 +1373,7 @@ def _execute_partner_front_door(
         else:
             dense = partner_group_max_by_key(group_ids, values, group_count, partner=partner, initial=-math.inf)
             value_name = "maxes"
-        metadata = _partner_bridge_metadata(operation, partner, group_count, len(_adapter_like(group_ids)))
+        metadata = _partner_bridge_metadata(operation, partner, group_count, _partner_column_length(group_ids))
         metadata.update(
             {
                 "canonical_output_host_compaction_used": True,
@@ -1393,7 +1393,7 @@ def _execute_partner_front_door(
         )
         return (
             {"sum_x": output_x, "sum_y": output_y},
-            _partner_bridge_metadata(operation, partner, group_count, len(_adapter_like(mapped_columns["group_ids"]))),
+            _partner_bridge_metadata(operation, partner, group_count, _partner_column_length(mapped_columns["group_ids"])),
         )
     if operation == "grouped_argmin_f64":
         from .partner_adapters import grouped_argmin_f64_partner_columns
@@ -1441,7 +1441,7 @@ def _execute_partner_front_door(
     if operation == "compact_mask_i64":
         values = mapped_columns["values"]
         mask = mapped_columns["mask"]
-        metadata = _partner_bridge_metadata(operation, partner, group_count, len(_adapter_like(values)))
+        metadata = _partner_bridge_metadata(operation, partner, group_count, _partner_column_length(values))
         if partner == "numba":
             from .numba_partner_continuation import run_numba_compact_mask_i64
 
