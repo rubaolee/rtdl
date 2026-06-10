@@ -431,6 +431,10 @@ def _run_grouped_suite(args: argparse.Namespace, modules: dict[str, Any]) -> dic
         numba_median = float(op_row["partners"]["numba"]["hot_median_sec"])
         op_row["numba_speedup_vs_cupy_hot_total"] = cupy_total / numba_total if numba_total > 0.0 else None
         op_row["numba_speedup_vs_cupy_hot_median"] = cupy_median / numba_median if numba_median > 0.0 else None
+        op_row["cupy_speedup_vs_numba_hot_total"] = numba_total / cupy_total if cupy_total > 0.0 else None
+        op_row["cupy_speedup_vs_numba_hot_median"] = numba_median / cupy_median if cupy_median > 0.0 else None
+        op_row["time_ratio_cupy_over_numba_hot_total"] = cupy_total / numba_total if numba_total > 0.0 else None
+        op_row["time_ratio_numba_over_cupy_hot_total"] = numba_total / cupy_total if cupy_total > 0.0 else None
         op_row["all_match_cpu_oracle"] = all(bool(op_row["partners"][partner]["match_cpu_oracle"]) for partner in PARTNERS)
         rows.append(op_row)
 
@@ -464,6 +468,9 @@ def _run_grouped_suite(args: argparse.Namespace, modules: dict[str, Any]) -> dic
         "partner_hot_total_sec": suite_totals,
         "numba_speedup_vs_cupy_suite_hot_total": (
             suite_totals["cupy"] / suite_totals["numba"] if suite_totals["numba"] > 0.0 else None
+        ),
+        "cupy_speedup_vs_numba_suite_hot_total": (
+            suite_totals["numba"] / suite_totals["cupy"] if suite_totals["cupy"] > 0.0 else None
         ),
         "all_match_cpu_oracle": all(bool(row["all_match_cpu_oracle"]) for row in rows),
         "all_partner_totals_meet_one_second_floor": all(
@@ -579,6 +586,10 @@ def _run_compact_suite(args: argparse.Namespace, modules: dict[str, Any]) -> dic
     numba_median = float(row["partners"]["numba"]["hot_median_sec"])
     row["numba_speedup_vs_cupy_hot_total"] = cupy_total / numba_total if numba_total > 0.0 else None
     row["numba_speedup_vs_cupy_hot_median"] = cupy_median / numba_median if numba_median > 0.0 else None
+    row["cupy_speedup_vs_numba_hot_total"] = numba_total / cupy_total if cupy_total > 0.0 else None
+    row["cupy_speedup_vs_numba_hot_median"] = numba_median / cupy_median if cupy_median > 0.0 else None
+    row["time_ratio_cupy_over_numba_hot_total"] = cupy_total / numba_total if numba_total > 0.0 else None
+    row["time_ratio_numba_over_cupy_hot_total"] = numba_total / cupy_total if cupy_total > 0.0 else None
     row["all_match_cpu_oracle"] = all(bool(row["partners"][partner]["match_cpu_oracle"]) for partner in PARTNERS)
     row["all_partner_totals_meet_one_second_floor"] = all(
         bool(row["partners"][partner]["meets_one_second_floor"]) for partner in PARTNERS
@@ -677,6 +688,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "numba_speedup_vs_cupy": {
                 "grouped_suite_hot_total": grouped["numba_speedup_vs_cupy_suite_hot_total"],
                 "compact_mask_hot_total": compact["numba_speedup_vs_cupy_hot_total"],
+            },
+            "cupy_speedup_vs_numba": {
+                "grouped_suite_hot_total": grouped["cupy_speedup_vs_numba_suite_hot_total"],
+                "compact_mask_hot_total": compact["cupy_speedup_vs_numba_hot_total"],
             },
             "interpretation_boundary": (
                 "Large-scale same-contract partner continuation timings only. These rows do not "
