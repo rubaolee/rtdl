@@ -131,6 +131,111 @@ def _time_until_floor(
     }
 
 
+def _time_fixed_repeats(
+    *,
+    label: str,
+    partner: str,
+    fn: Callable[[], Any],
+    modules: dict[str, Any],
+    warmup: int,
+    repeat: int,
+    target_hot_total_sec: float,
+    progress_every: int,
+) -> tuple[Any, dict[str, Any]]:
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+    if repeat <= 0:
+        raise ValueError("repeat must be positive")
+
+    last_result: Any = None
+    for iteration in range(warmup):
+        last_result = fn()
+        _sync_partner(partner, modules)
+        print(f"[goal4266] {label} fixed warmup {iteration + 1}/{warmup}", flush=True)
+
+    measured: list[float] = []
+    total = 0.0
+    for iteration in range(repeat):
+        started = time.perf_counter()
+        last_result = fn()
+        _sync_partner(partner, modules)
+        elapsed = time.perf_counter() - started
+        measured.append(elapsed)
+        total += elapsed
+        should_print = (
+            iteration == 0
+            or iteration + 1 == repeat
+            or (progress_every > 0 and (iteration + 1) % progress_every == 0)
+        )
+        if should_print:
+            print(
+                f"[goal4266] {label} fixed repeat {iteration + 1}/{repeat} "
+                f"elapsed={elapsed:.6f}s hot_total={total:.6f}s target={target_hot_total_sec:.3f}s",
+                flush=True,
+            )
+
+    return last_result, {
+        "hot_total_sec": float(total),
+        "hot_median_sec": _median(measured),
+        "hot_min_sec": min(measured) if measured else math.nan,
+        "hot_max_sec": max(measured) if measured else math.nan,
+        "hot_repeat_secs": measured,
+        "repeat": repeat,
+        "warmup": warmup,
+        "target_hot_total_sec": float(target_hot_total_sec),
+        "same_repeat_count_for_both_partners": True,
+        "meets_one_second_floor": bool(total >= 1.0),
+        "meets_requested_floor": bool(total >= target_hot_total_sec),
+        "max_repeat_exhausted": False,
+    }
+
+
+def _calibrate_equal_repeat_count(
+    *,
+    label: str,
+    partner_fns: dict[str, Callable[[], Any]],
+    modules: dict[str, Any],
+    warmup: int,
+    calibration_repeat: int,
+    target_hot_total_sec: float,
+    max_repeat: int,
+    progress_every: int,
+) -> tuple[int, dict[str, Any]]:
+    if calibration_repeat <= 0:
+        raise ValueError("calibration_repeat must be positive")
+    medians: dict[str, float] = {}
+    details: dict[str, Any] = {}
+    for partner in PARTNERS:
+        _result, timing = _time_fixed_repeats(
+            label=f"{label}/{partner}/calibration",
+            partner=partner,
+            fn=partner_fns[partner],
+            modules=modules,
+            warmup=warmup,
+            repeat=calibration_repeat,
+            target_hot_total_sec=0.0,
+            progress_every=progress_every,
+        )
+        medians[partner] = float(timing["hot_median_sec"])
+        details[partner] = {
+            "calibration_repeat": calibration_repeat,
+            "hot_median_sec": timing["hot_median_sec"],
+            "hot_total_sec": timing["hot_total_sec"],
+        }
+    fastest_median = min(value for value in medians.values() if value > 0.0)
+    repeat = int(math.ceil(float(target_hot_total_sec) / fastest_median))
+    repeat = max(calibration_repeat, min(int(max_repeat), repeat))
+    return repeat, {
+        "calibration_label": label,
+        "partner_medians_sec": medians,
+        "calibrated_equal_repeat": repeat,
+        "target_hot_total_sec": float(target_hot_total_sec),
+        "max_repeat": int(max_repeat),
+        "max_repeat_exhausted": bool(repeat == int(max_repeat)),
+        "details": details,
+    }
+
+
 def _make_grouped_host_columns(row_count: int, group_count: int, modules: dict[str, Any]) -> tuple[Any, Any]:
     np = modules["numpy"]
     indices = np.arange(row_count, dtype=np.int64)
@@ -234,6 +339,29 @@ def _validate_grouped_operation(operation: str, result: dict[str, Any], expected
     }
 
 
+def _make_grouped_operation_fn(
+    *,
+    operation: str,
+    partner: str,
+    columns: dict[str, Any],
+    group_count: int,
+    block_size: int,
+) -> Callable[[], dict[str, Any]]:
+    def run_one() -> dict[str, Any]:
+        return rt.execute_grouped_reduction_typed_stream_partner_columns(
+            group_ids=columns["group_ids"],
+            values=None if operation == "segmented_count_i64" else columns["values"],
+            group_count=group_count,
+            operation=operation,
+            partner=partner,
+            stream_id=f"goal4266_{operation}_{partner}",
+            producer_primitive="caller_supplied_large_scale_partner_comparison_columns",
+            block_size=block_size,
+        )
+
+    return run_one
+
+
 def _run_grouped_suite(args: argparse.Namespace, modules: dict[str, Any]) -> dict[str, Any]:
     print(
         f"[goal4266] grouped suite build rows={args.grouped_rows} groups={args.groups}",
@@ -253,29 +381,37 @@ def _run_grouped_suite(args: argparse.Namespace, modules: dict[str, Any]) -> dic
             "group_count": int(args.groups),
             "partners": {},
         }
+        partner_fns: dict[str, Callable[[], dict[str, Any]]] = {}
         for partner in PARTNERS:
             columns = partner_columns[partner]
-
-            def run_one() -> dict[str, Any]:
-                return rt.execute_grouped_reduction_typed_stream_partner_columns(
-                    group_ids=columns["group_ids"],
-                    values=None if operation == "segmented_count_i64" else columns["values"],
-                    group_count=args.groups,
-                    operation=operation,
-                    partner=partner,
-                    stream_id=f"goal4266_{operation}_{partner}",
-                    producer_primitive="caller_supplied_large_scale_partner_comparison_columns",
-                    block_size=args.block_size,
-                )
-
-            result, timing = _time_until_floor(
+            partner_fns[partner] = _make_grouped_operation_fn(
+                operation=operation,
+                partner=partner,
+                columns=columns,
+                group_count=args.groups,
+                block_size=args.block_size,
+            )
+        equal_repeat, calibration = _calibrate_equal_repeat_count(
+            label=operation,
+            partner_fns=partner_fns,
+            modules=modules,
+            warmup=args.warmup,
+            calibration_repeat=args.calibration_repeat,
+            target_hot_total_sec=args.target_hot_total_sec,
+            max_repeat=args.max_repeat,
+            progress_every=args.progress_every,
+        )
+        op_row["equal_repeat"] = equal_repeat
+        op_row["calibration"] = calibration
+        for partner in PARTNERS:
+            result, timing = _time_fixed_repeats(
                 label=f"{operation}/{partner}",
                 partner=partner,
-                fn=run_one,
+                fn=partner_fns[partner],
                 modules=modules,
-                warmup=args.warmup,
+                warmup=0,
+                repeat=equal_repeat,
                 target_hot_total_sec=args.target_hot_total_sec,
-                max_repeat=args.max_repeat,
                 progress_every=args.progress_every,
             )
             validation = _validate_grouped_operation(operation, result, expected, group_count=args.groups, modules=modules)
@@ -351,6 +487,25 @@ def _validate_compact(result: dict[str, Any], expected_values: Any, expected_ind
     }
 
 
+def _make_compact_operation_fn(
+    *,
+    partner: str,
+    columns: dict[str, Any],
+    block_size: int,
+) -> Callable[[], dict[str, Any]]:
+    def run_one() -> dict[str, Any]:
+        return rt.execute_compact_mask_typed_stream_partner_columns(
+            values=columns["values"],
+            mask=columns["mask"],
+            partner=partner,
+            stream_id=f"goal4266_compact_mask_{partner}",
+            producer_primitive="caller_supplied_large_scale_partner_comparison_columns",
+            block_size=block_size,
+        )
+
+    return run_one
+
+
 def _run_compact_suite(args: argparse.Namespace, modules: dict[str, Any]) -> dict[str, Any]:
     np = modules["numpy"]
     print(f"[goal4266] compact-mask suite build rows={args.compact_rows}", flush=True)
@@ -370,25 +525,39 @@ def _run_compact_suite(args: argparse.Namespace, modules: dict[str, Any]) -> dic
     }
     for partner in PARTNERS:
         columns = partner_columns[partner]
+        row.setdefault("_partner_fns", {})[partner] = _make_compact_operation_fn(
+            partner=partner,
+            columns=columns,
+            block_size=args.block_size,
+        )
+    equal_repeat, calibration = _calibrate_equal_repeat_count(
+        label="compact_mask_i64",
+        partner_fns=row.pop("_partner_fns"),
+        modules=modules,
+        warmup=args.warmup,
+        calibration_repeat=args.calibration_repeat,
+        target_hot_total_sec=args.target_hot_total_sec,
+        max_repeat=args.max_repeat,
+        progress_every=args.progress_every,
+    )
+    row["equal_repeat"] = equal_repeat
+    row["calibration"] = calibration
+    for partner in PARTNERS:
+        columns = partner_columns[partner]
+        run_one = _make_compact_operation_fn(
+            partner=partner,
+            columns=columns,
+            block_size=args.block_size,
+        )
 
-        def run_one() -> dict[str, Any]:
-            return rt.execute_compact_mask_typed_stream_partner_columns(
-                values=columns["values"],
-                mask=columns["mask"],
-                partner=partner,
-                stream_id=f"goal4266_compact_mask_{partner}",
-                producer_primitive="caller_supplied_large_scale_partner_comparison_columns",
-                block_size=args.block_size,
-            )
-
-        result, timing = _time_until_floor(
+        result, timing = _time_fixed_repeats(
             label=f"compact_mask_i64/{partner}",
             partner=partner,
             fn=run_one,
             modules=modules,
-            warmup=args.warmup,
+            warmup=0,
+            repeat=equal_repeat,
             target_hot_total_sec=args.target_hot_total_sec,
-            max_repeat=args.max_repeat,
             progress_every=args.progress_every,
         )
         validation = _validate_compact(result, expected_values, expected_indices, modules)
@@ -451,6 +620,7 @@ def _dry_run(args: argparse.Namespace) -> dict[str, Any]:
         "partners": PARTNERS,
         "target_hot_total_sec": float(args.target_hot_total_sec),
         "measurement_rule": "repeat each partner/contract until aggregate hot time reaches the requested floor or max_repeat is exhausted",
+        "fair_comparison_rule": "GPU runs calibrate a single repeat count per contract and use that same repeat count for CuPy and Numba",
         "claim_boundary": _claim_boundary(),
     }
 
@@ -489,6 +659,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "target_hot_total_sec": float(args.target_hot_total_sec),
         "warmup": int(args.warmup),
         "max_repeat": int(args.max_repeat),
+        "calibration_repeat": int(args.calibration_repeat),
         "block_size": int(args.block_size),
         "grouped_suite": grouped,
         "compact_mask_suite": compact,
@@ -516,6 +687,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--compact-rows", type=int, default=8_000_000)
     parser.add_argument("--target-hot-total-sec", type=float, default=1.25)
     parser.add_argument("--warmup", type=int, default=2)
+    parser.add_argument("--calibration-repeat", type=int, default=10)
     parser.add_argument("--max-repeat", type=int, default=5000)
     parser.add_argument("--progress-every", type=int, default=10)
     parser.add_argument("--block-size", type=int, default=256)

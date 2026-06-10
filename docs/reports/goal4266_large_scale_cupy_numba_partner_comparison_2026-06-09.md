@@ -18,7 +18,7 @@ Goal4266 adds a dedicated large-scale comparison runner:
 
 `scripts/goal4266_large_scale_partner_comparison.py`
 
-The runner repeats each partner/contract until the aggregate hot time crosses a requested floor, defaulting to `1.25s`, or until `--max-repeat` is exhausted. It reports both hot aggregate time and median per invocation.
+The runner first calibrates a repeat count for each contract, then runs CuPy and Numba with that **same repeat count**. The calibrated count is chosen so the faster partner should still exceed the requested aggregate hot-time floor, defaulting to `1.25s`, unless `--max-repeat` is exhausted. It reports both comparable hot aggregate time and median per invocation.
 
 ## Contracts Tested
 
@@ -41,7 +41,7 @@ Every published row must answer:
 4. Did both partners match the same CPU oracle?
 5. Is this partner-only continuation evidence, not whole-app or RT-core evidence?
 
-The runner therefore emits `claim_boundary` flags and a `subsecond_hot_total_rows` list. If a row stays below `1s`, it is visible and should not be used as decision-grade evidence.
+The runner therefore emits `claim_boundary` flags and a `subsecond_hot_total_rows` list. If a row stays below `1s`, it is visible and should not be used as decision-grade evidence. Speedups must be read from rows where both partners used the same repeat count.
 
 ## Runtime Fix
 
@@ -107,7 +107,7 @@ python3 scripts/goal4266_large_scale_partner_comparison.py \
   --output docs/reports/goal4266_large_scale_partner_comparison/summary.json
 ```
 
-If the pod is fast enough that any contract still fails the one-second floor after 5000 repeats, increase `--max-repeat` or increase row counts and rerun. Do not publish a winner table with any non-empty `subsecond_hot_total_rows`.
+If the pod is fast enough that any contract still fails the one-second floor after 5000 repeats, increase `--max-repeat` or increase row counts and rerun. Do not publish a winner table with any non-empty `subsecond_hot_total_rows`, or with rows where `same_repeat_count_for_both_partners` is not true.
 
 ## Claim Boundary
 
