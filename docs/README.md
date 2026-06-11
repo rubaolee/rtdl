@@ -41,14 +41,15 @@ Read these in order:
 1. [Project Front Page](../README.md)
 2. [Tutorials](../tutorials/README.md)
 3. [Current Tutorial Track](../tutorials/current/README.md)
-4. [Quick Tutorial](quick_tutorial.md)
-5. [App And Example Quickstart](app_example_quickstart.md)
-6. [Application Catalog](application_catalog.md)
-7. [Feature Guide](rtdl_feature_guide.md)
-8. [Capability Boundaries](capability_boundaries.md)
-9. [Current Architecture](current_architecture.md)
-10. [Performance Model](performance_model.md)
-11. [IR And Lowering](rtdl/ir_and_lowering.md)
+4. [Source-Tree Doctor](learn/source_tree_doctor.md)
+5. [Quick Tutorial](quick_tutorial.md)
+6. [App And Example Quickstart](app_example_quickstart.md)
+7. [Application Catalog](application_catalog.md)
+8. [Feature Guide](rtdl_feature_guide.md)
+9. [Capability Boundaries](capability_boundaries.md)
+10. [Current Architecture](current_architecture.md)
+11. [Performance Model](performance_model.md)
+12. [IR And Lowering](rtdl/ir_and_lowering.md)
 
 ## Current Reference Pages
 
@@ -57,6 +58,7 @@ Read these in order:
 | App engine support | [App Engine Support Matrix](app_engine_support_matrix.md) |
 | Backend maturity | [Backend Maturity](backend_maturity.md) |
 | Feature support | [Engine Feature Support Contract](features/engine_support_matrix.md) |
+| Source-tree setup | [Source-Tree Doctor](learn/source_tree_doctor.md) |
 | Partner acceleration | [Partner Acceleration Boundaries](partner_acceleration_boundaries.md) |
 | Current support matrix | [Current Support Matrix](current_main_support_matrix.md) |
 | Runtime overhead | [Runtime Overhead Architecture](runtime_overhead_architecture.md) |

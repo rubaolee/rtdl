@@ -24,6 +24,25 @@ $env:PYTHONPATH='src;.'
 
 ## 2. Run Hello World
 
+First run the source-tree doctor:
+
+Linux/macOS:
+
+```bash
+python scripts/rtdl_source_tree_doctor.py
+```
+
+Windows PowerShell:
+
+```powershell
+py -3 scripts\rtdl_source_tree_doctor.py
+```
+
+`PASS` on the required checks means the source tree is usable. Optional
+warnings only affect native backend or partner examples.
+
+Then run hello world:
+
 Linux/macOS:
 
 ```bash

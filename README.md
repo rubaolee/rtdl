@@ -38,6 +38,7 @@ paths and visual demos.
 Bash or zsh:
 
 ```bash
+PYTHONPATH=src:. python scripts/rtdl_source_tree_doctor.py
 PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world.py
 PYTHONPATH=src:. python examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
 ```
@@ -46,6 +47,7 @@ Windows `cmd.exe`:
 
 ```bat
 set PYTHONPATH=src;.
+python scripts\rtdl_source_tree_doctor.py
 python examples\current\getting_started\rtdl_hello_world.py
 python examples\current\research_benchmarks\hausdorff_xhd\rtdl_hausdorff_distance_app.py --backend cpu_python_reference
 ```
@@ -54,6 +56,7 @@ Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
+py -3 scripts\rtdl_source_tree_doctor.py
 python examples/current/getting_started/rtdl_hello_world.py
 python examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
 ```
@@ -95,10 +98,11 @@ must not become special private engine products.
 The fastest way to learn the design is:
 
 1. Run `examples/current/getting_started/rtdl_hello_world.py`.
-2. Follow the [Current Tutorial Track](tutorials/current/README.md).
-3. Run `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py`.
-4. Pick one app from [App And Example Quickstart](docs/app_example_quickstart.md).
-5. Read [Current Architecture](docs/current_architecture.md) only after you can
+2. Run `scripts/rtdl_source_tree_doctor.py` if imports or optional backends are unclear.
+3. Follow the [Current Tutorial Track](tutorials/current/README.md).
+4. Run `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py`.
+5. Pick one app from [App And Example Quickstart](docs/app_example_quickstart.md).
+6. Read [Current Architecture](docs/current_architecture.md) only after you can
    explain `input -> traverse -> refine -> emit`.
 
 ## What RTDL Provides
@@ -175,6 +179,7 @@ Use exact benchmark artifacts before publishing performance wording.
 - [Docs Index](docs/README.md)
 - [Tutorials](tutorials/README.md)
 - [Current Tutorial Track](tutorials/current/README.md)
+- [Source-Tree Doctor](docs/learn/source_tree_doctor.md)
 - [Public Documentation Map](docs/public_documentation_map.md)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [App And Example Quickstart](docs/app_example_quickstart.md)
