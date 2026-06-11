@@ -21,6 +21,13 @@ It runs:
 - the ten-app front-door dry-run;
 - the ten-app scale-profile dry-run.
 
+Before running the hardware bundle on a pod, run the
+[v2.10 Pod Bootstrap Probe](v2_10_pod_bootstrap_probe.md):
+
+```bash
+PYTHONPATH=src:. python scripts/rtdl_pod_bootstrap_probe.py --json
+```
+
 ## Hardware Run
 
 On a configured NVIDIA pod with `RTDL_OPTIX_LIBRARY` set:
