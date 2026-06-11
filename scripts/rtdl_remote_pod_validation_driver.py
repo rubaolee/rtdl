@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import threading
 import textwrap
 from typing import Any
 
@@ -101,9 +102,54 @@ def plan(args: argparse.Namespace) -> dict[str, Any]:
         "remote_script": remote_script,
         "destructive_checkout": False,
         "uses_fresh_mktemp_workdir": True,
+        "timeout_sec": args.timeout_sec,
         "release_authorized": False,
         "public_speedup_claim_authorized": False,
         "broad_rt_core_claim_authorized": False,
+    }
+
+
+def _execute_ssh(payload: dict[str, Any], *, timeout_sec: int, json_mode: bool) -> dict[str, Any]:
+    stream = sys.stderr if json_mode else sys.stdout
+    timed_out = {"value": False}
+
+    process = subprocess.Popen(
+        payload["command"],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
+    )
+
+    def _kill_on_timeout() -> None:
+        timed_out["value"] = True
+        process.kill()
+
+    timer = threading.Timer(timeout_sec, _kill_on_timeout)
+    timer.start()
+    captured: list[str] = []
+    try:
+        assert process.stdin is not None
+        process.stdin.write(payload["remote_script"])
+        process.stdin.close()
+        assert process.stdout is not None
+        for line in process.stdout:
+            captured.append(line)
+            stream.write(line)
+            stream.flush()
+        returncode = process.wait()
+    finally:
+        timer.cancel()
+
+    stdout = "".join(captured)
+    return {
+        **payload,
+        "returncode": returncode,
+        "stdout_tail": stdout[-8000:],
+        "stderr_tail": "",
+        "timed_out": timed_out["value"],
+        "status": "pass" if returncode == 0 and not timed_out["value"] else "fail",
     }
 
 
@@ -135,30 +181,13 @@ def main(argv: list[str] | None = None) -> int:
             print(payload["remote_script"])
         return 0
 
-    print("[rtdl-remote-driver] launching ssh validation", flush=True)
-    completed = subprocess.run(
-        payload["command"],
-        input=payload["remote_script"],
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        timeout=args.timeout_sec,
-        check=False,
-    )
-    summary = {
-        **payload,
-        "returncode": completed.returncode,
-        "stdout_tail": completed.stdout[-8000:],
-        "stderr_tail": completed.stderr[-8000:],
-        "status": "pass" if completed.returncode == 0 else "fail",
-    }
+    print("[rtdl-remote-driver] launching ssh validation", file=sys.stderr if args.json else sys.stdout, flush=True)
+    summary = _execute_ssh(payload, timeout_sec=args.timeout_sec, json_mode=args.json)
     if args.json:
         print(json.dumps(summary, indent=2, sort_keys=True))
     else:
-        print(completed.stdout)
-        if completed.stderr:
-            print(completed.stderr, file=sys.stderr)
-    return completed.returncode
+        print(f"[rtdl-remote-driver] status={summary['status']} returncode={summary['returncode']}", flush=True)
+    return int(summary["returncode"])
 
 
 if __name__ == "__main__":

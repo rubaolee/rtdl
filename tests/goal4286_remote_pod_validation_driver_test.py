@@ -49,6 +49,8 @@ class Goal4286RemotePodValidationDriverTest(unittest.TestCase):
         self.assertFalse(payload["broad_rt_core_claim_authorized"])
         self.assertTrue(payload["uses_fresh_mktemp_workdir"])
         self.assertFalse(payload["destructive_checkout"])
+        self.assertIn("timeout_sec", payload)
+        self.assertIn("ServerAliveInterval=30", " ".join(payload["command"]))
 
     def test_remote_script_has_progress_and_no_destructive_checkout(self) -> None:
         payload = self._dry_run("--build-optix", "--run-hardware", "--run-partner-comparison")
@@ -73,6 +75,17 @@ class Goal4286RemotePodValidationDriverTest(unittest.TestCase):
         self.assertIn("v2.10 Remote Pod Validation Driver", bundle)
         self.assertIn("does not install CUDA", report)
         self.assertIn("does not mutate", report)
+
+    def test_execute_path_streams_output_instead_of_buffering(self) -> None:
+        source = SCRIPT.read_text(encoding="utf-8")
+
+        self.assertIn("subprocess.Popen", source)
+        self.assertIn("for line in process.stdout", source)
+        self.assertIn("stream.write(line)", source)
+        self.assertIn("return int(summary[\"returncode\"])", source)
+        self.assertNotIn("completed.stdout", source)
+        self.assertNotIn("completed.stderr", source)
+        self.assertNotIn("stdout=subprocess.PIPE,\n        stderr=subprocess.PIPE,\n        timeout=args.timeout_sec", source)
 
 
 if __name__ == "__main__":
