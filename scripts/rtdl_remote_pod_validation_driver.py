@@ -84,7 +84,21 @@ def build_remote_script(
 
 
 def build_ssh_command(target: str, *, port: str | None, identity_file: str | None) -> list[str]:
-    command = ["ssh", "-o", "ServerAliveInterval=30", "-o", "ServerAliveCountMax=4"]
+    command = [
+        "ssh",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "StrictHostKeyChecking=accept-new",
+        "-o",
+        "ConnectTimeout=20",
+        "-o",
+        "ServerAliveInterval=30",
+        "-o",
+        "ServerAliveCountMax=4",
+        "-o",
+        "LogLevel=ERROR",
+    ]
     if port:
         command.extend(["-p", port])
     if identity_file:

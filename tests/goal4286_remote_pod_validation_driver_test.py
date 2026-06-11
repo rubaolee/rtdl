@@ -50,7 +50,11 @@ class Goal4286RemotePodValidationDriverTest(unittest.TestCase):
         self.assertTrue(payload["uses_fresh_mktemp_workdir"])
         self.assertFalse(payload["destructive_checkout"])
         self.assertIn("timeout_sec", payload)
-        self.assertIn("ServerAliveInterval=30", " ".join(payload["command"]))
+        command = " ".join(payload["command"])
+        self.assertIn("BatchMode=yes", command)
+        self.assertIn("StrictHostKeyChecking=accept-new", command)
+        self.assertIn("ConnectTimeout=20", command)
+        self.assertIn("ServerAliveInterval=30", command)
 
     def test_remote_script_has_progress_and_no_destructive_checkout(self) -> None:
         payload = self._dry_run("--build-optix", "--run-hardware", "--run-partner-comparison")
