@@ -65,8 +65,16 @@ class Goal4281PodBootstrapProbeTest(unittest.TestCase):
         self.assertIn("scripts/rtdl_pod_bootstrap_probe.py", text)
         self.assertIn("--json --strict", text)
         self.assertIn("does not install packages", text)
+        self.assertIn("$HOME/vendor/optix-dev", text)
+        self.assertNotIn("/home/lestat/vendor/optix-dev", text)
         self.assertIn("scripts/rtdl_pod_bootstrap_probe.py", bundle)
         self.assertIn("Before running the hardware bundle", bundle)
+
+    def test_probe_uses_generic_home_candidate_not_local_user_path(self) -> None:
+        source = SCRIPT.read_text(encoding="utf-8")
+
+        self.assertIn('Path.home() / "vendor" / "optix-dev"', source)
+        self.assertNotIn("/home/lestat/vendor/optix-dev", source)
 
 
 if __name__ == "__main__":

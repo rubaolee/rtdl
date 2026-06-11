@@ -17,13 +17,27 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 
-OPTIX_PREFIX_CANDIDATES = (
-    Path(os.environ["OPTIX_PREFIX"]) if os.environ.get("OPTIX_PREFIX") else None,
-    Path("/root/vendor/optix-sdk"),
-    Path("/root/vendor/optix-dev"),
-    Path("/workspace/vendor/optix-dev-8.0.0"),
-    Path("/home/lestat/vendor/optix-dev"),
-)
+def _optix_prefix_candidates() -> tuple[Path, ...]:
+    raw_candidates = [
+        Path(os.environ["OPTIX_PREFIX"]) if os.environ.get("OPTIX_PREFIX") else None,
+        Path("/root/vendor/optix-sdk"),
+        Path("/root/vendor/optix-dev"),
+        Path("/workspace/vendor/optix-sdk"),
+        Path("/workspace/vendor/optix-dev"),
+        Path("/workspace/vendor/optix-dev-8.0.0"),
+        Path.home() / "vendor" / "optix-dev",
+    ]
+    candidates: list[Path] = []
+    seen: set[str] = set()
+    for candidate in raw_candidates:
+        if candidate is None:
+            continue
+        normalized = str(candidate)
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        candidates.append(candidate)
+    return tuple(candidates)
 
 
 def _run(command: list[str], *, timeout: int = 10) -> dict[str, Any]:
@@ -64,7 +78,7 @@ def _file_status(path: Path) -> dict[str, Any]:
 
 
 def _optix_prefix_status() -> dict[str, Any]:
-    candidates = [path for path in OPTIX_PREFIX_CANDIDATES if path is not None]
+    candidates = _optix_prefix_candidates()
     checked = []
     selected: str | None = None
     for prefix in candidates:

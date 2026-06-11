@@ -27,8 +27,9 @@ The probe checks:
 - `make` and `g++`/`c++`;
 - Python modules `numpy`, `cupy`, and `numba`;
 - OptiX headers under `OPTIX_PREFIX`, `/root/vendor/optix-sdk`,
-  `/root/vendor/optix-dev`, `/workspace/vendor/optix-dev-8.0.0`, or
-  `/home/lestat/vendor/optix-dev`;
+  `/root/vendor/optix-dev`, `/workspace/vendor/optix-sdk`,
+  `/workspace/vendor/optix-dev`, `/workspace/vendor/optix-dev-8.0.0`, or
+  `$HOME/vendor/optix-dev`;
 - `RTDL_OPTIX_LIBRARY`, `RTDL_OPTIX_LIB`, or a built `build/librtdl_optix.so`.
 
 The probe does not install packages and does not authorize performance claims.
