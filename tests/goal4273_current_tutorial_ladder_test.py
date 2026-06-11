@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CURRENT_TUTORIAL_DIR = ROOT / "docs" / "tutorials" / "current"
+CURRENT_TUTORIAL_DIR = ROOT / "tutorials" / "current"
 
 
 class CurrentTutorialLadderTest(unittest.TestCase):
@@ -30,19 +30,17 @@ class CurrentTutorialLadderTest(unittest.TestCase):
         self.assertEqual([], missing)
 
     def test_current_track_is_front_door(self) -> None:
-        tutorials_readme = (ROOT / "docs" / "tutorials" / "README.md").read_text(
-            encoding="utf-8"
-        )
+        tutorials_readme = (ROOT / "tutorials" / "README.md").read_text(encoding="utf-8")
         learn_readme = (ROOT / "docs" / "learn" / "README.md").read_text(
             encoding="utf-8"
         )
         self.assertIn("current/README.md", tutorials_readme)
         self.assertIn("current/01_source_tree_first_run.md", tutorials_readme)
-        self.assertIn("../tutorials/current/README.md", learn_readme)
+        self.assertIn("../../tutorials/current/README.md", learn_readme)
 
     def test_current_tutorial_links_resolve(self) -> None:
         docs = list(CURRENT_TUTORIAL_DIR.glob("*.md")) + [
-            ROOT / "docs" / "tutorials" / "README.md",
+            ROOT / "tutorials" / "README.md",
             ROOT / "docs" / "learn" / "README.md",
         ]
         broken: list[str] = []
@@ -98,9 +96,7 @@ class CurrentTutorialLadderTest(unittest.TestCase):
 
     def test_spatial_join_reference_is_in_tutorial_track(self) -> None:
         index = (CURRENT_TUTORIAL_DIR / "README.md").read_text(encoding="utf-8")
-        tutorial_index = (ROOT / "docs" / "tutorials" / "README.md").read_text(
-            encoding="utf-8"
-        )
+        tutorial_index = (ROOT / "tutorials" / "README.md").read_text(encoding="utf-8")
         reference = (
             CURRENT_TUTORIAL_DIR / "08_spatial_join_rayjoin_reference.md"
         ).read_text(encoding="utf-8")

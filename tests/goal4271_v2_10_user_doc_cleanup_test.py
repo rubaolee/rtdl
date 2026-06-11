@@ -44,7 +44,11 @@ HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
 
 def _current_doc_files() -> list[Path]:
     files: list[Path] = [REPO_ROOT / "README.md"]
-    for root in (REPO_ROOT / "docs", REPO_ROOT / "examples" / "current"):
+    for root in (
+        REPO_ROOT / "tutorials",
+        REPO_ROOT / "docs",
+        REPO_ROOT / "examples" / "current",
+    ):
         for path in root.rglob("*.md"):
             rel = path.relative_to(REPO_ROOT).as_posix()
             if rel in EXCLUDED_FILES or any(rel.startswith(prefix) for prefix in EXCLUDED_PREFIXES):
@@ -127,8 +131,9 @@ class Goal4271V210UserDocCleanupTest(unittest.TestCase):
     def test_key_entrypoints_state_current_v2_10_surface(self) -> None:
         key_files = (
             "README.md",
+            "tutorials/README.md",
+            "tutorials/current/README.md",
             "docs/README.md",
-            "docs/tutorials/README.md",
             "docs/current_architecture.md",
             "docs/partner_acceleration_boundaries.md",
             "docs/learn/partner_choice_for_custom_logic.md",

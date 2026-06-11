@@ -65,7 +65,7 @@ RTDL accelerates arbitrary Numba or CuPy code.
 ```
 
 For current recommendations, read
-[Choosing A Partner For Custom Logic](../../learn/partner_choice_for_custom_logic.md).
+[Choosing A Partner For Custom Logic](../../docs/learn/partner_choice_for_custom_logic.md).
 
 ## Next
 

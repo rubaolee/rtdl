@@ -99,5 +99,5 @@ partner fit together.
 
 Read the full benchmark app reference:
 
-- [RT-DBSCAN-Style Study](../../../examples/current/research_benchmarks/rt_dbscan/README.md)
-- [Benchmark Partner Reference Matrix](../../learn/benchmark_partner_reference_matrix.md)
+- [RT-DBSCAN-Style Study](../../examples/current/research_benchmarks/rt_dbscan/README.md)
+- [Benchmark Partner Reference Matrix](../../docs/learn/benchmark_partner_reference_matrix.md)

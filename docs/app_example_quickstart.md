@@ -36,7 +36,7 @@ What this does not show:
 | Backend selection | `examples/current/getting_started/rtdl_hello_world_backends.py` | same kernel idea through selected runners | backend speedup |
 | Primitive discovery | `examples/current/getting_started/rtdl_primitive_discovery_workflow.py` | primitive, recipe, and explain-only plan metadata | execution, partner selection, or speedup |
 | Python+partner first path | `examples/current/partners/rtdl_partner_anyhit.py --partner numpy --backend embree` | partner-owned columns staged into Embree any-hit | zero-copy or RT-core speedup |
-| Advanced OptiX partner path | [OptiX Partner Column Any-Hit](tutorials/partner_optix_column_anyhit.md) | CuPy-oriented CUDA input-plus-output evidence for a prepared OptiX any-hit primitive | final release status, zero-copy, or broad acceleration |
+| Advanced OptiX partner path | [Partner Columns With CuPy Or Numba](../tutorials/current/05_partner_columns_cupy_numba.md) | CuPy/Numba-oriented partner-column teaching path around prepared RTDL primitives | final release status, zero-copy, or broad acceleration |
 | Feature recipes | `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py` | one compact recipe per public feature | production readiness for every backend |
 | Geometry/spatial joins | `examples/current/features/spatial/rtdl_segment_polygon_hitcount.py` | segment/polygon candidate traversal and refinement | full GIS engine |
 | Spatial coverage app | `examples/current/apps/geospatial/rtdl_service_coverage_gaps.py` | fixed-radius household/clinic join | full service optimization |
@@ -77,7 +77,7 @@ the needed local dependencies.
 
 | Example type | Start here | Why |
 | --- | --- | --- |
-| Tutorial examples | [Quick Tutorial](quick_tutorial.md) | shortest path to the kernel shape |
+| Tutorial examples | [Current Tutorial Track](../tutorials/current/README.md) | ordered teaching path from first run to benchmark-style apps |
 | Primitive discovery | [Primitive Discovery Workflow](learn/primitive_discovery_workflow.md) | search the primitive catalog and inspect explain-only plans |
 | Feature recipes | `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py` | one runnable recipe per feature |
 | App catalog | [Application Catalog](application_catalog.md) | current app inventory and boundaries |

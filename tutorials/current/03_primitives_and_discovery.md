@@ -35,8 +35,8 @@ The example prints a small discovery flow instead of running a heavy benchmark.
 
 Use the current generated catalog as the reference:
 
-- [Primitive Catalog](../../rtdl_primitive_catalog.md)
-- [Primitive Discovery Workflow](../../learn/primitive_discovery_workflow.md)
+- [Primitive Catalog](../../docs/rtdl_primitive_catalog.md)
+- [Primitive Discovery Workflow](../../docs/learn/primitive_discovery_workflow.md)
 
 The catalog is organized by primitive contracts and discovery metadata. App
 names may appear as references, but the primitive itself should stay generic.

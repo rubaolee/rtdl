@@ -27,7 +27,7 @@ evidence lanes remain intentionally historical and are not rewritten:
 
 | Check | Result |
 | --- | --- |
-| Current public Markdown files scanned | 100 |
+| Current public Markdown files scanned | 89 |
 | Broken local Markdown links | 0 |
 | Stale current-surface wording hits | 0 |
 | Generated primitive catalog drift | 0 |
@@ -59,6 +59,7 @@ pre release
 | Examples front door | Current examples README still mentioned PyTorch in a blocked arbitrary-partner sentence. | Removed PyTorch from current user-facing partner wording; kept NumPy/CuPy/Numba/user-extension framing. |
 | Primitive catalog | Generated catalog inherited old zero-copy wording from source metadata. | Updated source metadata and regenerated `docs/rtdl_primitive_catalog.md`. |
 | Documentation tests | Older tests still referenced `examples/v2_0` and hard-coded an old audit count. | Updated the tests to current `examples/current` paths and dynamic current-doc link coverage. |
+| Tutorial directory shape | Current tutorials lived under `docs/tutorials/`, mixing teaching material with reference docs. | Promoted current tutorials to top-level `tutorials/`, moved old loose tutorial pages into `history/tutorial_archive/`, and updated current link gates to include the new top-level tutorial tree. |
 
 ## Validation Commands
 

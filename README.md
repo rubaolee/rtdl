@@ -95,7 +95,7 @@ must not become special private engine products.
 The fastest way to learn the design is:
 
 1. Run `examples/current/getting_started/rtdl_hello_world.py`.
-2. Read [Quick Tutorial](docs/quick_tutorial.md).
+2. Follow the [Current Tutorial Track](tutorials/current/README.md).
 3. Run `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py`.
 4. Pick one app from [App And Example Quickstart](docs/app_example_quickstart.md).
 5. Read [Current Architecture](docs/current_architecture.md) only after you can
@@ -173,9 +173,10 @@ Use exact benchmark artifacts before publishing performance wording.
 ## Read Next
 
 - [Docs Index](docs/README.md)
+- [Tutorials](tutorials/README.md)
+- [Current Tutorial Track](tutorials/current/README.md)
 - [Public Documentation Map](docs/public_documentation_map.md)
 - [Quick Tutorial](docs/quick_tutorial.md)
-- [Tutorial Ladder](docs/tutorials/README.md)
 - [App And Example Quickstart](docs/app_example_quickstart.md)
 - [Choosing A Partner For Custom Logic](docs/learn/partner_choice_for_custom_logic.md)
 - [Application Catalog](docs/application_catalog.md)
@@ -225,8 +226,9 @@ other examples first and treat the linked 4K video as the reference recording.
 | Path | Purpose |
 | --- | --- |
 | `src/rtdsl/` | Python DSL/runtime and backend adapters |
+| `tutorials/` | Ordered teaching path for current learners |
 | `examples/` | Public example apps and demos |
-| `docs/` | User docs, architecture docs, tutorials, and evidence indexes |
+| `docs/` | Reference docs, architecture docs, API/IR docs, and evidence indexes |
 | `docs/reports/` | Benchmark evidence, audits, reviews, and consensus records |
 | `tests/` | Regression tests for API, docs, release gates, and claim boundaries |
 | `scripts/` | Audits, report generators, benchmark helpers, and intake tools |

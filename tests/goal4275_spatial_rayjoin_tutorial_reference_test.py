@@ -10,7 +10,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-TUTORIAL = ROOT / "docs" / "tutorials" / "current" / "08_spatial_join_rayjoin_reference.md"
+TUTORIAL = ROOT / "tutorials" / "current" / "08_spatial_join_rayjoin_reference.md"
 WALKTHROUGH = (
     ROOT
     / "examples"

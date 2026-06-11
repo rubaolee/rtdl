@@ -5,9 +5,9 @@ Use this door if you want to understand RTDL quickly and write programs.
 ## Path
 
 1. [Project Front Page](../../README.md)
-2. [Current RTDL Tutorial Track](../tutorials/current/README.md)
+2. [Current RTDL Tutorial Track](../../tutorials/current/README.md)
 3. [Quick Tutorial](../quick_tutorial.md)
-4. [Hello World](../tutorials/hello_world.md)
+4. [Run From The Source Tree](../../tutorials/current/01_source_tree_first_run.md)
 5. [App And Example Quickstart](../app_example_quickstart.md)
 6. [Primitive Discovery Workflow](primitive_discovery_workflow.md)
 7. [Prepared Execution Pattern](prepared_execution_pattern.md)

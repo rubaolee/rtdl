@@ -17,8 +17,8 @@ research notes to write their first RTDL program.
 | If you care about... | Read first | Then read |
 | --- | --- | --- |
 | What RTDL is | [Project Front Page](../README.md) | [Learn](learn/README.md) |
-| First program | [Quick Tutorial](quick_tutorial.md) | [Tutorial Ladder](tutorials/README.md), [Hello World](tutorials/hello_world.md) |
-| Workload recipes | [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) | [Workload Cookbook](rtdl/workload_cookbook.md), [Features Index](features/README.md) |
+| First program | [Current Tutorial Track](../tutorials/current/README.md) | [Quick Tutorial](quick_tutorial.md), [Examples Index](../examples/README.md) |
+| Workload recipes | [App And Example Quickstart](app_example_quickstart.md) | [Workload Cookbook](rtdl/workload_cookbook.md), [Features Index](features/README.md) |
 | Apps and examples | [App And Example Quickstart](app_example_quickstart.md) | [Application Catalog](application_catalog.md), [Examples Index](../examples/README.md) |
 | Architecture | [Current Architecture](current_architecture.md) | [Research](research/README.md), [Capability Boundaries](capability_boundaries.md) |
 | Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [DSL Reference](rtdl/dsl_reference.md) |
@@ -32,7 +32,7 @@ research notes to write their first RTDL program.
 | Layer | Purpose | Primary pages |
 | --- | --- | --- |
 | Front page | Short project promise and current boundary | [Project Front Page](../README.md), [Docs Index](README.md) |
-| Tutorials | Teach the kernel shape and first app runs | [Quick Tutorial](quick_tutorial.md), [Tutorial Ladder](tutorials/README.md), [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) |
+| Tutorials | Teach the kernel shape and first app runs | [Tutorials](../tutorials/README.md), [Current Tutorial Track](../tutorials/current/README.md), [Quick Tutorial](quick_tutorial.md) |
 | Apps and examples | Show what each app does and where RTDL fits | [App And Example Quickstart](app_example_quickstart.md), [Application Catalog](application_catalog.md) |
 | Architecture and language | Explain runtime, IR, lowering, and app model | [Current Architecture](current_architecture.md), [ITRE App Programming Model](rtdl/itre_app_model.md), [IR And Lowering](rtdl/ir_and_lowering.md), [DSL Reference](rtdl/dsl_reference.md) |
 | Performance and boundaries | Explain how to interpret backend results | [Performance Model](performance_model.md), [Capability Boundaries](capability_boundaries.md), [Partner Acceleration Boundaries](partner_acceleration_boundaries.md) |

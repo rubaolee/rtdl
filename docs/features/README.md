@@ -31,7 +31,7 @@ Use these pages when you want to answer practical questions:
 ## Recommended Reading Order
 
 1. [RTDL Quick Tutorial](../quick_tutorial.md)
-2. [RTDL Tutorials](../tutorials/README.md)
+2. [RTDL Tutorials](../../tutorials/README.md)
 3. [RTDL Programming Guide](../rtdl/programming_guide.md)
 4. [RTDL DSL Reference](../rtdl/dsl_reference.md)
 5. The feature home for the workload you plan to run.

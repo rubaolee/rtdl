@@ -59,8 +59,8 @@ treat that route as unavailable until your environment proves it.
 
 ## Where To Go Next
 
-- [Tutorial Reference Pages](../README.md)
-- [App And Example Quickstart](../../app_example_quickstart.md)
-- [Primitive Catalog](../../rtdl_primitive_catalog.md)
-- [Partner Choice For Custom Logic](../../learn/partner_choice_for_custom_logic.md)
-- [Research Benchmark Apps](../../../examples/current/research_benchmarks/README.md)
+- [Tutorials Index](../README.md)
+- [App And Example Quickstart](../../docs/app_example_quickstart.md)
+- [Primitive Catalog](../../docs/rtdl_primitive_catalog.md)
+- [Partner Choice For Custom Logic](../../docs/learn/partner_choice_for_custom_logic.md)
+- [Research Benchmark Apps](../../examples/current/research_benchmarks/README.md)

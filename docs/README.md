@@ -8,6 +8,10 @@ This directory has three doors:
 | [Research](research/README.md) | Internal researchers and advanced developers | Architecture notes, backend research, RayJoin/Embree context, future ideas, and design constraints. |
 | [Audit](audit/README.md) | Release reviewers and auditors | Process docs, runbooks, release reports, evidence reports, reviews, and archived goal logs. |
 
+Tutorials live at the repository top level in [Tutorials](../tutorials/README.md).
+Use docs when you need reference material; use tutorials when you want the
+ordered teaching path.
+
 If you are new, start in **Learn**. If you are evaluating design or extending
 the system, start in **Research**. If you are checking evidence, consensus, or
 project history, start in **Audit**.
@@ -35,15 +39,16 @@ generic.
 Read these in order:
 
 1. [Project Front Page](../README.md)
-2. [Quick Tutorial](quick_tutorial.md)
-3. [Tutorial Ladder](tutorials/README.md)
-4. [App And Example Quickstart](app_example_quickstart.md)
-5. [Application Catalog](application_catalog.md)
-6. [Feature Guide](rtdl_feature_guide.md)
-7. [Capability Boundaries](capability_boundaries.md)
-8. [Current Architecture](current_architecture.md)
-9. [Performance Model](performance_model.md)
-10. [IR And Lowering](rtdl/ir_and_lowering.md)
+2. [Tutorials](../tutorials/README.md)
+3. [Current Tutorial Track](../tutorials/current/README.md)
+4. [Quick Tutorial](quick_tutorial.md)
+5. [App And Example Quickstart](app_example_quickstart.md)
+6. [Application Catalog](application_catalog.md)
+7. [Feature Guide](rtdl_feature_guide.md)
+8. [Capability Boundaries](capability_boundaries.md)
+9. [Current Architecture](current_architecture.md)
+10. [Performance Model](performance_model.md)
+11. [IR And Lowering](rtdl/ir_and_lowering.md)
 
 ## Current Reference Pages
 
@@ -65,7 +70,6 @@ Read these in order:
 | Directory | What belongs there |
 | --- | --- |
 | `learn/` | Human learning route and curated current-doc links. |
-| `tutorials/` | Current v2.10 tutorials and runnable teaching docs. |
 | `features/` | Current feature homes and engine support contract. |
 | `rtdl/` | DSL, IR, programming model, and workload reference docs. |
 | `research/` | Advanced design, RayJoin/Embree context, technical app notes, proposals, and future research notes. |

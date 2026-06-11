@@ -68,266 +68,70 @@
       "line": 73,
       "path": "docs/learn/prepared_execution_pattern.md",
       "phrase": "broad RT-core speedup",
-      "snippet": "s, warmup, steady streams, planning, continuation execution, and validation must be shown as different phases.  ## Boundaries  Prepared execution does not authorize:  - release; - broad RT-core speedup wording; - whole-app speedup wording; - true zero-copy wording; - paper reproduction wording; - hidden partner selection; - app-specific native engine behavior.  The native engine"
+      "snippet": "s, warmup, steady streams, planning, continuation execution, and validation must be shown as different phases.  ## Boundaries  Prepared execution does not authorize:  - release; - broad RT-core speedup wording; - whole-app speedup wording; - general zero-copy or device-residency wording; - paper reproduction wording; - hidden partner selection; - app-specific native engine behav"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 74,
       "path": "docs/learn/prepared_execution_pattern.md",
       "phrase": "whole-app speedup",
-      "snippet": "ng, continuation execution, and validation must be shown as different phases.  ## Boundaries  Prepared execution does not authorize:  - release; - broad RT-core speedup wording; - whole-app speedup wording; - true zero-copy wording; - paper reproduction wording; - hidden partner selection; - app-specific native engine behavior.  The native engine remains generic. Application"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 75,
-      "path": "docs/learn/prepared_execution_pattern.md",
-      "phrase": "true zero-copy",
-      "snippet": "nd validation must be shown as different phases.  ## Boundaries  Prepared execution does not authorize:  - release; - broad RT-core speedup wording; - whole-app speedup wording; - true zero-copy wording; - paper reproduction wording; - hidden partner selection; - app-specific native engine behavior.  The native engine remains generic. Application interpretation stays in P"
+      "snippet": "ng, continuation execution, and validation must be shown as different phases.  ## Boundaries  Prepared execution does not authorize:  - release; - broad RT-core speedup wording; - whole-app speedup wording; - general zero-copy or device-residency wording; - paper reproduction wording; - hidden partner selection; - app-specific native engine behavior.  The native engine remai"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 76,
       "path": "docs/learn/prepared_execution_pattern.md",
       "phrase": "paper reproduction",
-      "snippet": "n as different phases.  ## Boundaries  Prepared execution does not authorize:  - release; - broad RT-core speedup wording; - whole-app speedup wording; - true zero-copy wording; - paper reproduction wording; - hidden partner selection; - app-specific native engine behavior.  The native engine remains generic. Application interpretation stays in Python examples or user code, a"
+      "snippet": "## Boundaries  Prepared execution does not authorize:  - release; - broad RT-core speedup wording; - whole-app speedup wording; - general zero-copy or device-residency wording; - paper reproduction wording; - hidden partner selection; - app-specific native engine behavior.  The native engine remains generic. Application interpretation stays in Python examples or user code, a"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 14,
       "path": "docs/learn/prepared_session_reuse.md",
       "phrase": "speedup",
-      "snippet": "ibly ```  This is caller-owned reuse. RTDL does not choose a backend, does not choose a partner, does not create a hidden global cache, and does not turn the pattern into a public speedup or true-zero-copy claim.  ## When To Use It  Use prepared-session reuse when the app has a stable scene, index, payload, or prepared primitive handle and then runs many related qu"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 14,
-      "path": "docs/learn/prepared_session_reuse.md",
-      "phrase": "true-zero-copy",
-      "snippet": "his is caller-owned reuse. RTDL does not choose a backend, does not choose a partner, does not create a hidden global cache, and does not turn the pattern into a public speedup or true-zero-copy claim.  ## When To Use It  Use prepared-session reuse when the app has a stable scene, index, payload, or prepared primitive handle and then runs many related queries over it.  Cu"
+      "snippet": "ibly ```  This is caller-owned reuse. RTDL does not choose a backend, does not choose a partner, does not create a hidden global cache, and does not turn the pattern into a public speedup or general zero-copy/device-residency claim.  ## When To Use It  Use prepared-session reuse when the app has a stable scene, index, payload, or prepared primitive handle and then"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 137,
       "path": "docs/learn/prepared_session_reuse.md",
       "phrase": "speedup",
-      "snippet": "reviewed release evidence authorizes that wording. |  ## Claim Boundary  Prepared-session reuse is a useful programming pattern. It does not authorize:  - release action; - public speedup wording; - broad RT-core speedup wording; - true-zero-copy wording; - automatic partner or backend selection; - app-specific native-engine logic.  The native engine stays app-agno"
+      "snippet": "reviewed release evidence authorizes that wording. |  ## Claim Boundary  Prepared-session reuse is a useful programming pattern. It does not authorize:  - release action; - public speedup wording; - broad RT-core speedup wording; - general zero-copy or device-residency wording; - automatic partner or backend selection; - app-specific native-engine logic.  The nativ"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 138,
       "path": "docs/learn/prepared_session_reuse.md",
       "phrase": "broad RT-core speedup",
-      "snippet": "idence authorizes that wording. |  ## Claim Boundary  Prepared-session reuse is a useful programming pattern. It does not authorize:  - release action; - public speedup wording; - broad RT-core speedup wording; - true-zero-copy wording; - automatic partner or backend selection; - app-specific native-engine logic.  The native engine stays app-agnostic. Prepared sessions describe"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 139,
-      "path": "docs/learn/prepared_session_reuse.md",
-      "phrase": "true-zero-copy",
-      "snippet": "## Claim Boundary  Prepared-session reuse is a useful programming pattern. It does not authorize:  - release action; - public speedup wording; - broad RT-core speedup wording; - true-zero-copy wording; - automatic partner or backend selection; - app-specific native-engine logic.  The native engine stays app-agnostic. Prepared sessions describe reuse of generic primitive"
+      "snippet": "idence authorizes that wording. |  ## Claim Boundary  Prepared-session reuse is a useful programming pattern. It does not authorize:  - release action; - public speedup wording; - broad RT-core speedup wording; - general zero-copy or device-residency wording; - automatic partner or backend selection; - app-specific native-engine logic.  The native engine stays app-agnostic. Prep"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 123,
       "path": "docs/learn/primitive_discovery_workflow.md",
       "phrase": "package-install",
-      "snippet": "r app explicitly chooses a continuation outside the primitive. Never rely on hidden partner dispatch. ```  ## Boundaries  This workflow does not authorize:  - release readiness; - package-install promises; - public speedup wording; - broad RT-core speedup wording; - true zero-copy wording; - automatic partner selection; - paper-system reproduction claims; - app-specific na"
+      "snippet": "r app explicitly chooses a continuation outside the primitive. Never rely on hidden partner dispatch. ```  ## Boundaries  This workflow does not authorize:  - release readiness; - package-install promises; - public speedup wording; - broad RT-core speedup wording; - general zero-copy or device-residency wording; - automatic partner selection; - paper-system reproduction cl"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 124,
       "path": "docs/learn/primitive_discovery_workflow.md",
       "phrase": "speedup",
-      "snippet": "tion outside the primitive. Never rely on hidden partner dispatch. ```  ## Boundaries  This workflow does not authorize:  - release readiness; - package-install promises; - public speedup wording; - broad RT-core speedup wording; - true zero-copy wording; - automatic partner selection; - paper-system reproduction claims; - app-specific native engine logic.  For the"
+      "snippet": "tion outside the primitive. Never rely on hidden partner dispatch. ```  ## Boundaries  This workflow does not authorize:  - release readiness; - package-install promises; - public speedup wording; - broad RT-core speedup wording; - general zero-copy or device-residency wording; - automatic partner selection; - paper-system reproduction claims; - app-specific native"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 125,
       "path": "docs/learn/primitive_discovery_workflow.md",
       "phrase": "broad RT-core speedup",
-      "snippet": "imitive. Never rely on hidden partner dispatch. ```  ## Boundaries  This workflow does not authorize:  - release readiness; - package-install promises; - public speedup wording; - broad RT-core speedup wording; - true zero-copy wording; - automatic partner selection; - paper-system reproduction claims; - app-specific native engine logic.  For the full generated primitive index,"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 126,
-      "path": "docs/learn/primitive_discovery_workflow.md",
-      "phrase": "true zero-copy",
-      "snippet": "tner dispatch. ```  ## Boundaries  This workflow does not authorize:  - release readiness; - package-install promises; - public speedup wording; - broad RT-core speedup wording; - true zero-copy wording; - automatic partner selection; - paper-system reproduction claims; - app-specific native engine logic.  For the full generated primitive index, read [RTDL Primitive Catal"
+      "snippet": "imitive. Never rely on hidden partner dispatch. ```  ## Boundaries  This workflow does not authorize:  - release readiness; - package-install promises; - public speedup wording; - broad RT-core speedup wording; - general zero-copy or device-residency wording; - automatic partner selection; - paper-system reproduction claims; - app-specific native engine logic.  For the full gene"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 127,
       "path": "docs/learn/primitive_discovery_workflow.md",
       "phrase": "automatic partner selection",
-      "snippet": "ndaries  This workflow does not authorize:  - release readiness; - package-install promises; - public speedup wording; - broad RT-core speedup wording; - true zero-copy wording; - automatic partner selection; - paper-system reproduction claims; - app-specific native engine logic.  For the full generated primitive index, read [RTDL Primitive Catalog And Promotion Rules](../rtdl_primiti"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 181,
-      "path": "docs/tutorials/db_workloads.md",
-      "phrase": "speedup",
-      "snippet": "es - the prepared RT dataset APIs support columnar-payload ingestion on Embree,   OptiX, and Vulkan where configured - this is not a SQL engine, DBMS, optimizer, or broad database speedup claim"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 119,
-      "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "phrase": "speedup",
-      "snippet": "op=..., value=...)`. - Supported operations: `any`, `count`, `sum`, `min`, and `max`. - Boundary: this is a Python helper over emitted rows, not a native RT backend   reduction or speedup claim. - Run:  ```bash PYTHONPATH=src:. python examples/current/features/ray_queries/rtdl_reduce_rows.py ```  - Learn from:   - [Reduce Rows feature home](../features/reduce_rows/"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 139,
-      "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "phrase": "speedup",
-      "snippet": "on engine. - Performance wording must come from the current reviewed evidence packet. This   app teaches any-hit rows plus `reduce_rows` without making a broad native   early-exit speedup claim. - Run:  ```bash PYTHONPATH=src:. python examples/current/apps/robotics/rtdl_robot_collision_screening_app.py --backend cpu_python_reference ```  - Learn from:   - `examples"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 272,
-      "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "phrase": "speedup",
-      "snippet": "ed distance selection plus witness IDs. - Boundary: exact distance remains an app pattern over `knn_rows`; the OptiX   threshold mode is a decision sub-path, not an exact-distance speedup claim. - Performance wording must come from the current reviewed evidence packet. This app   teaches exact-distance composition and the threshold decision sub-path without   claim"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 206,
-      "path": "docs/tutorials/graph_workloads.md",
-      "phrase": "speedup",
-      "snippet": "lus native graph summary continuations where `--output-mode summary` is selected; it is not a shortest-path, graph database, distributed graph analytics, or whole-app graph-system speedup claim.  ---  ## Next  - [Release-Facing Examples](../release_facing_examples.md) - [Application Catalog](../application_catalog.md) - [Partner Acceleration Boundaries](../partner_"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 220,
-      "path": "docs/tutorials/nearest_neighbor_workloads.md",
-      "phrase": "whole-app speedup",
-      "snippet": "dorff and ANN ranking paths are not broad NVIDIA RT-core claims. Prepared decision modes can use bounded fixed-radius traversal; they do not automatically authorize exact ranking, whole-app speedup, or arbitrary ANN index claims. Claim-sensitive scripts using `--require-rt-core` keep that boundary explicit.  ---  ## Backend progression  The public examples are easiest to lea"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 110,
-      "path": "docs/tutorials/partner_anyhit.md",
-      "phrase": "public speedup claim",
-      "snippet": "ptiX is selectable:  ```bash PYTHONPATH=src:. python examples/current/partners/rtdl_partner_anyhit.py --partner numpy --backend optix ```  But selecting `backend=\"optix\"` is not a public speedup claim. RT-core claims require separate hardware evidence on a Turing-or-newer NVIDIA GPU and reviewed phase timing.  ## Boundaries  This bridge is deliberately conservative:  - partner"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 124,
-      "path": "docs/tutorials/partner_anyhit.md",
-      "phrase": "speedup",
-      "snippet": "st staging; - `true_zero_copy_authorized` remains `false`; - `rt_core_speedup_claim_authorized` remains `false`; - timing fields show phase shape, not benchmark evidence; - public speedup claims still require exact evidence and release-boundary review.  That boundary is what lets RTDL support partner frameworks without turning the engine into a CuPy-, Numba-, or ap"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 4,
-      "path": "docs/tutorials/partner_optix_column_anyhit.md",
-      "phrase": "speedup",
-      "snippet": "# OptiX Partner Column Any-Hit  This tutorial explains the current v2.10 OptiX partner-column idea. It is not a broad GPU-speedup promise.  Read [Python Partner Any-Hit](partner_anyhit.md) first if you have not already seen the partner descriptor shape.  ## What This Path Demonstrates  The supported shape is"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 46,
-      "path": "docs/tutorials/partner_optix_column_anyhit.md",
-      "phrase": "broad RT-core speedup",
-      "snippet": "for the supported path; - continuation with normal CuPy code after RTDL returns.  Not allowed:  - arbitrary CuPy or Numba acceleration; - a general zero-copy product guarantee; - broad RT-core speedup or acceleration; - package-install support; - claims that every app phase is faster.  For the current partner-choice rule, read [Choosing A Partner For Custom Logic](../learn/part"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 47,
-      "path": "docs/tutorials/partner_optix_column_anyhit.md",
-      "phrase": "package-install",
-      "snippet": "ith normal CuPy code after RTDL returns.  Not allowed:  - arbitrary CuPy or Numba acceleration; - a general zero-copy product guarantee; - broad RT-core speedup or acceleration; - package-install support; - claims that every app phase is faster.  For the current partner-choice rule, read [Choosing A Partner For Custom Logic](../learn/partner_choice_for_custom_logic.md).  #"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 78,
-      "path": "docs/tutorials/README.md",
-      "phrase": "package-install",
-      "snippet": "partner-choice guidance. - OptiX evidence exists for specific measured contracts. - Python or partner frameworks own app continuation outside the RTDL primitive.  Not allowed:  - package-install promises; - broad RT-core speedup claims; - arbitrary CuPy/Numba acceleration claims; - arbitrary polygon overlay, graph analytics, or database acceleration claims; - universal sp"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 79,
-      "path": "docs/tutorials/README.md",
-      "phrase": "broad RT-core speedup",
-      "snippet": "OptiX evidence exists for specific measured contracts. - Python or partner frameworks own app continuation outside the RTDL primitive.  Not allowed:  - package-install promises; - broad RT-core speedup claims; - arbitrary CuPy/Numba acceleration claims; - arbitrary polygon overlay, graph analytics, or database acceleration claims; - universal speedup wording beyond reviewed evid"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 82,
-      "path": "docs/tutorials/README.md",
-      "phrase": "speedup",
-      "snippet": "ll promises; - broad RT-core speedup claims; - arbitrary CuPy/Numba acceleration claims; - arbitrary polygon overlay, graph analytics, or database acceleration claims; - universal speedup wording beyond reviewed evidence.  For the exact boundary, read [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md).  ## More Navigation  - [Docs Index](../RE"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 3,
-      "path": "docs/tutorials/rendering_and_visual_demos.md",
-      "phrase": "accelerated",
-      "snippet": "# Tutorial: RTDL Plus Python Rendering  RTDL is not a rendering engine. But it can act as the accelerated compute/query core inside one:  This page is part of the current v2.10-facing tutorial path. It shows the same Python-app plus RTDL-kernel split in visual programs.  - RTDL handle"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 88,
-      "path": "docs/tutorials/rendering_and_visual_demos.md",
-      "phrase": "accelerated",
-      "snippet": "- hit-span reconstruction - surface normal estimation - brightness calculation - ASCII character lookup - frame assembly - file writing  That is the honest boundary: RTDL is the accelerated core; Python is the application layer.  Source file:  - [examples/visual_demo/rtdl_lit_ball_demo.py](../../examples/visual_demo/rtdl_lit_ball_demo.py)  ---  ## Main 3D demo: hidde"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 165,
-      "path": "docs/tutorials/rendering_and_visual_demos.md",
-      "phrase": "accelerated",
-      "snippet": "ckaging  RTDL kernel   -> traversal   -> predicate/refine   -> emitted rows ```  RTDL is not a renderer. The demos still belong in the repo because they show RTDL acting as a real accelerated compute/query core inside larger Python applications.  ---  ## Next  - [Segment And Polygon Workloads](segment_polygon_workloads.md) - [Nearest-Neighbor Workloads](nearest_neighbo"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 171,
-      "path": "docs/tutorials/segment_polygon_workloads.md",
-      "phrase": "speedup",
-      "snippet": "nt calls on one RTX A5000 stream when the left/query segments were prepacked. Keep that claim narrow: it is a measured segment-pair pattern, not a broad segment/polygon or RayJoin speedup claim.  ---  ## OptiX mode boundary  The segment/polygon family exposes OptiX for compatibility work, but the public surface is still split into three distinct states:  | OptiX re"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 199,
-      "path": "docs/tutorials/segment_polygon_workloads.md",
-      "phrase": "speedup",
-      "snippet": "0 ```  Important boundary:  - these commands are useful for local compatibility and future promotion work - they are compatibility/native-mode examples, not broad NVIDIA RT-core   speedup claims - road-hazard has a bounded claim-review path with   `--output-mode summary --optix-mode native --require-rt-core`; that path is   limited to prepared compact summary trave"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 203,
-      "path": "docs/tutorials/segment_polygon_workloads.md",
-      "phrase": "speedup",
-      "snippet": "view path with   `--output-mode summary --optix-mode native --require-rt-core`; that path is   limited to prepared compact summary traversal, not full GIS/routing or   default-app speedup - segment/polygon hit-count has a bounded prepared compact-summary claim path,   not a broad default-app claim - `segment_polygon_anyhit_rows --output-mode rows --optix-mode nativ"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 246,
-      "path": "docs/tutorials/segment_polygon_workloads.md",
-      "phrase": "speedup",
-      "snippet": "ary plumbing.  The OptiX path is bounded to RT-assisted candidate discovery plus documented exact continuation. It is not a monolithic GPU polygon-area kernel or whole-app polygon speedup claim. For claim-sensitive runs:  ```bash PYTHONPATH=src:. python examples/current/features/spatial/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core ```  T"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 300,
-      "path": "docs/tutorials/segment_polygon_workloads.md",
-      "phrase": "speedup",
-      "snippet": "collection plus backend-neutral set-area summary plumbing before computing the Jaccard ratio.  The OptiX path is correctness-ready at chunk `1024`, but no positive public Jaccard speedup wording is authorized because current evidence still has OptiX slower than Embree. This is not a monolithic GPU Jaccard or whole-app speedup claim. For claim-sensitive runs:  ```b"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 301,
-      "path": "docs/tutorials/segment_polygon_workloads.md",
-      "phrase": "whole-app speedup",
-      "snippet": "at chunk `1024`, but no positive public Jaccard speedup wording is authorized because current evidence still has OptiX slower than Embree. This is not a monolithic GPU Jaccard or whole-app speedup claim. For claim-sensitive runs:  ```bash PYTHONPATH=src:. python examples/current/features/spatial/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core ```  ---  ## Reco"
-    },
-    {
-      "classification": "accepted_boundary_or_negative_context",
-      "line": 133,
-      "path": "docs/tutorials/v2_app_building.md",
-      "phrase": "speedup",
-      "snippet": "any-hit rows; - count rows; - closest-hit rows; - fixed-radius rows; - streaming witness columns; - grouped numeric summaries; - columnar-payload scan summaries.  Do not publish a speedup claim from a tutorial run. Use reviewed benchmark artifacts and the exact claim boundary instead.  ## Read Next  - [Python Partner Any-Hit](partner_anyhit.md) - [OptiX Partner Col"
+      "snippet": "does not authorize:  - release readiness; - package-install promises; - public speedup wording; - broad RT-core speedup wording; - general zero-copy or device-residency wording; - automatic partner selection; - paper-system reproduction claims; - app-specific native engine logic.  For the full generated primitive index, read [RTDL Primitive Catalog And Promotion Rules](../rtdl_primiti"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
@@ -544,46 +348,67 @@
       "line": 52,
       "path": "examples/current/research_benchmarks/rtnn/README.md",
       "phrase": "speedup",
-      "snippet": "` twice against a caller-owned `ExplicitPreparedSessionCache` and returns the visible `miss`/`put`/`hit` event log. It does not run the OptiX benchmark path and does not authorize speedup, true-zero-copy, or automatic partner/backend-selection claims.  The important boundary is that the RTDL-vs-CuPy rows are same-contract; the official RTNN rows are diagnostic unle"
+      "snippet": "` twice against a caller-owned `ExplicitPreparedSessionCache` and returns the visible `miss`/`put`/`hit` event log. It does not run the OptiX benchmark path and does not authorize speedup, general zero-copy/device-residency, or automatic partner/backend-selection claims.  The important boundary is that the RTDL-vs-CuPy rows are same-contract; the official RTNN rows"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 53,
-      "path": "examples/current/research_benchmarks/rtnn/README.md",
-      "phrase": "true-zero-copy",
-      "snippet": "gainst a caller-owned `ExplicitPreparedSessionCache` and returns the visible `miss`/`put`/`hit` event log. It does not run the OptiX benchmark path and does not authorize speedup, true-zero-copy, or automatic partner/backend-selection claims.  The important boundary is that the RTDL-vs-CuPy rows are same-contract; the official RTNN rows are diagnostic unless a future goal"
+      "line": 208,
+      "path": "examples/current/research_benchmarks/spatial_rayjoin/CODE_WALKTHROUGH.md",
+      "phrase": "speedup",
+      "snippet": "he prepared batch executor is the current RTDL/OptiX direction, with partner guidance recording about `0.024ms/request` for batch 100. |  Those numbers are not a universal RayJoin speedup claim. They say which contract currently favors which route.  The user-facing rule is:  ```text Do not publish \"RTDL beats RayJoin\" from this app. Publish: workload, dataset, rout"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 122,
+      "line": 214,
+      "path": "examples/current/research_benchmarks/spatial_rayjoin/CODE_WALKTHROUGH.md",
+      "phrase": "RTDL beats RayJoin",
+      "snippet": "for batch 100. |  Those numbers are not a universal RayJoin speedup claim. They say which contract currently favors which route.  The user-facing rule is:  ```text Do not publish \"RTDL beats RayJoin\" from this app. Publish: workload, dataset, route, partner, hardware, contract, correctness, and timing. ```  ## What Is New For RayJoin Authors  At the language level:  - RTDL tu"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 245,
+      "path": "examples/current/research_benchmarks/spatial_rayjoin/CODE_WALKTHROUGH.md",
+      "phrase": "paper reproduction claim",
+      "snippet": "e CUDA-core partner code can still win simple PIP count rows. - The benchmark is therefore useful as a route-selection study and generic   primitive design pressure, not as a full paper reproduction claim.  ## Current Limits  - Full RayJoin paper reproduction is not claimed. - Full polygon overlay construction is not the promoted contract here. - PIP route choice remains dataset an"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 249,
+      "path": "examples/current/research_benchmarks/spatial_rayjoin/CODE_WALKTHROUGH.md",
+      "phrase": "paper reproduction",
+      "snippet": "- The benchmark is therefore useful as a route-selection study and generic   primitive design pressure, not as a full paper reproduction claim.  ## Current Limits  - Full RayJoin paper reproduction is not claimed. - Full polygon overlay construction is not the promoted contract here. - PIP route choice remains dataset and result-contract dependent. - Native code remains app-"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 123,
       "path": "examples/current/research_benchmarks/spatial_rayjoin/README.md",
       "phrase": "paper reproduction",
       "snippet": "CDB files.  The route is still app-layer Python+CuPy policy over generic RTDL primitives. It does not make the native engine RayJoin-specific and does not authorize a full RayJoin paper reproduction or public speedup claim by itself.  For repeated PIP calls against the same point and shape records, use the prepared Python handle so the OptiX scene and CuPy lookup arrays are p"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 122,
+      "line": 123,
       "path": "examples/current/research_benchmarks/spatial_rayjoin/README.md",
       "phrase": "public speedup claim",
       "snippet": "is still app-layer Python+CuPy policy over generic RTDL primitives. It does not make the native engine RayJoin-specific and does not authorize a full RayJoin paper reproduction or public speedup claim by itself.  For repeated PIP calls against the same point and shape records, use the prepared Python handle so the OptiX scene and CuPy lookup arrays are prepared once:  ```python"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 156,
+      "line": 157,
       "path": "examples/current/research_benchmarks/spatial_rayjoin/README.md",
       "phrase": "public speedup claim",
       "snippet": "tay CUDA-resident; a host row-count scalar is exposed so Python can know the valid prefix length. This route is a reference implementation path, not a full RayJoin reproduction or public speedup claim. In short: the route combines generic compact grouped-count device columns with Python-owned RayJoin interpretation.  For app-owned side-aware topology policy, the current tree al"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 254,
+      "line": 255,
       "path": "examples/current/research_benchmarks/spatial_rayjoin/README.md",
       "phrase": "faster",
       "snippet": "te prepared_optix --pip-count-mode exact`). Goal3596 shows it is the best current RTDL-only PIP count route on the bounded public CDB slice, although the CuPy dense count is still faster there. Use `prepared_optix_cupy_refined_pip` when the app needs the richer candidate-plus prepared-refiner workflow, not as the default scalar count path.  This is an explicit use"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 323,
+      "line": 324,
       "path": "examples/current/research_benchmarks/spatial_rayjoin/README.md",
       "phrase": "speedup",
       "snippet": "strate that current RTDL can express useful   RayJoin-style spatial workloads over generic engine primitives. - It should not be used to claim full RayJoin reproduction, universal speedup,   or paper-scale superiority without a separate reviewed evidence report. - If a result is intended for a paper-facing comparison, record the commit,   command, dataset paths, ba"
@@ -621,11 +446,11 @@
       "line": 99,
       "path": "examples/README.md",
       "phrase": "speedup",
-      "snippet": "`examples/__init__.py`.  New documentation should use the explicit `examples/current/...` paths.  ## Claim Boundaries  - `--backend optix` is not by itself a broad NVIDIA RT-core speedup claim. - Partner examples show user-owned continuation around RTDL outputs; RTDL does   not claim to accelerate arbitrary NumPy, PyTorch, CuPy, or Numba programs. - `legacy_or_bac"
+      "snippet": "`examples/__init__.py`.  New documentation should use the explicit `examples/current/...` paths.  ## Claim Boundaries  - `--backend optix` is not by itself a broad NVIDIA RT-core speedup claim. - Partner examples show user-owned continuation around RTDL outputs; RTDL does   not claim to accelerate arbitrary NumPy, CuPy, Numba, or user-owned extension   programs. -"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 119,
+      "line": 121,
       "path": "examples/README.md",
       "phrase": "speedup",
       "snippet": "Support Matrix](../docs/app_engine_support_matrix.md) - [Performance Model](../docs/performance_model.md)  Selecting `--backend optix` does not automatically make a public RT-core speedup claim; use the support matrix and reviewed evidence before publishing performance wording."
@@ -685,9 +510,37 @@
       "path": "README.md",
       "phrase": "faster",
       "snippet": "eout_2026-06-07.md).  ## Performance Boundary  `--backend optix` means the OptiX backend is selected. It is not by itself a claim that every app, every phase, or every workload is faster on GPU.  Current measured evidence supports narrow statements: selected long RT-heavy workloads can show large OptiX speedups over Embree on the same app-level command surface. Sh"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 53,
+      "path": "tutorials/current/README.md",
+      "phrase": "package-install",
+      "snippet": "only for OptiX routes; - a CUDA-capable machine only when running GPU partner or OptiX examples.  ## Claim Boundary  These tutorials are current source-tree guidance. They are not package-install promises, universal speedup claims, or automatic partner-selection rules.  Use the exact command, backend, partner, dataset, and hardware when reporting performance. If a tutorial"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 54,
+      "path": "tutorials/current/README.md",
+      "phrase": "speedup",
+      "snippet": "ble machine only when running GPU partner or OptiX examples.  ## Claim Boundary  These tutorials are current source-tree guidance. They are not package-install promises, universal speedup claims, or automatic partner-selection rules.  Use the exact command, backend, partner, dataset, and hardware when reporting performance. If a tutorial says a route is optional, C"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 43,
+      "path": "tutorials/README.md",
+      "phrase": "package-install",
+      "snippet": "eaches the v2.10 source-tree programming model: Python+RTDL, explicit CuPy/Numba partner choices where needed, and generic app-agnostic engine primitives.  These tutorials are not package-install promises, automatic partner-selection promises, universal speedup claims, or paper-reproduction claims.  ## Related Doors  - [Project Front Page](../README.md) - [Docs Index](../d"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 44,
+      "path": "tutorials/README.md",
+      "phrase": "speedup",
+      "snippet": "/Numba partner choices where needed, and generic app-agnostic engine primitives.  These tutorials are not package-install promises, automatic partner-selection promises, universal speedup claims, or paper-reproduction claims.  ## Related Doors  - [Project Front Page](../README.md) - [Docs Index](../docs/README.md) - [Examples Index](../examples/README.md) - [App An"
     }
   ],
-  "accepted_boundary_or_negative_count": 98,
+  "accepted_boundary_or_negative_count": 77,
   "accepted_scoped_evidence_context": [
     {
       "classification": "accepted_scoped_evidence_context",
@@ -750,49 +603,7 @@
       "line": 47,
       "path": "docs/learn/prepared_execution_pattern.md",
       "phrase": "speedup",
-      "snippet": "=\"optix\", )  print(report.to_dict()[\"summary_sec\"]) ```  The report keeps the source artifact's claim flags and refuses to validate if a source artifact authorizes release, public speedup wording, true zero-copy wording, hidden partner selection, or app-specific native-engine behavior.  ## Current Prepared Example  For the public-CDB overlay-area route, the current"
-    },
-    {
-      "classification": "accepted_scoped_evidence_context",
-      "line": 47,
-      "path": "docs/learn/prepared_execution_pattern.md",
-      "phrase": "true zero-copy",
-      "snippet": "t(report.to_dict()[\"summary_sec\"]) ```  The report keeps the source artifact's claim flags and refuses to validate if a source artifact authorizes release, public speedup wording, true zero-copy wording, hidden partner selection, or app-specific native-engine behavior.  ## Current Prepared Example  For the public-CDB overlay-area route, the current evidence separates:  |"
-    },
-    {
-      "classification": "accepted_scoped_evidence_context",
-      "line": 165,
-      "path": "docs/tutorials/graph_workloads.md",
-      "phrase": "accelerated",
-      "snippet": "atures/graph/rtdl_graph_bfs.py --backend cpu PYTHONPATH=src:. python examples/current/features/graph/rtdl_graph_triangle_count.py --backend cpu ```  Then use your machine-specific accelerated backends:  ```bash PYTHONPATH=src:. python examples/current/features/graph/rtdl_graph_bfs.py --backend embree PYTHONPATH=src:. python examples/current/features/graph/rtdl_graph_tr"
-    },
-    {
-      "classification": "accepted_scoped_evidence_context",
-      "line": 48,
-      "path": "docs/tutorials/partner_optix_column_anyhit.md",
-      "phrase": "faster",
-      "snippet": "arbitrary CuPy or Numba acceleration; - a general zero-copy product guarantee; - broad RT-core speedup or acceleration; - package-install support; - claims that every app phase is faster.  For the current partner-choice rule, read [Choosing A Partner For Custom Logic](../learn/partner_choice_for_custom_logic.md).  ## Practical Starting Point  Start with the portab"
-    },
-    {
-      "classification": "accepted_scoped_evidence_context",
-      "line": 168,
-      "path": "docs/tutorials/segment_polygon_workloads.md",
-      "phrase": "faster",
-      "snippet": "s because tuple records are convenient, but repacking a large Python tuple on every call can dominate the measured runtime. The reviewed Goal2284/2285 LSI probe showed about `20x` faster repeated prepared segment-pair raw/count calls on one RTX A5000 stream when the left/query segments were prepacked. Keep that claim narrow: it is a measured segment-pair pattern,"
-    },
-    {
-      "classification": "accepted_scoped_evidence_context",
-      "line": 209,
-      "path": "docs/tutorials/segment_polygon_workloads.md",
-      "phrase": "speedup",
-      "snippet": "current path also documents streaming   witness-column output for larger summaries. Public wording must still stay   limited to the reviewed output capacity; unbounded row-volume speedup remains   outside the claim.  ---  ## The overlap and Jaccard line  The current source tree also includes two narrower polygon-overlap workloads:  ### `polygon_pair_overlap_area_r"
-    },
-    {
-      "classification": "accepted_scoped_evidence_context",
-      "line": 257,
-      "path": "docs/tutorials/segment_polygon_workloads.md",
-      "phrase": "speedup",
-      "snippet": "mary, streaming witness columns, and prepared bounded pair-row traversal only. Default app behavior, full GIS/routing, broad segment/polygon acceleration, and unbounded row-volume speedup remain outside the claim.  Kernel shape:  ```python @rt.kernel(backend=\"rtdl\", precision=\"float_approx\") def polygon_pair_overlap_area_rows_kernel():     left_polygons = rt.input("
+      "snippet": "=\"optix\", )  print(report.to_dict()[\"summary_sec\"]) ```  The report keeps the source artifact's claim flags and refuses to validate if a source artifact authorizes release, public speedup wording, general zero-copy wording, hidden partner selection, or app-specific native-engine behavior.  ## Current Prepared Example  For the public-CDB overlay-area route, the curr"
     },
     {
       "classification": "accepted_scoped_evidence_context",
@@ -842,9 +653,23 @@
       "path": "examples/current/research_benchmarks/rt_dbscan/README.md",
       "phrase": "speedup",
       "snippet": "wording. - Remaining work is outside this project-close scope unless new evidence   justifies a v3-scale native algorithm: paper reproduction, broader hardware   backends, public speedup wording, and any replacement for grouped-union that   changes the generic primitive contract."
+    },
+    {
+      "classification": "accepted_scoped_evidence_context",
+      "line": 204,
+      "path": "examples/current/research_benchmarks/spatial_rayjoin/CODE_WALKTHROUGH.md",
+      "phrase": "faster",
+      "snippet": "0529638s`, about `38.4x` for the scoped standard row. | | LSI and overlay scalar answers on bounded public CDB slices | Current partner guidance records RTDL/OptiX at about `260x` faster than dense partner baselines for the scalar-answer contracts. | | PIP one-shot bounded public CDB scalar count | CuPy dense CUDA-core count is still the faster current route at th"
+    },
+    {
+      "classification": "accepted_scoped_evidence_context",
+      "line": 205,
+      "path": "examples/current/research_benchmarks/spatial_rayjoin/CODE_WALKTHROUGH.md",
+      "phrase": "faster",
+      "snippet": "tiX at about `260x` faster than dense partner baselines for the scalar-answer contracts. | | PIP one-shot bounded public CDB scalar count | CuPy dense CUDA-core count is still the faster current route at that size. | | Resident repeated PIP | The prepared batch executor is the current RTDL/OptiX direction, with partner guidance recording about `0.024ms/request` fo"
     }
   ],
-  "accepted_scoped_evidence_count": 22,
+  "accepted_scoped_evidence_count": 18,
   "claim_boundary": {
     "amd_performance_claim_authorized": false,
     "automatic_partner_selection_authorized": false,
@@ -857,10 +682,10 @@
     "true_zero_copy_claim_authorized": false,
     "whole_app_speedup_claim_authorized": false
   },
-  "finding_count": 120,
+  "finding_count": 95,
   "hard_blocker_count": 0,
   "hard_blockers": [],
-  "public_file_count": 31,
+  "public_file_count": 30,
   "public_files_scanned": [
     "docs/learn/benchmark_partner_reference_matrix.md",
     "docs/learn/partner_choice_for_custom_logic.md",
@@ -868,18 +693,6 @@
     "docs/learn/prepared_session_reuse.md",
     "docs/learn/primitive_discovery_workflow.md",
     "docs/learn/README.md",
-    "docs/tutorials/db_workloads.md",
-    "docs/tutorials/feature_quickstart_cookbook.md",
-    "docs/tutorials/graph_workloads.md",
-    "docs/tutorials/hello_world.md",
-    "docs/tutorials/nearest_neighbor_workloads.md",
-    "docs/tutorials/partner_anyhit.md",
-    "docs/tutorials/partner_optix_column_anyhit.md",
-    "docs/tutorials/README.md",
-    "docs/tutorials/rendering_and_visual_demos.md",
-    "docs/tutorials/segment_polygon_workloads.md",
-    "docs/tutorials/sorting_demo.md",
-    "docs/tutorials/v2_app_building.md",
     "examples/current/research_benchmarks/barnes_hut/README.md",
     "examples/current/research_benchmarks/contact_manifold/README.md",
     "examples/current/research_benchmarks/hausdorff_xhd/README.md",
@@ -889,10 +702,21 @@
     "examples/current/research_benchmarks/robot_collision/README.md",
     "examples/current/research_benchmarks/rt_dbscan/README.md",
     "examples/current/research_benchmarks/rtnn/README.md",
+    "examples/current/research_benchmarks/spatial_rayjoin/CODE_WALKTHROUGH.md",
     "examples/current/research_benchmarks/spatial_rayjoin/README.md",
     "examples/current/research_benchmarks/triangle_counting/README.md",
     "examples/README.md",
-    "README.md"
+    "README.md",
+    "tutorials/current/01_source_tree_first_run.md",
+    "tutorials/current/02_kernel_shape_and_backends.md",
+    "tutorials/current/03_primitives_and_discovery.md",
+    "tutorials/current/04_python_app_structure.md",
+    "tutorials/current/05_partner_columns_cupy_numba.md",
+    "tutorials/current/06_prepared_execution_measurement.md",
+    "tutorials/current/07_benchmark_app_python_rtdl_partner.md",
+    "tutorials/current/08_spatial_join_rayjoin_reference.md",
+    "tutorials/current/README.md",
+    "tutorials/README.md"
   ],
   "schema": "rtdl.goal4248.current_public_docs_claim_boundary_scan.v1",
   "status": "pass"

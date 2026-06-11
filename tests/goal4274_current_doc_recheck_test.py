@@ -47,6 +47,7 @@ def _rel(path: Path) -> str:
 
 def _current_public_docs() -> list[Path]:
     files = [ROOT / "README.md"]
+    files.extend((ROOT / "tutorials").rglob("*.md"))
     files.extend((ROOT / "docs").rglob("*.md"))
     files.extend((ROOT / "examples").rglob("*.md"))
     docs: list[Path] = []

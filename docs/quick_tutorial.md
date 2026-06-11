@@ -223,7 +223,9 @@ For one compact recipe per feature:
 PYTHONPATH=src:. python examples/current/getting_started/rtdl_feature_quickstart_cookbook.py
 ```
 
-Then read [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md).
+Then continue with the [Current Tutorial Track](../tutorials/current/README.md)
+or run the feature cookbook example directly from
+`examples/current/getting_started/rtdl_feature_quickstart_cookbook.py`.
 
 For app-shaped demos, use [App And Example Quickstart](app_example_quickstart.md).
 For the full command archive, use [Release-Facing Examples](release_facing_examples.md).

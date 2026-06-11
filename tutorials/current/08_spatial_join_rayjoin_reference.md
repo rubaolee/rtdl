@@ -45,11 +45,11 @@ all_match_cpu_python_reference: true
 
 Read the detailed code walkthrough next:
 
-- [Spatial RayJoin Code Walkthrough](../../../examples/current/research_benchmarks/spatial_rayjoin/CODE_WALKTHROUGH.md)
+- [Spatial RayJoin Code Walkthrough](../../examples/current/research_benchmarks/spatial_rayjoin/CODE_WALKTHROUGH.md)
 
 Then use the benchmark README as the route reference:
 
-- [Spatial / RayJoin-Style Study](../../../examples/current/research_benchmarks/spatial_rayjoin/README.md)
+- [Spatial / RayJoin-Style Study](../../examples/current/research_benchmarks/spatial_rayjoin/README.md)
 
 ## What The App Teaches
 
@@ -65,4 +65,4 @@ Then use the benchmark README as the route reference:
 
 Return to the [Current RTDL Tutorial Track](README.md), or study the other
 research benchmarks under
-[examples/current/research_benchmarks](../../../examples/current/research_benchmarks/README.md).
+[examples/current/research_benchmarks](../../examples/current/research_benchmarks/README.md).

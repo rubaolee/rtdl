@@ -10,7 +10,7 @@ read as the front-door release summary. For current public status, use:
 - [RTDL v0.6 Release Statement](release_reports/v0_6/release_statement.md)
 - [RTDL v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
 - [Quick Tutorial](quick_tutorial.md)
-- [Tutorials](tutorials/README.md)
+- [Tutorials](../../../tutorials/README.md)
 
 Date: 2026-04-09
 
