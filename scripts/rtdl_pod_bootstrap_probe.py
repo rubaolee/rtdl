@@ -160,7 +160,7 @@ def probe() -> dict[str, Any]:
         "nvcc": {
             "path": nvcc_path,
             "available": nvcc_path is not None,
-            "probe": _run(["nvcc", "--version"], timeout=10) if nvcc_path else None,
+            "probe": _run([nvcc_path, "--version"], timeout=10) if nvcc_path else None,
         },
         "make": {"path": make_path, "available": make_path is not None},
         "cxx": {"path": gpp_path, "available": gpp_path is not None},

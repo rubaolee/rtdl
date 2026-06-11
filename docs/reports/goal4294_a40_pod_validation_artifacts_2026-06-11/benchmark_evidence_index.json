@@ -1,0 +1,498 @@
+{
+  "automatic_partner_selection_authorized": false,
+  "broad_rt_core_claim_authorized": false,
+  "claim_boundary": "Goal3823 records the current executable benchmark app front-door commands after Goals3818-3822. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+  "cross_cutting_reports": [
+    "docs/reports/goal3823_current_benchmark_front_door_registry_2026-06-07.md",
+    "docs/reports/goal3828_current_benchmark_scale_profile_registry_2026-06-07.md",
+    "docs/reports/goal4215_current_benchmark_scale_profile_after_rtdbscan_policy_2026-06-09.md",
+    "docs/reports/goal4266_large_scale_cupy_numba_partner_comparison_2026-06-09.md"
+  ],
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "app": "hausdorff_xhd",
+      "broad_rt_core_claim_authorized": false,
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--require-rt-core",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.25",
+        "--copies",
+        "8",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "command_text": "python examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend optix --require-rt-core --optix-summary-mode directed_threshold_prepared --hausdorff-threshold 0.25 --copies 8 --repeat 2 --warmup 1",
+      "evidence_refs": [
+        "Goal3818"
+      ],
+      "evidence_reports": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal3818_current_benchmark_contract_smoke_a5000_2026-06-07.md",
+          "ref": "Goal3818"
+        }
+      ],
+      "paper_reproduction_claim_authorized": false,
+      "pod_need": "OptiX timing needs NVIDIA pod or workstation",
+      "public_speedup_claim_authorized": false,
+      "purpose": "current Hausdorff/X-HD style OptiX threshold front door",
+      "release_authorized": false,
+      "requires_numba": false,
+      "requires_optix_library": true,
+      "row_id": "hausdorff_xhd_current_optix_threshold",
+      "timeout_sec": 120,
+      "user_reading": "primitive-first OptiX path; CuPy/Numba are comparison/reference lanes"
+    },
+    {
+      "app": "spatial_rayjoin",
+      "broad_rt_core_claim_authorized": false,
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+        "--workload",
+        "pip",
+        "--backend",
+        "optix",
+        "--execution-route",
+        "prepared_optix",
+        "--result-mode",
+        "count",
+        "--pip-count-mode",
+        "device_filtered_prepared_points_validated",
+        "--no-rows",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "command_text": "python examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py --workload pip --backend optix --execution-route prepared_optix --result-mode count --pip-count-mode device_filtered_prepared_points_validated --no-rows --repeat 2 --warmup 1",
+      "evidence_refs": [
+        "Goal3818",
+        "Goal3761"
+      ],
+      "evidence_reports": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal3818_current_benchmark_contract_smoke_a5000_2026-06-07.md",
+          "ref": "Goal3818"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal3761_rayjoin_native_pip_cross_size_current_2026-06-07.md",
+          "ref": "Goal3761"
+        }
+      ],
+      "paper_reproduction_claim_authorized": false,
+      "pod_need": "OptiX timing and public-CDB fixture runs need NVIDIA pod",
+      "public_speedup_claim_authorized": false,
+      "purpose": "current RayJoin-style prepared OptiX PIP count front door",
+      "release_authorized": false,
+      "requires_numba": false,
+      "requires_optix_library": true,
+      "row_id": "spatial_rayjoin_pip_count_current_prepared_optix",
+      "timeout_sec": 180,
+      "user_reading": "contract-split RayJoin-style path; scalar/count paths are stronger than full paper reproduction"
+    },
+    {
+      "app": "rt_dbscan",
+      "broad_rt_core_claim_authorized": false,
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+        "--mode",
+        "optix_rt_core_flags_numba_prepared_grid_components_3d",
+        "--dataset",
+        "clustered3d",
+        "--point-count",
+        "4096",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "command_text": "python examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py --mode optix_rt_core_flags_numba_prepared_grid_components_3d --dataset clustered3d --point-count 4096 --repeat 2 --warmup 1",
+      "evidence_refs": [
+        "Goal3818",
+        "Goal3758"
+      ],
+      "evidence_reports": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal3818_current_benchmark_contract_smoke_a5000_2026-06-07.md",
+          "ref": "Goal3818"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal3758_rt_dbscan_numba_repeat_probe_support_2026-06-07.md",
+          "ref": "Goal3758"
+        }
+      ],
+      "paper_reproduction_claim_authorized": false,
+      "pod_need": "OptiX plus Numba timing needs CUDA pod",
+      "public_speedup_claim_authorized": false,
+      "purpose": "current RT-DBSCAN OptiX threshold flags plus Numba component continuation",
+      "release_authorized": false,
+      "requires_numba": true,
+      "requires_optix_library": true,
+      "row_id": "rt_dbscan_optix_numba_prepared_grid",
+      "timeout_sec": 180,
+      "user_reading": "OptiX fixed-radius flags plus explicit Numba component continuation"
+    },
+    {
+      "app": "robot_collision",
+      "broad_rt_core_claim_authorized": false,
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+        "--mode",
+        "optix_prepared_device_count",
+        "--dataset",
+        "scaled",
+        "--pose-count",
+        "256",
+        "--obstacle-count",
+        "64",
+        "--link-count",
+        "4",
+        "--repeats",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "command_text": "python examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py --mode optix_prepared_device_count --dataset scaled --pose-count 256 --obstacle-count 64 --link-count 4 --repeats 2 --warmup 1",
+      "evidence_refs": [
+        "Goal3818",
+        "Goal3757"
+      ],
+      "evidence_reports": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal3818_current_benchmark_contract_smoke_a5000_2026-06-07.md",
+          "ref": "Goal3818"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal3757_robot_collision_scaled_prepared_perf_packet_2026-06-07.md",
+          "ref": "Goal3757"
+        }
+      ],
+      "paper_reproduction_claim_authorized": false,
+      "pod_need": "OptiX timing needs NVIDIA pod",
+      "public_speedup_claim_authorized": false,
+      "purpose": "current robot-collision prepared OptiX device-count front door",
+      "release_authorized": false,
+      "requires_numba": false,
+      "requires_optix_library": true,
+      "row_id": "robot_collision_optix_prepared_device_count",
+      "timeout_sec": 180,
+      "user_reading": "primitive-only prepared static-scene collision count path"
+    },
+    {
+      "app": "contact_manifold",
+      "broad_rt_core_claim_authorized": false,
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+        "--mode",
+        "native_collect_k",
+        "--backend",
+        "optix",
+        "--dataset",
+        "grid",
+        "--grid-count",
+        "16",
+        "--witness-capacity",
+        "32",
+        "--repeat-count",
+        "2"
+      ],
+      "command_text": "python examples/current/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py --mode native_collect_k --backend optix --dataset grid --grid-count 16 --witness-capacity 32 --repeat-count 2",
+      "evidence_refs": [
+        "Goal3818"
+      ],
+      "evidence_reports": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal3818_current_benchmark_contract_smoke_a5000_2026-06-07.md",
+          "ref": "Goal3818"
+        }
+      ],
+      "paper_reproduction_claim_authorized": false,
+      "pod_need": "OptiX timing needs NVIDIA pod",
+      "public_speedup_claim_authorized": false,
+      "purpose": "current contact-manifold bounded collect-k front door",
+      "release_authorized": false,
+      "requires_numba": false,
+      "requires_optix_library": true,
+      "row_id": "contact_manifold_optix_native_collect_k",
+      "timeout_sec": 120,
+      "user_reading": "bounded collect/witness primitive path; no manifold-native ABI"
+    },
+    {
+      "app": "raydb_style",
+      "broad_rt_core_claim_authorized": false,
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+        "--mode",
+        "count",
+        "--backend",
+        "paper_rt_optix_v2_5_primitive_first",
+        "--fixture-kind",
+        "generated",
+        "--generated-rows",
+        "4096",
+        "--generated-groups",
+        "128",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "command_text": "python examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py --mode count --backend paper_rt_optix_v2_5_primitive_first --fixture-kind generated --generated-rows 4096 --generated-groups 128 --repeat 2 --warmup 1",
+      "evidence_refs": [
+        "Goal3818"
+      ],
+      "evidence_reports": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal3818_current_benchmark_contract_smoke_a5000_2026-06-07.md",
+          "ref": "Goal3818"
+        }
+      ],
+      "paper_reproduction_claim_authorized": false,
+      "pod_need": "OptiX timing needs NVIDIA pod; CuPy/Numba comparison needs CUDA pod",
+      "public_speedup_claim_authorized": false,
+      "purpose": "current RayDB-style primitive-first grouped count front door",
+      "release_authorized": false,
+      "requires_numba": false,
+      "requires_optix_library": true,
+      "row_id": "raydb_style_optix_count_primitive_first",
+      "timeout_sec": 180,
+      "user_reading": "primitive-first grouped count path; partner rows only for unfused continuations"
+    },
+    {
+      "app": "barnes_hut",
+      "broad_rt_core_claim_authorized": false,
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+        "--mode",
+        "partner_exact_force",
+        "--partner",
+        "numba",
+        "--body-count",
+        "1024",
+        "--skip-validation",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "command_text": "python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode partner_exact_force --partner numba --body-count 1024 --skip-validation --repeat 2 --warmup 1",
+      "evidence_refs": [
+        "Goal3818",
+        "Goal3762"
+      ],
+      "evidence_reports": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal3818_current_benchmark_contract_smoke_a5000_2026-06-07.md",
+          "ref": "Goal3818"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal3762_barnes_hut_numba_block_reduce_force_2026-06-07.md",
+          "ref": "Goal3762"
+        }
+      ],
+      "paper_reproduction_claim_authorized": false,
+      "pod_need": "Numba CUDA timing needs CUDA pod",
+      "public_speedup_claim_authorized": false,
+      "purpose": "current Barnes-Hut no-RawKernel Numba exact-force front door",
+      "release_authorized": false,
+      "requires_numba": true,
+      "requires_optix_library": true,
+      "row_id": "barnes_hut_numba_exact_force",
+      "timeout_sec": 180,
+      "user_reading": "aggregate-frontier pressure plus Numba exact-force reference"
+    },
+    {
+      "app": "librts_spatial_index",
+      "broad_rt_core_claim_authorized": false,
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--box-count",
+        "1024",
+        "--query-count",
+        "1024",
+        "--operation",
+        "all",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "command_text": "python examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py --mode optix_aabb_index --dataset uniform --box-count 1024 --query-count 1024 --operation all --repeat 2 --warmup 1",
+      "evidence_refs": [
+        "Goal3818"
+      ],
+      "evidence_reports": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal3818_current_benchmark_contract_smoke_a5000_2026-06-07.md",
+          "ref": "Goal3818"
+        }
+      ],
+      "paper_reproduction_claim_authorized": false,
+      "pod_need": "OptiX timing needs NVIDIA pod",
+      "public_speedup_claim_authorized": false,
+      "purpose": "current LibRTS-style prepared OptiX AABB-index front door",
+      "release_authorized": false,
+      "requires_numba": false,
+      "requires_optix_library": true,
+      "row_id": "librts_spatial_index_optix_aabb_index",
+      "timeout_sec": 180,
+      "user_reading": "prepared AABB-index benchmark slice, not full mutable LibRTS"
+    },
+    {
+      "app": "rtnn",
+      "broad_rt_core_claim_authorized": false,
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py",
+        "--mode",
+        "prepared_optix_ranked_summary",
+        "--point-count",
+        "4096",
+        "--radius",
+        "0.02",
+        "--k",
+        "32",
+        "--repeat",
+        "2",
+        "--query-batch-size",
+        "4096",
+        "--distribution",
+        "uniform"
+      ],
+      "command_text": "python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_optix_ranked_summary --point-count 4096 --radius 0.02 --k 32 --repeat 2 --query-batch-size 4096 --distribution uniform",
+      "evidence_refs": [
+        "Goal3820"
+      ],
+      "evidence_reports": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal3820_rtnn_prepared_optix_ranked_summary_app_mode_2026-06-07.md",
+          "ref": "Goal3820"
+        }
+      ],
+      "paper_reproduction_claim_authorized": false,
+      "pod_need": "OptiX timing needs NVIDIA pod",
+      "public_speedup_claim_authorized": false,
+      "purpose": "current RTNN prepared OptiX ranked-summary executable front door",
+      "release_authorized": false,
+      "requires_numba": false,
+      "requires_optix_library": true,
+      "row_id": "rtnn_prepared_optix_ranked_summary",
+      "timeout_sec": 120,
+      "user_reading": "prepared fixed-radius ranked summary path"
+    },
+    {
+      "app": "triangle_counting",
+      "broad_rt_core_claim_authorized": false,
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+        "--mode",
+        "run",
+        "--backend",
+        "optix",
+        "--output-mode",
+        "summary",
+        "--optix-graph-mode",
+        "native",
+        "--copies",
+        "128",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "command_text": "python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode run --backend optix --output-mode summary --optix-graph-mode native --copies 128 --repeat 2 --warmup 1",
+      "evidence_refs": [
+        "Goal3819"
+      ],
+      "evidence_reports": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal3819_triangle_counting_native_mode_probe_2026-06-07.md",
+          "ref": "Goal3819"
+        }
+      ],
+      "paper_reproduction_claim_authorized": false,
+      "pod_need": "OptiX timing needs NVIDIA pod",
+      "public_speedup_claim_authorized": false,
+      "purpose": "current triangle-counting explicit native timing front door",
+      "release_authorized": false,
+      "requires_numba": false,
+      "requires_optix_library": true,
+      "row_id": "triangle_counting_optix_native_summary",
+      "timeout_sec": 180,
+      "user_reading": "explicit native graph summary path; candidate-row interpretation stays app code"
+    }
+  ],
+  "status": "current_v2_10_evidence_index_not_release_authorization",
+  "summary": {
+    "app_count": 10,
+    "broad_rt_core_claim_authorized": false,
+    "claim_boundary": "Goal3823 records the current executable benchmark app front-door commands after Goals3818-3822. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "numba_required_rows": [
+      "rt_dbscan_optix_numba_prepared_grid",
+      "barnes_hut_numba_exact_force"
+    ],
+    "optix_required_rows": [
+      "hausdorff_xhd_current_optix_threshold",
+      "spatial_rayjoin_pip_count_current_prepared_optix",
+      "rt_dbscan_optix_numba_prepared_grid",
+      "robot_collision_optix_prepared_device_count",
+      "contact_manifold_optix_native_collect_k",
+      "raydb_style_optix_count_primitive_first",
+      "barnes_hut_numba_exact_force",
+      "librts_spatial_index_optix_aabb_index",
+      "rtnn_prepared_optix_ranked_summary",
+      "triangle_counting_optix_native_summary"
+    ],
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "row_count": 10,
+    "status": "internal_command_registry_not_release_authorization",
+    "version": "rtdl.v2_10.current_benchmark_front_doors.goal3823.v1"
+  },
+  "validation": {
+    "app_count": 10,
+    "claim_boundary": "Goal3823 records the current executable benchmark app front-door commands after Goals3818-3822. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "errors": [],
+    "row_count": 10,
+    "status": "accept",
+    "version": "rtdl.v2_10.current_benchmark_front_doors.goal3823.v1"
+  },
+  "version": "rtdl.v2_10.current_benchmark_front_doors.goal3823.v1"
+}

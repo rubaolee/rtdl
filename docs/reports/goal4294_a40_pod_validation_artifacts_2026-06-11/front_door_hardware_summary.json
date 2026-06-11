@@ -1,0 +1,368 @@
+{
+  "all_pass": true,
+  "broad_rt_core_claim_authorized": false,
+  "claim_boundary": "Goal3823 records the current executable benchmark app front-door commands after Goals3818-3822. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+  "dry_run": false,
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "app": "hausdorff_xhd",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--require-rt-core",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.25",
+        "--copies",
+        "8",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 1.4588749730028212,
+      "returncode": 0,
+      "row_id": "hausdorff_xhd_current_optix_threshold",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "hes\": true,\n  \"oracle_identity_matches\": null,\n  \"oracle_within_threshold\": false,\n  \"point_count_a\": 32,\n  \"point_count_b\": 32,\n  \"prepared_session_residency\": {\n    \"automatic_partner_selection_authorized\": false,\n    \"cache_enabled_by_default\": false,\n    \"cache_key\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"backend\": \"optix\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"device\": \"cuda:0\",\n      \"explicit_key_required\": true,\n      \"input_fingerprints\": [\n        [\n          \"source_points\",\n          \"d822c592cb8641a09595f4ee\"\n        ],\n        [\n          \"target_points\",\n          \"d822c592cb8641a09595f4ee\"\n        ]\n      ],\n      \"parameter_fingerprint\": [\n        [\n          \"threshold\",\n          \"a30a043314fa89294fa2c1c9\"\n        ]\n      ],\n      \"partner\": \"none\",\n      \"primitive\": \"fixed_radius_threshold_2d\",\n      \"stable_id\": \"9993ff0950581a80a55042a7\"\n    },\n    \"cold_hot_phase_split_required\": true,\n    \"explicit_reuse_helper\": \"get_or_prepare_explicit_session\",\n    \"policy\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"broad_rt_core_claim_authorized\": false,\n      \"cache_enabled\": false,\n      \"cache_key\": {\n        \"app_specific_native_engine_logic_allowed\": false,\n        \"automatic_partner_selection_authorized\": false,\n        \"backend\": \"optix\",\n        \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n        \"device\": \"cuda:0\",\n        \"explicit_key_required\": true,\n        \"input_fingerprints\": [\n          [\n            \"source_points\",\n            \"d822c592cb8641a09595f4ee\"\n          ],\n          [\n            \"target_points\",\n            \"d822c592cb8641a09595f4ee\"\n          ]\n        ],\n        \"parameter_fingerprint\": [\n          [\n            \"threshold\",\n            \"a30a043314fa89294fa2c1c9\"\n          ]\n        ],\n        \"partner\": \"none\",\n        \"primitive\": \"fixed_radius_threshold_2d\",\n        \"stable_id\": \"9993ff0950581a80a55042a7\"\n      },\n      \"claim_boundary\": \"Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.\",\n      \"cold_prepare_phase\": \"prepare_scene_or_payload\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"hot_query_phase\": \"prepared_query\",\n      \"invalidation_events\": [\n        \"explicit_invalidate\",\n        \"backend_context_reset\",\n        \"close\"\n      ],\n      \"lifetime_state\": \"session_retained\",\n      \"public_speedup_claim_authorized\": false,\n      \"release_authorized\": false,\n      \"reuse_scope\": \"explicit_user_session\",\n      \"status\": \"internal_contract_not_release_authorization\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"prepare_once_query_many_pattern\": true,\n    \"public_speedup_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false\n  },\n  \"repeat_protocol\": {\n    \"measured_query_total_sec\": 0.0004412652924656868,\n    \"repeat\": 2,\n    \"reported_query_metric\": \"sum_of_directed_query_medians\",\n    \"warmup\": 1\n  },\n  \"rt_core_accelerated\": true,\n  \"rtdl_role\": \"RTDL/optix uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.00010080006904900074,\n    \"python_postprocess_sec\": 4.1606836020946503e-07,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.0002206326462328434,\n    \"scene_prepare_sec\": 0.7980444459244609,\n    \"validation_sec\": 0.00016497005708515644\n  },\n  \"within_threshold\": false\n}\n",
+      "timeout_sec": 120
+    },
+    {
+      "app": "spatial_rayjoin",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+        "--workload",
+        "pip",
+        "--backend",
+        "optix",
+        "--execution-route",
+        "prepared_optix",
+        "--result-mode",
+        "count",
+        "--pip-count-mode",
+        "device_filtered_prepared_points_validated",
+        "--no-rows",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 1.7147437010426074,
+      "returncode": 0,
+      "row_id": "spatial_rayjoin_pip_count_current_prepared_optix",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"app\": \"rayjoin_v2_spatial_join\",\n  \"backend\": \"optix\",\n  \"claim_boundary\": {\n    \"full_rayjoin_reproduction\": false,\n    \"paper_scale_perf_claim_authorized\": false,\n    \"requires_pod_for_optix_perf\": false,\n    \"rtdl_beats_rayjoin_claim_authorized\": false,\n    \"v2_0_release_authorized\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"count_mode\": \"device_filtered_prepared_points_validated\",\n  \"dataset\": \"tests/fixtures/rayjoin/br_county_subset.cdb\",\n  \"dataset_note\": \"County subset probe points against deterministic chain-derived polygons.\",\n  \"device_resident_continuation_status\": \"not_complete: prepared query can avoid Python row materialization for counts, but generic downstream row-stream continuation still needs pod/native work\",\n  \"execution_route\": \"prepared_optix\",\n  \"native_engine_boundary\": \"The engine sees generic prepared point/closed-shape, segment-pair, or shape-pair contracts. RayJoin application policy and paper-specific interpretation stay in Python.\",\n  \"native_phase_timings\": {\n    \"candidate_count_pass\": 5.702e-05,\n    \"candidate_download\": 0.0,\n    \"candidate_write_pass\": 0.0,\n    \"emitted_count\": 6,\n    \"exact_refine\": 0.0,\n    \"mode\": \"prepared_points_device_filtered_count\",\n    \"point_pack\": 0.0,\n    \"point_upload\": 0.0,\n    \"raw_candidate_count\": 6\n  },\n  \"phases_sec\": {\n    \"prepare_query_points_sec\": 0.0001530940644443035,\n    \"prepare_static_scene_sec\": 0.9525261879898608,\n    \"prepared_query_sec\": 0.00011908344458788633,\n    \"prepared_query_sec_repeat\": 2,\n    \"prepared_query_sec_total_sec\": 0.00023816688917577267,\n    \"prepared_query_sec_warmup\": 1,\n    \"query_pack_sec\": 1.4478107914328575e-05,\n    \"query_point_order_sec\": 4.798872396349907e-06,\n    \"static_shape_pack_sec\": 6.042700260877609e-05,\n    \"validation_exact_query_sec\": 0.0008810178842395544\n  },\n  \"point_order_mode\": \"natural\",\n  \"repeat_protocol\": {\n    \"measured_query_total_sec\": 0.00023816688917577267,\n    \"repeat\": 2,\n    \"reported_query_metric\": \"prepared_query_median\",\n    \"warmup\": 1\n  },\n  \"result_mode\": \"count\",\n  \"row_count\": 6,\n  \"segment_order_mode\": null,\n  \"summary\": {\n    \"boundary_event_contract_not_positive_membership\": null,\n    \"boundary_event_grouped_count_device_columns\": null,\n    \"boundary_event_row_count\": null,\n    \"count_mode\": \"device_filtered_prepared_points_validated\",\n    \"device_filtered_boundary_mode\": null,\n    \"device_filtered_count_matches_exact\": true,\n    \"device_filtered_is_exact_authority\": false,\n    \"output_contract\": \"point_to_shape_positive_hit_count_device_filtered_prepared_points_validated\",\n    \"point_id_count_device_columns\": null,\n    \"point_order_mode\": \"natural\",\n    \"positive_assignment_count\": 6,\n    \"positive_hit_row_count\": 6,\n    \"prepared_point_batch_executor\": null,\n    \"prepared_point_probe_columns\": {\n      \"device_resident_after_prepare\": true,\n      \"dimension\": 2,\n      \"native_symbol\": \"rtdl_optix_prepare_point_probe_columns_2d\",\n      \"point_count\": 3,\n      \"schema\": \"rtdl.optix.prepared_point_probe_columns_2d.v1\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"validation_exact_count\": 6\n  },\n  \"workload\": \"pip\"\n}\n",
+      "timeout_sec": 180
+    },
+    {
+      "app": "rt_dbscan",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+        "--mode",
+        "optix_rt_core_flags_numba_prepared_grid_components_3d",
+        "--dataset",
+        "clustered3d",
+        "--point-count",
+        "4096",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 4.225314518902451,
+      "returncode": 0,
+      "row_id": "rt_dbscan_optix_numba_prepared_grid",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "/usr/local/lib/python3.12/dist-packages/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 16 will likely result in GPU under-utilization due to low occupancy.\n  warn(NumbaPerformanceWarning(msg))\n/usr/local/lib/python3.12/dist-packages/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 16 will likely result in GPU under-utilization due to low occupancy.\n  warn(NumbaPerformanceWarning(msg))\n",
+      "stdout_tail": "\": true,\n    \"min_neighbors\": 12,\n    \"native_engine_row_contract\": \"not_called_partner_reference_only\",\n    \"native_engine_summary_contract\": \"generic_prepared_fixed_radius_count_threshold_3d_device_columns\",\n    \"native_execution_path\": \"prepared_rt_core_count_threshold_3d\",\n    \"neighbor_count_policy\": \"threshold_capped_at_min_neighbors_not_exact_full_degree\",\n    \"numba_component_continuation_sec\": 0.0054262380581349134,\n    \"numba_cuda_jit_used\": true,\n    \"optix_backend_used\": true,\n    \"optix_rt_count_threshold_sec\": 0.005633027059957385,\n    \"output_workspace_reused\": true,\n    \"partner\": \"numba\",\n    \"partner_reference_contract\": \"generic_prepared_numba_grid_radius_graph_component_labels_3d\",\n    \"path\": \"optix_rt_count_threshold_numba_prepared_grid_radius_graph_components_3d\",\n    \"point_count\": 4096,\n    \"prepared_grid_reused\": true,\n    \"prepared_query_repeat_protocol\": {\n      \"measured_iterations\": 1,\n      \"median_elapsed_sec\": 0.015927216969430447,\n      \"prepare_sec\": 1.1353058519307524,\n      \"repeat\": 2,\n      \"warmup\": 1\n    },\n    \"prepared_run_count\": 2,\n    \"radius\": 0.055,\n    \"raw_cuda_kernel_required\": false,\n    \"rt_core_accelerated\": true,\n    \"rt_core_speedup_claim_authorized\": false,\n    \"signature_source\": \"python_row_dicts_after_label_densification\",\n    \"threshold_metadata\": {\n      \"adapter\": \"fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns\",\n      \"app_count_host_materialization\": false,\n      \"app_count_materialization\": \"native_optix_rt_device_columns\",\n      \"direct_device_handoff_authorized\": true,\n      \"input_contract\": \"host_query_points_prepared_native_search_scene\",\n      \"native_engine_row_contract\": \"generic_fixed_radius_count_threshold_3d_device_columns\",\n      \"native_metadata\": {\n        \"backend\": \"optix\",\n        \"direct_device_handoff_authorized\": true,\n        \"materializes_neighbor_rows\": false,\n        \"native_elapsed_sec\": 0.0005847529973834753,\n        \"native_engine_row_contract\": \"generic_fixed_radius_count_threshold_3d_device_columns\",\n        \"native_execution_path\": \"prepared_rt_core_count_threshold_3d\",\n        \"native_symbol\": \"rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs\",\n        \"output_columns_true_zero_copy_authorized\": true,\n        \"paper_speedup_claim_authorized\": false,\n        \"query_count\": 4096,\n        \"radius\": 0.055,\n        \"rt_core_accelerated\": true,\n        \"search_count\": 4096,\n        \"source_devices\": [\n          \"cuda:0\"\n        ],\n        \"source_protocols\": [\n          \"cuda_array_interface\"\n        ],\n        \"threshold\": 12,\n        \"transfer_mode\": \"host_query_points_to_device_threshold_columns\",\n        \"true_zero_copy_authorized\": false,\n        \"v2_0_release_authorized\": false\n      },\n      \"output_columns_reused\": true,\n      \"paper_speedup_claim_authorized\": false,\n      \"partner\": \"numba\",\n      \"query_count\": 4096,\n      \"radius\": 0.055,\n      \"rt_core_accelerated\": true,\n      \"rt_core_speedup_claim_authorized\": false,\n      \"threshold\": 12,\n      \"true_zero_copy_authorized\": false,\n      \"v2_0_release_authorized\": false,\n      \"whole_app_speedup_claim_authorized\": false\n    },\n    \"v2_9_release_authorized\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"min_neighbors\": 12,\n  \"mode\": \"optix_rt_core_flags_numba_prepared_grid_components_3d\",\n  \"paper\": {\n    \"authors\": [\n      \"Vani Nagarajan\",\n      \"Milind Kulkarni\"\n    ],\n    \"doi\": \"10.1109/IPDPS54959.2023.00100\",\n    \"title\": \"RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware\",\n    \"venue\": \"IPDPS 2023\"\n  },\n  \"point_count\": 4096,\n  \"radius\": 0.055,\n  \"reference_signature\": {\n    \"cluster_sizes\": {\n      \"1\": 1024,\n      \"2\": 1024,\n      \"3\": 1024,\n      \"4\": 1024\n    },\n    \"core_count\": 4094,\n    \"noise_count\": 0\n  },\n  \"seed\": 20260519,\n  \"signature\": {\n    \"cluster_sizes\": {\n      \"1\": 1024,\n      \"2\": 1024,\n      \"3\": 1024,\n      \"4\": 1024\n    },\n    \"core_count\": 4094,\n    \"noise_count\": 0\n  }\n}\n",
+      "timeout_sec": 180
+    },
+    {
+      "app": "robot_collision",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+        "--mode",
+        "optix_prepared_device_count",
+        "--dataset",
+        "scaled",
+        "--pose-count",
+        "256",
+        "--obstacle-count",
+        "64",
+        "--link-count",
+        "4",
+        "--repeats",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 2.216932652052492,
+      "returncode": 0,
+      "row_id": "robot_collision_optix_prepared_device_count",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "   \"prepared_query_build\": {\n        \"count\": 1,\n        \"max_sec\": 0.03906130790710449,\n        \"median_sec\": 0.03906130790710449,\n        \"min_sec\": 0.03906130790710449,\n        \"total_sec\": 0.03906130790710449\n      },\n      \"query_pack\": {\n        \"count\": 1,\n        \"max_sec\": 0.0,\n        \"median_sec\": 0.0,\n        \"min_sec\": 0.0,\n        \"total_sec\": 0.0\n      },\n      \"traversal\": {\n        \"count\": 1,\n        \"max_sec\": 6.1092e-05,\n        \"median_sec\": 6.1092e-05,\n        \"min_sec\": 6.1092e-05,\n        \"total_sec\": 6.1092e-05\n      }\n    },\n    \"total_run_seconds\": {\n      \"count\": 1,\n      \"max_sec\": 0.0001438208855688572,\n      \"median_sec\": 0.0001438208855688572,\n      \"min_sec\": 0.0001438208855688572,\n      \"total_sec\": 0.0001438208855688572\n    }\n  },\n  \"runs\": [\n    {\n      \"buffer_reuse_metadata\": null,\n      \"flagged_group_count\": 331,\n      \"flags_signature\": \"count:331\",\n      \"is_warmup\": true,\n      \"iteration\": 0,\n      \"matches_probe_reference\": true,\n      \"phase_timing_seconds\": {\n        \"output_postprocess\": 7.770955562591553e-06,\n        \"prepare_build\": 0.1045002390164882,\n        \"prepared_query_build\": 0.03906130790710449,\n        \"query_pack\": 0.0,\n        \"traversal\": 0.000113357\n      },\n      \"prepared_query_run_index\": 1,\n      \"prepared_run_index\": 1,\n      \"prepared_scene_used\": true,\n      \"total_run_seconds\": 0.16914288699626923\n    },\n    {\n      \"buffer_reuse_metadata\": {\n        \"contract\": \"PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1\",\n        \"copy_boundary\": \"group_flags_device_to_native_host_then_scalar_to_python\",\n        \"device\": \"cuda_device\",\n        \"flagged_group_count_returned_to_python\": true,\n        \"group_count\": 1024,\n        \"group_flags_downloaded_to_host\": true,\n        \"group_flags_downloaded_to_python\": false,\n        \"group_indices_buffer_kind\": \"native_optix_device_uint32_group_indices\",\n        \"group_offsets_buffer_kind\": \"native_optix_device_uint32_offsets\",\n        \"host_output_buffer_kind\": \"ctypes_host_uint8_group_flags\",\n        \"host_output_buffer_reused\": true,\n        \"host_query_buffers_reused\": true,\n        \"native_device_output_buffer_reused\": true,\n        \"native_device_query_buffers_reused\": true,\n        \"output_buffer_kind\": \"native_optix_device_uint32_group_flags\",\n        \"owner\": \"optix_native_runtime\",\n        \"per_segment_records_downloaded_to_host\": false,\n        \"per_segment_records_materialized\": false,\n        \"public_speedup_claim_authorized\": false,\n        \"python_group_flags_materialized\": false,\n        \"query_buffer_kind\": \"native_optix_device_rtdl_segment3d_as_ray_array\",\n        \"query_segments_uploaded_each_run\": false,\n        \"result_kind\": \"uint32_flagged_group_count\",\n        \"segment_count\": 9216,\n        \"segment_output_buffer_kind\": \"not_materialized\",\n        \"true_zero_copy_authorized\": false\n      },\n      \"flagged_group_count\": 331,\n      \"flags_signature\": \"count:331\",\n      \"is_warmup\": false,\n      \"iteration\": 1,\n      \"matches_probe_reference\": true,\n      \"phase_timing_seconds\": {\n        \"output_postprocess\": 1.6919802874326706e-06,\n        \"prepare_build\": 0.1045002390164882,\n        \"prepared_query_build\": 0.03906130790710449,\n        \"query_pack\": 0.0,\n        \"traversal\": 6.1092e-05\n      },\n      \"prepared_query_run_index\": 2,\n      \"prepared_run_index\": 2,\n      \"prepared_scene_used\": true,\n      \"total_run_seconds\": 0.0001438208855688572\n    }\n  ],\n  \"tail_medians\": {\n    \"phase_timing_seconds\": {\n      \"output_postprocess\": 1.6919802874326706e-06,\n      \"prepare_build\": 0.1045002390164882,\n      \"prepared_query_build\": 0.03906130790710449,\n      \"query_pack\": 0.0,\n      \"traversal\": 6.1092e-05\n    },\n    \"total_run_seconds\": 0.0001438208855688572\n  },\n  \"warmup_protocol\": {\n    \"minimum_default\": \"7 repeats with 2 warmup rows for local evidence\",\n    \"repeat_count\": 2,\n    \"rule\": \"drop the first warmup_count rows; report medians over remaining tail rows\",\n    \"warmup_count\": 1\n  }\n}\n",
+      "timeout_sec": 180
+    },
+    {
+      "app": "contact_manifold",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+        "--mode",
+        "native_collect_k",
+        "--backend",
+        "optix",
+        "--dataset",
+        "grid",
+        "--grid-count",
+        "16",
+        "--witness-capacity",
+        "32",
+        "--repeat-count",
+        "2"
+      ],
+      "elapsed_sec": 0.6654242740478367,
+      "returncode": 0,
+      "row_id": "contact_manifold_optix_native_collect_k",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "tive_collect_repeat_count\": 2,\n  \"native_collect_runs_sec\": [\n    0.0003534459974616766,\n    0.00010306993499398232\n  ],\n  \"native_collect_timing_scope\": \"median_preserves_legacy_field_total_records_repeat_aggregate\",\n  \"native_collect_total_sec\": 0.0004565159324556589,\n  \"native_generic_symbol\": \"rtdl_optix_collect_k_bounded_i64\",\n  \"overflowed\": false,\n  \"primitive_under_test\": \"COLLECT_K_BOUNDED\",\n  \"repeat_count\": 2,\n  \"row_schema\": [\n    \"query_group_id\",\n    \"query_triangle_id\",\n    \"scene_triangle_id\"\n  ],\n  \"v2_4_phase_timing\": {\n    \"phase_contract_version\": \"rtdl.partner.v2.4\",\n    \"phases_sec\": {\n      \"materialization\": 0.00022825796622782946\n    },\n    \"promoted_performance_path\": false,\n    \"same_phase_contract_as_basis\": true,\n    \"source\": \"contact_manifold.native_collect_k\",\n    \"validation\": {\n      \"errors\": [],\n      \"known_phases\": [\n        \"materialization\"\n      ],\n      \"status\": \"accept\"\n    }\n  },\n  \"v2_4_prepared_session\": {\n    \"app_owned_interpretation\": \"Rows may represent contact witnesses in this benchmark, but RTDL sees only bounded int64 rows and valid_count.\",\n    \"app_specific_native_vocab_allowed\": false,\n    \"backend\": \"optix\",\n    \"descriptor_only\": true,\n    \"input_buffers\": [\n      {\n        \"access_mode\": \"read\",\n        \"alignment_bytes\": 1,\n        \"byte_offset\": 0,\n        \"capacity_elements\": 48,\n        \"data_ptr_observed\": false,\n        \"device\": \"cpu:0\",\n        \"dtype\": \"int64\",\n        \"element_count\": 48,\n        \"lifetime\": \"session_retained\",\n        \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n        \"mutability\": \"immutable\",\n        \"name\": \"candidate_id_rows\",\n        \"scope\": \"rtdl_primitive_handoff_only\",\n        \"shape\": [\n          16,\n          3\n        ],\n        \"source_protocol\": \"rtdl_generic_i64_rows\",\n        \"stream_handle\": 0,\n        \"strides_bytes\": null\n      }\n    ],\n    \"native_engine_boundary\": \"app_agnostic_native_engine\",\n    \"native_symbols\": [\n      \"rtdl_optix_collect_k_bounded_i64\"\n    ],\n    \"output_buffers\": [\n      {\n        \"access_mode\": \"write\",\n        \"alignment_bytes\": 1,\n        \"byte_offset\": 0,\n        \"capacity_elements\": 96,\n        \"data_ptr_observed\": false,\n        \"device\": \"cpu:0\",\n        \"dtype\": \"int64\",\n        \"element_count\": 96,\n        \"lifetime\": \"session_retained\",\n        \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n        \"mutability\": \"mutable\",\n        \"name\": \"bounded_witness_rows\",\n        \"scope\": \"rtdl_primitive_handoff_only\",\n        \"shape\": [\n          32,\n          3\n        ],\n        \"source_protocol\": \"rtdl_generic_i64_rows\",\n        \"stream_handle\": 0,\n        \"strides_bytes\": null\n      },\n      {\n        \"access_mode\": \"write\",\n        \"alignment_bytes\": 1,\n        \"byte_offset\": 0,\n        \"capacity_elements\": 1,\n        \"data_ptr_observed\": false,\n        \"device\": \"cpu:0\",\n        \"dtype\": \"uint64\",\n        \"element_count\": 1,\n        \"lifetime\": \"session_retained\",\n        \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n        \"mutability\": \"mutable\",\n        \"name\": \"valid_count\",\n        \"scope\": \"rtdl_primitive_handoff_only\",\n        \"shape\": [\n          1\n        ],\n        \"source_protocol\": \"rtdl_scalar_status\",\n        \"stream_handle\": 0,\n        \"strides_bytes\": null\n      }\n    ],\n    \"overflow_policy\": \"fail_closed_no_partial_rows\",\n    \"phase_contract\": \"bounded_witness_collection\",\n    \"primitive\": \"aabb_index_2d_bounded_i64_rows\",\n    \"requires_phase_timing\": true,\n    \"reusable_output_buffers\": true,\n    \"reusable_query_buffers\": true,\n    \"reusable_scene\": true,\n    \"row_schema\": [\n      \"query_group_id\",\n      \"query_triangle_id\",\n      \"scene_triangle_id\"\n    ],\n    \"same_phase_contract_as_basis_required\": true,\n    \"session_id\": \"generic_bounded_i64_rows_optix_16x32\",\n    \"status\": \"protocol_descriptor_only\",\n    \"v2_4_protocol_version\": \"rtdl.partner.v2.4\"\n  },\n  \"valid_count\": 16,\n  \"witness_capacity\": 32\n}\n",
+      "timeout_sec": 120
+    },
+    {
+      "app": "raydb_style",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+        "--mode",
+        "count",
+        "--backend",
+        "paper_rt_optix_v2_5_primitive_first",
+        "--fixture-kind",
+        "generated",
+        "--generated-rows",
+        "4096",
+        "--generated-groups",
+        "128",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 1.4080760120414197,
+      "returncode": 0,
+      "row_id": "raydb_style_optix_count_primitive_first",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "ecutes only a generic post-RT continuation over tensor carriers used for launch; Torch is a carrier here, not the v2.5 partner. RTDL/OptiX traversal remains separate.\",\n          \"contract_version\": \"rtdl.partner_continuation.v2.5\",\n          \"cupy_required\": false,\n          \"group_id_bounds_validation\": {\n            \"checked_before_kernel_launch\": true,\n            \"claim_boundary\": \"v2.5 Triton preview kernels reject out-of-range group ids before launch via a Torch CUDA predicate and host scalar sync. A separate device-error-flag helper is available, but the default strict Python exception path still reads a host scalar.\",\n            \"device_error_flag_available\": true,\n            \"device_error_flag_mode\": \"triton_device_error_flag_no_host_read\",\n            \"device_error_flag_used_by_default\": false,\n            \"mode\": \"torch_cuda_precheck_host_scalar_sync\",\n            \"true_zero_copy_claim_authorized\": false,\n            \"uses_host_scalar_sync\": true\n          },\n          \"input_columns\": [\n            \"group_ids:int64\"\n          ],\n          \"operation\": \"segmented_count_i64\",\n          \"output_columns\": [\n            \"counts:int64\"\n          ],\n          \"partner\": \"triton\",\n          \"phase\": \"partner_continuation\",\n          \"promoted_performance_path\": false,\n          \"pytorch_partner_required\": false,\n          \"raw_kernel_required\": false,\n          \"replaces_rt_traversal\": false,\n          \"requires_cuda\": true,\n          \"requires_torch_tensor_inputs\": true,\n          \"rt_traversal_contract_version\": \"rtdl.partner.v2.4\",\n          \"status\": \"preview_not_promoted\",\n          \"tensor_carrier\": \"torch_cuda_tensor_for_triton_launch\",\n          \"tensor_carrier_is_partner\": false,\n          \"triton_kernel_available\": true\n        }\n      ],\n      \"triton_executable_preview_available\": true,\n      \"uses_cupy_partner\": false,\n      \"uses_pytorch_partner\": false\n    },\n    \"v2_5_primitive_first_plan\": {\n      \"alternative_backend\": \"paper_rt_optix_device_hit_stream_triton_prepared\",\n      \"alternative_path\": \"prepared_typed_hit_stream_plus_partner_continuation\",\n      \"alternative_reserved_for\": \"continuations_not_expressible_as_fused_generic_rtdl_reductions\",\n      \"contract_version\": \"rtdl.raydb.v2_5.primitive_first_plan.v1\",\n      \"explain\": \"v2.5 plans are primitive-first: use the cheapest matching app-agnostic RTDL primitive before exposing an intermediate hit stream to a partner.\",\n      \"mode\": \"count\",\n      \"partner_continuation_available\": true,\n      \"partner_continuation_required\": false,\n      \"partner_operations\": [\n        \"segmented_count_i64\"\n      ],\n      \"public_speedup_claim_authorized\": false,\n      \"selected_backend\": \"paper_rt_optix_prepared_grouped_reduction\",\n      \"selected_generic_primitive\": \"generic_ray_triangle_primitive_grouped_i64_reduction_3d\",\n      \"selected_path\": \"prepared_fused_generic_grouped_reduction\",\n      \"selected_reduction\": \"count\",\n      \"selection_reason\": \"continuation_matches_existing_fused_app_agnostic_rtdl_primitive\",\n      \"true_zero_copy_authorized\": false,\n      \"typed_hit_stream_forced\": false\n    },\n    \"v2_5_selected_backend\": \"paper_rt_optix_prepared_grouped_reduction\",\n    \"v2_5_selected_generic_primitive\": \"generic_ray_triangle_primitive_grouped_i64_reduction_3d\",\n    \"v2_5_selected_path\": \"prepared_fused_generic_grouped_reduction\",\n    \"v2_5_selected_reduction\": \"count\"\n  },\n  \"mode\": \"count\",\n  \"row_count\": 4096,\n  \"rows\": [\n    {\n      \"count\": 1,\n      \"region_id\": 14\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 25\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 42\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 51\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 53\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 64\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 81\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 83\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 92\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 120\n    }\n  ]\n}\n",
+      "timeout_sec": 180
+    },
+    {
+      "app": "barnes_hut",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+        "--mode",
+        "partner_exact_force",
+        "--partner",
+        "numba",
+        "--body-count",
+        "1024",
+        "--skip-validation",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 2.0588491610251367,
+      "returncode": 0,
+      "row_id": "barnes_hut_numba_exact_force",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "     \"body_id\": 1001,\n      \"force_x\": 76.08735894584885,\n      \"force_y\": -816.3547202033643\n    },\n    {\n      \"body_id\": 1002,\n      \"force_x\": 30.928772916437964,\n      \"force_y\": -521.4547904181468\n    },\n    {\n      \"body_id\": 1003,\n      \"force_x\": 73.8010576771966,\n      \"force_y\": -576.7385285364717\n    },\n    {\n      \"body_id\": 1004,\n      \"force_x\": 63.2128016745093,\n      \"force_y\": -643.3147368631709\n    },\n    {\n      \"body_id\": 1005,\n      \"force_x\": 57.922809394707286,\n      \"force_y\": -705.1182737773743\n    },\n    {\n      \"body_id\": 1006,\n      \"force_x\": 23.885164826765916,\n      \"force_y\": -722.3832890252146\n    },\n    {\n      \"body_id\": 1007,\n      \"force_x\": 43.82897489967467,\n      \"force_y\": -778.06368636933\n    },\n    {\n      \"body_id\": 1008,\n      \"force_x\": -38.464696477519894,\n      \"force_y\": -827.5620722235351\n    },\n    {\n      \"body_id\": 1009,\n      \"force_x\": -15.71276632874806,\n      \"force_y\": -533.4708479218359\n    },\n    {\n      \"body_id\": 1010,\n      \"force_x\": -8.012252694553752,\n      \"force_y\": -596.8379519408772\n    },\n    {\n      \"body_id\": 1011,\n      \"force_x\": 1.7014907566751365,\n      \"force_y\": -649.4848725144935\n    },\n    {\n      \"body_id\": 1012,\n      \"force_x\": -34.404956139812654,\n      \"force_y\": -700.8558631831356\n    },\n    {\n      \"body_id\": 1013,\n      \"force_x\": -68.77973139968498,\n      \"force_y\": -720.1417038473603\n    },\n    {\n      \"body_id\": 1014,\n      \"force_x\": -55.29654408001174,\n      \"force_y\": -768.245782013958\n    },\n    {\n      \"body_id\": 1015,\n      \"force_x\": -146.06683910413807,\n      \"force_y\": -823.59210836521\n    },\n    {\n      \"body_id\": 1016,\n      \"force_x\": -88.77249559052498,\n      \"force_y\": -512.62536811874\n    },\n    {\n      \"body_id\": 1017,\n      \"force_x\": -89.02852113708015,\n      \"force_y\": -565.0234396358621\n    },\n    {\n      \"body_id\": 1018,\n      \"force_x\": -96.80552215579935,\n      \"force_y\": -619.1921701235004\n    },\n    {\n      \"body_id\": 1019,\n      \"force_x\": -154.68168157920564,\n      \"force_y\": -646.8925271931761\n    },\n    {\n      \"body_id\": 1020,\n      \"force_x\": -172.30386098327722,\n      \"force_y\": -654.635797242059\n    },\n    {\n      \"body_id\": 1021,\n      \"force_x\": -242.011795679442,\n      \"force_y\": -663.4285275960615\n    },\n    {\n      \"body_id\": 1022,\n      \"force_x\": -325.19921937909317,\n      \"force_y\": -699.6970789793298\n    },\n    {\n      \"body_id\": 1023,\n      \"force_x\": -270.57748141989066,\n      \"force_y\": -409.9016008749956\n    },\n    {\n      \"body_id\": 1024,\n      \"force_x\": -371.0049351634329,\n      \"force_y\": -382.3292723538349\n    }\n  ],\n  \"native_continuation_active\": false,\n  \"native_continuation_backend\": \"none\",\n  \"node_count\": 4,\n  \"node_radius\": null,\n  \"optix_summary_mode\": null,\n  \"output_mode\": \"full\",\n  \"partner\": \"numba\",\n  \"partner_metadata\": {\n    \"adapter\": \"pairwise_inverse_square_force_2d_partner_columns\",\n    \"app_force_materialization\": \"partner_gpu_pairwise_vector_sum\",\n    \"direct_device_handoff_authorized\": false,\n    \"exclude_equal_ids\": true,\n    \"input_contract\": \"caller_supplied_partner_device_weighted_point_columns\",\n    \"native_engine_row_contract\": \"not_called_partner_reference_only\",\n    \"numba_cuda_jit_used\": true,\n    \"numba_force_kernel_strategy\": \"block_source_target_stride_512_reduce_fastmath_true\",\n    \"output_columns_reused\": false,\n    \"partner\": \"numba\",\n    \"partner_reference_contract\": \"generic_pairwise_inverse_square_force_2d\",\n    \"raw_cuda_kernel_required\": false,\n    \"rt_core_speedup_claim_authorized\": false,\n    \"softening\": 0.05,\n    \"source_count\": 1024,\n    \"target_count\": 1024,\n    \"v2_0_release_authorized\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"partner_reference_contract\": \"generic_pairwise_inverse_square_force_2d\",\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"Partner exact-force mode computes generic weighted-point pairwise inverse-square force vectors outside the native engine.\",\n  \"theta\": 0.75,\n  \"validation_skipped\": true\n}\n",
+      "timeout_sec": 180
+    },
+    {
+      "app": "librts_spatial_index",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--box-count",
+        "1024",
+        "--query-count",
+        "1024",
+        "--operation",
+        "all",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 1.3799211480654776,
+      "returncode": 0,
+      "row_id": "librts_spatial_index_optix_aabb_index",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "   \"backend\": \"optix\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"device\": \"cuda:0\",\n      \"explicit_key_required\": true,\n      \"input_fingerprints\": [\n        [\n          \"box_queries\",\n          \"3d452e1a01a7ed470f50e82c\"\n        ],\n        [\n          \"boxes\",\n          \"3d452e1a01a7ed470f50e82c\"\n        ],\n        [\n          \"point_queries\",\n          \"3d452e1a01a7ed470f50e82c\"\n        ]\n      ],\n      \"parameter_fingerprint\": [\n        [\n          \"operation\",\n          \"5cf7504d9781301d83347546\"\n        ],\n        [\n          \"prepared_queries\",\n          \"b5bea41b6c623f7c09f1bf24\"\n        ]\n      ],\n      \"partner\": \"none\",\n      \"primitive\": \"aabb_index_query_2d\",\n      \"stable_id\": \"acb726c9a13f54a377137b32\"\n    },\n    \"cold_hot_phase_split_required\": true,\n    \"explicit_reuse_helper\": \"get_or_prepare_explicit_session\",\n    \"policy\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"broad_rt_core_claim_authorized\": false,\n      \"cache_enabled\": false,\n      \"cache_key\": {\n        \"app_specific_native_engine_logic_allowed\": false,\n        \"automatic_partner_selection_authorized\": false,\n        \"backend\": \"optix\",\n        \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n        \"device\": \"cuda:0\",\n        \"explicit_key_required\": true,\n        \"input_fingerprints\": [\n          [\n            \"box_queries\",\n            \"3d452e1a01a7ed470f50e82c\"\n          ],\n          [\n            \"boxes\",\n            \"3d452e1a01a7ed470f50e82c\"\n          ],\n          [\n            \"point_queries\",\n            \"3d452e1a01a7ed470f50e82c\"\n          ]\n        ],\n        \"parameter_fingerprint\": [\n          [\n            \"operation\",\n            \"5cf7504d9781301d83347546\"\n          ],\n          [\n            \"prepared_queries\",\n            \"b5bea41b6c623f7c09f1bf24\"\n          ]\n        ],\n        \"partner\": \"none\",\n        \"primitive\": \"aabb_index_query_2d\",\n        \"stable_id\": \"acb726c9a13f54a377137b32\"\n      },\n      \"claim_boundary\": \"Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.\",\n      \"cold_prepare_phase\": \"prepare_scene_or_payload\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"hot_query_phase\": \"prepared_query\",\n      \"invalidation_events\": [\n        \"explicit_invalidate\",\n        \"backend_context_reset\",\n        \"close\"\n      ],\n      \"lifetime_state\": \"session_retained\",\n      \"public_speedup_claim_authorized\": false,\n      \"release_authorized\": false,\n      \"reuse_scope\": \"explicit_user_session\",\n      \"status\": \"internal_contract_not_release_authorization\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"prepare_once_query_many_pattern\": true,\n    \"public_speedup_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false\n  },\n  \"primitive_contract\": \"generic_prepared_aabb_index_query_2d\",\n  \"public_speedup_claim_authorized\": false,\n  \"repeat_protocol\": {\n    \"measured_run_count\": 2,\n    \"query_sec_median\": 0.0004737934796139598,\n    \"query_sec_total\": 0.0009475869592279196,\n    \"repeat\": 2,\n    \"warmup\": 1\n  },\n  \"rt_core_accelerated\": true,\n  \"run_phases\": {\n    \"query_median_sec\": 0.0004737934796139598,\n    \"query_prepare_sec\": {\n      \"point_contains\": 0.0009685650002211332,\n      \"range_contains\": 0.0025077529717236757,\n      \"range_intersects\": 0.0\n    },\n    \"query_repeat\": 2,\n    \"query_sec\": {\n      \"multi_operation_packed_queries\": 0.0004737934796139598\n    },\n    \"query_summed_median_sec\": 0.0004737934796139598,\n    \"query_total_sec\": 0.0009475869592279196,\n    \"query_warmup\": 1,\n    \"scene_prepare_sec\": 0.3694039098918438\n  },\n  \"true_zero_copy_claim_authorized\": false\n}\n",
+      "timeout_sec": 180
+    },
+    {
+      "app": "rtnn",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py",
+        "--mode",
+        "prepared_optix_ranked_summary",
+        "--point-count",
+        "4096",
+        "--radius",
+        "0.02",
+        "--k",
+        "32",
+        "--repeat",
+        "2",
+        "--query-batch-size",
+        "4096",
+        "--distribution",
+        "uniform"
+      ],
+      "elapsed_sec": 3.381326033966616,
+      "returncode": 0,
+      "row_id": "rtnn_prepared_optix_ranked_summary",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "ny_pattern\": true,\n    \"public_speedup_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false\n  },\n  \"query_batch_size\": 4096,\n  \"radius\": 0.02,\n  \"repeat\": 2,\n  \"runner_payload\": {\n    \"backend\": \"optix\",\n    \"batch_count\": 1,\n    \"batch_phase_timings\": [\n      {\n        \"candidate_count_pass\": 5.093e-05,\n        \"candidate_write_pass\": 0.0,\n        \"count_download_and_prefix\": 0.0,\n        \"emitted_count\": 4096,\n        \"exact_refine\": 0.0,\n        \"mode\": \"prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_block_partials\",\n        \"prepare\": 0.0,\n        \"raw_candidate_count\": 4640,\n        \"row_download\": 1.1588e-05,\n        \"row_offset_upload\": 0.0,\n        \"upload\": 0.0\n      }\n    ],\n    \"claim_boundary\": {\n      \"aggregate_requests_batched\": true,\n      \"broad_rt_core_speedup_claim_authorized\": false,\n      \"device_ranked_summary_aggregate\": true,\n      \"device_ranked_summary_rows\": false,\n      \"device_resident_query_points\": true,\n      \"embree_ranked_summary_rows\": false,\n      \"float32_precision\": true,\n      \"materializes_neighbor_rows\": false,\n      \"paper_equivalent_rtnn_row\": false,\n      \"partitioned_or_batched_like_rtnn\": true,\n      \"prepared_cuda_graph_replay\": false,\n      \"rt_core_neighbor_search_claim_authorized\": false,\n      \"rtdl_speedup_claim_authorized\": false,\n      \"same_stream_partner_consumer\": false\n    },\n    \"contract\": {\n      \"aggregate_batch_request_mode\": \"homogeneous\",\n      \"aggregate_batch_requests\": [\n        {\n          \"k_max\": 32,\n          \"radius\": 0.02\n        }\n      ],\n      \"aggregate_request_count\": 1,\n      \"approximate\": false,\n      \"batched_queries\": true,\n      \"bounded_k\": 32,\n      \"exact\": false,\n      \"execution_path_policy_version\": null,\n      \"family\": \"fixed_radius_neighbors_3d\",\n      \"mode\": \"ranked-summary-aggregate-prepared-query-batch-float32\",\n      \"precision\": \"float32\",\n      \"prepared_cuda_graph_replay\": false,\n      \"prepared_query_points\": true,\n      \"prepared_search_structure\": true,\n      \"same_stream_partner_consumer\": false\n    },\n    \"elapsed_max_sec\": 0.0004450951237231493,\n    \"elapsed_median_sec\": 0.0002943670842796564,\n    \"elapsed_min_sec\": 0.00014363904483616352,\n    \"elapsed_runs_sec\": [\n      0.0004450951237231493,\n      0.00014363904483616352\n    ],\n    \"elapsed_sec\": 0.00014363904483616352,\n    \"error\": \"\",\n    \"execution_path_plan\": null,\n    \"execution_prepare_sec\": 2.6006367991212755,\n    \"external\": \"RTDL current\",\n    \"input_load_sec\": 0.0044206418097019196,\n    \"input_pack_sec\": 0.0022001739125698805,\n    \"k_max\": 32,\n    \"mode\": \"current_3d_fixed_radius_neighbors_optix_batched\",\n    \"ok\": true,\n    \"query_batch_size\": 4096,\n    \"query_count\": 4096,\n    \"radius\": 0.02,\n    \"ranked_aggregate_batch_summaries\": [\n      {\n        \"bounded_neighbor_count\": 4640,\n        \"k_max\": 32,\n        \"kth_id_checksum\": 8391148,\n        \"nearest_id_checksum\": 8386560,\n        \"precision\": \"float32\",\n        \"query_count\": 4096,\n        \"query_resident\": true,\n        \"radius\": 0.02,\n        \"request_index\": 0,\n        \"sum_distance\": 8.190031719394028\n      }\n    ],\n    \"ranked_aggregate_summary\": {\n      \"bounded_neighbor_count\": 4640,\n      \"kth_id_checksum\": 8391148,\n      \"nearest_id_checksum\": 8386560,\n      \"row_count\": 4096,\n      \"sum_distance\": 8.190031719394028\n    },\n    \"repeat\": 2,\n    \"result_mode\": \"ranked-summary-aggregate-prepared-query-batch-float32\",\n    \"row\": \"rtnn_current_prepared_optix_ranked_summary\",\n    \"row_count\": 4096,\n    \"runner\": \"goal2348_rtnn_v2_2_external_runner\",\n    \"same_stream_entrypoint_metadata\": null,\n    \"search_count\": 4096\n  },\n  \"runner_progress\": [\n    \"[goal2348] RTDL batched 3D start backend=optix queries=4096 search=4096 batch_size=4096 batches=1 result_mode=ranked-summary-aggregate-prepared-query-batch-float32\",\n    \"[goal2348] RTDL batched 3D repeat 1/2 ok=True sec=0.000445\",\n    \"[goal2348] RTDL batched 3D repeat 2/2 ok=True sec=0.000144\"\n  ],\n  \"seed\": 20260519\n}\n",
+      "timeout_sec": 120
+    },
+    {
+      "app": "triangle_counting",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+        "--mode",
+        "run",
+        "--backend",
+        "optix",
+        "--output-mode",
+        "summary",
+        "--optix-graph-mode",
+        "native",
+        "--copies",
+        "128",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "elapsed_sec": 7.405001959064975,
+      "returncode": 0,
+      "row_id": "triangle_counting_optix_native_summary",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"backend\": \"optix\",\n  \"benchmark_app\": \"triangle_counting\",\n  \"claim_boundary\": {\n    \"app_specific_native_engine_logic_allowed\": false,\n    \"automatic_partner_selection_authorized\": false,\n    \"benchmark_app\": true,\n    \"bfs_in_benchmark\": false,\n    \"distributed_graph_claim\": false,\n    \"full_graph_database_claim\": false,\n    \"generic_ray_triangle_rt_core_subpath_authorized\": true,\n    \"native_engine_customization\": false,\n    \"paper_code_intake_complete\": true,\n    \"paper_reproduction\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"rt_graph_1a2_generic_rt_mapping\": true,\n    \"rt_graph_2a1_generic_rt_mapping\": true,\n    \"rt_graph_id_ascending_adapter\": true,\n    \"rt_graph_preprocessing_oracle\": true,\n    \"triangle_count_rt_core_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false,\n    \"visibility_edges_in_benchmark\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"contract\": \"triangle_count_only\",\n  \"copies\": 128,\n  \"excluded_operations\": [\n    \"bfs\",\n    \"visibility_edges\"\n  ],\n  \"mode\": \"run\",\n  \"output_mode\": \"summary\",\n  \"section\": {\n    \"app\": \"graph_triangle_count\",\n    \"backend\": \"optix\",\n    \"copies\": 128,\n    \"graph_edge_count\": 768,\n    \"graph_vertex_count\": 512,\n    \"native_continuation_active\": true,\n    \"native_continuation_backend\": \"native_graph_triangle_raw_summary\",\n    \"optix_graph_mode\": \"native\",\n    \"optix_performance\": {\n      \"class\": \"host_indexed_fallback\",\n      \"note\": \"OptiX triangle-count currently uses a host-indexed CSR probe correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated.\"\n    },\n    \"output_mode\": \"summary\",\n    \"ray_tracing_accelerated\": false,\n    \"ray_tracing_note\": \"This backend is not currently classified as the graph triangle-count ray-tracing path.\",\n    \"row_count\": 128,\n    \"rows\": [],\n    \"rt_core_accelerated\": false,\n    \"run_phases\": {\n      \"input_construction_sec\": 0.0004015839658677578,\n      \"native_summary_postprocess_sec\": 3.781169652938843e-07,\n      \"query_and_materialize_sec\": 6.648499553091824,\n      \"query_raw_view_sec\": 6.648499553091824,\n      \"row_materialization_sec\": 0.0\n    },\n    \"seed_count\": 384,\n    \"summary\": {\n      \"touched_vertex_count\": 384,\n      \"triangle_count\": 128\n    }\n  },\n  \"touched_vertex_count\": 384,\n  \"triangle_count\": 128\n}\n",
+      "timeout_sec": 180
+    }
+  ],
+  "summary": {
+    "app_count": 10,
+    "broad_rt_core_claim_authorized": false,
+    "claim_boundary": "Goal3823 records the current executable benchmark app front-door commands after Goals3818-3822. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "numba_required_rows": [
+      "rt_dbscan_optix_numba_prepared_grid",
+      "barnes_hut_numba_exact_force"
+    ],
+    "optix_required_rows": [
+      "hausdorff_xhd_current_optix_threshold",
+      "spatial_rayjoin_pip_count_current_prepared_optix",
+      "rt_dbscan_optix_numba_prepared_grid",
+      "robot_collision_optix_prepared_device_count",
+      "contact_manifold_optix_native_collect_k",
+      "raydb_style_optix_count_primitive_first",
+      "barnes_hut_numba_exact_force",
+      "librts_spatial_index_optix_aabb_index",
+      "rtnn_prepared_optix_ranked_summary",
+      "triangle_counting_optix_native_summary"
+    ],
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "row_count": 10,
+    "status": "internal_command_registry_not_release_authorization",
+    "version": "rtdl.v2_10.current_benchmark_front_doors.goal3823.v1"
+  },
+  "validation": {
+    "app_count": 10,
+    "claim_boundary": "Goal3823 records the current executable benchmark app front-door commands after Goals3818-3822. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "errors": [],
+    "row_count": 10,
+    "status": "accept",
+    "version": "rtdl.v2_10.current_benchmark_front_doors.goal3823.v1"
+  },
+  "version": "rtdl.v2_10.current_benchmark_front_doors.goal3823.v1"
+}
