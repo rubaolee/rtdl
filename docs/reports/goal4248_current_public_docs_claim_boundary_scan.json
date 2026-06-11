@@ -2,6 +2,13 @@
   "accepted_boundary_or_negative_context": [
     {
       "classification": "accepted_boundary_or_negative_context",
+      "line": 71,
+      "path": "docs/learn/benchmark_evidence_index.md",
+      "phrase": "whole-application speedup",
+      "snippet": "must   be read by exact app, command, hardware, backend, partner, and dataset. - CuPy/Numba comparison rows are partner-continuation evidence only. They do   not become RT-core or whole-application speedup claims. - If a row needs OptiX, use a pod or workstation with `RTDL_OPTIX_LIBRARY`   pointing to `librtdl_optix`. - If a row needs Numba, install the CUDA-capable Numba stack on t"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
       "line": 5,
       "path": "docs/learn/benchmark_partner_reference_matrix.md",
       "phrase": "speedup",
@@ -261,21 +268,21 @@
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 43,
+      "line": 46,
       "path": "examples/current/research_benchmarks/README.md",
       "phrase": "public speedup claim",
       "snippet": "witness rows; local Embree generic-collector parity, RTX A5000 OptiX parity including generic AABB row output, standalone C++ CPU baseline, and 3-AI promotion consensus exist; no public speedup claim | `contact_manifold/README.md` | | `raydb_style/` | RayDB-style columnar grouped aggregate contract study; CPU reference plus Embree/OptiX count-sum parity over existing generic c"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 52,
+      "line": 55,
       "path": "examples/current/research_benchmarks/README.md",
       "phrase": "speedup",
       "snippet": "lity accepted as a segmented/streamed-lowering follow-up | `triangle_counting/README.md` |  ## How To Read Results  - Treat these as reproducible research harnesses, not universal speedup claims. - CPU-only commands are useful for correctness and contract checks. - OptiX timing needs a CUDA-capable machine with `librtdl_optix` built and   `RTDL_OPTIX_LIBRARY` set w"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 57,
+      "line": 60,
       "path": "examples/current/research_benchmarks/README.md",
       "phrase": "accelerated",
       "snippet": "`RTDL_OPTIX_LIBRARY` set when the library is outside the default path. - A result can show an RTDL program is useful for a workload without claiming   that every phase is RT-core accelerated. - Public performance language should cite the exact script, dataset, backend,   method, commit, and hardware.  ## Recommended Flow  1. Run the CPU reference command in the study"
@@ -478,35 +485,35 @@
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 139,
+      "line": 143,
       "path": "README.md",
       "phrase": "whole-application speedup",
       "snippet": "x separates promoted benchmark apps from learner/example apps. Promoted benchmarks are reconstruction instruments for RTDL language/runtime design, not broad paper-reproduction or whole-application speedup claims.  Do not read v2.10 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof that every user pr"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 141,
+      "line": 145,
       "path": "README.md",
       "phrase": "package-install",
       "snippet": "pps. Promoted benchmarks are reconstruction instruments for RTDL language/runtime design, not broad paper-reproduction or whole-application speedup claims.  Do not read v2.10 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof that every user program is faster. For the exact positive and nega"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 141,
+      "line": 145,
       "path": "README.md",
       "phrase": "broad RT-core claim",
       "snippet": "are reconstruction instruments for RTDL language/runtime design, not broad paper-reproduction or whole-application speedup claims.  Do not read v2.10 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof that every user program is faster. For the exact positive and negative rule, read [Partner Acce"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 143,
+      "line": 147,
       "path": "README.md",
       "phrase": "faster",
       "snippet": "Do not read v2.10 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof that every user program is faster. For the exact positive and negative rule, read [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md).  The v2.10 partner rule is user-chosen and evidence-gat"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 164,
+      "line": 168,
       "path": "README.md",
       "phrase": "faster",
       "snippet": "eout_2026-06-07.md).  ## Performance Boundary  `--backend optix` means the OptiX backend is selected. It is not by itself a claim that every app, every phase, or every workload is faster on GPU.  Current measured evidence supports narrow statements: selected long RT-heavy workloads can show large OptiX speedups over Embree on the same app-level command surface. Sh"
@@ -540,8 +547,15 @@
       "snippet": "/Numba partner choices where needed, and generic app-agnostic engine primitives.  These tutorials are not package-install promises, automatic partner-selection promises, universal speedup claims, or paper-reproduction claims.  ## Related Doors  - [Project Front Page](../README.md) - [Docs Index](../docs/README.md) - [Examples Index](../examples/README.md) - [App An"
     }
   ],
-  "accepted_boundary_or_negative_count": 77,
+  "accepted_boundary_or_negative_count": 78,
   "accepted_scoped_evidence_context": [
+    {
+      "classification": "accepted_scoped_evidence_context",
+      "line": 47,
+      "path": "docs/learn/benchmark_evidence_index.md",
+      "phrase": "paper reproduction",
+      "snippet": "NVIDIA pod for OptiX timing | | Spatial RayJoin | `spatial_rayjoin_pip_count_current_prepared_optix` | contract-split RayJoin-style path; scalar/count paths are stronger than full paper reproduction | NVIDIA pod plus public-CDB fixture for representative route | | RT-DBSCAN | `rt_dbscan_optix_numba_prepared_grid` | OptiX fixed-radius flags plus explicit Numba component contin"
+    },
     {
       "classification": "accepted_scoped_evidence_context",
       "line": 26,
@@ -669,7 +683,7 @@
       "snippet": "tiX at about `260x` faster than dense partner baselines for the scalar-answer contracts. | | PIP one-shot bounded public CDB scalar count | CuPy dense CUDA-core count is still the faster current route at that size. | | Resident repeated PIP | The prepared batch executor is the current RTDL/OptiX direction, with partner guidance recording about `0.024ms/request` fo"
     }
   ],
-  "accepted_scoped_evidence_count": 18,
+  "accepted_scoped_evidence_count": 19,
   "claim_boundary": {
     "amd_performance_claim_authorized": false,
     "automatic_partner_selection_authorized": false,
@@ -682,17 +696,19 @@
     "true_zero_copy_claim_authorized": false,
     "whole_app_speedup_claim_authorized": false
   },
-  "finding_count": 95,
+  "finding_count": 97,
   "hard_blocker_count": 0,
   "hard_blockers": [],
-  "public_file_count": 30,
+  "public_file_count": 32,
   "public_files_scanned": [
+    "docs/learn/benchmark_evidence_index.md",
     "docs/learn/benchmark_partner_reference_matrix.md",
     "docs/learn/partner_choice_for_custom_logic.md",
     "docs/learn/prepared_execution_pattern.md",
     "docs/learn/prepared_session_reuse.md",
     "docs/learn/primitive_discovery_workflow.md",
     "docs/learn/README.md",
+    "docs/learn/source_tree_doctor.md",
     "examples/current/research_benchmarks/barnes_hut/README.md",
     "examples/current/research_benchmarks/contact_manifold/README.md",
     "examples/current/research_benchmarks/hausdorff_xhd/README.md",
