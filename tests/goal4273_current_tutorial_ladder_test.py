@@ -22,6 +22,7 @@ class CurrentTutorialLadderTest(unittest.TestCase):
             "05_partner_columns_cupy_numba.md",
             "06_prepared_execution_measurement.md",
             "07_benchmark_app_python_rtdl_partner.md",
+            "08_spatial_join_rayjoin_reference.md",
         ]
         missing = [
             name for name in expected if not (CURRENT_TUTORIAL_DIR / name).is_file()
@@ -94,6 +95,20 @@ class CurrentTutorialLadderTest(unittest.TestCase):
         self.assertEqual([], missing)
         self.assertIn("CuPy and Numba are explicit choices", text)
         self.assertIn("optional OptiX", text)
+
+    def test_spatial_join_reference_is_in_tutorial_track(self) -> None:
+        index = (CURRENT_TUTORIAL_DIR / "README.md").read_text(encoding="utf-8")
+        tutorial_index = (ROOT / "docs" / "tutorials" / "README.md").read_text(
+            encoding="utf-8"
+        )
+        reference = (
+            CURRENT_TUTORIAL_DIR / "08_spatial_join_rayjoin_reference.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("08_spatial_join_rayjoin_reference.md", index)
+        self.assertIn("08_spatial_join_rayjoin_reference.md", tutorial_index)
+        self.assertIn("CODE_WALKTHROUGH.md", reference)
+        self.assertIn("RayJoin-style spatial join", reference)
 
 
 if __name__ == "__main__":

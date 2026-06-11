@@ -31,6 +31,7 @@ generic primitives, not hidden custom engines.
 | 5 | [Partner Columns With CuPy Or Numba](05_partner_columns_cupy_numba.md) | Learn when a partner is useful and how to keep the choice explicit. |
 | 6 | [Prepared Execution And Measurement](06_prepared_execution_measurement.md) | Separate setup, warmup, validation, and steady-state timing. |
 | 7 | [Benchmark App Walkthrough](07_benchmark_app_python_rtdl_partner.md) | Run an RT-DBSCAN-style benchmark app with CPU, RTDL, CuPy, and Numba routes. |
+| 8 | [Spatial Join Benchmark Reference](08_spatial_join_rayjoin_reference.md) | Study a RayJoin-style spatial join app and its RTDL-vs-partner route choices. |
 
 ## Prerequisites
 

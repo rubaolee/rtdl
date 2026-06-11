@@ -26,6 +26,7 @@ source-tree guidance and do not change release or performance claim boundaries.
 | 5 | [Partner Columns With CuPy Or Numba](current/05_partner_columns_cupy_numba.md) | Explicit partner choice for custom continuation |
 | 6 | [Prepared Execution And Measurement](current/06_prepared_execution_measurement.md) | Setup, prepare, warmup, steady-state, validation |
 | 7 | [Benchmark App Walkthrough](current/07_benchmark_app_python_rtdl_partner.md) | CPU oracle, RTDL rows, CuPy, Numba, and optional OptiX |
+| 8 | [Spatial Join Benchmark Reference](current/08_spatial_join_rayjoin_reference.md) | RayJoin-style PIP, LSI, overlay, prepared routes, and partner choices |
 
 ## Reference Tutorials
 

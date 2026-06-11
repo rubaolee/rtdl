@@ -14,6 +14,7 @@ every RayJoin paper result or optimization.
 | File | Role |
 | --- | --- |
 | `rtdl_rayjoin_v2_spatial_join_app.py` | CLI and Python API for PIP, LSI, and overlay-seed workloads |
+| `CODE_WALKTHROUGH.md` | Learner and RayJoin-author walkthrough of the code, routes, optimizations, and performance boundaries |
 
 ## Workloads
 
