@@ -26,6 +26,9 @@ def build_remote_script(
     ref: str,
     build_optix: bool,
     optix_prefix: str,
+    cuda_prefix: str | None,
+    numba_cuda_prefix: str | None,
+    rayjoin_public_cdb_dir: str | None,
     run_hardware: bool,
     run_partner_comparison: bool,
     timeout_scale: float,
@@ -41,8 +44,9 @@ def build_remote_script(
         build_step = textwrap.dedent(
             f"""
             echo "[rtdl-remote-pod] build OptiX library"
-            make build-optix OPTIX_PREFIX={_shell_quote(optix_prefix)} CUDA_PREFIX="${{CUDA_HOME:-/usr/local/cuda}}"
+            make build-optix OPTIX_PREFIX={_shell_quote(optix_prefix)} CUDA_PREFIX="${{RTDL_CUDA_PREFIX:-${{CUDA_HOME:-/usr/local/cuda}}}}"
             export RTDL_OPTIX_LIBRARY="$PWD/build/librtdl_optix.so"
+            export RTDL_OPTIX_LIB="$PWD/build/librtdl_optix.so"
             """
         ).strip()
     else:
@@ -54,6 +58,31 @@ def build_remote_script(
             fi
             """
         ).strip()
+
+    env_lines = []
+    if cuda_prefix:
+        quoted_cuda = _shell_quote(cuda_prefix)
+        env_lines.extend(
+            [
+                f"export RTDL_CUDA_PREFIX={quoted_cuda}",
+                'export PATH="$RTDL_CUDA_PREFIX/bin:$PATH"',
+                'export LD_LIBRARY_PATH="$RTDL_CUDA_PREFIX/targets/x86_64-linux/lib:$RTDL_CUDA_PREFIX/lib64:${LD_LIBRARY_PATH:-}"',
+            ]
+        )
+    if numba_cuda_prefix:
+        quoted_numba = _shell_quote(numba_cuda_prefix)
+        env_lines.extend(
+            [
+                f"export NUMBA_CUDA_PREFIX={quoted_numba}",
+                'export CUDA_HOME="$NUMBA_CUDA_PREFIX"',
+                'export CUDA_PATH="$NUMBA_CUDA_PREFIX"',
+                'export PATH="$NUMBA_CUDA_PREFIX/bin:$PATH"',
+                'export LD_LIBRARY_PATH="$NUMBA_CUDA_PREFIX/nvvm/lib64:${LD_LIBRARY_PATH:-}"',
+            ]
+        )
+    if rayjoin_public_cdb_dir:
+        env_lines.append(f"export RTDL_RAYJOIN_PUBLIC_CDB_DIR={_shell_quote(rayjoin_public_cdb_dir)}")
+    env_setup = "\n".join(env_lines)
 
     return textwrap.dedent(
         f"""
@@ -69,7 +98,11 @@ def build_remote_script(
           git checkout --detach FETCH_HEAD
         fi
         export PYTHONPATH=src:.
+        {env_setup}
         echo "[rtdl-remote-pod] head $(git rev-parse --short HEAD)"
+        echo "[rtdl-remote-pod] RTDL_CUDA_PREFIX=${{RTDL_CUDA_PREFIX:-unset}}"
+        echo "[rtdl-remote-pod] NUMBA_CUDA_PREFIX=${{NUMBA_CUDA_PREFIX:-unset}}"
+        echo "[rtdl-remote-pod] RTDL_RAYJOIN_PUBLIC_CDB_DIR=${{RTDL_RAYJOIN_PUBLIC_CDB_DIR:-unset}}"
         echo "[rtdl-remote-pod] bootstrap probe before build"
         python3 scripts/rtdl_pod_bootstrap_probe.py --json | tee "$WORKDIR/bootstrap_probe_before_build.json"
         {build_step}
@@ -113,6 +146,9 @@ def plan(args: argparse.Namespace) -> dict[str, Any]:
         ref=args.ref,
         build_optix=args.build_optix,
         optix_prefix=args.optix_prefix,
+        cuda_prefix=args.cuda_prefix,
+        numba_cuda_prefix=args.numba_cuda_prefix,
+        rayjoin_public_cdb_dir=args.rayjoin_public_cdb_dir,
         run_hardware=args.run_hardware,
         run_partner_comparison=args.run_partner_comparison,
         timeout_scale=args.timeout_scale,
@@ -188,6 +224,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ref", default="main", help="branch or tag to run; non-main refs are fetched and checked out")
     parser.add_argument("--build-optix", action="store_true", help="run make build-optix on the pod")
     parser.add_argument("--optix-prefix", default="/root/vendor/optix-sdk")
+    parser.add_argument("--cuda-prefix", help="native CUDA prefix for RTDL/OptiX builds, for example /usr/local/cuda-12.8")
+    parser.add_argument("--numba-cuda-prefix", help="optional CUDA/NVVM prefix used by Numba CUDA kernels")
+    parser.add_argument("--rayjoin-public-cdb-dir", help="optional external RayJoin public-CDB fixture directory")
     parser.add_argument("--run-hardware", action="store_true", help="run front-door and scale-profile hardware packets")
     parser.add_argument("--run-partner-comparison", action="store_true", help="also run the large CuPy/Numba comparison")
     parser.add_argument("--timeout-scale", type=float, default=1.0)

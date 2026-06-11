@@ -1,0 +1,113 @@
+{
+  "blockers": [],
+  "broad_rt_core_claim_authorized": false,
+  "checks": {
+    "cxx": {
+      "available": true,
+      "path": "/usr/bin/g++"
+    },
+    "make": {
+      "available": true,
+      "path": "/usr/bin/make"
+    },
+    "modules": {
+      "cupy": {
+        "available": true,
+        "module": "cupy"
+      },
+      "numba": {
+        "available": true,
+        "module": "numba"
+      },
+      "numpy": {
+        "available": true,
+        "module": "numpy"
+      }
+    },
+    "nvcc": {
+      "available": true,
+      "path": "/usr/local/cuda-12.8/bin/nvcc",
+      "probe": {
+        "command": [
+          "/usr/local/cuda-12.8/bin/nvcc",
+          "--version"
+        ],
+        "ok": true,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0"
+      }
+    },
+    "nvidia_smi": {
+      "available": true,
+      "path": "/usr/bin/nvidia-smi",
+      "probe": {
+        "command": [
+          "nvidia-smi"
+        ],
+        "ok": true,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "Thu Jun 11 04:56:05 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 565.57.01              Driver Version: 565.57.01      CUDA Version: 12.7     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA A40                     On  |   00000000:57:00.0 Off |                    0 |\n|  0%   33C    P8             31W /  300W |       1MiB /  46068MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+"
+      }
+    },
+    "optix_headers": {
+      "available": true,
+      "checked_headers": [
+        {
+          "exists": false,
+          "path": "/root/vendor/optix-sdk/include/optix.h"
+        },
+        {
+          "exists": true,
+          "path": "/root/vendor/optix-dev/include/optix.h"
+        },
+        {
+          "exists": false,
+          "path": "/workspace/vendor/optix-sdk/include/optix.h"
+        },
+        {
+          "exists": false,
+          "path": "/workspace/vendor/optix-dev/include/optix.h"
+        },
+        {
+          "exists": false,
+          "path": "/workspace/vendor/optix-dev-8.0.0/include/optix.h"
+        }
+      ],
+      "selected_prefix": "/root/vendor/optix-dev"
+    },
+    "python": {
+      "executable": "/usr/bin/python3",
+      "version": "3.12.3"
+    },
+    "rtdl_optix_library": {
+      "available": false,
+      "checked_libraries": [
+        {
+          "exists": false,
+          "path": "/root/rtdl_v2_10_validation.JeQCvX/repo/build/librtdl_optix.so"
+        },
+        {
+          "exists": false,
+          "path": "/root/rtdl_v2_10_validation.JeQCvX/repo/build/rtdl_optix.dll"
+        },
+        {
+          "exists": false,
+          "path": "/root/rtdl_v2_10_validation.JeQCvX/repo/build/librtdl_optix.dylib"
+        }
+      ],
+      "selected_library": null
+    }
+  },
+  "public_speedup_claim_authorized": false,
+  "recommended_build_command": "make build-optix OPTIX_PREFIX=/root/vendor/optix-dev CUDA_PREFIX=/usr/local/cuda-12.8",
+  "recommended_validation_command": "PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python scripts/rtdl_v2_10_pod_validation_bundle.py --run-front-door --run-scale-profile --output-dir docs/reports/v2_10_pod_validation_bundle_pod",
+  "release_authorized": false,
+  "repo": "/root/rtdl_v2_10_validation.JeQCvX/repo",
+  "status": "not_ready",
+  "tool": "rtdl_pod_bootstrap_probe",
+  "warnings": [
+    "librtdl_optix unavailable: run the build command before hardware packets"
+  ]
+}
