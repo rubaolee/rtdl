@@ -30,6 +30,15 @@ Scale-profile pod runner:
 PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python scripts/goal3828_current_benchmark_scale_profile_runner.py --output-dir docs/reports/current_benchmark_scale_profile_rerun
 ```
 
+Bounded pod-validation bundle:
+
+```bash
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python scripts/rtdl_v2_10_pod_validation_bundle.py --run-front-door --run-scale-profile --output-dir docs/reports/v2_10_pod_validation_bundle_pod
+```
+
+For the full procedure, read
+[v2.10 Pod Validation Bundle](../audit/runbooks/v2_10_pod_validation_bundle.md).
+
 ## Current Ten-App Rows
 
 | App | Current front-door row | Partner/native note | Pod need |
