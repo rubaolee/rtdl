@@ -19,6 +19,7 @@ py -3 scripts/rtdl_remote_pod_validation_driver.py `
   --target root@POD_HOST `
   --port POD_PORT `
   --identity-file ~/.ssh/id_ed25519 `
+  --ref main `
   --build-optix `
   --run-hardware `
   --json
@@ -37,6 +38,7 @@ py -3 scripts/rtdl_remote_pod_validation_driver.py `
   --target root@POD_HOST `
   --port POD_PORT `
   --identity-file ~/.ssh/id_ed25519 `
+  --ref main `
   --build-optix `
   --run-hardware `
   --execute
@@ -44,6 +46,9 @@ py -3 scripts/rtdl_remote_pod_validation_driver.py `
 
 Add `--run-partner-comparison` only when there is enough pod time for the
 large-scale CuPy/Numba comparison packet.
+
+Use `--repo-url` and `--ref` when the pod must validate a fork, branch, or tag.
+The default is the public RTDL repository at `main`.
 
 ## Expected Progress Lines
 

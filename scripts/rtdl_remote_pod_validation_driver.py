@@ -22,6 +22,8 @@ def _shell_quote(value: str) -> str:
 
 def build_remote_script(
     *,
+    repo_url: str,
+    ref: str,
     build_optix: bool,
     optix_prefix: str,
     run_hardware: bool,
@@ -59,8 +61,13 @@ def build_remote_script(
         echo "[rtdl-remote-pod] start $(date -Iseconds)"
         WORKDIR="$(mktemp -d /root/rtdl_v2_10_validation.XXXXXX)"
         echo "[rtdl-remote-pod] workdir $WORKDIR"
-        git clone --depth 1 {_shell_quote(REPO_URL)} "$WORKDIR/repo"
+        git clone --depth 1 {_shell_quote(repo_url)} "$WORKDIR/repo"
         cd "$WORKDIR/repo"
+        if [ {_shell_quote(ref)} != "main" ]; then
+          echo "[rtdl-remote-pod] checkout requested ref"
+          git fetch --depth 1 origin {_shell_quote(ref)}
+          git checkout --detach FETCH_HEAD
+        fi
         export PYTHONPATH=src:.
         echo "[rtdl-remote-pod] head $(git rev-parse --short HEAD)"
         echo "[rtdl-remote-pod] bootstrap probe before build"
@@ -88,6 +95,8 @@ def build_ssh_command(target: str, *, port: str | None, identity_file: str | Non
 
 def plan(args: argparse.Namespace) -> dict[str, Any]:
     remote_script = build_remote_script(
+        repo_url=args.repo_url,
+        ref=args.ref,
         build_optix=args.build_optix,
         optix_prefix=args.optix_prefix,
         run_hardware=args.run_hardware,
@@ -98,6 +107,8 @@ def plan(args: argparse.Namespace) -> dict[str, Any]:
     return {
         "tool": "rtdl_remote_pod_validation_driver",
         "mode": "execute" if args.execute else "dry_run",
+        "repo_url": args.repo_url,
+        "ref": args.ref,
         "command": command,
         "remote_script": remote_script,
         "destructive_checkout": False,
@@ -159,6 +170,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--port", help="SSH port")
     parser.add_argument("--identity-file", help="SSH private key path")
     parser.add_argument("--execute", action="store_true", help="actually run the remote script")
+    parser.add_argument("--repo-url", default=REPO_URL, help="Git repository URL to clone on the pod")
+    parser.add_argument("--ref", default="main", help="branch or tag to run; non-main refs are fetched and checked out")
     parser.add_argument("--build-optix", action="store_true", help="run make build-optix on the pod")
     parser.add_argument("--optix-prefix", default="/root/vendor/optix-sdk")
     parser.add_argument("--run-hardware", action="store_true", help="run front-door and scale-profile hardware packets")
