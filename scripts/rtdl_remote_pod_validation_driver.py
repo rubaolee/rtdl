@@ -143,8 +143,7 @@ def _execute_ssh(payload: dict[str, Any], *, timeout_sec: int, json_mode: bool) 
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        text=True,
-        bufsize=1,
+        bufsize=0,
     )
 
     def _kill_on_timeout() -> None:
@@ -156,12 +155,13 @@ def _execute_ssh(payload: dict[str, Any], *, timeout_sec: int, json_mode: bool) 
     captured: list[str] = []
     try:
         assert process.stdin is not None
-        process.stdin.write(payload["remote_script"])
+        process.stdin.write(payload["remote_script"].encode("utf-8"))
         process.stdin.close()
         assert process.stdout is not None
         for line in process.stdout:
-            captured.append(line)
-            stream.write(line)
+            decoded = line.decode("utf-8", errors="replace")
+            captured.append(decoded)
+            stream.write(decoded)
             stream.flush()
         returncode = process.wait()
     finally:

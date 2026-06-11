@@ -20,7 +20,7 @@ class Goal4289RemotePodDriverStreamingFixTest(unittest.TestCase):
         self.assertIn("subprocess.Popen", source)
         self.assertIn("stderr=subprocess.STDOUT", source)
         self.assertIn("for line in process.stdout", source)
-        self.assertIn("stream.write(line)", source)
+        self.assertIn("stream.write(decoded)", source)
         self.assertIn("threading.Timer", source)
 
     def test_json_dry_run_exposes_timeout(self) -> None:

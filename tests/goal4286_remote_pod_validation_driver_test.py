@@ -85,7 +85,7 @@ class Goal4286RemotePodValidationDriverTest(unittest.TestCase):
 
         self.assertIn("subprocess.Popen", source)
         self.assertIn("for line in process.stdout", source)
-        self.assertIn("stream.write(line)", source)
+        self.assertIn("stream.write(decoded)", source)
         self.assertIn("return int(summary[\"returncode\"])", source)
         self.assertNotIn("completed.stdout", source)
         self.assertNotIn("completed.stderr", source)
