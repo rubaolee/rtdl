@@ -14,6 +14,9 @@ For custom continuation choices, use the current learner guide:
 [Choosing A Partner For Custom Logic](../../../docs/learn/partner_choice_for_custom_logic.md)
 and the
 [Benchmark Partner Reference Matrix](../../../docs/learn/benchmark_partner_reference_matrix.md).
+For the current ten-app row map, pod requirements, and evidence reports, use
+the
+[Benchmark Evidence Index](../../../docs/learn/benchmark_evidence_index.md).
 The short rule is primitive first, explicit partner second: the benchmark apps
 recommend a current path per contract, CuPy remains useful as a CUDA-array
 baseline/opponent, and Numba is the no-RawKernel custom-kernel lane for selected

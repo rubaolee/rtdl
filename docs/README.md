@@ -49,7 +49,8 @@ Read these in order:
 9. [Capability Boundaries](capability_boundaries.md)
 10. [Current Architecture](current_architecture.md)
 11. [Performance Model](performance_model.md)
-12. [IR And Lowering](rtdl/ir_and_lowering.md)
+12. [Benchmark Evidence Index](learn/benchmark_evidence_index.md)
+13. [IR And Lowering](rtdl/ir_and_lowering.md)
 
 ## Current Reference Pages
 
@@ -62,6 +63,7 @@ Read these in order:
 | Partner acceleration | [Partner Acceleration Boundaries](partner_acceleration_boundaries.md) |
 | Current support matrix | [Current Support Matrix](current_main_support_matrix.md) |
 | Runtime overhead | [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
+| Benchmark evidence | [Benchmark Evidence Index](learn/benchmark_evidence_index.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
 | Release Reports | [Release Reports](release_reports/) |
 | Current benchmark adequacy | [Goal3786 v2.10 Benchmark Adequacy](reports/goal3786_current_benchmark_adequacy_after_hiprt_closeout_2026-06-07.md) |

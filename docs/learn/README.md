@@ -16,9 +16,10 @@ Use this door if you want to understand RTDL quickly and write programs.
 10. [Application Catalog](../application_catalog.md)
 11. [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
 12. [Benchmark Partner Reference Matrix](benchmark_partner_reference_matrix.md)
-13. [Feature Guide](../rtdl_feature_guide.md)
-14. [Programming Guide](../rtdl/programming_guide.md)
-15. [DSL Reference](../rtdl/dsl_reference.md)
+13. [Benchmark Evidence Index](benchmark_evidence_index.md)
+14. [Feature Guide](../rtdl_feature_guide.md)
+15. [Programming Guide](../rtdl/programming_guide.md)
+16. [DSL Reference](../rtdl/dsl_reference.md)
 
 ## Keep In Mind
 

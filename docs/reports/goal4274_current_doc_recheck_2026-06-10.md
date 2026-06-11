@@ -27,7 +27,7 @@ evidence lanes remain intentionally historical and are not rewritten:
 
 | Check | Result |
 | --- | --- |
-| Current public Markdown files scanned | 90 |
+| Current public Markdown files scanned | 91 |
 | Broken local Markdown links | 0 |
 | Stale current-surface wording hits | 0 |
 | Generated primitive catalog drift | 0 |
@@ -61,6 +61,7 @@ pre release
 | Documentation tests | Older tests still referenced `examples/v2_0` and hard-coded an old audit count. | Updated the tests to current `examples/current` paths and dynamic current-doc link coverage. |
 | Tutorial directory shape | Current tutorials lived under `docs/tutorials/`, mixing teaching material with reference docs. | Promoted current tutorials to top-level `tutorials/`, moved old loose tutorial pages into `history/tutorial_archive/`, and updated current link gates to include the new top-level tutorial tree. |
 | Source-tree setup | New users had no single command to distinguish required source-tree checks from optional partner/native warnings. | Added a source-tree doctor page and wired it into the current learner path. |
+| Benchmark evidence navigation | Current ten-app benchmark evidence existed across several reports and runners, but users lacked a compact current map. | Added a benchmark evidence index and linked it from the docs and benchmark directory. |
 
 ## Validation Commands
 
