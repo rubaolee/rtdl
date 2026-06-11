@@ -17,6 +17,20 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 
+CUDA_PREFIX_CANDIDATES = (
+    Path(os.environ["CUDA_HOME"]) if os.environ.get("CUDA_HOME") else None,
+    Path(os.environ["CUDA_PATH"]) if os.environ.get("CUDA_PATH") else None,
+    Path("/usr/local/cuda"),
+    Path("/usr/local/cuda-13.0"),
+    Path("/usr/local/cuda-12.8"),
+    Path("/usr/local/cuda-12.6"),
+    Path("/usr/local/cuda-12.5"),
+    Path("/usr/local/cuda-12.4"),
+    Path("/usr/lib/cuda"),
+    Path("/opt/cuda"),
+)
+
+
 def _optix_prefix_candidates() -> tuple[Path, ...]:
     raw_candidates = [
         Path(os.environ["OPTIX_PREFIX"]) if os.environ.get("OPTIX_PREFIX") else None,
@@ -77,6 +91,19 @@ def _file_status(path: Path) -> dict[str, Any]:
     return {"path": str(path), "exists": path.exists()}
 
 
+def _nvcc_path() -> str | None:
+    path_nvcc = shutil.which("nvcc")
+    if path_nvcc:
+        return path_nvcc
+    for prefix in CUDA_PREFIX_CANDIDATES:
+        if prefix is None:
+            continue
+        candidate = prefix / "bin" / "nvcc"
+        if candidate.exists():
+            return str(candidate)
+    return None
+
+
 def _optix_prefix_status() -> dict[str, Any]:
     candidates = _optix_prefix_candidates()
     checked = []
@@ -118,7 +145,7 @@ def _build_command(optix_prefix: str | None) -> str:
 
 def probe() -> dict[str, Any]:
     nvidia_smi_path = shutil.which("nvidia-smi")
-    nvcc_path = shutil.which("nvcc")
+    nvcc_path = _nvcc_path()
     make_path = shutil.which("make")
     gpp_path = shutil.which("g++") or shutil.which("c++")
     optix = _optix_prefix_status()
