@@ -143,9 +143,9 @@ Current guidance lives in:
 
 - [Choosing A Partner For Custom Logic](learn/partner_choice_for_custom_logic.md)
 - [Benchmark Partner Reference Matrix](learn/benchmark_partner_reference_matrix.md)
-- `docs/reports/goal4266_cupy_numba_user_partner_decision_matrix_2026-06-10.md`
-- `docs/reports/goal4267_v2_10_milestone_release_readiness_2026-06-10.md`
-- `docs/reports/goal4270_v2_10_public_release_tag_push_2026-06-10.md`
+- `docs/reports/goal4266_large_scale_cupy_numba_partner_comparison_2026-06-09.md`
+- `docs/reports/goal4267_v2_10_milestone_release_packet_2026-06-10.md`
+- `docs/reports/goal4270_v2_10_milestone_release_3ai_consensus_2026-06-10.md`
 
 Historical partner-continuation reports remain in `docs/reports/` for
 reviewers. They explain how the project reached the current v2.10 rule; they do
