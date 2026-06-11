@@ -28,6 +28,9 @@ Before running the hardware bundle on a pod, run the
 PYTHONPATH=src:. python scripts/rtdl_pod_bootstrap_probe.py --json
 ```
 
+If you want one SSH-controlled pod session with visible progress markers, use
+the [v2.10 Remote Pod Validation Driver](v2_10_remote_pod_validation_driver.md).
+
 ## Hardware Run
 
 On a configured NVIDIA pod with `RTDL_OPTIX_LIBRARY` set:
