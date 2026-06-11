@@ -248,7 +248,9 @@ def _partner_column_to_list(column, partner: str) -> list[object]:
         import cupy
 
         return cupy.asnumpy(column).tolist()
-    raise ValueError("partner must be 'torch' or 'cupy'")
+    if partner == "numba":
+        return column.copy_to_host().tolist()
+    raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
 
 
 def _run_partner_exact_top_k(
@@ -493,7 +495,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--partner",
-        choices=("torch", "cupy"),
+        choices=("torch", "cupy", "numba"),
         default="cupy",
         help="Partner runtime for --backend partner_exact_quality.",
     )

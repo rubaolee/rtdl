@@ -381,6 +381,11 @@ from .current_benchmark_front_doors import CURRENT_BENCHMARK_FRONT_DOOR_VERSION
 from .current_benchmark_front_doors import current_benchmark_front_doors
 from .current_benchmark_front_doors import summarize_current_benchmark_front_doors
 from .current_benchmark_front_doors import validate_current_benchmark_front_doors
+from .current_embree_cpu_partner_reference import CURRENT_EMBREE_CPU_PARTNER_REFERENCE_STATUS
+from .current_embree_cpu_partner_reference import CURRENT_EMBREE_CPU_PARTNER_REFERENCE_VERSION
+from .current_embree_cpu_partner_reference import current_embree_cpu_partner_reference_rows
+from .current_embree_cpu_partner_reference import summarize_current_embree_cpu_partner_reference
+from .current_embree_cpu_partner_reference import validate_current_embree_cpu_partner_reference
 from .current_benchmark_scale_profiles import CURRENT_BENCHMARK_SCALE_PROFILE_STATUS
 from .current_benchmark_scale_profiles import CURRENT_BENCHMARK_SCALE_PROFILE_VERSION
 from .current_benchmark_scale_profiles import current_benchmark_scale_profiles
@@ -2263,6 +2268,11 @@ __all__ = [
     "current_benchmark_front_doors",
     "summarize_current_benchmark_front_doors",
     "validate_current_benchmark_front_doors",
+    "CURRENT_EMBREE_CPU_PARTNER_REFERENCE_STATUS",
+    "CURRENT_EMBREE_CPU_PARTNER_REFERENCE_VERSION",
+    "current_embree_cpu_partner_reference_rows",
+    "summarize_current_embree_cpu_partner_reference",
+    "validate_current_embree_cpu_partner_reference",
     "CURRENT_BENCHMARK_SCALE_PROFILE_STATUS",
     "CURRENT_BENCHMARK_SCALE_PROFILE_VERSION",
     "current_benchmark_scale_profiles",

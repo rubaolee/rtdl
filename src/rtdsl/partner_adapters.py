@@ -3960,7 +3960,7 @@ def top_k_nearest_points_2d_partner_columns(
     k = int(k)
     if k <= 0:
         raise ValueError("k must be positive")
-    runtime = _partner_module(partner)
+    runtime = _numba_runtime_for_point_columns() if partner == "numba" else _partner_module(partner)
     query_count = _column_length(query_point_columns, "ids")
     candidate_count = _column_length(candidate_point_columns, "ids")
     if query_count <= 0 or candidate_count <= 0:
@@ -3968,6 +3968,7 @@ def top_k_nearest_points_2d_partner_columns(
     if k > candidate_count:
         raise ValueError("k must be <= candidate point count")
 
+    numba_topk_metadata: dict[str, object] = {}
     if runtime["name"] in {"triton", "torch"}:
         torch = runtime["module"]
         qx = query_point_columns["x"].to(torch.float64)
@@ -4027,8 +4028,63 @@ def top_k_nearest_points_2d_partner_columns(
         neighbor_ids = candidate_point_columns["ids"][nearest_indices].reshape(-1)
         distances = cupy.sqrt(nearest_distance_sq).reshape(-1)
         neighbor_rank = cupy.tile(cupy.arange(1, k + 1, dtype=cupy.uint32), query_count)
+    elif runtime["name"] == "numba":
+        cuda = runtime["module"]
+        np = runtime["numpy"]
+        score_payload = pairwise_l2_sq_score_rows_2d_partner_columns(
+            query_point_columns,
+            candidate_point_columns,
+            partner="numba",
+            return_metadata=True,
+        )
+        score_columns = score_payload["columns"]
+        host_group_ids = np.asarray(score_columns["group_ids"].copy_to_host(), dtype=np.int64)
+        host_item_ids = np.asarray(score_columns["item_ids"].copy_to_host(), dtype=np.int64)
+        host_scores = np.asarray(score_columns["scores"].copy_to_host(), dtype=np.float64)
+        host_query_ids = np.asarray(query_point_columns["ids"].copy_to_host(), dtype=np.int64)
+        out_query_ids: list[int] = []
+        out_neighbor_ids: list[int] = []
+        out_distances: list[float] = []
+        out_ranks: list[int] = []
+        for group_index in range(query_count):
+            indices = np.nonzero(host_group_ids == group_index)[0]
+            if indices.shape[0] < k:
+                raise ValueError(f"group {group_index} has fewer than k candidate rows")
+            ranked = sorted(
+                (
+                    (float(host_scores[index]), int(host_item_ids[index]))
+                    for index in indices.tolist()
+                ),
+                key=lambda item: (item[0], item[1]),
+            )[:k]
+            for rank, (score, item_id) in enumerate(ranked, start=1):
+                out_query_ids.append(int(host_query_ids[group_index]))
+                out_neighbor_ids.append(item_id)
+                out_distances.append(math.sqrt(score))
+                out_ranks.append(rank)
+        query_ids = cuda.to_device(np.asarray(out_query_ids, dtype=np.int64))
+        neighbor_ids = cuda.to_device(np.asarray(out_neighbor_ids, dtype=np.int64))
+        distances = cuda.to_device(np.asarray(out_distances, dtype=np.float64))
+        neighbor_rank = cuda.to_device(np.asarray(out_ranks, dtype=np.int64))
+        numba_topk_metadata = {
+            "v2_11_numba_partner_continuation_operations": (
+                "pairwise_l2_sq_score_rows_2d",
+                "host_rank_topk_f64_reference",
+            ),
+            "v2_11_numba_preview_kernel_status": "reference_host_rank_after_device_score_rows",
+            "numba_score_rows_generated_on_partner_device": True,
+            "numba_score_row_count": int(score_payload["metadata"]["row_count"]),
+            "numba_pairwise_score_rows_elapsed_seconds": float(
+                score_payload["metadata"]["numba_pairwise_score_rows_elapsed_seconds"]
+            ),
+            "host_rank_materialization_used": True,
+            "host_rank_materialization_reason": (
+                "Numba grouped_topk_f64 device kernel is not implemented in v2.11; "
+                "the reference path keeps the top-k contract correct and explicit."
+            ),
+        }
     else:
-        raise ValueError("partner must be 'torch' or 'cupy'")
+        raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
 
     runtime["sync"]()
     columns = {
@@ -4060,6 +4116,7 @@ def top_k_nearest_points_2d_partner_columns(
         "v2_5_triton_preview_kernel_status": (
             "preview_not_promoted" if runtime["name"] == "triton" else None
         ),
+        **(numba_topk_metadata if runtime["name"] == "numba" else {}),
         "app_row_materialization": "caller_optional",
         "direct_device_handoff_authorized": False,
         "rt_core_speedup_claim_authorized": False,
