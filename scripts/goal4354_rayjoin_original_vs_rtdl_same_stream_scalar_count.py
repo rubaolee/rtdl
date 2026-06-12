@@ -53,6 +53,36 @@ def _command_output(args: list[str]) -> str:
         return ""
 
 
+def _infer_nvidia_rt_core_hardware(gpu_query: str) -> tuple[bool | None, str]:
+    text = gpu_query.lower()
+    if not text:
+        return None, "nvidia-smi unavailable or returned no GPU rows"
+    if "gtx" in text:
+        return False, "GPU name contains GTX; this is not NVIDIA RT-core hardware"
+    if "rtx" in text:
+        return True, "GPU name contains RTX"
+    return None, "GPU name is not enough for a conservative RT-core hardware claim"
+
+
+def _hardware_report(rt_core_hardware: str) -> dict[str, Any]:
+    gpu = _command_output(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"])
+    gpu_compute = _command_output(
+        ["nvidia-smi", "--query-gpu=name,driver_version,compute_cap", "--format=csv,noheader"]
+    )
+    if rt_core_hardware == "auto":
+        inferred, reason = _infer_nvidia_rt_core_hardware(gpu_compute or gpu)
+    else:
+        inferred = rt_core_hardware == "yes"
+        reason = f"explicit --rt-core-hardware={rt_core_hardware}"
+    return {
+        "gpu": gpu,
+        "gpu_compute_capability": gpu_compute,
+        "nvidia_rt_core_hardware": inferred,
+        "rt_core_detection": reason,
+        "rt_core_claim_authorized": bool(inferred is True),
+    }
+
+
 def _median(values: list[float]) -> float:
     if not values:
         raise ValueError("cannot summarize an empty timing list")
@@ -202,7 +232,13 @@ def _inputs_from_stream(stream: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _run_lsi_optix(stream: dict[str, Any], *, warmups: int, repeats: int) -> dict[str, Any]:
+def _run_lsi_optix(
+    stream: dict[str, Any],
+    *,
+    warmups: int,
+    repeats: int,
+    rt_core_hardware: bool | None,
+) -> dict[str, Any]:
     inputs = _inputs_from_stream(stream)
     phases: dict[str, float] = {}
     phases["query_pack_sec"], packed_left = _phase(
@@ -245,7 +281,9 @@ def _run_lsi_optix(stream: dict[str, Any], *, warmups: int, repeats: int) -> dic
     return {
         "backend": "optix",
         "execution_route": "prepared_left_exact_segment_pair_scalar_count",
-        "rt_core_accelerated": True,
+        "rt_core_accelerated": bool(rt_core_hardware is True),
+        "optix_backend": True,
+        "nvidia_rt_core_hardware": rt_core_hardware,
         "row_stream_materialized": False,
         "input_shape": _input_shape("lsi", stream, inputs),
         "prepare_sec": phases,
@@ -264,6 +302,7 @@ def _run_pip_optix(
     count_mode: str,
     point_eps: float,
     include_fast_diagnostic: bool,
+    rt_core_hardware: bool | None,
 ) -> dict[str, Any]:
     if count_mode not in {"exact", "exact_prepared_points"}:
         raise ValueError("PIP RTDL count mode must be 'exact' or 'exact_prepared_points'")
@@ -399,7 +438,9 @@ def _run_pip_optix(
         "backend": "optix",
         "execution_route": execution_route,
         "count_mode": count_mode,
-        "rt_core_accelerated": True,
+        "rt_core_accelerated": bool(rt_core_hardware is True),
+        "optix_backend": True,
+        "nvidia_rt_core_hardware": rt_core_hardware,
         "row_stream_materialized": False,
         "input_shape": _input_shape("pip", stream, inputs),
         "prepare_sec": phases,
@@ -451,6 +492,8 @@ def _run_embree(
         "backend": "embree",
         "execution_route": "prepared_embree_native_scalar_count",
         "rt_core_accelerated": False,
+        "optix_backend": False,
+        "nvidia_rt_core_hardware": False,
         "row_stream_materialized": False,
         "input_shape": _input_shape(workload, stream, inputs),
         "prepare_sec": phases,
@@ -498,6 +541,8 @@ def _correctness_for_workload(
 
 def _build_payload(args: argparse.Namespace) -> dict[str, Any]:
     artifact_dir = _resolve(args.artifact_dir)
+    hardware = _hardware_report(args.rt_core_hardware)
+    rt_core_hardware = hardware["nvidia_rt_core_hardware"]
     workloads = tuple(item.strip() for item in args.workloads.split(",") if item.strip())
     invalid = sorted(set(workloads) - set(WORKLOADS))
     if invalid:
@@ -511,7 +556,12 @@ def _build_payload(args: argparse.Namespace) -> dict[str, Any]:
             raise ValueError(f"{stream_path} is not a RayJoin query_exec exported stream")
         backends: dict[str, Any] = {}
         if workload == "lsi":
-            backends["optix"] = _run_lsi_optix(stream, warmups=args.warmups, repeats=args.repeats)
+            backends["optix"] = _run_lsi_optix(
+                stream,
+                warmups=args.warmups,
+                repeats=args.repeats,
+                rt_core_hardware=rt_core_hardware,
+            )
         else:
             backends["optix"] = _run_pip_optix(
                 stream,
@@ -520,6 +570,7 @@ def _build_payload(args: argparse.Namespace) -> dict[str, Any]:
                 count_mode=args.pip_rtdl_count_mode,
                 point_eps=args.point_eps,
                 include_fast_diagnostic=args.include_pip_fast_diagnostic,
+                rt_core_hardware=rt_core_hardware,
             )
         if args.include_embree:
             embree_warmups = args.embree_warmups if args.embree_warmups is not None else args.warmups
@@ -565,7 +616,8 @@ def _build_payload(args: argparse.Namespace) -> dict[str, Any]:
         "artifact_dir": str(artifact_dir),
         "git_commit": _command_output(["git", "rev-parse", "HEAD"]),
         "git_status_short": _command_output(["git", "status", "--short", "--untracked-files=no"]),
-        "gpu": _command_output(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"]),
+        "gpu": hardware["gpu"],
+        "hardware": hardware,
         "cuda": _command_output(["nvcc", "--version"]),
         "protocol": {
             "rayjoin_source": "external RayJoin query_exec built from upstream commit 02bf6220d6d20b04af77ee20364eced75cc029c9 plus query stream export patch",
@@ -598,6 +650,14 @@ def _ratio_text(value: Any) -> str:
     return f"{float(value):.3f}x"
 
 
+def _tri_state_text(value: Any) -> str:
+    if value is True:
+        return "yes"
+    if value is False:
+        return "no"
+    return "unknown"
+
+
 def _render_markdown(payload: dict[str, Any]) -> str:
     lines: list[str] = [
         "# Goal4354 RayJoin Original vs RTDL+Partner Same-Stream Comparison",
@@ -611,6 +671,16 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         "- RTDL side: current prepared scalar-count hot paths, consuming the same exported queries.",
         "- Contract: scalar count only; RTDL measured paths do not materialize match rows.",
         "- Boundary: this is not a full RayJoin paper reproduction claim.",
+        "",
+        "## Hardware Classification",
+        "",
+        "| Field | Value |",
+        "| --- | --- |",
+        f"| GPU | `{payload.get('hardware', {}).get('gpu') or 'n/a'}` |",
+        f"| GPU compute capability query | `{payload.get('hardware', {}).get('gpu_compute_capability') or 'n/a'}` |",
+        "| NVIDIA RT-core hardware for this run | "
+        f"{_tri_state_text(payload.get('hardware', {}).get('nvidia_rt_core_hardware'))} |",
+        f"| Detection | {payload.get('hardware', {}).get('rt_core_detection') or 'n/a'} |",
         "",
         "## RayJoin Original Logs",
         "",
@@ -636,8 +706,8 @@ def _render_markdown(payload: dict[str, Any]) -> str:
             "",
             "## RTDL Same-Stream Results",
             "",
-            "| Workload | Backend | Query count | Row count | Hot median ms | Hot total s | Repeats | Native phase ms | Route |",
-            "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
+            "| Workload | Backend | RT-core hw | Query count | Row count | Hot median ms | Hot total s | Repeats | Native phase ms | Route |",
+            "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
         ]
     )
     for workload, row in payload["rtdl"].items():
@@ -650,7 +720,8 @@ def _render_markdown(payload: dict[str, Any]) -> str:
             )
             lines.append(
                 "| "
-                f"`{workload}` | `{backend}` | {row['query_count']} | {backend_row['row_count']} | "
+                f"`{workload}` | `{backend}` | {_tri_state_text(backend_row.get('nvidia_rt_core_hardware'))} | "
+                f"{row['query_count']} | {backend_row['row_count']} | "
                 f"{_fmt(float(backend_row['hot_median_sec']) * 1000.0, 6)} | "
                 f"{_fmt(timing['hot_total_sec'], 6)} | {timing['repeats']} | "
                 f"{_fmt(native_ms, 6)} | `{backend_row['execution_route']}` |"
@@ -736,6 +807,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--embree-warmups", type=int, default=None)
     parser.add_argument("--embree-repeats", type=int, default=None)
     parser.add_argument("--include-pip-fast-diagnostic", action="store_true")
+    parser.add_argument(
+        "--rt-core-hardware",
+        choices=("auto", "yes", "no"),
+        default="auto",
+        help="Classify NVIDIA RT-core hardware for this run; auto is conservative and avoids GTX/unknown overclaims.",
+    )
     parser.add_argument(
         "--pip-rtdl-count-mode",
         choices=("exact", "exact_prepared_points"),

@@ -22,6 +22,11 @@ class Goal4357RayJoinGoal4354ExactPreparedPointsRunnerTest(unittest.TestCase):
             "native_phase_timings",
             "candidate_count_pass",
             "Native phase ms",
+            "Hardware Classification",
+            "--rt-core-hardware",
+            "_infer_nvidia_rt_core_hardware",
+            '"rt_core_detection": reason',
+            '"rt_core_accelerated": bool(rt_core_hardware is True)',
             '"pip_rtdl_count_mode": args.pip_rtdl_count_mode',
             "_parse_rayjoin(artifact_dir, workloads)",
             "Status: measured from RayJoin-exported query streams",
@@ -36,6 +41,13 @@ class Goal4357RayJoinGoal4354ExactPreparedPointsRunnerTest(unittest.TestCase):
         self.assertIn('default="exact"', text)
         self.assertIn("prepared_exact_closed_shape_membership_scalar_count", text)
         self.assertIn("rtdl_optix_count_prepared_point_closed_shape_membership_2d", text)
+
+    def test_optix_rt_core_claim_is_not_unconditional(self) -> None:
+        text = SCRIPT.read_text(encoding="utf-8")
+
+        self.assertNotIn('"rt_core_accelerated": True', text)
+        self.assertIn('"GPU name contains GTX; this is not NVIDIA RT-core hardware"', text)
+        self.assertIn('"GPU name contains RTX"', text)
 
     def test_workload_filter_applies_to_rayjoin_log_parser(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
