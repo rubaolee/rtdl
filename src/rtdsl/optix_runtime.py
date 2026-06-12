@@ -289,6 +289,9 @@ OPTIX_CLOSED_SHAPE_MEMBERSHIP_POINT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_PREPARE_POINT_PROBE_COLUMNS_2D_SYMBOL = (
     "rtdl_optix_prepare_point_probe_columns_2d"
 )
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_PREPARED_POINTS_EXACT_COUNT_SYMBOL = (
+    "rtdl_optix_count_prepared_point_closed_shape_membership_prepared_points_2d"
+)
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_COUNT_SYMBOL = (
     "rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_prepared_points_2d"
 )
@@ -8326,6 +8329,8 @@ def _get_last_closed_shape_membership_phase_timings_from_library(lib) -> dict[st
             if mode_value == 10
             else "prepared_points_device_filtered_batch_executor_run"
             if mode_value == 11
+            else "prepared_points_exact_count"
+            if mode_value == 12
             else "none"
         ),
         "point_pack": float(point_pack.value),
@@ -12285,6 +12290,39 @@ class PreparedOptixPointClosedShapeMembership2D:
         if self._closed:
             raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
         return PreparedOptixPointProbeColumns2D(points)
+
+    def count_prepared_points_exact(
+        self,
+        prepared_points: PreparedOptixPointProbeColumns2D,
+    ) -> int:
+        """Return the exact host-refined count using pre-uploaded point-probe columns."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        if prepared_points.closed:
+            raise RuntimeError("prepared OptiX point-probe columns handle is closed")
+        if prepared_points.count == 0 or self._packed_shapes.polygon_count == 0:
+            return 0
+        count_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_PREPARED_POINTS_EXACT_COUNT_SYMBOL,
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_MEMBERSHIP_PREPARED_POINTS_EXACT_COUNT_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            prepared_points._handle,
+            ctypes.byref(count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(count.value)
 
     def count_device_filtered_prepared_points(
         self,
@@ -21097,6 +21135,21 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_count_prepared_closed_shape_membership.restype = ctypes.c_int
+
+    optional_count_prepared_closed_shape_membership_prepared_points_exact = (
+        _find_optional_backend_symbol(
+            lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_PREPARED_POINTS_EXACT_COUNT_SYMBOL,
+        )
+    )
+    if optional_count_prepared_closed_shape_membership_prepared_points_exact is not None:
+        optional_count_prepared_closed_shape_membership_prepared_points_exact.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_count_prepared_closed_shape_membership_prepared_points_exact.restype = ctypes.c_int
 
     optional_count_prepared_closed_shape_membership_device_filtered = _find_optional_backend_symbol(
         lib,

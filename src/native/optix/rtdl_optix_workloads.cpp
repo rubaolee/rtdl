@@ -9482,6 +9482,196 @@ static void count_prepared_point_closed_shape_membership_2d_optix(
     *count_out = exact_count;
 }
 
+static void count_prepared_point_closed_shape_membership_prepared_points_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        PreparedPointProbeColumns2D* prepared_points,
+        size_t* count_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared closed-shape membership handle must not be null");
+    }
+    if (!prepared_points) {
+        throw std::runtime_error("prepared point-probe columns handle must not be null");
+    }
+    if (!count_out) {
+        throw std::runtime_error("exact prepared-points count output pointer must not be null");
+    }
+    *count_out = 0;
+    const size_t point_count = prepared_points->point_count;
+    if (point_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+    if (point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("prepared closed-shape membership exact prepared-points count point count exceeds uint32_t chunk offset capacity");
+    }
+    if (prepared->right_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("prepared closed-shape membership exact prepared-points count shape count exceeds uint32_t launch capacity");
+    }
+
+    reset_closed_shape_membership_phase_timings(12u);
+    ensure_pip_pipeline();
+
+    uint32_t zero = 0;
+    upload<uint32_t>(prepared_points->d_count.ptr, &zero, 1);
+
+    PipLaunchParams lp;
+    lp.traversable    = prepared->accel.handle;
+    lp.points_x       = reinterpret_cast<const float*>(prepared_points->d_points_x.ptr);
+    lp.points_y       = reinterpret_cast<const float*>(prepared_points->d_points_y.ptr);
+    lp.point_ids      = reinterpret_cast<const uint32_t*>(prepared_points->d_point_ids.ptr);
+    lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
+    lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
+    lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
+    lp.prepared_edges = use_prepared_closed_shape_edge_layout()
+        ? reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr)
+        : nullptr;
+    lp.hit_words      = nullptr;
+    lp.output         = nullptr;
+    lp.output_count   = reinterpret_cast<uint32_t*>(prepared_points->d_count.ptr);
+    lp.output_capacity = 0u;
+    lp.positive_only  = 1u;
+    lp.hit_word_count = 0u;
+    lp.polygon_count  = static_cast<uint32_t>(prepared->right_count);
+    lp.probe_count    = static_cast<uint32_t>(point_count);
+    lp.point_index_offset = 0u;
+    lp.device_prefilter =
+        std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_DEVICE_PREFILTER") == nullptr ? 1u : 0u;
+    lp.boundary_check = closed_shape_membership_boundary_check_enabled();
+
+    CUstream stream = 0;
+    const uint64_t max_points_per_launch64 =
+        static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) /
+        static_cast<uint64_t>(prepared->right_count);
+    if (max_points_per_launch64 == 0) {
+        throw std::runtime_error("prepared closed-shape membership exact prepared-points count cannot chunk shape set into uint32_t capacity");
+    }
+    const size_t max_points_per_launch = static_cast<size_t>(
+        std::min<uint64_t>(max_points_per_launch64, static_cast<uint64_t>(point_count)));
+
+    auto launch_positive_candidate_pass = [&](
+            size_t point_offset,
+            size_t chunk_point_count,
+            CUdeviceptr output_ptr,
+            uint32_t output_capacity,
+            bool allow_overflow) -> uint32_t {
+        upload<uint32_t>(prepared_points->d_count.ptr, &zero, 1);
+        const CUdeviceptr chunk_points_x =
+            prepared_points->d_points_x.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+        const CUdeviceptr chunk_points_y =
+            prepared_points->d_points_y.ptr + static_cast<CUdeviceptr>(sizeof(float) * point_offset);
+        const CUdeviceptr chunk_point_ids =
+            prepared_points->d_point_ids.ptr + static_cast<CUdeviceptr>(sizeof(uint32_t) * point_offset);
+        lp.points_x = reinterpret_cast<const float*>(chunk_points_x);
+        lp.points_y = reinterpret_cast<const float*>(chunk_points_y);
+        lp.point_ids = reinterpret_cast<const uint32_t*>(chunk_point_ids);
+        lp.output = output_capacity == 0u
+            ? nullptr
+            : reinterpret_cast<GpuPipRecord*>(output_ptr);
+        lp.output_capacity = output_capacity;
+        lp.probe_count = static_cast<uint32_t>(chunk_point_count);
+        lp.point_index_offset = static_cast<uint32_t>(point_offset);
+        upload(prepared_points->d_params.ptr, &lp, 1);
+        const auto t_launch_start = std::chrono::steady_clock::now();
+        OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
+                                 prepared_points->d_params.ptr, sizeof(PipLaunchParams),
+                                 &g_pip.pipe->sbt,
+                                 static_cast<unsigned>(chunk_point_count), 1, 1));
+        CU_CHECK(cuStreamSynchronize(stream));
+        const auto t_launch_end = std::chrono::steady_clock::now();
+        if (output_capacity == 0u) {
+            g_optix_last_closed_shape_candidate_count_s += seconds_between(t_launch_start, t_launch_end);
+        } else {
+            g_optix_last_closed_shape_candidate_write_s += seconds_between(t_launch_start, t_launch_end);
+        }
+        uint32_t emitted = 0;
+        download(&emitted, prepared_points->d_count.ptr, 1);
+        if (emitted > output_capacity && output_capacity != 0u && !allow_overflow) {
+            throw std::runtime_error("prepared closed-shape membership exact prepared-points count output overflowed compact capacity");
+        }
+        return emitted;
+    };
+
+    const bool pip_one_pass_compact =
+        std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_ONE_PASS_COMPACT") == nullptr;
+    size_t exact_count = 0;
+    auto count_exact_hits = [&](const std::vector<GpuPipRecord>& gpu_rows) {
+        const auto t_refine_start = std::chrono::steady_clock::now();
+        for (const auto& gpu_row : gpu_rows) {
+            const size_t pi = static_cast<size_t>(gpu_row.point_id);
+            const size_t qi = static_cast<size_t>(gpu_row.polygon_id);
+            if (pi >= point_count || qi >= prepared->right_count) {
+                continue;
+            }
+            const double point_x = prepared_points->points_x_f64[pi];
+            const double point_y = prepared_points->points_y_f64[pi];
+            const RtdlPolygonRef& shape = prepared->host_right_polygons[qi];
+            if (!point_inside_bounds(prepared->host_right_bounds[qi], point_x, point_y, 1.0e-12)) {
+                continue;
+            }
+#if RTDL_OPTIX_HAS_GEOS
+            if (prepared->right_geos && !prepared->right_geos->covers(qi, point_x, point_y)) {
+                continue;
+            }
+#else
+            if (!exact_point_in_polygon(point_x, point_y, shape, prepared->host_right_vertices_xy.data())) {
+                continue;
+            }
+#endif
+            ++exact_count;
+        }
+        const auto t_refine_end = std::chrono::steady_clock::now();
+        g_optix_last_closed_shape_exact_refine_s += seconds_between(t_refine_start, t_refine_end);
+    };
+
+    for (size_t point_offset = 0; point_offset < point_count; point_offset += max_points_per_launch) {
+        const size_t chunk_point_count = std::min(max_points_per_launch, point_count - point_offset);
+        uint32_t gpu_count = 0;
+        if (pip_one_pass_compact) {
+            const size_t optimistic_capacity_size = std::min<size_t>(
+                (std::max)(chunk_point_count, size_t{4096}),
+                static_cast<size_t>(std::numeric_limits<uint32_t>::max()));
+            const uint32_t optimistic_capacity = static_cast<uint32_t>(optimistic_capacity_size);
+            DevPtr d_positive_output(sizeof(GpuPipRecord) * optimistic_capacity);
+            gpu_count = launch_positive_candidate_pass(
+                point_offset, chunk_point_count, d_positive_output.ptr, optimistic_capacity, true);
+            if (gpu_count <= optimistic_capacity) {
+                if (gpu_count == 0u) {
+                    continue;
+                }
+                std::vector<GpuPipRecord> chunk_rows(gpu_count);
+                const auto t_download_start = std::chrono::steady_clock::now();
+                download(chunk_rows.data(), d_positive_output.ptr, gpu_count);
+                const auto t_download_end = std::chrono::steady_clock::now();
+                g_optix_last_closed_shape_candidate_download_s += seconds_between(t_download_start, t_download_end);
+                g_optix_last_closed_shape_raw_candidate_count += gpu_count;
+                count_exact_hits(chunk_rows);
+                continue;
+            }
+        } else {
+            gpu_count = launch_positive_candidate_pass(point_offset, chunk_point_count, 0, 0, false);
+            if (gpu_count == 0u) {
+                continue;
+            }
+        }
+        DevPtr d_positive_output(sizeof(GpuPipRecord) * gpu_count);
+        const uint32_t written_count =
+            launch_positive_candidate_pass(point_offset, chunk_point_count, d_positive_output.ptr, gpu_count, false);
+        if (written_count != gpu_count) {
+            throw std::runtime_error("prepared closed-shape membership exact prepared-points count candidate count changed between count and write passes");
+        }
+        std::vector<GpuPipRecord> chunk_rows(gpu_count);
+        const auto t_download_start = std::chrono::steady_clock::now();
+        download(chunk_rows.data(), d_positive_output.ptr, gpu_count);
+        const auto t_download_end = std::chrono::steady_clock::now();
+        g_optix_last_closed_shape_candidate_download_s += seconds_between(t_download_start, t_download_end);
+        g_optix_last_closed_shape_raw_candidate_count += gpu_count;
+        count_exact_hits(chunk_rows);
+    }
+
+    g_optix_last_closed_shape_emitted_count = exact_count;
+    *count_out = exact_count;
+}
+
 static void count_prepared_point_closed_shape_membership_device_filtered_2d_optix(
         PreparedShapePairRelationBuild* prepared,
         const RtdlPoint* points,

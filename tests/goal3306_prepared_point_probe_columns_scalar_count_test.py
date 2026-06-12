@@ -13,7 +13,7 @@ RUNTIME = ROOT / "src" / "rtdsl" / "optix_runtime.py"
 APP = (
     ROOT
     / "examples"
-    / "v2_0"
+    / "current"
     / "research_benchmarks"
     / "spatial_rayjoin"
     / "rtdl_rayjoin_v2_spatial_join_app.py"
