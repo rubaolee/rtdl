@@ -181,6 +181,17 @@ from .prepared_session_residency import get_or_prepare_explicit_session
 from .prepared_session_residency import make_prepared_session_cache_key
 from .prepared_session_residency import summarize_prepared_session_timing_records
 from .prepared_session_residency import validate_prepared_session_residency_contract
+from .v2_12_prepared_resident_query_plan import V212PreparedResidentQueryWorkItem
+from .v2_12_prepared_resident_query_plan import V2_12_CROSS_APP_BENCHMARK_APP
+from .v2_12_prepared_resident_query_plan import V2_12_FORBIDDEN_CLAIM_FLAGS
+from .v2_12_prepared_resident_query_plan import V2_12_PREPARED_RESIDENT_QUERY_PLAN_CLAIM_BOUNDARY
+from .v2_12_prepared_resident_query_plan import V2_12_PREPARED_RESIDENT_QUERY_PLAN_STATUS
+from .v2_12_prepared_resident_query_plan import V2_12_PREPARED_RESIDENT_QUERY_PLAN_VERSION
+from .v2_12_prepared_resident_query_plan import V2_12_PREPARED_RESIDENT_QUERY_WORK_ITEMS
+from .v2_12_prepared_resident_query_plan import V2_12_REQUIRED_BACKENDS
+from .v2_12_prepared_resident_query_plan import summarize_v2_12_prepared_resident_query_plan
+from .v2_12_prepared_resident_query_plan import v2_12_prepared_resident_query_plan
+from .v2_12_prepared_resident_query_plan import validate_v2_12_prepared_resident_query_plan
 from .triton_partner_continuation import TRITON_PARTNER_CONTINUATION_STATUS
 from .triton_partner_continuation import TRITON_BOUNDED_COLLECT_FINALIZE_I64_OPERATION
 from .triton_partner_continuation import TRITON_COMPACT_MASK_I64_OPERATION
@@ -3227,6 +3238,17 @@ __all__ = [
     "rayjoin_bounded_plans",
     "rayjoin_feature_service_layers",
     "rayjoin_public_assets",
+    "V212PreparedResidentQueryWorkItem",
+    "V2_12_CROSS_APP_BENCHMARK_APP",
+    "V2_12_FORBIDDEN_CLAIM_FLAGS",
+    "V2_12_PREPARED_RESIDENT_QUERY_PLAN_CLAIM_BOUNDARY",
+    "V2_12_PREPARED_RESIDENT_QUERY_PLAN_STATUS",
+    "V2_12_PREPARED_RESIDENT_QUERY_PLAN_VERSION",
+    "V2_12_PREPARED_RESIDENT_QUERY_WORK_ITEMS",
+    "V2_12_REQUIRED_BACKENDS",
+    "summarize_v2_12_prepared_resident_query_plan",
+    "v2_12_prepared_resident_query_plan",
+    "validate_v2_12_prepared_resident_query_plan",
     "representative_dataset_names",
     "refine",
     "reduce_rows",
