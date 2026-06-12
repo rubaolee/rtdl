@@ -576,7 +576,7 @@ def _render_markdown(payload: dict[str, Any]) -> str:
     lines: list[str] = [
         "# Goal4354 RayJoin Original vs RTDL+Partner Same-Stream Comparison",
         "",
-        "Status: measured on the pod from RayJoin-exported query streams. Speedup column is "
+        "Status: measured from RayJoin-exported query streams. Speedup column is "
         "`RayJoin RT Query ms / RTDL hot query ms`; values above 1 mean RTDL is faster.",
         "",
         "## Scope",

@@ -21,8 +21,11 @@ class Goal4357RayJoinGoal4354ExactPreparedPointsRunnerTest(unittest.TestCase):
             "scalar_exact_positive_membership_count_prepared_points",
             '"pip_rtdl_count_mode": args.pip_rtdl_count_mode',
             "_parse_rayjoin(artifact_dir, workloads)",
+            "Status: measured from RayJoin-exported query streams",
         ):
             self.assertIn(phrase, text)
+
+        self.assertNotIn("Status: measured on the pod from RayJoin-exported query streams", text)
 
     def test_original_goal4354_exact_route_remains_default(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")

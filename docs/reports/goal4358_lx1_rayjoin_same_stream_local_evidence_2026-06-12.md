@@ -1,0 +1,108 @@
+# Goal4358 Local Linux RayJoin Same-Stream Evidence
+
+Date: 2026-06-12
+
+Status: local Linux pipeline evidence accepted; not public RT-core evidence.
+
+## Machine
+
+| Field | Value |
+| --- | --- |
+| Host | `lx1` / `192.168.1.20` |
+| OS | Ubuntu 24.04.4, Linux 6.17 |
+| GPU | NVIDIA GeForce GTX 1070, compute 6.1, driver 580.126.09 |
+| RT cores | No |
+| CUDA | 12.0 |
+| Embree | 4.3.0 |
+| RTDL commit | `1771559e052a2279423e7e84952320b38cecc063` |
+
+Boundary: this machine validates Linux build/runtime correctness, same-stream protocol, and Embree/OptiX plumbing. It cannot validate an NVIDIA RT-core speedup because GTX 1070 predates RT cores.
+
+## Runner Fixes
+
+The external RayJoin same-stream runner now works on both RTX pods and local non-RTX Linux boxes:
+
+| Commit | Fix |
+| --- | --- |
+| `336cc34d` | Parameterized RayJoin CUDA arch with `RAYJOIN_CUDA_ARCH`; local run used `61`, pod default remains `86`. |
+| `dce1bb14` | Added `RAYJOIN_EXTRA_CMAKE_PREFIX_PATH` so vendored `gflags`/`glog` can be used without system apt access. |
+| `1771559e` | Added `glog`/`gflags` include paths to RayJoin PTX custom compile commands. |
+
+Focused tests passed:
+
+```bash
+py -3 -m unittest tests.goal2198_rayjoin_same_query_pod_runner_test
+```
+
+## 1k End-To-End Smoke
+
+Artifact directory on `lx1`:
+
+```text
+/home/lestat/work/goal4358_same_stream_lx1_smoke/artifacts
+```
+
+RayJoin was built from upstream commit `02bf6220d6d20b04af77ee20364eced75cc029c9` plus the Goal2195 query-stream export patch. It exported PIP and LSI streams, and RTDL consumed those exact streams.
+
+| Workload | Backend | Query count | Row count | Median ms | Parity |
+| --- | --- | ---: | ---: | ---: | --- |
+| LSI | CPU | 1,000 | 99 | 590.758 | pass |
+| LSI | Embree | 1,000 | 99 | 2129.602 | pass |
+| LSI | OptiX | 1,000 | 99 | 31.143 | pass |
+| PIP | CPU | 1,000 | 80 | 200.673 | pass |
+| PIP | Embree | 1,000 | 80 | 32.750 | pass |
+| PIP | OptiX | 1,000 | 80 | 1.506 | pass |
+
+This is a protocol smoke, not a meaningful RT-core performance comparison.
+
+## 100k PIP Same-Stream Check
+
+Artifact directory on `lx1`:
+
+```text
+/home/lestat/work/goal4358_same_stream_lx1_pip100k/artifacts
+```
+
+The run used the new RTDL v2.12 `exact_prepared_points` PIP count path.
+
+RayJoin original logs:
+
+| RayJoin mode | Query ms | Build index ms | Adaptive grouping ms | Built-in check |
+| --- | ---: | ---: | ---: | --- |
+| Grid | 30.673700 | 4.173990 | n/a | n/a |
+| LBVH | 49.910300 | 4.971980 | n/a | pass |
+| RT | 2.602740 | 1.637940 | 1.322980 | pass |
+
+RTDL same-stream scalar count:
+
+| RTDL backend | Route | Query count | Count | Hot median ms | Native traversal ms |
+| --- | --- | ---: | ---: | ---: | ---: |
+| OptiX | `prepared_exact_closed_shape_membership_prepared_points_scalar_count` | 100,000 | 8,686 | 14.711126 | n/a |
+| Embree | `prepared_embree_native_scalar_count` | 100,000 | 8,686 | 35.062039 | 34.374250 |
+
+Direct comparison against RayJoin RT Query:
+
+| Workload | Backend | RayJoin RT query ms | RTDL hot query ms | RayJoin RT / RTDL |
+| --- | --- | ---: | ---: | ---: |
+| PIP | OptiX | 2.602740 | 14.711126 | 0.177x |
+| PIP | Embree | 2.602740 | 35.062039 | 0.074x |
+
+Correctness: RTDL OptiX and RTDL Embree both returned `8,686`; RayJoin RT built-in PIP check passed. RayJoin PIP logs do not export the positive count, so the external count comparison is RTDL cross-backend plus RayJoin built-in validation.
+
+## Interpretation
+
+The 100k local result is reasonable for this machine:
+
+- RayJoin RT is a purpose-built C++/CUDA/OptiX PIP implementation and is very fast even on a non-RT-core GTX 1070.
+- RTDL OptiX v2.12 now reuses prepared query point columns, removing hot-call point repack/reupload, but the exact PIP route still performs host exact refinement after device candidate discovery.
+- RTDL Embree is CPU-only and exact; its 35 ms hot median is consistent with the native traversal timing.
+- The local result should not be worded as RT-core acceleration evidence. It says the same-stream comparison machinery and v2.12 exact-prepared-points route are ready to move to a real RTX pod.
+
+## Next Pod Requirement
+
+For public RT-core-vs-Embree wording, rerun the same packet on an RTX pod:
+
+- set `RAYJOIN_CUDA_ARCH` to the pod GPU architecture;
+- keep `--pip-rtdl-count-mode exact_prepared_points`;
+- include Embree in the same artifact;
+- report hardware explicitly and avoid using local GTX 1070 results as RT-core evidence.
