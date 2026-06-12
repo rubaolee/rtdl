@@ -77,15 +77,28 @@ RTDL same-stream scalar count:
 
 | RTDL backend | Route | Query count | Count | Hot median ms | Native traversal ms |
 | --- | --- | ---: | ---: | ---: | ---: |
-| OptiX | `prepared_exact_closed_shape_membership_prepared_points_scalar_count` | 100,000 | 8,686 | 14.711126 | n/a |
-| Embree | `prepared_embree_native_scalar_count` | 100,000 | 8,686 | 35.062039 | 34.374250 |
+| OptiX | `prepared_exact_closed_shape_membership_prepared_points_scalar_count` | 100,000 | 8,686 | 14.723431 | 14.349937 |
+| Embree | `prepared_embree_native_scalar_count` | 100,000 | 8,686 | 35.297965 | 34.579573 |
 
 Direct comparison against RayJoin RT Query:
 
 | Workload | Backend | RayJoin RT query ms | RTDL hot query ms | RayJoin RT / RTDL |
 | --- | --- | ---: | ---: | ---: |
-| PIP | OptiX | 2.602740 | 14.711126 | 0.177x |
-| PIP | Embree | 2.602740 | 35.062039 | 0.074x |
+| PIP | OptiX | 2.602740 | 14.723431 | 0.177x |
+| PIP | Embree | 2.602740 | 35.297965 | 0.074x |
+
+OptiX native phase medians in the hot exact-prepared-points call:
+
+| Phase | Median ms |
+| --- | ---: |
+| Point pack | 0.000000 |
+| Point upload | 0.000000 |
+| Candidate count pass | 0.000000 |
+| Candidate write pass | 9.055412 |
+| Candidate download | 0.027206 |
+| Exact refine | 5.250849 |
+| Raw candidates | 8,794 |
+| Emitted count | 8,686 |
 
 Correctness: RTDL OptiX and RTDL Embree both returned `8,686`; RayJoin RT built-in PIP check passed. RayJoin PIP logs do not export the positive count, so the external count comparison is RTDL cross-backend plus RayJoin built-in validation.
 
