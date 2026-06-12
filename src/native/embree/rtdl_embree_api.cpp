@@ -1501,50 +1501,62 @@ RTDL_EMBREE_EXPORT int rtdl_embree_point_primitive_anyhit_2d_count(
     }
 
     const auto traversal_start = std::chrono::steady_clock::now();
-    size_t count = 0;
-    for (const Point2D& point : point_values) {
-      std::unordered_set<uint32_t> candidate_polygon_indices;
-      PipQueryState state {&point, &candidate_polygon_indices};
-      RTCPointQuery query;
-      query.x = static_cast<float>(point.p.x);
-      query.y = static_cast<float>(point.p.y);
-      query.z = 0.0f;
-      query.time = 0.0f;
-      query.radius = 0.0f;
-      RTCPointQueryContext context;
-      rtcInitPointQueryContext(&context);
-      g_query_kind = QueryKind::kPip;
-      g_query_state = &state;
-      rtcPointQuery(impl->holder.scene, &query, &context, polygon_point_query_collect, &state);
-      g_query_kind = QueryKind::kNone;
-      g_query_state = nullptr;
-      if (candidate_polygon_indices.empty()) {
-        continue;
-      }
-      std::vector<uint32_t> candidate_indices;
-      candidate_indices.reserve(candidate_polygon_indices.size());
-      for (uint32_t polygon_index : candidate_polygon_indices) {
-        candidate_indices.push_back(polygon_index);
-      }
-      std::sort(candidate_indices.begin(), candidate_indices.end());
-      for (uint32_t polygon_index : candidate_indices) {
+    std::atomic<size_t> total_count {0};
 #if RTDL_EMBREE_HAS_GEOS
-        const bool contains = impl->geos->covers(polygon_index, point.p.x, point.p.y);
-#else
-        const bool contains = point_in_polygon(point, impl->polygon_values[polygon_index]);
+    std::mutex geos_mutex;
 #endif
-        if (contains) {
-          ++count;
+    run_query_index_ranges(point_values.size(), [&](size_t begin, size_t end) {
+      size_t local_count = 0;
+      for (size_t point_index = begin; point_index < end; ++point_index) {
+        const Point2D& point = point_values[point_index];
+        std::unordered_set<uint32_t> candidate_polygon_indices;
+        PipQueryState state {&point, &candidate_polygon_indices};
+        RTCPointQuery query;
+        query.x = static_cast<float>(point.p.x);
+        query.y = static_cast<float>(point.p.y);
+        query.z = 0.0f;
+        query.time = 0.0f;
+        query.radius = 0.0f;
+        RTCPointQueryContext context;
+        rtcInitPointQueryContext(&context);
+        g_query_kind = QueryKind::kPip;
+        g_query_state = &state;
+        rtcPointQuery(impl->holder.scene, &query, &context, polygon_point_query_collect, &state);
+        g_query_kind = QueryKind::kNone;
+        g_query_state = nullptr;
+        if (candidate_polygon_indices.empty()) {
+          continue;
+        }
+        std::vector<uint32_t> candidate_indices;
+        candidate_indices.reserve(candidate_polygon_indices.size());
+        for (uint32_t polygon_index : candidate_polygon_indices) {
+          candidate_indices.push_back(polygon_index);
+        }
+        std::sort(candidate_indices.begin(), candidate_indices.end());
+        for (uint32_t polygon_index : candidate_indices) {
+#if RTDL_EMBREE_HAS_GEOS
+          bool contains = false;
+          {
+            std::lock_guard<std::mutex> lock(geos_mutex);
+            contains = impl->geos->covers(polygon_index, point.p.x, point.p.y);
+          }
+#else
+          const bool contains = point_in_polygon(point, impl->polygon_values[polygon_index]);
+#endif
+          if (contains) {
+            ++local_count;
+          }
         }
       }
-    }
+      total_count.fetch_add(local_count, std::memory_order_relaxed);
+    });
     g_query_kind = QueryKind::kNone;
     g_query_state = nullptr;
     if (traversal_seconds_out != nullptr) {
       const auto traversal_end = std::chrono::steady_clock::now();
       *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
     }
-    *hit_count_out = count;
+    *hit_count_out = total_count.load(std::memory_order_relaxed);
   }, error_out, error_size);
 }
 
