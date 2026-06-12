@@ -253,6 +253,7 @@ V2_5_NUMBA_PREVIEW_OPERATIONS = (
     "segmented_count_i64",
     "segmented_sum_f64",
     "grouped_vector_sum_f64x2",
+    "grouped_topk_f64",
 )
 V2_5_CUPY_PREVIEW_OPERATIONS = (
     "grouped_vector_sum_f64x2",

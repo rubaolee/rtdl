@@ -175,6 +175,132 @@ def _semantic_file_check(stdout_path: Path) -> dict[str, Any]:
     }
 
 
+def _load_json_object(path: Path) -> dict[str, Any] | None:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def _resolve_dotted_path(value: Any, path: str) -> Any:
+    current = value
+    if not path:
+        return None
+    for part in path.split("."):
+        if isinstance(current, dict) and part in current:
+            current = current[part]
+            continue
+        return None
+    return current
+
+
+def _hot_path_floor_contract(row: dict[str, Any]) -> dict[str, Any]:
+    target = row.get("hot_path_duration_target_sec")
+    target_value = float(target) if isinstance(target, (int, float)) else None
+    metric = str(row.get("representative_hot_path_metric") or "")
+    if target_value is None:
+        policy = "smoke_scale_or_internal_timing_not_claim_grade"
+    else:
+        policy = "must_meet_or_report_subfloor"
+    return {
+        "representative_hot_path_metric": metric,
+        "hot_path_duration_target_sec": target_value,
+        "scale_calibration_status": row.get("scale_calibration_status"),
+        "timing_floor_policy": policy,
+        "decision_grade_timing_authorized": False,
+        "public_speedup_claim_authorized": False,
+    }
+
+
+def _evaluate_hot_path_floor(row: dict[str, Any], stdout_path: Path) -> dict[str, Any]:
+    contract = _hot_path_floor_contract(row)
+    target = contract["hot_path_duration_target_sec"]
+    payload = _load_json_object(stdout_path)
+    metric = contract["representative_hot_path_metric"]
+    observed_value: float | None = None
+    observed_type: str | None = None
+    metric_resolution_status = "stdout_json_missing_or_unparseable"
+    if payload is not None:
+        observed = _resolve_dotted_path(payload, metric)
+        observed_type = type(observed).__name__
+        if isinstance(observed, (int, float)):
+            observed_value = float(observed)
+            metric_resolution_status = "metric_numeric"
+        elif observed is None:
+            metric_resolution_status = "metric_path_missing"
+        else:
+            metric_resolution_status = "metric_not_numeric"
+
+    if target is None:
+        status = "smoke_scale_or_internal_not_claim_grade"
+        met = None
+        reason = "no hot_path_duration_target_sec declared for this row"
+    elif observed_value is None:
+        status = "metric_not_numeric"
+        met = False
+        reason = "representative_hot_path_metric did not resolve to a numeric scalar"
+    elif observed_value >= target:
+        status = "floor_met_internal_evidence_only"
+        met = True
+        reason = "observed representative hot-path duration met the internal timing floor"
+    else:
+        status = "subfloor_not_claim_grade"
+        met = False
+        reason = "observed representative hot-path duration was below the internal timing floor"
+
+    return {
+        **contract,
+        "status": status,
+        "hot_path_duration_observed_sec": observed_value,
+        "hot_path_duration_target_met": met,
+        "resolved_metric_value_type": observed_type,
+        "metric_resolution_status": metric_resolution_status,
+        "reason": reason,
+    }
+
+
+def _summarize_hot_path_floor(rows: list[dict[str, Any]], *, dry_run: bool = False) -> dict[str, Any]:
+    evaluations = [row.get("hot_path_floor_evaluation", {}) for row in rows]
+    statuses = [str(evaluation.get("status")) for evaluation in evaluations if evaluation]
+    subfloor_rows = [
+        row["row_id"]
+        for row in rows
+        if row.get("hot_path_floor_evaluation", {}).get("status") in {"subfloor_not_claim_grade", "metric_not_numeric"}
+    ]
+    targeted_rows = [
+        row["row_id"]
+        for row in rows
+        if row.get("hot_path_floor_evaluation", {}).get("hot_path_duration_target_sec") is not None
+    ]
+    smoke_rows = [
+        row["row_id"]
+        for row in rows
+        if row.get("hot_path_floor_evaluation", {}).get("status") == "smoke_scale_or_internal_not_claim_grade"
+    ]
+    if dry_run:
+        status = "dry_run_policy_only_no_runtime_evaluation"
+    else:
+        status = "accept" if not subfloor_rows else "needs_floor_attention"
+    return {
+        "status": status,
+        "row_count": len(rows),
+        "targeted_floor_row_count": len(targeted_rows),
+        "smoke_or_internal_row_count": len(smoke_rows),
+        "targeted_floor_rows": tuple(targeted_rows),
+        "smoke_or_internal_rows": tuple(smoke_rows),
+        "subfloor_or_metric_missing_rows": tuple(subfloor_rows),
+        "statuses": tuple(sorted(set(statuses))),
+        "decision_grade_timing_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "boundary": (
+            "Rows without a numeric internal hot-path floor are smoke/internal timing rows, "
+            "not decision-grade performance evidence. Rows below the floor must not be used "
+            "for public speedup wording."
+        ),
+    }
+
+
 def _read_tail(path: Path, limit: int) -> str:
     try:
         return _tail(path.read_text(encoding="utf-8", errors="replace"), limit)
@@ -282,6 +408,7 @@ def _run_row(
     stdout_bytes = stdout_path.stat().st_size if stdout_path.exists() else 0
     stderr_bytes = stderr_path.stat().st_size if stderr_path.exists() else 0
     semantic = _semantic_file_check(stdout_path)
+    floor_evaluation = _evaluate_hot_path_floor(row, stdout_path)
     if timed_out:
         status = "timeout"
     else:
@@ -304,6 +431,7 @@ def _run_row(
         "stdout_bytes": stdout_bytes,
         "stderr_bytes": stderr_bytes,
         "semantic_stdout_check": semantic,
+        "hot_path_floor_evaluation": floor_evaluation,
         "stdout_tail": _read_tail(stdout_path, stdout_tail),
         "stderr_tail": _read_tail(stderr_path, stderr_tail),
     }
@@ -329,6 +457,112 @@ def _attach_prepared_session_profile(
     return row_result
 
 
+RAYJOIN_PUBLIC_CDB_ROW_ID = "spatial_rayjoin_public_cdb_representative_mixed_route_scale_default"
+RAYJOIN_PUBLIC_CDB_REQUIRED_FILES = (
+    "br_county_start256_count512.cdb",
+    "br_soil_start256_count512.cdb",
+)
+
+
+def _needs_rayjoin_public_cdb(rows: list[dict[str, Any]]) -> bool:
+    return any(str(row.get("row_id")) == RAYJOIN_PUBLIC_CDB_ROW_ID for row in rows)
+
+
+def _rayjoin_public_cdb_fixture_state(data_dir: Path) -> dict[str, Any]:
+    resolved = data_dir.resolve()
+    files = {
+        name: {
+            "exists": (resolved / name).exists(),
+            "bytes": (resolved / name).stat().st_size if (resolved / name).exists() else None,
+        }
+        for name in RAYJOIN_PUBLIC_CDB_REQUIRED_FILES
+    }
+    return {
+        "data_dir": str(resolved),
+        "required_files": files,
+        "all_required_files_present": all(item["exists"] for item in files.values()),
+    }
+
+
+def _materialize_rayjoin_public_cdb(data_dir: Path, *, dry_run: bool) -> dict[str, Any]:
+    state_before = _rayjoin_public_cdb_fixture_state(data_dir)
+    if dry_run:
+        return {
+            "status": "dry_run_planned",
+            "download_attempted": False,
+            "materialize_attempted": False,
+            "state_before": state_before,
+            "state_after": state_before,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+        }
+
+    from scripts.goal2159_rayjoin_public_cdb_runner import CASES
+    from scripts.goal2159_rayjoin_public_cdb_runner import _materialize_slices
+    from scripts.goal2159_rayjoin_public_cdb_runner import _maybe_download_samples
+
+    selected = (CASES["lsi_county256_soil256_count512"],)
+    _maybe_download_samples(data_dir, download=True)
+    _materialize_slices(data_dir, selected)
+    state_after = _rayjoin_public_cdb_fixture_state(data_dir)
+    status = "materialized" if state_after["all_required_files_present"] else "missing_required_files"
+    return {
+        "status": status,
+        "download_attempted": True,
+        "materialize_attempted": True,
+        "state_before": state_before,
+        "state_after": state_after,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+    }
+
+
+def _configure_rayjoin_public_cdb(
+    rows: list[dict[str, Any]],
+    *,
+    data_dir: Path | None,
+    materialize: bool,
+    dry_run: bool,
+) -> dict[str, Any]:
+    needed = _needs_rayjoin_public_cdb(rows)
+    default_dir = Path("data") / "rayjoin_public_cdb"
+    resolved_dir = (data_dir or default_dir).resolve()
+    if not needed:
+        return {
+            "status": "not_needed",
+            "needed_by_selected_rows": False,
+            "data_dir": str(resolved_dir),
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+        }
+
+    if data_dir is not None:
+        os.environ["RTDL_RAYJOIN_PUBLIC_CDB_DIR"] = str(resolved_dir)
+
+    if materialize:
+        payload = _materialize_rayjoin_public_cdb(resolved_dir, dry_run=dry_run)
+        os.environ["RTDL_RAYJOIN_PUBLIC_CDB_DIR"] = str(resolved_dir)
+        return {
+            **payload,
+            "needed_by_selected_rows": True,
+            "data_dir": str(resolved_dir),
+            "env_var_set": True,
+        }
+
+    state = _rayjoin_public_cdb_fixture_state(resolved_dir)
+    if state["all_required_files_present"]:
+        os.environ["RTDL_RAYJOIN_PUBLIC_CDB_DIR"] = str(resolved_dir)
+    return {
+        "status": "provided" if state["all_required_files_present"] else "not_materialized",
+        "needed_by_selected_rows": True,
+        "data_dir": str(resolved_dir),
+        "env_var_set": state["all_required_files_present"] or data_dir is not None,
+        "state": state,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-json", type=Path, default=None)
@@ -344,6 +578,20 @@ def main() -> int:
         action="store_true",
         help="Use the literal python command from the registry instead of sys.executable.",
     )
+    parser.add_argument(
+        "--materialize-rayjoin-public-cdb",
+        action="store_true",
+        help=(
+            "Explicitly download/materialize the bounded public-CDB RayJoin fixture "
+            "needed by the spatial RayJoin scale row before running it."
+        ),
+    )
+    parser.add_argument(
+        "--rayjoin-public-cdb-dir",
+        type=Path,
+        default=None,
+        help="Optional directory containing or receiving the public-CDB RayJoin fixture.",
+    )
     args = parser.parse_args()
 
     validation = validate_current_benchmark_scale_profiles()
@@ -355,6 +603,12 @@ def main() -> int:
     if not rows:
         raise SystemExit("no benchmark scale-profile rows selected")
 
+    rayjoin_public_cdb_fixture = _configure_rayjoin_public_cdb(
+        rows,
+        data_dir=args.rayjoin_public_cdb_dir,
+        materialize=bool(args.materialize_rayjoin_public_cdb),
+        dry_run=bool(args.dry_run),
+    )
     runtime_environment = _runtime_environment_metadata()
     output_dir = args.output_dir
     if output_dir is None:
@@ -376,6 +630,7 @@ def main() -> int:
         "prepared_session_residency_summary": summarize_current_prepared_session_residency_profiles(
             prepared_profile_rows
         ),
+        "rayjoin_public_cdb_fixture": rayjoin_public_cdb_fixture,
         "selected_prepared_session_residency_profile_count": len(prepared_profile_rows),
         "dry_run": bool(args.dry_run),
         "file_backed_stdout_probe": True,
@@ -398,6 +653,22 @@ def main() -> int:
                 "stdout_policy": row["stdout_policy"],
                 "expected_runtime_class": row["expected_runtime_class"],
                 "evidence_refs": list(row["evidence_refs"]),
+                "hot_path_floor_evaluation": {
+                    **_hot_path_floor_contract(row),
+                    "status": (
+                        "requires_runtime_evaluation"
+                        if row.get("hot_path_duration_target_sec") is not None
+                        else "smoke_scale_or_internal_not_claim_grade"
+                    ),
+                    "hot_path_duration_observed_sec": None,
+                    "hot_path_duration_target_met": None,
+                    "resolved_metric_value_type": None,
+                    "reason": (
+                        "dry run only; runtime packet must evaluate this metric"
+                        if row.get("hot_path_duration_target_sec") is not None
+                        else "no hot_path_duration_target_sec declared for this row"
+                    ),
+                },
             }
             for row in rows
         ]
@@ -435,6 +706,7 @@ def main() -> int:
             )
 
     statuses = [row.get("status") for row in result["rows"]]
+    result["hot_path_floor_summary"] = _summarize_hot_path_floor(result["rows"], dry_run=args.dry_run)
     result["all_pass"] = None if args.dry_run else all(status == "pass" for status in statuses)
     result["json_pass_count"] = None if args.dry_run else sum(
         1

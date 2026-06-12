@@ -3,12 +3,15 @@
 This page states the current v2.x-facing capability boundary for learners and
 users. Older release history is kept separately in
 [Learner Doc Version Notes](history/learner_doc_version_notes.md).
+For the short learner-facing summary, read
+[Current Claim Boundaries](learn/current_claim_boundaries.md).
 
 ## Current Status
 
-RTDL v2.10 is the current source-tree
-Python+partner+RTDL surface. It preserves the v2.x language boundary and
-provides the cleaned benchmark-vs-learner app portfolio.
+RTDL v2.11 is the current source-tree
+Python+partner+RTDL surface. It preserves the v2.x language boundary, provides
+the cleaned benchmark-vs-learner app portfolio, and closes the Embree CPU plus
+partner reference lane for promoted benchmark apps.
 
 ## Short Version
 
@@ -71,7 +74,7 @@ Allowed performance wording names the exact:
 
 When any of those are missing, use candidate or preview wording.
 
-## v2.10 Release Boundaries
+## v2.11 Release Boundaries
 
 Allowed:
 

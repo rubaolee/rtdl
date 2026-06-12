@@ -1,0 +1,267 @@
+{
+  "claim_boundary": "Internal CPU-only NVIDIA OptiX RT-core versus Embree CPU engineering packet. It does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or Intel-CPU-specific claims.",
+  "comparison_rows": [
+    {
+      "app": "librts_spatial_index",
+      "bucket": "clean_same_scale_query_phase",
+      "contract": "generic_prepared_aabb_index_query_2d",
+      "embree_profiles": [
+        {
+          "elapsed_sec": 0.10486842412501574,
+          "metric": 0.06268532946705818,
+          "profile": "threads8",
+          "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/librts_spatial_index.json",
+          "threads": 8
+        },
+        {
+          "elapsed_sec": 0.13737782090902328,
+          "metric": 0.09514946024864912,
+          "profile": "threads64",
+          "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs_threads64/librts_spatial_index.json",
+          "threads": 64
+        }
+      ],
+      "faster_backend_for_selected_metric": "optix",
+      "metric_name": "query_median_sec",
+      "metric_unit": "sec",
+      "optix_metric": 0.0006238026544451714,
+      "optix_source": "docs/reports/goal4346_cpu_only_pod_comparison_run/optix_same_scale_outputs/librts_spatial_index_1024x1024.json",
+      "ratio_authorization": "internal_query_phase_ratio_only_not_public_claim",
+      "selected_embree_metric_divided_by_optix_metric": 100.48903931454473,
+      "selected_embree_profile": {
+        "elapsed_sec": 0.10486842412501574,
+        "metric": 0.06268532946705818,
+        "profile": "threads8",
+        "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/librts_spatial_index.json",
+        "threads": 8
+      }
+    },
+    {
+      "app": "hausdorff_xhd",
+      "bucket": "clean_internal_query_ratio",
+      "contract": "directed_threshold_prepared_fixed_radius_count",
+      "embree_profiles": [
+        {
+          "elapsed_sec": null,
+          "metric": 0.009748009033501148,
+          "profile": "threads8",
+          "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/hausdorff_xhd.json",
+          "threads": 8
+        },
+        {
+          "elapsed_sec": null,
+          "metric": 0.014270251616835594,
+          "profile": "threads64",
+          "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs_threads64/hausdorff_xhd.json",
+          "threads": 64
+        }
+      ],
+      "faster_backend_for_selected_metric": "optix",
+      "metric_name": "max_directed_query_fixed_radius_threshold_reached_count_sec",
+      "metric_unit": "sec",
+      "optix_metric": 0.0038534943014383316,
+      "optix_source": "docs/reports/goal4346_cpu_only_pod_comparison_run/optix_scale_outputs_fixed_env/hausdorff_xhd_scale_default_optix_threshold.stdout.json",
+      "ratio_authorization": "internal_query_phase_ratio_only_not_public_claim",
+      "selected_embree_metric_divided_by_optix_metric": 2.5296544566999013,
+      "selected_embree_profile": {
+        "elapsed_sec": null,
+        "metric": 0.009748009033501148,
+        "profile": "threads8",
+        "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/hausdorff_xhd.json",
+        "threads": 8
+      }
+    },
+    {
+      "app": "contact_manifold",
+      "bucket": "clean_internal_query_ratio",
+      "contract": "native_collect_k_bounded_witness_rows",
+      "embree_profiles": [
+        {
+          "elapsed_sec": null,
+          "metric": 0.0003764443099498749,
+          "profile": "threads8",
+          "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/contact_manifold.json",
+          "threads": 8
+        },
+        {
+          "elapsed_sec": null,
+          "metric": 0.00036821793764829636,
+          "profile": "threads64",
+          "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs_threads64/contact_manifold.json",
+          "threads": 64
+        }
+      ],
+      "faster_backend_for_selected_metric": "embree",
+      "metric_name": "native_collect_elapsed_sec",
+      "metric_unit": "sec",
+      "optix_metric": 0.00044344086199998856,
+      "optix_source": "docs/reports/goal4346_cpu_only_pod_comparison_run/optix_scale_outputs_fixed_env/contact_manifold_optix_scale_default_grid64.stdout.json",
+      "ratio_authorization": "internal_query_phase_ratio_only_not_public_claim",
+      "selected_embree_metric_divided_by_optix_metric": 0.8303653749624585,
+      "selected_embree_profile": {
+        "elapsed_sec": null,
+        "metric": 0.00036821793764829636,
+        "profile": "threads64",
+        "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs_threads64/contact_manifold.json",
+        "threads": 64
+      }
+    },
+    {
+      "app": "triangle_counting",
+      "bucket": "clean_internal_query_ratio",
+      "contract": "rt_graph_2a1_generic_ray_triangle_any_hit",
+      "embree_profiles": [
+        {
+          "elapsed_sec": null,
+          "metric": 12.108332477509975,
+          "profile": "threads8",
+          "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/triangle_counting.json",
+          "threads": 8
+        },
+        {
+          "elapsed_sec": null,
+          "metric": 13.454485684633255,
+          "profile": "threads64",
+          "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs_threads64/triangle_counting.json",
+          "threads": 64
+        }
+      ],
+      "faster_backend_for_selected_metric": "optix",
+      "metric_name": "query_median_ms",
+      "metric_unit": "ms",
+      "optix_metric": 0.15533529222011566,
+      "optix_source": "docs/reports/goal4346_cpu_only_pod_comparison_run/optix_scale_outputs_fixed_env/triangle_counting_optix_rt_graph_2a1_scale_default_2048.stdout.json",
+      "ratio_authorization": "internal_query_phase_ratio_only_not_public_claim",
+      "selected_embree_metric_divided_by_optix_metric": 77.94965525511122,
+      "selected_embree_profile": {
+        "elapsed_sec": null,
+        "metric": 12.108332477509975,
+        "profile": "threads8",
+        "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/triangle_counting.json",
+        "threads": 8
+      }
+    },
+    {
+      "app": "robot_collision",
+      "bucket": "boundary_limited_phase_ratio",
+      "contract": "prepared_triangle_scene_grouped_segment_any_hit_same_scene_query_scale",
+      "embree_profiles": [
+        {
+          "elapsed_sec": null,
+          "metric": 0.001181259,
+          "profile": "threads8",
+          "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/robot_collision.json",
+          "threads": 8
+        },
+        {
+          "elapsed_sec": null,
+          "metric": 0.001186779,
+          "profile": "threads64",
+          "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs_threads64/robot_collision.json",
+          "threads": 64
+        }
+      ],
+      "faster_backend_for_selected_metric": "optix",
+      "metric_name": "traversal_phase_median_sec",
+      "metric_unit": "sec",
+      "optix_metric": 4.0496e-05,
+      "optix_source": "docs/reports/goal4346_cpu_only_pod_comparison_run/optix_scale_outputs_fixed_env/robot_collision_optix_scale_default_1024_no_probe_reference.stdout.json",
+      "ratio_authorization": "boundary_limited_phase_only_no_end_to_end_ratio",
+      "selected_embree_metric_divided_by_optix_metric": 29.169769853812724,
+      "selected_embree_profile": {
+        "elapsed_sec": null,
+        "metric": 0.001181259,
+        "profile": "threads8",
+        "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/robot_collision.json",
+        "threads": 8
+      }
+    },
+    {
+      "app": "raydb_style",
+      "bucket": "boundary_limited_phase_ratio",
+      "contract": "generated_grouped_count_same_rows_groups_boundary_limited_residency",
+      "embree_profiles": [
+        {
+          "elapsed_sec": 0.33661216776818037,
+          "metric": 0.013930317,
+          "profile": "threads8",
+          "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/raydb_style.json",
+          "threads": 8
+        },
+        {
+          "elapsed_sec": 0.36813065595924854,
+          "metric": 0.007873165,
+          "profile": "threads64",
+          "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs_threads64/raydb_style.json",
+          "threads": 64
+        }
+      ],
+      "faster_backend_for_selected_metric": "optix",
+      "metric_name": "native_rt_traversal_sec",
+      "metric_unit": "sec",
+      "optix_metric": 0.000209818,
+      "optix_source": "docs/reports/goal4346_cpu_only_pod_comparison_run/optix_scale_outputs_fixed_env/raydb_style_optix_count_scale_default_262k.stdout.json",
+      "ratio_authorization": "boundary_limited_phase_only_no_end_to_end_ratio",
+      "selected_embree_metric_divided_by_optix_metric": 37.523782516276015,
+      "selected_embree_profile": {
+        "elapsed_sec": 0.36813065595924854,
+        "metric": 0.007873165,
+        "profile": "threads64",
+        "source": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs_threads64/raydb_style.json",
+        "threads": 64
+      }
+    }
+  ],
+  "contract_choice_blockers": [
+    {
+      "app": "spatial_rayjoin",
+      "reason": "toolchain is fixed and current mixed route runs; serious Embree-vs-OptiX ratio still needs a chosen common contract: PIP count, LSI scalar count, or overlay active-count"
+    },
+    {
+      "app": "rt_dbscan",
+      "reason": "toolchain is fixed and current OptiX+Numba grouped signature runs; serious Embree-vs-OptiX ratio still needs fixed-radius rows or grouped-signature contract on both sides"
+    },
+    {
+      "app": "barnes_hut",
+      "reason": "toolchain is fixed and current Numba exact-force partner-only row runs; serious Embree-vs-OptiX ratio still needs exact-force configured route or node-coverage route on both sides"
+    },
+    {
+      "app": "rtnn",
+      "reason": "OptiX row is 3-D ranked summary; Embree registry row is 2-D ANN candidate quality; choose one contract before ratio reporting"
+    }
+  ],
+  "generated_at_utc": "2026-06-12T00:14:04.116928+00:00",
+  "inputs": {
+    "embree_threads64_dir": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs_threads64",
+    "embree_threads8_dir": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs",
+    "optix_librts_same_scale": "docs/reports/goal4346_cpu_only_pod_comparison_run/optix_same_scale_outputs/librts_spatial_index_1024x1024.json",
+    "optix_scale_summary": "docs/reports/goal4346_cpu_only_pod_comparison_run/optix_scale_summary_fixed_env.json"
+  },
+  "optix_scale_status": {
+    "all_pass": true,
+    "failed_rows": [],
+    "interpretation": "Corrected old working CUDA/Numba env resolved the PTX mismatch; all 10 OptiX scale rows passed.",
+    "validation_status": "accept"
+  },
+  "pod": {
+    "cpu_lscpu_excerpt": [
+      "CPU(s): 128",
+      "Vendor ID: AuthenticAMD",
+      "Model name: AMD EPYC 7702 64-Core Processor",
+      "Thread(s) per core: 2",
+      "Core(s) per socket: 64",
+      "Socket(s): 1"
+    ],
+    "cpu_vendor_boundary": "Pod CPU is AMD EPYC, not Intel. These Embree CPU timings are CPU/Embree pod evidence, not Intel-specific CPU evidence.",
+    "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB",
+    "ssh_target": "root@157.157.221.29:22956"
+  },
+  "toolchain_solution": {
+    "failed_attempt_preserved": "docs/reports/goal4346_cpu_only_pod_comparison_run/optix_scale_summary.json",
+    "fixed_summary": "docs/reports/goal4346_cpu_only_pod_comparison_run/optix_scale_summary_fixed_env.json",
+    "problem": "Initial fresh runner omitted the old working CUDA/Numba toolchain env; Numba emitted PTX 8.7 while resolving an older PTX 8.4 ptxas path, causing CUDA_ERROR_UNSUPPORTED_PTX_VERSION for spatial_rayjoin, rt_dbscan, and barnes_hut.",
+    "solution": "Set RTDL_CUDA_PREFIX=/usr/local/cuda-12.8, NUMBA_CUDA_PREFIX=/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc, CUDA_HOME/CUDA_PATH=$NUMBA_CUDA_PREFIX, put $RTDL_CUDA_PREFIX/bin first on PATH, and include NUMBA_CUDA_PREFIX/nvvm/lib64 plus CUDA 12.8 library dirs in LD_LIBRARY_PATH.",
+    "verification": "Numba CUDA smoke passed and the corrected OptiX scale summary has all_pass=true for all 10 rows."
+  },
+  "version": "goal4346.fresh_pod_cpu_only_comparison.fixed_numba_toolchain.v2"
+}

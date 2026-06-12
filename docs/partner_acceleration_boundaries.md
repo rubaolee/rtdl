@@ -1,5 +1,9 @@
 # Partner Acceleration Boundaries
 
+For the short learner-facing summary, start with
+[Current Claim Boundaries](learn/current_claim_boundaries.md). This page gives
+the longer partner-specific detail behind that summary.
+
 RTDL's partner path lets Python programs pass partner-owned columns into RTDL
 primitive calls. The supported partners are part of the data handoff contract;
 they are not general-purpose program optimizers.
@@ -98,13 +102,14 @@ For app continuations, the intended interpretation is:
   semantics, and final reports in Python or user partner code unless RTDL has
   shipped a reviewed generic primitive for that exact contract.
 
-## v2.10 Release Boundary
+## v2.11 Release Boundary
 
-v2.10 is the current source-tree Python+partner+RTDL milestone. It provides
-user-chosen partner guidance across primitive-first RTDL, CuPy reference paths,
-and selected Numba custom-continuation support. It does not authorize package-install wording,
-broad speedup wording, automatic partner selection, or a general zero-copy
-product claim.
+v2.11 is the current source-tree Python+partner+RTDL milestone. It carries
+forward the v2.10 user-chosen partner guidance across primitive-first RTDL,
+CuPy reference paths, and selected Numba custom-continuation support, and it
+adds the Embree CPU plus partner reference boundary for promoted benchmark
+apps. It does not authorize package-install wording, broad speedup wording,
+automatic partner selection, or a general zero-copy product claim.
 
 Every public performance statement must stay inside the reviewed evidence:
 
@@ -122,7 +127,7 @@ of performance wording.
 Copilot supplemental review may be useful engineering signal, but it does not
 replace Claude or Gemini under the strict 3-AI consensus rule.
 
-## v2.10 Partner Choice Rule
+## v2.11 Partner Choice Rule
 
 The current rule is intentionally simple:
 
@@ -143,10 +148,13 @@ Current guidance lives in:
 
 - [Choosing A Partner For Custom Logic](learn/partner_choice_for_custom_logic.md)
 - [Benchmark Partner Reference Matrix](learn/benchmark_partner_reference_matrix.md)
+- `docs/release_reports/v2_11/README.md`
+- `docs/reports/goal4298_v2_11_embree_cpu_partner_reference_packet_2026-06-11.md`
+- `docs/reports/goal4353_human_scale_rt_vs_embree_run_20260612_pod_v3/summary.md`
 - `docs/reports/goal4266_large_scale_cupy_numba_partner_comparison_2026-06-09.md`
 - `docs/reports/goal4267_v2_10_milestone_release_packet_2026-06-10.md`
 - `docs/reports/goal4270_v2_10_milestone_release_3ai_consensus_2026-06-10.md`
 
 Historical partner-continuation reports remain in `docs/reports/` for
-reviewers. They explain how the project reached the current v2.10 rule; they do
+reviewers. They explain how the project reached the current v2.11 rule; they do
 not override this learner-facing boundary.

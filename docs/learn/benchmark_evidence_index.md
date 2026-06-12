@@ -1,10 +1,14 @@
 # Benchmark Evidence Index
 
-Status: current v2.10 source-tree evidence map.
+Status: current v2.11 source-tree evidence map.
 
 Use this page when you want to reproduce or audit the ten benchmark-app front
 doors. It is intentionally narrower than the full report history: it tells you
 which row is current, what hardware it needs, and how to read the result.
+
+For conservative performance interpretation, read the
+[RT-Core Evidence Matrix](rt_core_evidence_matrix.md). It separates strong RT
+evidence, mixed evidence, partner-led evidence, and coverage evidence.
 
 Machine-readable source:
 
@@ -27,17 +31,32 @@ PYTHONPATH=src:. python scripts/goal3823_current_benchmark_front_door_runner.py 
 Scale-profile pod runner:
 
 ```bash
-PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python scripts/goal3828_current_benchmark_scale_profile_runner.py --output-dir docs/reports/current_benchmark_scale_profile_rerun
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python scripts/goal3828_current_benchmark_scale_profile_runner.py \
+  --materialize-rayjoin-public-cdb \
+  --output-dir docs/reports/current_benchmark_scale_profile_rerun
 ```
+
+The RayJoin public-CDB fixture is materialized only when the explicit
+`--materialize-rayjoin-public-cdb` flag is present. Without that flag, the
+runner records fixture status and lets the RayJoin row fail clearly if the
+data is absent.
 
 Bounded pod-validation bundle:
 
 ```bash
-PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python scripts/rtdl_v2_10_pod_validation_bundle.py --run-front-door --run-scale-profile --output-dir docs/reports/v2_10_pod_validation_bundle_pod
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python scripts/rtdl_v2_10_pod_validation_bundle.py --run-front-door --run-scale-profile --materialize-rayjoin-public-cdb --output-dir docs/reports/v2_10_pod_validation_bundle_pod
 ```
 
 For the full procedure, read
 [v2.10 Pod Validation Bundle](../audit/runbooks/v2_10_pod_validation_bundle.md).
+
+v2.11 closeout evidence:
+
+- [v2.11 release package](../release_reports/v2_11/README.md)
+- [v2.11 Embree CPU + partner reference packet](../reports/goal4298_v2_11_embree_cpu_partner_reference_packet_2026-06-11.md)
+- [Backend comparison campaign closeout](../reports/goal4345_backend_comparison_campaign_closeout_2026-06-11.md)
+- [Human-scale RT-core vs Embree CPU comparison](../reports/goal4353_human_scale_rt_vs_embree_run_20260612_pod_v3/summary.md)
+- [RayJoin original-code same-stream comparison](../reports/goal4354_rayjoin_original_vs_rtdl_pod/goal4354_rayjoin_original_vs_rtdl_same_stream_summary.md)
 
 ## Current Ten-App Rows
 
@@ -65,10 +84,15 @@ For the full procedure, read
 
 - A front-door row proves that the current command executes and keeps claim
   flags clean. It is not a performance leaderboard.
+- A ten-app packet is not ten broad RT-core speedup claims. Read each row by
+  exact contract before using it as performance evidence.
 - A scale-profile row is more useful for performance planning, but still must
   be read by exact app, command, hardware, backend, partner, and dataset.
 - CuPy/Numba comparison rows are partner-continuation evidence only. They do
   not become RT-core or whole-application speedup claims.
+- The RayJoin external comparison is useful for LSI/PIP diagnosis, but it is
+  not a full RayJoin paper reproduction and does not authorize RTDL-beats-RayJoin
+  wording.
 - If a row needs OptiX, use a pod or workstation with `RTDL_OPTIX_LIBRARY`
   pointing to `librtdl_optix`.
 - If a row needs Numba, install the CUDA-capable Numba stack on the pod before

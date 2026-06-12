@@ -867,7 +867,7 @@ def execute_grouped_vector_sum_typed_stream_partner_columns(
     if dry_run:
         return request
 
-    from .partner_adapters import grouped_vector_sum_2d_partner_columns
+    from .adapters.reductions import grouped_vector_sum_2d_partner_columns
 
     partner_columns: dict[str, Any] = {"group_ids": group_ids, "values_x": values_x, "values_y": values_y}
     if row_offsets is not None:
@@ -1396,17 +1396,17 @@ def _execute_partner_front_door(
             _partner_bridge_metadata(operation, partner, group_count, _partner_column_length(mapped_columns["group_ids"])),
         )
     if operation == "grouped_argmin_f64":
-        from .partner_adapters import grouped_argmin_f64_partner_columns
+        from .adapters.reductions import grouped_argmin_f64_partner_columns
 
         result = grouped_argmin_f64_partner_columns(mapped_columns, group_count=group_count, partner=partner, return_metadata=True)
         return _canonical_ranked_summary_columns(result["columns"], include_ranked_rows=False), dict(result["metadata"])
     if operation == "grouped_argmax_f64":
-        from .partner_adapters import grouped_argmax_f64_partner_columns
+        from .adapters.reductions import grouped_argmax_f64_partner_columns
 
         result = grouped_argmax_f64_partner_columns(mapped_columns, group_count=group_count, partner=partner, return_metadata=True)
         return _canonical_ranked_summary_columns(result["columns"], include_ranked_rows=False), dict(result["metadata"])
     if operation == "grouped_topk_f64":
-        from .partner_adapters import grouped_topk_f64_partner_columns
+        from .adapters.reductions import grouped_topk_f64_partner_columns
 
         if k is None:
             raise ValueError("k is required for grouped_topk_f64")

@@ -1,0 +1,18 @@
+{
+  "small_validated": {
+    "matches_cpu_reference": true,
+    "native_index": "embree_native_aabb_collision_index",
+    "query_median_sec": 0.0009246859954146203,
+    "cpu_reference_skipped": false
+  },
+  "large_1024_skip_counts": {
+    "matches_cpu_reference": null,
+    "native_index": "embree_native_aabb_collision_index",
+    "query_median_sec": 0.011698941001668572,
+    "elapsed_sec": 0.03340582999953767,
+    "cpu_reference_skipped": true,
+    "wall_sec": 0.51
+  },
+  "old_goal4339_large_query_median_sec": 43.764849884002615,
+  "query_median_speedup_vs_columnar_fallback": 3740.924061225765
+}

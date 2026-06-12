@@ -96,6 +96,8 @@ the explicit `examples/current/...` paths.
 
 ## Claim Boundaries
 
+- Short canonical boundary page:
+  [Current Claim Boundaries](../docs/learn/current_claim_boundaries.md).
 - `--backend optix` is not by itself a broad NVIDIA RT-core speedup claim.
 - Partner examples show user-owned continuation around RTDL outputs; RTDL does
   not claim to accelerate arbitrary NumPy, CuPy, Numba, or user-owned extension

@@ -248,13 +248,16 @@ def run_result_mode(
             copies=copies,
         )
     if backend == PAPER_RT_EMBREE_BACKEND:
-        return _run_paper_rt_native_result_mode(
+        return _run_paper_rt_prepared_grouped_reduction_result_mode(
             fixture=fixture,
             plan=plan,
             mode=mode,
             copies=copies,
             backend="embree",
             backend_label=PAPER_RT_EMBREE_BACKEND,
+            repeat=repeat,
+            warmup=warmup,
+            summary_only_iterations=summary_only_iterations,
         )
     if backend == PAPER_RT_OPTIX_BACKEND:
         return _run_paper_rt_native_result_mode(
@@ -1961,6 +1964,8 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
     copies: int,
     repeat: int,
     warmup: int,
+    backend: str = "optix",
+    backend_label: str = PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND,
     summary_only_iterations: bool = False,
 ) -> dict[str, Any]:
     if mode not in PAPER_RT_RESULT_MODES:
@@ -1986,7 +1991,7 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
         primitive_group_ids=workload["primitive_group_ids"],
         primitive_values=workload["primitive_values"],
         group_count=group_count,
-        backend="optix",
+        backend=backend,
     )
     prepared_ready = time.perf_counter()
     ray_batch_started = time.perf_counter()
@@ -2048,7 +2053,7 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
     materialization_sec = max(0.0, elapsed_sec - rt_traversal_sec)
     return {
         "app": "raydb_style_columnar_aggregate",
-        "backend": PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND,
+        "backend": backend_label,
         "mode": mode,
         "copies": int(copies),
         "row_count": len(fixture["row_ids"]),
@@ -2056,7 +2061,7 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
         "rows": rows,
         "matches_cpu_reference": _rows_match_cpu_reference(rows, cpu_rows),
         "metadata": {
-            "contract": "raydb_paper_triangle_scan_prepared_grouped_reduction_optix",
+            "contract": f"raydb_paper_triangle_scan_prepared_grouped_reduction_{backend}",
             "copies": int(copies),
             "row_count": len(fixture["row_ids"]),
             "timings": timing_medians,
@@ -2070,7 +2075,7 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
             "primitive_contract_required_for_native": GENERIC_RAY_TRIANGLE_GROUPED_REDUCTION_3D_SYMBOL,
             "v2_4_prepared_session": describe_paper_rt_v2_4_prepared_session(
                 workload,
-                backend="optix",
+                backend=backend,
                 mode=mode,
             ),
             "v2_5_partner_continuation": describe_raydb_v2_5_partner_continuation(mode),
@@ -2095,7 +2100,7 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
                 },
                 promoted_performance_path=False,
                 same_phase_contract_as_basis=True,
-                source=f"raydb_style.paper_rt_prepared_grouped_reduction.optix.{mode}",
+                source=f"raydb_style.paper_rt_prepared_grouped_reduction.{backend}.{mode}",
             ),
             "native_symbol": primitive_result.get("native_symbol"),
             "native_rt_core_lowering_path_present": True,
@@ -2117,8 +2122,8 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
             "generic_primitive_reduction": primitive_result.get("reduction"),
             "transfer_metadata": primitive_result.get("transfer_metadata"),
             "engine_boundary": (
-                "This prepared v2.4-style opponent reuses the generic OptiX scene, ray batch, "
-                "and primitive grouped payload. It still returns compact grouped rows through "
+                "This prepared v2.4-style opponent reuses the generic RTDL scene, ray batch, "
+                "and primitive grouped payload on the selected backend. It still returns compact grouped rows through "
                 "the native grouped-reduction contract rather than exposing a typed device "
                 "hit stream to a partner continuation."
             ),

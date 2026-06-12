@@ -234,9 +234,16 @@ Then run the current scale-profile packet with file-backed stdout:
 python3 scripts/goal3828_current_benchmark_scale_profile_runner.py \
   --output-json docs/reports/<goal>/summary.json \
   --output-dir docs/reports/<goal>/outputs \
+  --materialize-rayjoin-public-cdb \
   --heartbeat-sec 20 \
   --timeout-scale 1.0
 ```
+
+The RayJoin public-CDB fixture is materialized only because this command
+includes `--materialize-rayjoin-public-cdb`. If you omit that flag on a fresh
+pod, the runner records the fixture as missing and the RayJoin representative
+row can fail with a clear missing-data error instead of silently downloading
+data.
 
 Goal3971 is the reference artifact for this setup:
 `docs/reports/goal3971_current_head_scale_profile_after_loader_closeout_2026-06-08/summary.json`.

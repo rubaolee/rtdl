@@ -125,11 +125,11 @@ Checked endpoints:
 
 | Target | Result |
 | --- | --- |
-| `192.168.1.20` | SSH timed out |
-| `root@69.30.85.203 -p 22057` | connection refused |
-| `root@157.157.221.29 -p 24101` | key rejected |
+| local Linux host | SSH timed out |
+| redacted CUDA pod endpoint A | connection refused |
+| redacted CUDA pod endpoint B | key rejected |
 | Windows local | no CuPy and no Numba installed |
-| `root@213.192.2.91 -p 40030` | RTX 3090 run completed with the repo-local RTDL pod key |
+| redacted RTX 3090 pod endpoint | RTX 3090 run completed |
 
 ## Pod Command
 

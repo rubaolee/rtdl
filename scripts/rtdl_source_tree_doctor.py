@@ -82,7 +82,7 @@ def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
     checks.append(
         _check(
             "version marker",
-            "pass" if version == "v2.10" else "fail",
+            "pass" if version == "v2.11" else "fail",
             version or "VERSION is missing",
         )
     )
@@ -92,10 +92,20 @@ def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
         "front page": ROOT / "README.md",
         "top-level tutorials": ROOT / "tutorials" / "current" / "README.md",
         "current examples": ROOT / "examples" / "current" / "README.md",
-        "v2.10 release package": ROOT / "docs" / "release_reports" / "v2_10" / "README.md",
+        "v2.11 release package": ROOT / "docs" / "release_reports" / "v2_11" / "README.md",
     }
     for name, path in required_paths.items():
         checks.append(_check(name, "pass" if path.exists() else "fail", path.relative_to(ROOT).as_posix()))
+
+    editable_metadata = ROOT / "pyproject.toml"
+    checks.append(
+        _check(
+            "optional editable source-tree metadata",
+            "pass" if editable_metadata.exists() else "warn",
+            editable_metadata.relative_to(ROOT).as_posix(),
+            required=False,
+        )
+    )
 
     checks.append(
         _check(

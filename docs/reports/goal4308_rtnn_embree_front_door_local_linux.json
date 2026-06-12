@@ -1,0 +1,97 @@
+{
+  "all_pass": true,
+  "automatic_partner_selection_authorized": false,
+  "broad_rt_core_claim_authorized": false,
+  "claim_boundary": "Goal4298 records the v2.11 Embree CPU plus current CPU partner reference packet for the ten current benchmark apps. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, NVIDIA/AMD/Intel GPU performance wording, paper-reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
+  "dry_run": false,
+  "intel_gpu_performance_claim_authorized": false,
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "app": "rtnn",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py",
+        "--mode",
+        "ann_embree_quality",
+        "--copies",
+        "128"
+      ],
+      "cpu_thread_env": {
+        "MKL_NUM_THREADS": "8",
+        "NUMEXPR_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8",
+        "RTDL_EMBREE_THREADS": "8",
+        "TBB_NUM_THREADS": "8"
+      },
+      "elapsed_sec": 0.5428194840060314,
+      "returncode": 0,
+      "route_class": "embree_cpu_rt_plus_python_continuation",
+      "row_id": "rtnn_embree_cpu_ann_candidate_quality_reference",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"app\": \"rtnn_neighbor_search\",\n  \"approximate_row_count\": 384,\n  \"backend\": \"embree\",\n  \"benchmark_app\": \"rtnn_neighbor_search\",\n  \"boundary\": \"Embree CPU front door for the 2-D ANN candidate-quality contract. This removes the RTNN Embree-packet special case, but it is not the 3-D RTNN ranked-summary path and not full RTNN paper reproduction.\",\n  \"candidate_count\": 384,\n  \"candidate_radius\": null,\n  \"claim_boundary\": {\n    \"embree_cpu_compatibility_front_door\": true,\n    \"native_engine_customization\": false,\n    \"paper_reproduction_claim_authorized\": false,\n    \"rt_core_speedup_claim_authorized\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"contract\": \"Embree CPU candidate-subset exact top-1 rerank compared with exact full-set top-1\",\n  \"copies\": 128,\n  \"exact_match_count\": 256,\n  \"inherited_ann_optix_performance_note_present\": true,\n  \"k\": 1,\n  \"max_neighbor_rank\": 1,\n  \"mean_distance_ratio\": 3.6666666666637027,\n  \"mode\": \"ann_embree_quality\",\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"native_knn_rerank_summary\",\n  \"optix_summary_mode\": null,\n  \"output_mode\": \"quality_summary\",\n  \"query_count\": 384,\n  \"query_count_with_candidate\": 384,\n  \"recall_at_1\": 0.6666666666666666,\n  \"rt_core_accelerated\": false,\n  \"rt_path_note\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default candidate reranking uses KNN rows through CUDA-style kernels; explicit candidate_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for candidate-coverage decisions only.\"\n  },\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows for candidate-subset kNN reranking over a Python-selected candidate subset; Python evaluates approximation quality against exact search.\",\n  \"search_count\": 768,\n  \"uses_embree\": true,\n  \"uses_numba\": false\n}\n",
+      "timeout_sec": 180,
+      "uses_embree": true,
+      "uses_numba": false
+    }
+  ],
+  "runtime_environment": {
+    "cpu_thread_env": {
+      "MKL_NUM_THREADS": "8",
+      "NUMEXPR_NUM_THREADS": "8",
+      "OMP_NUM_THREADS": "8",
+      "OPENBLAS_NUM_THREADS": "8",
+      "RTDL_EMBREE_THREADS": "8",
+      "TBB_NUM_THREADS": "8"
+    },
+    "executable": "/usr/bin/python3",
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "python": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]"
+  },
+  "summary": {
+    "app_count": 1,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "claim_boundary": "Goal4298 records the v2.11 Embree CPU plus current CPU partner reference packet for the ten current benchmark apps. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, NVIDIA/AMD/Intel GPU performance wording, paper-reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
+    "embree_rows": [
+      "rtnn_embree_cpu_ann_candidate_quality_reference"
+    ],
+    "intel_gpu_performance_claim_authorized": false,
+    "numba_rows": [],
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "requires_embree_library_rows": [
+      "rtnn_embree_cpu_ann_candidate_quality_reference"
+    ],
+    "requires_numba_rows": [],
+    "row_count": 1,
+    "status": "internal_embree_cpu_partner_reference_not_release_authorization",
+    "true_zero_copy_claim_authorized": false,
+    "version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "true_zero_copy_claim_authorized": false,
+  "v2_11_release_authorized": false,
+  "validation": {
+    "app_count": 10,
+    "claim_boundary": "Goal4298 records the v2.11 Embree CPU plus current CPU partner reference packet for the ten current benchmark apps. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, NVIDIA/AMD/Intel GPU performance wording, paper-reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
+    "errors": [],
+    "row_count": 10,
+    "status": "accept",
+    "version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1"
+  },
+  "version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+  "whole_app_speedup_claim_authorized": false
+}

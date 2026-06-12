@@ -12,3 +12,22 @@ docs/reports/*_source_*.tar.gz
 !docs/reports/goal2550_barnes_hut_authors_new_mode_pod_logs/*.log
 scratch/public_hausdorff/
 docs/reports/goal155_external_review_gemini_2026-04-07.md
+
+# Local secrets and accidental workspace debris. Evidence reports should record
+# hardware class/driver metadata, not SSH keys or live connection strings.
+id_ed25519*
+*.pem
+*.ppk
+*.key
+*.egg-info/
+/Lib/
+/before_*.txt
+/rtdl_v0_4.tar.gz
+/scripts/pip*.exe
+
+# Release hygiene: keep large raw benchmark payloads local. Commit compact
+# summaries, markdown reports, and reproduction scripts instead.
+docs/reports/**/*_stream.json
+docs/reports/**/contact_broadphase_sweep/*.json
+docs/reports/**/contact_native_collect_long_repeat/*.json
+docs/reports/**/*_r[0-9]*.json

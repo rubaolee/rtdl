@@ -1384,6 +1384,7 @@ def run_rt_dbscan_benchmark(
         "optix_rt_core_grouped_stream_blocked_cupy_column_signature_3d",
         "optix_rt_core_grouped_stream_blocked_numba_column_signature_3d",
         "optix_rt_core_flags_numba_prepared_grid_column_signature_3d",
+        "embree_core_flags_numba_prepared_grid_column_signature_3d",
         "partner_cupy_partition_convergence_component_signature_3d",
         "partner_cupy_prepared_partition_convergence_component_signature_3d",
         "partner_cupy_prepared_direct_status_union_component_signature_3d",
@@ -1541,6 +1542,122 @@ def run_rt_dbscan_benchmark(
             "rt_core_accelerated": False,
             "materializes_neighbor_rows": True,
         }
+    elif mode == "embree_core_flags_numba_prepared_grid_column_signature_3d":
+        import numpy as np
+        from numba import cuda
+
+        prepare_start = time.perf_counter()
+        point_columns = rt.point_rows_to_partner_columns(points, partner="numba")
+        prepared_grid = rt.prepare_radius_graph_components_3d_numba_grid_partner_columns(
+            point_columns,
+            radius=resolved_radius,
+            partner="numba",
+        )
+        embree_kernel = make_fixed_radius_neighbors_3d_embree_kernel(
+            radius=resolved_radius,
+            k_max=resolved_min_neighbors,
+        )
+        prepare_sec = time.perf_counter() - prepare_start
+        point_index_by_id = {int(point.id): index for index, point in enumerate(points)}
+        prepared_query_runs: list[dict[str, object]] = []
+        for iteration in range(repeat):
+            run_timing: dict[str, float] = {}
+            run_start = time.perf_counter()
+            embree_start = time.perf_counter()
+            threshold_rows = rt.run_embree(
+                embree_kernel,
+                query_points=points,
+                search_points=points,
+            )
+            embree_elapsed = time.perf_counter() - embree_start
+            counts_host = np.zeros((len(points),), dtype=np.uint32)
+            for row in threshold_rows:
+                query_index = point_index_by_id[int(row["query_id"])]
+                if counts_host[query_index] < resolved_min_neighbors:
+                    counts_host[query_index] += 1
+            flags_host = (counts_host >= resolved_min_neighbors).astype(np.uint32, copy=False)
+            upload_start = time.perf_counter()
+            neighbor_counts_device = cuda.to_device(counts_host)
+            core_flags_device = cuda.to_device(flags_host)
+            cuda.synchronize()
+            upload_elapsed = time.perf_counter() - upload_start
+            continuation_start = time.perf_counter()
+            result = rt.radius_graph_components_3d_numba_prepared_grid_partner_columns(
+                prepared_grid,
+                min_neighbors=resolved_min_neighbors,
+                core_flags=core_flags_device,
+                neighbor_counts=neighbor_counts_device,
+                core_flag_source="embree_fixed_radius_threshold_capped_rows_3d",
+                return_metadata=True,
+            )
+            continuation_elapsed = time.perf_counter() - continuation_start
+            signature_start = time.perf_counter()
+            run_signature = _cluster_signature_from_partner_columns(result["columns"], partner="numba")
+            run_timing["embree_threshold_capped_rows_sec"] = embree_elapsed
+            run_timing["embree_threshold_columns_upload_sec"] = upload_elapsed
+            run_timing["numba_component_continuation_sec"] = continuation_elapsed
+            run_timing["column_signature_sec"] = time.perf_counter() - signature_start
+            prepared_query_runs.append(
+                {
+                    "iteration": iteration,
+                    "is_warmup": iteration < warmup,
+                    "elapsed_sec": time.perf_counter() - run_start,
+                    "timing_sec": run_timing,
+                    "signature": run_signature,
+                    "rows": (),
+                    "metadata": dict(result["metadata"]),
+                    "embree_threshold_row_count": len(threshold_rows),
+                    "core_flag_count": int(flags_host.sum()),
+                }
+            )
+        measured_runs = [row for row in prepared_query_runs if not bool(row["is_warmup"])]
+        if not measured_runs:
+            raise RuntimeError("RT-DBSCAN Embree+Numba repeat produced no measured rows")
+        phase_names = sorted({name for row in measured_runs for name in row["timing_sec"]})
+        timing_breakdown_sec = {
+            name: float(statistics.median(float(row["timing_sec"][name]) for row in measured_runs if name in row["timing_sec"]))
+            for name in phase_names
+        }
+        timing_total_sec = {
+            name: float(sum(float(row["timing_sec"][name]) for row in measured_runs if name in row["timing_sec"]))
+            for name in phase_names
+        }
+        elapsed_override = float(statistics.median(float(row["elapsed_sec"]) for row in measured_runs))
+        elapsed_total_sec = float(sum(float(row["elapsed_sec"]) for row in measured_runs))
+        signature_override = dict(measured_runs[-1]["signature"])
+        rows = ()
+        metadata = dict(measured_runs[-1]["metadata"])
+        metadata.update(
+            {
+                "path": "embree_threshold_capped_rows_numba_prepared_grid_radius_graph_column_signature_3d",
+                "embree_threshold_capped_rows_sec": timing_breakdown_sec["embree_threshold_capped_rows_sec"],
+                "embree_threshold_columns_upload_sec": timing_breakdown_sec["embree_threshold_columns_upload_sec"],
+                "numba_component_continuation_sec": timing_breakdown_sec["numba_component_continuation_sec"],
+                "column_signature_sec": timing_breakdown_sec["column_signature_sec"],
+                "native_engine_summary_contract": "generic_fixed_radius_count_threshold_3d_host_columns_via_threshold_capped_rows",
+                "native_execution_path": "embree_point_query_fixed_radius_3d_threshold_capped_rows",
+                "embree_backend_used": True,
+                "rt_core_accelerated": False,
+                "materializes_neighbor_summaries": False,
+                "materializes_neighbor_rows": True,
+                "materializes_python_rows": False,
+                "signature_source": "partner_column_arrays_no_python_row_dicts",
+                "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+                "embree_prepared_3d_scene_handle_used": False,
+                "current_embree_3d_scene_setup_paid_in_threshold_phase": True,
+                "embree_threshold_row_count": int(measured_runs[-1]["embree_threshold_row_count"]),
+                "core_flag_count": int(measured_runs[-1]["core_flag_count"]),
+                "prepared_query_repeat_protocol": {
+                    "repeat": repeat,
+                    "warmup": warmup,
+                    "measured_iterations": len(measured_runs),
+                    "prepare_sec": prepare_sec,
+                    "median_elapsed_sec": elapsed_override,
+                    "elapsed_sec_total": elapsed_total_sec,
+                },
+                "timing_total_sec": timing_total_sec,
+            }
+        )
     elif mode == "partner_spatial_bucket_3d":
         point_columns = rt.point_rows_to_partner_columns(points, partner=partner)
         result = rt.radius_graph_components_3d_spatial_bucket_partner_columns(
@@ -2304,7 +2421,12 @@ def run_rt_dbscan_benchmark(
             name: float(statistics.median(float(row["timing_sec"][name]) for row in measured_runs if name in row["timing_sec"]))
             for name in phase_names
         }
+        timing_total_sec = {
+            name: float(sum(float(row["timing_sec"][name]) for row in measured_runs if name in row["timing_sec"]))
+            for name in phase_names
+        }
         elapsed_override = float(statistics.median(float(row["elapsed_sec"]) for row in measured_runs))
+        elapsed_total_sec = float(sum(float(row["elapsed_sec"]) for row in measured_runs))
         signature_override = dict(measured_runs[-1]["signature"])
         rows = measured_runs[-1]["rows"]
         metadata = dict(measured_runs[-1]["metadata"])
@@ -2338,7 +2460,9 @@ def run_rt_dbscan_benchmark(
                     "measured_iterations": len(measured_runs),
                     "prepare_sec": prepare_sec,
                     "median_elapsed_sec": elapsed_override,
+                    "elapsed_sec_total": elapsed_total_sec,
                 },
+                "timing_total_sec": timing_total_sec,
             }
         )
     elif mode == "optix_rt_core_adjacency_cupy_components_3d":
@@ -2796,6 +2920,7 @@ def main(argv: list[str] | None = None) -> int:
             "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
             "optix_rt_core_flags_cupy_predicate_direct_status_all_true_column_signature_3d",
             "partner_cupy_declared_all_true_predicate_direct_status_column_signature_3d",
+            "embree_core_flags_numba_prepared_grid_column_signature_3d",
             "optix_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_grid_components_3d",
             "optix_rt_core_flags_cupy_prepared_grid_components_3d",

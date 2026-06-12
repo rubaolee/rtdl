@@ -27,7 +27,7 @@ def _goal1060_database_rows() -> list[dict[str, Any]]:
 def _source_observations() -> dict[str, Any]:
     optix = _read(ROOT / "src/rtdsl/optix_runtime.py")
     embree = _read(ROOT / "src/rtdsl/embree_runtime.py")
-    regional = _read(ROOT / "examples/rtdl_v0_7_db_app_demo.py")
+    regional = _read(ROOT / "examples/internal/archived_apps/rtdl_v0_7_db_app_demo.py")
     sales = _read(ROOT / "examples/current/apps/geospatial/rtdl_sales_risk_screening.py")
 
     return {

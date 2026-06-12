@@ -1,0 +1,180 @@
+{
+  "all_counts_match": true,
+  "block_size": 128,
+  "boundary": "Representative RayJoin current-route scale profile over bounded public-CDB slices. This is not a RayJoin paper reproduction, not automatic dispatch, not a public speedup claim, and not release evidence.",
+  "cases": [
+    {
+      "counts_match": true,
+      "dataset": "/root/rtdl_goal4329.OOFWIg/repo/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+      "numba_hot_median_sec": 0.0004418320022523403,
+      "numba_rawkernel_required": false,
+      "numba_speedup_vs_rtdl_optix": 3.9764119275695147,
+      "recommended_route": "numba_cuda_jit_scalar_count",
+      "rtdl_optix_execution_route": "prepared_optix_cupy_refined_pip",
+      "rtdl_optix_hot_median_sec": 0.0017569060437381268,
+      "rtdl_optix_speedup_vs_numba": 0.2514829998036008,
+      "workload": "pip"
+    },
+    {
+      "counts_match": true,
+      "dataset": "/root/rtdl_goal4329.OOFWIg/repo/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl_goal4329.OOFWIg/repo/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "loaded_case_reuse_enabled": true,
+      "numba_hot_median_sec": 0.02283889753744006,
+      "numba_rawkernel_required": false,
+      "numba_speedup_vs_rtdl_optix": 0.0038509641499143692,
+      "recommended_route": "rtdl_optix_prepared_scalar_count",
+      "rtdl_optix_execution_route": "prepared_optix_left_id_dense_count_loaded_case_reuse",
+      "rtdl_optix_hot_median_sec": 8.795177564024925e-05,
+      "rtdl_optix_speedup_vs_numba": 259.67522964923893,
+      "subprobe_wrapper_phase_timing_sec": {
+        "case_total_sec": 2.40718334261328,
+        "dataset_file_check_sec": 6.442144513130188e-05,
+        "numba_baseline_call_sec": 1.4035892440006137,
+        "numba_hot_total_sec": 1.1517206095159054,
+        "numba_load_case_sec": 0.11813200637698174,
+        "numba_prepare_sec": 0.001206105574965477,
+        "rtdl_optix_call_sec": 0.8852439103648067,
+        "rtdl_optix_hot_total_sec": 0.00443126168102026,
+        "rtdl_optix_prepare_total_sec": 0.43586588837206364,
+        "shared_load_case_sec": 0.11813200637698174
+      },
+      "workload": "lsi"
+    },
+    {
+      "counts_match": true,
+      "dataset": "/root/rtdl_goal4329.OOFWIg/repo/data/rayjoin_public_cdb/br_county_start256_count512.cdb + /root/rtdl_goal4329.OOFWIg/repo/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+      "loaded_case_reuse_enabled": true,
+      "numba_hot_median_sec": 0.03881857683882117,
+      "numba_rawkernel_required": false,
+      "numba_speedup_vs_rtdl_optix": 0.004816880022409181,
+      "recommended_route": "rtdl_optix_prepared_scalar_count",
+      "rtdl_optix_execution_route": "prepared_optix_shape_pair_active_count_loaded_case_reuse",
+      "rtdl_optix_hot_median_sec": 0.00018698442727327347,
+      "rtdl_optix_speedup_vs_numba": 207.6032608966345,
+      "subprobe_wrapper_phase_timing_sec": {
+        "case_total_sec": 3.9205204052850604,
+        "dataset_file_check_sec": 7.22566619515419e-05,
+        "numba_baseline_call_sec": 2.8456104760989547,
+        "numba_hot_total_sec": 1.9600302092731,
+        "numba_load_case_sec": 0.07323284540325403,
+        "numba_prepare_sec": 0.00990760326385498,
+        "rtdl_optix_call_sec": 1.001415810547769,
+        "rtdl_optix_hot_total_sec": 0.009382575750350952,
+        "rtdl_optix_prepare_total_sec": 0.9888847526162863,
+        "shared_load_case_sec": 0.07323284540325403
+      },
+      "workload": "overlay_seed"
+    }
+  ],
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "internal_results_only": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "cupy_required_for_reference_route": false,
+  "data_dir": "/root/rtdl_goal4329.OOFWIg/repo/data/rayjoin_public_cdb",
+  "dry_run": false,
+  "generated_at_unix": 1781205510.1046593,
+  "git_commit": "bf12a82bdda5f067da9ffb16a355a212f6280e70",
+  "git_status_short": "M .gitignore\n M README.md\n M docs/README.md\n M docs/audit/README.md\n M docs/audit/process/README.md\n M docs/capability_boundaries.md\n M docs/handoff/HANDOFF_CLAUDE_GOAL4298_4299_V2_11_EMBREE_CPU_NUMBA_REVIEW_2026-06-11.md\n M docs/learn/README.md\n M docs/learn/benchmark_evidence_index.md\n M docs/learn/source_tree_doctor.md\n M docs/partner_acceleration_boundaries.md\n M docs/reports/goal1906_public_v2_claim_boundary_scan.json\n M docs/reports/goal4215_current_benchmark_scale_profile_after_rtdbscan_policy_2026-06-09.md\n M docs/reports/goal4218_mixed_route_focus_after_policy_2026-06-09.md\n M docs/reports/goal4222_rtdbscan_blocked_vs_unblocked_profile_map_2026-06-09.md\n M docs/reports/goal4223_rayjoin_public_cdb_contract_scale_map_2026-06-09.md\n M docs/reports/goal4225_release_prep_current_scale_packet_2026-06-09.md\n M docs/reports/goal4248_current_public_docs_claim_boundary_scan.json\n M docs/reports/goal4250_post_docs_scan_pod_validation_2026-06-09.md\n M docs/reports/goal4262_exact_head_release_prep_pod_validation_2026-06-09.md\n M docs/reports/goal4266_large_scale_cupy_numba_partner_comparison_2026-06-09.md\n M docs/reports/goal4270_v2_10_milestone_release_3ai_consensus_2026-06-10.md\n M docs/reports/goal4291_remote_pod_driver_noninteractive_ssh_2026-06-11.md\n M docs/reports/goal4294_a40_pod_validation_2026-06-11.md\n M docs/reports/goal4297_remote_pod_driver_explicit_toolchain_env_2026-06-11.md\n M docs/reports/goal4298_v2_11_embree_cpu_partner_reference_packet_2026-06-11.md\n M docs/reviews/goal2061_gemini_review_goal2060_v2_pod_mixed_family_audit_2026-05-15.md\n M docs/reviews/goal3370_gemini_review_owner_face_cupy_pipeline_closure_2026-06-04.md\n M docs/rtdl/programming_guide.md\n M examples/README.md\n M examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py\n M scripts/goal1906_public_v2_claim_boundary_scan.py\n M scripts/goal3828_current_benchmark_scale_profile_runner.py\n M scripts/goal4248_current_public_docs_claim_boundary_scan.py\n M scripts/rtdl_source_tree_doctor.py\n M src/rtdsl/__init__.py\n M src/rtdsl/adapters/reductions.py\n M src/rtdsl/current_embree_cpu_partner_reference.py\n M src/rtdsl/numba_partner_continuation.py\n M src/rtdsl/partner_adapters.py\n M src/rtdsl/partner_continuation_protocol.py\n M src/rtdsl/v2_8_segmented_typed_stream_adapter.py\n M tests/goal1671_v1_8_v2_0_partner_gate_test.py\n M tests/goal1680_current_native_app_leakage_gap_test.py\n M tests/goal2865_current_head_packet_after_front_doors_test.py\n M tests/goal2876_current_packet_after_partner_conformance_closure_test.py\n M tests/goal2878_goal2868_residual_closure_mapping_test.py\n M tests/goal2880_current_packet_after_torch_carrier_provenance_test.py\n M tests/goal4248_current_public_docs_claim_boundary_scan_test.py\n M tests/goal4298_v2_11_embree_cpu_partner_reference_packet_test.py\n M tests/goal4299_numba_topk_partner_reference_test.py\n M tutorials/current/01_source_tree_first_run.md\n M tutorials/current/02_kernel_shape_and_backends.md\n M tutorials/current/README.md\n?? data/\n?? docs/audit/process/goal_tier_protocol.md\n?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4301_4308_FABLE5_ACTION_PACKET_2026-06-11.md\n?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4311_TIMING_FLOOR_AND_GOAL4309_FIXES_2026-06-11.md\n?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4314_AND_GOAL4312_FIXES_2026-06-11.md\n?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4317_GROUPED_REDUCTION_ROUTE_2026-06-11.md\n?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4320_PROGRAMMING_SURFACE_TRUTHFULNESS_2026-06-11.md\n?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4323_DENSE_GROUP_CONTRACT_METADATA_2026-06-11.md\n?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4323_FOLLOWUP_FIX_2026-06-11.md\n?? docs/learn/current_claim_boundaries.md\n?? docs/learn/programming_surfaces.md\n?? docs/learn/rt_core_evidence_matrix.md\n?? docs/reports/goal4301_ann_candidate_numba_device_topk_copies128_local_linux.json\n?? docs/reports/goal4301_ann_candidate_numba_device_topk_local_linux.json\n?? docs/reports/goal4301_numba_grouped_topk_device_rank_2026-06-11.md\n?? docs/reports/goal4301_v2_11_rtnn_numba_device_topk_runner_local_linux.json\n?? docs/reports/goal4303_claude_fable5_review_intake_security_and_topk_actions_2026-06-11.md\n?? docs/reports/goal4305_fable5_rt_core_honesty_and_goal_tier_protocol_2026-06-11.md\n?? docs/reports/goal4306_partner_column_contracts_foundation_2026-06-11.md\n?? docs/reports/goal4307_editable_source_tree_onboarding_2026-06-11.md\n?? docs/reports/goal4308_rtnn_embree_front_door_for_v2_11_packet_2026-06-11.md\n?? docs/reports/goal4308_rtnn_embree_front_door_local_linux.json\n?? docs/reports/goal4311_current_scale_timing_floor_guard_2026-06-11.md\n?? docs/reports/goal4311_current_scale_timing_floor_guard_dry_run.json\n?? docs/reports/goal4314_current_claim_boundary_canonicalization_2026-06-11.md\n?? docs/reports/goal4317_grouped_reduction_adapter_route_2026-06-11.md\n?? docs/reports/goal4320_programming_surface_truthfulness_2026-06-11.md\n?? docs/reports/goal4323_dense_group_contract_metadata_2026-06-11.md\n?? docs/reports/goal4326_versioning_glossary_2026-06-11.md\n?? docs/reports/goal4329_current_pod_validation/\n?? docs/reviews/goal4301_gemini_review_goal4298_4299_v2_11_embree_cpu_numba_2026-06-11.md\n?? docs/reviews/goal4302_claude-fable5_whole_project_critical_review_and_improvement_suggestions_2026-06-11.md\n?? docs/reviews/goal4302_claude_whole_project_critical_review_and_improvement_suggestions_2026-06-11.md\n?? docs/reviews/goal4309_claude_review_goal4301_4308_fable5_action_packet_2026-06-11.md\n?? docs/reviews/goal4310_gemini_review_goal4301_4308_fable5_action_packet_2026-06-11.md\n?? docs/reviews/goal4312_claude_review_goal4311_timing_floor_and_goal4309_fixes_2026-06-11.md\n?? docs/reviews/goal4313_gemini_review_goal4311_timing_floor_and_goal4309_fixes_2026-06-11.md\n?? docs/reviews/goal4315_claude_review_goal4314_and_goal4312_followup_fixes_2026-06-11.md\n?? docs/reviews/goal4316_gemini_review_goal4314_and_goal4312_followup_fixes_2026-06-11.md\n?? docs/reviews/goal4318_claude_review_goal4317_grouped_reduction_adapter_route_2026-06-11.md\n?? docs/reviews/goal4319_gemini_review_goal4317_grouped_reduction_adapter_route_2026-06-11.md\n?? docs/reviews/goal4321_claude_review_goal4320_programming_surface_truthfulness_2026-06-11.md\n?? docs/reviews/goal4322_gemini_review_goal4320_programming_surface_truthfulness_2026-06-11.md\n?? docs/reviews/goal4324_claude_review_goal4323_dense_group_contract_metadata_2026-06-11.md\n?? docs/reviews/goal4325_gemini_review_goal4323_dense_group_contract_metadata_2026-06-11.md\n?? docs/reviews/goal4327_claude_followup_review_goal4323_dense_group_contract_fix_2026-06-11.md\n?? docs/reviews/goal4328_gemini_followup_review_goal4323_dense_group_contract_fix_2026-06-11.md\n?? docs/versioning.md\n?? pyproject.toml\n?? run_review_tests.py\n?? src/rtdsl/partner_column_contracts.py\n?? tests/goal4301_numba_grouped_topk_device_rank_test.py\n?? tests/goal4303_current_security_redaction_guard_test.py\n?? tests/goal4305_fable5_evidence_and_process_docs_test.py\n?? tests/goal4306_partner_column_contracts_foundation_test.py\n?? tests/goal4307_editable_source_tree_onboarding_test.py\n?? tests/goal4308_rtnn_embree_front_door_test.py\n?? tests/goal4311_current_scale_timing_floor_guard_test.py\n?? tests/goal4314_current_claim_boundary_canonicalization_test.py\n?? tests/goal4317_grouped_reduction_adapter_route_test.py\n?? tests/goal4320_programming_surface_truthfulness_test.py\n?? tests/goal4323_dense_group_contract_metadata_test.py\n?? tests/goal4326_versioning_glossary_test.py",
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+  "numba_reference_available_for_custom_logic": true,
+  "pip_batch_device_predicate_eps": "1e-9",
+  "pip_batch_executor": {
+    "dataset": "/root/rtdl_goal4329.OOFWIg/repo/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+    "exact_count": 1417,
+    "largest_request_count": 100,
+    "largest_request_effective_streams": 16,
+    "largest_request_per_request_ms_median": 0.15590501483529806,
+    "largest_request_total_ms_median": 15.590501483529806,
+    "point_count": 512,
+    "recommended_route": "rtdl_optix_prepared_pip_batch_executor",
+    "shape_count": 478,
+    "single_ms_median": 0.18111849203705788,
+    "throughput_evidence_not_one_shot_latency": true
+  },
+  "raw_cuda_kernel_required_for_reference_route": false,
+  "recommended_route_summary": {
+    "automatic_dispatch": false,
+    "lsi_scalar_count": "rtdl_optix_prepared_segment_pair_count",
+    "overlay_active_count": "rtdl_optix_prepared_shape_pair_active_count",
+    "pip_one_shot": "numba_cuda_jit_scalar_count_no_rawkernel",
+    "pip_repeated_requests": "rtdl_optix_prepared_batch_executor",
+    "user_route_choice_visible": true
+  },
+  "repeat": 50,
+  "representative_hot_path_summary": {
+    "all_contract_counts_match": true,
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "contract_count": 4,
+    "lsi_scalar_count": {
+      "numba_hot_median_sec": 0.02283889753744006,
+      "reason": "fused generic segment-pair scalar count avoids dense partner looping",
+      "recommended_route": "rtdl_optix_prepared_segment_pair_count",
+      "rtdl_optix_hot_median_sec": 8.795177564024925e-05,
+      "rtdl_optix_speedup_vs_numba": 259.67522964923893
+    },
+    "metric_scope": "per_contract_hot_medians_not_wrapper_wall_time",
+    "overlay_active_count": {
+      "numba_hot_median_sec": 0.03881857683882117,
+      "reason": "fused generic shape-pair active count avoids dense partner looping",
+      "recommended_route": "rtdl_optix_prepared_shape_pair_active_count",
+      "rtdl_optix_hot_median_sec": 0.00018698442727327347,
+      "rtdl_optix_speedup_vs_numba": 207.6032608966345
+    },
+    "paper_reproduction_claim_authorized": false,
+    "pip_one_shot": {
+      "numba_hot_median_sec": 0.0004418320022523403,
+      "reason": "bounded one-shot scalar count favors simple partner code at this slice",
+      "recommended_route": "numba_cuda_jit_scalar_count_no_rawkernel",
+      "rtdl_optix_hot_median_sec": 0.0017569060437381268,
+      "rtdl_optix_speedup_vs_numba": 0.2514829998036008
+    },
+    "pip_repeated_requests": {
+      "batch_request_count": 100,
+      "batched_per_request_ms_median": 0.15590501483529806,
+      "per_request_speedup_vs_single_request": 1.1617233238353235,
+      "reason": "prepared scene and batched requests amortize traversal setup",
+      "recommended_route": "rtdl_optix_prepared_batch_executor",
+      "single_request_ms_median": 0.18111849203705788
+    },
+    "public_speedup_claim_authorized": false,
+    "recommended_route_summary": {
+      "automatic_dispatch": false,
+      "numba_contracts": [
+        "pip_one_shot"
+      ],
+      "rtdl_optix_contracts": [
+        "pip_repeated_requests",
+        "lsi_scalar_count",
+        "overlay_active_count"
+      ],
+      "user_route_choice_visible": true
+    },
+    "release_authorized": false,
+    "scale_runner_elapsed_sec_is_not_hot_path_metric": true,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "wrapper_elapsed_sec": 10.402150510810316
+  },
+  "representative_scale_profile": true,
+  "schema": "rtdl.goal3866.rayjoin_representative_scale_profile.v1",
+  "warmup": 5,
+  "wrapper_elapsed_sec": 10.402150510810316,
+  "wrapper_phase_timing_sec": {
+    "data_dir_resolve_sec": 6.973184645175934e-05,
+    "lsi_overlay_probe_sec": 6.448151926510036,
+    "pip_batch_probe_sec": 0.8565898183733225,
+    "pip_one_shot_probe_sec": 3.0971550457179546,
+    "profile_total_sec": 10.402150510810316
+  }
+}

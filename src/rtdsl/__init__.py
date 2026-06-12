@@ -92,12 +92,27 @@ from .partner_continuation_protocol import validate_v2_5_partner_continuation_co
 from .partner_continuation_protocol import validate_v2_5_partner_preview_gate
 from .partner_continuation_protocol import v2_5_partner_continuation_contract
 from .partner_continuation_protocol import v2_5_partner_preview_gate
+from .partner_column_contracts import GROUP_LAYOUT_CALLER_SUPPLIED_ROW_OFFSETS
+from .partner_column_contracts import GROUP_LAYOUT_DENSE_ZERO_BASED
+from .partner_column_contracts import GROUP_LAYOUT_EQUAL_CONTIGUOUS_SEGMENTS
+from .partner_column_contracts import PARTNER_COLUMN_CONTRACT_VERSION
+from .partner_column_contracts import RtdlGroupIdContract
+from .partner_column_contracts import RtdlPartnerClaimBoundary
+from .partner_column_contracts import SUPPORTED_GROUP_ID_LAYOUTS
+from .partner_column_contracts import default_partner_claim_boundary_metadata
+from .partner_column_contracts import make_dense_zero_based_group_id_contract
+from .partner_column_contracts import make_equal_contiguous_group_id_contract
+from .partner_column_contracts import require_group_id_contract
+from .partner_column_contracts import validate_group_id_contract
+from .partner_column_contracts import validate_partner_claim_boundary
 from .numba_partner_continuation import NUMBA_PARTNER_CONTINUATION_STATUS
 from .numba_partner_continuation import NUMBA_GROUP_ID_VALIDATION_MODE
 from .numba_partner_continuation import NUMBA_COMPACT_MASK_I64_OPERATION
 from .numba_partner_continuation import NUMBA_GLOBAL_ARGMAX_U32_F64_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_ARGMAX_F64_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_ARGMIN_F64_OPERATION
+from .numba_partner_continuation import NUMBA_GROUPED_TOPK_F64_MAX_K
+from .numba_partner_continuation import NUMBA_GROUPED_TOPK_F64_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION
 from .numba_partner_continuation import NUMBA_LABEL_COUNT_AND_FLAG_COUNT_I64_OPERATION
@@ -112,6 +127,7 @@ from .numba_partner_continuation import describe_numba_compact_mask_i64
 from .numba_partner_continuation import describe_numba_global_argmax_u32_f64
 from .numba_partner_continuation import describe_numba_grouped_argmax_f64
 from .numba_partner_continuation import describe_numba_grouped_argmin_f64
+from .numba_partner_continuation import describe_numba_grouped_topk_f64
 from .numba_partner_continuation import describe_numba_grouped_vector_sum_f64x2
 from .numba_partner_continuation import describe_numba_label_count_and_flag_count_i64
 from .numba_partner_continuation import describe_numba_pairwise_l2_sq_block_nearest_rows_2d
@@ -125,6 +141,7 @@ from .numba_partner_continuation import numba_partner_available
 from .numba_partner_continuation import run_numba_global_argmax_u32_f64
 from .numba_partner_continuation import run_numba_grouped_argmax_f64
 from .numba_partner_continuation import run_numba_grouped_argmin_f64
+from .numba_partner_continuation import run_numba_grouped_topk_f64
 from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2
 from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2_by_offsets
 from .numba_partner_continuation import run_numba_label_count_and_flag_count_i64
@@ -843,13 +860,18 @@ from .embree_runtime import EmbreeThreadConfig
 from .embree_runtime import directed_hausdorff_2d_embree
 from .embree_runtime import fixed_radius_count_threshold_2d_embree
 from .embree_runtime import prepare_embree_fixed_radius_count_threshold_2d
+from .embree_runtime import prepare_embree_fixed_radius_neighbors_3d
 from .embree_runtime import prepare_grouped_segment_query_3d
 from .embree_runtime import prepare_embree_knn_rows_2d
+from .embree_runtime import prepare_embree_aabb_index_2d
 from .embree_runtime import prepare_embree_static_triangle_scene_3d
+from .embree_runtime import PreparedEmbreeAabbIndex2D
 from .embree_runtime import PreparedEmbreeFixedRadiusCountThreshold2D
+from .embree_runtime import PreparedEmbreeFixedRadiusNeighbors3D
 from .embree_runtime import PreparedGroupedSegmentQuery3D
 from .embree_runtime import PreparedEmbreeKnnRows2D
 from .embree_runtime import PreparedEmbreeStaticTriangleScene3D
+from .embree_runtime import run_embree_count
 from .embree_runtime import run_embree_grouped_segment_any_hit_flags_3d
 from .engine_feature_matrix import assert_engine_feature_supported
 from .engine_feature_matrix import engine_feature_support
@@ -1213,39 +1235,39 @@ from .partner_adapters import fixed_radius_count_threshold_2d_optix_partner_devi
 from .partner_adapters import allocate_fixed_radius_count_threshold_2d_partner_device_output_columns
 from .partner_adapters import prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene
 from .partner_adapters import fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns
-from .partner_adapters import partner_group_any_by_key
-from .partner_adapters import partner_group_count_by_key
-from .partner_adapters import partner_group_count_unique_pairs_by_key
-from .partner_adapters import partner_group_max_by_key
-from .partner_adapters import partner_group_vector_sum_2d_by_key
-from .partner_adapters import partner_metric_table_reduce_by_key
-from .partner_adapters import partner_metric_table_reduce_repeated_pattern
+from .adapters.reductions import partner_group_any_by_key
+from .adapters.reductions import partner_group_count_by_key
+from .adapters.reductions import partner_group_count_unique_pairs_by_key
+from .adapters.reductions import partner_group_max_by_key
+from .adapters.reductions import partner_group_vector_sum_2d_by_key
+from .adapters.reductions import partner_metric_table_reduce_by_key
+from .adapters.reductions import partner_metric_table_reduce_repeated_pattern
 from .partner_adapters import metric_table_payload_to_partner_columns
-from .partner_adapters import partner_metric_table_reduce_batch
+from .adapters.reductions import partner_metric_table_reduce_batch
 from .partner_adapters import aabb_pair_payload_to_partner_columns
 from .partner_adapters import aabb_pair_overlap_summary_2d_partner_columns
 from .partner_adapters import aabb_tiled_candidate_pair_payload_2d_partner_columns
-from .partner_adapters import partner_group_min_by_key
-from .partner_adapters import partner_group_sum_by_key
+from .adapters.reductions import partner_group_min_by_key
+from .adapters.reductions import partner_group_sum_by_key
 from .partner_adapters import partner_mask_indices
 from .partner_adapters import partner_take_columns_by_indices
 from .partner_adapters import partner_compact_columns_by_mask
 from .partner_adapters import partner_page_columns
-from .partner_adapters import partner_unique_pair_keys
+from .adapters.reductions import partner_unique_pair_keys
 from .partner_adapters import optix_row_view_to_partner_columns
 from .partner_adapters import point_rows_to_partner_columns
 from .partner_adapters import weighted_point_rows_to_partner_columns
 from .partner_adapters import aggregate_frontier_collect_to_partner_columns
 from .partner_adapters import bounded_collect_finalize_i64_partner_columns
-from .partner_adapters import global_argmax_u32_f64_partner_columns
-from .partner_adapters import grouped_argmax_f64_partner_columns
-from .partner_adapters import grouped_argmin_f64_partner_columns
-from .partner_adapters import grouped_topk_f64_partner_columns
-from .partner_adapters import grouped_vector_sum_2d_partner_columns
-from .partner_adapters import prepare_grouped_vector_sum_2d_partner_columns_session
-from .partner_adapters import run_grouped_vector_sum_2d_partner_columns_session
-from .partner_adapters import measured_grouped_vector_sum_2d_partner_selection
-from .partner_adapters import group_argmin_then_global_argmax_partner_columns
+from .adapters.reductions import global_argmax_u32_f64_partner_columns
+from .adapters.reductions import grouped_argmax_f64_partner_columns
+from .adapters.reductions import grouped_argmin_f64_partner_columns
+from .adapters.reductions import grouped_topk_f64_partner_columns
+from .adapters.reductions import grouped_vector_sum_2d_partner_columns
+from .adapters.reductions import prepare_grouped_vector_sum_2d_partner_columns_session
+from .adapters.reductions import run_grouped_vector_sum_2d_partner_columns_session
+from .adapters.reductions import measured_grouped_vector_sum_2d_partner_selection
+from .adapters.reductions import group_argmin_then_global_argmax_partner_columns
 from .partner_adapters import pairwise_l2_sq_block_nearest_rows_2d_partner_columns
 from .partner_adapters import pairwise_l2_sq_score_rows_2d_partner_columns
 from .app_adapters import pairwise_inverse_square_force_2d_partner_columns
@@ -2134,12 +2156,27 @@ __all__ = [
     "validate_v2_5_partner_preview_gate",
     "v2_5_partner_continuation_contract",
     "v2_5_partner_preview_gate",
+    "GROUP_LAYOUT_CALLER_SUPPLIED_ROW_OFFSETS",
+    "GROUP_LAYOUT_DENSE_ZERO_BASED",
+    "GROUP_LAYOUT_EQUAL_CONTIGUOUS_SEGMENTS",
+    "PARTNER_COLUMN_CONTRACT_VERSION",
+    "RtdlGroupIdContract",
+    "RtdlPartnerClaimBoundary",
+    "SUPPORTED_GROUP_ID_LAYOUTS",
+    "default_partner_claim_boundary_metadata",
+    "make_dense_zero_based_group_id_contract",
+    "make_equal_contiguous_group_id_contract",
+    "require_group_id_contract",
+    "validate_group_id_contract",
+    "validate_partner_claim_boundary",
     "NUMBA_PARTNER_CONTINUATION_STATUS",
     "NUMBA_GROUP_ID_VALIDATION_MODE",
     "NUMBA_COMPACT_MASK_I64_OPERATION",
     "NUMBA_GLOBAL_ARGMAX_U32_F64_OPERATION",
     "NUMBA_GROUPED_ARGMAX_F64_OPERATION",
     "NUMBA_GROUPED_ARGMIN_F64_OPERATION",
+    "NUMBA_GROUPED_TOPK_F64_MAX_K",
+    "NUMBA_GROUPED_TOPK_F64_OPERATION",
     "NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION",
     "NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION",
     "NUMBA_LABEL_COUNT_AND_FLAG_COUNT_I64_OPERATION",
@@ -2154,6 +2191,7 @@ __all__ = [
     "describe_numba_global_argmax_u32_f64",
     "describe_numba_grouped_argmax_f64",
     "describe_numba_grouped_argmin_f64",
+    "describe_numba_grouped_topk_f64",
     "describe_numba_grouped_vector_sum_f64x2",
     "describe_numba_label_count_and_flag_count_i64",
     "describe_numba_pairwise_l2_sq_block_nearest_rows_2d",
@@ -2167,6 +2205,7 @@ __all__ = [
     "run_numba_global_argmax_u32_f64",
     "run_numba_grouped_argmax_f64",
     "run_numba_grouped_argmin_f64",
+    "run_numba_grouped_topk_f64",
     "run_numba_grouped_vector_sum_f64x2",
     "run_numba_grouped_vector_sum_f64x2_by_offsets",
     "run_numba_label_count_and_flag_count_i64",
@@ -2795,17 +2834,22 @@ __all__ = [
     "directed_hausdorff_2d_embree",
     "fixed_radius_count_threshold_2d_embree",
     "prepare_embree_fixed_radius_count_threshold_2d",
+    "prepare_embree_fixed_radius_neighbors_3d",
     "prepare_grouped_segment_query_3d",
     "prepare_embree_knn_rows_2d",
+    "prepare_embree_aabb_index_2d",
     "prepare_embree_static_triangle_scene_3d",
     "run_embree_grouped_segment_any_hit_flags_3d",
     "knn_rows_cpu",
     "EmbreeRowView",
     "EmbreeThreadConfig",
+    "PreparedEmbreeAabbIndex2D",
     "PreparedEmbreeFixedRadiusCountThreshold2D",
+    "PreparedEmbreeFixedRadiusNeighbors3D",
     "PreparedGroupedSegmentQuery3D",
     "PreparedEmbreeKnnRows2D",
     "PreparedEmbreeStaticTriangleScene3D",
+    "run_embree_count",
     "configure_embree",
     "collect_polygon_pair_candidates_bounded_embree",
     "embree_thread_config",

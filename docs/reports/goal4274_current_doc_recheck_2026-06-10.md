@@ -27,7 +27,7 @@ evidence lanes remain intentionally historical and are not rewritten:
 
 | Check | Result |
 | --- | --- |
-| Current public Markdown files scanned | 91 |
+| Current public Markdown files scanned | 95 |
 | Broken local Markdown links | 0 |
 | Stale current-surface wording hits | 0 |
 | Generated primitive catalog drift | 0 |

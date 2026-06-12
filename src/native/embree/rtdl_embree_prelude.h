@@ -24,6 +24,7 @@
 #include <cstring>
 #include <exception>
 #include <limits>
+#include <memory>
 #include <mutex>
 #include <new>
 #include <stdexcept>
@@ -88,6 +89,19 @@ struct RtdlPoint {
   uint32_t id;
   double x;
   double y;
+};
+
+struct RtdlAabb2D {
+  uint32_t id;
+  double min_x;
+  double min_y;
+  double max_x;
+  double max_y;
+};
+
+struct RtdlAabbPairRow {
+  uint32_t query_id;
+  uint32_t indexed_id;
 };
 
 struct RtdlAggregateFrontierSource2D {
@@ -249,8 +263,22 @@ struct RtdlFixedRadiusCountRow {
   uint32_t threshold_reached;
 };
 
+struct RtdlFixedRadiusRankedNeighborSummary {
+  uint32_t query_id;
+  uint32_t neighbor_count;
+  uint32_t nearest_neighbor_id;
+  uint32_t kth_neighbor_id;
+  double nearest_distance;
+  double kth_distance;
+  double sum_distance;
+};
+
 struct RtdlEmbreeFixedRadiusCountThreshold2D;
+struct RtdlEmbreeFixedRadiusNeighbors3D;
 struct RtdlEmbreeKnnRows2D;
+struct RtdlEmbreeAabbIndex2D;
+struct RtdlEmbreeSegmentPairIntersections2D;
+struct RtdlEmbreePointPrimitiveAnyHit2D;
 
 struct RtdlKnnNeighborRow {
   uint32_t query_id;
@@ -350,6 +378,30 @@ int rtdl_embree_run_segment_pair_intersection(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
+int rtdl_embree_count_segment_pair_intersections(
+    const RtdlSegment* left,
+    size_t left_count,
+    const RtdlSegment* right,
+    size_t right_count,
+    size_t* hit_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_segment_pair_intersections_2d_create(
+    const RtdlSegment* right,
+    size_t right_count,
+    RtdlEmbreeSegmentPairIntersections2D** handle_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_segment_pair_intersections_2d_count(
+    RtdlEmbreeSegmentPairIntersections2D* handle,
+    const RtdlSegment* left,
+    size_t left_count,
+    size_t* hit_count_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size);
+void rtdl_embree_segment_pair_intersections_2d_destroy(
+    RtdlEmbreeSegmentPairIntersections2D* handle);
 int rtdl_embree_run_point_primitive_anyhit_packet(
     const RtdlPoint* points,
     size_t point_count,
@@ -362,6 +414,36 @@ int rtdl_embree_run_point_primitive_anyhit_packet(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
+int rtdl_embree_count_point_primitive_anyhit_packet(
+    const RtdlPoint* points,
+    size_t point_count,
+    const RtdlPolygonRef* polygons,
+    size_t polygon_count,
+    const double* vertices_xy,
+    size_t vertex_xy_count,
+    uint32_t positive_only,
+    size_t* hit_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_point_primitive_anyhit_2d_create(
+    const RtdlPolygonRef* polygons,
+    size_t polygon_count,
+    const double* vertices_xy,
+    size_t vertex_xy_count,
+    RtdlEmbreePointPrimitiveAnyHit2D** handle_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_point_primitive_anyhit_2d_count(
+    RtdlEmbreePointPrimitiveAnyHit2D* handle,
+    const RtdlPoint* points,
+    size_t point_count,
+    uint32_t positive_only,
+    size_t* hit_count_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size);
+void rtdl_embree_point_primitive_anyhit_2d_destroy(
+    RtdlEmbreePointPrimitiveAnyHit2D* handle);
 int rtdl_embree_run_shape_pair_relation_flags(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
@@ -433,6 +515,15 @@ int rtdl_embree_static_triangle_scene_3d_grouped_segment_any_hit_flags(
     const uint32_t* group_offsets,
     size_t group_count,
     uint8_t* flags_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_static_triangle_scene_3d_ray_any_hit_weighted_sum(
+    void* handle,
+    const RtdlRay3D* rays,
+    size_t ray_count,
+    const uint64_t* ray_weights,
+    uint64_t* weighted_hit_sum_out,
     double* traversal_seconds_out,
     char* error_out,
     size_t error_size);
@@ -566,6 +657,25 @@ int rtdl_embree_run_fixed_radius_neighbors_3d(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
+int rtdl_embree_fixed_radius_neighbors_3d_create(
+    const RtdlPoint3D* search_points,
+    size_t search_count,
+    RtdlEmbreeFixedRadiusNeighbors3D** handle_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_fixed_radius_neighbors_3d_ranked_summary_run(
+    RtdlEmbreeFixedRadiusNeighbors3D* handle,
+    const RtdlPoint3D* query_points,
+    size_t query_count,
+    double radius,
+    size_t k_max,
+    RtdlFixedRadiusRankedNeighborSummary** rows_out,
+    size_t* row_count_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size);
+void rtdl_embree_fixed_radius_neighbors_3d_destroy(
+    RtdlEmbreeFixedRadiusNeighbors3D* handle);
 int rtdl_embree_run_fixed_radius_count_threshold(
     const RtdlPoint* query_points,
     size_t query_count,
@@ -750,6 +860,31 @@ int rtdl_embree_columnar_payload_grouped_reduction_sum(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
+int rtdl_embree_prepare_aabb_index_2d(
+    const RtdlAabb2D* boxes,
+    size_t box_count,
+    RtdlEmbreeAabbIndex2D** handle_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_count_prepared_aabb_index_2d(
+    RtdlEmbreeAabbIndex2D* handle,
+    const RtdlPoint* point_queries,
+    size_t point_query_count,
+    const RtdlAabb2D* box_queries,
+    size_t box_query_count,
+    uint32_t operation,
+    size_t* hit_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_collect_prepared_aabb_index_2d_range_intersection_rows(
+    RtdlEmbreeAabbIndex2D* handle,
+    const RtdlAabb2D* box_queries,
+    size_t box_query_count,
+    RtdlAabbPairRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+void rtdl_embree_destroy_prepared_aabb_index_2d(RtdlEmbreeAabbIndex2D* handle);
 void rtdl_embree_free_rows(void* rows);
 
 

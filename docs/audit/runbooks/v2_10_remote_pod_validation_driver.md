@@ -22,6 +22,7 @@ py -3 scripts/rtdl_remote_pod_validation_driver.py `
   --ref main `
   --build-optix `
   --run-hardware `
+  --materialize-rayjoin-public-cdb `
   --json
 ```
 
@@ -41,8 +42,14 @@ py -3 scripts/rtdl_remote_pod_validation_driver.py `
   --ref main `
   --build-optix `
   --run-hardware `
+  --materialize-rayjoin-public-cdb `
   --execute
 ```
+
+The RayJoin public-CDB fixture is materialized only when
+`--materialize-rayjoin-public-cdb` is present. Use
+`--rayjoin-public-cdb-dir PATH` when the fixture already lives in a known pod
+directory or should be stored somewhere other than the default bundle path.
 
 Add `--run-partner-comparison` only when there is enough pod time for the
 large-scale CuPy/Numba comparison packet.

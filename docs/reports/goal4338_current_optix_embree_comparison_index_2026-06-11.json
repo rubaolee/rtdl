@@ -1,0 +1,396 @@
+{
+  "automatic_partner_selection_authorized": false,
+  "broad_rt_core_claim_authorized": false,
+  "claim_boundary": "Goal4338 indexes the current NVIDIA OptiX scale-profile evidence beside the current Embree CPU reference registry. It is a comparability and planning packet, not a public speedup table. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, Intel GPU performance wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
+  "embree_artifact_path": "docs\\reports\\goal4298_v2_11_embree_cpu_partner_reference_local_linux.json",
+  "optix_artifact_path": "docs\\reports\\goal4329_current_pod_validation\\scale_summary_allpass.json",
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "app": "hausdorff_xhd",
+      "comparison_class": "contract_split_pair_required",
+      "embree_cpu": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 0.4511940749999894,
+          "row_id": "hausdorff_xhd_embree_cpu_directed_summary",
+          "status": "pass"
+        },
+        "purpose": "Embree CPU directed nearest-candidate summary for the Hausdorff/X-HD benchmark app",
+        "registry_version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+        "route_class": "embree_cpu_rt_primitive",
+        "row_id": "hausdorff_xhd_embree_cpu_directed_summary",
+        "uses_numba": false
+      },
+      "optix": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 1.5015461798757315,
+          "row_id": "hausdorff_xhd_scale_default_optix_threshold",
+          "status": "pass"
+        },
+        "purpose": "scale-profile Hausdorff/X-HD OptiX threshold decision run",
+        "registry_version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1",
+        "requires_numba": false,
+        "row_id": "hausdorff_xhd_scale_default_optix_threshold"
+      },
+      "public_speedup_claim_authorized": false,
+      "ratio_authorized_from_existing_artifacts": false,
+      "reason_existing_artifacts_are_not_speedup_grade": "OptiX evidence is a prepared threshold-decision route at 1024 copies; Embree evidence is an exact directed-summary route at 8 copies.",
+      "release_authorized": false,
+      "required_next_action": "run the same directed-summary or same threshold-decision contract on both backends at the same point counts, copies, repeat, and warmup"
+    },
+    {
+      "app": "spatial_rayjoin",
+      "comparison_class": "contract_split_pair_required",
+      "embree_cpu": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 0.4656024890000481,
+          "row_id": "spatial_rayjoin_pip_count_embree_cpu_generic_kernel",
+          "status": "pass"
+        },
+        "purpose": "Embree CPU generic-kernel PIP count route for the spatial RayJoin benchmark app",
+        "registry_version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+        "route_class": "embree_cpu_rt_plus_python_continuation",
+        "row_id": "spatial_rayjoin_pip_count_embree_cpu_generic_kernel",
+        "uses_numba": false
+      },
+      "optix": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 10.505823254585266,
+          "row_id": "spatial_rayjoin_public_cdb_representative_mixed_route_scale_default",
+          "status": "pass"
+        },
+        "purpose": "scale-profile RayJoin-style bounded public-CDB representative mixed route: Numba one-shot PIP, RTDL/OptiX repeated PIP batch executor, RTDL/OptiX LSI, and RTDL/OptiX overlay active count",
+        "registry_version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1",
+        "requires_numba": true,
+        "row_id": "spatial_rayjoin_public_cdb_representative_mixed_route_scale_default"
+      },
+      "public_speedup_claim_authorized": false,
+      "ratio_authorized_from_existing_artifacts": false,
+      "reason_existing_artifacts_are_not_speedup_grade": "OptiX evidence is a mixed public-CDB representative packet covering PIP batch, LSI, and overlay active count; Embree evidence is a PIP count-only generic-kernel row.",
+      "release_authorized": false,
+      "required_next_action": "split RayJoin into PIP count, LSI scalar count, and overlay active-count same-contract pairs before reporting a whole-app backend comparison"
+    },
+    {
+      "app": "rt_dbscan",
+      "comparison_class": "contract_split_pair_required",
+      "embree_cpu": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 0.46486219900009473,
+          "row_id": "rt_dbscan_embree_cpu_prepared_rows",
+          "status": "pass"
+        },
+        "purpose": "Embree CPU prepared fixed-radius row route for RT-DBSCAN compatibility coverage",
+        "registry_version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+        "route_class": "embree_cpu_rt_plus_python_continuation",
+        "row_id": "rt_dbscan_embree_cpu_prepared_rows",
+        "uses_numba": false
+      },
+      "optix": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 3.5027656545862556,
+          "row_id": "rt_dbscan_optix_numba_scale_default_65536_no_validation",
+          "status": "pass"
+        },
+        "purpose": "scale-profile RT-DBSCAN OptiX threshold flags plus Numba component signature without CPU validation or Python row materialization",
+        "registry_version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1",
+        "requires_numba": true,
+        "row_id": "rt_dbscan_optix_numba_scale_default_65536_no_validation"
+      },
+      "public_speedup_claim_authorized": false,
+      "ratio_authorized_from_existing_artifacts": false,
+      "reason_existing_artifacts_are_not_speedup_grade": "OptiX evidence is a 65K grouped-stream plus Numba signature route without CPU validation; Embree evidence is a tiny prepared-row route with Python continuation.",
+      "release_authorized": false,
+      "required_next_action": "run a common fixed-radius neighbor-row or grouped-signature contract with matching validation and continuation policy on both backends"
+    },
+    {
+      "app": "robot_collision",
+      "comparison_class": "same_contract_different_scale_pair_required",
+      "embree_cpu": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 0.4593928799999958,
+          "row_id": "robot_collision_embree_cpu_prepared_buffers",
+          "status": "pass"
+        },
+        "purpose": "Embree CPU prepared-buffer robot collision coverage route",
+        "registry_version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+        "route_class": "embree_cpu_rt_primitive",
+        "row_id": "robot_collision_embree_cpu_prepared_buffers",
+        "uses_numba": false
+      },
+      "optix": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 5.0032292529940605,
+          "row_id": "robot_collision_optix_scale_default_1024_no_probe_reference",
+          "status": "pass"
+        },
+        "purpose": "scale-profile robot-collision prepared OptiX device-count run with CPU probe validation separated",
+        "registry_version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1",
+        "requires_numba": false,
+        "row_id": "robot_collision_optix_scale_default_1024_no_probe_reference"
+      },
+      "public_speedup_claim_authorized": false,
+      "ratio_authorized_from_existing_artifacts": false,
+      "reason_existing_artifacts_are_not_speedup_grade": "Both rows are prepared collision-count routes, but OptiX uses the scaled 1024-pose resident profile and Embree uses the tiny fixture.",
+      "release_authorized": false,
+      "required_next_action": "run the scaled prepared-buffer/device-count contract on both backends with matching repeat, warmup, validation, and summary-only policy"
+    },
+    {
+      "app": "contact_manifold",
+      "comparison_class": "same_contract_different_scale_pair_required",
+      "embree_cpu": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 0.43525917899989963,
+          "row_id": "contact_manifold_embree_cpu_native_collect_k",
+          "status": "pass"
+        },
+        "purpose": "Embree CPU bounded collect-k route for contact-manifold witness coverage",
+        "registry_version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+        "route_class": "embree_cpu_rt_primitive",
+        "row_id": "contact_manifold_embree_cpu_native_collect_k",
+        "uses_numba": false
+      },
+      "optix": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 0.7516230111941695,
+          "row_id": "contact_manifold_optix_scale_default_grid64",
+          "status": "pass"
+        },
+        "purpose": "scale-profile contact-manifold bounded collect-k run",
+        "registry_version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1",
+        "requires_numba": false,
+        "row_id": "contact_manifold_optix_scale_default_grid64"
+      },
+      "public_speedup_claim_authorized": false,
+      "ratio_authorized_from_existing_artifacts": false,
+      "reason_existing_artifacts_are_not_speedup_grade": "Both rows use bounded collect-k style discovery, but OptiX uses grid64 with witness capacity 128 and Embree uses the tiny fixture with capacity 8.",
+      "release_authorized": false,
+      "required_next_action": "run the same grid size, witness capacity, repeat count, and backend contract on both backends"
+    },
+    {
+      "app": "raydb_style",
+      "comparison_class": "same_contract_different_scale_pair_required",
+      "embree_cpu": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 0.48531425099997705,
+          "row_id": "raydb_style_embree_cpu_count_primitive_first",
+          "status": "pass"
+        },
+        "purpose": "Embree CPU primitive-first grouped count route for RayDB-style columnar payloads",
+        "registry_version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+        "route_class": "embree_cpu_rt_primitive",
+        "row_id": "raydb_style_embree_cpu_count_primitive_first",
+        "uses_numba": false
+      },
+      "optix": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 6.7541706673800945,
+          "row_id": "raydb_style_optix_count_scale_default_262k",
+          "status": "pass"
+        },
+        "purpose": "scale-profile RayDB-style primitive-first grouped count run",
+        "registry_version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1",
+        "requires_numba": false,
+        "row_id": "raydb_style_optix_count_scale_default_262k"
+      },
+      "public_speedup_claim_authorized": false,
+      "ratio_authorized_from_existing_artifacts": false,
+      "reason_existing_artifacts_are_not_speedup_grade": "Both rows are primitive-first grouped count routes, but OptiX uses 262144 generated rows / 1024 groups while Embree uses 4096 rows / 128 groups.",
+      "release_authorized": false,
+      "required_next_action": "run identical generated row and group counts on both backends, with summary-only iteration policy held constant"
+    },
+    {
+      "app": "barnes_hut",
+      "comparison_class": "contract_split_pair_required",
+      "embree_cpu": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 0.4732881569999563,
+          "row_id": "barnes_hut_embree_cpu_node_coverage_prepared",
+          "status": "pass"
+        },
+        "purpose": "Embree CPU prepared node-coverage route for Barnes-Hut candidate coverage",
+        "registry_version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+        "route_class": "embree_cpu_rt_plus_python_continuation",
+        "row_id": "barnes_hut_embree_cpu_node_coverage_prepared",
+        "uses_numba": false
+      },
+      "optix": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 1.7520238887518644,
+          "row_id": "barnes_hut_numba_scale_default_8192",
+          "status": "pass"
+        },
+        "purpose": "scale-profile Barnes-Hut no-RawKernel Numba exact-force run with resident output reuse; Goal4053 separately covers prepared grouped-vector stream reductions",
+        "registry_version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1",
+        "requires_numba": true,
+        "row_id": "barnes_hut_numba_scale_default_8192"
+      },
+      "public_speedup_claim_authorized": false,
+      "ratio_authorized_from_existing_artifacts": false,
+      "reason_existing_artifacts_are_not_speedup_grade": "OptiX scale evidence is currently the Numba exact-force partner route; Embree evidence is a node-coverage prepared decision route.",
+      "release_authorized": false,
+      "required_next_action": "choose either exact-force partner continuation or prepared node coverage as the comparison contract, then run that one contract on both sides"
+    },
+    {
+      "app": "librts_spatial_index",
+      "comparison_class": "same_contract_different_scale_pair_required",
+      "embree_cpu": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 132.27003343600006,
+          "row_id": "librts_spatial_index_embree_cpu_aabb_index",
+          "status": "pass"
+        },
+        "purpose": "Embree CPU AABB-index route for the LibRTS-style spatial-index benchmark",
+        "registry_version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+        "route_class": "embree_cpu_rt_primitive",
+        "row_id": "librts_spatial_index_embree_cpu_aabb_index",
+        "uses_numba": false
+      },
+      "optix": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 2.001986567862332,
+          "row_id": "librts_spatial_index_optix_scale_default_32768",
+          "status": "pass"
+        },
+        "purpose": "scale-profile LibRTS-style prepared OptiX AABB-index run",
+        "registry_version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1",
+        "requires_numba": false,
+        "row_id": "librts_spatial_index_optix_scale_default_32768"
+      },
+      "public_speedup_claim_authorized": false,
+      "ratio_authorized_from_existing_artifacts": false,
+      "reason_existing_artifacts_are_not_speedup_grade": "Both rows are prepared AABB-index routes, but OptiX uses 32768 boxes and queries with skip-counts while Embree uses 1024 boxes and queries with operation=all.",
+      "release_authorized": false,
+      "required_next_action": "run identical box/query counts and operation policy; record whether count validation is enabled on both sides"
+    },
+    {
+      "app": "rtnn",
+      "comparison_class": "contract_split_pair_required",
+      "embree_cpu": {
+        "artifact": {
+          "artifact_present": false,
+          "claim_flag_violations": null,
+          "elapsed_sec": null,
+          "row_id": "rtnn_embree_cpu_ann_candidate_quality_reference",
+          "status": "missing_current_row_artifact"
+        },
+        "purpose": "Embree CPU candidate-quality route for the RTNN benchmark app's 2-D ANN contract",
+        "registry_version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+        "route_class": "embree_cpu_rt_plus_python_continuation",
+        "row_id": "rtnn_embree_cpu_ann_candidate_quality_reference",
+        "uses_numba": false
+      },
+      "optix": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 3.252491131424904,
+          "row_id": "rtnn_prepared_optix_scale_default_65536",
+          "status": "pass"
+        },
+        "purpose": "scale-profile RTNN prepared OptiX ranked-summary run",
+        "registry_version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1",
+        "requires_numba": false,
+        "row_id": "rtnn_prepared_optix_scale_default_65536"
+      },
+      "public_speedup_claim_authorized": false,
+      "ratio_authorized_from_existing_artifacts": false,
+      "reason_existing_artifacts_are_not_speedup_grade": "OptiX evidence is a 3-D prepared ranked-summary route; the current Embree registry is a 2-D ANN candidate-quality front door, and the local artifact may still contain the older Numba CPU reference row.",
+      "release_authorized": false,
+      "required_next_action": "refresh the current Embree artifact, then decide between 2-D ANN candidate quality and 3-D ranked-summary as the paired contract"
+    },
+    {
+      "app": "triangle_counting",
+      "comparison_class": "same_contract_different_scale_pair_required",
+      "embree_cpu": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 0.4789429890001884,
+          "row_id": "triangle_counting_embree_cpu_native_summary",
+          "status": "pass"
+        },
+        "purpose": "Embree CPU native graph-summary route for triangle counting",
+        "registry_version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+        "route_class": "embree_cpu_rt_primitive",
+        "row_id": "triangle_counting_embree_cpu_native_summary",
+        "uses_numba": false
+      },
+      "optix": {
+        "artifact": {
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 1.5021641217172146,
+          "row_id": "triangle_counting_optix_rt_graph_2a1_scale_default_2048",
+          "status": "pass"
+        },
+        "purpose": "scale-profile triangle-counting RT-Graph 2A1 prepared generic ray-triangle summary run",
+        "registry_version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1",
+        "requires_numba": false,
+        "row_id": "triangle_counting_optix_rt_graph_2a1_scale_default_2048"
+      },
+      "public_speedup_claim_authorized": false,
+      "ratio_authorized_from_existing_artifacts": false,
+      "reason_existing_artifacts_are_not_speedup_grade": "Both rows are native graph-summary style routes, but OptiX uses the RT-Graph 2A1 fixture at 2048 copies while Embree uses the default summary route at 128 copies.",
+      "release_authorized": false,
+      "required_next_action": "run the same fixture, copy count, repeat, warmup, and output-mode on both backends"
+    }
+  ],
+  "status": "internal_cross_backend_comparison_index_not_speedup_authorization",
+  "summary": {
+    "app_count": 10,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "contract_split_pair_required_count": 5,
+    "missing_current_artifact_count": 1,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "ratio_authorized_from_existing_artifacts_count": 0,
+    "release_authorized": false,
+    "row_count": 10,
+    "same_contract_different_scale_pair_required_count": 5
+  },
+  "validation": {
+    "app_count": 10,
+    "authorized_existing_artifact_ratio_count": 0,
+    "errors": [],
+    "missing_current_artifact_count": 1,
+    "row_count": 10,
+    "status": "accept",
+    "version": "rtdl.v2_11.current_optix_embree_comparison_index.goal4338.v1"
+  },
+  "version": "rtdl.v2_11.current_optix_embree_comparison_index.goal4338.v1"
+}

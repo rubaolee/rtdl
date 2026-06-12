@@ -20,10 +20,10 @@ The measurement compares explicit user-visible routes:
 It does not build an automatic dispatcher and it does not report a single
 whole-RayJoin score.
 
-## Pod And Source
+## Hardware And Source
 
-- Pod: `ssh root@157.157.221.29 -p 24101 -i ~/.ssh/id_ed25519`
-- Effective RTDL working key used by Codex: `id_ed25519_rtdl_codex`
+- Hardware: ephemeral RTX cloud validation pod; live SSH endpoint and local key
+  names intentionally redacted from tracked evidence.
 - GPU: `NVIDIA RTX 4000 Ada Generation`
 - Driver: `550.127.08`
 - Source commit used by pod run: `63289bbc`

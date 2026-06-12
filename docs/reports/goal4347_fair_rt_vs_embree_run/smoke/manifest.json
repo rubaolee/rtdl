@@ -1,0 +1,65 @@
+[
+  {
+    "elapsed_sec": 1.4545993069186807,
+    "label": "barnes_optix",
+    "returncode": 0,
+    "stderr": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/barnes_optix.stderr",
+    "stdout": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/barnes_optix.stdout"
+  },
+  {
+    "elapsed_sec": 0.6494109025225043,
+    "label": "barnes_embree_t8",
+    "returncode": 0,
+    "stderr": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/barnes_embree_t8.stderr",
+    "stdout": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/barnes_embree_t8.stdout"
+  },
+  {
+    "elapsed_sec": 0.8146072775125504,
+    "label": "barnes_embree_t64",
+    "returncode": 0,
+    "stderr": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/barnes_embree_t64.stderr",
+    "stdout": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/barnes_embree_t64.stdout"
+  },
+  {
+    "elapsed_sec": 2.729177233763039,
+    "label": "rtdbscan_optix_rt_numba",
+    "returncode": 0,
+    "stderr": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/rtdbscan_optix_rt_numba.stderr",
+    "stdout": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/rtdbscan_optix_rt_numba.stdout"
+  },
+  {
+    "elapsed_sec": 6.688914546743035,
+    "label": "rtdbscan_embree_rows_t8",
+    "returncode": 0,
+    "stderr": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/rtdbscan_embree_rows_t8.stderr",
+    "stdout": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/rtdbscan_embree_rows_t8.stdout"
+  },
+  {
+    "elapsed_sec": 6.743781112134457,
+    "label": "rtdbscan_embree_rows_t64",
+    "returncode": 0,
+    "stderr": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/rtdbscan_embree_rows_t64.stderr",
+    "stdout": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/rtdbscan_embree_rows_t64.stdout"
+  },
+  {
+    "elapsed_sec": 1.0508473943918943,
+    "label": "rayjoin_lsi_generic_optix",
+    "returncode": 0,
+    "stderr": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/rayjoin_lsi_generic_optix.stderr",
+    "stdout": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/rayjoin_lsi_generic_optix.stdout"
+  },
+  {
+    "elapsed_sec": 0.4648740841075778,
+    "label": "rayjoin_lsi_generic_embree_t8",
+    "returncode": 0,
+    "stderr": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/rayjoin_lsi_generic_embree_t8.stderr",
+    "stdout": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/rayjoin_lsi_generic_embree_t8.stdout"
+  },
+  {
+    "elapsed_sec": 1.092515790835023,
+    "label": "rayjoin_lsi_prepared_optix_dense",
+    "returncode": 0,
+    "stderr": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/rayjoin_lsi_prepared_optix_dense.stderr",
+    "stdout": "docs/reports/goal4347_fair_rt_vs_embree_run/smoke/rayjoin_lsi_prepared_optix_dense.stdout"
+  }
+]

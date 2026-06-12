@@ -5,6 +5,9 @@ from typing import Any
 
 from .partner_continuation_protocol import V2_5_PARTNER_CONTINUATION_VERSION
 from .partner_continuation_protocol import V2_5_STATUS_PREVIEW_NOT_PROMOTED
+from .partner_column_contracts import make_equal_contiguous_group_id_contract
+from .partner_column_contracts import make_dense_zero_based_group_id_contract
+from .partner_column_contracts import require_group_id_contract
 from .partner_protocol import V2_4_PARTNER_PROTOCOL_VERSION
 from .partner_protocol import v2_4_phase_timing_metadata
 
@@ -18,6 +21,8 @@ NUMBA_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
 NUMBA_COMPACT_MASK_I64_OPERATION = "compact_mask_i64"
 NUMBA_GROUPED_ARGMIN_F64_OPERATION = "grouped_argmin_f64"
 NUMBA_GROUPED_ARGMAX_F64_OPERATION = "grouped_argmax_f64"
+NUMBA_GROUPED_TOPK_F64_OPERATION = "grouped_topk_f64"
+NUMBA_GROUPED_TOPK_F64_MAX_K = 16
 NUMBA_GLOBAL_ARGMAX_U32_F64_OPERATION = "global_argmax_u32_f64"
 NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION = "pairwise_l2_sq_score_rows_2d"
 NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION = "pairwise_l2_sq_block_nearest_rows_2d"
@@ -121,6 +126,25 @@ def describe_numba_grouped_argmax_f64() -> dict[str, object]:
     )
     descriptor["tie_break"] = "highest_score_then_lowest_item_id"
     descriptor["host_present_group_compaction_used"] = True
+    return descriptor
+
+
+def describe_numba_grouped_topk_f64() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_GROUPED_TOPK_F64_OPERATION)
+    descriptor["input_columns"] = ("group_ids:int64", "item_ids:int64", "scores:float64")
+    descriptor["output_columns"] = (
+        "group_ids:int64",
+        "item_ids:int64",
+        "scores:float64",
+        "ranks:int64",
+        "row_offsets:int64",
+        "missing_group_ids:int64",
+    )
+    descriptor["tie_break"] = "lowest_score_then_lowest_item_id"
+    descriptor["duplicate_item_policy"] = "lowest_score_per_group_item"
+    descriptor["layout_precondition"] = "equal_contiguous_group_segments"
+    descriptor["max_k"] = NUMBA_GROUPED_TOPK_F64_MAX_K
+    descriptor["host_rank_materialization_used"] = False
     return descriptor
 
 
@@ -379,7 +403,6 @@ def run_numba_grouped_vector_sum_f64x2(
         cuda=cuda,
         np=np,
     )
-
     cuda.synchronize()
     started = perf_counter()
     sum_x = cuda.device_array((group_count,), dtype=np.float64)
@@ -692,6 +715,143 @@ def run_numba_grouped_argmax_f64(
         score_initial=-float("inf"),
         score_kernel_factory=_numba_grouped_argmax_score_f64_kernel,
         tie_break="highest_score_then_lowest_item_id",
+    )
+
+
+def run_numba_grouped_topk_f64(
+    group_ids: Any,
+    item_ids: Any,
+    scores: Any,
+    *,
+    group_count: int,
+    k: int,
+    rows_per_group: int | None = None,
+    block_size: int = 128,
+    validate_group_ids: bool = True,
+    validate_nan_scores: bool = True,
+) -> dict[str, object]:
+    """Run grouped top-k over equal contiguous score-row segments.
+
+    This is a generic ranked-summary continuation for score rows already laid
+    out as one contiguous segment per dense group. The v2.11 point top-k
+    adapter's pairwise score-row producer emits exactly this layout.
+    """
+
+    cuda, np = _import_numba_stack()
+    _validate_numba_cuda_vector(group_ids, name="group_ids", dtype=np.int64)
+    _validate_numba_cuda_vector(item_ids, name="item_ids", dtype=np.int64)
+    _validate_numba_cuda_vector(scores, name="scores", dtype=np.float64)
+    if not (tuple(group_ids.shape) == tuple(item_ids.shape) == tuple(scores.shape)):
+        raise ValueError("group_ids, item_ids, and scores must have the same shape")
+    if validate_nan_scores and int(scores.shape[0]) and bool(np.isnan(scores.copy_to_host()).any()):
+        raise ValueError("grouped top-k rejects NaN scores")
+    group_count = int(group_count)
+    k = int(k)
+    block_size = int(block_size)
+    row_count = int(group_ids.shape[0])
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    if group_count == 0:
+        raise ValueError("grouped top-k requires at least one group")
+    if k <= 0:
+        raise ValueError("k must be positive")
+    if k > NUMBA_GROUPED_TOPK_F64_MAX_K:
+        raise ValueError(f"k must be <= {NUMBA_GROUPED_TOPK_F64_MAX_K} for numba grouped_topk_f64")
+    if block_size not in {32, 64, 128, 256}:
+        raise ValueError("block_size must be one of 32, 64, 128, or 256")
+    if rows_per_group is None:
+        if row_count % group_count != 0:
+            raise ValueError("row_count must be divisible by group_count when rows_per_group is omitted")
+        rows_per_group = row_count // group_count
+    rows_per_group = int(rows_per_group)
+    if rows_per_group < k:
+        raise ValueError("rows_per_group must be >= k")
+    if rows_per_group * group_count != row_count:
+        raise ValueError("rows_per_group * group_count must equal row_count")
+    group_contract_metadata = require_group_id_contract(
+        make_equal_contiguous_group_id_contract(
+            operation=NUMBA_GROUPED_TOPK_F64_OPERATION,
+            group_count=group_count,
+            row_count=row_count,
+            rows_per_group=rows_per_group,
+        )
+    )
+    if validate_group_ids:
+        group_count, block_size, _ = _validate_group_run_shape(
+            group_ids,
+            group_count=group_count,
+            block_size=block_size,
+            validate_group_ids=True,
+            cuda=cuda,
+            np=np,
+        )
+
+    cuda.synchronize()
+    started = perf_counter()
+    output_count = group_count * k
+    out_group_ids = cuda.device_array((output_count,), dtype=np.int64)
+    out_item_ids = cuda.device_array((output_count,), dtype=np.int64)
+    out_scores = cuda.device_array((output_count,), dtype=np.float64)
+    out_ranks = cuda.device_array((output_count,), dtype=np.int64)
+    row_offsets = cuda.device_array((group_count + 1,), dtype=np.int64)
+    counts = cuda.device_array((group_count,), dtype=np.int64)
+    missing_group_ids = cuda.device_array((0,), dtype=np.int64)
+    error_flag = cuda.device_array((1,), dtype=np.int64)
+    error_flag.copy_to_device(np.zeros((1,), dtype=np.int64))
+    _cached_numba_kernel(cuda, _numba_grouped_topk_f64_equal_segments_kernel)[
+        (group_count,), block_size
+    ](
+        group_ids,
+        item_ids,
+        scores,
+        out_group_ids,
+        out_item_ids,
+        out_scores,
+        out_ranks,
+        row_offsets,
+        counts,
+        error_flag,
+        group_count,
+        rows_per_group,
+        k,
+    )
+    cuda.synchronize()
+    error_code = int(error_flag.copy_to_host()[0])
+    if error_code:
+        raise ValueError(
+            "grouped_topk_f64 equal-segment validation failed; "
+            f"error_code={error_code}; expected contiguous dense group segments and finite scores"
+        )
+    elapsed = perf_counter() - started
+
+    return _numba_run_result(
+        operation=NUMBA_GROUPED_TOPK_F64_OPERATION,
+        outputs={
+            "group_ids": out_group_ids,
+            "item_ids": out_item_ids,
+            "scores": out_scores,
+            "ranks": out_ranks,
+            "row_offsets": row_offsets,
+            "missing_group_ids": missing_group_ids,
+            "dense_item_ids": out_item_ids,
+            "dense_scores": out_scores,
+            "counts": counts,
+        },
+        elapsed=elapsed,
+        source="run_numba_grouped_topk_f64",
+        extra_metadata={
+            "tie_break": "lowest_score_then_lowest_item_id",
+            "duplicate_item_policy": "lowest_score_per_group_item",
+            "layout_precondition": "equal_contiguous_group_segments",
+            "rows_per_group": rows_per_group,
+            "k": k,
+            "max_k": NUMBA_GROUPED_TOPK_F64_MAX_K,
+            "host_rank_materialization_used": False,
+            "host_score_row_materialization_used": False,
+            "nan_validation_host_sync_used": validate_nan_scores,
+            "device_validation_error_flag_used": True,
+            **group_contract_metadata,
+        },
     )
 
 
@@ -1092,7 +1252,6 @@ def _run_numba_segmented_extreme_f64(
         cuda=cuda,
         np=np,
     )
-
     cuda.synchronize()
     started = perf_counter()
     output = cuda.device_array((group_count,), dtype=np.float64)
@@ -1142,6 +1301,18 @@ def _run_numba_grouped_arg_reduce_f64(
         validate_group_ids=validate_group_ids,
         cuda=cuda,
         np=np,
+    )
+    group_contract_metadata = require_group_id_contract(
+        make_dense_zero_based_group_id_contract(
+            operation=operation,
+            group_count=group_count,
+            row_count=row_count,
+            validation_mode=(
+                "device_resident_error_flag"
+                if validate_group_ids
+                else "caller_declared_unchecked"
+            ),
+        )
     )
 
     cuda.synchronize()
@@ -1225,6 +1396,7 @@ def _run_numba_grouped_arg_reduce_f64(
             "tie_break": tie_break,
             "host_present_group_compaction_used": compact_present_groups,
             "nan_validation_host_sync_used": validate_nan_scores,
+            **group_contract_metadata,
         },
     )
 
@@ -1417,6 +1589,94 @@ def _numba_grouped_arg_item_i64_kernel(cuda: Any):
             group = group_ids[index]
             if 0 <= group < group_count and scores[index] == dense_scores[group]:
                 cuda.atomic.min(dense_item_ids, group, item_ids[index])
+
+    return kernel
+
+
+def _numba_grouped_topk_f64_equal_segments_kernel(cuda: Any):
+    from numba import float64, int64
+
+    @cuda.jit
+    def kernel(
+        group_ids,
+        item_ids,
+        scores,
+        out_group_ids,
+        out_item_ids,
+        out_scores,
+        out_ranks,
+        row_offsets,
+        counts,
+        error_flag,
+        group_count,
+        rows_per_group,
+        k,
+    ):
+        shared_scores = cuda.shared.array(256, dtype=float64)
+        shared_items = cuda.shared.array(256, dtype=int64)
+
+        group = cuda.blockIdx.x
+        thread = cuda.threadIdx.x
+        block_size = cuda.blockDim.x
+        start = group * rows_per_group
+        out_start = group * k
+        max_i64 = 9223372036854775807
+
+        if group < group_count and thread == 0:
+            row_offsets[group] = out_start
+            if group == group_count - 1:
+                row_offsets[group_count] = out_start + k
+            counts[group] = k
+        cuda.syncthreads()
+
+        for rank_index in range(k):
+            best_score = float("inf")
+            best_item = max_i64
+            local = thread
+            while local < rows_per_group:
+                row = start + local
+                if group_ids[row] != group:
+                    cuda.atomic.max(error_flag, 0, 1)
+                score = scores[row]
+                item = item_ids[row]
+                if score != score:
+                    cuda.atomic.max(error_flag, 0, 2)
+                already_selected = False
+                prior = 0
+                while prior < rank_index:
+                    if out_item_ids[out_start + prior] == item:
+                        already_selected = True
+                    prior += 1
+                if not already_selected and score == score:
+                    if score < best_score or (score == best_score and item < best_item):
+                        best_score = score
+                        best_item = item
+                local += block_size
+            shared_scores[thread] = best_score
+            shared_items[thread] = best_item
+            cuda.syncthreads()
+
+            stride = block_size // 2
+            while stride > 0:
+                if thread < stride:
+                    other_score = shared_scores[thread + stride]
+                    other_item = shared_items[thread + stride]
+                    current_score = shared_scores[thread]
+                    current_item = shared_items[thread]
+                    if other_score < current_score or (other_score == current_score and other_item < current_item):
+                        shared_scores[thread] = other_score
+                        shared_items[thread] = other_item
+                cuda.syncthreads()
+                stride //= 2
+
+            if thread == 0:
+                if shared_items[0] == max_i64:
+                    cuda.atomic.max(error_flag, 0, 3)
+                out_group_ids[out_start + rank_index] = group
+                out_item_ids[out_start + rank_index] = shared_items[0]
+                out_scores[out_start + rank_index] = shared_scores[0]
+                out_ranks[out_start + rank_index] = rank_index + 1
+            cuda.syncthreads()
 
     return kernel
 

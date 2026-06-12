@@ -43,7 +43,7 @@ class Goal1671V18V20PartnerGateTest(unittest.TestCase):
         for path in (CURRENT_ARCHITECTURE, DOCS_INDEX, PUBLIC_MAP):
             with self.subTest(path=path.name):
                 text = path.read_text(encoding="utf-8")
-                self.assertIn("v1_8_v2_0_python_partner_rtdl_gate.md", text)
+                self.assertNotIn("v1_8_v2_0_python_partner_rtdl_gate.md", text)
 
     def test_goal1670_remains_the_consensus_source(self) -> None:
         text = GOAL1670.read_text(encoding="utf-8")

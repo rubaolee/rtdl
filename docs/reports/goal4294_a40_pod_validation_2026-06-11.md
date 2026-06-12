@@ -9,7 +9,7 @@ driver/probe hardening from Goals 4285-4293.
 
 This run targeted the user-provided pod:
 
-- Host: `194.68.245.114`
+- Host: redacted NVIDIA A40 pod endpoint
 - GPU: NVIDIA A40
 - Driver: `565.57.01`
 - Source commit: `6a556994a5176a3acc8bad2557c0905caa893898`

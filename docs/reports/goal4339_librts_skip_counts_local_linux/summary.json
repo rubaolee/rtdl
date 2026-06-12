@@ -1,0 +1,36 @@
+{
+  "embree_1024_skip_counts": {
+    "counts_keys": [
+      "point_contains",
+      "range_contains",
+      "range_intersects"
+    ],
+    "cpu_reference_skipped": true,
+    "elapsed_sec": 43.78623831900404,
+    "matches_cpu_reference": null,
+    "mode": "embree_aabb_index",
+    "native_engine_customization": false,
+    "query_median_sec": 43.764849884002615,
+    "query_repeat": 2,
+    "query_total_sec": 87.52969976800523,
+    "query_warmup": 1,
+    "rt_core_accelerated": false
+  },
+  "embree_small_validated": {
+    "counts_keys": [
+      "point_contains",
+      "range_contains",
+      "range_intersects"
+    ],
+    "cpu_reference_skipped": false,
+    "elapsed_sec": 0.03022161399712786,
+    "matches_cpu_reference": true,
+    "mode": "embree_aabb_index",
+    "native_engine_customization": false,
+    "query_median_sec": 0.014963487999921199,
+    "query_repeat": 2,
+    "query_total_sec": 0.029926975999842398,
+    "query_warmup": 1,
+    "rt_core_accelerated": false
+  }
+}

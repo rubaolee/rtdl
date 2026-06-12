@@ -47,7 +47,8 @@ class Goal4291RemotePodDriverNoninteractiveSshTest(unittest.TestCase):
     def test_report_records_live_pod_trigger_and_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
 
-        self.assertIn("194.68.245.114:22158", text)
+        self.assertIn("redacted live pod endpoint", text)
+        self.assertNotIn("194.68.245.114:22158", text)
         self.assertIn("host-key prompt", text)
         self.assertIn("does not run hardware validation by itself", text)
 

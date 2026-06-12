@@ -1,0 +1,14 @@
+{
+  "claim_boundary": {
+    "paper_dataset": false,
+    "synthetic_input_only": true
+  },
+  "generated": {
+    "dimension": 3,
+    "format": "rtnn_csv_xyz",
+    "path": "/root/rtdl_goal4329.OOFWIg/repo/docs/reports/goal4347_fair_rt_vs_embree_run/scale/rtnn_uniform_65536.csv",
+    "point_count": 65536,
+    "seed": 20260519
+  },
+  "runner": "goal2348_rtnn_v2_2_external_runner"
+}

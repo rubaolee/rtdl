@@ -18,9 +18,19 @@ export PYTHONPATH=src:.
 Windows PowerShell:
 
 ```powershell
-cd C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+cd C:\path\to\rtdl_v0_4_release_prep_review
 $env:PYTHONPATH='src;.'
 ```
+
+Optional developer convenience:
+
+```bash
+python -m pip install -e .
+```
+
+Use this only for a local checkout you are developing or studying. It removes
+the need to set `PYTHONPATH` in that environment, but it is not a distribution
+package promise.
 
 ## 2. Run Hello World
 

@@ -25,6 +25,12 @@ or "Hausdorff" in Python, but the engine should expose contracts such as
 fixed-radius counts, point-nearest summaries, grouped reductions, or segment
 intersection rows.
 
+The kernel shape is the mental model, not the only performance entry point.
+Current benchmark-quality routes often use primitive discovery and prepared
+front doors directly when they need prepared state, bounded output policies,
+typed summaries, or partner-column contracts. Keep the app meaning in Python
+and the RTDL contract generic either way.
+
 ## Backend Choice
 
 | Backend | Use it for | Notes |

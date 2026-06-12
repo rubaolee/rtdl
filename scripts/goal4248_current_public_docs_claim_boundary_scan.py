@@ -12,6 +12,7 @@ SCHEMA = "rtdl.goal4248.current_public_docs_claim_boundary_scan.v1"
 
 PUBLIC_DOC_ROOTS = (
     "README.md",
+    "docs/versioning.md",
     "docs/learn",
     "tutorials",
     "examples/README.md",

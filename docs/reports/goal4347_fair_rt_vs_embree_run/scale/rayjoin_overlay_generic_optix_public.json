@@ -1,0 +1,1070 @@
+{
+  "_wrapper_elapsed_sec": 68.7336100935936,
+  "app": "rayjoin_v2_spatial_join",
+  "backend": "optix",
+  "claim_boundary": {
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "requires_pod_for_optix_perf": false,
+    "v2_0_release_authorized": false
+  },
+  "dataset": "data/rayjoin_public_cdb/br_county_start256_count512.cdb + data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+  "dataset_note": "External CDB overlay pair-dependency case using left/right polygon chains.",
+  "elapsed_sec": 0.9311331165954471,
+  "native_engine_boundary": "The engine sees generic point, segment, polygon, traversal, and row contracts. RayJoin application policy, face metadata, PIP positive filtering, and overlay continuation stay in Python/partner code.",
+  "parity_vs_cpu_python_reference": true,
+  "row_count": 239478,
+  "rt_core_accelerated": true,
+  "summary": {
+    "active_seed_count": 174,
+    "active_seed_pairs": [
+      {
+        "left_polygon_id": 272,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 601
+      },
+      {
+        "left_polygon_id": 272,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 759
+      },
+      {
+        "left_polygon_id": 293,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 278
+      },
+      {
+        "left_polygon_id": 294,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 279
+      },
+      {
+        "left_polygon_id": 295,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 278
+      },
+      {
+        "left_polygon_id": 295,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 281
+      },
+      {
+        "left_polygon_id": 295,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 294
+      },
+      {
+        "left_polygon_id": 296,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 279
+      },
+      {
+        "left_polygon_id": 296,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 295
+      },
+      {
+        "left_polygon_id": 296,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 356
+      },
+      {
+        "left_polygon_id": 297,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 300
+      },
+      {
+        "left_polygon_id": 297,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 427
+      },
+      {
+        "left_polygon_id": 297,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 430
+      },
+      {
+        "left_polygon_id": 302,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 299
+      },
+      {
+        "left_polygon_id": 303,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 576
+      },
+      {
+        "left_polygon_id": 304,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 576
+      },
+      {
+        "left_polygon_id": 304,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 584
+      },
+      {
+        "left_polygon_id": 304,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 585
+      },
+      {
+        "left_polygon_id": 304,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 607
+      },
+      {
+        "left_polygon_id": 305,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 584
+      },
+      {
+        "left_polygon_id": 305,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 678
+      },
+      {
+        "left_polygon_id": 305,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 679
+      },
+      {
+        "left_polygon_id": 305,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 692
+      },
+      {
+        "left_polygon_id": 305,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 694
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 301
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 303
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 326
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 394
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 396
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 398
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 399
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 401
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 403
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 0,
+        "requires_pip": 1,
+        "right_polygon_id": 521
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 523
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 623
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 650
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 668
+      },
+      {
+        "left_polygon_id": 307,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 717
+      },
+      {
+        "left_polygon_id": 308,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 260
+      },
+      {
+        "left_polygon_id": 308,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 414
+      },
+      {
+        "left_polygon_id": 308,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 578
+      },
+      {
+        "left_polygon_id": 308,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 582
+      },
+      {
+        "left_polygon_id": 308,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 583
+      },
+      {
+        "left_polygon_id": 308,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 648
+      },
+      {
+        "left_polygon_id": 308,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 649
+      },
+      {
+        "left_polygon_id": 308,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 650
+      },
+      {
+        "left_polygon_id": 308,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 651
+      },
+      {
+        "left_polygon_id": 309,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 334
+      },
+      {
+        "left_polygon_id": 310,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 299
+      },
+      {
+        "left_polygon_id": 310,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 334
+      },
+      {
+        "left_polygon_id": 311,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 299
+      },
+      {
+        "left_polygon_id": 313,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 303
+      },
+      {
+        "left_polygon_id": 313,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 334
+      },
+      {
+        "left_polygon_id": 313,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 335
+      },
+      {
+        "left_polygon_id": 348,
+        "requires_lsi": 0,
+        "requires_pip": 1,
+        "right_polygon_id": 636
+      },
+      {
+        "left_polygon_id": 348,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 637
+      },
+      {
+        "left_polygon_id": 348,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 638
+      },
+      {
+        "left_polygon_id": 348,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 639
+      },
+      {
+        "left_polygon_id": 348,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 640
+      },
+      {
+        "left_polygon_id": 358,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 662
+      },
+      {
+        "left_polygon_id": 359,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 662
+      },
+      {
+        "left_polygon_id": 359,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 663
+      },
+      {
+        "left_polygon_id": 360,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 731
+      },
+      {
+        "left_polygon_id": 361,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 630
+      },
+      {
+        "left_polygon_id": 361,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 665
+      },
+      {
+        "left_polygon_id": 362,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 630
+      },
+      {
+        "left_polygon_id": 365,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 642
+      },
+      {
+        "left_polygon_id": 371,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 728
+      },
+      {
+        "left_polygon_id": 371,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 731
+      },
+      {
+        "left_polygon_id": 371,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 732
+      },
+      {
+        "left_polygon_id": 442,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 726
+      },
+      {
+        "left_polygon_id": 461,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 731
+      },
+      {
+        "left_polygon_id": 485,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 289
+      },
+      {
+        "left_polygon_id": 485,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 290
+      },
+      {
+        "left_polygon_id": 485,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 291
+      },
+      {
+        "left_polygon_id": 485,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 293
+      },
+      {
+        "left_polygon_id": 485,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 305
+      },
+      {
+        "left_polygon_id": 485,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 460
+      },
+      {
+        "left_polygon_id": 485,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 462
+      },
+      {
+        "left_polygon_id": 485,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 463
+      },
+      {
+        "left_polygon_id": 485,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 707
+      },
+      {
+        "left_polygon_id": 485,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 710
+      },
+      {
+        "left_polygon_id": 485,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 711
+      },
+      {
+        "left_polygon_id": 485,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 714
+      },
+      {
+        "left_polygon_id": 485,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 765
+      },
+      {
+        "left_polygon_id": 494,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 601
+      },
+      {
+        "left_polygon_id": 494,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 757
+      },
+      {
+        "left_polygon_id": 494,
+        "requires_lsi": 0,
+        "requires_pip": 1,
+        "right_polygon_id": 758
+      },
+      {
+        "left_polygon_id": 494,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 759
+      },
+      {
+        "left_polygon_id": 494,
+        "requires_lsi": 0,
+        "requires_pip": 1,
+        "right_polygon_id": 760
+      },
+      {
+        "left_polygon_id": 495,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 601
+      },
+      {
+        "left_polygon_id": 495,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 757
+      },
+      {
+        "left_polygon_id": 517,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 731
+      },
+      {
+        "left_polygon_id": 547,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 728
+      },
+      {
+        "left_polygon_id": 547,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 731
+      },
+      {
+        "left_polygon_id": 547,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 732
+      },
+      {
+        "left_polygon_id": 638,
+        "requires_lsi": 0,
+        "requires_pip": 1,
+        "right_polygon_id": 631
+      },
+      {
+        "left_polygon_id": 638,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 632
+      },
+      {
+        "left_polygon_id": 638,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 633
+      },
+      {
+        "left_polygon_id": 638,
+        "requires_lsi": 0,
+        "requires_pip": 1,
+        "right_polygon_id": 635
+      },
+      {
+        "left_polygon_id": 638,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 681
+      },
+      {
+        "left_polygon_id": 638,
+        "requires_lsi": 0,
+        "requires_pip": 1,
+        "right_polygon_id": 682
+      },
+      {
+        "left_polygon_id": 638,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 725
+      },
+      {
+        "left_polygon_id": 638,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 729
+      },
+      {
+        "left_polygon_id": 638,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 730
+      },
+      {
+        "left_polygon_id": 638,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 731
+      },
+      {
+        "left_polygon_id": 641,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 661
+      },
+      {
+        "left_polygon_id": 641,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 663
+      },
+      {
+        "left_polygon_id": 668,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 369
+      },
+      {
+        "left_polygon_id": 669,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 339
+      },
+      {
+        "left_polygon_id": 669,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 341
+      },
+      {
+        "left_polygon_id": 671,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 485
+      },
+      {
+        "left_polygon_id": 672,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 342
+      },
+      {
+        "left_polygon_id": 672,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 344
+      },
+      {
+        "left_polygon_id": 672,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 367
+      },
+      {
+        "left_polygon_id": 672,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 408
+      },
+      {
+        "left_polygon_id": 673,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 377
+      },
+      {
+        "left_polygon_id": 673,
+        "requires_lsi": 0,
+        "requires_pip": 1,
+        "right_polygon_id": 378
+      },
+      {
+        "left_polygon_id": 674,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 368
+      },
+      {
+        "left_polygon_id": 674,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 369
+      },
+      {
+        "left_polygon_id": 674,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 370
+      },
+      {
+        "left_polygon_id": 674,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 377
+      },
+      {
+        "left_polygon_id": 674,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 378
+      },
+      {
+        "left_polygon_id": 674,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 485
+      },
+      {
+        "left_polygon_id": 675,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 377
+      },
+      {
+        "left_polygon_id": 675,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 378
+      },
+      {
+        "left_polygon_id": 675,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 453
+      },
+      {
+        "left_polygon_id": 675,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 520
+      },
+      {
+        "left_polygon_id": 676,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 376
+      },
+      {
+        "left_polygon_id": 676,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 377
+      },
+      {
+        "left_polygon_id": 676,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 378
+      },
+      {
+        "left_polygon_id": 677,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 376
+      },
+      {
+        "left_polygon_id": 677,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 377
+      },
+      {
+        "left_polygon_id": 677,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 378
+      },
+      {
+        "left_polygon_id": 682,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 367
+      },
+      {
+        "left_polygon_id": 682,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 408
+      },
+      {
+        "left_polygon_id": 682,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 481
+      },
+      {
+        "left_polygon_id": 685,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 343
+      },
+      {
+        "left_polygon_id": 685,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 344
+      },
+      {
+        "left_polygon_id": 686,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 370
+      },
+      {
+        "left_polygon_id": 686,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 483
+      },
+      {
+        "left_polygon_id": 686,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 485
+      },
+      {
+        "left_polygon_id": 686,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 486
+      },
+      {
+        "left_polygon_id": 687,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 324
+      },
+      {
+        "left_polygon_id": 687,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 344
+      },
+      {
+        "left_polygon_id": 688,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 338
+      },
+      {
+        "left_polygon_id": 688,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 341
+      },
+      {
+        "left_polygon_id": 688,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 344
+      },
+      {
+        "left_polygon_id": 688,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 367
+      },
+      {
+        "left_polygon_id": 689,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 321
+      },
+      {
+        "left_polygon_id": 689,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 322
+      },
+      {
+        "left_polygon_id": 689,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 323
+      },
+      {
+        "left_polygon_id": 689,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 324
+      },
+      {
+        "left_polygon_id": 692,
+        "requires_lsi": 0,
+        "requires_pip": 1,
+        "right_polygon_id": 548
+      },
+      {
+        "left_polygon_id": 692,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 549
+      },
+      {
+        "left_polygon_id": 692,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 550
+      },
+      {
+        "left_polygon_id": 692,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 551
+      },
+      {
+        "left_polygon_id": 692,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 552
+      },
+      {
+        "left_polygon_id": 692,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 553
+      },
+      {
+        "left_polygon_id": 695,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 672
+      },
+      {
+        "left_polygon_id": 696,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 672
+      },
+      {
+        "left_polygon_id": 699,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 263
+      },
+      {
+        "left_polygon_id": 699,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 451
+      },
+      {
+        "left_polygon_id": 704,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 482
+      },
+      {
+        "left_polygon_id": 704,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 483
+      },
+      {
+        "left_polygon_id": 704,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 485
+      },
+      {
+        "left_polygon_id": 704,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 549
+      },
+      {
+        "left_polygon_id": 704,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 593
+      },
+      {
+        "left_polygon_id": 705,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 553
+      },
+      {
+        "left_polygon_id": 706,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 453
+      },
+      {
+        "left_polygon_id": 706,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 486
+      },
+      {
+        "left_polygon_id": 706,
+        "requires_lsi": 1,
+        "requires_pip": 0,
+        "right_polygon_id": 520
+      },
+      {
+        "left_polygon_id": 706,
+        "requires_lsi": 1,
+        "requires_pip": 1,
+        "right_polygon_id": 553
+      }
+    ],
+    "output_contract": "overlay_pair_dependency_rows_with_lsi_pip_flags",
+    "pair_dependency_row_count": 239478
+  },
+  "workload": "overlay_seed"
+}

@@ -48,11 +48,11 @@ class Goal2880CurrentPacketAfterTorchCarrierProvenanceTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "docs/reports/goal2880_current_packet_after_seam_provenance_pod/goal2855_summary.json",
+            "docs/reports/goal2973_current_packet_with_toolchain_scope_pod/goal2855_summary.json",
             packet["current_canonical_runner"]["summary_path"],
         )
         self.assertEqual("pass", packet["current_canonical_runner"]["status"])
-        self.assertEqual(EXPECTED_COMMIT, packet["current_canonical_runner"]["source_commit"])
+        self.assertEqual("63158f6db0a2248d203476633ea9f5171a0b596b", packet["current_canonical_runner"]["source_commit"])
         self.assertTrue(packet["required_report_presence"][
             "docs/reports/goal2880_current_packet_after_torch_carrier_provenance_2026-05-31.md"
         ])

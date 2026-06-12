@@ -897,10 +897,8 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
                 )
                 for prepared_query in prepared_query_batches
             ]
-        embree_kernel = None
     else:
-        prepared = None
-        embree_kernel = _make_rtdl_fixed_radius_neighbors_3d_kernel(rt, radius=radius, k_max=k_max)
+        prepared = rt.prepare_embree_fixed_radius_neighbors_3d(search)
     prepare_sec = time.perf_counter() - prepare_started
 
     print(
@@ -934,22 +932,22 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             for batch_index, (batch, batch_ids) in enumerate(query_batches):
                 same_stream_entrypoint_for_batch = None
                 if backend == "embree":
-                    rows = rt.run_embree(
-                        embree_kernel,
-                        result_mode="raw",
-                        query_points=batch,
-                        search_points=search,
-                    )
+                    batch_started = time.perf_counter()
+                    rows = prepared.run_ranked_summary_raw(batch, radius=radius, k_max=k_max)
                     try:
-                        summaries = _ranked_summary_rows_from_fixed_radius_row_view(rows, batch_ids)
-                        run_row_count += len(summaries)
+                        run_row_count += len(rows)
                     finally:
                         rows.close()
+                    batch_wall_seconds = time.perf_counter() - batch_started
                     run_phase_timings.append(
                         {
-                            "mode": "embree_fixed_radius_rows_to_ranked_summary_rows",
+                            "mode": "embree_prepared_fixed_radius_ranked_summary_rows",
                             "backend": "embree",
-                            "materializes_neighbor_rows": True,
+                            "prepared_search_structure": True,
+                            "materializes_neighbor_rows": False,
+                            "summary_rows_materialized": True,
+                            "native_traversal_seconds": prepared.last_traversal_seconds,
+                            "wall_seconds": batch_wall_seconds,
                         }
                     )
                     continue
@@ -1114,7 +1112,7 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             "precision": "float32" if result_mode in float32_aggregate_modes else "float64",
             "approximate": False,
             "bounded_k": k_max,
-            "prepared_search_structure": backend == "optix",
+            "prepared_search_structure": backend in {"optix", "embree"},
             "batched_queries": True,
             "prepared_query_points": result_mode in prepared_query_modes,
             "aggregate_request_count": aggregate_request_count if result_mode in batch_aggregate_modes else 1,
@@ -1149,7 +1147,7 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             "prepared_cuda_graph_replay": result_mode in graph_modes,
             "same_stream_partner_consumer": result_mode == same_stream_graph_mode,
             "embree_ranked_summary_rows": backend == "embree" and result_mode == "ranked-summary-raw",
-            "materializes_neighbor_rows": backend == "embree",
+            "materializes_neighbor_rows": False,
         },
     }
 

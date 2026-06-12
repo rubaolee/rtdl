@@ -13,6 +13,14 @@ This guide is intentionally different from:
 
 - [DSL Reference](dsl_reference.md): exact contract
 - [Workload Cookbook](workload_cookbook.md): copyable examples
+- [RTDL Programming Surfaces](../learn/programming_surfaces.md): when to use
+  kernels, prepared primitive front doors, or partner continuations
+
+Important boundary: `@rt.kernel` is the canonical teaching and kernel-authoring
+surface, but it is not the only current route to performance. Benchmark-quality
+programs may call primitive/prepared front doors directly when they need
+prepared state, bounded output policies, typed summaries, or partner-column
+contracts.
 
 ## 1. Start With The Current Kernel Header
 

@@ -1,0 +1,284 @@
+{
+  "automatic_partner_selection_authorized": false,
+  "broad_rt_core_claim_authorized": false,
+  "claim_boundary": "Goal4346 is a CPU-only OptiX-vs-Embree launch packet. It targets NVIDIA RT-core OptiX rows versus Embree CPU rows only. It has no Intel-GPU lane and does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
+  "contract_choice_blockers": [
+    {
+      "app": "spatial_rayjoin",
+      "next_action": "choose PIP count, LSI scalar count, or overlay active-count before ratio reporting",
+      "reason": "current OptiX row is a mixed route; current Embree row is PIP count-only"
+    },
+    {
+      "app": "rt_dbscan",
+      "next_action": "choose fixed-radius neighbor rows or grouped-signature contract",
+      "reason": "current OptiX row is grouped-stream plus Numba signature; current Embree row is prepared rows"
+    },
+    {
+      "app": "barnes_hut",
+      "next_action": "choose exact-force configured route or prepared node-coverage route",
+      "reason": "current NVIDIA scale row is Numba exact-force partner-only; current Embree row is node coverage"
+    },
+    {
+      "app": "rtnn",
+      "next_action": "choose 2-D ANN candidate quality or 3-D ranked-summary",
+      "reason": "current OptiX row is 3-D ranked summary; current Embree row is 2-D ANN candidate quality"
+    }
+  ],
+  "current_comparison_summary": {
+    "boundary_limited_phase_ratio_count": 2,
+    "clean_internal_query_ratio_count": 4,
+    "contract_choice_blocker_count": 4,
+    "fresh_scale_comparison_row_count": 5,
+    "fully_optimized_measured_pair_count": 1
+  },
+  "embree_cpu_scale_commands": [
+    {
+      "app": "hausdorff_xhd",
+      "bucket": "clean_internal_query_ratio",
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "embree",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.25",
+        "--copies",
+        "1024",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1"
+      ],
+      "note": "Same threshold-decision contract as the current OptiX scale row.",
+      "output_json": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/hausdorff_xhd.json",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "requires_embree_library": true,
+      "requires_intel_gpu": false,
+      "requires_nvidia_rt_core": false,
+      "timeout_sec": 180
+    },
+    {
+      "app": "robot_collision",
+      "bucket": "boundary_limited_phase_ratio",
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+        "--mode",
+        "embree_prepared_buffers",
+        "--dataset",
+        "scaled",
+        "--pose-count",
+        "1024",
+        "--obstacle-count",
+        "128",
+        "--link-count",
+        "4",
+        "--repeats",
+        "50000",
+        "--warmup",
+        "100",
+        "--no-probe-reference",
+        "--summary-only-runs"
+      ],
+      "note": "Same scene/query scale as OptiX, but output residency differs from OptiX device-count.",
+      "output_json": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/robot_collision.json",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "requires_embree_library": true,
+      "requires_intel_gpu": false,
+      "requires_nvidia_rt_core": false,
+      "timeout_sec": 360
+    },
+    {
+      "app": "contact_manifold",
+      "bucket": "clean_internal_query_ratio",
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+        "--mode",
+        "native_collect_k",
+        "--backend",
+        "embree",
+        "--dataset",
+        "grid",
+        "--grid-count",
+        "64",
+        "--witness-capacity",
+        "128",
+        "--repeat-count",
+        "3"
+      ],
+      "note": "Same collect-k grid, capacity, and repeat policy as OptiX.",
+      "output_json": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/contact_manifold.json",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "requires_embree_library": true,
+      "requires_intel_gpu": false,
+      "requires_nvidia_rt_core": false,
+      "timeout_sec": 180
+    },
+    {
+      "app": "raydb_style",
+      "bucket": "boundary_limited_phase_ratio",
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+        "--mode",
+        "count",
+        "--backend",
+        "paper_rt_embree",
+        "--fixture-kind",
+        "generated",
+        "--generated-rows",
+        "262144",
+        "--generated-groups",
+        "1024",
+        "--repeat",
+        "5000",
+        "--warmup",
+        "50",
+        "--summary-only-iterations"
+      ],
+      "note": "Same generated row/group scale as OptiX, but not the prepared-resident OptiX path.",
+      "output_json": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/raydb_style.json",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "requires_embree_library": true,
+      "requires_intel_gpu": false,
+      "requires_nvidia_rt_core": false,
+      "timeout_sec": 240
+    },
+    {
+      "app": "librts_spatial_index",
+      "bucket": "fully_optimized_measured_pair",
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--box-count",
+        "1024",
+        "--query-count",
+        "1024",
+        "--operation",
+        "all",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1",
+        "--skip-counts"
+      ],
+      "note": "Goal4340 optimized native Embree AABB_INDEX_QUERY_2D comparison shape.",
+      "output_json": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/librts_spatial_index.json",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "requires_embree_library": true,
+      "requires_intel_gpu": false,
+      "requires_nvidia_rt_core": false,
+      "timeout_sec": 180
+    },
+    {
+      "app": "triangle_counting",
+      "bucket": "clean_internal_query_ratio",
+      "command": [
+        "python",
+        "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+        "--mode",
+        "rt_graph_2a1_generic_rt",
+        "--backend",
+        "embree",
+        "--fixture",
+        "degree_oriented_two_triangles",
+        "--rt-graph-copies",
+        "2048",
+        "--detail",
+        "summary",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1"
+      ],
+      "note": "Same RT-Graph 2A1 fixture and repeat policy as OptiX.",
+      "output_json": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/triangle_counting.json",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "requires_embree_library": true,
+      "requires_intel_gpu": false,
+      "requires_nvidia_rt_core": false,
+      "timeout_sec": 240
+    }
+  ],
+  "environment_prefix": [
+    "export PYTHONPATH=src:.",
+    "export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so",
+    "export RTDL_OPTIX_LIB=$PWD/build/librtdl_optix.so",
+    "export RTDL_EMBREE_LIBRARY=$PWD/build/librtdl_embree.so",
+    "export RTDL_CUDA_PREFIX=${RTDL_CUDA_PREFIX:-/usr/local/cuda-12.8}",
+    "export NUMBA_CUDA_PREFIX=${NUMBA_CUDA_PREFIX:-/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc}",
+    "export CUDA_HOME=$NUMBA_CUDA_PREFIX",
+    "export CUDA_PATH=$NUMBA_CUDA_PREFIX",
+    "export PATH=$RTDL_CUDA_PREFIX/bin:$NUMBA_CUDA_PREFIX/bin:$PATH",
+    "export LD_LIBRARY_PATH=$NUMBA_CUDA_PREFIX/nvvm/lib64:$RTDL_CUDA_PREFIX/targets/x86_64-linux/lib:$RTDL_CUDA_PREFIX/lib64:${LD_LIBRARY_PATH:-}",
+    "export OMP_NUM_THREADS=${OMP_NUM_THREADS:-8}",
+    "export TBB_NUM_THREADS=${TBB_NUM_THREADS:-8}",
+    "export MKL_NUM_THREADS=${MKL_NUM_THREADS:-8}",
+    "export OPENBLAS_NUM_THREADS=${OPENBLAS_NUM_THREADS:-8}",
+    "export NUMEXPR_NUM_THREADS=${NUMEXPR_NUM_THREADS:-8}",
+    "export RTDL_EMBREE_THREADS=${RTDL_EMBREE_THREADS:-8}"
+  ],
+  "intel_gpu_lane": "omitted_by_user_until_hardware_exists",
+  "optix_scale_command": {
+    "command": [
+      "python",
+      "scripts/goal3828_current_benchmark_scale_profile_runner.py",
+      "--output-json",
+      "docs/reports/goal4346_cpu_only_pod_comparison_run/optix_scale_summary.json",
+      "--output-dir",
+      "docs/reports/goal4346_cpu_only_pod_comparison_run/optix_scale_outputs",
+      "--materialize-rayjoin-public-cdb"
+    ],
+    "note": "Run on an RTX-class pod. Do not use Pascal/GTX hardware for RT-core timing.",
+    "scale_profile_version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1",
+    "timeout_sec": 360
+  },
+  "paper_reproduction_claim_authorized": false,
+  "postprocess_commands": [
+    [
+      "python",
+      "scripts/rtdl_optimized_optix_embree_comparison_packet.py",
+      "--output-json",
+      "docs/reports/goal4346_cpu_only_pod_comparison_run/comparison_packet.json",
+      "--output-markdown",
+      "docs/reports/goal4346_cpu_only_pod_comparison_run/comparison_packet.md"
+    ],
+    [
+      "python",
+      "scripts/rtdl_backend_comparison_campaign_closeout.py",
+      "--output-json",
+      "docs/reports/goal4346_cpu_only_pod_comparison_run/closeout.json",
+      "--output-markdown",
+      "docs/reports/goal4346_cpu_only_pod_comparison_run/closeout.md"
+    ]
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "requires": {
+    "cuda_12_8_ptxas_first_for_numba_rows": true,
+    "embree_cpu_library": true,
+    "intel_gpu": false,
+    "nvidia_rt_core_pod_for_optix": true,
+    "reject_non_rt_core_nvidia_gpus_for_rt_core_timing": true
+  },
+  "status": "internal_cpu_only_optix_vs_embree_pod_launch_packet_not_release_authorization",
+  "target": "nvidia_rt_core_optix_vs_embree_cpu_only",
+  "validation": {
+    "errors": [],
+    "status": "accept"
+  },
+  "version": "rtdl.v2_11.cpu_only_pod_comparison_launch.goal4346.v2"
+}

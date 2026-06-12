@@ -4,7 +4,7 @@ Date: 2026-06-11
 
 ## Trigger
 
-The first live attempt against pod `root@194.68.245.114:22158` started the local
+The first live attempt against a redacted live pod endpoint started the local
 driver, Python, and SSH processes but produced no remote progress lines. The
 likely cause was SSH waiting before remote script execution, such as a host-key
 prompt.

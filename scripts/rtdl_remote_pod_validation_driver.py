@@ -29,6 +29,7 @@ def build_remote_script(
     cuda_prefix: str | None,
     numba_cuda_prefix: str | None,
     rayjoin_public_cdb_dir: str | None,
+    materialize_rayjoin_public_cdb: bool,
     run_hardware: bool,
     run_partner_comparison: bool,
     timeout_scale: float,
@@ -36,8 +37,12 @@ def build_remote_script(
     bundle_flags = []
     if run_hardware:
         bundle_flags.extend(["--run-front-door", "--run-scale-profile"])
+    if materialize_rayjoin_public_cdb:
+        bundle_flags.append("--materialize-rayjoin-public-cdb")
     if run_partner_comparison:
         bundle_flags.append("--run-partner-comparison")
+    if rayjoin_public_cdb_dir:
+        bundle_flags.extend(["--rayjoin-public-cdb-dir", _shell_quote(rayjoin_public_cdb_dir)])
     flags = " ".join(bundle_flags)
     build_step = ""
     if build_optix:
@@ -149,6 +154,7 @@ def plan(args: argparse.Namespace) -> dict[str, Any]:
         cuda_prefix=args.cuda_prefix,
         numba_cuda_prefix=args.numba_cuda_prefix,
         rayjoin_public_cdb_dir=args.rayjoin_public_cdb_dir,
+        materialize_rayjoin_public_cdb=args.materialize_rayjoin_public_cdb,
         run_hardware=args.run_hardware,
         run_partner_comparison=args.run_partner_comparison,
         timeout_scale=args.timeout_scale,
@@ -227,6 +233,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--cuda-prefix", help="native CUDA prefix for RTDL/OptiX builds, for example /usr/local/cuda-12.8")
     parser.add_argument("--numba-cuda-prefix", help="optional CUDA/NVVM prefix used by Numba CUDA kernels")
     parser.add_argument("--rayjoin-public-cdb-dir", help="optional external RayJoin public-CDB fixture directory")
+    parser.add_argument(
+        "--materialize-rayjoin-public-cdb",
+        action="store_true",
+        help="explicitly materialize the bounded RayJoin public-CDB fixture through the validation bundle",
+    )
     parser.add_argument("--run-hardware", action="store_true", help="run front-door and scale-profile hardware packets")
     parser.add_argument("--run-partner-comparison", action="store_true", help="also run the large CuPy/Numba comparison")
     parser.add_argument("--timeout-scale", type=float, default=1.0)

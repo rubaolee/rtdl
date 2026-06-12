@@ -324,6 +324,7 @@ def aabb_broadphase_witness_rows(
         if rows is None:
             raise RuntimeError("prepared AABB discovery did not run a measured query")
         query_median_sec = statistics.median(query_times)
+        query_total_sec = float(sum(query_times))
         broadphase = {
             "primitive": DISCOVERY_PRIMITIVE,
             "contract": "generic_aabb_intersection_pair_rows_2d",
@@ -344,8 +345,10 @@ def aabb_broadphase_witness_rows(
             "run_phases": {
                 "prepare_aabb_index_2d_sec": prepare_sec,
                 "emit_aabb_intersection_pair_rows_2d_median_sec": query_median_sec,
+                "emit_aabb_intersection_pair_rows_2d_total_sec": query_total_sec,
                 "emit_aabb_intersection_pair_rows_2d_min_sec": min(query_times),
                 "emit_aabb_intersection_pair_rows_2d_max_sec": max(query_times),
+                "emit_aabb_intersection_pair_rows_2d_measured_count": len(query_times),
             },
             "discovery_warmup_count": int(warmup_count),
             "discovery_repeat_count": int(repeat_count),

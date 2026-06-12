@@ -15,6 +15,10 @@ from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
+from .partner_column_contracts import default_partner_claim_boundary_metadata
+from .partner_column_contracts import make_dense_zero_based_group_id_contract
+from .partner_column_contracts import make_equal_contiguous_group_id_contract
+from .partner_column_contracts import require_group_id_contract
 from .triton_partner_continuation import run_triton_partner_continuation
 from .triton_partner_continuation import run_triton_bounded_collect_finalize_i64
 from .triton_partner_continuation import run_triton_dense_point_nearest_2d
@@ -1933,6 +1937,18 @@ def _numba_runtime_for_point_columns() -> dict[str, object]:
     }
 
 
+def _numba_topk_query_id_distance_kernel(cuda):
+    @cuda.jit
+    def kernel(query_source_ids, group_ids, scores, out_query_ids, out_distances, row_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            group = group_ids[index]
+            out_query_ids[index] = query_source_ids[group]
+            out_distances[index] = math.sqrt(scores[index])
+
+    return kernel
+
+
 def point_rows_to_partner_columns(points, *, partner: str = "torch") -> dict[str, object]:
     """Convert point rows into partner-owned generic point columns."""
     if partner == "numba":
@@ -2640,6 +2656,23 @@ def _generic_partner_front_door_metadata(
     return metadata
 
 
+def _dense_group_id_contract_metadata(
+    *,
+    operation: str,
+    group_count: int,
+    row_count: int,
+    validation_mode: str,
+) -> dict[str, object]:
+    return require_group_id_contract(
+        make_dense_zero_based_group_id_contract(
+            operation=operation,
+            group_count=group_count,
+            row_count=row_count,
+            validation_mode=validation_mode,
+        )
+    )
+
+
 def _torch_grouped_arg_reduce(score_columns: dict[str, object], *, group_count: int, reduce: str, runtime):
     torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
     group_count = int(group_count)
@@ -2795,6 +2828,16 @@ def grouped_argmin_f64_partner_columns(
         pass
     else:
         raise ValueError("partner must be 'triton', 'torch', or 'numba'")
+    group_contract_metadata = _dense_group_id_contract_metadata(
+        operation="grouped_argmin_f64",
+        group_count=group_count,
+        row_count=row_count,
+        validation_mode=(
+            "numba_device_runtime_validation"
+            if partner_name == "numba"
+            else "torch_host_group_id_bounds_check"
+        ),
+    )
     metadata = _generic_partner_front_door_metadata(
         adapter="grouped_argmin_f64_partner_columns",
         partner=partner_name,
@@ -2807,6 +2850,7 @@ def grouped_argmin_f64_partner_columns(
             "partner_elapsed_seconds": elapsed,
             "triton_elapsed_seconds": elapsed if partner_name == "triton" else None,
             "numba_elapsed_seconds": elapsed if partner_name == "numba" else None,
+            **group_contract_metadata,
             **numba_metadata,
         },
     )
@@ -2862,6 +2906,16 @@ def grouped_argmax_f64_partner_columns(
         pass
     else:
         raise ValueError("partner must be 'triton', 'torch', or 'numba'")
+    group_contract_metadata = _dense_group_id_contract_metadata(
+        operation="grouped_argmax_f64",
+        group_count=group_count,
+        row_count=row_count,
+        validation_mode=(
+            "numba_device_runtime_validation"
+            if partner_name == "numba"
+            else "torch_host_group_id_bounds_check"
+        ),
+    )
     metadata = _generic_partner_front_door_metadata(
         adapter="grouped_argmax_f64_partner_columns",
         partner=partner_name,
@@ -2874,6 +2928,7 @@ def grouped_argmax_f64_partner_columns(
             "partner_elapsed_seconds": elapsed,
             "triton_elapsed_seconds": elapsed if partner_name == "triton" else None,
             "numba_elapsed_seconds": elapsed if partner_name == "numba" else None,
+            **group_contract_metadata,
             **numba_metadata,
         },
     )
@@ -3023,13 +3078,64 @@ def grouped_topk_f64_partner_columns(
     group_count: int,
     k: int,
     partner: str = "triton",
+    rows_per_group: int | None = None,
     return_metadata: bool = False,
 ) -> dict[str, object]:
     """Finalize generic grouped score rows into deterministic top-k rows."""
 
-    runtime = _partner_module(partner)
     group_count = int(group_count)
     k = int(k)
+    if partner == "numba":
+        from .numba_partner_continuation import run_numba_grouped_topk_f64
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        runtime = _numba_runtime_for_point_columns()
+        group_ids = score_columns.get("group_ids")
+        item_ids = score_columns.get("item_ids")
+        scores = score_columns.get("scores")
+        if group_ids is None or item_ids is None or scores is None:
+            raise ValueError("score_columns must contain group_ids, item_ids, and scores")
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                {"group_ids": group_ids, "item_ids": item_ids, "scores": scores},
+                partner="numba",
+                access_modes={"group_ids": "read", "item_ids": "read", "scores": "read"},
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        result = run_numba_grouped_topk_f64(
+            group_ids,
+            item_ids,
+            scores,
+            group_count=group_count,
+            k=k,
+            rows_per_group=rows_per_group,
+        )
+        columns = result["outputs"]
+        row_count = int(group_ids.shape[0])
+        elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
+        group_contract_metadata = require_group_id_contract(
+            make_equal_contiguous_group_id_contract(
+                operation="grouped_topk_f64",
+                group_count=group_count,
+                row_count=row_count,
+                rows_per_group=rows_per_group,
+            )
+        )
+        numba_extra = {
+            "numba_elapsed_seconds": elapsed,
+            "numba_layout_precondition": result["layout_precondition"],
+            "numba_grouped_topk_device_rank_used": True,
+            "host_rank_materialization_used": False,
+            **group_contract_metadata,
+        }
+    else:
+        runtime = _partner_module(partner)
+        numba_extra = {}
     if runtime["name"] == "triton":
         torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
         _validate_torch_group_ids(group_ids, group_count, torch)
@@ -3041,8 +3147,18 @@ def grouped_topk_f64_partner_columns(
         columns, row_count = _torch_grouped_topk(score_columns, group_count=group_count, k=k, runtime=runtime)
         runtime["sync"]()
         elapsed = None
-    else:
-        raise ValueError("partner must be 'triton' or 'torch'")
+    elif runtime["name"] != "numba":
+        raise ValueError("partner must be 'triton', 'torch', or 'numba'")
+    group_contract_metadata = (
+        {}
+        if runtime["name"] == "numba"
+        else _dense_group_id_contract_metadata(
+            operation="grouped_topk_f64",
+            group_count=group_count,
+            row_count=row_count,
+            validation_mode="torch_host_group_id_bounds_check",
+        )
+    )
     metadata = _generic_partner_front_door_metadata(
         adapter="grouped_topk_f64_partner_columns",
         partner=runtime["name"],
@@ -3055,6 +3171,9 @@ def grouped_topk_f64_partner_columns(
             "tie_break": "lowest_score_then_lowest_item_id",
             "duplicate_item_policy": "lowest_score_per_group_item",
             "triton_elapsed_seconds": elapsed,
+            **default_partner_claim_boundary_metadata(),
+            **group_contract_metadata,
+            **numba_extra,
         },
     )
     if return_metadata:
@@ -4038,50 +4157,49 @@ def top_k_nearest_points_2d_partner_columns(
             return_metadata=True,
         )
         score_columns = score_payload["columns"]
-        host_group_ids = np.asarray(score_columns["group_ids"].copy_to_host(), dtype=np.int64)
-        host_item_ids = np.asarray(score_columns["item_ids"].copy_to_host(), dtype=np.int64)
-        host_scores = np.asarray(score_columns["scores"].copy_to_host(), dtype=np.float64)
-        host_query_ids = np.asarray(query_point_columns["ids"].copy_to_host(), dtype=np.int64)
-        out_query_ids: list[int] = []
-        out_neighbor_ids: list[int] = []
-        out_distances: list[float] = []
-        out_ranks: list[int] = []
-        for group_index in range(query_count):
-            indices = np.nonzero(host_group_ids == group_index)[0]
-            if indices.shape[0] < k:
-                raise ValueError(f"group {group_index} has fewer than k candidate rows")
-            ranked = sorted(
-                (
-                    (float(host_scores[index]), int(host_item_ids[index]))
-                    for index in indices.tolist()
-                ),
-                key=lambda item: (item[0], item[1]),
-            )[:k]
-            for rank, (score, item_id) in enumerate(ranked, start=1):
-                out_query_ids.append(int(host_query_ids[group_index]))
-                out_neighbor_ids.append(item_id)
-                out_distances.append(math.sqrt(score))
-                out_ranks.append(rank)
-        query_ids = cuda.to_device(np.asarray(out_query_ids, dtype=np.int64))
-        neighbor_ids = cuda.to_device(np.asarray(out_neighbor_ids, dtype=np.int64))
-        distances = cuda.to_device(np.asarray(out_distances, dtype=np.float64))
-        neighbor_rank = cuda.to_device(np.asarray(out_ranks, dtype=np.int64))
+        topk_payload = grouped_topk_f64_partner_columns(
+            score_columns,
+            group_count=query_count,
+            k=k,
+            partner="numba",
+            rows_per_group=candidate_count,
+            return_metadata=True,
+        )
+        topk_columns = topk_payload["columns"]
+        output_count = query_count * k
+        query_ids = cuda.device_array((output_count,), dtype=np.int64)
+        distances = cuda.device_array((output_count,), dtype=np.float64)
+        if output_count:
+            block_size = 128
+            grid = ((output_count + block_size - 1) // block_size,)
+            _numba_topk_query_id_distance_kernel(cuda)[grid, block_size](
+                query_point_columns["ids"],
+                topk_columns["group_ids"],
+                topk_columns["scores"],
+                query_ids,
+                distances,
+                output_count,
+            )
+        neighbor_ids = topk_columns["item_ids"]
+        neighbor_rank = topk_columns["ranks"]
+        cuda.synchronize()
         numba_topk_metadata = {
             "v2_11_numba_partner_continuation_operations": (
                 "pairwise_l2_sq_score_rows_2d",
-                "host_rank_topk_f64_reference",
+                "grouped_topk_f64",
+                "dense_group_id_query_id_gather_and_sqrt_f64",
             ),
-            "v2_11_numba_preview_kernel_status": "reference_host_rank_after_device_score_rows",
+            "v2_11_numba_preview_kernel_status": "device_grouped_topk_after_device_score_rows",
             "numba_score_rows_generated_on_partner_device": True,
             "numba_score_row_count": int(score_payload["metadata"]["row_count"]),
             "numba_pairwise_score_rows_elapsed_seconds": float(
                 score_payload["metadata"]["numba_pairwise_score_rows_elapsed_seconds"]
             ),
-            "host_rank_materialization_used": True,
-            "host_rank_materialization_reason": (
-                "Numba grouped_topk_f64 device kernel is not implemented in v2.11; "
-                "the reference path keeps the top-k contract correct and explicit."
-            ),
+            "numba_grouped_topk_device_rank_used": True,
+            "numba_grouped_topk_elapsed_seconds": float(topk_payload["metadata"]["numba_elapsed_seconds"]),
+            "host_rank_materialization_used": False,
+            "host_rank_materialization_reason": None,
+            "numba_topk_layout_precondition": topk_payload["metadata"]["numba_layout_precondition"],
         }
     else:
         raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
@@ -4104,7 +4222,7 @@ def top_k_nearest_points_2d_partner_columns(
         "k": k,
         "tie_break": "distance_then_candidate_id",
         "v2_5_partner_continuation_operation": (
-            "grouped_topk_f64" if runtime["name"] == "triton" else None
+            "grouped_topk_f64" if runtime["name"] in {"triton", "numba"} else None
         ),
         "v2_5_triton_adapter_kernel": (
             topk_result["adapter_kernel"] if runtime["name"] == "triton" else None
@@ -4118,6 +4236,7 @@ def top_k_nearest_points_2d_partner_columns(
         ),
         **(numba_topk_metadata if runtime["name"] == "numba" else {}),
         "app_row_materialization": "caller_optional",
+        **default_partner_claim_boundary_metadata(),
         "direct_device_handoff_authorized": False,
         "rt_core_speedup_claim_authorized": False,
         "v2_0_release_authorized": False,

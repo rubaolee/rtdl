@@ -14,7 +14,7 @@ from rtdsl.v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "scripts" / "rtdl_v2_11_embree_cpu_partner_reference_runner.py"
 REPORT = ROOT / "docs" / "reports" / "goal4298_v2_11_embree_cpu_partner_reference_packet_2026-06-11.md"
-LOCAL_LINUX_ARTIFACT = ROOT / "docs" / "reports" / "goal4298_v2_11_embree_cpu_partner_reference_local_linux.json"
+LOCAL_LINUX_ARTIFACT = ROOT / "docs" / "reports" / "goal4308_rtnn_embree_front_door_local_linux.json"
 
 
 class Goal4298V211EmbreeCpuPartnerReferencePacketTest(unittest.TestCase):
@@ -43,15 +43,15 @@ class Goal4298V211EmbreeCpuPartnerReferencePacketTest(unittest.TestCase):
         rows = {row["app"]: row for row in rt.current_embree_cpu_partner_reference_rows()}
 
         embree_apps = {app for app, row in rows.items() if row["uses_embree"]}
-        self.assertEqual(embree_apps, set(V2_8_PROMOTED_BENCHMARK_APPS) - {"rtnn"})
+        self.assertEqual(embree_apps, set(V2_8_PROMOTED_BENCHMARK_APPS))
 
-        self.assertFalse(rows["rtnn"]["uses_embree"])
-        self.assertFalse(rows["rtnn"]["requires_embree_library"])
-        self.assertTrue(rows["rtnn"]["uses_numba"])
-        self.assertTrue(rows["rtnn"]["requires_numba"])
+        self.assertTrue(rows["rtnn"]["uses_embree"])
+        self.assertTrue(rows["rtnn"]["requires_embree_library"])
+        self.assertFalse(rows["rtnn"]["uses_numba"])
+        self.assertFalse(rows["rtnn"]["requires_numba"])
         self.assertEqual(
             rows["rtnn"]["route_class"],
-            "numba_cpu_partner_reference_no_embree_front_door",
+            "embree_cpu_rt_plus_python_continuation",
         )
 
         for app, row in rows.items():
@@ -79,7 +79,7 @@ class Goal4298V211EmbreeCpuPartnerReferencePacketTest(unittest.TestCase):
                 capture_output=True,
                 check=True,
             )
-            self.assertIn("current_embree_cpu_partner_reference.goal4298", completed.stdout)
+            self.assertIn("current_embree_cpu_partner_reference.goal4308", completed.stdout)
             payload = json.loads(output.read_text(encoding="utf-8"))
 
         self.assertTrue(payload["dry_run"])
@@ -99,7 +99,7 @@ class Goal4298V211EmbreeCpuPartnerReferencePacketTest(unittest.TestCase):
 
         row_ids = {row["row_id"] for row in payload["rows"]}
         self.assertIn("spatial_rayjoin_pip_count_embree_cpu_generic_kernel", row_ids)
-        self.assertIn("rtnn_numba_cpu_partner_quality_reference", row_ids)
+        self.assertIn("rtnn_embree_cpu_ann_candidate_quality_reference", row_ids)
 
     def test_runner_only_filter_is_resumable(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -123,7 +123,7 @@ class Goal4298V211EmbreeCpuPartnerReferencePacketTest(unittest.TestCase):
 
         self.assertTrue(payload["dry_run"])
         self.assertEqual(payload["summary"]["row_count"], 1)
-        self.assertEqual(payload["rows"][0]["row_id"], "rtnn_numba_cpu_partner_quality_reference")
+        self.assertEqual(payload["rows"][0]["row_id"], "rtnn_embree_cpu_ann_candidate_quality_reference")
 
     def test_report_documents_scope_and_linux_validation_status(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
@@ -132,13 +132,13 @@ class Goal4298V211EmbreeCpuPartnerReferencePacketTest(unittest.TestCase):
             "v2.11 Embree CPU plus current CPU partner reference",
             "ten current benchmark apps",
             "RTNN",
-            "Numba CPU partner reference",
+            "Goal4308 follow-up",
             "does not authorize release action",
             "broad RT-core wording",
             "Intel GPU performance wording",
             "Local Linux validation",
             "all_pass: true",
-            "reference_host_rank_after_device_score_rows",
+            "ann_embree_quality",
         ):
             self.assertIn(phrase, text)
 
@@ -158,16 +158,14 @@ class Goal4298V211EmbreeCpuPartnerReferencePacketTest(unittest.TestCase):
         self.assertFalse(payload["intel_gpu_performance_claim_authorized"])
         self.assertEqual(payload["validation"]["status"], "accept")
         self.assertEqual(payload["validation"]["errors"], [])
-        self.assertEqual(payload["summary"]["row_count"], 10)
-        self.assertEqual(len(payload["rows"]), 10)
+        self.assertEqual(payload["summary"]["row_count"], 1)
+        self.assertEqual(len(payload["rows"]), 1)
         self.assertTrue(all(row["status"] == "pass" for row in payload["rows"]))
 
         rows = {row["app"]: row for row in payload["rows"]}
-        self.assertTrue(rows["hausdorff_xhd"]["uses_embree"])
-        self.assertTrue(rows["librts_spatial_index"]["uses_embree"])
-        self.assertFalse(rows["rtnn"]["uses_embree"])
-        self.assertTrue(rows["rtnn"]["uses_numba"])
-        self.assertIn("reference_host_rank_after_device_score_rows", rows["rtnn"]["stdout_tail"])
+        self.assertTrue(rows["rtnn"]["uses_embree"])
+        self.assertFalse(rows["rtnn"]["uses_numba"])
+        self.assertIn("ann_embree_quality", rows["rtnn"]["stdout_tail"])
 
 
 if __name__ == "__main__":

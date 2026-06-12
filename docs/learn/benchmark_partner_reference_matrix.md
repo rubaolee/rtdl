@@ -1,6 +1,6 @@
 # Benchmark Partner Reference Matrix
 
-Status: current v2.10 source-tree guidance.
+Status: current v2.11 source-tree guidance.
 This page is a guide for app authors choosing a custom continuation partner. It
 does not broaden release wording or authorize broad speedup claims.
 

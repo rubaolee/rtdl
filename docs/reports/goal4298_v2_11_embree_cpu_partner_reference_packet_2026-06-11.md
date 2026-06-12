@@ -12,7 +12,8 @@ to define and validate a clean executable packet for:
 
 - the ten current benchmark apps;
 - Embree CPU routes where the current app exposes an Embree front door;
-- the current CPU partner reference where no Embree front door exists;
+- the current CPU partner reference where no Embree front door existed at the
+  time of Goal4298;
 - all-thread CPU execution environment setup for local Linux runs.
 
 In short: this is the v2.11 Embree CPU plus current CPU partner reference packet.
@@ -47,15 +48,16 @@ The new test is:
 | `raydb_style` | `raydb_style_embree_cpu_count_primitive_first` | Embree CPU primitive-first grouped count |
 | `barnes_hut` | `barnes_hut_embree_cpu_node_coverage_prepared` | Embree CPU plus Python continuation |
 | `librts_spatial_index` | `librts_spatial_index_embree_cpu_aabb_index` | Embree CPU primitive |
-| `rtnn` | `rtnn_numba_cpu_partner_quality_reference` | Numba CPU partner reference, no Embree front door in the current RTNN app |
+| `rtnn` | `rtnn_embree_cpu_ann_candidate_quality_reference` | Embree CPU candidate-quality front door added by Goal4308 follow-up |
 | `triangle_counting` | `triangle_counting_embree_cpu_native_summary` | Embree CPU primitive |
 
-RTNN is intentionally different. The current RTNN benchmark app has OptiX and partner
-front doors, but no Embree front door. Goal4298 therefore records the honest CPU-side
-reference path as a Numba partner row instead of pretending Embree coverage exists.
-The first local Linux run exposed that the generic top-k adapter did not yet accept
-`partner="numba"`; Goal4299 adds the bounded reference Numba top-k path needed for
-this row while explicitly marking its host-ranked reference status.
+RTNN was intentionally different in the original Goal4298 packet: it used a
+Numba CPU partner reference because the benchmark app did not yet expose an
+Embree front door. Goal4308 follow-up removes that exception by adding
+`ann_embree_quality`, a bounded Embree CPU front door for the RTNN benchmark
+app's 2-D ANN candidate-quality contract. This does not claim the 3-D RTNN
+ranked-summary route is implemented on Embree, and it does not make a paper
+reproduction claim.
 
 ## Runner Behavior
 
@@ -92,7 +94,7 @@ NVIDIA RT-core performance and it is not Intel GPU performance wording.
 
 Local Linux validation target:
 
-`192.168.1.20`
+redacted local Linux host
 
 Initial SSH probe from Windows timed out on 2026-06-11, then the host came back.
 The final validation artifact is:
@@ -101,7 +103,7 @@ The final validation artifact is:
 
 Result:
 
-- Host: `192.168.1.20`
+- Host: redacted local Linux host
 - Python: `/usr/bin/python3`
 - CPU threads: `8`
 - Embree library: `build/librtdl_embree.so`
@@ -114,19 +116,29 @@ The slowest row is expectedly CPU-bound:
 - `librts_spatial_index_embree_cpu_aabb_index`: wrapper elapsed about `132s`,
   app-reported median query time about `43.9s`.
 
-The RTNN row now passes after Goal4299:
+The historical RTNN row passed after Goal4299:
 
 - `rtnn_numba_cpu_partner_quality_reference`: wrapper elapsed about `1.3s`;
 - Numba score rows generated on partner device: `true`;
 - top-k ranking status: `reference_host_rank_after_device_score_rows`;
 - host rank materialization: `true`, explicitly marked as v2.11 reference debt.
 
+Goal4308 follow-up supersedes that current registry row with:
+
+- `rtnn_embree_cpu_ann_candidate_quality_reference`;
+- mode: `ann_embree_quality`;
+- scope: Embree CPU candidate-subset top-1 quality reference for the 2-D ANN
+  candidate contract;
+- boundary: not 3-D RTNN ranked-summary, not full RTNN paper reproduction, not a
+  speedup claim.
+
 ## Acceptance Criteria
 
 - Registry covers all ten current benchmark apps exactly once.
-- Nine rows exercise Embree CPU.
-- RTNN is the only non-Embree row and is explicitly labeled as the Numba CPU partner
-  reference because the current RTNN app lacks an Embree front door.
+- Goal4298 historical artifact: nine rows exercised Embree CPU and RTNN used a
+  Numba CPU partner reference.
+- Current Goal4308 registry: all ten rows exercise Embree CPU, with RTNN using
+  `ann_embree_quality` for the 2-D ANN candidate-quality contract.
 - Registered commands do not route through OptiX or CuPy and do not require RT cores.
 - Runner sets all-thread CPU environment variables and prints per-row progress.
 - Runner fails closed on any claim-boundary flag set to `true` in app output.

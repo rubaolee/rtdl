@@ -40,8 +40,13 @@ PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
 python scripts/rtdl_v2_10_pod_validation_bundle.py \
   --run-front-door \
   --run-scale-profile \
+  --materialize-rayjoin-public-cdb \
   --output-dir docs/reports/v2_10_pod_validation_bundle_pod
 ```
+
+The RayJoin public-CDB fixture is not downloaded implicitly. The
+`--materialize-rayjoin-public-cdb` flag is the explicit opt-in used by the
+scale-profile runner to prepare the bounded RayJoin fixture on fresh pods.
 
 To refresh CuPy-vs-Numba partner-continuation evidence in the same session:
 
@@ -50,6 +55,7 @@ PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
 python scripts/rtdl_v2_10_pod_validation_bundle.py \
   --run-front-door \
   --run-scale-profile \
+  --materialize-rayjoin-public-cdb \
   --run-partner-comparison \
   --output-dir docs/reports/v2_10_pod_validation_bundle_pod
 ```
@@ -60,4 +66,6 @@ python scripts/rtdl_v2_10_pod_validation_bundle.py \
 - Do not publish speedup wording from a failed or partial bundle.
 - Read `bundle_summary.json` first; every step must be `pass`.
 - The bundle prints a start and completion line for each major step.
+- The bundle passes RayJoin fixture materialization through only when the
+  explicit `--materialize-rayjoin-public-cdb` flag is present.
 - The bundle does not move tags and does not authorize release claims.

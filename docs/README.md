@@ -4,7 +4,7 @@ This directory has three doors:
 
 | Door | Audience | Purpose |
 | --- | --- | --- |
-| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v2.10 boundaries. |
+| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v2.11 boundaries. |
 | [Research](research/README.md) | Internal researchers and advanced developers | Architecture notes, backend research, RayJoin/Embree context, future ideas, and design constraints. |
 | [Audit](audit/README.md) | Release reviewers and auditors | Process docs, runbooks, release reports, evidence reports, reviews, and archived goal logs. |
 
@@ -16,11 +16,13 @@ If you are new, start in **Learn**. If you are evaluating design or extending
 the system, start in **Research**. If you are checking evidence, consensus, or
 project history, start in **Audit**.
 
-Current status: RTDL v2.10 is the active source-tree Python+partner+RTDL
+Current status: RTDL v2.11 is the active source-tree Python+partner+RTDL
 app-portfolio surface on this branch. It keeps source-tree usage, preserves the
-no-broad-speedup/no-package-install boundary, and provides current partner-choice
-guidance, primitive discovery, prepared execution, and the 10-app benchmark
-adequacy matrix.
+no-broad-speedup/no-package-install boundary, closes the Embree CPU plus partner
+reference lane, and provides current partner-choice guidance, primitive
+discovery, prepared execution, and the 10-app benchmark evidence matrix.
+For the short canonical wording, read
+[Current Claim Boundaries](learn/current_claim_boundaries.md).
 
 Short model:
 
@@ -41,16 +43,20 @@ Read these in order:
 1. [Project Front Page](../README.md)
 2. [Tutorials](../tutorials/README.md)
 3. [Current Tutorial Track](../tutorials/current/README.md)
-4. [Source-Tree Doctor](learn/source_tree_doctor.md)
-5. [Quick Tutorial](quick_tutorial.md)
-6. [App And Example Quickstart](app_example_quickstart.md)
-7. [Application Catalog](application_catalog.md)
-8. [Feature Guide](rtdl_feature_guide.md)
-9. [Capability Boundaries](capability_boundaries.md)
-10. [Current Architecture](current_architecture.md)
-11. [Performance Model](performance_model.md)
-12. [Benchmark Evidence Index](learn/benchmark_evidence_index.md)
-13. [IR And Lowering](rtdl/ir_and_lowering.md)
+4. [Current Claim Boundaries](learn/current_claim_boundaries.md)
+5. [RTDL Programming Surfaces](learn/programming_surfaces.md)
+6. [Versioning Glossary](versioning.md)
+7. [Source-Tree Doctor](learn/source_tree_doctor.md)
+8. [Quick Tutorial](quick_tutorial.md)
+9. [App And Example Quickstart](app_example_quickstart.md)
+10. [Application Catalog](application_catalog.md)
+11. [Feature Guide](rtdl_feature_guide.md)
+12. [Capability Boundaries](capability_boundaries.md)
+13. [Current Architecture](current_architecture.md)
+14. [Performance Model](performance_model.md)
+15. [Benchmark Evidence Index](learn/benchmark_evidence_index.md)
+16. [RT-Core Evidence Matrix](learn/rt_core_evidence_matrix.md)
+17. [IR And Lowering](rtdl/ir_and_lowering.md)
 
 ## Current Reference Pages
 
@@ -60,13 +66,18 @@ Read these in order:
 | Backend maturity | [Backend Maturity](backend_maturity.md) |
 | Feature support | [Engine Feature Support Contract](features/engine_support_matrix.md) |
 | Source-tree setup | [Source-Tree Doctor](learn/source_tree_doctor.md) |
+| Claim boundary short form | [Current Claim Boundaries](learn/current_claim_boundaries.md) |
+| Programming surfaces | [RTDL Programming Surfaces](learn/programming_surfaces.md) |
+| Version identity | [RTDL Versioning Glossary](versioning.md) |
 | Partner acceleration | [Partner Acceleration Boundaries](partner_acceleration_boundaries.md) |
 | Current support matrix | [Current Support Matrix](current_main_support_matrix.md) |
 | Runtime overhead | [Runtime Overhead Architecture](runtime_overhead_architecture.md) |
 | Benchmark evidence | [Benchmark Evidence Index](learn/benchmark_evidence_index.md) |
+| RT-core evidence interpretation | [RT-Core Evidence Matrix](learn/rt_core_evidence_matrix.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
 | Release Reports | [Release Reports](release_reports/) |
-| Current benchmark adequacy | [Goal3786 v2.10 Benchmark Adequacy](reports/goal3786_current_benchmark_adequacy_after_hiprt_closeout_2026-06-07.md) |
+| Current release package | [RTDL v2.11 Release Package](release_reports/v2_11/README.md) |
+| Current benchmark evidence | [Benchmark Evidence Index](learn/benchmark_evidence_index.md) |
 | History Index | [History Index](history/README.md) |
 
 ## Directory Map
@@ -86,6 +97,6 @@ Read these in order:
 
 ## Rule
 
-Current learner docs should explain one coherent v2.10 surface. Previous release
+Current learner docs should explain one coherent v2.11 surface. Previous release
 evidence is preserved for review in history and release-report paths, but it
 should not interrupt the normal learning path.

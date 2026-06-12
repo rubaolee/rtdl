@@ -523,6 +523,8 @@ def describe_rt_graph_v2_4_prepared_session(
             if device_column_summary
             else "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum",
         )
+    elif normalized_backend == "embree" and is_2a1:
+        native_symbols = ("rtdl_embree_static_triangle_scene_3d_ray_any_hit_weighted_sum",)
     elif normalized_backend == "optix":
         native_symbols = (
             "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum_device_rays"
@@ -781,6 +783,19 @@ def rt_graph_2a1_generic_rt_payload(
                     query_timings_ms.append(elapsed)
         rows = None
         hit_weight_sum = int(summary_result["weighted_hit_sum"])
+    elif normalized_backend == "embree" and detail == "summary":
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_embree_static_triangle_scene_3d(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_any_hit_weighted_sum(rays, ray_weights)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
+        rows = None
+        hit_weight_sum = int(summary_result["weighted_hit_sum"])
     else:
         rows = ()
         for index in range(warmup + repeat):
@@ -846,7 +861,11 @@ def rt_graph_2a1_generic_rt_payload(
         "rt_core_path": (
             "generic_prepared_triangle_scene_3d_any_hit_weighted_sum"
             if summary_result is not None and normalized_backend == "optix"
-            else ("generic_ray_triangle_any_hit_rows" if normalized_backend == "optix" else None)
+            else (
+                "generic_prepared_triangle_scene_3d_any_hit_weighted_sum_embree"
+                if summary_result is not None and normalized_backend == "embree"
+                else ("generic_ray_triangle_any_hit_rows" if normalized_backend == "optix" else None)
+            )
         ),
         "partner": partner,
         "partner_summary_contract_used": use_cupy_summary,
@@ -873,10 +892,13 @@ def rt_graph_2a1_generic_rt_payload(
             "run_backend": _elapsed_ms(lowered, ran),
             "prepare_scene_ms": prepare_scene_ms,
             "query_median_ms": _median(query_timings_ms),
+            "query_total_ms": float(sum(query_timings_ms)),
+            "query_mean_ms": float(sum(query_timings_ms) / len(query_timings_ms)),
             "query_min_ms": min(query_timings_ms),
             "query_max_ms": max(query_timings_ms),
             "query_repeat": repeat,
             "query_warmup": warmup,
+            "query_measured_runs": len(query_timings_ms),
             "reduce_hits": _elapsed_ms(ran, reduced),
             "total": _elapsed_ms(started, reduced),
         },

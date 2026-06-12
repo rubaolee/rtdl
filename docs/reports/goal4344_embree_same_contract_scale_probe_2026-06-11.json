@@ -1,0 +1,193 @@
+{
+  "claim_boundary": "Goal4344 records fresh Embree CPU scale artifacts for the five rows that Goal4343 previously marked as needing same-contract scale evidence. It does not authorize release action, public speedup wording, whole-app acceleration wording, Intel GPU performance wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
+  "intel_gpu_performance_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "app": "hausdorff_xhd",
+      "artifact_name": "hausdorff_embree_threshold_1024",
+      "artifact_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\hausdorff_embree_threshold_1024.json",
+      "backend": "embree",
+      "boundary": "Same prepared fixed-radius threshold decision contract as the current OptiX row. This is still smoke/internal timing evidence.",
+      "clean_end_to_end_ratio_authorized": false,
+      "comparison_class": "same_contract_query_ratio_candidate",
+      "contract": "directed_threshold_prepared_fixed_radius_count",
+      "correctness": {
+        "matches_oracle": true,
+        "oracle_decision_matches": true
+      },
+      "metric_name": "max_directed_query_fixed_radius_threshold_reached_count_sec",
+      "metric_unit": "sec",
+      "metric_value": 0.009892253001453355,
+      "mode": null,
+      "process_status": 0,
+      "public_speedup_claim_authorized": false,
+      "query_ratio_candidate": true,
+      "release_authorized": false,
+      "scale": "copies=1024, threshold=0.25, repeat=5, warmup=1",
+      "secondary_metrics": {
+        "directed_a_to_b_sec": 0.009892253001453355,
+        "directed_b_to_a_sec": 0.009741603003931232,
+        "query_repeat": 5,
+        "query_warmup": 1
+      },
+      "status_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\hausdorff_embree_threshold_1024.status.json",
+      "stderr_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\hausdorff_embree_threshold_1024.stderr",
+      "wall_sec": 1
+    },
+    {
+      "app": "robot_collision",
+      "artifact_name": "robot_embree_prepared_buffers_1024_128_4_50000",
+      "artifact_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\robot_embree_prepared_buffers_1024_128_4_50000.json",
+      "backend": "embree",
+      "boundary": "Same scene/query scale as the current OptiX row, but Embree returns host compact flags while the current OptiX row uses an OptiX-only device-count path. Traversal phase is useful internally; total/output ratios are not clean backend ratios.",
+      "clean_end_to_end_ratio_authorized": false,
+      "comparison_class": "same_scene_query_scale_output_residency_boundary",
+      "contract": "prepared_triangle_scene_grouped_segment_any_hit_flags",
+      "correctness": {
+        "all_run_signatures_identical": true,
+        "no_probe_reference_matches_current_optix_scale_policy": true,
+        "probe_reference_validated": false
+      },
+      "metric_name": "tail_median_traversal_sec",
+      "metric_unit": "sec",
+      "metric_value": 0.000995346,
+      "mode": "embree_prepared_buffers",
+      "process_status": 0,
+      "public_speedup_claim_authorized": false,
+      "query_ratio_candidate": false,
+      "release_authorized": false,
+      "scale": "poses=1024, obstacles=128, links=4, repeat=50000, warmup=100",
+      "secondary_metrics": {
+        "group_count": 4096,
+        "measured_total_run_sec": 106.86598893669725,
+        "measured_traversal_total_sec": 49.816020108,
+        "segment_count": 36864,
+        "tail_total_run_sec": 0.0021345439963624813
+      },
+      "status_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\robot_embree_prepared_buffers_1024_128_4_50000.status.json",
+      "stderr_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\robot_embree_prepared_buffers_1024_128_4_50000.stderr",
+      "wall_sec": 141
+    },
+    {
+      "app": "contact_manifold",
+      "artifact_name": "contact_embree_grid64_witness128",
+      "artifact_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\contact_embree_grid64_witness128.json",
+      "backend": "embree",
+      "boundary": "Same bounded collect-k contract, grid size, witness capacity, and repeat count as OptiX.",
+      "clean_end_to_end_ratio_authorized": false,
+      "comparison_class": "same_contract_query_ratio_candidate",
+      "contract": "native_collect_k_bounded_witness_rows",
+      "correctness": {
+        "complete_candidate_coverage": true,
+        "matches_cpu_reference": true,
+        "overflowed": false
+      },
+      "metric_name": "native_collect_elapsed_sec",
+      "metric_unit": "sec",
+      "metric_value": 0.0002609880029922351,
+      "mode": "native_collect_k",
+      "process_status": 0,
+      "public_speedup_claim_authorized": false,
+      "query_ratio_candidate": true,
+      "release_authorized": false,
+      "scale": "grid=64, witness_capacity=128, repeat=3",
+      "secondary_metrics": {
+        "native_collect_max_sec": 0.0003741839973372407,
+        "native_collect_min_sec": 0.00021336699865059927,
+        "native_collect_total_sec": 0.0008485389989800751,
+        "repeat_count": 3,
+        "witness_capacity": 128
+      },
+      "status_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\contact_embree_grid64_witness128.status.json",
+      "stderr_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\contact_embree_grid64_witness128.stderr",
+      "wall_sec": 0
+    },
+    {
+      "app": "raydb_style",
+      "artifact_name": "raydb_embree_count_generated_262144_1024",
+      "artifact_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\raydb_embree_count_generated_262144_1024.json",
+      "backend": "paper_rt_embree",
+      "boundary": "Same generated row/group scale and grouped-count result contract as the current OptiX row, but the OptiX scale row is a prepared resident v2.5 primitive-first path while this Embree row is a non-resident native grouped-reduction run. Clean end-to-end ratios are withheld.",
+      "clean_end_to_end_ratio_authorized": false,
+      "comparison_class": "same_scale_prepared_residency_boundary",
+      "contract": "raydb_style_generated_grouped_count_primitive_first",
+      "correctness": {
+        "embree_same_contract_baseline": true,
+        "matches_cpu_reference": true
+      },
+      "metric_name": "native_grouped_reduction_traversal_sec",
+      "metric_unit": "sec",
+      "metric_value": 0.012958745,
+      "mode": "count",
+      "process_status": 0,
+      "public_speedup_claim_authorized": false,
+      "query_ratio_candidate": false,
+      "release_authorized": false,
+      "scale": "generated_rows=262144, generated_groups=1024, repeat=5000, warmup=50",
+      "secondary_metrics": {
+        "elapsed_sec": 0.24295564700150862,
+        "materialization_sec": 0.08329812100338668,
+        "ray_count": 884736,
+        "row_count": 262144,
+        "triangle_count": 262144
+      },
+      "status_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\raydb_embree_count_generated_262144_1024.status.json",
+      "stderr_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\raydb_embree_count_generated_262144_1024.stderr",
+      "wall_sec": 1
+    },
+    {
+      "app": "triangle_counting",
+      "artifact_name": "triangle_embree_rtgraph2a1_2048",
+      "artifact_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\triangle_embree_rtgraph2a1_2048.json",
+      "backend": "embree",
+      "boundary": "Same RT-Graph 2A1 fixture, copy count, detail mode, repeat, and warmup as OptiX.",
+      "clean_end_to_end_ratio_authorized": false,
+      "comparison_class": "same_contract_query_ratio_candidate",
+      "contract": "rt_graph_2a1_generic_ray_triangle_any_hit",
+      "correctness": {
+        "generic_rt_weighted_triangle_count": 4096,
+        "oracle_triangle_count": 4096,
+        "triangle_count_matches_oracle": true
+      },
+      "metric_name": "query_median_ms",
+      "metric_unit": "ms",
+      "metric_value": 11.544670000148471,
+      "mode": "rt_graph_2a1_generic_rt",
+      "process_status": 0,
+      "public_speedup_claim_authorized": false,
+      "query_ratio_candidate": true,
+      "release_authorized": false,
+      "scale": "fixture=degree_oriented_two_triangles, rt_graph_copies=2048, repeat=3, warmup=1",
+      "secondary_metrics": {
+        "primitive_count": 10240,
+        "query_max_ms": 11.577384997508489,
+        "query_min_ms": 10.896024999965448,
+        "query_repeat": 3,
+        "query_warmup": 1,
+        "ray_count": 4096
+      },
+      "status_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\triangle_embree_rtgraph2a1_2048.status.json",
+      "stderr_path": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\triangle_embree_rtgraph2a1_2048.stderr",
+      "wall_sec": 1
+    }
+  ],
+  "source_dir": "docs\\reports\\goal4344_embree_same_contract_scale_probe",
+  "status": "internal_embree_same_contract_scale_probe_not_public_speedup_authorization",
+  "summary": {
+    "all_status_zero": true,
+    "boundary_limited_scale_artifact_count": 2,
+    "case_count": 5,
+    "embree_scale_artifact_count": 5,
+    "intel_gpu_performance_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "same_contract_query_ratio_candidate_count": 3
+  },
+  "validation": {
+    "errors": [],
+    "status": "accept"
+  },
+  "version": "rtdl.v2_11.embree_same_contract_scale_probe.goal4344.v1"
+}

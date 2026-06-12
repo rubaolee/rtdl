@@ -1,0 +1,131 @@
+{
+  "checks": [
+    {
+      "detail": "v2.10",
+      "name": "version marker",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "src/rtdsl/__init__.py",
+      "name": "src/rtdsl",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "README.md",
+      "name": "front page",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "tutorials/current/README.md",
+      "name": "top-level tutorials",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "examples/current/README.md",
+      "name": "current examples",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "docs/release_reports/v2_10/README.md",
+      "name": "v2.10 release package",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "pyproject.toml",
+      "name": "optional editable source-tree metadata",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "3.12.3",
+      "name": "python version",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "rtdsl",
+      "name": "module rtdsl",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "numpy",
+      "name": "module numpy",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "imageio",
+      "name": "optional module imageio",
+      "required": false,
+      "status": "warn"
+    },
+    {
+      "detail": "imageio_ffmpeg",
+      "name": "optional module imageio-ffmpeg",
+      "required": false,
+      "status": "warn"
+    },
+    {
+      "detail": "cupy",
+      "name": "optional module cupy",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "numba",
+      "name": "optional module numba",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "/root/rtdl_goal4329.OOFWIg/repo/build/librtdl_optix.so",
+      "name": "optional OptiX library",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "build/librtdl_embree.so/dylib/dll not found",
+      "name": "optional Embree library",
+      "required": false,
+      "status": "warn"
+    },
+    {
+      "detail": "examples/current/getting_started/rtdl_hello_world.py ran",
+      "name": "hello-world smoke",
+      "required": true,
+      "status": "pass"
+    }
+  ],
+  "ok": true,
+  "repo": "/root/rtdl_goal4329.OOFWIg/repo",
+  "required_failures": [],
+  "tool": "rtdl_source_tree_doctor",
+  "version": "v2.10",
+  "warnings": [
+    {
+      "detail": "imageio",
+      "name": "optional module imageio",
+      "required": false,
+      "status": "warn"
+    },
+    {
+      "detail": "imageio_ffmpeg",
+      "name": "optional module imageio-ffmpeg",
+      "required": false,
+      "status": "warn"
+    },
+    {
+      "detail": "build/librtdl_embree.so/dylib/dll not found",
+      "name": "optional Embree library",
+      "required": false,
+      "status": "warn"
+    }
+  ]
+}

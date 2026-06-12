@@ -1,11 +1,17 @@
 # Handoff: Review Goal4298/Goal4299 v2.11 Embree CPU + Numba Reference Path
 
+Superseded note: Goal4308 replaced the original RTNN Numba-only exception with
+a bounded RTNN Embree ANN candidate-quality front door. Use
+`docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4301_4308_FABLE5_ACTION_PACKET_2026-06-11.md`
+for the current review packet. This older handoff is kept only as provenance
+for the Goal4298/Goal4299 review request.
+
 Please perform a read-only independent review of the Goal4298/Goal4299 work.
 
 ## Context
 
 The project is starting v2.11. The user asked to finish the Embree CPU plus
-Numba/current-partner reference path using local Linux (`192.168.1.20`).
+Numba/current-partner reference path using the redacted local Linux host.
 
 ## Files To Review
 
@@ -22,9 +28,11 @@ Numba/current-partner reference path using local Linux (`192.168.1.20`).
 ## Facts To Verify
 
 - The registry covers all ten current benchmark apps exactly once.
-- Nine rows exercise Embree CPU, and RTNN is honestly recorded as the one
-  Numba CPU partner reference row because the current RTNN app has no Embree
-  front door.
+- Historical Goal4298/Goal4299 state: nine rows exercised Embree CPU, and RTNN
+  was recorded as one Numba CPU partner reference row because the RTNN app had
+  no Embree front door at that time. Current Goal4308 state supersedes this:
+  all ten rows now exercise Embree CPU through a bounded RTNN ANN
+  candidate-quality route.
 - The runner sets all-thread CPU env vars, prints per-row progress, supports
   `--only` for resumability, and fails closed on claim-boundary flags.
 - Local Linux artifact records `all_pass: true` for all ten rows.

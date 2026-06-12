@@ -1,6 +1,6 @@
 # Primitive Discovery Workflow
 
-Status: current v2.10 source-tree discovery workflow.
+Status: current v2.11 source-tree discovery workflow.
 
 Use this page when you know the behavior you want, but you are not sure which
 RTDL primitive, composition recipe, or partner continuation contract to inspect

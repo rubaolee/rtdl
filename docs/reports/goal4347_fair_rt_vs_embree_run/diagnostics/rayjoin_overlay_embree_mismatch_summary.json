@@ -1,0 +1,123 @@
+{
+  "cpu_count": 239478,
+  "cpu_sec": 66.10176636651158,
+  "dataset": "data/rayjoin_public_cdb/br_county_start256_count512.cdb + data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+  "embree_count": 239478,
+  "embree_sec": 0.6856543989852071,
+  "only_cpu_count": 3,
+  "only_cpu_sample": [
+    [
+      [
+        "left_polygon_id",
+        638
+      ],
+      [
+        "requires_lsi",
+        0
+      ],
+      [
+        "requires_pip",
+        1
+      ],
+      [
+        "right_polygon_id",
+        635
+      ]
+    ],
+    [
+      [
+        "left_polygon_id",
+        494
+      ],
+      [
+        "requires_lsi",
+        0
+      ],
+      [
+        "requires_pip",
+        1
+      ],
+      [
+        "right_polygon_id",
+        758
+      ]
+    ],
+    [
+      [
+        "left_polygon_id",
+        692
+      ],
+      [
+        "requires_lsi",
+        0
+      ],
+      [
+        "requires_pip",
+        1
+      ],
+      [
+        "right_polygon_id",
+        548
+      ]
+    ]
+  ],
+  "only_embree_count": 3,
+  "only_embree_sample": [
+    [
+      [
+        "left_polygon_id",
+        494
+      ],
+      [
+        "requires_lsi",
+        0
+      ],
+      [
+        "requires_pip",
+        0
+      ],
+      [
+        "right_polygon_id",
+        758
+      ]
+    ],
+    [
+      [
+        "left_polygon_id",
+        692
+      ],
+      [
+        "requires_lsi",
+        0
+      ],
+      [
+        "requires_pip",
+        0
+      ],
+      [
+        "right_polygon_id",
+        548
+      ]
+    ],
+    [
+      [
+        "left_polygon_id",
+        638
+      ],
+      [
+        "requires_lsi",
+        0
+      ],
+      [
+        "requires_pip",
+        0
+      ],
+      [
+        "right_polygon_id",
+        635
+      ]
+    ]
+  ],
+  "set_counts_equal": true,
+  "set_intersection": 239475
+}

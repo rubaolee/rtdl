@@ -1,0 +1,22 @@
+[
+  {
+    "elapsed_sec": 0.10220869723707438,
+    "label": "rtnn_generate_16384",
+    "returncode": 0
+  },
+  {
+    "elapsed_sec": 3.0580978263169527,
+    "label": "rtnn_optix_raw_16384",
+    "returncode": 0
+  },
+  {
+    "elapsed_sec": 0.7163327988237143,
+    "label": "rtnn_embree_raw_16384_t8",
+    "returncode": 0
+  },
+  {
+    "elapsed_sec": 0.8898091409355402,
+    "label": "rtnn_embree_raw_16384_t64",
+    "returncode": 0
+  }
+]

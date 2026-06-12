@@ -86,7 +86,7 @@ def scan(root: pathlib.Path) -> dict[str, object]:
                 findings.append(record)
     release_authorized = (
         (root / "VERSION").exists()
-        and (root / "VERSION").read_text(encoding="utf-8").strip() == "v2.0"
+        and (root / "VERSION").read_text(encoding="utf-8").strip().startswith("v2.")
         and (root / "docs/reports/goal2322_final_v2_0_release_cleanup_3ai_consensus_2026-05-18.md").exists()
         and (root / "docs/reports/goal2323_v2_0_release_action_2026-05-18.md").exists()
     )

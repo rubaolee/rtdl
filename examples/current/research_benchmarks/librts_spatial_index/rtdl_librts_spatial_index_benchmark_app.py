@@ -330,6 +330,7 @@ def run_embree_aabb_counts(
     *,
     query_repeat: int = 1,
     warmup: int = 0,
+    validate_reference: bool = True,
 ) -> dict[str, object]:
     if query_repeat <= 0:
         raise ValueError("query_repeat must be positive")
@@ -370,7 +371,8 @@ def run_embree_aabb_counts(
     query_secs = [float(row["query_sec"]) for row in measured]
     query_median_sec = float(statistics.median(query_secs))
     query_total_sec = float(sum(query_secs))
-    cpu_counts = run_counts(fixture, operation)["counts"]
+    cpu_counts = run_counts(fixture, operation)["counts"] if validate_reference else None
+    matches_cpu_reference = primitive_result["counts"] == cpu_counts if cpu_counts is not None else None
     return {
         "app": "librts_spatial_index",
         "mode": "embree_aabb_index",
@@ -378,7 +380,8 @@ def run_embree_aabb_counts(
         "generic_primitive": primitive_result["primitive"],
         "primitive_contract": primitive_result["contract"],
         "counts": primitive_result["counts"],
-        "matches_cpu_reference": primitive_result["counts"] == cpu_counts,
+        "matches_cpu_reference": matches_cpu_reference,
+        "cpu_reference_skipped": not validate_reference,
         "candidate_checks": primitive_result["candidate_checks"],
         "elapsed_sec": prepare_sec + query_median_sec,
         "fixture": fixture.metadata(),
@@ -402,9 +405,10 @@ def run_embree_aabb_counts(
         "paper": PAPER,
         "claim_boundary": (
             "LibRTS-style benchmark call into generic Embree AABB_INDEX_QUERY_2D "
-            "lowered through app-agnostic columnar conjunctive scan. This is not "
-            "authors-code timing, not NVIDIA RT-core accelerated, and does not "
-            "authorize public speedup wording."
+            "using app-agnostic prepared AABB collision traversal when available, "
+            "with a columnar fallback for older libraries. This is not authors-code "
+            "timing, not NVIDIA RT-core accelerated, and does not authorize public "
+            "speedup wording."
         ),
         "native_engine_customization": False,
         "rt_core_accelerated": False,
@@ -420,6 +424,7 @@ def run_optix_aabb_counts(
     prepared_queries: bool = True,
     query_repeat: int = 1,
     warmup: int = 0,
+    validate_reference: bool = True,
 ) -> dict[str, object]:
     if query_repeat <= 0:
         raise ValueError("query_repeat must be positive")
@@ -566,6 +571,8 @@ def run_optix_aabb_counts(
         reuse_scope="explicit_user_session",
         invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
     )
+    cpu_counts = run_counts(fixture, operation)["counts"] if validate_reference else None
+    matches_cpu_reference = counts == cpu_counts if cpu_counts is not None else None
 
     return {
         "app": "librts_spatial_index",
@@ -574,6 +581,8 @@ def run_optix_aabb_counts(
         "generic_primitive": "AABB_INDEX_QUERY_2D",
         "primitive_contract": "generic_prepared_aabb_index_query_2d",
         "counts": counts,
+        "matches_cpu_reference": matches_cpu_reference,
+        "cpu_reference_skipped": not validate_reference,
         "elapsed_sec": scene_prepare_sec + sum(query_prepare_sec.values()) + sum(query_sec.values()),
         "fixture": fixture.metadata(),
         "run_phases": {
@@ -845,6 +854,7 @@ def main(argv: list[str] | None = None) -> int:
                 args.operation,
                 query_repeat=args.repeat,
                 warmup=args.warmup,
+                validate_reference=not args.skip_counts,
             )
         elif args.mode == "optix_aabb_index":
             payload = run_optix_aabb_counts(
@@ -853,6 +863,7 @@ def main(argv: list[str] | None = None) -> int:
                 prepared_queries=not args.no_prepared_queries,
                 query_repeat=args.repeat,
                 warmup=args.warmup,
+                validate_reference=not args.skip_counts,
             )
         elif args.mode == "mutation_cpu_reference":
             payload = run_mutation_counts(fixture, args.operation)

@@ -1,0 +1,140 @@
+{
+  "automatic_partner_selection_authorized": false,
+  "broad_rt_core_claim_authorized": false,
+  "hardware_steps_requested": {
+    "front_door": false,
+    "partner_comparison": false,
+    "scale_profile": true
+  },
+  "output_dir": "docs/reports/goal4332_bundle_pass_through_validation_fixed",
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "rayjoin_public_cdb_fixture_request": {
+    "data_dir": null,
+    "download_hidden_by_bundle": false,
+    "materialize_requested": true
+  },
+  "release_authorized": false,
+  "status": "pass",
+  "steps": [
+    {
+      "claim_flag_violations": [],
+      "command": [
+        "/usr/bin/python3",
+        "scripts/rtdl_source_tree_doctor.py",
+        "--json",
+        "--run-smoke"
+      ],
+      "elapsed_sec": 0.5798312751576304,
+      "json_artifact_path": null,
+      "json_error": null,
+      "json_parseable": true,
+      "json_source": "stdout",
+      "name": "source_tree_doctor",
+      "output_path": "docs/reports/goal4332_bundle_pass_through_validation_fixed/source_tree_doctor.json",
+      "returncode": 0,
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_json_error": null,
+      "stdout_json_parseable": true,
+      "stdout_tail": "{\n  \"checks\": [\n    {\n      \"detail\": \"v2.10\",\n      \"name\": \"version marker\",\n      \"required\": true,\n      \"status\": \"pass\"\n    },\n    {\n      \"detail\": \"src/rtdsl/__init__.py\",\n      \"name\": \"src/rtdsl\",\n      \"required\": true,\n      \"status\": \"pass\"\n    },\n    {\n      \"detail\": \"README.md\",\n      \"name\": \"front page\",\n      \"required\": true,\n      \"status\": \"pass\"\n    },\n    {\n      \"detail\": \"tutorials/current/README.md\",\n      \"name\": \"top-level tutorials\",\n      \"required\": true,\n      \"status\": \"pass\"\n    },\n    {\n      \"detail\": \"examples/current/README.md\",\n      \"name\": \"current examples\",\n      \"required\": true,\n      \"status\": \"pass\"\n    },\n    {\n      \"detail\": \"docs/release_reports/v2_10/README.md\",\n      \"name\": \"v2.10 release package\",\n      \"required\": true,\n      \"status\": \"pass\"\n    },\n    {\n      \"detail\": \"pyproject.toml\",\n      \"name\": \"optional editable source-tree metadata\",\n      \"required\": false,\n      \"status\": \"pass\"\n    },\n    {\n      \"detail\": \"3.12.3\",\n      \"name\": \"python version\",\n      \"required\": false,\n      \"status\": \"pass\"\n    },\n    {\n      \"detail\": \"rtdsl\",\n      \"name\": \"module rtdsl\",\n      \"required\": true,\n      \"status\": \"pass\"\n    },\n    {\n      \"detail\": \"numpy\",\n      \"name\": \"module numpy\",\n      \"required\": true,\n      \"status\": \"pass\"\n    },\n    {\n      \"detail\": \"imageio\",\n      \"name\": \"optional module imageio\",\n      \"required\": false,\n      \"status\": \"warn\"\n    },\n    {\n      \"detail\": \"imageio_ffmpeg\",\n      \"name\": \"optional module imageio-ffmpeg\",\n      \"required\": false,\n      \"status\": \"warn\"\n    },\n    {\n      \"detail\": \"cupy\",\n      \"name\": \"optional module cupy\",\n      \"required\": false,\n      \"status\": \"pass\"\n    },\n    {\n      \"detail\": \"numba\",\n      \"name\": \"optional module numba\",\n      \"required\": false,\n      \"status\": \"pass\"\n    },\n    {\n      \"detail\": \"/root/rtdl_goal4329.OOFWIg/repo/build/librtdl_optix.so\",\n      \"name\": \"optional OptiX library\",\n      \"required\": false,\n      \"status\": \"pass\"\n    },\n    {\n      \"detail\": \"build/librtdl_embree.so/dylib/dll not found\",\n      \"name\": \"optional Embree library\",\n      \"required\": false,\n      \"status\": \"warn\"\n    },\n    {\n      \"detail\": \"examples/current/getting_started/rtdl_hello_world.py ran\",\n      \"name\": \"hello-world smoke\",\n      \"required\": true,\n      \"status\": \"pass\"\n    }\n  ],\n  \"ok\": true,\n  \"repo\": \"/root/rtdl_goal4329.OOFWIg/repo\",\n  \"required_failures\": [],\n  \"tool\": \"rtdl_source_tree_doctor\",\n  \"version\": \"v2.10\",\n  \"warnings\": [\n    {\n      \"detail\": \"imageio\",\n      \"name\": \"optional module imageio\",\n      \"required\": false,\n      \"status\": \"warn\"\n    },\n    {\n      \"detail\": \"imageio_ffmpeg\",\n      \"name\": \"optional module imageio-ffmpeg\",\n      \"required\": false,\n      \"status\": \"warn\"\n    },\n    {\n      \"detail\": \"build/librtdl_embree.so/dylib/dll not found\",\n      \"name\": \"optional Embree library\",\n      \"required\": false,\n      \"status\": \"warn\"\n    }\n  ]\n}\n"
+    },
+    {
+      "claim_flag_violations": [],
+      "command": [
+        "/usr/bin/python3",
+        "scripts/rtdl_benchmark_evidence_index.py",
+        "--json"
+      ],
+      "elapsed_sec": 0.5832952726632357,
+      "json_artifact_path": null,
+      "json_error": null,
+      "json_parseable": true,
+      "json_source": "stdout",
+      "name": "benchmark_evidence_index",
+      "output_path": "docs/reports/goal4332_bundle_pass_through_validation_fixed/benchmark_evidence_index.json",
+      "returncode": 0,
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_json_error": null,
+      "stdout_json_parseable": true,
+      "stdout_tail": "purpose\": \"current RTNN prepared OptiX ranked-summary executable front door\",\n      \"release_authorized\": false,\n      \"requires_numba\": false,\n      \"requires_optix_library\": true,\n      \"row_id\": \"rtnn_prepared_optix_ranked_summary\",\n      \"timeout_sec\": 120,\n      \"user_reading\": \"prepared fixed-radius ranked summary path\"\n    },\n    {\n      \"app\": \"triangle_counting\",\n      \"broad_rt_core_claim_authorized\": false,\n      \"command\": [\n        \"python\",\n        \"examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py\",\n        \"--mode\",\n        \"run\",\n        \"--backend\",\n        \"optix\",\n        \"--output-mode\",\n        \"summary\",\n        \"--optix-graph-mode\",\n        \"native\",\n        \"--copies\",\n        \"128\",\n        \"--repeat\",\n        \"2\",\n        \"--warmup\",\n        \"1\"\n      ],\n      \"command_text\": \"python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode run --backend optix --output-mode summary --optix-graph-mode native --copies 128 --repeat 2 --warmup 1\",\n      \"evidence_refs\": [\n        \"Goal3819\"\n      ],\n      \"evidence_reports\": [\n        {\n          \"exists\": true,\n          \"path\": \"docs/reports/goal3819_triangle_counting_native_mode_probe_2026-06-07.md\",\n          \"ref\": \"Goal3819\"\n        }\n      ],\n      \"paper_reproduction_claim_authorized\": false,\n      \"pod_need\": \"OptiX timing needs NVIDIA pod\",\n      \"public_speedup_claim_authorized\": false,\n      \"purpose\": \"current triangle-counting explicit native timing front door\",\n      \"release_authorized\": false,\n      \"requires_numba\": false,\n      \"requires_optix_library\": true,\n      \"row_id\": \"triangle_counting_optix_native_summary\",\n      \"timeout_sec\": 180,\n      \"user_reading\": \"explicit native graph summary path; candidate-row interpretation stays app code\"\n    }\n  ],\n  \"status\": \"current_v2_10_evidence_index_not_release_authorization\",\n  \"summary\": {\n    \"app_count\": 10,\n    \"broad_rt_core_claim_authorized\": false,\n    \"claim_boundary\": \"Goal3823 records the current executable benchmark app front-door commands after Goals3818-3822. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.\",\n    \"numba_required_rows\": [\n      \"rt_dbscan_optix_numba_prepared_grid\",\n      \"barnes_hut_numba_exact_force\"\n    ],\n    \"optix_required_rows\": [\n      \"hausdorff_xhd_current_optix_threshold\",\n      \"spatial_rayjoin_pip_count_current_prepared_optix\",\n      \"rt_dbscan_optix_numba_prepared_grid\",\n      \"robot_collision_optix_prepared_device_count\",\n      \"contact_manifold_optix_native_collect_k\",\n      \"raydb_style_optix_count_primitive_first\",\n      \"barnes_hut_numba_exact_force\",\n      \"librts_spatial_index_optix_aabb_index\",\n      \"rtnn_prepared_optix_ranked_summary\",\n      \"triangle_counting_optix_native_summary\"\n    ],\n    \"paper_reproduction_claim_authorized\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"release_authorized\": false,\n    \"row_count\": 10,\n    \"status\": \"internal_command_registry_not_release_authorization\",\n    \"version\": \"rtdl.v2_10.current_benchmark_front_doors.goal3823.v1\"\n  },\n  \"validation\": {\n    \"app_count\": 10,\n    \"claim_boundary\": \"Goal3823 records the current executable benchmark app front-door commands after Goals3818-3822. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.\",\n    \"errors\": [],\n    \"row_count\": 10,\n    \"status\": \"accept\",\n    \"version\": \"rtdl.v2_10.current_benchmark_front_doors.goal3823.v1\"\n  },\n  \"version\": \"rtdl.v2_10.current_benchmark_front_doors.goal3823.v1\"\n}\n"
+    },
+    {
+      "claim_flag_violations": [],
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal3823_current_benchmark_front_door_runner.py",
+        "--dry-run",
+        "--output-json",
+        "docs/reports/goal4332_bundle_pass_through_validation_fixed/front_door_dry_run.json"
+      ],
+      "elapsed_sec": 0.5086650624871254,
+      "json_artifact_path": "docs/reports/goal4332_bundle_pass_through_validation_fixed/front_door_dry_run.json",
+      "json_error": null,
+      "json_parseable": true,
+      "json_source": "stdout",
+      "name": "front_door_dry_run",
+      "output_path": null,
+      "returncode": 0,
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_json_error": null,
+      "stdout_json_parseable": true,
+      "stdout_tail": "ent/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py\",\n        \"--mode\",\n        \"optix_aabb_index\",\n        \"--dataset\",\n        \"uniform\",\n        \"--box-count\",\n        \"1024\",\n        \"--query-count\",\n        \"1024\",\n        \"--operation\",\n        \"all\",\n        \"--repeat\",\n        \"2\",\n        \"--warmup\",\n        \"1\"\n      ],\n      \"evidence_refs\": [\n        \"Goal3818\"\n      ],\n      \"purpose\": \"current LibRTS-style prepared OptiX AABB-index front door\",\n      \"row_id\": \"librts_spatial_index_optix_aabb_index\",\n      \"timeout_sec\": 180\n    },\n    {\n      \"app\": \"rtnn\",\n      \"command\": [\n        \"python\",\n        \"examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py\",\n        \"--mode\",\n        \"prepared_optix_ranked_summary\",\n        \"--point-count\",\n        \"4096\",\n        \"--radius\",\n        \"0.02\",\n        \"--k\",\n        \"32\",\n        \"--repeat\",\n        \"2\",\n        \"--query-batch-size\",\n        \"4096\",\n        \"--distribution\",\n        \"uniform\"\n      ],\n      \"evidence_refs\": [\n        \"Goal3820\"\n      ],\n      \"purpose\": \"current RTNN prepared OptiX ranked-summary executable front door\",\n      \"row_id\": \"rtnn_prepared_optix_ranked_summary\",\n      \"timeout_sec\": 120\n    },\n    {\n      \"app\": \"triangle_counting\",\n      \"command\": [\n        \"python\",\n        \"examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py\",\n        \"--mode\",\n        \"run\",\n        \"--backend\",\n        \"optix\",\n        \"--output-mode\",\n        \"summary\",\n        \"--optix-graph-mode\",\n        \"native\",\n        \"--copies\",\n        \"128\",\n        \"--repeat\",\n        \"2\",\n        \"--warmup\",\n        \"1\"\n      ],\n      \"evidence_refs\": [\n        \"Goal3819\"\n      ],\n      \"purpose\": \"current triangle-counting explicit native timing front door\",\n      \"row_id\": \"triangle_counting_optix_native_summary\",\n      \"timeout_sec\": 180\n    }\n  ],\n  \"summary\": {\n    \"app_count\": 10,\n    \"broad_rt_core_claim_authorized\": false,\n    \"claim_boundary\": \"Goal3823 records the current executable benchmark app front-door commands after Goals3818-3822. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.\",\n    \"numba_required_rows\": [\n      \"rt_dbscan_optix_numba_prepared_grid\",\n      \"barnes_hut_numba_exact_force\"\n    ],\n    \"optix_required_rows\": [\n      \"hausdorff_xhd_current_optix_threshold\",\n      \"spatial_rayjoin_pip_count_current_prepared_optix\",\n      \"rt_dbscan_optix_numba_prepared_grid\",\n      \"robot_collision_optix_prepared_device_count\",\n      \"contact_manifold_optix_native_collect_k\",\n      \"raydb_style_optix_count_primitive_first\",\n      \"barnes_hut_numba_exact_force\",\n      \"librts_spatial_index_optix_aabb_index\",\n      \"rtnn_prepared_optix_ranked_summary\",\n      \"triangle_counting_optix_native_summary\"\n    ],\n    \"paper_reproduction_claim_authorized\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"release_authorized\": false,\n    \"row_count\": 10,\n    \"status\": \"internal_command_registry_not_release_authorization\",\n    \"version\": \"rtdl.v2_10.current_benchmark_front_doors.goal3823.v1\"\n  },\n  \"validation\": {\n    \"app_count\": 10,\n    \"claim_boundary\": \"Goal3823 records the current executable benchmark app front-door commands after Goals3818-3822. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.\",\n    \"errors\": [],\n    \"row_count\": 10,\n    \"status\": \"accept\",\n    \"version\": \"rtdl.v2_10.current_benchmark_front_doors.goal3823.v1\"\n  },\n  \"version\": \"rtdl.v2_10.current_benchmark_front_doors.goal3823.v1\"\n}\n"
+    },
+    {
+      "claim_flag_violations": [],
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal3828_current_benchmark_scale_profile_runner.py",
+        "--dry-run",
+        "--output-json",
+        "docs/reports/goal4332_bundle_pass_through_validation_fixed/scale_profile_dry_run.json",
+        "--materialize-rayjoin-public-cdb"
+      ],
+      "elapsed_sec": 0.76513153873384,
+      "json_artifact_path": "docs/reports/goal4332_bundle_pass_through_validation_fixed/scale_profile_dry_run.json",
+      "json_error": null,
+      "json_parseable": true,
+      "json_source": "stdout",
+      "name": "scale_profile_dry_run",
+      "output_path": null,
+      "returncode": 0,
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_json_error": null,
+      "stdout_json_parseable": true,
+      "stdout_tail": "   \"?? tests/goal4326_versioning_glossary_test.py\"\n    ],\n    \"nvidia_smi\": \"NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB\",\n    \"python_executable\": \"/usr/bin/python3\",\n    \"python_version\": \"3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]\",\n    \"rt_library_env\": {\n      \"CUDA_VISIBLE_DEVICES\": null,\n      \"RTDL_EMBREE_LIBRARY\": null,\n      \"RTDL_HIPRT_LIBRARY\": null,\n      \"RTDL_OPTIX_LIB\": \"/root/rtdl_goal4329.OOFWIg/repo/build/librtdl_optix.so\",\n      \"RTDL_OPTIX_LIBRARY\": \"/root/rtdl_goal4329.OOFWIg/repo/build/librtdl_optix.so\"\n    },\n    \"source_commit\": \"bf12a82bdda5f067da9ffb16a355a212f6280e70\",\n    \"source_commit_short\": \"bf12a82b\",\n    \"working_tree_clean\": false\n  },\n  \"selected_prepared_session_residency_profile_count\": 4,\n  \"summary\": {\n    \"app_count\": 10,\n    \"broad_rt_core_claim_authorized\": false,\n    \"claim_boundary\": \"Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.\",\n    \"file_backed_stdout_rows\": [\n      \"hausdorff_xhd_scale_default_optix_threshold\",\n      \"spatial_rayjoin_public_cdb_representative_mixed_route_scale_default\",\n      \"rt_dbscan_optix_numba_scale_default_65536_no_validation\",\n      \"robot_collision_optix_scale_default_1024_no_probe_reference\",\n      \"contact_manifold_optix_scale_default_grid64\",\n      \"raydb_style_optix_count_scale_default_262k\",\n      \"barnes_hut_numba_scale_default_8192\",\n      \"librts_spatial_index_optix_scale_default_32768\",\n      \"rtnn_prepared_optix_scale_default_65536\",\n      \"triangle_counting_optix_rt_graph_2a1_scale_default_2048\"\n    ],\n    \"numba_required_rows\": [\n      \"spatial_rayjoin_public_cdb_representative_mixed_route_scale_default\",\n      \"rt_dbscan_optix_numba_scale_default_65536_no_validation\",\n      \"barnes_hut_numba_scale_default_8192\"\n    ],\n    \"optix_required_rows\": [\n      \"hausdorff_xhd_scale_default_optix_threshold\",\n      \"spatial_rayjoin_public_cdb_representative_mixed_route_scale_default\",\n      \"rt_dbscan_optix_numba_scale_default_65536_no_validation\",\n      \"robot_collision_optix_scale_default_1024_no_probe_reference\",\n      \"contact_manifold_optix_scale_default_grid64\",\n      \"raydb_style_optix_count_scale_default_262k\",\n      \"barnes_hut_numba_scale_default_8192\",\n      \"librts_spatial_index_optix_scale_default_32768\",\n      \"rtnn_prepared_optix_scale_default_65536\",\n      \"triangle_counting_optix_rt_graph_2a1_scale_default_2048\"\n    ],\n    \"paper_reproduction_claim_authorized\": false,\n    \"profile_kinds\": [\n      \"default_scale\"\n    ],\n    \"public_speedup_claim_authorized\": false,\n    \"release_authorized\": false,\n    \"row_count\": 10,\n    \"scale_calibration_statuses\": [\n      \"internal_current_scale_not_claim_grade\",\n      \"resident_high_repeat_summary_contract_goal3984\"\n    ],\n    \"status\": \"internal_scale_profile_registry_not_release_authorization\",\n    \"timing_metric_scope\": \"wrapper_elapsed_sec_is_pod_budget_not_hot_path_metric\",\n    \"version\": \"rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1\"\n  },\n  \"validation\": {\n    \"app_count\": 10,\n    \"claim_boundary\": \"Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.\",\n    \"errors\": [],\n    \"row_count\": 10,\n    \"status\": \"accept\",\n    \"version\": \"rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1\"\n  },\n  \"version\": \"rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1\"\n}\n"
+    },
+    {
+      "claim_flag_violations": [],
+      "command": [
+        "/usr/bin/python3",
+        "scripts/goal3828_current_benchmark_scale_profile_runner.py",
+        "--output-json",
+        "docs/reports/goal4332_bundle_pass_through_validation_fixed/scale_profile_summary.json",
+        "--output-dir",
+        "docs/reports/goal4332_bundle_pass_through_validation_fixed/scale_profile_outputs",
+        "--heartbeat-sec",
+        "20",
+        "--timeout-scale",
+        "1.0",
+        "--materialize-rayjoin-public-cdb"
+      ],
+      "elapsed_sec": 39.54821741115302,
+      "json_artifact_path": "docs/reports/goal4332_bundle_pass_through_validation_fixed/scale_profile_summary.json",
+      "json_error": null,
+      "json_parseable": true,
+      "json_source": "artifact",
+      "name": "scale_profile_hardware_run",
+      "output_path": null,
+      "returncode": 0,
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_json_error": "Expecting value: line 1 column 2 (char 1)",
+      "stdout_json_parseable": false,
+      "stdout_tail": "   \"?? tests/goal4326_versioning_glossary_test.py\"\n    ],\n    \"nvidia_smi\": \"NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB\",\n    \"python_executable\": \"/usr/bin/python3\",\n    \"python_version\": \"3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]\",\n    \"rt_library_env\": {\n      \"CUDA_VISIBLE_DEVICES\": null,\n      \"RTDL_EMBREE_LIBRARY\": null,\n      \"RTDL_HIPRT_LIBRARY\": null,\n      \"RTDL_OPTIX_LIB\": \"/root/rtdl_goal4329.OOFWIg/repo/build/librtdl_optix.so\",\n      \"RTDL_OPTIX_LIBRARY\": \"/root/rtdl_goal4329.OOFWIg/repo/build/librtdl_optix.so\"\n    },\n    \"source_commit\": \"bf12a82bdda5f067da9ffb16a355a212f6280e70\",\n    \"source_commit_short\": \"bf12a82b\",\n    \"working_tree_clean\": false\n  },\n  \"selected_prepared_session_residency_profile_count\": 4,\n  \"summary\": {\n    \"app_count\": 10,\n    \"broad_rt_core_claim_authorized\": false,\n    \"claim_boundary\": \"Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.\",\n    \"file_backed_stdout_rows\": [\n      \"hausdorff_xhd_scale_default_optix_threshold\",\n      \"spatial_rayjoin_public_cdb_representative_mixed_route_scale_default\",\n      \"rt_dbscan_optix_numba_scale_default_65536_no_validation\",\n      \"robot_collision_optix_scale_default_1024_no_probe_reference\",\n      \"contact_manifold_optix_scale_default_grid64\",\n      \"raydb_style_optix_count_scale_default_262k\",\n      \"barnes_hut_numba_scale_default_8192\",\n      \"librts_spatial_index_optix_scale_default_32768\",\n      \"rtnn_prepared_optix_scale_default_65536\",\n      \"triangle_counting_optix_rt_graph_2a1_scale_default_2048\"\n    ],\n    \"numba_required_rows\": [\n      \"spatial_rayjoin_public_cdb_representative_mixed_route_scale_default\",\n      \"rt_dbscan_optix_numba_scale_default_65536_no_validation\",\n      \"barnes_hut_numba_scale_default_8192\"\n    ],\n    \"optix_required_rows\": [\n      \"hausdorff_xhd_scale_default_optix_threshold\",\n      \"spatial_rayjoin_public_cdb_representative_mixed_route_scale_default\",\n      \"rt_dbscan_optix_numba_scale_default_65536_no_validation\",\n      \"robot_collision_optix_scale_default_1024_no_probe_reference\",\n      \"contact_manifold_optix_scale_default_grid64\",\n      \"raydb_style_optix_count_scale_default_262k\",\n      \"barnes_hut_numba_scale_default_8192\",\n      \"librts_spatial_index_optix_scale_default_32768\",\n      \"rtnn_prepared_optix_scale_default_65536\",\n      \"triangle_counting_optix_rt_graph_2a1_scale_default_2048\"\n    ],\n    \"paper_reproduction_claim_authorized\": false,\n    \"profile_kinds\": [\n      \"default_scale\"\n    ],\n    \"public_speedup_claim_authorized\": false,\n    \"release_authorized\": false,\n    \"row_count\": 10,\n    \"scale_calibration_statuses\": [\n      \"internal_current_scale_not_claim_grade\",\n      \"resident_high_repeat_summary_contract_goal3984\"\n    ],\n    \"status\": \"internal_scale_profile_registry_not_release_authorization\",\n    \"timing_metric_scope\": \"wrapper_elapsed_sec_is_pod_budget_not_hot_path_metric\",\n    \"version\": \"rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1\"\n  },\n  \"validation\": {\n    \"app_count\": 10,\n    \"claim_boundary\": \"Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.\",\n    \"errors\": [],\n    \"row_count\": 10,\n    \"status\": \"accept\",\n    \"version\": \"rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1\"\n  },\n  \"version\": \"rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1\"\n}\n"
+    }
+  ]
+}

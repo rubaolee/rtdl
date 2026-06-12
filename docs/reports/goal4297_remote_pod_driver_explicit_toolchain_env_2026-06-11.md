@@ -61,9 +61,9 @@ an explicit environment:
 
 ```powershell
 py -3 scripts\rtdl_remote_pod_validation_driver.py `
-  --target root@194.68.245.114 `
-  --port 22158 `
-  --identity-file C:\Users\Lestat\.ssh\id_ed25519_rtdl_codex_current_pod `
+  --target <redacted-ephemeral-pod-host> `
+  --port <redacted-port> `
+  --identity-file <redacted-local-key-path> `
   --build-optix `
   --optix-prefix /root/vendor/optix-dev `
   --cuda-prefix /usr/local/cuda-12.8 `

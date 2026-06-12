@@ -98,6 +98,10 @@ struct ColumnarRowBoxSceneData {
   const std::vector<ColumnarRowBox>* boxes;
 };
 
+struct Aabb2DSceneData {
+  const std::vector<RtdlAabb2D>* boxes;
+};
+
 struct TriangleSceneData {
   const std::vector<Triangle2D>* triangles;
 };
@@ -643,6 +647,17 @@ void columnar_row_box_bounds(const RTCBoundsFunctionArguments* args) {
   args->bounds_o->upper_x = static_cast<float>(box.x) + half;
   args->bounds_o->upper_y = static_cast<float>(box.y) + half;
   args->bounds_o->upper_z = static_cast<float>(box.z) + half;
+}
+
+void aabb2d_bounds(const RTCBoundsFunctionArguments* args) {
+  auto* data = static_cast<Aabb2DSceneData*>(args->geometryUserPtr);
+  const RtdlAabb2D& box = (*data->boxes)[args->primID];
+  args->bounds_o->lower_x = static_cast<float>(std::min(box.min_x, box.max_x)) - kEps;
+  args->bounds_o->lower_y = static_cast<float>(std::min(box.min_y, box.max_y)) - kEps;
+  args->bounds_o->lower_z = -kEps;
+  args->bounds_o->upper_x = static_cast<float>(std::max(box.min_x, box.max_x)) + kEps;
+  args->bounds_o->upper_y = static_cast<float>(std::max(box.min_y, box.max_y)) + kEps;
+  args->bounds_o->upper_z = kEps;
 }
 
 void triangle_bounds(const RTCBoundsFunctionArguments* args) {

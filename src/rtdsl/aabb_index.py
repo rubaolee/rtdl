@@ -23,9 +23,7 @@ AABB_INDEX_2D_CONTRACT = {
     },
     "backend_status": {
         "cpu": "reference_uniform_grid_counts_and_intersection_pair_rows",
-        "embree": (
-            "generic_columnar_payload_conjunctive_scan_counts_and_range_intersection_pair_rows"
-        ),
+        "embree": "native_prepared_aabb_collision_counts_with_columnar_fallback",
         "optix": "native_count_point_contains_range_contains_range_intersects_point_contains_rows_and_range_intersection_rows",
         "hiprt": "native_count_point_contains_range_contains_range_intersects",
     },
@@ -384,7 +382,7 @@ class HiprtAabbIndex2D:
 
 @dataclass(frozen=True)
 class EmbreeAabbIndex2D:
-    """Prepared Embree AABB query path via the generic columnar predicate primitive."""
+    """Prepared Embree AABB query path with native collision traversal when available."""
 
     boxes: tuple[Aabb2D, ...]
     prepared: Any
@@ -404,18 +402,26 @@ class EmbreeAabbIndex2D:
         counts: dict[str, int] = {}
 
         query_start = time.perf_counter()
-        for name in operations:
-            count = 0
-            if name == "point_contains":
-                for point in points:
-                    count += self.prepared.conjunctive_scan_count(_point_contains_clauses(point))
-            elif name == "range_contains":
-                for query_box in query_boxes:
-                    count += self.prepared.conjunctive_scan_count(_range_contains_clauses(query_box))
-            elif name == "range_intersects":
-                for query_box in query_boxes:
-                    count += self.prepared.conjunctive_scan_count(_range_intersects_clauses(query_box))
-            counts[name] = count
+        native_prepared = bool(getattr(self.prepared, "native_aabb_index", False))
+        if native_prepared:
+            for name in operations:
+                if name == "point_contains":
+                    counts[name] = self.prepared.count(point_queries=points, operation=name)
+                else:
+                    counts[name] = self.prepared.count(box_queries=query_boxes, operation=name)
+        else:
+            for name in operations:
+                count = 0
+                if name == "point_contains":
+                    for point in points:
+                        count += self.prepared.conjunctive_scan_count(_point_contains_clauses(point))
+                elif name == "range_contains":
+                    for query_box in query_boxes:
+                        count += self.prepared.conjunctive_scan_count(_range_contains_clauses(query_box))
+                elif name == "range_intersects":
+                    for query_box in query_boxes:
+                        count += self.prepared.conjunctive_scan_count(_range_intersects_clauses(query_box))
+                counts[name] = count
         query_sec = time.perf_counter() - query_start
 
         return {
@@ -432,8 +438,12 @@ class EmbreeAabbIndex2D:
             },
             "index": {
                 "indexed_boxes": len(self.boxes),
-                "native_index": "embree_generic_columnar_payload",
-                "primary_fields": ["min_x", "min_y", "max_x"],
+                "native_index": (
+                    "embree_native_aabb_collision_index"
+                    if native_prepared
+                    else "embree_generic_columnar_payload"
+                ),
+                "primary_fields": [] if native_prepared else ["min_x", "min_y", "max_x"],
             },
             "run_phases": {
                 "query_aabb_index_2d_sec": query_sec,
@@ -441,9 +451,10 @@ class EmbreeAabbIndex2D:
             "rt_core_accelerated": False,
             "native_engine_customization": False,
             "claim_boundary": (
-                "Generic Embree AABB_INDEX_QUERY_2D count subpath lowered to the "
-                "app-agnostic columnar conjunctive-scan primitive; not LibRTS-specific "
-                "and not NVIDIA RT-core accelerated."
+                "Generic Embree AABB_INDEX_QUERY_2D count subpath using native "
+                "prepared AABB collision traversal when available, with a columnar "
+                "fallback for older libraries; not LibRTS-specific and not NVIDIA "
+                "RT-core accelerated."
             ),
         }
 
@@ -455,6 +466,22 @@ class EmbreeAabbIndex2D:
         normalized_query_boxes = tuple(_normalize_aabb2d(box) for box in query_boxes)
         if len(query_ids) != len(normalized_query_boxes):
             raise ValueError("query_ids length must match query_boxes length")
+        if bool(getattr(self.prepared, "native_aabb_index", False)):
+            _validate_u32_ids(query_ids, label="query_ids")
+            query_records = tuple(
+                _IdentifiedAabb2D(
+                    int(query_ids[index]),
+                    box.min_x,
+                    box.min_y,
+                    box.max_x,
+                    box.max_y,
+                )
+                for index, box in enumerate(normalized_query_boxes)
+            )
+            native = self.prepared.collect_range_intersection_rows(query_records)
+            return tuple(
+                sorted((int(query_id), int(indexed_id)) for query_id, indexed_id in native["candidate_id_rows"])
+            )
         rows: set[tuple[int, int]] = set()
         for query_index, query_box in enumerate(normalized_query_boxes):
             query_id = int(query_ids[query_index])
@@ -751,8 +778,16 @@ def aabb_intersection_pair_rows_2d(
             "complete_candidate_coverage": True,
             "index": {
                 "indexed_boxes": len(indexed_tuple),
-                "native_index": "embree_generic_columnar_payload",
-                "primary_fields": ["min_x", "min_y", "max_x"],
+                "native_index": (
+                    "embree_native_aabb_collision_index"
+                    if bool(getattr(prepared_embree.prepared, "native_aabb_index", False))
+                    else "embree_generic_columnar_payload"
+                ),
+                "primary_fields": (
+                    []
+                    if bool(getattr(prepared_embree.prepared, "native_aabb_index", False))
+                    else ["min_x", "min_y", "max_x"]
+                ),
             },
             "run_phases": {
                 "prepare_aabb_index_2d_sec": prepare_sec,
@@ -760,10 +795,15 @@ def aabb_intersection_pair_rows_2d(
             },
             "rt_core_accelerated": False,
             "native_engine_customization": False,
-            "native_generic_symbol": "rtdl_embree_columnar_payload_multi_predicate_scan",
+            "native_generic_symbol": (
+                "rtdl_embree_collect_prepared_aabb_index_2d_range_intersection_rows"
+                if bool(getattr(prepared_embree.prepared, "native_aabb_index", False))
+                else "rtdl_embree_columnar_payload_multi_predicate_scan"
+            ),
             "claim_boundary": (
                 "Generic Embree AABB_INDEX_QUERY_2D broadphase row output lowered to "
-                "the app-agnostic columnar conjunctive-scan primitive; exact app "
+                "the app-agnostic prepared AABB collision primitive when available, "
+                "with a columnar conjunctive-scan fallback; exact app "
                 "semantics and final witness interpretation remain outside the engine."
             ),
         }
@@ -1084,11 +1124,23 @@ def _prepare_embree_aabb_index_2d(
     *,
     row_ids: tuple[int, ...],
 ) -> EmbreeAabbIndex2D:
+    from .embree_runtime import embree_aabb_index_2d_available
+    from .embree_runtime import prepare_embree_aabb_index_2d
     from .embree_runtime import prepare_embree_columnar_record_set
 
     if len(row_ids) != len(boxes):
         raise ValueError("row_ids length must match indexed_boxes length")
     _validate_u32_ids(row_ids, label="row_ids")
+    identified_boxes = tuple(
+        _IdentifiedAabb2D(row_ids[index], box.min_x, box.min_y, box.max_x, box.max_y)
+        for index, box in enumerate(boxes)
+    )
+    if embree_aabb_index_2d_available():
+        return EmbreeAabbIndex2D(
+            boxes=boxes,
+            prepared=prepare_embree_aabb_index_2d(identified_boxes),
+            row_ids=row_ids,
+        )
     record_set = {
         "row_ids": row_ids,
         "columns": {

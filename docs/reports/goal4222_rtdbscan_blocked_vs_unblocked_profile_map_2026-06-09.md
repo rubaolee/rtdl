@@ -16,10 +16,10 @@ This is not app micro-tuning. It compares two generic RTDL/OptiX grouped-stream
 execution shapes across three fixture families and two scales, while preserving
 the same app-level RT-DBSCAN component-signature contract.
 
-## Pod And Source
+## Hardware And Source
 
-- Pod: `ssh root@157.157.221.29 -p 24101 -i ~/.ssh/id_ed25519`
-- Effective RTDL working key used by Codex: `id_ed25519_rtdl_codex`
+- Hardware: ephemeral RTX cloud validation pod; live SSH endpoint and local key
+  names intentionally redacted from tracked evidence.
 - GPU: `NVIDIA RTX 4000 Ada Generation`
 - Driver: `550.127.08`
 - Source commit: `63289bbc`

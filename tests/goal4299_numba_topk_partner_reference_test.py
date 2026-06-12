@@ -27,9 +27,10 @@ class Goal4299NumbaTopKPartnerReferenceTest(unittest.TestCase):
         source = ADAPTERS.read_text(encoding="utf-8")
         self.assertIn('partner == "numba"', source)
         self.assertIn("pairwise_l2_sq_score_rows_2d_partner_columns", source)
-        self.assertIn("reference_host_rank_after_device_score_rows", source)
+        self.assertIn("device_grouped_topk_after_device_score_rows", source)
+        self.assertIn("grouped_topk_f64_partner_columns", source)
+        self.assertIn("numba_grouped_topk_device_rank_used", source)
         self.assertIn("host_rank_materialization_used", source)
-        self.assertIn("host_rank_topk_f64_reference", source)
 
         ann_source = ANN_APP.read_text(encoding="utf-8")
         self.assertIn('if partner == "numba"', ann_source)
@@ -84,10 +85,11 @@ class Goal4299NumbaTopKPartnerReferenceTest(unittest.TestCase):
         self.assertEqual(metadata["partner_reference_contract"], "generic_exact_top_k_nearest_points_2d")
         self.assertEqual(
             metadata["v2_11_numba_preview_kernel_status"],
-            "reference_host_rank_after_device_score_rows",
+            "device_grouped_topk_after_device_score_rows",
         )
         self.assertTrue(metadata["numba_score_rows_generated_on_partner_device"])
-        self.assertTrue(metadata["host_rank_materialization_used"])
+        self.assertTrue(metadata["numba_grouped_topk_device_rank_used"])
+        self.assertFalse(metadata["host_rank_materialization_used"])
         self.assertFalse(metadata["rt_core_speedup_claim_authorized"])
         self.assertFalse(metadata["whole_app_speedup_claim_authorized"])
 

@@ -6,6 +6,7 @@ project history.
 ## Process And Runbooks
 
 - [Process Docs](process/README.md)
+- [Goal Tier Protocol](process/goal_tier_protocol.md)
 - [Directive Snapshots](process/directives/)
 - [Runbooks](runbooks/README.md)
 

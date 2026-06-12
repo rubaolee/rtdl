@@ -1,0 +1,311 @@
+{
+  "all_pass": null,
+  "broad_rt_core_claim_authorized": false,
+  "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+  "dry_run": true,
+  "file_backed_stdout_probe": true,
+  "hot_path_floor_summary": {
+    "boundary": "Rows without a numeric internal hot-path floor are smoke/internal timing rows, not decision-grade performance evidence. Rows below the floor must not be used for public speedup wording.",
+    "decision_grade_timing_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "row_count": 1,
+    "smoke_or_internal_row_count": 1,
+    "smoke_or_internal_rows": [
+      "spatial_rayjoin_public_cdb_representative_mixed_route_scale_default"
+    ],
+    "status": "dry_run_policy_only_no_runtime_evaluation",
+    "statuses": [
+      "smoke_scale_or_internal_not_claim_grade"
+    ],
+    "subfloor_or_metric_missing_rows": [],
+    "targeted_floor_row_count": 0,
+    "targeted_floor_rows": []
+  },
+  "json_pass_count": null,
+  "paper_reproduction_claim_authorized": false,
+  "prepared_session_residency_summary": {
+    "app_count": 0,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "claim_boundary": "Goal3874 records current prepared-session residency profiles for measured scene-heavy benchmark rows. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+    "geomean_prepare_to_hot_query_ratio": 0.0,
+    "max_prepare_to_hot_query_ratio": 0.0,
+    "prepared_session_contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "reuse_recommended_rows": [],
+    "row_count": 0,
+    "status": "internal_profile_registry_not_release_authorization",
+    "true_zero_copy_claim_authorized": false,
+    "version": "rtdl.v2_10.current_prepared_session_residency_profiles.goal3874.v1"
+  },
+  "prepared_session_residency_validation": {
+    "claim_boundary": "Goal3874 records current prepared-session residency profiles for measured scene-heavy benchmark rows. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+    "errors": [],
+    "prepared_session_claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+    "row_count": 4,
+    "status": "accept",
+    "version": "rtdl.v2_10.current_prepared_session_residency_profiles.goal3874.v1"
+  },
+  "public_speedup_claim_authorized": false,
+  "rayjoin_public_cdb_fixture": {
+    "data_dir": "/root/rtdl_goal4329.OOFWIg/repo/data/rayjoin_public_cdb_goal4332",
+    "download_attempted": false,
+    "env_var_set": true,
+    "materialize_attempted": false,
+    "needed_by_selected_rows": true,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "state_after": {
+      "all_required_files_present": false,
+      "data_dir": "/root/rtdl_goal4329.OOFWIg/repo/data/rayjoin_public_cdb_goal4332",
+      "required_files": {
+        "br_county_start256_count512.cdb": {
+          "bytes": null,
+          "exists": false
+        },
+        "br_soil_start256_count512.cdb": {
+          "bytes": null,
+          "exists": false
+        }
+      }
+    },
+    "state_before": {
+      "all_required_files_present": false,
+      "data_dir": "/root/rtdl_goal4329.OOFWIg/repo/data/rayjoin_public_cdb_goal4332",
+      "required_files": {
+        "br_county_start256_count512.cdb": {
+          "bytes": null,
+          "exists": false
+        },
+        "br_soil_start256_count512.cdb": {
+          "bytes": null,
+          "exists": false
+        }
+      }
+    },
+    "status": "dry_run_planned"
+  },
+  "release_authorized": false,
+  "rows": [
+    {
+      "app": "spatial_rayjoin",
+      "command": [
+        "python",
+        "scripts/goal3866_rayjoin_representative_scale_profile.py",
+        "--repeat",
+        "50",
+        "--warmup",
+        "5",
+        "--pip-batch-single-repeat",
+        "12",
+        "--pip-batch-repeat",
+        "8",
+        "--pip-batch-request-counts",
+        "1",
+        "100"
+      ],
+      "evidence_refs": [
+        "Goal3834",
+        "Goal3838",
+        "Goal3842",
+        "Goal3866",
+        "Goal3936",
+        "Goal4039"
+      ],
+      "expected_runtime_class": "representative_mixed_route_public_cdb",
+      "hot_path_floor_evaluation": {
+        "decision_grade_timing_authorized": false,
+        "hot_path_duration_observed_sec": null,
+        "hot_path_duration_target_met": null,
+        "hot_path_duration_target_sec": null,
+        "public_speedup_claim_authorized": false,
+        "reason": "no hot_path_duration_target_sec declared for this row",
+        "representative_hot_path_metric": "representative_hot_path_summary",
+        "resolved_metric_value_type": null,
+        "scale_calibration_status": "internal_current_scale_not_claim_grade",
+        "status": "smoke_scale_or_internal_not_claim_grade",
+        "timing_floor_policy": "smoke_scale_or_internal_timing_not_claim_grade"
+      },
+      "prepared_session_residency_profile": null,
+      "prepared_session_residency_profiled": false,
+      "profile_kind": "default_scale",
+      "purpose": "scale-profile RayJoin-style bounded public-CDB representative mixed route: Numba one-shot PIP, RTDL/OptiX repeated PIP batch executor, RTDL/OptiX LSI, and RTDL/OptiX overlay active count",
+      "row_id": "spatial_rayjoin_public_cdb_representative_mixed_route_scale_default",
+      "stdout_policy": "file_backed_stdout_required",
+      "timeout_sec": 360
+    }
+  ],
+  "runtime_environment": {
+    "cwd": "/root/rtdl_goal4329.OOFWIg/repo",
+    "git_status_short": [
+      "M .gitignore",
+      " M README.md",
+      " M docs/README.md",
+      " M docs/audit/README.md",
+      " M docs/audit/process/README.md",
+      " M docs/capability_boundaries.md",
+      " M docs/handoff/HANDOFF_CLAUDE_GOAL4298_4299_V2_11_EMBREE_CPU_NUMBA_REVIEW_2026-06-11.md",
+      " M docs/learn/README.md",
+      " M docs/learn/benchmark_evidence_index.md",
+      " M docs/learn/source_tree_doctor.md",
+      " M docs/partner_acceleration_boundaries.md",
+      " M docs/reports/goal1906_public_v2_claim_boundary_scan.json",
+      " M docs/reports/goal4215_current_benchmark_scale_profile_after_rtdbscan_policy_2026-06-09.md",
+      " M docs/reports/goal4218_mixed_route_focus_after_policy_2026-06-09.md",
+      " M docs/reports/goal4222_rtdbscan_blocked_vs_unblocked_profile_map_2026-06-09.md",
+      " M docs/reports/goal4223_rayjoin_public_cdb_contract_scale_map_2026-06-09.md",
+      " M docs/reports/goal4225_release_prep_current_scale_packet_2026-06-09.md",
+      " M docs/reports/goal4248_current_public_docs_claim_boundary_scan.json",
+      " M docs/reports/goal4250_post_docs_scan_pod_validation_2026-06-09.md",
+      " M docs/reports/goal4262_exact_head_release_prep_pod_validation_2026-06-09.md",
+      " M docs/reports/goal4266_large_scale_cupy_numba_partner_comparison_2026-06-09.md",
+      " M docs/reports/goal4270_v2_10_milestone_release_3ai_consensus_2026-06-10.md",
+      " M docs/reports/goal4291_remote_pod_driver_noninteractive_ssh_2026-06-11.md",
+      " M docs/reports/goal4294_a40_pod_validation_2026-06-11.md",
+      " M docs/reports/goal4297_remote_pod_driver_explicit_toolchain_env_2026-06-11.md",
+      " M docs/reports/goal4298_v2_11_embree_cpu_partner_reference_packet_2026-06-11.md",
+      " M docs/reviews/goal2061_gemini_review_goal2060_v2_pod_mixed_family_audit_2026-05-15.md",
+      " M docs/reviews/goal3370_gemini_review_owner_face_cupy_pipeline_closure_2026-06-04.md",
+      " M docs/rtdl/programming_guide.md",
+      " M examples/README.md",
+      " M examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py",
+      " M scripts/goal1906_public_v2_claim_boundary_scan.py",
+      " M scripts/goal3828_current_benchmark_scale_profile_runner.py",
+      " M scripts/goal4248_current_public_docs_claim_boundary_scan.py",
+      " M scripts/rtdl_source_tree_doctor.py",
+      " M src/rtdsl/__init__.py",
+      " M src/rtdsl/adapters/reductions.py",
+      " M src/rtdsl/current_embree_cpu_partner_reference.py",
+      " M src/rtdsl/numba_partner_continuation.py",
+      " M src/rtdsl/partner_adapters.py",
+      " M src/rtdsl/partner_continuation_protocol.py",
+      " M src/rtdsl/v2_8_segmented_typed_stream_adapter.py",
+      " M tests/goal1671_v1_8_v2_0_partner_gate_test.py",
+      " M tests/goal1680_current_native_app_leakage_gap_test.py",
+      " M tests/goal2865_current_head_packet_after_front_doors_test.py",
+      " M tests/goal2876_current_packet_after_partner_conformance_closure_test.py",
+      " M tests/goal2878_goal2868_residual_closure_mapping_test.py",
+      " M tests/goal2880_current_packet_after_torch_carrier_provenance_test.py",
+      " M tests/goal4248_current_public_docs_claim_boundary_scan_test.py",
+      " M tests/goal4298_v2_11_embree_cpu_partner_reference_packet_test.py",
+      " M tests/goal4299_numba_topk_partner_reference_test.py",
+      " M tutorials/current/01_source_tree_first_run.md",
+      " M tutorials/current/02_kernel_shape_and_backends.md",
+      " M tutorials/current/README.md",
+      "?? data/",
+      "?? docs/audit/process/goal_tier_protocol.md",
+      "?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4301_4308_FABLE5_ACTION_PACKET_2026-06-11.md",
+      "?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4311_TIMING_FLOOR_AND_GOAL4309_FIXES_2026-06-11.md",
+      "?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4314_AND_GOAL4312_FIXES_2026-06-11.md",
+      "?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4317_GROUPED_REDUCTION_ROUTE_2026-06-11.md",
+      "?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4320_PROGRAMMING_SURFACE_TRUTHFULNESS_2026-06-11.md",
+      "?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4323_DENSE_GROUP_CONTRACT_METADATA_2026-06-11.md",
+      "?? docs/handoff/HANDOFF_EXTERNAL_REVIEW_GOAL4323_FOLLOWUP_FIX_2026-06-11.md",
+      "?? docs/learn/current_claim_boundaries.md",
+      "?? docs/learn/programming_surfaces.md",
+      "?? docs/learn/rt_core_evidence_matrix.md",
+      "?? docs/reports/goal4301_ann_candidate_numba_device_topk_copies128_local_linux.json",
+      "?? docs/reports/goal4301_ann_candidate_numba_device_topk_local_linux.json",
+      "?? docs/reports/goal4301_numba_grouped_topk_device_rank_2026-06-11.md",
+      "?? docs/reports/goal4301_v2_11_rtnn_numba_device_topk_runner_local_linux.json",
+      "?? docs/reports/goal4303_claude_fable5_review_intake_security_and_topk_actions_2026-06-11.md",
+      "?? docs/reports/goal4305_fable5_rt_core_honesty_and_goal_tier_protocol_2026-06-11.md",
+      "?? docs/reports/goal4306_partner_column_contracts_foundation_2026-06-11.md",
+      "?? docs/reports/goal4307_editable_source_tree_onboarding_2026-06-11.md",
+      "?? docs/reports/goal4308_rtnn_embree_front_door_for_v2_11_packet_2026-06-11.md",
+      "?? docs/reports/goal4308_rtnn_embree_front_door_local_linux.json",
+      "?? docs/reports/goal4311_current_scale_timing_floor_guard_2026-06-11.md",
+      "?? docs/reports/goal4311_current_scale_timing_floor_guard_dry_run.json",
+      "?? docs/reports/goal4314_current_claim_boundary_canonicalization_2026-06-11.md",
+      "?? docs/reports/goal4317_grouped_reduction_adapter_route_2026-06-11.md",
+      "?? docs/reports/goal4320_programming_surface_truthfulness_2026-06-11.md",
+      "?? docs/reports/goal4323_dense_group_contract_metadata_2026-06-11.md",
+      "?? docs/reports/goal4326_versioning_glossary_2026-06-11.md",
+      "?? docs/reports/goal4329_current_pod_validation/",
+      "?? docs/reviews/goal4301_gemini_review_goal4298_4299_v2_11_embree_cpu_numba_2026-06-11.md",
+      "?? docs/reviews/goal4302_claude-fable5_whole_project_critical_review_and_improvement_suggestions_2026-06-11.md",
+      "?? docs/reviews/goal4302_claude_whole_project_critical_review_and_improvement_suggestions_2026-06-11.md",
+      "?? docs/reviews/goal4309_claude_review_goal4301_4308_fable5_action_packet_2026-06-11.md",
+      "?? docs/reviews/goal4310_gemini_review_goal4301_4308_fable5_action_packet_2026-06-11.md",
+      "?? docs/reviews/goal4312_claude_review_goal4311_timing_floor_and_goal4309_fixes_2026-06-11.md",
+      "?? docs/reviews/goal4313_gemini_review_goal4311_timing_floor_and_goal4309_fixes_2026-06-11.md",
+      "?? docs/reviews/goal4315_claude_review_goal4314_and_goal4312_followup_fixes_2026-06-11.md",
+      "?? docs/reviews/goal4316_gemini_review_goal4314_and_goal4312_followup_fixes_2026-06-11.md",
+      "?? docs/reviews/goal4318_claude_review_goal4317_grouped_reduction_adapter_route_2026-06-11.md",
+      "?? docs/reviews/goal4319_gemini_review_goal4317_grouped_reduction_adapter_route_2026-06-11.md",
+      "?? docs/reviews/goal4321_claude_review_goal4320_programming_surface_truthfulness_2026-06-11.md",
+      "?? docs/reviews/goal4322_gemini_review_goal4320_programming_surface_truthfulness_2026-06-11.md",
+      "?? docs/reviews/goal4324_claude_review_goal4323_dense_group_contract_metadata_2026-06-11.md",
+      "?? docs/reviews/goal4325_gemini_review_goal4323_dense_group_contract_metadata_2026-06-11.md",
+      "?? docs/reviews/goal4327_claude_followup_review_goal4323_dense_group_contract_fix_2026-06-11.md",
+      "?? docs/reviews/goal4328_gemini_followup_review_goal4323_dense_group_contract_fix_2026-06-11.md",
+      "?? docs/versioning.md",
+      "?? pyproject.toml",
+      "?? run_review_tests.py",
+      "?? src/rtdsl/partner_column_contracts.py",
+      "?? tests/goal4301_numba_grouped_topk_device_rank_test.py",
+      "?? tests/goal4303_current_security_redaction_guard_test.py",
+      "?? tests/goal4305_fable5_evidence_and_process_docs_test.py",
+      "?? tests/goal4306_partner_column_contracts_foundation_test.py",
+      "?? tests/goal4307_editable_source_tree_onboarding_test.py",
+      "?? tests/goal4308_rtnn_embree_front_door_test.py",
+      "?? tests/goal4311_current_scale_timing_floor_guard_test.py",
+      "?? tests/goal4314_current_claim_boundary_canonicalization_test.py",
+      "?? tests/goal4317_grouped_reduction_adapter_route_test.py",
+      "?? tests/goal4320_programming_surface_truthfulness_test.py",
+      "?? tests/goal4323_dense_group_contract_metadata_test.py",
+      "?? tests/goal4326_versioning_glossary_test.py"
+    ],
+    "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB",
+    "python_executable": "/usr/bin/python3",
+    "python_version": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+    "rt_library_env": {
+      "CUDA_VISIBLE_DEVICES": null,
+      "RTDL_EMBREE_LIBRARY": null,
+      "RTDL_HIPRT_LIBRARY": null,
+      "RTDL_OPTIX_LIB": "/root/rtdl_goal4329.OOFWIg/repo/build/librtdl_optix.so",
+      "RTDL_OPTIX_LIBRARY": "/root/rtdl_goal4329.OOFWIg/repo/build/librtdl_optix.so"
+    },
+    "source_commit": "bf12a82bdda5f067da9ffb16a355a212f6280e70",
+    "source_commit_short": "bf12a82b",
+    "working_tree_clean": false
+  },
+  "selected_prepared_session_residency_profile_count": 0,
+  "summary": {
+    "app_count": 1,
+    "broad_rt_core_claim_authorized": false,
+    "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "file_backed_stdout_rows": [
+      "spatial_rayjoin_public_cdb_representative_mixed_route_scale_default"
+    ],
+    "numba_required_rows": [
+      "spatial_rayjoin_public_cdb_representative_mixed_route_scale_default"
+    ],
+    "optix_required_rows": [
+      "spatial_rayjoin_public_cdb_representative_mixed_route_scale_default"
+    ],
+    "paper_reproduction_claim_authorized": false,
+    "profile_kinds": [
+      "default_scale"
+    ],
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "row_count": 1,
+    "scale_calibration_statuses": [
+      "internal_current_scale_not_claim_grade"
+    ],
+    "status": "internal_scale_profile_registry_not_release_authorization",
+    "timing_metric_scope": "wrapper_elapsed_sec_is_pod_budget_not_hot_path_metric",
+    "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+  },
+  "validation": {
+    "app_count": 10,
+    "claim_boundary": "Goal3828 records calibrated scale-profile commands for the ten benchmark apps after the Goal3827 file-stdout correction. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper-reproduction wording, true-zero-copy wording, AMD performance wording, automatic partner selection, or app-specific native-engine logic.",
+    "errors": [],
+    "row_count": 10,
+    "status": "accept",
+    "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+  },
+  "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
+}

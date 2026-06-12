@@ -17,7 +17,7 @@ latest pushed commit.
 
 | Field | Value |
 | --- | --- |
-| Host | `157.157.221.29:24101` |
+| Host | redacted RTX 4000 Ada pod endpoint |
 | Repository | `/root/goal4177.dpBIx4/repo` |
 | Source commit | `14dbb8e0` |
 | GPU from sync probe | `NVIDIA RTX 4000 Ada Generation, driver 550.127.08, 20475 MiB` |

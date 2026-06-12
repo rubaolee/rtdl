@@ -75,7 +75,7 @@ OK
 Codex also attempted to reach the last known Goal4266 CUDA pod endpoint:
 
 ```text
-root@213.192.2.91 -p 40030
+redacted RTX 3090 pod endpoint
 ```
 
 The endpoint refused the SSH connection. Therefore this consensus does not

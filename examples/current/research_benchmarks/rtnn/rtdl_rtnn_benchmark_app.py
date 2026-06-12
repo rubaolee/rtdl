@@ -137,6 +137,39 @@ def ann_partner_quality_payload(*, copies: int, partner: str) -> dict[str, Any]:
     }
 
 
+def ann_embree_quality_payload(*, copies: int) -> dict[str, Any]:
+    payload = ann_app.run_app(
+        "embree",
+        copies=copies,
+        output_mode="quality_summary",
+    )
+    inherited_optix_note = payload.pop("optix_performance", None)
+    return {
+        "benchmark_app": BENCHMARK_NAME,
+        "mode": "ann_embree_quality",
+        "contract": "Embree CPU candidate-subset exact top-1 rerank compared with exact full-set top-1",
+        **payload,
+        "rt_path_note": inherited_optix_note,
+        "inherited_ann_optix_performance_note_present": inherited_optix_note is not None,
+        "app": BENCHMARK_NAME,
+        "uses_embree": True,
+        "uses_numba": False,
+        "rt_core_accelerated": False,
+        "boundary": (
+            "Embree CPU front door for the 2-D ANN candidate-quality contract. "
+            "This removes the RTNN Embree-packet special case, but it is not the "
+            "3-D RTNN ranked-summary path and not full RTNN paper reproduction."
+        ),
+        "claim_boundary": {
+            "embree_cpu_compatibility_front_door": True,
+            "native_engine_customization": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "paper_reproduction_claim_authorized": False,
+        },
+    }
+
+
 def rtnn_known_results_payload() -> dict[str, Any]:
     rows = []
     for distribution in ("uniform", "clustered", "shell"):
@@ -602,6 +635,8 @@ def run_app(
         return ann_cpu_quality_payload(copies=copies)
     if mode == "ann_partner_quality":
         return ann_partner_quality_payload(copies=copies, partner=partner)
+    if mode == "ann_embree_quality":
+        return ann_embree_quality_payload(copies=copies)
     if mode == "rtnn_known_results":
         return rtnn_known_results_payload()
     if mode == "rtnn_command_plan":
@@ -641,6 +676,7 @@ def main(argv: list[str] | None = None) -> int:
             "scope",
             "ann_cpu_quality",
             "ann_partner_quality",
+            "ann_embree_quality",
             "rtnn_known_results",
             "rtnn_command_plan",
             "prepared_optix_ranked_summary",

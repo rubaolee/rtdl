@@ -1,0 +1,22 @@
+{
+  "row": "librts_aabb_index_1024x1024_operation_all_skip_counts",
+  "embree": {
+    "backend": "embree_cpu",
+    "host": "192.168.1.20",
+    "query_median_sec": 0.011698941001668572,
+    "elapsed_sec": 0.03340582999953767,
+    "rt_core_accelerated": false,
+    "native_index": "embree_native_aabb_collision_index"
+  },
+  "optix": {
+    "backend": "optix_rt",
+    "host": "157.157.221.29 RTX 4000 Ada pod",
+    "query_median_sec": 0.0006223348900675774,
+    "elapsed_sec": 0.2650614297017455,
+    "rt_core_accelerated": true,
+    "native_index": "optix_prepared_aabb_index",
+    "scene_prepare_sec": 0.26156231109052896
+  },
+  "optix_vs_embree_query_median_speedup": 18.798465566341978,
+  "claim_boundary": "Same fixture shape and app runner, different hosts/hardware; query-median comparison only, not a full system or paper reproduction claim."
+}

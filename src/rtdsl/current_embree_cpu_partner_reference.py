@@ -7,7 +7,7 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 CURRENT_EMBREE_CPU_PARTNER_REFERENCE_VERSION = (
-    "rtdl.v2_11.current_embree_cpu_partner_reference.goal4298.v1"
+    "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1"
 )
 CURRENT_EMBREE_CPU_PARTNER_REFERENCE_STATUS = (
     "internal_embree_cpu_partner_reference_not_release_authorization"
@@ -54,7 +54,6 @@ class CurrentEmbreeCpuPartnerReference:
             "embree_cpu_rt_primitive",
             "embree_cpu_rt_plus_python_continuation",
             "embree_cpu_rt_plus_numba_reference",
-            "numba_cpu_partner_reference_no_embree_front_door",
         }:
             raise ValueError(f"{self.app}: unknown route_class {self.route_class!r}")
         if not self.row_id or not self.purpose:
@@ -312,25 +311,20 @@ CURRENT_EMBREE_CPU_PARTNER_REFERENCE_ROWS: tuple[CurrentEmbreeCpuPartnerReferenc
     ),
     CurrentEmbreeCpuPartnerReference(
         app="rtnn",
-        row_id="rtnn_numba_cpu_partner_quality_reference",
-        purpose="Numba CPU partner quality-reference route because the current RTNN app has no Embree front door",
-        route_class="numba_cpu_partner_reference_no_embree_front_door",
+        row_id="rtnn_embree_cpu_ann_candidate_quality_reference",
+        purpose="Embree CPU candidate-quality route for the RTNN benchmark app's 2-D ANN contract",
+        route_class="embree_cpu_rt_plus_python_continuation",
         command=(
             "python",
             "examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py",
             "--mode",
-            "ann_partner_quality",
-            "--partner",
-            "numba",
+            "ann_embree_quality",
             "--copies",
             "128",
         ),
-        timeout_sec=120,
-        evidence_refs=("Goal4298", "Goal3820", "Goal4299"),
-        uses_embree=False,
-        uses_numba=True,
-        requires_embree_library=False,
-        requires_numba=True,
+        timeout_sec=180,
+        evidence_refs=("Goal4308", "Goal4298", "Goal3820"),
+        uses_embree=True,
     ),
     CurrentEmbreeCpuPartnerReference(
         app="triangle_counting",
@@ -428,13 +422,8 @@ def validate_current_embree_cpu_partner_reference(
             errors.append(f"{app}: uses_embree and requires_embree_library must agree")
         if bool(row.get("uses_numba")) != bool(row.get("requires_numba")):
             errors.append(f"{app}: uses_numba and requires_numba must agree")
-        if row.get("app") == "rtnn":
-            if row.get("uses_embree"):
-                errors.append("rtnn: current RTNN app has no Embree front door in this packet")
-            if not row.get("uses_numba"):
-                errors.append("rtnn: current CPU partner reference must use Numba")
-        elif not row.get("uses_embree"):
-            errors.append(f"{app}: non-RTNN benchmark rows must exercise Embree CPU")
+        if not row.get("uses_embree"):
+            errors.append(f"{app}: benchmark rows must exercise Embree CPU")
         for flag in (
             "release_authorized",
             "public_speedup_claim_authorized",

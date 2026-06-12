@@ -57,7 +57,12 @@ class Goal4286RemotePodValidationDriverTest(unittest.TestCase):
         self.assertIn("ServerAliveInterval=30", command)
 
     def test_remote_script_has_progress_and_no_destructive_checkout(self) -> None:
-        payload = self._dry_run("--build-optix", "--run-hardware", "--run-partner-comparison")
+        payload = self._dry_run(
+            "--build-optix",
+            "--run-hardware",
+            "--materialize-rayjoin-public-cdb",
+            "--run-partner-comparison",
+        )
         script = str(payload["remote_script"])
 
         self.assertIn("[rtdl-remote-pod] start", script)
@@ -66,7 +71,10 @@ class Goal4286RemotePodValidationDriverTest(unittest.TestCase):
         self.assertIn("rtdl_pod_bootstrap_probe.py", script)
         self.assertIn("make build-optix", script)
         self.assertIn("rtdl_v2_10_pod_validation_bundle.py", script)
-        self.assertIn("--run-front-door --run-scale-profile --run-partner-comparison", script)
+        self.assertIn(
+            "--run-front-door --run-scale-profile --materialize-rayjoin-public-cdb --run-partner-comparison",
+            script,
+        )
         self.assertNotIn("git reset --hard", script)
         self.assertNotIn("rm -rf", script)
 
@@ -76,6 +84,7 @@ class Goal4286RemotePodValidationDriverTest(unittest.TestCase):
         report = REPORT.read_text(encoding="utf-8")
 
         self.assertIn("dry-run unless `--execute`", runbook)
+        self.assertIn("--materialize-rayjoin-public-cdb", runbook)
         self.assertIn("v2.10 Remote Pod Validation Driver", bundle)
         self.assertIn("does not install CUDA", report)
         self.assertIn("does not mutate", report)

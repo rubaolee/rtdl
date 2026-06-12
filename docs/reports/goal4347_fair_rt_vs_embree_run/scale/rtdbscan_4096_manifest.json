@@ -1,0 +1,17 @@
+[
+  {
+    "elapsed_sec": 2.754288083873689,
+    "label": "rtdbscan_optix_rt_numba_4096",
+    "returncode": 0
+  },
+  {
+    "elapsed_sec": 2.8606894882395864,
+    "label": "rtdbscan_embree_numba_4096_t8",
+    "returncode": 0
+  },
+  {
+    "elapsed_sec": 2.7796496292576194,
+    "label": "rtdbscan_embree_numba_4096_t64",
+    "returncode": 0
+  }
+]

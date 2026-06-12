@@ -1,0 +1,513 @@
+{
+  "artifact_dir": "/workspace/rtdl_v0_4_release_prep_review/docs/reports/goal4354_rayjoin_original_vs_rtdl_pod",
+  "claim_boundary": {
+    "full_rayjoin_paper_reproduction": false,
+    "public_paper_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_query_stream_with_rayjoin_query_exec": true,
+    "whole_application_end_to_end_claim": false
+  },
+  "comparisons": [
+    {
+      "backend": "optix",
+      "meaning": "greater_than_1_means_rtdl_backend_faster_than_rayjoin_rt",
+      "rayjoin_rt_over_rtdl": 4.257683483556176,
+      "rayjoin_rt_query_ms": 1.01201,
+      "rtdl_hot_query_ms": 0.2376902848482132,
+      "workload": "lsi"
+    },
+    {
+      "backend": "embree",
+      "meaning": "greater_than_1_means_rtdl_backend_faster_than_rayjoin_rt",
+      "rayjoin_rt_over_rtdl": 5.508124141957406E-06,
+      "rayjoin_rt_query_ms": 1.01201,
+      "rtdl_hot_query_ms": 183730.4268963635,
+      "workload": "lsi"
+    },
+    {
+      "backend": "optix",
+      "meaning": "greater_than_1_means_rtdl_backend_faster_than_rayjoin_rt",
+      "rayjoin_rt_over_rtdl": 0.08664439651199803,
+      "rayjoin_rt_query_ms": 0.61361,
+      "rtdl_hot_query_ms": 7.081935182213783,
+      "workload": "pip"
+    },
+    {
+      "backend": "embree",
+      "meaning": "greater_than_1_means_rtdl_backend_faster_than_rayjoin_rt",
+      "rayjoin_rt_over_rtdl": 0.008553807444556423,
+      "rayjoin_rt_query_ms": 0.61361,
+      "rtdl_hot_query_ms": 71.73530664294958,
+      "workload": "pip"
+    }
+  ],
+  "cuda": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
+  "generated_at_utc": "2026-06-12T09:14:53Z",
+  "git_commit": "bf12a82bdda5f067da9ffb16a355a212f6280e70",
+  "git_status_short": "release-cleaned source tree; raw query-stream JSON and run logs are intentionally omitted from tracked v2.11 artifacts",
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+  "protocol": {
+    "dataset_basis": "RayJoin official sample base CDB/path from exported stream",
+    "include_embree": true,
+    "query_basis": "same RayJoin-exported query stream consumed by RTDL",
+    "rayjoin_source": "external RayJoin query_exec built from upstream commit 02bf6220d6d20b04af77ee20364eced75cc029c9 plus query stream export patch",
+    "rayjoin_timing_basis": "RayJoin query_exec reported Query ms from log",
+    "repeats": 3,
+    "rtdl_timing_basis": "Python wall time around current prepared native scalar-count front door",
+    "timed_metric": "hot scalar-count query phase; no Python row materialization in RTDL measured path",
+    "warmups": 1
+  },
+  "rayjoin": {
+    "lsi": {
+      "grid": {
+        "adaptive_grouping_ms": null,
+        "build_index_ms": 3.71599,
+        "built_in_check_passed": false,
+        "exists": true,
+        "intersections": 8921,
+        "optix_launch_count": 0,
+        "path": "/workspace/rtdl_v0_4_release_prep_review/docs/reports/goal4354_rayjoin_original_vs_rtdl_pod/rayjoin_lsi_grid.log",
+        "query_count_from_log": null,
+        "query_ms": 4.97468,
+        "timing_ms": {
+          "Build Index": 3.71599,
+          "Cleanup": 8.02708,
+          "Create App": 0.328064,
+          "Generate Workloads": 37.1192,
+          "Init": 0.678062,
+          "Load Data": 1.60885,
+          "Query": 4.97468,
+          "Read map 0": 3317.18,
+          "Warmup": 4.8759
+        }
+      },
+      "lbvh": {
+        "adaptive_grouping_ms": null,
+        "build_index_ms": 4.90999,
+        "built_in_check_passed": false,
+        "exists": true,
+        "intersections": 8921,
+        "optix_launch_count": 0,
+        "path": "/workspace/rtdl_v0_4_release_prep_review/docs/reports/goal4354_rayjoin_original_vs_rtdl_pod/rayjoin_lsi_lbvh.log",
+        "query_count_from_log": null,
+        "query_ms": 1.5467,
+        "timing_ms": {
+          "Build Index": 4.90999,
+          "Cleanup": 2.8491,
+          "Create App": 0.344038,
+          "Generate Workloads": 35.2859,
+          "Init": 0.766039,
+          "Load Data": 1.63794,
+          "Query": 1.5467,
+          "Read map 0": 3289.56,
+          "Warmup": 1.59693
+        }
+      },
+      "rt": {
+        "adaptive_grouping_ms": 0.604153,
+        "build_index_ms": 0.756025,
+        "built_in_check_passed": false,
+        "exists": true,
+        "intersections": 8921,
+        "optix_launch_count": 4,
+        "path": "/workspace/rtdl_v0_4_release_prep_review/docs/reports/goal4354_rayjoin_original_vs_rtdl_pod/rayjoin_lsi_rt.log",
+        "query_count_from_log": 100000,
+        "query_ms": 1.01201,
+        "timing_ms": {
+          "Adaptive Grouping": 0.604153,
+          "Build Index": 0.756025,
+          "Cleanup": 9.36007,
+          "Create App": 606.593,
+          "Generate Workloads": 631.428,
+          "Init": 1.37997,
+          "Load Data": 1.30296,
+          "Query": 1.01201,
+          "Read map 0": 3289.67,
+          "Warmup": 0.974894
+        }
+      }
+    },
+    "pip": {
+      "grid": {
+        "adaptive_grouping_ms": null,
+        "build_index_ms": 3.17883,
+        "built_in_check_passed": false,
+        "exists": true,
+        "intersections": null,
+        "optix_launch_count": 0,
+        "path": "/workspace/rtdl_v0_4_release_prep_review/docs/reports/goal4354_rayjoin_original_vs_rtdl_pod/rayjoin_pip_grid.log",
+        "query_count_from_log": null,
+        "query_ms": 15.885,
+        "timing_ms": {
+          "Build Index": 3.17883,
+          "Cleanup": 2.18606,
+          "Create App": 0.0798702,
+          "Generate Workloads": 6.14309,
+          "Init": 0.00309944,
+          "Load Data": 1.65009,
+          "Query": 15.885,
+          "Read map 0": 3334.97,
+          "Warmup": 16.0851
+        }
+      },
+      "lbvh": {
+        "adaptive_grouping_ms": null,
+        "build_index_ms": 7.71999,
+        "built_in_check_passed": true,
+        "exists": true,
+        "intersections": null,
+        "optix_launch_count": 0,
+        "path": "/workspace/rtdl_v0_4_release_prep_review/docs/reports/goal4354_rayjoin_original_vs_rtdl_pod/rayjoin_pip_lbvh.log",
+        "query_count_from_log": null,
+        "query_ms": 8.20565,
+        "timing_ms": {
+          "Build Index": 7.71999,
+          "Check": 56.922,
+          "Cleanup": 1.88208,
+          "Create App": 0.0789165,
+          "Generate Workloads": 5.54609,
+          "Init": 0.00405312,
+          "Load Data": 1.29104,
+          "Query": 8.20565,
+          "Read map 0": 3252.06,
+          "Warmup": 8.43191
+        }
+      },
+      "rt": {
+        "adaptive_grouping_ms": 0.609875,
+        "build_index_ms": 1.02401,
+        "built_in_check_passed": true,
+        "exists": true,
+        "intersections": null,
+        "optix_launch_count": 4,
+        "path": "/workspace/rtdl_v0_4_release_prep_review/docs/reports/goal4354_rayjoin_original_vs_rtdl_pod/rayjoin_pip_rt.log",
+        "query_count_from_log": null,
+        "query_ms": 0.61361,
+        "timing_ms": {
+          "Adaptive Grouping": 0.609875,
+          "Build Index": 1.02401,
+          "Check": 56.725,
+          "Cleanup": 3.09396,
+          "Create App": 140.673,
+          "Generate Workloads": 253.651,
+          "Init": 0.602007,
+          "Load Data": 1.37997,
+          "Query": 0.61361,
+          "Read map 0": 3250.63,
+          "Warmup": 0.70715
+        }
+      }
+    }
+  },
+  "rtdl": {
+    "lsi": {
+      "backends": {
+        "embree": {
+          "backend": "embree",
+          "execution_route": "prepared_embree_native_scalar_count",
+          "hot_median_sec": 183.7304268963635,
+          "input_shape": {
+            "base_cdb": "/workspace/RayJoin_external/test/dataset/br_county_clean_25_odyssey_final.txt",
+            "left_segments": 100000,
+            "query_count": 100000,
+            "right_segments": 326193
+          },
+          "output_contract": "scalar_count",
+          "prepare_sec": {
+            "bind_inputs_sec": 0.4323160210624337,
+            "prepare_kernel_sec": 0.18117909226566553
+          },
+          "row_count": 8921,
+          "row_stream_materialized": false,
+          "rt_core_accelerated": false,
+          "timing": {
+            "counts_stable": true,
+            "hot_max_sec": 183.7304268963635,
+            "hot_median_sec": 183.7304268963635,
+            "hot_min_sec": 183.7304268963635,
+            "hot_repeat_secs": [
+              183.7304268963635
+            ],
+            "hot_total_sec": 183.7304268963635,
+            "native_traversal_median_sec": 183.525940321,
+            "repeats": 1,
+            "row_count": 8921,
+            "runs": [
+              {
+                "elapsed_sec": 183.7304268963635,
+                "is_warmup": false,
+                "iteration": 0,
+                "native_traversal_seconds": 183.525940321,
+                "row_count": 8921,
+                "row_stream_materialized": false
+              }
+            ],
+            "warmups": 0
+          }
+        },
+        "optix": {
+          "backend": "optix",
+          "execution_route": "prepared_left_exact_segment_pair_scalar_count",
+          "hot_median_sec": 0.0002376902848482132,
+          "input_shape": {
+            "base_cdb": "/workspace/RayJoin_external/test/dataset/br_county_clean_25_odyssey_final.txt",
+            "left_segments": 100000,
+            "query_count": 100000,
+            "right_segments": 326193
+          },
+          "output_contract": "scalar_exact_count",
+          "prepare_sec": {
+            "prepare_left_set_sec": 0.0012563718482851982,
+            "prepare_static_scene_sec": 0.45622799079865217,
+            "query_pack_sec": 0.09537678118795156,
+            "static_segment_pack_sec": 0.30878080055117607
+          },
+          "row_count": 8921,
+          "row_stream_materialized": false,
+          "rt_core_accelerated": true,
+          "timing": {
+            "counts_stable": true,
+            "hot_max_sec": 0.0002878960222005844,
+            "hot_median_sec": 0.0002376902848482132,
+            "hot_min_sec": 0.00022067781537771225,
+            "hot_repeat_secs": [
+              0.0002878960222005844,
+              0.0002376902848482132,
+              0.00022067781537771225
+            ],
+            "hot_total_sec": 0.0007462641224265099,
+            "native_traversal_median_sec": null,
+            "repeats": 3,
+            "row_count": 8921,
+            "runs": [
+              {
+                "elapsed_sec": 0.6691661765798926,
+                "is_warmup": true,
+                "iteration": 0,
+                "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+                "right_group_count": 326193,
+                "route": "intersection_program_identity_or_ranged_primitive_records",
+                "row_count": 8921,
+                "row_stream_materialized": false
+              },
+              {
+                "elapsed_sec": 0.0002878960222005844,
+                "is_warmup": false,
+                "iteration": 1,
+                "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+                "right_group_count": 326193,
+                "route": "intersection_program_identity_or_ranged_primitive_records",
+                "row_count": 8921,
+                "row_stream_materialized": false
+              },
+              {
+                "elapsed_sec": 0.0002376902848482132,
+                "is_warmup": false,
+                "iteration": 2,
+                "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+                "right_group_count": 326193,
+                "route": "intersection_program_identity_or_ranged_primitive_records",
+                "row_count": 8921,
+                "row_stream_materialized": false
+              },
+              {
+                "elapsed_sec": 0.00022067781537771225,
+                "is_warmup": false,
+                "iteration": 3,
+                "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+                "right_group_count": 326193,
+                "route": "intersection_program_identity_or_ranged_primitive_records",
+                "row_count": 8921,
+                "row_stream_materialized": false
+              }
+            ],
+            "warmups": 1
+          }
+        }
+      },
+      "base_cdb": "/workspace/RayJoin_external/test/dataset/br_county_clean_25_odyssey_final.txt",
+      "correctness": {
+        "cross_backend_counts_match": true,
+        "rayjoin_rt_intersections": 8921,
+        "rtdl_backend_counts": {
+          "embree": 8921,
+          "optix": 8921
+        },
+        "rtdl_matches_rayjoin_rt_intersections": true
+      },
+      "query_count": 100000,
+      "query_stream": "/workspace/rtdl_v0_4_release_prep_review/docs/reports/goal4354_rayjoin_original_vs_rtdl_pod/rayjoin_lsi_gen100000_stream.json",
+      "query_stream_producer": "rayjoin_query_exec_export_patch",
+      "query_stream_schema": "rtdl.rayjoin.same_query_stream.v1",
+      "workload": "lsi"
+    },
+    "pip": {
+      "backends": {
+        "embree": {
+          "backend": "embree",
+          "execution_route": "prepared_embree_native_scalar_count",
+          "hot_median_sec": 0.07173530664294958,
+          "input_shape": {
+            "base_cdb": "/workspace/RayJoin_external/test/dataset/br_county_clean_25_odyssey_final.txt",
+            "points": 100000,
+            "polygons": 15700,
+            "query_count": 100000
+          },
+          "output_contract": "scalar_count",
+          "prepare_sec": {
+            "bind_inputs_sec": 0.10247336328029633,
+            "prepare_kernel_sec": 0.00017728563398122787
+          },
+          "row_count": 8686,
+          "row_stream_materialized": false,
+          "rt_core_accelerated": false,
+          "timing": {
+            "counts_stable": true,
+            "hot_max_sec": 0.07173530664294958,
+            "hot_median_sec": 0.07173530664294958,
+            "hot_min_sec": 0.07173530664294958,
+            "hot_repeat_secs": [
+              0.07173530664294958
+            ],
+            "hot_total_sec": 0.07173530664294958,
+            "native_traversal_median_sec": 0.045135902,
+            "repeats": 1,
+            "row_count": 8686,
+            "runs": [
+              {
+                "elapsed_sec": 0.07173530664294958,
+                "is_warmup": false,
+                "iteration": 0,
+                "native_traversal_seconds": 0.045135902,
+                "row_count": 8686,
+                "row_stream_materialized": false
+              }
+            ],
+            "warmups": 0
+          }
+        },
+        "optix": {
+          "backend": "optix",
+          "diagnostics": {
+            "rejected_fast_route": {
+              "boundary_candidate_row_count": 195,
+              "candidate_row_count": 8798,
+              "device_filtered_prepared_points_count": 8798,
+              "diagnostic_phases_sec": {
+                "device_filtered_prepared_points_sec": 0.0014972379431128502,
+                "prepare_query_points_sec": 0.001071220263838768,
+                "prepare_scalar_count_executor_sec": 0.6793452138081193,
+                "relation_status_executor_sec": 0.001449577510356903
+              },
+              "dropped_candidate_row_count": 195,
+              "exact_row_count": 8686,
+              "native_traversal_seconds": 0.001347595,
+              "not_used_for_speedup": true,
+              "reason": "same-stream PIP count did not match exact prepared.count/Embree semantics",
+              "relation_status_corrected_row_count": 8603
+            }
+          },
+          "execution_route": "prepared_exact_closed_shape_membership_scalar_count",
+          "hot_median_sec": 0.007081935182213783,
+          "input_shape": {
+            "base_cdb": "/workspace/RayJoin_external/test/dataset/br_county_clean_25_odyssey_final.txt",
+            "points": 100000,
+            "polygons": 15700,
+            "query_count": 100000
+          },
+          "output_contract": "scalar_exact_positive_membership_count",
+          "prepare_sec": {
+            "prepare_static_scene_sec": 0.7041277522221208,
+            "query_point_pack_sec": 0.1357452655211091,
+            "static_shape_pack_sec": 0.1981992879882455
+          },
+          "row_count": 8686,
+          "row_stream_materialized": false,
+          "rt_core_accelerated": true,
+          "timing": {
+            "counts_stable": true,
+            "hot_max_sec": 0.010127727873623371,
+            "hot_median_sec": 0.007081935182213783,
+            "hot_min_sec": 0.0069601936265826225,
+            "hot_repeat_secs": [
+              0.010127727873623371,
+              0.007081935182213783,
+              0.0069601936265826225
+            ],
+            "hot_total_sec": 0.024169856682419777,
+            "native_traversal_median_sec": null,
+            "repeats": 3,
+            "row_count": 8686,
+            "runs": [
+              {
+                "elapsed_sec": 0.014412321150302887,
+                "exact_host_refined_scalar_count": true,
+                "is_warmup": true,
+                "iteration": 0,
+                "native_symbol": "rtdl_optix_count_prepared_point_closed_shape_membership_2d",
+                "row_count": 8686,
+                "row_stream_materialized": false
+              },
+              {
+                "elapsed_sec": 0.010127727873623371,
+                "exact_host_refined_scalar_count": true,
+                "is_warmup": false,
+                "iteration": 1,
+                "native_symbol": "rtdl_optix_count_prepared_point_closed_shape_membership_2d",
+                "row_count": 8686,
+                "row_stream_materialized": false
+              },
+              {
+                "elapsed_sec": 0.007081935182213783,
+                "exact_host_refined_scalar_count": true,
+                "is_warmup": false,
+                "iteration": 2,
+                "native_symbol": "rtdl_optix_count_prepared_point_closed_shape_membership_2d",
+                "row_count": 8686,
+                "row_stream_materialized": false
+              },
+              {
+                "elapsed_sec": 0.0069601936265826225,
+                "exact_host_refined_scalar_count": true,
+                "is_warmup": false,
+                "iteration": 3,
+                "native_symbol": "rtdl_optix_count_prepared_point_closed_shape_membership_2d",
+                "row_count": 8686,
+                "row_stream_materialized": false
+              }
+            ],
+            "warmups": 1
+          }
+        }
+      },
+      "base_cdb": "/workspace/RayJoin_external/test/dataset/br_county_clean_25_odyssey_final.txt",
+      "correctness": {
+        "cross_backend_counts_match": true,
+        "rayjoin_pip_count_available_in_log": false,
+        "rayjoin_rt_builtin_check_passed": true,
+        "rtdl_backend_counts": {
+          "embree": 8686,
+          "optix": 8686
+        }
+      },
+      "query_count": 100000,
+      "query_stream": "/workspace/rtdl_v0_4_release_prep_review/docs/reports/goal4354_rayjoin_original_vs_rtdl_pod/rayjoin_pip_gen100000_stream.json",
+      "query_stream_producer": "rayjoin_query_exec_export_patch",
+      "query_stream_schema": "rtdl.rayjoin.same_query_stream.v1",
+      "workload": "pip"
+    }
+  },
+  "schema": "rtdl.goal4354.rayjoin_original_vs_rtdl_same_stream_scalar_count.v1",
+  "release_hygiene": {
+    "raw_payloads_in_source_tree": false,
+    "retained_artifacts": [
+      "goal4354_rayjoin_original_vs_rtdl_same_stream_summary.md",
+      "goal4354_rayjoin_original_vs_rtdl_same_stream_summary.json"
+    ],
+    "omitted_payload_classes": [
+      "RayJoin exported query-stream JSON",
+      "raw query_exec logs",
+      "per-run stdout/stderr logs"
+    ]
+  }
+}

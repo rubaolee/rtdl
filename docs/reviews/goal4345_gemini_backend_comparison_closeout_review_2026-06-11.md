@@ -1,0 +1,8 @@
+- verdict: accept
+- findings:
+  - All public speedup wording, broad RT-core claims, and release authorizations are correctly forced to `False` across all Python validators and markdown reports.
+  - The explicit partner policy in `backend_comparison_campaign_closeout.py` strictly prevents conflating Numba/partner continuation overhead with core backend traversal metrics, accurately separating pure RTDL performance from configured routes.
+  - Boundary-limited metrics (e.g., Robot Collision returning host compact flags vs OptiX device counts, and RayDB-style non-resident vs prepared-resident runs) are accurately categorized and heavily guarded. They are appropriately blocked from being used as clean end-to-end backend ratios.
+  - The ratio calculation logic (Embree / OptiX) correctly identifies the faster backend without mathematical errors, maintaining tight correctness definitions (like bounded collect-k overflow checks).
+  - No stale evidence is referenced; the scripts correctly tie back to the current internal pod validation (`goal4329`) and the fresh Embree scale probe artifacts (`goal4344`).
+- required fixes: none

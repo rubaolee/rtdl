@@ -13,7 +13,7 @@ public claim wording repair closure and target-map refresh.
 
 | Field | Value |
 | --- | --- |
-| Host | `157.157.221.29:24101` |
+| Host | redacted RTX 4000 Ada pod endpoint |
 | Repository | `/root/goal4177.dpBIx4/repo` |
 | Source commit | `3cbd7557` |
 | GPU | `NVIDIA RTX 4000 Ada Generation` |
