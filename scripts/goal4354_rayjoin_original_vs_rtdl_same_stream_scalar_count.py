@@ -435,9 +435,9 @@ def _run_embree(
     }
 
 
-def _parse_rayjoin(artifact_dir: Path) -> dict[str, dict[str, Any]]:
+def _parse_rayjoin(artifact_dir: Path, workloads: tuple[str, ...] = WORKLOADS) -> dict[str, dict[str, Any]]:
     rows: dict[str, dict[str, Any]] = {}
-    for workload in WORKLOADS:
+    for workload in workloads:
         rows[workload] = {}
         for mode in RAYJOIN_MODES:
             rows[workload][mode] = parse_rayjoin_log(artifact_dir / f"rayjoin_{workload}_{mode}.log")
@@ -476,7 +476,7 @@ def _build_payload(args: argparse.Namespace) -> dict[str, Any]:
     invalid = sorted(set(workloads) - set(WORKLOADS))
     if invalid:
         raise ValueError(f"invalid workloads: {invalid}")
-    rayjoin = _parse_rayjoin(artifact_dir)
+    rayjoin = _parse_rayjoin(artifact_dir, workloads)
     rtdl: dict[str, Any] = {}
     for workload in workloads:
         stream_path = _find_stream(artifact_dir, workload)

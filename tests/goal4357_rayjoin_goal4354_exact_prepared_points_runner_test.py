@@ -20,6 +20,7 @@ class Goal4357RayJoinGoal4354ExactPreparedPointsRunnerTest(unittest.TestCase):
             "rtdl_optix_count_prepared_point_closed_shape_membership_prepared_points_2d",
             "scalar_exact_positive_membership_count_prepared_points",
             '"pip_rtdl_count_mode": args.pip_rtdl_count_mode',
+            "_parse_rayjoin(artifact_dir, workloads)",
         ):
             self.assertIn(phrase, text)
 
@@ -29,6 +30,15 @@ class Goal4357RayJoinGoal4354ExactPreparedPointsRunnerTest(unittest.TestCase):
         self.assertIn('default="exact"', text)
         self.assertIn("prepared_exact_closed_shape_membership_scalar_count", text)
         self.assertIn("rtdl_optix_count_prepared_point_closed_shape_membership_2d", text)
+
+    def test_workload_filter_applies_to_rayjoin_log_parser(self) -> None:
+        text = SCRIPT.read_text(encoding="utf-8")
+
+        self.assertIn(
+            "def _parse_rayjoin(artifact_dir: Path, workloads: tuple[str, ...] = WORKLOADS)",
+            text,
+        )
+        self.assertIn("for workload in workloads:", text)
 
 
 if __name__ == "__main__":
