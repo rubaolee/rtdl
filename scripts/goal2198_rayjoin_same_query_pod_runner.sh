@@ -220,6 +220,16 @@ text = re.sub(
     f"set(ENABLED_ARCHS {rayjoin_cuda_arch})",
     text,
 )
+ptx_include_anchor = '        "-I${CMAKE_CURRENT_SOURCE_DIR}"\n'
+ptx_dependency_includes = (
+    ptx_include_anchor
+    + "        -I${GLOG_INCLUDE_DIRS}\n"
+    + "        -I${GFLAGS_INCLUDE_DIRS}\n"
+)
+if "-I${GLOG_INCLUDE_DIRS}" not in text:
+    if ptx_include_anchor not in text:
+        raise SystemExit("src/CMakeLists.txt: PTX include insertion point not found")
+    text = text.replace(ptx_include_anchor, ptx_dependency_includes)
 cmake.write_text(text, encoding="utf-8")
 
 markers = root / "src" / "util" / "markers.h"

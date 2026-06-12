@@ -54,6 +54,8 @@ class Goal2198RayJoinSameQueryPodRunnerTest(unittest.TestCase):
         self.assertIn("rayjoin_extra_cmake_prefix_path", text)
         self.assertIn("RTDL_GOAL2198_VEC2_HASH_EQUAL_PATCH", text)
         self.assertIn("set(ENABLED_ARCHS {rayjoin_cuda_arch})", text)
+        self.assertIn("-I${GLOG_INCLUDE_DIRS}", text)
+        self.assertIn("-I${GFLAGS_INCLUDE_DIRS}", text)
         self.assertIn("#include <nvtx3/nvToolsExt.h>", text)
         self.assertIn('"paper_scale_perf_claim_authorized": False', text)
         self.assertIn('"rtdl_beats_rayjoin_claim_authorized": False', text)
