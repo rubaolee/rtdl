@@ -291,12 +291,25 @@ def _run_pip_optix(
             )
 
             def run_once() -> dict[str, Any]:
+                row_count = int(prepared.count_prepared_points_exact(prepared_points))
+                phase_timings = prepared.last_phase_timings() or {}
+                native_phase_seconds = sum(
+                    float(phase_timings.get(key, 0.0))
+                    for key in (
+                        "candidate_count_pass",
+                        "candidate_write_pass",
+                        "candidate_download",
+                        "exact_refine",
+                    )
+                )
                 return {
-                    "row_count": int(prepared.count_prepared_points_exact(prepared_points)),
+                    "row_count": row_count,
                     "row_stream_materialized": False,
                     "exact_host_refined_scalar_count": True,
                     "query_points_prepared": True,
                     "native_symbol": "rtdl_optix_count_prepared_point_closed_shape_membership_prepared_points_2d",
+                    "native_phase_timings": phase_timings,
+                    "native_traversal_seconds": native_phase_seconds if phase_timings else None,
                 }
 
             repeat_label = "pip/rtdl_optix_exact_prepared_points_scalar_count"
@@ -304,12 +317,25 @@ def _run_pip_optix(
             output_contract = "scalar_exact_positive_membership_count_prepared_points"
         else:
             def run_once() -> dict[str, Any]:
+                row_count = int(prepared.count(packed_points))
+                phase_timings = prepared.last_phase_timings() or {}
+                native_phase_seconds = sum(
+                    float(phase_timings.get(key, 0.0))
+                    for key in (
+                        "candidate_count_pass",
+                        "candidate_write_pass",
+                        "candidate_download",
+                        "exact_refine",
+                    )
+                )
                 return {
-                    "row_count": int(prepared.count(packed_points)),
+                    "row_count": row_count,
                     "row_stream_materialized": False,
                     "exact_host_refined_scalar_count": True,
                     "query_points_prepared": False,
                     "native_symbol": "rtdl_optix_count_prepared_point_closed_shape_membership_2d",
+                    "native_phase_timings": phase_timings,
+                    "native_traversal_seconds": native_phase_seconds if phase_timings else None,
                 }
 
             repeat_label = "pip/rtdl_optix_exact_scalar_count"
@@ -610,7 +636,7 @@ def _render_markdown(payload: dict[str, Any]) -> str:
             "",
             "## RTDL Same-Stream Results",
             "",
-            "| Workload | Backend | Query count | Row count | Hot median ms | Hot total s | Repeats | Native traversal ms | Route |",
+            "| Workload | Backend | Query count | Row count | Hot median ms | Hot total s | Repeats | Native phase ms | Route |",
             "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
         ]
     )
