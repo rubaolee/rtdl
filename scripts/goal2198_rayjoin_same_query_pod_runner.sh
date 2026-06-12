@@ -24,6 +24,7 @@ RUN_APT_INSTALL="${RUN_APT_INSTALL:-1}"
 RUN_PIP_INSTALL="${RUN_PIP_INSTALL:-1}"
 ALLOW_NON_CUDA12="${ALLOW_NON_CUDA12:-0}"
 RAYJOIN_CUDA_ARCH="${RAYJOIN_CUDA_ARCH:-86}"
+RAYJOIN_EXTRA_CMAKE_PREFIX_PATH="${RAYJOIN_EXTRA_CMAKE_PREFIX_PATH:-}"
 
 RTDL_DIR="${WORK_DIR}/rtdl"
 RAYJOIN_DIR="${WORK_DIR}/RayJoin"
@@ -288,11 +289,15 @@ install_python_dependencies() {
 }
 
 build_rayjoin() {
+  local rayjoin_cmake_prefix_path="${OPTIX_PREFIX}"
+  if [[ -n "${RAYJOIN_EXTRA_CMAKE_PREFIX_PATH}" ]]; then
+    rayjoin_cmake_prefix_path="${rayjoin_cmake_prefix_path};${RAYJOIN_EXTRA_CMAKE_PREFIX_PATH}"
+  fi
   run_step configure_rayjoin cmake \
     -S "${RAYJOIN_DIR}" \
     -B "${RAYJOIN_DIR}/release" \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_PREFIX_PATH="${OPTIX_PREFIX}" \
+    -DCMAKE_PREFIX_PATH="${rayjoin_cmake_prefix_path}" \
     -DCMAKE_CUDA_COMPILER="${CUDA_PREFIX}/bin/nvcc"
   run_step build_rayjoin cmake --build "${RAYJOIN_DIR}/release" -j"$(nproc)"
 }
@@ -371,6 +376,7 @@ write_environment() {
     echo "warmup=${WARMUP}"
     echo "repeat=${REPEAT}"
     echo "rayjoin_cuda_arch=${RAYJOIN_CUDA_ARCH}"
+    echo "rayjoin_extra_cmake_prefix_path=${RAYJOIN_EXTRA_CMAKE_PREFIX_PATH}"
     uname -a || true
     if [[ -f /etc/os-release ]]; then cat /etc/os-release; fi
     if command -v nvidia-smi >/dev/null 2>&1; then

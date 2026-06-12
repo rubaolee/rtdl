@@ -50,6 +50,8 @@ class Goal2198RayJoinSameQueryPodRunnerTest(unittest.TestCase):
         self.assertIn("RAYJOIN_COMMIT", text)
         self.assertIn("RAYJOIN_CUDA_ARCH", text)
         self.assertIn("rayjoin_cuda_arch", text)
+        self.assertIn("RAYJOIN_EXTRA_CMAKE_PREFIX_PATH", text)
+        self.assertIn("rayjoin_extra_cmake_prefix_path", text)
         self.assertIn("RTDL_GOAL2198_VEC2_HASH_EQUAL_PATCH", text)
         self.assertIn("set(ENABLED_ARCHS {rayjoin_cuda_arch})", text)
         self.assertIn("#include <nvtx3/nvToolsExt.h>", text)
