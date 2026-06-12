@@ -23,6 +23,7 @@ STEP_TIMEOUT_SECONDS="${STEP_TIMEOUT_SECONDS:-1800}"
 RUN_APT_INSTALL="${RUN_APT_INSTALL:-1}"
 RUN_PIP_INSTALL="${RUN_PIP_INSTALL:-1}"
 ALLOW_NON_CUDA12="${ALLOW_NON_CUDA12:-0}"
+RAYJOIN_CUDA_ARCH="${RAYJOIN_CUDA_ARCH:-86}"
 
 RTDL_DIR="${WORK_DIR}/rtdl"
 RAYJOIN_DIR="${WORK_DIR}/RayJoin"
@@ -201,15 +202,23 @@ apply_rayjoin_build_compatibility_fixes() {
   run_step patch_rayjoin_build_compat "${PYTHON_BIN}" - "${RAYJOIN_DIR}" <<'PY'
 from __future__ import annotations
 
+import os
 import pathlib
 import re
 import sys
 
 root = pathlib.Path(sys.argv[1])
+rayjoin_cuda_arch = os.environ.get("RAYJOIN_CUDA_ARCH", "86")
+if not re.fullmatch(r"[0-9][0-9](;[0-9][0-9])*", rayjoin_cuda_arch):
+    raise SystemExit(f"invalid RAYJOIN_CUDA_ARCH: {rayjoin_cuda_arch!r}")
 
 cmake = root / "src" / "CMakeLists.txt"
 text = cmake.read_text(encoding="utf-8")
-text = re.sub(r"set\(\s*ENABLED_ARCHS\s+\"?[0-9; ]+\"?\s*\)", "set(ENABLED_ARCHS 86)", text)
+text = re.sub(
+    r"set\(\s*ENABLED_ARCHS\s+\"?[0-9; ]+\"?\s*\)",
+    f"set(ENABLED_ARCHS {rayjoin_cuda_arch})",
+    text,
+)
 cmake.write_text(text, encoding="utf-8")
 
 markers = root / "src" / "util" / "markers.h"
@@ -361,6 +370,7 @@ write_environment() {
     echo "seed=${SEED}"
     echo "warmup=${WARMUP}"
     echo "repeat=${REPEAT}"
+    echo "rayjoin_cuda_arch=${RAYJOIN_CUDA_ARCH}"
     uname -a || true
     if [[ -f /etc/os-release ]]; then cat /etc/os-release; fi
     if command -v nvidia-smi >/dev/null 2>&1; then

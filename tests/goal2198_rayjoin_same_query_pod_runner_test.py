@@ -48,8 +48,10 @@ class Goal2198RayJoinSameQueryPodRunnerTest(unittest.TestCase):
         text = SCRIPT.read_text(encoding="utf-8")
 
         self.assertIn("RAYJOIN_COMMIT", text)
+        self.assertIn("RAYJOIN_CUDA_ARCH", text)
+        self.assertIn("rayjoin_cuda_arch", text)
         self.assertIn("RTDL_GOAL2198_VEC2_HASH_EQUAL_PATCH", text)
-        self.assertIn("set(ENABLED_ARCHS 86)", text)
+        self.assertIn("set(ENABLED_ARCHS {rayjoin_cuda_arch})", text)
         self.assertIn("#include <nvtx3/nvToolsExt.h>", text)
         self.assertIn('"paper_scale_perf_claim_authorized": False', text)
         self.assertIn('"rtdl_beats_rayjoin_claim_authorized": False', text)
