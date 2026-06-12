@@ -298,7 +298,7 @@ struct PreparedPointPrimitiveAnyHit2DImpl {
   EmbreeDevice device;
   SceneHolder holder;
 #if RTDL_EMBREE_HAS_GEOS
-  std::unique_ptr<GeosPreparedPolygonSet> geos;
+  std::vector<std::unique_ptr<GeosPreparedPolygonSet>> geos_workers;
 #endif
 
   explicit PreparedPointPrimitiveAnyHit2DImpl(std::vector<Polygon2D> polygons)
@@ -319,7 +319,7 @@ struct PreparedPointPrimitiveAnyHit2DImpl {
     rtcAttachGeometry(holder.scene, holder.geometry);
     rtcCommitScene(holder.scene);
 #if RTDL_EMBREE_HAS_GEOS
-    geos = std::make_unique<GeosPreparedPolygonSet>(polygon_values);
+    geos_workers.push_back(std::make_unique<GeosPreparedPolygonSet>(polygon_values));
 #endif
   }
 };
@@ -424,6 +424,41 @@ void run_query_index_ranges(size_t query_count, WorkerFn worker_fn) {
     workers.emplace_back([&, worker_index, begin, end]() {
       try {
         worker_fn(begin, end);
+      } catch (...) {
+        exceptions[worker_index] = std::current_exception();
+      }
+    });
+  }
+  for (std::thread& worker : workers) {
+    worker.join();
+  }
+  for (const std::exception_ptr& exception : exceptions) {
+    if (exception) {
+      std::rethrow_exception(exception);
+    }
+  }
+}
+
+template <typename WorkerFn>
+void run_query_index_ranges_with_worker(size_t query_count, size_t worker_count, WorkerFn worker_fn) {
+  if (worker_count == 0) {
+    return;
+  }
+  if (worker_count == 1) {
+    worker_fn(0, 0, query_count);
+    return;
+  }
+
+  std::vector<std::thread> workers;
+  std::vector<std::exception_ptr> exceptions(worker_count);
+  workers.reserve(worker_count);
+  const size_t chunk = (query_count + worker_count - 1) / worker_count;
+  for (size_t worker_index = 0; worker_index < worker_count; ++worker_index) {
+    const size_t begin = worker_index * chunk;
+    const size_t end = std::min(query_count, begin + chunk);
+    workers.emplace_back([&, worker_index, begin, end]() {
+      try {
+        worker_fn(worker_index, begin, end);
       } catch (...) {
         exceptions[worker_index] = std::current_exception();
       }
@@ -1500,12 +1535,15 @@ RTDL_EMBREE_EXPORT int rtdl_embree_point_primitive_anyhit_2d_count(
       return;
     }
 
+    const size_t worker_count = embree_dispatch_thread_count(point_values.size());
+#if RTDL_EMBREE_HAS_GEOS
+    while (impl->geos_workers.size() < worker_count) {
+      impl->geos_workers.push_back(std::make_unique<GeosPreparedPolygonSet>(impl->polygon_values));
+    }
+#endif
     const auto traversal_start = std::chrono::steady_clock::now();
     std::atomic<size_t> total_count {0};
-#if RTDL_EMBREE_HAS_GEOS
-    std::mutex geos_mutex;
-#endif
-    run_query_index_ranges(point_values.size(), [&](size_t begin, size_t end) {
+    run_query_index_ranges_with_worker(point_values.size(), worker_count, [&](size_t worker_index, size_t begin, size_t end) {
       size_t local_count = 0;
       for (size_t point_index = begin; point_index < end; ++point_index) {
         const Point2D& point = point_values[point_index];
@@ -1535,11 +1573,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_point_primitive_anyhit_2d_count(
         std::sort(candidate_indices.begin(), candidate_indices.end());
         for (uint32_t polygon_index : candidate_indices) {
 #if RTDL_EMBREE_HAS_GEOS
-          bool contains = false;
-          {
-            std::lock_guard<std::mutex> lock(geos_mutex);
-            contains = impl->geos->covers(polygon_index, point.p.x, point.p.y);
-          }
+          const bool contains = impl->geos_workers.at(worker_index)->covers(polygon_index, point.p.x, point.p.y);
 #else
           const bool contains = point_in_polygon(point, impl->polygon_values[polygon_index]);
 #endif

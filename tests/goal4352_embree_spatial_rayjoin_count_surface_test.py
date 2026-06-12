@@ -40,7 +40,8 @@ class Goal4352EmbreeSpatialRayjoinCountSurfaceTest(unittest.TestCase):
         self.assertIn("from .embree_runtime import run_embree_count", init)
         self.assertIn('"run_embree_count"', init)
         self.assertIn("RTDL_EMBREE_EXPORT int rtdl_embree_point_primitive_anyhit_2d_count", api)
-        self.assertIn("run_query_index_ranges(point_values.size()", api)
+        self.assertIn("run_query_index_ranges_with_worker(point_values.size()", api)
+        self.assertIn("geos_workers", api)
         self.assertIn("total_count.fetch_add(local_count, std::memory_order_relaxed)", api)
 
     def test_human_scale_rayjoin_embree_probe_uses_native_count_surface(self) -> None:
