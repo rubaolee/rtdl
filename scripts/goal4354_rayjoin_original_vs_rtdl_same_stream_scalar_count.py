@@ -261,9 +261,12 @@ def _run_pip_optix(
     *,
     warmups: int,
     repeats: int,
+    count_mode: str,
     point_eps: float,
     include_fast_diagnostic: bool,
 ) -> dict[str, Any]:
+    if count_mode not in {"exact", "exact_prepared_points"}:
+        raise ValueError("PIP RTDL count mode must be 'exact' or 'exact_prepared_points'")
     inputs = _inputs_from_stream(stream)
     phases: dict[str, float] = {}
     phases["query_point_pack_sec"], packed_points = _phase(
@@ -279,17 +282,42 @@ def _run_pip_optix(
         lambda: prepare_point_closed_shape_membership_2d_optix(packed_shapes),
     )
     diagnostics: dict[str, Any] = {}
+    prepared_points = None
     try:
-        def run_once() -> dict[str, Any]:
-            return {
-                "row_count": int(prepared.count(packed_points)),
-                "row_stream_materialized": False,
-                "exact_host_refined_scalar_count": True,
-                "native_symbol": "rtdl_optix_count_prepared_point_closed_shape_membership_2d",
-            }
+        if count_mode == "exact_prepared_points":
+            phases["prepare_query_points_sec"], prepared_points = _phase(
+                "pip optix prepare query point columns",
+                lambda: prepared.prepare_point_probe_columns(packed_points),
+            )
+
+            def run_once() -> dict[str, Any]:
+                return {
+                    "row_count": int(prepared.count_prepared_points_exact(prepared_points)),
+                    "row_stream_materialized": False,
+                    "exact_host_refined_scalar_count": True,
+                    "query_points_prepared": True,
+                    "native_symbol": "rtdl_optix_count_prepared_point_closed_shape_membership_prepared_points_2d",
+                }
+
+            repeat_label = "pip/rtdl_optix_exact_prepared_points_scalar_count"
+            execution_route = "prepared_exact_closed_shape_membership_prepared_points_scalar_count"
+            output_contract = "scalar_exact_positive_membership_count_prepared_points"
+        else:
+            def run_once() -> dict[str, Any]:
+                return {
+                    "row_count": int(prepared.count(packed_points)),
+                    "row_stream_materialized": False,
+                    "exact_host_refined_scalar_count": True,
+                    "query_points_prepared": False,
+                    "native_symbol": "rtdl_optix_count_prepared_point_closed_shape_membership_2d",
+                }
+
+            repeat_label = "pip/rtdl_optix_exact_scalar_count"
+            execution_route = "prepared_exact_closed_shape_membership_scalar_count"
+            output_contract = "scalar_exact_positive_membership_count"
 
         timing = _run_repeats(
-            label="pip/rtdl_optix_exact_scalar_count",
+            label=repeat_label,
             warmups=warmups,
             repeats=repeats,
             fn=run_once,
@@ -297,12 +325,14 @@ def _run_pip_optix(
 
         if include_fast_diagnostic:
             diagnostic_phases: dict[str, float] = {}
-            prepared_points = None
             executor = None
-            diagnostic_phases["prepare_query_points_sec"], prepared_points = _phase(
-                "pip optix diagnostic prepare query point columns",
-                lambda: prepared.prepare_point_probe_columns(packed_points),
-            )
+            if prepared_points is None:
+                diagnostic_phases["prepare_query_points_sec"], prepared_points = _phase(
+                    "pip optix diagnostic prepare query point columns",
+                    lambda: prepared.prepare_point_probe_columns(packed_points),
+                )
+            else:
+                diagnostic_phases["prepare_query_points_sec"] = float(phases["prepare_query_points_sec"])
             diagnostic_phases["prepare_scalar_count_executor_sec"], executor = _phase(
                 "pip optix diagnostic prepare native scalar-count executor",
                 lambda: prepared.prepare_relation_status_corrected_scalar_count_executor(
@@ -334,14 +364,15 @@ def _run_pip_optix(
             finally:
                 if executor is not None:
                     executor.close()
-                if prepared_points is not None:
-                    prepared_points.close()
     finally:
+        if prepared_points is not None:
+            prepared_points.close()
         prepared.close()
 
     return {
         "backend": "optix",
-        "execution_route": "prepared_exact_closed_shape_membership_scalar_count",
+        "execution_route": execution_route,
+        "count_mode": count_mode,
         "rt_core_accelerated": True,
         "row_stream_materialized": False,
         "input_shape": _input_shape("pip", stream, inputs),
@@ -350,7 +381,7 @@ def _run_pip_optix(
         "timing": timing,
         "row_count": int(timing["row_count"]),
         "hot_median_sec": float(timing["hot_median_sec"]),
-        "output_contract": "scalar_exact_positive_membership_count",
+        "output_contract": output_contract,
     }
 
 
@@ -460,6 +491,7 @@ def _build_payload(args: argparse.Namespace) -> dict[str, Any]:
                 stream,
                 warmups=args.warmups,
                 repeats=args.repeats,
+                count_mode=args.pip_rtdl_count_mode,
                 point_eps=args.point_eps,
                 include_fast_diagnostic=args.include_pip_fast_diagnostic,
             )
@@ -519,6 +551,7 @@ def _build_payload(args: argparse.Namespace) -> dict[str, Any]:
             "warmups": int(args.warmups),
             "repeats": int(args.repeats),
             "include_embree": bool(args.include_embree),
+            "pip_rtdl_count_mode": args.pip_rtdl_count_mode,
         },
         "rayjoin": rayjoin,
         "rtdl": rtdl,
@@ -656,7 +689,8 @@ def _render_markdown(payload: dict[str, Any]) -> str:
             "## Interpretation Notes",
             "",
             "- `lsi`: the RTDL route is the current exact prepared-left segment-pair scalar count front door.",
-            "- `pip`: the RTDL route is the exact prepared closed-shape scalar count. The faster relation-status executor is recorded only as a rejected diagnostic when it disagrees with exact semantics.",
+            "- `pip`: the RTDL route is selected by `--pip-rtdl-count-mode`; `exact` preserves the original Goal4354 exact prepared closed-shape scalar count, while `exact_prepared_points` reuses prepared query-point columns but still performs host exact refinement.",
+            "- The faster relation-status executor is recorded only as a rejected diagnostic when it disagrees with exact PIP semantics.",
             "- Differences versus RayJoin RT can come from specialization: RayJoin is a purpose-built C++/CUDA/OptiX program, while RTDL keeps a generic runtime contract and Python front-door orchestration outside the timed native call.",
             "- The table separates hot query time from one-time pack/prepare work in the JSON artifact.",
         ]
@@ -676,6 +710,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--embree-warmups", type=int, default=None)
     parser.add_argument("--embree-repeats", type=int, default=None)
     parser.add_argument("--include-pip-fast-diagnostic", action="store_true")
+    parser.add_argument(
+        "--pip-rtdl-count-mode",
+        choices=("exact", "exact_prepared_points"),
+        default="exact",
+        help="PIP RTDL scalar-count route to measure; default preserves the original Goal4354 exact route.",
+    )
     parser.add_argument("--point-eps", type=float, default=1.0e-9)
     args = parser.parse_args()
     if args.warmups < 0 or args.repeats <= 0:

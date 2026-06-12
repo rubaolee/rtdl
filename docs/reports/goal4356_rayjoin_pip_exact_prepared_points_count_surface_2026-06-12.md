@@ -28,6 +28,10 @@ Run the same RayJoin stream used by Goal4354 with:
 
 `count_mode=exact_prepared_points`
 
+The Goal4354 runner now exposes this as:
+
+`python3 scripts/goal4354_rayjoin_original_vs_rtdl_same_stream_scalar_count.py --artifact-dir docs/reports/goal4354_rayjoin_original_vs_rtdl_pod --workloads pip --pip-rtdl-count-mode exact_prepared_points --include-embree`
+
 Compare against:
 
 1. RayJoin original PIP scalar count.
