@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 
-BACKEND_COMPARISON_CAMPAIGN_CLOSEOUT_VERSION = "rtdl.v2_12.backend_comparison_campaign_closeout.goal4362.v1"
+BACKEND_COMPARISON_CAMPAIGN_CLOSEOUT_VERSION = "rtdl.v2_12.backend_comparison_campaign_closeout.goal4364.v1"
 BACKEND_COMPARISON_CAMPAIGN_CLOSEOUT_STATUS = (
     "internal_backend_comparison_campaign_closeout_not_release_or_public_speedup_authorization"
 )
@@ -134,8 +134,8 @@ def backend_comparison_campaign_closeout(
                 "boundary": (
                     "No promoted benchmark app currently requires a contract choice "
                     "before an internal OptiX-vs-Embree ratio. Spatial RayJoin, "
-                    "RTNN, RT-DBSCAN, and Barnes-Hut now have scoped internal-only "
-                    "paired rows."
+                    "RTNN, RT-DBSCAN, Barnes-Hut, Robot Collision, and RayDB-style "
+                    "now have scoped internal-only paired rows."
                 ),
             },
             "serious_comparison_ready": {
@@ -145,7 +145,9 @@ def backend_comparison_campaign_closeout(
                     "three clean same-contract query-ratio scale rows, the RTNN "
                     "same-contract raw-row pair, the RT-DBSCAN same configured-route "
                     "RTDL+Numba pair, the Barnes-Hut native node-coverage pair, "
-                    "and two boundary-limited phase rows."
+                    "the Robot Collision prepared-buffer pair, and the RayDB-style "
+                    "prepared grouped-reduction pair. No active boundary-limited "
+                    "phase row remains."
                 ),
                 "boundary": "No public speedup, release, or whole-app claim is authorized.",
             },

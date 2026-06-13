@@ -1,0 +1,163 @@
+{
+  "app": "robot_collision_benchmark",
+  "app_lowering_seconds": 1.2076294099970255,
+  "backend": "embree",
+  "benchmark_timing_sec": {
+    "app_lowering_sec": 1.2076294099970255,
+    "tail_phase_output_clear_sec": 0.00033386600262019783,
+    "tail_phase_output_postprocess_sec": 0.0004950419970555231,
+    "tail_phase_prepare_build_sec": 0.005516072997124866,
+    "tail_phase_prepared_query_build_sec": 0.18584828700113576,
+    "tail_phase_query_pack_sec": 0.0,
+    "tail_phase_traversal_sec": 0.001179634,
+    "tail_total_run_sec": 0.002454288987792097
+  },
+  "case_shape": {
+    "group_count": 4096,
+    "link_count": 4,
+    "pose_count": 1024,
+    "probe_points_per_group": 9,
+    "segment_count": 36864,
+    "static_obstacle_triangle_count": 256
+  },
+  "claim_boundary": {
+    "authors_code_comparison_claim_authorized": false,
+    "continuous_collision_supported": false,
+    "cpu_reference_only": false,
+    "discrete_sampled_probe_contract_only": true,
+    "exact_solid_collision_claim_authorized": false,
+    "native_collision_abi_added": false,
+    "native_engine_touch_kind": "generic_rt_primitive_only",
+    "native_engine_touched": true,
+    "native_robot_abi_added": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "source_tree_usage_only": true
+  },
+  "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+  "dataset": "scaled",
+  "goal": "Goal2488",
+  "lowering_policy": "sampled_link_points_to_vertical_finite_segments_3d;center_corners_and_edge_midpoints_per_pose_link",
+  "mode": "embree_prepared_buffers",
+  "probe_reference_compact_link_flags": null,
+  "probe_reference_signature": null,
+  "reuse_metadata": {
+    "all_measured_counts_match_probe_reference": null,
+    "all_measured_runs_match_probe_reference": null,
+    "all_run_signatures_identical": true,
+    "host_query_output_buffers_reused": true,
+    "measured_run_count": 49900,
+    "native_query_output_buffer_reuse_note": "prepared_buffers mode reuses Python-owned ctypes query/output buffers; the backend consumes reusable host buffers and no native device buffer reuse is claimed",
+    "native_query_output_buffers_reused": false,
+    "prepare_build_seconds_constant": true,
+    "prepared_query_descriptor": {
+      "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+      "copy_boundary": "python_ctypes_host_buffer",
+      "device": "host",
+      "group_count": 4096,
+      "group_offsets_buffer_kind": "ctypes_host_uint32_offsets",
+      "host_output_buffer_reused": true,
+      "host_query_buffers_reused": true,
+      "native_device_query_buffers_reused": false,
+      "output_buffer_kind": "ctypes_host_uint8_group_flags",
+      "owner": "python_runtime_wrapper",
+      "public_speedup_claim_authorized": false,
+      "query_buffer_kind": "ctypes_host_rtdl_segment3d_array",
+      "segment_count": 36864,
+      "true_zero_copy_authorized": false
+    },
+    "prepared_query_run_index_summary": {
+      "count": 50000,
+      "first": 1,
+      "last": 50000
+    },
+    "prepared_query_run_indices": [],
+    "prepared_query_run_indices_strictly_increase": true,
+    "prepared_run_index_summary": {
+      "count": 50000,
+      "first": 1,
+      "last": 50000
+    },
+    "prepared_run_indices": [],
+    "prepared_run_indices_strictly_increase": true,
+    "prepared_scene_reused": true,
+    "probe_reference_flagged_group_count": null,
+    "probe_reference_seconds": null,
+    "probe_reference_validated": false,
+    "query_input_sequences_reused": true,
+    "repeat_count": 50000,
+    "warmup_rows_dropped": 100
+  },
+  "run_details_suppressed": true,
+  "run_summary": {
+    "phase_timing_seconds": {
+      "output_clear": {
+        "count": 49900,
+        "max_sec": 0.0020961379923392087,
+        "median_sec": 0.00033386600262019783,
+        "min_sec": 0.0003071649989578873,
+        "total_sec": 16.74395499388629
+      },
+      "output_postprocess": {
+        "count": 49900,
+        "max_sec": 0.001133026002207771,
+        "median_sec": 0.0004950419970555231,
+        "min_sec": 0.00045043599675409496,
+        "total_sec": 24.764109418014414
+      },
+      "prepare_build": {
+        "count": 49900,
+        "max_sec": 0.005516072997124866,
+        "median_sec": 0.005516072997124866,
+        "min_sec": 0.005516072997124866,
+        "total_sec": 275.2520425565308
+      },
+      "prepared_query_build": {
+        "count": 49900,
+        "max_sec": 0.18584828700113576,
+        "median_sec": 0.18584828700113576,
+        "min_sec": 0.18584828700113576,
+        "total_sec": 9273.829521356674
+      },
+      "query_pack": {
+        "count": 49900,
+        "max_sec": 0.0,
+        "median_sec": 0.0,
+        "min_sec": 0.0,
+        "total_sec": 0.0
+      },
+      "traversal": {
+        "count": 49900,
+        "max_sec": 0.002730845,
+        "median_sec": 0.001179634,
+        "min_sec": 0.001171539,
+        "total_sec": 59.064579848
+      }
+    },
+    "total_run_seconds": {
+      "count": 49900,
+      "max_sec": 0.01649593199545052,
+      "median_sec": 0.002454288987792097,
+      "min_sec": 0.0023874520120443776,
+      "total_sec": 122.81389074398612
+    }
+  },
+  "runs": [],
+  "tail_medians": {
+    "phase_timing_seconds": {
+      "output_clear": 0.00033386600262019783,
+      "output_postprocess": 0.0004950419970555231,
+      "prepare_build": 0.005516072997124866,
+      "prepared_query_build": 0.18584828700113576,
+      "query_pack": 0.0,
+      "traversal": 0.001179634
+    },
+    "total_run_seconds": 0.002454288987792097
+  },
+  "warmup_protocol": {
+    "minimum_default": "7 repeats with 2 warmup rows for local evidence",
+    "repeat_count": 50000,
+    "rule": "drop the first warmup_count rows; report medians over remaining tail rows",
+    "warmup_count": 100
+  }
+}

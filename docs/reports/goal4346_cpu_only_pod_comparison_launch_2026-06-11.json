@@ -4,10 +4,10 @@
   "claim_boundary": "Goal4346 is a CPU-only OptiX-vs-Embree launch packet. It targets NVIDIA RT-core OptiX rows versus Embree CPU rows only. It has no Intel-GPU lane and does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
   "contract_choice_blockers": [],
   "current_comparison_summary": {
-    "boundary_limited_phase_ratio_count": 2,
-    "clean_internal_query_ratio_count": 8,
+    "boundary_limited_phase_ratio_count": 0,
+    "clean_internal_query_ratio_count": 10,
     "contract_choice_blocker_count": 0,
-    "fresh_scale_comparison_row_count": 5,
+    "fresh_scale_comparison_row_count": 3,
     "fully_optimized_measured_pair_count": 1
   },
   "embree_cpu_scale_commands": [
@@ -41,7 +41,7 @@
     },
     {
       "app": "robot_collision",
-      "bucket": "boundary_limited_phase_ratio",
+      "bucket": "clean_internal_query_ratio",
       "command": [
         "python",
         "examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
@@ -62,7 +62,7 @@
         "--no-probe-reference",
         "--summary-only-runs"
       ],
-      "note": "Same scene/query scale as OptiX, but output residency differs from OptiX device-count.",
+      "note": "Same prepared-buffer compact flag contract as the Goal4363 OptiX pair.",
       "output_json": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/robot_collision.json",
       "public_speedup_claim_authorized": false,
       "release_authorized": false,
@@ -101,7 +101,7 @@
     },
     {
       "app": "raydb_style",
-      "bucket": "boundary_limited_phase_ratio",
+      "bucket": "clean_internal_query_ratio",
       "command": [
         "python",
         "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
@@ -116,12 +116,12 @@
         "--generated-groups",
         "1024",
         "--repeat",
-        "5000",
+        "9",
         "--warmup",
-        "50",
+        "1",
         "--summary-only-iterations"
       ],
-      "note": "Same generated row/group scale as OptiX, but not the prepared-resident OptiX path.",
+      "note": "Same prepared grouped-reduction contract and repeat/warmup policy as the Goal4364 OptiX pair.",
       "output_json": "docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/raydb_style.json",
       "public_speedup_claim_authorized": false,
       "release_authorized": false,
@@ -259,5 +259,5 @@
     "errors": [],
     "status": "accept"
   },
-  "version": "rtdl.v2_12.cpu_only_pod_comparison_launch.goal4362.v1"
+  "version": "rtdl.v2_12.cpu_only_pod_comparison_launch.goal4364.v1"
 }

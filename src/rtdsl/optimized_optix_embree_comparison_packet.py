@@ -17,16 +17,16 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 GOAL4341_OPTIMIZED_OPTIX_EMBREE_COMPARISON_PACKET_VERSION = (
-    "rtdl.v2_12.optimized_optix_embree_comparison_packet.goal4362.v1"
+    "rtdl.v2_12.optimized_optix_embree_comparison_packet.goal4364.v1"
 )
 GOAL4341_STATUS = "internal_optimized_embree_vs_optix_comparison_packet_not_public_speedup_authorization"
 GOAL4341_CLAIM_BOUNDARY = (
-    "Goal4362 extends the Goal4361 optimized/same-scale Embree-vs-OptiX packet "
-    "with the Barnes-Hut prepared node-coverage same-contract pair. It "
+    "Goal4364 extends the Goal4363 optimized/same-scale Embree-vs-OptiX packet "
+    "with the RayDB-style prepared grouped-reduction same-contract pair. It "
     "separates clean same-contract query-ratio rows, RayJoin same-stream "
     "scalar-count rows, RTNN raw-row backend rows, RT-DBSCAN configured-route "
-    "rows, Barnes-Hut native node-coverage rows, and boundary-limited "
-    "same-scale rows. This "
+    "rows, Barnes-Hut native node-coverage rows, Robot Collision prepared-buffer "
+    "rows, and RayDB-style prepared grouped-reduction rows. This "
     "packet does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper reproduction "
     "wording, true-zero-copy wording, automatic partner selection, or "
@@ -73,6 +73,20 @@ DEFAULT_BARNES_HUT_SAME_CONTRACT_ARTIFACT = (
     / "goal4362_rtx_a4000_v2_12_barnes_hut_same_contract_2026-06-13"
     / "summary.json"
 )
+DEFAULT_ROBOT_COLLISION_SAME_CONTRACT_ARTIFACT = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal4363_rtx_a4000_v2_12_robot_collision_same_contract_2026-06-13"
+    / "summary.json"
+)
+DEFAULT_RAYDB_SAME_CONTRACT_ARTIFACT = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal4364_rtx_a4000_v2_12_raydb_same_contract_2026-06-13"
+    / "summary.json"
+)
 
 
 APP_COMPARISON_PLAN: dict[str, dict[str, str]] = {
@@ -113,15 +127,17 @@ APP_COMPARISON_PLAN: dict[str, dict[str, str]] = {
         ),
     },
     "robot_collision": {
-        "goal4341_status": "same_scale_boundary_limited",
+        "goal4341_status": "same_contract_prepared_buffer_flags_available",
         "reason": (
-            "Goal4344 supplies the Embree row at the same scene/query scale as "
-            "OptiX, but the OptiX scale row uses the OptiX-only device-count path "
-            "while Embree returns host compact flags."
+            "Goal4363 supplies a same-scale prepared grouped-segment any-hit "
+            "compact flag pair for OptiX and Embree, with the same host prepared "
+            "query/output buffer contract and a separate same-scale probe-reference "
+            "validation run."
         ),
         "next_action": (
-            "show traversal-only internal phase comparison, or run an OptiX "
-            "prepared-buffer flags row before reporting a clean output-contract ratio"
+            "use this prepared-buffer ratio internally only; keep continuous "
+            "collision, planner, paper-reproduction, whole-app, and public speedup "
+            "wording blocked"
         ),
     },
     "contact_manifold": {
@@ -135,15 +151,16 @@ APP_COMPARISON_PLAN: dict[str, dict[str, str]] = {
         ),
     },
     "raydb_style": {
-        "goal4341_status": "same_scale_boundary_limited",
+        "goal4341_status": "same_contract_prepared_grouped_reduction_available",
         "reason": (
-            "Goal4344 supplies the Embree generated 262144-row / 1024-group count "
-            "row, but the current OptiX scale row is prepared/resident while the "
-            "Embree row is a non-resident native grouped-reduction run."
+            "Goal4364 supplies a same-scale generated 262144-row / 1024-group "
+            "prepared generic ray/triangle primitive grouped i64 count pair for "
+            "OptiX and Embree, with both rows matching the CPU reference."
         ),
         "next_action": (
-            "show traversal/native-call phases as boundary-limited internal evidence; "
-            "add prepared Embree residency before clean end-to-end ratios"
+            "use this prepared grouped-reduction ratio internally only; keep "
+            "RayDB authors-code, SQL engine, typed hit-stream handoff, whole-app, "
+            "and public speedup wording blocked"
         ),
     },
     "barnes_hut": {
@@ -353,68 +370,10 @@ def _triangle_comparison_row(scale_summary: dict[str, Any], probe_payload: dict[
     )
 
 
-def _robot_boundary_row(scale_summary: dict[str, Any], probe_payload: dict[str, Any]) -> dict[str, Any]:
-    optix, optix_source = _load_optix_stdout(scale_summary, "robot_collision")
-    embree, embree_row = _load_embree_probe_payload(probe_payload, "robot_collision")
-    return _ratio_row(
-        app="robot_collision",
-        comparison_table="pure_rtdl_primitive_boundary_limited",
-        contract="prepared_triangle_scene_grouped_segment_any_hit_same_scene_query_scale",
-        metric_name="traversal_phase_median_sec",
-        metric_unit="sec",
-        embree_metric=_required_float(embree, "tail_medians", "phase_timing_seconds", "traversal"),
-        optix_metric=_required_float(optix, "tail_medians", "phase_timing_seconds", "traversal"),
-        ratio_authorization="boundary_limited_traversal_phase_only_no_end_to_end_ratio",
-        optix_source=optix_source,
-        embree_source=str(embree_row["artifact_path"]),
-        correctness={
-            "same_case_shape": embree.get("case_shape") == optix.get("case_shape"),
-            "optix_probe_reference_validated": bool(_dig_optional(optix, "reuse_metadata", "probe_reference_validated")),
-            "embree_probe_reference_validated": bool(_dig_optional(embree, "reuse_metadata", "probe_reference_validated")),
-            "both_use_current_no_probe_reference_scale_policy": True,
-        },
-        boundary=str(embree_row["boundary"]),
-    )
-
-
-def _raydb_boundary_row(scale_summary: dict[str, Any], probe_payload: dict[str, Any]) -> dict[str, Any]:
-    optix, optix_source = _load_optix_stdout(scale_summary, "raydb_style")
-    embree, embree_row = _load_embree_probe_payload(probe_payload, "raydb_style")
-    return _ratio_row(
-        app="raydb_style",
-        comparison_table="pure_rtdl_primitive_boundary_limited",
-        contract="generated_grouped_count_same_rows_groups_boundary_limited_residency",
-        metric_name="native_rt_traversal_sec",
-        metric_unit="sec",
-        embree_metric=_required_float(embree, "metadata", "timings", "traversal"),
-        optix_metric=_required_float(optix, "metadata", "timings", "traversal"),
-        ratio_authorization="boundary_limited_traversal_phase_only_no_end_to_end_ratio",
-        optix_source=optix_source,
-        embree_source=str(embree_row["artifact_path"]),
-        correctness={
-            "optix_matches_cpu_reference": bool(optix.get("matches_cpu_reference")),
-            "embree_matches_cpu_reference": bool(embree.get("matches_cpu_reference")),
-            "same_row_count": int(optix.get("row_count", -1)) == int(embree.get("row_count", -2)),
-        },
-        boundary=str(embree_row["boundary"]),
-    )
-
-
-def _dig_optional(payload: dict[str, Any], *keys: str) -> Any:
-    node: Any = payload
-    for key in keys:
-        if not isinstance(node, dict) or key not in node:
-            return None
-        node = node[key]
-    return node
-
-
 def _scale_comparison_rows(scale_summary: dict[str, Any], probe_payload: dict[str, Any]) -> tuple[dict[str, Any], ...]:
     return (
         _hausdorff_comparison_row(scale_summary, probe_payload),
-        _robot_boundary_row(scale_summary, probe_payload),
         _contact_comparison_row(scale_summary, probe_payload),
-        _raydb_boundary_row(scale_summary, probe_payload),
         _triangle_comparison_row(scale_summary, probe_payload),
     )
 
@@ -641,6 +600,114 @@ def _barnes_hut_same_contract_backend_comparison_rows(
     return (row,)
 
 
+def _robot_collision_same_contract_backend_comparison_rows(
+    payload: dict[str, Any],
+    *,
+    source_path: Path,
+) -> tuple[dict[str, Any], ...]:
+    comparison = payload.get("comparison")
+    fixed_inputs = payload.get("fixed_inputs")
+    if not isinstance(comparison, dict) or not isinstance(fixed_inputs, dict):
+        return ()
+    row = _ratio_row(
+        app="robot_collision",
+        comparison_table="robot_collision_same_contract_prepared_buffer_flags",
+        contract=str(payload["contract"]),
+        metric_name="tail_total_run_sec",
+        metric_unit="sec",
+        embree_metric=float(comparison["embree_total_median_sec"]),
+        optix_metric=float(comparison["optix_total_median_sec"]),
+        ratio_authorization="internal_same_contract_prepared_buffer_flags_only_not_public_claim",
+        optix_source=_relative(source_path),
+        embree_source=_relative(source_path),
+        correctness={
+            "same_contract": bool(comparison["same_contract"]),
+            "same_mode_family": bool(comparison["same_mode_family"]),
+            "same_dataset_pose_obstacle_link_repeat_warmup": bool(
+                comparison["same_dataset_pose_obstacle_link_repeat_warmup"]
+            ),
+            "validation_same_scale": bool(comparison["validation_same_scale"]),
+            "validation_probe_reference_signature_match": bool(
+                comparison["validation_probe_reference_signature_match"]
+            ),
+            "all_run_signatures_identical_both": bool(
+                comparison["all_run_signatures_identical_both"]
+            ),
+            "group_count": int(fixed_inputs["group_count"]),
+            "segment_count": int(fixed_inputs["segment_count"]),
+            "optix_traversal_sec": float(comparison["optix_traversal_median_sec"]),
+            "embree_traversal_sec": float(comparison["embree_traversal_median_sec"]),
+            "traversal_phase_ratio": float(
+                comparison["embree_traversal_median_divided_by_optix_traversal_median"]
+            ),
+        },
+        boundary=(
+            "Same scaled scene/query shape, prepared grouped-segment any-hit "
+            "primitive, host prepared query/output buffers, repeat/warmup, compact "
+            "uint8 group flag output, and separate probe-reference validation. "
+            "Internal prepared-buffer backend ratio only; no continuous collision, "
+            "planner, whole-app, paper reproduction, or public speedup claim."
+        ),
+    )
+    row["rt_core_prepared_buffer_claim_authorized_internal"] = bool(
+        comparison["rt_core_prepared_buffer_claim_authorized_internal"]
+    )
+    return (row,)
+
+
+def _raydb_same_contract_backend_comparison_rows(
+    payload: dict[str, Any],
+    *,
+    source_path: Path,
+) -> tuple[dict[str, Any], ...]:
+    comparison = payload.get("comparison")
+    fixed_inputs = payload.get("fixed_inputs")
+    if not isinstance(comparison, dict) or not isinstance(fixed_inputs, dict):
+        return ()
+    row = _ratio_row(
+        app="raydb_style",
+        comparison_table="raydb_same_contract_prepared_grouped_reduction",
+        contract=str(payload["contract"]),
+        metric_name="elapsed_sec",
+        metric_unit="sec",
+        embree_metric=float(comparison["embree_elapsed_median_sec"]),
+        optix_metric=float(comparison["optix_elapsed_median_sec"]),
+        ratio_authorization="internal_same_contract_prepared_grouped_reduction_only_not_public_claim",
+        optix_source=_relative(source_path),
+        embree_source=_relative(source_path),
+        correctness={
+            "same_mode": bool(comparison["same_mode"]),
+            "same_generic_contract_family": bool(comparison["same_generic_contract_family"]),
+            "same_fixture_rows_groups_repeat_warmup": bool(
+                comparison["same_fixture_rows_groups_repeat_warmup"]
+            ),
+            "matches_cpu_reference_both": bool(comparison["matches_cpu_reference_both"]),
+            "row_count": int(fixed_inputs["row_count"]),
+            "group_count": int(fixed_inputs["group_count"]),
+            "ray_count": int(fixed_inputs["ray_count"]),
+            "triangle_count": int(fixed_inputs["triangle_count"]),
+            "optix_rt_core_accelerated": bool(comparison["optix_rt_core_accelerated"]),
+            "embree_rt_core_accelerated": bool(comparison["embree_rt_core_accelerated"]),
+            "optix_traversal_sec": float(comparison["optix_traversal_sec"]),
+            "embree_traversal_sec": float(comparison["embree_traversal_sec"]),
+            "traversal_phase_ratio": float(comparison["traversal_ratio"]),
+            "native_call_wall_ratio": float(comparison["native_call_wall_ratio"]),
+        },
+        boundary=(
+            "Same generated fixture scale, generic ray/triangle primitive grouped "
+            "i64 count reduction, prepared scene/ray batch/payload policy, "
+            "repeat/warmup, grouped count output, and CPU-reference match. "
+            "Internal prepared grouped-reduction backend ratio only; no RayDB "
+            "authors-code, SQL engine, typed hit-stream handoff, whole-app, or "
+            "public speedup claim."
+        ),
+    )
+    row["rt_core_prepared_grouped_reduction_claim_authorized_internal"] = bool(
+        comparison["rt_core_prepared_grouped_reduction_claim_authorized_internal"]
+    )
+    return (row,)
+
+
 def _librts_measured_pair(
     *,
     same_scale: dict[str, Any],
@@ -746,6 +813,8 @@ def _planning_rows(measured_pair: dict[str, Any]) -> tuple[dict[str, Any], ...]:
                 "same_contract_raw_rows_available_not_rt_core_proof",
                 "same_contract_configured_numba_route_available",
                 "same_contract_native_node_coverage_available",
+                "same_contract_prepared_buffer_flags_available",
+                "same_contract_prepared_grouped_reduction_available",
             },
             "boundary_limited_phase_ratio_only": plan["goal4341_status"] == "same_scale_boundary_limited",
             "public_speedup_claim_authorized": False,
@@ -771,6 +840,8 @@ def optimized_optix_embree_comparison_packet(
     rtnn_same_contract_artifact_path: Path | None = None,
     rt_dbscan_same_contract_artifact_path: Path | None = None,
     barnes_hut_same_contract_artifact_path: Path | None = None,
+    robot_collision_same_contract_artifact_path: Path | None = None,
+    raydb_same_contract_artifact_path: Path | None = None,
 ) -> dict[str, Any]:
     same_scale_path = same_scale_artifact_path or DEFAULT_GOAL4340_SAME_SCALE_ARTIFACT
     embree_summary_path = embree_summary_path or DEFAULT_GOAL4340_EMBREE_SUMMARY
@@ -780,6 +851,10 @@ def optimized_optix_embree_comparison_packet(
     rtnn_path = rtnn_same_contract_artifact_path or DEFAULT_RTNN_SAME_CONTRACT_ARTIFACT
     rt_dbscan_path = rt_dbscan_same_contract_artifact_path or DEFAULT_RT_DBSCAN_SAME_CONTRACT_ARTIFACT
     barnes_hut_path = barnes_hut_same_contract_artifact_path or DEFAULT_BARNES_HUT_SAME_CONTRACT_ARTIFACT
+    robot_collision_path = (
+        robot_collision_same_contract_artifact_path or DEFAULT_ROBOT_COLLISION_SAME_CONTRACT_ARTIFACT
+    )
+    raydb_path = raydb_same_contract_artifact_path or DEFAULT_RAYDB_SAME_CONTRACT_ARTIFACT
     same_scale = _load_json(same_scale_path)
     embree_summary = _load_json(embree_summary_path)
     pre_optimization_summary = _load_json(pre_optimization_path)
@@ -788,6 +863,8 @@ def optimized_optix_embree_comparison_packet(
     rtnn_same_contract = _load_json(rtnn_path)
     rt_dbscan_same_contract = _load_json(rt_dbscan_path)
     barnes_hut_same_contract = _load_json(barnes_hut_path)
+    robot_collision_same_contract = _load_json(robot_collision_path)
+    raydb_same_contract = _load_json(raydb_path)
     embree_probe = embree_same_contract_scale_probe()
 
     measured_pair = _librts_measured_pair(
@@ -809,6 +886,12 @@ def optimized_optix_embree_comparison_packet(
     ) + _barnes_hut_same_contract_backend_comparison_rows(
         barnes_hut_same_contract,
         source_path=barnes_hut_path,
+    ) + _robot_collision_same_contract_backend_comparison_rows(
+        robot_collision_same_contract,
+        source_path=robot_collision_path,
+    ) + _raydb_same_contract_backend_comparison_rows(
+        raydb_same_contract,
+        source_path=raydb_path,
     )
     planning_rows = _planning_rows(measured_pair)
 
@@ -836,6 +919,8 @@ def optimized_optix_embree_comparison_packet(
         "contact_manifold",
         "librts_spatial_index",
         "rtnn",
+        "robot_collision",
+        "raydb_style",
         "triangle_counting",
     }
     if {row["app"] for row in internal_ratio_rows} != expected_internal_ratio_apps:
@@ -843,7 +928,7 @@ def optimized_optix_embree_comparison_packet(
     boundary_limited_rows = [
         row for row in planning_rows if row["boundary_limited_phase_ratio_only"]
     ]
-    if {row["app"] for row in boundary_limited_rows} != {"robot_collision", "raydb_style"}:
+    if {row["app"] for row in boundary_limited_rows} != set():
         errors.append("unexpected boundary-limited app set in Goal4341")
     if len(same_stream_comparison_rows) != 2:
         errors.append("expected exactly two RayJoin same-stream comparison rows")
@@ -854,10 +939,10 @@ def optimized_optix_embree_comparison_packet(
             errors.append(f"RayJoin {row.get('workload')}: OptiX and Embree counts differ")
         if bool(row["correctness"]["row_stream_materialized"]):
             errors.append(f"RayJoin {row.get('workload')}: row stream was materialized")
-    if len(same_contract_backend_comparison_rows) != 3:
-        errors.append("expected exactly three same-contract backend/configured comparison rows")
+    if len(same_contract_backend_comparison_rows) != 5:
+        errors.append("expected exactly five same-contract backend/configured comparison rows")
     for row in same_contract_backend_comparison_rows:
-        if row["app"] not in {"rtnn", "rt_dbscan", "barnes_hut"}:
+        if row["app"] not in {"rtnn", "rt_dbscan", "barnes_hut", "robot_collision", "raydb_style"}:
             errors.append("same-contract backend comparison row has unexpected app")
         correctness = row["correctness"]
         if row["app"] == "rtnn" and (
@@ -894,12 +979,36 @@ def optimized_optix_embree_comparison_packet(
                 errors.append("Barnes-Hut OptiX row is not marked RT-core accelerated")
             if bool(correctness["embree_rt_core_accelerated"]):
                 errors.append("Barnes-Hut Embree row is unexpectedly RT-core accelerated")
+        if row["app"] == "robot_collision":
+            if not bool(correctness["same_contract"]):
+                errors.append("Robot Collision row does not use the same native contract")
+            if not bool(correctness["same_mode_family"]):
+                errors.append("Robot Collision row does not use matching prepared-buffer modes")
+            if not bool(correctness["same_dataset_pose_obstacle_link_repeat_warmup"]):
+                errors.append("Robot Collision row does not hold scene/query/repeat fixed")
+            if not bool(correctness["validation_same_scale"]):
+                errors.append("Robot Collision validation row does not match the timed scale")
+            if not bool(correctness["validation_probe_reference_signature_match"]):
+                errors.append("Robot Collision validation signatures differ")
+        if row["app"] == "raydb_style":
+            if not bool(correctness["same_mode"]):
+                errors.append("RayDB-style row does not use matching result mode")
+            if not bool(correctness["same_generic_contract_family"]):
+                errors.append("RayDB-style row does not use matching generic primitive contract")
+            if not bool(correctness["same_fixture_rows_groups_repeat_warmup"]):
+                errors.append("RayDB-style row does not hold fixture/repeat fixed")
+            if not bool(correctness["matches_cpu_reference_both"]):
+                errors.append("RayDB-style rows did not both match CPU reference")
+            if not bool(correctness["optix_rt_core_accelerated"]):
+                errors.append("RayDB-style OptiX row is not marked RT-core accelerated")
+            if bool(correctness["embree_rt_core_accelerated"]):
+                errors.append("RayDB-style Embree row is unexpectedly RT-core accelerated")
     for row in scale_comparison_rows:
         if float(row["embree_metric"]) <= 0.0 or float(row["optix_metric"]) <= 0.0:
             errors.append(f"{row['app']}: comparison metric must be positive")
         if row["ratio_authorization"].startswith("internal") and row["app"] not in expected_internal_ratio_apps:
             errors.append(f"{row['app']}: unexpected clean internal ratio authorization")
-        if row["ratio_authorization"].startswith("boundary_limited") and row["app"] not in {"robot_collision", "raydb_style"}:
+        if row["ratio_authorization"].startswith("boundary_limited"):
             errors.append(f"{row['app']}: unexpected boundary-limited ratio row")
 
     return {
@@ -915,6 +1024,8 @@ def optimized_optix_embree_comparison_packet(
             "rtnn_same_contract_summary": _relative(rtnn_path),
             "rt_dbscan_same_contract_summary": _relative(rt_dbscan_path),
             "barnes_hut_same_contract_summary": _relative(barnes_hut_path),
+            "robot_collision_same_contract_summary": _relative(robot_collision_path),
+            "raydb_same_contract_summary": _relative(raydb_path),
             "embree_same_contract_scale_probe": embree_probe["source_dir"],
         },
         "measured_pairs": (measured_pair,),

@@ -34,7 +34,9 @@ def _markdown(payload: dict[str, object]) -> str:
         "same-stream scalar-count pairs, Goal4360 adds the RTNN same-contract "
         "ranked-summary raw-row pair, and Goal4361 adds the RT-DBSCAN "
         "same-contract configured-route pair. Goal4362 adds the Barnes-Hut "
-        "same-contract native node-coverage pair. This current index remains "
+        "same-contract native node-coverage pair, and Goal4363 adds the Robot "
+        "Collision same-contract prepared-buffer pair. Goal4364 adds the RayDB-style "
+        "same-contract prepared grouped-reduction pair. This current index remains "
         "useful for showing which broad registry artifacts should not be compared directly.",
         "",
         "| App | OptiX row | Embree CPU row | Existing artifact status | Comparability | Internal ratio scope | Next action |",
@@ -120,15 +122,45 @@ def _markdown(payload: dict[str, object]) -> str:
                     speedup=float(barnes_hut_pair["optix_faster_than_embree"]),
                 )
             )
+        robot_pair = row.get("robot_collision_same_contract_pair")
+        if isinstance(robot_pair, dict):
+            lines.append(
+                "| {app} / prepared-buffer | `Goal4363 OptiX` | `Goal4363 Embree` | groups {groups}, validation={validation} | same-contract prepared-buffer compact-flag pair | `{scope}` | OptiX {optix_sec:.6f} sec vs Embree {embree_sec:.6f} sec; OptiX/Embree speedup {speedup:.2f}x; traversal ratio {traversal:.2f}x |".format(
+                    app=row["app"],
+                    groups=int(robot_pair["group_count"]),
+                    validation=bool(robot_pair["validation_probe_reference_signature_match"]),
+                    scope=robot_pair["ratio_authorization"],
+                    optix_sec=float(robot_pair["optix_total_median_sec"]),
+                    embree_sec=float(robot_pair["embree_total_median_sec"]),
+                    speedup=float(robot_pair["optix_faster_than_embree"]),
+                    traversal=float(robot_pair["traversal_phase_ratio"]),
+                )
+            )
+        raydb_pair = row.get("raydb_same_contract_pair")
+        if isinstance(raydb_pair, dict):
+            lines.append(
+                "| {app} / prepared-grouped | `Goal4364 OptiX` | `Goal4364 Embree` | rows {rows}, groups {groups}, cpu_ref={cpu_ref} | same-contract prepared grouped-reduction pair | `{scope}` | OptiX {optix_sec:.6f} sec vs Embree {embree_sec:.6f} sec; OptiX/Embree speedup {speedup:.2f}x; traversal ratio {traversal:.2f}x |".format(
+                    app=row["app"],
+                    rows=int(raydb_pair["row_count"]),
+                    groups=int(raydb_pair["group_count"]),
+                    cpu_ref=bool(raydb_pair["matches_cpu_reference_both"]),
+                    scope=raydb_pair["ratio_authorization"],
+                    optix_sec=float(raydb_pair["optix_elapsed_median_sec"]),
+                    embree_sec=float(raydb_pair["embree_elapsed_median_sec"]),
+                    speedup=float(raydb_pair["optix_faster_than_embree"]),
+                    traversal=float(raydb_pair["traversal_phase_ratio"]),
+                )
+            )
     lines.extend(
         [
             "",
             "Only the Goal4358 Spatial RayJoin LSI/PIP same-stream scalar-count "
             "pairs, the Goal4360 RTNN ranked-summary raw-row pair, and the "
             "Goal4361 RT-DBSCAN configured-route pair, and the Goal4362 Barnes-Hut "
-            "native node-coverage pair authorize internal backend ratios from "
-            "existing artifacts. Every public/release speedup and broad RT-core "
-            "claim flag remains false.",
+            "native node-coverage pair, and the Goal4363 Robot Collision prepared-buffer "
+            "pair, and the Goal4364 RayDB-style prepared grouped-reduction pair "
+            "authorize internal backend ratios from existing artifacts. Every "
+            "public/release speedup and broad RT-core claim flag remains false.",
             "Fresh same-contract paired runs are still required before publishing "
             "whole-app or broad benchmark speedups.",
         ]

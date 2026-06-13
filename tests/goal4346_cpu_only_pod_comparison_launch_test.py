@@ -63,6 +63,8 @@ class Goal4346CpuOnlyPodComparisonLaunchTest(unittest.TestCase):
             self.assertFalse(row["requires_intel_gpu"], app)
             self.assertFalse(row["public_speedup_claim_authorized"], app)
         self.assertEqual("fully_optimized_measured_pair", rows["librts_spatial_index"]["bucket"])
+        self.assertEqual("clean_internal_query_ratio", rows["raydb_style"]["bucket"])
+        self.assertIn("Goal4364", rows["raydb_style"]["note"])
 
     def test_contract_choice_blockers_remain_explicit(self) -> None:
         blockers = {row["app"]: row for row in self.payload["contract_choice_blockers"]}

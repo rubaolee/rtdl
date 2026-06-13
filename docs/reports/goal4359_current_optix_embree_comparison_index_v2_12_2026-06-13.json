@@ -7,8 +7,10 @@
   "optix_artifact_path": "docs\\reports\\goal4329_current_pod_validation\\scale_summary_allpass.json",
   "paper_reproduction_claim_authorized": false,
   "public_speedup_claim_authorized": false,
+  "raydb_same_contract_artifact_path": "docs\\reports\\goal4364_rtx_a4000_v2_12_raydb_same_contract_2026-06-13\\summary.json",
   "rayjoin_same_stream_artifact_path": "docs\\reports\\goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13\\summary.json",
   "release_authorized": false,
+  "robot_collision_same_contract_artifact_path": "docs\\reports\\goal4363_rtx_a4000_v2_12_robot_collision_same_contract_2026-06-13\\summary.json",
   "rows": [
     {
       "app": "hausdorff_xhd",
@@ -44,9 +46,11 @@
       "public_speedup_claim_authorized": false,
       "ratio_authorization_scope": "not_authorized",
       "ratio_authorized_from_existing_artifacts": false,
+      "raydb_same_contract_pair": null,
       "reason_existing_artifacts_are_not_speedup_grade": "OptiX evidence is a prepared threshold-decision route at 1024 copies; Embree evidence is an exact directed-summary route at 8 copies.",
       "release_authorized": false,
       "required_next_action": "run the same directed-summary or same threshold-decision contract on both backends at the same point counts, copies, repeat, and warmup",
+      "robot_collision_same_contract_pair": null,
       "rt_dbscan_same_contract_pair": null,
       "rtnn_same_contract_pair": null,
       "same_stream_scalar_count_pairs": []
@@ -85,9 +89,11 @@
       "public_speedup_claim_authorized": false,
       "ratio_authorization_scope": "internal_same_stream_scalar_count_only_not_public_claim",
       "ratio_authorized_from_existing_artifacts": true,
+      "raydb_same_contract_pair": null,
       "reason_existing_artifacts_are_not_speedup_grade": "Goal4358 adds RayJoin-exported same-stream LSI and PIP scalar-count pairs for RTDL OptiX and RTDL Embree. The older broad registry row is still mixed, so these ratios are scoped to the split scalar-count contracts rather than the whole RayJoin app.",
       "release_authorized": false,
       "required_next_action": "use the Goal4358 LSI/PIP scalar-count pairs for internal backend comparison; keep overlay active-count and whole-app wording separate",
+      "robot_collision_same_contract_pair": null,
       "rt_dbscan_same_contract_pair": null,
       "rtnn_same_contract_pair": null,
       "same_stream_scalar_count_pairs": [
@@ -151,9 +157,11 @@
       "public_speedup_claim_authorized": false,
       "ratio_authorization_scope": "internal_same_contract_configured_numba_route_only_not_public_claim",
       "ratio_authorized_from_existing_artifacts": true,
+      "raydb_same_contract_pair": null,
       "reason_existing_artifacts_are_not_speedup_grade": "Goal4361 adds a same-scale/same-seed clustered3d 65,536-point configured-route pair: OptiX RT-core count-threshold flags plus Numba prepared-grid column signature versus Embree threshold-capped rows plus the same Numba continuation.",
       "release_authorized": false,
       "required_next_action": "use the Goal4361 configured-route pair internally only; keep public whole-app and paper-speedup wording blocked",
+      "robot_collision_same_contract_pair": null,
       "rt_dbscan_same_contract_pair": {
         "contract": "rt_dbscan_clustered3d_count_threshold_flags_plus_numba_prepared_grid_column_signature",
         "embree_elapsed_median_sec": 17.313535127497744,
@@ -173,7 +181,7 @@
     {
       "app": "robot_collision",
       "barnes_hut_same_contract_pair": null,
-      "comparison_class": "same_contract_different_scale_pair_required",
+      "comparison_class": "same_contract_prepared_buffer_flags_available",
       "embree_cpu": {
         "artifact": {
           "artifact_present": true,
@@ -202,11 +210,27 @@
         "row_id": "robot_collision_optix_scale_default_1024_no_probe_reference"
       },
       "public_speedup_claim_authorized": false,
-      "ratio_authorization_scope": "not_authorized",
-      "ratio_authorized_from_existing_artifacts": false,
-      "reason_existing_artifacts_are_not_speedup_grade": "Both rows are prepared collision-count routes, but OptiX uses the scaled 1024-pose resident profile and Embree uses the tiny fixture.",
+      "ratio_authorization_scope": "internal_same_contract_prepared_buffer_flags_only_not_public_claim",
+      "ratio_authorized_from_existing_artifacts": true,
+      "raydb_same_contract_pair": null,
+      "reason_existing_artifacts_are_not_speedup_grade": "Goal4363 supplies a same-scale prepared grouped-segment any-hit compact flag pair for OptiX and Embree, with the same host prepared query/output buffer contract and a separate same-scale probe-reference validation run.",
       "release_authorized": false,
-      "required_next_action": "run the scaled prepared-buffer/device-count contract on both backends with matching repeat, warmup, validation, and summary-only policy",
+      "required_next_action": "use the Goal4363 prepared-buffer pair internally only; keep continuous collision, planner, paper-reproduction, whole-app, and public speedup wording blocked",
+      "robot_collision_same_contract_pair": {
+        "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+        "embree_total_median_sec": 0.002454288987792097,
+        "group_count": 4096,
+        "optix_faster_than_embree": 1.5952614345299878,
+        "optix_total_median_sec": 0.001538487005745992,
+        "ratio_authorization": "internal_same_contract_prepared_buffer_flags_only_not_public_claim",
+        "same_contract": true,
+        "same_dataset_pose_obstacle_link_repeat_warmup": true,
+        "same_mode_family": true,
+        "segment_count": 36864,
+        "traversal_phase_ratio": 9.224322232040224,
+        "validation_probe_reference_signature_match": true,
+        "validation_same_scale": true
+      },
       "rt_dbscan_same_contract_pair": null,
       "rtnn_same_contract_pair": null,
       "same_stream_scalar_count_pairs": []
@@ -245,9 +269,11 @@
       "public_speedup_claim_authorized": false,
       "ratio_authorization_scope": "not_authorized",
       "ratio_authorized_from_existing_artifacts": false,
+      "raydb_same_contract_pair": null,
       "reason_existing_artifacts_are_not_speedup_grade": "Both rows use bounded collect-k style discovery, but OptiX uses grid64 with witness capacity 128 and Embree uses the tiny fixture with capacity 8.",
       "release_authorized": false,
       "required_next_action": "run the same grid size, witness capacity, repeat count, and backend contract on both backends",
+      "robot_collision_same_contract_pair": null,
       "rt_dbscan_same_contract_pair": null,
       "rtnn_same_contract_pair": null,
       "same_stream_scalar_count_pairs": []
@@ -255,7 +281,7 @@
     {
       "app": "raydb_style",
       "barnes_hut_same_contract_pair": null,
-      "comparison_class": "same_contract_different_scale_pair_required",
+      "comparison_class": "same_contract_prepared_grouped_reduction_available",
       "embree_cpu": {
         "artifact": {
           "artifact_present": true,
@@ -284,11 +310,30 @@
         "row_id": "raydb_style_optix_count_scale_default_262k"
       },
       "public_speedup_claim_authorized": false,
-      "ratio_authorization_scope": "not_authorized",
-      "ratio_authorized_from_existing_artifacts": false,
-      "reason_existing_artifacts_are_not_speedup_grade": "Both rows are primitive-first grouped count routes, but OptiX uses 262144 generated rows / 1024 groups while Embree uses 4096 rows / 128 groups.",
+      "ratio_authorization_scope": "internal_same_contract_prepared_grouped_reduction_only_not_public_claim",
+      "ratio_authorized_from_existing_artifacts": true,
+      "raydb_same_contract_pair": {
+        "contract": "generic_ray_triangle_primitive_grouped_i64_reduction_3d_prepared_count",
+        "embree_elapsed_median_sec": 0.02195495601336006,
+        "embree_rt_core_accelerated": false,
+        "group_count": 1024,
+        "matches_cpu_reference_both": true,
+        "optix_elapsed_median_sec": 0.0009913160029100254,
+        "optix_faster_than_embree": 22.147282954084172,
+        "optix_rt_core_accelerated": true,
+        "ratio_authorization": "internal_same_contract_prepared_grouped_reduction_only_not_public_claim",
+        "ray_count": 884736,
+        "row_count": 262144,
+        "same_fixture_rows_groups_repeat_warmup": true,
+        "same_generic_contract_family": true,
+        "same_mode": true,
+        "traversal_phase_ratio": 69.73645972997411,
+        "triangle_count": 262144
+      },
+      "reason_existing_artifacts_are_not_speedup_grade": "Goal4364 supplies a same-scale generated 262144-row / 1024-group prepared generic ray/triangle primitive grouped i64 count pair for OptiX and Embree, with both rows matching the CPU reference.",
       "release_authorized": false,
-      "required_next_action": "run identical generated row and group counts on both backends, with summary-only iteration policy held constant",
+      "required_next_action": "use the Goal4364 prepared grouped-reduction pair internally only; keep RayDB authors-code, SQL engine, typed hit-stream handoff, whole-app, and public speedup wording blocked",
+      "robot_collision_same_contract_pair": null,
       "rt_dbscan_same_contract_pair": null,
       "rtnn_same_contract_pair": null,
       "same_stream_scalar_count_pairs": []
@@ -342,9 +387,11 @@
       "public_speedup_claim_authorized": false,
       "ratio_authorization_scope": "internal_same_contract_native_node_coverage_only_not_public_claim",
       "ratio_authorized_from_existing_artifacts": true,
+      "raydb_same_contract_pair": null,
       "reason_existing_artifacts_are_not_speedup_grade": "Goal4362 supplies a same-scale 1,000,000-body prepared node-coverage scalar-threshold pair for OptiX and Embree. The broad registry row still points at the Numba exact-force partner route, so the ratio is scoped to the native node-coverage contract.",
       "release_authorized": false,
       "required_next_action": "use the Goal4362 native node-coverage pair internally only; keep force-vector, paper-reproduction, whole-app, and public speedup wording blocked",
+      "robot_collision_same_contract_pair": null,
       "rt_dbscan_same_contract_pair": null,
       "rtnn_same_contract_pair": null,
       "same_stream_scalar_count_pairs": []
@@ -383,9 +430,11 @@
       "public_speedup_claim_authorized": false,
       "ratio_authorization_scope": "not_authorized",
       "ratio_authorized_from_existing_artifacts": false,
+      "raydb_same_contract_pair": null,
       "reason_existing_artifacts_are_not_speedup_grade": "Both rows are prepared AABB-index routes, but OptiX uses 32768 boxes and queries with skip-counts while Embree uses 1024 boxes and queries with operation=all.",
       "release_authorized": false,
       "required_next_action": "run identical box/query counts and operation policy; record whether count validation is enabled on both sides",
+      "robot_collision_same_contract_pair": null,
       "rt_dbscan_same_contract_pair": null,
       "rtnn_same_contract_pair": null,
       "same_stream_scalar_count_pairs": []
@@ -424,9 +473,11 @@
       "public_speedup_claim_authorized": false,
       "ratio_authorization_scope": "internal_same_contract_raw_row_query_only_not_public_rt_core_claim",
       "ratio_authorized_from_existing_artifacts": true,
+      "raydb_same_contract_pair": null,
       "reason_existing_artifacts_are_not_speedup_grade": "Goal4360 adds a same-scale/same-seed prepared 3-D fixed-radius bounded ranked-summary raw-row pair for OptiX and Embree. The broad registry row still points at the older Embree 2-D ANN candidate-quality front door, so the ratio is scoped to the Goal4360 raw-row contract.",
       "release_authorized": false,
       "required_next_action": "use the Goal4360 raw-row pair internally only; keep RT-core wording blocked because the current OptiX RTNN phase is the prepared uniform-cell ranked-summary implementation",
+      "robot_collision_same_contract_pair": null,
       "rt_dbscan_same_contract_pair": null,
       "rtnn_same_contract_pair": {
         "contract": "prepared_3d_fixed_radius_bounded_ranked_summary_raw_rows",
@@ -476,9 +527,11 @@
       "public_speedup_claim_authorized": false,
       "ratio_authorization_scope": "not_authorized",
       "ratio_authorized_from_existing_artifacts": false,
+      "raydb_same_contract_pair": null,
       "reason_existing_artifacts_are_not_speedup_grade": "Both rows are native graph-summary style routes, but OptiX uses the RT-Graph 2A1 fixture at 2048 copies while Embree uses the default summary route at 128 copies.",
       "release_authorized": false,
       "required_next_action": "run the same fixture, copy count, repeat, warmup, and output-mode on both backends",
+      "robot_collision_same_contract_pair": null,
       "rt_dbscan_same_contract_pair": null,
       "rtnn_same_contract_pair": null,
       "same_stream_scalar_count_pairs": []
@@ -496,26 +549,30 @@
     "missing_current_artifact_count": 0,
     "paper_reproduction_claim_authorized": false,
     "public_speedup_claim_authorized": false,
-    "ratio_authorized_from_existing_artifacts_count": 4,
+    "ratio_authorized_from_existing_artifacts_count": 6,
+    "raydb_same_contract_prepared_grouped_reduction_pair_count": 1,
     "release_authorized": false,
+    "robot_collision_same_contract_prepared_buffer_pair_count": 1,
     "row_count": 10,
     "rt_dbscan_same_contract_configured_route_pair_count": 1,
     "rtnn_same_contract_raw_row_pair_count": 1,
     "same_contract_configured_numba_route_available_count": 1,
-    "same_contract_different_scale_pair_required_count": 5,
+    "same_contract_different_scale_pair_required_count": 3,
     "same_contract_native_node_coverage_available_count": 1,
+    "same_contract_prepared_buffer_flags_available_count": 1,
+    "same_contract_prepared_grouped_reduction_available_count": 1,
     "same_contract_raw_rows_available_not_rt_core_proof_count": 1,
     "same_stream_scalar_count_pair_count": 2,
     "same_stream_scalar_count_pairs_available_count": 1
   },
   "validation": {
     "app_count": 10,
-    "authorized_existing_artifact_ratio_count": 4,
+    "authorized_existing_artifact_ratio_count": 6,
     "errors": [],
     "missing_current_artifact_count": 0,
     "row_count": 10,
     "status": "accept",
-    "version": "rtdl.v2_12.current_optix_embree_comparison_index.goal4362.v1"
+    "version": "rtdl.v2_12.current_optix_embree_comparison_index.goal4364.v1"
   },
-  "version": "rtdl.v2_12.current_optix_embree_comparison_index.goal4362.v1"
+  "version": "rtdl.v2_12.current_optix_embree_comparison_index.goal4364.v1"
 }

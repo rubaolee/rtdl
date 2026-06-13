@@ -38,9 +38,9 @@ Run OptiX on an RTX-class pod. Do not use Pascal/GTX hardware for RT-core timing
 | App | Bucket | Output | Command |
 | --- | --- | --- | --- |
 | hausdorff_xhd | `clean_internal_query_ratio` | `docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/hausdorff_xhd.json` | `python examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend embree --optix-summary-mode directed_threshold_prepared --hausdorff-threshold 0.25 --copies 1024 --repeat 5 --warmup 1` |
-| robot_collision | `boundary_limited_phase_ratio` | `docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/robot_collision.json` | `python examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py --mode embree_prepared_buffers --dataset scaled --pose-count 1024 --obstacle-count 128 --link-count 4 --repeats 50000 --warmup 100 --no-probe-reference --summary-only-runs` |
+| robot_collision | `clean_internal_query_ratio` | `docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/robot_collision.json` | `python examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py --mode embree_prepared_buffers --dataset scaled --pose-count 1024 --obstacle-count 128 --link-count 4 --repeats 50000 --warmup 100 --no-probe-reference --summary-only-runs` |
 | contact_manifold | `clean_internal_query_ratio` | `docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/contact_manifold.json` | `python examples/current/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py --mode native_collect_k --backend embree --dataset grid --grid-count 64 --witness-capacity 128 --repeat-count 3` |
-| raydb_style | `boundary_limited_phase_ratio` | `docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/raydb_style.json` | `python examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py --mode count --backend paper_rt_embree --fixture-kind generated --generated-rows 262144 --generated-groups 1024 --repeat 5000 --warmup 50 --summary-only-iterations` |
+| raydb_style | `clean_internal_query_ratio` | `docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/raydb_style.json` | `python examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py --mode count --backend paper_rt_embree --fixture-kind generated --generated-rows 262144 --generated-groups 1024 --repeat 9 --warmup 1 --summary-only-iterations` |
 | librts_spatial_index | `fully_optimized_measured_pair` | `docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/librts_spatial_index.json` | `python examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py --mode embree_aabb_index --dataset uniform --box-count 1024 --query-count 1024 --operation all --repeat 2 --warmup 1 --skip-counts` |
 | triangle_counting | `clean_internal_query_ratio` | `docs/reports/goal4346_cpu_only_pod_comparison_run/embree_scale_outputs/triangle_counting.json` | `python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_2a1_generic_rt --backend embree --fixture degree_oriented_two_triangles --rt-graph-copies 2048 --detail summary --repeat 3 --warmup 1` |
 
@@ -52,9 +52,9 @@ Run OptiX on an RTX-class pod. Do not use Pascal/GTX hardware for RT-core timing
 ## Current Comparison Shape
 
 - `fully_optimized_measured_pair_count`: 1
-- `fresh_scale_comparison_row_count`: 5
-- `clean_internal_query_ratio_count`: 8
-- `boundary_limited_phase_ratio_count`: 2
+- `fresh_scale_comparison_row_count`: 3
+- `clean_internal_query_ratio_count`: 10
+- `boundary_limited_phase_ratio_count`: 0
 - `contract_choice_blocker_count`: 0
 
 ## Postprocess

@@ -8,7 +8,7 @@ from .current_benchmark_scale_profiles import CURRENT_BENCHMARK_SCALE_PROFILE_VE
 from .optimized_optix_embree_comparison_packet import optimized_optix_embree_comparison_packet
 
 
-CPU_ONLY_POD_COMPARISON_LAUNCH_VERSION = "rtdl.v2_12.cpu_only_pod_comparison_launch.goal4362.v1"
+CPU_ONLY_POD_COMPARISON_LAUNCH_VERSION = "rtdl.v2_12.cpu_only_pod_comparison_launch.goal4364.v1"
 CPU_ONLY_POD_COMPARISON_LAUNCH_STATUS = (
     "internal_cpu_only_optix_vs_embree_pod_launch_packet_not_release_authorization"
 )
@@ -77,7 +77,7 @@ EMBREE_CPU_SCALE_COMMANDS: tuple[EmbreeCpuScaleCommand, ...] = (
     ),
     EmbreeCpuScaleCommand(
         app="robot_collision",
-        bucket="boundary_limited_phase_ratio",
+        bucket="clean_internal_query_ratio",
         command=(
             "python",
             "examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
@@ -100,7 +100,7 @@ EMBREE_CPU_SCALE_COMMANDS: tuple[EmbreeCpuScaleCommand, ...] = (
         ),
         output_json=f"{OUTPUT_ROOT}/embree_scale_outputs/robot_collision.json",
         timeout_sec=360,
-        note="Same scene/query scale as OptiX, but output residency differs from OptiX device-count.",
+        note="Same prepared-buffer compact flag contract as the Goal4363 OptiX pair.",
     ),
     EmbreeCpuScaleCommand(
         app="contact_manifold",
@@ -127,7 +127,7 @@ EMBREE_CPU_SCALE_COMMANDS: tuple[EmbreeCpuScaleCommand, ...] = (
     ),
     EmbreeCpuScaleCommand(
         app="raydb_style",
-        bucket="boundary_limited_phase_ratio",
+        bucket="clean_internal_query_ratio",
         command=(
             "python",
             "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
@@ -142,14 +142,14 @@ EMBREE_CPU_SCALE_COMMANDS: tuple[EmbreeCpuScaleCommand, ...] = (
             "--generated-groups",
             "1024",
             "--repeat",
-            "5000",
+            "9",
             "--warmup",
-            "50",
+            "1",
             "--summary-only-iterations",
         ),
         output_json=f"{OUTPUT_ROOT}/embree_scale_outputs/raydb_style.json",
         timeout_sec=240,
-        note="Same generated row/group scale as OptiX, but not the prepared-resident OptiX path.",
+        note="Same prepared grouped-reduction contract and repeat/warmup policy as the Goal4364 OptiX pair.",
     ),
     EmbreeCpuScaleCommand(
         app="librts_spatial_index",

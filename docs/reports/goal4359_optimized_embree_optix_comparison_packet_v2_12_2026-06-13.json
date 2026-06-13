@@ -1,7 +1,7 @@
 {
   "automatic_partner_selection_authorized": false,
   "broad_rt_core_claim_authorized": false,
-  "claim_boundary": "Goal4362 extends the Goal4361 optimized/same-scale Embree-vs-OptiX packet with the Barnes-Hut prepared node-coverage same-contract pair. It separates clean same-contract query-ratio rows, RayJoin same-stream scalar-count rows, RTNN raw-row backend rows, RT-DBSCAN configured-route rows, Barnes-Hut native node-coverage rows, and boundary-limited same-scale rows. This packet does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
+  "claim_boundary": "Goal4364 extends the Goal4363 optimized/same-scale Embree-vs-OptiX packet with the RayDB-style prepared grouped-reduction same-contract pair. It separates clean same-contract query-ratio rows, RayJoin same-stream scalar-count rows, RTNN raw-row backend rows, RT-DBSCAN configured-route rows, Barnes-Hut native node-coverage rows, Robot Collision prepared-buffer rows, and RayDB-style prepared grouped-reduction rows. This packet does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
   "measured_pairs": [
     {
       "app": "librts_spatial_index",
@@ -118,23 +118,23 @@
     },
     {
       "app": "robot_collision",
-      "boundary_limited_phase_ratio_only": true,
+      "boundary_limited_phase_ratio_only": false,
       "embree_cpu_registry": {
         "purpose": "Embree CPU prepared-buffer robot collision coverage route",
         "route_class": "embree_cpu_rt_primitive",
         "row_id": "robot_collision_embree_cpu_prepared_buffers",
         "version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1"
       },
-      "evidence_or_reason": "Goal4344 supplies the Embree row at the same scene/query scale as OptiX, but the OptiX scale row uses the OptiX-only device-count path while Embree returns host compact flags.",
-      "goal4341_status": "same_scale_boundary_limited",
-      "next_action": "show traversal-only internal phase comparison, or run an OptiX prepared-buffer flags row before reporting a clean output-contract ratio",
+      "evidence_or_reason": "Goal4363 supplies a same-scale prepared grouped-segment any-hit compact flag pair for OptiX and Embree, with the same host prepared query/output buffer contract and a separate same-scale probe-reference validation run.",
+      "goal4341_status": "same_contract_prepared_buffer_flags_available",
+      "next_action": "use this prepared-buffer ratio internally only; keep continuous collision, planner, paper-reproduction, whole-app, and public speedup wording blocked",
       "optix_registry": {
         "purpose": "scale-profile robot-collision prepared OptiX device-count run with CPU probe validation separated",
         "row_id": "robot_collision_optix_scale_default_1024_no_probe_reference",
         "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
       },
       "public_speedup_claim_authorized": false,
-      "query_median_ratio_authorized_for_internal_packet": false,
+      "query_median_ratio_authorized_for_internal_packet": true,
       "release_authorized": false
     },
     {
@@ -160,23 +160,23 @@
     },
     {
       "app": "raydb_style",
-      "boundary_limited_phase_ratio_only": true,
+      "boundary_limited_phase_ratio_only": false,
       "embree_cpu_registry": {
         "purpose": "Embree CPU primitive-first grouped count route for RayDB-style columnar payloads",
         "route_class": "embree_cpu_rt_primitive",
         "row_id": "raydb_style_embree_cpu_count_primitive_first",
         "version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1"
       },
-      "evidence_or_reason": "Goal4344 supplies the Embree generated 262144-row / 1024-group count row, but the current OptiX scale row is prepared/resident while the Embree row is a non-resident native grouped-reduction run.",
-      "goal4341_status": "same_scale_boundary_limited",
-      "next_action": "show traversal/native-call phases as boundary-limited internal evidence; add prepared Embree residency before clean end-to-end ratios",
+      "evidence_or_reason": "Goal4364 supplies a same-scale generated 262144-row / 1024-group prepared generic ray/triangle primitive grouped i64 count pair for OptiX and Embree, with both rows matching the CPU reference.",
+      "goal4341_status": "same_contract_prepared_grouped_reduction_available",
+      "next_action": "use this prepared grouped-reduction ratio internally only; keep RayDB authors-code, SQL engine, typed hit-stream handoff, whole-app, and public speedup wording blocked",
       "optix_registry": {
         "purpose": "scale-profile RayDB-style primitive-first grouped count run",
         "row_id": "raydb_style_optix_count_scale_default_262k",
         "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
       },
       "public_speedup_claim_authorized": false,
-      "query_median_ratio_authorized_for_internal_packet": false,
+      "query_median_ratio_authorized_for_internal_packet": true,
       "release_authorized": false
     },
     {
@@ -360,6 +360,71 @@
       "ratio_authorization": "internal_same_contract_native_node_coverage_only_not_public_claim",
       "release_authorized": false,
       "rt_core_node_coverage_claim_authorized_internal": true
+    },
+    {
+      "app": "robot_collision",
+      "boundary": "Same scaled scene/query shape, prepared grouped-segment any-hit primitive, host prepared query/output buffers, repeat/warmup, compact uint8 group flag output, and separate probe-reference validation. Internal prepared-buffer backend ratio only; no continuous collision, planner, whole-app, paper reproduction, or public speedup claim.",
+      "comparison_table": "robot_collision_same_contract_prepared_buffer_flags",
+      "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+      "correctness": {
+        "all_run_signatures_identical_both": true,
+        "embree_traversal_sec": 0.001179634,
+        "group_count": 4096,
+        "optix_traversal_sec": 0.000127883,
+        "same_contract": true,
+        "same_dataset_pose_obstacle_link_repeat_warmup": true,
+        "same_mode_family": true,
+        "segment_count": 36864,
+        "traversal_phase_ratio": 9.224322232040224,
+        "validation_probe_reference_signature_match": true,
+        "validation_same_scale": true
+      },
+      "embree_metric": 0.002454288987792097,
+      "embree_metric_divided_by_optix_metric": 1.5952614345299878,
+      "embree_source": "docs\\reports\\goal4363_rtx_a4000_v2_12_robot_collision_same_contract_2026-06-13\\summary.json",
+      "faster_backend_for_metric": "optix",
+      "metric_name": "tail_total_run_sec",
+      "metric_unit": "sec",
+      "optix_metric": 0.001538487005745992,
+      "optix_source": "docs\\reports\\goal4363_rtx_a4000_v2_12_robot_collision_same_contract_2026-06-13\\summary.json",
+      "public_speedup_claim_authorized": false,
+      "ratio_authorization": "internal_same_contract_prepared_buffer_flags_only_not_public_claim",
+      "release_authorized": false,
+      "rt_core_prepared_buffer_claim_authorized_internal": true
+    },
+    {
+      "app": "raydb_style",
+      "boundary": "Same generated fixture scale, generic ray/triangle primitive grouped i64 count reduction, prepared scene/ray batch/payload policy, repeat/warmup, grouped count output, and CPU-reference match. Internal prepared grouped-reduction backend ratio only; no RayDB authors-code, SQL engine, typed hit-stream handoff, whole-app, or public speedup claim.",
+      "comparison_table": "raydb_same_contract_prepared_grouped_reduction",
+      "contract": "generic_ray_triangle_primitive_grouped_i64_reduction_3d_prepared_count",
+      "correctness": {
+        "embree_rt_core_accelerated": false,
+        "embree_traversal_sec": 0.020128662,
+        "group_count": 1024,
+        "matches_cpu_reference_both": true,
+        "native_call_wall_ratio": 31.613050580529837,
+        "optix_rt_core_accelerated": true,
+        "optix_traversal_sec": 0.000288639,
+        "ray_count": 884736,
+        "row_count": 262144,
+        "same_fixture_rows_groups_repeat_warmup": true,
+        "same_generic_contract_family": true,
+        "same_mode": true,
+        "traversal_phase_ratio": 69.73645972997411,
+        "triangle_count": 262144
+      },
+      "embree_metric": 0.02195495601336006,
+      "embree_metric_divided_by_optix_metric": 22.147282954084172,
+      "embree_source": "docs\\reports\\goal4364_rtx_a4000_v2_12_raydb_same_contract_2026-06-13\\summary.json",
+      "faster_backend_for_metric": "optix",
+      "metric_name": "elapsed_sec",
+      "metric_unit": "sec",
+      "optix_metric": 0.0009913160029100254,
+      "optix_source": "docs\\reports\\goal4364_rtx_a4000_v2_12_raydb_same_contract_2026-06-13\\summary.json",
+      "public_speedup_claim_authorized": false,
+      "ratio_authorization": "internal_same_contract_prepared_grouped_reduction_only_not_public_claim",
+      "release_authorized": false,
+      "rt_core_prepared_grouped_reduction_claim_authorized_internal": true
     }
   ],
   "same_stream_comparison_rows": [
@@ -439,29 +504,6 @@
       "release_authorized": false
     },
     {
-      "app": "robot_collision",
-      "boundary": "Same scene/query scale as the current OptiX row, but Embree returns host compact flags while the current OptiX row uses an OptiX-only device-count path. Traversal phase is useful internally; total/output ratios are not clean backend ratios.",
-      "comparison_table": "pure_rtdl_primitive_boundary_limited",
-      "contract": "prepared_triangle_scene_grouped_segment_any_hit_same_scene_query_scale",
-      "correctness": {
-        "both_use_current_no_probe_reference_scale_policy": true,
-        "embree_probe_reference_validated": false,
-        "optix_probe_reference_validated": false,
-        "same_case_shape": true
-      },
-      "embree_metric": 0.000995346,
-      "embree_metric_divided_by_optix_metric": 24.670252317454022,
-      "embree_source": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\robot_embree_prepared_buffers_1024_128_4_50000.json",
-      "faster_backend_for_metric": "optix",
-      "metric_name": "traversal_phase_median_sec",
-      "metric_unit": "sec",
-      "optix_metric": 4.0346e-05,
-      "optix_source": "docs/reports/goal4329_current_pod_validation/scale_outputs_allpass/robot_collision_optix_scale_default_1024_no_probe_reference.stdout.json",
-      "public_speedup_claim_authorized": false,
-      "ratio_authorization": "boundary_limited_traversal_phase_only_no_end_to_end_ratio",
-      "release_authorized": false
-    },
-    {
       "app": "contact_manifold",
       "boundary": "Same bounded collect-k contract, grid size, witness capacity, and repeat count as OptiX.",
       "comparison_table": "pure_rtdl_primitive",
@@ -482,28 +524,6 @@
       "optix_source": "docs/reports/goal4329_current_pod_validation/scale_outputs_allpass/contact_manifold_optix_scale_default_grid64.stdout.json",
       "public_speedup_claim_authorized": false,
       "ratio_authorization": "internal_query_phase_ratio_only_not_public_claim",
-      "release_authorized": false
-    },
-    {
-      "app": "raydb_style",
-      "boundary": "Same generated row/group scale and grouped-count result contract as the current OptiX row, but the OptiX scale row is a prepared resident v2.5 primitive-first path while this Embree row is a non-resident native grouped-reduction run. Clean end-to-end ratios are withheld.",
-      "comparison_table": "pure_rtdl_primitive_boundary_limited",
-      "contract": "generated_grouped_count_same_rows_groups_boundary_limited_residency",
-      "correctness": {
-        "embree_matches_cpu_reference": true,
-        "optix_matches_cpu_reference": true,
-        "same_row_count": true
-      },
-      "embree_metric": 0.012958745,
-      "embree_metric_divided_by_optix_metric": 61.880100469398386,
-      "embree_source": "docs\\reports\\goal4344_embree_same_contract_scale_probe\\raydb_embree_count_generated_262144_1024.json",
-      "faster_backend_for_metric": "optix",
-      "metric_name": "native_rt_traversal_sec",
-      "metric_unit": "sec",
-      "optix_metric": 0.000209417,
-      "optix_source": "docs/reports/goal4329_current_pod_validation/scale_outputs_allpass/raydb_style_optix_count_scale_default_262k.stdout.json",
-      "public_speedup_claim_authorized": false,
-      "ratio_authorization": "boundary_limited_traversal_phase_only_no_end_to_end_ratio",
       "release_authorized": false
     },
     {
@@ -536,7 +556,9 @@
     "embree_summary": "docs\\reports\\goal4340_embree_native_aabb_index_local_linux\\summary.json",
     "optix_scale_summary": "docs\\reports\\goal4329_current_pod_validation\\scale_summary_allpass.json",
     "pre_optimization_summary": "docs\\reports\\goal4339_librts_skip_counts_local_linux\\summary.json",
+    "raydb_same_contract_summary": "docs\\reports\\goal4364_rtx_a4000_v2_12_raydb_same_contract_2026-06-13\\summary.json",
     "rayjoin_same_stream_summary": "docs\\reports\\goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13\\summary.json",
+    "robot_collision_same_contract_summary": "docs\\reports\\goal4363_rtx_a4000_v2_12_robot_collision_same_contract_2026-06-13\\summary.json",
     "rt_dbscan_same_contract_summary": "docs\\reports\\goal4361_rtx_a4000_v2_12_rt_dbscan_same_contract_2026-06-13\\summary.json",
     "rtnn_same_contract_summary": "docs\\reports\\goal4360_rtx_a4000_v2_12_rtnn_same_contract_2026-06-13\\summary.json",
     "same_scale_artifact": "docs\\reports\\goal4340_embree_optix_same_scale_comparison_2026-06-11.json"
@@ -545,23 +567,23 @@
   "summary": {
     "app_count": 10,
     "automatic_partner_selection_authorized": false,
-    "boundary_limited_phase_ratio_count": 2,
+    "boundary_limited_phase_ratio_count": 0,
     "broad_rt_core_claim_authorized": false,
     "contract_split_pair_required_count": 0,
-    "internal_query_median_ratio_count": 8,
+    "internal_query_median_ratio_count": 10,
     "measured_pair_count": 1,
     "optimized_embree_pairs_count": 1,
     "paper_reproduction_claim_authorized": false,
     "public_speedup_claim_authorized": false,
     "release_authorized": false,
-    "same_contract_backend_comparison_row_count": 3,
+    "same_contract_backend_comparison_row_count": 5,
     "same_contract_scale_pair_required_count": 0,
     "same_stream_comparison_row_count": 2,
-    "scale_comparison_row_count": 5
+    "scale_comparison_row_count": 3
   },
   "validation": {
     "errors": [],
     "status": "accept"
   },
-  "version": "rtdl.v2_12.optimized_optix_embree_comparison_packet.goal4362.v1"
+  "version": "rtdl.v2_12.optimized_optix_embree_comparison_packet.goal4364.v1"
 }

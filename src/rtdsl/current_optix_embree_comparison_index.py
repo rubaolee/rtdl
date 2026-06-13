@@ -16,7 +16,7 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 CURRENT_OPTIX_EMBREE_COMPARISON_INDEX_VERSION = (
-    "rtdl.v2_12.current_optix_embree_comparison_index.goal4362.v1"
+    "rtdl.v2_12.current_optix_embree_comparison_index.goal4364.v1"
 )
 CURRENT_OPTIX_EMBREE_COMPARISON_INDEX_STATUS = (
     "internal_cross_backend_comparison_index_not_speedup_authorization"
@@ -67,6 +67,20 @@ DEFAULT_BARNES_HUT_SAME_CONTRACT_ARTIFACT = (
     / "goal4362_rtx_a4000_v2_12_barnes_hut_same_contract_2026-06-13"
     / "summary.json"
 )
+DEFAULT_ROBOT_COLLISION_SAME_CONTRACT_ARTIFACT = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal4363_rtx_a4000_v2_12_robot_collision_same_contract_2026-06-13"
+    / "summary.json"
+)
+DEFAULT_RAYDB_SAME_CONTRACT_ARTIFACT = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal4364_rtx_a4000_v2_12_raydb_same_contract_2026-06-13"
+    / "summary.json"
+)
 
 
 COMPARISON_GAPS: dict[str, dict[str, str]] = {
@@ -108,14 +122,17 @@ COMPARISON_GAPS: dict[str, dict[str, str]] = {
         ),
     },
     "robot_collision": {
-        "comparison_class": "same_contract_different_scale_pair_required",
+        "comparison_class": "same_contract_prepared_buffer_flags_available",
         "reason": (
-            "Both rows are prepared collision-count routes, but OptiX uses the "
-            "scaled 1024-pose resident profile and Embree uses the tiny fixture."
+            "Goal4363 supplies a same-scale prepared grouped-segment any-hit "
+            "compact flag pair for OptiX and Embree, with the same host prepared "
+            "query/output buffer contract and a separate same-scale probe-reference "
+            "validation run."
         ),
         "required_next_action": (
-            "run the scaled prepared-buffer/device-count contract on both backends "
-            "with matching repeat, warmup, validation, and summary-only policy"
+            "use the Goal4363 prepared-buffer pair internally only; keep continuous "
+            "collision, planner, paper-reproduction, whole-app, and public speedup "
+            "wording blocked"
         ),
     },
     "contact_manifold": {
@@ -130,14 +147,16 @@ COMPARISON_GAPS: dict[str, dict[str, str]] = {
         ),
     },
     "raydb_style": {
-        "comparison_class": "same_contract_different_scale_pair_required",
+        "comparison_class": "same_contract_prepared_grouped_reduction_available",
         "reason": (
-            "Both rows are primitive-first grouped count routes, but OptiX uses "
-            "262144 generated rows / 1024 groups while Embree uses 4096 rows / 128 groups."
+            "Goal4364 supplies a same-scale generated 262144-row / 1024-group "
+            "prepared generic ray/triangle primitive grouped i64 count pair for "
+            "OptiX and Embree, with both rows matching the CPU reference."
         ),
         "required_next_action": (
-            "run identical generated row and group counts on both backends, with "
-            "summary-only iteration policy held constant"
+            "use the Goal4364 prepared grouped-reduction pair internally only; "
+            "keep RayDB authors-code, SQL engine, typed hit-stream handoff, "
+            "whole-app, and public speedup wording blocked"
         ),
     },
     "barnes_hut": {
@@ -382,6 +401,75 @@ def _barnes_hut_same_contract_pair(payload: dict[str, Any] | None) -> dict[str, 
     }
 
 
+def _robot_collision_same_contract_pair(payload: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not payload:
+        return None
+    comparison = payload.get("comparison")
+    fixed_inputs = payload.get("fixed_inputs")
+    if not isinstance(comparison, dict) or not isinstance(fixed_inputs, dict):
+        return None
+    return {
+        "contract": str(payload.get("contract")),
+        "same_contract": bool(comparison["same_contract"]),
+        "same_mode_family": bool(comparison["same_mode_family"]),
+        "same_dataset_pose_obstacle_link_repeat_warmup": bool(
+            comparison["same_dataset_pose_obstacle_link_repeat_warmup"]
+        ),
+        "validation_same_scale": bool(comparison["validation_same_scale"]),
+        "validation_probe_reference_signature_match": bool(
+            comparison["validation_probe_reference_signature_match"]
+        ),
+        "group_count": int(fixed_inputs["group_count"]),
+        "segment_count": int(fixed_inputs["segment_count"]),
+        "optix_total_median_sec": float(comparison["optix_total_median_sec"]),
+        "embree_total_median_sec": float(comparison["embree_total_median_sec"]),
+        "optix_faster_than_embree": (
+            float(comparison["embree_total_median_sec"])
+            / float(comparison["optix_total_median_sec"])
+            if float(comparison["optix_total_median_sec"])
+            else float("inf")
+        ),
+        "traversal_phase_ratio": float(
+            comparison["embree_traversal_median_divided_by_optix_traversal_median"]
+        ),
+        "ratio_authorization": "internal_same_contract_prepared_buffer_flags_only_not_public_claim",
+    }
+
+
+def _raydb_same_contract_pair(payload: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not payload:
+        return None
+    comparison = payload.get("comparison")
+    fixed_inputs = payload.get("fixed_inputs")
+    if not isinstance(comparison, dict) or not isinstance(fixed_inputs, dict):
+        return None
+    return {
+        "contract": str(payload.get("contract")),
+        "same_mode": bool(comparison["same_mode"]),
+        "same_generic_contract_family": bool(comparison["same_generic_contract_family"]),
+        "same_fixture_rows_groups_repeat_warmup": bool(
+            comparison["same_fixture_rows_groups_repeat_warmup"]
+        ),
+        "matches_cpu_reference_both": bool(comparison["matches_cpu_reference_both"]),
+        "row_count": int(fixed_inputs["row_count"]),
+        "group_count": int(fixed_inputs["group_count"]),
+        "ray_count": int(fixed_inputs["ray_count"]),
+        "triangle_count": int(fixed_inputs["triangle_count"]),
+        "optix_elapsed_median_sec": float(comparison["optix_elapsed_median_sec"]),
+        "embree_elapsed_median_sec": float(comparison["embree_elapsed_median_sec"]),
+        "optix_faster_than_embree": (
+            float(comparison["embree_elapsed_median_sec"])
+            / float(comparison["optix_elapsed_median_sec"])
+            if float(comparison["optix_elapsed_median_sec"])
+            else float("inf")
+        ),
+        "traversal_phase_ratio": float(comparison["traversal_ratio"]),
+        "optix_rt_core_accelerated": bool(comparison["optix_rt_core_accelerated"]),
+        "embree_rt_core_accelerated": bool(comparison["embree_rt_core_accelerated"]),
+        "ratio_authorization": "internal_same_contract_prepared_grouped_reduction_only_not_public_claim",
+    }
+
+
 def current_optix_embree_comparison_index(
     *,
     optix_artifact_path: Path | None = None,
@@ -390,6 +478,8 @@ def current_optix_embree_comparison_index(
     rtnn_same_contract_artifact_path: Path | None = None,
     rt_dbscan_same_contract_artifact_path: Path | None = None,
     barnes_hut_same_contract_artifact_path: Path | None = None,
+    robot_collision_same_contract_artifact_path: Path | None = None,
+    raydb_same_contract_artifact_path: Path | None = None,
 ) -> dict[str, Any]:
     optix_path = optix_artifact_path or DEFAULT_OPTIX_ARTIFACT
     embree_path = embree_artifact_path or DEFAULT_EMBREE_ARTIFACT
@@ -397,18 +487,26 @@ def current_optix_embree_comparison_index(
     rtnn_path = rtnn_same_contract_artifact_path or DEFAULT_RTNN_SAME_CONTRACT_ARTIFACT
     rt_dbscan_path = rt_dbscan_same_contract_artifact_path or DEFAULT_RT_DBSCAN_SAME_CONTRACT_ARTIFACT
     barnes_hut_path = barnes_hut_same_contract_artifact_path or DEFAULT_BARNES_HUT_SAME_CONTRACT_ARTIFACT
+    robot_collision_path = (
+        robot_collision_same_contract_artifact_path or DEFAULT_ROBOT_COLLISION_SAME_CONTRACT_ARTIFACT
+    )
+    raydb_path = raydb_same_contract_artifact_path or DEFAULT_RAYDB_SAME_CONTRACT_ARTIFACT
     optix_artifact = _load_json(optix_path)
     embree_artifact = _load_json(embree_path)
     rayjoin_artifact = _load_json(rayjoin_path)
     rtnn_artifact = _load_json(rtnn_path)
     rt_dbscan_artifact = _load_json(rt_dbscan_path)
     barnes_hut_artifact = _load_json(barnes_hut_path)
+    robot_collision_artifact = _load_json(robot_collision_path)
+    raydb_artifact = _load_json(raydb_path)
     optix_artifact_rows = _artifact_rows_by_id(optix_artifact)
     embree_artifact_rows = _artifact_rows_by_id(embree_artifact)
     rayjoin_same_stream_pairs = _rayjoin_same_stream_pairs(rayjoin_artifact)
     rtnn_same_contract_pair = _rtnn_same_contract_pair(rtnn_artifact)
     rt_dbscan_same_contract_pair = _rt_dbscan_same_contract_pair(rt_dbscan_artifact)
     barnes_hut_same_contract_pair = _barnes_hut_same_contract_pair(barnes_hut_artifact)
+    robot_collision_same_contract_pair = _robot_collision_same_contract_pair(robot_collision_artifact)
+    raydb_same_contract_pair = _raydb_same_contract_pair(raydb_artifact)
 
     optix_registry = {row["app"]: row for row in current_benchmark_scale_profiles()}
     embree_registry = {row["app"]: row for row in current_embree_cpu_partner_reference_rows()}
@@ -438,6 +536,8 @@ def current_optix_embree_comparison_index(
         same_contract_pair: dict[str, Any] | None = None
         configured_route_pair: dict[str, Any] | None = None
         native_node_coverage_pair: dict[str, Any] | None = None
+        prepared_buffer_pair: dict[str, Any] | None = None
+        prepared_grouped_reduction_pair: dict[str, Any] | None = None
         if app == "rt_dbscan":
             configured_route_pair = rt_dbscan_same_contract_pair
             ratio_authorized = bool(
@@ -463,6 +563,33 @@ def current_optix_embree_comparison_index(
             )
             if not ratio_authorized:
                 errors.append("barnes_hut: missing accepted Goal4362 same-contract node-coverage pair evidence")
+        if app == "robot_collision":
+            prepared_buffer_pair = robot_collision_same_contract_pair
+            ratio_authorized = bool(
+                prepared_buffer_pair
+                and prepared_buffer_pair["same_contract"]
+                and prepared_buffer_pair["same_mode_family"]
+                and prepared_buffer_pair["same_dataset_pose_obstacle_link_repeat_warmup"]
+                and prepared_buffer_pair["validation_same_scale"]
+                and prepared_buffer_pair["validation_probe_reference_signature_match"]
+            )
+            if not ratio_authorized:
+                errors.append("robot_collision: missing accepted Goal4363 same-contract prepared-buffer pair evidence")
+        if app == "raydb_style":
+            prepared_grouped_reduction_pair = raydb_same_contract_pair
+            ratio_authorized = bool(
+                prepared_grouped_reduction_pair
+                and prepared_grouped_reduction_pair["same_mode"]
+                and prepared_grouped_reduction_pair["same_generic_contract_family"]
+                and prepared_grouped_reduction_pair["same_fixture_rows_groups_repeat_warmup"]
+                and prepared_grouped_reduction_pair["matches_cpu_reference_both"]
+                and prepared_grouped_reduction_pair["optix_rt_core_accelerated"]
+                and not prepared_grouped_reduction_pair["embree_rt_core_accelerated"]
+            )
+            if not ratio_authorized:
+                errors.append(
+                    "raydb_style: missing accepted Goal4364 same-contract prepared grouped-reduction pair evidence"
+                )
         if app == "spatial_rayjoin":
             same_stream_pairs = rayjoin_same_stream_pairs
             ratio_authorized = len(same_stream_pairs) == 2 and all(
@@ -507,6 +634,8 @@ def current_optix_embree_comparison_index(
                 "rtnn_same_contract_pair": same_contract_pair,
                 "rt_dbscan_same_contract_pair": configured_route_pair,
                 "barnes_hut_same_contract_pair": native_node_coverage_pair,
+                "robot_collision_same_contract_pair": prepared_buffer_pair,
+                "raydb_same_contract_pair": prepared_grouped_reduction_pair,
                 "ratio_authorized_from_existing_artifacts": ratio_authorized,
                 "ratio_authorization_scope": (
                     "internal_same_stream_scalar_count_only_not_public_claim"
@@ -517,6 +646,10 @@ def current_optix_embree_comparison_index(
                     if app == "rt_dbscan" and ratio_authorized
                     else "internal_same_contract_native_node_coverage_only_not_public_claim"
                     if app == "barnes_hut" and ratio_authorized
+                    else "internal_same_contract_prepared_buffer_flags_only_not_public_claim"
+                    if app == "robot_collision" and ratio_authorized
+                    else "internal_same_contract_prepared_grouped_reduction_only_not_public_claim"
+                    if app == "raydb_style" and ratio_authorized
                     else "not_authorized"
                 ),
                 "public_speedup_claim_authorized": False,
@@ -533,10 +666,18 @@ def current_optix_embree_comparison_index(
     comparable_without_new_run = [
         row for row in rows if row["ratio_authorized_from_existing_artifacts"]
     ]
-    if {row["app"] for row in comparable_without_new_run} - {"spatial_rayjoin", "rtnn", "rt_dbscan", "barnes_hut"}:
+    if {row["app"] for row in comparable_without_new_run} - {
+        "spatial_rayjoin",
+        "rtnn",
+        "rt_dbscan",
+        "barnes_hut",
+        "robot_collision",
+        "raydb_style",
+    }:
         errors.append(
             "only Goal4358 Spatial RayJoin, Goal4360 RTNN, Goal4361 RT-DBSCAN, "
-            "and Goal4362 Barnes-Hut ratios may be authorized here"
+            "Goal4362 Barnes-Hut, Goal4363 Robot Collision, and Goal4364 RayDB-style ratios "
+            "may be authorized here"
         )
     if any(row["app"] == "spatial_rayjoin" for row in comparable_without_new_run) and len(rayjoin_same_stream_pairs) != 2:
         errors.append("Spatial RayJoin ratio authorization requires two same-stream scalar-count pairs")
@@ -546,6 +687,10 @@ def current_optix_embree_comparison_index(
         errors.append("RT-DBSCAN ratio authorization requires the Goal4361 same-contract configured-route pair")
     if any(row["app"] == "barnes_hut" for row in comparable_without_new_run) and barnes_hut_same_contract_pair is None:
         errors.append("Barnes-Hut ratio authorization requires the Goal4362 same-contract node-coverage pair")
+    if any(row["app"] == "robot_collision" for row in comparable_without_new_run) and robot_collision_same_contract_pair is None:
+        errors.append("Robot Collision ratio authorization requires the Goal4363 same-contract prepared-buffer pair")
+    if any(row["app"] == "raydb_style" for row in comparable_without_new_run) and raydb_same_contract_pair is None:
+        errors.append("RayDB-style ratio authorization requires the Goal4364 same-contract prepared grouped-reduction pair")
 
     validation = {
         "version": CURRENT_OPTIX_EMBREE_COMPARISON_INDEX_VERSION,
@@ -574,6 +719,14 @@ def current_optix_embree_comparison_index(
         "barnes_hut_same_contract_artifact_path": (
             str(barnes_hut_path.relative_to(ROOT)) if barnes_hut_path.is_absolute() else str(barnes_hut_path)
         ),
+        "robot_collision_same_contract_artifact_path": (
+            str(robot_collision_path.relative_to(ROOT))
+            if robot_collision_path.is_absolute()
+            else str(robot_collision_path)
+        ),
+        "raydb_same_contract_artifact_path": (
+            str(raydb_path.relative_to(ROOT)) if raydb_path.is_absolute() else str(raydb_path)
+        ),
         "rows": tuple(rows),
         "summary": {
             "app_count": len({row["app"] for row in rows}),
@@ -584,6 +737,12 @@ def current_optix_embree_comparison_index(
             "rt_dbscan_same_contract_configured_route_pair_count": 1 if rt_dbscan_same_contract_pair else 0,
             "barnes_hut_same_contract_native_node_coverage_pair_count": (
                 1 if barnes_hut_same_contract_pair else 0
+            ),
+            "robot_collision_same_contract_prepared_buffer_pair_count": (
+                1 if robot_collision_same_contract_pair else 0
+            ),
+            "raydb_same_contract_prepared_grouped_reduction_pair_count": (
+                1 if raydb_same_contract_pair else 0
             ),
             "missing_current_artifact_count": len(missing_artifacts),
             "same_stream_scalar_count_pairs_available_count": sum(
@@ -603,6 +762,16 @@ def current_optix_embree_comparison_index(
                 1
                 for row in rows
                 if row["comparison_class"] == "same_contract_native_node_coverage_available"
+            ),
+            "same_contract_prepared_buffer_flags_available_count": sum(
+                1
+                for row in rows
+                if row["comparison_class"] == "same_contract_prepared_buffer_flags_available"
+            ),
+            "same_contract_prepared_grouped_reduction_available_count": sum(
+                1
+                for row in rows
+                if row["comparison_class"] == "same_contract_prepared_grouped_reduction_available"
             ),
             "same_contract_different_scale_pair_required_count": sum(
                 1 for row in rows if row["comparison_class"] == "same_contract_different_scale_pair_required"

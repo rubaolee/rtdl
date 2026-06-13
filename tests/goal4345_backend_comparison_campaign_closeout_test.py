@@ -33,6 +33,7 @@ class Goal4345BackendComparisonCampaignCloseoutTest(unittest.TestCase):
         self.assertEqual(0, self.payload["comparison_buckets"]["rt_core_remaining_high_leverage_work_count"])
         self.assertEqual(0, self.payload["comparison_buckets"]["embree_same_contract_scale_pair_needed_count"])
         self.assertEqual(0, self.payload["comparison_buckets"]["contract_choice_blocker_count"])
+        self.assertEqual(0, self.payload["comparison_buckets"]["boundary_limited_phase_ratio_count"])
         self.assertFalse(self.payload["public_speedup_claim_authorized"])
         self.assertFalse(self.payload["release_authorized"])
 
@@ -91,7 +92,7 @@ class Goal4345BackendComparisonCampaignCloseoutTest(unittest.TestCase):
         self.assertIn("Backend Comparison Campaign Closeout", text)
         self.assertIn("Partner Policy", text)
         self.assertEqual("accept", payload["validation"]["status"])
-        self.assertEqual(5, payload["comparison_buckets"]["fresh_scale_comparison_row_count"])
+        self.assertEqual(3, payload["comparison_buckets"]["fresh_scale_comparison_row_count"])
 
     def test_external_review_and_consensus_note_are_present(self) -> None:
         gemini = GEMINI_REVIEW.read_text(encoding="utf-8")
