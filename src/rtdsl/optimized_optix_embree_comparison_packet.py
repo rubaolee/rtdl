@@ -17,15 +17,16 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 GOAL4341_OPTIMIZED_OPTIX_EMBREE_COMPARISON_PACKET_VERSION = (
-    "rtdl.v2_12.optimized_optix_embree_comparison_packet.goal4360.v1"
+    "rtdl.v2_12.optimized_optix_embree_comparison_packet.goal4361.v1"
 )
 GOAL4341_STATUS = "internal_optimized_embree_vs_optix_comparison_packet_not_public_speedup_authorization"
 GOAL4341_CLAIM_BOUNDARY = (
-    "Goal4360 extends the Goal4359 optimized/same-scale Embree-vs-OptiX packet "
-    "with the RTNN prepared 3-D ranked-summary raw-row same-contract backend "
-    "pair. It separates clean same-contract query-ratio rows, RayJoin "
-    "same-stream scalar-count rows, RTNN raw-row backend rows, boundary-limited "
-    "same-scale rows, and remaining contract-split/configured routes. This "
+    "Goal4361 extends the Goal4360 optimized/same-scale Embree-vs-OptiX packet "
+    "with the RT-DBSCAN OptiX RT-core count-threshold plus Numba column-signature "
+    "same-contract pair. It separates clean same-contract query-ratio rows, "
+    "RayJoin same-stream scalar-count rows, RTNN raw-row backend rows, "
+    "RT-DBSCAN configured-route rows, boundary-limited same-scale rows, and "
+    "the remaining contract-split/configured route. This "
     "packet does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper reproduction "
     "wording, true-zero-copy wording, automatic partner selection, or "
@@ -58,6 +59,13 @@ DEFAULT_RTNN_SAME_CONTRACT_ARTIFACT = (
     / "goal4360_rtx_a4000_v2_12_rtnn_same_contract_2026-06-13"
     / "summary.json"
 )
+DEFAULT_RT_DBSCAN_SAME_CONTRACT_ARTIFACT = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal4361_rtx_a4000_v2_12_rt_dbscan_same_contract_2026-06-13"
+    / "summary.json"
+)
 
 
 APP_COMPARISON_PLAN: dict[str, dict[str, str]] = {
@@ -85,14 +93,16 @@ APP_COMPARISON_PLAN: dict[str, dict[str, str]] = {
         ),
     },
     "rt_dbscan": {
-        "goal4341_status": "contract_split_pair_required",
+        "goal4341_status": "same_contract_configured_numba_route_available",
         "reason": (
-            "Current OptiX evidence is grouped-stream plus Numba continuation at 65K "
-            "points; current Embree evidence is a tiny prepared-row route."
+            "Goal4361 supplies a same-scale/same-seed clustered3d 65,536-point "
+            "configured-route pair: OptiX RT-core count-threshold flags plus "
+            "Numba prepared-grid column signature versus Embree threshold-capped "
+            "rows plus the same Numba continuation."
         ),
         "next_action": (
-            "choose either fixed-radius neighbor rows or grouped signatures, then run "
-            "that same contract on both backends"
+            "use this configured-route ratio internally only; keep public whole-app "
+            "and paper-speedup wording blocked"
         ),
     },
     "robot_collision": {
@@ -511,6 +521,60 @@ def _rtnn_same_contract_backend_comparison_rows(
     return (row,)
 
 
+def _rt_dbscan_same_contract_backend_comparison_rows(
+    payload: dict[str, Any],
+    *,
+    source_path: Path,
+) -> tuple[dict[str, Any], ...]:
+    rows_payload = payload.get("rows")
+    comparison = payload.get("comparison")
+    if not isinstance(rows_payload, dict) or not isinstance(comparison, dict):
+        return ()
+    optix = rows_payload.get("optix")
+    embree = rows_payload.get("embree")
+    if not isinstance(optix, dict) or not isinstance(embree, dict):
+        return ()
+    optix_phase = dict(optix["phase_median_sec"])
+    embree_phase = dict(embree["phase_median_sec"])
+    row = _ratio_row(
+        app="rt_dbscan",
+        comparison_table="rt_dbscan_same_contract_configured_numba_column_signature",
+        contract=str(payload["contract"]),
+        metric_name="elapsed_median_sec",
+        metric_unit="sec",
+        embree_metric=float(embree["elapsed_median_sec"]),
+        optix_metric=float(optix["elapsed_median_sec"]),
+        ratio_authorization="internal_same_contract_configured_numba_route_only_not_public_claim",
+        optix_source=_relative(source_path),
+        embree_source=_relative(source_path),
+        correctness={
+            "signature_match": bool(comparison["signature_match"]),
+            "same_numba_continuation": bool(comparison["same_numba_continuation"]),
+            "same_output_contract": bool(comparison["same_output_contract"]),
+            "same_dataset_radius_min_neighbors_seed_repeat_warmup": bool(
+                comparison["same_dataset_radius_min_neighbors_seed_repeat_warmup"]
+            ),
+            "optix_rt_core_accelerated": bool(optix["rt_core_accelerated"]),
+            "embree_rt_core_accelerated": bool(embree["rt_core_accelerated"]),
+            "optix_threshold_sec": float(optix_phase["optix_rt_count_threshold_sec"]),
+            "embree_threshold_sec": float(embree_phase["embree_threshold_capped_rows_sec"]),
+            "threshold_phase_ratio": float(
+                comparison["embree_threshold_phase_divided_by_optix_threshold_phase"]
+            ),
+        },
+        boundary=(
+            "Same clustered3d point count, radius, min-neighbor threshold, seed, "
+            "repeat/warmup, output component-size signature, and Numba prepared-grid "
+            "continuation. Internal configured-route backend ratio only; no public "
+            "whole-app or paper reproduction speedup claim."
+        ),
+    )
+    row["rt_core_threshold_phase_claim_authorized_internal"] = bool(
+        comparison["rt_core_threshold_phase_claim_authorized_internal"]
+    )
+    return (row,)
+
+
 def _librts_measured_pair(
     *,
     same_scale: dict[str, Any],
@@ -614,6 +678,7 @@ def _planning_rows(measured_pair: dict[str, Any]) -> tuple[dict[str, Any], ...]:
                 "measured_same_contract_optimized_pair",
                 "same_stream_scalar_count_pairs_available",
                 "same_contract_raw_rows_available_not_rt_core_proof",
+                "same_contract_configured_numba_route_available",
             },
             "boundary_limited_phase_ratio_only": plan["goal4341_status"] == "same_scale_boundary_limited",
             "public_speedup_claim_authorized": False,
@@ -637,6 +702,7 @@ def optimized_optix_embree_comparison_packet(
     optix_scale_summary_path: Path | None = None,
     rayjoin_same_stream_artifact_path: Path | None = None,
     rtnn_same_contract_artifact_path: Path | None = None,
+    rt_dbscan_same_contract_artifact_path: Path | None = None,
 ) -> dict[str, Any]:
     same_scale_path = same_scale_artifact_path or DEFAULT_GOAL4340_SAME_SCALE_ARTIFACT
     embree_summary_path = embree_summary_path or DEFAULT_GOAL4340_EMBREE_SUMMARY
@@ -644,12 +710,14 @@ def optimized_optix_embree_comparison_packet(
     optix_scale_path = optix_scale_summary_path or DEFAULT_OPTIX_SCALE_SUMMARY
     rayjoin_path = rayjoin_same_stream_artifact_path or DEFAULT_RAYJOIN_SAME_STREAM_ARTIFACT
     rtnn_path = rtnn_same_contract_artifact_path or DEFAULT_RTNN_SAME_CONTRACT_ARTIFACT
+    rt_dbscan_path = rt_dbscan_same_contract_artifact_path or DEFAULT_RT_DBSCAN_SAME_CONTRACT_ARTIFACT
     same_scale = _load_json(same_scale_path)
     embree_summary = _load_json(embree_summary_path)
     pre_optimization_summary = _load_json(pre_optimization_path)
     optix_scale_summary = _load_json(optix_scale_path)
     rayjoin_same_stream = _load_json(rayjoin_path)
     rtnn_same_contract = _load_json(rtnn_path)
+    rt_dbscan_same_contract = _load_json(rt_dbscan_path)
     embree_probe = embree_same_contract_scale_probe()
 
     measured_pair = _librts_measured_pair(
@@ -665,6 +733,9 @@ def optimized_optix_embree_comparison_packet(
     same_contract_backend_comparison_rows = _rtnn_same_contract_backend_comparison_rows(
         rtnn_same_contract,
         source_path=rtnn_path,
+    ) + _rt_dbscan_same_contract_backend_comparison_rows(
+        rt_dbscan_same_contract,
+        source_path=rt_dbscan_path,
     )
     planning_rows = _planning_rows(measured_pair)
 
@@ -686,6 +757,7 @@ def optimized_optix_embree_comparison_packet(
     ]
     expected_internal_ratio_apps = {
         "hausdorff_xhd",
+        "rt_dbscan",
         "spatial_rayjoin",
         "contact_manifold",
         "librts_spatial_index",
@@ -708,22 +780,33 @@ def optimized_optix_embree_comparison_packet(
             errors.append(f"RayJoin {row.get('workload')}: OptiX and Embree counts differ")
         if bool(row["correctness"]["row_stream_materialized"]):
             errors.append(f"RayJoin {row.get('workload')}: row stream was materialized")
-    if len(same_contract_backend_comparison_rows) != 1:
-        errors.append("expected exactly one RTNN same-contract backend comparison row")
+    if len(same_contract_backend_comparison_rows) != 2:
+        errors.append("expected exactly two same-contract backend/configured comparison rows")
     for row in same_contract_backend_comparison_rows:
-        if row["app"] != "rtnn":
-            errors.append("RTNN same-contract comparison row has wrong app")
+        if row["app"] not in {"rtnn", "rt_dbscan"}:
+            errors.append("same-contract backend comparison row has unexpected app")
         correctness = row["correctness"]
-        if not bool(correctness["optix_ok"]) or not bool(correctness["embree_ok"]):
+        if row["app"] == "rtnn" and (
+            not bool(correctness["optix_ok"]) or not bool(correctness["embree_ok"])
+        ):
             errors.append("RTNN same-contract row did not pass on both backends")
-        if not bool(correctness["row_count_match"]):
+        if row["app"] == "rtnn" and not bool(correctness["row_count_match"]):
             errors.append("RTNN same-contract row counts differ")
-        if not bool(correctness["integer_signature_match"]):
+        if row["app"] == "rtnn" and not bool(correctness["integer_signature_match"]):
             errors.append("RTNN same-contract integer signatures differ")
-        if not bool(correctness["sum_distance_match_exact"]):
+        if row["app"] == "rtnn" and not bool(correctness["sum_distance_match_exact"]):
             errors.append("RTNN same-contract sum_distance differs")
-        if bool(correctness["rt_core_neighbor_search_claim_authorized"]):
+        if row["app"] == "rtnn" and bool(correctness["rt_core_neighbor_search_claim_authorized"]):
             errors.append("RTNN same-contract row unexpectedly authorizes RT-core wording")
+        if row["app"] == "rt_dbscan":
+            if not bool(correctness["signature_match"]):
+                errors.append("RT-DBSCAN same-contract signatures differ")
+            if not bool(correctness["same_numba_continuation"]):
+                errors.append("RT-DBSCAN row does not hold Numba continuation fixed")
+            if not bool(correctness["optix_rt_core_accelerated"]):
+                errors.append("RT-DBSCAN OptiX row is not marked RT-core accelerated")
+            if bool(correctness["embree_rt_core_accelerated"]):
+                errors.append("RT-DBSCAN Embree row is unexpectedly RT-core accelerated")
     for row in scale_comparison_rows:
         if float(row["embree_metric"]) <= 0.0 or float(row["optix_metric"]) <= 0.0:
             errors.append(f"{row['app']}: comparison metric must be positive")
@@ -743,6 +826,7 @@ def optimized_optix_embree_comparison_packet(
             "optix_scale_summary": _relative(optix_scale_path),
             "rayjoin_same_stream_summary": _relative(rayjoin_path),
             "rtnn_same_contract_summary": _relative(rtnn_path),
+            "rt_dbscan_same_contract_summary": _relative(rt_dbscan_path),
             "embree_same_contract_scale_probe": embree_probe["source_dir"],
         },
         "measured_pairs": (measured_pair,),

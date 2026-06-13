@@ -1,0 +1,109 @@
+{
+  "claim_boundary": {
+    "broad_rt_core_claim_authorized": false,
+    "not_whole_app_public_speedup": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "same_contract_configured_route_comparison_candidate": true,
+    "same_numba_continuation": true
+  },
+  "comparison": {
+    "broad_rt_core_claim_authorized": false,
+    "embree_elapsed_median_divided_by_optix_elapsed_median": 54.95500826719458,
+    "embree_threshold_phase_divided_by_optix_threshold_phase": 138.76634853416533,
+    "faster_backend_for_elapsed_median": "optix",
+    "internal_configured_route_ratio_authorized": true,
+    "public_speedup_claim_authorized": false,
+    "rt_core_threshold_phase_claim_authorized_internal": true,
+    "same_dataset_radius_min_neighbors_seed_repeat_warmup": true,
+    "same_numba_continuation": true,
+    "same_output_contract": true,
+    "signature_match": true
+  },
+  "contract": "rt_dbscan_clustered3d_count_threshold_flags_plus_numba_prepared_grid_column_signature",
+  "date": "2026-06-13",
+  "fixed_inputs": {
+    "dataset": "clustered3d",
+    "min_neighbors": 12,
+    "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+    "output_contract": "component_size_signature_columns_no_python_rows",
+    "partner": "numba",
+    "point_count": 65536,
+    "radius": 0.055,
+    "repeat": 3,
+    "seed": 20260519,
+    "validation": false,
+    "warmup": 1
+  },
+  "gpu": "NVIDIA RTX A4000, 580.126.20, 8.6",
+  "host": "791ca879bbee",
+  "interpretation": "This closes RT-DBSCAN as a contract-choice blocker for the internal optimized packet. Both rows use the same clustered3d 65,536-point input, same radius/min-neighbor policy, same Numba prepared-grid column-signature continuation, and produce the same component-size signature. The observed speedup is dominated by the threshold phase: OptiX RT-core count-threshold is about 139x faster than Embree threshold-capped rows here, while the Numba continuation is similar on both sides.",
+  "rows": {
+    "embree": {
+      "backend": "embree_cpu",
+      "core_flag_count": 65536,
+      "elapsed_median_sec": 17.313535127497744,
+      "elapsed_total_sec": 34.62707025499549,
+      "embree_threshold_row_count": 786432,
+      "materializes_neighbor_rows": true,
+      "materializes_python_rows": false,
+      "mode": "embree_core_flags_numba_prepared_grid_column_signature_3d",
+      "native_execution_path": "embree_point_query_fixed_radius_3d_threshold_capped_rows",
+      "path": "embree_threshold_capped_rows_numba_prepared_grid_radius_graph_column_signature_3d",
+      "phase_median_sec": {
+        "column_signature_sec": 0.045975752494996414,
+        "embree_threshold_capped_rows_sec": 16.608574027501163,
+        "embree_threshold_columns_upload_sec": 0.0065323430026182905,
+        "numba_component_continuation_sec": 0.18025428400142118
+      },
+      "prepare_sec": 0.3601041689980775,
+      "rt_core_accelerated": false,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "source": "docs/reports/goal4361_rtx_a4000_v2_12_rt_dbscan_same_contract_2026-06-13/embree_numba_column_signature.stdout.json"
+    },
+    "optix": {
+      "backend": "optix_rt_core",
+      "elapsed_median_sec": 0.31504926799971145,
+      "elapsed_total_sec": 0.6300985359994229,
+      "materializes_neighbor_rows": false,
+      "materializes_python_rows": false,
+      "mode": "optix_rt_core_flags_numba_prepared_grid_column_signature_3d",
+      "native_execution_path": "prepared_rt_core_count_threshold_3d",
+      "path": "optix_rt_count_threshold_numba_prepared_grid_radius_graph_column_signature_3d",
+      "phase_median_sec": {
+        "column_signature_sec": 0.0,
+        "numba_component_continuation_sec": 0.15921149049972882,
+        "optix_rt_count_threshold_sec": 0.119687332000467
+      },
+      "prepare_sec": 1.3377479500049958,
+      "rt_core_accelerated": true,
+      "signature": {
+        "cluster_sizes": {
+          "1": 16384,
+          "2": 16384,
+          "3": 16384,
+          "4": 16384
+        },
+        "core_count": 65536,
+        "noise_count": 0
+      },
+      "source": "docs/reports/goal4361_rtx_a4000_v2_12_rt_dbscan_same_contract_2026-06-13/optix_numba_column_signature.stdout.json"
+    }
+  },
+  "status": "accept_internal_same_contract_rt_core_vs_embree_cpu_configured_numba_comparison",
+  "validation": {
+    "errors": [],
+    "status": "accept"
+  },
+  "version": "rtdl.v2_12.rt_dbscan_same_contract_optix_embree.goal4361.v1"
+}

@@ -1,7 +1,7 @@
 {
   "automatic_partner_selection_authorized": false,
   "broad_rt_core_claim_authorized": false,
-  "claim_boundary": "Goal4360 extends the Goal4359 optimized/same-scale Embree-vs-OptiX packet with the RTNN prepared 3-D ranked-summary raw-row same-contract backend pair. It separates clean same-contract query-ratio rows, RayJoin same-stream scalar-count rows, RTNN raw-row backend rows, boundary-limited same-scale rows, and remaining contract-split/configured routes. This packet does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
+  "claim_boundary": "Goal4361 extends the Goal4360 optimized/same-scale Embree-vs-OptiX packet with the RT-DBSCAN OptiX RT-core count-threshold plus Numba column-signature same-contract pair. It separates clean same-contract query-ratio rows, RayJoin same-stream scalar-count rows, RTNN raw-row backend rows, RT-DBSCAN configured-route rows, boundary-limited same-scale rows, and the remaining contract-split/configured route. This packet does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
   "measured_pairs": [
     {
       "app": "librts_spatial_index",
@@ -104,16 +104,16 @@
         "row_id": "rt_dbscan_embree_cpu_prepared_rows",
         "version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1"
       },
-      "evidence_or_reason": "Current OptiX evidence is grouped-stream plus Numba continuation at 65K points; current Embree evidence is a tiny prepared-row route.",
-      "goal4341_status": "contract_split_pair_required",
-      "next_action": "choose either fixed-radius neighbor rows or grouped signatures, then run that same contract on both backends",
+      "evidence_or_reason": "Goal4361 supplies a same-scale/same-seed clustered3d 65,536-point configured-route pair: OptiX RT-core count-threshold flags plus Numba prepared-grid column signature versus Embree threshold-capped rows plus the same Numba continuation.",
+      "goal4341_status": "same_contract_configured_numba_route_available",
+      "next_action": "use this configured-route ratio internally only; keep public whole-app and paper-speedup wording blocked",
       "optix_registry": {
         "purpose": "scale-profile RT-DBSCAN OptiX threshold flags plus Numba component signature without CPU validation or Python row materialization",
         "row_id": "rt_dbscan_optix_numba_scale_default_65536_no_validation",
         "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
       },
       "public_speedup_claim_authorized": false,
-      "query_median_ratio_authorized_for_internal_packet": false,
+      "query_median_ratio_authorized_for_internal_packet": true,
       "release_authorized": false
     },
     {
@@ -300,6 +300,35 @@
       "ratio_authorization": "internal_same_contract_raw_row_query_only_not_public_rt_core_claim",
       "release_authorized": false,
       "rt_core_neighbor_search_claim_authorized": false
+    },
+    {
+      "app": "rt_dbscan",
+      "boundary": "Same clustered3d point count, radius, min-neighbor threshold, seed, repeat/warmup, output component-size signature, and Numba prepared-grid continuation. Internal configured-route backend ratio only; no public whole-app or paper reproduction speedup claim.",
+      "comparison_table": "rt_dbscan_same_contract_configured_numba_column_signature",
+      "contract": "rt_dbscan_clustered3d_count_threshold_flags_plus_numba_prepared_grid_column_signature",
+      "correctness": {
+        "embree_rt_core_accelerated": false,
+        "embree_threshold_sec": 16.608574027501163,
+        "optix_rt_core_accelerated": true,
+        "optix_threshold_sec": 0.119687332000467,
+        "same_dataset_radius_min_neighbors_seed_repeat_warmup": true,
+        "same_numba_continuation": true,
+        "same_output_contract": true,
+        "signature_match": true,
+        "threshold_phase_ratio": 138.76634853416533
+      },
+      "embree_metric": 17.313535127497744,
+      "embree_metric_divided_by_optix_metric": 54.95500826719458,
+      "embree_source": "docs\\reports\\goal4361_rtx_a4000_v2_12_rt_dbscan_same_contract_2026-06-13\\summary.json",
+      "faster_backend_for_metric": "optix",
+      "metric_name": "elapsed_median_sec",
+      "metric_unit": "sec",
+      "optix_metric": 0.31504926799971145,
+      "optix_source": "docs\\reports\\goal4361_rtx_a4000_v2_12_rt_dbscan_same_contract_2026-06-13\\summary.json",
+      "public_speedup_claim_authorized": false,
+      "ratio_authorization": "internal_same_contract_configured_numba_route_only_not_public_claim",
+      "release_authorized": false,
+      "rt_core_threshold_phase_claim_authorized_internal": true
     }
   ],
   "same_stream_comparison_rows": [
@@ -476,6 +505,7 @@
     "optix_scale_summary": "docs\\reports\\goal4329_current_pod_validation\\scale_summary_allpass.json",
     "pre_optimization_summary": "docs\\reports\\goal4339_librts_skip_counts_local_linux\\summary.json",
     "rayjoin_same_stream_summary": "docs\\reports\\goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13\\summary.json",
+    "rt_dbscan_same_contract_summary": "docs\\reports\\goal4361_rtx_a4000_v2_12_rt_dbscan_same_contract_2026-06-13\\summary.json",
     "rtnn_same_contract_summary": "docs\\reports\\goal4360_rtx_a4000_v2_12_rtnn_same_contract_2026-06-13\\summary.json",
     "same_scale_artifact": "docs\\reports\\goal4340_embree_optix_same_scale_comparison_2026-06-11.json"
   },
@@ -485,14 +515,14 @@
     "automatic_partner_selection_authorized": false,
     "boundary_limited_phase_ratio_count": 2,
     "broad_rt_core_claim_authorized": false,
-    "contract_split_pair_required_count": 2,
-    "internal_query_median_ratio_count": 6,
+    "contract_split_pair_required_count": 1,
+    "internal_query_median_ratio_count": 7,
     "measured_pair_count": 1,
     "optimized_embree_pairs_count": 1,
     "paper_reproduction_claim_authorized": false,
     "public_speedup_claim_authorized": false,
     "release_authorized": false,
-    "same_contract_backend_comparison_row_count": 1,
+    "same_contract_backend_comparison_row_count": 2,
     "same_contract_scale_pair_required_count": 0,
     "same_stream_comparison_row_count": 2,
     "scale_comparison_row_count": 5
@@ -501,5 +531,5 @@
     "errors": [],
     "status": "accept"
   },
-  "version": "rtdl.v2_12.optimized_optix_embree_comparison_packet.goal4360.v1"
+  "version": "rtdl.v2_12.optimized_optix_embree_comparison_packet.goal4361.v1"
 }

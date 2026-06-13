@@ -53,10 +53,11 @@ class Goal4338CurrentOptixEmbreeComparisonIndexTest(unittest.TestCase):
         self.assertEqual(10, self.payload["summary"]["row_count"])
         self.assertEqual("accept", self.payload["validation"]["status"], self.payload["validation"]["errors"])
 
-    def test_only_goal4358_rayjoin_and_goal4360_rtnn_ratios_are_internally_authorized(self) -> None:
-        self.assertEqual(2, self.payload["summary"]["ratio_authorized_from_existing_artifacts_count"])
+    def test_only_scoped_goal4358_goal4360_goal4361_ratios_are_internally_authorized(self) -> None:
+        self.assertEqual(3, self.payload["summary"]["ratio_authorized_from_existing_artifacts_count"])
         self.assertEqual(2, self.payload["summary"]["same_stream_scalar_count_pair_count"])
         self.assertEqual(1, self.payload["summary"]["rtnn_same_contract_raw_row_pair_count"])
+        self.assertEqual(1, self.payload["summary"]["rt_dbscan_same_contract_configured_route_pair_count"])
         for row in self.payload["rows"]:
             if row["app"] == "spatial_rayjoin":
                 self.assertTrue(row["ratio_authorized_from_existing_artifacts"])
@@ -80,6 +81,19 @@ class Goal4338CurrentOptixEmbreeComparisonIndexTest(unittest.TestCase):
                 self.assertTrue(pair["sum_distance_match_exact"], pair)
                 self.assertFalse(pair["rt_core_neighbor_search_claim_authorized"], pair)
                 self.assertGreater(pair["optix_faster_than_embree"], 1.0, pair)
+            elif row["app"] == "rt_dbscan":
+                self.assertTrue(row["ratio_authorized_from_existing_artifacts"])
+                self.assertEqual(
+                    "internal_same_contract_configured_numba_route_only_not_public_claim",
+                    row["ratio_authorization_scope"],
+                )
+                pair = row["rt_dbscan_same_contract_pair"]
+                self.assertTrue(pair["signature_match"], pair)
+                self.assertTrue(pair["same_numba_continuation"], pair)
+                self.assertTrue(pair["same_output_contract"], pair)
+                self.assertTrue(pair["optix_rt_core_accelerated"], pair)
+                self.assertFalse(pair["embree_rt_core_accelerated"], pair)
+                self.assertGreater(pair["optix_faster_than_embree"], 50.0, pair)
             else:
                 self.assertFalse(row["ratio_authorized_from_existing_artifacts"], row["app"])
                 self.assertEqual("not_authorized", row["ratio_authorization_scope"])
@@ -105,15 +119,17 @@ class Goal4338CurrentOptixEmbreeComparisonIndexTest(unittest.TestCase):
                 "contract_split_pair_required",
                 "same_stream_scalar_count_pairs_available",
                 "same_contract_raw_rows_available_not_rt_core_proof",
+                "same_contract_configured_numba_route_available",
             },
         )
         self.assertEqual(1, self.payload["summary"]["same_stream_scalar_count_pairs_available_count"])
         self.assertEqual(1, self.payload["summary"]["same_contract_raw_rows_available_not_rt_core_proof_count"])
+        self.assertEqual(1, self.payload["summary"]["same_contract_configured_numba_route_available_count"])
         self.assertGreaterEqual(
             self.payload["summary"]["same_contract_different_scale_pair_required_count"],
             4,
         )
-        self.assertEqual(3, self.payload["summary"]["contract_split_pair_required_count"])
+        self.assertEqual(2, self.payload["summary"]["contract_split_pair_required_count"])
 
     def test_script_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -137,6 +153,7 @@ class Goal4338CurrentOptixEmbreeComparisonIndexTest(unittest.TestCase):
         self.assertIn("not a public speedup table", text)
         self.assertIn("same-stream scalar-count pair", text)
         self.assertIn("same-contract ranked-summary raw-row pair", text)
+        self.assertIn("same-contract RTDL+Numba configured-route pair", text)
         self.assertNotIn("RTNN artifact mismatch", text)
         self.assertIn("Fresh same-contract paired runs", text)
         forbidden = (
@@ -153,7 +170,7 @@ class Goal4338CurrentOptixEmbreeComparisonIndexTest(unittest.TestCase):
         self.assertFalse(payload["public_speedup_claim_authorized"])
         self.assertEqual(10, payload["summary"]["row_count"])
         self.assertEqual(0, payload["summary"]["missing_current_artifact_count"])
-        self.assertEqual(2, payload["summary"]["ratio_authorized_from_existing_artifacts_count"])
+        self.assertEqual(3, payload["summary"]["ratio_authorized_from_existing_artifacts_count"])
 
 
 if __name__ == "__main__":

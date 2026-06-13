@@ -32,7 +32,7 @@ def _markdown(payload: dict[str, object]) -> str:
         "",
         "- NVIDIA RT cores: yes, internally ready for the current OptiX benchmark routes; Goal4342 found no obvious remaining high-leverage RT-core implementation work.",
         "- Intel Embree CPUs: yes, internally ready for the native Embree primitive rows with contract boundaries; Goal4343 now reports zero missing same-contract scale rows.",
-        "- Serious comparison: yes, as a bucketted internal packet; the v2.12 packet separates clean query ratios, the RTNN raw-row pair, boundary-limited phase rows, and two remaining contract-choice/configured routes.",
+        "- Serious comparison: yes, as a bucketted internal packet; the v2.12 packet separates clean query ratios, RTNN and RT-DBSCAN scoped paired rows, boundary-limited phase rows, and one remaining contract-choice route.",
         "",
         "## Answers",
         "",

@@ -4,11 +4,6 @@
   "claim_boundary": "Goal4346 is a CPU-only OptiX-vs-Embree launch packet. It targets NVIDIA RT-core OptiX rows versus Embree CPU rows only. It has no Intel-GPU lane and does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
   "contract_choice_blockers": [
     {
-      "app": "rt_dbscan",
-      "next_action": "choose fixed-radius neighbor rows or grouped-signature contract",
-      "reason": "current OptiX row is grouped-stream plus Numba signature; current Embree row is prepared rows"
-    },
-    {
       "app": "barnes_hut",
       "next_action": "choose exact-force configured route or prepared node-coverage route",
       "reason": "current NVIDIA scale row is Numba exact-force partner-only; current Embree row is node coverage"
@@ -16,8 +11,8 @@
   ],
   "current_comparison_summary": {
     "boundary_limited_phase_ratio_count": 2,
-    "clean_internal_query_ratio_count": 6,
-    "contract_choice_blocker_count": 2,
+    "clean_internal_query_ratio_count": 7,
+    "contract_choice_blocker_count": 1,
     "fresh_scale_comparison_row_count": 5,
     "fully_optimized_measured_pair_count": 1
   },
@@ -270,5 +265,5 @@
     "errors": [],
     "status": "accept"
   },
-  "version": "rtdl.v2_12.cpu_only_pod_comparison_launch.goal4360.v1"
+  "version": "rtdl.v2_12.cpu_only_pod_comparison_launch.goal4361.v1"
 }

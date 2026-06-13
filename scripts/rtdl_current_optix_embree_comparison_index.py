@@ -31,10 +31,10 @@ def _markdown(payload: dict[str, object]) -> str:
         "",
         "Goal4341 supersedes the older planning index for the optimized LibRTS "
         "AABB same-contract row. Goal4358 adds Spatial RayJoin LSI/PIP "
-        "same-stream scalar-count pairs, and Goal4360 adds the RTNN "
-        "same-contract ranked-summary raw-row pair. This current index remains "
-        "useful for showing which broad registry artifacts should not be "
-        "compared directly.",
+        "same-stream scalar-count pairs, Goal4360 adds the RTNN same-contract "
+        "ranked-summary raw-row pair, and Goal4361 adds the RT-DBSCAN "
+        "same-contract configured-route pair. This current index remains useful "
+        "for showing which broad registry artifacts should not be compared directly.",
         "",
         "| App | OptiX row | Embree CPU row | Existing artifact status | Comparability | Internal ratio scope | Next action |",
         "| --- | --- | --- | --- | --- | --- | --- |",
@@ -91,13 +91,28 @@ def _markdown(payload: dict[str, object]) -> str:
                     speedup=float(rtnn_pair["optix_faster_than_embree"]),
                 )
             )
+        rt_dbscan_pair = row.get("rt_dbscan_same_contract_pair")
+        if isinstance(rt_dbscan_pair, dict):
+            lines.append(
+                "| {app} / configured | `Goal4361 OptiX` | `Goal4361 Embree` | signature={signature}, same_numba={same_numba}, optix_rt={optix_rt} | same-contract RTDL+Numba configured-route pair | `{scope}` | OptiX {optix_sec:.6f} sec vs Embree {embree_sec:.6f} sec; OptiX/Embree speedup {speedup:.2f}x |".format(
+                    app=row["app"],
+                    signature=bool(rt_dbscan_pair["signature_match"]),
+                    same_numba=bool(rt_dbscan_pair["same_numba_continuation"]),
+                    optix_rt=bool(rt_dbscan_pair["optix_rt_core_accelerated"]),
+                    scope=rt_dbscan_pair["ratio_authorization"],
+                    optix_sec=float(rt_dbscan_pair["optix_elapsed_median_sec"]),
+                    embree_sec=float(rt_dbscan_pair["embree_elapsed_median_sec"]),
+                    speedup=float(rt_dbscan_pair["optix_faster_than_embree"]),
+                )
+            )
     lines.extend(
         [
             "",
             "Only the Goal4358 Spatial RayJoin LSI/PIP same-stream scalar-count "
-            "pairs and the Goal4360 RTNN ranked-summary raw-row pair authorize "
-            "internal backend ratios from existing artifacts. Every public/release "
-            "speedup and broad RT-core claim flag remains false.",
+            "pairs, the Goal4360 RTNN ranked-summary raw-row pair, and the "
+            "Goal4361 RT-DBSCAN configured-route pair authorize internal backend "
+            "ratios from existing artifacts. Every public/release speedup and "
+            "broad RT-core claim flag remains false.",
             "Fresh same-contract paired runs are still required before publishing "
             "whole-app or broad benchmark speedups.",
         ]

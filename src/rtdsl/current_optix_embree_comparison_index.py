@@ -16,7 +16,7 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 CURRENT_OPTIX_EMBREE_COMPARISON_INDEX_VERSION = (
-    "rtdl.v2_12.current_optix_embree_comparison_index.goal4360.v1"
+    "rtdl.v2_12.current_optix_embree_comparison_index.goal4361.v1"
 )
 CURRENT_OPTIX_EMBREE_COMPARISON_INDEX_STATUS = (
     "internal_cross_backend_comparison_index_not_speedup_authorization"
@@ -53,6 +53,13 @@ DEFAULT_RTNN_SAME_CONTRACT_ARTIFACT = (
     / "goal4360_rtx_a4000_v2_12_rtnn_same_contract_2026-06-13"
     / "summary.json"
 )
+DEFAULT_RT_DBSCAN_SAME_CONTRACT_ARTIFACT = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal4361_rtx_a4000_v2_12_rt_dbscan_same_contract_2026-06-13"
+    / "summary.json"
+)
 
 
 COMPARISON_GAPS: dict[str, dict[str, str]] = {
@@ -81,15 +88,16 @@ COMPARISON_GAPS: dict[str, dict[str, str]] = {
         ),
     },
     "rt_dbscan": {
-        "comparison_class": "contract_split_pair_required",
+        "comparison_class": "same_contract_configured_numba_route_available",
         "reason": (
-            "OptiX evidence is a 65K grouped-stream plus Numba signature route "
-            "without CPU validation; Embree evidence is a tiny prepared-row route "
-            "with Python continuation."
+            "Goal4361 adds a same-scale/same-seed clustered3d 65,536-point "
+            "configured-route pair: OptiX RT-core count-threshold flags plus "
+            "Numba prepared-grid column signature versus Embree threshold-capped "
+            "rows plus the same Numba continuation."
         ),
         "required_next_action": (
-            "run a common fixed-radius neighbor-row or grouped-signature contract "
-            "with matching validation and continuation policy on both backends"
+            "use the Goal4361 configured-route pair internally only; keep public "
+            "whole-app and paper-speedup wording blocked"
         ),
     },
     "robot_collision": {
@@ -291,25 +299,61 @@ def _rtnn_same_contract_pair(payload: dict[str, Any] | None) -> dict[str, Any] |
     }
 
 
+def _rt_dbscan_same_contract_pair(payload: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not payload:
+        return None
+    rows = payload.get("rows")
+    comparison = payload.get("comparison")
+    if not isinstance(rows, dict) or not isinstance(comparison, dict):
+        return None
+    optix = rows.get("optix")
+    embree = rows.get("embree")
+    if not isinstance(optix, dict) or not isinstance(embree, dict):
+        return None
+    return {
+        "contract": str(payload.get("contract")),
+        "signature_match": bool(comparison["signature_match"]),
+        "same_numba_continuation": bool(comparison["same_numba_continuation"]),
+        "same_output_contract": bool(comparison["same_output_contract"]),
+        "optix_elapsed_median_sec": float(optix["elapsed_median_sec"]),
+        "embree_elapsed_median_sec": float(embree["elapsed_median_sec"]),
+        "optix_faster_than_embree": (
+            float(embree["elapsed_median_sec"]) / float(optix["elapsed_median_sec"])
+            if float(optix["elapsed_median_sec"])
+            else float("inf")
+        ),
+        "threshold_phase_ratio": float(
+            comparison["embree_threshold_phase_divided_by_optix_threshold_phase"]
+        ),
+        "optix_rt_core_accelerated": bool(optix["rt_core_accelerated"]),
+        "embree_rt_core_accelerated": bool(embree["rt_core_accelerated"]),
+        "ratio_authorization": "internal_same_contract_configured_numba_route_only_not_public_claim",
+    }
+
+
 def current_optix_embree_comparison_index(
     *,
     optix_artifact_path: Path | None = None,
     embree_artifact_path: Path | None = None,
     rayjoin_same_stream_artifact_path: Path | None = None,
     rtnn_same_contract_artifact_path: Path | None = None,
+    rt_dbscan_same_contract_artifact_path: Path | None = None,
 ) -> dict[str, Any]:
     optix_path = optix_artifact_path or DEFAULT_OPTIX_ARTIFACT
     embree_path = embree_artifact_path or DEFAULT_EMBREE_ARTIFACT
     rayjoin_path = rayjoin_same_stream_artifact_path or DEFAULT_RAYJOIN_SAME_STREAM_ARTIFACT
     rtnn_path = rtnn_same_contract_artifact_path or DEFAULT_RTNN_SAME_CONTRACT_ARTIFACT
+    rt_dbscan_path = rt_dbscan_same_contract_artifact_path or DEFAULT_RT_DBSCAN_SAME_CONTRACT_ARTIFACT
     optix_artifact = _load_json(optix_path)
     embree_artifact = _load_json(embree_path)
     rayjoin_artifact = _load_json(rayjoin_path)
     rtnn_artifact = _load_json(rtnn_path)
+    rt_dbscan_artifact = _load_json(rt_dbscan_path)
     optix_artifact_rows = _artifact_rows_by_id(optix_artifact)
     embree_artifact_rows = _artifact_rows_by_id(embree_artifact)
     rayjoin_same_stream_pairs = _rayjoin_same_stream_pairs(rayjoin_artifact)
     rtnn_same_contract_pair = _rtnn_same_contract_pair(rtnn_artifact)
+    rt_dbscan_same_contract_pair = _rt_dbscan_same_contract_pair(rt_dbscan_artifact)
 
     optix_registry = {row["app"]: row for row in current_benchmark_scale_profiles()}
     embree_registry = {row["app"]: row for row in current_embree_cpu_partner_reference_rows()}
@@ -337,6 +381,19 @@ def current_optix_embree_comparison_index(
         ratio_authorized = False
         same_stream_pairs: tuple[dict[str, Any], ...] = ()
         same_contract_pair: dict[str, Any] | None = None
+        configured_route_pair: dict[str, Any] | None = None
+        if app == "rt_dbscan":
+            configured_route_pair = rt_dbscan_same_contract_pair
+            ratio_authorized = bool(
+                configured_route_pair
+                and configured_route_pair["signature_match"]
+                and configured_route_pair["same_numba_continuation"]
+                and configured_route_pair["same_output_contract"]
+                and configured_route_pair["optix_rt_core_accelerated"]
+                and not configured_route_pair["embree_rt_core_accelerated"]
+            )
+            if not ratio_authorized:
+                errors.append("rt_dbscan: missing accepted Goal4361 same-contract configured-route pair evidence")
         if app == "spatial_rayjoin":
             same_stream_pairs = rayjoin_same_stream_pairs
             ratio_authorized = len(same_stream_pairs) == 2 and all(
@@ -379,12 +436,15 @@ def current_optix_embree_comparison_index(
                 "required_next_action": gap["required_next_action"],
                 "same_stream_scalar_count_pairs": same_stream_pairs,
                 "rtnn_same_contract_pair": same_contract_pair,
+                "rt_dbscan_same_contract_pair": configured_route_pair,
                 "ratio_authorized_from_existing_artifacts": ratio_authorized,
                 "ratio_authorization_scope": (
                     "internal_same_stream_scalar_count_only_not_public_claim"
                     if app == "spatial_rayjoin" and ratio_authorized
                     else "internal_same_contract_raw_row_query_only_not_public_rt_core_claim"
                     if app == "rtnn" and ratio_authorized
+                    else "internal_same_contract_configured_numba_route_only_not_public_claim"
+                    if app == "rt_dbscan" and ratio_authorized
                     else "not_authorized"
                 ),
                 "public_speedup_claim_authorized": False,
@@ -401,12 +461,14 @@ def current_optix_embree_comparison_index(
     comparable_without_new_run = [
         row for row in rows if row["ratio_authorized_from_existing_artifacts"]
     ]
-    if {row["app"] for row in comparable_without_new_run} - {"spatial_rayjoin", "rtnn"}:
-        errors.append("only Goal4358 Spatial RayJoin and Goal4360 RTNN ratios may be authorized here")
+    if {row["app"] for row in comparable_without_new_run} - {"spatial_rayjoin", "rtnn", "rt_dbscan"}:
+        errors.append("only Goal4358 Spatial RayJoin, Goal4360 RTNN, and Goal4361 RT-DBSCAN ratios may be authorized here")
     if any(row["app"] == "spatial_rayjoin" for row in comparable_without_new_run) and len(rayjoin_same_stream_pairs) != 2:
         errors.append("Spatial RayJoin ratio authorization requires two same-stream scalar-count pairs")
     if any(row["app"] == "rtnn" for row in comparable_without_new_run) and rtnn_same_contract_pair is None:
         errors.append("RTNN ratio authorization requires the Goal4360 same-contract raw-row pair")
+    if any(row["app"] == "rt_dbscan" for row in comparable_without_new_run) and rt_dbscan_same_contract_pair is None:
+        errors.append("RT-DBSCAN ratio authorization requires the Goal4361 same-contract configured-route pair")
 
     validation = {
         "version": CURRENT_OPTIX_EMBREE_COMPARISON_INDEX_VERSION,
@@ -429,6 +491,9 @@ def current_optix_embree_comparison_index(
         "rtnn_same_contract_artifact_path": (
             str(rtnn_path.relative_to(ROOT)) if rtnn_path.is_absolute() else str(rtnn_path)
         ),
+        "rt_dbscan_same_contract_artifact_path": (
+            str(rt_dbscan_path.relative_to(ROOT)) if rt_dbscan_path.is_absolute() else str(rt_dbscan_path)
+        ),
         "rows": tuple(rows),
         "summary": {
             "app_count": len({row["app"] for row in rows}),
@@ -436,6 +501,7 @@ def current_optix_embree_comparison_index(
             "ratio_authorized_from_existing_artifacts_count": len(comparable_without_new_run),
             "same_stream_scalar_count_pair_count": len(rayjoin_same_stream_pairs),
             "rtnn_same_contract_raw_row_pair_count": 1 if rtnn_same_contract_pair else 0,
+            "rt_dbscan_same_contract_configured_route_pair_count": 1 if rt_dbscan_same_contract_pair else 0,
             "missing_current_artifact_count": len(missing_artifacts),
             "same_stream_scalar_count_pairs_available_count": sum(
                 1 for row in rows if row["comparison_class"] == "same_stream_scalar_count_pairs_available"
@@ -444,6 +510,11 @@ def current_optix_embree_comparison_index(
                 1
                 for row in rows
                 if row["comparison_class"] == "same_contract_raw_rows_available_not_rt_core_proof"
+            ),
+            "same_contract_configured_numba_route_available_count": sum(
+                1
+                for row in rows
+                if row["comparison_class"] == "same_contract_configured_numba_route_available"
             ),
             "same_contract_different_scale_pair_required_count": sum(
                 1 for row in rows if row["comparison_class"] == "same_contract_different_scale_pair_required"

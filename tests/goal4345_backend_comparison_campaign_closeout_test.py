@@ -32,7 +32,7 @@ class Goal4345BackendComparisonCampaignCloseoutTest(unittest.TestCase):
         self.assertEqual("accept", validation["status"], validation["errors"])
         self.assertEqual(0, self.payload["comparison_buckets"]["rt_core_remaining_high_leverage_work_count"])
         self.assertEqual(0, self.payload["comparison_buckets"]["embree_same_contract_scale_pair_needed_count"])
-        self.assertEqual(2, self.payload["comparison_buckets"]["contract_choice_blocker_count"])
+        self.assertEqual(1, self.payload["comparison_buckets"]["contract_choice_blocker_count"])
         self.assertFalse(self.payload["public_speedup_claim_authorized"])
         self.assertFalse(self.payload["release_authorized"])
 
@@ -47,7 +47,7 @@ class Goal4345BackendComparisonCampaignCloseoutTest(unittest.TestCase):
             answers["ready_to_use_high_performance_intel_embree_cpus"]["answer"],
         )
         self.assertIn("not release authorization", answers["ready_to_use_high_performance_nvidia_rt_cores"]["boundary"])
-        self.assertIn("Two apps still require a contract choice", answers["ready_to_use_high_performance_intel_embree_cpus"]["boundary"])
+        self.assertIn("One app still requires a contract choice", answers["ready_to_use_high_performance_intel_embree_cpus"]["boundary"])
 
     def test_partner_policy_does_not_force_numba_universally(self) -> None:
         policy = self.payload["partner_policy"]

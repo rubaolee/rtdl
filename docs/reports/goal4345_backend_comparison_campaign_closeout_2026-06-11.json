@@ -2,7 +2,7 @@
   "answers": {
     "ready_to_use_high_performance_intel_embree_cpus": {
       "answer": "yes_for_native_embree_primitive_rows_with_contract_boundaries",
-      "boundary": "Two apps still require a contract choice before a serious OptiX-vs-Embree ratio: RT-DBSCAN and Barnes-Hut. Spatial RayJoin and RTNN now have scoped internal-only paired rows.",
+      "boundary": "One app still requires a contract choice before a serious OptiX-vs-Embree ratio: Barnes-Hut. Spatial RayJoin, RTNN, and RT-DBSCAN now have scoped internal-only paired rows.",
       "evidence": "Goal4340 fixed LibRTS AABB_INDEX_QUERY_2D; Goal4344 supplies the five previously missing Embree scale rows; Goal4343 now reports zero missing same-contract scale pairs."
     },
     "ready_to_use_high_performance_nvidia_rt_cores": {
@@ -13,7 +13,7 @@
     "serious_comparison_ready": {
       "answer": "yes_as_an_internal_bucketted_packet",
       "boundary": "No public speedup, release, or whole-app claim is authorized.",
-      "evidence": "The v2.12 packet separates one fully optimized LibRTS pair, three clean same-contract query-ratio scale rows, the RTNN same-contract raw-row pair, two boundary-limited phase rows, and two contract-choice/configured-route rows."
+      "evidence": "The v2.12 packet separates one fully optimized LibRTS pair, three clean same-contract query-ratio scale rows, the RTNN same-contract raw-row pair, the RT-DBSCAN same configured-route RTDL+Numba pair, two boundary-limited phase rows, and one remaining contract-choice row."
     }
   },
   "automatic_partner_selection_authorized": false,
@@ -21,8 +21,8 @@
   "claim_boundary": "Goal4345 closes the current internal RTDL OptiX-vs-Embree comparison campaign by summarizing the RT-core closeout, Embree scale closeout, and optimized comparison packet. It does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, Intel GPU performance wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
   "comparison_buckets": {
     "boundary_limited_phase_ratio_count": 2,
-    "clean_internal_query_ratio_count": 6,
-    "contract_choice_blocker_count": 2,
+    "clean_internal_query_ratio_count": 7,
+    "contract_choice_blocker_count": 1,
     "embree_same_contract_scale_pair_needed_count": 0,
     "embree_scale_artifact_count": 5,
     "fresh_scale_comparison_row_count": 5,
@@ -50,5 +50,5 @@
     "errors": [],
     "status": "accept"
   },
-  "version": "rtdl.v2_12.backend_comparison_campaign_closeout.goal4360.v1"
+  "version": "rtdl.v2_12.backend_comparison_campaign_closeout.goal4361.v1"
 }

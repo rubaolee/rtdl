@@ -6,9 +6,9 @@ Status: internal comparison packet; not public speedup authorization.
 
 ## Verdict
 
-This packet accepts one fully optimized LibRTS prepared-query comparison row, five fresh Embree scale rows from Goal4344, and the Goal4358 RayJoin LSI/PIP same-stream scalar-count rows, plus the Goal4360 RTNN prepared ranked-summary raw-row same-contract backend pair. Three Goal4344 rows are clean internal query-ratio candidates; Robot Collision and RayDB-style remain boundary-limited because the current OptiX rows use stronger resident/device output paths.
+This packet accepts one fully optimized LibRTS prepared-query comparison row, five fresh Embree scale rows from Goal4344, and the Goal4358 RayJoin LSI/PIP same-stream scalar-count rows, the Goal4360 RTNN prepared ranked-summary raw-row same-contract backend pair, and the Goal4361 RT-DBSCAN same-contract RTDL+Numba configured-route pair. Three Goal4344 rows are clean internal query-ratio candidates; Robot Collision and RayDB-style remain boundary-limited because the current OptiX rows use stronger resident/device output paths.
 
-The remaining serious comparison blockers are contract-choice apps: RT-DBSCAN and Barnes-Hut. Spatial RayJoin is now split into LSI/PIP scalar-count rows with internal-only ratios, and RTNN has a same-contract raw-row backend ratio that still does not authorize RT-core wording.
+The remaining serious comparison blocker is Barnes-Hut. Spatial RayJoin is now split into LSI/PIP scalar-count rows with internal-only ratios; RTNN has a same-contract raw-row backend ratio that still does not authorize RT-core wording; RT-DBSCAN has a same-contract configured-route ratio with the Numba continuation held fixed.
 
 ## Measured Pair
 
@@ -35,11 +35,12 @@ The same Embree row improved from the pre-Goal4340 columnar fallback query media
 | lsi | 14.538773001 | 0.335959005 | 43.28x | 8921 | `internal_same_stream_scalar_count_only_not_public_claim` |
 | pip | 14.167796995 | 12.033906998 | 1.18x | 8686 | `internal_same_stream_scalar_count_only_not_public_claim` |
 
-## RTNN Same-Contract Backend Row
+## Same-Contract Backend Rows
 
-| Contract | Embree Sec | OptiX Sec | Embree / OptiX | Row Count | Signature Match | RT-Core Claim | Authorization |
-| --- | ---: | ---: | ---: | ---: | --- | --- | --- |
-| `prepared_3d_fixed_radius_bounded_ranked_summary_raw_rows` | 0.122744617 | 0.103778298 | 1.18x | 65536 | `True` | `False` | `internal_same_contract_raw_row_query_only_not_public_rt_core_claim` |
+| App | Contract | Embree Sec | OptiX Sec | Embree / OptiX | Correctness | RT-Core Claim | Authorization |
+| --- | --- | ---: | ---: | ---: | --- | --- | --- |
+| rtnn | `prepared_3d_fixed_radius_bounded_ranked_summary_raw_rows` | 0.122744617 | 0.103778298 | 1.18x | `True` | `False` | `internal_same_contract_raw_row_query_only_not_public_rt_core_claim` |
+| rt_dbscan | `rt_dbscan_clustered3d_count_threshold_flags_plus_numba_prepared_grid_column_signature` | 17.313535127 | 0.315049268 | 54.96x | `True` | `True` | `internal_same_contract_configured_numba_route_only_not_public_claim` |
 
 Boundary-limited rows are useful engineering evidence, but they are not clean end-to-end backend ratios.
 
@@ -49,7 +50,7 @@ Boundary-limited rows are useful engineering evidence, but they are not clean en
 | --- | --- | --- | --- | --- | --- |
 | hausdorff_xhd | `hausdorff_xhd_scale_default_optix_threshold` | `hausdorff_xhd_embree_cpu_directed_summary` | `internal_query_ratio_candidate_ready` | Goal4344 supplies the Embree prepared threshold-decision row at the same copies, threshold, repeat, and warmup as the current OptiX scale row. | use query-phase ratio internally only; keep exact-distance and public speedup wording outside this packet |
 | spatial_rayjoin | `spatial_rayjoin_public_cdb_representative_mixed_route_scale_default` | `spatial_rayjoin_pip_count_embree_cpu_generic_kernel` | `same_stream_scalar_count_pairs_available` | Goal4358 supplies RayJoin-exported same-stream LSI and PIP scalar-count pairs for RTDL OptiX and RTDL Embree. The broad current registry row remains mixed, so these ratios are scoped to split scalar-count contracts. | use the same-stream LSI/PIP scalar-count rows internally; keep overlay active-count and whole-app wording separate |
-| rt_dbscan | `rt_dbscan_optix_numba_scale_default_65536_no_validation` | `rt_dbscan_embree_cpu_prepared_rows` | `contract_split_pair_required` | Current OptiX evidence is grouped-stream plus Numba continuation at 65K points; current Embree evidence is a tiny prepared-row route. | choose either fixed-radius neighbor rows or grouped signatures, then run that same contract on both backends |
+| rt_dbscan | `rt_dbscan_optix_numba_scale_default_65536_no_validation` | `rt_dbscan_embree_cpu_prepared_rows` | `same_contract_configured_numba_route_available` | Goal4361 supplies a same-scale/same-seed clustered3d 65,536-point configured-route pair: OptiX RT-core count-threshold flags plus Numba prepared-grid column signature versus Embree threshold-capped rows plus the same Numba continuation. | use this configured-route ratio internally only; keep public whole-app and paper-speedup wording blocked |
 | robot_collision | `robot_collision_optix_scale_default_1024_no_probe_reference` | `robot_collision_embree_cpu_prepared_buffers` | `same_scale_boundary_limited` | Goal4344 supplies the Embree row at the same scene/query scale as OptiX, but the OptiX scale row uses the OptiX-only device-count path while Embree returns host compact flags. | show traversal-only internal phase comparison, or run an OptiX prepared-buffer flags row before reporting a clean output-contract ratio |
 | contact_manifold | `contact_manifold_optix_scale_default_grid64` | `contact_manifold_embree_cpu_native_collect_k` | `internal_query_ratio_candidate_ready` | Goal4344 supplies the Embree native collect-k row at the same grid size, witness capacity, repeat count, and correctness policy as OptiX. | use native collect-k median internally only; keep public claims blocked |
 | raydb_style | `raydb_style_optix_count_scale_default_262k` | `raydb_style_embree_cpu_count_primitive_first` | `same_scale_boundary_limited` | Goal4344 supplies the Embree generated 262144-row / 1024-group count row, but the current OptiX scale row is prepared/resident while the Embree row is a non-resident native grouped-reduction run. | show traversal/native-call phases as boundary-limited internal evidence; add prepared Embree residency before clean end-to-end ratios |
@@ -60,6 +61,6 @@ Boundary-limited rows are useful engineering evidence, but they are not clean en
 
 ## Claim Boundary
 
-Goal4360 extends the Goal4359 optimized/same-scale Embree-vs-OptiX packet with the RTNN prepared 3-D ranked-summary raw-row same-contract backend pair. It separates clean same-contract query-ratio rows, RayJoin same-stream scalar-count rows, RTNN raw-row backend rows, boundary-limited same-scale rows, and remaining contract-split/configured routes. This packet does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.
+Goal4361 extends the Goal4360 optimized/same-scale Embree-vs-OptiX packet with the RT-DBSCAN OptiX RT-core count-threshold plus Numba column-signature same-contract pair. It separates clean same-contract query-ratio rows, RayJoin same-stream scalar-count rows, RTNN raw-row backend rows, RT-DBSCAN configured-route rows, boundary-limited same-scale rows, and the remaining contract-split/configured route. This packet does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.
 
 Validation status: `accept`.

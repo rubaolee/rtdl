@@ -42,16 +42,18 @@ def _markdown(payload: dict[str, object]) -> str:
         "",
         "This packet accepts one fully optimized LibRTS prepared-query comparison "
         "row, five fresh Embree scale rows from Goal4344, and the Goal4358 "
-        "RayJoin LSI/PIP same-stream scalar-count rows, plus the Goal4360 RTNN "
-        "prepared ranked-summary raw-row same-contract backend pair. Three "
-        "Goal4344 rows are clean internal query-ratio candidates; Robot "
+        "RayJoin LSI/PIP same-stream scalar-count rows, the Goal4360 RTNN "
+        "prepared ranked-summary raw-row same-contract backend pair, and the "
+        "Goal4361 RT-DBSCAN same-contract RTDL+Numba configured-route pair. "
+        "Three Goal4344 rows are clean internal query-ratio candidates; Robot "
         "Collision and RayDB-style remain boundary-limited because the current "
         "OptiX rows use stronger resident/device output paths.",
         "",
-        "The remaining serious comparison blockers are contract-choice apps: "
-        "RT-DBSCAN and Barnes-Hut. Spatial RayJoin is now split into LSI/PIP "
-        "scalar-count rows with internal-only ratios, and RTNN has a same-contract "
-        "raw-row backend ratio that still does not authorize RT-core wording.",
+        "The remaining serious comparison blocker is Barnes-Hut. Spatial RayJoin "
+        "is now split into LSI/PIP scalar-count rows with internal-only ratios; "
+        "RTNN has a same-contract raw-row backend ratio that still does not "
+        "authorize RT-core wording; RT-DBSCAN has a same-contract configured-route "
+        "ratio with the Numba continuation held fixed.",
         "",
         "## Measured Pair",
         "",
@@ -115,25 +117,35 @@ def _markdown(payload: dict[str, object]) -> str:
     lines.extend(
         [
             "",
-            "## RTNN Same-Contract Backend Row",
+            "## Same-Contract Backend Rows",
             "",
-            "| Contract | Embree Sec | OptiX Sec | Embree / OptiX | Row Count | Signature Match | RT-Core Claim | Authorization |",
-            "| --- | ---: | ---: | ---: | ---: | --- | --- | --- |",
+            "| App | Contract | Embree Sec | OptiX Sec | Embree / OptiX | Correctness | RT-Core Claim | Authorization |",
+            "| --- | --- | ---: | ---: | ---: | --- | --- | --- |",
         ]
     )
     for row_obj in same_contract_backend_rows:
         row = dict(row_obj)
         correctness = dict(row["correctness"])
+        correctness_ok = (
+            bool(correctness.get("integer_signature_match"))
+            and bool(correctness.get("sum_distance_match_exact"))
+        ) or (
+            bool(correctness.get("signature_match"))
+            and bool(correctness.get("same_numba_continuation"))
+            and bool(correctness.get("same_output_contract"))
+        )
+        rt_core_claim = bool(row.get("rt_core_neighbor_search_claim_authorized", False)) or bool(
+            row.get("rt_core_threshold_phase_claim_authorized_internal", False)
+        )
         lines.append(
-            "| `{contract}` | {embree_metric} | {optix_metric} | {ratio:.2f}x | {count} | `{signature}` | `{rt_core}` | `{auth}` |".format(
+            "| {app} | `{contract}` | {embree_metric} | {optix_metric} | {ratio:.2f}x | `{correctness}` | `{rt_core}` | `{auth}` |".format(
+                app=row["app"],
                 contract=row["contract"],
                 embree_metric=_fmt(float(row["embree_metric"])),
                 optix_metric=_fmt(float(row["optix_metric"])),
                 ratio=float(row["embree_metric_divided_by_optix_metric"]),
-                count=int(correctness["optix_row_count"]),
-                signature=bool(correctness["integer_signature_match"])
-                and bool(correctness["sum_distance_match_exact"]),
-                rt_core=bool(row["rt_core_neighbor_search_claim_authorized"]),
+                correctness=correctness_ok,
+                rt_core=rt_core_claim,
                 auth=row["ratio_authorization"],
             )
         )
