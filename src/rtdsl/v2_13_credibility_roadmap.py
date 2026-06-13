@@ -208,7 +208,11 @@ ROADMAP_GOALS: tuple[dict[str, Any], ...] = (
             "Contact Manifold, Robot Collision, LibRTS, and triangle-counting tiny rows are included first.",
         ),
         "depends_on": ("embree_cpu_fairness_hardening",),
-        "output_artifacts": ("docs/release_reports/v2_12/public_rt_vs_embree_comparison.md",),
+        "output_artifacts": (
+            "docs/reports/goal4349_human_scale_rt_vs_embree_comparison_2026-06-12.md",
+            "docs/reports/goal4349_human_scale_rt_vs_embree_comparison_2026-06-12.json",
+            "docs/reports/goal4349_human_scale_rt_vs_embree_run/",
+        ),
     },
     {
         "id": "public_wording_packet",

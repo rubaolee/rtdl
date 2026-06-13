@@ -279,7 +279,9 @@
       ],
       "id": "human_scale_timing_packet",
       "output_artifacts": [
-        "docs/release_reports/v2_12/public_rt_vs_embree_comparison.md"
+        "docs/reports/goal4349_human_scale_rt_vs_embree_comparison_2026-06-12.md",
+        "docs/reports/goal4349_human_scale_rt_vs_embree_comparison_2026-06-12.json",
+        "docs/reports/goal4349_human_scale_rt_vs_embree_run/"
       ],
       "priority": 4,
       "title": "Make tiny rows human-scale without changing the contract"
