@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Emit the Goal4341 optimized Embree-vs-OptiX comparison packet."""
+"""Emit the current optimized Embree-vs-OptiX comparison packet."""
 
 from __future__ import annotations
 
@@ -28,24 +28,27 @@ def _markdown(payload: dict[str, object]) -> str:
     embree = dict(measured_pair["embree_cpu_optimized"])
     optix = dict(measured_pair["optix_rt"])
     scale_rows = tuple(payload["scale_comparison_rows"])
+    same_stream_rows = tuple(payload["same_stream_comparison_rows"])
     planning_rows = tuple(payload["planning_rows"])
     lines = [
-        "# Goal4341: Optimized Embree vs OptiX Comparison Packet",
+        "# Goal4359: Optimized Embree vs OptiX Comparison Packet",
         "",
-        "Date: 2026-06-11",
+        "Date: 2026-06-13",
         "",
         "Status: internal comparison packet; not public speedup authorization.",
         "",
         "## Verdict",
         "",
-        "Goal4341 accepts one fully optimized LibRTS prepared-query comparison row "
-        "and adds five fresh Embree scale rows from Goal4344. Three of the new "
-        "rows are clean internal query-ratio candidates; Robot Collision and "
-        "RayDB-style are boundary-limited because the current OptiX rows use "
-        "stronger resident/device output paths.",
+        "This packet accepts one fully optimized LibRTS prepared-query comparison "
+        "row, five fresh Embree scale rows from Goal4344, and the Goal4358 "
+        "RayJoin LSI/PIP same-stream scalar-count rows. Three Goal4344 rows are "
+        "clean internal query-ratio candidates; Robot Collision and RayDB-style "
+        "remain boundary-limited because the current OptiX rows use stronger "
+        "resident/device output paths.",
         "",
         "The remaining serious comparison blockers are contract-choice apps: "
-        "Spatial RayJoin, RT-DBSCAN, Barnes-Hut, and RTNN.",
+        "RT-DBSCAN, Barnes-Hut, and RTNN. Spatial RayJoin is now split into "
+        "LSI/PIP scalar-count rows with internal-only ratios.",
         "",
         "## Measured Pair",
         "",
@@ -81,6 +84,28 @@ def _markdown(payload: dict[str, object]) -> str:
                 optix_metric=_fmt(float(row["optix_metric"])),
                 ratio=float(row["embree_metric_divided_by_optix_metric"]),
                 faster=row["faster_backend_for_metric"],
+                auth=row["ratio_authorization"],
+            )
+        )
+    lines.extend(
+        [
+            "",
+            "## RayJoin Same-Stream Rows",
+            "",
+            "| Workload | Embree ms | OptiX ms | Embree / OptiX | Count | Authorization |",
+            "| --- | ---: | ---: | ---: | ---: | --- |",
+        ]
+    )
+    for row_obj in same_stream_rows:
+        row = dict(row_obj)
+        correctness = dict(row["correctness"])
+        lines.append(
+            "| {workload} | {embree_metric} | {optix_metric} | {ratio:.2f}x | {count} | `{auth}` |".format(
+                workload=row["workload"],
+                embree_metric=_fmt(float(row["embree_metric"])),
+                optix_metric=_fmt(float(row["optix_metric"])),
+                ratio=float(row["embree_metric_divided_by_optix_metric"]),
+                count=int(correctness["optix_row_count"]),
                 auth=row["ratio_authorization"],
             )
         )
