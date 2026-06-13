@@ -37,7 +37,7 @@ DEFAULT_OPTIX_ARTIFACT = (
     ROOT / "docs" / "reports" / "goal4329_current_pod_validation" / "scale_summary_allpass.json"
 )
 DEFAULT_EMBREE_ARTIFACT = (
-    ROOT / "docs" / "reports" / "goal4298_v2_11_embree_cpu_partner_reference_local_linux.json"
+    ROOT / "docs" / "reports" / "goal4358_lx1_v2_11_embree_cpu_partner_reference_2026-06-12.json"
 )
 DEFAULT_RAYJOIN_SAME_STREAM_ARTIFACT = (
     ROOT
@@ -145,12 +145,11 @@ COMPARISON_GAPS: dict[str, dict[str, str]] = {
         "comparison_class": "contract_split_pair_required",
         "reason": (
             "OptiX evidence is a 3-D prepared ranked-summary route; the current "
-            "Embree registry is a 2-D ANN candidate-quality front door, and the "
-            "local artifact may still contain the older Numba CPU reference row."
+            "Embree registry is a 2-D ANN candidate-quality front door."
         ),
         "required_next_action": (
-            "refresh the current Embree artifact, then decide between 2-D ANN "
-            "candidate quality and 3-D ranked-summary as the paired contract"
+            "decide between 2-D ANN candidate quality and 3-D ranked-summary as "
+            "the paired contract, then run that one contract on both backends"
         ),
     },
     "triangle_counting": {

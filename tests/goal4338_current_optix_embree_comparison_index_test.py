@@ -75,13 +75,13 @@ class Goal4338CurrentOptixEmbreeComparisonIndexTest(unittest.TestCase):
             self.assertIn("required_next_action", row)
             self.assertIn("reason_existing_artifacts_are_not_speedup_grade", row)
 
-    def test_current_mismatch_for_rtnn_artifact_is_visible(self) -> None:
+    def test_current_rtnn_embree_artifact_is_present(self) -> None:
         rows = {row["app"]: row for row in self.payload["rows"]}
         rtnn = rows["rtnn"]
         self.assertEqual("rtnn_embree_cpu_ann_candidate_quality_reference", rtnn["embree_cpu"]["row_id"])
-        self.assertFalse(rtnn["embree_cpu"]["artifact"]["artifact_present"])
-        self.assertEqual("missing_current_row_artifact", rtnn["embree_cpu"]["artifact"]["status"])
-        self.assertIn("refresh the current Embree artifact", rtnn["required_next_action"])
+        self.assertTrue(rtnn["embree_cpu"]["artifact"]["artifact_present"])
+        self.assertEqual("pass", rtnn["embree_cpu"]["artifact"]["status"])
+        self.assertIn("decide between 2-D ANN", rtnn["required_next_action"])
 
     def test_comparison_classes_are_not_public_claim_classes(self) -> None:
         classes = {row["comparison_class"] for row in self.payload["rows"]}
@@ -121,7 +121,7 @@ class Goal4338CurrentOptixEmbreeComparisonIndexTest(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("not a public speedup table", text)
         self.assertIn("same-stream scalar-count pair", text)
-        self.assertIn("RTNN artifact mismatch", text)
+        self.assertNotIn("RTNN artifact mismatch", text)
         self.assertIn("Fresh same-contract paired runs", text)
         forbidden = (
             "public speedup claim " + "authorized",
@@ -136,6 +136,7 @@ class Goal4338CurrentOptixEmbreeComparisonIndexTest(unittest.TestCase):
         self.assertFalse(payload["release_authorized"])
         self.assertFalse(payload["public_speedup_claim_authorized"])
         self.assertEqual(10, payload["summary"]["row_count"])
+        self.assertEqual(0, payload["summary"]["missing_current_artifact_count"])
         self.assertEqual(1, payload["summary"]["ratio_authorized_from_existing_artifacts_count"])
 
 

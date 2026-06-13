@@ -77,10 +77,6 @@ def _markdown(payload: dict[str, object]) -> str:
     lines.extend(
         [
             "",
-            "RTNN artifact mismatch remains visible here because the current registry "
-            "expects the Goal4308 Embree row while the older artifact packet may not "
-            "contain that row.",
-            "",
             "Only the Goal4358 Spatial RayJoin LSI/PIP same-stream scalar-count "
             "pairs authorize internal backend ratios from existing artifacts. "
             "Every public/release speedup claim flag remains false.",
@@ -88,6 +84,17 @@ def _markdown(payload: dict[str, object]) -> str:
             "whole-app or broad benchmark speedups.",
         ]
     )
+    if any(
+        dict(dict(row_obj)["embree_cpu"])["artifact"]["status"] == "missing_current_row_artifact"
+        for row_obj in rows
+    ):
+        lines.extend(
+            [
+                "",
+                "At least one Embree artifact mismatch remains visible here because "
+                "the artifact does not contain the current registry row.",
+            ]
+        )
     return "\n".join(lines) + "\n"
 
 

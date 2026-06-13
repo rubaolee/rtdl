@@ -2,7 +2,7 @@
   "automatic_partner_selection_authorized": false,
   "broad_rt_core_claim_authorized": false,
   "claim_boundary": "Goal4338 indexes the current NVIDIA OptiX scale-profile evidence beside the current Embree CPU reference registry. It is a comparability and planning packet, not a public speedup table. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, Intel GPU performance wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
-  "embree_artifact_path": "docs\\reports\\goal4298_v2_11_embree_cpu_partner_reference_local_linux.json",
+  "embree_artifact_path": "docs\\reports\\goal4358_lx1_v2_11_embree_cpu_partner_reference_2026-06-12.json",
   "optix_artifact_path": "docs\\reports\\goal4329_current_pod_validation\\scale_summary_allpass.json",
   "paper_reproduction_claim_authorized": false,
   "public_speedup_claim_authorized": false,
@@ -16,7 +16,7 @@
         "artifact": {
           "artifact_present": true,
           "claim_flag_violations": [],
-          "elapsed_sec": 0.4511940749999894,
+          "elapsed_sec": 0.4551185529853683,
           "row_id": "hausdorff_xhd_embree_cpu_directed_summary",
           "status": "pass"
         },
@@ -54,7 +54,7 @@
         "artifact": {
           "artifact_present": true,
           "claim_flag_violations": [],
-          "elapsed_sec": 0.4656024890000481,
+          "elapsed_sec": 0.46642103701015003,
           "row_id": "spatial_rayjoin_pip_count_embree_cpu_generic_kernel",
           "status": "pass"
         },
@@ -117,7 +117,7 @@
         "artifact": {
           "artifact_present": true,
           "claim_flag_violations": [],
-          "elapsed_sec": 0.46486219900009473,
+          "elapsed_sec": 0.469621405005455,
           "row_id": "rt_dbscan_embree_cpu_prepared_rows",
           "status": "pass"
         },
@@ -155,7 +155,7 @@
         "artifact": {
           "artifact_present": true,
           "claim_flag_violations": [],
-          "elapsed_sec": 0.4593928799999958,
+          "elapsed_sec": 0.4640607709879987,
           "row_id": "robot_collision_embree_cpu_prepared_buffers",
           "status": "pass"
         },
@@ -193,7 +193,7 @@
         "artifact": {
           "artifact_present": true,
           "claim_flag_violations": [],
-          "elapsed_sec": 0.43525917899989963,
+          "elapsed_sec": 0.4397033280110918,
           "row_id": "contact_manifold_embree_cpu_native_collect_k",
           "status": "pass"
         },
@@ -231,7 +231,7 @@
         "artifact": {
           "artifact_present": true,
           "claim_flag_violations": [],
-          "elapsed_sec": 0.48531425099997705,
+          "elapsed_sec": 0.49672219398780726,
           "row_id": "raydb_style_embree_cpu_count_primitive_first",
           "status": "pass"
         },
@@ -269,7 +269,7 @@
         "artifact": {
           "artifact_present": true,
           "claim_flag_violations": [],
-          "elapsed_sec": 0.4732881569999563,
+          "elapsed_sec": 0.4805229020130355,
           "row_id": "barnes_hut_embree_cpu_node_coverage_prepared",
           "status": "pass"
         },
@@ -307,7 +307,7 @@
         "artifact": {
           "artifact_present": true,
           "claim_flag_violations": [],
-          "elapsed_sec": 132.27003343600006,
+          "elapsed_sec": 0.7405199819768313,
           "row_id": "librts_spatial_index_embree_cpu_aabb_index",
           "status": "pass"
         },
@@ -343,11 +343,11 @@
       "comparison_class": "contract_split_pair_required",
       "embree_cpu": {
         "artifact": {
-          "artifact_present": false,
-          "claim_flag_violations": null,
-          "elapsed_sec": null,
+          "artifact_present": true,
+          "claim_flag_violations": [],
+          "elapsed_sec": 5.959122917003697,
           "row_id": "rtnn_embree_cpu_ann_candidate_quality_reference",
-          "status": "missing_current_row_artifact"
+          "status": "pass"
         },
         "purpose": "Embree CPU candidate-quality route for the RTNN benchmark app's 2-D ANN contract",
         "registry_version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
@@ -371,9 +371,9 @@
       "public_speedup_claim_authorized": false,
       "ratio_authorization_scope": "not_authorized",
       "ratio_authorized_from_existing_artifacts": false,
-      "reason_existing_artifacts_are_not_speedup_grade": "OptiX evidence is a 3-D prepared ranked-summary route; the current Embree registry is a 2-D ANN candidate-quality front door, and the local artifact may still contain the older Numba CPU reference row.",
+      "reason_existing_artifacts_are_not_speedup_grade": "OptiX evidence is a 3-D prepared ranked-summary route; the current Embree registry is a 2-D ANN candidate-quality front door.",
       "release_authorized": false,
-      "required_next_action": "refresh the current Embree artifact, then decide between 2-D ANN candidate quality and 3-D ranked-summary as the paired contract",
+      "required_next_action": "decide between 2-D ANN candidate quality and 3-D ranked-summary as the paired contract, then run that one contract on both backends",
       "same_stream_scalar_count_pairs": []
     },
     {
@@ -383,7 +383,7 @@
         "artifact": {
           "artifact_present": true,
           "claim_flag_violations": [],
-          "elapsed_sec": 0.4789429890001884,
+          "elapsed_sec": 0.4877941920130979,
           "row_id": "triangle_counting_embree_cpu_native_summary",
           "status": "pass"
         },
@@ -421,7 +421,7 @@
     "automatic_partner_selection_authorized": false,
     "broad_rt_core_claim_authorized": false,
     "contract_split_pair_required_count": 4,
-    "missing_current_artifact_count": 1,
+    "missing_current_artifact_count": 0,
     "paper_reproduction_claim_authorized": false,
     "public_speedup_claim_authorized": false,
     "ratio_authorized_from_existing_artifacts_count": 1,
@@ -435,7 +435,7 @@
     "app_count": 10,
     "authorized_existing_artifact_ratio_count": 1,
     "errors": [],
-    "missing_current_artifact_count": 1,
+    "missing_current_artifact_count": 0,
     "row_count": 10,
     "status": "accept",
     "version": "rtdl.v2_12.current_optix_embree_comparison_index.goal4359.v1"
