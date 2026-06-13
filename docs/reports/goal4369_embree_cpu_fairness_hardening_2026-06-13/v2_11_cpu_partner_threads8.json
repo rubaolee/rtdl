@@ -1,0 +1,485 @@
+{
+  "all_pass": true,
+  "automatic_partner_selection_authorized": false,
+  "broad_rt_core_claim_authorized": false,
+  "claim_boundary": "Goal4298 records the v2.11 Embree CPU plus current CPU partner reference packet for the ten current benchmark apps. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, NVIDIA/AMD/Intel GPU performance wording, paper-reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
+  "dry_run": false,
+  "intel_gpu_performance_claim_authorized": false,
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "app": "hausdorff_xhd",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "embree",
+        "--embree-result-mode",
+        "directed_summary",
+        "--copies",
+        "8",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "cpu_thread_env": {
+        "MKL_NUM_THREADS": "8",
+        "NUMEXPR_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8",
+        "RTDL_EMBREE_THREADS": "8",
+        "TBB_NUM_THREADS": "8"
+      },
+      "elapsed_sec": 1.6167537639994407,
+      "returncode": 0,
+      "route_class": "embree_cpu_rt_primitive",
+      "row_id": "hausdorff_xhd_embree_cpu_directed_summary",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"app\": \"hausdorff_distance\",\n  \"backend\": \"embree\",\n  \"copies\": 8,\n  \"directed_a_to_b\": {\n    \"distance\": 0.30000000000000004,\n    \"distance_reduction_rows\": [\n      {\n        \"directed_distance\": 0.30000000000000004\n      }\n    ],\n    \"row_count\": 32,\n    \"source_id\": 3,\n    \"target_id\": 103\n  },\n  \"directed_b_to_a\": {\n    \"distance\": 0.30000000000000004,\n    \"distance_reduction_rows\": [\n      {\n        \"directed_distance\": 0.30000000000000004\n      }\n    ],\n    \"row_count\": 32,\n    \"source_id\": 103,\n    \"target_id\": 3\n  },\n  \"embree_result_mode\": \"directed_summary\",\n  \"hausdorff_distance\": 0.30000000000000004,\n  \"hausdorff_threshold\": null,\n  \"matches_oracle\": true,\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"embree_directed_hausdorff\",\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only.\"\n  },\n  \"optix_summary_mode\": null,\n  \"oracle\": {\n    \"directed_a_to_b\": {\n      \"distance\": 0.30000000000000004,\n      \"distance_reduction_rows\": [\n        {\n          \"directed_distance\": 0.30000000000000004\n        }\n      ],\n      \"row_count\": 32,\n      \"source_id\": 3,\n      \"target_id\": 103\n    },\n    \"directed_b_to_a\": {\n      \"distance\": 0.30000000000000004,\n      \"distance_reduction_rows\": [\n        {\n          \"directed_distance\": 0.30000000000000004\n        }\n      ],\n      \"row_count\": 32,\n      \"source_id\": 103,\n      \"target_id\": 3\n    },\n    \"hausdorff_distance\": 0.30000000000000004,\n    \"witness_direction\": \"b_to_a\"\n  },\n  \"partner\": null,\n  \"point_count_a\": 32,\n  \"point_count_b\": 32,\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL/Embree runs k=1 nearest-neighbor traversal and directed max reduction inside the native Embree summary path; Python keeps only undirected comparison and oracle validation.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.00033683099900372326,\n    \"native_directed_summary_sec\": 0.05654338400927372,\n    \"validation_sec\": 0.00017133601068053395\n  },\n  \"witness_direction\": \"b_to_a\"\n}\n",
+      "timeout_sec": 120,
+      "uses_embree": true,
+      "uses_numba": false
+    },
+    {
+      "app": "spatial_rayjoin",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+        "--workload",
+        "pip",
+        "--backend",
+        "embree",
+        "--execution-route",
+        "generic_kernel",
+        "--result-mode",
+        "count",
+        "--no-rows",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "cpu_thread_env": {
+        "MKL_NUM_THREADS": "8",
+        "NUMEXPR_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8",
+        "RTDL_EMBREE_THREADS": "8",
+        "TBB_NUM_THREADS": "8"
+      },
+      "elapsed_sec": 1.6917584280017763,
+      "returncode": 0,
+      "route_class": "embree_cpu_rt_plus_python_continuation",
+      "row_id": "spatial_rayjoin_pip_count_embree_cpu_generic_kernel",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"app\": \"rayjoin_v2_spatial_join\",\n  \"backend\": \"embree\",\n  \"claim_boundary\": {\n    \"full_rayjoin_reproduction\": false,\n    \"paper_scale_perf_claim_authorized\": false,\n    \"requires_pod_for_optix_perf\": true,\n    \"v2_0_release_authorized\": false\n  },\n  \"dataset\": \"tests/fixtures/rayjoin/br_county_subset.cdb\",\n  \"dataset_note\": \"County subset probe points against deterministic chain-derived polygons.\",\n  \"elapsed_sec\": 0.05745495799055789,\n  \"native_engine_boundary\": \"The engine sees generic point, segment, polygon, traversal, and row contracts. RayJoin application policy, face metadata, PIP positive filtering, and overlay continuation stay in Python/partner code.\",\n  \"parity_vs_cpu_python_reference\": true,\n  \"row_count\": 6,\n  \"rt_core_accelerated\": false,\n  \"summary\": {\n    \"output_contract\": \"point_to_polygon_positive_hit_rows\",\n    \"positive_assignment_count\": 6,\n    \"positive_assignments\": [\n      {\n        \"point_id\": 1,\n        \"polygon_id\": 1\n      },\n      {\n        \"point_id\": 1,\n        \"polygon_id\": 2\n      },\n      {\n        \"point_id\": 2,\n        \"polygon_id\": 1\n      },\n      {\n        \"point_id\": 2,\n        \"polygon_id\": 2\n      },\n      {\n        \"point_id\": 3,\n        \"polygon_id\": 1\n      },\n      {\n        \"point_id\": 3,\n        \"polygon_id\": 2\n      }\n    ],\n    \"positive_hit_row_count\": 6\n  },\n  \"workload\": \"pip\"\n}\n",
+      "timeout_sec": 180,
+      "uses_embree": true,
+      "uses_numba": false
+    },
+    {
+      "app": "rt_dbscan",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+        "--mode",
+        "embree_prepared_rows",
+        "--dataset",
+        "tiny",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "cpu_thread_env": {
+        "MKL_NUM_THREADS": "8",
+        "NUMEXPR_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8",
+        "RTDL_EMBREE_THREADS": "8",
+        "TBB_NUM_THREADS": "8"
+      },
+      "elapsed_sec": 1.6974353569967207,
+      "returncode": 0,
+      "route_class": "embree_cpu_rt_plus_python_continuation",
+      "row_id": "rt_dbscan_embree_cpu_prepared_rows",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"app\": \"rt_dbscan_benchmark\",\n  \"claim_boundary\": {\n    \"full_dbscan\": true,\n    \"host_bucket_index_used\": false,\n    \"native_dbscan_abi_added\": false,\n    \"paper_dataset_reproduction\": false,\n    \"paper_speedup_claim_authorized\": false,\n    \"rt_core_accelerated\": false\n  },\n  \"dataset\": \"tiny\",\n  \"elapsed_sec\": 0.058636225992813706,\n  \"matches_reference\": true,\n  \"metadata\": {\n    \"embree_backend_used\": true,\n    \"materializes_neighbor_rows\": true,\n    \"native_engine_row_contract\": \"generic_fixed_radius_neighbors_3d_rows\",\n    \"native_execution_path\": \"embree_point_query_fixed_radius_3d\",\n    \"neighbor_row_count\": 33,\n    \"path\": \"embree_fixed_radius_neighbor_rows_3d\",\n    \"rt_core_accelerated\": false\n  },\n  \"min_neighbors\": 3,\n  \"mode\": \"embree_prepared_rows\",\n  \"paper\": {\n    \"authors\": [\n      \"Vani Nagarajan\",\n      \"Milind Kulkarni\"\n    ],\n    \"doi\": \"10.1109/IPDPS54959.2023.00100\",\n    \"title\": \"RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware\",\n    \"venue\": \"IPDPS 2023\"\n  },\n  \"point_count\": 9,\n  \"radius\": 0.2,\n  \"reference_signature\": {\n    \"cluster_sizes\": {\n      \"1\": 4,\n      \"2\": 4\n    },\n    \"core_count\": 8,\n    \"noise_count\": 1\n  },\n  \"seed\": 20260519,\n  \"signature\": {\n    \"cluster_sizes\": {\n      \"1\": 4,\n      \"2\": 4\n    },\n    \"core_count\": 8,\n    \"noise_count\": 1\n  }\n}\n",
+      "timeout_sec": 180,
+      "uses_embree": true,
+      "uses_numba": false
+    },
+    {
+      "app": "robot_collision",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+        "--mode",
+        "embree_prepared_buffers",
+        "--dataset",
+        "tiny",
+        "--repeats",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "cpu_thread_env": {
+        "MKL_NUM_THREADS": "8",
+        "NUMEXPR_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8",
+        "RTDL_EMBREE_THREADS": "8",
+        "TBB_NUM_THREADS": "8"
+      },
+      "elapsed_sec": 1.6918064589990536,
+      "returncode": 0,
+      "route_class": "embree_cpu_rt_primitive",
+      "row_id": "robot_collision_embree_cpu_prepared_buffers",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "911684e-06,\n        \"median_sec\": 3.94799280911684e-06,\n        \"min_sec\": 3.94799280911684e-06,\n        \"total_sec\": 3.94799280911684e-06\n      },\n      \"output_postprocess\": {\n        \"count\": 1,\n        \"max_sec\": 4.458008334040642e-06,\n        \"median_sec\": 4.458008334040642e-06,\n        \"min_sec\": 4.458008334040642e-06,\n        \"total_sec\": 4.458008334040642e-06\n      },\n      \"prepare_build\": {\n        \"count\": 1,\n        \"max_sec\": 0.0033387720031896606,\n        \"median_sec\": 0.0033387720031896606,\n        \"min_sec\": 0.0033387720031896606,\n        \"total_sec\": 0.0033387720031896606\n      },\n      \"prepared_query_build\": {\n        \"count\": 1,\n        \"max_sec\": 0.002159247000236064,\n        \"median_sec\": 0.002159247000236064,\n        \"min_sec\": 0.002159247000236064,\n        \"total_sec\": 0.002159247000236064\n      },\n      \"query_pack\": {\n        \"count\": 1,\n        \"max_sec\": 0.0,\n        \"median_sec\": 0.0,\n        \"min_sec\": 0.0,\n        \"total_sec\": 0.0\n      },\n      \"traversal\": {\n        \"count\": 1,\n        \"max_sec\": 5.21e-06,\n        \"median_sec\": 5.21e-06,\n        \"min_sec\": 5.21e-06,\n        \"total_sec\": 5.21e-06\n      }\n    },\n    \"total_run_seconds\": {\n      \"count\": 1,\n      \"max_sec\": 5.469399911817163e-05,\n      \"median_sec\": 5.469399911817163e-05,\n      \"min_sec\": 5.469399911817163e-05,\n      \"total_sec\": 5.469399911817163e-05\n    }\n  },\n  \"runs\": [\n    {\n      \"buffer_reuse_metadata\": null,\n      \"flagged_group_count\": 4,\n      \"flags_signature\": \"0001110001\",\n      \"is_warmup\": true,\n      \"iteration\": 0,\n      \"matches_probe_reference\": true,\n      \"phase_timing_seconds\": {\n        \"output_clear\": 8.235001587308943e-06,\n        \"output_postprocess\": 7.533992175012827e-06,\n        \"prepare_build\": 0.0033387720031896606,\n        \"prepared_query_build\": 0.002159247000236064,\n        \"query_pack\": 0.0,\n        \"traversal\": 1.3386e-05\n      },\n      \"prepared_query_run_index\": 1,\n      \"prepared_run_index\": 1,\n      \"prepared_scene_used\": true,\n      \"total_run_seconds\": 9.779600077308714e-05\n    },\n    {\n      \"buffer_reuse_metadata\": {\n        \"contract\": \"PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1\",\n        \"copy_boundary\": \"python_ctypes_host_buffer\",\n        \"device\": \"host\",\n        \"group_count\": 10,\n        \"group_offsets_buffer_kind\": \"ctypes_host_uint32_offsets\",\n        \"host_output_buffer_reused\": true,\n        \"host_query_buffers_reused\": true,\n        \"native_device_query_buffers_reused\": false,\n        \"output_buffer_kind\": \"ctypes_host_uint8_group_flags\",\n        \"owner\": \"python_runtime_wrapper\",\n        \"public_speedup_claim_authorized\": false,\n        \"query_buffer_kind\": \"ctypes_host_rtdl_segment3d_array\",\n        \"segment_count\": 90,\n        \"true_zero_copy_authorized\": false\n      },\n      \"flagged_group_count\": 4,\n      \"flags_signature\": \"0001110001\",\n      \"is_warmup\": false,\n      \"iteration\": 1,\n      \"matches_probe_reference\": true,\n      \"phase_timing_seconds\": {\n        \"output_clear\": 3.94799280911684e-06,\n        \"output_postprocess\": 4.458008334040642e-06,\n        \"prepare_build\": 0.0033387720031896606,\n        \"prepared_query_build\": 0.002159247000236064,\n        \"query_pack\": 0.0,\n        \"traversal\": 5.21e-06\n      },\n      \"prepared_query_run_index\": 2,\n      \"prepared_run_index\": 2,\n      \"prepared_scene_used\": true,\n      \"total_run_seconds\": 5.469399911817163e-05\n    }\n  ],\n  \"tail_medians\": {\n    \"phase_timing_seconds\": {\n      \"output_clear\": 3.94799280911684e-06,\n      \"output_postprocess\": 4.458008334040642e-06,\n      \"prepare_build\": 0.0033387720031896606,\n      \"prepared_query_build\": 0.002159247000236064,\n      \"query_pack\": 0.0,\n      \"traversal\": 5.21e-06\n    },\n    \"total_run_seconds\": 5.469399911817163e-05\n  },\n  \"warmup_protocol\": {\n    \"minimum_default\": \"7 repeats with 2 warmup rows for local evidence\",\n    \"repeat_count\": 2,\n    \"rule\": \"drop the first warmup_count rows; report medians over remaining tail rows\",\n    \"warmup_count\": 1\n  }\n}\n",
+      "timeout_sec": 180,
+      "uses_embree": true,
+      "uses_numba": false
+    },
+    {
+      "app": "contact_manifold",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+        "--mode",
+        "native_collect_k",
+        "--backend",
+        "embree",
+        "--dataset",
+        "tiny",
+        "--witness-capacity",
+        "8",
+        "--repeat-count",
+        "2"
+      ],
+      "cpu_thread_env": {
+        "MKL_NUM_THREADS": "8",
+        "NUMEXPR_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8",
+        "RTDL_EMBREE_THREADS": "8",
+        "TBB_NUM_THREADS": "8"
+      },
+      "elapsed_sec": 1.5935994369938271,
+      "returncode": 0,
+      "route_class": "embree_cpu_rt_primitive",
+      "row_id": "contact_manifold_embree_cpu_native_collect_k",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": " \"native_collect_repeat_count\": 2,\n  \"native_collect_runs_sec\": [\n    0.00039547299093101174,\n    0.00010789599036797881\n  ],\n  \"native_collect_timing_scope\": \"median_preserves_legacy_field_total_records_repeat_aggregate\",\n  \"native_collect_total_sec\": 0.0005033689812989905,\n  \"native_generic_symbol\": \"rtdl_embree_collect_k_bounded_i64\",\n  \"overflowed\": false,\n  \"primitive_under_test\": \"COLLECT_K_BOUNDED\",\n  \"repeat_count\": 2,\n  \"row_schema\": [\n    \"query_group_id\",\n    \"query_triangle_id\",\n    \"scene_triangle_id\"\n  ],\n  \"v2_4_phase_timing\": {\n    \"phase_contract_version\": \"rtdl.partner.v2.4\",\n    \"phases_sec\": {\n      \"materialization\": 0.0002516844906494953\n    },\n    \"promoted_performance_path\": false,\n    \"same_phase_contract_as_basis\": true,\n    \"source\": \"contact_manifold.native_collect_k\",\n    \"validation\": {\n      \"errors\": [],\n      \"known_phases\": [\n        \"materialization\"\n      ],\n      \"status\": \"accept\"\n    }\n  },\n  \"v2_4_prepared_session\": {\n    \"app_owned_interpretation\": \"Rows may represent contact witnesses in this benchmark, but RTDL sees only bounded int64 rows and valid_count.\",\n    \"app_specific_native_vocab_allowed\": false,\n    \"backend\": \"embree\",\n    \"descriptor_only\": true,\n    \"input_buffers\": [\n      {\n        \"access_mode\": \"read\",\n        \"alignment_bytes\": 1,\n        \"byte_offset\": 0,\n        \"capacity_elements\": 9,\n        \"data_ptr_observed\": false,\n        \"device\": \"cpu:0\",\n        \"dtype\": \"int64\",\n        \"element_count\": 9,\n        \"lifetime\": \"session_retained\",\n        \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n        \"mutability\": \"immutable\",\n        \"name\": \"candidate_id_rows\",\n        \"scope\": \"rtdl_primitive_handoff_only\",\n        \"shape\": [\n          3,\n          3\n        ],\n        \"source_protocol\": \"rtdl_generic_i64_rows\",\n        \"stream_handle\": 0,\n        \"strides_bytes\": null\n      }\n    ],\n    \"native_engine_boundary\": \"app_agnostic_native_engine\",\n    \"native_symbols\": [\n      \"rtdl_embree_collect_k_bounded_i64\"\n    ],\n    \"output_buffers\": [\n      {\n        \"access_mode\": \"write\",\n        \"alignment_bytes\": 1,\n        \"byte_offset\": 0,\n        \"capacity_elements\": 24,\n        \"data_ptr_observed\": false,\n        \"device\": \"cpu:0\",\n        \"dtype\": \"int64\",\n        \"element_count\": 24,\n        \"lifetime\": \"session_retained\",\n        \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n        \"mutability\": \"mutable\",\n        \"name\": \"bounded_witness_rows\",\n        \"scope\": \"rtdl_primitive_handoff_only\",\n        \"shape\": [\n          8,\n          3\n        ],\n        \"source_protocol\": \"rtdl_generic_i64_rows\",\n        \"stream_handle\": 0,\n        \"strides_bytes\": null\n      },\n      {\n        \"access_mode\": \"write\",\n        \"alignment_bytes\": 1,\n        \"byte_offset\": 0,\n        \"capacity_elements\": 1,\n        \"data_ptr_observed\": false,\n        \"device\": \"cpu:0\",\n        \"dtype\": \"uint64\",\n        \"element_count\": 1,\n        \"lifetime\": \"session_retained\",\n        \"memory_manager_boundary\": \"not_a_general_purpose_memory_manager\",\n        \"mutability\": \"mutable\",\n        \"name\": \"valid_count\",\n        \"scope\": \"rtdl_primitive_handoff_only\",\n        \"shape\": [\n          1\n        ],\n        \"source_protocol\": \"rtdl_scalar_status\",\n        \"stream_handle\": 0,\n        \"strides_bytes\": null\n      }\n    ],\n    \"overflow_policy\": \"fail_closed_no_partial_rows\",\n    \"phase_contract\": \"bounded_witness_collection\",\n    \"primitive\": \"aabb_index_2d_bounded_i64_rows\",\n    \"requires_phase_timing\": true,\n    \"reusable_output_buffers\": true,\n    \"reusable_query_buffers\": true,\n    \"reusable_scene\": true,\n    \"row_schema\": [\n      \"query_group_id\",\n      \"query_triangle_id\",\n      \"scene_triangle_id\"\n    ],\n    \"same_phase_contract_as_basis_required\": true,\n    \"session_id\": \"generic_bounded_i64_rows_embree_3x8\",\n    \"status\": \"protocol_descriptor_only\",\n    \"v2_4_protocol_version\": \"rtdl.partner.v2.4\"\n  },\n  \"valid_count\": 3,\n  \"witness_capacity\": 8\n}\n",
+      "timeout_sec": 120,
+      "uses_embree": true,
+      "uses_numba": false
+    },
+    {
+      "app": "raydb_style",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+        "--mode",
+        "count",
+        "--backend",
+        "paper_rt_embree",
+        "--fixture-kind",
+        "generated",
+        "--generated-rows",
+        "4096",
+        "--generated-groups",
+        "128",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1",
+        "--summary-only-iterations"
+      ],
+      "cpu_thread_env": {
+        "MKL_NUM_THREADS": "8",
+        "NUMEXPR_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8",
+        "RTDL_EMBREE_THREADS": "8",
+        "TBB_NUM_THREADS": "8"
+      },
+      "elapsed_sec": 1.6767435549991205,
+      "returncode": 0,
+      "route_class": "embree_cpu_rt_primitive",
+      "row_id": "raydb_style_embree_cpu_count_primitive_first",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "_key\"\n      ],\n      \"mode\": \"count\",\n      \"numba_descriptors\": [\n        {\n          \"claim_boundary\": \"Numba executes only generic grouped continuation over device arrays; RTDL/OptiX traversal remains separate\",\n          \"contract_version\": \"rtdl.partner_continuation.v2.5\",\n          \"group_id_validation_mode\": \"device_resident_error_flag\",\n          \"input_columns\": [\n            \"group_ids:int64\"\n          ],\n          \"operation\": \"segmented_count_i64\",\n          \"output_columns\": [\n            \"counts:int64\"\n          ],\n          \"partner\": \"numba\",\n          \"phase\": \"partner_continuation\",\n          \"promoted_performance_path\": false,\n          \"raw_kernel_required\": false,\n          \"replaces_rt_traversal\": false,\n          \"requires_cuda\": true,\n          \"requires_numba_cuda_device_arrays\": true,\n          \"rt_traversal_contract_version\": \"rtdl.partner.v2.4\",\n          \"status\": \"preview_not_promoted\"\n        }\n      ],\n      \"operations\": [\n        \"segmented_count_i64\"\n      ],\n      \"post_rt_continuation_only\": true,\n      \"preferred_partner\": \"triton\",\n      \"promoted_performance_path\": false,\n      \"raw_kernel_required\": false,\n      \"replaces_rt_traversal\": false,\n      \"rt_core_speedup_claim_authorized\": false,\n      \"status\": \"adapter_front_door_preview_not_promoted\",\n      \"tensor_carrier\": \"torch_cuda_tensor_for_triton_launch\",\n      \"tensor_carrier_is_partner\": false,\n      \"triton_descriptors\": [\n        {\n          \"claim_boundary\": \"Triton executes only a generic post-RT continuation over tensor carriers used for launch; Torch is a carrier here, not the v2.5 partner. RTDL/OptiX traversal remains separate.\",\n          \"contract_version\": \"rtdl.partner_continuation.v2.5\",\n          \"cupy_required\": false,\n          \"group_id_bounds_validation\": {\n            \"checked_before_kernel_launch\": true,\n            \"claim_boundary\": \"v2.5 Triton preview kernels reject out-of-range group ids before launch via a Torch CUDA predicate and host scalar sync. A separate device-error-flag helper is available, but the default strict Python exception path still reads a host scalar.\",\n            \"device_error_flag_available\": true,\n            \"device_error_flag_mode\": \"triton_device_error_flag_no_host_read\",\n            \"device_error_flag_used_by_default\": false,\n            \"mode\": \"torch_cuda_precheck_host_scalar_sync\",\n            \"true_zero_copy_claim_authorized\": false,\n            \"uses_host_scalar_sync\": true\n          },\n          \"input_columns\": [\n            \"group_ids:int64\"\n          ],\n          \"operation\": \"segmented_count_i64\",\n          \"output_columns\": [\n            \"counts:int64\"\n          ],\n          \"partner\": \"triton\",\n          \"phase\": \"partner_continuation\",\n          \"promoted_performance_path\": false,\n          \"pytorch_partner_required\": false,\n          \"raw_kernel_required\": false,\n          \"replaces_rt_traversal\": false,\n          \"requires_cuda\": true,\n          \"requires_torch_tensor_inputs\": true,\n          \"rt_traversal_contract_version\": \"rtdl.partner.v2.4\",\n          \"status\": \"preview_not_promoted\",\n          \"tensor_carrier\": \"torch_cuda_tensor_for_triton_launch\",\n          \"tensor_carrier_is_partner\": false,\n          \"triton_kernel_available\": true\n        }\n      ],\n      \"triton_executable_preview_available\": true,\n      \"uses_cupy_partner\": false,\n      \"uses_pytorch_partner\": false\n    }\n  },\n  \"mode\": \"count\",\n  \"row_count\": 4096,\n  \"rows\": [\n    {\n      \"count\": 1,\n      \"region_id\": 14\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 25\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 42\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 51\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 53\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 64\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 81\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 83\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 92\n    },\n    {\n      \"count\": 1,\n      \"region_id\": 120\n    }\n  ]\n}\n",
+      "timeout_sec": 180,
+      "uses_embree": true,
+      "uses_numba": false
+    },
+    {
+      "app": "barnes_hut",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+        "--mode",
+        "embree_node_coverage_prepared",
+        "--body-count",
+        "1024",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "cpu_thread_env": {
+        "MKL_NUM_THREADS": "8",
+        "NUMEXPR_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8",
+        "RTDL_EMBREE_THREADS": "8",
+        "TBB_NUM_THREADS": "8"
+      },
+      "elapsed_sec": 1.6966198659938527,
+      "returncode": 0,
+      "route_class": "embree_cpu_rt_plus_python_continuation",
+      "row_id": "barnes_hut_embree_cpu_node_coverage_prepared",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "ve N-body solver.\",\n  \"backend\": \"embree\",\n  \"benchmark_metadata\": {\n    \"authors_code_comparison\": false,\n    \"benchmark\": \"barnes_hut_ppopp2025_style\",\n    \"benchmark_scope\": \"RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.\",\n    \"claim_boundary\": \"Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.\",\n    \"contract\": \"prepared_fixed_radius_node_coverage_threshold_decision_embree\",\n    \"mode\": \"embree_node_coverage_prepared\",\n    \"native_engine_app_specific\": false,\n    \"paper_reference\": {\n      \"authors\": [\n        \"Vani Nagarajan\",\n        \"Rohan Gangaraju\",\n        \"Kirshanthan Sundararajah\",\n        \"Artem Pelenitsyn\",\n        \"Milind Kulkarni\"\n      ],\n      \"authors_code_comparison\": false,\n      \"doi\": \"10.1145/3710848.3710885\",\n      \"paper_reproduction\": false,\n      \"title\": \"RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware\",\n      \"venue\": \"PPoPP 2025\"\n    },\n    \"paper_reproduction\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"reconstruction_instrument\": true,\n    \"research_benchmark\": true,\n    \"rt_core_accelerated\": false\n  },\n  \"body_count\": 1024,\n  \"boundary\": \"Node-coverage decision only; this is not Barnes-Hut opening-rule evaluation, not force-vector reduction, and not a fully native N-body solver.\",\n  \"claim_boundary\": \"Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.\",\n  \"matches_oracle\": true,\n  \"node_count\": 4,\n  \"node_coverage\": {\n    \"all_bodies_have_node_candidate\": true,\n    \"backend\": \"embree\",\n    \"body_count\": 1024,\n    \"covered_body_count\": 1024,\n    \"generic_primitive\": \"FIXED_RADIUS_COUNT_THRESHOLD_2D\",\n    \"identity_parity_available\": true,\n    \"query_repeat_protocol\": {\n      \"measured_run_count\": 2,\n      \"query_sec_median\": 0.006807149497035425,\n      \"query_sec_total\": 0.01361429899407085,\n      \"repeat\": 2,\n      \"warmup\": 1\n    },\n    \"radius\": 10.0,\n    \"row_count\": null,\n    \"run_phases\": {\n      \"query_fixed_radius_threshold_reached_count_sec\": 0.006807149497035425,\n      \"query_fixed_radius_threshold_reached_count_total_sec\": 0.01361429899407085,\n      \"query_repeat\": 2,\n      \"query_warmup\": 1,\n      \"scene_prepare_sec\": 0.05400169000495225\n    },\n    \"summary_mode\": \"scalar_threshold_count\",\n    \"summary_primitive\": \"REDUCE_INT(COUNT)\",\n    \"uncovered_body_ids\": []\n  },\n  \"node_radius\": 10.0,\n  \"optix_performance\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim.\"\n  },\n  \"optix_summary_mode\": \"node_coverage_prepared\",\n  \"oracle_decision_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_node_coverage\": {\n    \"all_bodies_have_node_candidate\": true,\n    \"body_count\": 1024,\n    \"covered_body_count\": 1024,\n    \"max_candidate_count\": 4,\n    \"min_candidate_count\": 4,\n    \"radius\": 10.0,\n    \"threshold\": 1,\n    \"uncovered_body_ids\": []\n  },\n  \"output_mode\": \"candidate_summary\",\n  \"repeat_protocol\": {\n    \"measured_query_total_sec\": 0.01361429899407085,\n    \"repeat\": 2,\n    \"reported_query_metric\": \"query_median\",\n    \"warmup\": 1\n  },\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL/embree uses prepared fixed-radius threshold traversal to answer the bounded Barnes-Hut node-coverage decision: every body has at least one quadtree node candidate within the discovery radius.\",\n  \"theta\": 0.75\n}\n",
+      "timeout_sec": 180,
+      "uses_embree": true,
+      "uses_numba": false
+    },
+    {
+      "app": "librts_spatial_index",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--box-count",
+        "1024",
+        "--query-count",
+        "1024",
+        "--operation",
+        "all",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "cpu_thread_env": {
+        "MKL_NUM_THREADS": "8",
+        "NUMEXPR_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8",
+        "RTDL_EMBREE_THREADS": "8",
+        "TBB_NUM_THREADS": "8"
+      },
+      "elapsed_sec": 2.045223466004245,
+      "returncode": 0,
+      "route_class": "embree_cpu_rt_primitive",
+      "row_id": "librts_spatial_index_embree_cpu_aabb_index",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"app\": \"librts_spatial_index\",\n  \"authors_code_comparison\": false,\n  \"candidate_checks\": null,\n  \"claim_boundary\": \"LibRTS-style benchmark call into generic Embree AABB_INDEX_QUERY_2D using app-agnostic prepared AABB collision traversal when available, with a columnar fallback for older libraries. This is not authors-code timing, not NVIDIA RT-core accelerated, and does not authorize public speedup wording.\",\n  \"counts\": {\n    \"point_contains\": 42228,\n    \"range_contains\": 29257,\n    \"range_intersects\": 65638\n  },\n  \"cpu_reference_skipped\": false,\n  \"elapsed_sec\": 0.12985644550644793,\n  \"fixture\": {\n    \"box_count\": 1024,\n    \"box_query_count\": 1024,\n    \"dataset\": \"uniform\",\n    \"paper_equivalent_dataset\": false,\n    \"point_query_count\": 1024,\n    \"seed\": 2025\n  },\n  \"generic_primitive\": \"AABB_INDEX_QUERY_2D\",\n  \"index\": {\n    \"indexed_boxes\": 1024,\n    \"native_index\": \"embree_native_aabb_collision_index\",\n    \"primary_fields\": []\n  },\n  \"matches_cpu_reference\": true,\n  \"mode\": \"embree_aabb_index\",\n  \"native_engine_customization\": false,\n  \"operation\": \"all\",\n  \"paper\": {\n    \"authors_code\": \"https://github.com/RTSpatial/RTSpatial\",\n    \"doi\": \"10.1145/3710848.3710850\",\n    \"title\": \"LibRTS: A Spatial Indexing Library by Ray Tracing\",\n    \"venue\": \"PPoPP 2025\"\n  },\n  \"paper_reproduction\": false,\n  \"primitive_contract\": \"generic_prepared_aabb_index_query_2d\",\n  \"repeat_protocol\": {\n    \"measured_run_count\": 2,\n    \"query_sec_median\": 0.06018420550390147,\n    \"query_sec_total\": 0.12036841100780293,\n    \"repeat\": 2,\n    \"warmup\": 1\n  },\n  \"rt_core_accelerated\": false,\n  \"run_phases\": {\n    \"query_median_sec\": 0.06018420550390147,\n    \"query_repeat\": 2,\n    \"query_sec\": 0.06018420550390147,\n    \"query_summed_median_sec\": 0.06018420550390147,\n    \"query_total_sec\": 0.12036841100780293,\n    \"query_warmup\": 1,\n    \"scene_prepare_sec\": 0.06967224000254646\n  }\n}\n",
+      "timeout_sec": 180,
+      "uses_embree": true,
+      "uses_numba": false
+    },
+    {
+      "app": "rtnn",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py",
+        "--mode",
+        "ann_embree_quality",
+        "--copies",
+        "128"
+      ],
+      "cpu_thread_env": {
+        "MKL_NUM_THREADS": "8",
+        "NUMEXPR_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8",
+        "RTDL_EMBREE_THREADS": "8",
+        "TBB_NUM_THREADS": "8"
+      },
+      "elapsed_sec": 1.7614584900002228,
+      "returncode": 0,
+      "route_class": "embree_cpu_rt_plus_python_continuation",
+      "row_id": "rtnn_embree_cpu_ann_candidate_quality_reference",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"app\": \"rtnn_neighbor_search\",\n  \"approximate_row_count\": 384,\n  \"backend\": \"embree\",\n  \"benchmark_app\": \"rtnn_neighbor_search\",\n  \"boundary\": \"Embree CPU front door for the 2-D ANN candidate-quality contract. This removes the RTNN Embree-packet special case, but it is not the 3-D RTNN ranked-summary path and not full RTNN paper reproduction.\",\n  \"candidate_count\": 384,\n  \"candidate_radius\": null,\n  \"claim_boundary\": {\n    \"embree_cpu_compatibility_front_door\": true,\n    \"native_engine_customization\": false,\n    \"paper_reproduction_claim_authorized\": false,\n    \"rt_core_speedup_claim_authorized\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"contract\": \"Embree CPU candidate-subset exact top-1 rerank compared with exact full-set top-1\",\n  \"copies\": 128,\n  \"exact_match_count\": 256,\n  \"inherited_ann_optix_performance_note_present\": true,\n  \"k\": 1,\n  \"max_neighbor_rank\": 1,\n  \"mean_distance_ratio\": 3.6666666666637027,\n  \"mode\": \"ann_embree_quality\",\n  \"native_continuation_active\": true,\n  \"native_continuation_backend\": \"native_knn_rerank_summary\",\n  \"optix_summary_mode\": null,\n  \"output_mode\": \"quality_summary\",\n  \"query_count\": 384,\n  \"query_count_with_candidate\": 384,\n  \"recall_at_1\": 0.6666666666666666,\n  \"rt_core_accelerated\": false,\n  \"rt_path_note\": {\n    \"class\": \"optix_traversal_prepared_summary\",\n    \"note\": \"Default candidate reranking uses KNN rows through CUDA-style kernels; explicit candidate_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for candidate-coverage decisions only.\"\n  },\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows for candidate-subset kNN reranking over a Python-selected candidate subset; Python evaluates approximation quality against exact search.\",\n  \"search_count\": 768,\n  \"uses_embree\": true,\n  \"uses_numba\": false\n}\n",
+      "timeout_sec": 180,
+      "uses_embree": true,
+      "uses_numba": false
+    },
+    {
+      "app": "triangle_counting",
+      "command": [
+        "/usr/bin/python3",
+        "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+        "--mode",
+        "run",
+        "--backend",
+        "embree",
+        "--output-mode",
+        "summary",
+        "--copies",
+        "128",
+        "--partner",
+        "none",
+        "--repeat",
+        "2",
+        "--warmup",
+        "1"
+      ],
+      "cpu_thread_env": {
+        "MKL_NUM_THREADS": "8",
+        "NUMEXPR_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8",
+        "RTDL_EMBREE_THREADS": "8",
+        "TBB_NUM_THREADS": "8"
+      },
+      "elapsed_sec": 1.6722111819981365,
+      "returncode": 0,
+      "route_class": "embree_cpu_rt_primitive",
+      "row_id": "triangle_counting_embree_cpu_native_summary",
+      "semantic_stdout_check": {
+        "claim_flag_violations": [],
+        "stdout_json_error": null,
+        "stdout_json_parseable": true
+      },
+      "status": "pass",
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"backend\": \"embree\",\n  \"benchmark_app\": \"triangle_counting\",\n  \"claim_boundary\": {\n    \"app_specific_native_engine_logic_allowed\": false,\n    \"automatic_partner_selection_authorized\": false,\n    \"benchmark_app\": true,\n    \"bfs_in_benchmark\": false,\n    \"distributed_graph_claim\": false,\n    \"full_graph_database_claim\": false,\n    \"generic_ray_triangle_rt_core_subpath_authorized\": true,\n    \"native_engine_customization\": false,\n    \"paper_code_intake_complete\": true,\n    \"paper_reproduction\": false,\n    \"public_speedup_claim_authorized\": false,\n    \"rt_graph_1a2_generic_rt_mapping\": true,\n    \"rt_graph_2a1_generic_rt_mapping\": true,\n    \"rt_graph_id_ascending_adapter\": true,\n    \"rt_graph_preprocessing_oracle\": true,\n    \"triangle_count_rt_core_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false,\n    \"visibility_edges_in_benchmark\": false,\n    \"whole_app_speedup_claim_authorized\": false\n  },\n  \"contract\": \"triangle_count_only\",\n  \"copies\": 128,\n  \"excluded_operations\": [\n    \"bfs\",\n    \"visibility_edges\"\n  ],\n  \"mode\": \"run\",\n  \"output_mode\": \"summary\",\n  \"section\": {\n    \"app\": \"graph_triangle_count\",\n    \"backend\": \"embree\",\n    \"copies\": 128,\n    \"graph_edge_count\": 768,\n    \"graph_vertex_count\": 512,\n    \"native_continuation_active\": true,\n    \"native_continuation_backend\": \"native_graph_triangle_raw_summary\",\n    \"optix_graph_mode\": \"not_applicable\",\n    \"optix_performance\": {\n      \"class\": \"host_indexed_fallback\",\n      \"note\": \"OptiX triangle-count currently uses a host-indexed CSR probe correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated.\"\n    },\n    \"output_mode\": \"summary\",\n    \"ray_tracing_accelerated\": true,\n    \"ray_tracing_note\": \"Embree uses ray traversal over graph-edge primitives to collect candidate neighbor sets; CPU-side set intersection and uniqueness bookkeeping remain outside the RT traversal.\",\n    \"row_count\": 128,\n    \"rows\": [],\n    \"rt_core_accelerated\": false,\n    \"run_phases\": {\n      \"input_construction_sec\": 0.0005872769979760051,\n      \"native_summary_postprocess_sec\": 3.4099502954632044e-07,\n      \"query_and_materialize_sec\": 0.07599623000714928,\n      \"query_raw_view_sec\": 0.07599623000714928,\n      \"row_materialization_sec\": 0.0\n    },\n    \"seed_count\": 384,\n    \"summary\": {\n      \"touched_vertex_count\": 384,\n      \"triangle_count\": 128\n    }\n  },\n  \"touched_vertex_count\": 384,\n  \"triangle_count\": 128\n}\n",
+      "timeout_sec": 180,
+      "uses_embree": true,
+      "uses_numba": false
+    }
+  ],
+  "runtime_environment": {
+    "cpu_thread_env": {
+      "MKL_NUM_THREADS": "8",
+      "NUMEXPR_NUM_THREADS": "8",
+      "OMP_NUM_THREADS": "8",
+      "OPENBLAS_NUM_THREADS": "8",
+      "RTDL_EMBREE_THREADS": "8",
+      "TBB_NUM_THREADS": "8"
+    },
+    "executable": "/usr/bin/python3",
+    "machine": "x86_64",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]"
+  },
+  "summary": {
+    "app_count": 10,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "claim_boundary": "Goal4298 records the v2.11 Embree CPU plus current CPU partner reference packet for the ten current benchmark apps. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, NVIDIA/AMD/Intel GPU performance wording, paper-reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
+    "embree_rows": [
+      "hausdorff_xhd_embree_cpu_directed_summary",
+      "spatial_rayjoin_pip_count_embree_cpu_generic_kernel",
+      "rt_dbscan_embree_cpu_prepared_rows",
+      "robot_collision_embree_cpu_prepared_buffers",
+      "contact_manifold_embree_cpu_native_collect_k",
+      "raydb_style_embree_cpu_count_primitive_first",
+      "barnes_hut_embree_cpu_node_coverage_prepared",
+      "librts_spatial_index_embree_cpu_aabb_index",
+      "rtnn_embree_cpu_ann_candidate_quality_reference",
+      "triangle_counting_embree_cpu_native_summary"
+    ],
+    "intel_gpu_performance_claim_authorized": false,
+    "numba_rows": [],
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "requires_embree_library_rows": [
+      "hausdorff_xhd_embree_cpu_directed_summary",
+      "spatial_rayjoin_pip_count_embree_cpu_generic_kernel",
+      "rt_dbscan_embree_cpu_prepared_rows",
+      "robot_collision_embree_cpu_prepared_buffers",
+      "contact_manifold_embree_cpu_native_collect_k",
+      "raydb_style_embree_cpu_count_primitive_first",
+      "barnes_hut_embree_cpu_node_coverage_prepared",
+      "librts_spatial_index_embree_cpu_aabb_index",
+      "rtnn_embree_cpu_ann_candidate_quality_reference",
+      "triangle_counting_embree_cpu_native_summary"
+    ],
+    "requires_numba_rows": [],
+    "row_count": 10,
+    "status": "internal_embree_cpu_partner_reference_not_release_authorization",
+    "true_zero_copy_claim_authorized": false,
+    "version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "true_zero_copy_claim_authorized": false,
+  "v2_11_release_authorized": false,
+  "validation": {
+    "app_count": 10,
+    "claim_boundary": "Goal4298 records the v2.11 Embree CPU plus current CPU partner reference packet for the ten current benchmark apps. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, NVIDIA/AMD/Intel GPU performance wording, paper-reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
+    "errors": [],
+    "row_count": 10,
+    "status": "accept",
+    "version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1"
+  },
+  "version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1",
+  "whole_app_speedup_claim_authorized": false
+}

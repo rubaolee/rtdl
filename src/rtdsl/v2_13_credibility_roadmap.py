@@ -189,7 +189,11 @@ ROADMAP_GOALS: tuple[dict[str, Any], ...] = (
             "Fallback and boundary-limited rows are excluded from release-facing speedups.",
         ),
         "depends_on": ("freeze_v2_12_release_boundary",),
-        "output_artifacts": ("docs/reports/goal4345_backend_comparison_campaign_closeout_2026-06-11.md",),
+        "output_artifacts": (
+            "docs/reports/goal4369_embree_cpu_fairness_hardening_2026-06-13.md",
+            "docs/reports/goal4369_embree_cpu_fairness_hardening_2026-06-13.json",
+            "docs/reports/goal4369_embree_cpu_fairness_hardening_2026-06-13/v2_11_cpu_partner_threads8.json",
+        ),
     },
     {
         "id": "human_scale_timing_packet",

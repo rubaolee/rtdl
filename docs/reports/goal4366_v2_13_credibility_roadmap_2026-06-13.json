@@ -260,7 +260,9 @@
       ],
       "id": "embree_cpu_fairness_hardening",
       "output_artifacts": [
-        "docs/reports/goal4345_backend_comparison_campaign_closeout_2026-06-11.md"
+        "docs/reports/goal4369_embree_cpu_fairness_hardening_2026-06-13.md",
+        "docs/reports/goal4369_embree_cpu_fairness_hardening_2026-06-13.json",
+        "docs/reports/goal4369_embree_cpu_fairness_hardening_2026-06-13/v2_11_cpu_partner_threads8.json"
       ],
       "priority": 3,
       "title": "Harden the Embree CPU side as the serious multicore baseline"
