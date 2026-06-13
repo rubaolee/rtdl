@@ -153,7 +153,7 @@
         "faster_backend": "optix",
         "reasonable": true,
         "row_label": "Spatial RayJoin PIP same-stream scalar count",
-        "v2_13_action": "Use Goal4367 as the baseline, then attack exact membership/refinement."
+        "v2_13_action": "Use Goal4368 as the improved exact baseline, then keep attacking exact refinement."
       },
       {
         "analysis": "Large OptiX win is credible for a prepared ray/triangle any-hit count; this is query/count timing rather than whole application time.",
@@ -241,6 +241,8 @@
       ],
       "id": "pip_exact_membership_optimization",
       "output_artifacts": [
+        "docs/reports/goal4368_pip_exact_prepared_points_executor_2026-06-13.md",
+        "docs/reports/goal4368_pip_exact_prepared_points_executor_2026-06-13/summary.json",
         "docs/reports/goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13.md"
       ],
       "priority": 2,

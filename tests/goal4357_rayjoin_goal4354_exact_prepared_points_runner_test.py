@@ -14,7 +14,7 @@ class Goal4357RayJoinGoal4354ExactPreparedPointsRunnerTest(unittest.TestCase):
 
         for phrase in (
             "--pip-rtdl-count-mode",
-            'choices=("exact", "exact_prepared_points")',
+            'choices=("exact", "exact_prepared_points", "exact_prepared_points_executor")',
             "count_prepared_points_exact(prepared_points)",
             "prepared_exact_closed_shape_membership_prepared_points_scalar_count",
             "rtdl_optix_count_prepared_point_closed_shape_membership_prepared_points_2d",

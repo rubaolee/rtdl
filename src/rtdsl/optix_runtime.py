@@ -292,6 +292,15 @@ OPTIX_PREPARE_POINT_PROBE_COLUMNS_2D_SYMBOL = (
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_PREPARED_POINTS_EXACT_COUNT_SYMBOL = (
     "rtdl_optix_count_prepared_point_closed_shape_membership_prepared_points_2d"
 )
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_PREPARED_POINTS_SCALAR_COUNT_EXECUTOR_PREPARE_SYMBOL = (
+    "rtdl_optix_prepare_point_closed_shape_membership_exact_prepared_points_scalar_count_executor_2d"
+)
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_PREPARED_POINTS_SCALAR_COUNT_EXECUTOR_RUN_SYMBOL = (
+    "rtdl_optix_run_point_closed_shape_membership_exact_prepared_points_scalar_count_executor_2d"
+)
+OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_PREPARED_POINTS_SCALAR_COUNT_EXECUTOR_DESTROY_SYMBOL = (
+    "rtdl_optix_destroy_point_closed_shape_membership_exact_prepared_points_scalar_count_executor_2d"
+)
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_COUNT_SYMBOL = (
     "rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_prepared_points_2d"
 )
@@ -8331,6 +8340,8 @@ def _get_last_closed_shape_membership_phase_timings_from_library(lib) -> dict[st
             if mode_value == 11
             else "prepared_points_exact_count"
             if mode_value == 12
+            else "prepared_points_exact_count_executor_run"
+            if mode_value == 13
             else "none"
         ),
         "point_pack": float(point_pack.value),
@@ -11765,6 +11776,120 @@ def _prepared_points_batch_native_stream_count(stream_count: int | str | None) -
     return parsed
 
 
+class PreparedOptixExactPreparedPointsScalarCountExecutor2D:
+    """Reusable exact scalar-count executor for prepared point/closed-shape probes."""
+
+    def __init__(
+        self,
+        prepared: "PreparedOptixPointClosedShapeMembership2D",
+        prepared_points: PreparedOptixPointProbeColumns2D,
+        *,
+        max_candidate_rows: int = 0,
+    ):
+        if prepared.closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        if prepared_points.closed:
+            raise RuntimeError("prepared OptiX point-probe columns handle is closed")
+        max_candidate_rows = int(max_candidate_rows)
+        if max_candidate_rows < 0:
+            raise ValueError("max_candidate_rows must be non-negative")
+        self._prepared_owner = prepared
+        self._prepared_points_owner = prepared_points
+        self.max_candidate_rows = max_candidate_rows
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._lib = prepared._lib
+        prepare_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_PREPARED_POINTS_SCALAR_COUNT_EXECUTOR_PREPARE_SYMBOL,
+        )
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_PREPARED_POINTS_SCALAR_COUNT_EXECUTOR_PREPARE_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            prepared._handle,
+            prepared_points._handle,
+            ctypes.c_size_t(max_candidate_rows),
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def run(self) -> int:
+        if self._closed:
+            raise RuntimeError("prepared OptiX exact prepared-points scalar-count executor is closed")
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_PREPARED_POINTS_SCALAR_COUNT_EXECUTOR_RUN_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_PREPARED_POINTS_SCALAR_COUNT_EXECUTOR_RUN_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            ctypes.byref(count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(count.value)
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "schema": "rtdl.optix.exact_prepared_points_scalar_count_executor_2d.v1",
+            "max_candidate_rows": self.max_candidate_rows,
+            "prepared_scene_owner_closed": self._prepared_owner.closed,
+            "prepared_points_owner_closed": self._prepared_points_owner.closed,
+            "native_prepare_symbol": (
+                OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_PREPARED_POINTS_SCALAR_COUNT_EXECUTOR_PREPARE_SYMBOL
+            ),
+            "native_run_symbol": (
+                OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_PREPARED_POINTS_SCALAR_COUNT_EXECUTOR_RUN_SYMBOL
+            ),
+            "reusable_native_executor": True,
+            "row_stream_materialized": False,
+            "exact_host_refined_scalar_count": True,
+            "true_zero_copy_claim_authorized": False,
+            "release_authorized": False,
+        }
+
+    def close(self) -> None:
+        if not self._closed:
+            destroy_symbol = _find_optional_backend_symbol(
+                self._lib,
+                OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_PREPARED_POINTS_SCALAR_COUNT_EXECUTOR_DESTROY_SYMBOL,
+            )
+            if destroy_symbol is not None and self._handle:
+                destroy_symbol(self._handle)
+            self._closed = True
+
+    def __enter__(self) -> "PreparedOptixExactPreparedPointsScalarCountExecutor2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 class PreparedOptixRelationStatusCorrectedScalarCountExecutor2D:
     """Reusable native scalar-count executor for prepared point/closed-shape probes."""
 
@@ -12323,6 +12448,28 @@ class PreparedOptixPointClosedShapeMembership2D:
         )
         _check_status(status, error)
         return int(count.value)
+
+    def prepare_exact_prepared_points_scalar_count_executor(
+        self,
+        prepared_points: PreparedOptixPointProbeColumns2D,
+        *,
+        max_candidate_rows: int = 0,
+    ) -> PreparedOptixExactPreparedPointsScalarCountExecutor2D:
+        """Prepare a reusable exact scalar-count executor for pre-uploaded point probes.
+
+        The executor preserves the same exact prepared-points count semantics as
+        ``count_prepared_points_exact``. It reuses native candidate workspace
+        across hot calls and raises if the fixed candidate capacity overflows.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX closed-shape membership handle is closed")
+        if prepared_points.closed:
+            raise RuntimeError("prepared OptiX point-probe columns handle is closed")
+        return PreparedOptixExactPreparedPointsScalarCountExecutor2D(
+            self,
+            prepared_points,
+            max_candidate_rows=max_candidate_rows,
+        )
 
     def count_device_filtered_prepared_points(
         self,
@@ -21150,6 +21297,40 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_count_prepared_closed_shape_membership_prepared_points_exact.restype = ctypes.c_int
+
+    optional_prepare_exact_prepared_points_scalar_count_executor = _find_optional_backend_symbol(
+        lib,
+        OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_PREPARED_POINTS_SCALAR_COUNT_EXECUTOR_PREPARE_SYMBOL,
+    )
+    if optional_prepare_exact_prepared_points_scalar_count_executor is not None:
+        optional_prepare_exact_prepared_points_scalar_count_executor.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_prepare_exact_prepared_points_scalar_count_executor.restype = ctypes.c_int
+
+    optional_run_exact_prepared_points_scalar_count_executor = _find_optional_backend_symbol(
+        lib,
+        OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_PREPARED_POINTS_SCALAR_COUNT_EXECUTOR_RUN_SYMBOL,
+    )
+    if optional_run_exact_prepared_points_scalar_count_executor is not None:
+        optional_run_exact_prepared_points_scalar_count_executor.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_run_exact_prepared_points_scalar_count_executor.restype = ctypes.c_int
+
+    optional_destroy_exact_prepared_points_scalar_count_executor = _find_optional_backend_symbol(
+        lib,
+        OPTIX_CLOSED_SHAPE_MEMBERSHIP_EXACT_PREPARED_POINTS_SCALAR_COUNT_EXECUTOR_DESTROY_SYMBOL,
+    )
+    if optional_destroy_exact_prepared_points_scalar_count_executor is not None:
+        optional_destroy_exact_prepared_points_scalar_count_executor.argtypes = [ctypes.c_void_p]
+        optional_destroy_exact_prepared_points_scalar_count_executor.restype = None
 
     optional_count_prepared_closed_shape_membership_device_filtered = _find_optional_backend_symbol(
         lib,

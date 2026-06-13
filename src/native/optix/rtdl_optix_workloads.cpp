@@ -9672,6 +9672,180 @@ static void count_prepared_point_closed_shape_membership_prepared_points_2d_opti
     *count_out = exact_count;
 }
 
+struct PreparedPointClosedShapeExactPreparedPointsScalarCountExecutor2D {
+    PreparedShapePairRelationBuild* prepared = nullptr;
+    PreparedPointProbeColumns2D* prepared_points = nullptr;
+    size_t output_capacity = 0;
+    DevPtr d_output;
+    DevPtr d_count;
+    DevPtr d_params;
+    std::vector<GpuPipRecord> host_rows;
+
+    static size_t choose_output_capacity(
+            PreparedShapePairRelationBuild* prepared_in,
+            PreparedPointProbeColumns2D* prepared_points_in,
+            size_t requested_capacity)
+    {
+        if (!prepared_in) {
+            throw std::runtime_error("prepared closed-shape membership handle must not be null");
+        }
+        if (!prepared_points_in) {
+            throw std::runtime_error("prepared point-probe columns handle must not be null");
+        }
+        if (prepared_points_in->point_count == 0 || prepared_in->right_count == 0) {
+            throw std::runtime_error("exact prepared-points executor requires non-empty prepared points and closed shapes");
+        }
+        if (prepared_points_in->point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("exact prepared-points executor point count exceeds uint32_t launch capacity");
+        }
+        if (prepared_in->right_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("exact prepared-points executor shape count exceeds uint32_t launch capacity");
+        }
+        const uint64_t max_points_per_launch64 =
+            static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) /
+            static_cast<uint64_t>(prepared_in->right_count);
+        if (max_points_per_launch64 == 0 ||
+                prepared_points_in->point_count > static_cast<size_t>(max_points_per_launch64)) {
+            throw std::runtime_error("exact prepared-points executor currently requires a single launch per run");
+        }
+        const size_t capacity = requested_capacity == 0
+            ? (std::max)(prepared_points_in->point_count, size_t{4096})
+            : requested_capacity;
+        if (capacity == 0 || capacity > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("exact prepared-points executor output capacity must fit uint32_t");
+        }
+        return capacity;
+    }
+
+    PreparedPointClosedShapeExactPreparedPointsScalarCountExecutor2D(
+            PreparedShapePairRelationBuild* prepared_in,
+            PreparedPointProbeColumns2D* prepared_points_in,
+            size_t requested_capacity)
+        : prepared(prepared_in),
+          prepared_points(prepared_points_in),
+          output_capacity(choose_output_capacity(prepared_in, prepared_points_in, requested_capacity)),
+          d_output(sizeof(GpuPipRecord) * output_capacity),
+          d_count(sizeof(uint32_t)),
+          d_params(sizeof(PipLaunchParams))
+    {
+        ensure_pip_pipeline();
+
+        PipLaunchParams lp;
+        lp.traversable    = prepared->accel.handle;
+        lp.points_x       = reinterpret_cast<const float*>(prepared_points->d_points_x.ptr);
+        lp.points_y       = reinterpret_cast<const float*>(prepared_points->d_points_y.ptr);
+        lp.point_ids      = reinterpret_cast<const uint32_t*>(prepared_points->d_point_ids.ptr);
+        lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(prepared->d_right_polygons.ptr);
+        lp.vertices_x     = reinterpret_cast<const float*>(prepared->d_right_vx.ptr);
+        lp.vertices_y     = reinterpret_cast<const float*>(prepared->d_right_vy.ptr);
+        lp.prepared_edges = use_prepared_closed_shape_edge_layout()
+            ? reinterpret_cast<const GpuPreparedClosedShapeEdge2D*>(prepared->d_right_edges.ptr)
+            : nullptr;
+        lp.hit_words      = nullptr;
+        lp.output         = reinterpret_cast<GpuPipRecord*>(d_output.ptr);
+        lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
+        lp.output_capacity = static_cast<uint32_t>(output_capacity);
+        lp.positive_only  = 1u;
+        lp.hit_word_count = 0u;
+        lp.polygon_count  = static_cast<uint32_t>(prepared->right_count);
+        lp.probe_count    = static_cast<uint32_t>(prepared_points->point_count);
+        lp.point_index_offset = 0u;
+        lp.device_prefilter =
+            std::getenv("RTDL_OPTIX_POINT_PRIMITIVE_ANYHIT_DISABLE_DEVICE_PREFILTER") == nullptr ? 1u : 0u;
+        lp.boundary_check = closed_shape_membership_boundary_check_enabled();
+        upload(d_params.ptr, &lp, 1);
+        host_rows.reserve((std::min)(output_capacity, prepared_points->point_count));
+    }
+
+    void run(size_t* count_out)
+    {
+        if (!count_out) {
+            throw std::runtime_error("exact prepared-points executor count output pointer must not be null");
+        }
+        *count_out = 0;
+        reset_closed_shape_membership_phase_timings(13u);
+
+        CUstream stream = 0;
+        CU_CHECK(cuMemsetD32Async(d_count.ptr, 0u, 1u, stream));
+        const auto t_launch_start = std::chrono::steady_clock::now();
+        OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
+                                 d_params.ptr, sizeof(PipLaunchParams),
+                                 &g_pip.pipe->sbt,
+                                 static_cast<unsigned>(prepared_points->point_count), 1, 1));
+        CU_CHECK(cuStreamSynchronize(stream));
+        const auto t_launch_end = std::chrono::steady_clock::now();
+        g_optix_last_closed_shape_candidate_write_s = seconds_between(t_launch_start, t_launch_end);
+
+        uint32_t emitted = 0u;
+        download(&emitted, d_count.ptr, 1);
+        if (emitted > output_capacity) {
+            throw std::runtime_error("exact prepared-points executor output overflowed fixed candidate capacity");
+        }
+
+        host_rows.resize(static_cast<size_t>(emitted));
+        if (emitted != 0u) {
+            const auto t_download_start = std::chrono::steady_clock::now();
+            download(host_rows.data(), d_output.ptr, static_cast<size_t>(emitted));
+            const auto t_download_end = std::chrono::steady_clock::now();
+            g_optix_last_closed_shape_candidate_download_s = seconds_between(t_download_start, t_download_end);
+        }
+        g_optix_last_closed_shape_raw_candidate_count = static_cast<size_t>(emitted);
+
+        size_t exact_count = 0;
+        const size_t point_count = prepared_points->point_count;
+        const auto t_refine_start = std::chrono::steady_clock::now();
+        for (const auto& gpu_row : host_rows) {
+            const size_t pi = static_cast<size_t>(gpu_row.point_id);
+            const size_t qi = static_cast<size_t>(gpu_row.polygon_id);
+            if (pi >= point_count || qi >= prepared->right_count) {
+                continue;
+            }
+            const double point_x = prepared_points->points_x_f64[pi];
+            const double point_y = prepared_points->points_y_f64[pi];
+            const RtdlPolygonRef& shape = prepared->host_right_polygons[qi];
+            if (!point_inside_bounds(prepared->host_right_bounds[qi], point_x, point_y, 1.0e-12)) {
+                continue;
+            }
+#if RTDL_OPTIX_HAS_GEOS
+            if (prepared->right_geos && !prepared->right_geos->covers(qi, point_x, point_y)) {
+                continue;
+            }
+#else
+            if (!exact_point_in_polygon(point_x, point_y, shape, prepared->host_right_vertices_xy.data())) {
+                continue;
+            }
+#endif
+            ++exact_count;
+        }
+        const auto t_refine_end = std::chrono::steady_clock::now();
+        g_optix_last_closed_shape_exact_refine_s = seconds_between(t_refine_start, t_refine_end);
+        g_optix_last_closed_shape_emitted_count = exact_count;
+        *count_out = exact_count;
+    }
+};
+
+static PreparedPointClosedShapeExactPreparedPointsScalarCountExecutor2D*
+prepare_point_closed_shape_membership_exact_prepared_points_scalar_count_executor_2d_optix(
+        PreparedShapePairRelationBuild* prepared,
+        PreparedPointProbeColumns2D* prepared_points,
+        size_t max_candidate_rows)
+{
+    return new PreparedPointClosedShapeExactPreparedPointsScalarCountExecutor2D(
+        prepared,
+        prepared_points,
+        max_candidate_rows);
+}
+
+static void run_point_closed_shape_membership_exact_prepared_points_scalar_count_executor_2d_optix(
+        PreparedPointClosedShapeExactPreparedPointsScalarCountExecutor2D* executor,
+        size_t* count_out)
+{
+    if (!executor) {
+        throw std::runtime_error("exact prepared-points scalar-count executor handle must not be null");
+    }
+    executor->run(count_out);
+}
+
 static void count_prepared_point_closed_shape_membership_device_filtered_2d_optix(
         PreparedShapePairRelationBuild* prepared,
         const RtdlPoint* points,

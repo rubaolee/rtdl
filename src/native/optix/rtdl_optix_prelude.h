@@ -728,6 +728,18 @@ int  rtdl_optix_count_prepared_point_closed_shape_membership_prepared_points_2d(
          void* prepared_points,
          size_t* count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_point_closed_shape_membership_exact_prepared_points_scalar_count_executor_2d(
+         void* prepared,
+         void* prepared_points,
+         size_t max_candidate_rows,
+         void** executor_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_point_closed_shape_membership_exact_prepared_points_scalar_count_executor_2d(
+         void* executor,
+         size_t* count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_point_closed_shape_membership_exact_prepared_points_scalar_count_executor_2d(
+         void* executor);
 int  rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_2d(
          void* prepared,
          const RtdlPoint* points, size_t point_count,

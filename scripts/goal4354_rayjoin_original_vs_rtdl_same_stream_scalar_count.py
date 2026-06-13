@@ -304,8 +304,11 @@ def _run_pip_optix(
     include_fast_diagnostic: bool,
     rt_core_hardware: bool | None,
 ) -> dict[str, Any]:
-    if count_mode not in {"exact", "exact_prepared_points"}:
-        raise ValueError("PIP RTDL count mode must be 'exact' or 'exact_prepared_points'")
+    if count_mode not in {"exact", "exact_prepared_points", "exact_prepared_points_executor"}:
+        raise ValueError(
+            "PIP RTDL count mode must be 'exact', 'exact_prepared_points', "
+            "or 'exact_prepared_points_executor'"
+        )
     inputs = _inputs_from_stream(stream)
     phases: dict[str, float] = {}
     phases["query_point_pack_sec"], packed_points = _phase(
@@ -322,13 +325,50 @@ def _run_pip_optix(
     )
     diagnostics: dict[str, Any] = {}
     prepared_points = None
+    exact_executor = None
     try:
-        if count_mode == "exact_prepared_points":
+        if count_mode in {"exact_prepared_points", "exact_prepared_points_executor"}:
             phases["prepare_query_points_sec"], prepared_points = _phase(
                 "pip optix prepare query point columns",
                 lambda: prepared.prepare_point_probe_columns(packed_points),
             )
 
+        if count_mode == "exact_prepared_points_executor":
+            phases["prepare_exact_scalar_count_executor_sec"], exact_executor = _phase(
+                "pip optix prepare exact prepared-points scalar-count executor",
+                lambda: prepared.prepare_exact_prepared_points_scalar_count_executor(prepared_points),
+            )
+
+            def run_once() -> dict[str, Any]:
+                row_count = int(exact_executor.run())
+                phase_timings = prepared.last_phase_timings() or {}
+                native_phase_seconds = sum(
+                    float(phase_timings.get(key, 0.0))
+                    for key in (
+                        "candidate_count_pass",
+                        "candidate_write_pass",
+                        "candidate_download",
+                        "exact_refine",
+                    )
+                )
+                return {
+                    "row_count": row_count,
+                    "row_stream_materialized": False,
+                    "exact_host_refined_scalar_count": True,
+                    "query_points_prepared": True,
+                    "exact_scalar_count_executor_reused": True,
+                    "native_symbol": (
+                        "rtdl_optix_run_point_closed_shape_membership_exact_prepared_points_"
+                        "scalar_count_executor_2d"
+                    ),
+                    "native_phase_timings": phase_timings,
+                    "native_traversal_seconds": native_phase_seconds if phase_timings else None,
+                }
+
+            repeat_label = "pip/rtdl_optix_exact_prepared_points_executor_scalar_count"
+            execution_route = "prepared_exact_closed_shape_membership_prepared_points_scalar_count_executor"
+            output_contract = "scalar_exact_positive_membership_count_prepared_points_executor"
+        elif count_mode == "exact_prepared_points":
             def run_once() -> dict[str, Any]:
                 row_count = int(prepared.count_prepared_points_exact(prepared_points))
                 phase_timings = prepared.last_phase_timings() or {}
@@ -430,6 +470,8 @@ def _run_pip_optix(
                 if executor is not None:
                     executor.close()
     finally:
+        if exact_executor is not None:
+            exact_executor.close()
         if prepared_points is not None:
             prepared_points.close()
         prepared.close()
@@ -815,9 +857,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--pip-rtdl-count-mode",
-        choices=("exact", "exact_prepared_points"),
+        choices=("exact", "exact_prepared_points", "exact_prepared_points_executor"),
         default="exact",
-        help="PIP RTDL scalar-count route to measure; default preserves the original Goal4354 exact route.",
+        help=(
+            "PIP RTDL scalar-count route to measure; default preserves the original Goal4354 exact route. "
+            "exact_prepared_points_executor reuses exact candidate workspace without changing exact semantics."
+        ),
     )
     parser.add_argument("--point-eps", type=float, default=1.0e-9)
     args = parser.parse_args()

@@ -8,7 +8,7 @@ Status: accepted plan; not a release packet and not new public speedup wording.
 | --- | ---: | --- | --- |
 | v2.12 release table | 11 scoped rows, 10 promoted apps | baseline is complete but row-scoped | freeze as the v2.13 starting point |
 | RayJoin LSI same stream | OptiX 0.336 ms, Embree 14.539 ms, Embree/OptiX 43.28x, RayJoin RT/RTDL 2.44x | strong RT-core value row and RTDL OptiX faster than RayJoin RT for scalar count | use Goal4367 as the authors-code comparison baseline |
-| RayJoin PIP same stream | OptiX 12.034 ms, Embree 14.168 ms, Embree/OptiX 1.18x, RayJoin RT faster 14.49x | near parity versus Embree and current RTDL optimization debt versus RayJoin RT | use Goal4367 as the PIP optimization baseline |
+| RayJoin PIP same stream | OptiX 12.034 ms, Embree 14.168 ms, Embree/OptiX 1.18x, RayJoin RT faster 14.49x | near parity versus Embree and current RTDL optimization debt versus RayJoin RT | Goal4368 improves the exact route; keep optimizing exact refinement |
 | Contact Manifold | Embree/OptiX 0.55x, faster backend `embree` | reasonable tiny-row Embree win; needs human-scale batching | include in human-scale timing packet |
 | RTNN | Embree/OptiX 1.18x, faster backend `optix` | near-parity backend row; not an RT-core neighbor-search claim | keep backend-only unless a true RT-core row is built |
 
@@ -25,7 +25,7 @@ Status: accepted plan; not a release packet and not new public speedup wording.
 | rt_dbscan | 54.955x | `optix` | `reasonable_scoped_rt_core_value` | Large OptiX win is credible because both rows hold the same Numba continuation fixed and differ mainly in the RTDL geometric prefilter. | Preserve the partner-fixed route and avoid whole-app DBSCAN wording. |
 | rtnn | 1.183x | `optix` | `reasonable_not_rt_core_claim` | Near parity is credible and is not an RT-core neighbor-search claim because the current OptiX row is a prepared ranked-summary route. | Either build a true RT-core neighbor-search row or keep this as backend-only. |
 | Spatial RayJoin LSI same-stream scalar count | 43.275x | `optix` | `reasonable_strong_rayjoin_rt_core_row` | Strong OptiX win is credible: same RayJoin-exported stream, scalar count, exact count match, and no RTDL row materialization. | Retain in the Goal4367 authors-code packet with stream hashes. |
-| Spatial RayJoin PIP same-stream scalar count | 1.177x | `optix` | `reasonable_but_v2_13_optimization_debt` | Near parity against Embree and slower-than-RayJoin RT are credible because exact membership refinement and generic front-door overhead dominate the current row. | Use Goal4367 as the baseline, then attack exact membership/refinement. |
+| Spatial RayJoin PIP same-stream scalar count | 1.177x | `optix` | `reasonable_but_v2_13_optimization_debt` | Near parity against Embree and slower-than-RayJoin RT are credible because exact membership refinement and generic front-door overhead dominate the current row. | Use Goal4368 as the improved exact baseline, then keep attacking exact refinement. |
 | triangle_counting | 72.685x | `optix` | `reasonable_scoped_rt_core_value` | Large OptiX win is credible for a prepared ray/triangle any-hit count; this is query/count timing rather than whole application time. | Keep prepared-query wording and add larger human-scale repeats. |
 
 ## PIP Phase Debt

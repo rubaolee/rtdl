@@ -100,7 +100,7 @@ ROW_REASONING_BY_CONTRACT: dict[str, dict[str, str]] = {
             "Near parity against Embree and slower-than-RayJoin RT are credible because "
             "exact membership refinement and generic front-door overhead dominate the current row."
         ),
-        "v2_13_action": "Use Goal4367 as the baseline, then attack exact membership/refinement.",
+        "v2_13_action": "Use Goal4368 as the improved exact baseline, then keep attacking exact refinement.",
     },
     "rt_graph_2a1_generic_ray_triangle_any_hit": {
         "classification": "reasonable_scoped_rt_core_value",
@@ -162,7 +162,11 @@ ROADMAP_GOALS: tuple[dict[str, Any], ...] = (
             "A successful optimization keeps the exact prepared-points count contract and count agreement.",
         ),
         "depends_on": ("rayjoin_authors_code_comparison_packet",),
-        "output_artifacts": ("docs/reports/goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13.md",),
+        "output_artifacts": (
+            "docs/reports/goal4368_pip_exact_prepared_points_executor_2026-06-13.md",
+            "docs/reports/goal4368_pip_exact_prepared_points_executor_2026-06-13/summary.json",
+            "docs/reports/goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13.md",
+        ),
     },
     {
         "id": "embree_cpu_fairness_hardening",
@@ -456,7 +460,7 @@ def markdown_v2_13_credibility_roadmap(payload: dict[str, Any]) -> str:
         (
             "| RayJoin PIP same stream | OptiX {optix} ms, Embree {embree} ms, "
             "Embree/OptiX {ratio}x, RayJoin RT faster {rayjoin_faster}x | {readout} | "
-            "use Goal4367 as the PIP optimization baseline |"
+            "Goal4368 improves the exact route; keep optimizing exact refinement |"
         ).format(
             optix=_fmt_number(rayjoin["pip"]["optix_hot_ms"]),
             embree=_fmt_number(rayjoin["pip"]["embree_hot_ms"]),
