@@ -1,5 +1,6 @@
 {
   "automatic_partner_selection_authorized": false,
+  "barnes_hut_same_contract_artifact_path": "docs\\reports\\goal4362_rtx_a4000_v2_12_barnes_hut_same_contract_2026-06-13\\summary.json",
   "broad_rt_core_claim_authorized": false,
   "claim_boundary": "Goal4338 indexes the current NVIDIA OptiX scale-profile evidence beside the current Embree CPU reference registry. It is a comparability and planning packet, not a public speedup table. It does not authorize release action, package-install wording, public speedup wording, whole-app acceleration wording, broad RT-core wording, Intel GPU performance wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
   "embree_artifact_path": "docs\\reports\\goal4358_lx1_v2_11_embree_cpu_partner_reference_2026-06-12.json",
@@ -11,6 +12,7 @@
   "rows": [
     {
       "app": "hausdorff_xhd",
+      "barnes_hut_same_contract_pair": null,
       "comparison_class": "contract_split_pair_required",
       "embree_cpu": {
         "artifact": {
@@ -51,6 +53,7 @@
     },
     {
       "app": "spatial_rayjoin",
+      "barnes_hut_same_contract_pair": null,
       "comparison_class": "same_stream_scalar_count_pairs_available",
       "embree_cpu": {
         "artifact": {
@@ -116,6 +119,7 @@
     },
     {
       "app": "rt_dbscan",
+      "barnes_hut_same_contract_pair": null,
       "comparison_class": "same_contract_configured_numba_route_available",
       "embree_cpu": {
         "artifact": {
@@ -168,6 +172,7 @@
     },
     {
       "app": "robot_collision",
+      "barnes_hut_same_contract_pair": null,
       "comparison_class": "same_contract_different_scale_pair_required",
       "embree_cpu": {
         "artifact": {
@@ -208,6 +213,7 @@
     },
     {
       "app": "contact_manifold",
+      "barnes_hut_same_contract_pair": null,
       "comparison_class": "same_contract_different_scale_pair_required",
       "embree_cpu": {
         "artifact": {
@@ -248,6 +254,7 @@
     },
     {
       "app": "raydb_style",
+      "barnes_hut_same_contract_pair": null,
       "comparison_class": "same_contract_different_scale_pair_required",
       "embree_cpu": {
         "artifact": {
@@ -288,7 +295,23 @@
     },
     {
       "app": "barnes_hut",
-      "comparison_class": "contract_split_pair_required",
+      "barnes_hut_same_contract_pair": {
+        "body_count": 1000000,
+        "contract": "prepared_fixed_radius_node_coverage_threshold_decision",
+        "covered_body_count_match": true,
+        "embree_query_median_sec": 3.9487363240041304,
+        "embree_rt_core_accelerated": false,
+        "node_count": 4,
+        "node_radius": 10.0,
+        "optix_faster_than_embree": 1.9377367961184142,
+        "optix_query_median_sec": 2.0378084020048846,
+        "optix_rt_core_accelerated": true,
+        "oracle_match_both": true,
+        "ratio_authorization": "internal_same_contract_native_node_coverage_only_not_public_claim",
+        "same_body_count_radius_repeat_warmup": true,
+        "same_output_contract": true
+      },
+      "comparison_class": "same_contract_native_node_coverage_available",
       "embree_cpu": {
         "artifact": {
           "artifact_present": true,
@@ -317,17 +340,18 @@
         "row_id": "barnes_hut_numba_scale_default_8192"
       },
       "public_speedup_claim_authorized": false,
-      "ratio_authorization_scope": "not_authorized",
-      "ratio_authorized_from_existing_artifacts": false,
-      "reason_existing_artifacts_are_not_speedup_grade": "OptiX scale evidence is currently the Numba exact-force partner route; Embree evidence is a node-coverage prepared decision route.",
+      "ratio_authorization_scope": "internal_same_contract_native_node_coverage_only_not_public_claim",
+      "ratio_authorized_from_existing_artifacts": true,
+      "reason_existing_artifacts_are_not_speedup_grade": "Goal4362 supplies a same-scale 1,000,000-body prepared node-coverage scalar-threshold pair for OptiX and Embree. The broad registry row still points at the Numba exact-force partner route, so the ratio is scoped to the native node-coverage contract.",
       "release_authorized": false,
-      "required_next_action": "choose either exact-force partner continuation or prepared node coverage as the comparison contract, then run that one contract on both sides",
+      "required_next_action": "use the Goal4362 native node-coverage pair internally only; keep force-vector, paper-reproduction, whole-app, and public speedup wording blocked",
       "rt_dbscan_same_contract_pair": null,
       "rtnn_same_contract_pair": null,
       "same_stream_scalar_count_pairs": []
     },
     {
       "app": "librts_spatial_index",
+      "barnes_hut_same_contract_pair": null,
       "comparison_class": "same_contract_different_scale_pair_required",
       "embree_cpu": {
         "artifact": {
@@ -368,6 +392,7 @@
     },
     {
       "app": "rtnn",
+      "barnes_hut_same_contract_pair": null,
       "comparison_class": "same_contract_raw_rows_available_not_rt_core_proof",
       "embree_cpu": {
         "artifact": {
@@ -419,6 +444,7 @@
     },
     {
       "app": "triangle_counting",
+      "barnes_hut_same_contract_pair": null,
       "comparison_class": "same_contract_different_scale_pair_required",
       "embree_cpu": {
         "artifact": {
@@ -464,30 +490,32 @@
   "summary": {
     "app_count": 10,
     "automatic_partner_selection_authorized": false,
+    "barnes_hut_same_contract_native_node_coverage_pair_count": 1,
     "broad_rt_core_claim_authorized": false,
-    "contract_split_pair_required_count": 2,
+    "contract_split_pair_required_count": 1,
     "missing_current_artifact_count": 0,
     "paper_reproduction_claim_authorized": false,
     "public_speedup_claim_authorized": false,
-    "ratio_authorized_from_existing_artifacts_count": 3,
+    "ratio_authorized_from_existing_artifacts_count": 4,
     "release_authorized": false,
     "row_count": 10,
     "rt_dbscan_same_contract_configured_route_pair_count": 1,
     "rtnn_same_contract_raw_row_pair_count": 1,
     "same_contract_configured_numba_route_available_count": 1,
     "same_contract_different_scale_pair_required_count": 5,
+    "same_contract_native_node_coverage_available_count": 1,
     "same_contract_raw_rows_available_not_rt_core_proof_count": 1,
     "same_stream_scalar_count_pair_count": 2,
     "same_stream_scalar_count_pairs_available_count": 1
   },
   "validation": {
     "app_count": 10,
-    "authorized_existing_artifact_ratio_count": 3,
+    "authorized_existing_artifact_ratio_count": 4,
     "errors": [],
     "missing_current_artifact_count": 0,
     "row_count": 10,
     "status": "accept",
-    "version": "rtdl.v2_12.current_optix_embree_comparison_index.goal4361.v1"
+    "version": "rtdl.v2_12.current_optix_embree_comparison_index.goal4362.v1"
   },
-  "version": "rtdl.v2_12.current_optix_embree_comparison_index.goal4361.v1"
+  "version": "rtdl.v2_12.current_optix_embree_comparison_index.goal4362.v1"
 }

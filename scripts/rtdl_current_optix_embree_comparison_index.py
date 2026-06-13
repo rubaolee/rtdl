@@ -33,8 +33,9 @@ def _markdown(payload: dict[str, object]) -> str:
         "AABB same-contract row. Goal4358 adds Spatial RayJoin LSI/PIP "
         "same-stream scalar-count pairs, Goal4360 adds the RTNN same-contract "
         "ranked-summary raw-row pair, and Goal4361 adds the RT-DBSCAN "
-        "same-contract configured-route pair. This current index remains useful "
-        "for showing which broad registry artifacts should not be compared directly.",
+        "same-contract configured-route pair. Goal4362 adds the Barnes-Hut "
+        "same-contract native node-coverage pair. This current index remains "
+        "useful for showing which broad registry artifacts should not be compared directly.",
         "",
         "| App | OptiX row | Embree CPU row | Existing artifact status | Comparability | Internal ratio scope | Next action |",
         "| --- | --- | --- | --- | --- | --- | --- |",
@@ -105,14 +106,29 @@ def _markdown(payload: dict[str, object]) -> str:
                     speedup=float(rt_dbscan_pair["optix_faster_than_embree"]),
                 )
             )
+        barnes_hut_pair = row.get("barnes_hut_same_contract_pair")
+        if isinstance(barnes_hut_pair, dict):
+            lines.append(
+                "| {app} / node-coverage | `Goal4362 OptiX` | `Goal4362 Embree` | bodies {bodies}, oracle={oracle}, optix_rt={optix_rt} | same-contract native node-coverage pair | `{scope}` | OptiX {optix_sec:.6f} sec vs Embree {embree_sec:.6f} sec; OptiX/Embree speedup {speedup:.2f}x |".format(
+                    app=row["app"],
+                    bodies=int(barnes_hut_pair["body_count"]),
+                    oracle=bool(barnes_hut_pair["oracle_match_both"]),
+                    optix_rt=bool(barnes_hut_pair["optix_rt_core_accelerated"]),
+                    scope=barnes_hut_pair["ratio_authorization"],
+                    optix_sec=float(barnes_hut_pair["optix_query_median_sec"]),
+                    embree_sec=float(barnes_hut_pair["embree_query_median_sec"]),
+                    speedup=float(barnes_hut_pair["optix_faster_than_embree"]),
+                )
+            )
     lines.extend(
         [
             "",
             "Only the Goal4358 Spatial RayJoin LSI/PIP same-stream scalar-count "
             "pairs, the Goal4360 RTNN ranked-summary raw-row pair, and the "
-            "Goal4361 RT-DBSCAN configured-route pair authorize internal backend "
-            "ratios from existing artifacts. Every public/release speedup and "
-            "broad RT-core claim flag remains false.",
+            "Goal4361 RT-DBSCAN configured-route pair, and the Goal4362 Barnes-Hut "
+            "native node-coverage pair authorize internal backend ratios from "
+            "existing artifacts. Every public/release speedup and broad RT-core "
+            "claim flag remains false.",
             "Fresh same-contract paired runs are still required before publishing "
             "whole-app or broad benchmark speedups.",
         ]

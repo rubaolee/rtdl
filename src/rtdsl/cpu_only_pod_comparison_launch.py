@@ -8,7 +8,7 @@ from .current_benchmark_scale_profiles import CURRENT_BENCHMARK_SCALE_PROFILE_VE
 from .optimized_optix_embree_comparison_packet import optimized_optix_embree_comparison_packet
 
 
-CPU_ONLY_POD_COMPARISON_LAUNCH_VERSION = "rtdl.v2_12.cpu_only_pod_comparison_launch.goal4361.v1"
+CPU_ONLY_POD_COMPARISON_LAUNCH_VERSION = "rtdl.v2_12.cpu_only_pod_comparison_launch.goal4362.v1"
 CPU_ONLY_POD_COMPARISON_LAUNCH_STATUS = (
     "internal_cpu_only_optix_vs_embree_pod_launch_packet_not_release_authorization"
 )
@@ -205,13 +205,7 @@ EMBREE_CPU_SCALE_COMMANDS: tuple[EmbreeCpuScaleCommand, ...] = (
 )
 
 
-CONTRACT_CHOICE_BLOCKERS = (
-    {
-        "app": "barnes_hut",
-        "reason": "current NVIDIA scale row is Numba exact-force partner-only; current Embree row is node coverage",
-        "next_action": "choose exact-force configured route or prepared node-coverage route",
-    },
-)
+CONTRACT_CHOICE_BLOCKERS: tuple[dict[str, str], ...] = ()
 
 
 def _env_prefix() -> tuple[str, ...]:
@@ -243,8 +237,8 @@ def cpu_only_pod_comparison_launch_packet() -> dict[str, Any]:
         errors.append("optimized comparison packet is not accept")
     if comparison_summary.get("same_contract_scale_pair_required_count") != 0:
         errors.append("comparison packet still needs same-contract scale pairs")
-    if comparison_summary.get("contract_split_pair_required_count") != 1:
-        errors.append("expected one remaining contract-choice blocker")
+    if comparison_summary.get("contract_split_pair_required_count") != 0:
+        errors.append("expected zero remaining contract-choice blockers")
 
     optix_command = (
         "python",

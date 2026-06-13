@@ -44,16 +44,18 @@ def _markdown(payload: dict[str, object]) -> str:
         "row, five fresh Embree scale rows from Goal4344, and the Goal4358 "
         "RayJoin LSI/PIP same-stream scalar-count rows, the Goal4360 RTNN "
         "prepared ranked-summary raw-row same-contract backend pair, and the "
-        "Goal4361 RT-DBSCAN same-contract RTDL+Numba configured-route pair. "
+        "Goal4361 RT-DBSCAN same-contract RTDL+Numba configured-route pair, "
+        "and the Goal4362 Barnes-Hut same-contract native node-coverage pair. "
         "Three Goal4344 rows are clean internal query-ratio candidates; Robot "
         "Collision and RayDB-style remain boundary-limited because the current "
         "OptiX rows use stronger resident/device output paths.",
         "",
-        "The remaining serious comparison blocker is Barnes-Hut. Spatial RayJoin "
-        "is now split into LSI/PIP scalar-count rows with internal-only ratios; "
+        "No promoted benchmark app remains in the contract-choice blocker bucket. "
+        "Spatial RayJoin is now split into LSI/PIP scalar-count rows with internal-only ratios; "
         "RTNN has a same-contract raw-row backend ratio that still does not "
         "authorize RT-core wording; RT-DBSCAN has a same-contract configured-route "
-        "ratio with the Numba continuation held fixed.",
+        "ratio with the Numba continuation held fixed; Barnes-Hut has a native "
+        "node-coverage ratio scoped away from force-vector and paper-reproduction wording.",
         "",
         "## Measured Pair",
         "",
@@ -133,9 +135,15 @@ def _markdown(payload: dict[str, object]) -> str:
             bool(correctness.get("signature_match"))
             and bool(correctness.get("same_numba_continuation"))
             and bool(correctness.get("same_output_contract"))
+        ) or (
+            bool(correctness.get("oracle_match_both"))
+            and bool(correctness.get("covered_body_count_match"))
+            and bool(correctness.get("same_output_contract"))
         )
         rt_core_claim = bool(row.get("rt_core_neighbor_search_claim_authorized", False)) or bool(
             row.get("rt_core_threshold_phase_claim_authorized_internal", False)
+        ) or bool(
+            row.get("rt_core_node_coverage_claim_authorized_internal", False)
         )
         lines.append(
             "| {app} | `{contract}` | {embree_metric} | {optix_metric} | {ratio:.2f}x | `{correctness}` | `{rt_core}` | `{auth}` |".format(

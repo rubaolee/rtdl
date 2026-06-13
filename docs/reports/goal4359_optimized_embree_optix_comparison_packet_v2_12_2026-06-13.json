@@ -1,7 +1,7 @@
 {
   "automatic_partner_selection_authorized": false,
   "broad_rt_core_claim_authorized": false,
-  "claim_boundary": "Goal4361 extends the Goal4360 optimized/same-scale Embree-vs-OptiX packet with the RT-DBSCAN OptiX RT-core count-threshold plus Numba column-signature same-contract pair. It separates clean same-contract query-ratio rows, RayJoin same-stream scalar-count rows, RTNN raw-row backend rows, RT-DBSCAN configured-route rows, boundary-limited same-scale rows, and the remaining contract-split/configured route. This packet does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
+  "claim_boundary": "Goal4362 extends the Goal4361 optimized/same-scale Embree-vs-OptiX packet with the Barnes-Hut prepared node-coverage same-contract pair. It separates clean same-contract query-ratio rows, RayJoin same-stream scalar-count rows, RTNN raw-row backend rows, RT-DBSCAN configured-route rows, Barnes-Hut native node-coverage rows, and boundary-limited same-scale rows. This packet does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.",
   "measured_pairs": [
     {
       "app": "librts_spatial_index",
@@ -188,16 +188,16 @@
         "row_id": "barnes_hut_embree_cpu_node_coverage_prepared",
         "version": "rtdl.v2_11.current_embree_cpu_partner_reference.goal4308.v1"
       },
-      "evidence_or_reason": "Current OptiX scale evidence is a Numba exact-force partner route; current Embree evidence is a prepared node-coverage route.",
-      "goal4341_status": "contract_split_pair_required",
-      "next_action": "choose exact-force partner continuation or prepared node coverage as the comparison contract, then run that contract on both sides",
+      "evidence_or_reason": "Goal4362 supplies a same-scale 1,000,000-body prepared node-coverage scalar-threshold pair for OptiX and Embree. The broad registry row still points at the Numba exact-force partner route, so the ratio is scoped to the native node-coverage contract.",
+      "goal4341_status": "same_contract_native_node_coverage_available",
+      "next_action": "use this native node-coverage ratio internally only; keep force-vector, paper-reproduction, whole-app, and public speedup wording blocked",
       "optix_registry": {
         "purpose": "scale-profile Barnes-Hut no-RawKernel Numba exact-force run with resident output reuse; Goal4053 separately covers prepared grouped-vector stream reductions",
         "row_id": "barnes_hut_numba_scale_default_8192",
         "version": "rtdl.v2_10.current_benchmark_scale_profiles.goal3828.v1"
       },
       "public_speedup_claim_authorized": false,
-      "query_median_ratio_authorized_for_internal_packet": false,
+      "query_median_ratio_authorized_for_internal_packet": true,
       "release_authorized": false
     },
     {
@@ -329,6 +329,37 @@
       "ratio_authorization": "internal_same_contract_configured_numba_route_only_not_public_claim",
       "release_authorized": false,
       "rt_core_threshold_phase_claim_authorized_internal": true
+    },
+    {
+      "app": "barnes_hut",
+      "boundary": "Same body count, one-level node count, radius, repeat/warmup, prepared fixed-radius threshold primitive, and scalar coverage decision output. Internal native node-coverage backend ratio only; no force-vector, whole-app, paper reproduction, or public speedup claim.",
+      "comparison_table": "barnes_hut_same_contract_native_node_coverage",
+      "contract": "prepared_fixed_radius_node_coverage_threshold_decision",
+      "correctness": {
+        "body_count": 1000000,
+        "covered_body_count_match": true,
+        "embree_prepare_sec": 0.11498229499557056,
+        "embree_rt_core_accelerated": false,
+        "node_count": 4,
+        "node_radius": 10.0,
+        "optix_prepare_sec": 1.0350105520046782,
+        "optix_rt_core_accelerated": true,
+        "oracle_match_both": true,
+        "same_body_count_radius_repeat_warmup": true,
+        "same_output_contract": true
+      },
+      "embree_metric": 3.9487363240041304,
+      "embree_metric_divided_by_optix_metric": 1.9377367961184142,
+      "embree_source": "docs\\reports\\goal4362_rtx_a4000_v2_12_barnes_hut_same_contract_2026-06-13\\summary.json",
+      "faster_backend_for_metric": "optix",
+      "metric_name": "query_fixed_radius_threshold_reached_count_sec",
+      "metric_unit": "sec",
+      "optix_metric": 2.0378084020048846,
+      "optix_source": "docs\\reports\\goal4362_rtx_a4000_v2_12_barnes_hut_same_contract_2026-06-13\\summary.json",
+      "public_speedup_claim_authorized": false,
+      "ratio_authorization": "internal_same_contract_native_node_coverage_only_not_public_claim",
+      "release_authorized": false,
+      "rt_core_node_coverage_claim_authorized_internal": true
     }
   ],
   "same_stream_comparison_rows": [
@@ -500,6 +531,7 @@
     }
   ],
   "sources": {
+    "barnes_hut_same_contract_summary": "docs\\reports\\goal4362_rtx_a4000_v2_12_barnes_hut_same_contract_2026-06-13\\summary.json",
     "embree_same_contract_scale_probe": "docs\\reports\\goal4344_embree_same_contract_scale_probe",
     "embree_summary": "docs\\reports\\goal4340_embree_native_aabb_index_local_linux\\summary.json",
     "optix_scale_summary": "docs\\reports\\goal4329_current_pod_validation\\scale_summary_allpass.json",
@@ -515,14 +547,14 @@
     "automatic_partner_selection_authorized": false,
     "boundary_limited_phase_ratio_count": 2,
     "broad_rt_core_claim_authorized": false,
-    "contract_split_pair_required_count": 1,
-    "internal_query_median_ratio_count": 7,
+    "contract_split_pair_required_count": 0,
+    "internal_query_median_ratio_count": 8,
     "measured_pair_count": 1,
     "optimized_embree_pairs_count": 1,
     "paper_reproduction_claim_authorized": false,
     "public_speedup_claim_authorized": false,
     "release_authorized": false,
-    "same_contract_backend_comparison_row_count": 2,
+    "same_contract_backend_comparison_row_count": 3,
     "same_contract_scale_pair_required_count": 0,
     "same_stream_comparison_row_count": 2,
     "scale_comparison_row_count": 5
@@ -531,5 +563,5 @@
     "errors": [],
     "status": "accept"
   },
-  "version": "rtdl.v2_12.optimized_optix_embree_comparison_packet.goal4361.v1"
+  "version": "rtdl.v2_12.optimized_optix_embree_comparison_packet.goal4362.v1"
 }

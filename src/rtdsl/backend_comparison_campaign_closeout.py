@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 
-BACKEND_COMPARISON_CAMPAIGN_CLOSEOUT_VERSION = "rtdl.v2_12.backend_comparison_campaign_closeout.goal4361.v1"
+BACKEND_COMPARISON_CAMPAIGN_CLOSEOUT_VERSION = "rtdl.v2_12.backend_comparison_campaign_closeout.goal4362.v1"
 BACKEND_COMPARISON_CAMPAIGN_CLOSEOUT_STATUS = (
     "internal_backend_comparison_campaign_closeout_not_release_or_public_speedup_authorization"
 )
@@ -79,8 +79,8 @@ def backend_comparison_campaign_closeout(
         errors.append("RT-core campaign still reports remaining high-leverage implementation work")
     if embree_summary.get("same_contract_scale_pair_needed_count") != 0:
         errors.append("Embree campaign still reports missing same-contract scale rows")
-    if comparison_summary.get("contract_split_pair_required_count") != 1:
-        errors.append("comparison packet should preserve one remaining contract-choice blocker")
+    if comparison_summary.get("contract_split_pair_required_count") != 0:
+        errors.append("comparison packet should report zero remaining contract-choice blockers")
 
     partner_policy = {
         "default": "do_not_force_numba_universally",
@@ -132,9 +132,10 @@ def backend_comparison_campaign_closeout(
                     "zero missing same-contract scale pairs."
                 ),
                 "boundary": (
-                    "One app still requires a contract choice before a serious "
-                    "OptiX-vs-Embree ratio: Barnes-Hut. Spatial RayJoin, RTNN, "
-                    "and RT-DBSCAN now have scoped internal-only paired rows."
+                    "No promoted benchmark app currently requires a contract choice "
+                    "before an internal OptiX-vs-Embree ratio. Spatial RayJoin, "
+                    "RTNN, RT-DBSCAN, and Barnes-Hut now have scoped internal-only "
+                    "paired rows."
                 ),
             },
             "serious_comparison_ready": {
@@ -143,8 +144,8 @@ def backend_comparison_campaign_closeout(
                     "The v2.12 packet separates one fully optimized LibRTS pair, "
                     "three clean same-contract query-ratio scale rows, the RTNN "
                     "same-contract raw-row pair, the RT-DBSCAN same configured-route "
-                    "RTDL+Numba pair, two boundary-limited phase rows, and one "
-                    "remaining contract-choice row."
+                    "RTDL+Numba pair, the Barnes-Hut native node-coverage pair, "
+                    "and two boundary-limited phase rows."
                 ),
                 "boundary": "No public speedup, release, or whole-app claim is authorized.",
             },

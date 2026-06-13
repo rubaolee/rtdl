@@ -48,15 +48,14 @@ Run OptiX on an RTX-class pod. Do not use Pascal/GTX hardware for RT-core timing
 
 | App | Reason | Next Action |
 | --- | --- | --- |
-| barnes_hut | current NVIDIA scale row is Numba exact-force partner-only; current Embree row is node coverage | choose exact-force configured route or prepared node-coverage route |
 
 ## Current Comparison Shape
 
 - `fully_optimized_measured_pair_count`: 1
 - `fresh_scale_comparison_row_count`: 5
-- `clean_internal_query_ratio_count`: 7
+- `clean_internal_query_ratio_count`: 8
 - `boundary_limited_phase_ratio_count`: 2
-- `contract_choice_blocker_count`: 1
+- `contract_choice_blocker_count`: 0
 
 ## Postprocess
 
