@@ -233,7 +233,10 @@ ROADMAP_GOALS: tuple[dict[str, Any], ...] = (
             "pip_exact_membership_optimization",
             "human_scale_timing_packet",
         ),
-        "output_artifacts": ("docs/release_reports/v2_12/public_rt_vs_embree_comparison.md",),
+        "output_artifacts": (
+            "docs/reports/goal4370_v2_13_public_wording_packet_2026-06-13.md",
+            "docs/reports/goal4370_v2_13_public_wording_packet_2026-06-13.json",
+        ),
     },
     {
         "id": "amd_gpu_defer_gate",
@@ -246,7 +249,10 @@ ROADMAP_GOALS: tuple[dict[str, Any], ...] = (
             "The public wording packet passes with zero unexplained speedup rows.",
         ),
         "depends_on": ("public_wording_packet",),
-        "output_artifacts": (),
+        "output_artifacts": (
+            "docs/reports/goal4370_v2_13_public_wording_packet_2026-06-13.md",
+            "docs/reports/goal4366_v2_13_credibility_roadmap_2026-06-13.md",
+        ),
     },
 )
 

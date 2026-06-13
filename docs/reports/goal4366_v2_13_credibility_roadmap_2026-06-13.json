@@ -301,7 +301,8 @@
       ],
       "id": "public_wording_packet",
       "output_artifacts": [
-        "docs/release_reports/v2_12/public_rt_vs_embree_comparison.md"
+        "docs/reports/goal4370_v2_13_public_wording_packet_2026-06-13.md",
+        "docs/reports/goal4370_v2_13_public_wording_packet_2026-06-13.json"
       ],
       "priority": 5,
       "title": "Produce the public comparison wording only after row-level explanations pass"
@@ -317,7 +318,10 @@
         "public_wording_packet"
       ],
       "id": "amd_gpu_defer_gate",
-      "output_artifacts": [],
+      "output_artifacts": [
+        "docs/reports/goal4370_v2_13_public_wording_packet_2026-06-13.md",
+        "docs/reports/goal4366_v2_13_credibility_roadmap_2026-06-13.md"
+      ],
       "priority": 6,
       "title": "Defer AMD GPU work until the NVIDIA-vs-Embree story is credible"
     }
