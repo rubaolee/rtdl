@@ -36,8 +36,8 @@ class Goal4366V213CredibilityRoadmapTest(unittest.TestCase):
         rayjoin = self.payload["current_baseline"]["rayjoin_same_stream"]
         self.assertGreater(rayjoin["lsi"]["embree_divided_by_optix"], 40.0)
         self.assertGreater(rayjoin["lsi"]["rayjoin_rt_over_rtdl_optix"], 1.0)
-        self.assertLess(rayjoin["pip"]["embree_divided_by_optix"], 1.3)
-        self.assertGreater(rayjoin["pip"]["rayjoin_rt_faster_than_rtdl_optix"], 10.0)
+        self.assertGreater(rayjoin["pip"]["embree_divided_by_optix"], 3.0)
+        self.assertGreater(rayjoin["pip"]["rayjoin_rt_faster_than_rtdl_optix"], 7.0)
         self.assertGreater(rayjoin["pip"]["phase_ms"]["exact_refine_median_ms"], 4.0)
         self.assertIn("optimization debt", rayjoin["pip"]["readout"])
 

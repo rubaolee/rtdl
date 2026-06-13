@@ -30,15 +30,15 @@ Status: measured from RayJoin-exported query streams. Speedup column is `RayJoin
 
 | Workload | Backend | RT-core hw | Query count | Row count | Hot median ms | Hot total s | Repeats | Native phase ms | Route |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| `pip` | `optix` | yes | 100000 | 8686 | 6.760860 | 0.051108 | 7 | 6.716397 | `prepared_exact_closed_shape_membership_prepared_points_scalar_count_executor` |
-| `pip` | `embree` | no | 100000 | 8686 | 19.610595 | 0.150287 | 7 | 15.796705 | `prepared_embree_native_scalar_count` |
+| `pip` | `optix` | yes | 100000 | 8686 | 6.040250 | 0.047712 | 7 | 5.992433 | `prepared_exact_closed_shape_membership_prepared_points_scalar_count_executor` |
+| `pip` | `embree` | no | 100000 | 8686 | 19.428359 | 0.144930 | 7 | 15.722725 | `prepared_embree_native_scalar_count` |
 
 ## Direct Comparison
 
 | Workload | RTDL backend | RayJoin RT query ms | RTDL hot query ms | Speedup | Readout |
 | --- | --- | ---: | ---: | ---: | --- |
-| `pip` | `optix` | 0.830221 | 6.760860 | 0.123x | RayJoin RT faster on the same stream |
-| `pip` | `embree` | 0.830221 | 19.610595 | 0.042x | RayJoin RT faster on the same stream |
+| `pip` | `optix` | 0.830221 | 6.040250 | 0.137x | RayJoin RT faster on the same stream |
+| `pip` | `embree` | 0.830221 | 19.428359 | 0.043x | RayJoin RT faster on the same stream |
 
 ## Correctness Checks
 

@@ -8,7 +8,7 @@ Status: accepted plan; not a release packet and not new public speedup wording.
 | --- | ---: | --- | --- |
 | v2.12 release table | 11 scoped rows, 10 promoted apps | baseline is complete but row-scoped | freeze as the v2.13 starting point |
 | RayJoin LSI same stream | OptiX 0.336 ms, Embree 14.539 ms, Embree/OptiX 43.28x, RayJoin RT/RTDL 2.44x | strong RT-core value row and RTDL OptiX faster than RayJoin RT for scalar count | use Goal4367 as the authors-code comparison baseline |
-| RayJoin PIP same stream | OptiX 12.034 ms, Embree 14.168 ms, Embree/OptiX 1.18x, RayJoin RT faster 14.49x | near parity versus Embree and current RTDL optimization debt versus RayJoin RT | Goal4368 improves the exact route; keep optimizing exact refinement |
+| RayJoin PIP same stream | OptiX 6.04 ms, Embree 19.428 ms, Embree/OptiX 3.22x, RayJoin RT faster 7.28x | clear OptiX-over-Embree improvement, but current RTDL optimization debt versus RayJoin RT | Goal4368 improves the exact route; keep optimizing exact refinement |
 | Contact Manifold | Embree/OptiX 0.55x, faster backend `embree` | reasonable tiny-row Embree win; needs human-scale batching | include in human-scale timing packet |
 | RTNN | Embree/OptiX 1.18x, faster backend `optix` | near-parity backend row; not an RT-core neighbor-search claim | keep backend-only unless a true RT-core row is built |
 
@@ -30,7 +30,7 @@ Status: accepted plan; not a release packet and not new public speedup wording.
 
 ## PIP Phase Debt
 
-The current PIP OptiX row is explainable but not satisfying: hot query median 12.034 ms, candidate write median 1.833 ms, candidate download median 0.024 ms, and exact refinement median 4.93 ms.
+The current PIP OptiX row is explainable but not satisfying: hot query median 6.04 ms, candidate write median 1.861 ms, candidate download median 0.023 ms, and exact refinement median 4.092 ms.
 
 ## V2.13 Goals
 

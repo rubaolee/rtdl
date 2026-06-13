@@ -19,6 +19,13 @@ DEFAULT_RAYJOIN_SUMMARY = (
     / "goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13"
     / "summary.json"
 )
+DEFAULT_PIP_OPTIMIZED_SUMMARY = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal4368_pip_exact_prepared_points_executor_2026-06-13"
+    / "summary.json"
+)
 
 
 ROW_REASONING_BY_CONTRACT: dict[str, dict[str, str]] = {
@@ -306,12 +313,15 @@ def v2_13_credibility_roadmap(
     *,
     v2_12_comparison_path: Path | None = None,
     rayjoin_summary_path: Path | None = None,
+    pip_optimized_summary_path: Path | None = None,
 ) -> dict[str, Any]:
     comparison_path = v2_12_comparison_path or DEFAULT_V2_12_COMPARISON
     rayjoin_path = rayjoin_summary_path or DEFAULT_RAYJOIN_SUMMARY
+    pip_optimized_path = pip_optimized_summary_path or DEFAULT_PIP_OPTIMIZED_SUMMARY
 
     comparison = _load_json(comparison_path)
     rayjoin = _load_json(rayjoin_path)
+    pip_optimized = _load_json(pip_optimized_path)
 
     rows = [dict(row) for row in comparison["rows"]]
     lsi_row = _release_row(rows, "lsi_same_stream_scalar_count")
@@ -321,10 +331,11 @@ def v2_13_credibility_roadmap(
 
     lsi_optix = _rayjoin_backend(rayjoin, "lsi", "optix")
     lsi_embree = _rayjoin_backend(rayjoin, "lsi", "embree")
-    pip_optix = _rayjoin_backend(rayjoin, "pip", "optix")
-    pip_embree = _rayjoin_backend(rayjoin, "pip", "embree")
+    pip_optix = _rayjoin_backend(pip_optimized, "pip", "optix")
+    pip_embree = _rayjoin_backend(pip_optimized, "pip", "embree")
     lsi_vs_rayjoin = _rayjoin_comparison(rayjoin, "lsi", "optix")
-    pip_vs_rayjoin = _rayjoin_comparison(rayjoin, "pip", "optix")
+    pip_vs_rayjoin = _rayjoin_comparison(pip_optimized, "pip", "optix")
+    pip_embree_over_optix = float(pip_embree["hot_median_sec"]) / float(pip_optix["hot_median_sec"])
 
     pip_phase_ms = {
         "candidate_write_median_ms": _round(_median_phase_ms(pip_optix, "candidate_write_pass")),
@@ -341,10 +352,12 @@ def v2_13_credibility_roadmap(
     if float(lsi_row["embree_divided_by_optix"]) <= 40.0:
         errors.append("RayJoin LSI must remain a strong OptiX-over-Embree baseline")
     if float(pip_row["embree_divided_by_optix"]) >= 1.3:
-        errors.append("RayJoin PIP should remain marked as near-parity optimization debt")
+        errors.append("v2.12 RayJoin PIP release row should remain marked as near-parity optimization debt")
+    if pip_embree_over_optix <= 2.5:
+        errors.append("Goal4368 optimized PIP should show a clear OptiX-over-Embree improvement")
     if float(lsi_vs_rayjoin["rayjoin_rt_over_rtdl"]) <= 1.0:
         errors.append("LSI authors-code comparison should show RTDL OptiX faster than RayJoin RT")
-    if float(pip_vs_rayjoin["rayjoin_rt_over_rtdl"]) >= 0.1:
+    if float(pip_vs_rayjoin["rayjoin_rt_over_rtdl"]) >= 0.2:
         errors.append("PIP authors-code comparison should remain a visible RTDL optimization debt")
     if not any(goal["id"] == "amd_gpu_defer_gate" for goal in ROADMAP_GOALS):
         errors.append("AMD GPU deferral gate is missing")
@@ -355,6 +368,7 @@ def v2_13_credibility_roadmap(
         "source_artifacts": {
             "v2_12_public_comparison": _relative(comparison_path),
             "rayjoin_same_stream_summary": _relative(rayjoin_path),
+            "pip_optimized_summary": _relative(pip_optimized_path),
         },
         "current_baseline": {
             "v2_12_summary": comparison["summary"],
@@ -372,14 +386,16 @@ def v2_13_credibility_roadmap(
                     "count": int(pip_optix["row_count"]),
                     "optix_hot_ms": _round(float(pip_optix["hot_median_sec"]) * 1000.0),
                     "embree_hot_ms": _round(float(pip_embree["hot_median_sec"]) * 1000.0),
-                    "embree_divided_by_optix": _round(float(pip_row["embree_divided_by_optix"]), 2),
+                    "embree_divided_by_optix": _round(pip_embree_over_optix, 2),
                     "rayjoin_rt_query_ms": _round(float(pip_vs_rayjoin["rayjoin_rt_query_ms"])),
                     "rayjoin_rt_over_rtdl_optix": _round(float(pip_vs_rayjoin["rayjoin_rt_over_rtdl"]), 3),
                     "rayjoin_rt_faster_than_rtdl_optix": _round(
                         1.0 / float(pip_vs_rayjoin["rayjoin_rt_over_rtdl"]),
                         2,
                     ),
-                    "readout": "near parity versus Embree and current RTDL optimization debt versus RayJoin RT",
+                    "readout": (
+                        "clear OptiX-over-Embree improvement, but current RTDL optimization debt versus RayJoin RT"
+                    ),
                     "phase_ms": pip_phase_ms,
                 },
             },

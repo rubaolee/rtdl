@@ -29,19 +29,19 @@
       },
       "pip": {
         "count": 8686,
-        "embree_divided_by_optix": 1.18,
-        "embree_hot_ms": 14.168,
-        "optix_hot_ms": 12.034,
+        "embree_divided_by_optix": 3.22,
+        "embree_hot_ms": 19.428,
+        "optix_hot_ms": 6.04,
         "phase_ms": {
-          "candidate_download_median_ms": 0.024,
-          "candidate_write_median_ms": 1.833,
-          "exact_refine_median_ms": 4.93,
-          "hot_query_median_ms": 12.034
+          "candidate_download_median_ms": 0.023,
+          "candidate_write_median_ms": 1.861,
+          "exact_refine_median_ms": 4.092,
+          "hot_query_median_ms": 6.04
         },
-        "rayjoin_rt_faster_than_rtdl_optix": 14.49,
-        "rayjoin_rt_over_rtdl_optix": 0.069,
+        "rayjoin_rt_faster_than_rtdl_optix": 7.28,
+        "rayjoin_rt_over_rtdl_optix": 0.137,
         "rayjoin_rt_query_ms": 0.83,
-        "readout": "near parity versus Embree and current RTDL optimization debt versus RayJoin RT"
+        "readout": "clear OptiX-over-Embree improvement, but current RTDL optimization debt versus RayJoin RT"
       }
     },
     "row_review": [
@@ -319,6 +319,7 @@
     }
   ],
   "source_artifacts": {
+    "pip_optimized_summary": "docs\\reports\\goal4368_pip_exact_prepared_points_executor_2026-06-13\\summary.json",
     "rayjoin_same_stream_summary": "docs\\reports\\goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13\\summary.json",
     "v2_12_public_comparison": "docs\\release_reports\\v2_12\\public_rt_vs_embree_comparison.json"
   },

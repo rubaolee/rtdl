@@ -80,7 +80,7 @@ class Goal4368PipExactPreparedPointsExecutorTest(unittest.TestCase):
 
         comparison = next(row for row in data["comparisons"] if row["backend"] == "optix")
         self.assertLess(comparison["rayjoin_rt_over_rtdl"], 1.0)
-        self.assertGreater(1.0 / comparison["rayjoin_rt_over_rtdl"], 8.0)
+        self.assertGreater(1.0 / comparison["rayjoin_rt_over_rtdl"], 7.0)
 
         phases = [
             row["native_phase_timings"]
