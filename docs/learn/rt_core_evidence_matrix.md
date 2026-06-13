@@ -1,6 +1,6 @@
 # RT-Core Evidence Matrix
 
-Status: current v2.11 source-tree evidence guide.
+Status: current v2.12 source-tree evidence guide.
 
 Use this page when you want to know which benchmark apps currently demonstrate
 RT-core value, which ones mostly test partner continuation, and which ones are
@@ -72,3 +72,4 @@ RTDL accelerates all ten benchmark apps on RT cores.
 - [Goal4303 Fable5 review intake](../reports/goal4303_claude_fable5_review_intake_security_and_topk_actions_2026-06-11.md)
 - [Goal4353 human-scale RT-core vs Embree CPU comparison](../reports/goal4353_human_scale_rt_vs_embree_run_20260612_pod_v3/summary.md)
 - [Goal4354 RayJoin original-code same-stream comparison](../reports/goal4354_rayjoin_original_vs_rtdl_pod/goal4354_rayjoin_original_vs_rtdl_same_stream_summary.md)
+- [Goal4358 v2.12 RTX A4000 RayJoin same-stream packet](../reports/goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13.md)

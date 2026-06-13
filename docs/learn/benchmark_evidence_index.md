@@ -1,6 +1,6 @@
 # Benchmark Evidence Index
 
-Status: current v2.11 source-tree evidence map.
+Status: current v2.12 source-tree evidence map.
 
 Use this page when you want to reproduce or audit the ten benchmark-app front
 doors. It is intentionally narrower than the full report history: it tells you
@@ -57,6 +57,10 @@ v2.11 closeout evidence:
 - [Backend comparison campaign closeout](../reports/goal4345_backend_comparison_campaign_closeout_2026-06-11.md)
 - [Human-scale RT-core vs Embree CPU comparison](../reports/goal4353_human_scale_rt_vs_embree_run_20260612_pod_v3/summary.md)
 - [RayJoin original-code same-stream comparison](../reports/goal4354_rayjoin_original_vs_rtdl_pod/goal4354_rayjoin_original_vs_rtdl_same_stream_summary.md)
+
+v2.12 evidence:
+
+- [RTX A4000 RayJoin same-stream packet after Embree LSI repair](../reports/goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13.md)
 
 ## Current Ten-App Rows
 
