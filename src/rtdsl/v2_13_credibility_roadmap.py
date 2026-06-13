@@ -92,7 +92,7 @@ ROW_REASONING_BY_CONTRACT: dict[str, dict[str, str]] = {
             "Strong OptiX win is credible: same RayJoin-exported stream, scalar count, "
             "exact count match, and no RTDL row materialization."
         ),
-        "v2_13_action": "Promote into an authors-code comparison packet with repeat and stream hashes.",
+        "v2_13_action": "Retain in the Goal4367 authors-code packet with stream hashes.",
     },
     "pip_same_stream_scalar_count": {
         "classification": "reasonable_but_v2_13_optimization_debt",
@@ -100,7 +100,7 @@ ROW_REASONING_BY_CONTRACT: dict[str, dict[str, str]] = {
             "Near parity against Embree and slower-than-RayJoin RT are credible because "
             "exact membership refinement and generic front-door overhead dominate the current row."
         ),
-        "v2_13_action": "Attack exact membership/refinement and compare against RayJoin RT before publication.",
+        "v2_13_action": "Use Goal4367 as the baseline, then attack exact membership/refinement.",
     },
     "rt_graph_2a1_generic_ray_triangle_any_hit": {
         "classification": "reasonable_scoped_rt_core_value",
@@ -142,6 +142,8 @@ ROADMAP_GOALS: tuple[dict[str, Any], ...] = (
         ),
         "depends_on": ("freeze_v2_12_release_boundary",),
         "output_artifacts": (
+            "docs/reports/goal4367_rayjoin_authors_code_comparison_packet_2026-06-13.md",
+            "docs/reports/goal4367_rayjoin_authors_code_comparison_packet_2026-06-13.json",
             "docs/reports/goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13.md",
             "docs/reports/goal4354_rayjoin_original_vs_rtdl_pod/goal4354_rayjoin_original_vs_rtdl_same_stream_summary.md",
         ),
@@ -443,7 +445,7 @@ def markdown_v2_13_credibility_roadmap(payload: dict[str, Any]) -> str:
         (
             "| RayJoin LSI same stream | OptiX {optix} ms, Embree {embree} ms, "
             "Embree/OptiX {ratio}x, RayJoin RT/RTDL {rayjoin_ratio}x | {readout} | "
-            "promote to authors-code comparison packet |"
+            "use Goal4367 as the authors-code comparison baseline |"
         ).format(
             optix=_fmt_number(rayjoin["lsi"]["optix_hot_ms"]),
             embree=_fmt_number(rayjoin["lsi"]["embree_hot_ms"]),
@@ -454,7 +456,7 @@ def markdown_v2_13_credibility_roadmap(payload: dict[str, Any]) -> str:
         (
             "| RayJoin PIP same stream | OptiX {optix} ms, Embree {embree} ms, "
             "Embree/OptiX {ratio}x, RayJoin RT faster {rayjoin_faster}x | {readout} | "
-            "make PIP the first optimization debt |"
+            "use Goal4367 as the PIP optimization baseline |"
         ).format(
             optix=_fmt_number(rayjoin["pip"]["optix_hot_ms"]),
             embree=_fmt_number(rayjoin["pip"]["embree_hot_ms"]),

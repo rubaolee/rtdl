@@ -1,0 +1,251 @@
+{
+  "artifact_manifest": [
+    {
+      "bytes": 12629271,
+      "name": "rayjoin_lsi_gen100000_stream.json",
+      "role": "RayJoin-exported LSI query stream consumed by RTDL",
+      "sha256": "6bed3890d327cbd7f33c6fb3c14b306484aa9f1ccca001710ec164f4d03671bd"
+    },
+    {
+      "bytes": 7059404,
+      "name": "rayjoin_pip_gen100000_stream.json",
+      "role": "RayJoin-exported PIP query stream consumed by RTDL",
+      "sha256": "d5ba3289e346febf86492d2f5d7abdab1a14977a5b6518fc813fd665a90b63a0"
+    },
+    {
+      "bytes": 1190,
+      "name": "rayjoin_lsi_grid.log",
+      "role": "RayJoin original LSI grid-mode timing log",
+      "sha256": "ccebf3404481cb85e9aacf7db966b2501c8215acd25d8a51a627a4e5efab470b"
+    },
+    {
+      "bytes": 1190,
+      "name": "rayjoin_lsi_lbvh.log",
+      "role": "RayJoin original LSI LBVH-mode timing log",
+      "sha256": "9820ba846993571780398814349499d17005651b52a8662fcb8ce4e94f67426e"
+    },
+    {
+      "bytes": 2235,
+      "name": "rayjoin_lsi_rt.log",
+      "role": "RayJoin original LSI RT-mode timing log",
+      "sha256": "32a333baf2e19c7dd18d9f29a0af6b3f238df49ec480273f85a4e4cd70764889"
+    },
+    {
+      "bytes": 675,
+      "name": "rayjoin_pip_grid.log",
+      "role": "RayJoin original PIP grid-mode timing log",
+      "sha256": "f738fb717a05d0dca81440279d173deaa18929d22fe8c8e5c75111b8aabfb274"
+    },
+    {
+      "bytes": 841,
+      "name": "rayjoin_pip_lbvh.log",
+      "role": "RayJoin original PIP LBVH-mode timing log",
+      "sha256": "0f6fe2c1ff4249fd0835c68436cfadd90e940f874428f62a81ee409bfb430e60"
+    },
+    {
+      "bytes": 1519,
+      "name": "rayjoin_pip_rt.log",
+      "role": "RayJoin original PIP RT-mode timing log",
+      "sha256": "38a6ce23cbfd41bc5d0dcba781da2ca658d62f95c0262cb08c8a40e2a458af84"
+    },
+    {
+      "bytes": 3051,
+      "name": "rtdl_lsi_same_rayjoin_stream.json",
+      "role": "RTDL LSI same-stream scalar-count result",
+      "sha256": "0b46cf3145aee850c5ca89d609f0ffd32ec94193cc7c8bf57e73b7e6855009d6"
+    },
+    {
+      "bytes": 3123,
+      "name": "rtdl_pip_same_rayjoin_stream.json",
+      "role": "RTDL PIP same-stream scalar-count result",
+      "sha256": "e61dff24e56a62a9cb49e23e5d5c53213a0eeea0ec19914589f7488a73237ad7"
+    },
+    {
+      "bytes": 6951,
+      "name": "summary.json",
+      "role": "Compact goal4358 summary retained outside the source tree artifact dir",
+      "sha256": "9ed49df8d27ce759b8480c96df863fb683b612ec6c05dc9f764fd453133a8695"
+    },
+    {
+      "bytes": 27926,
+      "name": "goal4354_lsi_pip100k_exact_prepared_points_rtx_a4000_summary_after_embree_lsi_no_bruteforce.json",
+      "role": "Full same-stream summary after Embree LSI no-bruteforce repair",
+      "sha256": "f4bb3c96848c4d467362f688a3c12c8a7eb904fec5e972c52bddd5dd8007f584"
+    }
+  ],
+  "claim_boundary": {
+    "full_rayjoin_paper_reproduction": false,
+    "public_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_query_stream_with_rayjoin_query_exec": true,
+    "scalar_count_contract_only": true,
+    "whole_application_end_to_end_claim": false
+  },
+  "direct_comparison": [
+    {
+      "direction": "greater_than_1_means_rtdl_backend_faster_than_rayjoin_rt",
+      "rayjoin_rt_faster_than_rtdl": null,
+      "rayjoin_rt_over_rtdl": 2.437,
+      "rayjoin_rt_query_ms": 0.819,
+      "readout": "RTDL backend faster than RayJoin RT for this scalar-count contract",
+      "rtdl_backend": "optix",
+      "rtdl_hot_query_ms": 0.336,
+      "workload": "lsi"
+    },
+    {
+      "direction": "greater_than_1_means_rtdl_backend_faster_than_rayjoin_rt",
+      "rayjoin_rt_faster_than_rtdl": 17.76,
+      "rayjoin_rt_over_rtdl": 0.056,
+      "rayjoin_rt_query_ms": 0.819,
+      "readout": "RayJoin RT faster than RTDL backend for this scalar-count contract",
+      "rtdl_backend": "embree",
+      "rtdl_hot_query_ms": 14.539,
+      "workload": "lsi"
+    },
+    {
+      "direction": "greater_than_1_means_rtdl_backend_faster_than_rayjoin_rt",
+      "rayjoin_rt_faster_than_rtdl": 14.49,
+      "rayjoin_rt_over_rtdl": 0.069,
+      "rayjoin_rt_query_ms": 0.83,
+      "readout": "RayJoin RT faster than RTDL backend for this scalar-count contract",
+      "rtdl_backend": "optix",
+      "rtdl_hot_query_ms": 12.034,
+      "workload": "pip"
+    },
+    {
+      "direction": "greater_than_1_means_rtdl_backend_faster_than_rayjoin_rt",
+      "rayjoin_rt_faster_than_rtdl": 17.07,
+      "rayjoin_rt_over_rtdl": 0.059,
+      "rayjoin_rt_query_ms": 0.83,
+      "readout": "RayJoin RT faster than RTDL backend for this scalar-count contract",
+      "rtdl_backend": "embree",
+      "rtdl_hot_query_ms": 14.168,
+      "workload": "pip"
+    }
+  ],
+  "hardware": {
+    "gpu": "NVIDIA RTX A4000, 580.126.20",
+    "gpu_compute_capability": "NVIDIA RTX A4000, 580.126.20, 8.6",
+    "nvidia_rt_core_hardware": true,
+    "rt_core_claim_authorized": true,
+    "rt_core_detection": "GPU name contains RTX"
+  },
+  "interpretation": {
+    "lsi": "Reasonable strong RTDL result: the RTDL OptiX route is an exact prepared-left segment-pair scalar count on the same stream, counts match RayJoin RT intersections, and no row stream is materialized in the measured RTDL path.",
+    "pip": "Reasonable but not good enough for RTDL: RayJoin RT remains much faster on PIP because the current RTDL exact prepared-points path spends material time in exact membership refinement and generic orchestration. This is a v2.13 optimization debt, not a public RTDL win."
+  },
+  "protocol": {
+    "dataset_basis": "RayJoin official sample base CDB/path from exported stream",
+    "query_basis": "same RayJoin-exported query stream consumed by RTDL",
+    "rayjoin_timing_basis": "RayJoin query_exec reported Query ms from log",
+    "repeats": 5,
+    "rtdl_timing_basis": "Python wall time around current prepared native scalar-count front door",
+    "timed_metric": "hot scalar-count query phase; no Python row materialization in RTDL measured path",
+    "warmups": 1
+  },
+  "rayjoin_original_logs": [
+    {
+      "adaptive_grouping_ms": null,
+      "build_index_ms": 3.922,
+      "correctness_signal": "intersections=8921",
+      "mode": "grid",
+      "optix_launch_count": 0,
+      "query_ms": 6.595,
+      "workload": "lsi"
+    },
+    {
+      "adaptive_grouping_ms": null,
+      "build_index_ms": 5.052,
+      "correctness_signal": "intersections=8921",
+      "mode": "lbvh",
+      "optix_launch_count": 0,
+      "query_ms": 2.021,
+      "workload": "lsi"
+    },
+    {
+      "adaptive_grouping_ms": 0.547,
+      "build_index_ms": 2.565,
+      "correctness_signal": "intersections=8921",
+      "mode": "rt",
+      "optix_launch_count": 6,
+      "query_ms": 0.819,
+      "workload": "lsi"
+    },
+    {
+      "adaptive_grouping_ms": null,
+      "build_index_ms": 2.957,
+      "correctness_signal": "n/a",
+      "mode": "grid",
+      "optix_launch_count": 0,
+      "query_ms": 22.39,
+      "workload": "pip"
+    },
+    {
+      "adaptive_grouping_ms": null,
+      "build_index_ms": 5.464,
+      "correctness_signal": "built_in_check=True",
+      "mode": "lbvh",
+      "optix_launch_count": 0,
+      "query_ms": 12.728,
+      "workload": "pip"
+    },
+    {
+      "adaptive_grouping_ms": 0.605,
+      "build_index_ms": 5.399,
+      "correctness_signal": "built_in_check=True",
+      "mode": "rt",
+      "optix_launch_count": 6,
+      "query_ms": 0.83,
+      "workload": "pip"
+    }
+  ],
+  "rtdl_same_stream_results": [
+    {
+      "backend": "optix",
+      "count": 8921,
+      "hot_query_ms": 0.336,
+      "route": "prepared_left_exact_segment_pair_scalar_count",
+      "row_stream_materialized": false,
+      "rt_core_accelerated": true,
+      "workload": "lsi"
+    },
+    {
+      "backend": "embree",
+      "count": 8921,
+      "hot_query_ms": 14.539,
+      "route": "prepared_embree_native_scalar_count",
+      "row_stream_materialized": false,
+      "rt_core_accelerated": false,
+      "workload": "lsi"
+    },
+    {
+      "backend": "optix",
+      "count": 8686,
+      "hot_query_ms": 12.034,
+      "route": "prepared_exact_closed_shape_membership_prepared_points_scalar_count",
+      "row_stream_materialized": false,
+      "rt_core_accelerated": true,
+      "workload": "pip"
+    },
+    {
+      "backend": "embree",
+      "count": 8686,
+      "hot_query_ms": 14.168,
+      "route": "prepared_embree_native_scalar_count",
+      "row_stream_materialized": false,
+      "rt_core_accelerated": false,
+      "workload": "pip"
+    }
+  ],
+  "source_artifacts": {
+    "raw_pod_artifact_dir": "/workspace/goal4358_rayjoin_same_stream_rtx_a4000/artifacts",
+    "rayjoin_source": "external RayJoin query_exec built from upstream commit 02bf6220d6d20b04af77ee20364eced75cc029c9 plus query stream export patch",
+    "retained_summary": "docs\\reports\\goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13\\summary.json"
+  },
+  "status": "accepted_internal_authors_code_comparison_packet",
+  "validation": {
+    "errors": [],
+    "status": "accept"
+  },
+  "version": "rtdl.v2_13.rayjoin_authors_code_packet.goal4367.v1"
+}

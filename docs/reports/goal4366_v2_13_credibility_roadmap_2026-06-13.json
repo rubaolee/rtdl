@@ -142,7 +142,7 @@
         "faster_backend": "optix",
         "reasonable": true,
         "row_label": "Spatial RayJoin LSI same-stream scalar count",
-        "v2_13_action": "Promote into an authors-code comparison packet with repeat and stream hashes."
+        "v2_13_action": "Retain in the Goal4367 authors-code packet with stream hashes."
       },
       {
         "analysis": "Near parity against Embree and slower-than-RayJoin RT are credible because exact membership refinement and generic front-door overhead dominate the current row.",
@@ -153,7 +153,7 @@
         "faster_backend": "optix",
         "reasonable": true,
         "row_label": "Spatial RayJoin PIP same-stream scalar count",
-        "v2_13_action": "Attack exact membership/refinement and compare against RayJoin RT before publication."
+        "v2_13_action": "Use Goal4367 as the baseline, then attack exact membership/refinement."
       },
       {
         "analysis": "Large OptiX win is credible for a prepared ray/triangle any-hit count; this is query/count timing rather than whole application time.",
@@ -221,6 +221,8 @@
       ],
       "id": "rayjoin_authors_code_comparison_packet",
       "output_artifacts": [
+        "docs/reports/goal4367_rayjoin_authors_code_comparison_packet_2026-06-13.md",
+        "docs/reports/goal4367_rayjoin_authors_code_comparison_packet_2026-06-13.json",
         "docs/reports/goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13.md",
         "docs/reports/goal4354_rayjoin_original_vs_rtdl_pod/goal4354_rayjoin_original_vs_rtdl_same_stream_summary.md"
       ],
