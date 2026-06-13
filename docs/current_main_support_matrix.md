@@ -1,6 +1,6 @@
 # RTDL Current Support Matrix
 
-Status: live support matrix for the v2.11 source tree.
+Status: live support matrix for the v2.12 source tree.
 
 This page is the current learner-facing matrix. Older release matrices remain
 under `docs/release_reports/` for audit work, but normal users should read this
@@ -14,9 +14,9 @@ cells and silent CPU fallback are not allowed.
 
 ## Boundary
 
-- Current docs target: v2.11 source-tree partner-choice guidance.
+- Current docs target: v2.12 source-tree partner-choice guidance.
 - Active release engines: Embree for CPU RT, OptiX for NVIDIA RT.
-- Active v2.11 direction: primitive-first native RTDL when a fused generic
+- Active v2.12 direction: primitive-first native RTDL when a fused generic
   primitive exactly expresses the work; explicit partner continuation only for
   unfused work or app choice; users choose supported partners explicitly, while
   benchmark recommendations must be backed by same-contract evidence and never

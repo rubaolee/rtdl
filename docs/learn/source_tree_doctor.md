@@ -1,6 +1,6 @@
 # Source-Tree Doctor
 
-Status: current v2.11 source-tree setup check.
+Status: current v2.12 source-tree setup check.
 
 Use the doctor before native backend or partner experiments. It checks the
 repository layout, current version marker, core imports, optional partner

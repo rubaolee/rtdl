@@ -4,7 +4,7 @@ This directory has three doors:
 
 | Door | Audience | Purpose |
 | --- | --- | --- |
-| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v2.11 boundaries. |
+| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v2.12 boundaries. |
 | [Research](research/README.md) | Internal researchers and advanced developers | Architecture notes, backend research, RayJoin/Embree context, future ideas, and design constraints. |
 | [Audit](audit/README.md) | Release reviewers and auditors | Process docs, runbooks, release reports, evidence reports, reviews, and archived goal logs. |
 
@@ -16,10 +16,11 @@ If you are new, start in **Learn**. If you are evaluating design or extending
 the system, start in **Research**. If you are checking evidence, consensus, or
 project history, start in **Audit**.
 
-Current status: RTDL v2.11 is the active source-tree Python+partner+RTDL
+Current status: RTDL v2.12 is the active source-tree Python+partner+RTDL
 app-portfolio surface on this branch. It keeps source-tree usage, preserves the
 no-broad-speedup/no-package-install boundary, closes the Embree CPU plus partner
-reference lane, and provides current partner-choice guidance, primitive
+reference lane, and provides the cleaned row-scoped RT-core versus Embree CPU
+comparison packet alongside current partner-choice guidance, primitive
 discovery, prepared execution, and the 10-app benchmark evidence matrix.
 For the short canonical wording, read
 [Current Claim Boundaries](learn/current_claim_boundaries.md).
@@ -76,7 +77,7 @@ Read these in order:
 | RT-core evidence interpretation | [RT-Core Evidence Matrix](learn/rt_core_evidence_matrix.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
 | Release Reports | [Release Reports](release_reports/) |
-| Current release package | [RTDL v2.11 Release Package](release_reports/v2_11/README.md) |
+| Current release package | [RTDL v2.12 Release Package](release_reports/v2_12/README.md) |
 | Current benchmark evidence | [Benchmark Evidence Index](learn/benchmark_evidence_index.md) |
 | History Index | [History Index](history/README.md) |
 
@@ -97,6 +98,6 @@ Read these in order:
 
 ## Rule
 
-Current learner docs should explain one coherent v2.11 surface. Previous release
+Current learner docs should explain one coherent v2.12 surface. Previous release
 evidence is preserved for review in history and release-report paths, but it
 should not interrupt the normal learning path.

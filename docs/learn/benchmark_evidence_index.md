@@ -60,9 +60,13 @@ v2.11 closeout evidence:
 
 v2.12 evidence:
 
+- [v2.12 release package](../release_reports/v2_12/README.md)
+- [v2.12 scoped RT-core vs Embree CPU comparison](../release_reports/v2_12/public_rt_vs_embree_comparison.md)
 - [RTX A4000 RayJoin same-stream packet after Embree LSI repair](../reports/goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13.md)
-- [Current OptiX-vs-Embree comparability index with Goal4358 RayJoin pairs](../reports/goal4359_current_optix_embree_comparison_index_v2_12_2026-06-13.md)
-- [Optimized OptiX-vs-Embree packet with RayJoin same-stream rows](../reports/goal4359_optimized_embree_optix_comparison_packet_v2_12_2026-06-13.md)
+- [Current OptiX-vs-Embree comparability index with all scoped pairs](../reports/goal4359_current_optix_embree_comparison_index_v2_12_2026-06-13.md)
+- [Optimized OptiX-vs-Embree packet with zero active boundary-limited rows](../reports/goal4359_optimized_embree_optix_comparison_packet_v2_12_2026-06-13.md)
+- [Robot Collision same-contract prepared-buffer evidence](../reports/goal4363_rtx_a4000_v2_12_robot_collision_same_contract_2026-06-13.md)
+- [RayDB-style same-contract prepared grouped-reduction evidence](../reports/goal4364_rtx_a4000_v2_12_raydb_same_contract_2026-06-13.md)
 
 ## Current Ten-App Rows
 
@@ -92,6 +96,9 @@ v2.12 evidence:
   flags clean. It is not a performance leaderboard.
 - A ten-app packet is not ten broad RT-core speedup claims. Read each row by
   exact contract before using it as performance evidence.
+- The v2.12 optimized packet has no active boundary-limited rows, but mixed
+  rows still matter: Contact Manifold is Embree-faster on the tiny collect-k
+  row, and Spatial RayJoin PIP plus RTNN are near-parity scoped rows.
 - A scale-profile row is more useful for performance planning, but still must
   be read by exact app, command, hardware, backend, partner, and dataset.
 - CuPy/Numba comparison rows are partner-continuation evidence only. They do

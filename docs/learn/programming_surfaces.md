@@ -1,6 +1,6 @@
 # RTDL Programming Surfaces
 
-Status: current v2.11 source-tree guidance.
+Status: current v2.12 source-tree guidance.
 
 RTDL is one language/runtime, but users enter it through three related
 surfaces. Keep them distinct when learning, writing examples, or reporting

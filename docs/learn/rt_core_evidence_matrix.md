@@ -73,3 +73,6 @@ RTDL accelerates all ten benchmark apps on RT cores.
 - [Goal4353 human-scale RT-core vs Embree CPU comparison](../reports/goal4353_human_scale_rt_vs_embree_run_20260612_pod_v3/summary.md)
 - [Goal4354 RayJoin original-code same-stream comparison](../reports/goal4354_rayjoin_original_vs_rtdl_pod/goal4354_rayjoin_original_vs_rtdl_same_stream_summary.md)
 - [Goal4358 v2.12 RTX A4000 RayJoin same-stream packet](../reports/goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13.md)
+- [v2.12 release scoped RT-core vs Embree CPU comparison](../release_reports/v2_12/public_rt_vs_embree_comparison.md)
+- [Goal4363 Robot Collision same-contract evidence](../reports/goal4363_rtx_a4000_v2_12_robot_collision_same_contract_2026-06-13.md)
+- [Goal4364 RayDB-style same-contract evidence](../reports/goal4364_rtx_a4000_v2_12_raydb_same_contract_2026-06-13.md)

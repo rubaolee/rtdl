@@ -7,10 +7,10 @@ performance claims in the current public docs.
 
 ## Product Surface
 
-The current learner-facing milestone is the v2.11 source-tree
-Python+partner+RTDL surface. It keeps the v2.10 Python+partner+RTDL programming
-model, closes the Embree CPU plus partner reference lane, and indexes the
-current RT-core versus Embree CPU comparison evidence.
+The current learner-facing milestone is the v2.12 source-tree
+Python+partner+RTDL surface. It keeps the v2.11 Python+partner+RTDL programming
+model, preserves the Embree CPU plus partner reference lane, and publishes the
+current row-scoped RT-core versus Embree CPU comparison evidence.
 
 Use RTDL from the repository source tree:
 
@@ -56,10 +56,11 @@ The current public docs do not authorize these claims; in short, RTDL does not a
 Selecting `--backend optix` means the OptiX backend was selected. It is not by
 itself a public RT-core speedup claim.
 
-The v2.11 evidence supports path-specific wording only. In particular, the
-Spatial RayJoin LSI prepared scalar-count path is a strong hot-query result,
-while the current generic exact PIP path is correct but slower than RayJoin's
-specialized PIP implementation on the same exported query stream.
+The v2.12 evidence supports path-specific wording only. In particular, the
+optimized packet has no active boundary-limited rows and no contract-choice
+blockers, but mixed rows remain explicit: Contact Manifold is Embree-faster for
+the tiny bounded collect-k row, and Spatial RayJoin PIP plus RTNN are near-parity
+scoped rows rather than broad RT-core claims.
 
 ## Partner Rule
 

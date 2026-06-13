@@ -8,10 +8,11 @@ For the short learner-facing summary, read
 
 ## Current Status
 
-RTDL v2.11 is the current source-tree
+RTDL v2.12 is the current source-tree
 Python+partner+RTDL surface. It preserves the v2.x language boundary, provides
-the cleaned benchmark-vs-learner app portfolio, and closes the Embree CPU plus
-partner reference lane for promoted benchmark apps.
+the cleaned benchmark-vs-learner app portfolio, preserves the Embree CPU plus
+partner reference lane for promoted benchmark apps, and publishes the row-scoped
+RT-core versus Embree CPU comparison packet.
 
 ## Short Version
 
@@ -74,7 +75,7 @@ Allowed performance wording names the exact:
 
 When any of those are missing, use candidate or preview wording.
 
-## v2.11 Release Boundaries
+## v2.12 Release Boundaries
 
 Allowed:
 
