@@ -14,13 +14,13 @@ REPORT = (
     ROOT
     / "docs"
     / "reports"
-    / "goal4338_current_optix_embree_comparison_index_2026-06-11.md"
+    / "goal4359_current_optix_embree_comparison_index_v2_12_2026-06-13.md"
 )
 JSON_ARTIFACT = (
     ROOT
     / "docs"
     / "reports"
-    / "goal4338_current_optix_embree_comparison_index_2026-06-11.json"
+    / "goal4359_current_optix_embree_comparison_index_v2_12_2026-06-13.json"
 )
 
 
@@ -53,10 +53,23 @@ class Goal4338CurrentOptixEmbreeComparisonIndexTest(unittest.TestCase):
         self.assertEqual(10, self.payload["summary"]["row_count"])
         self.assertEqual("accept", self.payload["validation"]["status"], self.payload["validation"]["errors"])
 
-    def test_no_existing_artifact_ratio_is_authorized(self) -> None:
-        self.assertEqual(0, self.payload["summary"]["ratio_authorized_from_existing_artifacts_count"])
+    def test_only_goal4358_rayjoin_same_stream_ratios_are_internally_authorized(self) -> None:
+        self.assertEqual(1, self.payload["summary"]["ratio_authorized_from_existing_artifacts_count"])
+        self.assertEqual(2, self.payload["summary"]["same_stream_scalar_count_pair_count"])
         for row in self.payload["rows"]:
-            self.assertFalse(row["ratio_authorized_from_existing_artifacts"], row["app"])
+            if row["app"] == "spatial_rayjoin":
+                self.assertTrue(row["ratio_authorized_from_existing_artifacts"])
+                self.assertEqual(
+                    "internal_same_stream_scalar_count_only_not_public_claim",
+                    row["ratio_authorization_scope"],
+                )
+                self.assertEqual(2, len(row["same_stream_scalar_count_pairs"]))
+                for pair in row["same_stream_scalar_count_pairs"]:
+                    self.assertTrue(pair["cross_backend_count_match"], pair)
+                    self.assertGreater(pair["optix_faster_than_embree"], 1.0, pair)
+            else:
+                self.assertFalse(row["ratio_authorized_from_existing_artifacts"], row["app"])
+                self.assertEqual("not_authorized", row["ratio_authorization_scope"])
             self.assertFalse(row["public_speedup_claim_authorized"], row["app"])
             self.assertFalse(row["release_authorized"], row["app"])
             self.assertIn("required_next_action", row)
@@ -74,16 +87,18 @@ class Goal4338CurrentOptixEmbreeComparisonIndexTest(unittest.TestCase):
         classes = {row["comparison_class"] for row in self.payload["rows"]}
         self.assertEqual(
             classes,
-            {"same_contract_different_scale_pair_required", "contract_split_pair_required"},
+            {
+                "same_contract_different_scale_pair_required",
+                "contract_split_pair_required",
+                "same_stream_scalar_count_pairs_available",
+            },
         )
+        self.assertEqual(1, self.payload["summary"]["same_stream_scalar_count_pairs_available_count"])
         self.assertGreaterEqual(
             self.payload["summary"]["same_contract_different_scale_pair_required_count"],
             4,
         )
-        self.assertGreaterEqual(
-            self.payload["summary"]["contract_split_pair_required_count"],
-            4,
-        )
+        self.assertEqual(4, self.payload["summary"]["contract_split_pair_required_count"])
 
     def test_script_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -99,11 +114,13 @@ class Goal4338CurrentOptixEmbreeComparisonIndexTest(unittest.TestCase):
             self.assertEqual(0, completed.returncode, completed.stderr)
             payload = json.loads(out.read_text(encoding="utf-8"))
             self.assertEqual("accept", payload["validation"]["status"])
-            self.assertIn("not a speedup table", completed.stdout)
+        self.assertIn("not a speedup table", completed.stdout)
+        self.assertIn("same-stream scalar-count pair", completed.stdout)
 
     def test_report_and_json_artifact_are_present_and_non_authorizing(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
         self.assertIn("not a public speedup table", text)
+        self.assertIn("same-stream scalar-count pair", text)
         self.assertIn("RTNN artifact mismatch", text)
         self.assertIn("Fresh same-contract paired runs", text)
         forbidden = (
@@ -119,6 +136,7 @@ class Goal4338CurrentOptixEmbreeComparisonIndexTest(unittest.TestCase):
         self.assertFalse(payload["release_authorized"])
         self.assertFalse(payload["public_speedup_claim_authorized"])
         self.assertEqual(10, payload["summary"]["row_count"])
+        self.assertEqual(1, payload["summary"]["ratio_authorized_from_existing_artifacts_count"])
 
 
 if __name__ == "__main__":

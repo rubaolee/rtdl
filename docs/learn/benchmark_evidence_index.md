@@ -61,6 +61,7 @@ v2.11 closeout evidence:
 v2.12 evidence:
 
 - [RTX A4000 RayJoin same-stream packet after Embree LSI repair](../reports/goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13.md)
+- [Current OptiX-vs-Embree comparability index with Goal4358 RayJoin pairs](../reports/goal4359_current_optix_embree_comparison_index_v2_12_2026-06-13.md)
 
 ## Current Ten-App Rows
 
