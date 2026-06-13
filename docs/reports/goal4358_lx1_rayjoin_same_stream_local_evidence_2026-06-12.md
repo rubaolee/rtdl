@@ -104,6 +104,23 @@ Embree PIP optimization audit:
 | Shared prepared GEOS plus mutex (`a3cd002b`) | ~90.996 | n/a | Rejected regression; mutex serialized GEOS calls and added thread overhead. |
 | Per-worker prepared GEOS contexts (`ae2113cd`/`013d477f`) | 9.983191 | 9.194794 | Accepted local CPU optimization; exact count remains 8,686. |
 
+Embree thread-count sweep artifact:
+
+```text
+goal4358_lx1_embree_pip100k_thread_sweep.json
+```
+
+| RTDL_EMBREE_THREADS | Effective threads | Hot median ms | Native traversal ms | Count |
+| --- | ---: | ---: | ---: | ---: |
+| `1` | 1 | 34.872551 | 34.171845 | 8,686 |
+| `2` | 2 | 22.603658 | 21.759421 | 8,686 |
+| `4` | 4 | 12.975769 | 12.183431 | 8,686 |
+| `8` | 8 | 9.913803 | 9.140633 | 8,686 |
+| `16` | 16 | 11.651458 | 10.884395 | 8,686 |
+| `auto` | 8 | 9.963293 | 10.942358 | 8,686 |
+
+Readout: `RTDL_EMBREE_THREADS=auto` maps to 8 on `lx1`, and the explicit 8-thread row is the best measured setting. The 16-thread row regresses, so using all logical CPU capacity here is not a free win.
+
 OptiX native phase medians in the hot exact-prepared-points call:
 
 | Phase | Median ms |
