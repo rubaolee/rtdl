@@ -14,7 +14,7 @@ Status: local Linux pipeline evidence accepted; not public RT-core evidence.
 | RT cores | No |
 | CUDA | 12.0 |
 | Embree | 4.3.0 |
-| RTDL commit | `ae2113cd92f29bbf5ee9c7d27bde8571f4e2f82d` |
+| RTDL commit | `013d477ff718d63e24b5f1a048cbf1b6ba2a234c` |
 
 Boundary: this machine validates Linux build/runtime correctness, same-stream protocol, and Embree/OptiX plumbing. It cannot validate an NVIDIA RT-core speedup because GTX 1070 predates RT cores.
 
@@ -29,6 +29,7 @@ The external RayJoin same-stream runner now works on both RTX pods and local non
 | `1771559e` | Added `glog`/`gflags` include paths to RayJoin PTX custom compile commands. |
 | `8b616c1a` | Exposed PIP native phase timings so OptiX hot time can be explained by candidate write/refine phases. |
 | `ae2113cd` | Replaced the regressing shared-GEOS mutex path with per-worker prepared GEOS contexts for Embree PIP count. |
+| `013d477f` | Added conservative hardware classification so GTX OptiX runs are not mislabeled as RT-core accelerated. |
 
 Focused tests passed:
 
@@ -65,7 +66,13 @@ Artifact directory on `lx1`:
 /home/lestat/work/goal4358_same_stream_lx1_pip100k/artifacts
 ```
 
-The run used the new RTDL v2.12 `exact_prepared_points` PIP count path. The Embree row below is the optimized per-worker GEOS result at `ae2113cd`.
+The final artifact is:
+
+```text
+goal4354_pip100k_exact_prepared_points_lx1_summary_metadata_labeled.json
+```
+
+It used the new RTDL v2.12 `exact_prepared_points` PIP count path. The Embree row below is the optimized per-worker GEOS result. Hardware metadata in the artifact marks this GTX 1070 run as `nvidia_rt_core_hardware=false` and `rt_core_accelerated=false`.
 
 RayJoin original logs:
 
@@ -77,17 +84,17 @@ RayJoin original logs:
 
 RTDL same-stream scalar count:
 
-| RTDL backend | Route | Query count | Count | Hot median ms | Native traversal ms |
-| --- | --- | ---: | ---: | ---: | ---: |
-| OptiX | `prepared_exact_closed_shape_membership_prepared_points_scalar_count` | 100,000 | 8,686 | 14.899719 | 14.493628 |
-| Embree | `prepared_embree_native_scalar_count` | 100,000 | 8,686 | 10.010491 | 9.186785 |
+| RTDL backend | RT-core hw | Route | Query count | Count | Hot median ms | Native traversal ms |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| OptiX | no | `prepared_exact_closed_shape_membership_prepared_points_scalar_count` | 100,000 | 8,686 | 14.881459 | 14.528547 |
+| Embree | no | `prepared_embree_native_scalar_count` | 100,000 | 8,686 | 9.983191 | 9.194794 |
 
 Direct comparison against RayJoin RT Query:
 
 | Workload | Backend | RayJoin RT query ms | RTDL hot query ms | RayJoin RT / RTDL |
 | --- | --- | ---: | ---: | ---: |
-| PIP | OptiX | 2.602740 | 14.899719 | 0.175x |
-| PIP | Embree | 2.602740 | 10.010491 | 0.260x |
+| PIP | OptiX | 2.602740 | 14.881459 | 0.175x |
+| PIP | Embree | 2.602740 | 9.983191 | 0.261x |
 
 Embree PIP optimization audit:
 
@@ -95,7 +102,7 @@ Embree PIP optimization audit:
 | --- | ---: | ---: | --- |
 | Original prepared scalar count before PIP parallelization | 35.297965 | 34.579573 | Correct but underused CPU parallelism during exact GEOS refinement. |
 | Shared prepared GEOS plus mutex (`a3cd002b`) | ~90.996 | n/a | Rejected regression; mutex serialized GEOS calls and added thread overhead. |
-| Per-worker prepared GEOS contexts (`ae2113cd`) | 10.010491 | 9.186785 | Accepted local CPU optimization; exact count remains 8,686. |
+| Per-worker prepared GEOS contexts (`ae2113cd`/`013d477f`) | 9.983191 | 9.194794 | Accepted local CPU optimization; exact count remains 8,686. |
 
 OptiX native phase medians in the hot exact-prepared-points call:
 
@@ -104,9 +111,9 @@ OptiX native phase medians in the hot exact-prepared-points call:
 | Point pack | 0.000000 |
 | Point upload | 0.000000 |
 | Candidate count pass | 0.000000 |
-| Candidate write pass | 9.059052 |
-| Candidate download | 0.026867 |
-| Exact refine | 5.405292 |
+| Candidate write pass | 9.030216 |
+| Candidate download | 0.027267 |
+| Exact refine | 5.451010 |
 | Raw candidates | 8,794 |
 | Emitted count | 8,686 |
 
@@ -117,8 +124,8 @@ Correctness: RTDL OptiX and RTDL Embree both returned `8,686`; RayJoin RT built-
 The 100k local result is reasonable for this machine:
 
 - RayJoin RT is a purpose-built C++/CUDA/OptiX PIP implementation and is very fast even on a non-RT-core GTX 1070.
-- RTDL OptiX v2.12 now reuses prepared query point columns, removing hot-call point repack/reupload, but the exact PIP route still spends about 9.06 ms in candidate write and about 5.41 ms in host exact refinement on this GTX 1070 run.
-- RTDL Embree is CPU-only and exact; after per-worker prepared GEOS contexts, its hot median is about 10.01 ms, much better than the old 35.30 ms serial-refine path and faster than RTDL OptiX on this non-RT-core local box.
+- RTDL OptiX v2.12 now reuses prepared query point columns, removing hot-call point repack/reupload, but the exact PIP route still spends about 9.03 ms in candidate write and about 5.45 ms in host exact refinement on this GTX 1070 run.
+- RTDL Embree is CPU-only and exact; after per-worker prepared GEOS contexts, its hot median is about 9.98 ms, much better than the old 35.30 ms serial-refine path and faster than RTDL OptiX on this non-RT-core local box.
 - RayJoin RT remains faster on this PIP100k stream because it is a specialized C++/CUDA/OptiX implementation with a 2.60 ms query phase; RTDL's local result is now a stronger CPU baseline, not a public RT-core win.
 - The local result should not be worded as RT-core acceleration evidence. It says the same-stream comparison machinery and v2.12 exact-prepared-points route are ready to move to a real RTX pod.
 
