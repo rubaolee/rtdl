@@ -66,9 +66,9 @@ class Goal4346CpuOnlyPodComparisonLaunchTest(unittest.TestCase):
 
     def test_contract_choice_blockers_remain_explicit(self) -> None:
         blockers = {row["app"]: row for row in self.payload["contract_choice_blockers"]}
-        self.assertEqual({"spatial_rayjoin", "rt_dbscan", "barnes_hut", "rtnn"}, set(blockers))
+        self.assertEqual({"rt_dbscan", "barnes_hut"}, set(blockers))
         self.assertIn("Numba exact-force partner-only", blockers["barnes_hut"]["reason"])
-        self.assertEqual(4, self.payload["current_comparison_summary"]["contract_choice_blocker_count"])
+        self.assertEqual(2, self.payload["current_comparison_summary"]["contract_choice_blocker_count"])
 
     def test_script_writes_report_and_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

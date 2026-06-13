@@ -6,9 +6,9 @@ Status: internal comparison packet; not public speedup authorization.
 
 ## Verdict
 
-This packet accepts one fully optimized LibRTS prepared-query comparison row, five fresh Embree scale rows from Goal4344, and the Goal4358 RayJoin LSI/PIP same-stream scalar-count rows. Three Goal4344 rows are clean internal query-ratio candidates; Robot Collision and RayDB-style remain boundary-limited because the current OptiX rows use stronger resident/device output paths.
+This packet accepts one fully optimized LibRTS prepared-query comparison row, five fresh Embree scale rows from Goal4344, and the Goal4358 RayJoin LSI/PIP same-stream scalar-count rows, plus the Goal4360 RTNN prepared ranked-summary raw-row same-contract backend pair. Three Goal4344 rows are clean internal query-ratio candidates; Robot Collision and RayDB-style remain boundary-limited because the current OptiX rows use stronger resident/device output paths.
 
-The remaining serious comparison blockers are contract-choice apps: RT-DBSCAN, Barnes-Hut, and RTNN. Spatial RayJoin is now split into LSI/PIP scalar-count rows with internal-only ratios.
+The remaining serious comparison blockers are contract-choice apps: RT-DBSCAN and Barnes-Hut. Spatial RayJoin is now split into LSI/PIP scalar-count rows with internal-only ratios, and RTNN has a same-contract raw-row backend ratio that still does not authorize RT-core wording.
 
 ## Measured Pair
 
@@ -35,6 +35,12 @@ The same Embree row improved from the pre-Goal4340 columnar fallback query media
 | lsi | 14.538773001 | 0.335959005 | 43.28x | 8921 | `internal_same_stream_scalar_count_only_not_public_claim` |
 | pip | 14.167796995 | 12.033906998 | 1.18x | 8686 | `internal_same_stream_scalar_count_only_not_public_claim` |
 
+## RTNN Same-Contract Backend Row
+
+| Contract | Embree Sec | OptiX Sec | Embree / OptiX | Row Count | Signature Match | RT-Core Claim | Authorization |
+| --- | ---: | ---: | ---: | ---: | --- | --- | --- |
+| `prepared_3d_fixed_radius_bounded_ranked_summary_raw_rows` | 0.122744617 | 0.103778298 | 1.18x | 65536 | `True` | `False` | `internal_same_contract_raw_row_query_only_not_public_rt_core_claim` |
+
 Boundary-limited rows are useful engineering evidence, but they are not clean end-to-end backend ratios.
 
 ## App Table
@@ -49,11 +55,11 @@ Boundary-limited rows are useful engineering evidence, but they are not clean en
 | raydb_style | `raydb_style_optix_count_scale_default_262k` | `raydb_style_embree_cpu_count_primitive_first` | `same_scale_boundary_limited` | Goal4344 supplies the Embree generated 262144-row / 1024-group count row, but the current OptiX scale row is prepared/resident while the Embree row is a non-resident native grouped-reduction run. | show traversal/native-call phases as boundary-limited internal evidence; add prepared Embree residency before clean end-to-end ratios |
 | barnes_hut | `barnes_hut_numba_scale_default_8192` | `barnes_hut_embree_cpu_node_coverage_prepared` | `contract_split_pair_required` | Current OptiX scale evidence is a Numba exact-force partner route; current Embree evidence is a prepared node-coverage route. | choose exact-force partner continuation or prepared node coverage as the comparison contract, then run that contract on both sides |
 | librts_spatial_index | `librts_spatial_index_optix_scale_default_32768` | `librts_spatial_index_embree_cpu_aabb_index` | `measured_same_contract_optimized_pair` | Goal4340 supplies a fresh same-scale AABB_INDEX_QUERY_2D prepared-query row after replacing the old Embree columnar fallback with a native Embree collision route. | scale the same prepared-query row to larger box/query counts and report scene-prepare amortization separately from query median |
-| rtnn | `rtnn_prepared_optix_scale_default_65536` | `rtnn_embree_cpu_ann_candidate_quality_reference` | `contract_split_pair_required` | Current OptiX evidence is a 3-D prepared ranked-summary route; current Embree evidence is a 2-D ANN candidate-quality route. | decide between 2-D ANN candidate quality and 3-D ranked-summary, then run the chosen contract on both backends |
+| rtnn | `rtnn_prepared_optix_scale_default_65536` | `rtnn_embree_cpu_ann_candidate_quality_reference` | `same_contract_raw_rows_available_not_rt_core_proof` | Goal4360 supplies a same-scale/same-seed prepared 3-D fixed-radius bounded ranked-summary raw-row pair for OptiX and Embree, with matching aggregate row signatures. | use this as an internal backend row only; keep RT-core wording blocked because the current OptiX RTNN phase is the prepared uniform-cell ranked-summary implementation |
 | triangle_counting | `triangle_counting_optix_rt_graph_2a1_scale_default_2048` | `triangle_counting_embree_cpu_native_summary` | `internal_query_ratio_candidate_ready` | Goal4344 supplies the Embree RT-Graph 2A1 row at the same fixture, copy count, detail mode, repeat, and warmup as the OptiX scale row. | use query-median ratio internally only; keep public claims blocked |
 
 ## Claim Boundary
 
-Goal4359 extends the Goal4341 optimized/same-scale Embree-vs-OptiX packet with the Goal4358 RayJoin same-stream LSI/PIP scalar-count rows. It separates clean same-contract query-ratio rows, RayJoin same-stream scalar-count rows, boundary-limited same-scale rows, and remaining contract-split/configured routes. This packet does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.
+Goal4360 extends the Goal4359 optimized/same-scale Embree-vs-OptiX packet with the RTNN prepared 3-D ranked-summary raw-row same-contract backend pair. It separates clean same-contract query-ratio rows, RayJoin same-stream scalar-count rows, RTNN raw-row backend rows, boundary-limited same-scale rows, and remaining contract-split/configured routes. This packet does not authorize release action, public speedup wording, whole-app acceleration wording, broad RT-core wording, paper reproduction wording, true-zero-copy wording, automatic partner selection, or app-specific native-engine logic.
 
 Validation status: `accept`.

@@ -1,10 +1,10 @@
 # Current OptiX vs Embree Comparison Index
 
-Version: `rtdl.v2_12.current_optix_embree_comparison_index.goal4359.v1`
+Version: `rtdl.v2_12.current_optix_embree_comparison_index.goal4360.v1`
 
 This is a comparability index, not a speedup table and not a public speedup table.
 
-Goal4341 supersedes the older planning index for the optimized LibRTS AABB same-contract row. Goal4358 now adds Spatial RayJoin LSI/PIP same-stream scalar-count pairs. This current index remains useful for showing which broad registry artifacts should not be compared directly.
+Goal4341 supersedes the older planning index for the optimized LibRTS AABB same-contract row. Goal4358 adds Spatial RayJoin LSI/PIP same-stream scalar-count pairs, and Goal4360 adds the RTNN same-contract ranked-summary raw-row pair. This current index remains useful for showing which broad registry artifacts should not be compared directly.
 
 | App | OptiX row | Embree CPU row | Existing artifact status | Comparability | Internal ratio scope | Next action |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -18,8 +18,9 @@ Goal4341 supersedes the older planning index for the optimized LibRTS AABB same-
 | raydb_style | `raydb_style_optix_count_scale_default_262k` | `raydb_style_embree_cpu_count_primitive_first` | OptiX pass; Embree pass | same_contract_different_scale_pair_required | `not_authorized` | run identical generated row and group counts on both backends, with summary-only iteration policy held constant |
 | barnes_hut | `barnes_hut_numba_scale_default_8192` | `barnes_hut_embree_cpu_node_coverage_prepared` | OptiX pass; Embree pass | contract_split_pair_required | `not_authorized` | choose either exact-force partner continuation or prepared node coverage as the comparison contract, then run that one contract on both sides |
 | librts_spatial_index | `librts_spatial_index_optix_scale_default_32768` | `librts_spatial_index_embree_cpu_aabb_index` | OptiX pass; Embree pass | same_contract_different_scale_pair_required | `not_authorized` | run identical box/query counts and operation policy; record whether count validation is enabled on both sides |
-| rtnn | `rtnn_prepared_optix_scale_default_65536` | `rtnn_embree_cpu_ann_candidate_quality_reference` | OptiX pass; Embree pass | contract_split_pair_required | `not_authorized` | decide between 2-D ANN candidate quality and 3-D ranked-summary as the paired contract, then run that one contract on both backends |
+| rtnn | `rtnn_prepared_optix_scale_default_65536` | `rtnn_embree_cpu_ann_candidate_quality_reference` | OptiX pass; Embree pass | same_contract_raw_rows_available_not_rt_core_proof | `internal_same_contract_raw_row_query_only_not_public_rt_core_claim` | use the Goal4360 raw-row pair internally only; keep RT-core wording blocked because the current OptiX RTNN phase is the prepared uniform-cell ranked-summary implementation |
+| rtnn / raw-row | `Goal4360 OptiX` | `Goal4360 Embree` | rows 65536, signature=True, rt_core_claim=False | same-contract ranked-summary raw-row pair | `internal_same_contract_raw_row_query_only_not_public_rt_core_claim` | OptiX 0.103778 sec vs Embree 0.122745 sec; OptiX/Embree speedup 1.18x |
 | triangle_counting | `triangle_counting_optix_rt_graph_2a1_scale_default_2048` | `triangle_counting_embree_cpu_native_summary` | OptiX pass; Embree pass | same_contract_different_scale_pair_required | `not_authorized` | run the same fixture, copy count, repeat, warmup, and output-mode on both backends |
 
-Only the Goal4358 Spatial RayJoin LSI/PIP same-stream scalar-count pairs authorize internal backend ratios from existing artifacts. Every public/release speedup claim flag remains false.
+Only the Goal4358 Spatial RayJoin LSI/PIP same-stream scalar-count pairs and the Goal4360 RTNN ranked-summary raw-row pair authorize internal backend ratios from existing artifacts. Every public/release speedup and broad RT-core claim flag remains false.
 Fresh same-contract paired runs are still required before publishing whole-app or broad benchmark speedups.

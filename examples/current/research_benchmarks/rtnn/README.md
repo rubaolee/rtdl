@@ -28,6 +28,8 @@ PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benc
 PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode rtnn_known_results
 PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_session_reuse_idiom --point-count 16 --radius 0.02 --k 8
 RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_optix_ranked_summary --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
+RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_raw --backend optix --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
+RTDL_EMBREE_LIBRARY=build/librtdl_embree.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_raw --backend embree --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
 ```
 
 ## GPU Evidence
@@ -45,6 +47,13 @@ It generates a deterministic synthetic point set and returns pure JSON with the
 runner progress captured in `runner_progress`. This is the command to use when
 you want an executable current RTDL/OptiX ranked-summary app route, not just the
 evidence summary.
+
+For backend-to-backend comparison, use `--mode prepared_ranked_summary_raw` with
+`--backend optix` or `--backend embree`. That mode keeps the output contract the
+same on both sides: prepared 3-D fixed-radius bounded ranked-summary raw rows.
+The runner payload includes `raw_ranked_summary_aggregate` with row-count,
+bounded-neighbor, nearest/kth checksum, and distance-sum fields so comparison
+reports can prove they timed equivalent work.
 
 The `--mode prepared_session_reuse_idiom` command is a non-performance teaching
 path. It invokes `get_or_prepare_explicit_session` twice against a caller-owned

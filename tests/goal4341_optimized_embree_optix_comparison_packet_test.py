@@ -51,10 +51,11 @@ class Goal4341OptimizedEmbreeOptixComparisonPacketTest(unittest.TestCase):
         self.assertEqual(1, self.payload["summary"]["measured_pair_count"])
         self.assertEqual(5, self.payload["summary"]["scale_comparison_row_count"])
         self.assertEqual(2, self.payload["summary"]["same_stream_comparison_row_count"])
-        self.assertEqual(5, self.payload["summary"]["internal_query_median_ratio_count"])
+        self.assertEqual(1, self.payload["summary"]["same_contract_backend_comparison_row_count"])
+        self.assertEqual(6, self.payload["summary"]["internal_query_median_ratio_count"])
         self.assertEqual(2, self.payload["summary"]["boundary_limited_phase_ratio_count"])
         self.assertEqual(0, self.payload["summary"]["same_contract_scale_pair_required_count"])
-        self.assertEqual(3, self.payload["summary"]["contract_split_pair_required_count"])
+        self.assertEqual(2, self.payload["summary"]["contract_split_pair_required_count"])
         self.assertEqual(10, self.payload["summary"]["app_count"])
         self.assertFalse(self.payload["public_speedup_claim_authorized"])
         self.assertFalse(self.payload["release_authorized"])
@@ -118,6 +119,27 @@ class Goal4341OptimizedEmbreeOptixComparisonPacketTest(unittest.TestCase):
             self.assertFalse(row["correctness"]["row_stream_materialized"], row)
             self.assertFalse(row["public_speedup_claim_authorized"], row)
 
+    def test_rtnn_same_contract_backend_row_is_internal_only(self) -> None:
+        rows = self.payload["same_contract_backend_comparison_rows"]
+        self.assertEqual(1, len(rows))
+        row = rows[0]
+        self.assertEqual("rtnn", row["app"])
+        self.assertEqual("rtnn_same_contract_raw_ranked_summary", row["comparison_table"])
+        self.assertEqual(
+            "internal_same_contract_raw_row_query_only_not_public_rt_core_claim",
+            row["ratio_authorization"],
+        )
+        self.assertGreater(row["embree_metric_divided_by_optix_metric"], 1.0)
+        correctness = row["correctness"]
+        self.assertTrue(correctness["optix_ok"])
+        self.assertTrue(correctness["embree_ok"])
+        self.assertTrue(correctness["row_count_match"])
+        self.assertTrue(correctness["integer_signature_match"])
+        self.assertTrue(correctness["sum_distance_match_exact"])
+        self.assertFalse(correctness["rt_core_neighbor_search_claim_authorized"])
+        self.assertFalse(row["public_speedup_claim_authorized"])
+        self.assertFalse(row["rt_core_neighbor_search_claim_authorized"])
+
     def test_app_table_marks_ratio_and_contract_choice_buckets(self) -> None:
         rows = {row["app"]: row for row in self.payload["planning_rows"]}
         self.assertEqual(set(rows), {
@@ -143,6 +165,7 @@ class Goal4341OptimizedEmbreeOptixComparisonPacketTest(unittest.TestCase):
                 "spatial_rayjoin",
                 "contact_manifold",
                 "librts_spatial_index",
+                "rtnn",
                 "triangle_counting",
             ],
             ratio_rows,
@@ -154,7 +177,10 @@ class Goal4341OptimizedEmbreeOptixComparisonPacketTest(unittest.TestCase):
         self.assertEqual(rows["spatial_rayjoin"]["goal4341_status"], "same_stream_scalar_count_pairs_available")
         self.assertEqual(rows["librts_spatial_index"]["goal4341_status"], "measured_same_contract_optimized_pair")
         self.assertEqual(rows["rt_dbscan"]["goal4341_status"], "contract_split_pair_required")
-        self.assertEqual(rows["rtnn"]["goal4341_status"], "contract_split_pair_required")
+        self.assertEqual(
+            rows["rtnn"]["goal4341_status"],
+            "same_contract_raw_rows_available_not_rt_core_proof",
+        )
         for app, row in rows.items():
             self.assertIn("next_action", row)
             self.assertNotEqual("", row["next_action"])
@@ -188,6 +214,7 @@ class Goal4341OptimizedEmbreeOptixComparisonPacketTest(unittest.TestCase):
             self.assertIn("not public speedup authorization", report)
             self.assertIn("librts_spatial_index", report)
             self.assertIn("RayJoin Same-Stream Rows", report)
+            self.assertIn("RTNN Same-Contract Backend Row", report)
             self.assertIn("Scale Rows", report)
             self.assertIn("boundary_limited", report)
 
@@ -196,12 +223,14 @@ class Goal4341OptimizedEmbreeOptixComparisonPacketTest(unittest.TestCase):
         payload = json.loads(V2_12_JSON_ARTIFACT.read_text(encoding="utf-8"))
         self.assertIn("Optimized Embree vs OptiX", text)
         self.assertIn("RayJoin Same-Stream Rows", text)
+        self.assertIn("RTNN Same-Contract Backend Row", text)
         self.assertIn("measured_same_contract_optimized_pair", text)
         self.assertIn("internal_query_ratio_candidate_ready", text)
         self.assertIn("same_scale_boundary_limited", text)
         self.assertIn("contract_split_pair_required", text)
         self.assertEqual("accept", payload["validation"]["status"])
         self.assertEqual(2, payload["summary"]["same_stream_comparison_row_count"])
+        self.assertEqual(1, payload["summary"]["same_contract_backend_comparison_row_count"])
         self.assertFalse(payload["summary"]["public_speedup_claim_authorized"])
 
     def test_external_reviews_and_consensus_record_boundaries(self) -> None:

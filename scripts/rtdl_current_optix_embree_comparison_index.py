@@ -30,9 +30,11 @@ def _markdown(payload: dict[str, object]) -> str:
         "This is a comparability index, not a speedup table and not a public speedup table.",
         "",
         "Goal4341 supersedes the older planning index for the optimized LibRTS "
-        "AABB same-contract row. Goal4358 now adds Spatial RayJoin LSI/PIP "
-        "same-stream scalar-count pairs. This current index remains useful for "
-        "showing which broad registry artifacts should not be compared directly.",
+        "AABB same-contract row. Goal4358 adds Spatial RayJoin LSI/PIP "
+        "same-stream scalar-count pairs, and Goal4360 adds the RTNN "
+        "same-contract ranked-summary raw-row pair. This current index remains "
+        "useful for showing which broad registry artifacts should not be "
+        "compared directly.",
         "",
         "| App | OptiX row | Embree CPU row | Existing artifact status | Comparability | Internal ratio scope | Next action |",
         "| --- | --- | --- | --- | --- | --- | --- |",
@@ -74,12 +76,28 @@ def _markdown(payload: dict[str, object]) -> str:
                         speedup=float(pair["optix_faster_than_embree"]),
                     )
                 )
+        rtnn_pair = row.get("rtnn_same_contract_pair")
+        if isinstance(rtnn_pair, dict):
+            lines.append(
+                "| {app} / raw-row | `Goal4360 OptiX` | `Goal4360 Embree` | rows {count}, signature={signature}, rt_core_claim={rt_core} | same-contract ranked-summary raw-row pair | `{scope}` | OptiX {optix_sec:.6f} sec vs Embree {embree_sec:.6f} sec; OptiX/Embree speedup {speedup:.2f}x |".format(
+                    app=row["app"],
+                    count=int(rtnn_pair["row_count"]),
+                    signature=bool(rtnn_pair["integer_signature_match"])
+                    and bool(rtnn_pair["sum_distance_match_exact"]),
+                    rt_core=bool(rtnn_pair["rt_core_neighbor_search_claim_authorized"]),
+                    scope=rtnn_pair["ratio_authorization"],
+                    optix_sec=float(rtnn_pair["optix_query_median_sec"]),
+                    embree_sec=float(rtnn_pair["embree_query_median_sec"]),
+                    speedup=float(rtnn_pair["optix_faster_than_embree"]),
+                )
+            )
     lines.extend(
         [
             "",
             "Only the Goal4358 Spatial RayJoin LSI/PIP same-stream scalar-count "
-            "pairs authorize internal backend ratios from existing artifacts. "
-            "Every public/release speedup claim flag remains false.",
+            "pairs and the Goal4360 RTNN ranked-summary raw-row pair authorize "
+            "internal backend ratios from existing artifacts. Every public/release "
+            "speedup and broad RT-core claim flag remains false.",
             "Fresh same-contract paired runs are still required before publishing "
             "whole-app or broad benchmark speedups.",
         ]

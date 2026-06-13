@@ -42,7 +42,7 @@ SUPPORTED_CONTRACTS = (
         "name": "rtnn_ranked_summary_3d",
         "owner": "scripts/goal2348_rtnn_v2_2_external_runner.py",
         "contract": "exact fixed-radius bounded ranked-neighbor summary row per query",
-        "runtime_shape": "packed columns, prepared OptiX 3-D search structure, explicit query batches",
+        "runtime_shape": "packed columns, prepared OptiX or Embree 3-D search structure, explicit query batches",
     },
 )
 
@@ -369,6 +369,146 @@ def rtnn_prepared_optix_ranked_summary_payload(
     }
 
 
+def rtnn_prepared_ranked_summary_raw_payload(
+    *,
+    backend: str,
+    point_count: int,
+    radius: float,
+    k: int,
+    repeat: int,
+    query_batch_size: int | None,
+    distribution: str,
+    seed: int,
+) -> dict[str, Any]:
+    """Run the same raw ranked-summary row contract on OptiX or Embree."""
+
+    if backend not in {"optix", "embree"}:
+        raise ValueError("backend must be optix or embree")
+    if point_count <= 0:
+        raise ValueError("point_count must be positive")
+    if radius <= 0.0:
+        raise ValueError("radius must be positive")
+    if k <= 0:
+        raise ValueError("k must be positive")
+    if repeat <= 0:
+        raise ValueError("repeat must be positive")
+    batch_size = query_batch_size or point_count
+    if batch_size <= 0:
+        raise ValueError("query_batch_size must be positive")
+
+    session_key = rt.make_prepared_session_cache_key(
+        primitive="fixed_radius_neighbors_3d_ranked_summary_raw",
+        backend=backend,
+        input_fingerprints={
+            "points": {
+                "point_count": point_count,
+                "distribution": distribution,
+                "seed": seed,
+            },
+            "queries": {
+                "query_batch_size": batch_size,
+                "distribution": distribution,
+                "seed": seed,
+            },
+        },
+        parameters={"radius": radius, "k": k},
+        partner="none",
+        device="cuda:0" if backend == "optix" else "cpu",
+    )
+    session_policy = rt.RtdlPreparedSessionResidencyPolicy(
+        cache_key=session_key,
+        cache_enabled=False,
+        lifetime_state="session_retained",
+        reuse_scope="explicit_user_session",
+        invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
+    )
+
+    from scripts import goal2348_rtnn_v2_2_external_runner as rtnn_runner
+
+    with tempfile.TemporaryDirectory(prefix="rtdl_rtnn_same_contract_") as tmp:
+        point_file = Path(tmp) / f"rtnn_{distribution}_{point_count}.csv"
+        generated = rtnn_runner.generate_point_file(
+            point_file,
+            point_count=point_count,
+            dimension=3,
+            seed=seed,
+            distribution=distribution,
+        )
+        runner_stdout = io.StringIO()
+        with contextlib.redirect_stdout(runner_stdout):
+            payload = rtnn_runner.run_rtdl_batched_3d_neighbors(
+                Namespace(
+                    point_file=point_file,
+                    query_file=None,
+                    radius=radius,
+                    k_max=k,
+                    backend=backend,
+                    query_batch_size=batch_size,
+                    result_mode="ranked-summary-raw",
+                    aggregate_request_count=1,
+                    aggregate_radius_multipliers=None,
+                    aggregate_k_values=None,
+                    repeat=repeat,
+                    row_label=f"rtnn_current_prepared_{backend}_ranked_summary_raw",
+                )
+            )
+
+    return {
+        "benchmark_app": BENCHMARK_NAME,
+        "mode": "prepared_ranked_summary_raw",
+        "backend": backend,
+        "contract": "prepared 3-D fixed-radius bounded ranked-summary raw rows",
+        "generated_input": generated,
+        "point_count": point_count,
+        "radius": radius,
+        "k": k,
+        "repeat": repeat,
+        "query_batch_size": batch_size,
+        "distribution": distribution,
+        "seed": seed,
+        "runner_progress": tuple(line for line in runner_stdout.getvalue().splitlines() if line.strip()),
+        "runner_payload": payload,
+        "same_contract_comparison_role": {
+            "comparison_key": "rtnn_prepared_3d_ranked_summary_raw",
+            "backend_variable": "optix_rt_core_or_embree_cpu",
+            "fixed_inputs": (
+                "point_count",
+                "radius",
+                "k",
+                "repeat",
+                "query_batch_size",
+                "distribution",
+                "seed",
+                "result_mode",
+            ),
+            "row_signature_field": "runner_payload.raw_ranked_summary_aggregate",
+        },
+        "prepared_session_residency": {
+            "cache_key": session_key.to_metadata(),
+            "policy": session_policy.to_metadata(),
+            "explicit_reuse_helper": "get_or_prepare_explicit_session",
+            "cache_enabled_by_default": False,
+            "cold_hot_phase_split_required": True,
+            "prepare_once_query_many_pattern": True,
+            "automatic_partner_selection_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "native_engine_customization": False,
+            "full_rtnn_paper_reproduction": False,
+            "public_speedup_claim_authorized": False,
+            "broad_rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "automatic_partner_selection_authorized": False,
+            "amd_performance_claim_authorized": False,
+            "same_contract_backend_comparison_candidate": True,
+            "materializes_summary_rows": True,
+        },
+    }
+
+
 def rtnn_prepared_session_reuse_idiom_payload(
     *,
     point_count: int,
@@ -626,6 +766,7 @@ def run_app(
     *,
     copies: int = 1,
     partner: str = "torch",
+    backend: str = "optix",
     operation: str = "grouped_topk_f64",
     k: int = 8,
 ) -> dict[str, Any]:
@@ -643,6 +784,17 @@ def run_app(
         return rtnn_command_plan_payload()
     if mode == "prepared_optix_ranked_summary":
         return rtnn_prepared_optix_ranked_summary_payload(
+            point_count=copies,
+            radius=0.02,
+            k=k,
+            repeat=1,
+            query_batch_size=copies,
+            distribution="uniform",
+            seed=20260519,
+        )
+    if mode == "prepared_ranked_summary_raw":
+        return rtnn_prepared_ranked_summary_raw_payload(
+            backend=backend,
             point_count=copies,
             radius=0.02,
             k=k,
@@ -680,6 +832,7 @@ def main(argv: list[str] | None = None) -> int:
             "rtnn_known_results",
             "rtnn_command_plan",
             "prepared_optix_ranked_summary",
+            "prepared_ranked_summary_raw",
             "prepared_session_reuse_idiom",
             "ranked_summary_typed_stream_plan",
             "rtnn_v2_8_ranked_summary_plan",
@@ -693,6 +846,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--query-batch-size", type=int, default=None)
     parser.add_argument("--distribution", choices=("uniform", "clustered", "shell"), default="uniform")
     parser.add_argument("--seed", type=int, default=20260519)
+    parser.add_argument("--backend", choices=("optix", "embree"), default="optix")
     parser.add_argument("--partner", choices=("torch", "cupy", "numba", "triton"), default="torch")
     parser.add_argument(
         "--operation",
@@ -711,6 +865,17 @@ def main(argv: list[str] | None = None) -> int:
             distribution=args.distribution,
             seed=args.seed,
         )
+    elif args.mode == "prepared_ranked_summary_raw":
+        payload = rtnn_prepared_ranked_summary_raw_payload(
+            backend=args.backend,
+            point_count=args.point_count or args.copies,
+            radius=args.radius,
+            k=args.k,
+            repeat=args.repeat,
+            query_batch_size=args.query_batch_size,
+            distribution=args.distribution,
+            seed=args.seed,
+        )
     elif args.mode == "prepared_session_reuse_idiom":
         payload = rtnn_prepared_session_reuse_idiom_payload(
             point_count=args.point_count or args.copies,
@@ -720,7 +885,14 @@ def main(argv: list[str] | None = None) -> int:
             seed=args.seed,
         )
     else:
-        payload = run_app(args.mode, copies=args.copies, partner=args.partner, operation=args.operation, k=args.k)
+        payload = run_app(
+            args.mode,
+            copies=args.copies,
+            partner=args.partner,
+            backend=args.backend,
+            operation=args.operation,
+            k=args.k,
+        )
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0
 

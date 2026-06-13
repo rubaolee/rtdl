@@ -8,7 +8,7 @@ from .current_benchmark_scale_profiles import CURRENT_BENCHMARK_SCALE_PROFILE_VE
 from .optimized_optix_embree_comparison_packet import optimized_optix_embree_comparison_packet
 
 
-CPU_ONLY_POD_COMPARISON_LAUNCH_VERSION = "rtdl.v2_11.cpu_only_pod_comparison_launch.goal4346.v2"
+CPU_ONLY_POD_COMPARISON_LAUNCH_VERSION = "rtdl.v2_12.cpu_only_pod_comparison_launch.goal4360.v1"
 CPU_ONLY_POD_COMPARISON_LAUNCH_STATUS = (
     "internal_cpu_only_optix_vs_embree_pod_launch_packet_not_release_authorization"
 )
@@ -207,11 +207,6 @@ EMBREE_CPU_SCALE_COMMANDS: tuple[EmbreeCpuScaleCommand, ...] = (
 
 CONTRACT_CHOICE_BLOCKERS = (
     {
-        "app": "spatial_rayjoin",
-        "reason": "current OptiX row is a mixed route; current Embree row is PIP count-only",
-        "next_action": "choose PIP count, LSI scalar count, or overlay active-count before ratio reporting",
-    },
-    {
         "app": "rt_dbscan",
         "reason": "current OptiX row is grouped-stream plus Numba signature; current Embree row is prepared rows",
         "next_action": "choose fixed-radius neighbor rows or grouped-signature contract",
@@ -220,11 +215,6 @@ CONTRACT_CHOICE_BLOCKERS = (
         "app": "barnes_hut",
         "reason": "current NVIDIA scale row is Numba exact-force partner-only; current Embree row is node coverage",
         "next_action": "choose exact-force configured route or prepared node-coverage route",
-    },
-    {
-        "app": "rtnn",
-        "reason": "current OptiX row is 3-D ranked summary; current Embree row is 2-D ANN candidate quality",
-        "next_action": "choose 2-D ANN candidate quality or 3-D ranked-summary",
     },
 )
 
@@ -258,8 +248,8 @@ def cpu_only_pod_comparison_launch_packet() -> dict[str, Any]:
         errors.append("optimized comparison packet is not accept")
     if comparison_summary.get("same_contract_scale_pair_required_count") != 0:
         errors.append("comparison packet still needs same-contract scale pairs")
-    if comparison_summary.get("contract_split_pair_required_count") != 4:
-        errors.append("expected four contract-choice blockers")
+    if comparison_summary.get("contract_split_pair_required_count") != 2:
+        errors.append("expected two remaining contract-choice blockers")
 
     optix_command = (
         "python",

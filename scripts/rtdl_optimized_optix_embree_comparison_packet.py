@@ -29,6 +29,7 @@ def _markdown(payload: dict[str, object]) -> str:
     optix = dict(measured_pair["optix_rt"])
     scale_rows = tuple(payload["scale_comparison_rows"])
     same_stream_rows = tuple(payload["same_stream_comparison_rows"])
+    same_contract_backend_rows = tuple(payload["same_contract_backend_comparison_rows"])
     planning_rows = tuple(payload["planning_rows"])
     lines = [
         "# Goal4359: Optimized Embree vs OptiX Comparison Packet",
@@ -41,14 +42,16 @@ def _markdown(payload: dict[str, object]) -> str:
         "",
         "This packet accepts one fully optimized LibRTS prepared-query comparison "
         "row, five fresh Embree scale rows from Goal4344, and the Goal4358 "
-        "RayJoin LSI/PIP same-stream scalar-count rows. Three Goal4344 rows are "
-        "clean internal query-ratio candidates; Robot Collision and RayDB-style "
-        "remain boundary-limited because the current OptiX rows use stronger "
-        "resident/device output paths.",
+        "RayJoin LSI/PIP same-stream scalar-count rows, plus the Goal4360 RTNN "
+        "prepared ranked-summary raw-row same-contract backend pair. Three "
+        "Goal4344 rows are clean internal query-ratio candidates; Robot "
+        "Collision and RayDB-style remain boundary-limited because the current "
+        "OptiX rows use stronger resident/device output paths.",
         "",
         "The remaining serious comparison blockers are contract-choice apps: "
-        "RT-DBSCAN, Barnes-Hut, and RTNN. Spatial RayJoin is now split into "
-        "LSI/PIP scalar-count rows with internal-only ratios.",
+        "RT-DBSCAN and Barnes-Hut. Spatial RayJoin is now split into LSI/PIP "
+        "scalar-count rows with internal-only ratios, and RTNN has a same-contract "
+        "raw-row backend ratio that still does not authorize RT-core wording.",
         "",
         "## Measured Pair",
         "",
@@ -106,6 +109,31 @@ def _markdown(payload: dict[str, object]) -> str:
                 optix_metric=_fmt(float(row["optix_metric"])),
                 ratio=float(row["embree_metric_divided_by_optix_metric"]),
                 count=int(correctness["optix_row_count"]),
+                auth=row["ratio_authorization"],
+            )
+        )
+    lines.extend(
+        [
+            "",
+            "## RTNN Same-Contract Backend Row",
+            "",
+            "| Contract | Embree Sec | OptiX Sec | Embree / OptiX | Row Count | Signature Match | RT-Core Claim | Authorization |",
+            "| --- | ---: | ---: | ---: | ---: | --- | --- | --- |",
+        ]
+    )
+    for row_obj in same_contract_backend_rows:
+        row = dict(row_obj)
+        correctness = dict(row["correctness"])
+        lines.append(
+            "| `{contract}` | {embree_metric} | {optix_metric} | {ratio:.2f}x | {count} | `{signature}` | `{rt_core}` | `{auth}` |".format(
+                contract=row["contract"],
+                embree_metric=_fmt(float(row["embree_metric"])),
+                optix_metric=_fmt(float(row["optix_metric"])),
+                ratio=float(row["embree_metric_divided_by_optix_metric"]),
+                count=int(correctness["optix_row_count"]),
+                signature=bool(correctness["integer_signature_match"])
+                and bool(correctness["sum_distance_match_exact"]),
+                rt_core=bool(row["rt_core_neighbor_search_claim_authorized"]),
                 auth=row["ratio_authorization"],
             )
         )

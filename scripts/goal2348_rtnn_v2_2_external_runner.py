@@ -783,6 +783,54 @@ def _aggregate_batch_requests(
     return tuple(requests)
 
 
+def _empty_ranked_summary_raw_aggregate() -> dict[str, object]:
+    return {
+        "query_count": 0,
+        "bounded_neighbor_count": 0,
+        "nearest_id_checksum": 0,
+        "kth_id_checksum": 0,
+        "sum_distance": 0.0,
+        "zero_neighbor_query_count": 0,
+        "min_neighbor_count": 0,
+        "max_neighbor_count": 0,
+    }
+
+
+def _ranked_summary_raw_aggregate(rows) -> dict[str, object]:
+    aggregate = _empty_ranked_summary_raw_aggregate()
+    min_neighbor_count: int | None = None
+    for index in range(len(rows)):
+        row = rows.rows_ptr[index]
+        neighbor_count = int(row.neighbor_count)
+        aggregate["query_count"] = int(aggregate["query_count"]) + 1
+        aggregate["bounded_neighbor_count"] = int(aggregate["bounded_neighbor_count"]) + neighbor_count
+        aggregate["nearest_id_checksum"] = int(aggregate["nearest_id_checksum"]) + int(row.nearest_neighbor_id)
+        aggregate["kth_id_checksum"] = int(aggregate["kth_id_checksum"]) + int(row.kth_neighbor_id)
+        aggregate["sum_distance"] = float(aggregate["sum_distance"]) + float(row.sum_distance)
+        if neighbor_count == 0:
+            aggregate["zero_neighbor_query_count"] = int(aggregate["zero_neighbor_query_count"]) + 1
+        min_neighbor_count = neighbor_count if min_neighbor_count is None else min(min_neighbor_count, neighbor_count)
+        aggregate["max_neighbor_count"] = max(int(aggregate["max_neighbor_count"]), neighbor_count)
+    aggregate["min_neighbor_count"] = 0 if min_neighbor_count is None else min_neighbor_count
+    return aggregate
+
+
+def _merge_ranked_summary_raw_aggregate(target: dict[str, object], source: dict[str, object]) -> None:
+    previous_query_count = int(target["query_count"])
+    target["query_count"] = int(target["query_count"]) + int(source["query_count"])
+    target["bounded_neighbor_count"] = int(target["bounded_neighbor_count"]) + int(source["bounded_neighbor_count"])
+    target["nearest_id_checksum"] = int(target["nearest_id_checksum"]) + int(source["nearest_id_checksum"])
+    target["kth_id_checksum"] = int(target["kth_id_checksum"]) + int(source["kth_id_checksum"])
+    target["sum_distance"] = float(target["sum_distance"]) + float(source["sum_distance"])
+    target["zero_neighbor_query_count"] = int(target["zero_neighbor_query_count"]) + int(source["zero_neighbor_query_count"])
+    target["min_neighbor_count"] = (
+        int(source["min_neighbor_count"])
+        if previous_query_count == 0
+        else min(int(target["min_neighbor_count"]), int(source["min_neighbor_count"]))
+    )
+    target["max_neighbor_count"] = max(int(target["max_neighbor_count"]), int(source["max_neighbor_count"]))
+
+
 def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]:
     """Run a prepared native 3D neighbor handle over query batches.
 
@@ -911,6 +959,8 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
     batch_phase_timings = []
     ranked_aggregate_summary = None
     ranked_aggregate_batch_summaries = None
+    raw_ranked_summary_aggregate = None
+    raw_ranked_summary_batch_summaries = None
     same_stream_entrypoint_metadata = None
     error = ""
     ok = True
@@ -927,6 +977,8 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
                 "kth_id_checksum": 0,
                 "sum_distance": 0.0,
             }
+            run_raw_ranked_summary_aggregate = _empty_ranked_summary_raw_aggregate()
+            run_raw_ranked_summary_batch_summaries = []
             run_phase_timings = []
             run_same_stream_entrypoint_metadata = []
             for batch_index, (batch, batch_ids) in enumerate(query_batches):
@@ -935,7 +987,13 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
                     batch_started = time.perf_counter()
                     rows = prepared.run_ranked_summary_raw(batch, radius=radius, k_max=k_max)
                     try:
-                        run_row_count += len(rows)
+                        batch_summary = _ranked_summary_raw_aggregate(rows)
+                        _merge_ranked_summary_raw_aggregate(
+                            run_raw_ranked_summary_aggregate,
+                            batch_summary,
+                        )
+                        run_raw_ranked_summary_batch_summaries.append(batch_summary)
+                        run_row_count += int(batch_summary["query_count"])
                     finally:
                         rows.close()
                     batch_wall_seconds = time.perf_counter() - batch_started
@@ -1028,7 +1086,13 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
                 else:
                     rows = prepared.run_ranked_summary_raw(batch, radius=radius, k_max=k_max)
                     try:
-                        run_row_count += len(rows)
+                        batch_summary = _ranked_summary_raw_aggregate(rows)
+                        _merge_ranked_summary_raw_aggregate(
+                            run_raw_ranked_summary_aggregate,
+                            batch_summary,
+                        )
+                        run_raw_ranked_summary_batch_summaries.append(batch_summary)
+                        run_row_count += int(batch_summary["query_count"])
                     finally:
                         rows.close()
                 phase_timing = rt.get_last_fixed_radius_neighbors_3d_phase_timings()
@@ -1049,6 +1113,16 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             ranked_aggregate_summary = (
                 run_ranked_aggregate_summary
                 if result_mode in aggregate_modes
+                else None
+            )
+            raw_ranked_summary_aggregate = (
+                run_raw_ranked_summary_aggregate
+                if result_mode == "ranked-summary-raw"
+                else None
+            )
+            raw_ranked_summary_batch_summaries = (
+                tuple(run_raw_ranked_summary_batch_summaries)
+                if result_mode == "ranked-summary-raw"
                 else None
             )
             same_stream_entrypoint_metadata = (
@@ -1101,6 +1175,8 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         "row_count": row_count,
         "ranked_aggregate_summary": ranked_aggregate_summary,
         "ranked_aggregate_batch_summaries": ranked_aggregate_batch_summaries,
+        "raw_ranked_summary_aggregate": raw_ranked_summary_aggregate,
+        "raw_ranked_summary_batch_summaries": raw_ranked_summary_batch_summaries,
         "same_stream_entrypoint_metadata": same_stream_entrypoint_metadata,
         "execution_path_plan": execution_path_plan,
         "batch_phase_timings": batch_phase_timings,

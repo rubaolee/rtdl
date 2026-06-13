@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 
-BACKEND_COMPARISON_CAMPAIGN_CLOSEOUT_VERSION = "rtdl.v2_11.backend_comparison_campaign_closeout.goal4345.v1"
+BACKEND_COMPARISON_CAMPAIGN_CLOSEOUT_VERSION = "rtdl.v2_12.backend_comparison_campaign_closeout.goal4360.v1"
 BACKEND_COMPARISON_CAMPAIGN_CLOSEOUT_STATUS = (
     "internal_backend_comparison_campaign_closeout_not_release_or_public_speedup_authorization"
 )
@@ -24,7 +24,7 @@ DEFAULT_RT_CORE_CLOSEOUT = ROOT / "docs" / "reports" / "goal4342_rt_core_optimiz
 DEFAULT_EMBREE_AUDIT = ROOT / "docs" / "reports" / "goal4343_embree_optimization_audit_2026-06-11.json"
 DEFAULT_EMBREE_SCALE_PROBE = ROOT / "docs" / "reports" / "goal4344_embree_same_contract_scale_probe_2026-06-11.json"
 DEFAULT_COMPARISON_PACKET = (
-    ROOT / "docs" / "reports" / "goal4341_optimized_embree_optix_comparison_packet_2026-06-11.json"
+    ROOT / "docs" / "reports" / "goal4359_optimized_embree_optix_comparison_packet_v2_12_2026-06-13.json"
 )
 
 
@@ -79,8 +79,8 @@ def backend_comparison_campaign_closeout(
         errors.append("RT-core campaign still reports remaining high-leverage implementation work")
     if embree_summary.get("same_contract_scale_pair_needed_count") != 0:
         errors.append("Embree campaign still reports missing same-contract scale rows")
-    if comparison_summary.get("contract_split_pair_required_count") != 4:
-        errors.append("comparison packet should preserve four contract-choice blockers")
+    if comparison_summary.get("contract_split_pair_required_count") != 2:
+        errors.append("comparison packet should preserve two remaining contract-choice blockers")
 
     partner_policy = {
         "default": "do_not_force_numba_universally",
@@ -132,17 +132,18 @@ def backend_comparison_campaign_closeout(
                     "zero missing same-contract scale pairs."
                 ),
                 "boundary": (
-                    "Four apps still require a contract choice before a serious "
-                    "OptiX-vs-Embree ratio: Spatial RayJoin, RT-DBSCAN, Barnes-Hut, "
-                    "and RTNN."
+                    "Two apps still require a contract choice before a serious "
+                    "OptiX-vs-Embree ratio: RT-DBSCAN and Barnes-Hut. Spatial "
+                    "RayJoin and RTNN now have scoped internal-only paired rows."
                 ),
             },
             "serious_comparison_ready": {
                 "answer": "yes_as_an_internal_bucketted_packet",
                 "evidence": (
-                    "Goal4341 separates one fully optimized LibRTS pair, three clean "
-                    "same-contract query-ratio scale rows, two boundary-limited phase "
-                    "rows, and four contract-choice/configured-route rows."
+                    "The v2.12 packet separates one fully optimized LibRTS pair, "
+                    "three clean same-contract query-ratio scale rows, the RTNN "
+                    "same-contract raw-row pair, two boundary-limited phase rows, "
+                    "and two contract-choice/configured-route rows."
                 ),
                 "boundary": "No public speedup, release, or whole-app claim is authorized.",
             },

@@ -48,18 +48,16 @@ Run OptiX on an RTX-class pod. Do not use Pascal/GTX hardware for RT-core timing
 
 | App | Reason | Next Action |
 | --- | --- | --- |
-| spatial_rayjoin | current OptiX row is a mixed route; current Embree row is PIP count-only | choose PIP count, LSI scalar count, or overlay active-count before ratio reporting |
 | rt_dbscan | current OptiX row is grouped-stream plus Numba signature; current Embree row is prepared rows | choose fixed-radius neighbor rows or grouped-signature contract |
 | barnes_hut | current NVIDIA scale row is Numba exact-force partner-only; current Embree row is node coverage | choose exact-force configured route or prepared node-coverage route |
-| rtnn | current OptiX row is 3-D ranked summary; current Embree row is 2-D ANN candidate quality | choose 2-D ANN candidate quality or 3-D ranked-summary |
 
 ## Current Comparison Shape
 
 - `fully_optimized_measured_pair_count`: 1
 - `fresh_scale_comparison_row_count`: 5
-- `clean_internal_query_ratio_count`: 4
+- `clean_internal_query_ratio_count`: 6
 - `boundary_limited_phase_ratio_count`: 2
-- `contract_choice_blocker_count`: 4
+- `contract_choice_blocker_count`: 2
 
 ## Postprocess
 

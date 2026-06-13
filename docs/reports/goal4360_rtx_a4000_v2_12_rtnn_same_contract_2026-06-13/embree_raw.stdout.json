@@ -1,0 +1,246 @@
+{
+  "backend": "embree",
+  "benchmark_app": "rtnn_neighbor_search",
+  "claim_boundary": {
+    "amd_performance_claim_authorized": false,
+    "ann_index_claim_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "benchmark_app": true,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_rtnn_paper_reproduction": false,
+    "materializes_summary_rows": true,
+    "native_engine_customization": false,
+    "public_speedup_claim_authorized": false,
+    "same_contract_backend_comparison_candidate": true,
+    "true_zero_copy_claim_authorized": false
+  },
+  "contract": "prepared 3-D fixed-radius bounded ranked-summary raw rows",
+  "distribution": "uniform",
+  "generated_input": {
+    "dimension": 3,
+    "format": "rtnn_csv_xyz",
+    "path": "/tmp/rtdl_rtnn_same_contract_zfc7sp8o/rtnn_uniform_65536.csv",
+    "point_count": 65536,
+    "seed": 20260519
+  },
+  "k": 50,
+  "mode": "prepared_ranked_summary_raw",
+  "point_count": 65536,
+  "prepared_session_residency": {
+    "automatic_partner_selection_authorized": false,
+    "cache_enabled_by_default": false,
+    "cache_key": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "backend": "embree",
+      "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+      "device": "cpu",
+      "explicit_key_required": true,
+      "input_fingerprints": [
+        [
+          "points",
+          "52035bd4af2b56188787f507"
+        ],
+        [
+          "queries",
+          "813a4d2fc2deaa80ad538a3e"
+        ]
+      ],
+      "parameter_fingerprint": [
+        [
+          "k",
+          "1a6562590ef19d1045d06c40"
+        ],
+        [
+          "radius",
+          "a7e46abf169710b34fe8898b"
+        ]
+      ],
+      "partner": "none",
+      "primitive": "fixed_radius_neighbors_3d_ranked_summary_raw",
+      "stable_id": "427cf6d4aba8467b81753971"
+    },
+    "cold_hot_phase_split_required": true,
+    "explicit_reuse_helper": "get_or_prepare_explicit_session",
+    "policy": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "cache_enabled": false,
+      "cache_key": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "backend": "embree",
+        "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "device": "cpu",
+        "explicit_key_required": true,
+        "input_fingerprints": [
+          [
+            "points",
+            "52035bd4af2b56188787f507"
+          ],
+          [
+            "queries",
+            "813a4d2fc2deaa80ad538a3e"
+          ]
+        ],
+        "parameter_fingerprint": [
+          [
+            "k",
+            "1a6562590ef19d1045d06c40"
+          ],
+          [
+            "radius",
+            "a7e46abf169710b34fe8898b"
+          ]
+        ],
+        "partner": "none",
+        "primitive": "fixed_radius_neighbors_3d_ranked_summary_raw",
+        "stable_id": "427cf6d4aba8467b81753971"
+      },
+      "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+      "cold_prepare_phase": "prepare_scene_or_payload",
+      "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+      "hot_query_phase": "prepared_query",
+      "invalidation_events": [
+        "explicit_invalidate",
+        "backend_context_reset",
+        "close"
+      ],
+      "lifetime_state": "session_retained",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "reuse_scope": "explicit_user_session",
+      "status": "internal_contract_not_release_authorization",
+      "true_zero_copy_claim_authorized": false
+    },
+    "prepare_once_query_many_pattern": true,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "query_batch_size": 65536,
+  "radius": 0.02,
+  "repeat": 3,
+  "runner_payload": {
+    "backend": "embree",
+    "batch_count": 1,
+    "batch_phase_timings": [
+      {
+        "backend": "embree",
+        "materializes_neighbor_rows": false,
+        "mode": "embree_prepared_fixed_radius_ranked_summary_rows",
+        "native_traversal_seconds": 0.012719637,
+        "prepared_search_structure": true,
+        "summary_rows_materialized": true,
+        "wall_seconds": 0.12273334599740338
+      }
+    ],
+    "claim_boundary": {
+      "aggregate_requests_batched": false,
+      "broad_rt_core_speedup_claim_authorized": false,
+      "device_ranked_summary_aggregate": false,
+      "device_ranked_summary_rows": false,
+      "device_resident_query_points": false,
+      "embree_ranked_summary_rows": true,
+      "float32_precision": false,
+      "materializes_neighbor_rows": false,
+      "paper_equivalent_rtnn_row": false,
+      "partitioned_or_batched_like_rtnn": true,
+      "prepared_cuda_graph_replay": false,
+      "rt_core_neighbor_search_claim_authorized": false,
+      "rtdl_speedup_claim_authorized": false,
+      "same_stream_partner_consumer": false
+    },
+    "contract": {
+      "aggregate_batch_request_mode": "not_batched",
+      "aggregate_batch_requests": [],
+      "aggregate_request_count": 1,
+      "approximate": false,
+      "batched_queries": true,
+      "bounded_k": 50,
+      "exact": true,
+      "execution_path_policy_version": null,
+      "family": "fixed_radius_neighbors_3d",
+      "mode": "ranked-summary-raw",
+      "precision": "float64",
+      "prepared_cuda_graph_replay": false,
+      "prepared_query_points": false,
+      "prepared_search_structure": true,
+      "same_stream_partner_consumer": false
+    },
+    "elapsed_max_sec": 0.12417482899036258,
+    "elapsed_median_sec": 0.12274461699416861,
+    "elapsed_min_sec": 0.11852286699286196,
+    "elapsed_runs_sec": [
+      0.11852286699286196,
+      0.12417482899036258,
+      0.12274461699416861
+    ],
+    "elapsed_sec": 0.12274461699416861,
+    "error": "",
+    "execution_path_plan": null,
+    "execution_prepare_sec": 0.07391768399975263,
+    "external": "RTDL current",
+    "input_load_sec": 0.10946091799996793,
+    "input_pack_sec": 0.03135843299969565,
+    "k_max": 50,
+    "mode": "current_3d_fixed_radius_neighbors_embree_batched",
+    "ok": true,
+    "query_batch_size": 65536,
+    "query_count": 65536,
+    "radius": 0.02,
+    "ranked_aggregate_batch_summaries": null,
+    "ranked_aggregate_summary": null,
+    "raw_ranked_summary_aggregate": {
+      "bounded_neighbor_count": 206256,
+      "kth_id_checksum": 2148443891,
+      "max_neighbor_count": 12,
+      "min_neighbor_count": 1,
+      "nearest_id_checksum": 2147450880,
+      "query_count": 65536,
+      "sum_distance": 2107.1706428148477,
+      "zero_neighbor_query_count": 0
+    },
+    "raw_ranked_summary_batch_summaries": [
+      {
+        "bounded_neighbor_count": 206256,
+        "kth_id_checksum": 2148443891,
+        "max_neighbor_count": 12,
+        "min_neighbor_count": 1,
+        "nearest_id_checksum": 2147450880,
+        "query_count": 65536,
+        "sum_distance": 2107.1706428148477,
+        "zero_neighbor_query_count": 0
+      }
+    ],
+    "repeat": 3,
+    "result_mode": "ranked-summary-raw",
+    "row": "rtnn_current_prepared_embree_ranked_summary_raw",
+    "row_count": 65536,
+    "runner": "goal2348_rtnn_v2_2_external_runner",
+    "same_stream_entrypoint_metadata": null,
+    "search_count": 65536
+  },
+  "runner_progress": [
+    "[goal2348] RTDL batched 3D start backend=embree queries=65536 search=65536 batch_size=65536 batches=1 result_mode=ranked-summary-raw",
+    "[goal2348] RTDL batched 3D repeat 1/3 ok=True sec=0.118523",
+    "[goal2348] RTDL batched 3D repeat 2/3 ok=True sec=0.124175",
+    "[goal2348] RTDL batched 3D repeat 3/3 ok=True sec=0.122745"
+  ],
+  "same_contract_comparison_role": {
+    "backend_variable": "optix_rt_core_or_embree_cpu",
+    "comparison_key": "rtnn_prepared_3d_ranked_summary_raw",
+    "fixed_inputs": [
+      "point_count",
+      "radius",
+      "k",
+      "repeat",
+      "query_batch_size",
+      "distribution",
+      "seed",
+      "result_mode"
+    ],
+    "row_signature_field": "runner_payload.raw_ranked_summary_aggregate"
+  },
+  "seed": 20260519
+}

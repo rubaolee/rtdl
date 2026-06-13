@@ -16,7 +16,7 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 CURRENT_OPTIX_EMBREE_COMPARISON_INDEX_VERSION = (
-    "rtdl.v2_12.current_optix_embree_comparison_index.goal4359.v1"
+    "rtdl.v2_12.current_optix_embree_comparison_index.goal4360.v1"
 )
 CURRENT_OPTIX_EMBREE_COMPARISON_INDEX_STATUS = (
     "internal_cross_backend_comparison_index_not_speedup_authorization"
@@ -44,6 +44,13 @@ DEFAULT_RAYJOIN_SAME_STREAM_ARTIFACT = (
     / "docs"
     / "reports"
     / "goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13"
+    / "summary.json"
+)
+DEFAULT_RTNN_SAME_CONTRACT_ARTIFACT = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal4360_rtx_a4000_v2_12_rtnn_same_contract_2026-06-13"
     / "summary.json"
 )
 
@@ -142,14 +149,18 @@ COMPARISON_GAPS: dict[str, dict[str, str]] = {
         ),
     },
     "rtnn": {
-        "comparison_class": "contract_split_pair_required",
+        "comparison_class": "same_contract_raw_rows_available_not_rt_core_proof",
         "reason": (
-            "OptiX evidence is a 3-D prepared ranked-summary route; the current "
-            "Embree registry is a 2-D ANN candidate-quality front door."
+            "Goal4360 adds a same-scale/same-seed prepared 3-D fixed-radius "
+            "bounded ranked-summary raw-row pair for OptiX and Embree. The "
+            "broad registry row still points at the older Embree 2-D ANN "
+            "candidate-quality front door, so the ratio is scoped to the "
+            "Goal4360 raw-row contract."
         ),
         "required_next_action": (
-            "decide between 2-D ANN candidate quality and 3-D ranked-summary as "
-            "the paired contract, then run that one contract on both backends"
+            "use the Goal4360 raw-row pair internally only; keep RT-core wording "
+            "blocked because the current OptiX RTNN phase is the prepared "
+            "uniform-cell ranked-summary implementation"
         ),
     },
     "triangle_counting": {
@@ -249,21 +260,56 @@ def _rayjoin_same_stream_pairs(payload: dict[str, Any] | None) -> tuple[dict[str
     return tuple(pairs)
 
 
+def _rtnn_same_contract_pair(payload: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not payload:
+        return None
+    rows = payload.get("rows")
+    comparison = payload.get("comparison")
+    if not isinstance(rows, dict) or not isinstance(comparison, dict):
+        return None
+    optix = rows.get("optix")
+    embree = rows.get("embree")
+    if not isinstance(optix, dict) or not isinstance(embree, dict):
+        return None
+    return {
+        "contract": str(payload.get("contract")),
+        "row_count": int(optix["row_count"]),
+        "cross_backend_row_count_match": int(optix["row_count"]) == int(embree["row_count"]),
+        "integer_signature_match": bool(comparison["integer_signature_match"]),
+        "sum_distance_match_exact": bool(comparison["sum_distance_match_exact"]),
+        "optix_query_median_sec": float(optix["query_median_sec"]),
+        "embree_query_median_sec": float(embree["query_median_sec"]),
+        "optix_faster_than_embree": (
+            float(embree["query_median_sec"]) / float(optix["query_median_sec"])
+            if float(optix["query_median_sec"])
+            else float("inf")
+        ),
+        "rt_core_neighbor_search_claim_authorized": bool(
+            comparison["rt_core_neighbor_search_claim_authorized"]
+        ),
+        "ratio_authorization": "internal_same_contract_raw_row_query_only_not_public_rt_core_claim",
+    }
+
+
 def current_optix_embree_comparison_index(
     *,
     optix_artifact_path: Path | None = None,
     embree_artifact_path: Path | None = None,
     rayjoin_same_stream_artifact_path: Path | None = None,
+    rtnn_same_contract_artifact_path: Path | None = None,
 ) -> dict[str, Any]:
     optix_path = optix_artifact_path or DEFAULT_OPTIX_ARTIFACT
     embree_path = embree_artifact_path or DEFAULT_EMBREE_ARTIFACT
     rayjoin_path = rayjoin_same_stream_artifact_path or DEFAULT_RAYJOIN_SAME_STREAM_ARTIFACT
+    rtnn_path = rtnn_same_contract_artifact_path or DEFAULT_RTNN_SAME_CONTRACT_ARTIFACT
     optix_artifact = _load_json(optix_path)
     embree_artifact = _load_json(embree_path)
     rayjoin_artifact = _load_json(rayjoin_path)
+    rtnn_artifact = _load_json(rtnn_path)
     optix_artifact_rows = _artifact_rows_by_id(optix_artifact)
     embree_artifact_rows = _artifact_rows_by_id(embree_artifact)
     rayjoin_same_stream_pairs = _rayjoin_same_stream_pairs(rayjoin_artifact)
+    rtnn_same_contract_pair = _rtnn_same_contract_pair(rtnn_artifact)
 
     optix_registry = {row["app"]: row for row in current_benchmark_scale_profiles()}
     embree_registry = {row["app"]: row for row in current_embree_cpu_partner_reference_rows()}
@@ -290,6 +336,7 @@ def current_optix_embree_comparison_index(
 
         ratio_authorized = False
         same_stream_pairs: tuple[dict[str, Any], ...] = ()
+        same_contract_pair: dict[str, Any] | None = None
         if app == "spatial_rayjoin":
             same_stream_pairs = rayjoin_same_stream_pairs
             ratio_authorized = len(same_stream_pairs) == 2 and all(
@@ -297,6 +344,17 @@ def current_optix_embree_comparison_index(
             )
             if not ratio_authorized:
                 errors.append("spatial_rayjoin: missing accepted Goal4358 same-stream LSI/PIP pair evidence")
+        if app == "rtnn":
+            same_contract_pair = rtnn_same_contract_pair
+            ratio_authorized = bool(
+                same_contract_pair
+                and same_contract_pair["cross_backend_row_count_match"]
+                and same_contract_pair["integer_signature_match"]
+                and same_contract_pair["sum_distance_match_exact"]
+                and not same_contract_pair["rt_core_neighbor_search_claim_authorized"]
+            )
+            if not ratio_authorized:
+                errors.append("rtnn: missing accepted Goal4360 same-contract raw-row pair evidence")
 
         rows.append(
             {
@@ -320,10 +378,13 @@ def current_optix_embree_comparison_index(
                 "reason_existing_artifacts_are_not_speedup_grade": gap["reason"],
                 "required_next_action": gap["required_next_action"],
                 "same_stream_scalar_count_pairs": same_stream_pairs,
+                "rtnn_same_contract_pair": same_contract_pair,
                 "ratio_authorized_from_existing_artifacts": ratio_authorized,
                 "ratio_authorization_scope": (
                     "internal_same_stream_scalar_count_only_not_public_claim"
-                    if ratio_authorized
+                    if app == "spatial_rayjoin" and ratio_authorized
+                    else "internal_same_contract_raw_row_query_only_not_public_rt_core_claim"
+                    if app == "rtnn" and ratio_authorized
                     else "not_authorized"
                 ),
                 "public_speedup_claim_authorized": False,
@@ -340,10 +401,12 @@ def current_optix_embree_comparison_index(
     comparable_without_new_run = [
         row for row in rows if row["ratio_authorized_from_existing_artifacts"]
     ]
-    if {row["app"] for row in comparable_without_new_run} - {"spatial_rayjoin"}:
-        errors.append("only Goal4358 Spatial RayJoin same-stream ratios may be authorized here")
-    if comparable_without_new_run and len(rayjoin_same_stream_pairs) != 2:
+    if {row["app"] for row in comparable_without_new_run} - {"spatial_rayjoin", "rtnn"}:
+        errors.append("only Goal4358 Spatial RayJoin and Goal4360 RTNN ratios may be authorized here")
+    if any(row["app"] == "spatial_rayjoin" for row in comparable_without_new_run) and len(rayjoin_same_stream_pairs) != 2:
         errors.append("Spatial RayJoin ratio authorization requires two same-stream scalar-count pairs")
+    if any(row["app"] == "rtnn" for row in comparable_without_new_run) and rtnn_same_contract_pair is None:
+        errors.append("RTNN ratio authorization requires the Goal4360 same-contract raw-row pair")
 
     validation = {
         "version": CURRENT_OPTIX_EMBREE_COMPARISON_INDEX_VERSION,
@@ -363,15 +426,24 @@ def current_optix_embree_comparison_index(
         "rayjoin_same_stream_artifact_path": (
             str(rayjoin_path.relative_to(ROOT)) if rayjoin_path.is_absolute() else str(rayjoin_path)
         ),
+        "rtnn_same_contract_artifact_path": (
+            str(rtnn_path.relative_to(ROOT)) if rtnn_path.is_absolute() else str(rtnn_path)
+        ),
         "rows": tuple(rows),
         "summary": {
             "app_count": len({row["app"] for row in rows}),
             "row_count": len(rows),
             "ratio_authorized_from_existing_artifacts_count": len(comparable_without_new_run),
             "same_stream_scalar_count_pair_count": len(rayjoin_same_stream_pairs),
+            "rtnn_same_contract_raw_row_pair_count": 1 if rtnn_same_contract_pair else 0,
             "missing_current_artifact_count": len(missing_artifacts),
             "same_stream_scalar_count_pairs_available_count": sum(
                 1 for row in rows if row["comparison_class"] == "same_stream_scalar_count_pairs_available"
+            ),
+            "same_contract_raw_rows_available_not_rt_core_proof_count": sum(
+                1
+                for row in rows
+                if row["comparison_class"] == "same_contract_raw_rows_available_not_rt_core_proof"
             ),
             "same_contract_different_scale_pair_required_count": sum(
                 1 for row in rows if row["comparison_class"] == "same_contract_different_scale_pair_required"
