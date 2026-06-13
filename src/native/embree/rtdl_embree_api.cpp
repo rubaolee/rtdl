@@ -1075,17 +1075,10 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_pair_intersection(
             rtdlRtcIntersect1(holder.scene, &rayhit, &args);
             g_query_kind = QueryKind::kNone;
             g_query_state = nullptr;
-            if (query_rows.empty()) {
-              for (size_t right_index = 0; right_index < right_segments.size(); ++right_index) {
-                Vec2 point {};
-                if (segment_intersection(probe, right_segments[right_index], &point)) {
-                  query_rows.push_back({
-                      right_index,
-                      {probe.id, right_segments[right_index].id, point.x, point.y},
-                  });
-                }
-              }
-            }
+            // Embree provides the candidate broadphase; shared endpoint cases
+            // that are easy to miss numerically are handled by the endpoint
+            // index below. Avoid a full static-segment scan for every zero-hit
+            // query because sparse LSI streams turn that into O(N*M).
             append_shared_endpoint_segment_hits(probe, right_segments, endpoint_index, query_rows);
             std::stable_sort(
                 query_rows.begin(),
@@ -1171,17 +1164,9 @@ RTDL_EMBREE_EXPORT int rtdl_embree_count_segment_pair_intersections(
         rtdlRtcIntersect1(holder.scene, &rayhit, &args);
         g_query_kind = QueryKind::kNone;
         g_query_state = nullptr;
-        if (query_rows.empty()) {
-          for (size_t right_index = 0; right_index < right_segments.size(); ++right_index) {
-            Vec2 point {};
-            if (segment_intersection(probe, right_segments[right_index], &point)) {
-              query_rows.push_back({
-                  right_index,
-                  {probe.id, right_segments[right_index].id, point.x, point.y},
-              });
-            }
-          }
-        }
+        // Embree provides the candidate broadphase; shared endpoint cases are
+        // added by the endpoint index below. Do not fall back to scanning every
+        // static segment for each zero-hit query.
         append_shared_endpoint_segment_hits(probe, right_segments, endpoint_index, query_rows);
         local_count += query_rows.size();
       }
@@ -1267,17 +1252,9 @@ RTDL_EMBREE_EXPORT int rtdl_embree_segment_pair_intersections_2d_count(
         rtdlRtcIntersect1(impl->holder.scene, &rayhit, &args);
         g_query_kind = QueryKind::kNone;
         g_query_state = nullptr;
-        if (query_rows.empty()) {
-          for (size_t right_index = 0; right_index < impl->right_segments.size(); ++right_index) {
-            Vec2 point {};
-            if (segment_intersection(probe, impl->right_segments[right_index], &point)) {
-              query_rows.push_back({
-                  right_index,
-                  {probe.id, impl->right_segments[right_index].id, point.x, point.y},
-              });
-            }
-          }
-        }
+        // Embree provides the candidate broadphase; shared endpoint cases are
+        // added by the endpoint index below. Do not fall back to scanning every
+        // static segment for each zero-hit query.
         append_shared_endpoint_segment_hits(probe, impl->right_segments, impl->endpoint_index, query_rows);
         local_count += query_rows.size();
       }
