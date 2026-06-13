@@ -8,11 +8,12 @@ For the short learner-facing summary, read
 
 ## Current Status
 
-RTDL v2.12 is the current source-tree
+RTDL v2.13 is the current source-tree
 Python+partner+RTDL surface. It preserves the v2.x language boundary, provides
 the cleaned benchmark-vs-learner app portfolio, preserves the Embree CPU plus
 partner reference lane for promoted benchmark apps, and publishes the row-scoped
-RT-core versus Embree CPU comparison packet.
+RT-core versus Embree CPU comparison packet with direction-specific public
+wording.
 
 ## Short Version
 
@@ -75,13 +76,13 @@ Allowed performance wording names the exact:
 
 When any of those are missing, use candidate or preview wording.
 
-## v2.12 Release Boundaries
+## v2.13 Release Boundaries
 
 Allowed:
 
 - Python+partner+RTDL source-tree release;
 - documented partner-owned input/output columns;
-- current OptiX/RT evidence under documented contracts;
+- current row-scoped OptiX/RT evidence under documented contracts;
 - streaming exact witness-column output where reviewed.
 
 Not allowed:

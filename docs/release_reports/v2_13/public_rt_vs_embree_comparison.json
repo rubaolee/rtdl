@@ -1,12 +1,4 @@
 {
-  "allowed_portfolio_wording": "RTDL v2.13 has row-scoped evidence that selected prepared OptiX/RT-core paths can outperform same-contract or explicitly caveated Embree CPU baselines across the promoted benchmark suite. Each published sentence must name the benchmark row, contract, speedup direction, and caveat.",
-  "amd_gpu_decision": {
-    "prepare_amd_gpu_now": false,
-    "reason": "The NVIDIA RT-core versus Embree CPU story is now packetized; AMD should be a separate v2.14-style matrix, not mixed into v2.13 closeout.",
-    "recommended_timing": "Prepare AMD GPU after v2.13 is closed/tagged, not before the NVIDIA-vs-Embree packet is frozen."
-  },
-  "amd_gpu_performance_claim_authorized": false,
-  "automatic_partner_selection_authorized": false,
   "blocked_wording": [
     "Do not say RT cores make every benchmark app faster.",
     "Do not say these are whole-application speedups.",
@@ -16,9 +8,7 @@
     "Do not say partner selection is automatic or universally Numba-based.",
     "Do not say Intel GPU or AMD GPU performance is covered by this packet."
   ],
-  "broad_rt_core_claim_authorized": false,
-  "intel_gpu_performance_claim_authorized": false,
-  "rayjoin_whole_system_claim_authorized": false,
+  "pip_interpretation": "PIP is deliberately mixed: the refreshed human-scale public CDB slice is near parity and slightly Embree-faster, while Goal4368 shows the stricter full same-stream exact prepared-points executor is 3.22x faster on OptiX than Embree and still 7.28x slower than RayJoin RT. Do not collapse those facts into a broad RT-core or RTDL-beats-RayJoin claim.",
   "rows": [
     {
       "allowed_wording": "For `barnes_hut` under `prepared_fixed_radius_node_coverage_threshold_decision`, the row-scoped RTDL OptiX prepared measurement is 2.71x faster per iteration than the best measured Embree CPU row for the same scoped contract/protocol. Keep the prepared-query/row-scoped contract in the sentence.",
@@ -211,28 +201,33 @@
   "source_artifacts": {
     "embree_fairness": "docs\\reports\\goal4369_embree_cpu_fairness_hardening_2026-06-13.json",
     "human_scale": "docs\\reports\\goal4349_human_scale_rt_vs_embree_comparison_2026-06-12.json",
-    "pip_optimized": "docs\\reports\\goal4368_pip_exact_prepared_points_executor_2026-06-13\\summary.json",
+    "pip_exact": "docs\\reports\\goal4368_pip_exact_prepared_points_executor_2026-06-13\\summary.json",
+    "public_wording": "docs\\reports\\goal4370_v2_13_public_wording_packet_2026-06-13.json",
     "rayjoin_authors_code": "docs\\reports\\goal4367_rayjoin_authors_code_comparison_packet_2026-06-13.json"
   },
-  "status": "accept_public_wording_packet",
+  "status": "published_source_tree_release_package",
   "summary": {
+    "amd_gpu_performance_claim_authorized": false,
+    "automatic_partner_selection_authorized": false,
     "blocked_row_count": 1,
     "broad_rt_core_claim_authorized": false,
+    "goal4368_exact_pip_embree_divided_by_optix": 3.216,
+    "goal4368_rayjoin_rt_faster_than_rtdl_optix_pip": 7.28,
+    "human_scale_all_rows_in_1_to_10_sec_band": true,
+    "human_scale_pip_embree_divided_by_optix": 0.947,
+    "intel_gpu_performance_claim_authorized": false,
     "prepare_amd_gpu_after_v2_13_close": true,
     "prepare_amd_gpu_now": false,
-    "rayjoin_lsi_row_scoped_speedup": 3.51,
-    "rayjoin_pip_row_scoped_speedup": 0.95,
+    "promoted_app_count": 10,
+    "rayjoin_lsi_human_scale_embree_divided_by_optix": 3.506,
     "rayjoin_whole_system_claim_authorized": false,
-    "row_count": 11,
-    "row_scoped_public_wording_authorized_count": 10,
-    "rtnn_public_rt_core_claim_authorized": false,
-    "whole_app_speedup_claim_authorized": false,
-    "zero_unexplained_rows": true
+    "row_scoped_wording_authorized_count": 10,
+    "scoped_row_count": 11,
+    "whole_app_speedup_claim_authorized": false
   },
   "validation": {
     "errors": [],
     "status": "accept"
   },
-  "version": "rtdl.v2_13.public_wording.goal4370.v1",
-  "whole_app_speedup_claim_authorized": false
+  "version": "rtdl.v2_13.release_publication.goal4371.v1"
 }

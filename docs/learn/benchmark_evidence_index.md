@@ -1,6 +1,6 @@
 # Benchmark Evidence Index
 
-Status: current v2.12 source-tree evidence map.
+Status: current v2.13 source-tree evidence map.
 
 Use this page when you want to reproduce or audit the ten benchmark-app front
 doors. It is intentionally narrower than the full report history: it tells you
@@ -68,6 +68,16 @@ v2.12 evidence:
 - [Robot Collision same-contract prepared-buffer evidence](../reports/goal4363_rtx_a4000_v2_12_robot_collision_same_contract_2026-06-13.md)
 - [RayDB-style same-contract prepared grouped-reduction evidence](../reports/goal4364_rtx_a4000_v2_12_raydb_same_contract_2026-06-13.md)
 
+v2.13 evidence:
+
+- [v2.13 release package](../release_reports/v2_13/README.md)
+- [v2.13 row-scoped RT-core vs Embree CPU comparison](../release_reports/v2_13/public_rt_vs_embree_comparison.md)
+- [v2.13 public wording packet](../reports/goal4370_v2_13_public_wording_packet_2026-06-13.md)
+- [Refreshed human-scale RT-core vs Embree CPU comparison](../reports/goal4349_human_scale_rt_vs_embree_comparison_2026-06-12.md)
+- [Embree CPU fairness hardening packet](../reports/goal4369_embree_cpu_fairness_hardening_2026-06-13.md)
+- [PIP exact prepared-points executor](../reports/goal4368_pip_exact_prepared_points_executor_2026-06-13.md)
+- [RayJoin authors-code comparison packet](../reports/goal4367_rayjoin_authors_code_comparison_packet_2026-06-13.md)
+
 ## Current Ten-App Rows
 
 | App | Current front-door row | Partner/native note | Pod need |
@@ -96,9 +106,11 @@ v2.12 evidence:
   flags clean. It is not a performance leaderboard.
 - A ten-app packet is not ten broad RT-core speedup claims. Read each row by
   exact contract before using it as performance evidence.
-- The v2.12 optimized packet has no active boundary-limited rows, but mixed
-  rows still matter: Contact Manifold is Embree-faster on the tiny collect-k
-  row, and Spatial RayJoin PIP plus RTNN are near-parity scoped rows.
+- The v2.13 release packet keeps mixed rows explicit: Spatial RayJoin PIP is
+  near parity and slightly Embree-faster in the refreshed human-scale slice,
+  Goal4368 separately records an OptiX-over-Embree exact PIP engineering win
+  that still does not beat RayJoin RT, and RTNN remains blocked as RT-core
+  neighbor-search speedup wording.
 - A scale-profile row is more useful for performance planning, but still must
   be read by exact app, command, hardware, backend, partner, and dataset.
 - CuPy/Numba comparison rows are partner-continuation evidence only. They do

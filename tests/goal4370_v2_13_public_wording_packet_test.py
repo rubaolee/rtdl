@@ -60,7 +60,13 @@ class Goal4370V213PublicWordingPacketTest(unittest.TestCase):
         self.assertFalse(rows["rtnn"]["row_scoped_public_wording_authorized"])
         self.assertIn("Do not publish RTNN", rows["rtnn"]["allowed_wording"])
         self.assertTrue(rows["spatial_rayjoin_pip"]["row_scoped_public_wording_authorized"])
-        self.assertIn("output-surface caveat", rows["spatial_rayjoin_pip"]["allowed_wording"])
+        self.assertLess(rows["spatial_rayjoin_pip"]["speedup_embree_per_iter_div_optix_per_iter"], 1.0)
+        self.assertEqual(
+            "ready_row_scoped_embree_faster_wording",
+            rows["spatial_rayjoin_pip"]["public_wording_status"],
+        )
+        self.assertIn("Embree CPU", rows["spatial_rayjoin_pip"]["allowed_wording"])
+        self.assertIn("not as an RT-core speedup", rows["spatial_rayjoin_pip"]["allowed_wording"])
 
     def test_amd_decision_is_after_v2_13_close_not_now(self) -> None:
         amd = self.payload["amd_gpu_decision"]

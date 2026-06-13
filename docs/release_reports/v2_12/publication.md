@@ -8,7 +8,7 @@ Version marker: `v2.12`
 
 ## Published Statement
 
-RTDL v2.12 is the current source-tree release for row-scoped NVIDIA
+RTDL v2.12 is an archived source-tree release for row-scoped NVIDIA
 OptiX/RT-core versus Embree CPU comparison evidence over the promoted benchmark
 portfolio.
 
@@ -20,7 +20,7 @@ The release publishes:
   contract-choice blockers;
 - Robot Collision and RayDB-style same-contract evidence from Goal4363 and
   Goal4364;
-- updated current claim-boundary and evidence-index pages.
+- updated v2.12 claim-boundary and evidence-index pages.
 
 Use RTDL from a checkout:
 
@@ -90,4 +90,3 @@ authorize broad speedup wording, whole-app speedup wording,
 package-install wording, automatic partner-selection wording,
 RTDL-beats-RayJoin wording, RayJoin paper reproduction wording, Intel GPU
 performance wording, or general zero-copy/device-residency wording.
-

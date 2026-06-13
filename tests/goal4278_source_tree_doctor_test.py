@@ -29,7 +29,7 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
 
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn("RTDL Source Tree Doctor", result.stdout)
-        self.assertIn("version: v2.12", result.stdout)
+        self.assertIn("version: v2.13", result.stdout)
         self.assertIn("[PASS] version marker", result.stdout)
         self.assertIn("optional module cupy", result.stdout)
         self.assertIn("optional OptiX library", result.stdout)
@@ -41,7 +41,7 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stderr)
         payload = json.loads(result.stdout)
         self.assertEqual("rtdl_source_tree_doctor", payload["tool"])
-        self.assertEqual("v2.12", payload["version"])
+        self.assertEqual("v2.13", payload["version"])
         self.assertTrue(payload["ok"])
         self.assertEqual([], payload["required_failures"])
 
@@ -52,7 +52,7 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
             "front page",
             "top-level tutorials",
             "current examples",
-            "v2.12 release package",
+            "v2.13 release package",
             "module rtdsl",
             "module numpy",
         ):

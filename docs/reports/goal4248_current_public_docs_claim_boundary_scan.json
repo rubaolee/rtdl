@@ -2,28 +2,35 @@
   "accepted_boundary_or_negative_context": [
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 97,
+      "line": 107,
       "path": "docs/learn/benchmark_evidence_index.md",
       "phrase": "broad RT-core speedup",
-      "snippet": "d)  ## Reading Rules  - A front-door row proves that the current command executes and keeps claim   flags clean. It is not a performance leaderboard. - A ten-app packet is not ten broad RT-core speedup claims. Read each row by   exact contract before using it as performance evidence. - The v2.12 optimized packet has no active boundary-limited rows, but mixed   rows still matter:"
+      "snippet": "d)  ## Reading Rules  - A front-door row proves that the current command executes and keeps claim   flags clean. It is not a performance leaderboard. - A ten-app packet is not ten broad RT-core speedup claims. Read each row by   exact contract before using it as performance evidence. - The v2.13 release packet keeps mixed rows explicit: Spatial RayJoin PIP is   near parity and s"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 100,
+      "line": 110,
       "path": "docs/learn/benchmark_evidence_index.md",
       "phrase": "faster",
-      "snippet": "exact contract before using it as performance evidence. - The v2.12 optimized packet has no active boundary-limited rows, but mixed   rows still matter: Contact Manifold is Embree-faster on the tiny collect-k   row, and Spatial RayJoin PIP plus RTNN are near-parity scoped rows. - A scale-profile row is more useful for performance planning, but still must   be read"
+      "snippet": "ach row by   exact contract before using it as performance evidence. - The v2.13 release packet keeps mixed rows explicit: Spatial RayJoin PIP is   near parity and slightly Embree-faster in the refreshed human-scale slice,   Goal4368 separately records an OptiX-over-Embree exact PIP engineering win   that still does not beat RayJoin RT, and RTNN remains blocked as"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 105,
+      "line": 113,
+      "path": "docs/learn/benchmark_evidence_index.md",
+      "phrase": "speedup",
+      "snippet": "le slice,   Goal4368 separately records an OptiX-over-Embree exact PIP engineering win   that still does not beat RayJoin RT, and RTNN remains blocked as RT-core   neighbor-search speedup wording. - A scale-profile row is more useful for performance planning, but still must   be read by exact app, command, hardware, backend, partner, and dataset. - CuPy/Numba compa"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 117,
       "path": "docs/learn/benchmark_evidence_index.md",
       "phrase": "whole-application speedup",
       "snippet": "must   be read by exact app, command, hardware, backend, partner, and dataset. - CuPy/Numba comparison rows are partner-continuation evidence only. They do   not become RT-core or whole-application speedup claims. - The RayJoin external comparison is useful for LSI/PIP diagnosis, but it is   not a full RayJoin paper reproduction and does not authorize RTDL-beats-RayJoin   wording. -"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 107,
+      "line": 119,
       "path": "docs/learn/benchmark_evidence_index.md",
       "phrase": "paper reproduction",
       "snippet": "evidence only. They do   not become RT-core or whole-application speedup claims. - The RayJoin external comparison is useful for LSI/PIP diagnosis, but it is   not a full RayJoin paper reproduction and does not authorize RTDL-beats-RayJoin   wording. - If a row needs OptiX, use a pod or workstation with `RTDL_OPTIX_LIBRARY`   pointing to `librtdl_optix`. - If a row needs Num"
@@ -33,7 +40,7 @@
       "line": 5,
       "path": "docs/learn/benchmark_partner_reference_matrix.md",
       "phrase": "speedup",
-      "snippet": "ix  Status: current v2.12 source-tree guidance. This page is a guide for app authors choosing a custom continuation partner. It does not broaden release wording or authorize broad speedup claims.  The first choice is always the same: if a fused generic RTDL primitive exactly expresses the answer, use that primitive. Partner code is for the work that is not fused, n"
+      "snippet": "ix  Status: current v2.13 source-tree guidance. This page is a guide for app authors choosing a custom continuation partner. It does not broaden release wording or authorize broad speedup claims.  The first choice is always the same: if a fused generic RTDL primitive exactly expresses the answer, use that primitive. Partner code is for the work that is not fused, n"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
@@ -103,28 +110,35 @@
       "line": 57,
       "path": "docs/learn/current_claim_boundaries.md",
       "phrase": "speedup",
-      "snippet": "zero-copy or device-residency; - AMD/HIPRT or Intel-GPU performance claims.  Selecting `--backend optix` means the OptiX backend was selected. It is not by itself a public RT-core speedup claim.  The v2.12 evidence supports path-specific wording only. In particular, the optimized packet has no active boundary-limited rows and no contract-choice blockers, but mixed"
+      "snippet": "zero-copy or device-residency; - AMD/HIPRT or Intel-GPU performance claims.  Selecting `--backend optix` means the OptiX backend was selected. It is not by itself a public RT-core speedup claim.  The v2.13 evidence supports path-specific wording only. In particular, the refreshed packet keeps every speedup tied to a row, contract, direction, and caveat. Mixed rows"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 61,
+      "line": 60,
+      "path": "docs/learn/current_claim_boundaries.md",
+      "phrase": "speedup",
+      "snippet": "backend was selected. It is not by itself a public RT-core speedup claim.  The v2.13 evidence supports path-specific wording only. In particular, the refreshed packet keeps every speedup tied to a row, contract, direction, and caveat. Mixed rows remain explicit: Spatial RayJoin PIP is near parity and slightly Embree-faster in the refreshed human-scale public CDB s"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 62,
       "path": "docs/learn/current_claim_boundaries.md",
       "phrase": "faster",
-      "snippet": "c wording only. In particular, the optimized packet has no active boundary-limited rows and no contract-choice blockers, but mixed rows remain explicit: Contact Manifold is Embree-faster for the tiny bounded collect-k row, and Spatial RayJoin PIP plus RTNN are near-parity scoped rows rather than broad RT-core claims.  ## Partner Rule  Use fused RTDL primitives fir"
+      "snippet": "icular, the refreshed packet keeps every speedup tied to a row, contract, direction, and caveat. Mixed rows remain explicit: Spatial RayJoin PIP is near parity and slightly Embree-faster in the refreshed human-scale public CDB slice, Goal4368 separately records an OptiX-over-Embree exact PIP engineering win that still does not beat RayJoin RT, and RTNN remains blo"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 4,
       "path": "docs/learn/partner_choice_for_custom_logic.md",
       "phrase": "package-install",
-      "snippet": "# Choosing A Partner For Custom Logic  Status: current v2.12 source-tree guidance. This is not a release tag, package-install promise, or broad speedup claim.  Use this page when the RTDL primitive is only part of your program and you need custom GPU or CPU-side continuation after RTDL emits flags, count"
+      "snippet": "# Choosing A Partner For Custom Logic  Status: current v2.13 source-tree guidance. This is not a release tag, package-install promise, or broad speedup claim.  Use this page when the RTDL primitive is only part of your program and you need custom GPU or CPU-side continuation after RTDL emits flags, count"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 4,
       "path": "docs/learn/partner_choice_for_custom_logic.md",
       "phrase": "speedup",
-      "snippet": "# Choosing A Partner For Custom Logic  Status: current v2.12 source-tree guidance. This is not a release tag, package-install promise, or broad speedup claim.  Use this page when the RTDL primitive is only part of your program and you need custom GPU or CPU-side continuation after RTDL emits flags, counts, witnesses, or typed col"
+      "snippet": "# Choosing A Partner For Custom Logic  Status: current v2.13 source-tree guidance. This is not a release tag, package-install promise, or broad speedup claim.  Use this page when the RTDL primitive is only part of your program and you need custom GPU or CPU-side continuation after RTDL emits flags, counts, witnesses, or typed col"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
@@ -138,7 +152,7 @@
       "line": 64,
       "path": "docs/learn/partner_choice_for_custom_logic.md",
       "phrase": "faster",
-      "snippet": "preserves the Embree CPU plus partner reference boundary for promoted benchmark apps, and adds the cleaned RT-core versus Embree CPU comparison packet. Numba is not automatically faster than CuPy. It wins only when the contract, launch shape, and data residency are good for that workload.  ## Benchmark Lessons  These rows are only for the part of an app that real"
+      "snippet": "e Embree CPU plus partner reference boundary for promoted benchmark apps, and adds the refreshed row-scoped RT-core versus Embree CPU comparison packet. Numba is not automatically faster than CuPy. It wins only when the contract, launch shape, and data residency are good for that workload.  ## Benchmark Lessons  These rows are only for the part of an app that real"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
@@ -236,28 +250,56 @@
       "line": 22,
       "path": "docs/learn/rt_core_evidence_matrix.md",
       "phrase": "whole-app speedup",
-      "snippet": "/ X-HD | Mixed RT evidence | RTDL/OptiX threshold and active-frontier style paths exercise RT traversal for bounded distance decisions. | Exact Hausdorff, witness extraction, and whole-app speedup are not broad public claims. | | Spatial RayJoin | Strong LSI RT evidence; mixed PIP evidence | LSI prepared scalar/count routes show strong prepared OptiX value. PIP exact count"
+      "snippet": "/ X-HD | Mixed RT evidence | RTDL/OptiX threshold and active-frontier style paths exercise RT traversal for bounded distance decisions. | Exact Hausdorff, witness extraction, and whole-app speedup are not broad public claims. | | Spatial RayJoin | Strong LSI RT evidence; mixed PIP evidence | LSI prepared scalar/count routes show prepared OptiX value. PIP is mixed: the refre"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 23,
+      "path": "docs/learn/rt_core_evidence_matrix.md",
+      "phrase": "faster",
+      "snippet": "dence; mixed PIP evidence | LSI prepared scalar/count routes show prepared OptiX value. PIP is mixed: the refreshed human-scale public CDB slice is near parity and slightly Embree-faster, while Goal4368 shows the stricter full same-stream exact executor is faster on OptiX than Embree but still slower than RayJoin RT. | This is not a full RayJoin paper reproduction"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 23,
+      "path": "docs/learn/rt_core_evidence_matrix.md",
+      "phrase": "faster",
+      "snippet": "tiX value. PIP is mixed: the refreshed human-scale public CDB slice is near parity and slightly Embree-faster, while Goal4368 shows the stricter full same-stream exact executor is faster on OptiX than Embree but still slower than RayJoin RT. | This is not a full RayJoin paper reproduction, not RTDL-beats-RayJoin wording, and not a single whole-app speedup claim. |"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 23,
       "path": "docs/learn/rt_core_evidence_matrix.md",
       "phrase": "paper reproduction",
-      "snippet": "tes show strong prepared OptiX value. PIP exact count is correct and comparable, but not a current RT-core win against RayJoin's specialized PIP path. | This is not a full RayJoin paper reproduction, not RTDL-beats-RayJoin wording, and not a single whole-app speedup claim. | | RT-DBSCAN | Mixed RT + partner evidence | OptiX fixed-radius/grouped-stream primitives pair with exp"
+      "snippet": "htly Embree-faster, while Goal4368 shows the stricter full same-stream exact executor is faster on OptiX than Embree but still slower than RayJoin RT. | This is not a full RayJoin paper reproduction, not RTDL-beats-RayJoin wording, and not a single whole-app speedup claim. | | RT-DBSCAN | Mixed RT + partner evidence | OptiX fixed-radius/grouped-stream primitives pair with exp"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 23,
       "path": "docs/learn/rt_core_evidence_matrix.md",
       "phrase": "whole-app speedup",
-      "snippet": "comparable, but not a current RT-core win against RayJoin's specialized PIP path. | This is not a full RayJoin paper reproduction, not RTDL-beats-RayJoin wording, and not a single whole-app speedup claim. | | RT-DBSCAN | Mixed RT + partner evidence | OptiX fixed-radius/grouped-stream primitives pair with explicit Numba continuation for component signatures. | RTDL does not c"
+      "snippet": "m exact executor is faster on OptiX than Embree but still slower than RayJoin RT. | This is not a full RayJoin paper reproduction, not RTDL-beats-RayJoin wording, and not a single whole-app speedup claim. | | RT-DBSCAN | Mixed RT + partner evidence | OptiX fixed-radius/grouped-stream primitives pair with explicit Numba continuation for component signatures. | RTDL does not c"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 28,
+      "path": "docs/learn/rt_core_evidence_matrix.md",
+      "phrase": "speedup",
+      "snippet": "| | Barnes-Hut | Scoped RT evidence | Prepared node-coverage threshold rows show an OptiX-over-Embree row-scoped win. | This is not Barnes-Hut force integration or a whole N-body speedup claim. | | LibRTS spatial index | Strong RT evidence | Prepared AABB/spatial-index style query rows exercise RT traversal in a LibRTS-like contract. | It is not full mutable LibRT"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 30,
+      "path": "docs/learn/rt_core_evidence_matrix.md",
+      "phrase": "speedup",
+      "snippet": "claim / engineering evidence | Fresh prepared ranked-summary rows are near parity and useful for backend engineering. | v2.13 does not authorize RTNN as an RT-core neighbor-search speedup, full RTNN paper reproduction, or arbitrary ANN index performance. | | Triangle counting | Mixed primitive/coverage evidence | Generic graph relationship-count compositions and ca"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 30,
       "path": "docs/learn/rt_core_evidence_matrix.md",
       "phrase": "paper reproduction",
-      "snippet": "sidecar | Prepared OptiX ranked-summary paths exercise RT traversal for nearest-neighbor-style candidate summaries; Numba top-k is a partner reference lane. | It is not full RTNN paper reproduction and does not prove arbitrary ANN index performance. | | Triangle counting | Mixed primitive/coverage evidence | Generic graph relationship-count compositions and candidate-row pat"
+      "snippet": "evidence | Fresh prepared ranked-summary rows are near parity and useful for backend engineering. | v2.13 does not authorize RTNN as an RT-core neighbor-search speedup, full RTNN paper reproduction, or arbitrary ANN index performance. | | Triangle counting | Mixed primitive/coverage evidence | Generic graph relationship-count compositions and candidate-row paths pressure-tes"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
@@ -271,7 +313,7 @@
       "line": 7,
       "path": "docs/versioning.md",
       "phrase": "package-install",
-      "snippet": "ee version markers and Git tags to identify reviewed research snapshots. A version tag names the state of the repository and the claim boundary attached to that state. It is not a package-install promise, wheel promise, PyPI promise, or automatic partner-selection promise.  ## Current Version  `v2.12` is the current source-tree release marker. It covers the Python+RTDL plu"
+      "snippet": "ee version markers and Git tags to identify reviewed research snapshots. A version tag names the state of the repository and the claim boundary attached to that state. It is not a package-install promise, wheel promise, PyPI promise, or automatic partner-selection promise.  ## Current Version  `v2.13` is the current source-tree release marker. It covers the Python+RTDL plu"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
@@ -656,35 +698,42 @@
       "line": 164,
       "path": "README.md",
       "phrase": "whole-application speedup",
-      "snippet": "x separates promoted benchmark apps from learner/example apps. Promoted benchmarks are reconstruction instruments for RTDL language/runtime design, not broad paper-reproduction or whole-application speedup claims.  Do not read v2.12 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof that every user pr"
+      "snippet": "x separates promoted benchmark apps from learner/example apps. Promoted benchmarks are reconstruction instruments for RTDL language/runtime design, not broad paper-reproduction or whole-application speedup claims.  Do not read v2.13 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof that every user pr"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 166,
       "path": "README.md",
       "phrase": "package-install",
-      "snippet": "pps. Promoted benchmarks are reconstruction instruments for RTDL language/runtime design, not broad paper-reproduction or whole-application speedup claims.  Do not read v2.12 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof that every user program is faster. For the exact positive and nega"
+      "snippet": "pps. Promoted benchmarks are reconstruction instruments for RTDL language/runtime design, not broad paper-reproduction or whole-application speedup claims.  Do not read v2.13 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof that every user program is faster. For the exact positive and nega"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 166,
       "path": "README.md",
       "phrase": "broad RT-core claim",
-      "snippet": "are reconstruction instruments for RTDL language/runtime design, not broad paper-reproduction or whole-application speedup claims.  Do not read v2.12 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof that every user program is faster. For the exact positive and negative rule, read [Current Clai"
+      "snippet": "are reconstruction instruments for RTDL language/runtime design, not broad paper-reproduction or whole-application speedup claims.  Do not read v2.13 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof that every user program is faster. For the exact positive and negative rule, read [Current Clai"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
       "line": 168,
       "path": "README.md",
       "phrase": "faster",
-      "snippet": "Do not read v2.12 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof that every user program is faster. For the exact positive and negative rule, read [Current Claim Boundaries](docs/learn/current_claim_boundaries.md) and [Partner Acceleration Boundaries](docs/partner_acceleration_"
+      "snippet": "Do not read v2.13 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof that every user program is faster. For the exact positive and negative rule, read [Current Claim Boundaries](docs/learn/current_claim_boundaries.md) and [Partner Acceleration Boundaries](docs/partner_acceleration_"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
-      "line": 190,
+      "line": 196,
       "path": "README.md",
       "phrase": "faster",
-      "snippet": "ts/v2_12/README.md).  ## Performance Boundary  `--backend optix` means the OptiX backend is selected. It is not by itself a claim that every app, every phase, or every workload is faster on GPU.  Current measured evidence supports narrow statements: selected prepared, traversal-heavy workloads can show OptiX/RT-core speedups over same-contract Embree CPU paths. So"
+      "snippet": "ts/v2_13/README.md).  ## Performance Boundary  `--backend optix` means the OptiX backend is selected. It is not by itself a claim that every app, every phase, or every workload is faster on GPU.  Current measured evidence supports narrow statements: selected prepared, traversal-heavy workloads can show OptiX/RT-core speedups over same-contract Embree CPU paths. So"
+    },
+    {
+      "classification": "accepted_boundary_or_negative_context",
+      "line": 201,
+      "path": "README.md",
+      "phrase": "faster",
+      "snippet": "tiX/RT-core speedups over same-contract Embree CPU paths. Some correct exact routes, including Spatial RayJoin PIP under the refreshed human-scale slice, are near parity or Embree-faster and should be worded as mixed engineering evidence rather than broad RT-core wins.  Use exact benchmark artifacts before publishing performance wording.  ## Read Next  - [Docs Ind"
     },
     {
       "classification": "accepted_boundary_or_negative_context",
@@ -736,11 +785,11 @@
       "snippet": "/Numba partner choices where needed, and generic app-agnostic engine primitives.  These tutorials are not package-install promises, automatic partner-selection promises, universal speedup claims, or paper-reproduction claims.  ## Related Doors  - [Project Front Page](../README.md) - [Docs Index](../docs/README.md) - [Examples Index](../examples/README.md) - [App An"
     }
   ],
-  "accepted_boundary_or_negative_count": 105,
+  "accepted_boundary_or_negative_count": 112,
   "accepted_scoped_evidence_context": [
     {
       "classification": "accepted_scoped_evidence_context",
-      "line": 76,
+      "line": 86,
       "path": "docs/learn/benchmark_evidence_index.md",
       "phrase": "paper reproduction",
       "snippet": "NVIDIA pod for OptiX timing | | Spatial RayJoin | `spatial_rayjoin_pip_count_current_prepared_optix` | contract-split RayJoin-style path; scalar/count paths are stronger than full paper reproduction | NVIDIA pod plus public-CDB fixture for representative route | | RT-DBSCAN | `rt_dbscan_optix_numba_prepared_grid` | OptiX fixed-radius flags plus explicit Numba component contin"
@@ -870,9 +919,16 @@
       "path": "examples/current/research_benchmarks/spatial_rayjoin/CODE_WALKTHROUGH.md",
       "phrase": "faster",
       "snippet": "tiX at about `260x` faster than dense partner baselines for the scalar-answer contracts. | | PIP one-shot bounded public CDB scalar count | CuPy dense CUDA-core count is still the faster current route at that size. | | Resident repeated PIP | The prepared batch executor is the current RTDL/OptiX direction, with partner guidance recording about `0.024ms/request` fo"
+    },
+    {
+      "classification": "accepted_scoped_evidence_context",
+      "line": 173,
+      "path": "README.md",
+      "phrase": "faster",
+      "snippet": "undaries](docs/partner_acceleration_boundaries.md).  The v2.13 comparison is deliberately mixed where the evidence is mixed: Spatial RayJoin PIP is near parity and slightly Embree-faster in the refreshed human-scale public CDB slice, while Goal4368 separately records an OptiX-over-Embree win for the stricter full same-stream exact prepared-points executor and stil"
     }
   ],
-  "accepted_scoped_evidence_count": 19,
+  "accepted_scoped_evidence_count": 20,
   "claim_boundary": {
     "amd_performance_claim_authorized": false,
     "automatic_partner_selection_authorized": false,
@@ -885,7 +941,7 @@
     "true_zero_copy_claim_authorized": false,
     "whole_app_speedup_claim_authorized": false
   },
-  "finding_count": 124,
+  "finding_count": 132,
   "hard_blocker_count": 0,
   "hard_blockers": [],
   "public_file_count": 36,

@@ -5,7 +5,6 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
-import tomllib
 import unittest
 
 from rtdsl.v2_12_public_release_comparison import (
@@ -83,12 +82,7 @@ class Goal4365V212ReleasePublicationTest(unittest.TestCase):
             self.assertIn("RTDL v2.12 Scoped RT-Core vs Embree CPU Comparison", markdown)
             self.assertIn("Contact Manifold and RTNN stay explicitly mixed", markdown)
 
-    def test_committed_release_package_is_current(self) -> None:
-        version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
-        pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-        self.assertEqual("v2.12", version)
-        self.assertEqual("2.12.0", pyproject["project"]["version"])
-
+    def test_committed_release_package_remains_archived_baseline(self) -> None:
         readme = (RELEASE_DIR / "README.md").read_text(encoding="utf-8")
         publication = (RELEASE_DIR / "publication.md").read_text(encoding="utf-8")
         tag_preparation = (RELEASE_DIR / "tag_preparation.md").read_text(encoding="utf-8")
@@ -103,7 +97,7 @@ class Goal4365V212ReleasePublicationTest(unittest.TestCase):
         self.assertIn("RTDL v2.12 Scoped RT-Core vs Embree CPU Comparison", comparison)
         self.assertEqual("accept", comparison_json["validation"]["status"])
 
-    def test_front_door_docs_point_at_v2_12_release(self) -> None:
+    def test_front_door_docs_point_at_v2_13_release(self) -> None:
         docs = "\n".join(
             [
                 (ROOT / "README.md").read_text(encoding="utf-8"),
@@ -112,9 +106,10 @@ class Goal4365V212ReleasePublicationTest(unittest.TestCase):
                 (ROOT / "docs" / "learn" / "current_claim_boundaries.md").read_text(encoding="utf-8"),
             ]
         )
-        self.assertIn("current v2.12 source-tree", docs)
-        self.assertIn("docs/release_reports/v2_12/README.md", docs)
+        self.assertIn("current v2.13 source-tree", docs)
+        self.assertIn("docs/release_reports/v2_13/README.md", docs)
         self.assertIn("row-scoped RT-core versus Embree CPU", docs)
+        self.assertNotIn("current v2.12 source-tree", docs)
         self.assertNotIn("current v2.11 source-tree", docs)
 
     def test_markdown_helper_contains_claim_boundary(self) -> None:

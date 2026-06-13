@@ -8,7 +8,7 @@ Release date: 2026-06-13
 
 ## Release Statement
 
-RTDL v2.12 is the current source-tree milestone for the row-scoped NVIDIA
+RTDL v2.12 is an archived source-tree milestone for the row-scoped NVIDIA
 OptiX/RT-core versus Embree CPU comparison campaign over the promoted benchmark
 portfolio. It carries forward the v2.11 Python+RTDL+partner surface and closes
 the v2.12 comparison cleanup: zero active boundary-limited rows, no remaining
@@ -28,7 +28,7 @@ zero-copy/device-residency product claim.
 
 ## What v2.12 Includes
 
-- The current source-tree Python+RTDL+partner surface from v2.11.
+- The v2.12 source-tree Python+RTDL+partner surface from v2.11.
 - A release-facing scoped RT-core versus Embree CPU comparison table for the
   promoted benchmark apps.
 - Goal4363 Robot Collision same-contract prepared-buffer evidence.
@@ -36,7 +36,7 @@ zero-copy/device-residency product claim.
 - A regenerated optimized comparison packet with `10` internally authorized
   app ratios, `0` active boundary-limited rows, and `0` contract-choice
   blockers.
-- Updated source-tree version marker, setup doctor, and current public-doc
+- Updated source-tree version marker, setup doctor, and v2.12 public-doc
   boundary pages.
 
 ## Comparison Summary

@@ -35,7 +35,7 @@ class Goal4349HumanScaleRtVsEmbreeComparisonTest(unittest.TestCase):
             self.assertLessEqual(row["optix_total_sec"], 10.0, row["app"])
             self.assertGreaterEqual(row["embree_total_sec"], 1.0, row["app"])
             self.assertLessEqual(row["embree_total_sec"], 10.0, row["app"])
-            self.assertGreater(row["speedup_embree_per_iter_div_optix_per_iter"], 1.0, row["app"])
+            self.assertGreater(row["speedup_embree_per_iter_div_optix_per_iter"], 0.0, row["app"])
             self.assertTrue(row["correct"], row["app"])
 
     def test_raydb_uses_prepared_embree_backend_surface(self) -> None:
@@ -56,12 +56,14 @@ class Goal4349HumanScaleRtVsEmbreeComparisonTest(unittest.TestCase):
             self.assertIn("divided by", row["speedup_explanation"], row["app"])
             self.assertTrue(row["public_wording"], row["app"])
 
-    def test_mixed_output_rows_are_not_marked_as_clean_backend_swaps(self) -> None:
+    def test_stale_output_rows_were_replaced_by_current_prepared_surfaces(self) -> None:
         payload = json.loads(REPORT_JSON.read_text(encoding="utf-8"))
         rows = {row["app"]: row for row in payload["rows"]}
-        for app in ("rtnn", "spatial_rayjoin_lsi"):
-            self.assertNotEqual(rows[app]["comparison_status"], "clean_backend_swap_prepared_phase")
-            self.assertIn("no_output_surface_differs", rows[app]["only_material_diff_claim"])
+        for app in ("rtnn", "spatial_rayjoin_lsi", "spatial_rayjoin_pip"):
+            self.assertEqual(rows[app]["comparison_status"], "clean_backend_swap_prepared_phase")
+            self.assertNotIn("no_output_surface_differs", rows[app]["only_material_diff_claim"])
+        self.assertLess(rows["spatial_rayjoin_pip"]["speedup_embree_per_iter_div_optix_per_iter"], 1.0)
+        self.assertIn("Embree is faster", rows["spatial_rayjoin_pip"]["speedup_explanation"])
         self.assertEqual(
             rows["robot_collision"]["comparison_status"],
             "clean_backend_swap_traversal_phase_only",
@@ -80,6 +82,8 @@ class Goal4349HumanScaleRtVsEmbreeComparisonTest(unittest.TestCase):
         self.assertIn("duration_bounded_throughput", source)
         self.assertIn("raydb_embree_t64_r240", source)
         self.assertIn("rayjoin_lsi_optix_r5000", source)
+        self.assertIn("RTDL_RAYJOIN_PUBLIC_COUNTY_CDB", source)
+        self.assertIn("rtnn_optix_r40", source)
 
 
 if __name__ == "__main__":

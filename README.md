@@ -13,7 +13,7 @@ start from primitive discovery or prepared front doors.
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
 
-This documentation is written for the current v2.12 source-tree RTDL surface:
+This documentation is written for the current v2.13 source-tree RTDL surface:
 Python+partner+RTDL over a generic, app-agnostic native engine, with prepared
 execution and a tested 10-app benchmark matrix. Use RTDL from the repository
 source tree either with `PYTHONPATH=src:.` or with the optional local editable
@@ -152,24 +152,30 @@ Backend support varies by feature and platform. Start with the portable
 `cpu_python_reference` backend, then use Embree or OptiX when your host has the
 native dependencies configured.
 
-## v2.12 Source-Tree Surface
+## v2.13 Source-Tree Surface
 
-RTDL v2.12 is the current source-tree surface for this branch. It keeps the
-Python+partner+RTDL language boundary from v2.11, preserves the Embree CPU plus
-partner reference lane for the promoted benchmark-app portfolio, and publishes
-the cleaned row-scoped RT-core versus Embree CPU comparison packet.
+RTDL v2.13 is the current source-tree surface for this branch. It keeps the
+Python+partner+RTDL language boundary from v2.11/v2.12, preserves the Embree CPU
+plus partner reference lane for the promoted benchmark-app portfolio, and
+publishes the refreshed row-scoped RT-core versus Embree CPU comparison packet.
 
 The current matrix separates promoted benchmark apps from learner/example apps.
 Promoted benchmarks are reconstruction instruments for RTDL language/runtime
 design, not broad paper-reproduction or whole-application speedup claims.
 
-Do not read v2.12 as a package-install promise, broad RT-core claim, arbitrary
+Do not read v2.13 as a package-install promise, broad RT-core claim, arbitrary
 CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof
 that every user program is faster. For the exact positive and negative rule, read
 [Current Claim Boundaries](docs/learn/current_claim_boundaries.md) and
 [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md).
 
-The v2.12 partner rule is still user-chosen and evidence-gated:
+The v2.13 comparison is deliberately mixed where the evidence is mixed: Spatial
+RayJoin PIP is near parity and slightly Embree-faster in the refreshed human-scale
+public CDB slice, while Goal4368 separately records an OptiX-over-Embree win for
+the stricter full same-stream exact prepared-points executor and still does not
+beat RayJoin RT.
+
+The v2.13 partner rule is still user-chosen and evidence-gated:
 
 - use fused RTDL primitives first when they exactly express the work;
 - choose a partner explicitly when custom continuation logic is needed;
@@ -181,8 +187,8 @@ The v2.12 partner rule is still user-chosen and evidence-gated:
 For the current partner-choice guide, read
 [Choosing A Partner For Custom Logic](docs/learn/partner_choice_for_custom_logic.md)
 and the [Benchmark Partner Reference Matrix](docs/learn/benchmark_partner_reference_matrix.md).
-For the current v2.12 release boundary and evidence set, see
-[RTDL v2.12 Release Package](docs/release_reports/v2_12/README.md).
+For the current v2.13 release boundary and evidence set, see
+[RTDL v2.13 Release Package](docs/release_reports/v2_13/README.md).
 
 ## Performance Boundary
 
@@ -191,9 +197,9 @@ claim that every app, every phase, or every workload is faster on GPU.
 
 Current measured evidence supports narrow statements: selected prepared,
 traversal-heavy workloads can show OptiX/RT-core speedups over same-contract
-Embree CPU paths. Some correct exact routes, including the current generic
-Spatial RayJoin PIP count path, are slower than specialized code and should be
-worded as correctness/evidence rows rather than broad RT-core wins.
+Embree CPU paths. Some correct exact routes, including Spatial RayJoin PIP under
+the refreshed human-scale slice, are near parity or Embree-faster and should be
+worded as mixed engineering evidence rather than broad RT-core wins.
 
 Use exact benchmark artifacts before publishing performance wording.
 

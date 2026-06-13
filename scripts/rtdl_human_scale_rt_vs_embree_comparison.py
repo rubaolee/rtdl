@@ -70,6 +70,47 @@ def _thread_env(threads: int | None = None) -> dict[str, str]:
     }
 
 
+def _existing_dataset_or_fallback(env_name: str, candidates: tuple[str, ...]) -> str:
+    override = os.environ.get(env_name)
+    if override:
+        return override
+    for candidate in candidates:
+        path = Path(candidate)
+        if not path.is_absolute():
+            path = ROOT / path
+        if path.exists():
+            return candidate
+    return candidates[-1]
+
+
+def _rayjoin_public_datasets() -> tuple[str, str]:
+    county = _existing_dataset_or_fallback(
+        "RTDL_RAYJOIN_PUBLIC_COUNTY_CDB",
+        (
+            "data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+            "tests/fixtures/rayjoin/br_county_subset.cdb",
+        ),
+    )
+    soil = _existing_dataset_or_fallback(
+        "RTDL_RAYJOIN_PUBLIC_SOIL_CDB",
+        (
+            "data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+            "tests/fixtures/rayjoin/br_soil_subset.cdb",
+        ),
+    )
+    return county, f"{county} + {soil}"
+
+
+def _rtnn_uniform_65536_path() -> str:
+    return _existing_dataset_or_fallback(
+        "RTDL_RTNN_UNIFORM_65536_CSV",
+        (
+            "docs/reports/goal4347_fair_rt_vs_embree_run/scale/rtnn_uniform_65536.csv",
+            "docs/reports/goal3548_v2_9_repeat_hook_10s_rerun_a5000_compact_calibrated3/v28/rtnn_uniform_65536.csv",
+        ),
+    )
+
+
 def _parse_json_stdout(text: str) -> dict[str, Any]:
     stripped = text.strip()
     if not stripped:
@@ -420,12 +461,8 @@ print(json.dumps({{
 
 def _specs() -> tuple[RunSpec, ...]:
     py = sys.executable
-    pip_dataset = "data/rayjoin_public_cdb/br_county_start256_count512.cdb"
-    lsi_dataset = (
-        "data/rayjoin_public_cdb/br_county_start256_count512.cdb + "
-        "data/rayjoin_public_cdb/br_soil_start256_count512.cdb"
-    )
-    rtnn_points = "docs/reports/goal4347_fair_rt_vs_embree_run/scale/rtnn_uniform_65536.csv"
+    pip_dataset, lsi_dataset = _rayjoin_public_datasets()
+    rtnn_points = _rtnn_uniform_65536_path()
     return (
         RunSpec("hausdorff_optix_r200", "hausdorff_xhd", "optix", (py, "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "optix", "--require-rt-core", "--optix-summary-mode", "directed_threshold_prepared", "--hausdorff-threshold", "0.25", "--copies", "1024", "--repeat", "200", "--warmup", "5"), _hausdorff, 240),
         RunSpec("hausdorff_embree_t8_r200", "hausdorff_xhd", "embree", (py, "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "embree", "--optix-summary-mode", "directed_threshold_prepared", "--hausdorff-threshold", "0.25", "--copies", "1024", "--repeat", "200", "--warmup", "5"), _hausdorff, 240, threads=8),
@@ -443,11 +480,11 @@ def _specs() -> tuple[RunSpec, ...]:
         RunSpec("rayjoin_pip_embree_t8_r2000", "spatial_rayjoin_pip", "embree", (py, "-c", _rayjoin_embree_probe("pip", pip_dataset, 2000, 10)), _rayjoin, 240, threads=8),
         RunSpec("rayjoin_pip_embree_t64_r2000", "spatial_rayjoin_pip", "embree", (py, "-c", _rayjoin_embree_probe("pip", pip_dataset, 2000, 10)), _rayjoin, 240, threads=64),
         RunSpec("rayjoin_lsi_optix_r5000", "spatial_rayjoin_lsi", "optix", (py, "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py", "--workload", "lsi", "--backend", "optix", "--execution-route", "prepared_optix", "--result-mode", "count", "--dataset", lsi_dataset, "--no-rows", "--repeat", "5000", "--warmup", "10"), _rayjoin, 300),
-        RunSpec("rayjoin_lsi_embree_t8_r5", "spatial_rayjoin_lsi", "embree", (py, "-c", _rayjoin_embree_probe("lsi", lsi_dataset, 5, 1)), _rayjoin, 240, threads=8),
-        RunSpec("rayjoin_lsi_embree_t64_r5", "spatial_rayjoin_lsi", "embree", (py, "-c", _rayjoin_embree_probe("lsi", lsi_dataset, 5, 1)), _rayjoin, 240, threads=64),
-        RunSpec("rtnn_optix_r1500", "rtnn", "optix", (py, "scripts/goal2348_rtnn_v2_2_external_runner.py", "run-rtdl-batched-3d-neighbors", "--point-file", rtnn_points, "--radius", "0.02", "--k-max", "50", "--backend", "optix", "--query-batch-size", "65536", "--result-mode", "ranked-summary-raw", "--repeat", "1500", "--row-label", "human_scale_rtnn_optix"), _rtnn, 300, json_out=True),
-        RunSpec("rtnn_embree_t8_r120", "rtnn", "embree", (py, "scripts/goal2348_rtnn_v2_2_external_runner.py", "run-rtdl-batched-3d-neighbors", "--point-file", rtnn_points, "--radius", "0.02", "--k-max", "50", "--backend", "embree", "--query-batch-size", "65536", "--result-mode", "ranked-summary-raw", "--repeat", "120", "--row-label", "human_scale_rtnn_embree_t8"), _rtnn, 300, threads=8, json_out=True),
-        RunSpec("rtnn_embree_t64_r120", "rtnn", "embree", (py, "scripts/goal2348_rtnn_v2_2_external_runner.py", "run-rtdl-batched-3d-neighbors", "--point-file", rtnn_points, "--radius", "0.02", "--k-max", "50", "--backend", "embree", "--query-batch-size", "65536", "--result-mode", "ranked-summary-raw", "--repeat", "120", "--row-label", "human_scale_rtnn_embree_t64"), _rtnn, 300, threads=64, json_out=True),
+        RunSpec("rayjoin_lsi_embree_t8_r500", "spatial_rayjoin_lsi", "embree", (py, "-c", _rayjoin_embree_probe("lsi", lsi_dataset, 500, 5)), _rayjoin, 240, threads=8),
+        RunSpec("rayjoin_lsi_embree_t64_r500", "spatial_rayjoin_lsi", "embree", (py, "-c", _rayjoin_embree_probe("lsi", lsi_dataset, 500, 5)), _rayjoin, 240, threads=64),
+        RunSpec("rtnn_optix_r40", "rtnn", "optix", (py, "scripts/goal2348_rtnn_v2_2_external_runner.py", "run-rtdl-batched-3d-neighbors", "--point-file", rtnn_points, "--radius", "0.02", "--k-max", "50", "--backend", "optix", "--query-batch-size", "65536", "--result-mode", "ranked-summary-raw", "--repeat", "40", "--row-label", "human_scale_rtnn_optix"), _rtnn, 300, json_out=True),
+        RunSpec("rtnn_embree_t8_r80", "rtnn", "embree", (py, "scripts/goal2348_rtnn_v2_2_external_runner.py", "run-rtdl-batched-3d-neighbors", "--point-file", rtnn_points, "--radius", "0.02", "--k-max", "50", "--backend", "embree", "--query-batch-size", "65536", "--result-mode", "ranked-summary-raw", "--repeat", "80", "--row-label", "human_scale_rtnn_embree_t8"), _rtnn, 300, threads=8, json_out=True),
+        RunSpec("rtnn_embree_t64_r80", "rtnn", "embree", (py, "scripts/goal2348_rtnn_v2_2_external_runner.py", "run-rtdl-batched-3d-neighbors", "--point-file", rtnn_points, "--radius", "0.02", "--k-max", "50", "--backend", "embree", "--query-batch-size", "65536", "--result-mode", "ranked-summary-raw", "--repeat", "80", "--row-label", "human_scale_rtnn_embree_t64"), _rtnn, 300, threads=64, json_out=True),
         RunSpec("librts_optix_r4800", "librts_spatial_index", "optix", (py, "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py", "--mode", "optix_aabb_index", "--dataset", "uniform", "--box-count", "1024", "--query-count", "1024", "--operation", "all", "--repeat", "4800", "--warmup", "10", "--skip-counts"), _librts, 300),
         RunSpec("librts_embree_t8_r48", "librts_spatial_index", "embree", (py, "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py", "--mode", "embree_aabb_index", "--dataset", "uniform", "--box-count", "1024", "--query-count", "1024", "--operation", "all", "--repeat", "48", "--warmup", "3", "--skip-counts"), _librts, 240, threads=8),
         RunSpec("librts_embree_t64_r48", "librts_spatial_index", "embree", (py, "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py", "--mode", "embree_aabb_index", "--dataset", "uniform", "--box-count", "1024", "--query-count", "1024", "--operation", "all", "--repeat", "48", "--warmup", "3", "--skip-counts"), _librts, 240, threads=64),

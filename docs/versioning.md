@@ -1,6 +1,6 @@
 # RTDL Versioning
 
-Status: current v2.12 source-tree guidance.
+Status: current v2.13 source-tree guidance.
 
 RTDL uses source-tree version markers and Git tags to identify reviewed
 research snapshots. A version tag names the state of the repository and the
@@ -9,10 +9,10 @@ wheel promise, PyPI promise, or automatic partner-selection promise.
 
 ## Current Version
 
-`v2.12` is the current source-tree release marker. It covers the Python+RTDL
+`v2.13` is the current source-tree release marker. It covers the Python+RTDL
 plus explicit partner programming surface, the Embree CPU reference lane, and
-the bounded row-scoped NVIDIA OptiX/RT-core versus Embree CPU evidence recorded
-in the v2.12 release packet.
+the refreshed bounded row-scoped NVIDIA OptiX/RT-core versus Embree CPU evidence
+recorded in the v2.13 release packet.
 
 Use the source tree directly:
 

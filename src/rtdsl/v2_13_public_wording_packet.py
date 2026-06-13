@@ -47,8 +47,13 @@ def _round(value: float | None, digits: int = 3) -> float | None:
 
 def _status_for_row(row: dict[str, Any]) -> str:
     status = str(row["comparison_status"])
+    ratio = float(row["speedup_embree_per_iter_div_optix_per_iter"])
     if row["app"] == "rtnn":
         return "blocked_not_rt_core_neighbor_search_claim"
+    if ratio < 1.0:
+        return "ready_row_scoped_embree_faster_wording"
+    if ratio < 1.2:
+        return "ready_near_parity_scoped_engineering_wording"
     if status == "clean_backend_swap_prepared_phase":
         return "ready_row_scoped_prepared_phase_wording"
     if status == "clean_backend_swap_traversal_phase_only":
@@ -64,20 +69,30 @@ def _public_authorized(status: str) -> bool:
 
 def _allowed_wording(row: dict[str, Any], status: str) -> str:
     speedup = float(row["speedup_embree_per_iter_div_optix_per_iter"])
+    if status == "blocked_not_rt_core_neighbor_search_claim":
+        return (
+            "Do not publish RTNN as an RT-core neighbor-search speedup. Keep it as engineering evidence until "
+            "the release has an end-to-end RTNN claim boundary that reviewers explicitly approve."
+        )
+    if speedup < 1.0:
+        inverse = 1.0 / speedup
+        return (
+            f"For `{row['app']}` under `{row['contract']}`, the row-scoped Embree CPU prepared "
+            f"measurement is {inverse:.2f}x faster per iteration than the RTDL OptiX prepared "
+            "measurement for this scoped protocol. Publish this as a near-parity or Embree-faster row, "
+            "not as an RT-core speedup."
+        )
     base = (
         f"For `{row['app']}` under `{row['contract']}`, the row-scoped RTDL OptiX prepared "
         f"measurement is {speedup:.2f}x faster per iteration than the best measured Embree CPU row "
         f"for the same scoped contract/protocol."
     )
+    if status == "ready_near_parity_scoped_engineering_wording":
+        return base + " Word this as near parity engineering evidence, not as a material RT-core speedup."
     if status == "ready_traversal_phase_only_wording":
         return base + " Word this only as a traversal-phase result, not as a full hot-loop or app speedup."
     if status == "ready_with_explicit_output_surface_caveat":
         return base + " Include the output-surface caveat from the packet; do not present it as a pure backend swap."
-    if status == "blocked_not_rt_core_neighbor_search_claim":
-        return (
-            "Do not publish RTNN as an RT-core neighbor-search speedup. Keep it as engineering evidence until "
-            "Embree and OptiX expose the same native ranked-summary surface."
-        )
     return base + " Keep the prepared-query/row-scoped contract in the sentence."
 
 
@@ -137,6 +152,13 @@ def v2_13_public_wording_packet(
         errors.append("authorized rows must have explicit allowed wording")
     if any(row["whole_app_speedup_claim_authorized"] for row in rows):
         errors.append("whole-application speedup wording must remain blocked")
+    if any(
+        row["row_scoped_public_wording_authorized"]
+        and float(row["speedup_embree_per_iter_div_optix_per_iter"]) < 1.0
+        and "Embree CPU" not in row["allowed_wording"]
+        for row in rows
+    ):
+        errors.append("Embree-faster rows must not be worded as OptiX speedups")
 
     authorized_rows = [row for row in rows if row["row_scoped_public_wording_authorized"]]
     blocked_rows = [row for row in rows if not row["row_scoped_public_wording_authorized"]]
