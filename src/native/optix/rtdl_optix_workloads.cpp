@@ -15030,7 +15030,12 @@ struct PreparedClosestHitGroupedArgmin3D {
     size_t ray_group_id_count = 0;
     size_t candidate_count = 0;
     size_t group_count = 0;
+    bool ray_group_ids_are_per_ray_ordinal = false;
+    bool grouped_input_columns_partner_owned = false;
     std::vector<uint32_t> ray_group_ids;
+    CUdeviceptr external_ray_group_ids_ptr = 0;
+    CUdeviceptr external_candidate_values_ptr = 0;
+    CUdeviceptr external_candidate_indices_ptr = 0;
     DevPtr d_ray_group_ids;
     DevPtr d_candidate_values;
     DevPtr d_candidate_indices;
@@ -15079,6 +15084,58 @@ struct PreparedClosestHitGroupedArgmin3D {
         upload(d_ray_group_ids.ptr, ray_group_ids_in, ray_group_id_count_in);
         upload(d_candidate_values.ptr, candidate_values, candidate_count_in);
         upload(d_candidate_indices.ptr, candidate_indices, candidate_count_in);
+    }
+
+    PreparedClosestHitGroupedArgmin3D(
+            uint64_t per_ray_group_ids_device_ptr,
+            size_t per_ray_group_id_count_in,
+            uint64_t candidate_values_device_ptr,
+            uint64_t candidate_indices_device_ptr,
+            size_t candidate_count_in,
+            size_t group_count_in)
+        : ray_group_id_count(per_ray_group_id_count_in),
+          candidate_count(candidate_count_in),
+          group_count(group_count_in),
+          ray_group_ids_are_per_ray_ordinal(true),
+          grouped_input_columns_partner_owned(true),
+          external_ray_group_ids_ptr(static_cast<CUdeviceptr>(per_ray_group_ids_device_ptr)),
+          external_candidate_values_ptr(static_cast<CUdeviceptr>(candidate_values_device_ptr)),
+          external_candidate_indices_ptr(static_cast<CUdeviceptr>(candidate_indices_device_ptr)),
+          d_ray_group_ids(0),
+          d_candidate_values(0),
+          d_candidate_indices(0),
+          d_group_has_value(sizeof(uint8_t) * group_count_in),
+          d_group_index(sizeof(uint32_t) * group_count_in),
+          d_group_value(sizeof(double) * group_count_in),
+          d_group_best_keys(sizeof(unsigned long long) * group_count_in)
+    {
+        if (!per_ray_group_ids_device_ptr && per_ray_group_id_count_in != 0)
+            throw std::runtime_error("per-ray group-id device pointer must not be null when nonempty");
+        if (!candidate_values_device_ptr && candidate_count_in != 0)
+            throw std::runtime_error("candidate values device pointer must not be null when candidate_count is nonzero");
+        if (!candidate_indices_device_ptr && candidate_count_in != 0)
+            throw std::runtime_error("candidate indices device pointer must not be null when candidate_count is nonzero");
+        if (per_ray_group_id_count_in > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("per-ray group-id count exceeds uint32 launch limit");
+        if (candidate_count_in > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("candidate_count exceeds uint32 launch limit");
+        if (group_count_in > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("group_count exceeds uint32 launch limit");
+    }
+
+    CUdeviceptr ray_group_ids_device_ptr() const
+    {
+        return grouped_input_columns_partner_owned ? external_ray_group_ids_ptr : d_ray_group_ids.ptr;
+    }
+
+    CUdeviceptr candidate_values_device_ptr() const
+    {
+        return grouped_input_columns_partner_owned ? external_candidate_values_ptr : d_candidate_values.ptr;
+    }
+
+    CUdeviceptr candidate_indices_device_ptr() const
+    {
+        return grouped_input_columns_partner_owned ? external_candidate_indices_ptr : d_candidate_indices.ptr;
     }
 };
 
@@ -17378,6 +17435,14 @@ static void ensure_ray_closest_hit_grouped_argmin_kernels()
             g_rayclosest3d_grouped_argmin.module,
             "closest_hit_grouped_argmin_min_index"));
         CU_CHECK(cuModuleGetFunction(
+            &g_rayclosest3d_grouped_argmin.min_key_per_ray_group_fn,
+            g_rayclosest3d_grouped_argmin.module,
+            "closest_hit_grouped_argmin_min_key_per_ray_group"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_rayclosest3d_grouped_argmin.min_index_per_ray_group_fn,
+            g_rayclosest3d_grouped_argmin.module,
+            "closest_hit_grouped_argmin_min_index_per_ray_group"));
+        CU_CHECK(cuModuleGetFunction(
             &g_rayclosest3d_grouped_argmin.materialize_fn,
             g_rayclosest3d_grouped_argmin.module,
             "closest_hit_grouped_argmin_materialize"));
@@ -18103,6 +18168,23 @@ static PreparedClosestHitGroupedArgmin3D* prepare_closest_hit_grouped_argmin_3d_
         ray_group_id_count,
         candidate_values,
         candidate_indices,
+        candidate_count,
+        group_count);
+}
+
+static PreparedClosestHitGroupedArgmin3D* prepare_closest_hit_grouped_argmin_3d_device_per_ray_groups_optix(
+        uint64_t per_ray_group_ids_device_ptr,
+        size_t per_ray_group_id_count,
+        uint64_t candidate_values_device_ptr,
+        uint64_t candidate_indices_device_ptr,
+        size_t candidate_count,
+        size_t group_count)
+{
+    return new PreparedClosestHitGroupedArgmin3D(
+        per_ray_group_ids_device_ptr,
+        per_ray_group_id_count,
+        candidate_values_device_ptr,
+        candidate_indices_device_ptr,
         candidate_count,
         group_count);
 }
@@ -20159,20 +20241,28 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared
         return;
     }
 
-    ray_batch->require_host_ray_ids("prepared closest-hit grouped argmin");
-    for (size_t i = 0; i < ray_count; ++i) {
-        if (ray_batch->ray_ids[i] >= ray_group_id_count)
-            throw std::runtime_error("ray id is outside the prepared ray group-id map");
-    }
-    bool ray_groups_are_unique = true;
-    std::vector<uint8_t> seen_groups(group_count, 0u);
-    for (size_t i = 0; i < ray_count; ++i) {
-        const uint32_t group_id = grouped_inputs->ray_group_ids[ray_batch->ray_ids[i]];
-        if (seen_groups[group_id] != 0u) {
-            ray_groups_are_unique = false;
-            break;
+    const bool per_ray_group_ids = grouped_inputs->ray_group_ids_are_per_ray_ordinal;
+    bool ray_groups_are_unique = false;
+    if (per_ray_group_ids) {
+        if (ray_group_id_count != ray_count)
+            throw std::runtime_error(
+                "per-ray grouped argmin input count must match prepared ray batch count");
+    } else {
+        ray_batch->require_host_ray_ids("prepared closest-hit grouped argmin");
+        for (size_t i = 0; i < ray_count; ++i) {
+            if (ray_batch->ray_ids[i] >= ray_group_id_count)
+                throw std::runtime_error("ray id is outside the prepared ray group-id map");
         }
-        seen_groups[group_id] = 1u;
+        ray_groups_are_unique = true;
+        std::vector<uint8_t> seen_groups(group_count, 0u);
+        for (size_t i = 0; i < ray_count; ++i) {
+            const uint32_t group_id = grouped_inputs->ray_group_ids[ray_batch->ray_ids[i]];
+            if (seen_groups[group_id] != 0u) {
+                ray_groups_are_unique = false;
+                break;
+            }
+            seen_groups[group_id] = 1u;
+        }
     }
 
     launch_prepared_static_triangle_scene_3d_device_ray_closest_hit_records_optix(
@@ -20194,11 +20284,61 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared
     CUdeviceptr d_index_ptr = grouped_inputs->d_group_index.ptr;
     CUdeviceptr d_value_ptr = grouped_inputs->d_group_value.ptr;
     CUdeviceptr d_rows_ptr = ray_batch->d_closest_hit_output.ptr;
-    CUdeviceptr d_ray_group_ids_ptr = grouped_inputs->d_ray_group_ids.ptr;
-    CUdeviceptr d_candidate_values_ptr = grouped_inputs->d_candidate_values.ptr;
-    CUdeviceptr d_candidate_indices_ptr = grouped_inputs->d_candidate_indices.ptr;
+    CUdeviceptr d_ray_group_ids_ptr = grouped_inputs->ray_group_ids_device_ptr();
+    CUdeviceptr d_candidate_values_ptr = grouped_inputs->candidate_values_device_ptr();
+    CUdeviceptr d_candidate_indices_ptr = grouped_inputs->candidate_indices_device_ptr();
 
-    if (ray_groups_are_unique) {
+    if (per_ray_group_ids) {
+        CUdeviceptr d_keys_ptr = grouped_inputs->d_group_best_keys.ptr;
+        void* init_args[] = {
+            &d_keys_ptr,
+            &d_has_ptr,
+            &d_index_ptr,
+            &d_value_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.init_fn,
+            group_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, init_args, nullptr));
+
+        void* min_key_args[] = {
+            &d_rows_ptr,
+            const_cast<uint32_t*>(&ray_count_u),
+            &d_ray_group_ids_ptr,
+            const_cast<uint32_t*>(&ray_group_id_count_u),
+            &d_candidate_values_ptr,
+            const_cast<uint32_t*>(&candidate_count_u),
+            &d_keys_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.min_key_per_ray_group_fn,
+            ray_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, min_key_args, nullptr));
+
+        void* min_index_args[] = {
+            &d_rows_ptr,
+            const_cast<uint32_t*>(&ray_count_u),
+            &d_ray_group_ids_ptr,
+            const_cast<uint32_t*>(&ray_group_id_count_u),
+            &d_candidate_values_ptr,
+            &d_candidate_indices_ptr,
+            const_cast<uint32_t*>(&candidate_count_u),
+            &d_keys_ptr,
+            &d_index_ptr,
+            &d_has_ptr,
+            &d_value_ptr,
+            const_cast<uint32_t*>(&group_count_u),
+        };
+        CU_CHECK(cuLaunchKernel(
+            g_rayclosest3d_grouped_argmin.min_index_per_ray_group_fn,
+            ray_grid, 1, 1,
+            block, 1, 1,
+            0, nullptr, min_index_args, nullptr));
+    } else if (ray_groups_are_unique) {
         clear_prepared_grouped_argmin_device_outputs(grouped_inputs);
         void* scatter_args[] = {
             &d_rows_ptr,
@@ -20272,6 +20412,22 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared
     CU_CHECK(cuStreamSynchronize(nullptr));
 }
 
+static void finalize_prepared_closest_hit_grouped_argmin_3d_optix(
+        PreparedClosestHitGroupedArgmin3D* grouped_inputs,
+        uint8_t* group_has_value_out,
+        uint32_t* group_index_out,
+        double* group_value_out)
+{
+    if (!grouped_inputs)
+        throw std::runtime_error("prepared grouped argmin inputs handle must not be null");
+    const size_t group_count = grouped_inputs->group_count;
+    if (group_count != 0 && (!group_has_value_out || !group_index_out || !group_value_out))
+        throw std::runtime_error("grouped argmin outputs must not be null when group_count is nonzero");
+    download(group_has_value_out, grouped_inputs->d_group_has_value.ptr, group_count);
+    download(group_index_out, grouped_inputs->d_group_index.ptr, group_count);
+    download(group_value_out, grouped_inputs->d_group_value.ptr, group_count);
+}
+
 static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_optix(
         PreparedStaticTriangleScene3D* prepared,
         PreparedRayBatch3D* ray_batch,
@@ -20292,9 +20448,11 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared
         ray_batch,
         grouped_inputs,
         traversal_seconds_out);
-    download(group_has_value_out, grouped_inputs->d_group_has_value.ptr, group_count);
-    download(group_index_out, grouped_inputs->d_group_index.ptr, group_count);
-    download(group_value_out, grouped_inputs->d_group_value.ptr, group_count);
+    finalize_prepared_closest_hit_grouped_argmin_3d_optix(
+        grouped_inputs,
+        group_has_value_out,
+        group_index_out,
+        group_value_out);
 }
 
 static void run_prepared_static_triangle_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin_optix(

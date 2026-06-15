@@ -2847,6 +2847,59 @@ extern "C" __global__ void closest_hit_grouped_argmin_min_index(
     }
 }
 
+extern "C" __global__ void closest_hit_grouped_argmin_min_key_per_ray_group(
+        const RayClosestHit3DRecord* rows,
+        uint32_t ray_count,
+        const uint32_t* per_ray_group_ids,
+        uint32_t per_ray_group_id_count,
+        const double* candidate_values,
+        uint32_t candidate_count,
+        unsigned long long* group_best_keys,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= ray_count || idx >= per_ray_group_id_count) return;
+    const RayClosestHit3DRecord row = rows[idx];
+    if (row.has_hit == 0u) return;
+    if (row.triangle_id >= candidate_count) return;
+    const uint32_t group_id = per_ray_group_ids[idx];
+    if (group_id >= group_count) return;
+    const double value = candidate_values[row.triangle_id];
+    if (isnan(value)) return;
+    atomicMin(&group_best_keys[group_id], encode_ordered_double(value));
+}
+
+extern "C" __global__ void closest_hit_grouped_argmin_min_index_per_ray_group(
+        const RayClosestHit3DRecord* rows,
+        uint32_t ray_count,
+        const uint32_t* per_ray_group_ids,
+        uint32_t per_ray_group_id_count,
+        const double* candidate_values,
+        const uint32_t* candidate_indices,
+        uint32_t candidate_count,
+        const unsigned long long* group_best_keys,
+        uint32_t* group_index,
+        uint8_t* group_has_value,
+        double* group_value,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= ray_count || idx >= per_ray_group_id_count) return;
+    const RayClosestHit3DRecord row = rows[idx];
+    if (row.has_hit == 0u) return;
+    if (row.triangle_id >= candidate_count) return;
+    const uint32_t group_id = per_ray_group_ids[idx];
+    if (group_id >= group_count) return;
+    const double value = candidate_values[row.triangle_id];
+    if (isnan(value)) return;
+    const unsigned long long key = encode_ordered_double(value);
+    if (key == group_best_keys[group_id]) {
+        group_has_value[group_id] = 1u;
+        group_value[group_id] = value;
+        atomicMin(&group_index[group_id], candidate_indices[row.triangle_id]);
+    }
+}
+
 extern "C" __global__ void grouped_candidate_argmin_min_key(
         const uint32_t* candidate_group_ids,
         const double* candidate_values,
@@ -7983,6 +8036,8 @@ struct ClosestHitGroupedArgminCuFunctions {
     CUfunction min_key_fn = nullptr;
     CUfunction scatter_unique_fn = nullptr;
     CUfunction min_index_fn = nullptr;
+    CUfunction min_key_per_ray_group_fn = nullptr;
+    CUfunction min_index_per_ray_group_fn = nullptr;
     CUfunction materialize_fn = nullptr;
     CUfunction merge_two_fn = nullptr;
     CUfunction candidate_min_key_fn = nullptr;
