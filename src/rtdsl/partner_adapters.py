@@ -7239,6 +7239,13 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             return {"columns": columns, "metadata": metadata}
         return columns
 
+    def run_same_stream_evidence(self, *, min_neighbors: int, return_metadata: bool = False):
+        return _run_cupy_grouped_stream_same_stream_evidence(
+            self,
+            min_neighbors=min_neighbors,
+            return_metadata=return_metadata,
+        )
+
     def close(self) -> None:
         if self.closed:
             return
@@ -7258,6 +7265,184 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             self.close()
         except Exception:
             pass
+
+
+def _run_cupy_grouped_stream_same_stream_evidence(
+    prepared: PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    if prepared.closed:
+        raise RuntimeError("prepared OptiX+CuPy grouped stream radius graph handle is closed")
+    min_neighbors = int(min_neighbors)
+    if min_neighbors < 1:
+        raise ValueError("min_neighbors must be at least 1")
+    if prepared.grouped_union_query_block_size is not None:
+        raise RuntimeError("same-stream evidence currently requires an unblocked grouped-union self query")
+
+    core_flag_cache_reused = prepared._cached_core_threshold == min_neighbors
+    if not core_flag_cache_reused:
+        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+            prepared.prepared_native,
+            prepared.point_rows,
+            radius=prepared.radius,
+            threshold=min_neighbors,
+            partner=prepared.partner,
+            output_columns=prepared.count_columns,
+            return_metadata=True,
+        )
+        prepared._cached_core_threshold = min_neighbors
+        prepared._cached_core_flags = threshold_result["columns"]["threshold_flags"]
+        prepared._cached_neighbor_counts = threshold_result["columns"]["neighbor_counts"]
+        prepared._cached_count_metadata = dict(threshold_result["metadata"])
+        prepared._cached_all_core_flags_true = bool(prepared.cupy.all(prepared._cached_core_flags).item())
+    core_flags = prepared._cached_core_flags
+    neighbor_counts = prepared._cached_neighbor_counts
+    all_core_flags_true = bool(prepared._cached_all_core_flags_true)
+    if all_core_flags_true:
+        raise RuntimeError("same-stream evidence requires the predicated grouped-union path, not the all-core shortcut")
+
+    stream = prepared.cupy.cuda.Stream(non_blocking=True)
+    telemetry = prepared.cupy.zeros((10,), dtype=prepared.cupy.uint64)
+    start_event = prepared.cupy.cuda.Event()
+    native_done_event = prepared.cupy.cuda.Event()
+    partner_done_event = prepared.cupy.cuda.Event()
+    threads = 256
+    label_blocks = (max(1, (prepared.point_count + threads - 1) // threads),)
+    with stream:
+        prepared.parent_workspace[...] = prepared.parent_initial
+        prepared.border_core_candidate_workspace.fill(prepared.point_count)
+        telemetry.fill(0)
+        start_event.record(stream)
+        native_result = prepared.prepared_native.apply_device_grouped_union_self_on_stream(
+            radius=prepared.radius,
+            predicate_flags=core_flags,
+            parent_out=prepared.parent_workspace,
+            fallback_candidate_out=prepared.border_core_candidate_workspace,
+            telemetry_out=telemetry,
+            cuda_stream_ptr=int(stream.ptr),
+            same_root_culling=prepared.grouped_union_same_root_culling,
+            direct_side_effect=prepared.grouped_union_direct_side_effect,
+        )
+        native_done_event.record(stream)
+        prepared.border_candidate_label_kernel(
+            label_blocks,
+            (threads,),
+            (
+                prepared.point_count,
+                core_flags,
+                prepared.parent_workspace,
+                prepared.border_core_candidate_workspace,
+                prepared.labels_workspace,
+            ),
+            stream=stream,
+        )
+        partner_done_event.record(stream)
+    partner_done_event.synchronize()
+
+    native_event_ms = float(prepared.cupy.cuda.get_elapsed_time(start_event, native_done_event))
+    partner_event_ms = float(prepared.cupy.cuda.get_elapsed_time(native_done_event, partner_done_event))
+    total_event_ms = float(prepared.cupy.cuda.get_elapsed_time(start_event, partner_done_event))
+    telemetry_host = [int(item) for item in prepared.cupy.asnumpy(telemetry).tolist()]
+    grouped_reused = prepared.run_count > 0
+    prepared.run_count += 1
+    columns = {
+        "point_ids": prepared.point_columns["ids"],
+        "component_labels": prepared.labels_workspace,
+        "is_core": core_flags,
+        "neighbor_counts": neighbor_counts,
+    }
+    native_metadata = dict(native_result["metadata"])
+    same_stream_evidence = {
+        "partner": prepared.partner,
+        "evidence_source": "cupy_cuda_event_pair",
+        "cuda_stream_ptr": int(stream.ptr),
+        "native_start_event_ptr": int(getattr(start_event, "ptr", 0) or 0),
+        "native_done_event_ptr": int(getattr(native_done_event, "ptr", 0) or 0),
+        "partner_done_event_ptr": int(getattr(partner_done_event, "ptr", 0) or 0),
+        "native_event_ms": native_event_ms,
+        "partner_event_ms": partner_event_ms,
+        "total_event_ms": total_event_ms,
+        "event_pair_scope": "prepared_native_optix_launch_to_cupy_label_kernel_on_same_stream",
+        "native_symbol": native_metadata.get("native_symbol"),
+        "native_metadata_cuda_stream_ptr": int(native_metadata.get("cuda_stream_ptr", 0) or 0),
+        "native_synchronized_before_return": bool(native_metadata.get("native_synchronized_before_return", True)),
+        "validation_materialization_after_measured_window": True,
+        "transfer_counter_observed": False,
+        "true_zero_copy_ready": False,
+        "no_hidden_copy_ready": False,
+        "same_stream_ready": (
+            int(stream.ptr) != 0
+            and int(native_metadata.get("cuda_stream_ptr", 0) or 0) == int(stream.ptr)
+            and not bool(native_metadata.get("native_synchronized_before_return", True))
+            and total_event_ms >= native_event_ms >= 0.0
+            and partner_event_ms >= 0.0
+        ),
+        "same_stream_ready_reason": "cuda_events_recorded_around_native_and_partner_work_on_the_same_cupy_stream",
+        "limits": (
+            "No CUDA transfer counter is attached in this evidence path; true-zero-copy remains false "
+            "even though validation materialization occurs after the measured window."
+        ),
+    }
+    metadata = {
+        "adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run_same_stream_evidence",
+        "partner": prepared.partner,
+        "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+        "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d_same_stream_evidence",
+        "native_engine_row_contract": native_metadata.get(
+            "native_engine_row_contract",
+            "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+        ),
+        "native_execution_path": native_metadata.get(
+            "native_execution_path",
+            "prepared_rt_core_grouped_union_3d_self_query_on_stream",
+        ),
+        "query_source": "prepared_search_points_self_query_device",
+        "point_count": prepared.point_count,
+        "radius": prepared.radius,
+        "min_neighbors": min_neighbors,
+        "prepared_grouped_stream_run_count": prepared.run_count,
+        "prepared_grouped_stream_reused": grouped_reused,
+        "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal_on_caller_stream",
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+        "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
+        "prepared_optix_scene_reused": True,
+        "output_columns_reused": True,
+        "core_flag_threshold": min_neighbors,
+        "core_flag_cache_reused": core_flag_cache_reused,
+        "all_core_flags_true": all_core_flags_true,
+        "grouped_union_query_block_size": None,
+        "grouped_union_query_block_count": 1,
+        "grouped_union_query_blocked_candidate": False,
+        "grouped_union_same_root_culling_enabled": prepared.grouped_union_same_root_culling,
+        "grouped_union_direct_side_effect_enabled": prepared.grouped_union_direct_side_effect,
+        "optix_backend_used": True,
+        "rt_core_accelerated": True,
+        "materializes_neighbor_summaries": False,
+        "materializes_neighbor_rows": False,
+        "materializes_directed_adjacency_stream": False,
+        "materializes_bounded_directed_adjacency_chunks": False,
+        "adjacency_write_pass_count": 0,
+        "grouped_stream_continuation_pass_count": 1,
+        "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+        "count_metadata": prepared._cached_count_metadata,
+        "native_grouped_stream_metadata": native_metadata,
+        "grouped_union_telemetry": telemetry_host,
+        "same_stream_evidence": same_stream_evidence,
+        "same_stream_ready": same_stream_evidence["same_stream_ready"],
+        "true_zero_copy_ready": False,
+        "automatic_hidden_dispatcher": False,
+        "direct_device_handoff_authorized": True,
+        "output_columns_true_zero_copy_authorized": True,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
 
 
 _RADIUS_GRAPH_BOUNDARY_ASSIGNMENT_POLICIES = (
@@ -7949,178 +8134,6 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "true_zero_copy_authorized": False,
             "raw_cuda_kernel_required": False,
             "numba_cuda_jit_used": True,
-            "rt_core_speedup_claim_authorized": False,
-            "v2_0_release_authorized": False,
-            "whole_app_speedup_claim_authorized": False,
-        }
-        if return_metadata:
-            return {"columns": columns, "metadata": metadata}
-        return columns
-
-    def run_same_stream_evidence(self, *, min_neighbors: int, return_metadata: bool = False):
-        if self.closed:
-            raise RuntimeError("prepared OptiX+CuPy grouped stream radius graph handle is closed")
-        min_neighbors = int(min_neighbors)
-        if min_neighbors < 1:
-            raise ValueError("min_neighbors must be at least 1")
-        if self.grouped_union_query_block_size is not None:
-            raise RuntimeError("same-stream evidence currently requires an unblocked grouped-union self query")
-
-        core_flag_cache_reused = self._cached_core_threshold == min_neighbors
-        if not core_flag_cache_reused:
-            threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
-                self.prepared_native,
-                self.point_rows,
-                radius=self.radius,
-                threshold=min_neighbors,
-                partner=self.partner,
-                output_columns=self.count_columns,
-                return_metadata=True,
-            )
-            self._cached_core_threshold = min_neighbors
-            self._cached_core_flags = threshold_result["columns"]["threshold_flags"]
-            self._cached_neighbor_counts = threshold_result["columns"]["neighbor_counts"]
-            self._cached_count_metadata = dict(threshold_result["metadata"])
-            self._cached_all_core_flags_true = bool(self.cupy.all(self._cached_core_flags).item())
-        core_flags = self._cached_core_flags
-        neighbor_counts = self._cached_neighbor_counts
-        all_core_flags_true = bool(self._cached_all_core_flags_true)
-        if all_core_flags_true:
-            raise RuntimeError("same-stream evidence requires the predicated grouped-union path, not the all-core shortcut")
-
-        stream = self.cupy.cuda.Stream(non_blocking=True)
-        telemetry = self.cupy.zeros((10,), dtype=self.cupy.uint64)
-        start_event = self.cupy.cuda.Event()
-        native_done_event = self.cupy.cuda.Event()
-        partner_done_event = self.cupy.cuda.Event()
-        threads = 256
-        label_blocks = (max(1, (self.point_count + threads - 1) // threads),)
-        with stream:
-            self.parent_workspace[...] = self.parent_initial
-            self.border_core_candidate_workspace.fill(self.point_count)
-            telemetry.fill(0)
-            start_event.record(stream)
-            native_result = self.prepared_native.apply_device_grouped_union_self_on_stream(
-                radius=self.radius,
-                predicate_flags=core_flags,
-                parent_out=self.parent_workspace,
-                fallback_candidate_out=self.border_core_candidate_workspace,
-                telemetry_out=telemetry,
-                cuda_stream_ptr=int(stream.ptr),
-                same_root_culling=self.grouped_union_same_root_culling,
-                direct_side_effect=self.grouped_union_direct_side_effect,
-            )
-            native_done_event.record(stream)
-            self.border_candidate_label_kernel(
-                label_blocks,
-                (threads,),
-                (
-                    self.point_count,
-                    core_flags,
-                    self.parent_workspace,
-                    self.border_core_candidate_workspace,
-                    self.labels_workspace,
-                ),
-                stream=stream,
-            )
-            partner_done_event.record(stream)
-        partner_done_event.synchronize()
-
-        native_event_ms = float(self.cupy.cuda.get_elapsed_time(start_event, native_done_event))
-        partner_event_ms = float(self.cupy.cuda.get_elapsed_time(native_done_event, partner_done_event))
-        total_event_ms = float(self.cupy.cuda.get_elapsed_time(start_event, partner_done_event))
-        telemetry_host = [int(item) for item in self.cupy.asnumpy(telemetry).tolist()]
-        grouped_reused = self.run_count > 0
-        self.run_count += 1
-        columns = {
-            "point_ids": self.point_columns["ids"],
-            "component_labels": self.labels_workspace,
-            "is_core": core_flags,
-            "neighbor_counts": neighbor_counts,
-        }
-        native_metadata = dict(native_result["metadata"])
-        same_stream_evidence = {
-            "partner": self.partner,
-            "evidence_source": "cupy_cuda_event_pair",
-            "cuda_stream_ptr": int(stream.ptr),
-            "native_start_event_ptr": int(getattr(start_event, "ptr", 0) or 0),
-            "native_done_event_ptr": int(getattr(native_done_event, "ptr", 0) or 0),
-            "partner_done_event_ptr": int(getattr(partner_done_event, "ptr", 0) or 0),
-            "native_event_ms": native_event_ms,
-            "partner_event_ms": partner_event_ms,
-            "total_event_ms": total_event_ms,
-            "event_pair_scope": "prepared_native_optix_launch_to_cupy_label_kernel_on_same_stream",
-            "native_symbol": native_metadata.get("native_symbol"),
-            "native_metadata_cuda_stream_ptr": int(native_metadata.get("cuda_stream_ptr", 0) or 0),
-            "native_synchronized_before_return": bool(native_metadata.get("native_synchronized_before_return", True)),
-            "validation_materialization_after_measured_window": True,
-            "transfer_counter_observed": False,
-            "true_zero_copy_ready": False,
-            "no_hidden_copy_ready": False,
-            "same_stream_ready": (
-                int(stream.ptr) != 0
-                and int(native_metadata.get("cuda_stream_ptr", 0) or 0) == int(stream.ptr)
-                and not bool(native_metadata.get("native_synchronized_before_return", True))
-                and total_event_ms >= native_event_ms >= 0.0
-                and partner_event_ms >= 0.0
-            ),
-            "same_stream_ready_reason": "cuda_events_recorded_around_native_and_partner_work_on_the_same_cupy_stream",
-            "limits": (
-                "No CUDA transfer counter is attached in this evidence path; true-zero-copy remains false "
-                "even though validation materialization occurs after the measured window."
-            ),
-        }
-        metadata = {
-            "adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run_same_stream_evidence",
-            "partner": self.partner,
-            "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
-            "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d_same_stream_evidence",
-            "native_engine_row_contract": native_metadata.get(
-                "native_engine_row_contract",
-                "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
-            ),
-            "native_execution_path": native_metadata.get(
-                "native_execution_path",
-                "prepared_rt_core_grouped_union_3d_self_query_on_stream",
-            ),
-            "query_source": "prepared_search_points_self_query_device",
-            "point_count": self.point_count,
-            "radius": self.radius,
-            "min_neighbors": min_neighbors,
-            "prepared_grouped_stream_run_count": self.run_count,
-            "prepared_grouped_stream_reused": grouped_reused,
-            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal_on_caller_stream",
-            "component_label_policy": "positive_root_index_labels_noise_minus_one",
-            "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
-            "fallback_candidate_policy": "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass",
-            "prepared_optix_scene_reused": True,
-            "output_columns_reused": True,
-            "core_flag_threshold": min_neighbors,
-            "core_flag_cache_reused": core_flag_cache_reused,
-            "all_core_flags_true": all_core_flags_true,
-            "grouped_union_query_block_size": None,
-            "grouped_union_query_block_count": 1,
-            "grouped_union_query_blocked_candidate": False,
-            "grouped_union_same_root_culling_enabled": self.grouped_union_same_root_culling,
-            "grouped_union_direct_side_effect_enabled": self.grouped_union_direct_side_effect,
-            "optix_backend_used": True,
-            "rt_core_accelerated": True,
-            "materializes_neighbor_summaries": False,
-            "materializes_neighbor_rows": False,
-            "materializes_directed_adjacency_stream": False,
-            "materializes_bounded_directed_adjacency_chunks": False,
-            "adjacency_write_pass_count": 0,
-            "grouped_stream_continuation_pass_count": 1,
-            "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
-            "count_metadata": self._cached_count_metadata,
-            "native_grouped_stream_metadata": native_metadata,
-            "grouped_union_telemetry": telemetry_host,
-            "same_stream_evidence": same_stream_evidence,
-            "same_stream_ready": same_stream_evidence["same_stream_ready"],
-            "true_zero_copy_ready": False,
-            "automatic_hidden_dispatcher": False,
-            "direct_device_handoff_authorized": True,
-            "output_columns_true_zero_copy_authorized": True,
             "rt_core_speedup_claim_authorized": False,
             "v2_0_release_authorized": False,
             "whole_app_speedup_claim_authorized": False,
