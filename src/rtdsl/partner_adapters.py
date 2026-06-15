@@ -1917,7 +1917,10 @@ def _numba_runtime_for_point_columns() -> dict[str, object]:
     from numba import cuda
 
     if not cuda.is_available():
-        raise RuntimeError("Numba partner adapter requires numba.cuda to be available")
+        try:
+            cuda.get_current_device()
+        except Exception as exc:
+            raise RuntimeError("Numba partner adapter requires numba.cuda to be available") from exc
 
     return {
         "name": "numba",
