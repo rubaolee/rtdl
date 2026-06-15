@@ -214,6 +214,11 @@ from .v3_0_m4_pilots import M4_COMPONENT_UNION_OPERATION
 from .v3_0_m4_pilots import M4_LOCAL_PREP_STATUS
 from .v3_0_m4_pilots import m4_component_union_pilot_graphs
 from .v3_0_m4_pilots import validate_m4_component_union_reuse
+from .v3_0_m5_topology_pilots import M5_LOCAL_PREP_STATUS
+from .v3_0_m5_topology_pilots import M5_TOPOLOGY_COMPACTION_OPERATION
+from .v3_0_m5_topology_pilots import M5_TOPOLOGY_CONTRACT_KEY
+from .v3_0_m5_topology_pilots import m5_topology_pilot_graphs
+from .v3_0_m5_topology_pilots import validate_m5_topology_pilots
 from .v2_12_prepared_resident_query_plan import V212PreparedResidentQueryWorkItem
 from .v2_12_prepared_resident_query_plan import V2_12_CROSS_APP_BENCHMARK_APP
 from .v2_12_prepared_resident_query_plan import V2_12_FORBIDDEN_CLAIM_FLAGS
