@@ -4,6 +4,7 @@ from collections.abc import Iterable, Mapping, Sequence
 import statistics
 import time
 
+from .reference import Point3D
 from .v2_8_fixed_radius_graph_component_front_door import fixed_radius_graph_component_labels_3d_v2_8
 from .v2_8_fixed_radius_graph_component_front_door import prepare_v2_8_fixed_radius_graph_component_continuation_3d
 from .v3_0_execution_graph import GraphValidationError
@@ -22,7 +23,7 @@ V3_M9_CONTRACT_KEY = "fixed_radius_component_grouped_stream_contract_v1"
 V3_M9_PARTNERS = ("cupy", "numba")
 
 
-def make_v3_m9_point_grid_3d(point_count: int) -> tuple[tuple[float, float, float], ...]:
+def make_v3_m9_point_grid_3d(point_count: int) -> tuple[Point3D, ...]:
     count = int(point_count)
     if count <= 0:
         raise GraphValidationError("point_count must be positive")
@@ -32,7 +33,7 @@ def make_v3_m9_point_grid_3d(point_count: int) -> tuple[tuple[float, float, floa
         x = float(index % width)
         y = float((index // width) % width)
         z = float(index // (width * width))
-        rows.append((x, y, z))
+        rows.append(Point3D(index, x, y, z))
     return tuple(rows)
 
 
