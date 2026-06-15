@@ -210,6 +210,9 @@ OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_SYMBOL = (
 OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_into_device_columns_with_status_on_stream"
 )
+OPTIX_RAY_BATCH_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_batch_triangle_hit_stream_into_device_columns_with_status_on_stream"
+)
 OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_segment_pair_candidate_device_columns"
 )
@@ -16420,6 +16423,7 @@ def _run_hit_stream_same_stream_status_summary_cupy(
         "consumer_read_status_on_device": True,
         "host_scalar_read_before_consumer": False,
     }
+    return result
 
 
 _HIT_STREAM_SAME_STREAM_ROW_WINDOW_SUMMARY_CUPY_SOURCE = r"""
@@ -19199,6 +19203,213 @@ class PreparedOptixStaticTriangleScene3D:
                 ),
             },
             "output_buffers": output_buffers,
+            "cuda_stream": stream,
+        }
+
+    def ray_batch_triangle_hit_stream_same_stream_row_reduction_summary(
+        self,
+        ray_batch: PreparedOptixRayBatch3D,
+        output_buffers: PreparedOptixHitStreamDeviceColumnBuffers,
+        *,
+        max_rows: int | None = None,
+        deduplicate_primitives: bool = True,
+        cuda_stream=None,
+        transfer_counter=None,
+        transfer_counter_scope: str = "producer_consumer",
+    ) -> dict[str, object]:
+        """Launch a prepared-ray hit stream and a bounded device-row reduction on one stream."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(ray_batch, PreparedOptixRayBatch3D):
+            raise TypeError(
+                "ray_batch_triangle_hit_stream_same_stream_row_reduction_summary requires "
+                "PreparedOptixRayBatch3D"
+            )
+        if ray_batch._closed:
+            raise RuntimeError("prepared OptiX ray batch handle is closed")
+        if not isinstance(output_buffers, PreparedOptixHitStreamDeviceColumnBuffers):
+            raise TypeError(
+                "ray_batch_triangle_hit_stream_same_stream_row_reduction_summary requires "
+                "PreparedOptixHitStreamDeviceColumnBuffers"
+            )
+        output_buffers._assert_open()
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RAY_BATCH_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RAY_BATCH_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        try:
+            import torch
+        except Exception as exc:
+            raise RuntimeError("same-stream prepared-ray hit-stream row-reduction summary requires torch") from exc
+        if cuda_stream is None:
+            stream = torch.cuda.Stream(device=output_buffers.ray_ids.device)
+            cuda_stream_ptr = int(stream.cuda_stream)
+        elif isinstance(cuda_stream, int):
+            stream = None
+            cuda_stream_ptr = int(cuda_stream)
+        elif hasattr(cuda_stream, "cuda_stream"):
+            stream = cuda_stream
+            cuda_stream_ptr = int(cuda_stream.cuda_stream)
+        else:
+            raise TypeError("cuda_stream must be None, an integer CUDA stream pointer, or a torch CUDA Stream")
+        if cuda_stream_ptr == 0:
+            raise ValueError("same-stream prepared-ray hit-stream row-reduction summary requires a nonzero CUDA stream pointer")
+        transfer_counter_scope = str(transfer_counter_scope)
+        if transfer_counter_scope not in {"post_native_enqueue", "producer_consumer"}:
+            raise ValueError(
+                "transfer_counter_scope must be 'post_native_enqueue' or 'producer_consumer'"
+            )
+
+        capacity = output_buffers.capacity if max_rows is None else int(max_rows)
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+        if capacity > output_buffers.capacity:
+            raise ValueError("max_rows must not exceed reusable output buffer capacity")
+
+        columns = _RtdlNativeDeviceHitStreamColumns()
+        error = ctypes.create_string_buffer(4096)
+        transfer_counter_snapshot = None
+        transfer_counter_active = False
+        if transfer_counter is not None and transfer_counter_scope == "producer_consumer":
+            transfer_counter.reset()
+            transfer_counter.enable()
+            transfer_counter_active = True
+        try:
+            native_start = time.perf_counter()
+            status = run_symbol(
+                self._handle,
+                ray_batch._handle,
+                ctypes.c_uint32(1 if deduplicate_primitives else 0),
+                ctypes.c_size_t(capacity),
+                ctypes.c_uint64(output_buffers.ray_ids_device_ptr),
+                ctypes.c_uint64(output_buffers.primitive_ids_device_ptr),
+                ctypes.c_uint64(output_buffers.row_count_device_ptr),
+                ctypes.c_uint64(output_buffers.hit_event_count_device_ptr),
+                ctypes.c_uint64(output_buffers.overflow_device_ptr),
+                ctypes.c_uint64(cuda_stream_ptr),
+                ctypes.byref(columns),
+                error,
+                len(error),
+            )
+            native_launch_seconds = time.perf_counter() - native_start
+            _check_status(status, error)
+
+            for observed, expected, name in (
+                (int(columns.ray_ids_device_ptr), output_buffers.ray_ids_device_ptr, "ray_ids"),
+                (int(columns.primitive_ids_device_ptr), output_buffers.primitive_ids_device_ptr, "primitive_ids"),
+                (int(columns.row_count_device_ptr), output_buffers.row_count_device_ptr, "row_count"),
+                (int(columns.hit_event_count_device_ptr), output_buffers.hit_event_count_device_ptr, "hit_event_count"),
+                (int(columns.overflow_device_ptr), output_buffers.overflow_device_ptr, "overflow"),
+            ):
+                if observed != expected:
+                    raise RuntimeError(f"native OptiX backend returned an unexpected {name} pointer")
+        except Exception:
+            if transfer_counter is not None and transfer_counter_active:
+                transfer_counter.disable_and_snapshot()
+            raise
+
+        async_owner = _OptixNativeHitStreamAsyncLaunchOwner(self._lib, columns.owner_handle)
+        owner_handle_observed = async_owner.handle_value != 0
+        consumer_start = time.perf_counter()
+        try:
+            if transfer_counter is not None and transfer_counter_scope == "post_native_enqueue":
+                transfer_counter.reset()
+                transfer_counter.enable()
+                transfer_counter_active = True
+            summary = _run_hit_stream_same_stream_row_reduction_summary_cupy(
+                output_buffers,
+                capacity=int(columns.capacity),
+                cuda_stream_ptr=cuda_stream_ptr,
+                transfer_counter=transfer_counter if transfer_counter_active else None,
+            )
+            transfer_counter_snapshot = summary.pop("_transfer_counter_snapshot", None)
+        finally:
+            if transfer_counter is not None and transfer_counter_active and transfer_counter_snapshot is None:
+                transfer_counter.disable_and_snapshot()
+            async_owner.close()
+        consumer_seconds = time.perf_counter() - consumer_start
+        transfer_counter_window = None
+        if transfer_counter_snapshot is not None:
+            if transfer_counter_scope == "producer_consumer":
+                transfer_counter_window = (
+                    "prepared_ray_batch_native_producer_enqueue_to_same_stream_row_reduction_before_summary_materialization"
+                )
+            else:
+                transfer_counter_window = (
+                    "post_native_enqueue_same_stream_row_reduction_before_summary_materialization"
+                )
+
+        self._run_count += 1
+        return {
+            "summary": summary,
+            "metadata": {
+                "contract_version": "rtdl.prepared_ray_batch_hit_stream_same_stream_row_reduction_consumer.v3_m15",
+                "backend": "optix",
+                "native_symbol": OPTIX_RAY_BATCH_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL,
+                "release_symbol": OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_ASYNC_LAUNCH_SYMBOL,
+                "producer_consumer_stream_ordering": "same_stream",
+                "stream_synchronization_proven": True,
+                "event_or_same_stream_ordering_proven": True,
+                "zero_copy_compatible_stream_ordering": True,
+                "producer_host_synchronization_used": False,
+                "host_scalar_read_before_consumer": False,
+                "host_row_materialization_before_consumer": False,
+                "prepared_ray_batch_used": True,
+                "prepared_ray_batch_seconds": float(ray_batch.prepare_seconds),
+                "prepared_ray_batch_transfer_metadata": dict(ray_batch.transfer_metadata),
+                "producer_input_upload_mode": "prepared_device_ray_batch_no_per_run_ray_upload",
+                "producer_input_upload_host_blocking_cuda_copy": False,
+                "query_rays_uploaded_each_run": False,
+                "query_rays_still_packed_on_host": False,
+                "prepared_rays_resident_on_device": True,
+                "final_materialization_synchronization_used": True,
+                "device_resident_status_for_partner": True,
+                "device_resident_row_reduction_for_partner": True,
+                "row_count_scalar_visibility_before_consumer": "device_only",
+                "overflow_scalar_visibility_before_consumer": "device_only",
+                "bounded_partner_consumer_executed": True,
+                "bounded_partner_consumer": "cupy_rawkernel",
+                "transfer_counter_observed": transfer_counter_snapshot is not None,
+                "transfer_counter_snapshot": transfer_counter_snapshot,
+                "transfer_counter_scope": transfer_counter_scope,
+                "transfer_counter_window": transfer_counter_window,
+                "async_partner_continuation_authorized": True,
+                "async_partner_continuation_authorization_scope": "bounded_same_stream_row_reduction_consumer_only",
+                "general_partner_continuation_authorized": False,
+                "true_zero_copy_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "native_launch_owner_handle_observed": owner_handle_observed,
+                "async_launch_owner_release_required": owner_handle_observed,
+                "stream_lifetime_contract": (
+                    "caller stream and prepared ray batch must remain valid until async launch owner release"
+                ),
+                "cuda_stream_ptr_nonzero": bool(cuda_stream_ptr),
+                "ray_count": int(ray_batch.ray_count),
+                "capacity": int(columns.capacity),
+                "phase_timing_seconds": {
+                    "prepare_build": float(self.prepare_seconds),
+                    "prepared_ray_batch_prepare": float(ray_batch.prepare_seconds),
+                    "query_pack": 0.0,
+                    "native_async_launch_enqueue": float(native_launch_seconds),
+                    "same_stream_partner_row_reduction_consumer_and_materialization": float(consumer_seconds),
+                },
+                "claim_boundary": (
+                    "This proves one bounded CuPy consumer can reduce all stored "
+                    "device-resident hit-stream rows after an OptiX producer reads "
+                    "a prepared device-resident ray batch on the same CUDA stream. "
+                    "It does not authorize broad true-zero-copy, public speedup, "
+                    "or arbitrary partner claims."
+                ),
+            },
+            "output_buffers": output_buffers,
+            "ray_batch": ray_batch,
             "cuda_stream": stream,
         }
 
@@ -23049,6 +23260,31 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_static_scene_3d_hit_stream_into_device_columns_with_status_on_stream.restype = ctypes.c_int
+    optional_static_scene_3d_ray_batch_hit_stream_into_device_columns_with_status_on_stream = (
+        _find_optional_backend_symbol(
+            lib,
+            OPTIX_RAY_BATCH_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM_SYMBOL,
+        )
+    )
+    if optional_static_scene_3d_ray_batch_hit_stream_into_device_columns_with_status_on_stream is not None:
+        optional_static_scene_3d_ray_batch_hit_stream_into_device_columns_with_status_on_stream.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+            ctypes.c_size_t,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.POINTER(_RtdlNativeDeviceHitStreamColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_ray_batch_hit_stream_into_device_columns_with_status_on_stream.restype = (
+            ctypes.c_int
+        )
     optional_static_scene_3d_release_hit_stream_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL,
