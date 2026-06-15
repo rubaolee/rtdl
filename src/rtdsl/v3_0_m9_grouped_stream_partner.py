@@ -485,7 +485,7 @@ def _apply_numba_cuda_compat_env() -> dict[str, object]:
     if bin_dir.exists():
         _prepend_env_path("PATH", str(bin_dir))
     os.environ["CUDA_HOME"] = str(root)
-    os.environ.setdefault("NUMBA_CUDA_ENABLE_MINOR_VERSION_COMPATIBILITY", "1")
+    os.environ["NUMBA_CUDA_ENABLE_MINOR_VERSION_COMPATIBILITY"] = "0"
     return {
         "applied": True,
         "cuda_home": str(root),
