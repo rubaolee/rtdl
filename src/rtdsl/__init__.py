@@ -210,6 +210,10 @@ from .v3_0_instrumentation import V3_INSTRUMENTATION_STATUS
 from .v3_0_instrumentation import V3_INSTRUMENTATION_VERSION
 from .v3_0_instrumentation import claim_readiness_summary
 from .v3_0_instrumentation import empty_claim_boundary_metadata
+from .v3_0_m4_pilots import M4_COMPONENT_UNION_OPERATION
+from .v3_0_m4_pilots import M4_LOCAL_PREP_STATUS
+from .v3_0_m4_pilots import m4_component_union_pilot_graphs
+from .v3_0_m4_pilots import validate_m4_component_union_reuse
 from .v2_12_prepared_resident_query_plan import V212PreparedResidentQueryWorkItem
 from .v2_12_prepared_resident_query_plan import V2_12_CROSS_APP_BENCHMARK_APP
 from .v2_12_prepared_resident_query_plan import V2_12_FORBIDDEN_CLAIM_FLAGS
