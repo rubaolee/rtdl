@@ -21494,6 +21494,9 @@ struct PointGroupThresholdRtLaunchParams {
 struct PointGroupNearestRtLaunchParams {
     OptixTraversableHandle traversable;
     const GpuPoint* query_points;
+    const uint32_t* query_ids;
+    const double* query_x;
+    const double* query_y;
     const GpuPoint* search_points;
     const GpuPointGroupBounds* groups;
     const uint32_t* active_flags;
@@ -21501,6 +21504,7 @@ struct PointGroupNearestRtLaunchParams {
     GpuFixedRadiusNearestRecord* output;
     uint32_t query_count;
     uint32_t active_keep_value;
+    uint32_t use_device_columns;
     float radius;
     float trace_tmax;
 };
@@ -22401,6 +22405,9 @@ static void run_prepared_point_group_nearest_witness_2d_optix(
     PointGroupNearestRtLaunchParams lp;
     lp.traversable = prepared->accel.handle;
     lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
+    lp.query_ids = nullptr;
+    lp.query_x = nullptr;
+    lp.query_y = nullptr;
     lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
     lp.groups = reinterpret_cast<const GpuPointGroupBounds*>(prepared->d_groups.ptr);
     lp.active_flags = nullptr;
@@ -22408,6 +22415,7 @@ static void run_prepared_point_group_nearest_witness_2d_optix(
     lp.output = reinterpret_cast<GpuFixedRadiusNearestRecord*>(d_output.ptr);
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.active_keep_value = 0u;
+    lp.use_device_columns = 0u;
     lp.radius = static_cast<float>(radius);
     lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
 
@@ -22500,6 +22508,9 @@ static void write_prepared_point_group_nearest_witness_2d_device_columns_optix(
     PointGroupNearestRtLaunchParams lp;
     lp.traversable = prepared->accel.handle;
     lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
+    lp.query_ids = nullptr;
+    lp.query_x = nullptr;
+    lp.query_y = nullptr;
     lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
     lp.groups = reinterpret_cast<const GpuPointGroupBounds*>(prepared->d_groups.ptr);
     lp.active_flags = nullptr;
@@ -22507,6 +22518,101 @@ static void write_prepared_point_group_nearest_witness_2d_device_columns_optix(
     lp.output = reinterpret_cast<GpuFixedRadiusNearestRecord*>(d_output.ptr);
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.active_keep_value = 0u;
+    lp.use_device_columns = 0u;
+    lp.radius = static_cast<float>(radius);
+    lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
+
+    DevPtr d_params(sizeof(PointGroupNearestRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    g_optix_last_bvh_build_s = 0.0;
+    auto t_start_trav = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_point_group_nearest_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(PointGroupNearestRtLaunchParams),
+                             &g_point_group_nearest_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    uint32_t count_u32 = static_cast<uint32_t>(query_count);
+    void* split_args[] = {
+        &d_output.ptr,
+        &count_u32,
+        &query_ids_out,
+        &neighbor_ids_out,
+        &distances_out,
+    };
+    const unsigned block = 256;
+    const unsigned grid = static_cast<unsigned>((query_count + block - 1) / block);
+    CU_CHECK(cuLaunchKernel(
+        g_point_group_nearest_split_columns.fn,
+        grid, 1, 1,
+        block, 1, 1,
+        0, stream, split_args, nullptr));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+    g_optix_last_copy_s = 0.0;
+}
+
+static void write_prepared_point_group_nearest_witness_2d_device_query_columns_optix(
+        PreparedPointGroupNearestWitness2D* prepared,
+        const uint32_t* query_ids,
+        const double* query_x,
+        const double* query_y,
+        size_t query_count,
+        double radius,
+        uint32_t* query_ids_out,
+        uint32_t* neighbor_ids_out,
+        double* distances_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX point-group handle must not be null");
+    if (query_count != 0 && (!query_ids || !query_x || !query_y))
+        throw std::runtime_error("point_group_nearest_witness_device_query_columns input pointers must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("point_group_nearest_witness_device_query_columns radius must be non-negative");
+    if (radius > static_cast<double>(prepared->max_radius) + 1.0e-7)
+        throw std::runtime_error("point_group_nearest_witness_device_query_columns radius exceeds prepared max_radius");
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("point_group_nearest_witness_device_query_columns query_count exceeds uint32 limit");
+    if (query_count == 0 || prepared->groups.empty()) return;
+    if (!query_ids_out || !neighbor_ids_out || !distances_out)
+        throw std::runtime_error("point_group_nearest_witness_device_query_columns output pointers must not be null when query_count is nonzero");
+
+    std::call_once(g_point_group_nearest_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kPointGroupNearestRtKernelSrc, "point_group_nearest_rt_kernel.cu");
+        g_point_group_nearest_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__point_group_nearest_probe",
+            "__miss__point_group_nearest_miss",
+            "__intersection__point_group_nearest_isect",
+            "__anyhit__point_group_nearest_anyhit",
+            nullptr, 4).release();
+    });
+    std::call_once(g_point_group_nearest_split_columns.init, [&]() {
+        std::string cubin = compile_to_cubin(
+            kPointGroupNearestMaxReduceKernelSrc,
+            "point_group_nearest_split_columns_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_point_group_nearest_split_columns.module, cubin.data()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_point_group_nearest_split_columns.fn,
+            g_point_group_nearest_split_columns.module,
+            "split_point_group_nearest_columns"));
+    });
+
+    DevPtr d_output(sizeof(GpuFixedRadiusNearestRecord) * query_count);
+
+    PointGroupNearestRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = nullptr;
+    lp.query_ids = query_ids;
+    lp.query_x = query_x;
+    lp.query_y = query_y;
+    lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
+    lp.groups = reinterpret_cast<const GpuPointGroupBounds*>(prepared->d_groups.ptr);
+    lp.active_flags = nullptr;
+    lp.active_query_count = nullptr;
+    lp.output = reinterpret_cast<GpuFixedRadiusNearestRecord*>(d_output.ptr);
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.active_keep_value = 0u;
+    lp.use_device_columns = 1u;
     lp.radius = static_cast<float>(radius);
     lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
 
@@ -22600,6 +22706,9 @@ static void reduce_prepared_point_group_nearest_max_distance_2d_optix(
     PointGroupNearestRtLaunchParams lp;
     lp.traversable = prepared->accel.handle;
     lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
+    lp.query_ids = nullptr;
+    lp.query_x = nullptr;
+    lp.query_y = nullptr;
     lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
     lp.groups = reinterpret_cast<const GpuPointGroupBounds*>(prepared->d_groups.ptr);
     lp.active_flags = nullptr;
@@ -22607,6 +22716,7 @@ static void reduce_prepared_point_group_nearest_max_distance_2d_optix(
     lp.output = reinterpret_cast<GpuFixedRadiusNearestRecord*>(d_output.ptr);
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.active_keep_value = 0u;
+    lp.use_device_columns = 0u;
     lp.radius = static_cast<float>(radius);
     lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
 
@@ -22740,6 +22850,9 @@ static void reduce_prepared_point_group_nearest_max_distance_active_frontier_2d_
     PointGroupNearestRtLaunchParams nearest_lp;
     nearest_lp.traversable = prepared->accel.handle;
     nearest_lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
+    nearest_lp.query_ids = nullptr;
+    nearest_lp.query_x = nullptr;
+    nearest_lp.query_y = nullptr;
     nearest_lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
     nearest_lp.groups = reinterpret_cast<const GpuPointGroupBounds*>(prepared->d_groups.ptr);
     nearest_lp.active_flags = reinterpret_cast<const uint32_t*>(d_flags.ptr);
@@ -22747,6 +22860,7 @@ static void reduce_prepared_point_group_nearest_max_distance_active_frontier_2d_
     nearest_lp.output = reinterpret_cast<GpuFixedRadiusNearestRecord*>(d_output.ptr);
     nearest_lp.query_count = static_cast<uint32_t>(query_count);
     nearest_lp.active_keep_value = 0u;
+    nearest_lp.use_device_columns = 0u;
     nearest_lp.radius = static_cast<float>(witness_radius);
     nearest_lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
 

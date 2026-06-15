@@ -7192,6 +7192,9 @@ struct FixedRadiusNearestRecord { uint32_t query_id, neighbor_id; float distance
 struct PointGroupNearestParams {
     OptixTraversableHandle traversable;
     const GpuPoint* query_points;
+    const uint32_t* query_ids;
+    const double* query_x;
+    const double* query_y;
     const GpuPoint* search_points;
     const PointGroupBounds* groups;
     const uint32_t* active_flags;
@@ -7199,6 +7202,7 @@ struct PointGroupNearestParams {
     FixedRadiusNearestRecord* output;
     uint32_t query_count;
     uint32_t active_keep_value;
+    uint32_t use_device_columns;
     float radius;
     float trace_tmax;
 };
@@ -7213,10 +7217,22 @@ static __forceinline__ __device__ float nearest_min_distance_sq_to_group(const G
     return dx * dx + dy * dy;
 }
 
+static __forceinline__ __device__ GpuPoint load_point_group_nearest_query(const uint32_t qidx) {
+    if (params.use_device_columns) {
+        return GpuPoint{
+            static_cast<float>(params.query_x[qidx]),
+            static_cast<float>(params.query_y[qidx]),
+            params.query_ids[qidx],
+            0u
+        };
+    }
+    return params.query_points[qidx];
+}
+
 extern "C" __global__ void __raygen__point_group_nearest_probe() {
     const uint32_t idx = optixGetLaunchIndex().x;
     if (idx >= params.query_count) return;
-    const GpuPoint q = params.query_points[idx];
+    const GpuPoint q = load_point_group_nearest_query(idx);
     if (params.active_flags && params.active_flags[idx] != params.active_keep_value) {
         params.output[idx] = {q.id, 0xffffffffu, -1.0f};
         return;
@@ -7244,7 +7260,7 @@ extern "C" __global__ void __miss__point_group_nearest_miss() {}
 extern "C" __global__ void __intersection__point_group_nearest_isect() {
     const uint32_t prim = optixGetPrimitiveIndex();
     const uint32_t qidx = optixGetPayload_0();
-    const GpuPoint q = params.query_points[qidx];
+    const GpuPoint q = load_point_group_nearest_query(qidx);
     const PointGroupBounds g = params.groups[prim];
     const float radius_sq = params.radius * params.radius;
     if (nearest_min_distance_sq_to_group(q, g) > radius_sq) {
@@ -7256,7 +7272,7 @@ extern "C" __global__ void __intersection__point_group_nearest_isect() {
 extern "C" __global__ void __anyhit__point_group_nearest_anyhit() {
     const uint32_t prim = optixGetPrimitiveIndex();
     const uint32_t qidx = optixGetPayload_0();
-    const GpuPoint q = params.query_points[qidx];
+    const GpuPoint q = load_point_group_nearest_query(qidx);
     const PointGroupBounds g = params.groups[prim];
     const float radius_sq = params.radius * params.radius;
     float best = __uint_as_float(optixGetPayload_1());

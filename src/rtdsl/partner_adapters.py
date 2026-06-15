@@ -2945,6 +2945,7 @@ def global_argmax_u32_f64_partner_columns(
     *,
     partner: str = "numba",
     invalid_item_id: int = _UINT32_MAX,
+    validate_non_empty_on_host: bool = True,
     return_metadata: bool = False,
 ) -> dict[str, object]:
     """Select the highest-score uint32 item from generic device columns."""
@@ -2980,6 +2981,7 @@ def global_argmax_u32_f64_partner_columns(
         item_ids,
         scores,
         invalid_item_id=invalid_item_id,
+        validate_non_empty_on_host=validate_non_empty_on_host,
     )
     elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
     columns = result["outputs"]
@@ -2996,6 +2998,7 @@ def global_argmax_u32_f64_partner_columns(
             "tie_break": result["tie_break"],
             "reduction_strategy": result.get("reduction_strategy"),
             "invalid_item_id": int(result["invalid_item_id"]),
+            "host_valid_count_check_used": bool(result.get("host_valid_count_check_used")),
             "partner_elapsed_seconds": elapsed,
             "numba_elapsed_seconds": elapsed,
             "host_row_materialization_used": False,
