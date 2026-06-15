@@ -7023,6 +7023,182 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             }
         }
 
+    def apply_device_grouped_union_self_on_stream(
+        self,
+        *,
+        radius: float,
+        predicate_flags,
+        parent_out,
+        fallback_candidate_out,
+        telemetry_out,
+        cuda_stream_ptr: int,
+        same_root_culling: bool = True,
+        direct_side_effect: bool = False,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius grouped-union self 3D handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        same_root_culling = _require_bool(same_root_culling, name="same_root_culling")
+        direct_side_effect = _require_bool(direct_side_effect, name="direct_side_effect")
+        cuda_stream_ptr = int(cuda_stream_ptr)
+        if cuda_stream_ptr == 0:
+            raise ValueError("cuda_stream_ptr must be a nonzero CUDA stream handle")
+
+        predicate_handoff = _partner.prepare_direct_device_pointer_handoff(predicate_flags, access="read")
+        parent_handoff = _partner.prepare_direct_device_pointer_handoff(parent_out, access="readwrite")
+        fallback_handoff = _partner.prepare_direct_device_pointer_handoff(fallback_candidate_out, access="readwrite")
+        telemetry_handoff = _partner.prepare_direct_device_pointer_handoff(telemetry_out, access="readwrite")
+        expected_device = (predicate_handoff.device_type, predicate_handoff.device_id)
+        if (parent_handoff.device_type, parent_handoff.device_id) != expected_device:
+            raise ValueError("predicate_flags and parent_out must live on the same CUDA device")
+        if (fallback_handoff.device_type, fallback_handoff.device_id) != expected_device:
+            raise ValueError("predicate_flags and fallback_candidate_out must live on the same CUDA device")
+        if (telemetry_handoff.device_type, telemetry_handoff.device_id) != expected_device:
+            raise ValueError("grouped-union telemetry_out must live on the same CUDA device")
+        if _partner_dtype_token(predicate_handoff.dtype) != "uint32":
+            raise ValueError("predicate_flags must use dtype uint32")
+        if _partner_dtype_token(parent_handoff.dtype) != "int32":
+            raise ValueError("parent_out must use dtype int32")
+        if _partner_dtype_token(fallback_handoff.dtype) != "int32":
+            raise ValueError("fallback_candidate_out must use dtype int32")
+        if _partner_dtype_token(telemetry_handoff.dtype) != "uint64":
+            raise ValueError("grouped-union telemetry_out must use dtype uint64")
+        if len(tuple(predicate_handoff.shape)) != 1:
+            raise ValueError("predicate_flags must be one-dimensional")
+        if tuple(parent_handoff.shape) != tuple(predicate_handoff.shape):
+            raise ValueError("parent_out must have the same shape as predicate_flags")
+        if tuple(fallback_handoff.shape) != tuple(predicate_handoff.shape):
+            raise ValueError("fallback_candidate_out must have the same shape as predicate_flags")
+        if len(tuple(telemetry_handoff.shape)) != 1:
+            raise ValueError("grouped-union telemetry_out must be one-dimensional")
+        if int(predicate_handoff.shape[0]) < self._packed_search.count:
+            raise ValueError("grouped-union self workspaces must cover every prepared search item")
+        if int(telemetry_handoff.shape[0]) < 10:
+            raise ValueError("grouped-union same-stream telemetry_out must contain at least ten counters")
+        if not _partner_contiguous_column_strides(predicate_handoff.strides, itemsize=4):
+            raise ValueError("predicate_flags must be contiguous")
+        if not _partner_contiguous_column_strides(parent_handoff.strides, itemsize=4):
+            raise ValueError("parent_out must be contiguous")
+        if not _partner_contiguous_column_strides(fallback_handoff.strides, itemsize=4):
+            raise ValueError("fallback_candidate_out must be contiguous")
+        if not _partner_contiguous_column_strides(telemetry_handoff.strides, itemsize=8):
+            raise ValueError("grouped-union telemetry_out must be contiguous")
+
+        query_count = self._packed_search.count
+        telemetry_buffer_length = int(telemetry_handoff.shape[0])
+        symbol_name = (
+            _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXTENDED_TELEMETRY_EXECUTION_OPTIONS_ON_STREAM_SYMBOL
+        )
+        if query_count == 0:
+            return {
+                "metadata": {
+                    "backend": "optix",
+                    "native_symbol": symbol_name,
+                    "query_count": 0,
+                    "query_index_offset": 0,
+                    "search_count": self._packed_search.count,
+                    "item_count": int(predicate_handoff.shape[0]),
+                    "query_source": "prepared_search_points_self_query_device",
+                    "transfer_mode": "prepared_device_search_points_self_grouped_union_on_stream_empty_shortcut",
+                    "cuda_stream_ptr": cuda_stream_ptr,
+                    "native_synchronized_before_return": False,
+                    "native_timing_source": "not_measured_empty_shortcut",
+                    "rt_core_accelerated": True,
+                    "direct_device_handoff_authorized": True,
+                    "output_columns_true_zero_copy_authorized": True,
+                    "true_zero_copy_authorized": False,
+                    "paper_speedup_claim_authorized": False,
+                }
+            }
+
+        lib = _load_optix_library()
+        apply_symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if apply_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{symbol_name}; rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        start = time.perf_counter()
+        status = apply_symbol(
+            self._handle,
+            ctypes.c_double(float(radius)),
+            ctypes.c_void_p(predicate_handoff.data_ptr),
+            ctypes.c_void_p(parent_handoff.data_ptr),
+            ctypes.c_void_p(fallback_handoff.data_ptr),
+            ctypes.c_void_p(telemetry_handoff.data_ptr),
+            ctypes.c_size_t(telemetry_buffer_length),
+            ctypes.c_uint32(1 if same_root_culling else 0),
+            ctypes.c_uint32(1 if direct_side_effect else 0),
+            ctypes.c_size_t(int(predicate_handoff.shape[0])),
+            ctypes.c_uint64(cuda_stream_ptr),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        elapsed = time.perf_counter() - start
+        telemetry_contract = _grouped_union_telemetry_contract(10)
+        return {
+            "metadata": {
+                "backend": "optix",
+                "native_symbol": symbol_name,
+                "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+                "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_on_stream",
+                "query_source": "prepared_search_points_self_query_device",
+                "query_count": query_count,
+                "query_index_offset": 0,
+                "search_count": self._packed_search.count,
+                "item_count": int(predicate_handoff.shape[0]),
+                "radius": float(radius),
+                "native_enqueue_elapsed_sec": elapsed,
+                "native_elapsed_sec": elapsed,
+                "native_timing_source": "host_enqueue_timer_only_cuda_events_required_for_kernel_time",
+                "native_synchronized_before_return": False,
+                "stream_ordering_requested": "caller_supplied_cuda_stream",
+                "cuda_stream_ptr": cuda_stream_ptr,
+                "transfer_mode": "prepared_device_search_points_self_grouped_union_workspaces_on_stream",
+                "source_protocols": tuple(sorted({
+                    predicate_handoff.source_protocol,
+                    parent_handoff.source_protocol,
+                    fallback_handoff.source_protocol,
+                    telemetry_handoff.source_protocol,
+                })),
+                "source_devices": (f"{expected_device[0]}:{expected_device[1]}",),
+                "rt_core_accelerated": True,
+                "materializes_neighbor_rows": False,
+                "materializes_directed_adjacency_stream": False,
+                "grouped_union_intersection_culling_policy": (
+                    "predicate_aware_connectivity_and_fallback_before_anyhit"
+                ),
+                "grouped_union_same_root_culling_enabled": same_root_culling,
+                "grouped_union_same_root_culling_policy": (
+                    "parent_union_same_root_before_anyhit"
+                    if same_root_culling
+                    else "disabled_by_caller"
+                ),
+                "grouped_union_direct_side_effect_enabled": direct_side_effect,
+                "grouped_union_direct_side_effect_policy": (
+                    _grouped_union_direct_side_effect_policy(direct_side_effect)
+                ),
+                "grouped_union_telemetry_requested": True,
+                "grouped_union_telemetry_buffer_length": telemetry_buffer_length,
+                "grouped_union_telemetry_counter_count": 10,
+                "grouped_union_extended_telemetry_enabled": True,
+                "grouped_union_root_read_telemetry_enabled": True,
+                "grouped_union_telemetry_contract": telemetry_contract,
+                "direct_device_handoff_authorized": True,
+                "output_columns_true_zero_copy_authorized": True,
+                "same_stream_ready": False,
+                "same_stream_ready_reason": "runtime_enqueued_on_caller_stream_but_caller_must_attach_cuda_event_evidence",
+                "true_zero_copy_authorized": False,
+                "v2_0_release_authorized": False,
+                "paper_speedup_claim_authorized": False,
+            }
+        }
+
     def apply_device_grouped_union_all_self(
         self,
         *,
@@ -10958,6 +11134,9 @@ _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_TELEMETRY_EXECU
 )
 _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXTENDED_TELEMETRY_EXECUTION_OPTIONS_SYMBOL = (
     "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_extended_telemetry_and_execution_options"
+)
+_OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXTENDED_TELEMETRY_EXECUTION_OPTIONS_ON_STREAM_SYMBOL = (
+    "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_extended_telemetry_and_execution_options_on_stream"
 )
 _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_SYMBOL = (
     "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs"
@@ -24098,6 +24277,27 @@ def _register_argtypes(lib) -> None:
             ctypes.c_uint32,
             ctypes.c_uint32,
             ctypes.c_size_t,
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXTENDED_TELEMETRY_EXECUTION_OPTIONS_ON_STREAM_SYMBOL,
+    )
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_double,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_size_t,
+            ctypes.c_uint64,
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int

@@ -25059,6 +25059,7 @@ static void run_fixed_radius_neighbors_rt_3d(
 struct PreparedFixedRadiusCountThreshold3DRt {
     std::vector<RtdlPoint3D> search_points;
     std::unique_ptr<DevPtr> d_search;
+    std::unique_ptr<DevPtr> d_grouped_union_params;
     AccelHolder accel;
     double max_radius = 0.0;
 
@@ -25102,6 +25103,7 @@ struct PreparedFixedRadiusCountThreshold3DRt {
         }
         d_search = std::make_unique<DevPtr>(sizeof(GpuPoint3DHost) * gpu_search.size());
         upload(d_search->ptr, gpu_search.data(), gpu_search.size());
+        d_grouped_union_params = std::make_unique<DevPtr>(sizeof(FixedRadiusGroupedUnion3DRtLaunchParams));
         accel = build_custom_accel(get_optix_context(), aabbs);
     }
 };
@@ -25297,7 +25299,9 @@ static void launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
         size_t telemetry_count,
         bool same_root_culling,
         bool direct_side_effect,
-        size_t item_count);
+        size_t item_count,
+        CUstream launch_stream = 0,
+        bool synchronize_after_launch = true);
 
 static void apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
         PreparedFixedRadiusCountThreshold3DRt* prepared,
@@ -25475,17 +25479,29 @@ static void launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
     lp.radius = radius_f;
     lp.trace_tmax = std::max(1.0e-6f, 2.0f * aabb_radius);
 
-    DevPtr d_params(sizeof(FixedRadiusGroupedUnion3DRtLaunchParams));
-    upload(d_params.ptr, &lp, 1);
+    std::unique_ptr<DevPtr> local_params;
+    CUdeviceptr params_ptr = 0;
+    if (synchronize_after_launch) {
+        local_params = std::make_unique<DevPtr>(sizeof(FixedRadiusGroupedUnion3DRtLaunchParams));
+        params_ptr = local_params->ptr;
+    } else {
+        if (!prepared->d_grouped_union_params) {
+            throw std::runtime_error("fixed_radius_grouped_union_3d async launch params buffer is missing");
+        }
+        params_ptr = prepared->d_grouped_union_params->ptr;
+    }
+    upload(params_ptr, &lp, 1);
 
-    CUstream stream = 0;
+    CUstream stream = launch_stream;
     g_optix_last_bvh_build_s = 0.0;
     auto t_start_trav = std::chrono::steady_clock::now();
     OPTIX_CHECK(optixLaunch(g_frn3d_grouped_union_rt.pipe->pipeline, stream,
-                             d_params.ptr, sizeof(FixedRadiusGroupedUnion3DRtLaunchParams),
+                             params_ptr, sizeof(FixedRadiusGroupedUnion3DRtLaunchParams),
                              &g_frn3d_grouped_union_rt.pipe->sbt,
                              static_cast<unsigned>(query_count), 1, 1));
-    CU_CHECK(cuStreamSynchronize(stream));
+    if (synchronize_after_launch) {
+        CU_CHECK(cuStreamSynchronize(stream));
+    }
     auto t_end_trav = std::chrono::steady_clock::now();
     g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
     g_optix_last_copy_s = 0.0;
@@ -25541,6 +25557,65 @@ static void apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_opt
         same_root_culling,
         direct_side_effect,
         item_count);
+}
+
+static void apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix_on_stream(
+        PreparedFixedRadiusCountThreshold3DRt* prepared,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        size_t telemetry_count,
+        bool same_root_culling,
+        bool direct_side_effect,
+        size_t item_count,
+        uint64_t cuda_stream_ptr)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius grouped-union 3D handle must not be null");
+    if (radius < 0.0) throw std::runtime_error("fixed_radius_grouped_union_3d_self_on_stream radius must be non-negative");
+    if (radius > prepared->max_radius + 1.0e-7) {
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_on_stream radius exceeds prepared max_radius");
+    }
+    const size_t query_count = prepared->search_points.size();
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_on_stream query_count exceeds uint32 limit");
+    if (item_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_on_stream item_count exceeds uint32 limit");
+    if (item_count < query_count)
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_on_stream workspaces must cover every prepared search item");
+    if (query_count == 0) return;
+    if (!parent_out)
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_on_stream parent pointer must not be null when query_count is nonzero");
+    const bool all_predicate = predicate_flags == nullptr && fallback_candidate_out == nullptr;
+    if (!all_predicate && (!predicate_flags || !fallback_candidate_out))
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_on_stream predicate and fallback pointers must both be null only for all-items mode");
+    if (!prepared->d_search)
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_on_stream prepared search device buffer is missing");
+    if (!prepared->accel.handle || prepared->search_points.empty()) {
+        return;
+    }
+    CUstream stream = reinterpret_cast<CUstream>(cuda_stream_ptr);
+    if (!stream) {
+        throw std::runtime_error("fixed_radius_grouped_union_3d_self_on_stream requires a nonzero CUDA stream pointer");
+    }
+
+    launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
+        prepared,
+        reinterpret_cast<const GpuPoint3DHost*>(prepared->d_search->ptr),
+        query_count,
+        0,
+        radius,
+        predicate_flags,
+        parent_out,
+        fallback_candidate_out,
+        telemetry_out,
+        telemetry_count,
+        same_root_culling,
+        direct_side_effect,
+        item_count,
+        stream,
+        false);
 }
 
 static void run_k_closest_hits_cuda(

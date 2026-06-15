@@ -5864,6 +5864,29 @@ extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_devi
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_extended_telemetry_and_execution_options_on_stream(
+        void* prepared,
+        double radius,
+        const uint32_t* predicate_flags,
+        int32_t* parent_out,
+        int32_t* fallback_candidate_out,
+        uint64_t* telemetry_out,
+        size_t telemetry_count,
+        uint32_t same_root_culling,
+        uint32_t direct_side_effect,
+        size_t item_count,
+        uint64_t cuda_stream_ptr,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_optix_on_stream(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            radius, predicate_flags, parent_out, fallback_candidate_out, telemetry_out,
+            telemetry_count, same_root_culling != 0u, direct_side_effect != 0u, item_count,
+            cuda_stream_ptr);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs(
         void* prepared,
         size_t query_start,

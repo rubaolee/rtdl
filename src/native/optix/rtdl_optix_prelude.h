@@ -1878,6 +1878,19 @@ int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs
          uint32_t direct_side_effect,
          size_t item_count,
          char* error_out, size_t error_size);
+int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_with_extended_telemetry_and_execution_options_on_stream(
+         void* prepared,
+         double radius,
+         const uint32_t* predicate_flags,
+         int32_t* parent_out,
+         int32_t* fallback_candidate_out,
+         uint64_t* telemetry_out,
+         size_t telemetry_count,
+         uint32_t same_root_culling,
+         uint32_t direct_side_effect,
+         size_t item_count,
+         uint64_t cuda_stream_ptr,
+         char* error_out, size_t error_size);
 int  rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_range_device_outputs(
          void* prepared,
          size_t query_start,
