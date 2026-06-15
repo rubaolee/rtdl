@@ -30,7 +30,11 @@ class Goal4409V30M13HitStreamNoHiddenCopyEvidenceTest(unittest.TestCase):
         helper = text[helper_start:helper_end]
         self.assertIn("transfer_counter=None", helper)
         self.assertIn("transfer_counter.disable_and_snapshot()", helper)
+        self.assertIn("result = {", helper)
+        self.assertIn('result["_transfer_counter_snapshot"] = transfer_counter_snapshot', helper)
+        self.assertIn("return result", helper)
         self.assertLess(helper.index("transfer_counter.disable_and_snapshot()"), helper.index("cp.asnumpy(summary)"))
+        self.assertLess(helper.index('result["_transfer_counter_snapshot"]'), helper.rindex("return result"))
 
         method_start = text.index("def ray_triangle_hit_stream_same_stream_row_reduction_summary")
         method_end = text.index("def ray_triangle_hit_stream_event_ordered_row_reduction_summary", method_start)

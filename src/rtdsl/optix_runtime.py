@@ -16674,7 +16674,7 @@ def _run_hit_stream_same_stream_row_reduction_summary_cupy(
         transfer_counter_snapshot = transfer_counter.disable_and_snapshot()
     values = [int(item) for item in cp.asnumpy(summary).tolist()]
     missing = (1 << 64) - 1
-    return {
+    result = {
         "row_count": values[0],
         "overflow": bool(values[1]),
         "hit_event_count": values[2],
