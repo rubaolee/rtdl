@@ -181,6 +181,27 @@ from .prepared_session_residency import get_or_prepare_explicit_session
 from .prepared_session_residency import make_prepared_session_cache_key
 from .prepared_session_residency import summarize_prepared_session_timing_records
 from .prepared_session_residency import validate_prepared_session_residency_contract
+from .v3_0_execution_graph import BackendContract
+from .v3_0_execution_graph import BackendPlan
+from .v3_0_execution_graph import CapacityPolicy
+from .v3_0_execution_graph import ClaimBoundary
+from .v3_0_execution_graph import ContinuationNode
+from .v3_0_execution_graph import ExecutionReport as V3ExecutionReport
+from .v3_0_execution_graph import GraphValidationError
+from .v3_0_execution_graph import GraphValue
+from .v3_0_execution_graph import LoweringHints
+from .v3_0_execution_graph import MaterializeNode
+from .v3_0_execution_graph import PartnerNode
+from .v3_0_execution_graph import PartnerPolicy
+from .v3_0_execution_graph import PhaseMarker
+from .v3_0_execution_graph import PreparedGraph
+from .v3_0_execution_graph import PrimitiveNode
+from .v3_0_execution_graph import StreamBinding
+from .v3_0_execution_graph import ValidationNode
+from .v3_0_execution_graph import V3_EXECUTION_GRAPH_IR_VERSION
+from .v3_0_execution_graph import V3_EXECUTION_GRAPH_STATUS
+from .v3_0_execution_graph import prepare_graph
+from .v3_0_execution_graph import validate_v3_public_name
 from .v2_12_prepared_resident_query_plan import V212PreparedResidentQueryWorkItem
 from .v2_12_prepared_resident_query_plan import V2_12_CROSS_APP_BENCHMARK_APP
 from .v2_12_prepared_resident_query_plan import V2_12_FORBIDDEN_CLAIM_FLAGS

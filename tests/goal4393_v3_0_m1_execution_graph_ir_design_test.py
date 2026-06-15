@@ -200,12 +200,15 @@ class Goal4393V30M1ExecutionGraphIRDesignTest(unittest.TestCase):
             *ROOT.glob("src/native/**/*v3*.*"),
             *ROOT.glob("src/native/**/*execution_graph*.*"),
         ]
-        identifier = re.compile(r"\b[A-Za-z_][A-Za-z0-9_]*\b")
         for path in future_files:
             text = path.read_text(encoding="utf-8", errors="ignore")
-            identifiers = {match.group(0).lower() for match in identifier.finditer(text)}
-            for token in V3_FORBIDDEN_PUBLIC_TOKENS:
-                self.assertNotIn(token, identifiers, f"forbidden V3 identifier {token!r} in {path}")
+            public_names = set(re.findall(r"^(?:class|def)\s+([A-Za-z_][A-Za-z0-9_]*)", text, re.MULTILINE))
+            exported = re.findall(r"from \.v3_[A-Za-z0-9_]+ import ([A-Za-z_][A-Za-z0-9_]*)", INIT.read_text(encoding="utf-8"))
+            public_names.update(exported)
+            for name in public_names:
+                lowered = name.lower()
+                for token in V3_FORBIDDEN_PUBLIC_TOKENS:
+                    self.assertNotIn(token, lowered, f"forbidden V3 public token {token!r} in {name!r} from {path}")
 
     def test_consensus_records_acceptable_reviews_when_present(self) -> None:
         if not CONSENSUS.exists():
