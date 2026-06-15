@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import platform
+import subprocess
 from pathlib import Path
 
 import rtdsl as rt
@@ -37,7 +38,24 @@ def main() -> int:
 
 
 def _hardware_label() -> str:
+    gpu = _run_text(
+        [
+            "nvidia-smi",
+            "--query-gpu=name,driver_version,memory.total,pci.bus_id",
+            "--format=csv,noheader",
+        ]
+    ).strip()
+    if gpu:
+        return gpu.splitlines()[0]
     return f"{platform.platform()} / {platform.processor() or platform.machine()}"
+
+
+def _run_text(command: list[str]) -> str:
+    try:
+        completed = subprocess.run(command, check=False, capture_output=True, text=True)
+    except FileNotFoundError:
+        return ""
+    return (completed.stdout or "") + (completed.stderr or "")
 
 
 if __name__ == "__main__":
