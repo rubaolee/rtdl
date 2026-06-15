@@ -6,6 +6,7 @@ import json
 import os
 import platform
 import subprocess
+import sys
 from pathlib import Path
 
 _NUMBA_CUDA_COMPAT_ENV = None
@@ -56,6 +57,9 @@ def _prepend_env_path(name: str, value: str) -> None:
 
 
 _NUMBA_CUDA_COMPAT_ENV = _apply_numba_cuda_compat_env_before_rtdsl_import()
+if _NUMBA_CUDA_COMPAT_ENV.get("applied") and os.environ.get("RTDL_NUMBA_CUDA_COMPAT_REEXEC") != "1":
+    os.environ["RTDL_NUMBA_CUDA_COMPAT_REEXEC"] = "1"
+    os.execvpe(sys.executable, [sys.executable, *sys.argv], os.environ.copy())
 if _NUMBA_CUDA_COMPAT_ENV.get("applied"):
     try:
         from numba import cuda
