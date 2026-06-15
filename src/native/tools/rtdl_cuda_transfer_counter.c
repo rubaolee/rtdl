@@ -13,6 +13,10 @@ typedef int cudaError_t;
 typedef int cudaMemcpyKind;
 
 enum {
+    RTDL_CUDA_ERROR_UNKNOWN = 999,
+};
+
+enum {
     RTDL_COPY_HOST_TO_DEVICE = 1,
     RTDL_COPY_DEVICE_TO_HOST = 2,
     RTDL_COPY_DEVICE_TO_DEVICE = 3,
@@ -113,131 +117,202 @@ static void* rtdl_next_symbol(const char* name) {
     return dlsym(RTLD_NEXT, name);
 }
 
+static void* rtdl_next_symbol_or_alt(const char* name, const char* alt_name) {
+    void* symbol = dlsym(RTLD_NEXT, name);
+    if (!symbol && alt_name) {
+        symbol = dlsym(RTLD_NEXT, alt_name);
+    }
+    return symbol;
+}
+
+static CUresult rtdl_missing_driver_symbol(void) {
+    return (CUresult)RTDL_CUDA_ERROR_UNKNOWN;
+}
+
+static cudaError_t rtdl_missing_runtime_symbol(void) {
+    return (cudaError_t)RTDL_CUDA_ERROR_UNKNOWN;
+}
+
 #define RTDL_ORIGINAL(name, type) ((type)rtdl_next_symbol(name))
+#define RTDL_ORIGINAL_OR_ALT(name, alt_name, type) ((type)rtdl_next_symbol_or_alt(name, alt_name))
 
 CUresult cuMemcpyHtoD(CUdeviceptr dstDevice, const void* srcHost, size_t ByteCount) {
     typedef CUresult (*Fn)(CUdeviceptr, const void*, size_t);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyHtoD", "cuMemcpyHtoD_v2", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_HOST_TO_DEVICE, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyHtoD", Fn);
     return fn(dstDevice, srcHost, ByteCount);
 }
 
 CUresult cuMemcpyHtoD_v2(CUdeviceptr dstDevice, const void* srcHost, size_t ByteCount) {
     typedef CUresult (*Fn)(CUdeviceptr, const void*, size_t);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyHtoD_v2", "cuMemcpyHtoD", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_HOST_TO_DEVICE, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyHtoD_v2", Fn);
     return fn(dstDevice, srcHost, ByteCount);
 }
 
 CUresult cuMemcpyHtoDAsync(CUdeviceptr dstDevice, const void* srcHost, size_t ByteCount, CUstream hStream) {
     typedef CUresult (*Fn)(CUdeviceptr, const void*, size_t, CUstream);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyHtoDAsync", "cuMemcpyHtoDAsync_v2", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_HOST_TO_DEVICE, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyHtoDAsync", Fn);
     return fn(dstDevice, srcHost, ByteCount, hStream);
 }
 
 CUresult cuMemcpyHtoDAsync_v2(CUdeviceptr dstDevice, const void* srcHost, size_t ByteCount, CUstream hStream) {
     typedef CUresult (*Fn)(CUdeviceptr, const void*, size_t, CUstream);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyHtoDAsync_v2", "cuMemcpyHtoDAsync", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_HOST_TO_DEVICE, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyHtoDAsync_v2", Fn);
     return fn(dstDevice, srcHost, ByteCount, hStream);
 }
 
 CUresult cuMemcpyDtoH(void* dstHost, CUdeviceptr srcDevice, size_t ByteCount) {
     typedef CUresult (*Fn)(void*, CUdeviceptr, size_t);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyDtoH", "cuMemcpyDtoH_v2", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_DEVICE_TO_HOST, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyDtoH", Fn);
     return fn(dstHost, srcDevice, ByteCount);
 }
 
 CUresult cuMemcpyDtoH_v2(void* dstHost, CUdeviceptr srcDevice, size_t ByteCount) {
     typedef CUresult (*Fn)(void*, CUdeviceptr, size_t);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyDtoH_v2", "cuMemcpyDtoH", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_DEVICE_TO_HOST, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyDtoH_v2", Fn);
     return fn(dstHost, srcDevice, ByteCount);
 }
 
 CUresult cuMemcpyDtoHAsync(void* dstHost, CUdeviceptr srcDevice, size_t ByteCount, CUstream hStream) {
     typedef CUresult (*Fn)(void*, CUdeviceptr, size_t, CUstream);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyDtoHAsync", "cuMemcpyDtoHAsync_v2", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_DEVICE_TO_HOST, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyDtoHAsync", Fn);
     return fn(dstHost, srcDevice, ByteCount, hStream);
 }
 
 CUresult cuMemcpyDtoHAsync_v2(void* dstHost, CUdeviceptr srcDevice, size_t ByteCount, CUstream hStream) {
     typedef CUresult (*Fn)(void*, CUdeviceptr, size_t, CUstream);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyDtoHAsync_v2", "cuMemcpyDtoHAsync", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_DEVICE_TO_HOST, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyDtoHAsync_v2", Fn);
     return fn(dstHost, srcDevice, ByteCount, hStream);
 }
 
 CUresult cuMemcpyDtoD(CUdeviceptr dstDevice, CUdeviceptr srcDevice, size_t ByteCount) {
     typedef CUresult (*Fn)(CUdeviceptr, CUdeviceptr, size_t);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyDtoD", "cuMemcpyDtoD_v2", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_DEVICE_TO_DEVICE, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyDtoD", Fn);
     return fn(dstDevice, srcDevice, ByteCount);
 }
 
 CUresult cuMemcpyDtoD_v2(CUdeviceptr dstDevice, CUdeviceptr srcDevice, size_t ByteCount) {
     typedef CUresult (*Fn)(CUdeviceptr, CUdeviceptr, size_t);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyDtoD_v2", "cuMemcpyDtoD", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_DEVICE_TO_DEVICE, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyDtoD_v2", Fn);
     return fn(dstDevice, srcDevice, ByteCount);
 }
 
 CUresult cuMemcpyDtoDAsync(CUdeviceptr dstDevice, CUdeviceptr srcDevice, size_t ByteCount, CUstream hStream) {
     typedef CUresult (*Fn)(CUdeviceptr, CUdeviceptr, size_t, CUstream);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyDtoDAsync", "cuMemcpyDtoDAsync_v2", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_DEVICE_TO_DEVICE, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyDtoDAsync", Fn);
     return fn(dstDevice, srcDevice, ByteCount, hStream);
 }
 
 CUresult cuMemcpyDtoDAsync_v2(CUdeviceptr dstDevice, CUdeviceptr srcDevice, size_t ByteCount, CUstream hStream) {
     typedef CUresult (*Fn)(CUdeviceptr, CUdeviceptr, size_t, CUstream);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyDtoDAsync_v2", "cuMemcpyDtoDAsync", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_DEVICE_TO_DEVICE, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyDtoDAsync_v2", Fn);
     return fn(dstDevice, srcDevice, ByteCount, hStream);
 }
 
 CUresult cuMemcpy(CUdeviceptr dst, CUdeviceptr src, size_t ByteCount) {
     typedef CUresult (*Fn)(CUdeviceptr, CUdeviceptr, size_t);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpy", "cuMemcpy_v2", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_UNKNOWN, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpy", Fn);
     return fn(dst, src, ByteCount);
 }
 
 CUresult cuMemcpy_v2(CUdeviceptr dst, CUdeviceptr src, size_t ByteCount) {
     typedef CUresult (*Fn)(CUdeviceptr, CUdeviceptr, size_t);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpy_v2", "cuMemcpy", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_UNKNOWN, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpy_v2", Fn);
     return fn(dst, src, ByteCount);
 }
 
 CUresult cuMemcpyAsync(CUdeviceptr dst, CUdeviceptr src, size_t ByteCount, CUstream hStream) {
     typedef CUresult (*Fn)(CUdeviceptr, CUdeviceptr, size_t, CUstream);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyAsync", "cuMemcpyAsync_v2", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_UNKNOWN, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyAsync", Fn);
     return fn(dst, src, ByteCount, hStream);
 }
 
 CUresult cuMemcpyAsync_v2(CUdeviceptr dst, CUdeviceptr src, size_t ByteCount, CUstream hStream) {
     typedef CUresult (*Fn)(CUdeviceptr, CUdeviceptr, size_t, CUstream);
+    Fn fn = RTDL_ORIGINAL_OR_ALT("cuMemcpyAsync_v2", "cuMemcpyAsync", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
     rtdl_count_copy(RTDL_COPY_UNKNOWN, ByteCount);
-    Fn fn = RTDL_ORIGINAL("cuMemcpyAsync_v2", Fn);
     return fn(dst, src, ByteCount, hStream);
 }
 
 CUresult cuMemcpyPeer(CUdeviceptr dstDevice, CUcontext dstContext, CUdeviceptr srcDevice, CUcontext srcContext, size_t ByteCount) {
     typedef CUresult (*Fn)(CUdeviceptr, CUcontext, CUdeviceptr, CUcontext, size_t);
-    rtdl_count_copy(RTDL_COPY_DEVICE_TO_DEVICE, ByteCount);
     Fn fn = RTDL_ORIGINAL("cuMemcpyPeer", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
+    rtdl_count_copy(RTDL_COPY_DEVICE_TO_DEVICE, ByteCount);
     return fn(dstDevice, dstContext, srcDevice, srcContext, ByteCount);
 }
 
 CUresult cuMemcpyPeerAsync(CUdeviceptr dstDevice, CUcontext dstContext, CUdeviceptr srcDevice, CUcontext srcContext, size_t ByteCount, CUstream hStream) {
     typedef CUresult (*Fn)(CUdeviceptr, CUcontext, CUdeviceptr, CUcontext, size_t, CUstream);
-    rtdl_count_copy(RTDL_COPY_DEVICE_TO_DEVICE, ByteCount);
     Fn fn = RTDL_ORIGINAL("cuMemcpyPeerAsync", Fn);
+    if (!fn) {
+        return rtdl_missing_driver_symbol();
+    }
+    rtdl_count_copy(RTDL_COPY_DEVICE_TO_DEVICE, ByteCount);
     return fn(dstDevice, dstContext, srcDevice, srcContext, ByteCount, hStream);
 }
 
@@ -256,14 +331,20 @@ static int rtdl_runtime_direction(cudaMemcpyKind kind) {
 
 cudaError_t cudaMemcpy(void* dst, const void* src, size_t count, cudaMemcpyKind kind) {
     typedef cudaError_t (*Fn)(void*, const void*, size_t, cudaMemcpyKind);
-    rtdl_count_copy(rtdl_runtime_direction(kind), count);
     Fn fn = RTDL_ORIGINAL("cudaMemcpy", Fn);
+    if (!fn) {
+        return rtdl_missing_runtime_symbol();
+    }
+    rtdl_count_copy(rtdl_runtime_direction(kind), count);
     return fn(dst, src, count, kind);
 }
 
 cudaError_t cudaMemcpyAsync(void* dst, const void* src, size_t count, cudaMemcpyKind kind, CUstream stream) {
     typedef cudaError_t (*Fn)(void*, const void*, size_t, cudaMemcpyKind, CUstream);
-    rtdl_count_copy(rtdl_runtime_direction(kind), count);
     Fn fn = RTDL_ORIGINAL("cudaMemcpyAsync", Fn);
+    if (!fn) {
+        return rtdl_missing_runtime_symbol();
+    }
+    rtdl_count_copy(rtdl_runtime_direction(kind), count);
     return fn(dst, src, count, kind, stream);
 }

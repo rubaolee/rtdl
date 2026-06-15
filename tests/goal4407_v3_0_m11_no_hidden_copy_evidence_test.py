@@ -34,6 +34,8 @@ class Goal4407V30M11NoHiddenCopyEvidenceTest(unittest.TestCase):
         self.assertIn("-shared", text)
         self.assertIn("LD_PRELOAD", text)
         self.assertIn("os.execvpe", text)
+        self.assertIn('"reason": "already_preloaded"', text)
+        self.assertLess(text.index("already_preloaded ="), text.index("_build_transfer_counter"))
         self.assertLess(text.index("_ensure_transfer_counter_preloaded"), text.index("import rtdsl as rt"))
         self.assertIn("run_v3_m11_no_hidden_copy_evidence_case", text)
 

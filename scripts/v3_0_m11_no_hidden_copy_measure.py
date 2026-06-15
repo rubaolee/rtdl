@@ -19,11 +19,17 @@ _NUMBA_CUDA_COMPAT_ENV = None
 def _ensure_transfer_counter_preloaded(library: Path, source: Path) -> dict[str, object]:
     library = library.resolve()
     source = source.resolve()
-    build = _build_transfer_counter(library, source)
     preload = os.environ.get("LD_PRELOAD", "")
     preload_parts = [part for part in preload.split(os.pathsep) if part]
     already_preloaded = str(library) in preload_parts
     os.environ["RTDL_CUDA_TRANSFER_COUNTER_LIBRARY"] = str(library)
+    build = {
+        "skipped": True,
+        "reason": "already_preloaded",
+        "library_exists": library.exists(),
+    }
+    if not already_preloaded:
+        build = _build_transfer_counter(library, source)
     if not already_preloaded:
         os.environ["LD_PRELOAD"] = os.pathsep.join([str(library), *preload_parts])
         os.environ["RTDL_CUDA_TRANSFER_COUNTER_REEXEC"] = "1"
