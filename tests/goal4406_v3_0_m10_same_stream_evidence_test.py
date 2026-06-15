@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import json
 import unittest
 
 from rtdsl.v3_0_execution_graph import GraphValidationError
@@ -18,6 +19,9 @@ API = ROOT / "src/native/optix/rtdl_optix_api.cpp"
 RUNTIME = ROOT / "src/rtdsl/optix_runtime.py"
 ADAPTERS = ROOT / "src/rtdsl/partner_adapters.py"
 RUNNER = ROOT / "scripts/v3_0_m10_same_stream_evidence_measure.py"
+REPORT = ROOT / "docs/reports/goal4406_v3_0_m10_same_stream_evidence_2026-06-15.md"
+ARTIFACT_8192 = ROOT / "docs/reports/goal4406_v3_0_m10_same_stream_evidence_8192_2026-06-15.json"
+ARTIFACT_65536 = ROOT / "docs/reports/goal4406_v3_0_m10_same_stream_evidence_65536_2026-06-15.json"
 
 
 class Goal4406V30M10SameStreamEvidenceTest(unittest.TestCase):
@@ -66,6 +70,22 @@ class Goal4406V30M10SameStreamEvidenceTest(unittest.TestCase):
         self.assertIn("--component-threshold", text)
         self.assertIn("default=7", text)
         self.assertIn("validate_v3_m10_same_stream_payload", text)
+
+    def test_pod_artifacts_validate_and_report_states_boundary(self) -> None:
+        self.assertTrue(REPORT.exists())
+        report = REPORT.read_text(encoding="utf-8")
+        self.assertIn("M10 is complete for same-stream evidence", report)
+        self.assertIn("true_zero_copy_ready=false", report)
+        for path in (ARTIFACT_8192, ARTIFACT_65536):
+            self.assertTrue(path.exists(), f"missing {path}")
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            validation = validate_v3_m10_same_stream_payload(payload)
+            self.assertTrue(validation["same_stream_ready"])
+            self.assertFalse(validation["true_zero_copy_ready"])
+            for row in payload["partner_rows"]:
+                evidence = row["metadata"]["same_stream_evidence"]
+                self.assertEqual(evidence["cuda_stream_ptr"], evidence["native_metadata_cuda_stream_ptr"])
+                self.assertFalse(evidence["native_synchronized_before_return"])
 
     def test_validator_accepts_strict_synthetic_payload(self) -> None:
         payload = _synthetic_payload()
