@@ -33,16 +33,18 @@ Two older Numba availability guards were also hardened to accept `cuda.get_curre
 | 512 | 0.000355s | 0.000483s | 0.735x | RT grouped union | yes |
 | 8,192 | 0.000388s | 0.000509s | 0.762x | RT grouped union | yes |
 | 65,536 | 0.000598s | 0.000721s | 0.830x | RT grouped union | yes |
+| 8,192, threshold 7 | 0.000477s | 0.000579s | 0.824x | predicated RT grouped union | yes |
 
 Raw evidence:
 
 - `docs/reports/goal4403_v3_0_m9_grouped_stream_partner_512_2026-06-15.json`
 - `docs/reports/goal4403_v3_0_m9_grouped_stream_partner_8192_2026-06-15.json`
 - `docs/reports/goal4403_v3_0_m9_grouped_stream_partner_65536_2026-06-15.json`
+- `docs/reports/goal4404_v3_0_m9_grouped_stream_partner_8192_threshold7_2026-06-15.json`
 
 ## Interpretation
 
-This is not a human-scale benchmark result; the all-core grouped-union path is too small and too fast for public performance wording. Its value is architectural evidence:
+This is not a human-scale benchmark result; the grouped-union rows are too small and too fast for public performance wording. The threshold-7 row does exercise the predicated RT grouped-union path (`all_core_flags_true=false`), but it is still a sub-millisecond evidence gate rather than a benchmark-app comparison. Its value is architectural evidence:
 
 1. The Numba/PTX blocker is solved for this route on the pod.
 2. CuPy and Numba are both viable explicit partner choices for the grouped-stream continuation.
