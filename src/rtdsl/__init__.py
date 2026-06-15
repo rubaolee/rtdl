@@ -202,6 +202,14 @@ from .v3_0_execution_graph import V3_EXECUTION_GRAPH_IR_VERSION
 from .v3_0_execution_graph import V3_EXECUTION_GRAPH_STATUS
 from .v3_0_execution_graph import prepare_graph
 from .v3_0_execution_graph import validate_v3_public_name
+from .v3_0_instrumentation import EvidenceRecord
+from .v3_0_instrumentation import InstrumentationPacket
+from .v3_0_instrumentation import PhaseTimingRecord
+from .v3_0_instrumentation import ResidencyEvidence
+from .v3_0_instrumentation import V3_INSTRUMENTATION_STATUS
+from .v3_0_instrumentation import V3_INSTRUMENTATION_VERSION
+from .v3_0_instrumentation import claim_readiness_summary
+from .v3_0_instrumentation import empty_claim_boundary_metadata
 from .v2_12_prepared_resident_query_plan import V212PreparedResidentQueryWorkItem
 from .v2_12_prepared_resident_query_plan import V2_12_CROSS_APP_BENCHMARK_APP
 from .v2_12_prepared_resident_query_plan import V2_12_FORBIDDEN_CLAIM_FLAGS
