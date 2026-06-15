@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -11,6 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 COUNTER_SOURCE = ROOT / "src/native/tools/rtdl_cuda_transfer_counter.c"
 RUNNER = ROOT / "scripts/v3_0_m11_no_hidden_copy_measure.py"
 MODULE = ROOT / "src/rtdsl/v3_0_m11_no_hidden_copy_evidence.py"
+REPORT = ROOT / "docs/reports/goal4407_v3_0_m11_no_hidden_copy_evidence_2026-06-15.md"
+EVIDENCE_JSON = ROOT / "docs/reports/goal4407_v3_0_m11_no_hidden_copy_evidence_65536_2026-06-15.json"
 
 
 class Goal4407V30M11NoHiddenCopyEvidenceTest(unittest.TestCase):
@@ -110,6 +113,35 @@ class Goal4407V30M11NoHiddenCopyEvidenceTest(unittest.TestCase):
         payload["partner_rows"] = (row, payload["partner_rows"][1])
         with self.assertRaises(GraphValidationError):
             rt.validate_v3_m11_no_hidden_copy_payload(payload)
+
+    def test_pod_artifact_and_report_capture_m11_gate(self) -> None:
+        payload = json.loads(EVIDENCE_JSON.read_text(encoding="utf-8"))
+        validation = rt.validate_v3_m11_no_hidden_copy_payload(payload)
+        self.assertTrue(validation["same_stream_ready"])
+        self.assertTrue(validation["transfer_counter_observed"])
+        self.assertTrue(validation["no_hidden_column_copy_ready"])
+        self.assertTrue(validation["true_zero_copy_ready"])
+        self.assertFalse(validation["public_claim_authorized"])
+        for row in payload["partner_rows"]:
+            classification = row["transfer_counter_classification"]
+            self.assertEqual(0, classification["observed_device_to_host_calls"])
+            self.assertEqual(0, classification["observed_device_to_device_calls"])
+            self.assertEqual(0, classification["observed_unknown_calls"])
+            self.assertLess(
+                classification["observed_host_to_device_bytes"],
+                classification["min_named_column_bytes"],
+            )
+            evidence = row["metadata"]["same_stream_evidence"]
+            self.assertTrue(evidence["true_zero_copy_ready"])
+            self.assertEqual(
+                "v3_m11_transfer_counter_classification",
+                evidence["true_zero_copy_readiness_source"],
+            )
+        report = REPORT.read_text(encoding="utf-8")
+        self.assertIn("No-Hidden-Copy Evidence", report)
+        self.assertIn("public_claim_authorized`: false", report)
+        self.assertIn("CuPy", report)
+        self.assertIn("Numba", report)
 
 
 def _synthetic_payload() -> dict[str, object]:
