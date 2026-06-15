@@ -25316,7 +25316,9 @@ static void apply_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
         size_t telemetry_count,
         bool same_root_culling,
         bool direct_side_effect,
-        size_t item_count)
+        size_t item_count,
+        CUstream launch_stream,
+        bool synchronize_after_launch)
 {
     if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius grouped-union 3D handle must not be null");
     if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
