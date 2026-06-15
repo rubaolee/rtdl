@@ -7239,11 +7239,12 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             return {"columns": columns, "metadata": metadata}
         return columns
 
-    def run_same_stream_evidence(self, *, min_neighbors: int, return_metadata: bool = False):
+    def run_same_stream_evidence(self, *, min_neighbors: int, return_metadata: bool = False, transfer_counter=None):
         return _run_cupy_grouped_stream_same_stream_evidence(
             self,
             min_neighbors=min_neighbors,
             return_metadata=return_metadata,
+            transfer_counter=transfer_counter,
         )
 
     def close(self) -> None:
@@ -7272,6 +7273,7 @@ def _run_cupy_grouped_stream_same_stream_evidence(
     *,
     min_neighbors: int,
     return_metadata: bool = False,
+    transfer_counter=None,
 ):
     if prepared.closed:
         raise RuntimeError("prepared OptiX+CuPy grouped stream radius graph handle is closed")
@@ -7310,36 +7312,47 @@ def _run_cupy_grouped_stream_same_stream_evidence(
     partner_done_event = prepared.cupy.cuda.Event()
     threads = 256
     label_blocks = (max(1, (prepared.point_count + threads - 1) // threads),)
+    transfer_counter_snapshot = None
     with stream:
         prepared.parent_workspace[...] = prepared.parent_initial
         prepared.border_core_candidate_workspace.fill(prepared.point_count)
         telemetry.fill(0)
-        start_event.record(stream)
-        native_result = prepared.prepared_native.apply_device_grouped_union_self_on_stream(
-            radius=prepared.radius,
-            predicate_flags=core_flags,
-            parent_out=prepared.parent_workspace,
-            fallback_candidate_out=prepared.border_core_candidate_workspace,
-            telemetry_out=telemetry,
-            cuda_stream_ptr=int(stream.ptr),
-            same_root_culling=prepared.grouped_union_same_root_culling,
-            direct_side_effect=prepared.grouped_union_direct_side_effect,
-        )
-        native_done_event.record(stream)
-        prepared.border_candidate_label_kernel(
-            label_blocks,
-            (threads,),
-            (
-                prepared.point_count,
-                core_flags,
-                prepared.parent_workspace,
-                prepared.border_core_candidate_workspace,
-                prepared.labels_workspace,
-            ),
-            stream=stream,
-        )
-        partner_done_event.record(stream)
+        if transfer_counter is not None:
+            transfer_counter.reset()
+            transfer_counter.enable()
+        try:
+            start_event.record(stream)
+            native_result = prepared.prepared_native.apply_device_grouped_union_self_on_stream(
+                radius=prepared.radius,
+                predicate_flags=core_flags,
+                parent_out=prepared.parent_workspace,
+                fallback_candidate_out=prepared.border_core_candidate_workspace,
+                telemetry_out=telemetry,
+                cuda_stream_ptr=int(stream.ptr),
+                same_root_culling=prepared.grouped_union_same_root_culling,
+                direct_side_effect=prepared.grouped_union_direct_side_effect,
+            )
+            native_done_event.record(stream)
+            prepared.border_candidate_label_kernel(
+                label_blocks,
+                (threads,),
+                (
+                    prepared.point_count,
+                    core_flags,
+                    prepared.parent_workspace,
+                    prepared.border_core_candidate_workspace,
+                    prepared.labels_workspace,
+                ),
+                stream=stream,
+            )
+            partner_done_event.record(stream)
+        except Exception:
+            if transfer_counter is not None:
+                transfer_counter.disable_and_snapshot()
+            raise
     partner_done_event.synchronize()
+    if transfer_counter is not None:
+        transfer_counter_snapshot = transfer_counter.disable_and_snapshot()
 
     native_event_ms = float(prepared.cupy.cuda.get_elapsed_time(start_event, native_done_event))
     partner_event_ms = float(prepared.cupy.cuda.get_elapsed_time(native_done_event, partner_done_event))
@@ -7369,7 +7382,8 @@ def _run_cupy_grouped_stream_same_stream_evidence(
         "native_metadata_cuda_stream_ptr": int(native_metadata.get("cuda_stream_ptr", 0) or 0),
         "native_synchronized_before_return": bool(native_metadata.get("native_synchronized_before_return", True)),
         "validation_materialization_after_measured_window": True,
-        "transfer_counter_observed": False,
+        "transfer_counter_observed": transfer_counter_snapshot is not None,
+        "transfer_counter_snapshot": transfer_counter_snapshot,
         "true_zero_copy_ready": False,
         "no_hidden_copy_ready": False,
         "same_stream_ready": (
@@ -7381,7 +7395,9 @@ def _run_cupy_grouped_stream_same_stream_evidence(
         ),
         "same_stream_ready_reason": "cuda_events_recorded_around_native_and_partner_work_on_the_same_cupy_stream",
         "limits": (
-            "No CUDA transfer counter is attached in this evidence path; true-zero-copy remains false "
+            "Transfer counter is attached; M11 classifies the snapshot for named column no-hidden-copy readiness."
+            if transfer_counter_snapshot is not None
+            else "No CUDA transfer counter is attached in this evidence path; true-zero-copy remains false "
             "even though validation materialization occurs after the measured window."
         ),
     }
@@ -7431,6 +7447,7 @@ def _run_cupy_grouped_stream_same_stream_evidence(
         "native_grouped_stream_metadata": native_metadata,
         "grouped_union_telemetry": telemetry_host,
         "same_stream_evidence": same_stream_evidence,
+        "transfer_counter_snapshot": transfer_counter_snapshot,
         "same_stream_ready": same_stream_evidence["same_stream_ready"],
         "true_zero_copy_ready": False,
         "automatic_hidden_dispatcher": False,
@@ -7860,7 +7877,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             return {"columns": columns, "metadata": metadata}
         return columns
 
-    def run_same_stream_evidence(self, *, min_neighbors: int, return_metadata: bool = False):
+    def run_same_stream_evidence(self, *, min_neighbors: int, return_metadata: bool = False, transfer_counter=None):
         if self.closed:
             raise RuntimeError("prepared OptiX+Numba grouped stream radius graph handle is closed")
         min_neighbors = int(min_neighbors)
@@ -7885,6 +7902,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         start_event = self.cuda.event(timing=True)
         native_done_event = self.cuda.event(timing=True)
         partner_done_event = self.cuda.event(timing=True)
+        transfer_counter_snapshot = None
 
         self.parent_border_init_kernel[self.label_blocks, self.threads, stream](
             self.parent_workspace,
@@ -7893,27 +7911,37 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             self.point_count,
             True,
         )
-        start_event.record(stream)
-        native_result = self.prepared_native.apply_device_grouped_union_self_on_stream(
-            radius=self.radius,
-            predicate_flags=core_flags,
-            parent_out=self.parent_workspace,
-            fallback_candidate_out=self.border_core_candidate_workspace,
-            telemetry_out=telemetry,
-            cuda_stream_ptr=stream_ptr,
-            same_root_culling=self.grouped_union_same_root_culling,
-            direct_side_effect=self.grouped_union_direct_side_effect,
-        )
-        native_done_event.record(stream)
-        self.border_candidate_label_kernel[self.label_blocks, self.threads, stream](
-            self.point_count,
-            core_flags,
-            self.parent_workspace,
-            self.border_core_candidate_workspace,
-            self.labels_workspace,
-        )
-        partner_done_event.record(stream)
+        if transfer_counter is not None:
+            transfer_counter.reset()
+            transfer_counter.enable()
+        try:
+            start_event.record(stream)
+            native_result = self.prepared_native.apply_device_grouped_union_self_on_stream(
+                radius=self.radius,
+                predicate_flags=core_flags,
+                parent_out=self.parent_workspace,
+                fallback_candidate_out=self.border_core_candidate_workspace,
+                telemetry_out=telemetry,
+                cuda_stream_ptr=stream_ptr,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
+            )
+            native_done_event.record(stream)
+            self.border_candidate_label_kernel[self.label_blocks, self.threads, stream](
+                self.point_count,
+                core_flags,
+                self.parent_workspace,
+                self.border_core_candidate_workspace,
+                self.labels_workspace,
+            )
+            partner_done_event.record(stream)
+        except Exception:
+            if transfer_counter is not None:
+                transfer_counter.disable_and_snapshot()
+            raise
         partner_done_event.synchronize()
+        if transfer_counter is not None:
+            transfer_counter_snapshot = transfer_counter.disable_and_snapshot()
 
         native_event_ms = float(start_event.elapsed_time(native_done_event))
         partner_event_ms = float(native_done_event.elapsed_time(partner_done_event))
@@ -7943,7 +7971,8 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "native_metadata_cuda_stream_ptr": int(native_metadata.get("cuda_stream_ptr", 0) or 0),
             "native_synchronized_before_return": bool(native_metadata.get("native_synchronized_before_return", True)),
             "validation_materialization_after_measured_window": True,
-            "transfer_counter_observed": False,
+            "transfer_counter_observed": transfer_counter_snapshot is not None,
+            "transfer_counter_snapshot": transfer_counter_snapshot,
             "true_zero_copy_ready": False,
             "no_hidden_copy_ready": False,
             "same_stream_ready": (
@@ -7955,7 +7984,9 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             ),
             "same_stream_ready_reason": "cuda_events_recorded_around_native_and_partner_work_on_the_same_numba_stream",
             "limits": (
-                "No CUDA transfer counter is attached in this evidence path; true-zero-copy remains false "
+                "Transfer counter is attached; M11 classifies the snapshot for named column no-hidden-copy readiness."
+                if transfer_counter_snapshot is not None
+                else "No CUDA transfer counter is attached in this evidence path; true-zero-copy remains false "
                 "even though validation materialization occurs after the measured window."
             ),
         }
@@ -8009,6 +8040,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "native_grouped_stream_metadata": native_metadata,
             "grouped_union_telemetry": telemetry_host,
             "same_stream_evidence": same_stream_evidence,
+            "transfer_counter_snapshot": transfer_counter_snapshot,
             "same_stream_ready": same_stream_evidence["same_stream_ready"],
             "true_zero_copy_ready": False,
             "automatic_hidden_dispatcher": False,

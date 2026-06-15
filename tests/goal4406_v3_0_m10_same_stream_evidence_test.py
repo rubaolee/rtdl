@@ -61,7 +61,8 @@ class Goal4406V30M10SameStreamEvidenceTest(unittest.TestCase):
         self.assertIn("numba_cuda_event_pair", text)
         self.assertIn("prepared_native_optix_launch_to_cupy_label_kernel_on_same_stream", text)
         self.assertIn("prepared_native_optix_launch_to_numba_label_kernel_on_same_stream", text)
-        self.assertIn('"transfer_counter_observed": False', text)
+        self.assertIn('"transfer_counter_observed": transfer_counter_snapshot is not None', text)
+        self.assertIn('"transfer_counter_snapshot": transfer_counter_snapshot', text)
         self.assertIn('"true_zero_copy_ready": False', text)
 
     def test_runner_exists_for_pod_regeneration(self) -> None:
