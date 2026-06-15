@@ -10,9 +10,9 @@ Historical evidence files are allowed to mention old versions and old not-releas
 
 ## Summary
 
-- Documents scanned: `12159`
+- Documents scanned: `12163`
 - Current-facing documents: `113`
-- Historical/evidence documents: `12031`
+- Historical/evidence documents: `12035`
 - Other documents: `15`
 - Documents with issues: `407`
 - Current-facing documents with issues: `0`
@@ -839,6 +839,7 @@ Historical/evidence policy: old reports, reviews, handoffs, patches, and history
 | `docs/handoff/GOAL973_CLAUDE_REVIEW_REQUEST_2026-04-26.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/handoff/GOAL974_CLAUDE_REVIEW_REQUEST_2026-04-26.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/handoff/GOAL97_EXTERNAL_VARIANTS.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
+| `docs/handoff/HANDOFF_3AI_GOAL4391_TOTAL_DOC_CLEANUP_AUDIT_2026-06-15.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/handoff/HANDOFF_CLAUDE_GOAL1777_V2_0_PARTNER_PROTOCOL_BASELINE.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/handoff/HANDOFF_CLAUDE_GOAL1787_OPTIX_PARTNER_ANYHIT_HOST_STAGE.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/handoff/HANDOFF_CLAUDE_GOAL1823_OPTIX_DEVICE_RAY_COLUMNS_REVIEW.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
@@ -7209,6 +7210,7 @@ Historical/evidence policy: old reports, reviews, handoffs, patches, and history
 | `docs/reports/goal438_external_review_2026-04-16.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/reports/goal438_v0_7_release_gate_refresh_after_native_prepared_db_2026-04-16.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/reports/goal438_v0_7_release_gate_refresh_after_native_prepared_db_review_2026-04-16.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
+| `docs/reports/goal4391_3ai_consensus_total_doc_cleanup_audit_2026-06-15.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/reports/goal4391_total_doc_cleanup_audit_2026-06-15.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/reports/goal439_external_tester_report_intake_ledger_2026-04-16.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/reports/goal439_v0_7_external_tester_report_intake_2026-04-16.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
@@ -10062,6 +10064,8 @@ Historical/evidence policy: old reports, reviews, handoffs, patches, and history
 | `docs/reviews/goal4384_gemini_review_v3_0_preflight_2026-06-14.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/reviews/goal4390_claude_review_status_v2_14_app_author_implementation_strategy_2026-06-15.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/reviews/goal4390_claude_review_v2_14_app_author_implementation_strategy_2026-06-15.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
+| `docs/reviews/goal4391_claude_review_total_doc_cleanup_audit_2026-06-15.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
+| `docs/reviews/goal4391_gemini_review_total_doc_cleanup_audit_2026-06-15.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/reviews/hausdorff_v2_user_cuda_benchmark_gemini_review_2026-05-15.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/reviews/REQUEST_REVIEW_v3_0_frechet_lab_lessons_2026-05-12.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |
 | `docs/reviews/v2_5_goal_scoping_triton_runtime_and_tiered_benchmark_parity_2026-05-29.md` | historical_or_evidence | 0 | 0 | clean | preserved_as_historical_or_evidence |

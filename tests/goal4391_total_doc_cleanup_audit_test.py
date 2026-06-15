@@ -9,6 +9,9 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "rtdl_total_doc_cleanup_audit.py"
 REPORT_MD = ROOT / "docs" / "reports" / "goal4391_total_doc_cleanup_audit_2026-06-15.md"
+CONSENSUS_MD = ROOT / "docs" / "reports" / "goal4391_3ai_consensus_total_doc_cleanup_audit_2026-06-15.md"
+CLAUDE_REVIEW = ROOT / "docs" / "reviews" / "goal4391_claude_review_total_doc_cleanup_audit_2026-06-15.md"
+GEMINI_REVIEW = ROOT / "docs" / "reviews" / "goal4391_gemini_review_total_doc_cleanup_audit_2026-06-15.md"
 
 
 def load_audit_module():
@@ -65,6 +68,18 @@ class Goal4391TotalDocCleanupAuditTest(unittest.TestCase):
         self.assertIn("`README.md`", report)
         self.assertIn("fixed: current source-tree surface", report)
         self.assertIn("Historical/evidence policy", report)
+
+    def test_3ai_consensus_accepts_closeout(self) -> None:
+        claude = CLAUDE_REVIEW.read_text(encoding="utf-8")
+        gemini = GEMINI_REVIEW.read_text(encoding="utf-8")
+        consensus = CONSENSUS_MD.read_text(encoding="utf-8")
+
+        self.assertIn("VERDICT: ACCEPT_WITH_NOTES", claude)
+        self.assertIn("VERDICT: ACCEPT", gemini)
+        self.assertIn("| Codex | ACCEPT | none |", consensus)
+        self.assertIn("| Claude | ACCEPT_WITH_NOTES | none |", consensus)
+        self.assertIn("| Gemini | ACCEPT | none |", consensus)
+        self.assertIn("Goal4391 is accepted and closed.", consensus)
 
 
 if __name__ == "__main__":
