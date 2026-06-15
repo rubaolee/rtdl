@@ -28,6 +28,8 @@ class Goal4407V30M11NoHiddenCopyEvidenceTest(unittest.TestCase):
             self.assertIn(symbol, text)
         self.assertIn("RTDL_COPY_HOST_TO_DEVICE", text)
         self.assertIn("RTDL_COPY_DEVICE_TO_HOST", text)
+        self.assertIn('dlopen("libcuda.so.1"', text)
+        self.assertIn("RTDL_DRIVER_ORIGINAL_OR_ALT", text)
 
     def test_runner_builds_and_preloads_counter_before_rtdsl_import(self) -> None:
         text = RUNNER.read_text(encoding="utf-8")
