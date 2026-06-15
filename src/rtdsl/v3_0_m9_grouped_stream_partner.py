@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
+import importlib.util
+import os
+from pathlib import Path
 import statistics
 import time
 
@@ -49,6 +52,7 @@ def run_v3_m9_grouped_stream_partner_case(
     grouped_union_query_block_size: int | None = None,
     grouped_union_direct_side_effect: bool = False,
 ) -> dict[str, object]:
+    compat = _apply_numba_cuda_compat_env()
     validate_v3_public_name(V3_M9_GRAPH_ID, label="M9 graph id")
     if int(warmups) < 0 or int(repeats) <= 0:
         raise GraphValidationError("warmups/repeats are invalid")
@@ -74,6 +78,7 @@ def run_v3_m9_grouped_stream_partner_case(
             hardware=hardware,
             grouped_union_query_block_size=grouped_union_query_block_size,
             grouped_union_direct_side_effect=bool(grouped_union_direct_side_effect),
+            compat_env=compat,
         )
         rows.append(row)
         signatures[partner] = tuple(row["validation_signature"])
@@ -284,6 +289,7 @@ def _run_partner_row(
     hardware: str,
     grouped_union_query_block_size: int | None,
     grouped_union_direct_side_effect: bool,
+    compat_env: Mapping[str, object],
 ) -> dict[str, object]:
     prepare_start = time.perf_counter()
     prepared = prepare_v2_8_fixed_radius_graph_component_continuation_3d(
@@ -358,6 +364,7 @@ def _run_partner_row(
             "validation_signature": signature,
             "device_data_ptrs": data_ptrs,
             "metadata": metadata,
+            "numba_cuda_compat_env": dict(compat_env) if partner == "numba" else None,
             "instrumentation": instrumentation.to_metadata(),
             "claim_readiness": instrumentation.claim_readiness,
             "public_claim_authorized": False,
@@ -459,3 +466,51 @@ def _phase_evidence_ids(
     if phase == "validation":
         return (validation_id,)
     return ()
+
+
+def _apply_numba_cuda_compat_env() -> dict[str, object]:
+    """Prefer a driver-compatible packaged CUDA NVVM for Numba if available."""
+
+    if os.environ.get("RTDL_DISABLE_NUMBA_CUDA_COMPAT") == "1":
+        return {"applied": False, "reason": "disabled_by_env"}
+    root = _find_packaged_cuda_nvcc_root()
+    if root is None:
+        return {"applied": False, "reason": "packaged_cuda_nvcc_not_found"}
+    nvvm_dir = root / "nvvm" / "lib64"
+    bin_dir = root / "bin"
+    libnvvm = nvvm_dir / "libnvvm.so"
+    if not libnvvm.exists():
+        return {"applied": False, "reason": "packaged_libnvvm_not_found", "root": str(root)}
+    _prepend_env_path("LD_LIBRARY_PATH", str(nvvm_dir))
+    if bin_dir.exists():
+        _prepend_env_path("PATH", str(bin_dir))
+    os.environ["CUDA_HOME"] = str(root)
+    os.environ.setdefault("NUMBA_CUDA_ENABLE_MINOR_VERSION_COMPATIBILITY", "1")
+    return {
+        "applied": True,
+        "cuda_home": str(root),
+        "ld_library_path_prefix": str(nvvm_dir),
+        "path_prefix": str(bin_dir) if bin_dir.exists() else None,
+        "reason": "prefer_packaged_cuda_nvcc_nvvm_for_driver_compatible_ptx",
+    }
+
+
+def _find_packaged_cuda_nvcc_root() -> Path | None:
+    spec = importlib.util.find_spec("nvidia.cuda_nvcc")
+    locations = getattr(spec, "submodule_search_locations", None) if spec is not None else None
+    if locations:
+        candidate = Path(tuple(locations)[0])
+        if (candidate / "nvvm" / "lib64" / "libnvvm.so").exists():
+            return candidate
+    fallback = Path("/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc")
+    if (fallback / "nvvm" / "lib64" / "libnvvm.so").exists():
+        return fallback
+    return None
+
+
+def _prepend_env_path(name: str, value: str) -> None:
+    current = os.environ.get(name, "")
+    parts = [part for part in current.split(os.pathsep) if part]
+    if value in parts:
+        parts.remove(value)
+    os.environ[name] = os.pathsep.join([value, *parts])
