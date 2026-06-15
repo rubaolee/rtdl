@@ -224,6 +224,11 @@ from .v3_0_m6_aggregate_pilots import M6_LOCAL_PREP_STATUS
 from .v3_0_m6_aggregate_pilots import M6_VECTOR_SUM_OPERATION
 from .v3_0_m6_aggregate_pilots import m6_frontier_vector_pilot_graphs
 from .v3_0_m6_aggregate_pilots import validate_m6_frontier_vector_pilots
+from .v3_0_m7_harness import BenchmarkHarnessPacket
+from .v3_0_m7_harness import BenchmarkHarnessRow
+from .v3_0_m7_harness import V3_BENCHMARK_HARNESS_STATUS
+from .v3_0_m7_harness import V3_BENCHMARK_HARNESS_VERSION
+from .v3_0_m7_harness import validate_benchmark_harness_packet
 from .v2_12_prepared_resident_query_plan import V212PreparedResidentQueryWorkItem
 from .v2_12_prepared_resident_query_plan import V2_12_CROSS_APP_BENCHMARK_APP
 from .v2_12_prepared_resident_query_plan import V2_12_FORBIDDEN_CLAIM_FLAGS
