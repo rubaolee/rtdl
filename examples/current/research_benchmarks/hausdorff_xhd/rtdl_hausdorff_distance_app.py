@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
+from rtdsl.optix_runtime import prepare_optix_point_group_nearest_witness_2d
 from rtdsl.reference import Point
 
 
@@ -97,12 +98,14 @@ def _optix_performance() -> dict[str, str]:
 def _enforce_rt_core_requirement(backend: str, optix_summary_mode: str, require_rt_core: bool) -> None:
     if not require_rt_core:
         return
+    if backend == "optix_device_max_nearest":
+        return
     if backend != "optix":
-        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+        raise ValueError("--require-rt-core is only meaningful with --backend optix or optix_device_max_nearest")
     if optix_summary_mode != "directed_threshold_prepared":
         raise RuntimeError(
             "hausdorff_distance RT-core path requires --backend optix "
-            "--optix-summary-mode directed_threshold_prepared"
+            "--optix-summary-mode directed_threshold_prepared or --backend optix_device_max_nearest"
         )
 
 
@@ -297,6 +300,8 @@ def _native_continuation_backend(
     embree_result_mode: str,
     optix_summary_mode: str,
 ) -> str:
+    if backend == "optix_device_max_nearest":
+        return "optix_device_query_nearest_witness_partner_global_max"
     if backend == "optix" and optix_summary_mode == "directed_threshold_prepared":
         return "optix_threshold_count"
     if backend == "embree" and optix_summary_mode == "directed_threshold_prepared":
@@ -553,6 +558,264 @@ def _run_partner_numba_block_nearest_exact_directed(
     }
 
 
+def _make_spatial_point_groups_for_device_nearest(
+    points: tuple[Point, ...],
+    *,
+    radius: float,
+) -> tuple[tuple[Point, ...], tuple[dict[str, object], ...]]:
+    if not points:
+        raise ValueError("point-group nearest requires non-empty target points")
+    if radius <= 0.0:
+        raise ValueError("point-group nearest radius must be positive")
+    cell_size = max(float(radius) * 2.0, 1.0e-9)
+    min_x = min(float(point.x) for point in points)
+    min_y = min(float(point.y) for point in points)
+    keyed = sorted(
+        (
+            (
+                math.floor((float(point.x) - min_x) / cell_size),
+                math.floor((float(point.y) - min_y) / cell_size),
+                index,
+                point,
+            )
+            for index, point in enumerate(points)
+        ),
+        key=lambda item: (item[0], item[1], item[2]),
+    )
+    ordered_points = tuple(item[3] for item in keyed)
+    groups: list[dict[str, object]] = []
+    start = 0
+    group_id = 0
+    while start < len(ordered_points):
+        cell_x = keyed[start][0]
+        cell_y = keyed[start][1]
+        end = start + 1
+        while end < len(ordered_points) and keyed[end][0] == cell_x and keyed[end][1] == cell_y:
+            end += 1
+        chunk = ordered_points[start:end]
+        groups.append(
+            {
+                "id": group_id,
+                "point_offset": start,
+                "point_count": end - start,
+                "min_x": min(float(point.x) for point in chunk),
+                "min_y": min(float(point.y) for point in chunk),
+                "max_x": max(float(point.x) for point in chunk),
+                "max_y": max(float(point.y) for point in chunk),
+            }
+        )
+        start = end
+        group_id += 1
+    return ordered_points, tuple(groups)
+
+
+def _points_to_cupy_query_columns(cp, points: tuple[Point, ...]) -> dict[str, object]:
+    import numpy as np
+
+    return {
+        "ids": cp.asarray([int(point.id) for point in points], dtype=cp.uint32),
+        "x": cp.asarray([float(point.x) for point in points], dtype=cp.float64),
+        "y": cp.asarray([float(point.y) for point in points], dtype=cp.float64),
+    }
+
+
+def _cupy_global_argmax_u32_f64_with_neighbor(cp, item_ids, neighbor_ids, scores) -> dict[str, object]:
+    invalid = cp.uint32(0xFFFFFFFF)
+    valid = (item_ids != invalid) & cp.isfinite(scores)
+    safe_scores = cp.where(valid, scores, cp.asarray(-float("inf"), dtype=cp.float64))
+    best_score = cp.max(safe_scores)
+    candidate = valid & (scores == best_score)
+    item_ids_u64 = item_ids.astype(cp.uint64, copy=False)
+    max_u64 = cp.asarray(0xFFFFFFFFFFFFFFFF, dtype=cp.uint64)
+    best_item = cp.min(cp.where(candidate, item_ids_u64, max_u64))
+    row_indices = cp.arange(item_ids.shape[0], dtype=cp.int64)
+    max_i64 = cp.asarray(0x7FFFFFFFFFFFFFFF, dtype=cp.int64)
+    best_row = cp.min(cp.where(candidate & (item_ids_u64 == best_item), row_indices, max_i64))
+    return {
+        "columns": {
+            "item_ids": best_item.astype(cp.uint32, copy=False).reshape((1,)),
+            "scores": best_score.reshape((1,)),
+            "row_indices": best_row.reshape((1,)),
+            "neighbor_ids": neighbor_ids[best_row].reshape((1,)),
+            "valid_count": cp.sum(valid).astype(cp.int64, copy=False).reshape((1,)),
+        },
+        "metadata": {
+            "adapter": "hausdorff_app_cupy_global_argmax_u32_f64",
+            "partner": "cupy",
+            "operation": "global_argmax_u32_f64",
+            "contract": "generic_global_argmax_u32_f64",
+            "host_valid_count_check_used": False,
+            "host_row_materialization_used": False,
+            "rt_core_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
+    }
+
+
+def _materialize_device_max_nearest_result(cp, partner: str, consumer: dict[str, object], neighbor_ids) -> dict[str, object]:
+    columns = consumer["columns"]
+    if partner == "cupy":
+        query_id = int(cp.asnumpy(columns["item_ids"])[0])
+        row_index = int(cp.asnumpy(columns["row_indices"])[0])
+        distance = float(cp.asnumpy(columns["scores"])[0])
+        neighbor_id = int(cp.asnumpy(columns["neighbor_ids"])[0])
+        valid_count = int(cp.asnumpy(columns["valid_count"])[0])
+    elif partner == "numba":
+        query_id = int(columns["item_ids"].copy_to_host()[0])
+        row_index = int(columns["row_indices"].copy_to_host()[0])
+        distance = float(columns["scores"].copy_to_host()[0])
+        valid_count = int(columns["valid_count"].copy_to_host()[0])
+        neighbor_id = int(cp.asnumpy(neighbor_ids[row_index : row_index + 1])[0])
+    else:
+        raise ValueError(f"unsupported device max-nearest partner `{partner}`")
+    return {
+        "distance": distance,
+        "source_id": query_id,
+        "target_id": neighbor_id,
+        "row_index": row_index,
+        "valid_count": valid_count,
+    }
+
+
+def _run_optix_device_max_nearest_directed(
+    source: tuple[Point, ...],
+    target: tuple[Point, ...],
+    *,
+    partner: str,
+    label: str,
+    radius: float,
+    query_repeat: int,
+    warmup: int,
+) -> dict[str, object]:
+    if partner not in {"cupy", "numba"}:
+        raise ValueError("optix_device_max_nearest partner must be 'cupy' or 'numba'")
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+    try:
+        import cupy as cp
+    except Exception as exc:
+        raise RuntimeError("optix_device_max_nearest requires CuPy for device columns") from exc
+
+    ordered_target, groups = _make_spatial_point_groups_for_device_nearest(target, radius=radius)
+    prepare_start = time.perf_counter()
+    scene = prepare_optix_point_group_nearest_witness_2d(
+        ordered_target,
+        groups,
+        max_radius=radius,
+    )
+    query_columns = _points_to_cupy_query_columns(cp, source)
+    output_columns = {
+        "query_ids": cp.empty((len(source),), dtype=cp.uint32),
+        "neighbor_ids": cp.empty((len(source),), dtype=cp.uint32),
+        "distances": cp.empty((len(source),), dtype=cp.float64),
+    }
+    cp.cuda.runtime.deviceSynchronize()
+    prepare_sec = time.perf_counter() - prepare_start
+    hot_samples: list[float] = []
+    materialize_samples: list[float] = []
+    materialized_rows: list[dict[str, object]] = []
+    producer_metadata: dict[str, object] | None = None
+    consumer_metadata: dict[str, object] | None = None
+    try:
+        for iteration in range(warmup + query_repeat):
+            hot_start = time.perf_counter()
+            producer = scene.write_device_nearest_witness_columns_from_device_query_columns(
+                query_columns,
+                radius=radius,
+                query_ids_out=output_columns["query_ids"],
+                neighbor_ids_out=output_columns["neighbor_ids"],
+                distances_out=output_columns["distances"],
+            )
+            candidate_item_ids = cp.where(
+                output_columns["neighbor_ids"] != cp.uint32(0xFFFFFFFF),
+                output_columns["query_ids"],
+                cp.uint32(0xFFFFFFFF),
+            ).astype(cp.uint32, copy=False)
+            if partner == "cupy":
+                consumer = _cupy_global_argmax_u32_f64_with_neighbor(
+                    cp,
+                    candidate_item_ids,
+                    output_columns["neighbor_ids"],
+                    output_columns["distances"],
+                )
+            else:
+                consumer = rt.global_argmax_u32_f64_partner_columns(
+                    {"item_ids": candidate_item_ids, "scores": output_columns["distances"]},
+                    partner="numba",
+                    validate_non_empty_on_host=False,
+                    return_metadata=True,
+                )
+            cp.cuda.runtime.deviceSynchronize()
+            hot_elapsed = time.perf_counter() - hot_start
+            materialize_start = time.perf_counter()
+            materialized = _materialize_device_max_nearest_result(
+                cp,
+                partner,
+                consumer,
+                output_columns["neighbor_ids"],
+            )
+            materialize_elapsed = time.perf_counter() - materialize_start
+            producer_metadata = dict(producer["metadata"])
+            consumer_metadata = dict(consumer["metadata"])
+            if iteration >= warmup:
+                hot_samples.append(hot_elapsed)
+                materialize_samples.append(materialize_elapsed)
+                materialized_rows.append(materialized)
+    finally:
+        scene.close()
+    if not materialized_rows:
+        raise RuntimeError("optix_device_max_nearest produced no measured rows")
+    signatures = {
+        (
+            int(row["source_id"]),
+            int(row["target_id"]),
+            int(row["row_index"]),
+            int(round(float(row["distance"]) * 1_000_000_000.0)),
+            int(row["valid_count"]),
+        )
+        for row in materialized_rows
+    }
+    if len(signatures) != 1:
+        raise RuntimeError("optix_device_max_nearest directed result changed across repeats")
+    final = materialized_rows[-1]
+    return {
+        "label": label,
+        "distance": float(final["distance"]),
+        "source_id": int(final["source_id"]),
+        "target_id": int(final["target_id"]),
+        "row_count": len(source),
+        "valid_count": int(final["valid_count"]),
+        "complete_within_radius": int(final["valid_count"]) == len(source),
+        "radius": float(radius),
+        "partner": partner,
+        "prepared_scene_used": True,
+        "prepared_query_columns_used": True,
+        "prepared_output_columns_used": True,
+        "device_query_columns_used": True,
+        "device_output_columns_used": True,
+        "device_result_materialization_after_hot_window": True,
+        "host_query_upload_in_hot_window": False,
+        "host_row_materialization_before_consumer": False,
+        "hot_device_synchronized_before_timer_stop": True,
+        "native_engine_row_contract": "generic_point_group_nearest_witness_2d_device_columns",
+        "partner_reference_contract": "generic_global_argmax_u32_f64",
+        "producer_metadata": producer_metadata or {},
+        "consumer_metadata": consumer_metadata or {},
+        "group_count": len(groups),
+        "run_phases": {
+            "prepare_sec": prepare_sec,
+            "hot_device_median_sec": float(statistics.median(hot_samples)),
+            "hot_device_total_sec": float(sum(hot_samples)),
+            "materialize_median_sec": float(statistics.median(materialize_samples)),
+            "materialize_total_sec": float(sum(materialize_samples)),
+            "query_repeat": int(query_repeat),
+            "query_warmup": int(warmup),
+        },
+    }
+
+
 def run_app(
     backend: str = "cpu_python_reference",
     copies: int = 1,
@@ -590,6 +853,91 @@ def run_app(
         embree_result_mode=embree_result_mode,
         optix_summary_mode=optix_summary_mode,
     )
+
+    if backend == "optix_device_max_nearest":
+        query_start = time.perf_counter()
+        directed_ab = _run_optix_device_max_nearest_directed(
+            points_a,
+            points_b,
+            partner=partner,
+            label="a_to_b",
+            radius=hausdorff_threshold,
+            query_repeat=query_repeat,
+            warmup=warmup,
+        )
+        directed_ba = _run_optix_device_max_nearest_directed(
+            points_b,
+            points_a,
+            partner=partner,
+            label="b_to_a",
+            radius=hausdorff_threshold,
+            query_repeat=query_repeat,
+            warmup=warmup,
+        )
+        run_phases["optix_device_max_nearest_directed_summary_sec"] = time.perf_counter() - query_start
+        run_phases["scene_prepare_sec"] = float(directed_ab["run_phases"]["prepare_sec"]) + float(
+            directed_ba["run_phases"]["prepare_sec"]
+        )
+        run_phases["hot_device_sec"] = float(directed_ab["run_phases"]["hot_device_median_sec"]) + float(
+            directed_ba["run_phases"]["hot_device_median_sec"]
+        )
+        run_phases["materialize_sec"] = float(directed_ab["run_phases"]["materialize_median_sec"]) + float(
+            directed_ba["run_phases"]["materialize_median_sec"]
+        )
+        undirected = max(
+            (("a_to_b", directed_ab), ("b_to_a", directed_ba)),
+            key=lambda item: (float(item[1]["distance"]), item[0]),
+        )
+        validation_start = time.perf_counter()
+        oracle = expected_tiled_hausdorff(copies=copies)
+        run_phases["validation_sec"] = time.perf_counter() - validation_start
+        return {
+            "app": "hausdorff_distance",
+            "backend": backend,
+            "partner": partner,
+            "copies": copies,
+            "point_count_a": len(points_a),
+            "point_count_b": len(points_b),
+            "embree_result_mode": None,
+            "optix_summary_mode": "device_max_nearest",
+            "hausdorff_threshold": hausdorff_threshold,
+            "directed_a_to_b": directed_ab,
+            "directed_b_to_a": directed_ba,
+            "hausdorff_distance": float(undirected[1]["distance"]),
+            "witness_direction": undirected[0],
+            "oracle": oracle,
+            "matches_oracle": math.isclose(
+                float(undirected[1]["distance"]),
+                float(oracle["hausdorff_distance"]),
+                rel_tol=1e-5,
+                abs_tol=1e-5,
+            ),
+            "rtdl_role": (
+                "RTDL/OptiX uses the generic prepared point-group nearest-witness "
+                "device-query-column primitive, then the selected partner runs a "
+                "generic global max reduction on device before compact materialization."
+            ),
+            "optix_performance": _optix_performance(),
+            "native_continuation_active": True,
+            "native_continuation_backend": native_continuation_backend,
+            "rt_core_accelerated": True,
+            "partner_reference_contract": "generic_global_argmax_u32_f64",
+            "run_phases": run_phases,
+            "repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "reported_query_metric": "sum_of_directed_hot_device_medians",
+            },
+            "claim_boundary": {
+                "v3_0_internal_evidence": True,
+                "public_speedup_claim_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+                "automatic_partner_selection_authorized": False,
+                "app_specific_native_engine_logic_allowed": False,
+            },
+        }
 
     if backend == "partner_exact":
         query_start = time.perf_counter()
@@ -1071,6 +1419,7 @@ def main(argv: list[str] | None = None) -> int:
             "partner_cupy_witness_exact",
             "partner_numba_witness_exact",
             "partner_numba_block_nearest_exact",
+            "optix_device_max_nearest",
         ),
         default="cpu_python_reference",
     )
