@@ -16407,7 +16407,7 @@ def _run_hit_stream_same_stream_status_summary_cupy(
     external_stream.synchronize()
     values = [int(item) for item in cp.asnumpy(summary).tolist()]
     missing = (1 << 64) - 1
-    return {
+    result = {
         "row_count": values[0],
         "overflow": bool(values[1]),
         "hit_event_count": values[2],
@@ -16636,6 +16636,7 @@ def _run_hit_stream_same_stream_row_reduction_summary_cupy(
     *,
     capacity: int,
     cuda_stream_ptr: int,
+    transfer_counter=None,
 ) -> dict[str, object]:
     try:
         import cupy as cp
@@ -16668,6 +16669,9 @@ def _run_hit_stream_same_stream_row_reduction_summary_cupy(
             ),
         )
     external_stream.synchronize()
+    transfer_counter_snapshot = None
+    if transfer_counter is not None:
+        transfer_counter_snapshot = transfer_counter.disable_and_snapshot()
     values = [int(item) for item in cp.asnumpy(summary).tolist()]
     missing = (1 << 64) - 1
     return {
@@ -16692,6 +16696,9 @@ def _run_hit_stream_same_stream_row_reduction_summary_cupy(
         "host_scalar_read_before_consumer": False,
         "host_row_materialization_before_consumer": False,
     }
+    if transfer_counter_snapshot is not None:
+        result["_transfer_counter_snapshot"] = transfer_counter_snapshot
+    return result
 
 
 def _run_hit_stream_event_ordered_row_reduction_summary_cupy(
@@ -19007,6 +19014,7 @@ class PreparedOptixStaticTriangleScene3D:
         max_rows: int | None = None,
         deduplicate_primitives: bool = True,
         cuda_stream=None,
+        transfer_counter=None,
     ) -> dict[str, object]:
         """Launch a hit stream and a bounded device-row reduction on one stream."""
         if self._closed:
@@ -19092,13 +19100,21 @@ class PreparedOptixStaticTriangleScene3D:
         async_owner = _OptixNativeHitStreamAsyncLaunchOwner(self._lib, columns.owner_handle)
         owner_handle_observed = async_owner.handle_value != 0
         consumer_start = time.perf_counter()
+        transfer_counter_snapshot = None
         try:
+            if transfer_counter is not None:
+                transfer_counter.reset()
+                transfer_counter.enable()
             summary = _run_hit_stream_same_stream_row_reduction_summary_cupy(
                 output_buffers,
                 capacity=int(columns.capacity),
                 cuda_stream_ptr=cuda_stream_ptr,
+                transfer_counter=transfer_counter,
             )
+            transfer_counter_snapshot = summary.pop("_transfer_counter_snapshot", None)
         finally:
+            if transfer_counter is not None and transfer_counter_snapshot is None:
+                transfer_counter.disable_and_snapshot()
             async_owner.close()
         consumer_seconds = time.perf_counter() - consumer_start
 
@@ -19127,6 +19143,13 @@ class PreparedOptixStaticTriangleScene3D:
                 "overflow_scalar_visibility_before_consumer": "device_only",
                 "bounded_partner_consumer_executed": True,
                 "bounded_partner_consumer": "cupy_rawkernel",
+                "transfer_counter_observed": transfer_counter_snapshot is not None,
+                "transfer_counter_snapshot": transfer_counter_snapshot,
+                "transfer_counter_window": (
+                    "post_native_enqueue_same_stream_row_reduction_before_summary_materialization"
+                    if transfer_counter_snapshot is not None
+                    else None
+                ),
                 "async_partner_continuation_authorized": True,
                 "async_partner_continuation_authorization_scope": "bounded_same_stream_row_reduction_consumer_only",
                 "general_partner_continuation_authorized": False,

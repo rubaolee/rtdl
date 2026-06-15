@@ -267,7 +267,7 @@ def validate_no_hidden_copy_row(
     if evidence.get("true_zero_copy_ready") is not True:
         raise GraphValidationError(f"{partner} same-stream evidence must prove true_zero_copy_ready")
 
-    instrumentation = row.get("instrumentation", {})
+    instrumentation = row.get("instrumentation")
     if isinstance(instrumentation, Mapping):
         readiness = instrumentation.get("claim_readiness", {})
         if isinstance(readiness, Mapping):
