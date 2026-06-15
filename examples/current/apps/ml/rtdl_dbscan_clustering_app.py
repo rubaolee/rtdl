@@ -3,7 +3,9 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import statistics
 import sys
+import time
 from pathlib import Path
 from typing import Iterable
 
@@ -216,6 +218,38 @@ def expected_tiled_core_flag_rows(*, copies: int) -> tuple[dict[str, object], ..
     return tuple(rows)
 
 
+def expected_tiled_cluster_rows(*, copies: int) -> tuple[dict[str, object], ...]:
+    """Exact clustered rows for make_dbscan_case without O(N^2) expansion."""
+    base_rows = (
+        (1, 1, True, MIN_POINTS),
+        (2, 1, True, MIN_POINTS),
+        (3, 1, True, MIN_POINTS),
+        (4, 1, True, MIN_POINTS),
+        (5, 2, True, 3),
+        (6, 2, True, 3),
+        (7, 2, True, 3),
+        (8, NOISE_CLUSTER_ID, False, 1),
+    )
+    rows: list[dict[str, object]] = []
+    for copy_index in range(copies):
+        id_offset = 100 * copy_index
+        cluster_offset = 2 * copy_index
+        for point_id, cluster_id, is_core, neighbor_count in base_rows:
+            rows.append(
+                {
+                    "point_id": point_id + id_offset,
+                    "cluster_id": (
+                        NOISE_CLUSTER_ID
+                        if cluster_id == NOISE_CLUSTER_ID
+                        else cluster_id + cluster_offset
+                    ),
+                    "is_core": is_core,
+                    "neighbor_count": neighbor_count,
+                }
+            )
+    return tuple(rows)
+
+
 def _core_flag_rows_from_count_rows(
     points: tuple[rt.Point, ...],
     count_rows: Iterable[dict[str, object]],
@@ -338,7 +372,158 @@ def _partner_column_to_list(column, partner: str) -> list[object]:
         import cupy
 
         return cupy.asnumpy(column).tolist()
-    raise ValueError("partner must be 'torch' or 'cupy'")
+    if partner == "numba":
+        return column.copy_to_host().tolist()
+    raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
+
+
+def _points_to_3d_rows(points: tuple[rt.Point, ...]) -> tuple[rt.Point3D, ...]:
+    return tuple(rt.Point3D(id=point.id, x=point.x, y=point.y, z=0.0) for point in points)
+
+
+def _densify_cluster_labels(rows: Iterable[dict[str, object]]) -> tuple[dict[str, object], ...]:
+    dense_by_original: dict[int, int] = {}
+    next_cluster_id = 1
+    dense_rows: list[dict[str, object]] = []
+    for row in sorted(rows, key=lambda item: int(item["point_id"])):
+        original_label = int(row["cluster_id"])
+        dense_label = original_label
+        if original_label != NOISE_CLUSTER_ID:
+            if original_label not in dense_by_original:
+                dense_by_original[original_label] = next_cluster_id
+                next_cluster_id += 1
+            dense_label = dense_by_original[original_label]
+        dense_rows.append(
+            {
+                "point_id": int(row["point_id"]),
+                "cluster_id": int(dense_label),
+                "is_core": bool(row["is_core"]),
+                "neighbor_count": int(row["neighbor_count"]),
+            }
+        )
+    return tuple(dense_rows)
+
+
+def _run_optix_grouped_stream_clusters(
+    points: tuple[rt.Point, ...],
+    *,
+    partner: str,
+    query_repeat: int = 1,
+    warmup: int = 0,
+    grouped_union_query_block_size: int | None = None,
+) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
+    if partner not in {"cupy", "numba"}:
+        raise ValueError("optix_grouped_stream_components requires partner='cupy' or partner='numba'")
+    if int(query_repeat) < 1:
+        raise ValueError("query_repeat must be at least 1")
+    if int(warmup) < 0:
+        raise ValueError("warmup must be non-negative")
+
+    point_rows_3d = _points_to_3d_rows(points)
+    prepare_start = time.perf_counter()
+    measured_runs: list[dict[str, object]] = []
+    last_result: dict[str, object] | None = None
+    with rt.prepare_v2_8_fixed_radius_graph_component_continuation_3d(
+        point_rows_3d,
+        radius=EPSILON,
+        component_threshold=MIN_POINTS,
+        backend="optix",
+        partner=partner,
+        strategy="grouped_stream",
+        grouped_union_query_block_size=grouped_union_query_block_size,
+    ) as prepared:
+        prepare_sec = time.perf_counter() - prepare_start
+        total_runs = int(warmup) + int(query_repeat)
+        for iteration in range(total_runs):
+            run_start = time.perf_counter()
+            result = rt.fixed_radius_graph_component_labels_3d_v2_8(
+                prepared,
+                component_threshold=MIN_POINTS,
+                return_metadata=True,
+            )
+            elapsed = time.perf_counter() - run_start
+            last_result = result
+            if iteration >= int(warmup):
+                measured_runs.append(
+                    {
+                        "iteration": iteration - int(warmup),
+                        "elapsed_sec": elapsed,
+                        "metadata": dict(result["metadata"]),
+                    }
+                )
+    if last_result is None or not measured_runs:
+        raise RuntimeError("OptiX grouped-stream DBSCAN route produced no measured component-label run")
+
+    materialize_start = time.perf_counter()
+    columns = last_result["columns"]
+    point_ids = _partner_column_to_list(columns["point_ids"], partner)
+    labels = _partner_column_to_list(columns["component_labels"], partner)
+    core_flags = _partner_column_to_list(columns["is_core"], partner)
+    neighbor_counts = _partner_column_to_list(columns["neighbor_counts"], partner)
+    rows = _densify_cluster_labels(
+        {
+            "point_id": int(point_id),
+            "cluster_id": int(cluster_id),
+            "is_core": bool(is_core),
+            "neighbor_count": int(neighbor_count),
+        }
+        for point_id, cluster_id, is_core, neighbor_count in zip(
+            point_ids,
+            labels,
+            core_flags,
+            neighbor_counts,
+        )
+    )
+    materialize_sec = time.perf_counter() - materialize_start
+    elapsed_samples = tuple(float(row["elapsed_sec"]) for row in measured_runs)
+    metadata = dict(last_result["metadata"])
+    metadata.update(
+        {
+            "adapter": "dbscan_app_optix_grouped_stream_component_labels",
+            "app_contract": "dbscan_cluster_rows_from_generic_fixed_radius_graph_components_2d_lifted_to_3d",
+            "app_specific_native_engine_logic_allowed": False,
+            "automatic_partner_selection_authorized": False,
+            "backend": "optix",
+            "partner": partner,
+            "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+            "front_door_operation": "fixed_radius_graph_component_labels_3d",
+            "native_execution_path": metadata.get("native_execution_path", "prepared_rt_core_grouped_union_3d_self_query"),
+            "native_engine_summary_contract": metadata.get(
+                "native_engine_row_contract",
+                "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            ),
+            "partner_reference_contract": metadata.get(
+                "partner_reference_contract",
+                f"generic_prepared_optix_{partner}_grouped_stream_component_labels_3d",
+            ),
+            "prepare_sec": prepare_sec,
+            "hot_component_label_elapsed_sec_median": statistics.median(elapsed_samples),
+            "hot_component_label_elapsed_sec_min": min(elapsed_samples),
+            "hot_component_label_elapsed_sec_max": max(elapsed_samples),
+            "prepared_query_repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "measured_iterations": len(measured_runs),
+            },
+            "device_result_materialization_after_hot_window": True,
+            "post_window_row_materialization_sec": materialize_sec,
+            "materializes_python_rows": True,
+            "host_row_materialization_before_consumer": False,
+            "materializes_neighbor_rows": False,
+            "materializes_directed_adjacency_stream": False,
+            "rt_core_accelerated": bool(metadata.get("rt_core_accelerated", True)),
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "boundary": (
+                "DBSCAN app bridge over the generic OptiX fixed-radius graph component "
+                "front door; DBSCAN naming, 2D-to-3D lifting, label densification, and "
+                "validation remain app logic."
+            ),
+        }
+    )
+    return rows, metadata
 
 
 def _run_partner_exact_clusters(
@@ -347,6 +532,8 @@ def _run_partner_exact_clusters(
     partner: str,
     spatial_bucket: bool = False,
 ) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
+    if partner not in {"torch", "cupy"}:
+        raise ValueError("partner exact-cluster reference paths require partner='torch' or partner='cupy'")
     point_columns = rt.point_rows_to_partner_columns(points, partner=partner)
     adapter = (
         rt.radius_graph_components_2d_spatial_bucket_partner_columns
@@ -398,6 +585,8 @@ def _native_continuation_backend(
         output_mode == "core_flags" or embree_summary_mode in {"rt_core_flags", "rt_core_flags_prepared"}
     ):
         return "embree_threshold_count"
+    if backend == "optix_grouped_stream_components":
+        return "optix_grouped_stream_component_labels"
     return "none"
 
 
@@ -534,6 +723,9 @@ def run_app(
     output_mode: str = "full",
     partner: str = "cupy",
     skip_validation: bool = False,
+    query_repeat: int = 1,
+    warmup: int = 0,
+    grouped_union_query_block_size: int | None = None,
 ) -> dict[str, object]:
     if optix_summary_mode not in {"rows", "rt_core_flags", "rt_core_flags_prepared"}:
         raise ValueError("optix_summary_mode must be 'rows', 'rt_core_flags', or 'rt_core_flags_prepared'")
@@ -546,7 +738,18 @@ def run_app(
     core_flag_rows: tuple[dict[str, object], ...] = ()
     scalar_core_count: dict[str, int | str | None] | None = None
     partner_metadata: dict[str, object] | None = None
-    if backend in {"partner_exact_clusters", "partner_spatial_exact_clusters"}:
+    if backend == "optix_grouped_stream_components":
+        if output_mode != "full":
+            raise ValueError("optix_grouped_stream_components currently supports output_mode='full'")
+        neighbor_rows = ()
+        cluster_rows, partner_metadata = _run_optix_grouped_stream_clusters(
+            points,
+            partner=partner,
+            query_repeat=query_repeat,
+            warmup=warmup,
+            grouped_union_query_block_size=grouped_union_query_block_size,
+        )
+    elif backend in {"partner_exact_clusters", "partner_spatial_exact_clusters"}:
         neighbor_rows = ()
         cluster_rows, partner_metadata = _run_partner_exact_clusters(
             points,
@@ -604,10 +807,17 @@ def run_app(
     else:
         neighbor_rows = _run_rows(backend, case)
         cluster_rows = cluster_from_neighbor_rows(points, neighbor_rows)
-    validation_skipped = skip_validation and backend in {"partner_exact_clusters", "partner_spatial_exact_clusters"}
+    validation_skipped = skip_validation and backend in {
+        "optix_grouped_stream_components",
+        "partner_exact_clusters",
+        "partner_spatial_exact_clusters",
+    }
     if validation_skipped:
         oracle_rows = ()
         oracle_core_flag_rows = ()
+    elif backend == "optix_grouped_stream_components":
+        oracle_rows = expected_tiled_cluster_rows(copies=copies)
+        oracle_core_flag_rows = expected_tiled_core_flag_rows(copies=copies)
     elif output_mode in {"core_flags", "core_count"} or core_flag_rows:
         oracle_rows = ()
         oracle_core_flag_rows = expected_tiled_core_flag_rows(copies=copies)
@@ -638,7 +848,12 @@ def run_app(
         "output_mode": output_mode,
         "optix_summary_mode": optix_summary_mode if backend == "optix" else "not_applicable",
         "embree_summary_mode": embree_summary_mode if backend == "embree" else "not_applicable",
-        "partner": partner if backend in {"partner_exact_clusters", "partner_spatial_exact_clusters"} else None,
+        "partner": (
+            partner
+            if backend
+            in {"optix_grouped_stream_components", "partner_exact_clusters", "partner_spatial_exact_clusters"}
+            else None
+        ),
         "epsilon": EPSILON,
         "min_points": MIN_POINTS,
         "k_max": K_MAX,
@@ -651,7 +866,13 @@ def run_app(
         "threshold_reached_count": (
             int(scalar_core_count["threshold_reached_count"]) if scalar_core_count is not None else None
         ),
-        "core_count": int(scalar_core_count["core_count"]) if scalar_core_count is not None else sum(1 for row in core_flag_rows if bool(row.get("is_core", False))),
+        "core_count": (
+            int(scalar_core_count["core_count"])
+            if scalar_core_count is not None
+            else sum(1 for row in core_flag_rows if bool(row.get("is_core", False)))
+            if core_flag_rows
+            else sum(1 for row in cluster_rows if bool(row.get("is_core", False)))
+        ),
         "native_continuation_active": native_continuation_backend != "none",
         "native_continuation_backend": native_continuation_backend,
         "noise_point_ids": [int(row["point_id"]) for row in cluster_rows if int(row["cluster_id"]) == NOISE_CLUSTER_ID],
@@ -671,8 +892,8 @@ def run_app(
         ),
         "partner_metadata": partner_metadata,
         "matches_oracle": matches_oracle,
-        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The partner exact-cluster paths compute generic radius-graph component labels over point columns outside the native engine.",
-        "boundary": "Bounded app-level DBSCAN demo only. The partner exact-cluster paths are exact radius-graph component references, not a native engine DBSCAN continuation and not an RT-core claim. The spatial-bucket path uses a host-built sparse bucket index as an explicit transitional debt, not a true zero-copy claim.",
+        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The optix_grouped_stream_components path uses the generic fixed-radius graph component front door with an explicit CuPy or Numba partner continuation.",
+        "boundary": "Bounded app-level DBSCAN demo only. The default rows/core predicate prototype still does not yet expose clustering expansion as a native engine primitive. The grouped-stream path is a generic fixed-radius graph component route, not a DBSCAN-specific native engine ABI, automatic partner choice, public speedup claim, or true-zero-copy claim. The spatial-bucket path uses a host-built sparse bucket index as an explicit transitional debt.",
     }
 
 
@@ -682,10 +903,20 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--backend",
-        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "scipy", "partner_exact_clusters", "partner_spatial_exact_clusters"),
+        choices=(
+            "cpu_python_reference",
+            "cpu",
+            "embree",
+            "optix",
+            "vulkan",
+            "scipy",
+            "optix_grouped_stream_components",
+            "partner_exact_clusters",
+            "partner_spatial_exact_clusters",
+        ),
         default="cpu_python_reference",
     )
-    parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
+    parser.add_argument("--partner", choices=("torch", "cupy", "numba"), default="cupy")
     parser.add_argument("--copies", type=int, default=1, help="tile the authored clustering fixture")
     parser.add_argument(
         "--output-mode",
@@ -710,6 +941,9 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="For partner exact-cluster timing rows, skip the O(n^2) Python oracle after separate validation has been recorded.",
     )
+    parser.add_argument("--query-repeat", type=int, default=1, help="measured prepared grouped-stream repeats")
+    parser.add_argument("--warmup", type=int, default=0, help="unmeasured prepared grouped-stream warmup repeats")
+    parser.add_argument("--grouped-union-query-block-size", type=int, default=None)
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -721,6 +955,9 @@ def main(argv: list[str] | None = None) -> int:
                 output_mode=args.output_mode,
                 partner=args.partner,
                 skip_validation=args.skip_validation,
+                query_repeat=args.query_repeat,
+                warmup=args.warmup,
+                grouped_union_query_block_size=args.grouped_union_query_block_size,
             ),
             indent=2,
             sort_keys=True,
