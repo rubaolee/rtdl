@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-import ctypes
 from pathlib import Path
 import statistics
 import time
@@ -20,6 +19,11 @@ from .v3_0_m9_grouped_stream_partner import _apply_numba_cuda_compat_env
 from .v3_0_m9_grouped_stream_partner import _column_data_ptrs
 from .v3_0_m9_grouped_stream_partner import _component_signature_from_columns
 from .v3_0_m9_grouped_stream_partner import make_v3_m9_point_grid_3d
+from .v3_0_no_hidden_copy_contract import CudaTransferCounter
+from .v3_0_no_hidden_copy_contract import V3_NO_HIDDEN_COPY_DEFAULT_ALLOWED_NON_COLUMN_HOST_TO_DEVICE_BYTES
+from .v3_0_no_hidden_copy_contract import annotate_no_hidden_copy_metadata
+from .v3_0_no_hidden_copy_contract import classify_no_hidden_copy_transfer_snapshot
+from .v3_0_no_hidden_copy_contract import validate_no_hidden_copy_payload
 
 
 V3_M11_NO_HIDDEN_COPY_VERSION = "rtdl.v3_0.no_hidden_copy_evidence.m11"
@@ -27,74 +31,9 @@ V3_M11_NO_HIDDEN_COPY_STATUS = "m11_transfer_counter_no_hidden_column_copy_inter
 V3_M11_GRAPH_ID = "fixed_radius_component_no_hidden_copy_evidence_pilot"
 V3_M11_CONTRACT_KEY = "fixed_radius_component_no_hidden_copy_contract_v1"
 V3_M11_PARTNERS = V3_M9_PARTNERS
-V3_M11_ALLOWED_NON_COLUMN_HOST_TO_DEVICE_BYTES = 4096
-
-
-class _TransferCounterSnapshot(ctypes.Structure):
-    _fields_ = [
-        ("enabled", ctypes.c_uint64),
-        ("total_calls", ctypes.c_uint64),
-        ("total_bytes", ctypes.c_uint64),
-        ("host_to_device_calls", ctypes.c_uint64),
-        ("host_to_device_bytes", ctypes.c_uint64),
-        ("device_to_host_calls", ctypes.c_uint64),
-        ("device_to_host_bytes", ctypes.c_uint64),
-        ("device_to_device_calls", ctypes.c_uint64),
-        ("device_to_device_bytes", ctypes.c_uint64),
-        ("unknown_calls", ctypes.c_uint64),
-        ("unknown_bytes", ctypes.c_uint64),
-    ]
-
-
-class CudaTransferCounter:
-    """Small ctypes wrapper for the LD_PRELOAD CUDA transfer counter."""
-
-    def __init__(self, library_path: str | Path):
-        self.library_path = str(library_path)
-        self._lib = ctypes.CDLL(self.library_path)
-        self._lib.rtdl_cuda_transfer_counter_reset.argtypes = []
-        self._lib.rtdl_cuda_transfer_counter_reset.restype = None
-        self._lib.rtdl_cuda_transfer_counter_set_enabled.argtypes = [ctypes.c_int]
-        self._lib.rtdl_cuda_transfer_counter_set_enabled.restype = None
-        self._lib.rtdl_cuda_transfer_counter_is_enabled.argtypes = []
-        self._lib.rtdl_cuda_transfer_counter_is_enabled.restype = ctypes.c_uint64
-        self._lib.rtdl_cuda_transfer_counter_snapshot.argtypes = [
-            ctypes.POINTER(_TransferCounterSnapshot)
-        ]
-        self._lib.rtdl_cuda_transfer_counter_snapshot.restype = None
-        self._lib.rtdl_cuda_transfer_counter_version.argtypes = []
-        self._lib.rtdl_cuda_transfer_counter_version.restype = ctypes.c_char_p
-
-    @property
-    def version(self) -> str:
-        value = self._lib.rtdl_cuda_transfer_counter_version()
-        return value.decode("utf-8") if value else "unknown"
-
-    def reset(self) -> None:
-        self._lib.rtdl_cuda_transfer_counter_reset()
-
-    def enable(self) -> None:
-        self._lib.rtdl_cuda_transfer_counter_set_enabled(1)
-
-    def disable_and_snapshot(self) -> dict[str, object]:
-        self._lib.rtdl_cuda_transfer_counter_set_enabled(0)
-        snapshot = _TransferCounterSnapshot()
-        self._lib.rtdl_cuda_transfer_counter_snapshot(ctypes.byref(snapshot))
-        return {
-            "counter_version": self.version,
-            "library_path": self.library_path,
-            "enabled": int(snapshot.enabled),
-            "total_calls": int(snapshot.total_calls),
-            "total_bytes": int(snapshot.total_bytes),
-            "host_to_device_calls": int(snapshot.host_to_device_calls),
-            "host_to_device_bytes": int(snapshot.host_to_device_bytes),
-            "device_to_host_calls": int(snapshot.device_to_host_calls),
-            "device_to_host_bytes": int(snapshot.device_to_host_bytes),
-            "device_to_device_calls": int(snapshot.device_to_device_calls),
-            "device_to_device_bytes": int(snapshot.device_to_device_bytes),
-            "unknown_calls": int(snapshot.unknown_calls),
-            "unknown_bytes": int(snapshot.unknown_bytes),
-        }
+V3_M11_ALLOWED_NON_COLUMN_HOST_TO_DEVICE_BYTES = (
+    V3_NO_HIDDEN_COPY_DEFAULT_ALLOWED_NON_COLUMN_HOST_TO_DEVICE_BYTES
+)
 
 
 def run_v3_m11_no_hidden_copy_evidence_case(
@@ -192,45 +131,15 @@ def classify_transfer_counter_snapshot(
     point_count: int,
     allowed_non_column_host_to_device_bytes: int = V3_M11_ALLOWED_NON_COLUMN_HOST_TO_DEVICE_BYTES,
 ) -> dict[str, object]:
-    if not isinstance(snapshot, Mapping):
-        raise GraphValidationError("transfer counter snapshot must be a mapping")
     point_count = int(point_count)
     min_named_column_bytes = min(point_count * 4, point_count * 8)
-    host_to_device_bytes = int(snapshot.get("host_to_device_bytes", 0) or 0)
-    device_to_host_calls = int(snapshot.get("device_to_host_calls", 0) or 0)
-    device_to_device_calls = int(snapshot.get("device_to_device_calls", 0) or 0)
-    unknown_calls = int(snapshot.get("unknown_calls", 0) or 0)
-    disallowed_reasons = []
-    if device_to_host_calls:
-        disallowed_reasons.append("device_to_host_copy_observed")
-    if device_to_device_calls:
-        disallowed_reasons.append("device_to_device_copy_observed")
-    if unknown_calls:
-        disallowed_reasons.append("unknown_direction_copy_observed")
-    if host_to_device_bytes > int(allowed_non_column_host_to_device_bytes):
-        disallowed_reasons.append("host_to_device_bytes_exceed_allowed_launch_parameter_scope")
-    if host_to_device_bytes >= min_named_column_bytes:
-        disallowed_reasons.append("host_to_device_bytes_reach_named_column_size")
-    hidden_copy_observed = bool(disallowed_reasons)
-    return {
-        "transfer_counter_observed": True,
-        "allowed_non_column_host_to_device_bytes": int(allowed_non_column_host_to_device_bytes),
-        "min_named_column_bytes": min_named_column_bytes,
-        "observed_total_calls": int(snapshot.get("total_calls", 0) or 0),
-        "observed_total_bytes": int(snapshot.get("total_bytes", 0) or 0),
-        "observed_host_to_device_bytes": host_to_device_bytes,
-        "observed_device_to_host_calls": device_to_host_calls,
-        "observed_device_to_device_calls": device_to_device_calls,
-        "observed_unknown_calls": unknown_calls,
-        "allowed_transfer_scope": (
-            "no device-to-host/device-to-device/unknown copies; host-to-device bytes may only cover "
-            "small native launch-parameter setup, not named handoff or output columns"
-        ),
-        "hidden_copy_observed": hidden_copy_observed,
-        "disallowed_reasons": tuple(disallowed_reasons),
-        "no_hidden_column_copy_ready": not hidden_copy_observed,
-        "true_zero_copy_ready": not hidden_copy_observed,
-    }
+    return classify_no_hidden_copy_transfer_snapshot(
+        snapshot,
+        min_named_column_bytes=min_named_column_bytes,
+        allowed_non_column_host_to_device_bytes=allowed_non_column_host_to_device_bytes,
+        measured_window="m11_native_optix_to_python_partner_continuation",
+        readiness_source="v3_m11_transfer_counter_classification",
+    )
 
 
 def build_v3_m11_no_hidden_copy_instrumentation(
@@ -356,99 +265,18 @@ def build_v3_m11_no_hidden_copy_instrumentation(
 
 
 def validate_v3_m11_no_hidden_copy_payload(payload: Mapping[str, object]) -> dict[str, object]:
-    if payload.get("version") != V3_M11_NO_HIDDEN_COPY_VERSION:
-        raise GraphValidationError("unexpected M11 no-hidden-copy version")
-    if payload.get("status") != V3_M11_NO_HIDDEN_COPY_STATUS:
-        raise GraphValidationError("unexpected M11 no-hidden-copy status")
+    validation = validate_no_hidden_copy_payload(
+        payload,
+        expected_version=V3_M11_NO_HIDDEN_COPY_VERSION,
+        expected_status=V3_M11_NO_HIDDEN_COPY_STATUS,
+        required_partners=V3_M11_PARTNERS,
+        require_signature_match=True,
+    )
     rows = tuple(payload.get("partner_rows", ()))
     if len(rows) != 2:
         raise GraphValidationError("M11 no-hidden-copy payload requires two partner rows")
-    partners = {str(row["partner"]) for row in rows if isinstance(row, Mapping)}
-    if partners != set(V3_M11_PARTNERS):
-        raise GraphValidationError("M11 no-hidden-copy payload must include cupy and numba")
-    signatures = {tuple(row["validation_signature"]) for row in rows}
-    if len(signatures) != 1:
-        raise GraphValidationError("M11 no-hidden-copy signatures must match")
-    for row in rows:
-        _validate_partner_row(row)
-    comparison = payload.get("comparison", {})
-    if not isinstance(comparison, Mapping):
-        raise GraphValidationError("M11 no-hidden-copy payload requires comparison")
-    for key in (
-        "same_stream_ready",
-        "transfer_counter_observed",
-        "no_hidden_column_copy_ready",
-        "true_zero_copy_ready",
-    ):
-        if comparison.get(key) is not True:
-            raise GraphValidationError(f"M11 comparison must prove {key}=true")
-    boundary = payload.get("claim_boundary", {})
-    if not isinstance(boundary, Mapping):
-        raise GraphValidationError("M11 no-hidden-copy payload requires claim boundary")
-    for key in (
-        "public_speedup_claim_authorized",
-        "rt_core_speedup_claim_authorized",
-        "same_stream_public_claim_authorized",
-        "true_zero_copy_public_claim_authorized",
-        "automatic_partner_selection_authorized",
-    ):
-        if bool(boundary.get(key)):
-            raise GraphValidationError(f"M11 no-hidden-copy payload must not authorize {key}")
-    return {
-        "status": V3_M11_NO_HIDDEN_COPY_STATUS,
-        "partner_count": len(rows),
-        "signature_match": True,
-        "same_stream_ready": True,
-        "transfer_counter_observed": True,
-        "no_hidden_column_copy_ready": True,
-        "true_zero_copy_ready": True,
-        "public_claim_authorized": False,
-    }
-
-
-def _validate_partner_row(row: Mapping[str, object]) -> None:
-    partner = str(row.get("partner"))
-    if partner not in V3_M11_PARTNERS:
-        raise GraphValidationError("M11 no-hidden-copy row has unsupported partner")
-    for key in (
-        "same_stream_ready",
-        "transfer_counter_observed",
-        "no_hidden_column_copy_ready",
-        "true_zero_copy_ready",
-    ):
-        if row.get(key) is not True:
-            raise GraphValidationError(f"{partner} row must prove {key}=true")
-    classification = row.get("transfer_counter_classification", {})
-    if not isinstance(classification, Mapping):
-        raise GraphValidationError(f"{partner} row requires transfer counter classification")
-    if classification.get("hidden_copy_observed") is not False:
-        raise GraphValidationError(f"{partner} row observed a hidden copy")
-    if int(classification.get("observed_device_to_host_calls", 0) or 0) != 0:
-        raise GraphValidationError(f"{partner} row observed device-to-host copies")
-    if int(classification.get("observed_unknown_calls", 0) or 0) != 0:
-        raise GraphValidationError(f"{partner} row observed unknown-direction copies")
-    if int(classification.get("observed_host_to_device_bytes", 0) or 0) > int(
-        classification.get("allowed_non_column_host_to_device_bytes", 0) or 0
-    ):
-        raise GraphValidationError(f"{partner} row observed too many host-to-device bytes")
-    metadata = row.get("metadata", {})
-    if not isinstance(metadata, Mapping):
-        raise GraphValidationError(f"{partner} row requires metadata")
-    evidence = metadata.get("same_stream_evidence", {})
-    if not isinstance(evidence, Mapping) or evidence.get("transfer_counter_observed") is not True:
-        raise GraphValidationError(f"{partner} same-stream evidence must include a transfer counter")
-    if evidence.get("transfer_counter_snapshot") is None:
-        raise GraphValidationError(f"{partner} row missing transfer counter snapshot")
-    instrumentation = row.get("instrumentation", {})
-    if isinstance(instrumentation, Mapping):
-        readiness = instrumentation.get("claim_readiness", {})
-        if isinstance(readiness, Mapping):
-            if readiness.get("same_stream_ready") is not True:
-                raise GraphValidationError(f"{partner} instrumentation did not prove same_stream_ready")
-            if readiness.get("true_zero_copy_ready") is not True:
-                raise GraphValidationError(f"{partner} instrumentation did not prove true_zero_copy_ready")
-    if bool(row.get("public_claim_authorized")):
-        raise GraphValidationError(f"{partner} row must not authorize public claims")
+    validation["status"] = V3_M11_NO_HIDDEN_COPY_STATUS
+    return validation
 
 
 def _run_partner_row(
@@ -531,19 +359,12 @@ def _run_partner_row(
         all_samples_no_hidden_copy = all(
             bool(item["no_hidden_column_copy_ready"]) for item in classifications
         )
-        same_stream_evidence = dict(metadata.get("same_stream_evidence", {}))
-        same_stream_evidence.update(
-            {
-                "no_hidden_column_copy_ready": all_samples_no_hidden_copy,
-                "true_zero_copy_ready": all_samples_no_hidden_copy,
-                "true_zero_copy_readiness_source": "v3_m11_transfer_counter_classification",
-                "allowed_non_column_host_to_device_bytes": final_classification[
-                    "allowed_non_column_host_to_device_bytes"
-                ],
-                "min_named_column_bytes": final_classification["min_named_column_bytes"],
-            }
+        metadata = annotate_no_hidden_copy_metadata(
+            metadata,
+            final_classification,
+            all_samples_ready=all_samples_no_hidden_copy,
+            readiness_source="v3_m11_transfer_counter_classification",
         )
-        metadata["same_stream_evidence"] = same_stream_evidence
         instrumentation = build_v3_m11_no_hidden_copy_instrumentation(
             partner=partner,
             hardware=hardware,

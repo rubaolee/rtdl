@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 COUNTER_SOURCE = ROOT / "src/native/tools/rtdl_cuda_transfer_counter.c"
 RUNNER = ROOT / "scripts/v3_0_m11_no_hidden_copy_measure.py"
 MODULE = ROOT / "src/rtdsl/v3_0_m11_no_hidden_copy_evidence.py"
+CONTRACT_MODULE = ROOT / "src/rtdsl/v3_0_no_hidden_copy_contract.py"
 REPORT = ROOT / "docs/reports/goal4407_v3_0_m11_no_hidden_copy_evidence_2026-06-15.md"
 EVIDENCE_JSON = ROOT / "docs/reports/goal4407_v3_0_m11_no_hidden_copy_evidence_65536_2026-06-15.json"
 
@@ -46,10 +47,12 @@ class Goal4407V30M11NoHiddenCopyEvidenceTest(unittest.TestCase):
 
     def test_module_exports_strict_m11_contract(self) -> None:
         text = MODULE.read_text(encoding="utf-8")
+        contract_text = CONTRACT_MODULE.read_text(encoding="utf-8")
         self.assertIn("V3_M11_NO_HIDDEN_COPY_STATUS", text)
         self.assertIn("classify_transfer_counter_snapshot", text)
-        self.assertIn("device_to_host_copy_observed", text)
-        self.assertIn("host_to_device_bytes_exceed_allowed_launch_parameter_scope", text)
+        self.assertIn("classify_no_hidden_copy_transfer_snapshot", text)
+        self.assertIn("device_to_host_copy_observed", contract_text)
+        self.assertIn("host_to_device_bytes_exceed_allowed_launch_parameter_scope", contract_text)
         self.assertIn("true_zero_copy_ready", text)
 
     def test_transfer_snapshot_classifier_allows_small_launch_param_upload(self) -> None:
@@ -201,6 +204,9 @@ def _synthetic_row(partner: str) -> dict[str, object]:
                 "validation_materialization_after_measured_window": True,
                 "transfer_counter_observed": True,
                 "transfer_counter_snapshot": snapshot,
+                "no_hidden_column_copy_ready": True,
+                "true_zero_copy_ready": True,
+                "true_zero_copy_readiness_source": "v3_m11_transfer_counter_classification",
             }
         },
         "instrumentation": {
