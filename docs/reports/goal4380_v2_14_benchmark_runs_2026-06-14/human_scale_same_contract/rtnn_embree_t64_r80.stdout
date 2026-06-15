@@ -1,0 +1,258 @@
+[goal2348] RTDL batched 3D start backend=embree queries=65536 search=65536 batch_size=65536 batches=1 result_mode=ranked-summary-raw
+[goal2348] RTDL batched 3D repeat 1/80 ok=True sec=0.124132
+[goal2348] RTDL batched 3D repeat 2/80 ok=True sec=0.110622
+[goal2348] RTDL batched 3D repeat 3/80 ok=True sec=0.110721
+[goal2348] RTDL batched 3D repeat 4/80 ok=True sec=0.111389
+[goal2348] RTDL batched 3D repeat 5/80 ok=True sec=0.110453
+[goal2348] RTDL batched 3D repeat 6/80 ok=True sec=0.109366
+[goal2348] RTDL batched 3D repeat 7/80 ok=True sec=0.109321
+[goal2348] RTDL batched 3D repeat 8/80 ok=True sec=0.109235
+[goal2348] RTDL batched 3D repeat 9/80 ok=True sec=0.110124
+[goal2348] RTDL batched 3D repeat 10/80 ok=True sec=0.110113
+[goal2348] RTDL batched 3D repeat 11/80 ok=True sec=0.109627
+[goal2348] RTDL batched 3D repeat 12/80 ok=True sec=0.109635
+[goal2348] RTDL batched 3D repeat 13/80 ok=True sec=0.109995
+[goal2348] RTDL batched 3D repeat 14/80 ok=True sec=0.109385
+[goal2348] RTDL batched 3D repeat 15/80 ok=True sec=0.109723
+[goal2348] RTDL batched 3D repeat 16/80 ok=True sec=0.109596
+[goal2348] RTDL batched 3D repeat 17/80 ok=True sec=0.109937
+[goal2348] RTDL batched 3D repeat 18/80 ok=True sec=0.109721
+[goal2348] RTDL batched 3D repeat 19/80 ok=True sec=0.109693
+[goal2348] RTDL batched 3D repeat 20/80 ok=True sec=0.110889
+[goal2348] RTDL batched 3D repeat 21/80 ok=True sec=0.110073
+[goal2348] RTDL batched 3D repeat 22/80 ok=True sec=0.109713
+[goal2348] RTDL batched 3D repeat 23/80 ok=True sec=0.110937
+[goal2348] RTDL batched 3D repeat 24/80 ok=True sec=0.109819
+[goal2348] RTDL batched 3D repeat 25/80 ok=True sec=0.109577
+[goal2348] RTDL batched 3D repeat 26/80 ok=True sec=0.109596
+[goal2348] RTDL batched 3D repeat 27/80 ok=True sec=0.109779
+[goal2348] RTDL batched 3D repeat 28/80 ok=True sec=0.109625
+[goal2348] RTDL batched 3D repeat 29/80 ok=True sec=0.109874
+[goal2348] RTDL batched 3D repeat 30/80 ok=True sec=0.110439
+[goal2348] RTDL batched 3D repeat 31/80 ok=True sec=0.109726
+[goal2348] RTDL batched 3D repeat 32/80 ok=True sec=0.108924
+[goal2348] RTDL batched 3D repeat 33/80 ok=True sec=0.109730
+[goal2348] RTDL batched 3D repeat 34/80 ok=True sec=0.109534
+[goal2348] RTDL batched 3D repeat 35/80 ok=True sec=0.109903
+[goal2348] RTDL batched 3D repeat 36/80 ok=True sec=0.109281
+[goal2348] RTDL batched 3D repeat 37/80 ok=True sec=0.110106
+[goal2348] RTDL batched 3D repeat 38/80 ok=True sec=0.110085
+[goal2348] RTDL batched 3D repeat 39/80 ok=True sec=0.109327
+[goal2348] RTDL batched 3D repeat 40/80 ok=True sec=0.110871
+[goal2348] RTDL batched 3D repeat 41/80 ok=True sec=0.110645
+[goal2348] RTDL batched 3D repeat 42/80 ok=True sec=0.109935
+[goal2348] RTDL batched 3D repeat 43/80 ok=True sec=0.109518
+[goal2348] RTDL batched 3D repeat 44/80 ok=True sec=0.109613
+[goal2348] RTDL batched 3D repeat 45/80 ok=True sec=0.109913
+[goal2348] RTDL batched 3D repeat 46/80 ok=True sec=0.109725
+[goal2348] RTDL batched 3D repeat 47/80 ok=True sec=0.111570
+[goal2348] RTDL batched 3D repeat 48/80 ok=True sec=0.110259
+[goal2348] RTDL batched 3D repeat 49/80 ok=True sec=0.108969
+[goal2348] RTDL batched 3D repeat 50/80 ok=True sec=0.109479
+[goal2348] RTDL batched 3D repeat 51/80 ok=True sec=0.110478
+[goal2348] RTDL batched 3D repeat 52/80 ok=True sec=0.110473
+[goal2348] RTDL batched 3D repeat 53/80 ok=True sec=0.110597
+[goal2348] RTDL batched 3D repeat 54/80 ok=True sec=0.113402
+[goal2348] RTDL batched 3D repeat 55/80 ok=True sec=0.111133
+[goal2348] RTDL batched 3D repeat 56/80 ok=True sec=0.110685
+[goal2348] RTDL batched 3D repeat 57/80 ok=True sec=0.108997
+[goal2348] RTDL batched 3D repeat 58/80 ok=True sec=0.109558
+[goal2348] RTDL batched 3D repeat 59/80 ok=True sec=0.110623
+[goal2348] RTDL batched 3D repeat 60/80 ok=True sec=0.109777
+[goal2348] RTDL batched 3D repeat 61/80 ok=True sec=0.111127
+[goal2348] RTDL batched 3D repeat 62/80 ok=True sec=0.113221
+[goal2348] RTDL batched 3D repeat 63/80 ok=True sec=0.112248
+[goal2348] RTDL batched 3D repeat 64/80 ok=True sec=0.114406
+[goal2348] RTDL batched 3D repeat 65/80 ok=True sec=0.114260
+[goal2348] RTDL batched 3D repeat 66/80 ok=True sec=0.112382
+[goal2348] RTDL batched 3D repeat 67/80 ok=True sec=0.109467
+[goal2348] RTDL batched 3D repeat 68/80 ok=True sec=0.109267
+[goal2348] RTDL batched 3D repeat 69/80 ok=True sec=0.108940
+[goal2348] RTDL batched 3D repeat 70/80 ok=True sec=0.109914
+[goal2348] RTDL batched 3D repeat 71/80 ok=True sec=0.109642
+[goal2348] RTDL batched 3D repeat 72/80 ok=True sec=0.109082
+[goal2348] RTDL batched 3D repeat 73/80 ok=True sec=0.110106
+[goal2348] RTDL batched 3D repeat 74/80 ok=True sec=0.109630
+[goal2348] RTDL batched 3D repeat 75/80 ok=True sec=0.109989
+[goal2348] RTDL batched 3D repeat 76/80 ok=True sec=0.109563
+[goal2348] RTDL batched 3D repeat 77/80 ok=True sec=0.108908
+[goal2348] RTDL batched 3D repeat 78/80 ok=True sec=0.109375
+[goal2348] RTDL batched 3D repeat 79/80 ok=True sec=0.110104
+[goal2348] RTDL batched 3D repeat 80/80 ok=True sec=0.109954
+{
+  "backend": "embree",
+  "batch_count": 1,
+  "batch_phase_timings": [
+    {
+      "backend": "embree",
+      "materializes_neighbor_rows": false,
+      "mode": "embree_prepared_fixed_radius_ranked_summary_rows",
+      "native_traversal_seconds": 0.006574177,
+      "prepared_search_structure": true,
+      "summary_rows_materialized": true,
+      "wall_seconds": 0.10994524508714676
+    }
+  ],
+  "claim_boundary": {
+    "aggregate_requests_batched": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "device_ranked_summary_aggregate": false,
+    "device_ranked_summary_rows": false,
+    "device_resident_query_points": false,
+    "embree_ranked_summary_rows": true,
+    "float32_precision": false,
+    "materializes_neighbor_rows": false,
+    "paper_equivalent_rtnn_row": false,
+    "partitioned_or_batched_like_rtnn": true,
+    "prepared_cuda_graph_replay": false,
+    "rt_core_neighbor_search_claim_authorized": false,
+    "rtdl_speedup_claim_authorized": false,
+    "same_stream_partner_consumer": false
+  },
+  "contract": {
+    "aggregate_batch_request_mode": "not_batched",
+    "aggregate_batch_requests": [],
+    "aggregate_request_count": 1,
+    "approximate": false,
+    "batched_queries": true,
+    "bounded_k": 50,
+    "exact": true,
+    "execution_path_policy_version": null,
+    "family": "fixed_radius_neighbors_3d",
+    "mode": "ranked-summary-raw",
+    "precision": "float64",
+    "prepared_cuda_graph_replay": false,
+    "prepared_query_points": false,
+    "prepared_search_structure": true,
+    "same_stream_partner_consumer": false
+  },
+  "elapsed_max_sec": 0.12413153797388077,
+  "elapsed_median_sec": 0.1098884642124176,
+  "elapsed_min_sec": 0.10890763252973557,
+  "elapsed_runs_sec": [
+    0.12413153797388077,
+    0.11062201112508774,
+    0.1107206717133522,
+    0.11138948053121567,
+    0.11045311391353607,
+    0.10936572402715683,
+    0.10932069271802902,
+    0.1092352420091629,
+    0.1101241260766983,
+    0.1101132407784462,
+    0.1096271276473999,
+    0.1096353679895401,
+    0.10999467968940735,
+    0.10938531905412674,
+    0.1097228080034256,
+    0.10959592461585999,
+    0.10993697494268417,
+    0.10972075909376144,
+    0.1096930131316185,
+    0.1108887568116188,
+    0.11007273942232132,
+    0.10971298068761826,
+    0.110936738550663,
+    0.10981853306293488,
+    0.10957713425159454,
+    0.10959598422050476,
+    0.10977949947118759,
+    0.10962525010108948,
+    0.10987399518489838,
+    0.11043934524059296,
+    0.10972573608160019,
+    0.10892373323440552,
+    0.10972969979047775,
+    0.10953351110219955,
+    0.10990293323993683,
+    0.10928142070770264,
+    0.11010637134313583,
+    0.11008536070585251,
+    0.10932669043540955,
+    0.11087093502283096,
+    0.11064539849758148,
+    0.10993503034114838,
+    0.10951768606901169,
+    0.10961266607046127,
+    0.10991251468658447,
+    0.10972532629966736,
+    0.11157035827636719,
+    0.11025936901569366,
+    0.1089685782790184,
+    0.10947933793067932,
+    0.11047781258821487,
+    0.11047325283288956,
+    0.11059742420911789,
+    0.11340221017599106,
+    0.11113254725933075,
+    0.1106845885515213,
+    0.1089969351887703,
+    0.10955756902694702,
+    0.11062276363372803,
+    0.10977654159069061,
+    0.11112657189369202,
+    0.11322079598903656,
+    0.1122475415468216,
+    0.11440625786781311,
+    0.11425986140966415,
+    0.11238209903240204,
+    0.10946722328662872,
+    0.10926661640405655,
+    0.10893990844488144,
+    0.10991448909044266,
+    0.10964171588420868,
+    0.1090819388628006,
+    0.11010585725307465,
+    0.10963013023138046,
+    0.10998949408531189,
+    0.10956297069787979,
+    0.10890763252973557,
+    0.10937545448541641,
+    0.11010352522134781,
+    0.10995376110076904
+  ],
+  "elapsed_sec": 0.10995376110076904,
+  "error": "",
+  "execution_path_plan": null,
+  "execution_prepare_sec": 0.11675675958395004,
+  "external": "RTDL current",
+  "input_load_sec": 0.1253819391131401,
+  "input_pack_sec": 0.029032714664936066,
+  "k_max": 50,
+  "mode": "current_3d_fixed_radius_neighbors_embree_batched",
+  "ok": true,
+  "query_batch_size": 65536,
+  "query_count": 65536,
+  "radius": 0.02,
+  "ranked_aggregate_batch_summaries": null,
+  "ranked_aggregate_summary": null,
+  "raw_ranked_summary_aggregate": {
+    "bounded_neighbor_count": 206434,
+    "kth_id_checksum": 2148001918,
+    "max_neighbor_count": 13,
+    "min_neighbor_count": 1,
+    "nearest_id_checksum": 2147450880,
+    "query_count": 65536,
+    "sum_distance": 2110.9291638399195,
+    "zero_neighbor_query_count": 0
+  },
+  "raw_ranked_summary_batch_summaries": [
+    {
+      "bounded_neighbor_count": 206434,
+      "kth_id_checksum": 2148001918,
+      "max_neighbor_count": 13,
+      "min_neighbor_count": 1,
+      "nearest_id_checksum": 2147450880,
+      "query_count": 65536,
+      "sum_distance": 2110.9291638399195,
+      "zero_neighbor_query_count": 0
+    }
+  ],
+  "repeat": 80,
+  "result_mode": "ranked-summary-raw",
+  "row": "human_scale_rtnn_embree_t64",
+  "row_count": 65536,
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "same_stream_entrypoint_metadata": null,
+  "search_count": 65536
+}

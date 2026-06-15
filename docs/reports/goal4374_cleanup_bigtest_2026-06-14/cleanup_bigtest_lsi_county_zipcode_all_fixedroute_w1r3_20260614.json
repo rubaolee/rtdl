@@ -1,0 +1,201 @@
+{
+  "case_id": "lsi_county_zipcode",
+  "dataset_root": "/workspace/rayjoin_same_source_data/cdb_partial_topology",
+  "input_provenance": "same_source_regenerated_cdb",
+  "input_shape": {
+    "base_chains": 8662896,
+    "base_segments": 8662896,
+    "query_chains": 9503,
+    "query_segments": 5279181,
+    "query_stream": "all_edges_from_query_map_s"
+  },
+  "pair_id": "county_zipcode",
+  "paper_label": "County x Zipcode",
+  "program": "lsi",
+  "program_contract": "Base map R is -poly1; query map S is -poly2; the query stream is all line segments/edges from S.",
+  "results": {
+    "embree": {
+      "backend": "rtdl_embree",
+      "count": 181629,
+      "counts_stable": true,
+      "hot_max_sec": 6.189779035747051,
+      "hot_median_sec": 5.892485074698925,
+      "hot_min_sec": 5.746541045606136,
+      "hot_total_sec": 17.828805156052113,
+      "native_traversal_median_sec": null,
+      "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract",
+      "repeat": 3,
+      "runs": [
+        {
+          "count": 181629,
+          "elapsed_sec": 6.143026806414127,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_result": {
+            "count": 181629,
+            "route": "rayjoin_overlay_lsi_rows",
+            "row_count": 181629
+          },
+          "native_timings": {
+            "hot_call_sec": 6.1430152133107185,
+            "mode": "rayjoin_lsi_aabb_refined",
+            "native_traversal": 1.312242812
+          }
+        },
+        {
+          "count": 181629,
+          "elapsed_sec": 6.189779035747051,
+          "is_warmup": false,
+          "iteration": 1,
+          "native_result": {
+            "count": 181629,
+            "route": "rayjoin_overlay_lsi_rows",
+            "row_count": 181629
+          },
+          "native_timings": {
+            "hot_call_sec": 6.189769074320793,
+            "mode": "rayjoin_lsi_aabb_refined",
+            "native_traversal": 1.220505692
+          }
+        },
+        {
+          "count": 181629,
+          "elapsed_sec": 5.746541045606136,
+          "is_warmup": false,
+          "iteration": 2,
+          "native_result": {
+            "count": 181629,
+            "route": "rayjoin_overlay_lsi_rows",
+            "row_count": 181629
+          },
+          "native_timings": {
+            "hot_call_sec": 5.746530555188656,
+            "mode": "rayjoin_lsi_aabb_refined",
+            "native_traversal": 1.126848964
+          }
+        },
+        {
+          "count": 181629,
+          "elapsed_sec": 5.892485074698925,
+          "is_warmup": false,
+          "iteration": 3,
+          "native_result": {
+            "count": 181629,
+            "route": "rayjoin_overlay_lsi_rows",
+            "row_count": 181629
+          },
+          "native_timings": {
+            "hot_call_sec": 5.892475426197052,
+            "mode": "rayjoin_lsi_aabb_refined",
+            "native_traversal": 1.214894796
+          }
+        }
+      ],
+      "warmup": 1
+    },
+    "optix": {
+      "backend": "rtdl_optix",
+      "count": 181629,
+      "counts_stable": true,
+      "hot_max_sec": 2.6208374202251434,
+      "hot_median_sec": 2.52097849547863,
+      "hot_min_sec": 2.512368753552437,
+      "hot_total_sec": 7.65418466925621,
+      "native_traversal_median_sec": 0.002022735,
+      "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract",
+      "repeat": 3,
+      "runs": [
+        {
+          "count": 181629,
+          "elapsed_sec": 3.7140467762947083,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_result": {
+            "count": 181629,
+            "route": "rayjoin_overlay_lsi_rows",
+            "row_count": 181629
+          },
+          "native_timings": {
+            "candidate_count_pass": 0.002017084,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "emitted_count": 181629,
+            "exact_refine": 0.0,
+            "hot_call_sec": 3.6698724552989006,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0
+          }
+        },
+        {
+          "count": 181629,
+          "elapsed_sec": 2.6208374202251434,
+          "is_warmup": false,
+          "iteration": 1,
+          "native_result": {
+            "count": 181629,
+            "route": "rayjoin_overlay_lsi_rows",
+            "row_count": 181629
+          },
+          "native_timings": {
+            "candidate_count_pass": 0.002022735,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "emitted_count": 181629,
+            "exact_refine": 0.0,
+            "hot_call_sec": 2.6207955703139305,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0
+          }
+        },
+        {
+          "count": 181629,
+          "elapsed_sec": 2.52097849547863,
+          "is_warmup": false,
+          "iteration": 2,
+          "native_result": {
+            "count": 181629,
+            "route": "rayjoin_overlay_lsi_rows",
+            "row_count": 181629
+          },
+          "native_timings": {
+            "candidate_count_pass": 0.002019589,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "emitted_count": 181629,
+            "exact_refine": 0.0,
+            "hot_call_sec": 2.5209465250372887,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0
+          }
+        },
+        {
+          "count": 181629,
+          "elapsed_sec": 2.512368753552437,
+          "is_warmup": false,
+          "iteration": 3,
+          "native_result": {
+            "count": 181629,
+            "route": "rayjoin_overlay_lsi_rows",
+            "row_count": 181629
+          },
+          "native_timings": {
+            "candidate_count_pass": 0.002024468,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "emitted_count": 181629,
+            "exact_refine": 0.0,
+            "hot_call_sec": 2.5123377591371536,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0
+          }
+        }
+      ],
+      "warmup": 1
+    }
+  },
+  "schema": "rtdl.rayjoin_paper_suite.rtdl_run.v1"
+}

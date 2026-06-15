@@ -89,6 +89,36 @@ _EMBREE_AABB_INDEX_OPERATION_CODES = {
     "range_contains": EMBREE_AABB_INDEX_RANGE_CONTAINS,
     "range_intersects": EMBREE_AABB_INDEX_RANGE_INTERSECTS,
 }
+EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_SYMBOL = (
+    "rtdl_embree_prepare_directed_segment_point_location_2d"
+)
+EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL = (
+    "rtdl_embree_run_prepared_directed_segment_point_location_2d"
+)
+EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL = (
+    "rtdl_embree_count_prepared_directed_segment_point_location_2d"
+)
+EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_TIMINGS_SYMBOL = (
+    "rtdl_embree_directed_segment_point_location_get_last_phase_timings"
+)
+EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_DESTROY_SYMBOL = (
+    "rtdl_embree_destroy_prepared_directed_segment_point_location_2d"
+)
+EMBREE_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SYMBOL = (
+    "rtdl_embree_prepare_rayjoin_cdb_point_location_2d"
+)
+EMBREE_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL = (
+    "rtdl_embree_run_prepared_rayjoin_cdb_point_location_2d"
+)
+EMBREE_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL = (
+    "rtdl_embree_count_prepared_rayjoin_cdb_point_location_2d"
+)
+EMBREE_RAYJOIN_CDB_POINT_LOCATION_TIMINGS_SYMBOL = (
+    "rtdl_embree_rayjoin_cdb_point_location_get_last_phase_timings"
+)
+EMBREE_RAYJOIN_CDB_POINT_LOCATION_DESTROY_SYMBOL = (
+    "rtdl_embree_destroy_prepared_rayjoin_cdb_point_location_2d"
+)
 EMBREE_REQUIRED_SYMBOLS = (
     "rtdl_embree_get_version",
     "rtdl_embree_configure_threads",
@@ -255,6 +285,18 @@ class _RtdlSegment(ctypes.Structure):
         ("y0", ctypes.c_double),
         ("x1", ctypes.c_double),
         ("y1", ctypes.c_double),
+    ]
+
+
+class _RtdlRayjoinCdbSegment(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x0", ctypes.c_double),
+        ("y0", ctypes.c_double),
+        ("x1", ctypes.c_double),
+        ("y1", ctypes.c_double),
+        ("left_face_id", ctypes.c_uint32),
+        ("right_face_id", ctypes.c_uint32),
     ]
 
 
@@ -483,6 +525,15 @@ class _RtdlPointNearestSegmentRow(ctypes.Structure):
     ]
 
 
+class _RtdlRayjoinCdbPointLocationRow(ctypes.Structure):
+    _fields_ = [
+        ("point_id", ctypes.c_uint32),
+        ("face_id", ctypes.c_uint32),
+        ("segment_id", ctypes.c_uint32),
+        ("hit_t", ctypes.c_double),
+    ]
+
+
 class _RtdlFixedRadiusNeighborRow(ctypes.Structure):
     _fields_ = [
         ("query_id", ctypes.c_uint32),
@@ -507,6 +558,16 @@ class _RtdlFixedRadiusRankedNeighborSummary(ctypes.Structure):
         ("kth_neighbor_id", ctypes.c_uint32),
         ("nearest_distance", ctypes.c_double),
         ("kth_distance", ctypes.c_double),
+        ("sum_distance", ctypes.c_double),
+    ]
+
+
+class _RtdlFixedRadiusRankedNeighborAggregate(ctypes.Structure):
+    _fields_ = [
+        ("query_count", ctypes.c_size_t),
+        ("bounded_neighbor_count", ctypes.c_size_t),
+        ("nearest_id_checksum", ctypes.c_uint64),
+        ("kth_id_checksum", ctypes.c_uint64),
         ("sum_distance", ctypes.c_double),
     ]
 
@@ -571,6 +632,13 @@ class _RtdlPayloadField(ctypes.Structure):
 
 @dataclass(frozen=True)
 class PackedSegments:
+    records: object
+    count: int
+    owner: object | None = None
+
+
+@dataclass(frozen=True)
+class PackedRayjoinCdbSegments:
     records: object
     count: int
     owner: object | None = None
@@ -673,6 +741,23 @@ class EmbreeRowView:
             tuple(getattr(self.rows_ptr[index], field) for field in self.field_names)
             for index in range(self.row_count)
         )
+
+    def to_numpy(self, *, copy: bool = False):
+        """Return a structured NumPy view over the host row buffer."""
+        if self._closed:
+            raise RuntimeError("cannot expose NumPy rows after EmbreeRowView is closed")
+        import numpy as _np
+
+        rows = _np.ctypeslib.as_array(self.rows_ptr, shape=(self.row_count,))
+        return rows.copy() if copy else rows
+
+    def to_numpy_columns(self, *, copy: bool = False) -> dict[str, object]:
+        """Return row fields as NumPy arrays keyed by field name."""
+        rows = self.to_numpy(copy=False)
+        columns = {field: rows[field] for field in self.field_names}
+        if copy:
+            columns = {field: column.copy() for field, column in columns.items()}
+        return columns
 
     def __del__(self) -> None:
         try:
@@ -1143,6 +1228,79 @@ def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None,
     return PackedSegments(records=array, count=count)
 
 
+def pack_rayjoin_cdb_segments(
+    records=None,
+    *,
+    ids=None,
+    x0=None,
+    y0=None,
+    x1=None,
+    y1=None,
+    left_face_ids=None,
+    right_face_ids=None,
+) -> PackedRayjoinCdbSegments:
+    if isinstance(records, PackedRayjoinCdbSegments):
+        return records
+    if records is not None:
+        record_tuple = tuple(records)
+        array = (_RtdlRayjoinCdbSegment * len(record_tuple))(*[
+            _RtdlRayjoinCdbSegment(
+                _uint32_field(_segment_field(item, "id"), "id"),
+                float(_segment_field(item, "x0")),
+                float(_segment_field(item, "y0")),
+                float(_segment_field(item, "x1")),
+                float(_segment_field(item, "y1")),
+                _uint32_field(_segment_field(item, "left_face_id"), "left_face_id"),
+                _uint32_field(_segment_field(item, "right_face_id"), "right_face_id"),
+            )
+            for item in record_tuple
+        ])
+        return PackedRayjoinCdbSegments(records=array, count=len(record_tuple))
+
+    ids_list = _coerce_list("ids", ids)
+    x0_list = _coerce_list("x0", x0)
+    y0_list = _coerce_list("y0", y0)
+    x1_list = _coerce_list("x1", x1)
+    y1_list = _coerce_list("y1", y1)
+    left_list = _coerce_list("left_face_ids", left_face_ids)
+    right_list = _coerce_list("right_face_ids", right_face_ids)
+    count = _validate_equal_lengths(
+        "RayJoin CDB segments",
+        ids_list,
+        x0_list,
+        y0_list,
+        x1_list,
+        y1_list,
+        left_list,
+        right_list,
+    )
+    array = (_RtdlRayjoinCdbSegment * count)(*[
+        _RtdlRayjoinCdbSegment(
+            _uint32_field(ids_list[i], "id"),
+            float(x0_list[i]),
+            float(y0_list[i]),
+            float(x1_list[i]),
+            float(y1_list[i]),
+            _uint32_field(left_list[i], "left_face_id"),
+            _uint32_field(right_list[i], "right_face_id"),
+        )
+        for i in range(count)
+    ])
+    return PackedRayjoinCdbSegments(records=array, count=count)
+
+
+PackedDirectedSegmentFaces = PackedRayjoinCdbSegments
+
+
+def pack_directed_segment_faces(*args, **kwargs) -> PackedDirectedSegmentFaces:
+    """Pack directed 2-D segments with left/right face payloads.
+
+    This is the app-agnostic name for the segment layout used by RayJoin CDB
+    point-location, polygon-overlay, and similar topology-aware apps.
+    """
+    return pack_rayjoin_cdb_segments(*args, **kwargs)
+
+
 def _try_pack_segments_records_numpy_arrays(records, order_mode: str) -> PackedSegments | None:
     try:
         import numpy as _np
@@ -1330,6 +1488,13 @@ def _segment_id_to_packed_u32(value) -> int:
     if segment_id < 0 or segment_id > _PACKED_SEGMENT_ID_MAX:
         raise ValueError("segment ids must fit the uint32 packed segment ABI")
     return segment_id
+
+
+def _uint32_field(value, field_name: str) -> int:
+    uint_value = int(value)
+    if uint_value < 0 or uint_value > _PACKED_SEGMENT_ID_MAX:
+        raise ValueError(f"{field_name} must fit the uint32 native ABI")
+    return uint_value
 
 
 def _pack_points_columns_numpy(ids, x, y, z=None, *, dimension: int | None = None) -> PackedPoints | None:
@@ -3346,6 +3511,143 @@ def prepare_embree_fixed_radius_count_threshold_2d(search_points) -> PreparedEmb
     return PreparedEmbreeFixedRadiusCountThreshold2D(search_points)
 
 
+class PreparedEmbreeFixedRadiusCountThreshold3D:
+    """Reusable Embree BVH for repeated 3-D fixed-radius count-threshold queries."""
+
+    _fields = ("query_id", "neighbor_count", "threshold_reached")
+
+    def __init__(self, search_points) -> None:
+        self._library = _load_configured_embree_library()
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._last_traversal_seconds = 0.0
+        create = _require_optional_embree_symbol(
+            self._library,
+            "rtdl_embree_fixed_radius_count_threshold_3d_create",
+        )
+        if create is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export "
+                "rtdl_embree_fixed_radius_count_threshold_3d_create; "
+                "rebuild the Embree backend from current main"
+            )
+        packed_search = pack_points(records=search_points, dimension=3)
+        error = ctypes.create_string_buffer(4096)
+        status = create(
+            packed_search.records,
+            packed_search.count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def last_traversal_seconds(self) -> float:
+        return float(self._last_traversal_seconds)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        destroy = _require_optional_embree_symbol(
+            self._library,
+            "rtdl_embree_fixed_radius_count_threshold_3d_destroy",
+        )
+        if destroy is not None and self._handle:
+            destroy(self._handle)
+        self._closed = True
+        self._handle = ctypes.c_void_p()
+
+    def __enter__(self) -> "PreparedEmbreeFixedRadiusCountThreshold3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def run_raw(
+        self,
+        query_points,
+        *,
+        radius: float,
+        threshold: int = 0,
+    ) -> EmbreeRowView:
+        if self._closed:
+            raise RuntimeError("prepared Embree fixed-radius count-threshold 3D handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+        run = _require_optional_embree_symbol(
+            self._library,
+            "rtdl_embree_fixed_radius_count_threshold_3d_run",
+        )
+        if run is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export "
+                "rtdl_embree_fixed_radius_count_threshold_3d_run; "
+                "rebuild the Embree backend from current main"
+            )
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=3)
+        if packed_queries.dimension != 3:
+            raise ValueError("PreparedEmbreeFixedRadiusCountThreshold3D.run_raw requires 3-D points")
+        rows_ptr = ctypes.POINTER(_RtdlFixedRadiusCountRow)()
+        row_count = ctypes.c_size_t()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(threshold)),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        self._last_traversal_seconds = float(traversal_seconds.value)
+        return EmbreeRowView(
+            library=self._library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlFixedRadiusCountRow,
+            field_names=self._fields,
+        )
+
+    def run(
+        self,
+        query_points,
+        *,
+        radius: float,
+        threshold: int = 0,
+    ) -> tuple[dict[str, int], ...]:
+        rows = self.run_raw(query_points, radius=radius, threshold=threshold)
+        try:
+            return tuple(
+                {
+                    "query_id": int(row["query_id"]),
+                    "neighbor_count": int(row["neighbor_count"]),
+                    "threshold_reached": int(row["threshold_reached"]),
+                }
+                for row in rows.to_dict_rows()
+            )
+        finally:
+            rows.close()
+
+
+def prepare_embree_fixed_radius_count_threshold_3d(search_points) -> PreparedEmbreeFixedRadiusCountThreshold3D:
+    """Prepare a reusable Embree 3-D fixed-radius count-threshold object."""
+    return PreparedEmbreeFixedRadiusCountThreshold3D(search_points)
+
+
 class PreparedEmbreeFixedRadiusNeighbors3D:
     """Reusable Embree BVH for repeated 3-D fixed-radius ranked-summary queries."""
 
@@ -3486,6 +3788,61 @@ class PreparedEmbreeFixedRadiusNeighbors3D:
             return rows.to_dict_rows()
         finally:
             rows.close()
+
+    def aggregate_ranked_summary(self, query_points, *, radius: float, k_max: int) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared Embree fixed-radius-neighbor 3D handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if k_max <= 0:
+            raise ValueError("k_max must be positive")
+        if k_max > 64:
+            raise ValueError("PreparedEmbreeFixedRadiusNeighbors3D.aggregate_ranked_summary currently supports k_max <= 64")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=3)
+        if packed_queries.dimension != 3:
+            raise ValueError("PreparedEmbreeFixedRadiusNeighbors3D.aggregate_ranked_summary requires 3-D points")
+        if packed_queries.count == 0 or self._packed_search.count == 0:
+            self._last_traversal_seconds = 0.0
+            return {
+                "query_count": int(packed_queries.count),
+                "bounded_neighbor_count": 0,
+                "nearest_id_checksum": 0,
+                "kth_id_checksum": 0,
+                "sum_distance": 0.0,
+            }
+        run = _require_optional_embree_symbol(
+            self._library,
+            "rtdl_embree_fixed_radius_neighbors_3d_ranked_summary_aggregate_run",
+        )
+        if run is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export "
+                "rtdl_embree_fixed_radius_neighbors_3d_ranked_summary_aggregate_run; "
+                "rebuild the Embree backend from current main"
+            )
+        aggregate = _RtdlFixedRadiusRankedNeighborAggregate()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(k_max)),
+            ctypes.byref(aggregate),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        self._last_traversal_seconds = float(traversal_seconds.value)
+        return {
+            "query_count": int(aggregate.query_count),
+            "bounded_neighbor_count": int(aggregate.bounded_neighbor_count),
+            "nearest_id_checksum": int(aggregate.nearest_id_checksum),
+            "kth_id_checksum": int(aggregate.kth_id_checksum),
+            "sum_distance": float(aggregate.sum_distance),
+        }
 
 
 def prepare_embree_fixed_radius_neighbors_3d(search_points) -> PreparedEmbreeFixedRadiusNeighbors3D:
@@ -4783,6 +5140,90 @@ def _call_lsi_embree_packed(compiled: CompiledKernel, packed_inputs, library) ->
     )
 
 
+def _call_rayjoin_lsi_aabb_refined_embree_packed(compiled, packed_inputs, library) -> tuple[EmbreeRowView, dict[str, object]]:
+    left_name = compiled.candidates.left.name
+    right_name = compiled.candidates.right.name
+    left = packed_inputs[left_name]
+    right = packed_inputs[right_name]
+    symbol = _require_optional_embree_symbol(
+        library,
+        "rtdl_embree_run_rayjoin_lsi_aabb_refined_segment_pair_intersections",
+    )
+    if symbol is None:
+        raise RuntimeError(
+            "loaded Embree backend library does not export "
+            "rtdl_embree_run_rayjoin_lsi_aabb_refined_segment_pair_intersections; "
+            "rebuild the Embree backend from current main"
+        )
+    rows_ptr = ctypes.POINTER(_RtdlLsiRow)()
+    row_count = ctypes.c_size_t()
+    traversal_seconds = ctypes.c_double()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        left.records,
+        left.count,
+        right.records,
+        right.count,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        ctypes.byref(traversal_seconds),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return (
+        EmbreeRowView(
+            library=library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlLsiRow,
+            field_names=("left_id", "right_id", "intersection_point_x", "intersection_point_y"),
+        ),
+        {
+            "mode": "rayjoin_lsi_aabb_refined",
+            "native_traversal": float(traversal_seconds.value),
+        },
+    )
+
+
+def _count_rayjoin_lsi_aabb_refined_embree_packed(compiled, packed_inputs, library) -> tuple[int, dict[str, object]]:
+    left_name = compiled.candidates.left.name
+    right_name = compiled.candidates.right.name
+    left = packed_inputs[left_name]
+    right = packed_inputs[right_name]
+    symbol = _require_optional_embree_symbol(
+        library,
+        "rtdl_embree_count_rayjoin_lsi_aabb_refined_segment_pair_intersections",
+    )
+    if symbol is None:
+        raise RuntimeError(
+            "loaded Embree backend library does not export "
+            "rtdl_embree_count_rayjoin_lsi_aabb_refined_segment_pair_intersections; "
+            "rebuild the Embree backend from current main"
+        )
+    hit_count = ctypes.c_size_t()
+    traversal_seconds = ctypes.c_double()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        left.records,
+        left.count,
+        right.records,
+        right.count,
+        ctypes.byref(hit_count),
+        ctypes.byref(traversal_seconds),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return (
+        int(hit_count.value),
+        {
+            "mode": "rayjoin_lsi_aabb_refined",
+            "native_traversal": float(traversal_seconds.value),
+        },
+    )
+
+
 class _PreparedEmbreeSegmentPairCountHandle:
     def __init__(self, library, right: PackedSegments) -> None:
         self.library = library
@@ -4853,6 +5294,179 @@ class _PreparedEmbreeSegmentPairCountHandle:
             self.close()
         except Exception:
             pass
+
+
+class PreparedEmbreeRayjoinCdbPointLocation2D:
+    def __init__(self, library, handle: ctypes.c_void_p, segment_count: int) -> None:
+        self.library = library
+        self.handle = handle
+        self.segment_count = int(segment_count)
+        self._closed = False
+
+    def run_raw(self, points) -> EmbreeRowView:
+        if self._closed:
+            raise RuntimeError("prepared Embree RayJoin CDB point-location handle is closed")
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        run_symbol = _find_first_optional_embree_symbol(
+            self.library,
+            EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL,
+            EMBREE_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export "
+                f"{EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL} or "
+                f"{EMBREE_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL}; rebuild the Embree backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlRayjoinCdbPointLocationRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self.handle,
+            packed_points.records,
+            packed_points.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return EmbreeRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlRayjoinCdbPointLocationRow,
+            field_names=("point_id", "face_id", "segment_id", "hit_t"),
+        )
+
+    def run(self, points) -> tuple:
+        rows = self.run_raw(points)
+        try:
+            return rows.to_dict_rows()
+        finally:
+            rows.close()
+
+    def count_positive_faces(self, points) -> int:
+        if self._closed:
+            raise RuntimeError("prepared Embree RayJoin CDB point-location handle is closed")
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        count_symbol = _find_first_optional_embree_symbol(
+            self.library,
+            EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL,
+            EMBREE_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL,
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export "
+                f"{EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL} or "
+                f"{EMBREE_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL}; rebuild the Embree backend from current main"
+            )
+        positive_face_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self.handle,
+            packed_points.records,
+            packed_points.count,
+            ctypes.byref(positive_face_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(positive_face_count.value)
+
+    def last_phase_timings(self) -> dict[str, float | int | str] | None:
+        symbol = _find_first_optional_embree_symbol(
+            self.library,
+            EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_TIMINGS_SYMBOL,
+            EMBREE_RAYJOIN_CDB_POINT_LOCATION_TIMINGS_SYMBOL,
+        )
+        if symbol is None:
+            return None
+        traversal = ctypes.c_double()
+        point_count = ctypes.c_size_t()
+        positive_face_count = ctypes.c_size_t()
+        mode = ctypes.c_uint32()
+        status = symbol(
+            ctypes.byref(traversal),
+            ctypes.byref(point_count),
+            ctypes.byref(positive_face_count),
+            ctypes.byref(mode),
+        )
+        if status != 0:
+            return None
+        mode_name = {1: "count", 2: "rows"}.get(int(mode.value), "none")
+        return {
+            "mode": mode_name,
+            "traversal": float(traversal.value),
+            "point_count": int(point_count.value),
+            "positive_face_count": int(positive_face_count.value),
+        }
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        destroy = _find_first_optional_embree_symbol(
+            self.library,
+            EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_DESTROY_SYMBOL,
+            EMBREE_RAYJOIN_CDB_POINT_LOCATION_DESTROY_SYMBOL,
+        )
+        if destroy is not None and self.handle:
+            destroy(self.handle)
+        self.handle = ctypes.c_void_p()
+        self._closed = True
+
+    def __enter__(self) -> "PreparedEmbreeRayjoinCdbPointLocation2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_rayjoin_cdb_point_location_2d_embree(segments) -> PreparedEmbreeRayjoinCdbPointLocation2D:
+    library = _load_embree_library()
+    prepare_symbol = _find_first_optional_embree_symbol(
+        library,
+        EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_SYMBOL,
+        EMBREE_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SYMBOL,
+    )
+    if prepare_symbol is None:
+        raise RuntimeError(
+            "loaded Embree backend library does not export "
+            f"{EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_SYMBOL} or "
+            f"{EMBREE_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SYMBOL}; rebuild the Embree backend from current main"
+        )
+    packed_segments = pack_rayjoin_cdb_segments(segments)
+    handle = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = prepare_symbol(
+        packed_segments.records,
+        packed_segments.count,
+        ctypes.byref(handle),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return PreparedEmbreeRayjoinCdbPointLocation2D(
+        library=library,
+        handle=handle,
+        segment_count=int(packed_segments.count),
+    )
+
+
+PreparedEmbreeDirectedSegmentPointLocation2D = PreparedEmbreeRayjoinCdbPointLocation2D
+
+
+def prepare_directed_segment_point_location_2d_embree(
+    segments,
+) -> PreparedEmbreeDirectedSegmentPointLocation2D:
+    """Prepare a directed-segment point-location primitive on the Embree backend."""
+    return prepare_rayjoin_cdb_point_location_2d_embree(segments)
 
 
 class _PreparedEmbreePointPrimitiveCountHandle:
@@ -6184,6 +6798,41 @@ def _load_embree_library():
         ]
         optional_count_segment_pair_intersections.restype = ctypes.c_int
 
+    optional_rayjoin_lsi_aabb_rows = _require_optional_embree_symbol(
+        library,
+        "rtdl_embree_run_rayjoin_lsi_aabb_refined_segment_pair_intersections",
+    )
+    if optional_rayjoin_lsi_aabb_rows is not None:
+        optional_rayjoin_lsi_aabb_rows.argtypes = [
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlLsiRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_rayjoin_lsi_aabb_rows.restype = ctypes.c_int
+
+    optional_rayjoin_lsi_aabb_count = _require_optional_embree_symbol(
+        library,
+        "rtdl_embree_count_rayjoin_lsi_aabb_refined_segment_pair_intersections",
+    )
+    if optional_rayjoin_lsi_aabb_count is not None:
+        optional_rayjoin_lsi_aabb_count.argtypes = [
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlSegment),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_rayjoin_lsi_aabb_count.restype = ctypes.c_int
+
     optional_segment_pair_count_create = _require_optional_embree_symbol(
         library,
         "rtdl_embree_segment_pair_intersections_2d_create",
@@ -6221,6 +6870,69 @@ def _load_embree_library():
     if optional_segment_pair_count_destroy is not None:
         optional_segment_pair_count_destroy.argtypes = [ctypes.c_void_p]
         optional_segment_pair_count_destroy.restype = None
+
+    def _register_optional(symbol_name: str, argtypes, restype=ctypes.c_int):
+        symbol = _require_optional_embree_symbol(library, symbol_name)
+        if symbol is not None:
+            symbol.argtypes = argtypes
+            symbol.restype = restype
+        return symbol
+
+    point_location_prepare_argtypes = [
+        ctypes.POINTER(_RtdlRayjoinCdbSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_void_p),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    point_location_run_argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlRayjoinCdbPointLocationRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    point_location_count_argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    point_location_timings_argtypes = [
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_uint32),
+    ]
+    for symbol_name in (
+        EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_SYMBOL,
+        EMBREE_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SYMBOL,
+    ):
+        _register_optional(symbol_name, point_location_prepare_argtypes)
+    for symbol_name in (
+        EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL,
+        EMBREE_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL,
+    ):
+        _register_optional(symbol_name, point_location_run_argtypes)
+    for symbol_name in (
+        EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL,
+        EMBREE_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL,
+    ):
+        _register_optional(symbol_name, point_location_count_argtypes)
+    for symbol_name in (
+        EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_TIMINGS_SYMBOL,
+        EMBREE_RAYJOIN_CDB_POINT_LOCATION_TIMINGS_SYMBOL,
+    ):
+        _register_optional(symbol_name, point_location_timings_argtypes)
+    for symbol_name in (
+        EMBREE_DIRECTED_SEGMENT_POINT_LOCATION_DESTROY_SYMBOL,
+        EMBREE_RAYJOIN_CDB_POINT_LOCATION_DESTROY_SYMBOL,
+    ):
+        _register_optional(symbol_name, [ctypes.c_void_p], restype=None)
 
     library.rtdl_embree_run_point_primitive_anyhit_packet.argtypes = [
         ctypes.POINTER(_RtdlPoint),
@@ -6615,6 +7327,24 @@ def _load_embree_library():
         ]
         optional_fixed_radius_3d_summary_run.restype = ctypes.c_int
 
+    optional_fixed_radius_3d_summary_aggregate_run = _require_optional_embree_symbol(
+        library,
+        "rtdl_embree_fixed_radius_neighbors_3d_ranked_summary_aggregate_run",
+    )
+    if optional_fixed_radius_3d_summary_aggregate_run is not None:
+        optional_fixed_radius_3d_summary_aggregate_run.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlFixedRadiusRankedNeighborAggregate),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_fixed_radius_3d_summary_aggregate_run.restype = ctypes.c_int
+
     optional_fixed_radius_3d_destroy = _require_optional_embree_symbol(
         library,
         "rtdl_embree_fixed_radius_neighbors_3d_destroy",
@@ -6678,6 +7408,47 @@ def _load_embree_library():
     if optional_frn_count_destroy is not None:
         optional_frn_count_destroy.argtypes = [ctypes.c_void_p]
         optional_frn_count_destroy.restype = None
+
+    optional_frn_count_3d_create = _require_optional_embree_symbol(
+        library,
+        "rtdl_embree_fixed_radius_count_threshold_3d_create",
+    )
+    if optional_frn_count_3d_create is not None:
+        optional_frn_count_3d_create.argtypes = [
+            ctypes.POINTER(_RtdlPoint3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_frn_count_3d_create.restype = ctypes.c_int
+
+    optional_frn_count_3d_run = _require_optional_embree_symbol(
+        library,
+        "rtdl_embree_fixed_radius_count_threshold_3d_run",
+    )
+    if optional_frn_count_3d_run is not None:
+        optional_frn_count_3d_run.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_frn_count_3d_run.restype = ctypes.c_int
+
+    optional_frn_count_3d_destroy = _require_optional_embree_symbol(
+        library,
+        "rtdl_embree_fixed_radius_count_threshold_3d_destroy",
+    )
+    if optional_frn_count_3d_destroy is not None:
+        optional_frn_count_3d_destroy.argtypes = [ctypes.c_void_p]
+        optional_frn_count_3d_destroy.restype = None
 
     optional_aabb_index_create = _require_optional_embree_symbol(library, "rtdl_embree_prepare_aabb_index_2d")
     if optional_aabb_index_create is not None:
@@ -6980,6 +7751,14 @@ def _require_optional_embree_symbol(library, symbol_name: str):
         return getattr(library, symbol_name)
     except AttributeError:
         return None
+
+
+def _find_first_optional_embree_symbol(library, *symbol_names: str):
+    for symbol_name in symbol_names:
+        symbol = _require_optional_embree_symbol(library, symbol_name)
+        if symbol is not None:
+            return symbol
+    return None
 
 
 def _require_embree_symbols(library, library_path: Path) -> None:

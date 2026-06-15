@@ -1,0 +1,69 @@
+{
+  "app": "rayjoin_v2_spatial_join",
+  "backend": "optix",
+  "claim_boundary": {
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "requires_pod_for_optix_perf": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "count_mode": "exact",
+  "dataset": "data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+  "dataset_note": "External CDB point-location case using probe points and polygons from one file.",
+  "device_resident_continuation_status": "not_complete: prepared query can avoid Python row materialization for counts, but generic downstream row-stream continuation still needs pod/native work",
+  "execution_route": "prepared_optix",
+  "native_engine_boundary": "The engine sees generic prepared point/closed-shape, segment-pair, or shape-pair contracts. RayJoin application policy and paper-specific interpretation stay in Python.",
+  "native_phase_timings": {
+    "candidate_count_pass": 0.0,
+    "candidate_download": 9.668e-06,
+    "candidate_write_pass": 0.00024748,
+    "emitted_count": 1417,
+    "exact_refine": 0.000403848,
+    "mode": "count",
+    "point_pack": 1.252e-06,
+    "point_upload": 1.8325e-05,
+    "raw_candidate_count": 1429
+  },
+  "phases_sec": {
+    "prepare_static_scene_sec": 0.7601010724902153,
+    "prepared_query_sec": 0.0007220804691314697,
+    "prepared_query_sec_repeat": 2000,
+    "prepared_query_sec_total_sec": 1.4465040192008018,
+    "prepared_query_sec_warmup": 10,
+    "query_pack_sec": 0.00044859200716018677,
+    "query_point_order_sec": 9.819865226745605e-06,
+    "static_shape_pack_sec": 0.008753307163715363
+  },
+  "point_order_mode": "natural",
+  "repeat_protocol": {
+    "measured_query_total_sec": 1.4465040192008018,
+    "repeat": 2000,
+    "reported_query_metric": "prepared_query_median",
+    "warmup": 10
+  },
+  "result_mode": "count",
+  "row_count": 1417,
+  "segment_order_mode": null,
+  "summary": {
+    "boundary_event_contract_not_positive_membership": null,
+    "boundary_event_grouped_count_device_columns": null,
+    "boundary_event_row_count": null,
+    "count_mode": "exact",
+    "device_filtered_boundary_mode": null,
+    "device_filtered_count_matches_exact": null,
+    "device_filtered_is_exact_authority": false,
+    "exact_prepared_points_matches_host_exact": null,
+    "exact_prepared_points_reuses_query_columns": null,
+    "output_contract": "point_to_shape_positive_hit_count",
+    "point_id_count_device_columns": null,
+    "point_order_mode": "natural",
+    "positive_assignment_count": 1417,
+    "positive_hit_row_count": 1417,
+    "prepared_point_batch_executor": null,
+    "prepared_point_probe_columns": null,
+    "validation_exact_count": null
+  },
+  "workload": "pip"
+}

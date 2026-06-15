@@ -4,6 +4,12 @@ Status: ready after publication commit.
 
 Intended tag: `v2.13`
 
+Post-Goal4378 note: v2.13 is preserved as the already-created source-tree
+release marker and now carries a bridge caveat. If a `v2.13` tag has already
+been published, do not move it. If it has not been published, do not use this
+file to create a stronger new public claim; v2.14 is the next formal cleanup and
+benchmark-app boost release target.
+
 ## Required Commit Contents
 
 - `VERSION` set to `v2.13`.

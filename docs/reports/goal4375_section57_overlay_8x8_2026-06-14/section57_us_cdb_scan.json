@@ -1,0 +1,37 @@
+{
+  "files": [
+    {
+      "bytes": 904529353,
+      "chains": 8662896,
+      "nonzero_faces": 3144,
+      "path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+      "points": 17325792,
+      "segments": 8662896
+    },
+    {
+      "bytes": 185388484,
+      "chains": 9503,
+      "nonzero_faces": 4500,
+      "path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "points": 5288684,
+      "segments": 5279181
+    },
+    {
+      "bytes": 3146767020,
+      "chains": 28473338,
+      "nonzero_faces": 239203,
+      "path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+      "points": 56946676,
+      "segments": 28473338
+    },
+    {
+      "bytes": 2402941772,
+      "chains": 22431809,
+      "nonzero_faces": 463512,
+      "path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+      "points": 44863618,
+      "segments": 22431809
+    }
+  ],
+  "schema": "rtdl.rayjoin_paper_suite.cdb_scan.v1"
+}

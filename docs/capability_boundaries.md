@@ -8,7 +8,7 @@ For the short learner-facing summary, read
 
 ## Current Status
 
-RTDL v2.13 is the current source-tree
+RTDL v2.14 is the current source-tree
 Python+partner+RTDL surface. It preserves the v2.x language boundary, provides
 the cleaned benchmark-vs-learner app portfolio, preserves the Embree CPU plus
 partner reference lane for promoted benchmark apps, and publishes the row-scoped
@@ -76,13 +76,15 @@ Allowed performance wording names the exact:
 
 When any of those are missing, use candidate or preview wording.
 
-## v2.13 Release Boundaries
+## v2.14 Release Boundaries
 
 Allowed:
 
 - Python+partner+RTDL source-tree release;
 - documented partner-owned input/output columns;
 - current row-scoped OptiX/RT evidence under documented contracts;
+- documented app-author strategy for primitive-first paths, prepared execution,
+  explicit partner choice, and app-agnostic primitive requests;
 - streaming exact witness-column output where reviewed.
 
 Not allowed:

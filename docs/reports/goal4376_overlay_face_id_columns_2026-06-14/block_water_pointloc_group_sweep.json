@@ -1,0 +1,100 @@
+{
+  "rows": [
+    {
+      "left_hot_sec": 13.923881344497204,
+      "left_mode": "face_ids_device_points",
+      "left_traversal": 12.226780247,
+      "policy": "fixed8",
+      "prepare_wall_sec": 6.023575522005558,
+      "right_hot_sec": 11.758763074874878,
+      "right_mode": "face_ids_device_points",
+      "right_traversal": 10.402294576,
+      "status": "ok",
+      "total_wall_sec": 32.406393982470036
+    },
+    {
+      "left_hot_sec": 7.575326278805733,
+      "left_mode": "face_ids_device_points",
+      "left_traversal": 5.932343297,
+      "policy": "adaptive_16_1.5",
+      "prepare_wall_sec": 6.2516442239284515,
+      "right_hot_sec": 6.775518260896206,
+      "right_mode": "face_ids_device_points",
+      "right_traversal": 5.404054077,
+      "status": "ok",
+      "total_wall_sec": 21.30481057614088
+    },
+    {
+      "left_hot_sec": 7.952260419726372,
+      "left_mode": "face_ids_device_points",
+      "left_traversal": 6.311593031,
+      "policy": "adaptive_32_1.5",
+      "prepare_wall_sec": 6.227852798998356,
+      "right_hot_sec": 7.190176114439964,
+      "right_mode": "face_ids_device_points",
+      "right_traversal": 5.87694963,
+      "status": "ok",
+      "total_wall_sec": 22.081781215965748
+    },
+    {
+      "left_hot_sec": 8.640983618795872,
+      "left_mode": "face_ids_device_points",
+      "left_traversal": 7.001055034,
+      "policy": "adaptive_64_1.5",
+      "prepare_wall_sec": 6.146807760000229,
+      "right_hot_sec": 7.994730398058891,
+      "right_mode": "face_ids_device_points",
+      "right_traversal": 6.682719803,
+      "status": "ok",
+      "total_wall_sec": 23.543523587286472
+    },
+    {
+      "left_hot_sec": 13.78073300421238,
+      "left_mode": "face_ids_device_points",
+      "left_traversal": 12.13667174,
+      "policy": "adaptive_64_3.5",
+      "prepare_wall_sec": 4.851658135652542,
+      "right_hot_sec": 12.707878232002258,
+      "right_mode": "face_ids_device_points",
+      "right_traversal": 11.339922294,
+      "status": "ok",
+      "total_wall_sec": 32.04286619275808
+    },
+    {
+      "left_hot_sec": 16.384345702826977,
+      "left_mode": "face_ids_device_points",
+      "left_traversal": 14.743393748,
+      "policy": "adaptive_128_2.0",
+      "prepare_wall_sec": 5.118710294365883,
+      "right_hot_sec": 14.996716782450676,
+      "right_mode": "face_ids_device_points",
+      "right_traversal": 13.630545054,
+      "status": "ok",
+      "total_wall_sec": 37.20552350580692
+    },
+    {
+      "left_hot_sec": 15.38272988051176,
+      "left_mode": "face_ids_device_points",
+      "left_traversal": 13.741544211,
+      "policy": "adaptive_128_3.5",
+      "prepare_wall_sec": 4.799520641565323,
+      "right_hot_sec": 15.082243420183659,
+      "right_mode": "face_ids_device_points",
+      "right_traversal": 13.720084527,
+      "status": "ok",
+      "total_wall_sec": 35.91520703583956
+    },
+    {
+      "left_hot_sec": 19.586770847439766,
+      "left_mode": "face_ids_device_points",
+      "left_traversal": 17.955684759,
+      "policy": "adaptive_256_4.0",
+      "prepare_wall_sec": 4.741245575249195,
+      "right_hot_sec": 19.94897485524416,
+      "right_mode": "face_ids_device_points",
+      "right_traversal": 18.597302175,
+      "status": "ok",
+      "total_wall_sec": 44.935939736664295
+    }
+  ]
+}

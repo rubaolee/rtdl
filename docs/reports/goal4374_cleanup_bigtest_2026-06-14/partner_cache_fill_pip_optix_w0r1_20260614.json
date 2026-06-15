@@ -1,0 +1,112 @@
+{
+  "case_id": "pip_county_zipcode",
+  "dataset_root": "/workspace/rayjoin_same_source_data/cdb_partial_topology",
+  "input_provenance": "same_source_regenerated_cdb",
+  "input_shape": {
+    "base_cdb_segments": 8662896,
+    "base_chains": 8662896,
+    "query_chains": 9503,
+    "query_points": 5288684,
+    "query_stream": "all_points_from_query_map_s"
+  },
+  "pair_id": "county_zipcode",
+  "paper_label": "County x Zipcode",
+  "partner_cache": {
+    "enabled": true,
+    "path": "/workspace/rayjoin_same_source_data/results/partner_cache_20260614",
+    "source": "cli"
+  },
+  "program": "pip",
+  "program_contract": "Base map R is -poly1; query map S is -poly2; the query point stream is every point returned by S.get_points(), not one representative point per chain.",
+  "results": {
+    "optix": {
+      "backend": "rtdl_optix",
+      "count": 3823783,
+      "counts_stable": true,
+      "hot_max_sec": 0.2791680842638016,
+      "hot_median_sec": 0.2791680842638016,
+      "hot_min_sec": 0.2791680842638016,
+      "hot_total_sec": 0.2791680842638016,
+      "native_traversal_median_sec": 0.126506621,
+      "repeat": 1,
+      "runs": [
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2791680842638016,
+          "is_warmup": false,
+          "iteration": 0,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.013924049,
+            "positive_face_count": 3823783,
+            "row_download": 2.8444e-05,
+            "traversal": 0.126506621
+          }
+        }
+      ],
+      "warmup": 0
+    },
+    "optix_device_resident": {
+      "backend": "rtdl_optix_device_resident",
+      "count": 3823783,
+      "counts_stable": true,
+      "hot_max_sec": 0.11838700622320175,
+      "hot_median_sec": 0.11838700622320175,
+      "hot_min_sec": 0.11838700622320175,
+      "hot_total_sec": 0.11838700622320175,
+      "native_traversal_median_sec": 0.118273401,
+      "repeat": 1,
+      "runs": [
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11838700622320175,
+          "is_warmup": false,
+          "iteration": 0,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 1.1121e-05,
+            "traversal": 0.118273401
+          }
+        }
+      ],
+      "warmup": 0
+    },
+    "optix_device_segment_ids": {
+      "backend": "rtdl_optix_device_segment_ids",
+      "count": 5288684,
+      "counts_stable": true,
+      "hot_max_sec": 0.11843859404325485,
+      "hot_median_sec": 0.11843859404325485,
+      "hot_min_sec": 0.11843859404325485,
+      "hot_total_sec": 0.11843859404325485,
+      "native_traversal_median_sec": 0.118411042,
+      "output_contract": "author_shape_device_resident_closest_segment_id_column_no_host_download_no_positive_count_atomic",
+      "repeat": 1,
+      "runs": [
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11843859404325485,
+          "is_warmup": false,
+          "iteration": 0,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118411042
+          }
+        }
+      ],
+      "warmup": 0
+    }
+  },
+  "schema": "rtdl.rayjoin_paper_suite.rtdl_run.v1"
+}

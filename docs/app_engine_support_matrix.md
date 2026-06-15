@@ -1,6 +1,6 @@
 # RTDL App Engine Support Matrix
 
-Status: public app-level support map for the v2.13 released source
+Status: public app-level support map for the v2.14 released source
 tree.
 
 This matrix answers which engines each public app entry point exposes today.
@@ -45,7 +45,7 @@ For OptiX performance classification, use
 | `examples/current/apps/robotics/rtdl_robot_collision_screening_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `direct_cli_native` | `not_exposed_by_app_cli` |
 | `examples/current/apps/simulation/rtdl_barnes_hut_force_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 
-## v2.13 Reading Guide
+## v2.14 Reading Guide
 
 - Embree rows are the CPU RT implementation path.
 - OptiX rows are the NVIDIA RT implementation path, but only reviewed

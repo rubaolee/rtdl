@@ -102,17 +102,18 @@ For app continuations, the intended interpretation is:
   semantics, and final reports in Python or user partner code unless RTDL has
   shipped a reviewed generic primitive for that exact contract.
 
-## v2.13 Release Boundary
+## v2.14 Release Boundary
 
-v2.13 is the current source-tree Python+partner+RTDL milestone. It carries
+v2.14 is the current source-tree Python+partner+RTDL milestone. It carries
 forward the v2.11 user-chosen partner guidance across primitive-first RTDL,
 CuPy reference paths, and selected Numba custom-continuation support, preserves
 the Embree CPU plus partner reference boundary for promoted benchmark apps, and
 adds the refreshed row-scoped RT-core versus Embree CPU comparison packet with
-direction-specific public wording. It does not authorize package-install
-wording, broad speedup wording, automatic partner selection, RTDL-beats-RayJoin
-wording, Intel/AMD GPU performance wording, or a general zero-copy product
-claim.
+direction-specific public wording plus the v2.14 app-author implementation
+strategy. It does not authorize package-install wording, broad speedup wording,
+automatic partner selection, RTDL-beats-RayJoin wording, arbitrary raw OptiX
+callback exposure as a stable user API, Intel/AMD GPU performance wording, or a
+general zero-copy product claim.
 
 Every public performance statement must stay inside the reviewed evidence:
 
@@ -130,7 +131,7 @@ of performance wording.
 Copilot supplemental review may be useful engineering signal, but it does not
 replace Claude or Gemini under the strict 3-AI consensus rule.
 
-## v2.13 Partner Choice Rule
+## v2.14 Partner Choice Rule
 
 The current rule is intentionally simple:
 
@@ -151,6 +152,9 @@ Current guidance lives in:
 
 - [Choosing A Partner For Custom Logic](learn/partner_choice_for_custom_logic.md)
 - [Benchmark Partner Reference Matrix](learn/benchmark_partner_reference_matrix.md)
+- `docs/release_reports/v2_14/README.md`
+- `docs/release_reports/v2_14/public_rt_vs_embree_comparison.md`
+- `docs/learn/v2_14_app_author_implementation_strategy.md`
 - `docs/release_reports/v2_13/README.md`
 - `docs/release_reports/v2_13/public_rt_vs_embree_comparison.md`
 - `docs/release_reports/v2_12/README.md`
@@ -162,5 +166,5 @@ Current guidance lives in:
 - `docs/reports/goal4270_v2_10_milestone_release_3ai_consensus_2026-06-10.md`
 
 Historical partner-continuation reports remain in `docs/reports/` for
-reviewers. They explain how the project reached the current v2.13 rule; they do
+reviewers. They explain how the project reached the current v2.14 rule; they do
 not override this learner-facing boundary.

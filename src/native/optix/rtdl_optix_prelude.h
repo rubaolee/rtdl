@@ -100,6 +100,14 @@ struct RtdlSegment {
     double x0, y0, x1, y1;
 };
 
+struct RtdlRayjoinCdbSegment {
+    uint32_t id;
+    double x0, y0, x1, y1;
+    uint32_t left_face_id;
+    uint32_t right_face_id;
+};
+typedef RtdlRayjoinCdbSegment RtdlDirectedSegmentFace2D;
+
 struct RtdlPoint {
     uint32_t id;
     double x, y;
@@ -193,6 +201,14 @@ struct RtdlSegmentFirstHitRow {
     uint32_t probe_id, primitive_id;
     double hit_x, hit_y, hit_t;
 };
+
+struct RtdlRayjoinCdbPointLocationRow {
+    uint32_t point_id;
+    uint32_t face_id;
+    uint32_t segment_id;
+    double hit_t;
+};
+typedef RtdlRayjoinCdbPointLocationRow RtdlDirectedSegmentPointLocationRow2D;
 
 struct RtdlPipRow {
     uint32_t point_id, polygon_id, contains;
@@ -691,6 +707,80 @@ int  rtdl_optix_count_prepared_segment_first_hit(
          const RtdlSegment* probes, size_t probe_count,
          size_t* count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_directed_segment_point_location_2d(
+         const RtdlDirectedSegmentFace2D* segments,
+         size_t segment_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_directed_segment_point_location_2d(
+         void* prepared,
+         const RtdlPoint* points, size_t point_count,
+         RtdlDirectedSegmentPointLocationRow2D** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_prepare_directed_segment_point_location_points_2d(
+         void* prepared,
+         const RtdlPoint* points, size_t point_count,
+         void** prepared_points_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_directed_segment_point_location_2d_device_points(
+         void* prepared,
+         void* prepared_points,
+         size_t* positive_face_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_write_prepared_directed_segment_point_location_2d_device_segment_ids(
+         void* prepared,
+         void* prepared_points,
+         size_t* point_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_write_prepared_directed_segment_point_location_2d_device_face_ids(
+         void* prepared,
+         void* prepared_points,
+         size_t* point_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_directed_segment_point_location_2d(
+         void* prepared,
+         const RtdlPoint* points, size_t point_count,
+         size_t* positive_face_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_directed_segment_point_location_2d(void* prepared);
+void rtdl_optix_destroy_prepared_directed_segment_point_location_points_2d(void* prepared_points);
+int  rtdl_optix_prepare_rayjoin_cdb_point_location_2d(
+         const RtdlRayjoinCdbSegment* segments,
+         size_t segment_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_rayjoin_cdb_point_location_2d(
+         void* prepared,
+         const RtdlPoint* points, size_t point_count,
+         RtdlRayjoinCdbPointLocationRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d(
+         void* prepared,
+         const RtdlPoint* points, size_t point_count,
+         void** prepared_points_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d_device_points(
+         void* prepared,
+         void* prepared_points,
+         size_t* positive_face_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_write_prepared_rayjoin_cdb_point_location_2d_device_segment_ids(
+         void* prepared,
+         void* prepared_points,
+         size_t* point_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_write_prepared_rayjoin_cdb_point_location_2d_device_face_ids(
+         void* prepared,
+         void* prepared_points,
+         size_t* point_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d(
+         void* prepared,
+         const RtdlPoint* points, size_t point_count,
+         size_t* positive_face_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_rayjoin_cdb_point_location_2d(void* prepared);
+void rtdl_optix_destroy_prepared_rayjoin_cdb_point_location_points_2d(void* prepared_points);
 void rtdl_optix_destroy_prepared_segment_pair_intersection(void* prepared);
 void rtdl_optix_destroy_prepared_segment_pair_left_set(void* prepared_left);
 int  rtdl_optix_run_point_primitive_anyhit_packet(
@@ -2140,6 +2230,20 @@ int  rtdl_optix_segment_pair_intersection_get_last_phase_timings(
          double* exact_refine_out,
          size_t* raw_candidate_count_out,
          size_t* emitted_count_out,
+         uint32_t* mode_out);
+int  rtdl_optix_rayjoin_cdb_point_location_get_last_phase_timings(
+         double* point_upload_out,
+         double* traversal_out,
+         double* row_download_out,
+         size_t* point_count_out,
+         size_t* positive_face_count_out,
+         uint32_t* mode_out);
+int  rtdl_optix_directed_segment_point_location_get_last_phase_timings(
+         double* point_upload_out,
+         double* traversal_out,
+         double* row_download_out,
+         size_t* point_count_out,
+         size_t* positive_face_count_out,
          uint32_t* mode_out);
 int  rtdl_optix_fixed_radius_neighbors_3d_get_last_phase_timings(
          double* prepare_out,

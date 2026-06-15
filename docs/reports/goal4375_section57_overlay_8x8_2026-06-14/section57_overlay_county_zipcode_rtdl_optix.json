@@ -1,0 +1,538 @@
+{
+  "backend": "optix",
+  "case_id": "overlay_county_zipcode",
+  "compute_without_load_pack_median_sec": 5.757548041641712,
+  "dataset_root": "/workspace/rayjoin_section57_data/cdb_topology",
+  "input_provenance": "same_source_regenerated_cdb",
+  "input_shape": {
+    "map0_chains": 8662896,
+    "map0_edges": 8662896,
+    "map0_points": 17325792,
+    "map1_chains": 9503,
+    "map1_edges": 5279181,
+    "map1_points": 5288684
+  },
+  "load_pack_median_sec": 0.06103643774986267,
+  "lsi": {
+    "intersection_count": 181629,
+    "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract"
+  },
+  "midpoint_pip": {
+    "map0_midpoints_in_map1": 55819,
+    "map0_positive_faces": 27465,
+    "map1_midpoints_in_map0": 21969,
+    "map1_positive_faces": 14355
+  },
+  "native_timings": {
+    "lsi": {
+      "candidate_count_pass": 0.002049897,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.0,
+      "emitted_count": 181629,
+      "exact_refine": 0.0,
+      "hot_call_sec": 2.4862410202622414,
+      "left_upload": 0.0,
+      "mode": "count_prepared_left_grouped_range_direct_intersection",
+      "raw_candidate_count": 0
+    },
+    "midpoint_pip_map0_in_map1": {
+      "hot_call_sec": 0.018702171742916107,
+      "mode": "count",
+      "point_count": 55819,
+      "point_upload": 0.000114147,
+      "positive_face_count": 27465,
+      "row_download": 8.837e-06,
+      "traversal": 0.017994456
+    },
+    "midpoint_pip_map1_in_map0": {
+      "hot_call_sec": 0.008130602538585663,
+      "mode": "count",
+      "point_count": 21969,
+      "point_upload": 4.8953e-05,
+      "positive_face_count": 14355,
+      "row_download": 7.965e-06,
+      "traversal": 0.007788265
+    },
+    "point_location_prepare_map0_in_map1": {
+      "hot_call_sec": 0.5086232200264931,
+      "mode": "prepare"
+    },
+    "point_location_prepare_map1_in_map0": {
+      "hot_call_sec": 0.8247883468866348,
+      "mode": "prepare"
+    },
+    "vertex_pip_map0_in_map1": {
+      "hot_call_sec": 1.120001181960106,
+      "mode": "count",
+      "point_count": 17325792,
+      "point_upload": 0.044291615,
+      "positive_face_count": 7034556,
+      "row_download": 5.0867e-05,
+      "traversal": 0.619466138
+    },
+    "vertex_pip_map1_in_map0": {
+      "hot_call_sec": 0.270077683031559,
+      "mode": "count",
+      "point_count": 5288684,
+      "point_upload": 0.014205153,
+      "positive_face_count": 3823783,
+      "row_download": 1.8876e-05,
+      "traversal": 0.118876595
+    }
+  },
+  "output": {
+    "assembled": false,
+    "chain_count": null,
+    "face_count": null,
+    "path": null
+  },
+  "pair_id": "county_zipcode",
+  "paper_label": "County x Zipcode",
+  "partner_cache": {
+    "enabled": true,
+    "path": "/workspace/rayjoin_section57_data/cdb_topology/.rtdl_rayjoin_overlay_packed_cache",
+    "source": "cli"
+  },
+  "phase_median_seconds": {
+    "load_pack_inputs_sec": 0.06103643774986267,
+    "lsi_midpoint_projection_sec": 0.10068247467279434,
+    "point_location_prepare_sec": 1.3407595679163933,
+    "point_location_prepare_wall_sec": 1.3407753556966782,
+    "total_sec": 5.818584479391575
+  },
+  "phase_seconds": {
+    "load_pack_inputs_sec": 0.06103643774986267,
+    "lsi_midpoint_projection_sec": 0.10068247467279434,
+    "point_location_prepare_sec": 1.333411566913128,
+    "point_location_prepare_wall_sec": 1.333426907658577,
+    "total_sec": 5.818584479391575
+  },
+  "program": "overlay",
+  "program_contract": "Both CDB maps are loaded; overlay runs LSI once, locates vertices of each map in the other map, classifies midpoints between intersections, then writes output chains.",
+  "repeat": 3,
+  "runs": [
+    {
+      "is_warmup": true,
+      "iteration": 0,
+      "result": {
+        "backend": "optix",
+        "input_shape": {
+          "map0_chains": 8662896,
+          "map0_edges": 8662896,
+          "map0_points": 17325792,
+          "map1_chains": 9503,
+          "map1_edges": 5279181,
+          "map1_points": 5288684
+        },
+        "lsi": {
+          "intersection_count": 181629,
+          "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract"
+        },
+        "midpoint_pip": {
+          "map0_midpoints_in_map1": 55819,
+          "map0_positive_faces": 27465,
+          "map1_midpoints_in_map0": 21969,
+          "map1_positive_faces": 14355
+        },
+        "native_timings": {
+          "lsi": {
+            "candidate_count_pass": 0.002033757,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "emitted_count": 181629,
+            "exact_refine": 0.0,
+            "hot_call_sec": 3.5380339175462723,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0
+          },
+          "midpoint_pip_map0_in_map1": {
+            "hot_call_sec": 0.019578740000724792,
+            "mode": "count",
+            "point_count": 55819,
+            "point_upload": 0.000119848,
+            "positive_face_count": 27465,
+            "row_download": 8.135e-06,
+            "traversal": 0.018402602
+          },
+          "midpoint_pip_map1_in_map0": {
+            "hot_call_sec": 0.008300594985485077,
+            "mode": "count",
+            "point_count": 21969,
+            "point_upload": 5.1808e-05,
+            "positive_face_count": 14355,
+            "row_download": 7.684e-06,
+            "traversal": 0.007785059
+          },
+          "point_location_prepare_map0_in_map1": {
+            "hot_call_sec": 0.9761955440044403,
+            "mode": "prepare"
+          },
+          "point_location_prepare_map1_in_map0": {
+            "hot_call_sec": 0.7820018604397774,
+            "mode": "prepare"
+          },
+          "vertex_pip_map0_in_map1": {
+            "hot_call_sec": 1.110793650150299,
+            "mode": "count",
+            "point_count": 17325792,
+            "point_upload": 0.044373441,
+            "positive_face_count": 7034556,
+            "row_download": 5.7179e-05,
+            "traversal": 0.620857393
+          },
+          "vertex_pip_map1_in_map0": {
+            "hot_call_sec": 0.2667752802371979,
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014130471,
+            "positive_face_count": 3823783,
+            "row_download": 1.6241e-05,
+            "traversal": 0.118978039
+          }
+        },
+        "output": {
+          "assembled": false,
+          "chain_count": null,
+          "face_count": null,
+          "path": null
+        },
+        "phase_seconds": {
+          "load_pack_inputs_sec": 52.49691193550825,
+          "lsi_midpoint_projection_sec": 0.1438894271850586,
+          "point_location_prepare_sec": 1.7581974044442177,
+          "point_location_prepare_wall_sec": 1.7582244873046875,
+          "total_sec": 59.66166674345732
+        },
+        "program": "overlay",
+        "schema": "rtdl.rayjoin.overlay_rtdl_run.v1",
+        "vertex_pip": {
+          "map0_points_in_map1": 17325792,
+          "map0_positive_faces": 7034556,
+          "map1_points_in_map0": 5288684,
+          "map1_positive_faces": 3823783
+        }
+      }
+    },
+    {
+      "is_warmup": false,
+      "iteration": 1,
+      "result": {
+        "backend": "optix",
+        "input_shape": {
+          "map0_chains": 8662896,
+          "map0_edges": 8662896,
+          "map0_points": 17325792,
+          "map1_chains": 9503,
+          "map1_edges": 5279181,
+          "map1_points": 5288684
+        },
+        "lsi": {
+          "intersection_count": 181629,
+          "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract"
+        },
+        "midpoint_pip": {
+          "map0_midpoints_in_map1": 55819,
+          "map0_positive_faces": 27465,
+          "map1_midpoints_in_map0": 21969,
+          "map1_positive_faces": 14355
+        },
+        "native_timings": {
+          "lsi": {
+            "candidate_count_pass": 0.002052091,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "emitted_count": 181629,
+            "exact_refine": 0.0,
+            "hot_call_sec": 4.5212671756744385,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0
+          },
+          "midpoint_pip_map0_in_map1": {
+            "hot_call_sec": 0.01873624324798584,
+            "mode": "count",
+            "point_count": 55819,
+            "point_upload": 0.000119226,
+            "positive_face_count": 27465,
+            "row_download": 8.266e-06,
+            "traversal": 0.018024964
+          },
+          "midpoint_pip_map1_in_map0": {
+            "hot_call_sec": 0.008152440190315247,
+            "mode": "count",
+            "point_count": 21969,
+            "point_upload": 5.1117e-05,
+            "positive_face_count": 14355,
+            "row_download": 7.595e-06,
+            "traversal": 0.007819093
+          },
+          "point_location_prepare_map0_in_map1": {
+            "hot_call_sec": 1.2512922510504723,
+            "mode": "prepare"
+          },
+          "point_location_prepare_map1_in_map0": {
+            "hot_call_sec": 2.620093658566475,
+            "mode": "prepare"
+          },
+          "vertex_pip_map0_in_map1": {
+            "hot_call_sec": 1.1118591204285622,
+            "mode": "count",
+            "point_count": 17325792,
+            "point_upload": 0.044481446,
+            "positive_face_count": 7034556,
+            "row_download": 4.0227e-05,
+            "traversal": 0.610989064
+          },
+          "vertex_pip_map1_in_map0": {
+            "hot_call_sec": 0.270249143242836,
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014172862,
+            "positive_face_count": 3823783,
+            "row_download": 1.622e-05,
+            "traversal": 0.118793788
+          }
+        },
+        "output": {
+          "assembled": false,
+          "chain_count": null,
+          "face_count": null,
+          "path": null
+        },
+        "phase_seconds": {
+          "load_pack_inputs_sec": 0.7622608840465546,
+          "lsi_midpoint_projection_sec": 0.09954032301902771,
+          "point_location_prepare_sec": 3.871385909616947,
+          "point_location_prepare_wall_sec": 3.8714058324694633,
+          "total_sec": 12.54771388322115
+        },
+        "program": "overlay",
+        "schema": "rtdl.rayjoin.overlay_rtdl_run.v1",
+        "vertex_pip": {
+          "map0_points_in_map1": 17325792,
+          "map0_positive_faces": 7034556,
+          "map1_points_in_map0": 5288684,
+          "map1_positive_faces": 3823783
+        }
+      }
+    },
+    {
+      "is_warmup": false,
+      "iteration": 2,
+      "result": {
+        "backend": "optix",
+        "input_shape": {
+          "map0_chains": 8662896,
+          "map0_edges": 8662896,
+          "map0_points": 17325792,
+          "map1_chains": 9503,
+          "map1_edges": 5279181,
+          "map1_points": 5288684
+        },
+        "lsi": {
+          "intersection_count": 181629,
+          "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract"
+        },
+        "midpoint_pip": {
+          "map0_midpoints_in_map1": 55819,
+          "map0_positive_faces": 27465,
+          "map1_midpoints_in_map0": 21969,
+          "map1_positive_faces": 14355
+        },
+        "native_timings": {
+          "lsi": {
+            "candidate_count_pass": 0.002049897,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "emitted_count": 181629,
+            "exact_refine": 0.0,
+            "hot_call_sec": 2.4862410202622414,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0
+          },
+          "midpoint_pip_map0_in_map1": {
+            "hot_call_sec": 0.018702171742916107,
+            "mode": "count",
+            "point_count": 55819,
+            "point_upload": 0.000114147,
+            "positive_face_count": 27465,
+            "row_download": 8.837e-06,
+            "traversal": 0.017994456
+          },
+          "midpoint_pip_map1_in_map0": {
+            "hot_call_sec": 0.008130602538585663,
+            "mode": "count",
+            "point_count": 21969,
+            "point_upload": 4.8953e-05,
+            "positive_face_count": 14355,
+            "row_download": 7.965e-06,
+            "traversal": 0.007788265
+          },
+          "point_location_prepare_map0_in_map1": {
+            "hot_call_sec": 0.5086232200264931,
+            "mode": "prepare"
+          },
+          "point_location_prepare_map1_in_map0": {
+            "hot_call_sec": 0.8247883468866348,
+            "mode": "prepare"
+          },
+          "vertex_pip_map0_in_map1": {
+            "hot_call_sec": 1.120001181960106,
+            "mode": "count",
+            "point_count": 17325792,
+            "point_upload": 0.044291615,
+            "positive_face_count": 7034556,
+            "row_download": 5.0867e-05,
+            "traversal": 0.619466138
+          },
+          "vertex_pip_map1_in_map0": {
+            "hot_call_sec": 0.270077683031559,
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014205153,
+            "positive_face_count": 3823783,
+            "row_download": 1.8876e-05,
+            "traversal": 0.118876595
+          }
+        },
+        "output": {
+          "assembled": false,
+          "chain_count": null,
+          "face_count": null,
+          "path": null
+        },
+        "phase_seconds": {
+          "load_pack_inputs_sec": 0.06103643774986267,
+          "lsi_midpoint_projection_sec": 0.10068247467279434,
+          "point_location_prepare_sec": 1.333411566913128,
+          "point_location_prepare_wall_sec": 1.333426907658577,
+          "total_sec": 5.818584479391575
+        },
+        "program": "overlay",
+        "schema": "rtdl.rayjoin.overlay_rtdl_run.v1",
+        "vertex_pip": {
+          "map0_points_in_map1": 17325792,
+          "map0_positive_faces": 7034556,
+          "map1_points_in_map0": 5288684,
+          "map1_positive_faces": 3823783
+        }
+      }
+    },
+    {
+      "is_warmup": false,
+      "iteration": 3,
+      "result": {
+        "backend": "optix",
+        "input_shape": {
+          "map0_chains": 8662896,
+          "map0_edges": 8662896,
+          "map0_points": 17325792,
+          "map1_chains": 9503,
+          "map1_edges": 5279181,
+          "map1_points": 5288684
+        },
+        "lsi": {
+          "intersection_count": 181629,
+          "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract"
+        },
+        "midpoint_pip": {
+          "map0_midpoints_in_map1": 55819,
+          "map0_positive_faces": 27465,
+          "map1_midpoints_in_map0": 21969,
+          "map1_positive_faces": 14355
+        },
+        "native_timings": {
+          "lsi": {
+            "candidate_count_pass": 0.002033095,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "emitted_count": 181629,
+            "exact_refine": 0.0,
+            "hot_call_sec": 2.4685485661029816,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0
+          },
+          "midpoint_pip_map0_in_map1": {
+            "hot_call_sec": 0.018934093415737152,
+            "mode": "count",
+            "point_count": 55819,
+            "point_upload": 0.000117994,
+            "positive_face_count": 27465,
+            "row_download": 1.0901e-05,
+            "traversal": 0.018195508
+          },
+          "midpoint_pip_map1_in_map0": {
+            "hot_call_sec": 0.00816413015127182,
+            "mode": "count",
+            "point_count": 21969,
+            "point_upload": 5.232e-05,
+            "positive_face_count": 14355,
+            "row_download": 1.034e-05,
+            "traversal": 0.007807091
+          },
+          "point_location_prepare_map0_in_map1": {
+            "hot_call_sec": 0.5047468617558479,
+            "mode": "prepare"
+          },
+          "point_location_prepare_map1_in_map0": {
+            "hot_call_sec": 0.8360127061605453,
+            "mode": "prepare"
+          },
+          "vertex_pip_map0_in_map1": {
+            "hot_call_sec": 1.1147838681936264,
+            "mode": "count",
+            "point_count": 17325792,
+            "point_upload": 0.044305641,
+            "positive_face_count": 7034556,
+            "row_download": 4.4915e-05,
+            "traversal": 0.612536966
+          },
+          "vertex_pip_map1_in_map0": {
+            "hot_call_sec": 0.271985799074173,
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014101335,
+            "positive_face_count": 3823783,
+            "row_download": 2.5208e-05,
+            "traversal": 0.118839385
+          }
+        },
+        "output": {
+          "assembled": false,
+          "chain_count": null,
+          "face_count": null,
+          "path": null
+        },
+        "phase_seconds": {
+          "load_pack_inputs_sec": 0.04908501356840134,
+          "lsi_midpoint_projection_sec": 0.1010889858007431,
+          "point_location_prepare_sec": 1.3407595679163933,
+          "point_location_prepare_wall_sec": 1.3407753556966782,
+          "total_sec": 5.74334954470396
+        },
+        "program": "overlay",
+        "schema": "rtdl.rayjoin.overlay_rtdl_run.v1",
+        "vertex_pip": {
+          "map0_points_in_map1": 17325792,
+          "map0_positive_faces": 7034556,
+          "map1_points_in_map0": 5288684,
+          "map1_positive_faces": 3823783
+        }
+      }
+    }
+  ],
+  "schema": "rtdl.rayjoin.overlay_rtdl_run.v1",
+  "total_max_sec": 12.54771388322115,
+  "total_median_sec": 5.818584479391575,
+  "total_min_sec": 5.74334954470396,
+  "vertex_pip": {
+    "map0_points_in_map1": 17325792,
+    "map0_positive_faces": 7034556,
+    "map1_points_in_map0": 5288684,
+    "map1_positive_faces": 3823783
+  },
+  "warmup": 1
+}

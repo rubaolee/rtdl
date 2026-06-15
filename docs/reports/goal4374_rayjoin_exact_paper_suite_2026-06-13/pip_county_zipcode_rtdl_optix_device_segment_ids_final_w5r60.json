@@ -1,0 +1,2987 @@
+{
+  "case_id": "pip_county_zipcode",
+  "dataset_root": "/workspace/rayjoin_same_source_data/cdb_partial_topology",
+  "input_provenance": "same_source_regenerated_cdb",
+  "input_shape": {
+    "base_cdb_segments": 8662896,
+    "base_chains": 8662896,
+    "query_chains": 9503,
+    "query_points": 5288684,
+    "query_stream": "all_points_from_query_map_s"
+  },
+  "pair_id": "county_zipcode",
+  "paper_label": "County x Zipcode",
+  "program": "pip",
+  "program_contract": "Base map R is -poly1; query map S is -poly2; the query point stream is every point returned by S.get_points(), not one representative point per chain.",
+  "results": {
+    "optix": {
+      "backend": "rtdl_optix",
+      "count": 3823783,
+      "counts_stable": true,
+      "hot_max_sec": 0.28764162957668304,
+      "hot_median_sec": 0.2709685191512108,
+      "hot_min_sec": 0.2700328379869461,
+      "hot_total_sec": 16.27281265705824,
+      "native_traversal_median_sec": 0.11882608250000001,
+      "repeat": 60,
+      "runs": [
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.28111670911312103,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.01405826,
+            "positive_face_count": 3823783,
+            "row_download": 2.9516e-05,
+            "traversal": 0.126760275
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2707841843366623,
+          "is_warmup": true,
+          "iteration": 1,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014208015,
+            "positive_face_count": 3823783,
+            "row_download": 1.9247e-05,
+            "traversal": 0.118188192
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27090689539909363,
+          "is_warmup": true,
+          "iteration": 2,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014120679,
+            "positive_face_count": 3823783,
+            "row_download": 3.2282e-05,
+            "traversal": 0.118855801
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2715749144554138,
+          "is_warmup": true,
+          "iteration": 3,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014085482,
+            "positive_face_count": 3823783,
+            "row_download": 2.1521e-05,
+            "traversal": 0.118907368
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2714505270123482,
+          "is_warmup": true,
+          "iteration": 4,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.01410506,
+            "positive_face_count": 3823783,
+            "row_download": 2.0759e-05,
+            "traversal": 0.118891989
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2724762037396431,
+          "is_warmup": false,
+          "iteration": 5,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.01406822,
+            "positive_face_count": 3823783,
+            "row_download": 2.2022e-05,
+            "traversal": 0.118803711
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27117788791656494,
+          "is_warmup": false,
+          "iteration": 6,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014085663,
+            "positive_face_count": 3823783,
+            "row_download": 2.2242e-05,
+            "traversal": 0.118824461
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.28764162957668304,
+          "is_warmup": false,
+          "iteration": 7,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014275263,
+            "positive_face_count": 3823783,
+            "row_download": 2.2002e-05,
+            "traversal": 0.118800174
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27074407041072845,
+          "is_warmup": false,
+          "iteration": 8,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014083088,
+            "positive_face_count": 3823783,
+            "row_download": 2.2754e-05,
+            "traversal": 0.118898482
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2708304822444916,
+          "is_warmup": false,
+          "iteration": 9,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014542471,
+            "positive_face_count": 3823783,
+            "row_download": 2.142e-05,
+            "traversal": 0.118936283
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.270597867667675,
+          "is_warmup": false,
+          "iteration": 10,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.01412628,
+            "positive_face_count": 3823783,
+            "row_download": 2.0389e-05,
+            "traversal": 0.11880286
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27060090005397797,
+          "is_warmup": false,
+          "iteration": 11,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014122694,
+            "positive_face_count": 3823783,
+            "row_download": 2.7251e-05,
+            "traversal": 0.118801808
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27033886313438416,
+          "is_warmup": false,
+          "iteration": 12,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014058231,
+            "positive_face_count": 3823783,
+            "row_download": 2.082e-05,
+            "traversal": 0.11894501
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2706562429666519,
+          "is_warmup": false,
+          "iteration": 13,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014058031,
+            "positive_face_count": 3823783,
+            "row_download": 2.6209e-05,
+            "traversal": 0.118786238
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27058470994234085,
+          "is_warmup": false,
+          "iteration": 14,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014177207,
+            "positive_face_count": 3823783,
+            "row_download": 2.098e-05,
+            "traversal": 0.118909242
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2709728106856346,
+          "is_warmup": false,
+          "iteration": 15,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014074381,
+            "positive_face_count": 3823783,
+            "row_download": 2.1441e-05,
+            "traversal": 0.118916386
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2711666375398636,
+          "is_warmup": false,
+          "iteration": 16,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014118034,
+            "positive_face_count": 3823783,
+            "row_download": 2.0529e-05,
+            "traversal": 0.118906397
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2701953276991844,
+          "is_warmup": false,
+          "iteration": 17,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014188237,
+            "positive_face_count": 3823783,
+            "row_download": 2.136e-05,
+            "traversal": 0.118816005
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2701829820871353,
+          "is_warmup": false,
+          "iteration": 18,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014139335,
+            "positive_face_count": 3823783,
+            "row_download": 2.124e-05,
+            "traversal": 0.118906477
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2702142000198364,
+          "is_warmup": false,
+          "iteration": 19,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014076095,
+            "positive_face_count": 3823783,
+            "row_download": 2.0789e-05,
+            "traversal": 0.118844449
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27143625915050507,
+          "is_warmup": false,
+          "iteration": 20,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.01422615,
+            "positive_face_count": 3823783,
+            "row_download": 2.0078e-05,
+            "traversal": 0.118849338
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27062811702489853,
+          "is_warmup": false,
+          "iteration": 21,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014127182,
+            "positive_face_count": 3823783,
+            "row_download": 2.0469e-05,
+            "traversal": 0.118926666
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27118293195962906,
+          "is_warmup": false,
+          "iteration": 22,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014786845,
+            "positive_face_count": 3823783,
+            "row_download": 1.9947e-05,
+            "traversal": 0.118938588
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27077755331993103,
+          "is_warmup": false,
+          "iteration": 23,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014083929,
+            "positive_face_count": 3823783,
+            "row_download": 2.067e-05,
+            "traversal": 0.11886086
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27011992037296295,
+          "is_warmup": false,
+          "iteration": 24,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014083098,
+            "positive_face_count": 3823783,
+            "row_download": 1.9998e-05,
+            "traversal": 0.118809553
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2700328379869461,
+          "is_warmup": false,
+          "iteration": 25,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014059202,
+            "positive_face_count": 3823783,
+            "row_download": 2.0178e-05,
+            "traversal": 0.1187555
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2703922986984253,
+          "is_warmup": false,
+          "iteration": 26,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014065475,
+            "positive_face_count": 3823783,
+            "row_download": 2.1652e-05,
+            "traversal": 0.118766872
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2706262618303299,
+          "is_warmup": false,
+          "iteration": 27,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014350175,
+            "positive_face_count": 3823783,
+            "row_download": 2.0709e-05,
+            "traversal": 0.118731956
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27013278752565384,
+          "is_warmup": false,
+          "iteration": 28,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014055826,
+            "positive_face_count": 3823783,
+            "row_download": 2.0849e-05,
+            "traversal": 0.118781109
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27096422761678696,
+          "is_warmup": false,
+          "iteration": 29,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014169592,
+            "positive_face_count": 3823783,
+            "row_download": 2.0789e-05,
+            "traversal": 0.118932827
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2707377150654793,
+          "is_warmup": false,
+          "iteration": 30,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014074592,
+            "positive_face_count": 3823783,
+            "row_download": 2.1922e-05,
+            "traversal": 0.118946683
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2717914655804634,
+          "is_warmup": false,
+          "iteration": 31,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.01418414,
+            "positive_face_count": 3823783,
+            "row_download": 2.09e-05,
+            "traversal": 0.118906547
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27106015384197235,
+          "is_warmup": false,
+          "iteration": 32,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014217904,
+            "positive_face_count": 3823783,
+            "row_download": 1.9928e-05,
+            "traversal": 0.118772041
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2702261656522751,
+          "is_warmup": false,
+          "iteration": 33,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014031951,
+            "positive_face_count": 3823783,
+            "row_download": 2.2403e-05,
+            "traversal": 0.118737937
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2711186185479164,
+          "is_warmup": false,
+          "iteration": 34,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014038162,
+            "positive_face_count": 3823783,
+            "row_download": 2.1321e-05,
+            "traversal": 0.118833268
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2708084285259247,
+          "is_warmup": false,
+          "iteration": 35,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014093888,
+            "positive_face_count": 3823783,
+            "row_download": 2.2433e-05,
+            "traversal": 0.118763475
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27090873569250107,
+          "is_warmup": false,
+          "iteration": 36,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014082166,
+            "positive_face_count": 3823783,
+            "row_download": 2.0459e-05,
+            "traversal": 0.11886075
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27174853533506393,
+          "is_warmup": false,
+          "iteration": 37,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014712003,
+            "positive_face_count": 3823783,
+            "row_download": 2.098e-05,
+            "traversal": 0.118849659
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2714357078075409,
+          "is_warmup": false,
+          "iteration": 38,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014121702,
+            "positive_face_count": 3823783,
+            "row_download": 2.0629e-05,
+            "traversal": 0.118925894
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2713331952691078,
+          "is_warmup": false,
+          "iteration": 39,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014117663,
+            "positive_face_count": 3823783,
+            "row_download": 2.2132e-05,
+            "traversal": 0.118743578
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2703005075454712,
+          "is_warmup": false,
+          "iteration": 40,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014161527,
+            "positive_face_count": 3823783,
+            "row_download": 2.0889e-05,
+            "traversal": 0.118922478
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27016090601682663,
+          "is_warmup": false,
+          "iteration": 41,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014118074,
+            "positive_face_count": 3823783,
+            "row_download": 2.0128e-05,
+            "traversal": 0.118837235
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2720648944377899,
+          "is_warmup": false,
+          "iteration": 42,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014109838,
+            "positive_face_count": 3823783,
+            "row_download": 2.1942e-05,
+            "traversal": 0.118740552
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2711069881916046,
+          "is_warmup": false,
+          "iteration": 43,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014109528,
+            "positive_face_count": 3823783,
+            "row_download": 2.2302e-05,
+            "traversal": 0.118827256
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2709919288754463,
+          "is_warmup": false,
+          "iteration": 44,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014132101,
+            "positive_face_count": 3823783,
+            "row_download": 2.4767e-05,
+            "traversal": 0.118753306
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2712491527199745,
+          "is_warmup": false,
+          "iteration": 45,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014047661,
+            "positive_face_count": 3823783,
+            "row_download": 2.3084e-05,
+            "traversal": 0.11873997
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27178753912448883,
+          "is_warmup": false,
+          "iteration": 46,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.01409971,
+            "positive_face_count": 3823783,
+            "row_download": 2.1009e-05,
+            "traversal": 0.118891609
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2713262289762497,
+          "is_warmup": false,
+          "iteration": 47,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014122262,
+            "positive_face_count": 3823783,
+            "row_download": 2.4156e-05,
+            "traversal": 0.118814492
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27080491185188293,
+          "is_warmup": false,
+          "iteration": 48,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014194209,
+            "positive_face_count": 3823783,
+            "row_download": 2.5409e-05,
+            "traversal": 0.118857835
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27116530388593674,
+          "is_warmup": false,
+          "iteration": 49,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014095331,
+            "positive_face_count": 3823783,
+            "row_download": 2.2753e-05,
+            "traversal": 0.118721906
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2719607949256897,
+          "is_warmup": false,
+          "iteration": 50,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014201864,
+            "positive_face_count": 3823783,
+            "row_download": 2.4166e-05,
+            "traversal": 0.118843558
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27075742185115814,
+          "is_warmup": false,
+          "iteration": 51,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014079441,
+            "positive_face_count": 3823783,
+            "row_download": 2.0259e-05,
+            "traversal": 0.118926927
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27107615023851395,
+          "is_warmup": false,
+          "iteration": 52,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014514037,
+            "positive_face_count": 3823783,
+            "row_download": 2.2333e-05,
+            "traversal": 0.11877118
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27107714116573334,
+          "is_warmup": false,
+          "iteration": 53,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014247981,
+            "positive_face_count": 3823783,
+            "row_download": 2.2764e-05,
+            "traversal": 0.118880367
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2711067721247673,
+          "is_warmup": false,
+          "iteration": 54,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014087927,
+            "positive_face_count": 3823783,
+            "row_download": 2.0339e-05,
+            "traversal": 0.118740461
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2706996351480484,
+          "is_warmup": false,
+          "iteration": 55,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014141869,
+            "positive_face_count": 3823783,
+            "row_download": 2.1611e-05,
+            "traversal": 0.118761752
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2712371498346329,
+          "is_warmup": false,
+          "iteration": 56,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014177367,
+            "positive_face_count": 3823783,
+            "row_download": 2.4556e-05,
+            "traversal": 0.118807569
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27071530371904373,
+          "is_warmup": false,
+          "iteration": 57,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014073079,
+            "positive_face_count": 3823783,
+            "row_download": 2.9797e-05,
+            "traversal": 0.118789111
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27082905173301697,
+          "is_warmup": false,
+          "iteration": 58,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014045938,
+            "positive_face_count": 3823783,
+            "row_download": 2.2783e-05,
+            "traversal": 0.118768381
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27125413715839386,
+          "is_warmup": false,
+          "iteration": 59,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014102475,
+            "positive_face_count": 3823783,
+            "row_download": 2.3945e-05,
+            "traversal": 0.118870495
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2712285667657852,
+          "is_warmup": false,
+          "iteration": 60,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014102566,
+            "positive_face_count": 3823783,
+            "row_download": 2.2603e-05,
+            "traversal": 0.118865886
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2711474522948265,
+          "is_warmup": false,
+          "iteration": 61,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.0143363,
+            "positive_face_count": 3823783,
+            "row_download": 2.4667e-05,
+            "traversal": 0.118711302
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2712223008275032,
+          "is_warmup": false,
+          "iteration": 62,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014130809,
+            "positive_face_count": 3823783,
+            "row_download": 2.113e-05,
+            "traversal": 0.118824909
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.2705281227827072,
+          "is_warmup": false,
+          "iteration": 63,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014077869,
+            "positive_face_count": 3823783,
+            "row_download": 2.2724e-05,
+            "traversal": 0.118833725
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.27117156237363815,
+          "is_warmup": false,
+          "iteration": 64,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 5288684,
+            "point_upload": 0.014119878,
+            "positive_face_count": 3823783,
+            "row_download": 2.9637e-05,
+            "traversal": 0.118755186
+          }
+        }
+      ],
+      "warmup": 5
+    },
+    "optix_device_resident": {
+      "backend": "rtdl_optix_device_resident",
+      "count": 3823783,
+      "counts_stable": true,
+      "hot_max_sec": 0.11875376105308533,
+      "hot_median_sec": 0.11860143765807152,
+      "hot_min_sec": 0.118478924036026,
+      "hot_total_sec": 7.116363495588303,
+      "native_traversal_median_sec": 0.1185638625,
+      "repeat": 60,
+      "runs": [
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11882318556308746,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 1.2183e-05,
+            "traversal": 0.118705542
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.1185697391629219,
+          "is_warmup": true,
+          "iteration": 1,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 9.088e-06,
+            "traversal": 0.118529016
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11852061748504639,
+          "is_warmup": true,
+          "iteration": 2,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.937e-06,
+            "traversal": 0.118484211
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11853975802659988,
+          "is_warmup": true,
+          "iteration": 3,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.536e-06,
+            "traversal": 0.118504209
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11852099746465683,
+          "is_warmup": true,
+          "iteration": 4,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.075e-06,
+            "traversal": 0.118487037
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11861985921859741,
+          "is_warmup": false,
+          "iteration": 5,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.967e-06,
+            "traversal": 0.11858352
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11857056617736816,
+          "is_warmup": false,
+          "iteration": 6,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.355e-06,
+            "traversal": 0.118535509
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11859308183193207,
+          "is_warmup": false,
+          "iteration": 7,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.396e-06,
+            "traversal": 0.118559544
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11867045611143112,
+          "is_warmup": false,
+          "iteration": 8,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.025e-06,
+            "traversal": 0.118638754
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.1185872033238411,
+          "is_warmup": false,
+          "iteration": 9,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.035e-06,
+            "traversal": 0.118555276
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11865806579589844,
+          "is_warmup": false,
+          "iteration": 10,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.557e-06,
+            "traversal": 0.118624047
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11860105395317078,
+          "is_warmup": false,
+          "iteration": 11,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.716e-06,
+            "traversal": 0.118566547
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11860472708940506,
+          "is_warmup": false,
+          "iteration": 12,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.275e-06,
+            "traversal": 0.118570805
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11856525391340256,
+          "is_warmup": false,
+          "iteration": 13,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.506e-06,
+            "traversal": 0.118532763
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.1185455471277237,
+          "is_warmup": false,
+          "iteration": 14,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.225e-06,
+            "traversal": 0.118513156
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.1185801550745964,
+          "is_warmup": false,
+          "iteration": 15,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 7.825e-06,
+            "traversal": 0.118540829
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11857859045267105,
+          "is_warmup": false,
+          "iteration": 16,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 7.925e-06,
+            "traversal": 0.118547932
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.118478924036026,
+          "is_warmup": false,
+          "iteration": 17,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.506e-06,
+            "traversal": 0.118444706
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.1186385378241539,
+          "is_warmup": false,
+          "iteration": 18,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.035e-06,
+            "traversal": 0.118605742
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11856895685195923,
+          "is_warmup": false,
+          "iteration": 19,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 1.1762e-05,
+            "traversal": 0.118532052
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11859040707349777,
+          "is_warmup": false,
+          "iteration": 20,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.836e-06,
+            "traversal": 0.118553743
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11864454299211502,
+          "is_warmup": false,
+          "iteration": 21,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.266e-06,
+            "traversal": 0.118610551
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11855887621641159,
+          "is_warmup": false,
+          "iteration": 22,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.386e-06,
+            "traversal": 0.118526291
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11875376105308533,
+          "is_warmup": false,
+          "iteration": 23,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.316e-06,
+            "traversal": 0.118720329
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11871916055679321,
+          "is_warmup": false,
+          "iteration": 24,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.406e-06,
+            "traversal": 0.118682588
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11866023391485214,
+          "is_warmup": false,
+          "iteration": 25,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.176e-06,
+            "traversal": 0.118627223
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11860253661870956,
+          "is_warmup": false,
+          "iteration": 26,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 1.0129e-05,
+            "traversal": 0.118563371
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11862011253833771,
+          "is_warmup": false,
+          "iteration": 27,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.275e-06,
+            "traversal": 0.11858354
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11862432956695557,
+          "is_warmup": false,
+          "iteration": 28,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.646e-06,
+            "traversal": 0.11858939
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11860514432191849,
+          "is_warmup": false,
+          "iteration": 29,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 1.063e-05,
+            "traversal": 0.118564354
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.1187269315123558,
+          "is_warmup": false,
+          "iteration": 30,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 9.208e-06,
+            "traversal": 0.118692396
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11848079413175583,
+          "is_warmup": false,
+          "iteration": 31,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.536e-06,
+            "traversal": 0.11844664
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11860182136297226,
+          "is_warmup": false,
+          "iteration": 32,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.055e-06,
+            "traversal": 0.118568461
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11868717521429062,
+          "is_warmup": false,
+          "iteration": 33,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 7.996e-06,
+            "traversal": 0.118655677
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11857376992702484,
+          "is_warmup": false,
+          "iteration": 34,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 9.057e-06,
+            "traversal": 0.118538094
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11858651787042618,
+          "is_warmup": false,
+          "iteration": 35,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.536e-06,
+            "traversal": 0.118551599
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11856439709663391,
+          "is_warmup": false,
+          "iteration": 36,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.396e-06,
+            "traversal": 0.118530098
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11864927411079407,
+          "is_warmup": false,
+          "iteration": 37,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.366e-06,
+            "traversal": 0.118611964
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11865650862455368,
+          "is_warmup": false,
+          "iteration": 38,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.055e-06,
+            "traversal": 0.118624087
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.1186593547463417,
+          "is_warmup": false,
+          "iteration": 39,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.386e-06,
+            "traversal": 0.118622604
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11868367344141006,
+          "is_warmup": false,
+          "iteration": 40,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.727e-06,
+            "traversal": 0.118649224
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11859724670648575,
+          "is_warmup": false,
+          "iteration": 41,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 9.027e-06,
+            "traversal": 0.118560586
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11858520656824112,
+          "is_warmup": false,
+          "iteration": 42,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.416e-06,
+            "traversal": 0.118550006
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11862257868051529,
+          "is_warmup": false,
+          "iteration": 43,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.365e-06,
+            "traversal": 0.118589321
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11865143477916718,
+          "is_warmup": false,
+          "iteration": 44,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.386e-06,
+            "traversal": 0.118616762
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11856535077095032,
+          "is_warmup": false,
+          "iteration": 45,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.035e-06,
+            "traversal": 0.118532303
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.1185239925980568,
+          "is_warmup": false,
+          "iteration": 46,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.646e-06,
+            "traversal": 0.118490713
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11854548007249832,
+          "is_warmup": false,
+          "iteration": 47,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.657e-06,
+            "traversal": 0.118510812
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11869601905345917,
+          "is_warmup": false,
+          "iteration": 48,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.676e-06,
+            "traversal": 0.118654454
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11855550110340118,
+          "is_warmup": false,
+          "iteration": 49,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 7.985e-06,
+            "traversal": 0.118523676
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.1185859739780426,
+          "is_warmup": false,
+          "iteration": 50,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.436e-06,
+            "traversal": 0.118553422
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11849884688854218,
+          "is_warmup": false,
+          "iteration": 51,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.416e-06,
+            "traversal": 0.118465536
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11861415207386017,
+          "is_warmup": false,
+          "iteration": 52,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.446e-06,
+            "traversal": 0.118580304
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11852999776601791,
+          "is_warmup": false,
+          "iteration": 53,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.757e-06,
+            "traversal": 0.11848887
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.1186273843050003,
+          "is_warmup": false,
+          "iteration": 54,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.145e-06,
+            "traversal": 0.11859441
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11866350471973419,
+          "is_warmup": false,
+          "iteration": 55,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.466e-06,
+            "traversal": 0.118630018
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11862927675247192,
+          "is_warmup": false,
+          "iteration": 56,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.215e-06,
+            "traversal": 0.118595052
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11859122663736343,
+          "is_warmup": false,
+          "iteration": 57,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.416e-06,
+            "traversal": 0.11855733
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.1185770258307457,
+          "is_warmup": false,
+          "iteration": 58,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.005e-06,
+            "traversal": 0.118545357
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11857472360134125,
+          "is_warmup": false,
+          "iteration": 59,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.356e-06,
+            "traversal": 0.118542742
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11860588937997818,
+          "is_warmup": false,
+          "iteration": 60,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.326e-06,
+            "traversal": 0.11857357
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11864551901817322,
+          "is_warmup": false,
+          "iteration": 61,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.075e-06,
+            "traversal": 0.118614098
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11854594945907593,
+          "is_warmup": false,
+          "iteration": 62,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.265e-06,
+            "traversal": 0.118514319
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11859489232301712,
+          "is_warmup": false,
+          "iteration": 63,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.115e-06,
+            "traversal": 0.118562981
+          }
+        },
+        {
+          "count": 3823783,
+          "elapsed_sec": 0.11862602084875107,
+          "is_warmup": false,
+          "iteration": 64,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 3823783,
+            "row_download": 8.496e-06,
+            "traversal": 0.118592086
+          }
+        }
+      ],
+      "warmup": 5
+    },
+    "optix_device_segment_ids": {
+      "backend": "rtdl_optix_device_segment_ids",
+      "count": 5288684,
+      "counts_stable": true,
+      "hot_max_sec": 0.11871226131916046,
+      "hot_median_sec": 0.11861146241426468,
+      "hot_min_sec": 0.11852652579545975,
+      "hot_total_sec": 7.116501480340958,
+      "native_traversal_median_sec": 0.11857576049999999,
+      "output_contract": "author_shape_device_resident_closest_segment_id_column_no_host_download_no_positive_count_atomic",
+      "repeat": 60,
+      "runs": [
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11870314925909042,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118661969
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11858423799276352,
+          "is_warmup": true,
+          "iteration": 1,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118558903
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.118580661714077,
+          "is_warmup": true,
+          "iteration": 2,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118560036
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11863172799348831,
+          "is_warmup": true,
+          "iteration": 3,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118613657
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11865445226430893,
+          "is_warmup": true,
+          "iteration": 4,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118634477
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.1185719221830368,
+          "is_warmup": false,
+          "iteration": 5,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118549886
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11865799129009247,
+          "is_warmup": false,
+          "iteration": 6,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118637332
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11862368136644363,
+          "is_warmup": false,
+          "iteration": 7,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118600161
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.1186382994055748,
+          "is_warmup": false,
+          "iteration": 8,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118612515
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11868225038051605,
+          "is_warmup": false,
+          "iteration": 9,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118658692
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11852921545505524,
+          "is_warmup": false,
+          "iteration": 10,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118505521
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11857711523771286,
+          "is_warmup": false,
+          "iteration": 11,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118553613
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11862960457801819,
+          "is_warmup": false,
+          "iteration": 12,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118605692
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11853434145450592,
+          "is_warmup": false,
+          "iteration": 13,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118511182
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11867425590753555,
+          "is_warmup": false,
+          "iteration": 14,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118650918
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11853508651256561,
+          "is_warmup": false,
+          "iteration": 15,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118512134
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11868075281381607,
+          "is_warmup": false,
+          "iteration": 16,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118650317
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.1185963973402977,
+          "is_warmup": false,
+          "iteration": 17,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.1185524
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.1185380071401596,
+          "is_warmup": false,
+          "iteration": 18,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118501133
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11867479234933853,
+          "is_warmup": false,
+          "iteration": 19,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118643213
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11863553524017334,
+          "is_warmup": false,
+          "iteration": 20,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118605712
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11857173591852188,
+          "is_warmup": false,
+          "iteration": 21,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118534717
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11861255019903183,
+          "is_warmup": false,
+          "iteration": 22,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118577258
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11871226131916046,
+          "is_warmup": false,
+          "iteration": 23,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118674142
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11867161840200424,
+          "is_warmup": false,
+          "iteration": 24,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118639957
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11853290349245071,
+          "is_warmup": false,
+          "iteration": 25,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118501634
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11858028918504715,
+          "is_warmup": false,
+          "iteration": 26,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118549094
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11855508387088776,
+          "is_warmup": false,
+          "iteration": 27,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118522924
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11860868334770203,
+          "is_warmup": false,
+          "iteration": 28,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118577038
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11865245550870895,
+          "is_warmup": false,
+          "iteration": 29,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118623084
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11861512809991837,
+          "is_warmup": false,
+          "iteration": 30,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118582718
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.1186162680387497,
+          "is_warmup": false,
+          "iteration": 31,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118535018
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11865712702274323,
+          "is_warmup": false,
+          "iteration": 32,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118591255
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.1185830757021904,
+          "is_warmup": false,
+          "iteration": 33,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118553563
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11868975311517715,
+          "is_warmup": false,
+          "iteration": 34,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.11866256
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11859962344169617,
+          "is_warmup": false,
+          "iteration": 35,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118570154
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11864066869020462,
+          "is_warmup": false,
+          "iteration": 36,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118611413
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11863783001899719,
+          "is_warmup": false,
+          "iteration": 37,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118609309
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11858347803354263,
+          "is_warmup": false,
+          "iteration": 38,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118555196
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11858022958040237,
+          "is_warmup": false,
+          "iteration": 39,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.11855193
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11853231489658356,
+          "is_warmup": false,
+          "iteration": 40,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.11850499
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11866497993469238,
+          "is_warmup": false,
+          "iteration": 41,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.11863638
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11867214739322662,
+          "is_warmup": false,
+          "iteration": 42,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118641369
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11862711608409882,
+          "is_warmup": false,
+          "iteration": 43,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118592807
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11866416037082672,
+          "is_warmup": false,
+          "iteration": 44,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118631301
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11857371032238007,
+          "is_warmup": false,
+          "iteration": 45,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118544235
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11856965720653534,
+          "is_warmup": false,
+          "iteration": 46,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118542823
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11858014762401581,
+          "is_warmup": false,
+          "iteration": 47,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118551499
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11854558438062668,
+          "is_warmup": false,
+          "iteration": 48,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118516723
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.1186574250459671,
+          "is_warmup": false,
+          "iteration": 49,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118630358
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11858460307121277,
+          "is_warmup": false,
+          "iteration": 50,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118555937
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11855275183916092,
+          "is_warmup": false,
+          "iteration": 51,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118521031
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11858901381492615,
+          "is_warmup": false,
+          "iteration": 52,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118559464
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11856501549482346,
+          "is_warmup": false,
+          "iteration": 53,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118536841
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11859384179115295,
+          "is_warmup": false,
+          "iteration": 54,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118565535
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11852652579545975,
+          "is_warmup": false,
+          "iteration": 55,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118498798
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11866842210292816,
+          "is_warmup": false,
+          "iteration": 56,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118641159
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11861355602741241,
+          "is_warmup": false,
+          "iteration": 57,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.11858381
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11861410737037659,
+          "is_warmup": false,
+          "iteration": 58,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118586636
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11861632019281387,
+          "is_warmup": false,
+          "iteration": 59,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118584943
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11856427043676376,
+          "is_warmup": false,
+          "iteration": 60,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118534226
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11855222284793854,
+          "is_warmup": false,
+          "iteration": 61,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118519418
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11867038160562515,
+          "is_warmup": false,
+          "iteration": 62,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118625039
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11861281841993332,
+          "is_warmup": false,
+          "iteration": 63,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118574483
+          }
+        },
+        {
+          "count": 5288684,
+          "elapsed_sec": 0.11861037462949753,
+          "is_warmup": false,
+          "iteration": 64,
+          "native_result": {
+            "row_count": 5288684
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 5288684,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.118578279
+          }
+        }
+      ],
+      "warmup": 5
+    }
+  },
+  "schema": "rtdl.rayjoin_paper_suite.rtdl_run.v1"
+}

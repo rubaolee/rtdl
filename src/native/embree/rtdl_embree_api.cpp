@@ -13,6 +13,10 @@ constexpr uint32_t kAabbIndexPointContains = 1;
 constexpr uint32_t kAabbIndexRangeContains = 2;
 constexpr uint32_t kAabbIndexRangeIntersects = 3;
 std::atomic<size_t> g_embree_thread_override {0};
+thread_local double g_embree_last_rayjoin_cdb_traversal_s = 0.0;
+thread_local size_t g_embree_last_rayjoin_cdb_point_count = 0;
+thread_local size_t g_embree_last_rayjoin_cdb_positive_face_count = 0;
+thread_local uint32_t g_embree_last_rayjoin_cdb_mode = 0;
 
 struct ColumnarPrimaryAxis {
   size_t field_index;
@@ -52,6 +56,28 @@ struct PreparedFixedRadiusCountThreshold2DImpl {
     rtcSetGeometryUserData(holder.geometry, &scene_data);
     rtcSetGeometryBoundsFunction(holder.geometry, point_bounds, nullptr);
     rtcSetGeometryPointQueryFunction(holder.geometry, point_point_query_collect);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+  }
+};
+
+struct PreparedFixedRadiusCountThreshold3DImpl {
+  std::vector<Point3D> search_values;
+  PointSceneData3D scene_data;
+  EmbreeDevice device;
+  SceneHolder holder;
+
+  explicit PreparedFixedRadiusCountThreshold3DImpl(std::vector<Point3D> points)
+      : search_values(std::move(points)),
+        scene_data {&search_values},
+        device(),
+        holder(device.device) {
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(search_values.size()));
+    rtcSetGeometryUserData(holder.geometry, &scene_data);
+    rtcSetGeometryBoundsFunction(holder.geometry, point_bounds_3d, nullptr);
+    rtcSetGeometryPointQueryFunction(holder.geometry, point_point_query_collect_3d);
     rtcCommitGeometry(holder.geometry);
     rtcAttachGeometry(holder.scene, holder.geometry);
     rtcCommitScene(holder.scene);
@@ -182,6 +208,30 @@ RtdlFixedRadiusRankedNeighborSummary make_fixed_radius_ranked_summary(
       sum_distance};
 }
 
+RtdlFixedRadiusRankedNeighborAggregate empty_fixed_radius_ranked_aggregate() {
+  return {0u, 0u, 0u, 0u, 0.0};
+}
+
+void add_fixed_radius_ranked_summary_to_aggregate(
+    RtdlFixedRadiusRankedNeighborAggregate& aggregate,
+    const RtdlFixedRadiusRankedNeighborSummary& summary) {
+  aggregate.query_count += 1u;
+  aggregate.bounded_neighbor_count += static_cast<size_t>(summary.neighbor_count);
+  aggregate.nearest_id_checksum += static_cast<uint64_t>(summary.nearest_neighbor_id);
+  aggregate.kth_id_checksum += static_cast<uint64_t>(summary.kth_neighbor_id);
+  aggregate.sum_distance += summary.sum_distance;
+}
+
+void merge_fixed_radius_ranked_aggregate(
+    RtdlFixedRadiusRankedNeighborAggregate& target,
+    const RtdlFixedRadiusRankedNeighborAggregate& source) {
+  target.query_count += source.query_count;
+  target.bounded_neighbor_count += source.bounded_neighbor_count;
+  target.nearest_id_checksum += source.nearest_id_checksum;
+  target.kth_id_checksum += source.kth_id_checksum;
+  target.sum_distance += source.sum_distance;
+}
+
 struct SegmentEndpointKey {
   double x;
   double y;
@@ -229,7 +279,8 @@ void append_shared_endpoint_segment_hits(
     const Segment2D& probe,
     const std::vector<Segment2D>& right_segments,
     const SegmentEndpointIndex& endpoint_index,
-    std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>>& query_rows) {
+    std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>>& query_rows,
+    uint32_t predicate_mode = 0u) {
   std::unordered_set<size_t> existing;
   existing.reserve(query_rows.size());
   for (const auto& row : query_rows) {
@@ -248,7 +299,13 @@ void append_shared_endpoint_segment_hits(
       }
       Vec2 point {};
       const Segment2D& right = right_segments[right_index];
-      if (!segment_intersection(probe, right, &point)) {
+      const bool hit = predicate_mode == 1u
+          ? rayjoin_lsi_segment_intersection(probe, right)
+          : segment_intersection(probe, right, &point);
+      if (!hit) {
+        continue;
+      }
+      if (predicate_mode == 1u && !segment_intersection(probe, right, &point)) {
         continue;
       }
       query_rows.push_back({
@@ -265,14 +322,23 @@ struct PreparedSegmentPairIntersections2DImpl {
   SegmentSceneData scene_data;
   std::vector<size_t> build_order_by_primitive;
   SegmentEndpointIndex endpoint_index;
+  std::vector<Segment2D> rayjoin_right_segments;
+  SegmentSceneData rayjoin_scene_data;
+  SegmentEndpointIndex rayjoin_endpoint_index;
+  RayjoinLsiScaleKey rayjoin_lsi_scale_key;
+  const RtdlSegment* rayjoin_lsi_left_source = nullptr;
+  size_t rayjoin_lsi_left_count = 0;
+  std::vector<Segment2D> rayjoin_lsi_left_segments;
   EmbreeDevice device;
   SceneHolder holder;
+  std::unique_ptr<SceneHolder> rayjoin_holder;
 
   explicit PreparedSegmentPairIntersections2DImpl(std::vector<Segment2D> segments)
       : right_segments(std::move(segments)),
         scene_data {&right_segments},
         build_order_by_primitive(right_segments.size()),
         endpoint_index(build_segment_endpoint_index(right_segments)),
+        rayjoin_scene_data {&rayjoin_right_segments},
         device(),
         holder(device.device) {
     if (right_segments.size() > static_cast<size_t>(std::numeric_limits<unsigned>::max())) {
@@ -286,6 +352,120 @@ struct PreparedSegmentPairIntersections2DImpl {
     rtcSetGeometryUserData(holder.geometry, &scene_data);
     rtcSetGeometryBoundsFunction(holder.geometry, segment_bounds, nullptr);
     rtcSetGeometryIntersectFunction(holder.geometry, segment_intersect);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+  }
+};
+
+void build_segment_scene(
+    EmbreeDevice& device,
+    SceneHolder& holder,
+    SegmentSceneData& scene_data,
+    const std::vector<Segment2D>& segments,
+    RTCBoundsFunction bounds_function = segment_bounds) {
+  holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+  rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(segments.size()));
+  rtcSetGeometryUserData(holder.geometry, &scene_data);
+  rtcSetGeometryBoundsFunction(holder.geometry, bounds_function, nullptr);
+  rtcSetGeometryIntersectFunction(holder.geometry, segment_intersect);
+  rtcCommitGeometry(holder.geometry);
+  rtcAttachGeometry(holder.scene, holder.geometry);
+  rtcCommitScene(holder.scene);
+}
+
+void rebuild_rayjoin_segment_scene(PreparedSegmentPairIntersections2DImpl& impl) {
+  impl.rayjoin_holder = std::make_unique<SceneHolder>(impl.device.device);
+  build_segment_scene(
+      impl.device,
+      *impl.rayjoin_holder,
+      impl.rayjoin_scene_data,
+      impl.rayjoin_right_segments,
+      rayjoin_lsi_segment_bounds);
+}
+
+struct RayjoinCdbScaleState {
+  bool valid = false;
+  RayjoinLsiScale scale;
+};
+
+bool rayjoin_cdb_parse_env_double(const char* name, double* out) {
+  const char* raw = std::getenv(name);
+  if (raw == nullptr || raw[0] == '\0') {
+    return false;
+  }
+  char* end = nullptr;
+  const double value = std::strtod(raw, &end);
+  if (end == raw || *end != '\0' || !std::isfinite(value)) {
+    throw std::runtime_error(std::string(name) + " must be a finite floating-point value");
+  }
+  *out = value;
+  return true;
+}
+
+RayjoinCdbScaleState rayjoin_cdb_scale_from_env() {
+  double min_x = 0.0;
+  double max_x = 0.0;
+  double min_y = 0.0;
+  double max_y = 0.0;
+  const bool has_min_x = rayjoin_cdb_parse_env_double("RTDL_RAYJOIN_CDB_SCALE_MIN_X", &min_x);
+  const bool has_max_x = rayjoin_cdb_parse_env_double("RTDL_RAYJOIN_CDB_SCALE_MAX_X", &max_x);
+  const bool has_min_y = rayjoin_cdb_parse_env_double("RTDL_RAYJOIN_CDB_SCALE_MIN_Y", &min_y);
+  const bool has_max_y = rayjoin_cdb_parse_env_double("RTDL_RAYJOIN_CDB_SCALE_MAX_Y", &max_y);
+  const bool any = has_min_x || has_max_x || has_min_y || has_max_y;
+  const bool all = has_min_x && has_max_x && has_min_y && has_max_y;
+  if (!any) {
+    return {};
+  }
+  if (!all) {
+    throw std::runtime_error("RayJoin CDB scale env requires min/max x/y together");
+  }
+  if (!(min_x < max_x) || !(min_y < max_y)) {
+    throw std::runtime_error("RayJoin CDB scale bounds must have min < max on both axes");
+  }
+  RayjoinCdbScaleState state;
+  state.valid = true;
+  RayjoinLsiScaleKey key;
+  key.valid = true;
+  key.min_x = min_x;
+  key.max_x = max_x;
+  key.min_y = min_y;
+  key.max_y = max_y;
+  state.scale = make_rayjoin_lsi_scale(key);
+  return state;
+}
+
+double rayjoin_cdb_unscale_x(const RayjoinLsiScale& scale, int64_t x) {
+  return static_cast<double>(x) * scale.rrx + scale.ddeltax;
+}
+
+double rayjoin_cdb_unscale_y(const RayjoinLsiScale& scale, int64_t y) {
+  return static_cast<double>(y) * scale.rry + scale.ddeltay;
+}
+
+struct PreparedRayjoinCdbPointLocation2DImpl {
+  std::vector<RayjoinCdbSegment2D> segments;
+  RayjoinCdbSegmentSceneData scene_data;
+  RayjoinCdbScaleState scale_state;
+  EmbreeDevice device;
+  SceneHolder holder;
+
+  explicit PreparedRayjoinCdbPointLocation2DImpl(
+      std::vector<RayjoinCdbSegment2D> input_segments,
+      RayjoinCdbScaleState input_scale_state)
+      : segments(std::move(input_segments)),
+        scene_data {&segments},
+        scale_state(input_scale_state),
+        device(),
+        holder(device.device) {
+    if (segments.size() > static_cast<size_t>(std::numeric_limits<unsigned>::max())) {
+      throw std::runtime_error("Embree RayJoin CDB scene supports at most UINT_MAX segments");
+    }
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(segments.size()));
+    rtcSetGeometryUserData(holder.geometry, &scene_data);
+    rtcSetGeometryBoundsFunction(holder.geometry, rayjoin_cdb_segment_bounds, nullptr);
+    rtcSetGeometryIntersectFunction(holder.geometry, rayjoin_cdb_point_location_intersect);
     rtcCommitGeometry(holder.geometry);
     rtcAttachGeometry(holder.scene, holder.geometry);
     rtcCommitScene(holder.scene);
@@ -472,6 +652,87 @@ void run_query_index_ranges_with_worker(size_t query_count, size_t worker_count,
       std::rethrow_exception(exception);
     }
   }
+}
+
+void reset_rayjoin_cdb_point_location_phase_timings(uint32_t mode) {
+  g_embree_last_rayjoin_cdb_traversal_s = 0.0;
+  g_embree_last_rayjoin_cdb_point_count = 0;
+  g_embree_last_rayjoin_cdb_positive_face_count = 0;
+  g_embree_last_rayjoin_cdb_mode = mode;
+}
+
+uint32_t rayjoin_cdb_query_map_id_from_env() {
+  const char* raw = std::getenv("RTDL_RAYJOIN_CDB_QUERY_MAP_ID");
+  return raw != nullptr && std::string(raw) == "0" ? 0u : 1u;
+}
+
+Point2D make_point2d_from_rtdl(const RtdlPoint& point) {
+  if (!std::isfinite(point.x) || !std::isfinite(point.y)) {
+    throw std::runtime_error("RayJoin CDB point-location query points must be finite");
+  }
+  return {point.id, {point.x, point.y}};
+}
+
+RtdlRayjoinCdbPointLocationRow locate_rayjoin_cdb_point(
+    PreparedRayjoinCdbPointLocation2DImpl* prepared,
+    const RtdlPoint& raw_point) {
+  Point2D point = make_point2d_from_rtdl(raw_point);
+  int64_t rayjoin_x = 0;
+  int64_t rayjoin_y = 0;
+  double rayjoin_rry = 0.0;
+  if (prepared->scale_state.valid) {
+    rayjoin_x = rayjoin_lsi_scale_x(prepared->scale_state.scale, raw_point.x);
+    rayjoin_y = rayjoin_lsi_scale_y(prepared->scale_state.scale, raw_point.y);
+    rayjoin_rry = prepared->scale_state.scale.rry;
+    point.p.x = rayjoin_cdb_unscale_x(prepared->scale_state.scale, rayjoin_x);
+    point.p.y = rayjoin_cdb_unscale_y(prepared->scale_state.scale, rayjoin_y);
+  }
+  uint32_t best_primitive_index = std::numeric_limits<uint32_t>::max();
+  uint32_t best_segment_id = std::numeric_limits<uint32_t>::max();
+  double best_t = std::numeric_limits<double>::infinity();
+  double best_y = std::numeric_limits<double>::infinity();
+  double best_slope = -std::numeric_limits<double>::infinity();
+  bool has_hit = false;
+  RayjoinCdbPointLocationQueryState state {
+      &point,
+      &best_primitive_index,
+      &best_segment_id,
+      &best_t,
+      &best_y,
+      &best_slope,
+      &has_hit,
+      rayjoin_cdb_query_map_id_from_env(),
+      rayjoin_x,
+      rayjoin_y,
+      rayjoin_rry,
+      prepared->scale_state.valid,
+      std::getenv("RTDL_RAYJOIN_CDB_ALLOW_EQUAL_TIES") != nullptr,
+  };
+  g_query_kind = QueryKind::kRayjoinCdbPointLocation;
+  g_query_state = &state;
+  RTCRayHit rayhit;
+  set_ray(&rayhit, point.p, {0.0, 1.0}, std::numeric_limits<float>::max());
+  RTCIntersectArguments args;
+  rtcInitIntersectArguments(&args);
+  rtdlRtcIntersect1(prepared->holder.scene, &rayhit, &args);
+  g_query_kind = QueryKind::kNone;
+  g_query_state = nullptr;
+
+  if (!has_hit || best_primitive_index >= prepared->segments.size()) {
+    return {
+        point.id,
+        0u,
+        std::numeric_limits<uint32_t>::max(),
+        std::numeric_limits<double>::infinity(),
+    };
+  }
+  const RayjoinCdbSegment2D& segment = prepared->segments[best_primitive_index];
+  return {
+      point.id,
+      rayjoin_cdb_face_for_segment_direction(segment),
+      best_segment_id,
+      best_t,
+  };
 }
 
 size_t columnar_find_field_index_or_throw(const RtdlColumnField* fields, size_t field_count, const char* name) {
@@ -868,29 +1129,41 @@ std::vector<RtdlAabb2D> point_queries_as_aabbs(const RtdlPoint* points, size_t p
   std::vector<RtdlAabb2D> query_boxes;
   query_boxes.reserve(point_count);
   for (size_t index = 0; index < point_count; ++index) {
-    query_boxes.push_back({points[index].id, points[index].x, points[index].y, points[index].x, points[index].y});
+    // Give Embree's broadphase a non-degenerate query box, then keep the
+    // exact inclusive point predicate anchored at min_x/min_y in the callback.
+    query_boxes.push_back({
+        points[index].id,
+        points[index].x,
+        points[index].y,
+        std::nextafter(points[index].x, std::numeric_limits<double>::infinity()),
+        std::nextafter(points[index].y, std::numeric_limits<double>::infinity())});
   }
   return query_boxes;
 }
 
 bool aabb2d_contains_point_query(const RtdlAabb2D& box, const RtdlAabb2D& point_query) {
-  const double x = point_query.min_x;
-  const double y = point_query.min_y;
-  return box.min_x <= x && x <= box.max_x && box.min_y <= y && y <= box.max_y;
+  // Native AABB backends use fp32 envelope traversal; keep the exact
+  // predicate on the same precision contract for OptiX/Embree parity.
+  const float x = static_cast<float>(point_query.min_x);
+  const float y = static_cast<float>(point_query.min_y);
+  return static_cast<float>(box.min_x) <= x
+      && x <= static_cast<float>(box.max_x)
+      && static_cast<float>(box.min_y) <= y
+      && y <= static_cast<float>(box.max_y);
 }
 
 bool aabb2d_contains_aabb(const RtdlAabb2D& outer, const RtdlAabb2D& inner) {
-  return outer.min_x <= inner.min_x
-      && outer.min_y <= inner.min_y
-      && outer.max_x >= inner.max_x
-      && outer.max_y >= inner.max_y;
+  return static_cast<float>(outer.min_x) <= static_cast<float>(inner.min_x)
+      && static_cast<float>(outer.min_y) <= static_cast<float>(inner.min_y)
+      && static_cast<float>(outer.max_x) >= static_cast<float>(inner.max_x)
+      && static_cast<float>(outer.max_y) >= static_cast<float>(inner.max_y);
 }
 
 bool aabb2d_intersects_aabb(const RtdlAabb2D& left, const RtdlAabb2D& right) {
-  return right.min_x <= left.max_x
-      && right.max_x >= left.min_x
-      && right.min_y <= left.max_y
-      && right.max_y >= left.min_y;
+  return static_cast<float>(right.min_x) <= static_cast<float>(left.max_x)
+      && static_cast<float>(right.max_x) >= static_cast<float>(left.min_x)
+      && static_cast<float>(right.min_y) <= static_cast<float>(left.max_y)
+      && static_cast<float>(right.max_y) >= static_cast<float>(left.min_y);
 }
 
 void attach_aabb2d_scene(RTCDevice device, SceneHolder& holder, Aabb2DSceneData& scene_data) {
@@ -907,6 +1180,7 @@ void attach_aabb2d_scene(RTCDevice device, SceneHolder& holder, Aabb2DSceneData&
   rtcSetGeometryBoundsFunction(holder.geometry, aabb2d_bounds, nullptr);
   rtcCommitGeometry(holder.geometry);
   rtcAttachGeometry(holder.scene, holder.geometry);
+  apply_scene_build_quality_from_env(holder.scene, "RTDL_EMBREE_AABB_SCENE_BUILD_QUALITY");
   rtcCommitScene(holder.scene);
 }
 
@@ -987,6 +1261,186 @@ void aabb_rows_collision_callback(void* user_ptr, RTCCollision* collisions, unsi
     state->rows->insert(state->rows->end(), local_rows.begin(), local_rows.end());
   }
 }
+
+struct RayjoinLsiAabbRefinedCollisionState {
+  const std::vector<Segment2D>* indexed_segments;
+  const std::vector<Segment2D>* query_segments;
+  std::vector<RtdlSegmentPairIntersectionRow>* rows;
+  std::mutex* rows_mutex;
+};
+
+double rayjoin_lsi_aabb_pad_from_env() {
+  const char* raw = std::getenv("RTDL_EMBREE_RAYJOIN_LSI_AABB_PAD");
+  if (raw == nullptr || raw[0] == '\0') {
+    return 1.0e-4;
+  }
+  char* end = nullptr;
+  const double parsed = std::strtod(raw, &end);
+  if (end == raw || !std::isfinite(parsed) || parsed < 0.0) {
+    throw std::runtime_error("RTDL_EMBREE_RAYJOIN_LSI_AABB_PAD must be a non-negative finite float");
+  }
+  return parsed;
+}
+
+RtdlAabb2D segment_aabb_record(const Segment2D& segment, double pad) {
+  const Bounds2D bounds = bounds_for_segment(segment);
+  return {
+      segment.id,
+      bounds.min_x - pad,
+      bounds.min_y - pad,
+      bounds.max_x + pad,
+      bounds.max_y + pad,
+  };
+}
+
+Vec2 segment_intersection_point_for_materialized_pair(const Segment2D& left, const Segment2D& right) {
+  const double px = left.a.x;
+  const double py = left.a.y;
+  const double rx = left.b.x - left.a.x;
+  const double ry = left.b.y - left.a.y;
+  const double qx = right.a.x;
+  const double qy = right.a.y;
+  const double sx = right.b.x - right.a.x;
+  const double sy = right.b.y - right.a.y;
+  const double denom = rx * sy - ry * sx;
+  if (std::fabs(denom) <= kSegmentIntersectionEps) {
+    return left.a;
+  }
+  const double qpx = qx - px;
+  const double qpy = qy - py;
+  const double t = (qpx * sy - qpy * sx) / denom;
+  return {px + t * rx, py + t * ry};
+}
+
+std::vector<RtdlAabb2D> segment_aabb_records(const std::vector<Segment2D>& segments, double pad) {
+  std::vector<RtdlAabb2D> boxes;
+  boxes.reserve(segments.size());
+  for (const Segment2D& segment : segments) {
+    boxes.push_back(segment_aabb_record(segment, pad));
+  }
+  return boxes;
+}
+
+void rayjoin_lsi_aabb_refined_collision_callback(
+    void* user_ptr,
+    RTCCollision* collisions,
+    unsigned int num_collisions) {
+  auto* state = static_cast<RayjoinLsiAabbRefinedCollisionState*>(user_ptr);
+  if (state == nullptr
+      || state->indexed_segments == nullptr
+      || state->query_segments == nullptr
+      || state->rows == nullptr
+      || state->rows_mutex == nullptr) {
+    return;
+  }
+  std::vector<RtdlSegmentPairIntersectionRow> local_rows;
+  local_rows.reserve(num_collisions);
+  for (unsigned int index = 0; index < num_collisions; ++index) {
+    const RTCCollision& collision = collisions[index];
+    if (collision.primID0 >= state->indexed_segments->size() ||
+        collision.primID1 >= state->query_segments->size()) {
+      continue;
+    }
+    const Segment2D& right = (*state->indexed_segments)[collision.primID0];
+    const Segment2D& left = (*state->query_segments)[collision.primID1];
+    if (!rayjoin_lsi_segment_intersection(left, right)) {
+      continue;
+    }
+    const Vec2 point = segment_intersection_point_for_materialized_pair(left, right);
+    local_rows.push_back({left.id, right.id, point.x, point.y});
+  }
+  if (!local_rows.empty()) {
+    std::lock_guard<std::mutex> lock(*state->rows_mutex);
+    state->rows->insert(state->rows->end(), local_rows.begin(), local_rows.end());
+  }
+}
+
+std::vector<RtdlSegmentPairIntersectionRow> run_rayjoin_lsi_aabb_refined_rows(
+    const RtdlSegment* left,
+    size_t left_count,
+    const RtdlSegment* right,
+    size_t right_count,
+    double* traversal_seconds_out) {
+  if (left_count > 0 && left == nullptr) {
+    throw std::runtime_error("RayJoin LSI AABB refined left segment pointer must not be null");
+  }
+  if (right_count > 0 && right == nullptr) {
+    throw std::runtime_error("RayJoin LSI AABB refined right segment pointer must not be null");
+  }
+  if (left_count > static_cast<size_t>(std::numeric_limits<unsigned>::max()) ||
+      right_count > static_cast<size_t>(std::numeric_limits<unsigned>::max())) {
+    throw std::runtime_error("RayJoin LSI AABB refined path supports at most UINT_MAX segments per side");
+  }
+  if (traversal_seconds_out != nullptr) {
+    *traversal_seconds_out = 0.0;
+  }
+  if (left_count == 0 || right_count == 0) {
+    return {};
+  }
+
+  std::vector<Segment2D> left_segments;
+  std::vector<Segment2D> right_segments;
+  left_segments.reserve(left_count);
+  right_segments.reserve(right_count);
+  for (size_t i = 0; i < left_count; ++i) {
+    left_segments.push_back({left[i].id, {left[i].x0, left[i].y0}, {left[i].x1, left[i].y1}});
+  }
+  for (size_t i = 0; i < right_count; ++i) {
+    right_segments.push_back({right[i].id, {right[i].x0, right[i].y0}, {right[i].x1, right[i].y1}});
+  }
+
+  const RayjoinLsiScaleKey scale_key = rayjoin_lsi_scale_key_for_segments(right_segments, left_segments);
+  if (!scale_key.valid) {
+    throw std::runtime_error("RayJoin LSI AABB refined path requires non-empty finite segment inputs");
+  }
+  const RayjoinLsiScale scale = make_rayjoin_lsi_scale(scale_key);
+  for (Segment2D& segment : right_segments) {
+    rayjoin_lsi_apply_scale(segment, scale, false);
+  }
+  for (Segment2D& segment : left_segments) {
+    rayjoin_lsi_apply_scale(segment, scale, false);
+  }
+
+  const double aabb_pad = rayjoin_lsi_aabb_pad_from_env();
+  std::vector<RtdlAabb2D> right_boxes = segment_aabb_records(right_segments, aabb_pad);
+  std::vector<RtdlAabb2D> left_boxes = segment_aabb_records(left_segments, aabb_pad);
+
+  EmbreeDevice device;
+  Aabb2DSceneData right_scene_data {&right_boxes};
+  SceneHolder right_holder(device.device);
+  attach_aabb2d_scene(device.device, right_holder, right_scene_data);
+
+  Aabb2DSceneData left_scene_data {&left_boxes};
+  SceneHolder left_holder(device.device);
+  attach_aabb2d_scene(device.device, left_holder, left_scene_data);
+
+  std::vector<RtdlSegmentPairIntersectionRow> rows;
+  std::mutex rows_mutex;
+  RayjoinLsiAabbRefinedCollisionState state {
+      &right_segments,
+      &left_segments,
+      &rows,
+      &rows_mutex,
+  };
+
+  const auto traversal_start = std::chrono::steady_clock::now();
+  rtcCollide(right_holder.scene, left_holder.scene, rayjoin_lsi_aabb_refined_collision_callback, &state);
+  const auto traversal_end = std::chrono::steady_clock::now();
+  if (traversal_seconds_out != nullptr) {
+    *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+  }
+
+  std::sort(rows.begin(), rows.end(), [](const RtdlSegmentPairIntersectionRow& left_row, const RtdlSegmentPairIntersectionRow& right_row) {
+    if (left_row.left_id != right_row.left_id) {
+      return left_row.left_id < right_row.left_id;
+    }
+    return left_row.right_id < right_row.right_id;
+  });
+  rows.erase(std::unique(rows.begin(), rows.end(), [](const RtdlSegmentPairIntersectionRow& left_row, const RtdlSegmentPairIntersectionRow& right_row) {
+    return left_row.left_id == right_row.left_id && left_row.right_id == right_row.right_id;
+  }), rows.end());
+  return rows;
+}
 #endif
 
 }  // namespace
@@ -1031,6 +1485,21 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_pair_intersection(
     for (size_t i = 0; i < right_count; ++i) {
       right_segments.push_back({right[i].id, {right[i].x0, right[i].y0}, {right[i].x1, right[i].y1}});
     }
+    const uint32_t predicate_mode = embree_segment_pair_predicate_mode_from_env();
+    if (predicate_mode == 1u) {
+      const RayjoinLsiScaleKey scale_key =
+          rayjoin_lsi_scale_key_for_segments(right_segments, left_segments);
+      if (!scale_key.valid) {
+        throw std::runtime_error("RayJoin LSI Embree rows require non-empty finite segment inputs");
+      }
+      const RayjoinLsiScale scale = make_rayjoin_lsi_scale(scale_key);
+      for (Segment2D& segment : right_segments) {
+        rayjoin_lsi_apply_scale(segment, scale, true);
+      }
+      for (Segment2D& segment : left_segments) {
+        rayjoin_lsi_apply_scale(segment, scale, true);
+      }
+    }
 
     EmbreeDevice device;
     SegmentSceneData data {&right_segments};
@@ -1038,7 +1507,10 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_pair_intersection(
     holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
     rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(right_segments.size()));
     rtcSetGeometryUserData(holder.geometry, &data);
-    rtcSetGeometryBoundsFunction(holder.geometry, segment_bounds, nullptr);
+    rtcSetGeometryBoundsFunction(
+        holder.geometry,
+        predicate_mode == 1u ? rayjoin_lsi_segment_bounds : segment_bounds,
+        nullptr);
     rtcSetGeometryIntersectFunction(holder.geometry, segment_intersect);
     rtcCommitGeometry(holder.geometry);
     rtcAttachGeometry(holder.scene, holder.geometry);
@@ -1060,16 +1532,11 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_pair_intersection(
               continue;
             }
             std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>> query_rows;
-            SegmentPairIntersectionQueryState state {&probe, &query_rows, &build_order_by_primitive};
+            SegmentPairIntersectionQueryState state {&probe, &query_rows, &build_order_by_primitive, predicate_mode};
             g_query_kind = QueryKind::kSegmentPairIntersection;
             g_query_state = &state;
             RTCRayHit rayhit;
-            const double endpoint_pad = 1.0e-4;
-            Vec2 padded_origin {
-                probe.a.x - direction.x * endpoint_pad,
-                probe.a.y - direction.y * endpoint_pad,
-            };
-            set_ray(&rayhit, padded_origin, direction, static_cast<float>(1.0 + endpoint_pad * 2.0));
+            set_segment_pair_query_ray(&rayhit, probe, predicate_mode);
             RTCIntersectArguments args;
             rtcInitIntersectArguments(&args);
             rtdlRtcIntersect1(holder.scene, &rayhit, &args);
@@ -1079,7 +1546,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_pair_intersection(
             // that are easy to miss numerically are handled by the endpoint
             // index below. Avoid a full static-segment scan for every zero-hit
             // query because sparse LSI streams turn that into O(N*M).
-            append_shared_endpoint_segment_hits(probe, right_segments, endpoint_index, query_rows);
+            append_shared_endpoint_segment_hits(
+                probe,
+                right_segments,
+                endpoint_index,
+                query_rows,
+                predicate_mode);
             std::stable_sort(
                 query_rows.begin(),
                 query_rows.end(),
@@ -1120,6 +1592,21 @@ RTDL_EMBREE_EXPORT int rtdl_embree_count_segment_pair_intersections(
     for (size_t i = 0; i < right_count; ++i) {
       right_segments.push_back({right[i].id, {right[i].x0, right[i].y0}, {right[i].x1, right[i].y1}});
     }
+    const uint32_t predicate_mode = embree_segment_pair_predicate_mode_from_env();
+    if (predicate_mode == 1u) {
+      const RayjoinLsiScaleKey scale_key =
+          rayjoin_lsi_scale_key_for_segments(right_segments, left_segments);
+      if (!scale_key.valid) {
+        throw std::runtime_error("RayJoin LSI Embree rows require non-empty finite segment inputs");
+      }
+      const RayjoinLsiScale scale = make_rayjoin_lsi_scale(scale_key);
+      for (Segment2D& segment : right_segments) {
+        rayjoin_lsi_apply_scale(segment, scale, true);
+      }
+      for (Segment2D& segment : left_segments) {
+        rayjoin_lsi_apply_scale(segment, scale, true);
+      }
+    }
 
     EmbreeDevice device;
     SegmentSceneData data {&right_segments};
@@ -1127,7 +1614,10 @@ RTDL_EMBREE_EXPORT int rtdl_embree_count_segment_pair_intersections(
     holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
     rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(right_segments.size()));
     rtcSetGeometryUserData(holder.geometry, &data);
-    rtcSetGeometryBoundsFunction(holder.geometry, segment_bounds, nullptr);
+    rtcSetGeometryBoundsFunction(
+        holder.geometry,
+        predicate_mode == 1u ? rayjoin_lsi_segment_bounds : segment_bounds,
+        nullptr);
     rtcSetGeometryIntersectFunction(holder.geometry, segment_intersect);
     rtcCommitGeometry(holder.geometry);
     rtcAttachGeometry(holder.scene, holder.geometry);
@@ -1149,16 +1639,11 @@ RTDL_EMBREE_EXPORT int rtdl_embree_count_segment_pair_intersections(
           continue;
         }
         std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>> query_rows;
-        SegmentPairIntersectionQueryState state {&probe, &query_rows, &build_order_by_primitive};
+        SegmentPairIntersectionQueryState state {&probe, &query_rows, &build_order_by_primitive, predicate_mode};
         g_query_kind = QueryKind::kSegmentPairIntersection;
         g_query_state = &state;
         RTCRayHit rayhit;
-        const double endpoint_pad = 1.0e-4;
-        Vec2 padded_origin {
-            probe.a.x - direction.x * endpoint_pad,
-            probe.a.y - direction.y * endpoint_pad,
-        };
-        set_ray(&rayhit, padded_origin, direction, static_cast<float>(1.0 + endpoint_pad * 2.0));
+        set_segment_pair_query_ray(&rayhit, probe, predicate_mode);
         RTCIntersectArguments args;
         rtcInitIntersectArguments(&args);
         rtdlRtcIntersect1(holder.scene, &rayhit, &args);
@@ -1167,7 +1652,12 @@ RTDL_EMBREE_EXPORT int rtdl_embree_count_segment_pair_intersections(
         // Embree provides the candidate broadphase; shared endpoint cases are
         // added by the endpoint index below. Do not fall back to scanning every
         // static segment for each zero-hit query.
-        append_shared_endpoint_segment_hits(probe, right_segments, endpoint_index, query_rows);
+            append_shared_endpoint_segment_hits(
+                probe,
+                right_segments,
+                endpoint_index,
+                query_rows,
+                predicate_mode);
         local_count += query_rows.size();
       }
       total_count.fetch_add(local_count, std::memory_order_relaxed);
@@ -1219,43 +1709,91 @@ RTDL_EMBREE_EXPORT int rtdl_embree_segment_pair_intersections_2d_count(
       *traversal_seconds_out = 0.0;
     }
     auto* impl = reinterpret_cast<PreparedSegmentPairIntersections2DImpl*>(handle);
+    if (left_count == 0 || impl->right_segments.empty()) {
+      return;
+    }
 
+    const uint32_t predicate_mode = embree_segment_pair_predicate_mode_from_env();
     std::vector<Segment2D> left_segments;
-    left_segments.reserve(left_count);
-    for (size_t i = 0; i < left_count; ++i) {
-      left_segments.push_back({left[i].id, {left[i].x0, left[i].y0}, {left[i].x1, left[i].y1}});
+    const std::vector<Segment2D>* active_left_segments = &left_segments;
+    if (predicate_mode == 1u &&
+        impl->rayjoin_lsi_left_source == left &&
+        impl->rayjoin_lsi_left_count == left_count &&
+        impl->rayjoin_lsi_scale_key.valid) {
+      active_left_segments = &impl->rayjoin_lsi_left_segments;
+    } else {
+      left_segments.reserve(left_count);
+      for (size_t i = 0; i < left_count; ++i) {
+        left_segments.push_back({left[i].id, {left[i].x0, left[i].y0}, {left[i].x1, left[i].y1}});
+      }
+      if (predicate_mode == 1u) {
+        const RayjoinLsiScaleKey scale_key =
+            rayjoin_lsi_scale_key_for_segments(impl->right_segments, left_segments);
+        if (!scale_key.valid) {
+          throw std::runtime_error("RayJoin LSI Embree count requires non-empty finite segment inputs");
+        }
+        const RayjoinLsiScale scale = make_rayjoin_lsi_scale(scale_key);
+        if (!rayjoin_lsi_scale_key_equal(impl->rayjoin_lsi_scale_key, scale_key)) {
+          impl->rayjoin_right_segments = impl->right_segments;
+          for (Segment2D& segment : impl->rayjoin_right_segments) {
+            rayjoin_lsi_apply_scale(segment, scale, true);
+          }
+          impl->rayjoin_endpoint_index = build_segment_endpoint_index(impl->rayjoin_right_segments);
+          rebuild_rayjoin_segment_scene(*impl);
+          impl->rayjoin_lsi_scale_key = scale_key;
+        }
+        for (Segment2D& segment : left_segments) {
+          rayjoin_lsi_apply_scale(segment, scale, true);
+        }
+        impl->rayjoin_lsi_left_source = left;
+        impl->rayjoin_lsi_left_count = left_count;
+        impl->rayjoin_lsi_left_segments = std::move(left_segments);
+        active_left_segments = &impl->rayjoin_lsi_left_segments;
+      }
+    }
+
+    RTCScene active_scene = impl->holder.scene;
+    const std::vector<Segment2D>* active_right_segments = &impl->right_segments;
+    const SegmentEndpointIndex* active_endpoint_index = &impl->endpoint_index;
+    if (predicate_mode == 1u) {
+      if (!impl->rayjoin_holder) {
+        throw std::runtime_error("RayJoin LSI Embree scene cache was not initialized");
+      }
+      active_scene = impl->rayjoin_holder->scene;
+      active_right_segments = &impl->rayjoin_right_segments;
+      active_endpoint_index = &impl->rayjoin_endpoint_index;
     }
 
     std::atomic<size_t> total_count {0};
     const auto traversal_start = std::chrono::steady_clock::now();
-    run_query_index_ranges(left_segments.size(), [&](size_t begin, size_t end) {
+    run_query_index_ranges(active_left_segments->size(), [&](size_t begin, size_t end) {
       size_t local_count = 0;
       for (size_t left_index = begin; left_index < end; ++left_index) {
-        const Segment2D& probe = left_segments[left_index];
+        const Segment2D& probe = (*active_left_segments)[left_index];
         Vec2 direction = sub(probe.b, probe.a);
         if (std::fabs(direction.x) < kSegmentIntersectionEps && std::fabs(direction.y) < kSegmentIntersectionEps) {
           continue;
         }
         std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>> query_rows;
-        SegmentPairIntersectionQueryState state {&probe, &query_rows, &impl->build_order_by_primitive};
+        SegmentPairIntersectionQueryState state {&probe, &query_rows, &impl->build_order_by_primitive, predicate_mode};
         g_query_kind = QueryKind::kSegmentPairIntersection;
         g_query_state = &state;
         RTCRayHit rayhit;
-        const double endpoint_pad = 1.0e-4;
-        Vec2 padded_origin {
-            probe.a.x - direction.x * endpoint_pad,
-            probe.a.y - direction.y * endpoint_pad,
-        };
-        set_ray(&rayhit, padded_origin, direction, static_cast<float>(1.0 + endpoint_pad * 2.0));
+        set_segment_pair_query_ray(&rayhit, probe, predicate_mode);
         RTCIntersectArguments args;
         rtcInitIntersectArguments(&args);
-        rtdlRtcIntersect1(impl->holder.scene, &rayhit, &args);
+        rtdlRtcIntersect1(active_scene, &rayhit, &args);
         g_query_kind = QueryKind::kNone;
         g_query_state = nullptr;
         // Embree provides the candidate broadphase; shared endpoint cases are
         // added by the endpoint index below. Do not fall back to scanning every
         // static segment for each zero-hit query.
-        append_shared_endpoint_segment_hits(probe, impl->right_segments, impl->endpoint_index, query_rows);
+        append_shared_endpoint_segment_hits(
+            probe,
+            *active_right_segments,
+            *active_endpoint_index,
+            query_rows,
+            predicate_mode);
         local_count += query_rows.size();
       }
       total_count.fetch_add(local_count, std::memory_order_relaxed);
@@ -1274,6 +1812,250 @@ RTDL_EMBREE_EXPORT void rtdl_embree_segment_pair_intersections_2d_destroy(
     RtdlEmbreeSegmentPairIntersections2D* handle) {
   auto* impl = reinterpret_cast<PreparedSegmentPairIntersections2DImpl*>(handle);
   delete impl;
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_prepare_rayjoin_cdb_point_location_2d(
+    const RtdlRayjoinCdbSegment* segments,
+    size_t segment_count,
+    void** handle_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (handle_out == nullptr) {
+      throw std::runtime_error("handle_out must not be null");
+    }
+    if (segment_count != 0 && segments == nullptr) {
+      throw std::runtime_error("CDB segment pointer must not be null when segment_count is nonzero");
+    }
+    *handle_out = nullptr;
+    const RayjoinCdbScaleState scale_state = rayjoin_cdb_scale_from_env();
+    std::vector<RayjoinCdbSegment2D> segment_values;
+    segment_values.reserve(segment_count);
+    for (size_t i = 0; i < segment_count; ++i) {
+      if (!std::isfinite(segments[i].x0) || !std::isfinite(segments[i].y0) ||
+          !std::isfinite(segments[i].x1) || !std::isfinite(segments[i].y1)) {
+        throw std::runtime_error("CDB segment coordinates must be finite");
+      }
+      int64_t sx0 = 0;
+      int64_t sy0 = 0;
+      int64_t sx1 = 0;
+      int64_t sy1 = 0;
+      double x0 = segments[i].x0;
+      double y0 = segments[i].y0;
+      double x1 = segments[i].x1;
+      double y1 = segments[i].y1;
+      if (scale_state.valid) {
+        sx0 = rayjoin_lsi_scale_x(scale_state.scale, x0);
+        sy0 = rayjoin_lsi_scale_y(scale_state.scale, y0);
+        sx1 = rayjoin_lsi_scale_x(scale_state.scale, x1);
+        sy1 = rayjoin_lsi_scale_y(scale_state.scale, y1);
+        x0 = rayjoin_cdb_unscale_x(scale_state.scale, sx0);
+        y0 = rayjoin_cdb_unscale_y(scale_state.scale, sy0);
+        x1 = rayjoin_cdb_unscale_x(scale_state.scale, sx1);
+        y1 = rayjoin_cdb_unscale_y(scale_state.scale, sy1);
+      }
+      segment_values.push_back({
+          segments[i].id,
+          {x0, y0},
+          {x1, y1},
+          segments[i].left_face_id,
+          segments[i].right_face_id,
+          sx0,
+          sy0,
+          sx1,
+          sy1,
+          scale_state.valid,
+      });
+    }
+    auto* impl = new PreparedRayjoinCdbPointLocation2DImpl(std::move(segment_values), scale_state);
+    *handle_out = impl;
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_run_prepared_rayjoin_cdb_point_location_2d(
+    void* handle,
+    const RtdlPoint* points,
+    size_t point_count,
+    RtdlRayjoinCdbPointLocationRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (handle == nullptr) {
+      throw std::runtime_error("prepared CDB point-location handle must not be null");
+    }
+    if (point_count != 0 && points == nullptr) {
+      throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+    }
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("row output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    auto* impl = reinterpret_cast<PreparedRayjoinCdbPointLocation2DImpl*>(handle);
+    reset_rayjoin_cdb_point_location_phase_timings(2u);
+    g_embree_last_rayjoin_cdb_point_count = point_count;
+    if (point_count == 0 || impl->segments.empty()) {
+      return;
+    }
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    std::vector<RtdlRayjoinCdbPointLocationRow> rows =
+        run_query_ranges<RtdlRayjoinCdbPointLocationRow>(
+            point_count,
+            [&](size_t begin, size_t end, std::vector<RtdlRayjoinCdbPointLocationRow>& local_rows) {
+              local_rows.reserve(end - begin);
+              for (size_t index = begin; index < end; ++index) {
+                local_rows.push_back(locate_rayjoin_cdb_point(impl, points[index]));
+              }
+            });
+    const auto traversal_end = std::chrono::steady_clock::now();
+    g_embree_last_rayjoin_cdb_traversal_s =
+        std::chrono::duration<double>(traversal_end - traversal_start).count();
+    size_t positive_face_count = 0;
+    for (const auto& row : rows) {
+      if (row.face_id != 0u) {
+        ++positive_face_count;
+      }
+    }
+    g_embree_last_rayjoin_cdb_positive_face_count = positive_face_count;
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_count_prepared_rayjoin_cdb_point_location_2d(
+    void* handle,
+    const RtdlPoint* points,
+    size_t point_count,
+    size_t* positive_face_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (handle == nullptr) {
+      throw std::runtime_error("prepared CDB point-location handle must not be null");
+    }
+    if (point_count != 0 && points == nullptr) {
+      throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+    }
+    if (positive_face_count_out == nullptr) {
+      throw std::runtime_error("positive_face_count_out must not be null");
+    }
+    *positive_face_count_out = 0;
+    auto* impl = reinterpret_cast<PreparedRayjoinCdbPointLocation2DImpl*>(handle);
+    reset_rayjoin_cdb_point_location_phase_timings(1u);
+    g_embree_last_rayjoin_cdb_point_count = point_count;
+    if (point_count == 0 || impl->segments.empty()) {
+      return;
+    }
+
+    std::atomic<size_t> total_count {0};
+    const auto traversal_start = std::chrono::steady_clock::now();
+    run_query_index_ranges(point_count, [&](size_t begin, size_t end) {
+      size_t local_count = 0;
+      for (size_t index = begin; index < end; ++index) {
+        const RtdlRayjoinCdbPointLocationRow row = locate_rayjoin_cdb_point(impl, points[index]);
+        if (row.face_id != 0u) {
+          ++local_count;
+        }
+      }
+      total_count.fetch_add(local_count, std::memory_order_relaxed);
+    });
+    const auto traversal_end = std::chrono::steady_clock::now();
+    g_embree_last_rayjoin_cdb_traversal_s =
+        std::chrono::duration<double>(traversal_end - traversal_start).count();
+    *positive_face_count_out = total_count.load(std::memory_order_relaxed);
+    g_embree_last_rayjoin_cdb_positive_face_count = *positive_face_count_out;
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_rayjoin_cdb_point_location_get_last_phase_timings(
+    double* traversal,
+    size_t* point_count,
+    size_t* positive_face_count,
+    uint32_t* mode) {
+  if (traversal != nullptr) {
+    *traversal = g_embree_last_rayjoin_cdb_traversal_s;
+  }
+  if (point_count != nullptr) {
+    *point_count = g_embree_last_rayjoin_cdb_point_count;
+  }
+  if (positive_face_count != nullptr) {
+    *positive_face_count = g_embree_last_rayjoin_cdb_positive_face_count;
+  }
+  if (mode != nullptr) {
+    *mode = g_embree_last_rayjoin_cdb_mode;
+  }
+  return 0;
+}
+
+RTDL_EMBREE_EXPORT void rtdl_embree_destroy_prepared_rayjoin_cdb_point_location_2d(void* handle) {
+  auto* impl = reinterpret_cast<PreparedRayjoinCdbPointLocation2DImpl*>(handle);
+  delete impl;
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_prepare_directed_segment_point_location_2d(
+    const RtdlDirectedSegmentFace2D* segments,
+    size_t segment_count,
+    void** handle_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl_embree_prepare_rayjoin_cdb_point_location_2d(
+      reinterpret_cast<const RtdlRayjoinCdbSegment*>(segments),
+      segment_count,
+      handle_out,
+      error_out,
+      error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_run_prepared_directed_segment_point_location_2d(
+    void* handle,
+    const RtdlPoint* points,
+    size_t point_count,
+    RtdlDirectedSegmentPointLocationRow2D** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl_embree_run_prepared_rayjoin_cdb_point_location_2d(
+      handle,
+      points,
+      point_count,
+      reinterpret_cast<RtdlRayjoinCdbPointLocationRow**>(rows_out),
+      row_count_out,
+      error_out,
+      error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_count_prepared_directed_segment_point_location_2d(
+    void* handle,
+    const RtdlPoint* points,
+    size_t point_count,
+    size_t* positive_face_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl_embree_count_prepared_rayjoin_cdb_point_location_2d(
+      handle,
+      points,
+      point_count,
+      positive_face_count_out,
+      error_out,
+      error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_directed_segment_point_location_get_last_phase_timings(
+    double* traversal,
+    size_t* point_count,
+    size_t* positive_face_count,
+    uint32_t* mode) {
+  return rtdl_embree_rayjoin_cdb_point_location_get_last_phase_timings(
+      traversal,
+      point_count,
+      positive_face_count,
+      mode);
+}
+
+RTDL_EMBREE_EXPORT void rtdl_embree_destroy_prepared_directed_segment_point_location_2d(void* handle) {
+  rtdl_embree_destroy_prepared_rayjoin_cdb_point_location_2d(handle);
 }
 
 RTDL_EMBREE_EXPORT int rtdl_embree_run_point_primitive_anyhit_packet(
@@ -3263,6 +4045,91 @@ RTDL_EMBREE_EXPORT int rtdl_embree_fixed_radius_neighbors_3d_ranked_summary_run(
   }, error_out, error_size);
 }
 
+RTDL_EMBREE_EXPORT int rtdl_embree_fixed_radius_neighbors_3d_ranked_summary_aggregate_run(
+    RtdlEmbreeFixedRadiusNeighbors3D* handle,
+    const RtdlPoint3D* query_points,
+    size_t query_count,
+    double radius,
+    size_t k_max,
+    RtdlFixedRadiusRankedNeighborAggregate* aggregate_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (handle == nullptr) {
+      throw std::runtime_error("prepared fixed_radius_neighbors_3d handle must not be null");
+    }
+    if (aggregate_out == nullptr) {
+      throw std::runtime_error("aggregate_out must not be null");
+    }
+    if (radius < 0.0) {
+      throw std::runtime_error("fixed_radius_neighbors_3d radius must be non-negative");
+    }
+    if (k_max == 0) {
+      throw std::runtime_error("fixed_radius_neighbors_3d k_max must be positive");
+    }
+    if (k_max > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+      throw std::runtime_error("fixed_radius_neighbors_3d k_max exceeds uint32 limit");
+    }
+    *aggregate_out = empty_fixed_radius_ranked_aggregate();
+    if (traversal_seconds_out != nullptr) {
+      *traversal_seconds_out = 0.0;
+    }
+    auto* impl = reinterpret_cast<PreparedFixedRadiusNeighbors3DImpl*>(handle);
+
+    std::vector<Point3D> query_values;
+    query_values.reserve(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+      query_values.push_back({query_points[i].id, {query_points[i].x, query_points[i].y, query_points[i].z}});
+    }
+
+    constexpr double kFixedRadiusCandidateEps = 1.0e-4;
+    const size_t worker_count = embree_dispatch_thread_count(query_values.size());
+    std::vector<RtdlFixedRadiusRankedNeighborAggregate> worker_aggregates(
+        worker_count == 0 ? 1 : worker_count,
+        empty_fixed_radius_ranked_aggregate());
+    const auto traversal_start = std::chrono::steady_clock::now();
+    run_query_index_ranges_with_worker(query_values.size(), worker_aggregates.size(), [&](size_t worker_index, size_t begin, size_t end) {
+      RtdlFixedRadiusRankedNeighborAggregate& local_aggregate = worker_aggregates[worker_index];
+      std::vector<RtdlFixedRadiusNeighborRow> query_rows;
+      query_rows.reserve(std::min<size_t>(std::max<size_t>(k_max, 1), 1024));
+      std::unordered_set<uint32_t> seen_neighbor_ids;
+      seen_neighbor_ids.reserve(std::min<size_t>(std::max<size_t>(k_max * 2, 8), 2048));
+      for (size_t query_index = begin; query_index < end; ++query_index) {
+        const Point3D& query = query_values[query_index];
+        query_rows.clear();
+        seen_neighbor_ids.clear();
+        FixedRadiusNeighborsQueryState3D state {&query, &impl->search_values, radius, &query_rows, &seen_neighbor_ids};
+        RTCPointQuery point_query;
+        point_query.x = static_cast<float>(query.p.x);
+        point_query.y = static_cast<float>(query.p.y);
+        point_query.z = static_cast<float>(query.p.z);
+        point_query.time = 0.0f;
+        point_query.radius = static_cast<float>(radius + kFixedRadiusCandidateEps);
+        RTCPointQueryContext context;
+        rtcInitPointQueryContext(&context);
+        g_query_kind = QueryKind::kFixedRadiusNeighbors3D;
+        rtcPointQuery(impl->holder.scene, &point_query, &context, point_point_query_collect_3d, &state);
+        g_query_kind = QueryKind::kNone;
+        std::sort(query_rows.begin(), query_rows.end(), fixed_radius_neighbor_rank_less);
+        if (query_rows.size() > k_max) {
+          query_rows.resize(k_max);
+        }
+        add_fixed_radius_ranked_summary_to_aggregate(
+            local_aggregate,
+            make_fixed_radius_ranked_summary(query.id, query_rows));
+      }
+    });
+    if (traversal_seconds_out != nullptr) {
+      const auto traversal_end = std::chrono::steady_clock::now();
+      *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+    }
+    for (const RtdlFixedRadiusRankedNeighborAggregate& worker_aggregate : worker_aggregates) {
+      merge_fixed_radius_ranked_aggregate(*aggregate_out, worker_aggregate);
+    }
+  }, error_out, error_size);
+}
+
 RTDL_EMBREE_EXPORT void rtdl_embree_fixed_radius_neighbors_3d_destroy(
     RtdlEmbreeFixedRadiusNeighbors3D* handle) {
   auto* impl = reinterpret_cast<PreparedFixedRadiusNeighbors3DImpl*>(handle);
@@ -3445,6 +4312,113 @@ RTDL_EMBREE_EXPORT int rtdl_embree_fixed_radius_count_threshold_2d_run(
 RTDL_EMBREE_EXPORT void rtdl_embree_fixed_radius_count_threshold_2d_destroy(
     RtdlEmbreeFixedRadiusCountThreshold2D* handle) {
   auto* impl = reinterpret_cast<PreparedFixedRadiusCountThreshold2DImpl*>(handle);
+  delete impl;
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_fixed_radius_count_threshold_3d_create(
+    const RtdlPoint3D* search_points,
+    size_t search_count,
+    RtdlEmbreeFixedRadiusCountThreshold3D** handle_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (handle_out == nullptr) {
+      throw std::runtime_error("handle_out must not be null");
+    }
+    *handle_out = nullptr;
+    std::vector<Point3D> search_values;
+    search_values.reserve(search_count);
+    for (size_t i = 0; i < search_count; ++i) {
+      search_values.push_back({search_points[i].id, {search_points[i].x, search_points[i].y, search_points[i].z}});
+    }
+    auto* impl = new PreparedFixedRadiusCountThreshold3DImpl(std::move(search_values));
+    *handle_out = reinterpret_cast<RtdlEmbreeFixedRadiusCountThreshold3D*>(impl);
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_fixed_radius_count_threshold_3d_run(
+    RtdlEmbreeFixedRadiusCountThreshold3D* handle,
+    const RtdlPoint3D* query_points,
+    size_t query_count,
+    double radius,
+    size_t threshold,
+    RtdlFixedRadiusCountRow** rows_out,
+    size_t* row_count_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (handle == nullptr) {
+      throw std::runtime_error("prepared fixed_radius_count_threshold_3d handle must not be null");
+    }
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (radius < 0.0) {
+      throw std::runtime_error("fixed_radius_count_threshold_3d radius must be non-negative");
+    }
+    if (threshold > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+      throw std::runtime_error("fixed_radius_count_threshold_3d threshold exceeds uint32 limit");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (traversal_seconds_out != nullptr) {
+      *traversal_seconds_out = 0.0;
+    }
+    auto* impl = reinterpret_cast<PreparedFixedRadiusCountThreshold3DImpl*>(handle);
+
+    std::vector<Point3D> query_values;
+    query_values.reserve(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+      query_values.push_back({query_points[i].id, {query_points[i].x, query_points[i].y, query_points[i].z}});
+    }
+
+    constexpr double kFixedRadiusCandidateEps = 1.0e-4;
+    std::vector<RtdlFixedRadiusCountRow> rows(query_values.size());
+    const auto traversal_start = std::chrono::steady_clock::now();
+    run_query_index_ranges(query_values.size(), [&](size_t begin, size_t end) {
+      std::unordered_set<uint32_t> seen_neighbor_ids;
+      seen_neighbor_ids.reserve(std::min<size_t>(std::max<size_t>(threshold * 2, 8), 2048));
+      for (size_t query_index = begin; query_index < end; ++query_index) {
+        const Point3D& query = query_values[query_index];
+        seen_neighbor_ids.clear();
+        FixedRadiusCountThresholdQueryState3D state {
+            &query,
+            &impl->search_values,
+            radius * radius,
+            threshold,
+            0u,
+            0u,
+            &seen_neighbor_ids};
+        RTCPointQuery point_query;
+        point_query.x = static_cast<float>(query.p.x);
+        point_query.y = static_cast<float>(query.p.y);
+        point_query.z = static_cast<float>(query.p.z);
+        point_query.time = 0.0f;
+        point_query.radius = static_cast<float>(radius + kFixedRadiusCandidateEps);
+        RTCPointQueryContext context;
+        rtcInitPointQueryContext(&context);
+        g_query_kind = QueryKind::kFixedRadiusCountThreshold3D;
+        rtcPointQuery(impl->holder.scene, &point_query, &context, point_point_query_collect_3d, &state);
+        g_query_kind = QueryKind::kNone;
+        rows[query_index] = {
+            query.id,
+            state.neighbor_count,
+            state.threshold_reached};
+      }
+    });
+    if (traversal_seconds_out != nullptr) {
+      const auto traversal_end = std::chrono::steady_clock::now();
+      *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+    }
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT void rtdl_embree_fixed_radius_count_threshold_3d_destroy(
+    RtdlEmbreeFixedRadiusCountThreshold3D* handle) {
+  auto* impl = reinterpret_cast<PreparedFixedRadiusCountThreshold3DImpl*>(handle);
   delete impl;
 }
 
@@ -4815,6 +5789,67 @@ RTDL_EMBREE_EXPORT int rtdl_embree_collect_prepared_aabb_index_2d_range_intersec
     (void)box_queries;
     (void)box_query_count;
     throw std::runtime_error("native Embree AABB_INDEX_QUERY_2D row path requires Embree 4 collision support");
+#endif
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_run_rayjoin_lsi_aabb_refined_segment_pair_intersections(
+    const RtdlSegment* left,
+    size_t left_count,
+    const RtdlSegment* right,
+    size_t right_count,
+    RtdlSegmentPairIntersectionRow** rows_out,
+    size_t* row_count_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("RayJoin LSI AABB refined row output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+#if RTDL_EMBREE_API_MAJOR >= 4
+    std::vector<RtdlSegmentPairIntersectionRow> rows =
+        run_rayjoin_lsi_aabb_refined_rows(left, left_count, right, right_count, traversal_seconds_out);
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+#else
+    (void)left;
+    (void)left_count;
+    (void)right;
+    (void)right_count;
+    (void)traversal_seconds_out;
+    throw std::runtime_error("RayJoin LSI AABB refined path requires Embree 4 collision support");
+#endif
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_count_rayjoin_lsi_aabb_refined_segment_pair_intersections(
+    const RtdlSegment* left,
+    size_t left_count,
+    const RtdlSegment* right,
+    size_t right_count,
+    size_t* hit_count_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (hit_count_out == nullptr) {
+      throw std::runtime_error("RayJoin LSI AABB refined count output pointer must not be null");
+    }
+    *hit_count_out = 0;
+#if RTDL_EMBREE_API_MAJOR >= 4
+    std::vector<RtdlSegmentPairIntersectionRow> rows =
+        run_rayjoin_lsi_aabb_refined_rows(left, left_count, right, right_count, traversal_seconds_out);
+    *hit_count_out = rows.size();
+#else
+    (void)left;
+    (void)left_count;
+    (void)right;
+    (void)right_count;
+    (void)traversal_seconds_out;
+    throw std::runtime_error("RayJoin LSI AABB refined path requires Embree 4 collision support");
 #endif
   }, error_out, error_size);
 }

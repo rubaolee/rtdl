@@ -1,0 +1,655 @@
+{
+  "availability": [
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/dtl_cnty/dtl_cnty_Point.cdb, point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "case_id": "lsi_county_zipcode",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/dtl_cnty/dtl_cnty_Point.cdb"
+      },
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "program": "lsi",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/dtl_cnty/dtl_cnty_Point.cdb, point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "case_id": "pip_county_zipcode",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/dtl_cnty/dtl_cnty_Point.cdb"
+      },
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "program": "pip",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/dtl_cnty/dtl_cnty_Point.cdb, point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "case_id": "overlay_county_zipcode",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/dtl_cnty/dtl_cnty_Point.cdb"
+      },
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb"
+      },
+      "rtdl_status": "missing_full_overlay"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb, point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+      "case_id": "lsi_block_water",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb"
+      },
+      "pair_id": "block_water",
+      "paper_label": "Block x Water",
+      "program": "lsi",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb, point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+      "case_id": "pip_block_water",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb"
+      },
+      "pair_id": "block_water",
+      "paper_label": "Block x Water",
+      "program": "pip",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb, point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+      "case_id": "overlay_block_water",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb"
+      },
+      "pair_id": "block_water",
+      "paper_label": "Block x Water",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb"
+      },
+      "rtdl_status": "missing_full_overlay"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Africa/lakes_Africa_Point.cdb, point_cdb/parks/Africa/parks_Africa_Point.cdb",
+      "case_id": "lsi_lkaf_pkaf",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/Africa/lakes_Africa_Point.cdb"
+      },
+      "pair_id": "lkaf_pkaf",
+      "paper_label": "LKAF x PKAF",
+      "program": "lsi",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/Africa/parks_Africa_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Africa/lakes_Africa_Point.cdb, point_cdb/parks/Africa/parks_Africa_Point.cdb",
+      "case_id": "pip_lkaf_pkaf",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/Africa/lakes_Africa_Point.cdb"
+      },
+      "pair_id": "lkaf_pkaf",
+      "paper_label": "LKAF x PKAF",
+      "program": "pip",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/Africa/parks_Africa_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Africa/lakes_Africa_Point.cdb, point_cdb/parks/Africa/parks_Africa_Point.cdb",
+      "case_id": "overlay_lkaf_pkaf",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/Africa/lakes_Africa_Point.cdb"
+      },
+      "pair_id": "lkaf_pkaf",
+      "paper_label": "LKAF x PKAF",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/Africa/parks_Africa_Point.cdb"
+      },
+      "rtdl_status": "missing_full_overlay"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Asia/lakes_Asia_Point.cdb, point_cdb/parks/Asia/parks_Asia_Point.cdb",
+      "case_id": "lsi_lkas_pkas",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/Asia/lakes_Asia_Point.cdb"
+      },
+      "pair_id": "lkas_pkas",
+      "paper_label": "LKAS x PKAS",
+      "program": "lsi",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/Asia/parks_Asia_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Asia/lakes_Asia_Point.cdb, point_cdb/parks/Asia/parks_Asia_Point.cdb",
+      "case_id": "pip_lkas_pkas",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/Asia/lakes_Asia_Point.cdb"
+      },
+      "pair_id": "lkas_pkas",
+      "paper_label": "LKAS x PKAS",
+      "program": "pip",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/Asia/parks_Asia_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Asia/lakes_Asia_Point.cdb, point_cdb/parks/Asia/parks_Asia_Point.cdb",
+      "case_id": "overlay_lkas_pkas",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/Asia/lakes_Asia_Point.cdb"
+      },
+      "pair_id": "lkas_pkas",
+      "paper_label": "LKAS x PKAS",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/Asia/parks_Asia_Point.cdb"
+      },
+      "rtdl_status": "missing_full_overlay"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Australia/lakes_Australia_Point.cdb, point_cdb/parks/Australia/parks_Australia_Point.cdb",
+      "case_id": "lsi_lkau_pkau",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/Australia/lakes_Australia_Point.cdb"
+      },
+      "pair_id": "lkau_pkau",
+      "paper_label": "LKAU x PKAU",
+      "program": "lsi",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/Australia/parks_Australia_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Australia/lakes_Australia_Point.cdb, point_cdb/parks/Australia/parks_Australia_Point.cdb",
+      "case_id": "pip_lkau_pkau",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/Australia/lakes_Australia_Point.cdb"
+      },
+      "pair_id": "lkau_pkau",
+      "paper_label": "LKAU x PKAU",
+      "program": "pip",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/Australia/parks_Australia_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Australia/lakes_Australia_Point.cdb, point_cdb/parks/Australia/parks_Australia_Point.cdb",
+      "case_id": "overlay_lkau_pkau",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/Australia/lakes_Australia_Point.cdb"
+      },
+      "pair_id": "lkau_pkau",
+      "paper_label": "LKAU x PKAU",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/Australia/parks_Australia_Point.cdb"
+      },
+      "rtdl_status": "missing_full_overlay"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Europe/lakes_Europe_Point.cdb, point_cdb/parks/Europe/parks_Europe_Point.cdb",
+      "case_id": "lsi_lkeu_pkeu",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/Europe/lakes_Europe_Point.cdb"
+      },
+      "pair_id": "lkeu_pkeu",
+      "paper_label": "LKEU x PKEU",
+      "program": "lsi",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/Europe/parks_Europe_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Europe/lakes_Europe_Point.cdb, point_cdb/parks/Europe/parks_Europe_Point.cdb",
+      "case_id": "pip_lkeu_pkeu",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/Europe/lakes_Europe_Point.cdb"
+      },
+      "pair_id": "lkeu_pkeu",
+      "paper_label": "LKEU x PKEU",
+      "program": "pip",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/Europe/parks_Europe_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Europe/lakes_Europe_Point.cdb, point_cdb/parks/Europe/parks_Europe_Point.cdb",
+      "case_id": "overlay_lkeu_pkeu",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/Europe/lakes_Europe_Point.cdb"
+      },
+      "pair_id": "lkeu_pkeu",
+      "paper_label": "LKEU x PKEU",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/Europe/parks_Europe_Point.cdb"
+      },
+      "rtdl_status": "missing_full_overlay"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/North_America/lakes_North_America_Point.cdb, point_cdb/parks/North_America/parks_North_America_Point.cdb",
+      "case_id": "lsi_lkna_pkna",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/North_America/lakes_North_America_Point.cdb"
+      },
+      "pair_id": "lkna_pkna",
+      "paper_label": "LKNA x PKNA",
+      "program": "lsi",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/North_America/parks_North_America_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/North_America/lakes_North_America_Point.cdb, point_cdb/parks/North_America/parks_North_America_Point.cdb",
+      "case_id": "pip_lkna_pkna",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/North_America/lakes_North_America_Point.cdb"
+      },
+      "pair_id": "lkna_pkna",
+      "paper_label": "LKNA x PKNA",
+      "program": "pip",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/North_America/parks_North_America_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/North_America/lakes_North_America_Point.cdb, point_cdb/parks/North_America/parks_North_America_Point.cdb",
+      "case_id": "overlay_lkna_pkna",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/North_America/lakes_North_America_Point.cdb"
+      },
+      "pair_id": "lkna_pkna",
+      "paper_label": "LKNA x PKNA",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/North_America/parks_North_America_Point.cdb"
+      },
+      "rtdl_status": "missing_full_overlay"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/South_America/lakes_South_America_Point.cdb, point_cdb/parks/South_America/parks_South_America_Point.cdb",
+      "case_id": "lsi_lksa_pksa",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/South_America/lakes_South_America_Point.cdb"
+      },
+      "pair_id": "lksa_pksa",
+      "paper_label": "LKSA x PKSA",
+      "program": "lsi",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/South_America/parks_South_America_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/South_America/lakes_South_America_Point.cdb, point_cdb/parks/South_America/parks_South_America_Point.cdb",
+      "case_id": "pip_lksa_pksa",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/South_America/lakes_South_America_Point.cdb"
+      },
+      "pair_id": "lksa_pksa",
+      "paper_label": "LKSA x PKSA",
+      "program": "pip",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/South_America/parks_South_America_Point.cdb"
+      },
+      "rtdl_status": "implemented"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/South_America/lakes_South_America_Point.cdb, point_cdb/parks/South_America/parks_South_America_Point.cdb",
+      "case_id": "overlay_lksa_pksa",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/lakes/South_America/lakes_South_America_Point.cdb"
+      },
+      "pair_id": "lksa_pksa",
+      "paper_label": "LKSA x PKSA",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "/workspace/rayjoin_datasets/point_cdb/parks/South_America/parks_South_America_Point.cdb"
+      },
+      "rtdl_status": "missing_full_overlay"
+    }
+  ],
+  "dataset_root": "/workspace/rayjoin_datasets",
+  "definition": {
+    "analogue_inputs_count_as_exact": false,
+    "default_enlarge": "3.5",
+    "default_grid_size": 15000,
+    "default_repeat": 5,
+    "default_serialize_prefix": "/dev/shm",
+    "default_warmup": 5,
+    "default_xsect_factor": "0.1",
+    "overlay_seed_counts_as_overlay": false,
+    "preprocessed_share_url": "https://datadryad.org/stash/share/aIs0nLs2TsLE_dcWO2qPHiohRKoOI3kx0WGT5BnATtA",
+    "scope": "exact RayJoin ICS'24 paper reproduction for LSI, PIP, and polygon overlay"
+  },
+  "pairs": [
+    {
+      "left_dataset": "County",
+      "left_relative_path": "point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+      "left_stats": {
+        "description": "Boundaries of the U.S. Counties",
+        "line_segments_label": "1.0M",
+        "polygons_label": "3.1K"
+      },
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "right_dataset": "Zipcode",
+      "right_relative_path": "point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "right_stats": {
+        "description": "ZIP Code areas for the USPS",
+        "line_segments_label": "23.9M",
+        "polygons_label": "32.2K"
+      }
+    },
+    {
+      "left_dataset": "Block",
+      "left_relative_path": "point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+      "left_stats": {
+        "description": "Census block groups in the U.S.",
+        "line_segments_label": "29.3M",
+        "polygons_label": "239.2K"
+      },
+      "pair_id": "block_water",
+      "paper_label": "Block x Water",
+      "right_dataset": "Water",
+      "right_relative_path": "point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+      "right_stats": {
+        "description": "Major water features in the U.S.",
+        "line_segments_label": "25.6M",
+        "polygons_label": "463.6K"
+      }
+    },
+    {
+      "left_dataset": "LKAF",
+      "left_relative_path": "point_cdb/lakes/Africa/lakes_Africa_Point.cdb",
+      "left_stats": {
+        "description": "Water areas in Africa",
+        "line_segments_label": "1.8M",
+        "polygons_label": "18.2K"
+      },
+      "pair_id": "lkaf_pkaf",
+      "paper_label": "LKAF x PKAF",
+      "right_dataset": "PKAF",
+      "right_relative_path": "point_cdb/parks/Africa/parks_Africa_Point.cdb",
+      "right_stats": {
+        "description": "Parks or green areas in Africa",
+        "line_segments_label": "1.3M",
+        "polygons_label": "25.7K"
+      }
+    },
+    {
+      "left_dataset": "LKAS",
+      "left_relative_path": "point_cdb/lakes/Asia/lakes_Asia_Point.cdb",
+      "left_stats": {
+        "description": "Water areas in Asia",
+        "line_segments_label": "10.3M",
+        "polygons_label": "151.6K"
+      },
+      "pair_id": "lkas_pkas",
+      "paper_label": "LKAS x PKAS",
+      "right_dataset": "PKAS",
+      "right_relative_path": "point_cdb/parks/Asia/parks_Asia_Point.cdb",
+      "right_stats": {
+        "description": "Parks or green areas in Asia",
+        "line_segments_label": "11.9M",
+        "polygons_label": "172.6K"
+      }
+    },
+    {
+      "left_dataset": "LKAU",
+      "left_relative_path": "point_cdb/lakes/Australia/lakes_Australia_Point.cdb",
+      "left_stats": {
+        "description": "Water areas in Australia",
+        "line_segments_label": "1.2M",
+        "polygons_label": "14.5K"
+      },
+      "pair_id": "lkau_pkau",
+      "paper_label": "LKAU x PKAU",
+      "right_dataset": "PKAU",
+      "right_relative_path": "point_cdb/parks/Australia/parks_Australia_Point.cdb",
+      "right_stats": {
+        "description": "Parks or green areas in Australia",
+        "line_segments_label": "567.1K",
+        "polygons_label": "12.8K"
+      }
+    },
+    {
+      "left_dataset": "LKEU",
+      "left_relative_path": "point_cdb/lakes/Europe/lakes_Europe_Point.cdb",
+      "left_stats": {
+        "description": "Water areas in Europe",
+        "line_segments_label": "27.9M",
+        "polygons_label": "654.8K"
+      },
+      "pair_id": "lkeu_pkeu",
+      "paper_label": "LKEU x PKEU",
+      "right_dataset": "PKEU",
+      "right_relative_path": "point_cdb/parks/Europe/parks_Europe_Point.cdb",
+      "right_stats": {
+        "description": "Parks or green areas in Europe",
+        "line_segments_label": "65.9M",
+        "polygons_label": "1.9M"
+      }
+    },
+    {
+      "left_dataset": "LKNA",
+      "left_relative_path": "point_cdb/lakes/North_America/lakes_North_America_Point.cdb",
+      "left_stats": {
+        "description": "Water areas in North America",
+        "line_segments_label": "69.3M",
+        "polygons_label": "1.6M"
+      },
+      "pair_id": "lkna_pkna",
+      "paper_label": "LKNA x PKNA",
+      "right_dataset": "PKNA",
+      "right_relative_path": "point_cdb/parks/North_America/parks_North_America_Point.cdb",
+      "right_stats": {
+        "description": "Parks or green areas in North America",
+        "line_segments_label": "26.9M",
+        "polygons_label": "303.0K"
+      }
+    },
+    {
+      "left_dataset": "LKSA",
+      "left_relative_path": "point_cdb/lakes/South_America/lakes_South_America_Point.cdb",
+      "left_stats": {
+        "description": "Water areas in South America",
+        "line_segments_label": "2.4M",
+        "polygons_label": "32.6K"
+      },
+      "pair_id": "lksa_pksa",
+      "paper_label": "LKSA x PKSA",
+      "right_dataset": "PKSA",
+      "right_relative_path": "point_cdb/parks/South_America/parks_South_America_Point.cdb",
+      "right_stats": {
+        "description": "Parks or green areas in South America",
+        "line_segments_label": "3.2M",
+        "polygons_label": "49.5K"
+      }
+    }
+  ],
+  "programs": [
+    {
+      "gap_note": "Need exact paper input CDBs before full matrix timing.",
+      "output_contract": "segment-segment intersection count/rows",
+      "paper_executable": "query_exec",
+      "paper_query": "lsi",
+      "paper_table": "Table 3 top",
+      "program_id": "lsi",
+      "rtdl_embree_route": "prepared segment-pair intersection count",
+      "rtdl_optix_route": "prepared segment-pair intersection count",
+      "rtdl_status": "implemented"
+    },
+    {
+      "gap_note": "Need exact paper input CDBs before full matrix timing.",
+      "output_contract": "point id, face id, segment id, hit t; scalar positive-face count in hot path",
+      "paper_executable": "query_exec",
+      "paper_query": "pip",
+      "paper_table": "Table 3 bottom",
+      "program_id": "pip",
+      "rtdl_embree_route": "RayJoin CDB closest-hit face-id point-location",
+      "rtdl_optix_route": "RayJoin CDB closest-hit face-id point-location",
+      "rtdl_status": "implemented"
+    },
+    {
+      "gap_note": "Current RTDL overlay_seed rows are not enough; exact reproduction requires full polygon materialization.",
+      "output_contract": "materialized polygon overlay result equivalent to polyover_exec output",
+      "paper_executable": "polyover_exec",
+      "paper_query": null,
+      "paper_table": "Section 5.7 / Table 4",
+      "program_id": "overlay",
+      "rtdl_embree_route": "LSI + PIP + full overlay polygon assembly",
+      "rtdl_optix_route": "LSI + PIP + full overlay polygon assembly",
+      "rtdl_status": "missing_full_overlay"
+    }
+  ],
+  "schema": "rtdl.rayjoin_paper_suite.exact_reproduction.v1"
+}

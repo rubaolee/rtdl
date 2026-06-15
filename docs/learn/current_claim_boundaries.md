@@ -7,10 +7,12 @@ performance claims in the current public docs.
 
 ## Product Surface
 
-The current learner-facing milestone is the v2.13 source-tree
+The current learner-facing milestone is the v2.14 source-tree
 Python+partner+RTDL surface. It keeps the v2.11/v2.12 Python+partner+RTDL
 programming model, preserves the Embree CPU plus partner reference lane, and
-publishes the refreshed row-scoped RT-core versus Embree CPU comparison evidence.
+publishes the refreshed row-scoped RT-core versus Embree CPU comparison
+evidence plus the app-author strategy for primitive-first, explicit-partner
+implementation.
 
 Use RTDL from the repository source tree:
 
@@ -56,12 +58,13 @@ The current public docs do not authorize these claims; in short, RTDL does not a
 Selecting `--backend optix` means the OptiX backend was selected. It is not by
 itself a public RT-core speedup claim.
 
-The v2.13 evidence supports path-specific wording only. In particular, the
+The v2.14 evidence supports path-specific wording only. In particular, the
 refreshed packet keeps every speedup tied to a row, contract, direction, and
 caveat. Mixed rows remain explicit: Spatial RayJoin PIP is near parity and
 slightly Embree-faster in the refreshed human-scale public CDB slice, Goal4368
 separately records an OptiX-over-Embree exact PIP engineering win that still does
-not beat RayJoin RT, and RTNN remains blocked as an RT-core neighbor-search claim.
+not beat RayJoin RT, RayJoin overlay reports the available 2/8 exact CDB subset,
+and RTNN remains blocked as an RT-core neighbor-search claim.
 
 ## Partner Rule
 

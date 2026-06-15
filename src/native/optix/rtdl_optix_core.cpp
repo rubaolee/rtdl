@@ -621,8 +621,10 @@ struct AccelHolder {
     }
 };
 
-static AccelHolder build_custom_accel(OptixDeviceContext ctx,
-                                      const std::vector<OptixAabb>& aabbs) {
+static AccelHolder build_custom_accel_with_flags(
+        OptixDeviceContext ctx,
+        const std::vector<OptixAabb>& aabbs,
+        unsigned int build_flags) {
     AccelHolder result;
     size_t aabb_bytes = sizeof(OptixAabb) * aabbs.size();
     CU_CHECK(cuMemAlloc(&result.aabb_buf, aabb_bytes));
@@ -639,7 +641,7 @@ static AccelHolder build_custom_accel(OptixDeviceContext ctx,
     cpp.numSbtRecords  = 1;
 
     OptixAccelBuildOptions accel_opts = {};
-    accel_opts.buildFlags = OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS;
+    accel_opts.buildFlags = build_flags;
     accel_opts.operation  = OPTIX_BUILD_OPERATION_BUILD;
 
     OptixAccelBufferSizes sizes = {};
@@ -655,6 +657,14 @@ static AccelHolder build_custom_accel(OptixDeviceContext ctx,
                                  &result.handle, nullptr, 0));
     CU_CHECK(cuStreamSynchronize(stream));
     return result;
+}
+
+static AccelHolder build_custom_accel(OptixDeviceContext ctx,
+                                      const std::vector<OptixAabb>& aabbs) {
+    return build_custom_accel_with_flags(
+        ctx,
+        aabbs,
+        OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS);
 }
 
 static AccelHolder build_custom_accel_from_device_aabbs(
@@ -1144,6 +1154,414 @@ extern "C" __global__ void __anyhit__segment_first_hit_anyhit() {
         old = observed;
     }
     optixIgnoreIntersection();
+}
+)CUDA";
+
+// ---------- RayJoin CDB point-location PIP kernel -----------------------------------------------
+
+static const char* kRayjoinCdbPointLocationKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+struct GpuRayjoinCdbPoint {
+    float x;
+    float y;
+    unsigned int id;
+    unsigned int has_scaled;
+    long long sx;
+    long long sy;
+};
+
+struct GpuRayjoinCdbSegment {
+    float x0, y0, x1, y1;
+    unsigned int id;
+    unsigned int left_face_id;
+    unsigned int right_face_id;
+    unsigned int has_scaled;
+    long long sx0, sy0, sx1, sy1;
+};
+
+struct GpuRayjoinCdbSegmentRange {
+    unsigned int begin;
+    unsigned int end;
+};
+
+struct GpuRayjoinCdbPointLocationRecord {
+    unsigned int point_id;
+    unsigned int face_id;
+    unsigned int segment_id;
+    float hit_t;
+};
+
+struct RayjoinCdbPointLocationParams {
+    OptixTraversableHandle traversable;
+    const GpuRayjoinCdbPoint* points;
+    const GpuRayjoinCdbSegment* segments;
+    const GpuRayjoinCdbSegmentRange* ranges;
+    GpuRayjoinCdbPointLocationRecord* output;
+    unsigned int* segment_id_output;
+    unsigned int* face_id_output;
+    unsigned long long* positive_face_count;
+    unsigned int point_count;
+    unsigned int query_map_id;
+    unsigned int allow_equal_ties;
+};
+
+extern "C" {
+__constant__ RayjoinCdbPointLocationParams params;
+}
+
+static __forceinline__ __device__ float cdb_absf(float x) {
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ double cdb_absd(double x) {
+    return x < 0.0 ? -x : x;
+}
+
+static __forceinline__ __device__ double unpack_double_payload(unsigned int lo, unsigned int hi) {
+    const unsigned long long bits =
+        (static_cast<unsigned long long>(hi) << 32) | static_cast<unsigned long long>(lo);
+    return __longlong_as_double(static_cast<long long>(bits));
+}
+
+static __forceinline__ __device__ void pack_double_payload(
+        double value,
+        unsigned int* lo,
+        unsigned int* hi) {
+    const unsigned long long bits = static_cast<unsigned long long>(__double_as_longlong(value));
+    *lo = static_cast<unsigned int>(bits & 0xffffffffull);
+    *hi = static_cast<unsigned int>(bits >> 32);
+}
+
+struct RayjoinCdbLine {
+    __int128 a;
+    __int128 b;
+    __int128 c;
+};
+
+static __forceinline__ __device__ RayjoinCdbLine rayjoin_cdb_line_for_segment(
+        const GpuRayjoinCdbSegment segment)
+{
+    RayjoinCdbLine line;
+    line.a = static_cast<__int128>(segment.sy0) - static_cast<__int128>(segment.sy1);
+    line.b = static_cast<__int128>(segment.sx1) - static_cast<__int128>(segment.sx0);
+    line.c = -(static_cast<__int128>(segment.sx0) * line.a) -
+             (static_cast<__int128>(segment.sy0) * line.b);
+    if (line.b < 0) {
+        line.a = -line.a;
+        line.b = -line.b;
+        line.c = -line.c;
+    }
+    return line;
+}
+
+static __forceinline__ __device__ double rayjoin_cdb_segment_slope_scaled(
+        const GpuRayjoinCdbSegment segment)
+{
+    const RayjoinCdbLine line = rayjoin_cdb_line_for_segment(segment);
+    if (line.b == 0) {
+        return 0.0;
+    }
+    return static_cast<double>(line.a) / static_cast<double>(line.b);
+}
+
+static __forceinline__ __device__ float rayjoin_cdb_segment_slope_world(
+        const GpuRayjoinCdbSegment segment)
+{
+    float a = segment.y0 - segment.y1;
+    float b = segment.x1 - segment.x0;
+    if (b < 0.0f) {
+        a = -a;
+        b = -b;
+    }
+    if (b == 0.0f) {
+        return 0.0f;
+    }
+    return a / b;
+}
+
+static __forceinline__ __device__ bool vertical_ray_segment_scaled(
+        const GpuRayjoinCdbPoint point,
+        const GpuRayjoinCdbSegment segment,
+        unsigned int query_map_id,
+        double* hit_y_out,
+        float* report_t_out,
+        double* slope_out)
+{
+    if (point.has_scaled == 0u || segment.has_scaled == 0u) {
+        return false;
+    }
+    const long long x_min = segment.sx0 < segment.sx1 ? segment.sx0 : segment.sx1;
+    const long long x_max = segment.sx0 > segment.sx1 ? segment.sx0 : segment.sx1;
+    const long long excluded_x = query_map_id == 0u ? x_min : x_max;
+    if (point.sx < x_min || point.sx > x_max || point.sx == excluded_x) {
+        return false;
+    }
+
+    const RayjoinCdbLine line = rayjoin_cdb_line_for_segment(segment);
+    if (line.b == 0) {
+        return false;
+    }
+    const __int128 numerator =
+        -(line.a * static_cast<__int128>(point.sx)) - line.c;
+    const double xsect_y = static_cast<double>(numerator) / static_cast<double>(line.b);
+    double diff_y = static_cast<double>(point.sy) - xsect_y;
+    if (diff_y == 0.0) {
+        diff_y = query_map_id == 0u ? -static_cast<double>(line.a) : static_cast<double>(line.a);
+    }
+    if (diff_y == 0.0) {
+        diff_y = query_map_id == 0u ? -static_cast<double>(line.b) : static_cast<double>(line.b);
+    }
+    if (diff_y > 0.0) {
+        return false;
+    }
+    *hit_y_out = xsect_y;
+    *report_t_out = fmaxf(0.0f, static_cast<float>(xsect_y - static_cast<double>(point.sy)));
+    *slope_out = static_cast<double>(line.a) / static_cast<double>(line.b);
+    return true;
+}
+
+static __forceinline__ __device__ bool vertical_ray_segment_t_precise(
+        const GpuRayjoinCdbPoint point,
+        const GpuRayjoinCdbSegment segment,
+        unsigned int query_map_id,
+        float* t_out,
+        float* slope_out)
+{
+    const double eps = 1.0e-7;
+    const double point_x = static_cast<double>(point.x);
+    const double point_y = static_cast<double>(point.y);
+    const double x0 = static_cast<double>(segment.x0);
+    const double y0 = static_cast<double>(segment.y0);
+    const double x1 = static_cast<double>(segment.x1);
+    const double y1 = static_cast<double>(segment.y1);
+    const double sx = x1 - x0;
+    if (cdb_absd(sx) <= eps) {
+        return false;
+    }
+    const double lo_x = fmin(x0, x1);
+    const double hi_x = fmax(x0, x1);
+    const double excluded_x = query_map_id == 0u ? lo_x : hi_x;
+    if (point_x < lo_x - eps || point_x > hi_x + eps || cdb_absd(point_x - excluded_x) <= eps) {
+        return false;
+    }
+    const double u = (point_x - x0) / sx;
+    if (u < -eps || u > 1.0 + eps) {
+        return false;
+    }
+    const double hit_y = y0 + u * (y1 - y0);
+    double diff_y = point_y - hit_y;
+    double a = y0 - y1;
+    double b = x1 - x0;
+    if (b < 0.0) {
+        a = -a;
+        b = -b;
+    }
+    if (cdb_absd(diff_y) <= eps) {
+        diff_y = query_map_id == 0u ? -a : a;
+    }
+    if (cdb_absd(diff_y) <= eps) {
+        diff_y = query_map_id == 0u ? -b : b;
+    }
+    if (diff_y > eps) {
+        return false;
+    }
+    const double t = hit_y - point_y;
+    *t_out = static_cast<float>(fmax(t, 0.0));
+    *slope_out = static_cast<float>(a / b);
+    return true;
+}
+
+static __forceinline__ __device__ bool vertical_ray_segment_t(
+        const GpuRayjoinCdbPoint point,
+        const GpuRayjoinCdbSegment segment,
+        unsigned int query_map_id,
+        float* t_out,
+        float* slope_out)
+{
+    const float eps = 1.0e-7f;
+    const float refine_eps = 1.0e-5f;
+    const float sx = segment.x1 - segment.x0;
+    if (cdb_absf(sx) <= eps) {
+        return false;
+    }
+    const float lo_x = fminf(segment.x0, segment.x1);
+    const float hi_x = fmaxf(segment.x0, segment.x1);
+    const float excluded_x = query_map_id == 0u ? lo_x : hi_x;
+    if (point.x < lo_x - eps || point.x > hi_x + eps || cdb_absf(point.x - excluded_x) <= eps) {
+        return false;
+    }
+    const float u = (point.x - segment.x0) / sx;
+    if (u < -eps || u > 1.0f + eps) {
+        return false;
+    }
+    const float hit_y = segment.y0 + u * (segment.y1 - segment.y0);
+    float diff_y = point.y - hit_y;
+    if (cdb_absf(diff_y) <= refine_eps) {
+        return vertical_ray_segment_t_precise(point, segment, query_map_id, t_out, slope_out);
+    }
+    float a = segment.y0 - segment.y1;
+    float b = segment.x1 - segment.x0;
+    if (b < 0.0f) {
+        a = -a;
+        b = -b;
+    }
+    if (diff_y > eps) {
+        return false;
+    }
+    const float t = hit_y - point.y;
+    *t_out = fmaxf(t, 0.0f);
+    *slope_out = a / b;
+    return true;
+}
+
+static __forceinline__ __device__ unsigned int face_for_segment_direction(
+        const GpuRayjoinCdbSegment segment)
+{
+    if (segment.has_scaled != 0u) {
+        return segment.sx0 < segment.sx1 ? segment.right_face_id : segment.left_face_id;
+    }
+    return segment.x0 < segment.x1 ? segment.right_face_id : segment.left_face_id;
+}
+
+extern "C" __global__ void __raygen__rayjoin_cdb_point_location() {
+    const unsigned int idx = optixGetLaunchIndex().x;
+    if (idx >= params.point_count) return;
+    const GpuRayjoinCdbPoint point = params.points[idx];
+    if (params.output != nullptr) {
+        params.output[idx].point_id = point.id;
+        params.output[idx].face_id = 0u;
+        params.output[idx].segment_id = 0xffffffffu;
+        params.output[idx].hit_t = 3.402823466e38F;
+    }
+    if (params.segment_id_output != nullptr) {
+        params.segment_id_output[idx] = 0xffffffffu;
+    }
+    if (params.face_id_output != nullptr) {
+        params.face_id_output[idx] = 0u;
+    }
+
+    unsigned int p0 = idx;
+    double best_y = 1.7976931348623157e308;
+    unsigned int p1 = 0u;
+    unsigned int p2 = 0u;
+    pack_double_payload(best_y, &p1, &p2);
+    unsigned int p3 = 0xffffffffu;
+    optixTrace(params.traversable,
+               make_float3(point.x, point.y, 0.0f),
+               make_float3(0.0f, 1.0f, 0.0f),
+               0.0f, 1.0e30f, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+    if (p3 != 0xffffffffu) {
+        const GpuRayjoinCdbSegment segment = params.segments[p3];
+        const unsigned int face_id = face_for_segment_direction(segment);
+        best_y = unpack_double_payload(p1, p2);
+        if (params.output != nullptr) {
+            params.output[idx].face_id = face_id;
+            params.output[idx].segment_id = segment.id;
+            params.output[idx].hit_t = point.has_scaled
+                ? fmaxf(0.0f, static_cast<float>(best_y - static_cast<double>(point.sy)))
+                : static_cast<float>(best_y);
+        }
+        if (params.segment_id_output != nullptr) {
+            params.segment_id_output[idx] = segment.id;
+        }
+        if (params.face_id_output != nullptr) {
+            params.face_id_output[idx] = face_id;
+        }
+        if (params.positive_face_count != nullptr && face_id != 0u) {
+            atomicAdd(params.positive_face_count, 1ull);
+        }
+    }
+}
+
+extern "C" __global__ void __miss__rayjoin_cdb_point_location() {}
+
+extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
+    const unsigned int point_index = optixGetPayload_0();
+    const GpuRayjoinCdbPoint point = params.points[point_index];
+    const GpuRayjoinCdbSegmentRange range = params.ranges[optixGetPrimitiveIndex()];
+    const float eps = 1.0e-7f;
+    const unsigned int query_map_id = params.query_map_id;
+    unsigned int best_y_lo = optixGetPayload_1();
+    unsigned int best_y_hi = optixGetPayload_2();
+    double best_y = unpack_double_payload(best_y_lo, best_y_hi);
+    unsigned int best_segment_index = optixGetPayload_3();
+    bool report = false;
+    float report_t = 0.0f;
+    for (unsigned int segment_index = range.begin; segment_index < range.end; ++segment_index) {
+        const GpuRayjoinCdbSegment segment = params.segments[segment_index];
+        float t = 0.0f;
+        float slope = 0.0f;
+        bool better = false;
+        if (point.has_scaled != 0u && segment.has_scaled != 0u) {
+            double hit_y = 0.0;
+            double exact_slope = 0.0;
+            if (!vertical_ray_segment_scaled(point, segment, query_map_id, &hit_y, &t, &exact_slope)) {
+                continue;
+            }
+            if (hit_y < best_y) {
+                better = true;
+            } else if (hit_y == best_y) {
+                if (best_segment_index == 0xffffffffu) {
+                    better = true;
+                } else {
+                    const double best_slope =
+                        rayjoin_cdb_segment_slope_scaled(params.segments[best_segment_index]);
+                    const bool current_slope_gt = exact_slope > best_slope;
+                    better = query_map_id == 0u ? !current_slope_gt : current_slope_gt;
+                }
+            }
+            if (better) {
+                best_y = hit_y;
+                report_t = t;
+            }
+        } else {
+            if (!vertical_ray_segment_t(point, segment, query_map_id, &t, &slope)) {
+                continue;
+            }
+            if (t < static_cast<float>(best_y) - eps) {
+                better = true;
+            } else if (cdb_absf(t - static_cast<float>(best_y)) <= eps) {
+                if (best_segment_index == 0xffffffffu) {
+                    better = true;
+                } else if (query_map_id == 0u &&
+                           slope < rayjoin_cdb_segment_slope_world(params.segments[best_segment_index]) - eps) {
+                    better = true;
+                } else if (query_map_id != 0u &&
+                           slope > rayjoin_cdb_segment_slope_world(params.segments[best_segment_index]) + eps) {
+                    better = true;
+                } else if (best_segment_index != 0xffffffffu) {
+                    better = segment.id < params.segments[best_segment_index].id;
+                }
+            }
+            if (better) {
+                best_y = static_cast<double>(t);
+                report_t = t;
+            }
+        }
+        if (better) {
+            best_segment_index = segment_index;
+            report = true;
+        }
+    }
+    if (report) {
+        pack_double_payload(best_y, &best_y_lo, &best_y_hi);
+        optixSetPayload_1(best_y_lo);
+        optixSetPayload_2(best_y_hi);
+        optixSetPayload_3(best_segment_index);
+        const float accepted_t = params.allow_equal_ties != 0u
+            ? nextafterf(report_t, 3.402823466e38F)
+            : report_t;
+        optixReportIntersection(accepted_t, 0u);
+    }
+}
+
+extern "C" __global__ void __closesthit__rayjoin_cdb_point_location() {
 }
 )CUDA";
 
@@ -7491,6 +7909,11 @@ struct SegmentFirstHitPipeline {
     std::once_flag   init;
 };
 
+struct RayjoinCdbPointLocationPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
 struct PipPipeline {
     PipelineHolder* pipe = nullptr;
     std::once_flag   init;
@@ -7571,6 +7994,7 @@ static SegmentPairIntersectionPipeline         g_segment_pair_intersection;
 static SegmentPairIntersectionPipeline         g_segment_pair_candidate_device_columns;
 static SegmentPairIntersectionPipeline         g_segment_pair_left_id_count_device_columns;
 static SegmentFirstHitPipeline                 g_segment_first_hit;
+static RayjoinCdbPointLocationPipeline         g_rayjoin_cdb_point_location;
 static PipPipeline         g_pip;
 static PipPipeline         g_pip_scalar_count;
 static PipPipeline         g_pip_candidate_device_columns;
@@ -7670,6 +8094,32 @@ static KnnCuFunction      g_collect_k_i64_row_width2_final_prefix_offsets_level;
 
 #pragma pack(push, 1)
 struct GpuSegment   { float x0, y0, x1, y1; uint32_t id; };
+struct GpuRayjoinCdbSegment {
+    float x0, y0, x1, y1;
+    uint32_t id;
+    uint32_t left_face_id;
+    uint32_t right_face_id;
+    uint32_t has_scaled;
+    int64_t sx0, sy0, sx1, sy1;
+};
+struct GpuRayjoinCdbSegmentRange {
+    uint32_t begin;
+    uint32_t end;
+};
+struct GpuRayjoinCdbPointLocationRecord {
+    uint32_t point_id;
+    uint32_t face_id;
+    uint32_t segment_id;
+    float hit_t;
+};
+struct GpuRayjoinCdbPoint {
+    float x;
+    float y;
+    uint32_t id;
+    uint32_t has_scaled;
+    int64_t sx;
+    int64_t sy;
+};
 struct GpuPoint     { float x, y;           uint32_t id; uint32_t pad; };
 struct GpuPoint3DHost { float x, y, z;      uint32_t id; };
 struct GpuPolygonRef { uint32_t id, vertex_offset, vertex_count; };

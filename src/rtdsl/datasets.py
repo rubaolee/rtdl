@@ -623,10 +623,21 @@ def arcgis_pages_to_cdb(
     max_pages: int | None = None,
     max_features: int | None = None,
     ignore_invalid_tail: bool = False,
+    topology_mode: str = "rings",
+    topology_precision: int = 10,
 ) -> CdbDataset:
     features = list(load_arcgis_feature_pages(root, max_pages=max_pages, ignore_invalid_tail=ignore_invalid_tail))
     if max_features is not None:
         features = features[:max_features]
+    if topology_mode == "polygon_to_line":
+        return _arcgis_features_to_polygon_to_line_cdb(
+            features,
+            name=name,
+            feature_id_field=feature_id_field,
+            coordinate_precision=topology_precision,
+        )
+    if topology_mode != "rings":
+        raise ValueError("topology_mode must be 'rings' or 'polygon_to_line'")
 
     chains: list[CdbChain] = []
     next_chain_id = 1
@@ -658,6 +669,97 @@ def arcgis_pages_to_cdb(
     return CdbDataset(name=name, chains=tuple(chains))
 
 
+def _quantized_arcgis_vertex(vertex: object, *, coordinate_precision: int) -> tuple[float, float]:
+    values = list(vertex)  # type: ignore[arg-type]
+    return (round(float(values[0]), coordinate_precision), round(float(values[1]), coordinate_precision))
+
+
+def _arcgis_features_to_polygon_to_line_cdb(
+    features: list[dict[str, object]],
+    *,
+    name: str,
+    feature_id_field: str,
+    coordinate_precision: int,
+) -> CdbDataset:
+    edge_records: dict[tuple[tuple[float, float], tuple[float, float]], dict[str, object]] = {}
+    edge_order: list[tuple[tuple[float, float], tuple[float, float]]] = []
+
+    for feature in features:
+        attributes = feature.get("attributes", {})
+        geometry = feature.get("geometry", {})
+        face_id = int(attributes[feature_id_field])  # type: ignore[index]
+        rings = geometry.get("rings", ())  # type: ignore[union-attr]
+        for ring in rings:
+            if len(ring) < 4:
+                continue
+            quantized_ring = [
+                _quantized_arcgis_vertex(vertex, coordinate_precision=coordinate_precision)
+                for vertex in ring
+            ]
+            if len(set(quantized_ring)) < 3:
+                continue
+            vertices = [(float(vertex[0]), float(vertex[1])) for vertex in ring]
+            for start, end, q_start, q_end in zip(
+                vertices,
+                vertices[1:],
+                quantized_ring,
+                quantized_ring[1:],
+            ):
+                if q_start == q_end:
+                    continue
+                edge_key = (q_start, q_end) if q_start <= q_end else (q_end, q_start)
+                record = edge_records.get(edge_key)
+                if record is None:
+                    record = {
+                        "q_start": q_start,
+                        "q_end": q_end,
+                        "x0": start[0],
+                        "y0": start[1],
+                        "x1": end[0],
+                        "y1": end[1],
+                        "left_face_id": face_id,
+                        "right_face_id": 0,
+                    }
+                    edge_records[edge_key] = record
+                    edge_order.append(edge_key)
+                    continue
+
+                same_orientation = q_start == record["q_start"] and q_end == record["q_end"]
+                if same_orientation:
+                    if record["left_face_id"] in (0, face_id):
+                        record["left_face_id"] = face_id
+                    elif record["right_face_id"] in (0, face_id):
+                        record["right_face_id"] = face_id
+                else:
+                    if record["right_face_id"] in (0, face_id):
+                        record["right_face_id"] = face_id
+                    elif record["left_face_id"] in (0, face_id):
+                        record["left_face_id"] = face_id
+
+    chains: list[CdbChain] = []
+    next_point_id = 1
+    for chain_id, edge_key in enumerate(edge_order, start=1):
+        record = edge_records[edge_key]
+        points = (
+            CdbPoint(float(record["x0"]), float(record["y0"])),
+            CdbPoint(float(record["x1"]), float(record["y1"])),
+        )
+        chains.append(
+            CdbChain(
+                chain_id=chain_id,
+                point_count=2,
+                first_point_id=next_point_id,
+                last_point_id=next_point_id + 1,
+                left_face_id=int(record["left_face_id"]),
+                right_face_id=int(record["right_face_id"]),
+                points=points,
+            )
+        )
+        next_point_id += 2
+
+    return CdbDataset(name=name, chains=tuple(chains))
+
+
 def chains_to_segments(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[dict[str, float | int], ...]:
     chains = dataset.chains if limit_chains is None else dataset.chains[:limit_chains]
     records = []
@@ -671,6 +773,40 @@ def chains_to_segments(dataset: CdbDataset, *, limit_chains: int | None = None) 
                     "y0": start.y,
                     "x1": end.x,
                     "y1": end.y,
+                    "chain_id": chain.chain_id,
+                }
+            )
+            next_id += 1
+    return tuple(records)
+
+
+def chains_to_rayjoin_cdb_segments(
+    dataset: CdbDataset,
+    *,
+    limit_chains: int | None = None,
+) -> tuple[dict[str, float | int], ...]:
+    """Convert CDB chains to RayJoin-style directed edges with face ids.
+
+    RayJoin's PIP point-location route needs the closest boundary edge plus
+    the CDB chain's left/right face ids.  The generic ``chains_to_segments``
+    adapter deliberately drops those face ids, so this helper keeps the
+    specialized CDB contract explicit.
+    """
+
+    chains = dataset.chains if limit_chains is None else dataset.chains[:limit_chains]
+    records = []
+    next_id = 1
+    for chain in chains:
+        for start, end in zip(chain.points, chain.points[1:]):
+            records.append(
+                {
+                    "id": next_id,
+                    "x0": start.x,
+                    "y0": start.y,
+                    "x1": end.x,
+                    "y1": end.y,
+                    "left_face_id": chain.left_face_id,
+                    "right_face_id": chain.right_face_id,
                     "chain_id": chain.chain_id,
                 }
             )
@@ -752,6 +888,35 @@ def chains_to_probe_points(dataset: CdbDataset, *, limit_chains: int | None = No
                 y=point.y,
             )
         )
+    payload = _CanonicalPointTuple(records)
+    if payload:
+        from .embree_runtime import pack_points
+
+        payload._rtdl_packed_points = pack_points(records=payload)
+    return payload
+
+
+def chains_to_all_points(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[Point, ...]:
+    """Return every CDB point in file order.
+
+    RayJoin's paper PIP path uses `query_map.get_points()` when `-poly2` is
+    supplied, so exact paper-suite PIP must probe all query-map points rather
+    than one representative point per chain.
+    """
+
+    chains = dataset.chains if limit_chains is None else dataset.chains[:limit_chains]
+    records = []
+    next_id = 1
+    for chain in chains:
+        for point in chain.points:
+            records.append(
+                Point(
+                    id=next_id,
+                    x=point.x,
+                    y=point.y,
+                )
+            )
+            next_id += 1
     payload = _CanonicalPointTuple(records)
     if payload:
         from .embree_runtime import pack_points

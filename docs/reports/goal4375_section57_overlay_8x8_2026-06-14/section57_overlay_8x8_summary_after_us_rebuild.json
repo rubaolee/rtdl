@@ -1,0 +1,149 @@
+{
+  "coverage": {
+    "overlay_pairs_complete": 2,
+    "overlay_pairs_incomplete": 6,
+    "overlay_pairs_total": 8
+  },
+  "dataset_root": "/workspace/rayjoin_section57_data/cdb_topology",
+  "output_dir": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14",
+  "rows": [
+    {
+      "author_rt_process_sec": 5.613634318113327,
+      "complete": true,
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "paper_rayjoin_preprocessing_sec": 0.07,
+      "paper_rayjoin_processing_sec": 0.12,
+      "paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_county_zipcode_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_county_zipcode_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_county_zipcode_rtdl_optix.json"
+      },
+      "rtdl_embree_lsi_count": 181629,
+      "rtdl_embree_total_sec": 9.953530356287956,
+      "rtdl_optix_lsi_count": 181629,
+      "rtdl_optix_total_sec": 5.818584479391575
+    },
+    {
+      "author_rt_process_sec": 28.08766432851553,
+      "complete": true,
+      "pair_id": "block_water",
+      "paper_label": "Block x Water",
+      "paper_rayjoin_preprocessing_sec": 0.12,
+      "paper_rayjoin_processing_sec": 0.23,
+      "paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_block_water_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_block_water_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_block_water_rtdl_optix.json"
+      },
+      "rtdl_embree_lsi_count": 649605,
+      "rtdl_embree_total_sec": 34.90493054687977,
+      "rtdl_optix_lsi_count": 649605,
+      "rtdl_optix_total_sec": 42.380106933414936
+    },
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "lkaf_pkaf",
+      "paper_label": "LKAF x PKAF",
+      "paper_rayjoin_preprocessing_sec": 0.01,
+      "paper_rayjoin_processing_sec": 0.01,
+      "paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkaf_pkaf_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkaf_pkaf_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkaf_pkaf_rtdl_optix.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null
+    },
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "lkas_pkas",
+      "paper_label": "LKAS x PKAS",
+      "paper_rayjoin_preprocessing_sec": 0.05,
+      "paper_rayjoin_processing_sec": 0.04,
+      "paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkas_pkas_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkas_pkas_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkas_pkas_rtdl_optix.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null
+    },
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "lkau_pkau",
+      "paper_label": "LKAU x PKAU",
+      "paper_rayjoin_preprocessing_sec": 0.01,
+      "paper_rayjoin_processing_sec": 0.01,
+      "paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkau_pkau_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkau_pkau_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkau_pkau_rtdl_optix.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null
+    },
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "lkeu_pkeu",
+      "paper_label": "LKEU x PKEU",
+      "paper_rayjoin_preprocessing_sec": 0.2,
+      "paper_rayjoin_processing_sec": 0.2,
+      "paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkeu_pkeu_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkeu_pkeu_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkeu_pkeu_rtdl_optix.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null
+    },
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "lkna_pkna",
+      "paper_label": "LKNA x PKNA",
+      "paper_rayjoin_preprocessing_sec": 0.21,
+      "paper_rayjoin_processing_sec": 0.25,
+      "paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkna_pkna_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkna_pkna_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkna_pkna_rtdl_optix.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null
+    },
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "lksa_pksa",
+      "paper_label": "LKSA x PKSA",
+      "paper_rayjoin_preprocessing_sec": 0.01,
+      "paper_rayjoin_processing_sec": 0.02,
+      "paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lksa_pksa_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lksa_pksa_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lksa_pksa_rtdl_optix.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null
+    }
+  ],
+  "schema": "rtdl.rayjoin.section57_overlay_matrix.summary.v1",
+  "timing_caveat": "Paper Table 4 values are historical reference numbers. Local author_rt rows are measured process wall times. RTDL rows are warm-cache medians under the selected protocol."
+}

@@ -1,12 +1,18 @@
 # Benchmark Partner Reference Matrix
 
-Status: current v2.13 source-tree guidance.
+Status: current v2.14 closeout guidance.
 This page is a guide for app authors choosing a custom continuation partner. It
 does not broaden release wording or authorize broad speedup claims.
 
 The first choice is always the same: if a fused generic RTDL primitive exactly
 expresses the answer, use that primitive. Partner code is for the work that is
 not fused, not a hidden replacement for the RTDL engine.
+
+For any benchmark-app claim that needs partner continuation, RTDL requires two
+partner lines before stronger wording: the current best-performance partner for
+that contract, and a Numba implementation. Numba is required because it gives
+users a Python-source, no-C++/CUDA-kernel-writing path. This does not mean Numba
+must win; it means Numba must be measured as the accessibility/reference path.
 
 Users choose partners explicitly. The tables below separate two cases:
 
@@ -24,7 +30,7 @@ table and use the primitive-first table instead.
 | Benchmark app / contract | Custom logic pressure | Current RTDL primitive-first path | Recommended custom partner when needed | CuPy role | Numba role | Current best path summary | Evidence boundary |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Spatial RayJoin | point-in-polygon parity/count, boundary proximity, row-stream filtering | scalar count/parity and first-hit/nearest-boundary style primitives where available | Numba for scalar-count and topology-reference continuation; CuPy for dense CUDA baselines | useful dense opponent and app-level exact continuation; still fastest on the one-shot bounded public-CDB PIP scalar-count row | Goal3834/3838 no-RawKernel scalar-count coverage for PIP, LSI, and overlay; compact-mask/topology references also exist | primitive-first for LSI/overlay scalar answers, where RTDL/OptiX is about `260x` faster than dense partners; resident repeated PIP uses the prepared batch executor at about `0.024ms/request` for batch 100; one-shot bounded public-CDB PIP remains contract-specific | no paper-reproduction claim without RayJoin same-contract evidence |
-| RT-DBSCAN | fixed-radius core flags plus component labeling | fixed-radius/core-summary primitives | Numba prepared grid/component continuation for the current reference path; CuPy remains a baseline | prepared grid/components baseline and opponent | measured prepared-repeat component continuation evidence; no RawKernel required | RTDL/OptiX threshold flags plus Numba prepared component continuation for scale rows | dense-stream and clustering semantics remain app code; cite Goal3835 before publishing |
+| RT-DBSCAN | fixed-radius core flags plus component labeling | fixed-radius/core-summary primitives | Numba prepared grid/component continuation for the current prepared-grid contract; CuPy remains the same-contract opponent | measured prepared-grid opponent; at 524K RT+CuPy is 10.662s and pure CuPy is 22.341s | current best measured path for this contract; at 524K RT+Numba is 8.900s and pure Numba is 20.244s; no RawKernel required | RTDL/OptiX threshold flags plus Numba prepared component continuation for scale rows; signatures match CuPy at all Goal4389 scales | dense-stream and clustering semantics remain app code; cite Goal4389 before publishing |
 | RayDB-style unfused grouped continuation | grouped min/max/count/sum/avg when not already fused | fused columnar grouped reductions when they exactly match | CuPy for current performance; Numba when no-RawKernel Python-source reference code matters | Goal4266 large-scale same-contract RTX 3090 rows for grouped count/sum/min/max and average-as-sum-plus-count; currently faster than Numba | selected generic grouped continuation lane; correct no-RawKernel reference, currently slower than CuPy in Goal4266 | use primitive-first for fused scalar summaries; use CuPy for current speed on unfused grouped continuations; use Numba for Python-source reference constraints | do not force partner continuation onto fused primitive rows; Goal4266 is partner-continuation evidence only |
 | Triangle candidate-row compaction | candidate-row interpretation after the scalar answer | generic RT graph relationship-count composition for the scalar answer | CuPy for current compact-mask performance; Numba when no-RawKernel Python-source reference code matters | Goal4266 large-scale same-contract compact-mask row; currently much faster than Numba | compact-mask continuation reference; correct no-RawKernel path, currently slower than CuPy in Goal4266 | scalar answer stays primitive-first; choose a partner only for explicit candidate-row compaction | app interpretation of candidate rows stays outside engine; no RT-core triangle-count claim; Goal4266 is partner-continuation evidence only |
 | Barnes-Hut | force-vector continuation after aggregate-frontier collection | aggregate-frontier collect primitive | CuPy for fastest measured exact force-vector path; Numba for no-RawKernel block-reduction reference | active force-vector partner reference, faster overall in current evidence | Goal3837 current-head no-RawKernel exact-force evidence; near-CuPy but not default winner | primitive collects generic frontier rows; app computes force law; CuPy remains the faster measured continuation | no broad N-body acceleration claim |
@@ -50,9 +56,11 @@ continuation work not covered by the primitive.
 1. Start from the benchmark README and run the primitive-first command.
 2. If the app needs unfused continuation, choose the partner listed above only
    when the README or report gives same-contract evidence for your scale.
-3. If your app needs a continuation not listed here, keep that partner
+3. For partner-dependent benchmark claims, measure both the best-performance
+   partner and Numba on the same contract, data, repeat protocol, and oracle.
+4. If your app needs a continuation not listed here, keep that partner
    experimental until you add correctness, timing, and review artifacts.
-4. Keep user code honest: app-specific policy and labels can be in Python, but
+5. Keep user code honest: app-specific policy and labels can be in Python, but
    the native engine primitive must stay app-agnostic.
 
 For CuPy-vs-Numba decisions, prefer decision-grade rows like Goal4266: both

@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "/workspace/rtdl/examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py", line 3399, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/workspace/rtdl/examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py", line 3378, in main
+    payload = run_rayjoin_prepared_optix_workload(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/rtdl/examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py", line 763, in run_rayjoin_prepared_optix_workload
+    _phase_repeat_time(
+  File "/workspace/rtdl/examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py", line 272, in _phase_repeat_time
+    value = fn()
+            ^^^^
+  File "/workspace/rtdl/examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py", line 768, in <lambda>
+    fn=lambda: prepared.count(packed_left),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/rtdl/src/rtdsl/optix_runtime.py", line 3277, in count
+    _check_status(status, error)
+  File "/workspace/rtdl/src/rtdsl/optix_runtime.py", line 24849, in _check_status
+    raise RuntimeError(msg)
+RuntimeError: OptiX error: Invalid value

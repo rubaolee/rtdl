@@ -20,6 +20,7 @@ THETA = 0.75
 SOFTENING = 0.05
 NODE_DISCOVERY_RADIUS = 10.0
 K_MAX = 16
+NODE_TOPOLOGIES = ("one_level", "fixed_depth_cells")
 
 
 @dataclass(frozen=True)
@@ -588,6 +589,8 @@ def run_app(
     output_mode: str = "full",
     optix_summary_mode: str = "rows",
     node_radius: float = NODE_DISCOVERY_RADIUS,
+    node_topology: str = "one_level",
+    node_depth: int = 1,
     partner: str = "cupy",
     skip_validation: bool = False,
     require_rt_core: bool = False,
@@ -598,6 +601,10 @@ def run_app(
         raise ValueError("output_mode must be 'full', 'candidate_summary', or 'force_summary'")
     if optix_summary_mode not in {"rows", "node_coverage_prepared"}:
         raise ValueError("optix_summary_mode must be 'rows' or 'node_coverage_prepared'")
+    if node_topology not in NODE_TOPOLOGIES:
+        raise ValueError("node_topology must be 'one_level' or 'fixed_depth_cells'")
+    if node_depth < 1:
+        raise ValueError("node_depth must be at least 1")
     if node_radius < 0:
         raise ValueError("node_radius must be non-negative")
     if query_repeat <= 0:
@@ -606,7 +613,10 @@ def run_app(
         raise ValueError("warmup must be non-negative")
     _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
     bodies = make_bodies() if body_count is None else make_generated_bodies(body_count)
-    nodes = build_one_level_quadtree(bodies)
+    if node_topology == "fixed_depth_cells":
+        nodes = build_fixed_depth_quadtree_cells(bodies, depth=node_depth)
+    else:
+        nodes = build_one_level_quadtree(bodies)
     if backend == "partner_exact_force":
         if output_mode == "force_summary" and skip_validation:
             force_summary, partner_metadata = _run_partner_exact_force_summary(
@@ -687,14 +697,23 @@ def run_app(
             query_repeat=query_repeat,
             warmup=warmup,
         )
-        oracle = node_coverage_oracle(bodies, nodes, radius=node_radius)
+        oracle = None if skip_validation else node_coverage_oracle(bodies, nodes, radius=node_radius)
         oracle_decision_matches = (
-            coverage["all_bodies_have_node_candidate"] == oracle["all_bodies_have_node_candidate"]
+            None
+            if oracle is None
+            else coverage["all_bodies_have_node_candidate"] == oracle["all_bodies_have_node_candidate"]
         )
         oracle_identity_matches = (
-            coverage["uncovered_body_ids"] == oracle["uncovered_body_ids"]
-            if coverage["identity_parity_available"]
-            else None
+            None
+            if oracle is None or not coverage["identity_parity_available"]
+            else coverage["uncovered_body_ids"] == oracle["uncovered_body_ids"]
+        )
+        matches_oracle = (
+            None
+            if oracle is None
+            else oracle_decision_matches
+            if oracle_identity_matches is None
+            else oracle_decision_matches and oracle_identity_matches
         )
         return {
             "app": "barnes_hut_force_app",
@@ -702,18 +721,17 @@ def run_app(
             "theta": theta,
             "body_count": len(bodies),
             "node_count": len(nodes),
+            "node_topology": node_topology,
+            "node_depth": node_depth,
             "output_mode": output_mode,
             "optix_summary_mode": optix_summary_mode,
             "node_radius": node_radius,
             "node_coverage": coverage,
             "oracle_node_coverage": oracle,
-            "matches_oracle": (
-                oracle_decision_matches
-                if oracle_identity_matches is None
-                else oracle_decision_matches and oracle_identity_matches
-            ),
+            "matches_oracle": matches_oracle,
             "oracle_decision_matches": oracle_decision_matches,
             "oracle_identity_matches": oracle_identity_matches,
+            "validation_skipped": skip_validation,
             "rtdl_role": (
                 f"RTDL/{backend} uses prepared fixed-radius threshold traversal to answer "
                 "the bounded Barnes-Hut node-coverage decision: every body has at "
@@ -814,6 +832,18 @@ def main(argv: list[str] | None = None) -> int:
         help="node discovery radius for --optix-summary-mode node_coverage_prepared",
     )
     parser.add_argument(
+        "--node-topology",
+        choices=NODE_TOPOLOGIES,
+        default="one_level",
+        help="node fixture topology for prepared node-coverage mode",
+    )
+    parser.add_argument(
+        "--node-depth",
+        type=int,
+        default=1,
+        help="depth for --node-topology fixed_depth_cells",
+    )
+    parser.add_argument(
         "--require-rt-core",
         action="store_true",
         help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
@@ -835,6 +865,8 @@ def main(argv: list[str] | None = None) -> int:
                 output_mode=args.output_mode,
                 optix_summary_mode=args.optix_summary_mode,
                 node_radius=args.node_radius,
+                node_topology=args.node_topology,
+                node_depth=args.node_depth,
                 partner=args.partner,
                 skip_validation=args.skip_validation,
                 require_rt_core=args.require_rt_core,

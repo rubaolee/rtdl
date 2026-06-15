@@ -27,6 +27,10 @@ struct Segment2D {
   uint32_t id;
   Vec2 a;
   Vec2 b;
+  int64_t rayjoin_x0 = 0;
+  int64_t rayjoin_y0 = 0;
+  int64_t rayjoin_x1 = 0;
+  int64_t rayjoin_y1 = 0;
 };
 
 struct Point2D {
@@ -325,6 +329,196 @@ bool segment_intersection(
   if (point_out != nullptr) {
     point_out->x = p.x + t * r.x;
     point_out->y = p.y + t * r.y;
+  }
+  return true;
+}
+
+struct RayjoinLsiScaleKey {
+  bool valid = false;
+  double min_x = 0.0;
+  double max_x = 0.0;
+  double min_y = 0.0;
+  double max_y = 0.0;
+};
+
+struct RayjoinLsiScale {
+  double rx = 0.0;
+  double ry = 0.0;
+  double rrx = 0.0;
+  double rry = 0.0;
+  double deltax = 0.0;
+  double deltay = 0.0;
+  double ddeltax = 0.0;
+  double ddeltay = 0.0;
+};
+
+struct RayjoinLsiLine {
+  __int128 a;
+  __int128 b;
+  __int128 c;
+};
+
+uint32_t embree_segment_pair_predicate_mode_from_env() {
+  const char* raw = std::getenv("RTDL_EMBREE_SEGMENT_PAIR_PREDICATE");
+  if (raw != nullptr && std::string(raw) == "rayjoin_lsi") {
+    return 1u;
+  }
+  raw = std::getenv("RTDL_OPTIX_SEGMENT_PAIR_PREDICATE");
+  if (raw != nullptr && std::string(raw) == "rayjoin_lsi") {
+    return 1u;
+  }
+  return 0u;
+}
+
+bool rayjoin_lsi_scale_key_equal(const RayjoinLsiScaleKey& left, const RayjoinLsiScaleKey& right) {
+  return left.valid == right.valid &&
+         left.min_x == right.min_x &&
+         left.max_x == right.max_x &&
+         left.min_y == right.min_y &&
+         left.max_y == right.max_y;
+}
+
+RayjoinLsiScale make_rayjoin_lsi_scale(const RayjoinLsiScaleKey& key) {
+  constexpr int64_t internal_max = (int64_t{1} << 46) - int64_t{1};
+  constexpr int64_t internal_min = -(int64_t{1} << 46);
+  const double margin = 1.0;
+  const double box_max_x = key.max_x + margin;
+  const double box_min_x = key.min_x - margin;
+  const double box_max_y = key.max_y + margin;
+  const double box_min_y = key.min_y - margin;
+  const double internal_range = static_cast<double>(internal_max - internal_min);
+  RayjoinLsiScale scale;
+  scale.rx = internal_range / (box_max_x - box_min_x);
+  scale.ry = internal_range / (box_max_y - box_min_y);
+  scale.rrx = 1.0 / scale.rx;
+  scale.rry = 1.0 / scale.ry;
+  scale.deltax = 0.5 * (
+      static_cast<double>(internal_max + internal_min) -
+      (box_max_x + box_min_x) * scale.rx);
+  scale.deltay = 0.5 * (
+      static_cast<double>(internal_max + internal_min) -
+      (box_max_y + box_min_y) * scale.ry);
+  scale.ddeltax = 0.5 * (
+      (box_max_x + box_min_x) -
+      static_cast<double>(internal_max + internal_min) * scale.rrx);
+  scale.ddeltay = 0.5 * (
+      (box_max_y + box_min_y) -
+      static_cast<double>(internal_max + internal_min) * scale.rry);
+  return scale;
+}
+
+int64_t rayjoin_lsi_scale_x(const RayjoinLsiScale& scale, double x) {
+  return static_cast<int64_t>(std::fma(x, scale.rx, scale.deltax));
+}
+
+int64_t rayjoin_lsi_scale_y(const RayjoinLsiScale& scale, double y) {
+  return static_cast<int64_t>(std::fma(y, scale.ry, scale.deltay));
+}
+
+void rayjoin_lsi_apply_scale(Segment2D& segment, const RayjoinLsiScale& scale, bool replace_coordinates = false) {
+  segment.rayjoin_x0 = rayjoin_lsi_scale_x(scale, segment.a.x);
+  segment.rayjoin_y0 = rayjoin_lsi_scale_y(scale, segment.a.y);
+  segment.rayjoin_x1 = rayjoin_lsi_scale_x(scale, segment.b.x);
+  segment.rayjoin_y1 = rayjoin_lsi_scale_y(scale, segment.b.y);
+  if (replace_coordinates) {
+    segment.a.x = static_cast<double>(segment.rayjoin_x0) * scale.rrx + scale.ddeltax;
+    segment.a.y = static_cast<double>(segment.rayjoin_y0) * scale.rry + scale.ddeltay;
+    segment.b.x = static_cast<double>(segment.rayjoin_x1) * scale.rrx + scale.ddeltax;
+    segment.b.y = static_cast<double>(segment.rayjoin_y1) * scale.rry + scale.ddeltay;
+  }
+}
+
+void rayjoin_lsi_accumulate_bounds(const Segment2D& segment, RayjoinLsiScaleKey& key) {
+  key.min_x = std::min(key.min_x, std::min(segment.a.x, segment.b.x));
+  key.max_x = std::max(key.max_x, std::max(segment.a.x, segment.b.x));
+  key.min_y = std::min(key.min_y, std::min(segment.a.y, segment.b.y));
+  key.max_y = std::max(key.max_y, std::max(segment.a.y, segment.b.y));
+}
+
+RayjoinLsiScaleKey rayjoin_lsi_scale_key_for_segments(
+    const std::vector<Segment2D>& right_segments,
+    const std::vector<Segment2D>& left_segments) {
+  RayjoinLsiScaleKey key {
+      true,
+      std::numeric_limits<double>::infinity(),
+      -std::numeric_limits<double>::infinity(),
+      std::numeric_limits<double>::infinity(),
+      -std::numeric_limits<double>::infinity(),
+  };
+  for (const Segment2D& segment : right_segments) {
+    rayjoin_lsi_accumulate_bounds(segment, key);
+  }
+  for (const Segment2D& segment : left_segments) {
+    rayjoin_lsi_accumulate_bounds(segment, key);
+  }
+  if (!std::isfinite(key.min_x) || !std::isfinite(key.max_x) ||
+      !std::isfinite(key.min_y) || !std::isfinite(key.max_y)) {
+    key.valid = false;
+  }
+  return key;
+}
+
+RayjoinLsiLine rayjoin_lsi_line_for_segment(const Segment2D& segment) {
+  RayjoinLsiLine line;
+  line.a = static_cast<__int128>(segment.rayjoin_y0) - static_cast<__int128>(segment.rayjoin_y1);
+  line.b = static_cast<__int128>(segment.rayjoin_x1) - static_cast<__int128>(segment.rayjoin_x0);
+  line.c = -(static_cast<__int128>(segment.rayjoin_x0) * line.a) -
+           (static_cast<__int128>(segment.rayjoin_y0) * line.b);
+  if (line.b < 0) {
+    line.a = -line.a;
+    line.b = -line.b;
+    line.c = -line.c;
+  }
+  return line;
+}
+
+__int128 rayjoin_lsi_eval(const RayjoinLsiLine& line, int64_t x, int64_t y) {
+  return static_cast<__int128>(x) * line.a + static_cast<__int128>(y) * line.b + line.c;
+}
+
+bool rayjoin_lsi_same_point(int64_t ax, int64_t ay, int64_t bx, int64_t by) {
+  return ax == bx && ay == by;
+}
+
+bool rayjoin_lsi_segment_intersection(const Segment2D& left, const Segment2D& right) {
+  const RayjoinLsiLine e1 = rayjoin_lsi_line_for_segment(left);
+  const RayjoinLsiLine e2 = rayjoin_lsi_line_for_segment(right);
+  if ((e1.a == 0 && e1.b == 0) || (e2.a == 0 && e2.b == 0)) {
+    return false;
+  }
+
+  __int128 e2_p1_agst_e1 = rayjoin_lsi_eval(e1, right.rayjoin_x0, right.rayjoin_y0);
+  __int128 e2_p2_agst_e1 = rayjoin_lsi_eval(e1, right.rayjoin_x1, right.rayjoin_y1);
+  __int128 e1_p1_agst_e2 = rayjoin_lsi_eval(e2, left.rayjoin_x0, left.rayjoin_y0);
+  __int128 e1_p2_agst_e2 = rayjoin_lsi_eval(e2, left.rayjoin_x1, left.rayjoin_y1);
+
+  if (e1_p1_agst_e2 == 0) e1_p1_agst_e2 = -e2.a;
+  if (e1_p1_agst_e2 == 0) e1_p1_agst_e2 = -e2.b;
+  if (e1_p1_agst_e2 == 0) return false;
+  if (e1_p2_agst_e2 == 0) e1_p2_agst_e2 = -e2.a;
+  if (e1_p2_agst_e2 == 0) e1_p2_agst_e2 = -e2.b;
+  if (e1_p2_agst_e2 == 0) return false;
+  if ((e1_p1_agst_e2 > 0 && e1_p2_agst_e2 > 0) ||
+      (e1_p1_agst_e2 < 0 && e1_p2_agst_e2 < 0)) {
+    return false;
+  }
+
+  if (e2_p1_agst_e1 == 0) e2_p1_agst_e1 = e1.a;
+  if (e2_p1_agst_e1 == 0) e2_p1_agst_e1 = e1.b;
+  if (e2_p1_agst_e1 == 0) return false;
+  if (e2_p2_agst_e1 == 0) e2_p2_agst_e1 = e1.a;
+  if (e2_p2_agst_e1 == 0) e2_p2_agst_e1 = e1.b;
+  if (e2_p2_agst_e1 == 0) return false;
+  if ((e2_p1_agst_e1 > 0 && e2_p2_agst_e1 > 0) ||
+      (e2_p1_agst_e1 < 0 && e2_p2_agst_e1 < 0)) {
+    return false;
+  }
+
+  if ((rayjoin_lsi_same_point(left.rayjoin_x0, left.rayjoin_y0, right.rayjoin_x0, right.rayjoin_y0) &&
+       rayjoin_lsi_same_point(left.rayjoin_x1, left.rayjoin_y1, right.rayjoin_x1, right.rayjoin_y1)) ||
+      (rayjoin_lsi_same_point(left.rayjoin_x0, left.rayjoin_y0, right.rayjoin_x1, right.rayjoin_y1) &&
+       rayjoin_lsi_same_point(left.rayjoin_x1, left.rayjoin_y1, right.rayjoin_x0, right.rayjoin_y0))) {
+    return false;
   }
   return true;
 }

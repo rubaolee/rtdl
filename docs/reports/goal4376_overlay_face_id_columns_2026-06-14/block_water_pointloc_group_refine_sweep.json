@@ -1,0 +1,76 @@
+{
+  "rows": [
+    {
+      "left_hot_sec": 7.083293981850147,
+      "left_traversal": 5.423614905,
+      "pointloc_wall_sec": 21.539305947721004,
+      "policy": "adaptive_4_1.5",
+      "prepare_wall_sec": 7.649023786187172,
+      "right_hot_sec": 6.100832372903824,
+      "right_traversal": 4.746870444
+    },
+    {
+      "left_hot_sec": 7.320144586265087,
+      "left_traversal": 5.669813432,
+      "pointloc_wall_sec": 20.808841332793236,
+      "policy": "adaptive_8_1.5",
+      "prepare_wall_sec": 6.361799754202366,
+      "right_hot_sec": 6.403064705431461,
+      "right_traversal": 5.0543338
+    },
+    {
+      "left_hot_sec": 7.5002616122365,
+      "left_traversal": 5.81820015,
+      "pointloc_wall_sec": 21.399936631321907,
+      "policy": "adaptive_12_1.5",
+      "prepare_wall_sec": 6.525587111711502,
+      "right_hot_sec": 6.588287636637688,
+      "right_traversal": 5.251023316
+    },
+    {
+      "left_hot_sec": 6.108249746263027,
+      "left_traversal": 4.446312454,
+      "pointloc_wall_sec": 18.861544966697693,
+      "policy": "adaptive_16_1.2",
+      "prepare_wall_sec": 6.55667994171381,
+      "right_hot_sec": 5.4078225418925285,
+      "right_traversal": 4.073694336
+    },
+    {
+      "left_hot_sec": 11.290554255247116,
+      "left_traversal": 9.548335988,
+      "pointloc_wall_sec": 27.28524186462164,
+      "policy": "adaptive_16_2.0",
+      "prepare_wall_sec": 5.733968831598759,
+      "right_hot_sec": 9.492292173206806,
+      "right_traversal": 8.101898392
+    },
+    {
+      "left_hot_sec": 7.866548269987106,
+      "left_traversal": 6.162622982,
+      "pointloc_wall_sec": 22.140118159353733,
+      "policy": "adaptive_24_1.5",
+      "prepare_wall_sec": 6.514687426388264,
+      "right_hot_sec": 7.015760585665703,
+      "right_traversal": 5.678401999
+    },
+    {
+      "left_hot_sec": 7.057332046329975,
+      "left_traversal": 5.37443552,
+      "pointloc_wall_sec": 20.659287936985493,
+      "policy": "adaptive_20_1.4",
+      "prepare_wall_sec": 6.4869153425097466,
+      "right_hot_sec": 6.324857793748379,
+      "right_traversal": 4.989037919
+    },
+    {
+      "left_hot_sec": 8.638274408876896,
+      "left_traversal": 6.934305339,
+      "pointloc_wall_sec": 23.177094146609306,
+      "policy": "adaptive_20_1.6",
+      "prepare_wall_sec": 6.249975427985191,
+      "right_hot_sec": 7.55874165892601,
+      "right_traversal": 6.230833132
+    }
+  ]
+}

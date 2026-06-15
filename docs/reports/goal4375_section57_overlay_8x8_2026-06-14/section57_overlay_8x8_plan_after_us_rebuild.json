@@ -1,0 +1,919 @@
+{
+  "coverage": {
+    "overlay_pairs_blocked": 6,
+    "overlay_pairs_input_ready": 2,
+    "overlay_pairs_total": 8,
+    "required_for_section57_full_reproduction": "8/8 overlay pairs with author_rt, rtdl_optix, and rtdl_embree results"
+  },
+  "dataset_root": "/workspace/rayjoin_section57_data/cdb_topology",
+  "input_provenance": "same_source_regenerated_cdb",
+  "output_dir": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14",
+  "preprocessed_share_url": "https://datadryad.org/stash/share/aIs0nLs2TsLE_dcWO2qPHiohRKoOI3kx0WGT5BnATtA",
+  "rows": [
+    {
+      "blocker": null,
+      "case_id": "overlay_county_zipcode",
+      "commands": {
+        "author_rt": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-author",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--query-exec",
+          "/workspace/RayJoin_fresh/release/bin/query_exec",
+          "--polyover-exec",
+          "/workspace/RayJoin_fresh/release/bin/polyover_exec",
+          "--case-id",
+          "overlay_county_zipcode",
+          "--mode",
+          "rt",
+          "--serialize-prefix",
+          "/dev/shm",
+          "--grid-size",
+          "15000",
+          "--xsect-factor",
+          "0.1",
+          "--enlarge",
+          "3.5",
+          "--warmup",
+          "5",
+          "--repeat",
+          "5",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_county_zipcode_author_rt.json"
+        ],
+        "rtdl_embree": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_county_zipcode",
+          "--backend",
+          "embree",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_county_zipcode_rtdl_embree.json"
+        ],
+        "rtdl_optix": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_county_zipcode",
+          "--backend",
+          "optix",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_county_zipcode_rtdl_optix.json"
+        ]
+      },
+      "exact_input_ready": true,
+      "left_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "paper_table4_seconds": {
+        "EPUG-Overlay": {
+          "preprocessing_sec": 52.64,
+          "processing_sec": 165.71
+        },
+        "Kinetica": {
+          "preprocessing_sec": null,
+          "processing_sec": 22.81
+        },
+        "LBVH*": {
+          "preprocessing_sec": 0.11,
+          "processing_sec": 8.07
+        },
+        "PostGIS": {
+          "preprocessing_sec": null,
+          "processing_sec": 30.58
+        },
+        "RasterIntervals": {
+          "preprocessing_sec": 580.4,
+          "processing_sec": 2.94
+        },
+        "RayJoin*": {
+          "preprocessing_sec": 0.07,
+          "processing_sec": 0.12
+        },
+        "Uniform Grid*": {
+          "preprocessing_sec": 0.08,
+          "processing_sec": 1.82
+        }
+      },
+      "result_paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_county_zipcode_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_county_zipcode_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_county_zipcode_rtdl_optix.json"
+      },
+      "right_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb"
+    },
+    {
+      "blocker": null,
+      "case_id": "overlay_block_water",
+      "commands": {
+        "author_rt": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-author",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--query-exec",
+          "/workspace/RayJoin_fresh/release/bin/query_exec",
+          "--polyover-exec",
+          "/workspace/RayJoin_fresh/release/bin/polyover_exec",
+          "--case-id",
+          "overlay_block_water",
+          "--mode",
+          "rt",
+          "--serialize-prefix",
+          "/dev/shm",
+          "--grid-size",
+          "15000",
+          "--xsect-factor",
+          "0.1",
+          "--enlarge",
+          "3.5",
+          "--warmup",
+          "5",
+          "--repeat",
+          "5",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_block_water_author_rt.json"
+        ],
+        "rtdl_embree": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_block_water",
+          "--backend",
+          "embree",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_block_water_rtdl_embree.json"
+        ],
+        "rtdl_optix": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_block_water",
+          "--backend",
+          "optix",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_block_water_rtdl_optix.json"
+        ]
+      },
+      "exact_input_ready": true,
+      "left_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+      "pair_id": "block_water",
+      "paper_label": "Block x Water",
+      "paper_table4_seconds": {
+        "EPUG-Overlay": {
+          "preprocessing_sec": 114.46,
+          "processing_sec": 250.21
+        },
+        "Kinetica": {
+          "preprocessing_sec": null,
+          "processing_sec": 52.75
+        },
+        "LBVH*": {
+          "preprocessing_sec": 0.18,
+          "processing_sec": 54.82
+        },
+        "PostGIS": {
+          "preprocessing_sec": null,
+          "processing_sec": 233.78
+        },
+        "RasterIntervals": {
+          "preprocessing_sec": 1114.52,
+          "processing_sec": 10.54
+        },
+        "RayJoin*": {
+          "preprocessing_sec": 0.12,
+          "processing_sec": 0.23
+        },
+        "Uniform Grid*": {
+          "preprocessing_sec": 0.13,
+          "processing_sec": 1.29
+        }
+      },
+      "result_paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_block_water_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_block_water_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_block_water_rtdl_optix.json"
+      },
+      "right_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Africa/lakes_Africa_Point.cdb, point_cdb/parks/Africa/parks_Africa_Point.cdb",
+      "case_id": "overlay_lkaf_pkaf",
+      "commands": {
+        "author_rt": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-author",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--query-exec",
+          "/workspace/RayJoin_fresh/release/bin/query_exec",
+          "--polyover-exec",
+          "/workspace/RayJoin_fresh/release/bin/polyover_exec",
+          "--case-id",
+          "overlay_lkaf_pkaf",
+          "--mode",
+          "rt",
+          "--serialize-prefix",
+          "/dev/shm",
+          "--grid-size",
+          "15000",
+          "--xsect-factor",
+          "0.1",
+          "--enlarge",
+          "3.5",
+          "--warmup",
+          "5",
+          "--repeat",
+          "5",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkaf_pkaf_author_rt.json"
+        ],
+        "rtdl_embree": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_lkaf_pkaf",
+          "--backend",
+          "embree",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkaf_pkaf_rtdl_embree.json"
+        ],
+        "rtdl_optix": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_lkaf_pkaf",
+          "--backend",
+          "optix",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkaf_pkaf_rtdl_optix.json"
+        ]
+      },
+      "exact_input_ready": false,
+      "left_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/lakes/Africa/lakes_Africa_Point.cdb",
+      "pair_id": "lkaf_pkaf",
+      "paper_label": "LKAF x PKAF",
+      "paper_table4_seconds": {
+        "EPUG-Overlay": {
+          "preprocessing_sec": 5.26,
+          "processing_sec": 4.94
+        },
+        "Kinetica": {
+          "preprocessing_sec": null,
+          "processing_sec": 0.34
+        },
+        "LBVH*": {
+          "preprocessing_sec": 0.02,
+          "processing_sec": 0.05
+        },
+        "PostGIS": {
+          "preprocessing_sec": null,
+          "processing_sec": 0.97
+        },
+        "RasterIntervals": {
+          "preprocessing_sec": 81.2,
+          "processing_sec": 0.14
+        },
+        "RayJoin*": {
+          "preprocessing_sec": 0.01,
+          "processing_sec": 0.01
+        },
+        "Uniform Grid*": {
+          "preprocessing_sec": 0.05,
+          "processing_sec": 0.78
+        }
+      },
+      "result_paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkaf_pkaf_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkaf_pkaf_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkaf_pkaf_rtdl_optix.json"
+      },
+      "right_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/parks/Africa/parks_Africa_Point.cdb"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Asia/lakes_Asia_Point.cdb, point_cdb/parks/Asia/parks_Asia_Point.cdb",
+      "case_id": "overlay_lkas_pkas",
+      "commands": {
+        "author_rt": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-author",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--query-exec",
+          "/workspace/RayJoin_fresh/release/bin/query_exec",
+          "--polyover-exec",
+          "/workspace/RayJoin_fresh/release/bin/polyover_exec",
+          "--case-id",
+          "overlay_lkas_pkas",
+          "--mode",
+          "rt",
+          "--serialize-prefix",
+          "/dev/shm",
+          "--grid-size",
+          "15000",
+          "--xsect-factor",
+          "0.1",
+          "--enlarge",
+          "3.5",
+          "--warmup",
+          "5",
+          "--repeat",
+          "5",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkas_pkas_author_rt.json"
+        ],
+        "rtdl_embree": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_lkas_pkas",
+          "--backend",
+          "embree",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkas_pkas_rtdl_embree.json"
+        ],
+        "rtdl_optix": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_lkas_pkas",
+          "--backend",
+          "optix",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkas_pkas_rtdl_optix.json"
+        ]
+      },
+      "exact_input_ready": false,
+      "left_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/lakes/Asia/lakes_Asia_Point.cdb",
+      "pair_id": "lkas_pkas",
+      "paper_label": "LKAS x PKAS",
+      "paper_table4_seconds": {
+        "EPUG-Overlay": {
+          "preprocessing_sec": 35.22,
+          "processing_sec": 37.41
+        },
+        "Kinetica": {
+          "preprocessing_sec": null,
+          "processing_sec": 4.1
+        },
+        "LBVH*": {
+          "preprocessing_sec": 0.09,
+          "processing_sec": 2.46
+        },
+        "PostGIS": {
+          "preprocessing_sec": null,
+          "processing_sec": 27.78
+        },
+        "RasterIntervals": {
+          "preprocessing_sec": 82.03,
+          "processing_sec": 5.29
+        },
+        "RayJoin*": {
+          "preprocessing_sec": 0.05,
+          "processing_sec": 0.04
+        },
+        "Uniform Grid*": {
+          "preprocessing_sec": 0.07,
+          "processing_sec": 3.54
+        }
+      },
+      "result_paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkas_pkas_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkas_pkas_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkas_pkas_rtdl_optix.json"
+      },
+      "right_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/parks/Asia/parks_Asia_Point.cdb"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Australia/lakes_Australia_Point.cdb, point_cdb/parks/Australia/parks_Australia_Point.cdb",
+      "case_id": "overlay_lkau_pkau",
+      "commands": {
+        "author_rt": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-author",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--query-exec",
+          "/workspace/RayJoin_fresh/release/bin/query_exec",
+          "--polyover-exec",
+          "/workspace/RayJoin_fresh/release/bin/polyover_exec",
+          "--case-id",
+          "overlay_lkau_pkau",
+          "--mode",
+          "rt",
+          "--serialize-prefix",
+          "/dev/shm",
+          "--grid-size",
+          "15000",
+          "--xsect-factor",
+          "0.1",
+          "--enlarge",
+          "3.5",
+          "--warmup",
+          "5",
+          "--repeat",
+          "5",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkau_pkau_author_rt.json"
+        ],
+        "rtdl_embree": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_lkau_pkau",
+          "--backend",
+          "embree",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkau_pkau_rtdl_embree.json"
+        ],
+        "rtdl_optix": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_lkau_pkau",
+          "--backend",
+          "optix",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkau_pkau_rtdl_optix.json"
+        ]
+      },
+      "exact_input_ready": false,
+      "left_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/lakes/Australia/lakes_Australia_Point.cdb",
+      "pair_id": "lkau_pkau",
+      "paper_label": "LKAU x PKAU",
+      "paper_table4_seconds": {
+        "EPUG-Overlay": {
+          "preprocessing_sec": 3.54,
+          "processing_sec": 4.74
+        },
+        "Kinetica": {
+          "preprocessing_sec": null,
+          "processing_sec": 0.86
+        },
+        "LBVH*": {
+          "preprocessing_sec": 0.01,
+          "processing_sec": 0.05
+        },
+        "PostGIS": {
+          "preprocessing_sec": null,
+          "processing_sec": 0.79
+        },
+        "RasterIntervals": {
+          "preprocessing_sec": 48.72,
+          "processing_sec": 0.12
+        },
+        "RayJoin*": {
+          "preprocessing_sec": 0.01,
+          "processing_sec": 0.01
+        },
+        "Uniform Grid*": {
+          "preprocessing_sec": 0.03,
+          "processing_sec": 0.38
+        }
+      },
+      "result_paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkau_pkau_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkau_pkau_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkau_pkau_rtdl_optix.json"
+      },
+      "right_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/parks/Australia/parks_Australia_Point.cdb"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Europe/lakes_Europe_Point.cdb, point_cdb/parks/Europe/parks_Europe_Point.cdb",
+      "case_id": "overlay_lkeu_pkeu",
+      "commands": {
+        "author_rt": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-author",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--query-exec",
+          "/workspace/RayJoin_fresh/release/bin/query_exec",
+          "--polyover-exec",
+          "/workspace/RayJoin_fresh/release/bin/polyover_exec",
+          "--case-id",
+          "overlay_lkeu_pkeu",
+          "--mode",
+          "rt",
+          "--serialize-prefix",
+          "/dev/shm",
+          "--grid-size",
+          "15000",
+          "--xsect-factor",
+          "0.1",
+          "--enlarge",
+          "3.5",
+          "--warmup",
+          "5",
+          "--repeat",
+          "5",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkeu_pkeu_author_rt.json"
+        ],
+        "rtdl_embree": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_lkeu_pkeu",
+          "--backend",
+          "embree",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkeu_pkeu_rtdl_embree.json"
+        ],
+        "rtdl_optix": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_lkeu_pkeu",
+          "--backend",
+          "optix",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkeu_pkeu_rtdl_optix.json"
+        ]
+      },
+      "exact_input_ready": false,
+      "left_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/lakes/Europe/lakes_Europe_Point.cdb",
+      "pair_id": "lkeu_pkeu",
+      "paper_label": "LKEU x PKEU",
+      "paper_table4_seconds": {
+        "EPUG-Overlay": {
+          "preprocessing_sec": 161.91,
+          "processing_sec": 177.61
+        },
+        "Kinetica": {
+          "preprocessing_sec": null,
+          "processing_sec": 14.69
+        },
+        "LBVH*": {
+          "preprocessing_sec": null,
+          "processing_sec": null
+        },
+        "PostGIS": {
+          "preprocessing_sec": null,
+          "processing_sec": 92.58
+        },
+        "RasterIntervals": {
+          "preprocessing_sec": 511.82,
+          "processing_sec": 15.47
+        },
+        "RayJoin*": {
+          "preprocessing_sec": 0.2,
+          "processing_sec": 0.2
+        },
+        "Uniform Grid*": {
+          "preprocessing_sec": 0.2,
+          "processing_sec": 9.4
+        }
+      },
+      "result_paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkeu_pkeu_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkeu_pkeu_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkeu_pkeu_rtdl_optix.json"
+      },
+      "right_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/parks/Europe/parks_Europe_Point.cdb"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/North_America/lakes_North_America_Point.cdb, point_cdb/parks/North_America/parks_North_America_Point.cdb",
+      "case_id": "overlay_lkna_pkna",
+      "commands": {
+        "author_rt": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-author",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--query-exec",
+          "/workspace/RayJoin_fresh/release/bin/query_exec",
+          "--polyover-exec",
+          "/workspace/RayJoin_fresh/release/bin/polyover_exec",
+          "--case-id",
+          "overlay_lkna_pkna",
+          "--mode",
+          "rt",
+          "--serialize-prefix",
+          "/dev/shm",
+          "--grid-size",
+          "15000",
+          "--xsect-factor",
+          "0.1",
+          "--enlarge",
+          "3.5",
+          "--warmup",
+          "5",
+          "--repeat",
+          "5",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkna_pkna_author_rt.json"
+        ],
+        "rtdl_embree": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_lkna_pkna",
+          "--backend",
+          "embree",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkna_pkna_rtdl_embree.json"
+        ],
+        "rtdl_optix": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_lkna_pkna",
+          "--backend",
+          "optix",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkna_pkna_rtdl_optix.json"
+        ]
+      },
+      "exact_input_ready": false,
+      "left_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/lakes/North_America/lakes_North_America_Point.cdb",
+      "pair_id": "lkna_pkna",
+      "paper_label": "LKNA x PKNA",
+      "paper_table4_seconds": {
+        "EPUG-Overlay": {
+          "preprocessing_sec": 166.83,
+          "processing_sec": 234.53
+        },
+        "Kinetica": {
+          "preprocessing_sec": null,
+          "processing_sec": 11.75
+        },
+        "LBVH*": {
+          "preprocessing_sec": 0.47,
+          "processing_sec": 58.4
+        },
+        "PostGIS": {
+          "preprocessing_sec": null,
+          "processing_sec": 163.42
+        },
+        "RasterIntervals": {
+          "preprocessing_sec": 203.45,
+          "processing_sec": 21.52
+        },
+        "RayJoin*": {
+          "preprocessing_sec": 0.21,
+          "processing_sec": 0.25
+        },
+        "Uniform Grid*": {
+          "preprocessing_sec": 0.2,
+          "processing_sec": 7.29
+        }
+      },
+      "result_paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkna_pkna_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkna_pkna_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lkna_pkna_rtdl_optix.json"
+      },
+      "right_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/parks/North_America/parks_North_America_Point.cdb"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/South_America/lakes_South_America_Point.cdb, point_cdb/parks/South_America/parks_South_America_Point.cdb",
+      "case_id": "overlay_lksa_pksa",
+      "commands": {
+        "author_rt": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-author",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--query-exec",
+          "/workspace/RayJoin_fresh/release/bin/query_exec",
+          "--polyover-exec",
+          "/workspace/RayJoin_fresh/release/bin/polyover_exec",
+          "--case-id",
+          "overlay_lksa_pksa",
+          "--mode",
+          "rt",
+          "--serialize-prefix",
+          "/dev/shm",
+          "--grid-size",
+          "15000",
+          "--xsect-factor",
+          "0.1",
+          "--enlarge",
+          "3.5",
+          "--warmup",
+          "5",
+          "--repeat",
+          "5",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lksa_pksa_author_rt.json"
+        ],
+        "rtdl_embree": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_lksa_pksa",
+          "--backend",
+          "embree",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lksa_pksa_rtdl_embree.json"
+        ],
+        "rtdl_optix": [
+          "/usr/bin/python3",
+          "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py",
+          "run-rtdl",
+          "--dataset-root",
+          "/workspace/rayjoin_section57_data/cdb_topology",
+          "--case-id",
+          "overlay_lksa_pksa",
+          "--backend",
+          "optix",
+          "--warmup",
+          "1",
+          "--repeat",
+          "3",
+          "--input-provenance",
+          "same_source_regenerated_cdb",
+          "--output-json",
+          "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lksa_pksa_rtdl_optix.json"
+        ]
+      },
+      "exact_input_ready": false,
+      "left_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/lakes/South_America/lakes_South_America_Point.cdb",
+      "pair_id": "lksa_pksa",
+      "paper_label": "LKSA x PKSA",
+      "paper_table4_seconds": {
+        "EPUG-Overlay": {
+          "preprocessing_sec": 9.75,
+          "processing_sec": 8.3
+        },
+        "Kinetica": {
+          "preprocessing_sec": null,
+          "processing_sec": 1.05
+        },
+        "LBVH*": {
+          "preprocessing_sec": 0.03,
+          "processing_sec": 0.26
+        },
+        "PostGIS": {
+          "preprocessing_sec": null,
+          "processing_sec": 2.54
+        },
+        "RasterIntervals": {
+          "preprocessing_sec": 272.04,
+          "processing_sec": 0.45
+        },
+        "RayJoin*": {
+          "preprocessing_sec": 0.01,
+          "processing_sec": 0.02
+        },
+        "Uniform Grid*": {
+          "preprocessing_sec": 0.06,
+          "processing_sec": 0.81
+        }
+      },
+      "result_paths": {
+        "author_rt": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lksa_pksa_author_rt.json",
+        "rtdl_embree": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lksa_pksa_rtdl_embree.json",
+        "rtdl_optix": "docs/reports/goal4375_section57_overlay_8x8_2026-06-14/section57_overlay_lksa_pksa_rtdl_optix.json"
+      },
+      "right_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/parks/South_America/parks_South_America_Point.cdb"
+    }
+  ],
+  "schema": "rtdl.rayjoin.section57_overlay_matrix.plan.v1"
+}

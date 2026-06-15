@@ -1,0 +1,28 @@
+{
+  "dataset_root": "/workspace/rayjoin_section57_data/cdb_topology",
+  "input_provenance": "same_source_regenerated_cdb",
+  "rows": [
+    {
+      "output_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+      "source_root": "/workspace/rayjoin_section57_data/arcgis_pages/blockgroup_feature_layer",
+      "stats": {
+        "bytes": 3146767020,
+        "chains": 28473338,
+        "nonzero_faces": 239203,
+        "path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+        "points": 56946676,
+        "segments": 28473338
+      },
+      "target": {
+        "cdb_name": "USACensusBlockGroupBoundaries",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+        "source_asset_id": "blockgroup_feature_layer",
+        "target_id": "blockgroup",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    }
+  ],
+  "schema": "rtdl.rayjoin_paper_suite.same_source_arcgis_cdb_tree.v1",
+  "staged_root": "/workspace/rayjoin_section57_data/arcgis_pages"
+}

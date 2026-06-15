@@ -39,6 +39,43 @@ class Goal28CConversionTest(unittest.TestCase):
         self.assertEqual(dataset.chains[0].point_count, 4)
         self.assertEqual(dataset.chains[1].first_point_id, 5)
 
+    def test_arcgis_polygon_to_line_mode_merges_reversed_shared_edges(self) -> None:
+        payload = {
+            "features": [
+                {
+                    "attributes": {"OBJECTID": 10},
+                    "geometry": {
+                        "rings": [
+                            [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0], [0.0, 0.0]],
+                        ]
+                    },
+                },
+                {
+                    "attributes": {"OBJECTID": 20},
+                    "geometry": {
+                        "rings": [
+                            [[1.0, 0.0], [2.0, 0.0], [2.0, 1.0], [1.0, 1.0], [1.0, 0.0]],
+                        ]
+                    },
+                },
+            ]
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            page_path = Path(tmpdir) / "page_000000.json"
+            page_path.write_text(json.dumps(payload), encoding="utf-8")
+            dataset = rt.arcgis_pages_to_cdb(tmpdir, name="topology", topology_mode="polygon_to_line")
+
+        self.assertEqual(len(dataset.chains), 7)
+        shared = [
+            chain
+            for chain in dataset.chains
+            if {chain.points[0], chain.points[1]} == {rt.CdbPoint(1.0, 0.0), rt.CdbPoint(1.0, 1.0)}
+        ]
+        self.assertEqual(len(shared), 1)
+        self.assertEqual(shared[0].left_face_id, 10)
+        self.assertEqual(shared[0].right_face_id, 20)
+        self.assertTrue(all(chain.point_count == 2 for chain in dataset.chains))
+
     def test_chains_to_polygons_returns_vertices(self) -> None:
         dataset = rt.parse_cdb_text(
             "\n".join(

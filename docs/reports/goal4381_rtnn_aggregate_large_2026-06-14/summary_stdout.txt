@@ -1,0 +1,6 @@
+rtnn_uniform_1m_embree_aggregate_exact_repeat3.json ok= True median= 1.5127074420452118 min= 1.5079313293099403 max= 1.5993571281433105 repeats= 3
+  aggregate= {'bounded_neighbor_count': 37037834, 'kth_id_checksum': 549111597200, 'nearest_id_checksum': 549755289600, 'row_count': 1048576, 'sum_distance': 538955.5824922409}
+rtnn_uniform_1m_optix_aggregate_exact_repeat100.json ok= True median= 0.1491520218551159 min= 0.14862261712551117 max= 0.15551242232322693 repeats= 100
+  aggregate= {'bounded_neighbor_count': 37037834, 'kth_id_checksum': 549111597200, 'nearest_id_checksum': 549755289600, 'row_count': 1048576, 'sum_distance': 538955.5824922408}
+rtnn_uniform_1m_optix_best_prepared_graph_same_stream_repeat100.json ok= True median= 0.016836419701576233 min= 0.016736872494220734 max= 0.4547100141644478 repeats= 100
+  aggregate= {'bounded_neighbor_count': 37037819, 'kth_id_checksum': 549115349158, 'nearest_id_checksum': 549755289600, 'row_count': 1048576, 'sum_distance': 538955.2830869076}

@@ -1,0 +1,21 @@
+{
+  "files": [
+    {
+      "bytes": 904529353,
+      "chains": 8662896,
+      "nonzero_faces": 3144,
+      "path": "/workspace/rayjoin_same_source_data/cdb_partial_topology/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+      "points": 17325792,
+      "segments": 8662896
+    },
+    {
+      "bytes": 185388484,
+      "chains": 9503,
+      "nonzero_faces": 4500,
+      "path": "/workspace/rayjoin_same_source_data/cdb_partial_topology/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "points": 5288684,
+      "segments": 5279181
+    }
+  ],
+  "schema": "rtdl.rayjoin_paper_suite.cdb_scan.v1"
+}

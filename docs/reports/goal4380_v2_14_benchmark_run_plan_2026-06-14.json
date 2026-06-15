@@ -1,0 +1,292 @@
+{
+  "claim_boundary": "The v2.14 benchmark cleanup gap matrix is a draft planning and validation surface. It does not authorize release action, tag action, public speedup wording, whole-application speedup wording, broad RT-core wording, RTDL-beats-RayJoin wording, RayJoin paper-reproduction wording, author-hot-compute parity wording, automatic partner selection, Intel/AMD GPU performance wording, true-zero-copy wording, or app-specific native engine logic.",
+  "rows": [
+    {
+      "app": "hausdorff_xhd",
+      "claim_boundary": "prepare/build, traversal, and output count phases",
+      "command": [
+        "python3",
+        "scripts/rtdl_human_scale_rt_vs_embree_comparison.py",
+        "--output-dir",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+        "--only",
+        "hausdorff_xhd"
+      ],
+      "evidence_status": "requires_fresh_same_contract_human_scale_run",
+      "expected_result_artifact": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract/summary.json",
+      "output_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+      "phase_explanation_required": true,
+      "public_wording_authorized": false,
+      "release_evidence": false,
+      "row_id": "hausdorff_xhd_threshold",
+      "row_label": "Hausdorff / X-HD threshold",
+      "runner": "human_scale_same_contract"
+    },
+    {
+      "app": "spatial_rayjoin",
+      "claim_boundary": "segment-pair prepare, traversal/count, and avoided row materialization",
+      "command": [
+        "python3",
+        "scripts/rtdl_human_scale_rt_vs_embree_comparison.py",
+        "--output-dir",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+        "--only",
+        "spatial_rayjoin_lsi"
+      ],
+      "evidence_status": "requires_fresh_same_contract_human_scale_run",
+      "expected_result_artifact": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract/summary.json",
+      "output_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+      "phase_explanation_required": true,
+      "public_wording_authorized": false,
+      "release_evidence": false,
+      "row_id": "spatial_rayjoin_lsi",
+      "row_label": "Spatial RayJoin LSI",
+      "runner": "human_scale_same_contract"
+    },
+    {
+      "app": "spatial_rayjoin",
+      "claim_boundary": "prepare, point upload/device points, traversal, scalar count or device-column output",
+      "command": [
+        "python3",
+        "scripts/rtdl_human_scale_rt_vs_embree_comparison.py",
+        "--output-dir",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+        "--only",
+        "spatial_rayjoin_pip"
+      ],
+      "evidence_status": "requires_fresh_same_contract_human_scale_run",
+      "expected_result_artifact": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract/summary.json",
+      "output_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+      "phase_explanation_required": true,
+      "public_wording_authorized": false,
+      "release_evidence": false,
+      "row_id": "spatial_rayjoin_pip",
+      "row_label": "Spatial RayJoin PIP",
+      "runner": "human_scale_same_contract"
+    },
+    {
+      "app": "spatial_rayjoin",
+      "claim_boundary": "Overlay output is a Section 5.7 process/app-runtime packet. It must not be reported as author hot-compute parity.",
+      "command": [
+        "python3",
+        "scripts/rayjoin_section57_overlay_matrix.py",
+        "run",
+        "--dataset-root",
+        "/workspace/rayjoin_section57_data/cdb_topology",
+        "--output-dir",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/rayjoin_section57_overlay",
+        "--query-exec",
+        "/workspace/RayJoin_fresh/release/bin/query_exec",
+        "--polyover-exec",
+        "/workspace/RayJoin_fresh/release/bin/polyover_exec",
+        "--author-warmup",
+        "5",
+        "--author-repeat",
+        "5",
+        "--rtdl-warmup",
+        "1",
+        "--rtdl-repeat",
+        "3",
+        "--run-json",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/rayjoin_section57_overlay/section57_overlay_run.json",
+        "--summary-json",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/rayjoin_section57_overlay/section57_overlay_summary.json",
+        "--summary-md",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/rayjoin_section57_overlay/section57_overlay_summary.md"
+      ],
+      "evidence_status": "requires_fresh_section57_overlay_run_8_of_8",
+      "expected_result_artifact": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/rayjoin_section57_overlay/section57_overlay_summary.json",
+      "output_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/rayjoin_section57_overlay",
+      "phase_explanation_required": true,
+      "public_wording_authorized": false,
+      "release_evidence": false,
+      "row_id": "spatial_rayjoin_overlay",
+      "row_label": "Spatial RayJoin polygon overlay",
+      "runner": "rayjoin_section57_overlay"
+    },
+    {
+      "app": "rt_dbscan",
+      "claim_boundary": "RT threshold/core flags, handoff, Numba continuation, signature reduction",
+      "command": [
+        "python3",
+        "scripts/rtdl_human_scale_rt_vs_embree_comparison.py",
+        "--output-dir",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+        "--only",
+        "rt_dbscan"
+      ],
+      "evidence_status": "requires_fresh_same_contract_human_scale_run",
+      "expected_result_artifact": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract/summary.json",
+      "output_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+      "phase_explanation_required": true,
+      "public_wording_authorized": false,
+      "release_evidence": false,
+      "row_id": "rt_dbscan_core_flags_numba_signature",
+      "row_label": "RT-DBSCAN core flags plus Numba signature",
+      "runner": "human_scale_same_contract"
+    },
+    {
+      "app": "robot_collision",
+      "claim_boundary": "scene prepare, traversal, compact flag output, host loop tail",
+      "command": [
+        "python3",
+        "scripts/rtdl_human_scale_rt_vs_embree_comparison.py",
+        "--output-dir",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+        "--only",
+        "robot_collision"
+      ],
+      "evidence_status": "requires_fresh_same_contract_human_scale_run",
+      "expected_result_artifact": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract/summary.json",
+      "output_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+      "phase_explanation_required": true,
+      "public_wording_authorized": false,
+      "release_evidence": false,
+      "row_id": "robot_collision_grouped_segment_flags",
+      "row_label": "Robot collision grouped segment flags",
+      "runner": "human_scale_same_contract"
+    },
+    {
+      "app": "contact_manifold",
+      "claim_boundary": "AABB prepare, traversal, collect-k/witness bookkeeping, output compactness",
+      "command": [
+        "python3",
+        "scripts/rtdl_human_scale_rt_vs_embree_comparison.py",
+        "--output-dir",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+        "--only",
+        "contact_manifold"
+      ],
+      "evidence_status": "requires_fresh_same_contract_human_scale_run",
+      "expected_result_artifact": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract/summary.json",
+      "output_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+      "phase_explanation_required": true,
+      "public_wording_authorized": false,
+      "release_evidence": false,
+      "row_id": "contact_manifold_aabb_collect_k",
+      "row_label": "Contact manifold AABB collect-k broadphase",
+      "runner": "human_scale_same_contract"
+    },
+    {
+      "app": "raydb_style",
+      "claim_boundary": "ray/triangle prepare, traversal, grouped reduction, avoided typed hit-stream materialization",
+      "command": [
+        "python3",
+        "scripts/rtdl_human_scale_rt_vs_embree_comparison.py",
+        "--output-dir",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+        "--only",
+        "raydb_style"
+      ],
+      "evidence_status": "requires_fresh_same_contract_human_scale_run",
+      "expected_result_artifact": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract/summary.json",
+      "output_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+      "phase_explanation_required": true,
+      "public_wording_authorized": false,
+      "release_evidence": false,
+      "row_id": "raydb_style_grouped_i64_count",
+      "row_label": "RayDB-style grouped i64 count",
+      "runner": "human_scale_same_contract"
+    },
+    {
+      "app": "barnes_hut",
+      "claim_boundary": "tree/body prepare, traversal, coverage threshold decision, excluded force-vector work",
+      "command": [
+        "python3",
+        "scripts/rtdl_human_scale_rt_vs_embree_comparison.py",
+        "--output-dir",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+        "--only",
+        "barnes_hut"
+      ],
+      "evidence_status": "requires_fresh_same_contract_human_scale_run",
+      "expected_result_artifact": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract/summary.json",
+      "output_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+      "phase_explanation_required": true,
+      "public_wording_authorized": false,
+      "release_evidence": false,
+      "row_id": "barnes_hut_node_coverage",
+      "row_label": "Barnes-Hut node coverage",
+      "runner": "human_scale_same_contract"
+    },
+    {
+      "app": "librts_spatial_index",
+      "claim_boundary": "scene prepare, point/range query traversal, all-ops count consistency, scene-prepare amortization",
+      "command": [
+        "python3",
+        "scripts/rtdl_human_scale_rt_vs_embree_comparison.py",
+        "--output-dir",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+        "--only",
+        "librts_spatial_index"
+      ],
+      "evidence_status": "requires_fresh_same_contract_human_scale_run",
+      "expected_result_artifact": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract/summary.json",
+      "output_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+      "phase_explanation_required": true,
+      "public_wording_authorized": false,
+      "release_evidence": false,
+      "row_id": "librts_spatial_index_aabb",
+      "row_label": "LibRTS-style AABB index",
+      "runner": "human_scale_same_contract"
+    },
+    {
+      "app": "rtnn",
+      "claim_boundary": "prepared index/search, traversal, ranked-summary output, materialization cost",
+      "command": [
+        "python3",
+        "scripts/rtdl_human_scale_rt_vs_embree_comparison.py",
+        "--output-dir",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+        "--only",
+        "rtnn"
+      ],
+      "evidence_status": "requires_fresh_same_contract_human_scale_run",
+      "expected_result_artifact": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract/summary.json",
+      "output_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+      "phase_explanation_required": true,
+      "public_wording_authorized": false,
+      "release_evidence": false,
+      "row_id": "rtnn_ranked_summary",
+      "row_label": "RTNN fixed-radius ranked summary",
+      "runner": "human_scale_same_contract"
+    },
+    {
+      "app": "triangle_counting",
+      "claim_boundary": "ray/triangle prepare, any-hit traversal, scalar accumulation, excluded graph workload claims",
+      "command": [
+        "python3",
+        "scripts/rtdl_human_scale_rt_vs_embree_comparison.py",
+        "--output-dir",
+        "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+        "--only",
+        "triangle_counting"
+      ],
+      "evidence_status": "requires_fresh_same_contract_human_scale_run",
+      "expected_result_artifact": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract/summary.json",
+      "output_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+      "phase_explanation_required": true,
+      "public_wording_authorized": false,
+      "release_evidence": false,
+      "row_id": "triangle_counting_any_hit",
+      "row_label": "Triangle counting RT-2A1 summary",
+      "runner": "human_scale_same_contract"
+    }
+  ],
+  "status": "executable_plan_not_release_evidence",
+  "summary": {
+    "human_scale_row_count": 11,
+    "output_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14",
+    "overlay_pairs": "all_section57_pairs_8_of_8",
+    "overlay_row_count": 1,
+    "public_wording_authorized_count": 0,
+    "release_evidence_count": 0,
+    "release_ready": false,
+    "row_count": 12
+  },
+  "validation": {
+    "errors": [],
+    "status": "accept_executable_plan"
+  },
+  "version": "rtdl.v2_14.benchmark_run_plan.goal4380.v1"
+}

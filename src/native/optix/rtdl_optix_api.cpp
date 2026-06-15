@@ -438,6 +438,268 @@ extern "C" int rtdl_optix_count_prepared_segment_first_hit(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_rayjoin_cdb_point_location_2d(
+        const RtdlRayjoinCdbSegment* segments,
+        size_t segment_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!segments && segment_count != 0)
+            throw std::runtime_error("segments pointer must not be null when segment_count is nonzero");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_rayjoin_cdb_point_location_2d_optix(segments, segment_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_rayjoin_cdb_point_location_2d(
+        void* prepared,
+        const RtdlPoint* points, size_t point_count,
+        RtdlRayjoinCdbPointLocationRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared CDB point-location handle must not be null");
+        if (!points && point_count != 0)
+            throw std::runtime_error("points pointer must not be null when point_count is nonzero");
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("row output pointers must not be null");
+        run_prepared_rayjoin_cdb_point_location_2d_optix(
+            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
+            points,
+            point_count,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d(
+        void* prepared,
+        const RtdlPoint* points, size_t point_count,
+        void** prepared_points_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared CDB point-location handle must not be null");
+        if (!points && point_count != 0)
+            throw std::runtime_error("points pointer must not be null when point_count is nonzero");
+        if (!prepared_points_out)
+            throw std::runtime_error("prepared_points_out must not be null");
+        *prepared_points_out = nullptr;
+        *prepared_points_out = prepare_rayjoin_cdb_point_location_points_2d_optix(
+            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
+            points,
+            point_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d_device_points(
+        void* prepared,
+        void* prepared_points,
+        size_t* positive_face_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared CDB point-location handle must not be null");
+        if (!prepared_points)
+            throw std::runtime_error("prepared CDB point-location query points handle must not be null");
+        if (!positive_face_count_out)
+            throw std::runtime_error("positive_face_count_out must not be null");
+        count_prepared_rayjoin_cdb_point_location_2d_device_points_optix(
+            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
+            reinterpret_cast<PreparedRayjoinCdbPointLocationPoints2D*>(prepared_points),
+            positive_face_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_write_prepared_rayjoin_cdb_point_location_2d_device_segment_ids(
+        void* prepared,
+        void* prepared_points,
+        size_t* point_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared CDB point-location handle must not be null");
+        if (!prepared_points)
+            throw std::runtime_error("prepared CDB point-location query points handle must not be null");
+        if (!point_count_out)
+            throw std::runtime_error("point_count_out must not be null");
+        write_prepared_rayjoin_cdb_point_location_2d_device_segment_ids_optix(
+            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
+            reinterpret_cast<PreparedRayjoinCdbPointLocationPoints2D*>(prepared_points),
+            point_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_write_prepared_rayjoin_cdb_point_location_2d_device_face_ids(
+        void* prepared,
+        void* prepared_points,
+        size_t* point_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared CDB point-location handle must not be null");
+        if (!prepared_points)
+            throw std::runtime_error("prepared CDB point-location query points handle must not be null");
+        if (!point_count_out)
+            throw std::runtime_error("point_count_out must not be null");
+        write_prepared_rayjoin_cdb_point_location_2d_device_face_ids_optix(
+            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
+            reinterpret_cast<PreparedRayjoinCdbPointLocationPoints2D*>(prepared_points),
+            point_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d(
+        void* prepared,
+        const RtdlPoint* points, size_t point_count,
+        size_t* positive_face_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared CDB point-location handle must not be null");
+        if (!points && point_count != 0)
+            throw std::runtime_error("points pointer must not be null when point_count is nonzero");
+        if (!positive_face_count_out)
+            throw std::runtime_error("positive_face_count_out must not be null");
+        count_prepared_rayjoin_cdb_point_location_2d_optix(
+            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
+            points,
+            point_count,
+            positive_face_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_rayjoin_cdb_point_location_2d(void* prepared)
+{
+    delete reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_rayjoin_cdb_point_location_points_2d(void* prepared_points)
+{
+    delete reinterpret_cast<PreparedRayjoinCdbPointLocationPoints2D*>(prepared_points);
+}
+
+extern "C" int rtdl_optix_prepare_directed_segment_point_location_2d(
+        const RtdlDirectedSegmentFace2D* segments,
+        size_t segment_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return rtdl_optix_prepare_rayjoin_cdb_point_location_2d(
+        reinterpret_cast<const RtdlRayjoinCdbSegment*>(segments),
+        segment_count,
+        prepared_out,
+        error_out,
+        error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_directed_segment_point_location_2d(
+        void* prepared,
+        const RtdlPoint* points, size_t point_count,
+        RtdlDirectedSegmentPointLocationRow2D** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return rtdl_optix_run_prepared_rayjoin_cdb_point_location_2d(
+        prepared,
+        points,
+        point_count,
+        reinterpret_cast<RtdlRayjoinCdbPointLocationRow**>(rows_out),
+        row_count_out,
+        error_out,
+        error_size);
+}
+
+extern "C" int rtdl_optix_prepare_directed_segment_point_location_points_2d(
+        void* prepared,
+        const RtdlPoint* points, size_t point_count,
+        void** prepared_points_out,
+        char* error_out, size_t error_size)
+{
+    return rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d(
+        prepared,
+        points,
+        point_count,
+        prepared_points_out,
+        error_out,
+        error_size);
+}
+
+extern "C" int rtdl_optix_count_prepared_directed_segment_point_location_2d_device_points(
+        void* prepared,
+        void* prepared_points,
+        size_t* positive_face_count_out,
+        char* error_out, size_t error_size)
+{
+    return rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d_device_points(
+        prepared,
+        prepared_points,
+        positive_face_count_out,
+        error_out,
+        error_size);
+}
+
+extern "C" int rtdl_optix_write_prepared_directed_segment_point_location_2d_device_segment_ids(
+        void* prepared,
+        void* prepared_points,
+        size_t* point_count_out,
+        char* error_out, size_t error_size)
+{
+    return rtdl_optix_write_prepared_rayjoin_cdb_point_location_2d_device_segment_ids(
+        prepared,
+        prepared_points,
+        point_count_out,
+        error_out,
+        error_size);
+}
+
+extern "C" int rtdl_optix_write_prepared_directed_segment_point_location_2d_device_face_ids(
+        void* prepared,
+        void* prepared_points,
+        size_t* point_count_out,
+        char* error_out, size_t error_size)
+{
+    return rtdl_optix_write_prepared_rayjoin_cdb_point_location_2d_device_face_ids(
+        prepared,
+        prepared_points,
+        point_count_out,
+        error_out,
+        error_size);
+}
+
+extern "C" int rtdl_optix_count_prepared_directed_segment_point_location_2d(
+        void* prepared,
+        const RtdlPoint* points, size_t point_count,
+        size_t* positive_face_count_out,
+        char* error_out, size_t error_size)
+{
+    return rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d(
+        prepared,
+        points,
+        point_count,
+        positive_face_count_out,
+        error_out,
+        error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_directed_segment_point_location_2d(void* prepared)
+{
+    rtdl_optix_destroy_prepared_rayjoin_cdb_point_location_2d(prepared);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_directed_segment_point_location_points_2d(void* prepared_points)
+{
+    rtdl_optix_destroy_prepared_rayjoin_cdb_point_location_points_2d(prepared_points);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_segment_pair_intersection(void* prepared)
 {
     delete reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared);

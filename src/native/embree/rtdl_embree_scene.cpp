@@ -34,7 +34,27 @@ struct SceneHolder {
   }
 };
 
+void apply_scene_build_quality_from_env(RTCScene scene, const char* env_name) {
+  const char* raw = std::getenv(env_name);
+  if (raw == nullptr || raw[0] == '\0') {
+    return;
+  }
+  const std::string value(raw);
+  if (value == "low") {
+    rtcSetSceneBuildQuality(scene, RTC_BUILD_QUALITY_LOW);
+  } else if (value == "medium") {
+    rtcSetSceneBuildQuality(scene, RTC_BUILD_QUALITY_MEDIUM);
+  } else if (value == "high") {
+    rtcSetSceneBuildQuality(scene, RTC_BUILD_QUALITY_HIGH);
+  } else if (value == "refit") {
+    rtcSetSceneBuildQuality(scene, RTC_BUILD_QUALITY_REFIT);
+  } else {
+    throw std::runtime_error(std::string(env_name) + " must be one of: low, medium, high, refit");
+  }
+}
+
 constexpr float kBvhCandidatePad = 2.5e-1f;
+constexpr float kRayjoinCdbBoundsPad = 1.0e-4f;
 
 enum class QueryKind {
   kNone,
@@ -52,16 +72,35 @@ enum class QueryKind {
   kFixedRadiusNeighbors,
   kFixedRadiusNeighbors3D,
   kFixedRadiusCountThreshold,
+  kFixedRadiusCountThreshold3D,
   kNearestPoint,
   kKnnRows,
   kKnnRows3D,
   kColumnarPredicateScanRay,
   kColumnarGroupedCountRay,
   kColumnarGroupedSumRay,
+  kRayjoinCdbPointLocation,
 };
 
 struct SegmentSceneData {
   const std::vector<Segment2D>* segments;
+};
+
+struct RayjoinCdbSegment2D {
+  uint32_t id;
+  Vec2 a;
+  Vec2 b;
+  uint32_t left_face_id;
+  uint32_t right_face_id;
+  int64_t rayjoin_x0 = 0;
+  int64_t rayjoin_y0 = 0;
+  int64_t rayjoin_x1 = 0;
+  int64_t rayjoin_y1 = 0;
+  bool has_rayjoin_scale = false;
+};
+
+struct RayjoinCdbSegmentSceneData {
+  const std::vector<RayjoinCdbSegment2D>* segments;
 };
 
 struct PolygonSceneData {
@@ -114,6 +153,7 @@ struct SegmentPairIntersectionQueryState {
   const Segment2D* probe;
   std::vector<std::pair<size_t, RtdlSegmentPairIntersectionRow>>* rows;
   const std::vector<size_t>* build_order_by_primitive;
+  uint32_t predicate_mode;
 };
 
 struct PipQueryState {
@@ -159,6 +199,22 @@ struct RayClosestHitState3D {
   double* best_t;
   bool* has_hit;
   std::unordered_set<uint32_t>* seen_triangle_ids;
+};
+
+struct RayjoinCdbPointLocationQueryState {
+  const Point2D* point;
+  uint32_t* best_primitive_index;
+  uint32_t* best_segment_id;
+  double* best_t;
+  double* best_y;
+  double* best_slope;
+  bool* has_hit;
+  uint32_t query_map_id;
+  int64_t rayjoin_x = 0;
+  int64_t rayjoin_y = 0;
+  double rayjoin_rry = 0.0;
+  bool has_rayjoin_scale = false;
+  bool allow_equal_ties = false;
 };
 
 struct RayPrimitiveGroupedI64ReductionState3D {
@@ -216,6 +272,16 @@ struct FixedRadiusNeighborsQueryState3D {
 struct FixedRadiusCountThresholdQueryState {
   const Point2D* query;
   const std::vector<Point2D>* search_points;
+  double radius_squared;
+  size_t threshold;
+  uint32_t neighbor_count;
+  uint32_t threshold_reached;
+  std::unordered_set<uint32_t>* seen_neighbor_ids;
+};
+
+struct FixedRadiusCountThresholdQueryState3D {
+  const Point3D* query;
+  const std::vector<Point3D>* search_points;
   double radius_squared;
   size_t threshold;
   uint32_t neighbor_count;
@@ -392,6 +458,34 @@ void set_ray(RTCRayHit* rayhit, const Vec2& origin, const Vec2& direction, float
   for (unsigned i = 0; i < RTC_MAX_INSTANCE_LEVEL_COUNT; ++i) {
     rayhit->hit.instID[i] = RTC_INVALID_GEOMETRY_ID;
   }
+}
+
+Segment2D rayjoin_lsi_trace_segment(const Segment2D& probe) {
+  Segment2D trace = probe;
+  if (trace.a.x == trace.b.x) {
+    if (trace.a.y > trace.b.y) {
+      std::swap(trace.a, trace.b);
+    }
+  } else if (trace.a.x > trace.b.x) {
+    std::swap(trace.a, trace.b);
+  }
+  return trace;
+}
+
+void set_segment_pair_query_ray(
+    RTCRayHit* rayhit,
+    const Segment2D& probe,
+    uint32_t predicate_mode) {
+  const Segment2D trace = predicate_mode == 1u
+      ? rayjoin_lsi_trace_segment(probe)
+      : probe;
+  const Vec2 direction = sub(trace.b, trace.a);
+  const double endpoint_pad = predicate_mode == 1u ? 0.0 : 1.0e-4;
+  Vec2 padded_origin {
+      trace.a.x - direction.x * endpoint_pad,
+      trace.a.y - direction.y * endpoint_pad,
+  };
+  set_ray(rayhit, padded_origin, direction, static_cast<float>(1.0 + endpoint_pad * 2.0));
 }
 
 void set_ray_3d(RTCRayHit* rayhit, const Vec3& origin, const Vec3& direction, float tmax) {
@@ -592,6 +686,34 @@ void segment_bounds(const RTCBoundsFunctionArguments* args) {
   args->bounds_o->upper_z = kEps;
 }
 
+void rayjoin_lsi_segment_bounds(const RTCBoundsFunctionArguments* args) {
+  constexpr double kRayjoinLsiBoundsPad = kBvhCandidatePad;
+  auto* data = static_cast<SegmentSceneData*>(args->geometryUserPtr);
+  const Segment2D& segment = (*data->segments)[args->primID];
+  Bounds2D b = bounds_for_segment(segment);
+  args->bounds_o->lower_x = static_cast<float>(b.min_x - kRayjoinLsiBoundsPad);
+  args->bounds_o->lower_y = static_cast<float>(b.min_y - kRayjoinLsiBoundsPad);
+  args->bounds_o->lower_z = static_cast<float>(-kRayjoinLsiBoundsPad);
+  args->bounds_o->upper_x = static_cast<float>(b.max_x + kRayjoinLsiBoundsPad);
+  args->bounds_o->upper_y = static_cast<float>(b.max_y + kRayjoinLsiBoundsPad);
+  args->bounds_o->upper_z = static_cast<float>(kRayjoinLsiBoundsPad);
+}
+
+void rayjoin_cdb_segment_bounds(const RTCBoundsFunctionArguments* args) {
+  auto* data = static_cast<RayjoinCdbSegmentSceneData*>(args->geometryUserPtr);
+  const RayjoinCdbSegment2D& segment = (*data->segments)[args->primID];
+  const double min_x = std::min(segment.a.x, segment.b.x);
+  const double min_y = std::min(segment.a.y, segment.b.y);
+  const double max_x = std::max(segment.a.x, segment.b.x);
+  const double max_y = std::max(segment.a.y, segment.b.y);
+  args->bounds_o->lower_x = static_cast<float>(min_x) - kRayjoinCdbBoundsPad;
+  args->bounds_o->lower_y = static_cast<float>(min_y) - kRayjoinCdbBoundsPad;
+  args->bounds_o->lower_z = -kRayjoinCdbBoundsPad;
+  args->bounds_o->upper_x = static_cast<float>(max_x) + kRayjoinCdbBoundsPad;
+  args->bounds_o->upper_y = static_cast<float>(max_y) + kRayjoinCdbBoundsPad;
+  args->bounds_o->upper_z = kRayjoinCdbBoundsPad;
+}
+
 void polygon_bounds(const RTCBoundsFunctionArguments* args) {
   auto* data = static_cast<PolygonSceneData*>(args->geometryUserPtr);
   const Polygon2D& polygon = (*data->polygons)[args->primID];
@@ -684,6 +806,198 @@ void triangle_bounds_3d(const RTCBoundsFunctionArguments* args) {
   args->bounds_o->upper_z = b.max_z;
 }
 
+struct RayjoinCdbLine {
+  __int128 a;
+  __int128 b;
+  __int128 c;
+};
+
+RayjoinCdbLine rayjoin_cdb_line_for_segment(const RayjoinCdbSegment2D& segment) {
+  RayjoinCdbLine line;
+  line.a = static_cast<__int128>(segment.rayjoin_y0) - static_cast<__int128>(segment.rayjoin_y1);
+  line.b = static_cast<__int128>(segment.rayjoin_x1) - static_cast<__int128>(segment.rayjoin_x0);
+  line.c = -(static_cast<__int128>(segment.rayjoin_x0) * line.a) -
+           (static_cast<__int128>(segment.rayjoin_y0) * line.b);
+  if (line.b < 0) {
+    line.a = -line.a;
+    line.b = -line.b;
+    line.c = -line.c;
+  }
+  return line;
+}
+
+double rayjoin_cdb_segment_slope_scaled(const RayjoinCdbSegment2D& segment) {
+  const RayjoinCdbLine line = rayjoin_cdb_line_for_segment(segment);
+  if (line.b == 0) {
+    return 0.0;
+  }
+  return static_cast<double>(line.a) / static_cast<double>(line.b);
+}
+
+double rayjoin_cdb_segment_slope_world(const RayjoinCdbSegment2D& segment) {
+  double a = segment.a.y - segment.b.y;
+  double b = segment.b.x - segment.a.x;
+  if (b < 0.0) {
+    a = -a;
+    b = -b;
+  }
+  if (b == 0.0) {
+    return 0.0;
+  }
+  return a / b;
+}
+
+bool rayjoin_cdb_vertical_ray_segment_scaled(
+    const RayjoinCdbPointLocationQueryState& state,
+    const RayjoinCdbSegment2D& segment,
+    double* hit_y_out,
+    double* hit_t_out,
+    double* slope_out) {
+  if (!state.has_rayjoin_scale || !segment.has_rayjoin_scale) {
+    return false;
+  }
+  const int64_t x_min = std::min(segment.rayjoin_x0, segment.rayjoin_x1);
+  const int64_t x_max = std::max(segment.rayjoin_x0, segment.rayjoin_x1);
+  const int64_t excluded_x = state.query_map_id == 0u ? x_min : x_max;
+  if (state.rayjoin_x < x_min || state.rayjoin_x > x_max || state.rayjoin_x == excluded_x) {
+    return false;
+  }
+
+  const RayjoinCdbLine line = rayjoin_cdb_line_for_segment(segment);
+  if (line.b == 0) {
+    return false;
+  }
+  const __int128 numerator =
+      -(line.a * static_cast<__int128>(state.rayjoin_x)) - line.c;
+  const double xsect_y = static_cast<double>(numerator) / static_cast<double>(line.b);
+  double diff_y = static_cast<double>(state.rayjoin_y) - xsect_y;
+  if (diff_y == 0.0) {
+    diff_y = state.query_map_id == 0u ? -static_cast<double>(line.a) : static_cast<double>(line.a);
+  }
+  if (diff_y == 0.0) {
+    diff_y = state.query_map_id == 0u ? -static_cast<double>(line.b) : static_cast<double>(line.b);
+  }
+  if (diff_y > 0.0) {
+    return false;
+  }
+  *hit_y_out = xsect_y;
+  const int64_t truncated_hit_y = static_cast<int64_t>(xsect_y);
+  *hit_t_out = std::max(
+      0.0,
+      static_cast<double>(truncated_hit_y - state.rayjoin_y) * state.rayjoin_rry);
+  *slope_out = static_cast<double>(line.a) / static_cast<double>(line.b);
+  return true;
+}
+
+bool rayjoin_cdb_vertical_ray_segment_t_precise(
+    const Point2D& point,
+    const RayjoinCdbSegment2D& segment,
+    uint32_t query_map_id,
+    double* t_out,
+    double* slope_out) {
+  constexpr double eps = 1.0e-7;
+  const double point_x = static_cast<double>(static_cast<float>(point.p.x));
+  const double point_y = static_cast<double>(static_cast<float>(point.p.y));
+  const double ax = static_cast<double>(static_cast<float>(segment.a.x));
+  const double ay = static_cast<double>(static_cast<float>(segment.a.y));
+  const double bx = static_cast<double>(static_cast<float>(segment.b.x));
+  const double by = static_cast<double>(static_cast<float>(segment.b.y));
+  const double sx = bx - ax;
+  if (std::fabs(sx) <= eps) {
+    return false;
+  }
+  const double lo_x = std::min(ax, bx);
+  const double hi_x = std::max(ax, bx);
+  const double excluded_x = query_map_id == 0u ? lo_x : hi_x;
+  if (point_x < lo_x - eps || point_x > hi_x + eps || std::fabs(point_x - excluded_x) <= eps) {
+    return false;
+  }
+  const double u = (point_x - ax) / sx;
+  if (u < -eps || u > 1.0 + eps) {
+    return false;
+  }
+  const double hit_y = ay + u * (by - ay);
+  double diff_y = point_y - hit_y;
+  double a = ay - by;
+  double b = bx - ax;
+  if (b < 0.0) {
+    a = -a;
+    b = -b;
+  }
+  if (std::fabs(diff_y) <= eps) {
+    diff_y = query_map_id == 0u ? -a : a;
+  }
+  if (std::fabs(diff_y) <= eps) {
+    diff_y = query_map_id == 0u ? -b : b;
+  }
+  if (diff_y > eps) {
+    return false;
+  }
+  const double t = hit_y - point_y;
+  *t_out = std::max(0.0, t);
+  *slope_out = a / b;
+  return true;
+}
+
+bool rayjoin_cdb_vertical_ray_segment_t(
+    const Point2D& point,
+    const RayjoinCdbSegment2D& segment,
+    uint32_t query_map_id,
+    double* t_out,
+    double* slope_out) {
+  constexpr float eps = 1.0e-7f;
+  constexpr float refine_eps = 1.0e-5f;
+  const float point_x = static_cast<float>(point.p.x);
+  const float point_y = static_cast<float>(point.p.y);
+  const float ax = static_cast<float>(segment.a.x);
+  const float ay = static_cast<float>(segment.a.y);
+  const float bx = static_cast<float>(segment.b.x);
+  const float by = static_cast<float>(segment.b.y);
+  const float sx = bx - ax;
+  if (std::fabs(sx) <= eps) {
+    return false;
+  }
+  const float lo_x = std::min(ax, bx);
+  const float hi_x = std::max(ax, bx);
+  const float excluded_x = query_map_id == 0u ? lo_x : hi_x;
+  if (point_x < lo_x - eps || point_x > hi_x + eps || std::fabs(point_x - excluded_x) <= eps) {
+    return false;
+  }
+  const float u = (point_x - ax) / sx;
+  if (u < -eps || u > 1.0f + eps) {
+    return false;
+  }
+  const float hit_y = ay + u * (by - ay);
+  const float diff_y = point_y - hit_y;
+  if (std::fabs(diff_y) <= refine_eps) {
+    return rayjoin_cdb_vertical_ray_segment_t_precise(point, segment, query_map_id, t_out, slope_out);
+  }
+  float a = ay - by;
+  float b = bx - ax;
+  if (b < 0.0f) {
+    a = -a;
+    b = -b;
+  }
+  if (diff_y > eps) {
+    return false;
+  }
+  const float t = hit_y - point_y;
+  *t_out = static_cast<double>(std::max(0.0f, t));
+  *slope_out = static_cast<double>(a / b);
+  return true;
+}
+
+uint32_t rayjoin_cdb_face_for_segment_direction(const RayjoinCdbSegment2D& segment) {
+  if (segment.has_rayjoin_scale) {
+    return segment.rayjoin_x0 < segment.rayjoin_x1
+        ? segment.right_face_id
+        : segment.left_face_id;
+  }
+  return static_cast<float>(segment.a.x) < static_cast<float>(segment.b.x)
+      ? segment.right_face_id
+      : segment.left_face_id;
+}
+
 void segment_intersect(const RTCIntersectFunctionNArguments* args) {
   if (args->N != 1 || args->valid[0] != -1 || g_query_kind != QueryKind::kSegmentPairIntersection || g_query_state == nullptr) {
     return;
@@ -692,7 +1006,14 @@ void segment_intersect(const RTCIntersectFunctionNArguments* args) {
   auto* state = static_cast<SegmentPairIntersectionQueryState*>(g_query_state);
   const Segment2D& build = (*data->segments)[args->primID];
   Vec2 point {};
-  if (segment_intersection(*state->probe, build, &point)) {
+  const bool hit = state->predicate_mode == 1u
+      ? rayjoin_lsi_segment_intersection(*state->probe, build)
+      : segment_intersection(*state->probe, build, &point);
+  if (hit) {
+    if (state->predicate_mode == 1u &&
+        !segment_intersection(*state->probe, build, &point)) {
+      return;
+    }
     // segment-pair intersection collects all intersecting build segments directly from the user-geometry
     // callback; this path is not limited to a single closest-hit row.
     const size_t build_order = state->build_order_by_primitive == nullptr
@@ -700,6 +1021,86 @@ void segment_intersect(const RTCIntersectFunctionNArguments* args) {
         : state->build_order_by_primitive->at(args->primID);
     state->rows->push_back({build_order, {state->probe->id, build.id, point.x, point.y}});
   }
+}
+
+void rayjoin_cdb_point_location_intersect(const RTCIntersectFunctionNArguments* args) {
+  if (args->N != 1 || args->valid[0] != -1 ||
+      g_query_kind != QueryKind::kRayjoinCdbPointLocation ||
+      g_query_state == nullptr) {
+    return;
+  }
+  auto* data = static_cast<RayjoinCdbSegmentSceneData*>(args->geometryUserPtr);
+  auto* state = static_cast<RayjoinCdbPointLocationQueryState*>(g_query_state);
+  auto* rayhit = reinterpret_cast<RTCRayHit*>(args->rayhit);
+  const RayjoinCdbSegment2D& segment = (*data->segments)[args->primID];
+  double hit_t = 0.0;
+  double hit_y = 0.0;
+  double slope = 0.0;
+  bool better = false;
+  if (state->has_rayjoin_scale && segment.has_rayjoin_scale) {
+    if (!rayjoin_cdb_vertical_ray_segment_scaled(*state, segment, &hit_y, &hit_t, &slope)) {
+      return;
+    }
+    if (hit_t < 0.0) {
+      return;
+    }
+    if (hit_t < static_cast<double>(rayhit->ray.tnear) - kSegmentIntersectionEps ||
+        hit_t > static_cast<double>(rayhit->ray.tfar) + kSegmentIntersectionEps) {
+      return;
+    }
+    if (!*state->has_hit || hit_y < *state->best_y) {
+      better = true;
+    } else if (hit_y == *state->best_y) {
+      if (*state->best_primitive_index == std::numeric_limits<uint32_t>::max()) {
+        better = true;
+      } else {
+        const RayjoinCdbSegment2D& best_segment = (*data->segments)[*state->best_primitive_index];
+        const double best_slope = rayjoin_cdb_segment_slope_scaled(best_segment);
+        const bool current_slope_gt = slope > best_slope;
+        better = state->query_map_id == 0u ? !current_slope_gt : current_slope_gt;
+      }
+    }
+  } else {
+    if (!rayjoin_cdb_vertical_ray_segment_t(*state->point, segment, state->query_map_id, &hit_t, &slope)) {
+      return;
+    }
+    if (hit_t < static_cast<double>(rayhit->ray.tnear) - kSegmentIntersectionEps ||
+        hit_t > static_cast<double>(rayhit->ray.tfar) + kSegmentIntersectionEps) {
+      return;
+    }
+    better =
+        !*state->has_hit ||
+        hit_t < *state->best_t - kSegmentIntersectionEps ||
+        (std::fabs(hit_t - *state->best_t) <= kSegmentIntersectionEps &&
+         ((state->query_map_id == 0u &&
+           slope < rayjoin_cdb_segment_slope_world((*data->segments)[*state->best_primitive_index]) -
+                       kSegmentIntersectionEps) ||
+          (state->query_map_id != 0u &&
+           slope > rayjoin_cdb_segment_slope_world((*data->segments)[*state->best_primitive_index]) +
+                       kSegmentIntersectionEps) ||
+          (std::fabs(slope - *state->best_slope) <= kSegmentIntersectionEps &&
+           segment.id < *state->best_segment_id)));
+  }
+  if (!better) {
+    return;
+  }
+  *state->has_hit = true;
+  *state->best_t = hit_t;
+  *state->best_y = hit_y;
+  *state->best_slope = slope;
+  *state->best_segment_id = segment.id;
+  *state->best_primitive_index = static_cast<uint32_t>(args->primID);
+  const float next_t = state->allow_equal_ties
+      ? std::nextafter(static_cast<float>(hit_t), std::numeric_limits<float>::infinity())
+      : static_cast<float>(hit_t);
+  rayhit->ray.tfar = next_t;
+  rayhit->hit.geomID = args->geomID;
+  rayhit->hit.primID = args->primID;
+  rayhit->hit.u = 0.0f;
+  rayhit->hit.v = 0.0f;
+  rayhit->hit.Ng_x = 0.0f;
+  rayhit->hit.Ng_y = 0.0f;
+  rayhit->hit.Ng_z = 1.0f;
 }
 
 void polygon_intersect_filter(const RTCFilterFunctionNArguments* args);
@@ -924,6 +1325,30 @@ bool point_point_query_collect_3d(RTCPointQueryFunctionArguments* args) {
     if (distance <= state->radius) {
       state->seen_neighbor_ids->insert(search_point.id);
       state->rows->push_back({state->query->id, search_point.id, distance});
+    }
+    return false;
+  }
+  if (g_query_kind == QueryKind::kFixedRadiusCountThreshold3D) {
+    auto* state = static_cast<FixedRadiusCountThresholdQueryState3D*>(args->userPtr);
+    if (state->threshold > 0 && state->threshold_reached != 0) {
+      return false;
+    }
+    const Point3D& search_point = (*state->search_points)[args->primID];
+    if (state->seen_neighbor_ids->find(search_point.id) != state->seen_neighbor_ids->end()) {
+      return false;
+    }
+    double dx = search_point.p.x - state->query->p.x;
+    double dy = search_point.p.y - state->query->p.y;
+    double dz = search_point.p.z - state->query->p.z;
+    double distance_squared = dx * dx + dy * dy + dz * dz;
+    if (distance_squared <= state->radius_squared) {
+      state->seen_neighbor_ids->insert(search_point.id);
+      ++state->neighbor_count;
+      if (state->threshold > 0 && state->neighbor_count >= state->threshold) {
+        state->threshold_reached = 1u;
+        args->query->radius = 0.0f;
+        return true;
+      }
     }
     return false;
   }

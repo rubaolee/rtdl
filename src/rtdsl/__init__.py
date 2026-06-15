@@ -800,9 +800,11 @@ from .datasets import arcgis_pages_to_cdb
 from .datasets import build_arcgis_geojson_query_url
 from .datasets import build_arcgis_query_url
 from .datasets import build_arcgis_layer_url
+from .datasets import chains_to_all_points
 from .datasets import chains_to_polygons
 from .datasets import chains_to_polygon_refs
 from .datasets import chains_to_probe_points
+from .datasets import chains_to_rayjoin_cdb_segments
 from .datasets import chains_to_segment_columns
 from .datasets import chains_to_segments
 from .datasets import chains_to_topology_rows
@@ -871,16 +873,22 @@ from .embree_runtime import EmbreeThreadConfig
 from .embree_runtime import directed_hausdorff_2d_embree
 from .embree_runtime import fixed_radius_count_threshold_2d_embree
 from .embree_runtime import prepare_embree_fixed_radius_count_threshold_2d
+from .embree_runtime import prepare_embree_fixed_radius_count_threshold_3d
 from .embree_runtime import prepare_embree_fixed_radius_neighbors_3d
 from .embree_runtime import prepare_grouped_segment_query_3d
 from .embree_runtime import prepare_embree_knn_rows_2d
 from .embree_runtime import prepare_embree_aabb_index_2d
+from .embree_runtime import prepare_directed_segment_point_location_2d_embree
+from .embree_runtime import prepare_rayjoin_cdb_point_location_2d_embree
 from .embree_runtime import prepare_embree_static_triangle_scene_3d
 from .embree_runtime import PreparedEmbreeAabbIndex2D
 from .embree_runtime import PreparedEmbreeFixedRadiusCountThreshold2D
+from .embree_runtime import PreparedEmbreeFixedRadiusCountThreshold3D
 from .embree_runtime import PreparedEmbreeFixedRadiusNeighbors3D
 from .embree_runtime import PreparedGroupedSegmentQuery3D
 from .embree_runtime import PreparedEmbreeKnnRows2D
+from .embree_runtime import PreparedEmbreeDirectedSegmentPointLocation2D
+from .embree_runtime import PreparedEmbreeRayjoinCdbPointLocation2D
 from .embree_runtime import PreparedEmbreeStaticTriangleScene3D
 from .embree_runtime import run_embree_count
 from .embree_runtime import run_embree_grouped_segment_any_hit_flags_3d
@@ -1205,12 +1213,18 @@ from .optix_runtime import PreparedOptixGroupedSegmentQuery3D
 from .optix_runtime import PreparedOptixGroupedCandidateArgmin
 from .optix_runtime import PreparedOptixSegmentPolygonAnyHitRows2D
 from .optix_runtime import PreparedOptixSegmentPolygonHitcount2D
+from .optix_runtime import PreparedOptixDirectedSegmentPointLocation2D
+from .optix_runtime import PreparedOptixDirectedSegmentPointLocationPoints2D
+from .optix_runtime import PreparedOptixRayjoinCdbPointLocation2D
+from .optix_runtime import PreparedOptixRayjoinCdbPointLocationPoints2D
 from .optix_runtime import PreparedOptixPointClosedShapeMembership2D
 from .optix_runtime import PreparedOptixPointClosedShapeBatchCountExecutor2D
 from .optix_runtime import PreparedOptixPointClosedShapeBatchCountGraph2D
 from .optix_runtime import PreparedOptixPointProbeColumns2D
 from .optix_runtime import closed_shape_membership_2d_optix
 from .optix_runtime import collect_polygon_pair_candidates_bounded_optix
+from .optix_runtime import prepare_directed_segment_point_location_2d_optix
+from .optix_runtime import prepare_rayjoin_cdb_point_location_2d_optix
 from .optix_runtime import prepare_point_closed_shape_membership_2d_optix
 from .optix_runtime import prepare_point_probe_columns_2d_optix
 from .optix_runtime import ray_segment_group_count_2d_optix
@@ -1401,11 +1415,14 @@ from .embree_runtime import EmbreeRowView
 from .embree_runtime import pack_points
 from .embree_runtime import pack_polygons
 from .embree_runtime import pack_rays
+from .embree_runtime import pack_directed_segment_faces
+from .embree_runtime import pack_rayjoin_cdb_segments
 from .embree_runtime import pack_segments
 from .embree_runtime import pack_triangles
 from .embree_runtime import PackedPoints
 from .embree_runtime import PackedPolygons
 from .embree_runtime import PackedRays
+from .embree_runtime import PackedDirectedSegmentFaces
 from .embree_runtime import PackedSegments
 from .embree_runtime import PackedTriangles
 from .embree_runtime import prepare_embree
@@ -2551,6 +2568,7 @@ __all__ = [
     "PackedPoints",
     "PackedPolygons",
     "PackedRays",
+    "PackedDirectedSegmentFaces",
     "PackedSegments",
     "PackedTriangles",
     "PayloadRegister",
@@ -2782,9 +2800,11 @@ __all__ = [
     "build_arcgis_geojson_query_url",
     "build_arcgis_query_url",
     "build_arcgis_layer_url",
+    "chains_to_all_points",
     "chains_to_polygons",
     "chains_to_polygon_refs",
     "chains_to_probe_points",
+    "chains_to_rayjoin_cdb_segments",
     "chains_to_segment_columns",
     "chains_to_segments",
     "chains_to_topology_rows",
@@ -2845,10 +2865,13 @@ __all__ = [
     "directed_hausdorff_2d_embree",
     "fixed_radius_count_threshold_2d_embree",
     "prepare_embree_fixed_radius_count_threshold_2d",
+    "prepare_embree_fixed_radius_count_threshold_3d",
     "prepare_embree_fixed_radius_neighbors_3d",
     "prepare_grouped_segment_query_3d",
     "prepare_embree_knn_rows_2d",
     "prepare_embree_aabb_index_2d",
+    "prepare_directed_segment_point_location_2d_embree",
+    "prepare_rayjoin_cdb_point_location_2d_embree",
     "prepare_embree_static_triangle_scene_3d",
     "run_embree_grouped_segment_any_hit_flags_3d",
     "knn_rows_cpu",
@@ -2856,9 +2879,12 @@ __all__ = [
     "EmbreeThreadConfig",
     "PreparedEmbreeAabbIndex2D",
     "PreparedEmbreeFixedRadiusCountThreshold2D",
+    "PreparedEmbreeFixedRadiusCountThreshold3D",
     "PreparedEmbreeFixedRadiusNeighbors3D",
     "PreparedGroupedSegmentQuery3D",
     "PreparedEmbreeKnnRows2D",
+    "PreparedEmbreeDirectedSegmentPointLocation2D",
+    "PreparedEmbreeRayjoinCdbPointLocation2D",
     "PreparedEmbreeStaticTriangleScene3D",
     "run_embree_count",
     "configure_embree",
@@ -2960,12 +2986,18 @@ __all__ = [
     "PreparedOptixGroupedCandidateArgmin",
     "PreparedOptixSegmentPolygonAnyHitRows2D",
     "PreparedOptixSegmentPolygonHitcount2D",
+    "PreparedOptixDirectedSegmentPointLocation2D",
+    "PreparedOptixDirectedSegmentPointLocationPoints2D",
+    "PreparedOptixRayjoinCdbPointLocation2D",
+    "PreparedOptixRayjoinCdbPointLocationPoints2D",
     "PreparedOptixPointClosedShapeMembership2D",
     "PreparedOptixPointClosedShapeBatchCountExecutor2D",
     "PreparedOptixPointClosedShapeBatchCountGraph2D",
     "PreparedOptixPointProbeColumns2D",
     "closed_shape_membership_2d_optix",
     "collect_polygon_pair_candidates_bounded_optix",
+    "prepare_directed_segment_point_location_2d_optix",
+    "prepare_rayjoin_cdb_point_location_2d_optix",
     "prepare_point_closed_shape_membership_2d_optix",
     "prepare_point_probe_columns_2d_optix",
     "ray_segment_group_count_2d_optix",
@@ -3160,6 +3192,8 @@ __all__ = [
     "pack_points",
     "pack_polygons",
     "pack_rays",
+    "pack_directed_segment_faces",
+    "pack_rayjoin_cdb_segments",
     "pack_segments",
     "pack_triangles",
     "lower_to_execution_plan",

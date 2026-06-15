@@ -80,6 +80,13 @@ thread_local size_t g_optix_last_segment_pair_raw_candidate_count = 0;
 thread_local size_t g_optix_last_segment_pair_emitted_count = 0;
 thread_local uint32_t g_optix_last_segment_pair_mode = 0;
 
+thread_local double g_optix_last_rayjoin_cdb_point_upload_s = 0.0;
+thread_local double g_optix_last_rayjoin_cdb_traversal_s = 0.0;
+thread_local double g_optix_last_rayjoin_cdb_row_download_s = 0.0;
+thread_local size_t g_optix_last_rayjoin_cdb_point_count = 0;
+thread_local size_t g_optix_last_rayjoin_cdb_positive_face_count = 0;
+thread_local uint32_t g_optix_last_rayjoin_cdb_mode = 0;
+
 thread_local double g_optix_last_shape_pair_left_prepare_s = 0.0;
 thread_local double g_optix_last_shape_pair_left_upload_s = 0.0;
 thread_local double g_optix_last_shape_pair_traversal_s = 0.0;
@@ -148,6 +155,40 @@ extern "C" int rtdl_optix_segment_pair_intersection_get_last_phase_timings(
     if (emitted_count) *emitted_count = g_optix_last_segment_pair_emitted_count;
     if (mode) *mode = g_optix_last_segment_pair_mode;
     return 0;
+}
+
+extern "C" int rtdl_optix_rayjoin_cdb_point_location_get_last_phase_timings(
+        double* point_upload,
+        double* traversal,
+        double* row_download,
+        size_t* point_count,
+        size_t* positive_face_count,
+        uint32_t* mode)
+{
+    if (point_upload) *point_upload = g_optix_last_rayjoin_cdb_point_upload_s;
+    if (traversal) *traversal = g_optix_last_rayjoin_cdb_traversal_s;
+    if (row_download) *row_download = g_optix_last_rayjoin_cdb_row_download_s;
+    if (point_count) *point_count = g_optix_last_rayjoin_cdb_point_count;
+    if (positive_face_count) *positive_face_count = g_optix_last_rayjoin_cdb_positive_face_count;
+    if (mode) *mode = g_optix_last_rayjoin_cdb_mode;
+    return 0;
+}
+
+extern "C" int rtdl_optix_directed_segment_point_location_get_last_phase_timings(
+        double* point_upload,
+        double* traversal,
+        double* row_download,
+        size_t* point_count,
+        size_t* positive_face_count,
+        uint32_t* mode)
+{
+    return rtdl_optix_rayjoin_cdb_point_location_get_last_phase_timings(
+        point_upload,
+        traversal,
+        row_download,
+        point_count,
+        positive_face_count,
+        mode);
 }
 
 extern "C" int rtdl_optix_shape_pair_relation_get_last_phase_timings(
@@ -233,6 +274,16 @@ static void reset_segment_pair_phase_timings(uint32_t mode)
     g_optix_last_segment_pair_raw_candidate_count = 0;
     g_optix_last_segment_pair_emitted_count = 0;
     g_optix_last_segment_pair_mode = mode;
+}
+
+static void reset_rayjoin_cdb_point_location_phase_timings(uint32_t mode)
+{
+    g_optix_last_rayjoin_cdb_point_upload_s = 0.0;
+    g_optix_last_rayjoin_cdb_traversal_s = 0.0;
+    g_optix_last_rayjoin_cdb_row_download_s = 0.0;
+    g_optix_last_rayjoin_cdb_point_count = 0;
+    g_optix_last_rayjoin_cdb_positive_face_count = 0;
+    g_optix_last_rayjoin_cdb_mode = mode;
 }
 
 static void reset_shape_pair_relation_phase_timings(uint32_t mode)
@@ -3910,16 +3961,168 @@ struct SegmentPairLeftIdCountDeviceColumnsLaunchParams {
     uint32_t probe_count;
 };
 
+struct RayjoinLsiScaledSegment {
+    uint32_t id;
+    int64_t x0, y0, x1, y1;
+};
+
+struct RayjoinLsiScaleKey {
+    bool valid = false;
+    double min_x = 0.0;
+    double max_x = 0.0;
+    double min_y = 0.0;
+    double max_y = 0.0;
+};
+
+struct RayjoinCdbScale {
+    bool valid = false;
+    double rx = 0.0;
+    double ry = 0.0;
+    double rrx = 0.0;
+    double rry = 0.0;
+    double deltax = 0.0;
+    double deltay = 0.0;
+    double ddeltax = 0.0;
+    double ddeltay = 0.0;
+};
+
+static bool rayjoin_cdb_parse_env_double(const char* name, double* out)
+{
+    const char* raw = std::getenv(name);
+    if (raw == nullptr || raw[0] == '\0') {
+        return false;
+    }
+    char* end = nullptr;
+    const double value = std::strtod(raw, &end);
+    if (end == raw || *end != '\0' || !std::isfinite(value)) {
+        throw std::runtime_error(std::string(name) + " must be a finite floating-point value");
+    }
+    *out = value;
+    return true;
+}
+
+static RayjoinCdbScale rayjoin_cdb_scale_from_env()
+{
+    double min_x = 0.0;
+    double max_x = 0.0;
+    double min_y = 0.0;
+    double max_y = 0.0;
+    const bool has_min_x = rayjoin_cdb_parse_env_double("RTDL_RAYJOIN_CDB_SCALE_MIN_X", &min_x);
+    const bool has_max_x = rayjoin_cdb_parse_env_double("RTDL_RAYJOIN_CDB_SCALE_MAX_X", &max_x);
+    const bool has_min_y = rayjoin_cdb_parse_env_double("RTDL_RAYJOIN_CDB_SCALE_MIN_Y", &min_y);
+    const bool has_max_y = rayjoin_cdb_parse_env_double("RTDL_RAYJOIN_CDB_SCALE_MAX_Y", &max_y);
+    const bool any = has_min_x || has_max_x || has_min_y || has_max_y;
+    const bool all = has_min_x && has_max_x && has_min_y && has_max_y;
+    if (!any) {
+        return RayjoinCdbScale{};
+    }
+    if (!all) {
+        throw std::runtime_error("RayJoin CDB scale env requires min/max x/y together");
+    }
+    if (!(min_x < max_x) || !(min_y < max_y)) {
+        throw std::runtime_error("RayJoin CDB scale bounds must have min < max on both axes");
+    }
+
+    constexpr int64_t internal_max = (int64_t{1} << 46) - int64_t{1};
+    constexpr int64_t internal_min = -(int64_t{1} << 46);
+    const double margin = 1.0;
+    const double box_max_x = max_x + margin;
+    const double box_min_x = min_x - margin;
+    const double box_max_y = max_y + margin;
+    const double box_min_y = min_y - margin;
+    const double internal_range = static_cast<double>(internal_max - internal_min);
+    RayjoinCdbScale scale;
+    scale.valid = true;
+    scale.rx = internal_range / (box_max_x - box_min_x);
+    scale.ry = internal_range / (box_max_y - box_min_y);
+    scale.rrx = 1.0 / scale.rx;
+    scale.rry = 1.0 / scale.ry;
+    scale.deltax = 0.5 * (
+        static_cast<double>(internal_max + internal_min) -
+        (box_max_x + box_min_x) * scale.rx);
+    scale.deltay = 0.5 * (
+        static_cast<double>(internal_max + internal_min) -
+        (box_max_y + box_min_y) * scale.ry);
+    scale.ddeltax = 0.5 * (
+        (box_max_x + box_min_x) -
+        static_cast<double>(internal_max + internal_min) * scale.rrx);
+    scale.ddeltay = 0.5 * (
+        (box_max_y + box_min_y) -
+        static_cast<double>(internal_max + internal_min) * scale.rry);
+    return scale;
+}
+
+static int64_t rayjoin_cdb_scale_x(const RayjoinCdbScale& scale, double x)
+{
+    return static_cast<int64_t>(std::fma(x, scale.rx, scale.deltax));
+}
+
+static int64_t rayjoin_cdb_scale_y(const RayjoinCdbScale& scale, double y)
+{
+    return static_cast<int64_t>(std::fma(y, scale.ry, scale.deltay));
+}
+
+static double rayjoin_cdb_unscale_x(const RayjoinCdbScale& scale, int64_t x)
+{
+    return static_cast<double>(x) * scale.rrx + scale.ddeltax;
+}
+
+static double rayjoin_cdb_unscale_y(const RayjoinCdbScale& scale, int64_t y)
+{
+    return static_cast<double>(y) * scale.rry + scale.ddeltay;
+}
+
+static size_t rayjoin_cdb_group_max_size_from_env()
+{
+    const char* raw = std::getenv("RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE");
+    if (raw == nullptr || raw[0] == '\0') {
+        raw = std::getenv("RTDL_RAYJOIN_CDB_GROUP_MAX_SIZE");
+    }
+    if (raw == nullptr || raw[0] == '\0') {
+        return 64u;
+    }
+    char* end = nullptr;
+    const unsigned long long value = std::strtoull(raw, &end, 10);
+    if (end == raw || *end != '\0' || value == 0ull || value > 1024ull) {
+        throw std::runtime_error("directed segment point-location group max size must be an integer in [1, 1024]");
+    }
+    return static_cast<size_t>(value);
+}
+
+static double rayjoin_cdb_group_area_enlarge_from_env()
+{
+    double value = 3.5;
+    if (!rayjoin_cdb_parse_env_double("RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE", &value)) {
+        (void)rayjoin_cdb_parse_env_double("RTDL_RAYJOIN_CDB_GROUP_AREA_ENLARGE", &value);
+    }
+    if (!(value > 1.0)) {
+        throw std::runtime_error("directed segment point-location group area enlarge must be greater than 1.0");
+    }
+    return value;
+}
+
+static bool rayjoin_cdb_group_fixed8_from_env()
+{
+    const char* raw = std::getenv("RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE");
+    if (raw == nullptr || raw[0] == '\0') {
+        raw = std::getenv("RTDL_RAYJOIN_CDB_GROUP_MODE");
+    }
+    return raw == nullptr || std::string(raw) != "adaptive";
+}
+
 struct SegmentPairExactCountLaunchParams {
     OptixTraversableHandle traversable;
     const GpuSegment* left_segs;
     const GpuSegment* right_segs;
     const RtdlSegment* left_exact_segs;
+    const RayjoinLsiScaledSegment* left_rayjoin_lsi_segs;
     const RtdlSegment* right_exact_segs;
+    const RayjoinLsiScaledSegment* right_rayjoin_lsi_segs;
     unsigned long long* exact_count;
     unsigned long long* candidate_event_count;
     uint32_t probe_count;
     uint32_t left_offset;
+    uint32_t predicate_mode;
 };
 
 struct SegmentPairGroupRange {
@@ -3931,12 +4134,17 @@ struct SegmentPairGroupedRangeExactCountLaunchParams {
     OptixTraversableHandle traversable;
     const GpuSegment* left_segs;
     const RtdlSegment* left_exact_segs;
+    const RayjoinLsiScaledSegment* left_rayjoin_lsi_segs;
     const RtdlSegment* right_exact_segs;
+    const RayjoinLsiScaledSegment* right_rayjoin_lsi_segs;
     const SegmentPairGroupRange* right_group_ranges;
     unsigned long long* exact_count;
     unsigned long long* group_candidate_count;
+    unsigned long long* pair_output;
+    unsigned long long pair_output_capacity;
     uint32_t probe_count;
     uint32_t left_offset;
+    uint32_t predicate_mode;
 };
 
 struct NativeSegmentPairCandidateDeviceColumnsOwner {
@@ -4088,16 +4296,24 @@ struct RtdlSegment {
     double x0, y0, x1, y1;
 };
 
+struct RayjoinLsiScaledSegment {
+    unsigned int id;
+    long long x0, y0, x1, y1;
+};
+
 struct SegmentPairExactCountLaunchParams {
     OptixTraversableHandle traversable;
     const GpuSegment* left_segs;
     const GpuSegment* right_segs;
     const RtdlSegment* left_exact_segs;
+    const RayjoinLsiScaledSegment* left_rayjoin_lsi_segs;
     const RtdlSegment* right_exact_segs;
+    const RayjoinLsiScaledSegment* right_rayjoin_lsi_segs;
     unsigned long long* exact_count;
     unsigned long long* candidate_event_count;
     unsigned int probe_count;
     unsigned int left_offset;
+    unsigned int predicate_mode;
 };
 
 extern "C" {
@@ -4127,15 +4343,113 @@ static __forceinline__ __device__ bool exact_segment_intersection_device(
     return 0.0 <= t && t <= 1.0 && 0.0 <= u && u <= 1.0;
 }
 
+struct RayjoinLine {
+    __int128 a, b, c;
+};
+
+static __forceinline__ __device__ RayjoinLine rayjoin_line_for_segment(
+    const RayjoinLsiScaledSegment s)
+{
+    RayjoinLine line;
+    line.a = (__int128)s.y0 - (__int128)s.y1;
+    line.b = (__int128)s.x1 - (__int128)s.x0;
+    line.c = -((__int128)s.x0 * line.a) - ((__int128)s.y0 * line.b);
+    if (line.b < 0) {
+        line.a = -line.a;
+        line.b = -line.b;
+        line.c = -line.c;
+    }
+    return line;
+}
+
+static __forceinline__ __device__ __int128 rayjoin_eval(
+    const RayjoinLine line,
+    const long long x,
+    const long long y)
+{
+    return (__int128)x * line.a + (__int128)y * line.b + line.c;
+}
+
+static __forceinline__ __device__ bool rayjoin_same_point(
+    const long long ax,
+    const long long ay,
+    const long long bx,
+    const long long by)
+{
+    return ax == bx && ay == by;
+}
+
+static __forceinline__ __device__ bool rayjoin_lsi_intersection_device(
+    const RayjoinLsiScaledSegment left,
+    const RayjoinLsiScaledSegment right)
+{
+    const RayjoinLine e1 = rayjoin_line_for_segment(left);
+    const RayjoinLine e2 = rayjoin_line_for_segment(right);
+    if ((e1.a == 0 && e1.b == 0) || (e2.a == 0 && e2.b == 0)) {
+        return false;
+    }
+
+    __int128 e2_p1_agst_e1 = rayjoin_eval(e1, right.x0, right.y0);
+    __int128 e2_p2_agst_e1 = rayjoin_eval(e1, right.x1, right.y1);
+    __int128 e1_p1_agst_e2 = rayjoin_eval(e2, left.x0, left.y0);
+    __int128 e1_p2_agst_e2 = rayjoin_eval(e2, left.x1, left.y1);
+
+    if (e1_p1_agst_e2 == 0) e1_p1_agst_e2 = -e2.a;
+    if (e1_p1_agst_e2 == 0) e1_p1_agst_e2 = -e2.b;
+    if (e1_p1_agst_e2 == 0) return false;
+    if (e1_p2_agst_e2 == 0) e1_p2_agst_e2 = -e2.a;
+    if (e1_p2_agst_e2 == 0) e1_p2_agst_e2 = -e2.b;
+    if (e1_p2_agst_e2 == 0) return false;
+    if ((e1_p1_agst_e2 > 0 && e1_p2_agst_e2 > 0) ||
+        (e1_p1_agst_e2 < 0 && e1_p2_agst_e2 < 0)) {
+        return false;
+    }
+
+    if (e2_p1_agst_e1 == 0) e2_p1_agst_e1 = e1.a;
+    if (e2_p1_agst_e1 == 0) e2_p1_agst_e1 = e1.b;
+    if (e2_p1_agst_e1 == 0) return false;
+    if (e2_p2_agst_e1 == 0) e2_p2_agst_e1 = e1.a;
+    if (e2_p2_agst_e1 == 0) e2_p2_agst_e1 = e1.b;
+    if (e2_p2_agst_e1 == 0) return false;
+    if ((e2_p1_agst_e1 > 0 && e2_p2_agst_e1 > 0) ||
+        (e2_p1_agst_e1 < 0 && e2_p2_agst_e1 < 0)) {
+        return false;
+    }
+
+    if ((rayjoin_same_point(left.x0, left.y0, right.x0, right.y0) &&
+         rayjoin_same_point(left.x1, left.y1, right.x1, right.y1)) ||
+        (rayjoin_same_point(left.x0, left.y0, right.x1, right.y1) &&
+         rayjoin_same_point(left.x1, left.y1, right.x0, right.y0))) {
+        return false;
+    }
+    return true;
+}
+
 extern "C" __global__ void __raygen__segment_pair_direct_intersection_exact_count_probe() {
     const unsigned int idx = optixGetLaunchIndex().x;
     if (idx >= params.probe_count) return;
     const GpuSegment p = params.left_segs[idx];
     unsigned int p0 = idx;
+    const float tmax = params.predicate_mode == 1u ? 1.0f : (1.0f + 1.0e-4f);
+    float x0 = p.x0;
+    float y0 = p.y0;
+    float x1 = p.x1;
+    float y1 = p.y1;
+    if (params.predicate_mode == 1u) {
+        if (x0 == x1) {
+            if (y0 > y1) {
+                const float tx = x0; const float ty = y0;
+                x0 = x1; y0 = y1; x1 = tx; y1 = ty;
+            }
+        } else if (x0 > x1) {
+            const float tx = x0; const float ty = y0;
+            x0 = x1; y0 = y1; x1 = tx; y1 = ty;
+        }
+    }
     optixTrace(params.traversable,
-               make_float3(p.x0, p.y0, 0.0f),
-               make_float3(p.x1 - p.x0, p.y1 - p.y0, 0.0f),
-               0.0f, 1.0f + 1.0e-4f, 0.0f,
+               make_float3(x0, y0, 0.0f),
+               make_float3(x1 - x0, y1 - y0, 0.0f),
+               0.0f, tmax, 0.0f,
                OptixVisibilityMask(255),
                OPTIX_RAY_FLAG_NONE,
                0, 1, 0,
@@ -4152,7 +4466,16 @@ extern "C" __global__ void __intersection__segment_pair_direct_intersection_exac
     }
     const RtdlSegment left = params.left_exact_segs[params.left_offset + pidx];
     const RtdlSegment right = params.right_exact_segs[bidx];
-    if (exact_segment_intersection_device(left, right)) {
+    bool hit = false;
+    if (params.predicate_mode == 1u) {
+        const RayjoinLsiScaledSegment left_scaled =
+            params.left_rayjoin_lsi_segs[params.left_offset + pidx];
+        const RayjoinLsiScaledSegment right_scaled = params.right_rayjoin_lsi_segs[bidx];
+        hit = rayjoin_lsi_intersection_device(left_scaled, right_scaled);
+    } else {
+        hit = exact_segment_intersection_device(left, right);
+    }
+    if (hit) {
         atomicAdd(params.exact_count, 1ull);
     }
 }
@@ -4173,6 +4496,11 @@ struct RtdlSegment {
     double x0, y0, x1, y1;
 };
 
+struct RayjoinLsiScaledSegment {
+    unsigned int id;
+    long long x0, y0, x1, y1;
+};
+
 struct SegmentPairGroupRange {
     unsigned int begin;
     unsigned int end;
@@ -4182,12 +4510,17 @@ struct SegmentPairGroupedRangeExactCountLaunchParams {
     OptixTraversableHandle traversable;
     const GpuSegment* left_segs;
     const RtdlSegment* left_exact_segs;
+    const RayjoinLsiScaledSegment* left_rayjoin_lsi_segs;
     const RtdlSegment* right_exact_segs;
+    const RayjoinLsiScaledSegment* right_rayjoin_lsi_segs;
     const SegmentPairGroupRange* right_group_ranges;
     unsigned long long* exact_count;
     unsigned long long* group_candidate_count;
+    unsigned long long* pair_output;
+    unsigned long long pair_output_capacity;
     unsigned int probe_count;
     unsigned int left_offset;
+    unsigned int predicate_mode;
 };
 
 extern "C" {
@@ -4217,15 +4550,113 @@ static __forceinline__ __device__ bool exact_segment_intersection_device(
     return 0.0 <= t && t <= 1.0 && 0.0 <= u && u <= 1.0;
 }
 
+struct RayjoinLine {
+    __int128 a, b, c;
+};
+
+static __forceinline__ __device__ RayjoinLine rayjoin_line_for_segment(
+    const RayjoinLsiScaledSegment s)
+{
+    RayjoinLine line;
+    line.a = (__int128)s.y0 - (__int128)s.y1;
+    line.b = (__int128)s.x1 - (__int128)s.x0;
+    line.c = -((__int128)s.x0 * line.a) - ((__int128)s.y0 * line.b);
+    if (line.b < 0) {
+        line.a = -line.a;
+        line.b = -line.b;
+        line.c = -line.c;
+    }
+    return line;
+}
+
+static __forceinline__ __device__ __int128 rayjoin_eval(
+    const RayjoinLine line,
+    const long long x,
+    const long long y)
+{
+    return (__int128)x * line.a + (__int128)y * line.b + line.c;
+}
+
+static __forceinline__ __device__ bool rayjoin_same_point(
+    const long long ax,
+    const long long ay,
+    const long long bx,
+    const long long by)
+{
+    return ax == bx && ay == by;
+}
+
+static __forceinline__ __device__ bool rayjoin_lsi_intersection_device(
+    const RayjoinLsiScaledSegment left,
+    const RayjoinLsiScaledSegment right)
+{
+    const RayjoinLine e1 = rayjoin_line_for_segment(left);
+    const RayjoinLine e2 = rayjoin_line_for_segment(right);
+    if ((e1.a == 0 && e1.b == 0) || (e2.a == 0 && e2.b == 0)) {
+        return false;
+    }
+
+    __int128 e2_p1_agst_e1 = rayjoin_eval(e1, right.x0, right.y0);
+    __int128 e2_p2_agst_e1 = rayjoin_eval(e1, right.x1, right.y1);
+    __int128 e1_p1_agst_e2 = rayjoin_eval(e2, left.x0, left.y0);
+    __int128 e1_p2_agst_e2 = rayjoin_eval(e2, left.x1, left.y1);
+
+    if (e1_p1_agst_e2 == 0) e1_p1_agst_e2 = -e2.a;
+    if (e1_p1_agst_e2 == 0) e1_p1_agst_e2 = -e2.b;
+    if (e1_p1_agst_e2 == 0) return false;
+    if (e1_p2_agst_e2 == 0) e1_p2_agst_e2 = -e2.a;
+    if (e1_p2_agst_e2 == 0) e1_p2_agst_e2 = -e2.b;
+    if (e1_p2_agst_e2 == 0) return false;
+    if ((e1_p1_agst_e2 > 0 && e1_p2_agst_e2 > 0) ||
+        (e1_p1_agst_e2 < 0 && e1_p2_agst_e2 < 0)) {
+        return false;
+    }
+
+    if (e2_p1_agst_e1 == 0) e2_p1_agst_e1 = e1.a;
+    if (e2_p1_agst_e1 == 0) e2_p1_agst_e1 = e1.b;
+    if (e2_p1_agst_e1 == 0) return false;
+    if (e2_p2_agst_e1 == 0) e2_p2_agst_e1 = e1.a;
+    if (e2_p2_agst_e1 == 0) e2_p2_agst_e1 = e1.b;
+    if (e2_p2_agst_e1 == 0) return false;
+    if ((e2_p1_agst_e1 > 0 && e2_p2_agst_e1 > 0) ||
+        (e2_p1_agst_e1 < 0 && e2_p2_agst_e1 < 0)) {
+        return false;
+    }
+
+    if ((rayjoin_same_point(left.x0, left.y0, right.x0, right.y0) &&
+         rayjoin_same_point(left.x1, left.y1, right.x1, right.y1)) ||
+        (rayjoin_same_point(left.x0, left.y0, right.x1, right.y1) &&
+         rayjoin_same_point(left.x1, left.y1, right.x0, right.y0))) {
+        return false;
+    }
+    return true;
+}
+
 extern "C" __global__ void __raygen__segment_pair_grouped_range_direct_intersection_exact_count_probe() {
     const unsigned int idx = optixGetLaunchIndex().x;
     if (idx >= params.probe_count) return;
     const GpuSegment p = params.left_segs[idx];
     unsigned int p0 = idx;
+    const float tmax = params.predicate_mode == 1u ? 1.0f : (1.0f + 1.0e-4f);
+    float x0 = p.x0;
+    float y0 = p.y0;
+    float x1 = p.x1;
+    float y1 = p.y1;
+    if (params.predicate_mode == 1u) {
+        if (x0 == x1) {
+            if (y0 > y1) {
+                const float tx = x0; const float ty = y0;
+                x0 = x1; y0 = y1; x1 = tx; y1 = ty;
+            }
+        } else if (x0 > x1) {
+            const float tx = x0; const float ty = y0;
+            x0 = x1; y0 = y1; x1 = tx; y1 = ty;
+        }
+    }
     optixTrace(params.traversable,
-               make_float3(p.x0, p.y0, 0.0f),
-               make_float3(p.x1 - p.x0, p.y1 - p.y0, 0.0f),
-               0.0f, 1.0f + 1.0e-4f, 0.0f,
+               make_float3(x0, y0, 0.0f),
+               make_float3(x1 - x0, y1 - y0, 0.0f),
+               0.0f, tmax, 0.0f,
                OptixVisibilityMask(255),
                OPTIX_RAY_FLAG_NONE,
                0, 1, 0,
@@ -4244,8 +4675,21 @@ extern "C" __global__ void __intersection__segment_pair_grouped_range_direct_int
     const SegmentPairGroupRange range = params.right_group_ranges[group_idx];
     for (unsigned int ridx = range.begin; ridx < range.end; ++ridx) {
         const RtdlSegment right = params.right_exact_segs[ridx];
-        if (exact_segment_intersection_device(left, right)) {
-            atomicAdd(params.exact_count, 1ull);
+        bool hit = false;
+        if (params.predicate_mode == 1u) {
+            const RayjoinLsiScaledSegment left_scaled =
+                params.left_rayjoin_lsi_segs[params.left_offset + pidx];
+            const RayjoinLsiScaledSegment right_scaled = params.right_rayjoin_lsi_segs[ridx];
+            hit = rayjoin_lsi_intersection_device(left_scaled, right_scaled);
+        } else {
+            hit = exact_segment_intersection_device(left, right);
+        }
+        if (hit) {
+            const unsigned long long out_index = atomicAdd(params.exact_count, 1ull);
+            if (params.pair_output != nullptr && out_index < params.pair_output_capacity) {
+                params.pair_output[out_index] =
+                    ((unsigned long long)left.id << 32) | (unsigned long long)right.id;
+            }
         }
     }
 }
@@ -4257,6 +4701,20 @@ struct SegmentFirstHitLaunchParams {
     const GpuSegment* primitives;
     uint64_t* best_pair;
     uint32_t probe_count;
+};
+
+struct RayjoinCdbPointLocationLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuRayjoinCdbPoint* points;
+    const GpuRayjoinCdbSegment* segments;
+    const GpuRayjoinCdbSegmentRange* ranges;
+    GpuRayjoinCdbPointLocationRecord* output;
+    uint32_t* segment_id_output;
+    uint32_t* face_id_output;
+    unsigned long long* positive_face_count;
+    uint32_t point_count;
+    uint32_t query_map_id;
+    uint32_t allow_equal_ties;
 };
 
 struct PreparedSegmentPairIntersectionBuild {
@@ -4271,6 +4729,9 @@ struct PreparedSegmentPairIntersectionBuild {
     std::unique_ptr<DevPtr> d_right_group_ranges;
     std::unique_ptr<AccelHolder> grouped_range_accel;
     size_t right_group_count = 0;
+    uint32_t grouped_range_predicate_mode = std::numeric_limits<uint32_t>::max();
+    RayjoinLsiScaleKey rayjoin_lsi_scale_key;
+    std::unique_ptr<DevPtr> d_rayjoin_lsi_right;
 
     PreparedSegmentPairIntersectionBuild(const RtdlSegment* right, size_t count)
         : right_segments(count),
@@ -4310,13 +4771,241 @@ struct PreparedSegmentPairIntersectionBuild {
     }
 };
 
+struct PreparedRayjoinCdbPointLocation2D {
+    static constexpr size_t kSegmentsPerRange = 8;
+    std::vector<GpuRayjoinCdbSegment> segments;
+    std::vector<GpuRayjoinCdbSegmentRange> ranges;
+    std::vector<RtdlRayjoinCdbSegment> host_segments;
+    RayjoinCdbScale scale;
+    size_t segment_count = 0;
+    size_t range_count = 0;
+    DevPtr d_segments;
+    DevPtr d_ranges;
+    AccelHolder accel;
+
+    PreparedRayjoinCdbPointLocation2D(const RtdlRayjoinCdbSegment* input, size_t count)
+        : segments(count),
+          ranges(),
+          host_segments(),
+          scale(rayjoin_cdb_scale_from_env()),
+          segment_count(count),
+          range_count(count),
+          d_segments(sizeof(GpuRayjoinCdbSegment) * count),
+          d_ranges(sizeof(GpuRayjoinCdbSegmentRange) * range_count)
+    {
+        if (!input && count != 0) {
+            throw std::runtime_error("CDB segment pointer must not be null when segment_count is nonzero");
+        }
+        if (count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error("CDB segment count exceeds uint32 primitive capacity");
+        }
+        if (count > 0) {
+            host_segments.assign(input, input + count);
+        }
+        for (size_t i = 0; i < count; ++i) {
+            if (!std::isfinite(input[i].x0) || !std::isfinite(input[i].y0) ||
+                !std::isfinite(input[i].x1) || !std::isfinite(input[i].y1)) {
+                throw std::runtime_error("CDB segment coordinates must be finite");
+            }
+            int64_t sx0 = 0;
+            int64_t sy0 = 0;
+            int64_t sx1 = 0;
+            int64_t sy1 = 0;
+            double x0 = input[i].x0;
+            double y0 = input[i].y0;
+            double x1 = input[i].x1;
+            double y1 = input[i].y1;
+            if (scale.valid) {
+                sx0 = rayjoin_cdb_scale_x(scale, x0);
+                sy0 = rayjoin_cdb_scale_y(scale, y0);
+                sx1 = rayjoin_cdb_scale_x(scale, x1);
+                sy1 = rayjoin_cdb_scale_y(scale, y1);
+                x0 = rayjoin_cdb_unscale_x(scale, sx0);
+                y0 = rayjoin_cdb_unscale_y(scale, sy0);
+                x1 = rayjoin_cdb_unscale_x(scale, sx1);
+                y1 = rayjoin_cdb_unscale_y(scale, sy1);
+            }
+            segments[i] = {
+                static_cast<float>(x0),
+                static_cast<float>(y0),
+                static_cast<float>(x1),
+                static_cast<float>(y1),
+                input[i].id,
+                input[i].left_face_id,
+                input[i].right_face_id,
+                scale.valid ? 1u : 0u,
+                sx0,
+                sy0,
+                sx1,
+                sy1,
+            };
+        }
+        upload(d_segments.ptr, segments.data(), segments.size());
+
+        if (!segments.empty()) {
+            auto segment_bounds = [&](size_t segment_index) {
+                const GpuRayjoinCdbSegment& segment = segments[segment_index];
+                OptixAabb aabb;
+                aabb.minX = std::min(segment.x0, segment.x1);
+                aabb.minY = std::min(segment.y0, segment.y1);
+                aabb.minZ = 0.0f;
+                aabb.maxX = std::max(segment.x0, segment.x1);
+                aabb.maxY = std::max(segment.y0, segment.y1);
+                aabb.maxZ = 0.0f;
+                return aabb;
+            };
+            auto merge_bounds = [](const OptixAabb& left, const OptixAabb& right) {
+                OptixAabb merged;
+                merged.minX = std::min(left.minX, right.minX);
+                merged.minY = std::min(left.minY, right.minY);
+                merged.minZ = std::min(left.minZ, right.minZ);
+                merged.maxX = std::max(left.maxX, right.maxX);
+                merged.maxY = std::max(left.maxY, right.maxY);
+                merged.maxZ = std::max(left.maxZ, right.maxZ);
+                return merged;
+            };
+            auto area = [](const OptixAabb& aabb) {
+                return (aabb.maxX - aabb.minX) * (aabb.maxY - aabb.minY);
+            };
+            auto padded = [](const OptixAabb& aabb) {
+                OptixAabb padded_aabb;
+                padded_aabb.minX = aabb.minX - kSegmentAabbPad;
+                padded_aabb.minY = aabb.minY - kSegmentAabbPad;
+                padded_aabb.minZ = -kSegmentAabbPad;
+                padded_aabb.maxX = aabb.maxX + kSegmentAabbPad;
+                padded_aabb.maxY = aabb.maxY + kSegmentAabbPad;
+                padded_aabb.maxZ = kSegmentAabbPad;
+                return padded_aabb;
+            };
+            std::vector<OptixAabb> aabbs;
+            if (rayjoin_cdb_group_fixed8_from_env()) {
+                ranges.resize((segments.size() + kSegmentsPerRange - 1) / kSegmentsPerRange);
+                aabbs.resize(ranges.size());
+                for (size_t range_index = 0; range_index < ranges.size(); ++range_index) {
+                    const size_t begin = range_index * kSegmentsPerRange;
+                    const size_t end = std::min(begin + kSegmentsPerRange, segments.size());
+                    ranges[range_index] = {
+                        static_cast<uint32_t>(begin),
+                        static_cast<uint32_t>(end),
+                    };
+                    OptixAabb bounds = segment_bounds(begin);
+                    for (size_t i = begin + 1; i < end; ++i) {
+                        bounds = merge_bounds(bounds, segment_bounds(i));
+                    }
+                    aabbs[range_index] = padded(bounds);
+                }
+            } else {
+                const size_t max_group_size = rayjoin_cdb_group_max_size_from_env();
+                const float area_enlarge = static_cast<float>(rayjoin_cdb_group_area_enlarge_from_env());
+                ranges.reserve(segments.size());
+                aabbs.reserve(segments.size());
+                size_t begin = 0;
+                while (begin < segments.size()) {
+                    size_t end = begin + 1;
+                    OptixAabb bounds = segment_bounds(begin);
+                    while (end < segments.size() && end - begin < max_group_size) {
+                        const OptixAabb next = segment_bounds(end);
+                        const OptixAabb merged = merge_bounds(bounds, next);
+                        const float base_area = std::max(area(bounds), area(next));
+                        const float merged_area = area(merged);
+                        if (!(base_area > 0.0f) || !(merged_area / base_area < area_enlarge)) {
+                            break;
+                        }
+                        bounds = merged;
+                        ++end;
+                    }
+                    ranges.push_back({
+                        static_cast<uint32_t>(begin),
+                        static_cast<uint32_t>(end),
+                    });
+                    aabbs.push_back(padded(bounds));
+                    begin = end;
+                }
+            }
+            range_count = ranges.size();
+            if (range_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+                throw std::runtime_error("CDB grouped range count exceeds uint32 primitive capacity");
+            }
+            if (range_count == 0) {
+                return;
+            }
+            upload(d_ranges.ptr, ranges.data(), ranges.size());
+            accel = build_custom_accel(get_optix_context(), aabbs);
+        }
+    }
+};
+
+static std::vector<GpuRayjoinCdbPoint> make_rayjoin_cdb_gpu_points(
+        const PreparedRayjoinCdbPointLocation2D* prepared,
+        const RtdlPoint* points,
+        size_t point_count)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared CDB point-location handle must not be null");
+    }
+    if (!points && point_count != 0) {
+        throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+    }
+    if (point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("RayJoin CDB point-location point count exceeds uint32 launch capacity");
+    }
+    std::vector<GpuRayjoinCdbPoint> gpu_points(point_count);
+    for (size_t i = 0; i < point_count; ++i) {
+        if (!std::isfinite(points[i].x) || !std::isfinite(points[i].y)) {
+            throw std::runtime_error("RayJoin CDB point-location query points must be finite");
+        }
+        int64_t sx = 0;
+        int64_t sy = 0;
+        double x = points[i].x;
+        double y = points[i].y;
+        if (prepared->scale.valid) {
+            sx = rayjoin_cdb_scale_x(prepared->scale, x);
+            sy = rayjoin_cdb_scale_y(prepared->scale, y);
+            x = rayjoin_cdb_unscale_x(prepared->scale, sx);
+            y = rayjoin_cdb_unscale_y(prepared->scale, sy);
+        }
+        gpu_points[i] = {
+            static_cast<float>(x),
+            static_cast<float>(y),
+            points[i].id,
+            prepared->scale.valid ? 1u : 0u,
+            sx,
+            sy,
+        };
+    }
+    return gpu_points;
+}
+
+struct PreparedRayjoinCdbPointLocationPoints2D {
+    size_t point_count = 0;
+    DevPtr d_points;
+    DevPtr d_segment_ids;
+
+    PreparedRayjoinCdbPointLocationPoints2D(
+            const PreparedRayjoinCdbPointLocation2D* prepared,
+            const RtdlPoint* points,
+            size_t count)
+        : point_count(count),
+          d_points(sizeof(GpuRayjoinCdbPoint) * count),
+          d_segment_ids(sizeof(uint32_t) * count)
+    {
+        const std::vector<GpuRayjoinCdbPoint> gpu_points =
+            make_rayjoin_cdb_gpu_points(prepared, points, count);
+        upload(d_points.ptr, gpu_points.data(), gpu_points.size());
+    }
+};
+
 struct PreparedSegmentPairLeftSet {
     size_t left_count = 0;
+    std::vector<RtdlSegment> host_left_segments;
     DevPtr d_left;
     DevPtr d_left_exact;
+    RayjoinLsiScaleKey rayjoin_lsi_scale_key;
+    std::unique_ptr<DevPtr> d_rayjoin_lsi_left;
 
     PreparedSegmentPairLeftSet(const RtdlSegment* left, size_t count)
         : left_count(count),
+          host_left_segments(),
           d_left(sizeof(GpuSegment) * count),
           d_left_exact(sizeof(RtdlSegment) * count)
     {
@@ -4325,6 +5014,9 @@ struct PreparedSegmentPairLeftSet {
         }
         if (count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
             throw std::runtime_error("segment-pair left-set count exceeds uint32 launch capacity");
+        }
+        if (count > 0) {
+            host_left_segments.assign(left, left + count);
         }
         std::vector<GpuSegment> gpu_left(count);
         for (size_t i = 0; i < count; ++i) {
@@ -4726,14 +5418,60 @@ static OptixAabb segment_pair_merge_aabb(const OptixAabb& left, const OptixAabb&
     return merged;
 }
 
+static uint32_t segment_pair_predicate_mode_from_env();
+
+static float rayjoin_next_float_from_double(double value, int direction, int iterations = 2)
+{
+    float out = static_cast<float>(value);
+    if (out == 0.0f) {
+        return 0.0f;
+    }
+    const float target = value * static_cast<double>(direction) < 0.0
+        ? 0.0f
+        : static_cast<float>(direction) * std::numeric_limits<float>::infinity();
+    for (int i = 0; i < iterations; ++i) {
+        out = std::nextafter(out, target);
+    }
+    return out;
+}
+
+static OptixAabb rayjoin_raw_aabb_for_segment(const GpuSegment& segment)
+{
+    OptixAabb aabb;
+    aabb.minX = std::min(segment.x0, segment.x1);
+    aabb.maxX = std::max(segment.x0, segment.x1);
+    aabb.minY = std::min(segment.y0, segment.y1);
+    aabb.maxY = std::max(segment.y0, segment.y1);
+    aabb.minZ = -0.005f;
+    aabb.maxZ = 0.005f;
+    return aabb;
+}
+
+static OptixAabb rayjoin_round_aabb(const OptixAabb& aabb)
+{
+    OptixAabb rounded;
+    rounded.minX = rayjoin_next_float_from_double(aabb.minX, -1);
+    rounded.maxX = rayjoin_next_float_from_double(aabb.maxX, 1);
+    rounded.minY = rayjoin_next_float_from_double(aabb.minY, -1);
+    rounded.maxY = rayjoin_next_float_from_double(aabb.maxY, 1);
+    rounded.minZ = rayjoin_next_float_from_double(aabb.minZ, -1);
+    rounded.maxZ = rayjoin_next_float_from_double(aabb.maxZ, 1);
+    return rounded;
+}
+
 static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBuild* prepared)
 {
     if (!prepared) {
         throw std::runtime_error("prepared segment-pair handle must not be null");
     }
-    if (prepared->grouped_range_accel) {
+    const uint32_t predicate_mode = segment_pair_predicate_mode_from_env();
+    const bool rayjoin_lsi_mode = predicate_mode == 1u;
+    if (prepared->grouped_range_accel &&
+        prepared->grouped_range_predicate_mode == predicate_mode) {
         return;
     }
+    prepared->grouped_range_accel.reset();
+    prepared->d_right_group_ranges.reset();
     prepared->right_group_ranges.clear();
     prepared->right_group_count = 0;
     if (prepared->right_segments.empty()) {
@@ -4758,12 +5496,16 @@ static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBu
     std::vector<OptixAabb> group_aabbs;
     group_aabbs.reserve(prepared->right_segments.size());
     size_t begin = 0;
-    OptixAabb current = aabb_for_segment(
-        prepared->right_segments[0].x0, prepared->right_segments[0].y0,
-        prepared->right_segments[0].x1, prepared->right_segments[0].y1);
+    OptixAabb current = rayjoin_lsi_mode
+        ? rayjoin_raw_aabb_for_segment(prepared->right_segments[0])
+        : aabb_for_segment(
+            prepared->right_segments[0].x0, prepared->right_segments[0].y0,
+            prepared->right_segments[0].x1, prepared->right_segments[0].y1);
     for (size_t index = 1; index < prepared->right_segments.size(); ++index) {
         const GpuSegment& segment = prepared->right_segments[index];
-        const OptixAabb next = aabb_for_segment(segment.x0, segment.y0, segment.x1, segment.y1);
+        const OptixAabb next = rayjoin_lsi_mode
+            ? rayjoin_raw_aabb_for_segment(segment)
+            : aabb_for_segment(segment.x0, segment.y0, segment.x1, segment.y1);
         const OptixAabb merged = segment_pair_merge_aabb(current, next);
         const float current_area = std::max(segment_pair_aabb_area(current), 1.0e-12f);
         const float next_area = std::max(segment_pair_aabb_area(next), 1.0e-12f);
@@ -4785,7 +5527,7 @@ static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBu
                 static_cast<uint32_t>(begin),
                 static_cast<uint32_t>(index),
             });
-        group_aabbs.push_back(current);
+        group_aabbs.push_back(rayjoin_lsi_mode ? rayjoin_round_aabb(current) : current);
         begin = index;
         current = next;
     }
@@ -4799,7 +5541,7 @@ static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBu
             static_cast<uint32_t>(begin),
             static_cast<uint32_t>(end),
         });
-    group_aabbs.push_back(current);
+    group_aabbs.push_back(rayjoin_lsi_mode ? rayjoin_round_aabb(current) : current);
     prepared->right_group_count = prepared->right_group_ranges.size();
     prepared->d_right_group_ranges = std::make_unique<DevPtr>(
         sizeof(SegmentPairGroupRange) * prepared->right_group_ranges.size());
@@ -4808,7 +5550,329 @@ static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBu
         prepared->right_group_ranges.data(),
         prepared->right_group_ranges.size());
     prepared->grouped_range_accel = std::make_unique<AccelHolder>(
-        build_custom_accel(get_optix_context(), group_aabbs));
+        rayjoin_lsi_mode
+            ? build_custom_accel_with_flags(
+                get_optix_context(),
+                group_aabbs,
+                OPTIX_BUILD_FLAG_ALLOW_COMPACTION)
+            : build_custom_accel(get_optix_context(), group_aabbs));
+    prepared->grouped_range_predicate_mode = predicate_mode;
+}
+
+static uint32_t segment_pair_predicate_mode_from_env()
+{
+    const char* raw = std::getenv("RTDL_OPTIX_SEGMENT_PAIR_PREDICATE");
+    if (raw && std::string(raw) == "rayjoin_lsi") {
+        return 1u;
+    }
+    return 0u;
+}
+
+static bool rayjoin_lsi_scale_key_matches(
+        const RayjoinLsiScaleKey& key,
+        double min_x,
+        double max_x,
+        double min_y,
+        double max_y)
+{
+    return key.valid &&
+           key.min_x == min_x &&
+           key.max_x == max_x &&
+           key.min_y == min_y &&
+           key.max_y == max_y;
+}
+
+struct RayjoinLsiScale {
+    double rx = 0.0;
+    double ry = 0.0;
+    double rrx = 0.0;
+    double rry = 0.0;
+    double deltax = 0.0;
+    double deltay = 0.0;
+    double ddeltax = 0.0;
+    double ddeltay = 0.0;
+};
+
+static RayjoinLsiScale make_rayjoin_lsi_scale(
+        double min_x,
+        double max_x,
+        double min_y,
+        double max_y)
+{
+    constexpr int64_t internal_max = (int64_t{1} << 46) - int64_t{1};
+    constexpr int64_t internal_min = -(int64_t{1} << 46);
+    const double margin = 1.0;
+    const double box_max_x = max_x + margin;
+    const double box_min_x = min_x - margin;
+    const double box_max_y = max_y + margin;
+    const double box_min_y = min_y - margin;
+    const double internal_range = static_cast<double>(internal_max - internal_min);
+    RayjoinLsiScale scale;
+    scale.rx = internal_range / (box_max_x - box_min_x);
+    scale.ry = internal_range / (box_max_y - box_min_y);
+    scale.rrx = 1.0 / scale.rx;
+    scale.rry = 1.0 / scale.ry;
+    scale.deltax = 0.5 * (
+        static_cast<double>(internal_max + internal_min) -
+        (box_max_x + box_min_x) * scale.rx);
+    scale.deltay = 0.5 * (
+        static_cast<double>(internal_max + internal_min) -
+        (box_max_y + box_min_y) * scale.ry);
+    scale.ddeltax = 0.5 * (
+        (box_max_x + box_min_x) -
+        static_cast<double>(internal_max + internal_min) * scale.rrx);
+    scale.ddeltay = 0.5 * (
+        (box_max_y + box_min_y) -
+        static_cast<double>(internal_max + internal_min) * scale.rry);
+    return scale;
+}
+
+static int64_t rayjoin_lsi_scale_x(const RayjoinLsiScale& scale, double x)
+{
+    return static_cast<int64_t>(std::fma(x, scale.rx, scale.deltax));
+}
+
+static int64_t rayjoin_lsi_scale_y(const RayjoinLsiScale& scale, double y)
+{
+    return static_cast<int64_t>(std::fma(y, scale.ry, scale.deltay));
+}
+
+static std::vector<RayjoinLsiScaledSegment> make_rayjoin_lsi_scaled_segments(
+        const std::vector<RtdlSegment>& segments,
+        const RayjoinLsiScale& scale)
+{
+    std::vector<RayjoinLsiScaledSegment> out;
+    out.reserve(segments.size());
+    for (const RtdlSegment& segment : segments) {
+        out.push_back(RayjoinLsiScaledSegment{
+            segment.id,
+            rayjoin_lsi_scale_x(scale, segment.x0),
+            rayjoin_lsi_scale_y(scale, segment.y0),
+            rayjoin_lsi_scale_x(scale, segment.x1),
+            rayjoin_lsi_scale_y(scale, segment.y1),
+        });
+    }
+    return out;
+}
+
+static GpuSegment rayjoin_lsi_gpu_segment_from_scaled(
+        const RayjoinLsiScaledSegment& segment,
+        const RayjoinLsiScale& scale)
+{
+    return GpuSegment{
+        static_cast<float>(static_cast<double>(segment.x0) * scale.rrx + scale.ddeltax),
+        static_cast<float>(static_cast<double>(segment.y0) * scale.rry + scale.ddeltay),
+        static_cast<float>(static_cast<double>(segment.x1) * scale.rrx + scale.ddeltax),
+        static_cast<float>(static_cast<double>(segment.y1) * scale.rry + scale.ddeltay),
+        segment.id,
+    };
+}
+
+static std::vector<GpuSegment> make_rayjoin_lsi_gpu_segments_from_scaled(
+        const std::vector<RayjoinLsiScaledSegment>& segments,
+        const RayjoinLsiScale& scale)
+{
+    std::vector<GpuSegment> out;
+    out.reserve(segments.size());
+    for (const RayjoinLsiScaledSegment& segment : segments) {
+        out.push_back(rayjoin_lsi_gpu_segment_from_scaled(segment, scale));
+    }
+    return out;
+}
+
+struct RayjoinLsiLineHost {
+    __int128 a, b, c;
+};
+
+static RayjoinLsiLineHost rayjoin_lsi_line_for_scaled_segment_host(
+        const RayjoinLsiScaledSegment& segment)
+{
+    RayjoinLsiLineHost line;
+    line.a = static_cast<__int128>(segment.y0) - static_cast<__int128>(segment.y1);
+    line.b = static_cast<__int128>(segment.x1) - static_cast<__int128>(segment.x0);
+    line.c = -(static_cast<__int128>(segment.x0) * line.a) -
+             (static_cast<__int128>(segment.y0) * line.b);
+    if (line.b < 0) {
+        line.a = -line.a;
+        line.b = -line.b;
+        line.c = -line.c;
+    }
+    return line;
+}
+
+static __int128 rayjoin_lsi_eval_host(
+        const RayjoinLsiLineHost& line,
+        int64_t x,
+        int64_t y)
+{
+    return static_cast<__int128>(x) * line.a +
+           static_cast<__int128>(y) * line.b +
+           line.c;
+}
+
+static bool rayjoin_lsi_same_point_host(
+        int64_t ax,
+        int64_t ay,
+        int64_t bx,
+        int64_t by)
+{
+    return ax == bx && ay == by;
+}
+
+static bool rayjoin_lsi_intersection_host(
+        const RayjoinLsiScaledSegment& left,
+        const RayjoinLsiScaledSegment& right)
+{
+    const RayjoinLsiLineHost e1 = rayjoin_lsi_line_for_scaled_segment_host(left);
+    const RayjoinLsiLineHost e2 = rayjoin_lsi_line_for_scaled_segment_host(right);
+    if ((e1.a == 0 && e1.b == 0) || (e2.a == 0 && e2.b == 0)) {
+        return false;
+    }
+
+    __int128 e2_p1_agst_e1 = rayjoin_lsi_eval_host(e1, right.x0, right.y0);
+    __int128 e2_p2_agst_e1 = rayjoin_lsi_eval_host(e1, right.x1, right.y1);
+    __int128 e1_p1_agst_e2 = rayjoin_lsi_eval_host(e2, left.x0, left.y0);
+    __int128 e1_p2_agst_e2 = rayjoin_lsi_eval_host(e2, left.x1, left.y1);
+
+    if (e1_p1_agst_e2 == 0) e1_p1_agst_e2 = -e2.a;
+    if (e1_p1_agst_e2 == 0) e1_p1_agst_e2 = -e2.b;
+    if (e1_p1_agst_e2 == 0) return false;
+    if (e1_p2_agst_e2 == 0) e1_p2_agst_e2 = -e2.a;
+    if (e1_p2_agst_e2 == 0) e1_p2_agst_e2 = -e2.b;
+    if (e1_p2_agst_e2 == 0) return false;
+    if ((e1_p1_agst_e2 > 0 && e1_p2_agst_e2 > 0) ||
+        (e1_p1_agst_e2 < 0 && e1_p2_agst_e2 < 0)) {
+        return false;
+    }
+
+    if (e2_p1_agst_e1 == 0) e2_p1_agst_e1 = e1.a;
+    if (e2_p1_agst_e1 == 0) e2_p1_agst_e1 = e1.b;
+    if (e2_p1_agst_e1 == 0) return false;
+    if (e2_p2_agst_e1 == 0) e2_p2_agst_e1 = e1.a;
+    if (e2_p2_agst_e1 == 0) e2_p2_agst_e1 = e1.b;
+    if (e2_p2_agst_e1 == 0) return false;
+    if ((e2_p1_agst_e1 > 0 && e2_p2_agst_e1 > 0) ||
+        (e2_p1_agst_e1 < 0 && e2_p2_agst_e1 < 0)) {
+        return false;
+    }
+
+    if ((rayjoin_lsi_same_point_host(left.x0, left.y0, right.x0, right.y0) &&
+         rayjoin_lsi_same_point_host(left.x1, left.y1, right.x1, right.y1)) ||
+        (rayjoin_lsi_same_point_host(left.x0, left.y0, right.x1, right.y1) &&
+         rayjoin_lsi_same_point_host(left.x1, left.y1, right.x0, right.y0))) {
+        return false;
+    }
+    return true;
+}
+
+static std::unordered_map<uint32_t, RayjoinLsiScaledSegment>
+make_rayjoin_lsi_scaled_segment_map(
+        const RtdlSegment* left,
+        size_t left_count,
+        const RtdlSegment* right,
+        size_t right_count,
+        bool left_side)
+{
+    double min_x = std::numeric_limits<double>::infinity();
+    double min_y = std::numeric_limits<double>::infinity();
+    double max_x = -std::numeric_limits<double>::infinity();
+    double max_y = -std::numeric_limits<double>::infinity();
+    auto accumulate = [&](const RtdlSegment& segment) {
+        min_x = std::min(min_x, std::min(segment.x0, segment.x1));
+        min_y = std::min(min_y, std::min(segment.y0, segment.y1));
+        max_x = std::max(max_x, std::max(segment.x0, segment.x1));
+        max_y = std::max(max_y, std::max(segment.y0, segment.y1));
+    };
+    for (size_t i = 0; i < left_count; ++i) {
+        accumulate(left[i]);
+    }
+    for (size_t i = 0; i < right_count; ++i) {
+        accumulate(right[i]);
+    }
+    if (!std::isfinite(min_x) || !std::isfinite(min_y) ||
+        !std::isfinite(max_x) || !std::isfinite(max_y)) {
+        throw std::runtime_error("RayJoin LSI row materialization requires non-empty finite segment inputs");
+    }
+    const RayjoinLsiScale scale = make_rayjoin_lsi_scale(min_x, max_x, min_y, max_y);
+    const RtdlSegment* source = left_side ? left : right;
+    const size_t count = left_side ? left_count : right_count;
+    std::unordered_map<uint32_t, RayjoinLsiScaledSegment> out;
+    out.reserve(count);
+    for (size_t i = 0; i < count; ++i) {
+        const RtdlSegment& segment = source[i];
+        out.emplace(
+            segment.id,
+            RayjoinLsiScaledSegment{
+                segment.id,
+                rayjoin_lsi_scale_x(scale, segment.x0),
+                rayjoin_lsi_scale_y(scale, segment.y0),
+                rayjoin_lsi_scale_x(scale, segment.x1),
+                rayjoin_lsi_scale_y(scale, segment.y1),
+            });
+    }
+    return out;
+}
+
+static void ensure_rayjoin_lsi_scaled_segment_caches(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        PreparedSegmentPairLeftSet* prepared_left)
+{
+    if (!prepared || !prepared_left) {
+        throw std::runtime_error("RayJoin LSI scaled segment cache requires prepared handles");
+    }
+    if (prepared->rayjoin_lsi_scale_key.valid &&
+        prepared_left->rayjoin_lsi_scale_key.valid &&
+        prepared->rayjoin_lsi_scale_key.min_x == prepared_left->rayjoin_lsi_scale_key.min_x &&
+        prepared->rayjoin_lsi_scale_key.max_x == prepared_left->rayjoin_lsi_scale_key.max_x &&
+        prepared->rayjoin_lsi_scale_key.min_y == prepared_left->rayjoin_lsi_scale_key.min_y &&
+        prepared->rayjoin_lsi_scale_key.max_y == prepared_left->rayjoin_lsi_scale_key.max_y) {
+        return;
+    }
+    double min_x = std::numeric_limits<double>::infinity();
+    double min_y = std::numeric_limits<double>::infinity();
+    double max_x = -std::numeric_limits<double>::infinity();
+    double max_y = -std::numeric_limits<double>::infinity();
+    auto accumulate = [&](const RtdlSegment& segment) {
+        min_x = std::min(min_x, std::min(segment.x0, segment.x1));
+        min_y = std::min(min_y, std::min(segment.y0, segment.y1));
+        max_x = std::max(max_x, std::max(segment.x0, segment.x1));
+        max_y = std::max(max_y, std::max(segment.y0, segment.y1));
+    };
+    for (const RtdlSegment& segment : prepared->host_right_segments) {
+        accumulate(segment);
+    }
+    for (const RtdlSegment& segment : prepared_left->host_left_segments) {
+        accumulate(segment);
+    }
+    if (!std::isfinite(min_x) || !std::isfinite(min_y) ||
+        !std::isfinite(max_x) || !std::isfinite(max_y)) {
+        throw std::runtime_error("RayJoin LSI scaled segment cache requires non-empty finite inputs");
+    }
+    const RayjoinLsiScale scale = make_rayjoin_lsi_scale(min_x, max_x, min_y, max_y);
+    if (!rayjoin_lsi_scale_key_matches(prepared->rayjoin_lsi_scale_key, min_x, max_x, min_y, max_y)) {
+        std::vector<RayjoinLsiScaledSegment> scaled_right =
+            make_rayjoin_lsi_scaled_segments(prepared->host_right_segments, scale);
+        prepared->right_segments = make_rayjoin_lsi_gpu_segments_from_scaled(scaled_right, scale);
+        prepared->d_rayjoin_lsi_right = std::make_unique<DevPtr>(
+            sizeof(RayjoinLsiScaledSegment) * scaled_right.size());
+        upload(prepared->d_rayjoin_lsi_right->ptr, scaled_right.data(), scaled_right.size());
+        prepared->rayjoin_lsi_scale_key = RayjoinLsiScaleKey{true, min_x, max_x, min_y, max_y};
+        prepared->grouped_range_accel.reset();
+        prepared->d_right_group_ranges.reset();
+        prepared->right_group_ranges.clear();
+        prepared->right_group_count = 0;
+        prepared->grouped_range_predicate_mode = std::numeric_limits<uint32_t>::max();
+    }
+    if (!rayjoin_lsi_scale_key_matches(prepared_left->rayjoin_lsi_scale_key, min_x, max_x, min_y, max_y)) {
+        std::vector<RayjoinLsiScaledSegment> scaled_left =
+            make_rayjoin_lsi_scaled_segments(prepared_left->host_left_segments, scale);
+        std::vector<GpuSegment> gpu_left = make_rayjoin_lsi_gpu_segments_from_scaled(scaled_left, scale);
+        upload(prepared_left->d_left.ptr, gpu_left.data(), gpu_left.size());
+        prepared_left->d_rayjoin_lsi_left = std::make_unique<DevPtr>(
+            sizeof(RayjoinLsiScaledSegment) * scaled_left.size());
+        upload(prepared_left->d_rayjoin_lsi_left->ptr, scaled_left.data(), scaled_left.size());
+        prepared_left->rayjoin_lsi_scale_key = RayjoinLsiScaleKey{true, min_x, max_x, min_y, max_y};
+    }
 }
 
 static void launch_segment_pair_ambiguity_count_kernel(
@@ -4910,13 +5974,30 @@ static void ensure_segment_first_hit_pipeline() {
     });
 }
 
+static void ensure_rayjoin_cdb_point_location_pipeline() {
+    std::call_once(g_rayjoin_cdb_point_location.init, [&]() {
+        std::string ptx = compile_to_ptx(
+            kRayjoinCdbPointLocationKernelSrc,
+            "rayjoin_cdb_point_location_kernel.cu");
+        g_rayjoin_cdb_point_location.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayjoin_cdb_point_location",
+            "__miss__rayjoin_cdb_point_location",
+            "__intersection__rayjoin_cdb_point_location",
+            nullptr,
+            "__closesthit__rayjoin_cdb_point_location",
+            4).release();
+    });
+}
+
 static void finalize_segment_pair_intersection_rows(
         const RtdlSegment* left, size_t left_count,
         const RtdlSegment* right, size_t right_count,
         const std::vector<GpuSegmentPairIntersectionRecord>& gpu_rows,
         RtdlSegmentPairIntersectionRow** rows_out,
         size_t* row_count_out,
-        const std::unordered_map<uint32_t, const RtdlSegment*>* prepared_right_by_id = nullptr)
+        const std::unordered_map<uint32_t, const RtdlSegment*>* prepared_right_by_id = nullptr,
+        uint32_t predicate_mode = 0u)
 {
     std::unordered_map<uint32_t, const RtdlSegment*> left_by_id;
     std::unordered_map<uint32_t, const RtdlSegment*> local_right_by_id;
@@ -4950,6 +6031,19 @@ static void finalize_segment_pair_intersection_rows(
     refined.reserve(gpu_rows.size());
     std::unordered_set<uint64_t> seen_pairs;
     seen_pairs.reserve(gpu_rows.size() * 2 + 1);
+    std::unordered_map<uint32_t, RayjoinLsiScaledSegment> rayjoin_left_by_id;
+    std::unordered_map<uint32_t, RayjoinLsiScaledSegment> rayjoin_right_by_id;
+    bool rayjoin_scaled_ready = false;
+    auto ensure_rayjoin_scaled = [&]() {
+        if (rayjoin_scaled_ready || predicate_mode != 1u) {
+            return;
+        }
+        rayjoin_left_by_id = make_rayjoin_lsi_scaled_segment_map(
+            left, left_count, right, right_count, true);
+        rayjoin_right_by_id = make_rayjoin_lsi_scaled_segment_map(
+            left, left_count, right, right_count, false);
+        rayjoin_scaled_ready = true;
+    };
 
     for (const auto& gpu_row : gpu_rows) {
         const RtdlSegment* left_seg = nullptr;
@@ -4973,6 +6067,16 @@ static void finalize_segment_pair_intersection_rows(
             static_cast<uint64_t>(right_seg->id);
         if (seen_pairs.find(pair_key) != seen_pairs.end()) {
             continue;
+        }
+        if (predicate_mode == 1u) {
+            ensure_rayjoin_scaled();
+            const auto left_scaled = rayjoin_left_by_id.find(left_seg->id);
+            const auto right_scaled = rayjoin_right_by_id.find(right_seg->id);
+            if (left_scaled == rayjoin_left_by_id.end() ||
+                right_scaled == rayjoin_right_by_id.end() ||
+                !rayjoin_lsi_intersection_host(left_scaled->second, right_scaled->second)) {
+                continue;
+            }
         }
         double ix = 0.0;
         double iy = 0.0;
@@ -5003,7 +6107,8 @@ static size_t count_segment_pair_intersection_rows(
         const RtdlSegment* left, size_t left_count,
         const RtdlSegment* right, size_t right_count,
         const std::vector<GpuSegmentPairIntersectionRecord>& gpu_rows,
-        const std::unordered_map<uint32_t, const RtdlSegment*>* prepared_right_by_id = nullptr)
+        const std::unordered_map<uint32_t, const RtdlSegment*>* prepared_right_by_id = nullptr,
+        uint32_t predicate_mode = 0u)
 {
     std::unordered_map<uint32_t, const RtdlSegment*> left_by_id;
     std::unordered_map<uint32_t, const RtdlSegment*> local_right_by_id;
@@ -5036,6 +6141,19 @@ static size_t count_segment_pair_intersection_rows(
     size_t exact_count = 0;
     std::unordered_set<uint64_t> seen_pairs;
     seen_pairs.reserve(gpu_rows.size() * 2 + 1);
+    std::unordered_map<uint32_t, RayjoinLsiScaledSegment> rayjoin_left_by_id;
+    std::unordered_map<uint32_t, RayjoinLsiScaledSegment> rayjoin_right_by_id;
+    bool rayjoin_scaled_ready = false;
+    auto ensure_rayjoin_scaled = [&]() {
+        if (rayjoin_scaled_ready || predicate_mode != 1u) {
+            return;
+        }
+        rayjoin_left_by_id = make_rayjoin_lsi_scaled_segment_map(
+            left, left_count, right, right_count, true);
+        rayjoin_right_by_id = make_rayjoin_lsi_scaled_segment_map(
+            left, left_count, right, right_count, false);
+        rayjoin_scaled_ready = true;
+    };
 
     for (const auto& gpu_row : gpu_rows) {
         const RtdlSegment* left_seg = nullptr;
@@ -5059,6 +6177,16 @@ static size_t count_segment_pair_intersection_rows(
             static_cast<uint64_t>(right_seg->id);
         if (seen_pairs.find(pair_key) != seen_pairs.end()) {
             continue;
+        }
+        if (predicate_mode == 1u) {
+            ensure_rayjoin_scaled();
+            const auto left_scaled = rayjoin_left_by_id.find(left_seg->id);
+            const auto right_scaled = rayjoin_right_by_id.find(right_seg->id);
+            if (left_scaled == rayjoin_left_by_id.end() ||
+                right_scaled == rayjoin_right_by_id.end() ||
+                !rayjoin_lsi_intersection_host(left_scaled->second, right_scaled->second)) {
+                continue;
+            }
         }
         double ix = 0.0;
         double iy = 0.0;
@@ -5159,6 +6287,295 @@ static std::vector<RtdlSegmentFirstHitRow> materialize_segment_first_hit_rows(
         });
     }
     return refined;
+}
+
+static void launch_rayjoin_cdb_point_location_optix(
+        const PreparedRayjoinCdbPointLocation2D* prepared,
+        CUdeviceptr d_points_ptr,
+        size_t point_count,
+        CUdeviceptr d_output_ptr,
+        CUdeviceptr d_segment_id_output_ptr,
+        CUdeviceptr d_face_id_output_ptr,
+        CUdeviceptr d_positive_count_ptr)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared CDB point-location handle must not be null");
+    }
+    if (point_count == 0 || prepared->segment_count == 0) {
+        return;
+    }
+    if (!d_points_ptr) {
+        throw std::runtime_error("device point pointer must not be null when point_count is nonzero");
+    }
+    if (point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("RayJoin CDB point-location point count exceeds uint32 launch capacity");
+    }
+    ensure_rayjoin_cdb_point_location_pipeline();
+
+    if (d_positive_count_ptr) {
+        unsigned long long zero64 = 0ull;
+        upload<unsigned long long>(d_positive_count_ptr, &zero64, 1);
+    }
+
+    RayjoinCdbPointLocationLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.points = reinterpret_cast<const GpuRayjoinCdbPoint*>(d_points_ptr);
+    lp.segments = reinterpret_cast<const GpuRayjoinCdbSegment*>(prepared->d_segments.ptr);
+    lp.ranges = reinterpret_cast<const GpuRayjoinCdbSegmentRange*>(prepared->d_ranges.ptr);
+    lp.output = reinterpret_cast<GpuRayjoinCdbPointLocationRecord*>(d_output_ptr);
+    lp.segment_id_output = reinterpret_cast<uint32_t*>(d_segment_id_output_ptr);
+    lp.face_id_output = reinterpret_cast<uint32_t*>(d_face_id_output_ptr);
+    lp.positive_face_count = reinterpret_cast<unsigned long long*>(d_positive_count_ptr);
+    lp.point_count = static_cast<uint32_t>(point_count);
+    const char* raw_query_map_id = std::getenv("RTDL_RAYJOIN_CDB_QUERY_MAP_ID");
+    lp.query_map_id = (raw_query_map_id != nullptr && std::string(raw_query_map_id) == "0") ? 0u : 1u;
+    lp.allow_equal_ties =
+        std::getenv("RTDL_RAYJOIN_CDB_ALLOW_EQUAL_TIES") != nullptr ? 1u : 0u;
+
+    DevPtr d_params(sizeof(RayjoinCdbPointLocationLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    const auto t_launch_start = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_rayjoin_cdb_point_location.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayjoinCdbPointLocationLaunchParams),
+                             &g_rayjoin_cdb_point_location.pipe->sbt,
+                             static_cast<unsigned>(point_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto t_launch_end = std::chrono::steady_clock::now();
+    g_optix_last_rayjoin_cdb_traversal_s += seconds_between(t_launch_start, t_launch_end);
+}
+
+static void launch_rayjoin_cdb_point_location_optix(
+        const PreparedRayjoinCdbPointLocation2D* prepared,
+        const RtdlPoint* points,
+        size_t point_count,
+        CUdeviceptr d_output_ptr,
+        CUdeviceptr d_segment_id_output_ptr,
+        CUdeviceptr d_face_id_output_ptr,
+        CUdeviceptr d_positive_count_ptr)
+{
+    if (!points && point_count != 0) {
+        throw std::runtime_error("point pointer must not be null when point_count is nonzero");
+    }
+    if (point_count == 0 || !prepared || prepared->segment_count == 0) {
+        return;
+    }
+    const std::vector<GpuRayjoinCdbPoint> gpu_points =
+        make_rayjoin_cdb_gpu_points(prepared, points, point_count);
+    const auto t_upload_start = std::chrono::steady_clock::now();
+    DevPtr d_points(sizeof(GpuRayjoinCdbPoint) * point_count);
+    upload(d_points.ptr, gpu_points.data(), gpu_points.size());
+    const auto t_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_rayjoin_cdb_point_upload_s += seconds_between(t_upload_start, t_upload_end);
+
+    launch_rayjoin_cdb_point_location_optix(
+        prepared,
+        d_points.ptr,
+        point_count,
+        d_output_ptr,
+        d_segment_id_output_ptr,
+        d_face_id_output_ptr,
+        d_positive_count_ptr);
+}
+
+static PreparedRayjoinCdbPointLocation2D* prepare_rayjoin_cdb_point_location_2d_optix(
+        const RtdlRayjoinCdbSegment* segments,
+        size_t segment_count)
+{
+    ensure_rayjoin_cdb_point_location_pipeline();
+    return new PreparedRayjoinCdbPointLocation2D(segments, segment_count);
+}
+
+static PreparedRayjoinCdbPointLocationPoints2D* prepare_rayjoin_cdb_point_location_points_2d_optix(
+        PreparedRayjoinCdbPointLocation2D* prepared,
+        const RtdlPoint* points,
+        size_t point_count)
+{
+    ensure_rayjoin_cdb_point_location_pipeline();
+    return new PreparedRayjoinCdbPointLocationPoints2D(prepared, points, point_count);
+}
+
+static void count_prepared_rayjoin_cdb_point_location_2d_optix(
+        PreparedRayjoinCdbPointLocation2D* prepared,
+        const RtdlPoint* points,
+        size_t point_count,
+        size_t* positive_face_count_out)
+{
+    if (!positive_face_count_out) {
+        throw std::runtime_error("positive_face_count_out must not be null");
+    }
+    *positive_face_count_out = 0;
+    reset_rayjoin_cdb_point_location_phase_timings(1u);
+    g_optix_last_rayjoin_cdb_point_count = point_count;
+    if (point_count == 0 || !prepared || prepared->segment_count == 0) {
+        return;
+    }
+
+    DevPtr d_positive_count(sizeof(unsigned long long));
+    launch_rayjoin_cdb_point_location_optix(
+        prepared,
+        points,
+        point_count,
+        0,
+        0,
+        0,
+        d_positive_count.ptr);
+
+    unsigned long long host_count = 0ull;
+    const auto t_download_start = std::chrono::steady_clock::now();
+    download<unsigned long long>(&host_count, d_positive_count.ptr, 1);
+    const auto t_download_end = std::chrono::steady_clock::now();
+    g_optix_last_rayjoin_cdb_row_download_s += seconds_between(t_download_start, t_download_end);
+    *positive_face_count_out = static_cast<size_t>(host_count);
+    g_optix_last_rayjoin_cdb_positive_face_count = *positive_face_count_out;
+}
+
+static void count_prepared_rayjoin_cdb_point_location_2d_device_points_optix(
+        PreparedRayjoinCdbPointLocation2D* prepared,
+        PreparedRayjoinCdbPointLocationPoints2D* prepared_points,
+        size_t* positive_face_count_out)
+{
+    if (!positive_face_count_out) {
+        throw std::runtime_error("positive_face_count_out must not be null");
+    }
+    *positive_face_count_out = 0;
+    reset_rayjoin_cdb_point_location_phase_timings(3u);
+    const size_t point_count = prepared_points ? prepared_points->point_count : 0;
+    g_optix_last_rayjoin_cdb_point_count = point_count;
+    if (point_count == 0 || !prepared || !prepared_points || prepared->segment_count == 0) {
+        return;
+    }
+
+    DevPtr d_positive_count(sizeof(unsigned long long));
+    launch_rayjoin_cdb_point_location_optix(
+        prepared,
+        prepared_points->d_points.ptr,
+        point_count,
+        0,
+        0,
+        0,
+        d_positive_count.ptr);
+
+    unsigned long long host_count = 0ull;
+    const auto t_download_start = std::chrono::steady_clock::now();
+    download<unsigned long long>(&host_count, d_positive_count.ptr, 1);
+    const auto t_download_end = std::chrono::steady_clock::now();
+    g_optix_last_rayjoin_cdb_row_download_s += seconds_between(t_download_start, t_download_end);
+    *positive_face_count_out = static_cast<size_t>(host_count);
+    g_optix_last_rayjoin_cdb_positive_face_count = *positive_face_count_out;
+}
+
+static void write_prepared_rayjoin_cdb_point_location_2d_device_segment_ids_optix(
+        PreparedRayjoinCdbPointLocation2D* prepared,
+        PreparedRayjoinCdbPointLocationPoints2D* prepared_points,
+        size_t* point_count_out)
+{
+    if (!point_count_out) {
+        throw std::runtime_error("point_count_out must not be null");
+    }
+    *point_count_out = 0;
+    reset_rayjoin_cdb_point_location_phase_timings(4u);
+    const size_t point_count = prepared_points ? prepared_points->point_count : 0;
+    g_optix_last_rayjoin_cdb_point_count = point_count;
+    if (point_count == 0 || !prepared || !prepared_points || prepared->segment_count == 0) {
+        return;
+    }
+
+    launch_rayjoin_cdb_point_location_optix(
+        prepared,
+        prepared_points->d_points.ptr,
+        point_count,
+        0,
+        prepared_points->d_segment_ids.ptr,
+        0,
+        0);
+
+    *point_count_out = point_count;
+}
+
+static void write_prepared_rayjoin_cdb_point_location_2d_device_face_ids_optix(
+        PreparedRayjoinCdbPointLocation2D* prepared,
+        PreparedRayjoinCdbPointLocationPoints2D* prepared_points,
+        size_t* point_count_out)
+{
+    if (!point_count_out) {
+        throw std::runtime_error("point_count_out must not be null");
+    }
+    *point_count_out = 0;
+    reset_rayjoin_cdb_point_location_phase_timings(5u);
+    const size_t point_count = prepared_points ? prepared_points->point_count : 0;
+    g_optix_last_rayjoin_cdb_point_count = point_count;
+    if (point_count == 0 || !prepared || !prepared_points || prepared->segment_count == 0) {
+        return;
+    }
+
+    DevPtr d_face_ids(sizeof(uint32_t) * point_count);
+    launch_rayjoin_cdb_point_location_optix(
+        prepared,
+        prepared_points->d_points.ptr,
+        point_count,
+        0,
+        0,
+        d_face_ids.ptr,
+        0);
+
+    *point_count_out = point_count;
+}
+
+static void run_prepared_rayjoin_cdb_point_location_2d_optix(
+        PreparedRayjoinCdbPointLocation2D* prepared,
+        const RtdlPoint* points,
+        size_t point_count,
+        RtdlRayjoinCdbPointLocationRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("row output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    reset_rayjoin_cdb_point_location_phase_timings(2u);
+    g_optix_last_rayjoin_cdb_point_count = point_count;
+    if (point_count == 0 || !prepared || prepared->segment_count == 0) {
+        return;
+    }
+
+    DevPtr d_output(sizeof(GpuRayjoinCdbPointLocationRecord) * point_count);
+    DevPtr d_positive_count(sizeof(unsigned long long));
+    launch_rayjoin_cdb_point_location_optix(
+        prepared,
+        points,
+        point_count,
+        d_output.ptr,
+        0,
+        0,
+        d_positive_count.ptr);
+
+    std::vector<GpuRayjoinCdbPointLocationRecord> gpu_rows(point_count);
+    unsigned long long host_count = 0ull;
+    const auto t_download_start = std::chrono::steady_clock::now();
+    download(gpu_rows.data(), d_output.ptr, point_count);
+    download<unsigned long long>(&host_count, d_positive_count.ptr, 1);
+    const auto t_download_end = std::chrono::steady_clock::now();
+    g_optix_last_rayjoin_cdb_row_download_s += seconds_between(t_download_start, t_download_end);
+    g_optix_last_rayjoin_cdb_positive_face_count = static_cast<size_t>(host_count);
+
+    auto* out = static_cast<RtdlRayjoinCdbPointLocationRow*>(
+        std::malloc(sizeof(RtdlRayjoinCdbPointLocationRow) * point_count));
+    if (!out && point_count != 0) {
+        throw std::bad_alloc();
+    }
+    for (size_t i = 0; i < point_count; ++i) {
+        out[i] = RtdlRayjoinCdbPointLocationRow{
+            gpu_rows[i].point_id,
+            gpu_rows[i].face_id,
+            gpu_rows[i].segment_id,
+            static_cast<double>(gpu_rows[i].hit_t),
+        };
+    }
+    *rows_out = out;
+    *row_count_out = point_count;
 }
 
 static std::vector<GpuSegmentPairIntersectionRecord> collect_segment_pair_intersection_candidates_optix(
@@ -5448,11 +6865,14 @@ static size_t count_segment_pair_intersection_exact_one_pass_optix(
         lp.left_segs = reinterpret_cast<const GpuSegment*>(chunk_left_ptr);
         lp.right_segs = reinterpret_cast<const GpuSegment*>(d_right_ptr);
         lp.left_exact_segs = reinterpret_cast<const RtdlSegment*>(d_left_exact_ptr);
+        lp.left_rayjoin_lsi_segs = nullptr;
         lp.right_exact_segs = reinterpret_cast<const RtdlSegment*>(d_right_exact_ptr);
+        lp.right_rayjoin_lsi_segs = nullptr;
         lp.exact_count = reinterpret_cast<unsigned long long*>(d_exact_count.ptr);
         lp.candidate_event_count = reinterpret_cast<unsigned long long*>(d_candidate_event_count.ptr);
         lp.probe_count = static_cast<uint32_t>(chunk_left_count);
         lp.left_offset = static_cast<uint32_t>(left_offset);
+        lp.predicate_mode = 0u;
 
         DevPtr d_params(sizeof(SegmentPairExactCountLaunchParams));
         upload(d_params.ptr, &lp, 1);
@@ -5485,9 +6905,12 @@ static size_t count_segment_pair_intersection_direct_is_exact_one_pass_optix(
         size_t left_count,
         CUdeviceptr d_left_ptr,
         CUdeviceptr d_left_exact_ptr,
+        CUdeviceptr d_left_rayjoin_lsi_ptr,
         CUdeviceptr d_right_exact_ptr,
+        CUdeviceptr d_right_rayjoin_lsi_ptr,
         size_t right_count,
         OptixTraversableHandle traversable,
+        uint32_t predicate_mode,
         bool record_candidate_events)
 {
     if (left_count == 0 || right_count == 0) {
@@ -5530,11 +6953,14 @@ static size_t count_segment_pair_intersection_direct_is_exact_one_pass_optix(
         lp.left_segs = reinterpret_cast<const GpuSegment*>(chunk_left_ptr);
         lp.right_segs = nullptr;
         lp.left_exact_segs = reinterpret_cast<const RtdlSegment*>(d_left_exact_ptr);
+        lp.left_rayjoin_lsi_segs = reinterpret_cast<const RayjoinLsiScaledSegment*>(d_left_rayjoin_lsi_ptr);
         lp.right_exact_segs = reinterpret_cast<const RtdlSegment*>(d_right_exact_ptr);
+        lp.right_rayjoin_lsi_segs = reinterpret_cast<const RayjoinLsiScaledSegment*>(d_right_rayjoin_lsi_ptr);
         lp.exact_count = reinterpret_cast<unsigned long long*>(d_exact_count.ptr);
         lp.candidate_event_count = reinterpret_cast<unsigned long long*>(d_candidate_event_count.ptr);
         lp.probe_count = static_cast<uint32_t>(chunk_left_count);
         lp.left_offset = static_cast<uint32_t>(left_offset);
+        lp.predicate_mode = predicate_mode;
 
         DevPtr d_params(sizeof(SegmentPairExactCountLaunchParams));
         upload(d_params.ptr, &lp, 1);
@@ -5568,6 +6994,9 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
         size_t left_count,
         CUdeviceptr d_left_ptr,
         CUdeviceptr d_left_exact_ptr,
+        CUdeviceptr d_left_rayjoin_lsi_ptr,
+        CUdeviceptr d_right_rayjoin_lsi_ptr,
+        uint32_t predicate_mode,
         bool record_group_candidate_events)
 {
     if (!prepared) {
@@ -5592,6 +7021,19 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
     DevPtr d_exact_count(sizeof(unsigned long long));
     DevPtr d_group_candidate_count(
         record_group_candidate_events ? sizeof(unsigned long long) : 0);
+    const char* pair_dump_path = std::getenv("RTDL_OPTIX_SEGMENT_PAIR_DUMP_PATH");
+    unsigned long long pair_dump_capacity = 0ull;
+    if (pair_dump_path && pair_dump_path[0] != '\0') {
+        pair_dump_capacity = 2000000ull;
+        if (const char* raw_capacity = std::getenv("RTDL_OPTIX_SEGMENT_PAIR_DUMP_CAPACITY")) {
+            char* end = nullptr;
+            const unsigned long long parsed = std::strtoull(raw_capacity, &end, 10);
+            if (end != raw_capacity && parsed != 0ull) {
+                pair_dump_capacity = parsed;
+            }
+        }
+    }
+    DevPtr d_pair_output(pair_dump_capacity * sizeof(unsigned long long));
     unsigned long long zero64 = 0ull;
     upload<unsigned long long>(d_exact_count.ptr, &zero64, 1);
     if (record_group_candidate_events) {
@@ -5602,12 +7044,17 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
     lp.traversable = prepared->grouped_range_accel->handle;
     lp.left_segs = reinterpret_cast<const GpuSegment*>(d_left_ptr);
     lp.left_exact_segs = reinterpret_cast<const RtdlSegment*>(d_left_exact_ptr);
+    lp.left_rayjoin_lsi_segs = reinterpret_cast<const RayjoinLsiScaledSegment*>(d_left_rayjoin_lsi_ptr);
     lp.right_exact_segs = reinterpret_cast<const RtdlSegment*>(prepared->d_right_exact.ptr);
+    lp.right_rayjoin_lsi_segs = reinterpret_cast<const RayjoinLsiScaledSegment*>(d_right_rayjoin_lsi_ptr);
     lp.right_group_ranges = reinterpret_cast<const SegmentPairGroupRange*>(prepared->d_right_group_ranges->ptr);
     lp.exact_count = reinterpret_cast<unsigned long long*>(d_exact_count.ptr);
     lp.group_candidate_count = reinterpret_cast<unsigned long long*>(d_group_candidate_count.ptr);
+    lp.pair_output = reinterpret_cast<unsigned long long*>(d_pair_output.ptr);
+    lp.pair_output_capacity = pair_dump_capacity;
     lp.probe_count = static_cast<uint32_t>(left_count);
     lp.left_offset = 0u;
+    lp.predicate_mode = predicate_mode;
 
     DevPtr d_params(sizeof(SegmentPairGroupedRangeExactCountLaunchParams));
     upload(d_params.ptr, &lp, 1);
@@ -5634,6 +7081,45 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
         g_optix_last_segment_pair_raw_candidate_count = static_cast<size_t>(group_candidate_count);
     } else {
         g_optix_last_segment_pair_raw_candidate_count = 0;
+    }
+    if (pair_dump_capacity != 0ull) {
+        const unsigned long long rows_to_copy = std::min(exact_count, pair_dump_capacity);
+        std::vector<unsigned long long> pair_rows(static_cast<size_t>(rows_to_copy));
+        if (!pair_rows.empty()) {
+            download(pair_rows.data(), d_pair_output.ptr, pair_rows.size());
+        }
+        const char* raw_pair_dump_format = std::getenv("RTDL_OPTIX_SEGMENT_PAIR_DUMP_FORMAT");
+        const bool binary_u64_pairs =
+            raw_pair_dump_format != nullptr && std::string(raw_pair_dump_format) == "binary_u64_pairs";
+        FILE* dump_file = std::fopen(pair_dump_path, binary_u64_pairs ? "wb" : "w");
+        if (!dump_file) {
+            throw std::runtime_error("failed to open RTDL_OPTIX_SEGMENT_PAIR_DUMP_PATH for writing");
+        }
+        if (binary_u64_pairs) {
+            const size_t written = std::fwrite(
+                pair_rows.data(),
+                sizeof(unsigned long long),
+                pair_rows.size(),
+                dump_file);
+            if (written != pair_rows.size()) {
+                std::fclose(dump_file);
+                throw std::runtime_error("failed to write binary RTDL_OPTIX_SEGMENT_PAIR_DUMP_PATH rows");
+            }
+        } else {
+            for (unsigned long long pair : pair_rows) {
+                const unsigned int left_id = static_cast<unsigned int>(pair >> 32);
+                const unsigned int right_id = static_cast<unsigned int>(pair & 0xffffffffull);
+                std::fprintf(dump_file, "%u %u\n", left_id, right_id);
+            }
+        }
+        std::fclose(dump_file);
+        if (exact_count > pair_dump_capacity) {
+            std::fprintf(
+                stderr,
+                "RTDL_OPTIX_SEGMENT_PAIR_DUMP_PATH truncated %llu exact pairs to capacity %llu\n",
+                exact_count,
+                pair_dump_capacity);
+        }
     }
     return static_cast<size_t>(exact_count);
 }
@@ -5920,7 +7406,8 @@ static void launch_segment_pair_intersection_optix(
         RtdlSegmentPairIntersectionRow** rows_out,
         size_t* row_count_out,
         const RtdlSegment* right_host,
-        const std::unordered_map<uint32_t, const RtdlSegment*>* prepared_right_by_id = nullptr)
+        const std::unordered_map<uint32_t, const RtdlSegment*>* prepared_right_by_id = nullptr,
+        uint32_t predicate_mode = 0u)
 {
     (void)gpu_left_host;
     (void)gpu_right_host;
@@ -5934,7 +7421,8 @@ static void launch_segment_pair_intersection_optix(
         gpu_rows,
         rows_out,
         row_count_out,
-        prepared_right_by_id);
+        prepared_right_by_id,
+        predicate_mode);
     const auto t_refine_end = std::chrono::steady_clock::now();
     g_optix_last_segment_pair_exact_refine_s =
         std::chrono::duration<double>(t_refine_end - t_refine_start).count();
@@ -5982,7 +7470,9 @@ static void run_segment_pair_intersection_optix(
         accel.handle,
         rows_out,
         row_count_out,
-        right);
+        right,
+        nullptr,
+        segment_pair_predicate_mode_from_env());
 }
 
 static PreparedSegmentPairIntersectionBuild* prepare_segment_pair_intersection_optix(
@@ -6028,7 +7518,8 @@ static void run_prepared_segment_pair_intersection_optix(
         rows_out,
         row_count_out,
         prepared->host_right_segments.data(),
-        &prepared->right_by_id);
+        &prepared->right_by_id,
+        segment_pair_predicate_mode_from_env());
 }
 
 static void count_prepared_segment_pair_intersection_optix(
@@ -6186,13 +7677,20 @@ static void count_prepared_segment_pair_intersection_prepared_left_direct_inters
     if (prepared_left->left_count == 0 || prepared->right_count == 0) {
         return;
     }
+    const uint32_t predicate_mode = segment_pair_predicate_mode_from_env();
+    if (predicate_mode == 1u) {
+        ensure_rayjoin_lsi_scaled_segment_caches(prepared, prepared_left);
+    }
     *count_out = count_segment_pair_intersection_direct_is_exact_one_pass_optix(
         prepared_left->left_count,
         prepared_left->d_left.ptr,
         prepared_left->d_left_exact.ptr,
+        predicate_mode == 1u ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
         prepared->d_right_exact.ptr,
+        predicate_mode == 1u ? prepared->d_rayjoin_lsi_right->ptr : 0,
         prepared->right_count,
         prepared->accel.handle,
+        predicate_mode,
         false);
     g_optix_last_segment_pair_emitted_count = *count_out;
 }
@@ -6218,11 +7716,18 @@ static void count_prepared_segment_pair_intersection_prepared_left_grouped_range
     if (prepared_left->left_count == 0 || prepared->right_count == 0) {
         return;
     }
+    const uint32_t predicate_mode = segment_pair_predicate_mode_from_env();
+    if (predicate_mode == 1u) {
+        ensure_rayjoin_lsi_scaled_segment_caches(prepared, prepared_left);
+    }
     *count_out = count_segment_pair_intersection_grouped_range_direct_is_exact_one_pass_optix(
         prepared,
         prepared_left->left_count,
         prepared_left->d_left.ptr,
         prepared_left->d_left_exact.ptr,
+        predicate_mode == 1u ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
+        predicate_mode == 1u ? prepared->d_rayjoin_lsi_right->ptr : 0,
+        predicate_mode,
         false);
     *group_count_out = prepared->right_group_count;
     g_optix_last_segment_pair_emitted_count = *count_out;

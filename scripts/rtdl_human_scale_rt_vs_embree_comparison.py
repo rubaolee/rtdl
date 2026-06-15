@@ -28,17 +28,19 @@ DEFAULT_OUTPUT_DIR = ROOT / "docs" / "reports" / "goal4349_human_scale_rt_vs_emb
 
 def _base_env() -> dict[str, str]:
     env = os.environ.copy()
+    rtdl_cuda_prefix = env.get("RTDL_CUDA_PREFIX", "/usr/local/cuda-12.8")
+    bundled_nvcc_prefix = "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc"
+    numba_cuda_prefix = env.get("NUMBA_CUDA_PREFIX")
+    if not numba_cuda_prefix:
+        numba_cuda_prefix = bundled_nvcc_prefix if Path(bundled_nvcc_prefix).exists() else rtdl_cuda_prefix
     env.update(
         {
             "PYTHONPATH": "src:.",
             "RTDL_OPTIX_LIBRARY": str(ROOT / "build" / "librtdl_optix.so"),
             "RTDL_OPTIX_LIB": str(ROOT / "build" / "librtdl_optix.so"),
             "RTDL_EMBREE_LIBRARY": str(ROOT / "build" / "librtdl_embree.so"),
-            "RTDL_CUDA_PREFIX": env.get("RTDL_CUDA_PREFIX", "/usr/local/cuda-12.8"),
-            "NUMBA_CUDA_PREFIX": env.get(
-                "NUMBA_CUDA_PREFIX",
-                "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc",
-            ),
+            "RTDL_CUDA_PREFIX": rtdl_cuda_prefix,
+            "NUMBA_CUDA_PREFIX": numba_cuda_prefix,
         }
     )
     env["CUDA_HOME"] = env["NUMBA_CUDA_PREFIX"]
@@ -479,9 +481,9 @@ def _specs() -> tuple[RunSpec, ...]:
         RunSpec("rayjoin_pip_optix_r2000", "spatial_rayjoin_pip", "optix", (py, "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py", "--workload", "pip", "--backend", "optix", "--execution-route", "prepared_optix", "--result-mode", "count", "--dataset", pip_dataset, "--no-rows", "--repeat", "2000", "--warmup", "10"), _rayjoin, 240),
         RunSpec("rayjoin_pip_embree_t8_r2000", "spatial_rayjoin_pip", "embree", (py, "-c", _rayjoin_embree_probe("pip", pip_dataset, 2000, 10)), _rayjoin, 240, threads=8),
         RunSpec("rayjoin_pip_embree_t64_r2000", "spatial_rayjoin_pip", "embree", (py, "-c", _rayjoin_embree_probe("pip", pip_dataset, 2000, 10)), _rayjoin, 240, threads=64),
-        RunSpec("rayjoin_lsi_optix_r5000", "spatial_rayjoin_lsi", "optix", (py, "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py", "--workload", "lsi", "--backend", "optix", "--execution-route", "prepared_optix", "--result-mode", "count", "--dataset", lsi_dataset, "--no-rows", "--repeat", "5000", "--warmup", "10"), _rayjoin, 300),
-        RunSpec("rayjoin_lsi_embree_t8_r500", "spatial_rayjoin_lsi", "embree", (py, "-c", _rayjoin_embree_probe("lsi", lsi_dataset, 500, 5)), _rayjoin, 240, threads=8),
-        RunSpec("rayjoin_lsi_embree_t64_r500", "spatial_rayjoin_lsi", "embree", (py, "-c", _rayjoin_embree_probe("lsi", lsi_dataset, 500, 5)), _rayjoin, 240, threads=64),
+        RunSpec("rayjoin_lsi_optix_dense_r20000", "spatial_rayjoin_lsi", "optix", (py, "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py", "--workload", "lsi", "--backend", "optix", "--execution-route", "prepared_optix_left_id_dense_count", "--result-mode", "count", "--dataset", lsi_dataset, "--no-rows", "--repeat", "20000", "--warmup", "10"), _rayjoin, 360),
+        RunSpec("rayjoin_lsi_embree_t8_r2000", "spatial_rayjoin_lsi", "embree", (py, "-c", _rayjoin_embree_probe("lsi", lsi_dataset, 2000, 10)), _rayjoin, 300, threads=8),
+        RunSpec("rayjoin_lsi_embree_t64_r2000", "spatial_rayjoin_lsi", "embree", (py, "-c", _rayjoin_embree_probe("lsi", lsi_dataset, 2000, 10)), _rayjoin, 300, threads=64),
         RunSpec("rtnn_optix_r40", "rtnn", "optix", (py, "scripts/goal2348_rtnn_v2_2_external_runner.py", "run-rtdl-batched-3d-neighbors", "--point-file", rtnn_points, "--radius", "0.02", "--k-max", "50", "--backend", "optix", "--query-batch-size", "65536", "--result-mode", "ranked-summary-raw", "--repeat", "40", "--row-label", "human_scale_rtnn_optix"), _rtnn, 300, json_out=True),
         RunSpec("rtnn_embree_t8_r80", "rtnn", "embree", (py, "scripts/goal2348_rtnn_v2_2_external_runner.py", "run-rtdl-batched-3d-neighbors", "--point-file", rtnn_points, "--radius", "0.02", "--k-max", "50", "--backend", "embree", "--query-batch-size", "65536", "--result-mode", "ranked-summary-raw", "--repeat", "80", "--row-label", "human_scale_rtnn_embree_t8"), _rtnn, 300, threads=8, json_out=True),
         RunSpec("rtnn_embree_t64_r80", "rtnn", "embree", (py, "scripts/goal2348_rtnn_v2_2_external_runner.py", "run-rtdl-batched-3d-neighbors", "--point-file", rtnn_points, "--radius", "0.02", "--k-max", "50", "--backend", "embree", "--query-batch-size", "65536", "--result-mode", "ranked-summary-raw", "--repeat", "80", "--row-label", "human_scale_rtnn_embree_t64"), _rtnn, 300, threads=64, json_out=True),
@@ -498,6 +500,33 @@ def _specs() -> tuple[RunSpec, ...]:
         RunSpec("raydb_embree_t8_r240", "raydb_style", "embree", (py, "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py", "--mode", "count", "--backend", "paper_rt_embree", "--fixture-kind", "generated", "--generated-rows", "262144", "--generated-groups", "1024", "--repeat", "240", "--warmup", "5", "--summary-only-iterations"), _raydb, 300, threads=8),
         RunSpec("raydb_embree_t64_r240", "raydb_style", "embree", (py, "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py", "--mode", "count", "--backend", "paper_rt_embree", "--fixture-kind", "generated", "--generated-rows", "262144", "--generated-groups", "1024", "--repeat", "240", "--warmup", "5", "--summary-only-iterations"), _raydb, 300, threads=64),
     )
+
+
+def _split_only(value: str | None) -> tuple[str, ...]:
+    if value is None or value.strip() == "":
+        return ()
+    return tuple(item.strip() for item in value.split(",") if item.strip())
+
+
+def _filter_specs(specs: tuple[RunSpec, ...], only: tuple[str, ...]) -> tuple[RunSpec, ...]:
+    if not only:
+        return specs
+    selected = [
+        spec
+        for spec in specs
+        if spec.app in only or spec.label in only
+    ]
+    matched = {spec.app for spec in selected} | {spec.label for spec in selected}
+    unknown = sorted(set(only) - matched)
+    if unknown:
+        available = sorted({spec.app for spec in specs} | {spec.label for spec in specs})
+        raise ValueError(
+            "unknown --only selection(s): "
+            + ", ".join(unknown)
+            + "; available selections: "
+            + ", ".join(available)
+        )
+    return tuple(selected)
 
 
 ROW_ASSESSMENTS: dict[str, dict[str, str]] = {
@@ -823,9 +852,9 @@ def _markdown(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def run(output_dir: Path, *, dry_run: bool = False) -> dict[str, Any]:
+def run(output_dir: Path, *, dry_run: bool = False, only: tuple[str, ...] = ()) -> dict[str, Any]:
     output_dir = output_dir.resolve()
-    specs = _specs()
+    specs = _filter_specs(_specs(), only)
     runs: list[dict[str, Any]] = []
     for index, spec in enumerate(specs, start=1):
         print(f"[human-scale] {index}/{len(specs)} {spec.label}", flush=True)
@@ -836,7 +865,10 @@ def run(output_dir: Path, *, dry_run: bool = False) -> dict[str, Any]:
         for run_row in runs:
             if run_row.get("returncode") != 0:
                 errors.append(f"{run_row['label']}: returncode {run_row.get('returncode')}")
-        expected_apps = {
+        expected_apps = {spec.app for spec in specs}
+        if not expected_apps:
+            errors.append("no benchmark apps selected")
+        default_expected_apps = {
             "hausdorff_xhd",
             "barnes_hut",
             "contact_manifold",
@@ -849,6 +881,8 @@ def run(output_dir: Path, *, dry_run: bool = False) -> dict[str, Any]:
             "robot_collision",
             "raydb_style",
         }
+        if not only:
+            expected_apps = default_expected_apps
         got_apps = {row["app"] for row in rows}
         for missing in sorted(expected_apps - got_apps):
             errors.append(f"missing comparison row for {missing}")
@@ -888,8 +922,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--only",
+        help=(
+            "Comma-separated app ids or run labels to execute. "
+            "Examples: hausdorff_xhd,spatial_rayjoin_lsi or raydb_optix_r5000."
+        ),
+    )
     args = parser.parse_args(argv)
-    payload = run(args.output_dir, dry_run=args.dry_run)
+    payload = run(args.output_dir, dry_run=args.dry_run, only=_split_only(args.only))
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0 if payload["validation"]["status"] == "accept" else 1
 

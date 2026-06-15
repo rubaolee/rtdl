@@ -18,15 +18,21 @@ USER_AGENT = "RTDL Goal28B ArcGIS Stager/1.0"
 
 
 def fetch_json(url: str) -> dict[str, Any]:
-    request = Request(url, headers={"User-Agent": USER_AGENT})
+    request = Request(url, headers={"User-Agent": USER_AGENT, "Accept-Encoding": "gzip"})
     with urlopen(request, timeout=120) as response:
-        return json.load(response)
+        payload = response.read()
+        if response.headers.get("Content-Encoding", "").lower() == "gzip":
+            payload = gzip.decompress(payload)
+        return json.loads(payload.decode("utf-8"))
 
 
 def fetch_bytes(url: str) -> bytes:
-    request = Request(url, headers={"User-Agent": USER_AGENT})
+    request = Request(url, headers={"User-Agent": USER_AGENT, "Accept-Encoding": "gzip"})
     with urlopen(request, timeout=120) as response:
-        return response.read()
+        payload = response.read()
+        if response.headers.get("Content-Encoding", "").lower() == "gzip":
+            payload = gzip.decompress(payload)
+        return payload
 
 
 def write_bytes(destination: Path, payload: bytes, *, use_gzip: bool) -> Path:
@@ -55,6 +61,7 @@ def stage_asset(
     sleep_sec: float,
     use_gzip: bool,
     response_format: str,
+    out_fields: str = "*",
     resume_skip_existing: bool,
 ) -> dict[str, Any]:
     asset_root = output_dir / asset.asset_id
@@ -92,6 +99,7 @@ def stage_asset(
                 offset=offset,
                 record_count=min(page_size, total - offset),
                 response_format=response_format,
+                out_fields=out_fields,
             )
             try:
                 payload = fetch_bytes(query_url)
@@ -129,6 +137,7 @@ def stage_asset(
         "pages": pages,
         "status": "complete" if downloaded == total else "partial",
         "response_format": response_format,
+        "out_fields": out_fields,
         "output_root": str(asset_root),
     }
     (asset_root / "manifest.json").write_text(json.dumps(asset_manifest, indent=2, sort_keys=True), encoding="utf-8")
@@ -185,6 +194,11 @@ def parse_args() -> argparse.Namespace:
         help="FeatureServer response format used for paginated page downloads.",
     )
     parser.add_argument(
+        "--out-fields",
+        default="*",
+        help="FeatureServer outFields value. CDB conversion needs OBJECTID plus geometry.",
+    )
+    parser.add_argument(
         "--resume-skip-existing",
         action="store_true",
         help="Reuse already-downloaded page files that match the expected page naming scheme.",
@@ -213,6 +227,7 @@ def main() -> int:
             sleep_sec=args.sleep_sec,
             use_gzip=args.gzip,
             response_format=args.response_format,
+            out_fields=args.out_fields,
             resume_skip_existing=args.resume_skip_existing,
         )
         for asset in selected_assets

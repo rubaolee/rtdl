@@ -1,0 +1,60 @@
+{
+  "schema": "rtdl.goal4380.v2_14_pod_benchmark_execution.v1",
+  "date": "2026-06-14",
+  "status": "current_head_evidence_not_release_authorization",
+  "pod": {
+    "host": "ad938d39a223",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "gpu_memory_mib": 20475,
+    "driver_version": "550.127.08",
+    "cuda_runtime_reported_by_nvidia_smi": "12.4",
+    "cpu": "AMD EPYC 7702 64-Core Processor",
+    "logical_cpus": 128,
+    "python": "3.12.3"
+  },
+  "toolchain_fixes": [
+    "Prefer /usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc as NUMBA_CUDA_PREFIX when present.",
+    "Avoid the CUDA 12.8 NVVM path that emitted PTX 8.7 for a driver supporting PTX 8.4.",
+    "Use RayJoin LSI OptiX prepared_optix_left_id_dense_count instead of the stale prepared_optix route."
+  ],
+  "human_scale_same_contract": {
+    "artifact_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/human_scale_same_contract",
+    "validation_status": "accept",
+    "rows_total": 11,
+    "rows_correct": 11
+  },
+  "rayjoin_section57_overlay": {
+    "artifact_dir": "docs/reports/goal4380_v2_14_benchmark_runs_2026-06-14/rayjoin_section57_overlay",
+    "overlay_pairs_total": 8,
+    "overlay_pairs_complete": 2,
+    "overlay_pairs_incomplete": 6,
+    "completed_rows": [
+      {
+        "pair": "County x Zipcode",
+        "local_author_rt_process_sec": 5.521469,
+        "rtdl_optix_total_sec": 5.78234,
+        "rtdl_embree_total_sec": 15.121065,
+        "optix_vs_embree_speedup": 2.61,
+        "lsi_count_match": true
+      },
+      {
+        "pair": "Block x Water",
+        "local_author_rt_process_sec": 27.943863,
+        "rtdl_optix_total_sec": 28.649871,
+        "rtdl_embree_total_sec": 53.792848,
+        "optix_vs_embree_speedup": 1.88,
+        "lsi_count_match": true
+      }
+    ]
+  },
+  "release_conclusion": {
+    "non_overlay_matrix_ready_for_review": true,
+    "section57_full_8_of_8_reproduction_ready": false,
+    "public_release_authorized": false,
+    "required_next": [
+      "External review of v2.14 public wording.",
+      "Maintainer authorization before tagging.",
+      "Exact Section 5.7 CDB inputs before claiming full RayJoin overlay reproduction."
+    ]
+  }
+}

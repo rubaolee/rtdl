@@ -1,6 +1,6 @@
 # RT-Core Evidence Matrix
 
-Status: current v2.13 source-tree evidence guide.
+Status: current v2.14 source-tree evidence guide.
 
 Use this page when you want to know which benchmark apps currently demonstrate
 RT-core value, which ones mostly test partner continuation, and which ones are
@@ -27,7 +27,7 @@ evidence, not automatically performance evidence.
 | RayDB-style | Strong primitive evidence | Fused generic grouped count/sum primitives can beat unfused partner continuation when the primitive exactly matches the query. | Arbitrary SQL/database acceleration is not claimed. |
 | Barnes-Hut | Scoped RT evidence | Prepared node-coverage threshold rows show an OptiX-over-Embree row-scoped win. | This is not Barnes-Hut force integration or a whole N-body speedup claim. |
 | LibRTS spatial index | Strong RT evidence | Prepared AABB/spatial-index style query rows exercise RT traversal in a LibRTS-like contract. | It is not full mutable LibRTS and not a universal index replacement. |
-| RTNN | Blocked RT-core claim / engineering evidence | Fresh prepared ranked-summary rows are near parity and useful for backend engineering. | v2.13 does not authorize RTNN as an RT-core neighbor-search speedup, full RTNN paper reproduction, or arbitrary ANN index performance. |
+| RTNN | Blocked RT-core claim / engineering evidence | Fresh prepared ranked-summary rows are near parity and useful for backend engineering. | v2.14 does not authorize RTNN as an RT-core neighbor-search speedup, full RTNN paper reproduction, or arbitrary ANN index performance. |
 | Triangle counting | Mixed primitive/coverage evidence | Generic graph relationship-count compositions and candidate-row paths pressure-test typed streams and reductions. | It does not prove broad triangle-counting acceleration for all graph families. |
 
 ## Performance Claim Checklist
@@ -77,3 +77,4 @@ RTDL accelerates all ten benchmark apps on RT cores.
 - [Goal4363 Robot Collision same-contract evidence](../reports/goal4363_rtx_a4000_v2_12_robot_collision_same_contract_2026-06-13.md)
 - [Goal4364 RayDB-style same-contract evidence](../reports/goal4364_rtx_a4000_v2_12_raydb_same_contract_2026-06-13.md)
 - [v2.13 release scoped RT-core vs Embree CPU comparison](../release_reports/v2_13/public_rt_vs_embree_comparison.md)
+- [v2.14 release scoped RT-core vs Embree CPU comparison](../release_reports/v2_14/public_rt_vs_embree_comparison.md)

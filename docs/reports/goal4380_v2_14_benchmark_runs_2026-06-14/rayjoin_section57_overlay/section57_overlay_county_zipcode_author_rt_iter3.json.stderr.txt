@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py", line 698, in <module>
+    main()
+  File "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py", line 694, in main
+    args.func(args)
+  File "/workspace/rtdl/scripts/rayjoin_paper_reproduction_suite.py", line 491, in cmd_run_author
+    result = run_rayjoin_author_command(command)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/rtdl/src/rtdsl/rayjoin_paper_suite.py", line 577, in run_rayjoin_author_command
+    completed = subprocess.run(
+                ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '('/workspace/RayJoin_fresh/release/bin/polyover_exec', '-poly1', '/workspace/rayjoin_section57_data/cdb_topology/point_cdb/dtl_cnty/dtl_cnty_Point.cdb', '-poly2', '/workspace/rayjoin_section57_data/cdb_topology/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb', '-serialize=/dev/shm', '-grid_size=15000', '-mode=rt', '-v=1', '-fau', '-xsect_factor', '0.1', '-enlarge=3.5', '-check=false')' died with <Signals.SIGABRT: 6>.

@@ -1,0 +1,73 @@
+{
+  "dataset_root": "/workspace/rayjoin_datasets",
+  "mode": "rt",
+  "rows": [
+    {
+      "backend": "rayjoin_author_rt",
+      "case_id": "lsi_county_zipcode",
+      "command": [
+        "/workspace/RayJoin_fresh/release/bin/query_exec",
+        "-poly1",
+        "/workspace/rayjoin_datasets/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+        "-poly2",
+        "/workspace/rayjoin_datasets/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+        "-serialize=/dev/shm",
+        "-grid_size=15000",
+        "-mode=rt",
+        "-v=1",
+        "-fau",
+        "-xsect_factor",
+        "0.1",
+        "-enlarge=3.5",
+        "-check=false",
+        "-warmup=5",
+        "-repeat=5",
+        "-query=lsi"
+      ]
+    },
+    {
+      "backend": "rayjoin_author_rt",
+      "case_id": "pip_county_zipcode",
+      "command": [
+        "/workspace/RayJoin_fresh/release/bin/query_exec",
+        "-poly1",
+        "/workspace/rayjoin_datasets/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+        "-poly2",
+        "/workspace/rayjoin_datasets/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+        "-serialize=/dev/shm",
+        "-grid_size=15000",
+        "-mode=rt",
+        "-v=1",
+        "-fau",
+        "-xsect_factor",
+        "0.1",
+        "-enlarge=3.5",
+        "-check=false",
+        "-warmup=5",
+        "-repeat=5",
+        "-query=pip"
+      ]
+    },
+    {
+      "backend": "rayjoin_author_rt",
+      "case_id": "overlay_county_zipcode",
+      "command": [
+        "/workspace/RayJoin_fresh/release/bin/polyover_exec",
+        "-poly1",
+        "/workspace/rayjoin_datasets/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+        "-poly2",
+        "/workspace/rayjoin_datasets/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+        "-serialize=/dev/shm",
+        "-grid_size=15000",
+        "-mode=rt",
+        "-v=1",
+        "-fau",
+        "-xsect_factor",
+        "0.1",
+        "-enlarge=3.5",
+        "-check=false"
+      ]
+    }
+  ],
+  "schema": "rtdl.rayjoin_paper_suite.author_commands.v1"
+}

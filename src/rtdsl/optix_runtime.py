@@ -43,6 +43,8 @@ from pathlib import Path
 from typing import Iterable, Mapping
 
 from .embree_runtime import _RtdlSegment
+from .embree_runtime import _RtdlRayjoinCdbSegment
+from .embree_runtime import _RtdlRayjoinCdbPointLocationRow
 from .embree_runtime import _RtdlPoint
 from .embree_runtime import _RtdlPoint3D
 from .embree_runtime import _RtdlPolygonRef
@@ -82,6 +84,7 @@ from .oracle_runtime import _encode_db_text_fields
 from .embree_runtime import PackedPoints
 from .embree_runtime import PackedPolygons
 from .embree_runtime import PackedRays
+from .embree_runtime import PackedRayjoinCdbSegments
 from .embree_runtime import PackedSegments
 from .embree_runtime import PackedTriangles
 from .embree_runtime import PackedGraphCSR
@@ -94,6 +97,7 @@ from .embree_runtime import _pack_segments_3d_from_endpoints
 from .embree_runtime import _pack_static_triangles_3d
 from .embree_runtime import _encode_all_db_text_columns
 from .embree_runtime import _pack_points_columns_numpy
+from .embree_runtime import pack_rayjoin_cdb_segments
 from .db_reference import PredicateClause
 from .db_reference import normalize_denorm_table
 from .db_reference import normalize_grouped_query
@@ -237,6 +241,66 @@ OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_PREPARED_LEFT_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_SEGMENT_PAIR_DESTROY_LEFT_SET_SYMBOL = "rtdl_optix_destroy_prepared_segment_pair_left_set"
 OPTIX_RELEASE_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_segment_pair_left_id_count_device_columns"
+)
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_SYMBOL = (
+    "rtdl_optix_prepare_directed_segment_point_location_2d"
+)
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL = (
+    "rtdl_optix_run_prepared_directed_segment_point_location_2d"
+)
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL = (
+    "rtdl_optix_count_prepared_directed_segment_point_location_2d"
+)
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_POINTS_SYMBOL = (
+    "rtdl_optix_prepare_directed_segment_point_location_points_2d"
+)
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_DEVICE_POINTS_SYMBOL = (
+    "rtdl_optix_count_prepared_directed_segment_point_location_2d_device_points"
+)
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_WRITE_DEVICE_SEGMENT_IDS_SYMBOL = (
+    "rtdl_optix_write_prepared_directed_segment_point_location_2d_device_segment_ids"
+)
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_WRITE_DEVICE_FACE_IDS_SYMBOL = (
+    "rtdl_optix_write_prepared_directed_segment_point_location_2d_device_face_ids"
+)
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DESTROY_SYMBOL = (
+    "rtdl_optix_destroy_prepared_directed_segment_point_location_2d"
+)
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DESTROY_POINTS_SYMBOL = (
+    "rtdl_optix_destroy_prepared_directed_segment_point_location_points_2d"
+)
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_TIMINGS_SYMBOL = (
+    "rtdl_optix_directed_segment_point_location_get_last_phase_timings"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SYMBOL = (
+    "rtdl_optix_prepare_rayjoin_cdb_point_location_2d"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL = (
+    "rtdl_optix_run_prepared_rayjoin_cdb_point_location_2d"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL = (
+    "rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_POINTS_SYMBOL = (
+    "rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_DEVICE_POINTS_SYMBOL = (
+    "rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d_device_points"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_WRITE_DEVICE_SEGMENT_IDS_SYMBOL = (
+    "rtdl_optix_write_prepared_rayjoin_cdb_point_location_2d_device_segment_ids"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_WRITE_DEVICE_FACE_IDS_SYMBOL = (
+    "rtdl_optix_write_prepared_rayjoin_cdb_point_location_2d_device_face_ids"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_DESTROY_SYMBOL = (
+    "rtdl_optix_destroy_prepared_rayjoin_cdb_point_location_2d"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_DESTROY_POINTS_SYMBOL = (
+    "rtdl_optix_destroy_prepared_rayjoin_cdb_point_location_points_2d"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_TIMINGS_SYMBOL = (
+    "rtdl_optix_rayjoin_cdb_point_location_get_last_phase_timings"
 )
 OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_shape_pair_relation_active_device_columns"
@@ -3747,6 +3811,329 @@ def prepare_segment_pair_intersection_optix(right_segments) -> PreparedOptixSegm
         prepared_handle=prepared,
         right_count=int(right.count),
     )
+
+
+@dataclass
+class PreparedOptixRayjoinCdbPointLocationPoints2D:
+    library: object
+    prepared_points_handle: ctypes.c_void_p
+    point_count: int = 0
+    _closed: bool = False
+
+    def close(self) -> None:
+        if not self._closed:
+            destroy = _find_first_optional_backend_symbol(
+                self.library,
+                OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DESTROY_POINTS_SYMBOL,
+                OPTIX_RAYJOIN_CDB_POINT_LOCATION_DESTROY_POINTS_SYMBOL,
+            )
+            if destroy is not None:
+                destroy(self.prepared_points_handle)
+            self._closed = True
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+@dataclass
+class PreparedOptixRayjoinCdbPointLocation2D:
+    library: object
+    prepared_handle: ctypes.c_void_p
+    segment_count: int = 0
+    _closed: bool = False
+
+    def run_raw(self, points) -> OptixRowView:
+        if self._closed:
+            raise RuntimeError("prepared OptiX RayJoin CDB point-location handle is closed")
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        run_symbol = _find_first_optional_backend_symbol(
+            self.library,
+            OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL,
+            OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL} or "
+                f"{OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlRayjoinCdbPointLocationRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self.prepared_handle,
+            packed_points.records,
+            packed_points.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return OptixRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlRayjoinCdbPointLocationRow,
+            field_names=("point_id", "face_id", "segment_id", "hit_t"),
+        )
+
+    def run(self, points) -> tuple:
+        rows = self.run_raw(points)
+        try:
+            return rows.to_dict_rows()
+        finally:
+            rows.close()
+
+    def count_positive_faces(self, points) -> int:
+        if self._closed:
+            raise RuntimeError("prepared OptiX RayJoin CDB point-location handle is closed")
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        count_symbol = _find_first_optional_backend_symbol(
+            self.library,
+            OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL,
+            OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL,
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL} or "
+                f"{OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        positive_face_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self.prepared_handle,
+            packed_points.records,
+            packed_points.count,
+            ctypes.byref(positive_face_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(positive_face_count.value)
+
+    def prepare_query_points(self, points) -> PreparedOptixRayjoinCdbPointLocationPoints2D:
+        if self._closed:
+            raise RuntimeError("prepared OptiX RayJoin CDB point-location handle is closed")
+        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+        prepare_symbol = _find_first_optional_backend_symbol(
+            self.library,
+            OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
+            OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
+        )
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_POINTS_SYMBOL} or "
+                f"{OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_POINTS_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        prepared_points = ctypes.c_void_p()
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            self.prepared_handle,
+            packed_points.records,
+            packed_points.count,
+            ctypes.byref(prepared_points),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return PreparedOptixRayjoinCdbPointLocationPoints2D(
+            library=self.library,
+            prepared_points_handle=prepared_points,
+            point_count=int(packed_points.count),
+        )
+
+    def count_positive_faces_device_points(
+        self,
+        prepared_points: PreparedOptixRayjoinCdbPointLocationPoints2D,
+    ) -> int:
+        if self._closed:
+            raise RuntimeError("prepared OptiX RayJoin CDB point-location handle is closed")
+        if prepared_points._closed:
+            raise RuntimeError("prepared OptiX RayJoin CDB query points handle is closed")
+        count_symbol = _find_first_optional_backend_symbol(
+            self.library,
+            OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_DEVICE_POINTS_SYMBOL,
+            OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_DEVICE_POINTS_SYMBOL,
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_DEVICE_POINTS_SYMBOL} or "
+                f"{OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_DEVICE_POINTS_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        positive_face_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self.prepared_handle,
+            prepared_points.prepared_points_handle,
+            ctypes.byref(positive_face_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(positive_face_count.value)
+
+    def write_segment_ids_device_points(
+        self,
+        prepared_points: PreparedOptixRayjoinCdbPointLocationPoints2D,
+    ) -> dict[str, int]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX RayJoin CDB point-location handle is closed")
+        if prepared_points._closed:
+            raise RuntimeError("prepared OptiX RayJoin CDB query points handle is closed")
+        write_symbol = _find_first_optional_backend_symbol(
+            self.library,
+            OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_WRITE_DEVICE_SEGMENT_IDS_SYMBOL,
+            OPTIX_RAYJOIN_CDB_POINT_LOCATION_WRITE_DEVICE_SEGMENT_IDS_SYMBOL,
+        )
+        if write_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_WRITE_DEVICE_SEGMENT_IDS_SYMBOL} or "
+                f"{OPTIX_RAYJOIN_CDB_POINT_LOCATION_WRITE_DEVICE_SEGMENT_IDS_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        point_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = write_symbol(
+            self.prepared_handle,
+            prepared_points.prepared_points_handle,
+            ctypes.byref(point_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return {"row_count": int(point_count.value)}
+
+    def write_face_ids_device_points(
+        self,
+        prepared_points: PreparedOptixRayjoinCdbPointLocationPoints2D,
+    ) -> dict[str, int]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX RayJoin CDB point-location handle is closed")
+        if prepared_points._closed:
+            raise RuntimeError("prepared OptiX RayJoin CDB query points handle is closed")
+        write_symbol = _find_first_optional_backend_symbol(
+            self.library,
+            OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_WRITE_DEVICE_FACE_IDS_SYMBOL,
+            OPTIX_RAYJOIN_CDB_POINT_LOCATION_WRITE_DEVICE_FACE_IDS_SYMBOL,
+        )
+        if write_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_WRITE_DEVICE_FACE_IDS_SYMBOL} or "
+                f"{OPTIX_RAYJOIN_CDB_POINT_LOCATION_WRITE_DEVICE_FACE_IDS_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        point_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = write_symbol(
+            self.prepared_handle,
+            prepared_points.prepared_points_handle,
+            ctypes.byref(point_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return {"row_count": int(point_count.value)}
+
+    def last_phase_timings(self) -> dict[str, float | int | str] | None:
+        return _get_last_rayjoin_cdb_point_location_phase_timings_from_library(self.library)
+
+    def close(self) -> None:
+        if not self._closed:
+            destroy = _find_first_optional_backend_symbol(
+                self.library,
+                OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DESTROY_SYMBOL,
+                OPTIX_RAYJOIN_CDB_POINT_LOCATION_DESTROY_SYMBOL,
+            )
+            if destroy is not None:
+                destroy(self.prepared_handle)
+            self._closed = True
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_rayjoin_cdb_point_location_2d_optix(segments) -> PreparedOptixRayjoinCdbPointLocation2D:
+    lib = _load_optix_library()
+    prepare_symbol = _find_first_optional_backend_symbol(
+        lib,
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SYMBOL,
+    )
+    if prepare_symbol is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export "
+            f"{OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_SYMBOL} or "
+            f"{OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SYMBOL}; rebuild the OptiX backend from current main"
+        )
+    if _find_first_optional_backend_symbol(
+        lib,
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL,
+    ) is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export "
+            f"{OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL} or "
+            f"{OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL}; rebuild the OptiX backend from current main"
+        )
+    packed_segments = (
+        segments
+        if isinstance(segments, PackedRayjoinCdbSegments)
+        else pack_rayjoin_cdb_segments(segments)
+    )
+    prepared = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = prepare_symbol(
+        packed_segments.records,
+        packed_segments.count,
+        ctypes.byref(prepared),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return PreparedOptixRayjoinCdbPointLocation2D(
+        library=lib,
+        prepared_handle=prepared,
+        segment_count=int(packed_segments.count),
+    )
+
+
+PreparedOptixDirectedSegmentPointLocationPoints2D = PreparedOptixRayjoinCdbPointLocationPoints2D
+PreparedOptixDirectedSegmentPointLocation2D = PreparedOptixRayjoinCdbPointLocation2D
+
+
+def prepare_directed_segment_point_location_2d_optix(
+    segments,
+) -> PreparedOptixDirectedSegmentPointLocation2D:
+    """Prepare a directed-segment point-location primitive on the OptiX backend.
+
+    This is the app-agnostic public name for the primitive used by the RayJoin
+    CDB PIP route. Segment records carry left/right face payloads; RayJoin's
+    scale and tie policy are supplied by the app through the existing execution
+    environment.
+    """
+    return prepare_rayjoin_cdb_point_location_2d_optix(segments)
 
 
 @dataclass
@@ -8213,6 +8600,58 @@ def _get_last_segment_pair_phase_timings_from_library(lib) -> dict[str, float | 
     if mode_name.startswith("first_hit"):
         result["device_witness_materialize"] = float(exact_refine.value)
     return result
+
+
+def _get_last_rayjoin_cdb_point_location_phase_timings_from_library(
+    lib,
+) -> dict[str, float | int | str] | None:
+    symbol = _find_first_optional_backend_symbol(
+        lib,
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_TIMINGS_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_TIMINGS_SYMBOL,
+    )
+    if symbol is None:
+        return None
+    symbol.argtypes = (
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_uint32),
+    )
+    symbol.restype = ctypes.c_int
+    point_upload = ctypes.c_double(0.0)
+    traversal = ctypes.c_double(0.0)
+    row_download = ctypes.c_double(0.0)
+    point_count = ctypes.c_size_t(0)
+    positive_face_count = ctypes.c_size_t(0)
+    mode = ctypes.c_uint32(0)
+    status = symbol(
+        ctypes.byref(point_upload),
+        ctypes.byref(traversal),
+        ctypes.byref(row_download),
+        ctypes.byref(point_count),
+        ctypes.byref(positive_face_count),
+        ctypes.byref(mode),
+    )
+    if status != 0:
+        return None
+    mode_name = {
+        1: "count",
+        2: "rows",
+        3: "count_device_points",
+        4: "segment_ids_device_points",
+        5: "face_ids_device_points",
+    }.get(int(mode.value), "none")
+    return {
+        "mode": mode_name,
+        "point_upload": float(point_upload.value),
+        "traversal": float(traversal.value),
+        "row_download": float(row_download.value),
+        "point_count": int(point_count.value),
+        "positive_face_count": int(positive_face_count.value),
+    }
 
 
 def _get_last_shape_pair_relation_phase_timings_from_library(lib) -> dict[str, float | int | str] | None:
@@ -21200,6 +21639,101 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_prepared_segment_first_hit.restype = ctypes.c_int
+    def _register_optional(symbol_name: str, argtypes, restype=ctypes.c_int):
+        symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if symbol is not None:
+            symbol.argtypes = argtypes
+            symbol.restype = restype
+        return symbol
+
+    point_location_prepare_argtypes = [
+        ctypes.POINTER(_RtdlRayjoinCdbSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_void_p),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    point_location_run_argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlRayjoinCdbPointLocationRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    point_location_count_argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    point_location_prepare_points_argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_void_p),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    point_location_device_count_argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    point_location_timings_argtypes = [
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_uint32),
+    ]
+    for symbol_name in (
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SYMBOL,
+    ):
+        _register_optional(symbol_name, point_location_prepare_argtypes)
+    for symbol_name in (
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL,
+    ):
+        _register_optional(symbol_name, point_location_run_argtypes)
+    for symbol_name in (
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL,
+    ):
+        _register_optional(symbol_name, point_location_count_argtypes)
+    for symbol_name in (
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
+    ):
+        _register_optional(symbol_name, point_location_prepare_points_argtypes)
+    for symbol_name in (
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_DEVICE_POINTS_SYMBOL,
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_WRITE_DEVICE_SEGMENT_IDS_SYMBOL,
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_WRITE_DEVICE_FACE_IDS_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_DEVICE_POINTS_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_WRITE_DEVICE_SEGMENT_IDS_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_WRITE_DEVICE_FACE_IDS_SYMBOL,
+    ):
+        _register_optional(symbol_name, point_location_device_count_argtypes)
+    for symbol_name in (
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_TIMINGS_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_TIMINGS_SYMBOL,
+    ):
+        _register_optional(symbol_name, point_location_timings_argtypes)
+    for symbol_name in (
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DESTROY_SYMBOL,
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DESTROY_POINTS_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_DESTROY_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_DESTROY_POINTS_SYMBOL,
+    ):
+        _register_optional(symbol_name, [ctypes.c_void_p], restype=None)
     optional_destroy_prepared_segment_pair = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_destroy_prepared_segment_pair_intersection",
@@ -24271,6 +24805,14 @@ def _find_optional_backend_symbol(lib, symbol_name: str):
         return getattr(lib, symbol_name)
     except AttributeError:
         return None
+
+
+def _find_first_optional_backend_symbol(lib, *symbol_names: str):
+    for symbol_name in symbol_names:
+        symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if symbol is not None:
+            return symbol
+    return None
 
 
 def _require_optix_graph_symbol(lib, symbol_name: str):

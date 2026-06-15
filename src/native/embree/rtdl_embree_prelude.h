@@ -85,6 +85,17 @@ struct RtdlSegment {
   double y1;
 };
 
+struct RtdlRayjoinCdbSegment {
+  uint32_t id;
+  double x0;
+  double y0;
+  double x1;
+  double y1;
+  uint32_t left_face_id;
+  uint32_t right_face_id;
+};
+typedef RtdlRayjoinCdbSegment RtdlDirectedSegmentFace2D;
+
 struct RtdlPoint {
   uint32_t id;
   double x;
@@ -251,6 +262,14 @@ struct RtdlPointNearestSegmentRow {
   double distance;
 };
 
+struct RtdlRayjoinCdbPointLocationRow {
+  uint32_t point_id;
+  uint32_t face_id;
+  uint32_t segment_id;
+  double hit_t;
+};
+typedef RtdlRayjoinCdbPointLocationRow RtdlDirectedSegmentPointLocationRow2D;
+
 struct RtdlFixedRadiusNeighborRow {
   uint32_t query_id;
   uint32_t neighbor_id;
@@ -273,12 +292,22 @@ struct RtdlFixedRadiusRankedNeighborSummary {
   double sum_distance;
 };
 
+struct RtdlFixedRadiusRankedNeighborAggregate {
+  size_t query_count;
+  size_t bounded_neighbor_count;
+  uint64_t nearest_id_checksum;
+  uint64_t kth_id_checksum;
+  double sum_distance;
+};
+
 struct RtdlEmbreeFixedRadiusCountThreshold2D;
+struct RtdlEmbreeFixedRadiusCountThreshold3D;
 struct RtdlEmbreeFixedRadiusNeighbors3D;
 struct RtdlEmbreeKnnRows2D;
 struct RtdlEmbreeAabbIndex2D;
 struct RtdlEmbreeSegmentPairIntersections2D;
 struct RtdlEmbreePointPrimitiveAnyHit2D;
+struct RtdlEmbreeRayjoinCdbPointLocation2D;
 
 struct RtdlKnnNeighborRow {
   uint32_t query_id;
@@ -635,6 +664,60 @@ int rtdl_embree_run_point_nearest_segment(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
+int rtdl_embree_prepare_directed_segment_point_location_2d(
+    const RtdlDirectedSegmentFace2D* segments,
+    size_t segment_count,
+    void** handle_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_run_prepared_directed_segment_point_location_2d(
+    void* handle,
+    const RtdlPoint* points,
+    size_t point_count,
+    RtdlDirectedSegmentPointLocationRow2D** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_count_prepared_directed_segment_point_location_2d(
+    void* handle,
+    const RtdlPoint* points,
+    size_t point_count,
+    size_t* positive_face_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_directed_segment_point_location_get_last_phase_timings(
+    double* traversal,
+    size_t* point_count,
+    size_t* positive_face_count,
+    uint32_t* mode);
+void rtdl_embree_destroy_prepared_directed_segment_point_location_2d(void* handle);
+int rtdl_embree_prepare_rayjoin_cdb_point_location_2d(
+    const RtdlRayjoinCdbSegment* segments,
+    size_t segment_count,
+    void** handle_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_run_prepared_rayjoin_cdb_point_location_2d(
+    void* handle,
+    const RtdlPoint* points,
+    size_t point_count,
+    RtdlRayjoinCdbPointLocationRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_count_prepared_rayjoin_cdb_point_location_2d(
+    void* handle,
+    const RtdlPoint* points,
+    size_t point_count,
+    size_t* positive_face_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_rayjoin_cdb_point_location_get_last_phase_timings(
+    double* traversal,
+    size_t* point_count,
+    size_t* positive_face_count,
+    uint32_t* mode);
+void rtdl_embree_destroy_prepared_rayjoin_cdb_point_location_2d(void* handle);
 int rtdl_embree_run_fixed_radius_neighbors(
     const RtdlPoint* query_points,
     size_t query_count,
@@ -674,6 +757,16 @@ int rtdl_embree_fixed_radius_neighbors_3d_ranked_summary_run(
     double* traversal_seconds_out,
     char* error_out,
     size_t error_size);
+int rtdl_embree_fixed_radius_neighbors_3d_ranked_summary_aggregate_run(
+    RtdlEmbreeFixedRadiusNeighbors3D* handle,
+    const RtdlPoint3D* query_points,
+    size_t query_count,
+    double radius,
+    size_t k_max,
+    RtdlFixedRadiusRankedNeighborAggregate* aggregate_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size);
 void rtdl_embree_fixed_radius_neighbors_3d_destroy(
     RtdlEmbreeFixedRadiusNeighbors3D* handle);
 int rtdl_embree_run_fixed_radius_count_threshold(
@@ -705,6 +798,25 @@ int rtdl_embree_fixed_radius_count_threshold_2d_run(
     size_t error_size);
 void rtdl_embree_fixed_radius_count_threshold_2d_destroy(
     RtdlEmbreeFixedRadiusCountThreshold2D* handle);
+int rtdl_embree_fixed_radius_count_threshold_3d_create(
+    const RtdlPoint3D* search_points,
+    size_t search_count,
+    RtdlEmbreeFixedRadiusCountThreshold3D** handle_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_fixed_radius_count_threshold_3d_run(
+    RtdlEmbreeFixedRadiusCountThreshold3D* handle,
+    const RtdlPoint3D* query_points,
+    size_t query_count,
+    double radius,
+    size_t threshold,
+    RtdlFixedRadiusCountRow** rows_out,
+    size_t* row_count_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size);
+void rtdl_embree_fixed_radius_count_threshold_3d_destroy(
+    RtdlEmbreeFixedRadiusCountThreshold3D* handle);
 int rtdl_embree_k_closest_hits_2d_create(
     const RtdlPoint* search_points,
     size_t search_count,
@@ -882,6 +994,25 @@ int rtdl_embree_collect_prepared_aabb_index_2d_range_intersection_rows(
     size_t box_query_count,
     RtdlAabbPairRow** rows_out,
     size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_run_rayjoin_lsi_aabb_refined_segment_pair_intersections(
+    const RtdlSegment* left,
+    size_t left_count,
+    const RtdlSegment* right,
+    size_t right_count,
+    RtdlSegmentPairIntersectionRow** rows_out,
+    size_t* row_count_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_count_rayjoin_lsi_aabb_refined_segment_pair_intersections(
+    const RtdlSegment* left,
+    size_t left_count,
+    const RtdlSegment* right,
+    size_t right_count,
+    size_t* hit_count_out,
+    double* traversal_seconds_out,
     char* error_out,
     size_t error_size);
 void rtdl_embree_destroy_prepared_aabb_index_2d(RtdlEmbreeAabbIndex2D* handle);

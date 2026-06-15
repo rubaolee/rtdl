@@ -1173,6 +1173,7 @@ def run_benchmark(
     body_count: int | None = None,
     theta: float = app.THETA,
     node_radius: float = app.NODE_DISCOVERY_RADIUS,
+    node_topology: str = "one_level",
     bucket_size: int = 32,
     max_depth: int = 32,
     partner: str = "cupy",
@@ -1439,6 +1440,9 @@ def run_benchmark(
                 output_mode="candidate_summary",
                 optix_summary_mode="node_coverage_prepared",
                 node_radius=node_radius,
+                node_topology=node_topology,
+                node_depth=max_depth,
+                skip_validation=skip_validation,
                 query_repeat=query_repeat,
                 warmup=warmup,
             ),
@@ -1455,6 +1459,9 @@ def run_benchmark(
                 output_mode="candidate_summary",
                 optix_summary_mode="node_coverage_prepared",
                 node_radius=node_radius,
+                node_topology=node_topology,
+                node_depth=max_depth,
+                skip_validation=skip_validation,
                 require_rt_core=require_rt_core,
                 query_repeat=query_repeat,
                 warmup=warmup,
@@ -1492,6 +1499,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--body-count", type=int, default=None)
     parser.add_argument("--theta", type=float, default=app.THETA)
     parser.add_argument("--node-radius", type=float, default=app.NODE_DISCOVERY_RADIUS)
+    parser.add_argument("--node-topology", choices=app.NODE_TOPOLOGIES, default="one_level")
     parser.add_argument("--bucket-size", type=int, default=32)
     parser.add_argument("--max-depth", type=int, default=32)
     parser.add_argument("--partner", choices=("torch", "cupy", "numba"), default="cupy")
@@ -1513,6 +1521,7 @@ def main(argv: list[str] | None = None) -> int:
         body_count=args.body_count,
         theta=args.theta,
         node_radius=args.node_radius,
+        node_topology=args.node_topology,
         bucket_size=args.bucket_size,
         max_depth=args.max_depth,
         partner=args.partner,

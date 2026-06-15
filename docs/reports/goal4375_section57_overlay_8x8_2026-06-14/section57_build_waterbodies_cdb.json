@@ -1,0 +1,28 @@
+{
+  "dataset_root": "/workspace/rayjoin_section57_data/cdb_topology",
+  "input_provenance": "same_source_regenerated_cdb",
+  "rows": [
+    {
+      "output_path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+      "source_root": "/workspace/rayjoin_section57_data/arcgis_pages/waterbodies_feature_layer",
+      "stats": {
+        "bytes": 2402941772,
+        "chains": 22431809,
+        "nonzero_faces": 463512,
+        "path": "/workspace/rayjoin_section57_data/cdb_topology/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+        "points": 44863618,
+        "segments": 22431809
+      },
+      "target": {
+        "cdb_name": "USADetailedWaterBodies",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+        "source_asset_id": "waterbodies_feature_layer",
+        "target_id": "waterbodies",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    }
+  ],
+  "schema": "rtdl.rayjoin_paper_suite.same_source_arcgis_cdb_tree.v1",
+  "staged_root": "/workspace/rayjoin_section57_data/arcgis_pages"
+}

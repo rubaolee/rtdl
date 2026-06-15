@@ -1,6 +1,6 @@
 # Benchmark Evidence Index
 
-Status: current v2.13 source-tree evidence map.
+Status: current v2.14 source-tree evidence map.
 
 Use this page when you want to reproduce or audit the ten benchmark-app front
 doors. It is intentionally narrower than the full report history: it tells you
@@ -78,6 +78,14 @@ v2.13 evidence:
 - [PIP exact prepared-points executor](../reports/goal4368_pip_exact_prepared_points_executor_2026-06-13.md)
 - [RayJoin authors-code comparison packet](../reports/goal4367_rayjoin_authors_code_comparison_packet_2026-06-13.md)
 
+v2.14 evidence:
+
+- [v2.14 release package](../release_reports/v2_14/README.md)
+- [v2.14 row-scoped RT-core vs Embree CPU comparison](../release_reports/v2_14/public_rt_vs_embree_comparison.md)
+- [v2.14 public wording boundaries](../release_reports/v2_14/public_wording_boundaries.md)
+- [v2.14 final closeout](../release_reports/v2_14/final_closeout.md)
+- [v2.14 app-author implementation strategy](v2_14_app_author_implementation_strategy.md)
+
 ## Current Ten-App Rows
 
 | App | Current front-door row | Partner/native note | Pod need |
@@ -106,11 +114,12 @@ v2.13 evidence:
   flags clean. It is not a performance leaderboard.
 - A ten-app packet is not ten broad RT-core speedup claims. Read each row by
   exact contract before using it as performance evidence.
-- The v2.13 release packet keeps mixed rows explicit: Spatial RayJoin PIP is
+- The v2.14 release packet keeps mixed rows explicit: Spatial RayJoin PIP is
   near parity and slightly Embree-faster in the refreshed human-scale slice,
   Goal4368 separately records an OptiX-over-Embree exact PIP engineering win
   that still does not beat RayJoin RT, and RTNN remains blocked as RT-core
-  neighbor-search speedup wording.
+  neighbor-search speedup wording. RayJoin overlay reports the available 2/8
+  exact CDB subset, not a full 8/8 Section 5.7 reproduction.
 - A scale-profile row is more useful for performance planning, but still must
   be read by exact app, command, hardware, backend, partner, and dataset.
 - CuPy/Numba comparison rows are partner-continuation evidence only. They do

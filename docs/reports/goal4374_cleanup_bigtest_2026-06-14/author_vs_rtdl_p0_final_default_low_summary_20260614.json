@@ -1,0 +1,206 @@
+{
+  "principle": "Report end-to-end and compute/native timing separately; classify load/pack as partner/cache overhead, not RT traversal.",
+  "rows": [
+    {
+      "count": 180506,
+      "implementation": "rayjoin_author_rt",
+      "notes": "Author command wall time, includes its own read/init/build/query/cleanup phases.",
+      "program": "lsi",
+      "seconds": 17.110516518354416,
+      "timing_view": "end_to_end_process"
+    },
+    {
+      "count": 180506,
+      "implementation": "rayjoin_author_rt",
+      "notes": "Author-reported Query phase.",
+      "program": "lsi",
+      "seconds": 0.00438619,
+      "timing_view": "author_query"
+    },
+    {
+      "count": null,
+      "implementation": "rayjoin_author_rt",
+      "notes": "Author command wall time, includes its own read/init/build/query/cleanup phases.",
+      "program": "pip",
+      "seconds": 16.256993129849434,
+      "timing_view": "end_to_end_process"
+    },
+    {
+      "count": null,
+      "implementation": "rayjoin_author_rt",
+      "notes": "Author-reported Query phase.",
+      "program": "pip",
+      "seconds": 0.00719991,
+      "timing_view": "author_query"
+    },
+    {
+      "count": null,
+      "implementation": "rayjoin_author_rt",
+      "notes": "Author command wall time, includes its own read/init/build/query/cleanup phases.",
+      "program": "overlay",
+      "seconds": 7.149181090295315,
+      "timing_view": "end_to_end_process"
+    },
+    {
+      "count": null,
+      "implementation": "rayjoin_author_rt",
+      "notes": "Author-reported Intersection edges phase.",
+      "program": "overlay",
+      "seconds": 0.00597405,
+      "timing_view": "intersection_edges"
+    },
+    {
+      "count": null,
+      "implementation": "rayjoin_author_rt",
+      "notes": "Author-reported Computer output polygons phase.",
+      "program": "overlay",
+      "seconds": 0.0335631,
+      "timing_view": "computer_output_polygons"
+    },
+    {
+      "count": 181629,
+      "implementation": "rtdl_embree",
+      "notes": "RTDL hot median after warmup=1 repeat=3.",
+      "program": "lsi",
+      "seconds": 5.892485074698925,
+      "timing_view": "hot_median"
+    },
+    {
+      "count": 181629,
+      "implementation": "rtdl_embree",
+      "notes": "Native traversal/RT phase where available.",
+      "program": "lsi",
+      "seconds": null,
+      "timing_view": "native_median"
+    },
+    {
+      "count": 181629,
+      "implementation": "rtdl_optix",
+      "notes": "RTDL hot median after warmup=1 repeat=3.",
+      "program": "lsi",
+      "seconds": 2.52097849547863,
+      "timing_view": "hot_median"
+    },
+    {
+      "count": 181629,
+      "implementation": "rtdl_optix",
+      "notes": "Native traversal/RT phase where available.",
+      "program": "lsi",
+      "seconds": 0.002022735,
+      "timing_view": "native_median"
+    },
+    {
+      "count": 3823783,
+      "implementation": "rtdl_embree",
+      "notes": "RTDL hot median after warmup=5 repeat=60.",
+      "program": "pip",
+      "seconds": 0.3038785457611084,
+      "timing_view": "hot_median"
+    },
+    {
+      "count": 3823783,
+      "implementation": "rtdl_embree",
+      "notes": "Native traversal/RT phase where available.",
+      "program": "pip",
+      "seconds": 0.30381315200000003,
+      "timing_view": "native_median"
+    },
+    {
+      "count": 3823783,
+      "implementation": "rtdl_optix",
+      "notes": "RTDL hot median after warmup=5 repeat=60.",
+      "program": "pip",
+      "seconds": 0.27742883563041687,
+      "timing_view": "hot_median"
+    },
+    {
+      "count": 3823783,
+      "implementation": "rtdl_optix",
+      "notes": "Native traversal/RT phase where available.",
+      "program": "pip",
+      "seconds": 0.118838838,
+      "timing_view": "native_median"
+    },
+    {
+      "count": 3823783,
+      "implementation": "rtdl_optix_device_resident",
+      "notes": "RTDL hot median after warmup=5 repeat=60.",
+      "program": "pip",
+      "seconds": 0.1185840517282486,
+      "timing_view": "hot_median"
+    },
+    {
+      "count": 3823783,
+      "implementation": "rtdl_optix_device_resident",
+      "notes": "Native traversal/RT phase where available.",
+      "program": "pip",
+      "seconds": 0.1185490025,
+      "timing_view": "native_median"
+    },
+    {
+      "count": 5288684,
+      "implementation": "rtdl_optix_device_segment_ids",
+      "notes": "RTDL hot median after warmup=5 repeat=60.",
+      "program": "pip",
+      "seconds": 0.11856473982334137,
+      "timing_view": "hot_median"
+    },
+    {
+      "count": 5288684,
+      "implementation": "rtdl_optix_device_segment_ids",
+      "notes": "Native traversal/RT phase where available.",
+      "program": "pip",
+      "seconds": 0.118543286,
+      "timing_view": "native_median"
+    },
+    {
+      "count": 181629,
+      "implementation": "rtdl_embree",
+      "notes": "RTDL overlay median including CDB load/pack/cache and compute after warmup=1 repeat=3.",
+      "program": "overlay",
+      "seconds": 9.900761015713215,
+      "timing_view": "end_to_end"
+    },
+    {
+      "count": null,
+      "implementation": "rtdl_embree",
+      "notes": "RTDL app ingestion plus packed-array load/pack.",
+      "program": "overlay",
+      "seconds": 0.040057890117168427,
+      "timing_view": "load_pack"
+    },
+    {
+      "count": 181629,
+      "implementation": "rtdl_embree",
+      "notes": "RTDL overlay total minus load/pack phase.",
+      "program": "overlay",
+      "seconds": 9.860703125596046,
+      "timing_view": "compute_without_load_pack"
+    },
+    {
+      "count": 181629,
+      "implementation": "rtdl_optix",
+      "notes": "RTDL overlay median including CDB load/pack/cache and compute after warmup=1 repeat=3.",
+      "program": "overlay",
+      "seconds": 5.804978430271149,
+      "timing_view": "end_to_end"
+    },
+    {
+      "count": null,
+      "implementation": "rtdl_optix",
+      "notes": "RTDL app ingestion plus packed-array load/pack.",
+      "program": "overlay",
+      "seconds": 0.05096635967493057,
+      "timing_view": "load_pack"
+    },
+    {
+      "count": 181629,
+      "implementation": "rtdl_optix",
+      "notes": "RTDL overlay total minus load/pack phase.",
+      "program": "overlay",
+      "seconds": 5.754012070596218,
+      "timing_view": "compute_without_load_pack"
+    }
+  ],
+  "schema": "rtdl.rayjoin.author_rtdl_comparison_summary.v1"
+}

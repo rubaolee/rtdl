@@ -167,6 +167,51 @@ def grid_fixture(*, cell_count: int) -> CollisionWitnessFixture:
     )
 
 
+def jittered_grid_fixture(*, cell_count: int) -> CollisionWitnessFixture:
+    if cell_count <= 0:
+        raise ValueError("jittered grid fixture cell_count must be positive")
+    cells_per_axis = int(math.ceil(math.sqrt(cell_count)))
+    scene_triangles: list[Triangle2D] = []
+    query_triangles: list[Triangle2D] = []
+    expected_rows: list[WitnessRow] = []
+    for index in range(cell_count):
+        gx = index % cells_per_axis
+        gy = index // cells_per_axis
+        jitter_x = ((index * 17) % 13) * 0.017
+        jitter_y = ((index * 31) % 11) * 0.019
+        size = 0.55 + ((index * 7) % 5) * 0.035
+        x0 = gx * 2.75 + jitter_x
+        y0 = gy * 2.65 + jitter_y
+        scene_id = 30_000 + index
+        query_id = 40_000 + index
+        group_id = index
+        scene_triangles.append(
+            _triangle(scene_id, ((x0, y0), (x0 + size, y0), (x0, y0 + size)))
+        )
+        query_triangles.append(
+            _triangle(
+                query_id,
+                (
+                    (x0 + 0.12 * size, y0 + 0.12 * size),
+                    (x0 + 0.78 * size, y0 + 0.18 * size),
+                    (x0 + 0.18 * size, y0 + 0.78 * size),
+                ),
+                query_group_id=group_id,
+            )
+        )
+        expected_rows.append((group_id, query_id, scene_id))
+    return CollisionWitnessFixture(
+        name=f"jittered_grid_{cell_count}",
+        scene_triangles=tuple(scene_triangles),
+        query_triangles=tuple(query_triangles),
+        expected_witness_rows=tuple(expected_rows),
+        contract_note=(
+            "scaled deterministic two-dimensional jittered fixture with one "
+            "known exact witness per cell"
+        ),
+    )
+
+
 def build_fixture(dataset: str, *, grid_count: int = 64) -> CollisionWitnessFixture:
     normalized = dataset.strip().lower()
     if normalized in {"tiny", "overflow"}:
@@ -174,6 +219,8 @@ def build_fixture(dataset: str, *, grid_count: int = 64) -> CollisionWitnessFixt
         return tiny_fixture()
     if normalized == "grid":
         return grid_fixture(cell_count=grid_count)
+    if normalized == "jittered_grid":
+        return jittered_grid_fixture(cell_count=grid_count)
     raise ValueError(f"unknown contact witness dataset: {dataset}")
 
 
@@ -1081,7 +1128,7 @@ def main(argv: list[str] | None = None) -> int:
         ),
         default="scope",
     )
-    parser.add_argument("--dataset", choices=("tiny", "overflow", "grid"), default="tiny")
+    parser.add_argument("--dataset", choices=("tiny", "overflow", "grid", "jittered_grid"), default="tiny")
     parser.add_argument("--witness-capacity", type=int, default=8)
     parser.add_argument("--grid-count", type=int, default=64)
     parser.add_argument("--repeat-count", type=int, default=5)

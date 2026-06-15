@@ -2,6 +2,14 @@
 
 Status: release-facing row-scoped comparison; not broad speedup wording.
 
+Post-Goal4378 bridge note: this v2.13 table remains a row-scoped RTDL
+OptiX-vs-Embree CPU comparison. It must not be read as author-hot-compute parity
+for RayJoin. Goal4376 adds better RayJoin overlay OptiX rows, but those rows
+show near author process wall under a cached/preprocessed application-wall
+protocol, not equality with the RayJoin authors' specialized C++/CUDA/OptiX hot
+processing path. v2.14 is the next formal cleanup and benchmark-app boost
+release target.
+
 | App | Status | Directional readout | Contract | Allowed wording |
 | --- | --- | ---: | --- | --- |
 | barnes_hut | `ready_row_scoped_prepared_phase_wording` | OptiX 2.71x faster | `prepared_fixed_radius_node_coverage_threshold_decision` | For `barnes_hut` under `prepared_fixed_radius_node_coverage_threshold_decision`, the row-scoped RTDL OptiX prepared measurement is 2.71x faster per iteration than the best measured Embree CPU row for the same scoped contract/protocol. Keep the prepared-query/row-scoped contract in the sentence. |
@@ -26,6 +34,8 @@ PIP is deliberately mixed: the refreshed human-scale public CDB slice is near pa
 - Do not say these are whole-application speedups.
 - Do not say RTDL reproduces the RayJoin paper.
 - Do not say RTDL beats RayJoin as a whole system.
+- Do not say RTDL hot compute matches the RayJoin authors' specialized
+  C++/CUDA/OptiX hot path.
 - Do not say RTNN is an RT-core neighbor-search speedup.
 - Do not say partner selection is automatic or universally Numba-based.
 - Do not say Intel GPU or AMD GPU performance is covered by this packet.
