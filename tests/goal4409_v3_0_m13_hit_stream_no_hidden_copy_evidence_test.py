@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -11,6 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 MODULE = ROOT / "src/rtdsl/v3_0_m13_hit_stream_no_hidden_copy_evidence.py"
 RUNTIME = ROOT / "src/rtdsl/optix_runtime.py"
 RUNNER = ROOT / "scripts/v3_0_m13_hit_stream_no_hidden_copy_measure.py"
+REPORT = ROOT / "docs/reports/goal4409_v3_0_m13_hit_stream_no_hidden_copy_evidence_2026-06-15.md"
+EVIDENCE_JSON = ROOT / "docs/reports/goal4409_v3_0_m13_hit_stream_no_hidden_copy_evidence_8192_2026-06-15.json"
 
 
 class Goal4409V30M13HitStreamNoHiddenCopyEvidenceTest(unittest.TestCase):
@@ -82,6 +85,34 @@ class Goal4409V30M13HitStreamNoHiddenCopyEvidenceTest(unittest.TestCase):
         payload["partner_rows"] = (row,)
         with self.assertRaisesRegex(GraphValidationError, "measured window scope"):
             rt.validate_v3_m13_hit_stream_no_hidden_copy_payload(payload)
+
+    def test_pod_artifact_and_report_capture_second_workload_gate(self) -> None:
+        payload = json.loads(EVIDENCE_JSON.read_text(encoding="utf-8"))
+        validation = rt.validate_v3_m13_hit_stream_no_hidden_copy_payload(payload)
+        self.assertTrue(validation["same_stream_ready"])
+        self.assertTrue(validation["transfer_counter_observed"])
+        self.assertTrue(validation["no_hidden_column_copy_ready"])
+        self.assertTrue(validation["true_zero_copy_ready"])
+        self.assertFalse(validation["public_claim_authorized"])
+
+        row = payload["partner_rows"][0]
+        self.assertEqual("cupy", row["partner"])
+        self.assertEqual(8192, row["ray_count"])
+        self.assertEqual([16384, 16384, 16384, 67100672, 8192, 0, 0, 1], row["validation_signature"])
+        summary = row["transfer_counter_summary"]
+        self.assertEqual(5, summary["sample_count"])
+        self.assertEqual(0, summary["max_observed_total_bytes"])
+        classification = row["transfer_counter_classification"]
+        self.assertEqual(0, classification["observed_device_to_host_calls"])
+        self.assertEqual(0, classification["observed_device_to_device_calls"])
+        self.assertEqual(0, classification["observed_unknown_calls"])
+        self.assertEqual(0, classification["observed_host_to_device_bytes"])
+        self.assertEqual(131072, classification["min_named_column_bytes"])
+
+        report = REPORT.read_text(encoding="utf-8")
+        self.assertIn("M13 Hit-Stream No-Hidden-Copy Evidence", report)
+        self.assertIn("second workload", report)
+        self.assertIn("public speedup", report)
 
 
 def _snapshot() -> dict[str, object]:
