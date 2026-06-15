@@ -5,11 +5,11 @@ This page is preserved historical context for maintainers.
 It is not part of the primary `v0.7.0` user-learning path and should not be
 read as the front-door release summary. For current public status, use:
 
-- [RTDL v0.7 Release Statement](release_reports/v0_7/release_statement.md)
-- [RTDL v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
-- [RTDL v0.6 Release Statement](release_reports/v0_6/release_statement.md)
-- [RTDL v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
-- [Quick Tutorial](quick_tutorial.md)
+- [RTDL v0.7 Release Statement](../../release_reports/v0_7/release_statement.md)
+- [RTDL v0.7 Support Matrix](../../release_reports/v0_7/support_matrix.md)
+- [RTDL v0.6 Release Statement](../../release_reports/v0_6/release_statement.md)
+- [RTDL v0.6 Support Matrix](../../release_reports/v0_6/support_matrix.md)
+- [Quick Tutorial](../../quick_tutorial.md)
 - [Tutorials](../../../tutorials/README.md)
 
 Date: 2026-04-09
@@ -38,9 +38,9 @@ For the new application-story proof, the strongest current v0.3 result is:
 - a public video entry point for that demo line:
   - [RTDL 4K Visual Demo Video](https://youtu.be/d3yJB7AmCLM)
 - a saved work report for that 4K artifact:
-  - [Hidden-Star 4K Render Work Report](reports/hidden_star_4k_render_work_report_2026-04-11.md)
+  - [Hidden-Star 4K Render Work Report](../../reports/hidden_star_4k_render_work_report_2026-04-11.md)
 - the repo’s primary preserved source artifact for that line:
-  - [rtdl_hidden_star_stable_ball_demo.py](../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
+  - [rtdl_hidden_star_stable_ball_demo.py](../../../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
 - the earlier Linux OptiX and Vulkan smooth-camera support artifacts remain preserved as secondary comparison/support material, not as the primary hidden-star demo outputs
 
 The archived v0.1 `county_zipcode` positive-hit `pip` line remains the trust
@@ -81,19 +81,19 @@ RTDL also already works well with Python user applications where:
 
 Small example:
 
-- [rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
+- [rtdl_lit_ball_demo.py](../../../examples/visual_demo/rtdl_lit_ball_demo.py)
 
 Preserved primary source baseline for the stronger current application-style example:
 
-- [rtdl_hidden_star_stable_ball_demo.py](../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
+- [rtdl_hidden_star_stable_ball_demo.py](../../../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
 
 Preserved stable comparison baseline:
 
-- [rtdl_smooth_camera_orbit_demo.py](../examples/visual_demo/rtdl_smooth_camera_orbit_demo.py)
+- [rtdl_smooth_camera_orbit_demo.py](../../../examples/visual_demo/rtdl_smooth_camera_orbit_demo.py)
 
 Preserved moving-light comparison example:
 
-- [rtdl_orbiting_star_ball_demo.py](../examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
+- [rtdl_orbiting_star_ball_demo.py](../../../examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
 
 ## Did the CPU still matter when using OptiX or Vulkan?
 

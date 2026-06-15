@@ -49,7 +49,7 @@ The release-prep worktree should be treated as the canonical packaging checkout.
 ---
 
 ## 4. Visual & Content Assets
-*   📚 **Bibliography**: Consolidated the research paper list into the [Foundations Document](../../workloads_and_research_foundations.md).
+*   📚 **Bibliography**: Consolidated the research paper list into the [Foundations Document](../../research/archive/future/workloads_and_research_foundations.md).
 *   🏠 **Main Entry**: Current committed front page is at [README.md](../../../README.md).
 *   📂 **Docs Hub**: Current committed documentation index is at [docs/README.md](../../README.md).
 

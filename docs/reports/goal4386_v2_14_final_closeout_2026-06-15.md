@@ -2,9 +2,8 @@
 
 Date: 2026-06-15
 
-Status: v2.14 closeout complete for internal transition, with Goal4389
-RTDBSCAN partner-dual evidence and Goal4390 app-author strategy added. Public
-publication and tagging still require maintainer authorization.
+Status: v2.14 closeout complete and published, with Goal4389 RTDBSCAN
+partner-dual evidence and Goal4390 app-author strategy added.
 
 ## Summary
 
@@ -15,7 +14,7 @@ The requested 1-7 sequence is complete:
 3. Public/internal wording boundaries locked.
 4. Final local gates passed.
 5. Final pod gates passed.
-6. v2.14 final closeout report written.
+6. v2.14 final closeout report written and released.
 7. V3.0 M1 design is allowed next; V3.0 implementation remains blocked until the M1 IR design document is frozen.
 
 Post-closeout supplement: Goal4389 closes the current RTDBSCAN partner-dual
@@ -57,3 +56,6 @@ Local Windows focused gate: 59 tests OK.
 Pod Linux focused gate: 59 tests OK.
 
 The exact command lists are recorded in `docs/release_reports/v2_14/final_closeout.md`.
+
+Publication follow-up: maintainer authorization was later given, the version
+marker moved to v2.14, and tag `v2.14` was created and pushed.

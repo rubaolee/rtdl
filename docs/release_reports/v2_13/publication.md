@@ -10,6 +10,7 @@ Version marker: `v2.13`
 
 Goal4378 preserves v2.13 as the already-created source-tree release marker and
 opens v2.14 as the next formal cleanup and benchmark-app boost release target.
+v2.14 has since been published, so this file is preserved as previous-release evidence rather than the current source-tree release note.
 
 This bridge note adds one important RayJoin caveat after Goal4376: near author
 process wall is not author hot-compute parity. v2.13 must not be used to claim
@@ -18,7 +19,7 @@ C++/CUDA/OptiX hot path.
 
 ## Published Statement
 
-RTDL v2.13 is the current source-tree release for the refreshed row-scoped NVIDIA OptiX/RT-core versus Embree CPU comparison. The release keeps every published performance sentence tied to a benchmark row, contract, direction, and caveat.
+RTDL v2.13 is a previous source-tree release for the refreshed row-scoped NVIDIA OptiX/RT-core versus Embree CPU comparison. The release keeps every published performance sentence tied to a benchmark row, contract, direction, and caveat; the current release is v2.14.
 
 ## Public Wording That Is Allowed
 

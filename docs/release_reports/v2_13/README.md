@@ -12,9 +12,12 @@ after the Goal4376 overlay optimization. The next formal cleanup and
 benchmark-app boost release target is v2.14. Do not read v2.13 as author
 hot-compute parity for RayJoin, broad RT-core speedup, or whole-app speedup.
 
+Supersession note: v2.13 is now a previous source-tree release. The current
+source-tree release is [v2.14](../v2_14/README.md).
+
 ## Release Statement
 
-RTDL v2.13 is the current source-tree release for the refreshed row-scoped NVIDIA OptiX/RT-core versus Embree CPU comparison. The release keeps every published performance sentence tied to a benchmark row, contract, direction, and caveat.
+RTDL v2.13 is a previous source-tree release for the refreshed row-scoped NVIDIA OptiX/RT-core versus Embree CPU comparison. The release keeps every published performance sentence tied to a benchmark row, contract, direction, and caveat; the current release is v2.14.
 
 Use RTDL directly from a checkout:
 

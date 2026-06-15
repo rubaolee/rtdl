@@ -16,7 +16,8 @@
     "release_dir": "docs/release_reports/v2_13",
     "version_marker": "v2.13"
   },
-  "release_statement": "RTDL v2.13 is the current source-tree release for the refreshed row-scoped NVIDIA OptiX/RT-core versus Embree CPU comparison. The release keeps every published performance sentence tied to a benchmark row, contract, direction, and caveat.",
+  "release_statement": "RTDL v2.13 is a previous source-tree release for the refreshed row-scoped NVIDIA OptiX/RT-core versus Embree CPU comparison. The release keeps every published performance sentence tied to a benchmark row, contract, direction, and caveat; the current release is v2.14.",
+  "superseded_by": "v2.14",
   "rows": [
     {
       "allowed_wording": "For `barnes_hut` under `prepared_fixed_radius_node_coverage_threshold_decision`, the row-scoped RTDL OptiX prepared measurement is 2.71x faster per iteration than the best measured Embree CPU row for the same scoped contract/protocol. Keep the prepared-query/row-scoped contract in the sentence.",
