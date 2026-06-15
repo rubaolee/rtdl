@@ -21,6 +21,8 @@ class Goal4409V30M13HitStreamNoHiddenCopyEvidenceTest(unittest.TestCase):
         self.assertIn("classify_no_hidden_copy_transfer_snapshot", text)
         self.assertIn("validate_no_hidden_copy_payload", text)
         self.assertIn("post_native_enqueue_same_stream_hit_stream_row_reduction_before_summary_materialization", text)
+        self.assertIn("deduplicate_primitives: bool = False", text)
+        self.assertIn("deduplicate_primitives=bool(deduplicate_primitives)", text)
         self.assertIn("make_v3_m13_hit_stream_rays", text)
 
     def test_runtime_hook_disables_counter_before_summary_materialization(self) -> None:
@@ -49,6 +51,7 @@ class Goal4409V30M13HitStreamNoHiddenCopyEvidenceTest(unittest.TestCase):
         self.assertIn("LD_PRELOAD", text)
         self.assertIn("os.execvpe", text)
         self.assertLess(text.index("_ensure_transfer_counter_preloaded"), text.index("import rtdsl as rt"))
+        self.assertIn("--deduplicate-primitives", text)
         self.assertIn("run_v3_m13_hit_stream_no_hidden_copy_evidence_case", text)
 
     def test_fixture_generation_is_deterministic_and_nonempty(self) -> None:

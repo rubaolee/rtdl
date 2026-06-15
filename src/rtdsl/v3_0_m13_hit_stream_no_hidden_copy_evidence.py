@@ -38,6 +38,7 @@ def run_v3_m13_hit_stream_no_hidden_copy_evidence_case(
     repeats: int = 5,
     hardware: str = "pod_rtx_4000_ada",
     capacity_multiplier: int = 2,
+    deduplicate_primitives: bool = False,
 ) -> dict[str, object]:
     validate_v3_public_name(V3_M13_GRAPH_ID, label="M13 graph id")
     ray_count = int(ray_count)
@@ -61,7 +62,11 @@ def run_v3_m13_hit_stream_no_hidden_copy_evidence_case(
         buffers = scene.prepare_ray_triangle_hit_stream_device_column_buffers(capacity)
         try:
             for _ in range(warmups):
-                scene.ray_triangle_hit_stream_same_stream_row_reduction_summary(rays, buffers)
+                scene.ray_triangle_hit_stream_same_stream_row_reduction_summary(
+                    rays,
+                    buffers,
+                    deduplicate_primitives=bool(deduplicate_primitives),
+                )
 
             host_samples = []
             native_enqueue_samples = []
@@ -75,6 +80,7 @@ def run_v3_m13_hit_stream_no_hidden_copy_evidence_case(
                 result = scene.ray_triangle_hit_stream_same_stream_row_reduction_summary(
                     rays,
                     buffers,
+                    deduplicate_primitives=bool(deduplicate_primitives),
                     transfer_counter=transfer_counter,
                 )
                 host_samples.append(time.perf_counter() - start)
@@ -171,6 +177,7 @@ def run_v3_m13_hit_stream_no_hidden_copy_evidence_case(
             "triangle_count": len(triangles),
             "capacity": capacity,
             "capacity_multiplier": capacity_multiplier,
+            "deduplicate_primitives": bool(deduplicate_primitives),
             "warmups": warmups,
             "repeats": repeats,
             "allowed_non_column_host_to_device_bytes": V3_M13_ALLOWED_NON_COLUMN_HOST_TO_DEVICE_BYTES,

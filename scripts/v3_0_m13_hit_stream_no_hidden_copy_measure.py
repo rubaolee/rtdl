@@ -84,6 +84,7 @@ def main() -> int:
     parser.add_argument("--warmups", type=int, default=2)
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--capacity-multiplier", type=int, default=2)
+    parser.add_argument("--deduplicate-primitives", action="store_true")
     parser.add_argument("--hardware", default=None)
     parser.add_argument(
         "--transfer-counter-library",
@@ -103,6 +104,7 @@ def main() -> int:
         warmups=args.warmups,
         repeats=args.repeats,
         capacity_multiplier=args.capacity_multiplier,
+        deduplicate_primitives=args.deduplicate_primitives,
         hardware=args.hardware or _hardware_label(),
     )
     validation = rt.validate_v3_m13_hit_stream_no_hidden_copy_payload(payload)
