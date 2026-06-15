@@ -14957,12 +14957,14 @@ static GpuRay3DHost pack_ray_3d_as_raw_gpu_ray(const RtdlRay3D& ray);
 struct PreparedRayBatch3D {
     size_t ray_count = 0;
     std::vector<uint32_t> ray_ids;
+    bool host_ray_ids_available = false;
     DevPtr d_rays;
     DevPtr d_closest_hit_output;
 
     explicit PreparedRayBatch3D(const RtdlRay3D* rays, size_t count)
         : ray_count(count),
           ray_ids(count),
+          host_ray_ids_available(true),
           d_rays(sizeof(GpuRay3DHost) * count),
           d_closest_hit_output(sizeof(GpuRayClosestHitRecord) * count)
     {
@@ -14992,7 +14994,6 @@ struct PreparedRayBatch3D {
             const double* ray_tmax,
             size_t count)
         : ray_count(count),
-          ray_ids(count),
           d_rays(sizeof(GpuRay3DHost) * count),
           d_closest_hit_output(sizeof(GpuRayClosestHitRecord) * count)
     {
@@ -15002,9 +15003,6 @@ struct PreparedRayBatch3D {
             return;
         if (!ray_ids_in || !ray_ox || !ray_oy || !ray_oz || !ray_dx || !ray_dy || !ray_dz || !ray_tmax)
             throw std::runtime_error("device ray column pointers must not be null when ray_count is nonzero");
-        std::vector<uint32_t> host_ray_ids(count);
-        download(host_ray_ids.data(), reinterpret_cast<CUdeviceptr>(ray_ids_in), count);
-        ray_ids = std::move(host_ray_ids);
         pack_ray3d_device_columns_to_buffer(
             ray_ids_in,
             ray_ox,
@@ -15016,6 +15014,15 @@ struct PreparedRayBatch3D {
             ray_tmax,
             count,
             d_rays.ptr);
+    }
+
+    void require_host_ray_ids(const char* operation) const
+    {
+        if (!host_ray_ids_available || ray_ids.size() != ray_count)
+            throw std::runtime_error(
+                std::string(operation)
+                + " requires host ray-id bookkeeping; device-column prepared ray batches "
+                  "use the hit-stream-safe device-only contract");
     }
 };
 
@@ -19883,6 +19890,7 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_grouped_
         if (ray_group_ids[i] >= group_count)
             throw std::runtime_error("ray group id is outside the grouped argmin output range");
     }
+    ray_batch->require_host_ray_ids("closest-hit grouped argmin");
     for (size_t i = 0; i < ray_count; ++i) {
         if (ray_batch->ray_ids[i] >= ray_group_id_count)
             throw std::runtime_error("ray id is outside the ray group-id map");
@@ -20151,6 +20159,7 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared
         return;
     }
 
+    ray_batch->require_host_ray_ids("prepared closest-hit grouped argmin");
     for (size_t i = 0; i < ray_count; ++i) {
         if (ray_batch->ray_ids[i] >= ray_group_id_count)
             throw std::runtime_error("ray id is outside the prepared ray group-id map");

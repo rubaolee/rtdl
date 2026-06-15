@@ -15569,6 +15569,9 @@ class PreparedOptixRayBatch3D:
             "prepared_rays_resident_on_device": True,
             "ray_batch_created_from": "partner_device_columns",
             "ray_columns_partner_owned": True,
+            "ray_id_host_bookkeeping_downloaded": False,
+            "host_ray_ids_available": False,
+            "grouped_host_ray_id_contract_available": False,
             "true_zero_copy_authorized": False,
         }
         return self
