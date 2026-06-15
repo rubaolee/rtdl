@@ -1,0 +1,580 @@
+{
+  "backend_rows": [
+    {
+      "backend": "embree",
+      "claim_readiness": {
+        "device_resident_ready": false,
+        "phase_complete": true,
+        "public_claim_authorized": false,
+        "same_stream_ready": false,
+        "true_zero_copy_ready": false
+      },
+      "frontier_row_count": 523035,
+      "max_seconds": 1.1449073553085327,
+      "median_seconds": 1.121130332350731,
+      "min_seconds": 1.1015214920043945,
+      "native_engine_app_specific": false,
+      "native_symbol": "rtdl_embree_collect_aggregate_frontier_2d",
+      "public_claim_authorized": false,
+      "rows_match_reference": true,
+      "samples_seconds": [
+        1.1449073553085327,
+        1.121130332350731,
+        1.1015214920043945
+      ]
+    },
+    {
+      "backend": "optix",
+      "claim_readiness": {
+        "device_resident_ready": false,
+        "phase_complete": true,
+        "public_claim_authorized": false,
+        "same_stream_ready": false,
+        "true_zero_copy_ready": false
+      },
+      "frontier_row_count": 523035,
+      "max_seconds": 1.116003766655922,
+      "median_seconds": 1.1031843945384026,
+      "min_seconds": 1.097132995724678,
+      "native_engine_app_specific": false,
+      "native_symbol": "rtdl_optix_collect_aggregate_frontier_2d",
+      "public_claim_authorized": false,
+      "rows_match_reference": true,
+      "samples_seconds": [
+        1.116003766655922,
+        1.097132995724678,
+        1.1031843945384026
+      ]
+    }
+  ],
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "reason": "This M8 case proves measured same-contract native lowering for a generic frontier row primitive. The current wrappers return host-materialized rows and do not prove same-stream partner continuation or RT-core speedup.",
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "comparison": {
+    "embree_median_seconds": 1.121130332350731,
+    "embree_over_optix_ratio": 1.016267396367438,
+    "optix_median_seconds": 1.1031843945384026,
+    "winner": "optix"
+  },
+  "contract": "generic_aggregate_frontier_collect_2d_v1",
+  "dataset": "deterministic_weighted_point_grid",
+  "fixture_summary": {
+    "build_seconds": 0.04718155413866043,
+    "frontier_row_count": 523035,
+    "point_count": 2048,
+    "prepare_seconds": 0.0011698752641677856,
+    "reference_seconds": 1.062540702521801,
+    "tree_node_count": 193
+  },
+  "graph_id": "aggregate_frontier_lowering_pilot",
+  "harness": {
+    "claim_boundary": {
+      "app_specific_native_engine_authorized": false,
+      "automatic_backend_selection_authorized": false,
+      "automatic_partner_selection_authorized": false,
+      "device_resident_claim_authorized": false,
+      "hidden_partner_selection_authorized": false,
+      "paper_reproduction_claim_authorized": false,
+      "public_speedup_authorized": false,
+      "raw_optix_callback_user_api_authorized": false,
+      "rt_core_speedup_authorized": false,
+      "same_stream_claim_authorized": false,
+      "true_zero_copy_authorized": false
+    },
+    "harness_version": "rtdl.v3_0.benchmark_harness.m7",
+    "ir_version": "rtdl.v3_0.execution_graph_ir.m1",
+    "packet_id": "aggregate_frontier_lowering_packet",
+    "public_claim_authorized": false,
+    "rows": [
+      {
+        "backend": "embree",
+        "comparison_group": "aggregate_frontier_native_lowering",
+        "comparison_role": "rtdl_embree",
+        "dataset": "deterministic_weighted_point_grid",
+        "external_code_version": null,
+        "external_timing_basis": null,
+        "graph_id": "aggregate_frontier_lowering_pilot",
+        "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+        "includes_build": true,
+        "includes_download": true,
+        "includes_upload": false,
+        "includes_validation": true,
+        "instrumentation": {
+          "backend": "embree",
+          "claim_boundary": {
+            "app_specific_native_engine_authorized": false,
+            "automatic_backend_selection_authorized": false,
+            "automatic_partner_selection_authorized": false,
+            "device_resident_claim_authorized": false,
+            "hidden_partner_selection_authorized": false,
+            "paper_reproduction_claim_authorized": false,
+            "public_speedup_authorized": false,
+            "raw_optix_callback_user_api_authorized": false,
+            "rt_core_speedup_authorized": false,
+            "same_stream_claim_authorized": false,
+            "true_zero_copy_authorized": false
+          },
+          "claim_readiness": {
+            "device_resident_ready": false,
+            "phase_complete": true,
+            "public_claim_authorized": false,
+            "same_stream_ready": false,
+            "true_zero_copy_ready": false
+          },
+          "evidence_records": [
+            {
+              "backend": "embree",
+              "details": {
+                "native_symbol": "rtdl_embree_collect_aggregate_frontier_2d"
+              },
+              "evidence_id": "embree_native_handle_record",
+              "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+              "kind": "backend_native_handle",
+              "observed": true,
+              "phase": "prepare",
+              "source": "native_symbol_lookup"
+            },
+            {
+              "backend": "embree",
+              "details": {
+                "frontier_row_count": 523035,
+                "native_seconds_median": 1.121130332350731,
+                "wrapper_includes_host_row_materialization": true
+              },
+              "evidence_id": "embree_native_timer_record",
+              "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+              "kind": "embree_phase_timer",
+              "observed": true,
+              "phase": "rt_traversal",
+              "source": "python_perf_counter_wrapper"
+            },
+            {
+              "backend": "embree",
+              "details": {
+                "host_materialized_rows": 523035
+              },
+              "evidence_id": "embree_host_materialization_record",
+              "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+              "kind": "host_timer",
+              "observed": true,
+              "phase": "download_or_materialization",
+              "source": "native_wrapper_output_contract"
+            },
+            {
+              "backend": "embree",
+              "details": {
+                "validation_seconds": 1.062540702521801
+              },
+              "evidence_id": "embree_validation_timer_record",
+              "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+              "kind": "host_timer",
+              "observed": true,
+              "phase": "validation",
+              "source": "cpu_reference_parity_check"
+            }
+          ],
+          "graph_id": "aggregate_frontier_lowering_pilot",
+          "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+          "instrumentation_version": "rtdl.v3_0.instrumentation.m3",
+          "ir_version": "rtdl.v3_0.execution_graph_ir.m1",
+          "phase_timings": [
+            {
+              "backend": "embree",
+              "evidence_ids": [
+                "embree_native_handle_record"
+              ],
+              "materialization_candidate": false,
+              "phase": "prepare",
+              "seconds": 0.0011698752641677856,
+              "setup_candidate": true,
+              "steady_state_candidate": false,
+              "timing_source": "host_timer"
+            },
+            {
+              "backend": "embree",
+              "evidence_ids": [],
+              "materialization_candidate": false,
+              "phase": "build",
+              "seconds": 0.04718155413866043,
+              "setup_candidate": true,
+              "steady_state_candidate": false,
+              "timing_source": "host_timer"
+            },
+            {
+              "backend": "embree",
+              "evidence_ids": [],
+              "materialization_candidate": false,
+              "phase": "upload",
+              "seconds": 0.0,
+              "setup_candidate": true,
+              "steady_state_candidate": false,
+              "timing_source": "metadata_only"
+            },
+            {
+              "backend": "embree",
+              "evidence_ids": [],
+              "materialization_candidate": false,
+              "phase": "query_prepare",
+              "seconds": 0.0,
+              "setup_candidate": true,
+              "steady_state_candidate": false,
+              "timing_source": "metadata_only"
+            },
+            {
+              "backend": "embree",
+              "evidence_ids": [
+                "embree_native_timer_record"
+              ],
+              "materialization_candidate": false,
+              "phase": "rt_traversal",
+              "seconds": 1.121130332350731,
+              "setup_candidate": false,
+              "steady_state_candidate": true,
+              "timing_source": "embree_timer"
+            },
+            {
+              "backend": "embree",
+              "evidence_ids": [],
+              "materialization_candidate": false,
+              "phase": "stream_handoff",
+              "seconds": 0.0,
+              "setup_candidate": false,
+              "steady_state_candidate": true,
+              "timing_source": "metadata_only"
+            },
+            {
+              "backend": "embree",
+              "evidence_ids": [],
+              "materialization_candidate": false,
+              "phase": "continuation_or_reduction",
+              "seconds": 0.0,
+              "setup_candidate": false,
+              "steady_state_candidate": true,
+              "timing_source": "metadata_only"
+            },
+            {
+              "backend": "embree",
+              "evidence_ids": [
+                "embree_host_materialization_record"
+              ],
+              "materialization_candidate": true,
+              "phase": "download_or_materialization",
+              "seconds": 0.0,
+              "setup_candidate": false,
+              "steady_state_candidate": false,
+              "timing_source": "host_timer"
+            },
+            {
+              "backend": "embree",
+              "evidence_ids": [
+                "embree_validation_timer_record"
+              ],
+              "materialization_candidate": false,
+              "phase": "validation",
+              "seconds": 1.062540702521801,
+              "setup_candidate": false,
+              "steady_state_candidate": false,
+              "timing_source": "host_timer"
+            },
+            {
+              "backend": "embree",
+              "evidence_ids": [],
+              "materialization_candidate": false,
+              "phase": "host_wrapper",
+              "seconds": 0.0,
+              "setup_candidate": false,
+              "steady_state_candidate": false,
+              "timing_source": "host_timer"
+            }
+          ],
+          "public_claim_authorized": false,
+          "residency_evidence": [
+            {
+              "backend_handle_observed": true,
+              "data_ptr_observed": false,
+              "device_resident_ready": false,
+              "evidence_ids": [
+                "embree_native_handle_record",
+                "embree_host_materialization_record"
+              ],
+              "hidden_copy_observed": false,
+              "host_materialized": true,
+              "lifetime": "session_retained",
+              "residency": "materialized",
+              "storage": "host",
+              "stream_ordering": "host_synchronized",
+              "transfer_counter_observed": false,
+              "true_zero_copy_ready": false,
+              "value_name": "frontier_rows"
+            }
+          ],
+          "status": "m3_metadata_only_no_claim_promotion"
+        },
+        "partner": "none",
+        "public_claim_authorized": false,
+        "repeats": 3,
+        "row_id": "aggregate_frontier_embree_lowering_row",
+        "same_contract_key": "aggregate_frontier_vector_contract_v1",
+        "scale": "point_count=2048;tree_node_count=193",
+        "timing_basis": "phase_split",
+        "warmups": 1
+      },
+      {
+        "backend": "optix",
+        "comparison_group": "aggregate_frontier_native_lowering",
+        "comparison_role": "rtdl_optix",
+        "dataset": "deterministic_weighted_point_grid",
+        "external_code_version": null,
+        "external_timing_basis": null,
+        "graph_id": "aggregate_frontier_lowering_pilot",
+        "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+        "includes_build": true,
+        "includes_download": true,
+        "includes_upload": false,
+        "includes_validation": true,
+        "instrumentation": {
+          "backend": "optix",
+          "claim_boundary": {
+            "app_specific_native_engine_authorized": false,
+            "automatic_backend_selection_authorized": false,
+            "automatic_partner_selection_authorized": false,
+            "device_resident_claim_authorized": false,
+            "hidden_partner_selection_authorized": false,
+            "paper_reproduction_claim_authorized": false,
+            "public_speedup_authorized": false,
+            "raw_optix_callback_user_api_authorized": false,
+            "rt_core_speedup_authorized": false,
+            "same_stream_claim_authorized": false,
+            "true_zero_copy_authorized": false
+          },
+          "claim_readiness": {
+            "device_resident_ready": false,
+            "phase_complete": true,
+            "public_claim_authorized": false,
+            "same_stream_ready": false,
+            "true_zero_copy_ready": false
+          },
+          "evidence_records": [
+            {
+              "backend": "optix",
+              "details": {
+                "native_symbol": "rtdl_optix_collect_aggregate_frontier_2d"
+              },
+              "evidence_id": "optix_native_handle_record",
+              "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+              "kind": "backend_native_handle",
+              "observed": true,
+              "phase": "prepare",
+              "source": "native_symbol_lookup"
+            },
+            {
+              "backend": "optix",
+              "details": {
+                "frontier_row_count": 523035,
+                "native_seconds_median": 1.1031843945384026,
+                "wrapper_includes_host_row_materialization": true
+              },
+              "evidence_id": "optix_native_timer_record",
+              "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+              "kind": "host_timer",
+              "observed": true,
+              "phase": "rt_traversal",
+              "source": "python_perf_counter_wrapper"
+            },
+            {
+              "backend": "optix",
+              "details": {
+                "host_materialized_rows": 523035
+              },
+              "evidence_id": "optix_host_materialization_record",
+              "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+              "kind": "host_timer",
+              "observed": true,
+              "phase": "download_or_materialization",
+              "source": "native_wrapper_output_contract"
+            },
+            {
+              "backend": "optix",
+              "details": {
+                "validation_seconds": 1.062540702521801
+              },
+              "evidence_id": "optix_validation_timer_record",
+              "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+              "kind": "host_timer",
+              "observed": true,
+              "phase": "validation",
+              "source": "cpu_reference_parity_check"
+            }
+          ],
+          "graph_id": "aggregate_frontier_lowering_pilot",
+          "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+          "instrumentation_version": "rtdl.v3_0.instrumentation.m3",
+          "ir_version": "rtdl.v3_0.execution_graph_ir.m1",
+          "phase_timings": [
+            {
+              "backend": "optix",
+              "evidence_ids": [
+                "optix_native_handle_record"
+              ],
+              "materialization_candidate": false,
+              "phase": "prepare",
+              "seconds": 0.0011698752641677856,
+              "setup_candidate": true,
+              "steady_state_candidate": false,
+              "timing_source": "host_timer"
+            },
+            {
+              "backend": "optix",
+              "evidence_ids": [],
+              "materialization_candidate": false,
+              "phase": "build",
+              "seconds": 0.04718155413866043,
+              "setup_candidate": true,
+              "steady_state_candidate": false,
+              "timing_source": "host_timer"
+            },
+            {
+              "backend": "optix",
+              "evidence_ids": [],
+              "materialization_candidate": false,
+              "phase": "upload",
+              "seconds": 0.0,
+              "setup_candidate": true,
+              "steady_state_candidate": false,
+              "timing_source": "metadata_only"
+            },
+            {
+              "backend": "optix",
+              "evidence_ids": [],
+              "materialization_candidate": false,
+              "phase": "query_prepare",
+              "seconds": 0.0,
+              "setup_candidate": true,
+              "steady_state_candidate": false,
+              "timing_source": "metadata_only"
+            },
+            {
+              "backend": "optix",
+              "evidence_ids": [
+                "optix_native_timer_record"
+              ],
+              "materialization_candidate": false,
+              "phase": "rt_traversal",
+              "seconds": 1.1031843945384026,
+              "setup_candidate": false,
+              "steady_state_candidate": true,
+              "timing_source": "host_timer"
+            },
+            {
+              "backend": "optix",
+              "evidence_ids": [],
+              "materialization_candidate": false,
+              "phase": "stream_handoff",
+              "seconds": 0.0,
+              "setup_candidate": false,
+              "steady_state_candidate": true,
+              "timing_source": "metadata_only"
+            },
+            {
+              "backend": "optix",
+              "evidence_ids": [],
+              "materialization_candidate": false,
+              "phase": "continuation_or_reduction",
+              "seconds": 0.0,
+              "setup_candidate": false,
+              "steady_state_candidate": true,
+              "timing_source": "metadata_only"
+            },
+            {
+              "backend": "optix",
+              "evidence_ids": [
+                "optix_host_materialization_record"
+              ],
+              "materialization_candidate": true,
+              "phase": "download_or_materialization",
+              "seconds": 0.0,
+              "setup_candidate": false,
+              "steady_state_candidate": false,
+              "timing_source": "host_timer"
+            },
+            {
+              "backend": "optix",
+              "evidence_ids": [
+                "optix_validation_timer_record"
+              ],
+              "materialization_candidate": false,
+              "phase": "validation",
+              "seconds": 1.062540702521801,
+              "setup_candidate": false,
+              "steady_state_candidate": false,
+              "timing_source": "host_timer"
+            },
+            {
+              "backend": "optix",
+              "evidence_ids": [],
+              "materialization_candidate": false,
+              "phase": "host_wrapper",
+              "seconds": 0.0,
+              "setup_candidate": false,
+              "steady_state_candidate": false,
+              "timing_source": "host_timer"
+            }
+          ],
+          "public_claim_authorized": false,
+          "residency_evidence": [
+            {
+              "backend_handle_observed": true,
+              "data_ptr_observed": false,
+              "device_resident_ready": false,
+              "evidence_ids": [
+                "optix_native_handle_record",
+                "optix_host_materialization_record"
+              ],
+              "hidden_copy_observed": false,
+              "host_materialized": true,
+              "lifetime": "session_retained",
+              "residency": "materialized",
+              "storage": "host",
+              "stream_ordering": "host_synchronized",
+              "transfer_counter_observed": false,
+              "true_zero_copy_ready": false,
+              "value_name": "frontier_rows"
+            }
+          ],
+          "status": "m3_metadata_only_no_claim_promotion"
+        },
+        "partner": "none",
+        "public_claim_authorized": false,
+        "repeats": 3,
+        "row_id": "aggregate_frontier_optix_lowering_row",
+        "same_contract_key": "aggregate_frontier_vector_contract_v1",
+        "scale": "point_count=2048;tree_node_count=193",
+        "timing_basis": "phase_split",
+        "warmups": 1
+      }
+    ],
+    "status": "m7_harness_skeleton_no_public_claim"
+  },
+  "harness_validation": {
+    "comparison_groups": [
+      "aggregate_frontier_native_lowering"
+    ],
+    "packet_id": "aggregate_frontier_lowering_packet",
+    "public_claim_authorized": false,
+    "row_count": 2,
+    "status": "m7_harness_skeleton_no_public_claim"
+  },
+  "native_abi_contract": "generic_aggregate_frontier_collect_2d_native_abi_v1",
+  "parameters": {
+    "bucket_size": 32,
+    "point_count": 2048,
+    "repeats": 3,
+    "theta": 0.5,
+    "warmups": 1
+  },
+  "status": "m8_native_lowering_measured_no_public_claim",
+  "version": "rtdl.v3_0.measured_lowering.m8"
+}
