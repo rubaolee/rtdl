@@ -19015,6 +19015,7 @@ class PreparedOptixStaticTriangleScene3D:
         deduplicate_primitives: bool = True,
         cuda_stream=None,
         transfer_counter=None,
+        transfer_counter_scope: str = "post_native_enqueue",
     ) -> dict[str, object]:
         """Launch a hit stream and a bounded device-row reduction on one stream."""
         if self._closed:
@@ -19053,6 +19054,11 @@ class PreparedOptixStaticTriangleScene3D:
             raise TypeError("cuda_stream must be None, an integer CUDA stream pointer, or a torch CUDA Stream")
         if cuda_stream_ptr == 0:
             raise ValueError("same-stream hit-stream row-reduction summary requires a nonzero CUDA stream pointer")
+        transfer_counter_scope = str(transfer_counter_scope)
+        if transfer_counter_scope not in {"post_native_enqueue", "producer_consumer"}:
+            raise ValueError(
+                "transfer_counter_scope must be 'post_native_enqueue' or 'producer_consumer'"
+            )
 
         pack_start = time.perf_counter()
         packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
@@ -19067,56 +19073,77 @@ class PreparedOptixStaticTriangleScene3D:
 
         columns = _RtdlNativeDeviceHitStreamColumns()
         error = ctypes.create_string_buffer(4096)
-        native_start = time.perf_counter()
-        status = run_symbol(
-            self._handle,
-            packed_rays.records,
-            packed_rays.count,
-            ctypes.c_uint32(1 if deduplicate_primitives else 0),
-            ctypes.c_size_t(capacity),
-            ctypes.c_uint64(output_buffers.ray_ids_device_ptr),
-            ctypes.c_uint64(output_buffers.primitive_ids_device_ptr),
-            ctypes.c_uint64(output_buffers.row_count_device_ptr),
-            ctypes.c_uint64(output_buffers.hit_event_count_device_ptr),
-            ctypes.c_uint64(output_buffers.overflow_device_ptr),
-            ctypes.c_uint64(cuda_stream_ptr),
-            ctypes.byref(columns),
-            error,
-            len(error),
-        )
-        native_launch_seconds = time.perf_counter() - native_start
-        _check_status(status, error)
+        transfer_counter_snapshot = None
+        transfer_counter_active = False
+        if transfer_counter is not None and transfer_counter_scope == "producer_consumer":
+            transfer_counter.reset()
+            transfer_counter.enable()
+            transfer_counter_active = True
+        try:
+            native_start = time.perf_counter()
+            status = run_symbol(
+                self._handle,
+                packed_rays.records,
+                packed_rays.count,
+                ctypes.c_uint32(1 if deduplicate_primitives else 0),
+                ctypes.c_size_t(capacity),
+                ctypes.c_uint64(output_buffers.ray_ids_device_ptr),
+                ctypes.c_uint64(output_buffers.primitive_ids_device_ptr),
+                ctypes.c_uint64(output_buffers.row_count_device_ptr),
+                ctypes.c_uint64(output_buffers.hit_event_count_device_ptr),
+                ctypes.c_uint64(output_buffers.overflow_device_ptr),
+                ctypes.c_uint64(cuda_stream_ptr),
+                ctypes.byref(columns),
+                error,
+                len(error),
+            )
+            native_launch_seconds = time.perf_counter() - native_start
+            _check_status(status, error)
 
-        for observed, expected, name in (
-            (int(columns.ray_ids_device_ptr), output_buffers.ray_ids_device_ptr, "ray_ids"),
-            (int(columns.primitive_ids_device_ptr), output_buffers.primitive_ids_device_ptr, "primitive_ids"),
-            (int(columns.row_count_device_ptr), output_buffers.row_count_device_ptr, "row_count"),
-            (int(columns.hit_event_count_device_ptr), output_buffers.hit_event_count_device_ptr, "hit_event_count"),
-            (int(columns.overflow_device_ptr), output_buffers.overflow_device_ptr, "overflow"),
-        ):
-            if observed != expected:
-                raise RuntimeError(f"native OptiX backend returned an unexpected {name} pointer")
+            for observed, expected, name in (
+                (int(columns.ray_ids_device_ptr), output_buffers.ray_ids_device_ptr, "ray_ids"),
+                (int(columns.primitive_ids_device_ptr), output_buffers.primitive_ids_device_ptr, "primitive_ids"),
+                (int(columns.row_count_device_ptr), output_buffers.row_count_device_ptr, "row_count"),
+                (int(columns.hit_event_count_device_ptr), output_buffers.hit_event_count_device_ptr, "hit_event_count"),
+                (int(columns.overflow_device_ptr), output_buffers.overflow_device_ptr, "overflow"),
+            ):
+                if observed != expected:
+                    raise RuntimeError(f"native OptiX backend returned an unexpected {name} pointer")
+        except Exception:
+            if transfer_counter is not None and transfer_counter_active:
+                transfer_counter.disable_and_snapshot()
+            raise
 
         async_owner = _OptixNativeHitStreamAsyncLaunchOwner(self._lib, columns.owner_handle)
         owner_handle_observed = async_owner.handle_value != 0
         consumer_start = time.perf_counter()
-        transfer_counter_snapshot = None
         try:
-            if transfer_counter is not None:
+            if transfer_counter is not None and transfer_counter_scope == "post_native_enqueue":
                 transfer_counter.reset()
                 transfer_counter.enable()
+                transfer_counter_active = True
             summary = _run_hit_stream_same_stream_row_reduction_summary_cupy(
                 output_buffers,
                 capacity=int(columns.capacity),
                 cuda_stream_ptr=cuda_stream_ptr,
-                transfer_counter=transfer_counter,
+                transfer_counter=transfer_counter if transfer_counter_active else None,
             )
             transfer_counter_snapshot = summary.pop("_transfer_counter_snapshot", None)
         finally:
-            if transfer_counter is not None and transfer_counter_snapshot is None:
+            if transfer_counter is not None and transfer_counter_active and transfer_counter_snapshot is None:
                 transfer_counter.disable_and_snapshot()
             async_owner.close()
         consumer_seconds = time.perf_counter() - consumer_start
+        transfer_counter_window = None
+        if transfer_counter_snapshot is not None:
+            if transfer_counter_scope == "producer_consumer":
+                transfer_counter_window = (
+                    "native_producer_enqueue_to_same_stream_row_reduction_before_summary_materialization"
+                )
+            else:
+                transfer_counter_window = (
+                    "post_native_enqueue_same_stream_row_reduction_before_summary_materialization"
+                )
 
         self._run_count += 1
         return {
@@ -19145,11 +19172,8 @@ class PreparedOptixStaticTriangleScene3D:
                 "bounded_partner_consumer": "cupy_rawkernel",
                 "transfer_counter_observed": transfer_counter_snapshot is not None,
                 "transfer_counter_snapshot": transfer_counter_snapshot,
-                "transfer_counter_window": (
-                    "post_native_enqueue_same_stream_row_reduction_before_summary_materialization"
-                    if transfer_counter_snapshot is not None
-                    else None
-                ),
+                "transfer_counter_scope": transfer_counter_scope,
+                "transfer_counter_window": transfer_counter_window,
                 "async_partner_continuation_authorized": True,
                 "async_partner_continuation_authorization_scope": "bounded_same_stream_row_reduction_consumer_only",
                 "general_partner_continuation_authorized": False,
