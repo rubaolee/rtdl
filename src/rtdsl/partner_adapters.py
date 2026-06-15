@@ -5943,7 +5943,10 @@ def _numba_cuda_stack_for_radius_graph():
     from numba import cuda
 
     if not cuda.is_available():
-        raise RuntimeError("Numba radius-graph component adapter requires numba.cuda")
+        try:
+            cuda.get_current_device()
+        except Exception as exc:
+            raise RuntimeError("Numba radius-graph component adapter requires numba.cuda") from exc
     return cuda, np
 
 

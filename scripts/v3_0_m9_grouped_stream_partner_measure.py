@@ -56,6 +56,15 @@ def _prepend_env_path(name: str, value: str) -> None:
 
 
 _NUMBA_CUDA_COMPAT_ENV = _apply_numba_cuda_compat_env_before_rtdsl_import()
+if _NUMBA_CUDA_COMPAT_ENV.get("applied"):
+    try:
+        from numba import cuda
+
+        cuda.get_current_device()
+        _NUMBA_CUDA_COMPAT_ENV["numba_preinitialized"] = True
+    except Exception as exc:  # pragma: no cover - pod diagnostic path.
+        _NUMBA_CUDA_COMPAT_ENV["numba_preinitialized"] = False
+        _NUMBA_CUDA_COMPAT_ENV["numba_preinit_error"] = repr(exc)
 
 import rtdsl as rt
 
