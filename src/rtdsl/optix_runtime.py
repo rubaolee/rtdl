@@ -5230,6 +5230,73 @@ class PreparedOptixFixedRadiusQueryPoints3D:
             pass
 
 
+class _OptixFixedRadiusRankedSummaryAggregateDeviceResult3D:
+    """Device-side aggregate result for fixed-radius ranked-summary graph partials."""
+
+    def __init__(
+        self,
+        *,
+        partner: str,
+        request_specs: tuple[dict[str, object], ...],
+        precision: str,
+        aggregate_slots_u64,
+        aggregate_sum_distance,
+        metadata: Mapping[str, object],
+    ):
+        self.partner = str(partner)
+        self.request_specs = tuple(dict(item) for item in request_specs)
+        self.precision = str(precision)
+        self.aggregate_slots_u64 = aggregate_slots_u64
+        self.aggregate_sum_distance = aggregate_sum_distance
+        self.metadata = dict(metadata)
+
+    def materialize(self) -> dict[str, object]:
+        materialize_start = time.perf_counter()
+        if self.partner == "cupy":
+            try:
+                import cupy as cp
+            except Exception as exc:
+                raise RuntimeError("CuPy materialization requires cupy") from exc
+            slots = cp.asnumpy(self.aggregate_slots_u64)
+            sums = cp.asnumpy(self.aggregate_sum_distance)
+        elif self.partner == "numba":
+            slots = self.aggregate_slots_u64.copy_to_host()
+            sums = self.aggregate_sum_distance.copy_to_host()
+        else:
+            raise RuntimeError(f"unsupported fixed-radius graph device result partner: {self.partner}")
+        materialize_seconds = time.perf_counter() - materialize_start
+
+        aggregates = tuple(
+            {
+                "query_count": int(slots[index, 0]),
+                "bounded_neighbor_count": int(slots[index, 1]),
+                "nearest_id_checksum": int(slots[index, 2]),
+                "kth_id_checksum": int(slots[index, 3]),
+                "sum_distance": float(sums[index]),
+                "precision": self.precision,
+                "query_resident": True,
+                "request_index": index,
+                "radius": float(self.request_specs[index]["radius"]),
+                "k_max": int(self.request_specs[index]["k_max"]),
+                "cuda_graph_replay": True,
+                "same_stream_partner_reduced": True,
+            }
+            for index in range(len(self.request_specs))
+        )
+        metadata = dict(self.metadata)
+        phase_timings = dict(metadata.get("phase_timing_seconds") or {})
+        phase_timings["result_materialization"] = float(materialize_seconds)
+        metadata.update(
+            {
+                "result_materialized": True,
+                "result_materialization_after_device_window": True,
+                "result_materialization_synchronization_used": True,
+                "phase_timing_seconds": phase_timings,
+            }
+        )
+        return {"aggregates": aggregates, "metadata": metadata}
+
+
 class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
     """Static CUDA graph for generic prepared fixed-radius aggregate batches."""
 
@@ -5417,8 +5484,8 @@ class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
             for index, aggregate in enumerate(aggregates)
         )
 
-    def replay_same_stream_device_partials_summary_cupy(self) -> dict[str, object]:
-        """Launch graph and reduce native partial rows with a same-stream CuPy consumer."""
+    def _launch_same_stream_device_partials(self) -> dict[str, object]:
+        """Launch graph and return device partial-row handoff metadata without host materialization."""
         if self._closed:
             raise RuntimeError("prepared fixed-radius aggregate graph handle is closed")
         if self._owner.closed:
@@ -5426,22 +5493,7 @@ class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
         if self._prepared_queries.closed:
             raise RuntimeError("prepared OptiX fixed-radius query handle is closed")
         if self._empty_results is not None:
-            return {
-                "aggregates": self._empty_results,
-                "metadata": {
-                    "contract_version": (
-                        "rtdl.fixed_radius_ranked_summary_aggregate_graph_same_stream_partials.v2.5"
-                    ),
-                    "backend": "optix",
-                    "empty_graph_path": True,
-                    "same_stream_partner_consumer_executed": False,
-                    "device_resident_partial_rows_for_partner": False,
-                    "host_scalar_read_before_consumer": False,
-                    "host_partial_materialization_before_consumer": False,
-                    "true_zero_copy_authorized": False,
-                    "public_speedup_claim_authorized": False,
-                },
-            }
+            raise RuntimeError("empty fixed-radius graph path has no device partial rows")
 
         lib = _load_optix_library()
         symbol_name = "rtdl_optix_launch_fixed_radius_ranked_summary_aggregate_batch_graph_device_partials_3d"
@@ -5477,110 +5529,254 @@ class PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D:
         if int(partial_count.value) != expected_partial_count:
             raise RuntimeError("native fixed-radius graph returned inconsistent partial_count")
 
-        consumer_start = time.perf_counter()
-        aggregates = _run_fixed_radius_graph_partials_same_stream_summary_cupy(
-            owner=self,
-            partials_device_ptr=int(partials_device_ptr.value),
-            partial_count=int(partial_count.value),
-            request_count=observed_request_count,
-            query_block_count=int(query_block_count.value),
-            cuda_stream_ptr=int(cuda_stream_ptr.value),
-        )
-        consumer_seconds = time.perf_counter() - consumer_start
+        return {
+            "symbol_name": symbol_name,
+            "partials_device_ptr": int(partials_device_ptr.value),
+            "partial_count": int(partial_count.value),
+            "request_count": observed_request_count,
+            "query_block_count": int(query_block_count.value),
+            "cuda_stream_ptr": int(cuda_stream_ptr.value),
+            "native_launch_enqueue_seconds": float(native_launch_enqueue_seconds),
+        }
+
+    def _same_stream_device_partials_metadata(
+        self,
+        *,
+        partner: str,
+        launch: Mapping[str, object],
+        consumer_device_seconds: float,
+        entrypoint_name: str,
+    ) -> dict[str, object]:
         primitive_payload_column_descriptors = (
             describe_fixed_radius_graph_partial_payload_descriptor(
-                partials_device_ptr=int(partials_device_ptr.value),
-                partial_count=int(partial_count.value),
+                partials_device_ptr=int(launch["partials_device_ptr"]),
+                partial_count=int(launch["partial_count"]),
                 stream_ordering="same_stream",
                 owner=self,
-                request_count=observed_request_count,
-                query_block_count=int(query_block_count.value),
+                request_count=int(launch["request_count"]),
+                query_block_count=int(launch["query_block_count"]),
             ),
         )
         primitive_payload_entrypoint = describe_primitive_payload_partner_continuation_entrypoint(
             operation="hit_stream_grouped_ray_id_primitive_i64",
-            partner="cupy",
+            partner=str(partner),
             descriptors=primitive_payload_column_descriptors,
-            entrypoint=(
-                "PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D."
-                "replay_same_stream_device_partials_summary_cupy"
-            ),
-            execution_status="completed_same_stream_consumer",
+            entrypoint=entrypoint_name,
+            execution_status="completed_same_stream_device_consumer",
         )
         return {
-            "aggregates": tuple(
-                {
-                    "query_count": int(aggregate["query_count"]),
-                    "bounded_neighbor_count": int(aggregate["bounded_neighbor_count"]),
-                    "nearest_id_checksum": int(aggregate["nearest_id_checksum"]),
-                    "kth_id_checksum": int(aggregate["kth_id_checksum"]),
-                    "sum_distance": float(aggregate["sum_distance"]),
-                    "precision": self._precision,
-                    "query_resident": True,
-                    "request_index": index,
-                    "radius": float(self._requests[index]["radius"]),
-                    "k_max": int(self._requests[index]["k_max"]),
-                    "cuda_graph_replay": True,
-                    "request_buffer_update_count": self.request_buffer_update_count,
-                    "same_stream_partner_reduced": True,
-                }
-                for index, aggregate in enumerate(aggregates)
+            "contract_version": (
+                "rtdl.fixed_radius_ranked_summary_aggregate_graph_same_stream_partials.v3_m19"
             ),
-            "metadata": {
-                "contract_version": (
-                    "rtdl.fixed_radius_ranked_summary_aggregate_graph_same_stream_partials.v2.5"
-                ),
-                "backend": "optix",
-                "native_symbol": symbol_name,
-                "producer_consumer_stream_ordering": "same_cuda_stream",
-                "stream_synchronization_proven": True,
-                "event_or_same_stream_ordering_proven": True,
-                "same_stream_ordering_proven": True,
-                "cuda_stream_ptr_nonzero": bool(int(cuda_stream_ptr.value)),
-                "producer_host_synchronization_used": False,
-                "host_scalar_read_before_consumer": False,
-                "host_partial_materialization_before_consumer": False,
-                "final_materialization_synchronization_used": True,
-                "device_resident_partial_rows_for_partner": True,
-                "bounded_partner_consumer_executed": True,
-                "bounded_partner_consumer": "cupy_rawkernel",
-                "async_partner_continuation_authorized": True,
-                "async_partner_continuation_authorization_scope": (
-                    "bounded_same_stream_fixed_radius_graph_partial_summary_consumer_only"
-                ),
-                "general_partner_continuation_authorized": False,
-                "true_zero_copy_authorized": False,
-                "public_speedup_claim_authorized": False,
-                "partial_row_type": "RtdlFixedRadiusRankedNeighborAggregate",
-                "partial_row_size_bytes": ctypes.sizeof(_RtdlFixedRadiusRankedNeighborAggregate),
-                "partial_count": int(partial_count.value),
-                "request_count": observed_request_count,
-                "query_block_count": int(query_block_count.value),
-                "primitive_payload_column_descriptors": primitive_payload_column_descriptors,
-                "primitive_payload_continuation_entrypoint": primitive_payload_entrypoint,
-                "primitive_payload_continuation_plan": primitive_payload_entrypoint[
-                    "primitive_payload_continuation_plan"
-                ],
-                "primitive_payload_planner_fallback_required": bool(
-                    primitive_payload_entrypoint["fallback_required"]
-                ),
-                "primitive_payload_planner_fallback_reasons": tuple(
-                    primitive_payload_entrypoint["fallback_reasons"]
-                ),
-                "phase_timing_seconds": {
-                    "native_graph_launch_enqueue": float(native_launch_enqueue_seconds),
-                    "same_stream_partner_partial_reduction_consumer_and_materialization": float(
-                        consumer_seconds
-                    ),
-                },
-                "claim_boundary": (
-                    "This proves one bounded CuPy consumer can reduce device-resident "
-                    "fixed-radius graph partial rows on the same native CUDA stream "
-                    "without a producer-side host scalar sync. It does not authorize "
-                    "broad true-zero-copy, public speedup, or arbitrary partner claims."
+            "backend": "optix",
+            "partner": str(partner),
+            "native_symbol": str(launch["symbol_name"]),
+            "producer_consumer_stream_ordering": "same_cuda_stream",
+            "stream_synchronization_proven": True,
+            "event_or_same_stream_ordering_proven": True,
+            "same_stream_ordering_proven": True,
+            "cuda_stream_ptr_nonzero": bool(int(launch["cuda_stream_ptr"])),
+            "producer_host_synchronization_used": False,
+            "host_scalar_read_before_consumer": False,
+            "host_partial_materialization_before_consumer": False,
+            "result_materialized": False,
+            "result_materialization_after_device_window": False,
+            "result_materialization_synchronization_used": False,
+            "device_resident_partial_rows_for_partner": True,
+            "bounded_partner_consumer_executed": True,
+            "bounded_partner_consumer": f"{partner}_device_reduction",
+            "async_partner_continuation_authorized": True,
+            "async_partner_continuation_authorization_scope": (
+                "bounded_same_stream_fixed_radius_graph_partial_summary_consumer_only"
+            ),
+            "general_partner_continuation_authorized": False,
+            "true_zero_copy_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "partial_row_type": "RtdlFixedRadiusRankedNeighborAggregate",
+            "partial_row_size_bytes": ctypes.sizeof(_RtdlFixedRadiusRankedNeighborAggregate),
+            "partial_count": int(launch["partial_count"]),
+            "request_count": int(launch["request_count"]),
+            "query_block_count": int(launch["query_block_count"]),
+            "primitive_payload_column_descriptors": primitive_payload_column_descriptors,
+            "primitive_payload_continuation_entrypoint": primitive_payload_entrypoint,
+            "primitive_payload_continuation_plan": primitive_payload_entrypoint[
+                "primitive_payload_continuation_plan"
+            ],
+            "primitive_payload_planner_fallback_required": bool(
+                primitive_payload_entrypoint["fallback_required"]
+            ),
+            "primitive_payload_planner_fallback_reasons": tuple(
+                primitive_payload_entrypoint["fallback_reasons"]
+            ),
+            "phase_timing_seconds": {
+                "native_graph_launch_enqueue": float(launch["native_launch_enqueue_seconds"]),
+                "same_stream_partner_partial_reduction_consumer_device": float(
+                    consumer_device_seconds
                 ),
             },
+            "claim_boundary": (
+                "This proves one bounded partner consumer can reduce device-resident "
+                "fixed-radius graph partial rows on the same native CUDA stream before "
+                "aggregate materialization. It does not authorize broad true-zero-copy, "
+                "public speedup, whole-app speedup, or arbitrary partner claims."
+            ),
         }
+
+    def replay_same_stream_device_partials_summary_cupy_device(
+        self,
+    ) -> _OptixFixedRadiusRankedSummaryAggregateDeviceResult3D:
+        """Launch graph and reduce native partial rows into CuPy device aggregate columns."""
+        launch = self._launch_same_stream_device_partials()
+        consumer_start = time.perf_counter()
+        aggregate_slots_u64, aggregate_sum_distance = (
+            _run_fixed_radius_graph_partials_same_stream_summary_cupy_device(
+                owner=self,
+                partials_device_ptr=int(launch["partials_device_ptr"]),
+                partial_count=int(launch["partial_count"]),
+                request_count=int(launch["request_count"]),
+                query_block_count=int(launch["query_block_count"]),
+                cuda_stream_ptr=int(launch["cuda_stream_ptr"]),
+            )
+        )
+        consumer_seconds = time.perf_counter() - consumer_start
+        metadata = self._same_stream_device_partials_metadata(
+            partner="cupy",
+            launch=launch,
+            consumer_device_seconds=consumer_seconds,
+            entrypoint_name=(
+                "PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D."
+                "replay_same_stream_device_partials_summary_cupy_device"
+            ),
+        )
+        return _OptixFixedRadiusRankedSummaryAggregateDeviceResult3D(
+            partner="cupy",
+            request_specs=self._requests,
+            precision=self._precision,
+            aggregate_slots_u64=aggregate_slots_u64,
+            aggregate_sum_distance=aggregate_sum_distance,
+            metadata=metadata,
+        )
+
+    def replay_same_stream_device_partials_summary_numba_device(
+        self,
+    ) -> _OptixFixedRadiusRankedSummaryAggregateDeviceResult3D:
+        """Launch graph and reduce native partial rows into Numba device aggregate columns."""
+        launch = self._launch_same_stream_device_partials()
+        consumer_start = time.perf_counter()
+        aggregate_slots_u64, aggregate_sum_distance = (
+            _run_fixed_radius_graph_partials_same_stream_summary_numba_device(
+                owner=self,
+                partials_device_ptr=int(launch["partials_device_ptr"]),
+                partial_count=int(launch["partial_count"]),
+                request_count=int(launch["request_count"]),
+                query_block_count=int(launch["query_block_count"]),
+                cuda_stream_ptr=int(launch["cuda_stream_ptr"]),
+            )
+        )
+        consumer_seconds = time.perf_counter() - consumer_start
+        metadata = self._same_stream_device_partials_metadata(
+            partner="numba",
+            launch=launch,
+            consumer_device_seconds=consumer_seconds,
+            entrypoint_name=(
+                "PreparedOptixFixedRadiusRankedSummaryAggregateBatchGraph3D."
+                "replay_same_stream_device_partials_summary_numba_device"
+            ),
+        )
+        return _OptixFixedRadiusRankedSummaryAggregateDeviceResult3D(
+            partner="numba",
+            request_specs=self._requests,
+            precision=self._precision,
+            aggregate_slots_u64=aggregate_slots_u64,
+            aggregate_sum_distance=aggregate_sum_distance,
+            metadata=metadata,
+        )
+
+    def replay_same_stream_device_partials_summary_cupy(self) -> dict[str, object]:
+        """Launch graph, reduce native partial rows with CuPy, then materialize aggregates."""
+        if self._empty_results is not None:
+            return {
+                "aggregates": self._empty_results,
+                "metadata": {
+                    "contract_version": (
+                        "rtdl.fixed_radius_ranked_summary_aggregate_graph_same_stream_partials.v2.5"
+                    ),
+                    "backend": "optix",
+                    "empty_graph_path": True,
+                    "same_stream_partner_consumer_executed": False,
+                    "device_resident_partial_rows_for_partner": False,
+                    "host_scalar_read_before_consumer": False,
+                    "host_partial_materialization_before_consumer": False,
+                    "true_zero_copy_authorized": False,
+                    "public_speedup_claim_authorized": False,
+                },
+            }
+
+        device_result = self.replay_same_stream_device_partials_summary_cupy_device()
+        materialized = device_result.materialize()
+        aggregates = tuple(
+            {
+                **dict(aggregate),
+                "request_buffer_update_count": self.request_buffer_update_count,
+            }
+            for aggregate in materialized["aggregates"]
+        )
+        metadata = dict(materialized["metadata"])
+        metadata["contract_version"] = (
+            "rtdl.fixed_radius_ranked_summary_aggregate_graph_same_stream_partials.v2.5"
+        )
+        phase_timings = dict(metadata.get("phase_timing_seconds") or {})
+        if "same_stream_partner_partial_reduction_consumer_device" in phase_timings:
+            phase_timings["same_stream_partner_partial_reduction_consumer_and_materialization"] = (
+                float(phase_timings["same_stream_partner_partial_reduction_consumer_device"])
+                + float(phase_timings.get("result_materialization", 0.0))
+            )
+        metadata.update(
+            {
+                "legacy_materializing_execution_status": "completed_same_stream_consumer",
+                "same_stream_partner_consumer_executed": True,
+                "final_materialization_synchronization_used": True,
+                "phase_timing_seconds": phase_timings,
+            }
+        )
+        return {"aggregates": aggregates, "metadata": metadata}
+
+    def replay_same_stream_device_partials_summary_numba(self) -> dict[str, object]:
+        """Launch graph, reduce native partial rows with Numba, then materialize aggregates."""
+        if self._empty_results is not None:
+            return {
+                "aggregates": self._empty_results,
+                "metadata": {
+                    "contract_version": (
+                        "rtdl.fixed_radius_ranked_summary_aggregate_graph_same_stream_partials.v3_m19"
+                    ),
+                    "backend": "optix",
+                    "partner": "numba",
+                    "empty_graph_path": True,
+                    "same_stream_partner_consumer_executed": False,
+                    "device_resident_partial_rows_for_partner": False,
+                    "host_scalar_read_before_consumer": False,
+                    "host_partial_materialization_before_consumer": False,
+                    "true_zero_copy_authorized": False,
+                    "public_speedup_claim_authorized": False,
+                },
+            }
+
+        device_result = self.replay_same_stream_device_partials_summary_numba_device()
+        materialized = device_result.materialize()
+        aggregates = tuple(
+            {
+                **dict(aggregate),
+                "request_buffer_update_count": self.request_buffer_update_count,
+            }
+            for aggregate in materialized["aggregates"]
+        )
+        metadata = dict(materialized["metadata"])
+        metadata["same_stream_partner_consumer_executed"] = True
+        metadata["final_materialization_synchronization_used"] = True
+        return {"aggregates": aggregates, "metadata": metadata}
 
     def close(self) -> None:
         if self._closed:
@@ -16475,7 +16671,7 @@ def _fixed_radius_graph_partials_same_stream_summary_cupy_kernel():
     )
 
 
-def _run_fixed_radius_graph_partials_same_stream_summary_cupy(
+def _run_fixed_radius_graph_partials_same_stream_summary_cupy_device(
     *,
     owner,
     partials_device_ptr: int,
@@ -16483,7 +16679,7 @@ def _run_fixed_radius_graph_partials_same_stream_summary_cupy(
     request_count: int,
     query_block_count: int,
     cuda_stream_ptr: int,
-) -> tuple[dict[str, object], ...]:
+):
     try:
         import cupy as cp
     except Exception as exc:
@@ -16529,6 +16725,32 @@ def _run_fixed_radius_graph_partials_same_stream_summary_cupy(
             ),
         )
     external_stream.synchronize()
+    return aggregate_slots_u64, aggregate_sum_distance
+
+
+def _run_fixed_radius_graph_partials_same_stream_summary_cupy(
+    *,
+    owner,
+    partials_device_ptr: int,
+    partial_count: int,
+    request_count: int,
+    query_block_count: int,
+    cuda_stream_ptr: int,
+) -> tuple[dict[str, object], ...]:
+    try:
+        import cupy as cp
+    except Exception as exc:
+        raise RuntimeError("same-stream fixed-radius graph partial consumer requires cupy") from exc
+    aggregate_slots_u64, aggregate_sum_distance = (
+        _run_fixed_radius_graph_partials_same_stream_summary_cupy_device(
+            owner=owner,
+            partials_device_ptr=partials_device_ptr,
+            partial_count=partial_count,
+            request_count=request_count,
+            query_block_count=query_block_count,
+            cuda_stream_ptr=cuda_stream_ptr,
+        )
+    )
     slots = cp.asnumpy(aggregate_slots_u64)
     sums = cp.asnumpy(aggregate_sum_distance)
     return tuple(
@@ -16541,6 +16763,175 @@ def _run_fixed_radius_graph_partials_same_stream_summary_cupy(
         }
         for index in range(int(request_count))
     )
+
+
+@functools.lru_cache(maxsize=1)
+def _fixed_radius_graph_partials_same_stream_summary_numba_kernel():
+    try:
+        import numpy as np
+        from numba import cuda
+        from numba import float64
+        from numba import uint64
+    except Exception as exc:
+        raise RuntimeError("same-stream fixed-radius graph partial consumer requires numba.cuda") from exc
+
+    @cuda.jit
+    def kernel(
+        partial_slots_u64,
+        partial_slots_f64,
+        request_count,
+        query_block_count,
+        aggregate_slots_u64,
+        aggregate_sum_distance,
+    ):
+        request_index = cuda.blockIdx.x
+        if request_index >= request_count:
+            return
+
+        query_count = cuda.shared.array(256, dtype=uint64)
+        bounded_neighbor_count = cuda.shared.array(256, dtype=uint64)
+        nearest_id_checksum = cuda.shared.array(256, dtype=uint64)
+        kth_id_checksum = cuda.shared.array(256, dtype=uint64)
+        sum_distance = cuda.shared.array(256, dtype=float64)
+
+        tid = cuda.threadIdx.x
+        local_query_count = np.uint64(0)
+        local_bounded_neighbor_count = np.uint64(0)
+        local_nearest_id_checksum = np.uint64(0)
+        local_kth_id_checksum = np.uint64(0)
+        local_sum_distance = 0.0
+        partial_index = tid
+        while partial_index < query_block_count:
+            slot = (request_index * query_block_count + partial_index) * 5
+            local_query_count += partial_slots_u64[slot + 0]
+            local_bounded_neighbor_count += partial_slots_u64[slot + 1]
+            local_nearest_id_checksum += partial_slots_u64[slot + 2]
+            local_kth_id_checksum += partial_slots_u64[slot + 3]
+            local_sum_distance += partial_slots_f64[slot + 4]
+            partial_index += cuda.blockDim.x
+
+        query_count[tid] = local_query_count
+        bounded_neighbor_count[tid] = local_bounded_neighbor_count
+        nearest_id_checksum[tid] = local_nearest_id_checksum
+        kth_id_checksum[tid] = local_kth_id_checksum
+        sum_distance[tid] = local_sum_distance
+        cuda.syncthreads()
+
+        stride = cuda.blockDim.x >> 1
+        while stride > 0:
+            if tid < stride:
+                query_count[tid] += query_count[tid + stride]
+                bounded_neighbor_count[tid] += bounded_neighbor_count[tid + stride]
+                nearest_id_checksum[tid] += nearest_id_checksum[tid + stride]
+                kth_id_checksum[tid] += kth_id_checksum[tid + stride]
+                sum_distance[tid] += sum_distance[tid + stride]
+            cuda.syncthreads()
+            stride >>= 1
+
+        if tid == 0:
+            aggregate_slots_u64[request_index, 0] = query_count[0]
+            aggregate_slots_u64[request_index, 1] = bounded_neighbor_count[0]
+            aggregate_slots_u64[request_index, 2] = nearest_id_checksum[0]
+            aggregate_slots_u64[request_index, 3] = kth_id_checksum[0]
+            aggregate_sum_distance[request_index] = sum_distance[0]
+
+    return kernel
+
+
+def _numba_device_array_from_cuda_pointer(
+    *,
+    pointer: int,
+    shape: tuple[int, ...],
+    dtype,
+    owner,
+):
+    try:
+        import ctypes as _ctypes
+        import numpy as np
+        from numba import cuda
+        from numba.cuda.cudadrv import devicearray
+        from numba.cuda.cudadrv import driver
+    except Exception as exc:
+        raise RuntimeError("wrapping a native CUDA pointer requires numba.cuda") from exc
+    dtype = np.dtype(dtype)
+    shape = tuple(int(item) for item in shape)
+    if not shape or any(item < 0 for item in shape):
+        raise ValueError("Numba native CUDA pointer view requires a non-negative shape")
+    item_count = 1
+    for extent in shape:
+        item_count *= extent
+    strides = []
+    stride = dtype.itemsize
+    for extent in reversed(shape):
+        strides.append(stride)
+        stride *= max(int(extent), 1)
+    strides = tuple(reversed(strides))
+    memory = driver.MemoryPointer(
+        cuda.current_context(),
+        _ctypes.c_void_p(int(pointer)),
+        int(item_count) * dtype.itemsize,
+        owner=owner,
+    )
+    return devicearray.DeviceNDArray(shape, strides, dtype, gpu_data=memory)
+
+
+def _run_fixed_radius_graph_partials_same_stream_summary_numba_device(
+    *,
+    owner,
+    partials_device_ptr: int,
+    partial_count: int,
+    request_count: int,
+    query_block_count: int,
+    cuda_stream_ptr: int,
+):
+    try:
+        import numpy as np
+        from numba import cuda
+    except Exception as exc:
+        raise RuntimeError("same-stream fixed-radius graph partial consumer requires numba.cuda") from exc
+    if int(partials_device_ptr) == 0:
+        raise ValueError("same-stream fixed-radius graph partial consumer requires a nonzero partial pointer")
+    if int(cuda_stream_ptr) == 0:
+        raise ValueError("same-stream fixed-radius graph partial consumer requires a nonzero CUDA stream pointer")
+    if int(request_count) <= 0:
+        raise ValueError("same-stream fixed-radius graph partial consumer requires request_count > 0")
+    if int(query_block_count) <= 0:
+        raise ValueError("same-stream fixed-radius graph partial consumer requires query_block_count > 0")
+    if int(partial_count) != int(request_count) * int(query_block_count):
+        raise ValueError("fixed-radius graph partial_count must equal request_count * query_block_count")
+
+    row_size_bytes = ctypes.sizeof(_RtdlFixedRadiusRankedNeighborAggregate)
+    slot_count = int(partial_count) * 5
+    partial_slots_u64 = _numba_device_array_from_cuda_pointer(
+        pointer=int(partials_device_ptr),
+        shape=(slot_count,),
+        dtype=np.uint64,
+        owner=owner,
+    )
+    partial_slots_f64 = _numba_device_array_from_cuda_pointer(
+        pointer=int(partials_device_ptr),
+        shape=(slot_count,),
+        dtype=np.float64,
+        owner=owner,
+    )
+    expected_bytes = int(partial_count) * row_size_bytes
+    if int(slot_count) * np.dtype(np.uint64).itemsize != expected_bytes:
+        raise RuntimeError("fixed-radius graph partial row layout size mismatch")
+
+    aggregate_slots_u64 = cuda.device_array((int(request_count), 4), dtype=np.uint64)
+    aggregate_sum_distance = cuda.device_array((int(request_count),), dtype=np.float64)
+    stream = cuda.external_stream(int(cuda_stream_ptr))
+    kernel = _fixed_radius_graph_partials_same_stream_summary_numba_kernel()
+    kernel[(int(request_count),), (256,), stream](
+        partial_slots_u64,
+        partial_slots_f64,
+        np.uint64(int(request_count)),
+        np.uint64(int(query_block_count)),
+        aggregate_slots_u64,
+        aggregate_sum_distance,
+    )
+    stream.synchronize()
+    return aggregate_slots_u64, aggregate_sum_distance
 
 
 _HIT_STREAM_SAME_STREAM_STATUS_SUMMARY_CUPY_SOURCE = r"""
