@@ -531,6 +531,19 @@ def _run_partner_row(
         all_samples_no_hidden_copy = all(
             bool(item["no_hidden_column_copy_ready"]) for item in classifications
         )
+        same_stream_evidence = dict(metadata.get("same_stream_evidence", {}))
+        same_stream_evidence.update(
+            {
+                "no_hidden_column_copy_ready": all_samples_no_hidden_copy,
+                "true_zero_copy_ready": all_samples_no_hidden_copy,
+                "true_zero_copy_readiness_source": "v3_m11_transfer_counter_classification",
+                "allowed_non_column_host_to_device_bytes": final_classification[
+                    "allowed_non_column_host_to_device_bytes"
+                ],
+                "min_named_column_bytes": final_classification["min_named_column_bytes"],
+            }
+        )
+        metadata["same_stream_evidence"] = same_stream_evidence
         instrumentation = build_v3_m11_no_hidden_copy_instrumentation(
             partner=partner,
             hardware=hardware,
