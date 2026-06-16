@@ -64,7 +64,9 @@ caveat. Mixed rows remain explicit: Spatial RayJoin PIP is near parity and
 slightly Embree-faster in the refreshed human-scale public CDB slice, Goal4368
 separately records an OptiX-over-Embree exact PIP engineering win that still does
 not beat RayJoin RT, RayJoin overlay reports the available 2/8 exact CDB subset,
-and RTNN remains blocked as an RT-core neighbor-search claim.
+and RTNN remains limited to RTDL-internal same-contract aggregate plus resident
+graph-bridge evidence, not full RTNN paper reproduction or arbitrary ANN-index
+speedup.
 
 ## Partner Rule
 

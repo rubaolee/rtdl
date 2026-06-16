@@ -98,7 +98,7 @@ v2.14 evidence:
 | RayDB-style | `raydb_style_optix_count_primitive_first` | primitive-first grouped count path; partner rows only for unfused continuations | NVIDIA pod; CUDA pod for CuPy/Numba partner comparison |
 | Barnes-Hut | `barnes_hut_mixed_explicit_cpu_numba_or_optix_numba` | fused CPU/Numba is current fastest measured no-C++ app route; prepared RTDL/OptiX+Numba remains device-column RT evidence; CuPy remains same-contract GPU comparison | NVIDIA/CUDA pod for OptiX; Numba CPU for fastest measured app route |
 | LibRTS spatial index | `librts_spatial_index_optix_aabb_index` | prepared AABB-index benchmark slice, not full mutable LibRTS | NVIDIA pod for OptiX timing |
-| RTNN | `rtnn_prepared_optix_ranked_summary` | prepared fixed-radius ranked summary path | NVIDIA pod for OptiX timing |
+| RTNN | `rtnn_mixed_exact_aggregate_or_graph_partner_bridge` | exact float64 aggregate for same-contract OptiX-vs-Embree comparison; prepared graph plus explicit CuPy/Numba same-stream partner bridge for resident app evidence | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
 | Triangle counting | `triangle_counting_optix_native_summary` | explicit native graph summary path; candidate-row interpretation stays app code | NVIDIA pod for OptiX timing |
 
 ## Evidence Reports
@@ -112,6 +112,7 @@ v2.14 evidence:
 - [Barnes-Hut host baselines for the prepared app route](../reports/goal4440_v3_0_m43_barnes_hut_host_baselines_2026-06-16.md)
 - [Barnes-Hut host Numba CPU baselines](../reports/goal4441_v3_0_m44_barnes_hut_host_numba_cpu_baselines_2026-06-16.md)
 - [Barnes-Hut fused Numba CPU frontier baseline](../reports/goal4442_v3_0_m45_barnes_hut_fused_numba_cpu_frontier_2026-06-16.md)
+- [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)
 
 ## Reading Rules
 
@@ -122,8 +123,10 @@ v2.14 evidence:
 - The v2.14 release packet keeps mixed rows explicit: Spatial RayJoin PIP is
   near parity and slightly Embree-faster in the refreshed human-scale slice,
   Goal4368 separately records an OptiX-over-Embree exact PIP engineering win
-  that still does not beat RayJoin RT, and RTNN remains blocked as RT-core
-  neighbor-search speedup wording. RayJoin overlay reports the available 2/8
+  that still does not beat RayJoin RT, and RTNN now has large RTDL-internal
+  same-contract aggregate and app-front-door graph-bridge evidence while still
+  not claiming full RTNN paper reproduction or arbitrary ANN-index speedup.
+  RayJoin overlay reports the available 2/8
   exact CDB subset, not a full 8/8 Section 5.7 reproduction.
 - A scale-profile row is more useful for performance planning, but still must
   be read by exact app, command, hardware, backend, partner, and dataset.

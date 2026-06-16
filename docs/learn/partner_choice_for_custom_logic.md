@@ -91,7 +91,7 @@ These are not partner-choice examples:
 | App row | Current lesson |
 | --- | --- |
 | Hausdorff distance | The current performance winner is the RTDL/OptiX active-frontier path; CuPy grouped-grid remains a strong CUDA-core baseline; Numba paths are correctness and contract evidence, not the default performance recommendation. |
-| RTNN-style nearest-neighbor studies | RTDL fixed-radius ranked summaries and the `prepared_optix_ranked_summary` app mode are the current executable front door; use CuPy for CUDA-core baseline rows and treat partners as explicit experiments unless same-contract timing wins. |
+| RTNN-style nearest-neighbor studies | Use exact native ranked-summary aggregate when comparing OptiX and Embree under the same float64 contract. Use `prepared_ranked_summary_graph_partner_bridge` when the purpose is resident graph replay plus same-stream partner reduction; M47 keeps CuPy and Numba both visible at 1M resident search / 65K query batch, with CuPy slightly faster and Numba near parity as the no-C++ Python-source reference. |
 | RayDB fused count/sum | Use the fused generic grouped-reduction primitive when it exactly answers the query. |
 | Triangle scalar answer | Use the generic graph relationship-count composition; do not turn it into a CuPy-vs-Numba choice. |
 | Robot collision, contact manifold, LibRTS-style spatial index | Current promoted paths are primitive-first or no-promoted-partner rows. Add partner code only as app-owned continuation with new same-contract evidence. |

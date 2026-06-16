@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4442.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4443.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -39,7 +39,13 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "CPU/Numba route that avoids frontier and contribution row materialization "
     "and is faster than the current RTDL/OptiX+Numba route for the tested "
     "Barnes-Hut scales; Barnes-Hut route guidance is therefore mixed explicit "
-    "choice, not RT-core speedup wording."
+    "choice, not RT-core speedup wording. Goal4443 refreshes RTNN after the "
+    "Goal4381 large aggregate evidence and Goal4422 app-level graph bridge: "
+    "exact float64 OptiX aggregate rows beat exact Embree aggregate rows on "
+    "large RTNN-shaped data, while the prepared graph plus same-stream CuPy "
+    "and Numba partner bridge is the explicit resident app route. RTNN route "
+    "guidance is mixed explicit because exact float64 aggregate and float32 "
+    "resident graph rows must not be collapsed into one automatic backend claim."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -500,15 +506,44 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
     ),
     CurrentBenchmarkRouteDecision(
         app="rtnn",
-        decision_kind="primitive_first",
-        current_reader_decision="Use prepared RTDL/OptiX ranked-summary aggregate; no promoted partner continuation is needed.",
-        primary_route="prepared RTDL/OptiX fixed-radius ranked-summary aggregate",
-        partner_policy="primitive_only",
-        primitive_contract="fixed-radius ranked nearest summary aggregate",
-        user_choice_guidance="Use CuPy/Numba only for explicit custom ranking baselines beyond the promoted summary contract.",
-        rejected_or_unpromoted_candidates=("RTNN paper reproduction", "partner ranking route without same-contract evidence"),
-        next_runtime_action="keep prepared columns first-class; future work is larger batched/replay evidence",
-        evidence_refs=("Goal2821", "Goal2822", "Goal3820", "Goal3937"),
+        decision_kind="mixed_explicit",
+        current_reader_decision=(
+            "Use the exact float64 RTDL/OptiX native ranked-summary aggregate when the user needs "
+            "same-contract backend comparison against Embree. Goal4381 shows OptiX is 10.14x "
+            "faster than Embree on the 1,048,576-point uniform aggregate row and 11.80x faster "
+            "on the 262,144-point shell row. Use prepared_ranked_summary_graph_partner_bridge "
+            "when the user wants the current resident app bridge: Goal4443 records a 1,048,576 "
+            "resident search scene with a 65,536-query batch, repeat=1000, signature-matched "
+            "CuPy and Numba same-stream partner reductions, and about 5ms hot median per batch "
+            "for both partners. Keep exact float64 aggregate and float32 graph-bridge rows separate."
+        ),
+        primary_route=(
+            "mixed explicit RTNN route: exact RTDL/OptiX native aggregate for same-contract "
+            "OptiX-vs-Embree comparison; prepared graph plus explicit CuPy/Numba same-stream "
+            "partner reductions for resident app-bridge evidence"
+        ),
+        partner_policy="mixed_explicit_user_choice",
+        primitive_contract="fixed-radius ranked nearest summary aggregate plus resident graph partial-summary bridge",
+        user_choice_guidance=(
+            "Choose prepared_ranked_summary_raw or the native aggregate runner row when exact float64 "
+            "backend comparison is required. Choose prepared_ranked_summary_graph_partner_bridge for "
+            "the resident float32 app bridge and keep both CuPy and Numba visible; CuPy is the slightly "
+            "faster measured M47 partner at 1M/65K, while Numba is near parity and remains the no-C++ "
+            "Python-source reference. Do not auto-select across exact aggregate, float32 graph bridge, "
+            "or official RTNN diagnostic rows."
+        ),
+        rejected_or_unpromoted_candidates=(
+            "RTNN paper reproduction",
+            "official RTNN comparison without output-contract equivalence",
+            "automatic exact-vs-float32 route selection",
+            "arbitrary ANN index speedup claim",
+        ),
+        next_runtime_action=(
+            "preserve exact aggregate and resident graph bridge as separate front-door rows; future "
+            "work is paper-dataset acquisition, official RTNN same-output-contract comparison, and "
+            "broader distribution/scale ladders rather than more toy repeat-only timing"
+        ),
+        evidence_refs=("Goal2821", "Goal2822", "Goal3820", "Goal3937", "Goal4381", "Goal4422", "Goal4443"),
         pod_needed_next=False,
     ),
     CurrentBenchmarkRouteDecision(

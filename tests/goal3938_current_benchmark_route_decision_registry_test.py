@@ -16,7 +16,7 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_route_decisions()
         summary = rt.summarize_current_benchmark_route_decisions()
 
-        self.assertEqual("rtdl.v2_10.current_benchmark_route_decisions.goal4169.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4443.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
         self.assertEqual(10, summary["app_count"])
@@ -72,15 +72,32 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         self.assertIn("hidden factor selection", route["next_runtime_action"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
 
-    def test_barnes_hut_is_honest_about_fastest_partner_and_numba_reference(self) -> None:
+    def test_barnes_hut_is_honest_about_mixed_cpu_fastest_route(self) -> None:
         route = rt.explain_current_benchmark_route("barnes_hut")
 
-        self.assertEqual("fastest_partner_with_numba_reference", route["decision_kind"])
-        self.assertEqual("cupy_fastest_numba_reference", route["partner_policy"])
-        self.assertIn("CuPy remains fastest measured", route["current_reader_decision"])
-        self.assertIn("Numba available as the no-RawKernel reference", route["current_reader_decision"])
-        self.assertIn("no-RawKernel Python JIT", route["user_choice_guidance"])
-        self.assertIn("Numba-as-fastest-force-route", route["rejected_or_unpromoted_candidates"])
+        self.assertEqual("mixed_explicit", route["decision_kind"])
+        self.assertEqual(
+            "explicit_route_choice_cpu_numba_or_optix_numba_cupy_comparison",
+            route["partner_policy"],
+        )
+        self.assertIn("fused_frontier_force_sum_bucketized_cpu_numba", route["current_reader_decision"])
+        self.assertIn("prepared_aggregate_frontier_weighted_vector_optix", route["current_reader_decision"])
+        self.assertIn("Goal4442", route["evidence_refs"])
+        self.assertIn(
+            "Barnes-Hut RT-core speedup claim after Goal4442 fused CPU/Numba evidence",
+            route["rejected_or_unpromoted_candidates"],
+        )
+
+    def test_rtnn_route_is_mixed_after_large_app_bridge(self) -> None:
+        route = rt.explain_current_benchmark_route("rtnn")
+
+        self.assertEqual("mixed_explicit", route["decision_kind"])
+        self.assertEqual("mixed_explicit_user_choice", route["partner_policy"])
+        self.assertIn("Goal4381", route["evidence_refs"])
+        self.assertIn("Goal4443", route["evidence_refs"])
+        self.assertIn("exact float64 RTDL/OptiX native ranked-summary aggregate", route["current_reader_decision"])
+        self.assertIn("prepared_ranked_summary_graph_partner_bridge", route["current_reader_decision"])
+        self.assertIn("automatic exact-vs-float32 route selection", route["rejected_or_unpromoted_candidates"])
 
     def test_unknown_app_fails_to_advisory_no_current_route(self) -> None:
         route = rt.explain_current_benchmark_route("new_app")

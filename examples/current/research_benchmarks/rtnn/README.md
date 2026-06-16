@@ -61,9 +61,18 @@ path. It invokes `get_or_prepare_explicit_session` twice against a caller-owned
 log. It does not run the OptiX benchmark path and does not authorize speedup,
 general zero-copy/device-residency, or automatic partner/backend-selection claims.
 
-The important boundary is that the RTDL-vs-CuPy rows are same-contract; the
-official RTNN rows are diagnostic unless a future goal proves output-contract
-equivalence.
+Goal4381 adds the current large same-contract aggregate evidence: exact float64
+RTDL/OptiX native aggregate is `10.14x` faster than exact Embree on the
+1,048,576-point uniform row and `11.80x` faster on the 262,144-point shell row.
+Goal4443 adds app-front-door resident graph-bridge evidence at 1,048,576 search
+points with 65,536-query batches and repeat=1000: CuPy and Numba both validate
+the same signature, use CUDA graph replay and same-stream partner reduction, and
+measure about `5ms` hot median per batch. Exact float64 aggregate rows and
+float32 graph-bridge rows must remain separate.
+
+The important boundary is that RTDL exact aggregate and app graph-bridge rows
+are RTDL-internal same-contract evidence; the official RTNN rows are diagnostic
+unless a future goal proves output-contract equivalence.
 
 ## Engine Boundary
 
