@@ -20596,6 +20596,64 @@ static void run_prepared_static_triangle_scene_3d_ray_any_hit_weighted_sum_devic
         *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
 }
 
+static void run_prepared_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedRayBatch3D* ray_batch,
+        const uint64_t* ray_weights,
+        size_t ray_weight_count,
+        uint64_t* weighted_hit_sum_out,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!ray_batch)
+        throw std::runtime_error("prepared ray batch handle must not be null");
+    if (!ray_weights && ray_batch->ray_count != 0)
+        throw std::runtime_error("partner device ray_weights pointer must not be null when ray_count is nonzero");
+    if (ray_weight_count != ray_batch->ray_count)
+        throw std::runtime_error("ray_weight_count must match prepared ray batch ray_count");
+    if (!weighted_hit_sum_out)
+        throw std::runtime_error("weighted_hit_sum_out must not be null");
+    if (ray_batch->ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+    *weighted_hit_sum_out = 0u;
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (ray_batch->ray_count == 0 || prepared->triangle_count == 0)
+        return;
+
+    ensure_ray_anyhit_weighted_sum_3d_pipeline();
+
+    DevPtr d_sum(sizeof(unsigned long long));
+    unsigned long long zero = 0ull;
+    upload(d_sum.ptr, &zero, 1);
+
+    RayAnyHitWeightedSum3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay3DHost*>(ray_batch->d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.ray_weights = reinterpret_cast<const unsigned long long*>(ray_weights);
+    lp.weighted_hit_sum = reinterpret_cast<unsigned long long*>(d_sum.ptr);
+    lp.ray_count = static_cast<uint32_t>(ray_batch->ray_count);
+
+    DevPtr d_params(sizeof(RayAnyHitWeightedSum3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_weighted_sum3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayAnyHitWeightedSum3DLaunchParams),
+                             &g_rayanyhit_weighted_sum3d.pipe->sbt,
+                             static_cast<unsigned>(ray_batch->ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    unsigned long long sum = 0ull;
+    download(&sum, d_sum.ptr, 1);
+    *weighted_hit_sum_out = static_cast<uint64_t>(sum);
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
 static void run_prepared_static_triangle_scene_3d_ray_hit_count_sum_device_optix(
         PreparedStaticTriangleScene3D* prepared,
         const uint32_t* ray_ids,

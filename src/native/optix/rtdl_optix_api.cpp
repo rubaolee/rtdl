@@ -2105,6 +2105,26 @@ extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights(
+        void* scene_handle,
+        void* ray_batch_handle,
+        const uint64_t* ray_weights,
+        size_t ray_weight_count,
+        uint64_t* weighted_hit_sum_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedRayBatch3D*>(ray_batch_handle),
+            ray_weights,
+            ray_weight_count,
+            weighted_hit_sum_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum(
         void* scene_handle,
         const RtdlRay3D* rays, size_t ray_count,

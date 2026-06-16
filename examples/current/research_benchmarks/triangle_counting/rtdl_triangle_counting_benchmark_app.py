@@ -1040,6 +1040,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
     query_phase_samples_ms: list[dict[str, float]] = []
     warmup_query_timings_ms: list[float] = []
     segment_ray_build_timings_ms: list[float] = []
+    prepared_ray_batch_build_timings_ms: list[float] = []
     lowered_ray_count_runs: list[int] = []
     lowered_ray_weight_sum_runs: list[int] = []
     prepare_started = time.perf_counter()
@@ -1052,6 +1053,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             replay_query_phase_ms = [dict() for _ in range(warmup + repeat)]
             replay_hit_weight_sums = [0 for _ in range(warmup + repeat)]
             replay_segment_build_ms = 0.0
+            replay_prepared_ray_batch_build_ms = 0.0
             replay_lowered_ray_count = 0
             replay_lowered_ray_weight_sum = 0
             for start_edge, end_edge, _two_hop_rows in segment_plan["ranges"]:
@@ -1068,12 +1070,21 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                 replay_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                 replay_lowered_ray_count += _record_count(rays)
                 replay_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
-                for index in range(warmup + repeat):
-                    query_started = time.perf_counter()
-                    summary_result = scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
-                    replay_query_ms[index] += _elapsed_ms(query_started, time.perf_counter())
-                    _accumulate_backend_query_phase_ms(replay_query_phase_ms[index], summary_result)
-                    replay_hit_weight_sums[index] += int(summary_result["weighted_hit_sum"])
+                ray_batch_prepare_started = time.perf_counter()
+                with scene.prepare_ray_batch_device_columns(rays) as ray_batch:
+                    replay_prepared_ray_batch_build_ms += _elapsed_ms(
+                        ray_batch_prepare_started,
+                        time.perf_counter(),
+                    )
+                    for index in range(warmup + repeat):
+                        query_started = time.perf_counter()
+                        summary_result = scene.ray_batch_any_hit_weighted_sum_device_weights(
+                            ray_batch,
+                            ray_weights,
+                        )
+                        replay_query_ms[index] += _elapsed_ms(query_started, time.perf_counter())
+                        _accumulate_backend_query_phase_ms(replay_query_phase_ms[index], summary_result)
+                        replay_hit_weight_sums[index] += int(summary_result["weighted_hit_sum"])
                 if segment_ray_representation == "unique_weighted":
                     del rays, ray_weights
                     _release_cupy_cached_blocks()
@@ -1083,6 +1094,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                 query_timings_ms.append(float(replay_query_ms[index]))
                 query_phase_samples_ms.append(dict(replay_query_phase_ms[index]))
                 segment_ray_build_timings_ms.append(float(replay_segment_build_ms))
+                prepared_ray_batch_build_timings_ms.append(float(replay_prepared_ray_batch_build_ms))
                 lowered_ray_count_runs.append(int(replay_lowered_ray_count))
                 lowered_ray_weight_sum_runs.append(int(replay_lowered_ray_weight_sum))
                 hit_weight_sum = int(replay_hit_weight_sums[index])
@@ -1139,6 +1151,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
         else {
             "prepare_scene": float(prepare_scene_ms),
             "segment_ray_build": _median(segment_ray_build_timings_ms),
+            "prepared_ray_batch_build": _median(prepared_ray_batch_build_timings_ms),
         },
         per_run_build_timings_ms={}
         if segment_query_schedule == "prepared_segment_replay"
@@ -1279,6 +1292,12 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "prepare_scene_ms": prepare_scene_ms,
             "segment_ray_build_median_ms": _median(segment_ray_build_timings_ms),
             "segment_ray_build_total_ms": float(sum(segment_ray_build_timings_ms)),
+            "prepared_ray_batch_build_median_ms": (
+                _median(prepared_ray_batch_build_timings_ms)
+                if prepared_ray_batch_build_timings_ms
+                else 0.0
+            ),
+            "prepared_ray_batch_build_total_ms": float(sum(prepared_ray_batch_build_timings_ms)),
             "query_median_ms": _median(query_timings_ms),
             "query_total_ms": float(sum(query_timings_ms)),
             "query_mean_ms": float(sum(query_timings_ms) / len(query_timings_ms)),
@@ -1384,6 +1403,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     query_phase_samples_ms: list[dict[str, float]] = []
     warmup_query_timings_ms: list[float] = []
     segment_ray_build_timings_ms: list[float] = []
+    prepared_ray_batch_build_timings_ms: list[float] = []
     triangle_build_timings_ms: list[float] = []
     prepare_scene_timings_ms: list[float] = []
     lowered_ray_count_runs: list[int] = []
@@ -1395,6 +1415,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
         replay_query_phase_ms = [dict() for _ in range(warmup + repeat)]
         replay_hit_weight_sums = [0 for _ in range(warmup + repeat)]
         replay_segment_ray_build_ms = 0.0
+        replay_prepared_ray_batch_build_ms = 0.0
         replay_triangle_build_ms = 0.0
         replay_prepare_scene_ms = 0.0
         replay_lowered_ray_count = 0
@@ -1425,12 +1446,21 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                     replay_segment_ray_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                     replay_lowered_ray_count += _record_count(rays)
                     replay_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
-                    for index in range(warmup + repeat):
-                        query_started = time.perf_counter()
-                        summary_result = prepared_scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
-                        replay_query_ms[index] += _elapsed_ms(query_started, time.perf_counter())
-                        _accumulate_backend_query_phase_ms(replay_query_phase_ms[index], summary_result)
-                        replay_hit_weight_sums[index] += int(summary_result["weighted_hit_sum"])
+                    ray_batch_prepare_started = time.perf_counter()
+                    with prepared_scene.prepare_ray_batch_device_columns(rays) as ray_batch:
+                        replay_prepared_ray_batch_build_ms += _elapsed_ms(
+                            ray_batch_prepare_started,
+                            time.perf_counter(),
+                        )
+                        for index in range(warmup + repeat):
+                            query_started = time.perf_counter()
+                            summary_result = prepared_scene.ray_batch_any_hit_weighted_sum_device_weights(
+                                ray_batch,
+                                ray_weights,
+                            )
+                            replay_query_ms[index] += _elapsed_ms(query_started, time.perf_counter())
+                            _accumulate_backend_query_phase_ms(replay_query_phase_ms[index], summary_result)
+                            replay_hit_weight_sums[index] += int(summary_result["weighted_hit_sum"])
                     if segment_ray_representation == "unique_weighted":
                         del rays, ray_weights
                         _release_cupy_cached_blocks()
@@ -1440,6 +1470,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             query_timings_ms.append(float(replay_query_ms[index]))
             query_phase_samples_ms.append(dict(replay_query_phase_ms[index]))
             segment_ray_build_timings_ms.append(float(replay_segment_ray_build_ms))
+            prepared_ray_batch_build_timings_ms.append(float(replay_prepared_ray_batch_build_ms))
             triangle_build_timings_ms.append(float(replay_triangle_build_ms))
             prepare_scene_timings_ms.append(float(replay_prepare_scene_ms))
             lowered_ray_count_runs.append(int(replay_lowered_ray_count))
@@ -1507,6 +1538,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "triangle_build": _median(triangle_build_timings_ms),
             "prepare_scene": _median(prepare_scene_timings_ms),
             "segment_ray_build": _median(segment_ray_build_timings_ms),
+            "prepared_ray_batch_build": _median(prepared_ray_batch_build_timings_ms),
         }
         phase_per_run_build_timings_ms: dict[str, list[float]] = {}
     else:
@@ -1675,6 +1707,12 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "triangle_build_total_ms": float(sum(triangle_build_timings_ms)),
             "segment_ray_build_median_ms": _median(segment_ray_build_timings_ms),
             "segment_ray_build_total_ms": float(sum(segment_ray_build_timings_ms)),
+            "prepared_ray_batch_build_median_ms": (
+                _median(prepared_ray_batch_build_timings_ms)
+                if prepared_ray_batch_build_timings_ms
+                else 0.0
+            ),
+            "prepared_ray_batch_build_total_ms": float(sum(prepared_ray_batch_build_timings_ms)),
             "query_median_ms": _median(query_timings_ms),
             "query_total_ms": float(sum(query_timings_ms)),
             "query_mean_ms": float(sum(query_timings_ms) / len(query_timings_ms)),

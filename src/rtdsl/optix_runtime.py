@@ -11846,6 +11846,9 @@ _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_TRIANGLES_SYMBOL = (
 _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_WEIGHTED_SUM_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum_device_rays"
 )
+_OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_DEVICE_WEIGHTED_SUM_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights"
+)
 _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_HIT_COUNT_SUM_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum_device_rays"
 )
@@ -16343,6 +16346,7 @@ class PreparedOptixRayBatch3D:
         self._lib = lib
         self._handle = ctypes.c_void_p()
         self._closed = False
+        self._device_ray_expected_device = None
         packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
         if packed_rays.dimension != 3:
             raise ValueError("PreparedOptixRayBatch3D requires 3-D rays")
@@ -16382,6 +16386,7 @@ class PreparedOptixRayBatch3D:
         rays = packet["rays"]
         self.ray_count = int(packet["metadata"]["ray_count"])
         self._packed_rays_owner = packet
+        self._device_ray_expected_device = (rays["ids"].device_type, rays["ids"].device_id)
         create_symbol = _find_optional_backend_symbol(self._lib, OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL)
         if create_symbol is None:
             raise RuntimeError(
@@ -22296,6 +22301,102 @@ class PreparedOptixStaticTriangleScene3D:
             },
         }
 
+    def ray_batch_any_hit_weighted_sum_device_weights(
+        self,
+        rays: PreparedOptixRayBatch3D,
+        ray_weights,
+    ) -> dict[str, object]:
+        """Return weighted any-hit sum from a prepared 3-D ray batch and partner-owned weights."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(rays, PreparedOptixRayBatch3D):
+            raise TypeError("ray_batch_any_hit_weighted_sum_device_weights requires PreparedOptixRayBatch3D")
+        if rays._closed:
+            raise RuntimeError("prepared OptiX ray batch handle is closed")
+        expected_device = getattr(rays, "_device_ray_expected_device", None)
+        if expected_device is None:
+            raise ValueError(
+                "ray_batch_any_hit_weighted_sum_device_weights requires a ray batch "
+                "created from partner device columns"
+            )
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_DEVICE_WEIGHTED_SUM_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{_OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_DEVICE_WEIGHTED_SUM_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        pack_start = time.perf_counter()
+        weights_handoff = _partner.prepare_direct_device_pointer_handoff(ray_weights, access="read")
+        if len(weights_handoff.shape) != 1:
+            raise ValueError("partner device ray weight column must be one-dimensional")
+        _require_partner_device_uint64_weight_layout(
+            weights_handoff,
+            ray_count=int(rays.ray_count),
+            expected_device=expected_device,
+        )
+        query_pack_seconds = time.perf_counter() - pack_start
+
+        weighted_sum = ctypes.c_uint64()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            rays._handle,
+            ctypes.c_void_p(weights_handoff.data_ptr),
+            int(rays.ray_count),
+            ctypes.byref(weighted_sum),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+        self._run_count += 1
+        ray_batch_transfer_metadata = dict(getattr(rays, "transfer_metadata", {}) or {})
+        return {
+            "backend": "optix",
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_ANY_HIT_WEIGHTED_SUM_DEVICE_WEIGHTS_V1",
+            "result_kind": "uint64_weighted_any_hit_sum",
+            "weighted_hit_sum": int(weighted_sum.value),
+            "ray_count": int(rays.ray_count),
+            "triangle_count": self.triangle_count,
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_ray_batch_used": True,
+            "prepared_run_index": self._run_count,
+            "rows_materialized": False,
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "prepared_ray_batch_prepare": float(rays.prepare_seconds),
+                "query_pack": float(query_pack_seconds),
+                "traversal": float(traversal_seconds.value),
+            },
+            "transfer_metadata": {
+                **ray_batch_transfer_metadata,
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": False,
+                "query_rays_packed_on_device_once": True,
+                "prepared_rays_resident_on_device": True,
+                "ray_weights_uploaded_each_run": False,
+                "ray_weights_device_resident": True,
+                "ray_weights_source_protocol": weights_handoff.source_protocol,
+                "ray_weights_source_device": f"{weights_handoff.device_type}:{weights_handoff.device_id}",
+                "per_ray_records_downloaded_to_host": False,
+                "scalar_sum_returned_to_python": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "row_witnesses": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+            },
+        }
+
     def ray_hit_count_sum_device_columns(self, ray_columns: dict) -> dict[str, object]:
         """Return hit-count sum from partner-owned 3-D ray columns."""
         if self._closed:
@@ -24457,6 +24558,22 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_static_scene_3d_device_weighted_sum.restype = ctypes.c_int
+    optional_static_scene_3d_ray_batch_device_weighted_sum = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_DEVICE_WEIGHTED_SUM_SYMBOL,
+    )
+    if optional_static_scene_3d_ray_batch_device_weighted_sum is not None:
+        optional_static_scene_3d_ray_batch_device_weighted_sum.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_ray_batch_device_weighted_sum.restype = ctypes.c_int
     optional_static_scene_3d_primitive_grouped = _find_optional_backend_symbol(
         lib,
         OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
