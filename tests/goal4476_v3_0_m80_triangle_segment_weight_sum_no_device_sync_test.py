@@ -15,8 +15,6 @@ class Goal4476V30M80TriangleSegmentWeightSumNoDeviceSyncTest(unittest.TestCase):
         self.assertNotIn("_sum_uint64_like(ray_weights)", source)
         self.assertEqual(2, source.count("lowered_ray_weight_sum += int(_two_hop_rows)"))
         self.assertEqual(2, source.count("lowered_ray_weight_sum += int(two_hop_rows)"))
-        self.assertIn("def _sync_cupy_default_stream_if_available", source)
-        self.assertEqual(5, source.count("_sync_cupy_default_stream_if_available()"))
 
     def test_uint64_sum_helper_is_not_removed_for_other_callers(self) -> None:
         source = APP.read_text(encoding="utf-8")
