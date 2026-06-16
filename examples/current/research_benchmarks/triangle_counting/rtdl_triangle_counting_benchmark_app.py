@@ -1069,7 +1069,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                 )
                 replay_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                 replay_lowered_ray_count += _record_count(rays)
-                replay_lowered_ray_weight_sum += int(_two_hop_rows)
+                replay_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
                 ray_batch_prepare_started = time.perf_counter()
                 with scene.prepare_ray_batch_device_columns(rays) as ray_batch:
                     replay_prepared_ray_batch_build_ms += _elapsed_ms(
@@ -1119,7 +1119,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                     )
                     run_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                     run_lowered_ray_count += _record_count(rays)
-                    run_lowered_ray_weight_sum += int(_two_hop_rows)
+                    run_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
                     query_started = time.perf_counter()
                     summary_result = scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
                     run_query_ms += _elapsed_ms(query_started, time.perf_counter())
@@ -1445,7 +1445,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                     )
                     replay_segment_ray_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                     replay_lowered_ray_count += _record_count(rays)
-                    replay_lowered_ray_weight_sum += int(two_hop_rows)
+                    replay_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
                     ray_batch_prepare_started = time.perf_counter()
                     with prepared_scene.prepare_ray_batch_device_columns(rays) as ray_batch:
                         replay_prepared_ray_batch_build_ms += _elapsed_ms(
@@ -1511,7 +1511,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                         )
                         run_segment_ray_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                         run_lowered_ray_count += _record_count(rays)
-                        run_lowered_ray_weight_sum += int(two_hop_rows)
+                        run_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
                         query_started = time.perf_counter()
                         summary_result = prepared_scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
                         run_query_ms += _elapsed_ms(query_started, time.perf_counter())
