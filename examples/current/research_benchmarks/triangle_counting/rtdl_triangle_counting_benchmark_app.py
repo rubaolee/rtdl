@@ -1037,6 +1037,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
 
     summary_result = None
     query_timings_ms: list[float] = []
+    query_phase_samples_ms: list[dict[str, float]] = []
     warmup_query_timings_ms: list[float] = []
     segment_ray_build_timings_ms: list[float] = []
     lowered_ray_count_runs: list[int] = []
@@ -1048,6 +1049,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
     with scene:
         if segment_query_schedule == "prepared_segment_replay":
             replay_query_ms = [0.0 for _ in range(warmup + repeat)]
+            replay_query_phase_ms = [dict() for _ in range(warmup + repeat)]
             replay_hit_weight_sums = [0 for _ in range(warmup + repeat)]
             replay_segment_build_ms = 0.0
             replay_lowered_ray_count = 0
@@ -1070,6 +1072,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                     query_started = time.perf_counter()
                     summary_result = scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
                     replay_query_ms[index] += _elapsed_ms(query_started, time.perf_counter())
+                    _accumulate_backend_query_phase_ms(replay_query_phase_ms[index], summary_result)
                     replay_hit_weight_sums[index] += int(summary_result["weighted_hit_sum"])
                 if segment_ray_representation == "unique_weighted":
                     del rays, ray_weights
@@ -1078,6 +1081,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                 warmup_query_timings_ms.append(float(replay_query_ms[index]))
             for index in range(warmup, warmup + repeat):
                 query_timings_ms.append(float(replay_query_ms[index]))
+                query_phase_samples_ms.append(dict(replay_query_phase_ms[index]))
                 segment_ray_build_timings_ms.append(float(replay_segment_build_ms))
                 lowered_ray_count_runs.append(int(replay_lowered_ray_count))
                 lowered_ray_weight_sum_runs.append(int(replay_lowered_ray_weight_sum))
@@ -1086,6 +1090,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             for index in range(warmup + repeat):
                 run_segment_build_ms = 0.0
                 run_query_ms = 0.0
+                run_query_phase_ms: dict[str, float] = {}
                 run_hit_weight_sum = 0
                 run_lowered_ray_count = 0
                 run_lowered_ray_weight_sum = 0
@@ -1106,9 +1111,11 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                     query_started = time.perf_counter()
                     summary_result = scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
                     run_query_ms += _elapsed_ms(query_started, time.perf_counter())
+                    _accumulate_backend_query_phase_ms(run_query_phase_ms, summary_result)
                     run_hit_weight_sum += int(summary_result["weighted_hit_sum"])
                 if index >= warmup:
                     query_timings_ms.append(run_query_ms)
+                    query_phase_samples_ms.append(dict(run_query_phase_ms))
                     segment_ray_build_timings_ms.append(run_segment_build_ms)
                     lowered_ray_count_runs.append(int(run_lowered_ray_count))
                     lowered_ray_weight_sum_runs.append(int(run_lowered_ray_weight_sum))
@@ -1277,6 +1284,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "query_mean_ms": float(sum(query_timings_ms) / len(query_timings_ms)),
             "query_min_ms": min(query_timings_ms),
             "query_max_ms": max(query_timings_ms),
+            "backend_query_phase_summary_ms": _backend_query_phase_summary_ms(query_phase_samples_ms),
             "query_repeat": repeat,
             "query_warmup": warmup,
             "query_measured_runs": len(query_timings_ms),
@@ -1373,6 +1381,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     planned = time.perf_counter()
 
     query_timings_ms: list[float] = []
+    query_phase_samples_ms: list[dict[str, float]] = []
     warmup_query_timings_ms: list[float] = []
     segment_ray_build_timings_ms: list[float] = []
     triangle_build_timings_ms: list[float] = []
@@ -1383,6 +1392,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     summary_result = None
     if segment_query_schedule == "prepared_segment_replay":
         replay_query_ms = [0.0 for _ in range(warmup + repeat)]
+        replay_query_phase_ms = [dict() for _ in range(warmup + repeat)]
         replay_hit_weight_sums = [0 for _ in range(warmup + repeat)]
         replay_segment_ray_build_ms = 0.0
         replay_triangle_build_ms = 0.0
@@ -1419,6 +1429,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                         query_started = time.perf_counter()
                         summary_result = prepared_scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
                         replay_query_ms[index] += _elapsed_ms(query_started, time.perf_counter())
+                        _accumulate_backend_query_phase_ms(replay_query_phase_ms[index], summary_result)
                         replay_hit_weight_sums[index] += int(summary_result["weighted_hit_sum"])
                     if segment_ray_representation == "unique_weighted":
                         del rays, ray_weights
@@ -1427,6 +1438,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             warmup_query_timings_ms.append(float(replay_query_ms[index]))
         for index in range(warmup, warmup + repeat):
             query_timings_ms.append(float(replay_query_ms[index]))
+            query_phase_samples_ms.append(dict(replay_query_phase_ms[index]))
             segment_ray_build_timings_ms.append(float(replay_segment_ray_build_ms))
             triangle_build_timings_ms.append(float(replay_triangle_build_ms))
             prepare_scene_timings_ms.append(float(replay_prepare_scene_ms))
@@ -1436,6 +1448,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     else:
         for index in range(warmup + repeat):
             run_query_ms = 0.0
+            run_query_phase_ms: dict[str, float] = {}
             run_segment_ray_build_ms = 0.0
             run_triangle_build_ms = 0.0
             run_prepare_scene_ms = 0.0
@@ -1471,9 +1484,11 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                         query_started = time.perf_counter()
                         summary_result = prepared_scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
                         run_query_ms += _elapsed_ms(query_started, time.perf_counter())
+                        _accumulate_backend_query_phase_ms(run_query_phase_ms, summary_result)
                         run_hit_weight_sum += int(summary_result["weighted_hit_sum"])
             if index >= warmup:
                 query_timings_ms.append(run_query_ms)
+                query_phase_samples_ms.append(dict(run_query_phase_ms))
                 segment_ray_build_timings_ms.append(run_segment_ray_build_ms)
                 triangle_build_timings_ms.append(run_triangle_build_ms)
                 prepare_scene_timings_ms.append(run_prepare_scene_ms)
@@ -1665,6 +1680,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "query_mean_ms": float(sum(query_timings_ms) / len(query_timings_ms)),
             "query_min_ms": min(query_timings_ms),
             "query_max_ms": max(query_timings_ms),
+            "backend_query_phase_summary_ms": _backend_query_phase_summary_ms(query_phase_samples_ms),
             "query_repeat": repeat,
             "query_warmup": warmup,
             "query_measured_runs": len(query_timings_ms),
@@ -2044,6 +2060,35 @@ def _segmented_phase_split_ms(
             "may repeat a build-once value across measured runs. Use this phase_split_ms "
             "object for actual build-once versus measured replay throughput wording."
         ),
+    }
+
+
+def _accumulate_backend_query_phase_ms(target: dict[str, float], result: dict[str, object]) -> None:
+    phases = result.get("phase_timing_seconds")
+    if not isinstance(phases, dict):
+        return
+    for name in ("query_pack", "traversal"):
+        value = phases.get(name)
+        if value is not None:
+            target[name] = target.get(name, 0.0) + float(value) * 1000.0
+
+
+def _backend_query_phase_summary_ms(samples: list[dict[str, float]]) -> dict[str, object]:
+    names = sorted({name for sample in samples for name in sample})
+    phases = {
+        name: {
+            "median_ms": _median([float(sample.get(name, 0.0)) for sample in samples]),
+            "total_ms": float(sum(float(sample.get(name, 0.0)) for sample in samples)),
+            "min_ms": min(float(sample.get(name, 0.0)) for sample in samples),
+            "max_ms": max(float(sample.get(name, 0.0)) for sample in samples),
+        }
+        for name in names
+    }
+    return {
+        "schema_version": "triangle_counting.backend_query_phase_summary.v1",
+        "run_count": len(samples),
+        "phase_names": tuple(names),
+        "phases": phases,
     }
 
 
