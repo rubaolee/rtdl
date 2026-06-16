@@ -1035,6 +1035,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
 
     summary_result = None
     query_timings_ms: list[float] = []
+    warmup_query_timings_ms: list[float] = []
     segment_ray_build_timings_ms: list[float] = []
     lowered_ray_count_runs: list[int] = []
     lowered_ray_weight_sum_runs: list[int] = []
@@ -1070,6 +1071,8 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                 if segment_ray_representation == "unique_weighted":
                     del rays, ray_weights
                     _release_cupy_cached_blocks()
+            for index in range(0, warmup):
+                warmup_query_timings_ms.append(float(replay_query_ms[index]))
             for index in range(warmup, warmup + repeat):
                 query_timings_ms.append(float(replay_query_ms[index]))
                 segment_ray_build_timings_ms.append(float(replay_segment_build_ms))
@@ -1106,11 +1109,31 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                     lowered_ray_count_runs.append(int(run_lowered_ray_count))
                     lowered_ray_weight_sum_runs.append(int(run_lowered_ray_weight_sum))
                     hit_weight_sum = int(run_hit_weight_sum)
+                else:
+                    warmup_query_timings_ms.append(run_query_ms)
                 if segment_ray_representation == "unique_weighted":
                     _release_cupy_cached_blocks()
                 _release_cupy_cached_blocks()
     ran = time.perf_counter()
     reduced = time.perf_counter()
+    run_backend_ms = _elapsed_ms(lowered, ran)
+    phase_split_ms = _segmented_phase_split_ms(
+        segment_query_schedule=segment_query_schedule,
+        warmup=warmup,
+        repeat=repeat,
+        measured_query_timings_ms=query_timings_ms,
+        warmup_query_timings_ms=warmup_query_timings_ms,
+        build_once_ms={"prepare_scene": float(prepare_scene_ms)}
+        if segment_query_schedule != "prepared_segment_replay"
+        else {
+            "prepare_scene": float(prepare_scene_ms),
+            "segment_ray_build": _median(segment_ray_build_timings_ms),
+        },
+        per_run_build_timings_ms={}
+        if segment_query_schedule == "prepared_segment_replay"
+        else {"segment_ray_build": segment_ray_build_timings_ms},
+        run_backend_ms=run_backend_ms,
+    )
 
     primitive_count = _record_count(triangles)
     logical_ray_count = int(segment_plan["total_two_hop_rows"])
@@ -1237,7 +1260,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "validate_oracle": _elapsed_ms(loaded, oracle_checked),
             "build_contract": _elapsed_ms(oracle_checked, built),
             "build_geometry": _elapsed_ms(built, lowered),
-            "run_backend": _elapsed_ms(lowered, ran),
+            "run_backend": run_backend_ms,
             "prepare_scene_ms": prepare_scene_ms,
             "segment_ray_build_median_ms": _median(segment_ray_build_timings_ms),
             "segment_ray_build_total_ms": float(sum(segment_ray_build_timings_ms)),
@@ -1253,6 +1276,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "reduce_hits": _elapsed_ms(ran, reduced),
             "total": _elapsed_ms(started, reduced),
         },
+        "phase_split_ms": phase_split_ms,
         "hit_rows": {
             "row_count": int(lowered_ray_count),
             "logical_row_count": logical_ray_count,
@@ -1338,6 +1362,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     planned = time.perf_counter()
 
     query_timings_ms: list[float] = []
+    warmup_query_timings_ms: list[float] = []
     segment_ray_build_timings_ms: list[float] = []
     triangle_build_timings_ms: list[float] = []
     prepare_scene_timings_ms: list[float] = []
@@ -1386,6 +1411,8 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                     if segment_ray_representation == "unique_weighted":
                         del rays, ray_weights
                         _release_cupy_cached_blocks()
+        for index in range(0, warmup):
+            warmup_query_timings_ms.append(float(replay_query_ms[index]))
         for index in range(warmup, warmup + repeat):
             query_timings_ms.append(float(replay_query_ms[index]))
             segment_ray_build_timings_ms.append(float(replay_segment_ray_build_ms))
@@ -1440,10 +1467,37 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                 lowered_ray_count_runs.append(int(run_lowered_ray_count))
                 lowered_ray_weight_sum_runs.append(int(run_lowered_ray_weight_sum))
                 hit_weight_sum = int(run_hit_weight_sum)
+            else:
+                warmup_query_timings_ms.append(run_query_ms)
             if segment_ray_representation == "unique_weighted":
                 _release_cupy_cached_blocks()
     ran = time.perf_counter()
     reduced = time.perf_counter()
+    run_backend_ms = _elapsed_ms(planned, ran)
+    if segment_query_schedule == "prepared_segment_replay":
+        phase_build_once_ms = {
+            "triangle_build": _median(triangle_build_timings_ms),
+            "prepare_scene": _median(prepare_scene_timings_ms),
+            "segment_ray_build": _median(segment_ray_build_timings_ms),
+        }
+        phase_per_run_build_timings_ms: dict[str, list[float]] = {}
+    else:
+        phase_build_once_ms = {}
+        phase_per_run_build_timings_ms = {
+            "triangle_build": triangle_build_timings_ms,
+            "prepare_scene": prepare_scene_timings_ms,
+            "segment_ray_build": segment_ray_build_timings_ms,
+        }
+    phase_split_ms = _segmented_phase_split_ms(
+        segment_query_schedule=segment_query_schedule,
+        warmup=warmup,
+        repeat=repeat,
+        measured_query_timings_ms=query_timings_ms,
+        warmup_query_timings_ms=warmup_query_timings_ms,
+        build_once_ms=phase_build_once_ms,
+        per_run_build_timings_ms=phase_per_run_build_timings_ms,
+        run_backend_ms=run_backend_ms,
+    )
 
     primitive_count = int(scene_plan["total_directed_edges"])
     logical_ray_count = int(scene_plan["total_two_hop_rows"])
@@ -1582,7 +1636,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "load_edges": _elapsed_ms(started, loaded),
             "build_contract": _elapsed_ms(loaded, built),
             "plan_segments": _elapsed_ms(built, planned),
-            "run_backend": _elapsed_ms(planned, ran),
+            "run_backend": run_backend_ms,
             "prepare_scene_median_ms": _median(prepare_scene_timings_ms),
             "prepare_scene_total_ms": float(sum(prepare_scene_timings_ms)),
             "triangle_build_median_ms": _median(triangle_build_timings_ms),
@@ -1601,6 +1655,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "reduce_hits": _elapsed_ms(ran, reduced),
             "total": _elapsed_ms(started, reduced),
         },
+        "phase_split_ms": phase_split_ms,
         "hit_rows": {
             "row_count": int(lowered_ray_count),
             "logical_row_count": logical_ray_count,
@@ -1621,7 +1676,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "policy": session_policy.to_metadata(),
             "explicit_reuse_helper": "get_or_prepare_explicit_session",
             "cache_enabled_by_default": False,
-            "prepare_once_query_many_pattern": False,
+            "prepare_once_query_many_pattern": segment_query_schedule == "prepared_segment_replay",
             "automatic_partner_selection_authorized": False,
             "true_zero_copy_claim_authorized": False,
             "public_speedup_claim_authorized": False,
@@ -1899,6 +1954,79 @@ def _elapsed_ms(started: float, ended: float) -> float:
 
 def _median(values: list[float]) -> float:
     return float(statistics.median(values))
+
+
+def _segmented_phase_split_ms(
+    *,
+    segment_query_schedule: str,
+    warmup: int,
+    repeat: int,
+    measured_query_timings_ms: list[float],
+    warmup_query_timings_ms: list[float],
+    build_once_ms: dict[str, float],
+    per_run_build_timings_ms: dict[str, list[float]],
+    run_backend_ms: float,
+) -> dict[str, Any]:
+    measured_query_total_ms = float(sum(measured_query_timings_ms))
+    measured_query_mean_ms = (
+        measured_query_total_ms / float(len(measured_query_timings_ms))
+        if measured_query_timings_ms
+        else 0.0
+    )
+    measured_query_median_ms = _median(measured_query_timings_ms) if measured_query_timings_ms else 0.0
+    build_once_total_ms = float(sum(build_once_ms.values()))
+    per_run_build_median_ms = {
+        name: (_median(values) if values else 0.0)
+        for name, values in per_run_build_timings_ms.items()
+    }
+    per_run_build_median_total_ms = float(sum(per_run_build_median_ms.values()))
+    one_shot_backend_estimate_ms = (
+        build_once_total_ms + per_run_build_median_total_ms + measured_query_median_ms
+    )
+    amortized_build_per_measured_query_ms = (
+        build_once_total_ms / float(repeat) + per_run_build_median_total_ms
+        if repeat > 0
+        else build_once_total_ms + per_run_build_median_total_ms
+    )
+    replay_queries_per_second = (
+        float(len(measured_query_timings_ms)) * 1000.0 / measured_query_total_ms
+        if measured_query_total_ms > 0.0
+        else 0.0
+    )
+    return {
+        "schema_version": "triangle_counting.segmented_phase_split.v1",
+        "segment_query_schedule": segment_query_schedule,
+        "phase_boundary": (
+            "backend phase split only: excludes edge-file load, oracle validation, "
+            "and graph-contract construction unless those costs are already inside "
+            "run_backend_ms"
+        ),
+        "build_once_ms": build_once_ms,
+        "build_once_total_ms": build_once_total_ms,
+        "per_run_build_median_ms": per_run_build_median_ms,
+        "per_run_build_median_total_ms": per_run_build_median_total_ms,
+        "warmup_query_total_ms": float(sum(warmup_query_timings_ms)),
+        "warmup_query_runs": int(warmup),
+        "measured_replay_query_total_ms": measured_query_total_ms,
+        "measured_replay_query_median_ms": measured_query_median_ms,
+        "measured_replay_query_mean_ms": measured_query_mean_ms,
+        "measured_replay_query_min_ms": min(measured_query_timings_ms) if measured_query_timings_ms else 0.0,
+        "measured_replay_query_max_ms": max(measured_query_timings_ms) if measured_query_timings_ms else 0.0,
+        "measured_replay_query_runs": int(len(measured_query_timings_ms)),
+        "configured_repeat": int(repeat),
+        "one_shot_backend_estimate_ms": one_shot_backend_estimate_ms,
+        "amortized_build_per_measured_query_ms": float(amortized_build_per_measured_query_ms),
+        "amortized_backend_per_measured_query_ms": float(
+            amortized_build_per_measured_query_ms + measured_query_mean_ms
+        ),
+        "replay_queries_per_second": replay_queries_per_second,
+        "run_backend_ms": float(run_backend_ms),
+        "legacy_timing_note": (
+            "For prepared_segment_replay, legacy timing_ms segment/scene build totals "
+            "may repeat a build-once value across measured runs. Use this phase_split_ms "
+            "object for actual build-once versus measured replay throughput wording."
+        ),
+    }
 
 
 def _validate_repetition(*, warmup: int, repeat: int) -> None:
