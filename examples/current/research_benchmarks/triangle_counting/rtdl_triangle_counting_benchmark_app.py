@@ -221,6 +221,14 @@ def command_plan_payload() -> dict[str, Any]:
             "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay "
             "--segment-unique-key-builder numba_direct --segment-ray-build-telemetry sync_subphases"
         ),
+        "rt_graph_2a1_segmented_prepared_sort_rle_unique_counts_candidate": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
+            "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay "
+            "--segment-unique-key-builder numba_direct_sort_rle"
+        ),
         "rt_graph_2a1_segmented_scene_generic_rt_optix_cupy_partner": (
             "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
@@ -2286,8 +2294,10 @@ def _validate_segment_query_schedule(value: str) -> None:
 
 
 def _validate_segment_unique_key_builder(value: str) -> None:
-    if value not in {"cupy_repeat", "numba_direct"}:
-        raise ValueError("segment_unique_key_builder must be cupy_repeat or numba_direct")
+    if value not in {"cupy_repeat", "numba_direct", "numba_direct_sort_rle"}:
+        raise ValueError(
+            "segment_unique_key_builder must be cupy_repeat, numba_direct, or numba_direct_sort_rle"
+        )
 
 
 def _validate_segment_ray_column_layout(value: str) -> None:
@@ -2298,6 +2308,23 @@ def _validate_segment_ray_column_layout(value: str) -> None:
 def _validate_segment_ray_build_telemetry(value: str) -> None:
     if value not in {"none", "sync_subphases"}:
         raise ValueError("segment_ray_build_telemetry must be none or sync_subphases")
+
+
+def _unique_counts_sort_rle_cupy(keys, *, cupy_module):
+    cp = cupy_module
+    keys.sort()
+    if int(keys.size) == 0:
+        return keys, cp.empty(0, dtype=cp.int64)
+    boundary = cp.empty(keys.shape, dtype=cp.bool_)
+    boundary[0] = True
+    boundary[1:] = keys[1:] != keys[:-1]
+    run_starts = cp.nonzero(boundary)[0]
+    unique_keys = keys[run_starts]
+    run_ends = cp.empty(int(run_starts.size) + 1, dtype=run_starts.dtype)
+    run_ends[:-1] = run_starts
+    run_ends[-1] = int(keys.size)
+    unique_counts = (run_ends[1:] - run_ends[:-1]).astype(cp.int64, copy=False)
+    return unique_keys, unique_counts
 
 
 def _record_count(records) -> int:
@@ -2820,7 +2847,10 @@ def _build_rt_graph_2a1_cupy_segment_rays(
         segment_ray_build_telemetry=segment_ray_build_telemetry,
         cupy_module=cp,
     )
-    if ray_representation == "unique_weighted" and unique_key_builder == "numba_direct":
+    if ray_representation == "unique_weighted" and unique_key_builder in {
+        "numba_direct",
+        "numba_direct_sort_rle",
+    }:
         key_base = int(contract.vertex_count)
         output_offsets = cp.cumsum(counts) - counts
         two_hop_keys = cp.empty(ray_count, dtype=cp.int64)
@@ -2861,10 +2891,15 @@ def _build_rt_graph_2a1_cupy_segment_rays(
             segment_ray_build_telemetry=segment_ray_build_telemetry,
             cupy_module=cp,
         )
-        unique_keys, unique_counts = cp.unique(two_hop_keys, return_counts=True)
+        if unique_key_builder == "numba_direct_sort_rle":
+            unique_keys, unique_counts = _unique_counts_sort_rle_cupy(two_hop_keys, cupy_module=cp)
+            unique_phase_name = "cupy_sort_rle_counts"
+        else:
+            unique_keys, unique_counts = cp.unique(two_hop_keys, return_counts=True)
+            unique_phase_name = "cupy_unique_counts"
         phase_started = _finish_segment_ray_build_phase_ms(
             phase_started,
-            "cupy_unique_counts",
+            unique_phase_name,
             phase_timing_ms=phase_timing_ms,
             segment_ray_build_telemetry=segment_ray_build_telemetry,
             cupy_module=cp,
@@ -3936,11 +3971,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--segment-unique-key-builder",
-        choices=("cupy_repeat", "numba_direct"),
+        choices=("cupy_repeat", "numba_direct", "numba_direct_sort_rle"),
         default="cupy_repeat",
         help=(
             "Unique-weighted segment key builder: existing CuPy repeat/gather path "
-            "or no-C++ Numba direct packed-key fill before CuPy unique/count reduction."
+            "or no-C++ Numba direct packed-key fill before CuPy unique/count reduction "
+            "or explicit sort/RLE unique-count candidate."
         ),
     )
     parser.add_argument(

@@ -35,11 +35,11 @@ class Goal4472V30M76TriangleNumbaDirectUniqueKeysTest(unittest.TestCase):
         source = APP.read_text(encoding="utf-8")
 
         self.assertIn("--segment-unique-key-builder", source)
-        self.assertIn('choices=("cupy_repeat", "numba_direct")', source)
+        self.assertIn('choices=("cupy_repeat", "numba_direct", "numba_direct_sort_rle")', source)
         self.assertIn("_get_rt_graph_2a1_fill_unique_keys_numba_kernel", source)
 
     def test_invalid_segment_unique_key_builder_is_rejected(self) -> None:
-        with self.assertRaisesRegex(ValueError, "cupy_repeat or numba_direct"):
+        with self.assertRaisesRegex(ValueError, "cupy_repeat, numba_direct, or numba_direct_sort_rle"):
             app.run_app(
                 "rt_graph_2a1_segmented_generic_rt",
                 edge_file="missing.edge",
