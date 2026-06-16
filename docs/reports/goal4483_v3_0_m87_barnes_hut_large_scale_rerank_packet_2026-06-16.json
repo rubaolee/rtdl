@@ -1,0 +1,53 @@
+{
+  "goal": 4483,
+  "milestone": "v3_0_m87",
+  "status": "barnes_hut_large_scale_rerank_complete",
+  "date": "2026-06-16",
+  "runner": "scripts/v3_0_m62_barnes_hut_current_route_rerank.py",
+  "runner_version": "rtdl.v3_0.barnes_hut_current_route_rerank.goal4458.v1",
+  "raw_artifact": "goal4483_v3_0_m87_barnes_hut_large_scale_rerank_2026-06-16.json",
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "app_specific_native_engine_logic_allowed": false
+  },
+  "route_decision": {
+    "before_m87": "Goal4458 kept fused CPU/Numba fastest on 8192/16384/32768 bodies.",
+    "after_m87": "Large-scale current guidance is scale-dependent: fused Numba CUDA is fastest on 65536 and 131072 bodies, while fused CPU/Numba remains the small-scale fastest route from Goal4458.",
+    "prepared_optix_status": "Prepared RTDL/OptiX+Numba remains RT-core aggregate-frontier device-column evidence, but is not the fastest force-summary route at either M87 scale."
+  },
+  "rows": [
+    {
+      "body_count": 65536,
+      "contribution_rows": 55935606,
+      "fastest_route_id": "numba_cuda_fused",
+      "cpu_numba_s": 0.10009687393903732,
+      "numba_cuda_s": 0.033963584899902345,
+      "optix_numba_s": 0.17902645920319366,
+      "optix_cupy_s": 0.319275421650753,
+      "numba_cuda_speedup_vs_cpu_numba": 2.946,
+      "numba_cuda_speedup_vs_optix_numba": 5.271,
+      "optix_numba_slower_than_cpu_numba": 1.789
+    },
+    {
+      "body_count": 131072,
+      "contribution_rows": 68023506,
+      "fastest_route_id": "numba_cuda_fused",
+      "cpu_numba_s": 0.10380395501852036,
+      "numba_cuda_s": 0.04490851211547851,
+      "optix_numba_s": 0.6183092123394013,
+      "optix_cupy_s": 0.7826001471828652,
+      "numba_cuda_speedup_vs_cpu_numba": 2.312,
+      "numba_cuda_speedup_vs_optix_numba": 13.768,
+      "optix_numba_slower_than_cpu_numba": 5.957
+    }
+  ],
+  "interpretation": {
+    "headline": "Barnes-Hut route guidance is scale-dependent after M87.",
+    "why_numba_cuda_wins_large_rows": "The fused Numba CUDA route keeps traversal and force accumulation in one no-C++ partner kernel and avoids aggregate-frontier row emission.",
+    "why_prepared_optix_still_loses": "The prepared OptiX route uses RT cores for generic aggregate-frontier device-column collection, but still pays the frontier-emission contract before partner vector accumulation; at 131072 bodies the frontier traversal median alone is about 0.594s.",
+    "v3_implication": "A competitive RT-core Barnes-Hut route needs a fused app-agnostic RT-native/device aggregate-vector primitive, not more tuning of the row-emission frontier contract."
+  }
+}

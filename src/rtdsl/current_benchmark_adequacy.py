@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4482.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4483.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -19,7 +19,10 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "app-reference partner API and Goal4450 wires that API into the Barnes-Hut "
     "app front door, with Goal4458 later reranking the current Barnes-Hut front "
     "doors and keeping prepared RTDL/OptiX as RT-core device-column evidence "
-    "rather than a Barnes-Hut RT-core speedup row; RTNN separates "
+    "rather than a Barnes-Hut RT-core speedup row, and Goal4483 extending the "
+    "rerank to 65536/131072 bodies where fused Numba CUDA becomes fastest while "
+    "prepared RTDL/OptiX+Numba remains slower due to aggregate-frontier row emission; "
+    "RTNN separates "
     "Goal4381 exact float64 aggregate rows from Goal4443 uniform resident "
     "graph-bridge rows, Goal4459 clustered resident graph-bridge rows, and "
     "Goal4460 shell resident graph-bridge rows; "
@@ -352,14 +355,18 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "CPU/Numba as the fastest measured route on the RTX 4000 Ada pod at "
             "8192/16384/32768 bodies, fused Numba CUDA as the no-C++ GPU fused "
             "partner lane, and prepared RTDL/OptiX+Numba as RT-core device-column "
-            "evidence rather than Barnes-Hut RT-core speedup evidence."
+            "evidence rather than Barnes-Hut RT-core speedup evidence. Goal4483 "
+            "extends the same rerank to 65536/131072 bodies and changes current "
+            "guidance to scale-dependent: fused Numba CUDA is fastest at those "
+            "larger rows, 2.31x-2.95x faster than fused CPU/Numba and "
+            "5.27x-13.77x faster than prepared RTDL/OptiX+Numba."
         ),
         "adequacy": "adequate",
         "current_recommended_path": (
             "choose `fused_frontier_force_sum_bucketized_cpu_numba` for the current "
-            "strongest CPU fused baseline; choose "
+            "small-scale CPU-fastest rows from Goal4458; choose "
             "`fused_frontier_force_sum_bucketized_numba_cuda` for the current "
-            "app-front-door no-C++ fused GPU partner route, or "
+            "larger-row fastest fused Numba CUDA route from Goal4483, or "
             "`prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda` when "
             "embedding the reusable API directly; choose "
             "`prepared_aggregate_frontier_weighted_vector_optix --partner numba` "
@@ -370,14 +377,17 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "and is also the fastest measured partner for the current prepared "
             "aggregate-frontier RTDL/OptiX device-column contract; CuPy remains "
             "the measured comparison partner, not the default winner for this "
-            "contract"
+            "contract; after Goal4483 the fused Numba CUDA path is the fastest "
+            "measured larger-row Barnes-Hut app route, while prepared OptiX+Numba "
+            "remains the RT-core evidence route"
         ),
         "next_generic_runtime_action": (
             "treat as covered for Numba-reference, fused CPU/GPU partner, "
             "presegmented grouped-vector continuation, and route-choice evidence; "
             "Barnes-Hut RT-core speedup requires promoting the fused subtree "
             "traversal plus vector accumulation shape into an app-agnostic "
-            "RT-native/device primitive, not more host-row optimization"
+            "RT-native/device primitive and comparing against the Goal4483 "
+            "large-row fused Numba CUDA result, not more host-row optimization"
         ),
         "evidence_refs": (
             "Goal2803",
@@ -401,6 +411,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4449",
             "Goal4450",
             "Goal4458",
+            "Goal4483",
         ),
     },
     "rtnn": {
