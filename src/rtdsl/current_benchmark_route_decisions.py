@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4461.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4462.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -96,7 +96,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "segmented RT-2A1 route: CuPy builds a directed CSR and two-hop count estimate, "
     "then bounded duplicate two-hop ray batches reuse one generic OptiX triangle "
     "scene. This removes the previous global two-hop summary materialization from "
-    "that explicit route while keeping triangle-count RT-core speedup claims blocked."
+    "that explicit route while keeping triangle-count RT-core speedup claims blocked. "
+    "Goal4462 validates that route on the real `com-lj` paper dataset that failed "
+    "Goal2593 RTDL 2A1/1A2 with a 7,429,851,776-byte CUDA allocation failure; "
+    "segmented RTDL matches 177,820,130 expected triangles without global two-hop "
+    "summary materialization."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -674,7 +678,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "OptiX triangle scene across bounded ray batches. On the 200,000 K4-clique row "
             "it matched the generated 800,000-triangle oracle with 1,200,000 directed edge "
             "triangles, 800,000 duplicate two-hop rays, four segments, and no global two-hop "
-            "summary materialization. CuPy remains the current large-scale performance route; "
+            "summary materialization. Goal4462 then runs the same segmented route on the real "
+            "`com-lj` paper dataset, replacing the Goal2593 7,429,851,776-byte CUDA allocation "
+            "failure with an exact 177,820,130 / 177,820,130 triangle-count match over "
+            "33,895,259 directed edge triangles, 928,731,472 duplicate two-hop rays, and "
+            "186 segments. CuPy remains the current large-scale performance route; broader "
             "paper-dataset segmented evidence is the next validation step."
         ),
         primary_route="generic RT graph relationship-count composition",
@@ -692,7 +700,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Cite Goal4457 for the current CuPy app route that skips host-column materialization."
             " Cite Goal4461 when the user needs the segmented RT-2A1 route that avoids global "
             "two-hop summary materialization by lowering duplicate two-hop rays in bounded "
-            "generic RT batches."
+            "generic RT batches. Cite Goal4462 when the user asks whether this segmented "
+            "route actually runs a formerly OOM paper dataset: `com-lj` now matches the "
+            "expected triangle count exactly."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -704,15 +714,16 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "treating bounded-id remap as safe for huge sparse id spaces",
             "requiring CuPy host-column materialization in app summary mode after Goal4457",
             "treating the Goal4461 segmented RT-2A1 route as a public triangle-count RT-core speedup claim",
+            "treating the Goal4462 com-lj success as a refreshed full paper-dataset speedup matrix",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
             "preserve the generic graph relationship-count route and avoid claiming RT-core "
             "triangle-count acceleration; the remaining graph-summary construction validation "
-            "is to run the segmented RT-2A1 route on the RT-Graph paper datasets that "
-            "previously OOMed, then compare it against the CuPy global-summary route, "
-            "the no-C++ Numba reference, cuGraph, and authors' RT-Graph code under one "
-            "explicit timing contract"
+            "is to extend the segmented RT-2A1 route from the now-passing `com-lj` row to "
+            "`soc-LiveJournal1` and `com-orkut`, then compare it against the CuPy "
+            "global-summary route, the no-C++ Numba reference, cuGraph, and authors' "
+            "RT-Graph code under one explicit timing contract"
         ),
         evidence_refs=(
             "Goal2797",
@@ -728,6 +739,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4456",
             "Goal4457",
             "Goal4461",
+            "Goal4462",
         ),
         pod_needed_next=False,
     ),

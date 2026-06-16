@@ -1,0 +1,129 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "engine_contract": "generic prepared triangle scene plus generic ray/triangle weighted any-hit sum",
+    "native_engine_customization": false,
+    "paper_dataset_speedup_claim_authorized": false,
+    "partner_role": "CuPy app partner builds directed CSR and segmented duplicate two-hop ray batches",
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparison": {
+    "all_triangle_counts_match_expected": true,
+    "datasets": [
+      "com_lj"
+    ],
+    "global_two_hop_summary_materialized": false,
+    "previous_goal2593_blocker_addressed_for": [
+      "com_lj"
+    ],
+    "public_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": 4462,
+  "implementation": "segmented_2a1_cupy_paper_dataset",
+  "milestone": "v3_0_m66",
+  "parameters": {
+    "hardware": "RTX 4000 Ada pod",
+    "repeat": 3,
+    "segment_max_two_hop_rows": 5000000,
+    "warmup": 1
+  },
+  "rows": [
+    {
+      "backend": "optix",
+      "dataset": "com_lj",
+      "edge_count": 34681189,
+      "edge_file": "build/goal2593_snap_edges/com-lj.edge",
+      "expected_triangle_count": 177820130,
+      "global_two_hop_summary_materialized": false,
+      "mode": "rt_graph_2a1_segmented_generic_rt",
+      "observed_triangle_count": 177820130,
+      "partner": "cupy",
+      "partner_timing_ms": {
+        "compact_unique_ms": 224.17,
+        "degree_ms": 119.126,
+        "directed_csr_ms": 82.676,
+        "estimated_two_hop_relation_count": 928731472,
+        "host_columns_materialized": false,
+        "load_np_ms": 639.863,
+        "max_two_hop_per_directed_edge": 524,
+        "total_partner_ms": 2062.806,
+        "triangle_count_available": false,
+        "two_hop_estimate_ms": 3.944,
+        "two_hop_summary_materialized": false,
+        "upload_ms": 993.026
+      },
+      "primitive_count": 33895259,
+      "ray_count": 928731472,
+      "rt_core_accelerated": true,
+      "segmentation": {
+        "count_column_rows": 33895259,
+        "counts_download_ms": 50.809718668460846,
+        "max_segment_two_hop_rows": 5000000,
+        "max_two_hop_rows": 5000000,
+        "ranges_preview": [
+          {
+            "end_edge": 141370,
+            "start_edge": 0,
+            "two_hop_rows": 4999977
+          },
+          {
+            "end_edge": 257515,
+            "start_edge": 141370,
+            "two_hop_rows": 4999988
+          },
+          {
+            "end_edge": 394187,
+            "start_edge": 257515,
+            "two_hop_rows": 4999970
+          },
+          {
+            "end_edge": 606032,
+            "start_edge": 394187,
+            "two_hop_rows": 4999990
+          },
+          {
+            "end_edge": 838521,
+            "start_edge": 606032,
+            "two_hop_rows": 4999997
+          },
+          {
+            "end_edge": 995658,
+            "start_edge": 838521,
+            "two_hop_rows": 4999973
+          },
+          {
+            "end_edge": 1156314,
+            "start_edge": 995658,
+            "two_hop_rows": 4999983
+          },
+          {
+            "end_edge": 1228376,
+            "start_edge": 1156314,
+            "two_hop_rows": 4999896
+          }
+        ],
+        "ranges_truncated": true,
+        "segment_count": 186,
+        "total_two_hop_rows": 928731472
+      },
+      "timing_ms": {
+        "build_contract": 2472.8249236941338,
+        "build_geometry": 7801.84905230999,
+        "prepare_scene_ms": 678.5285025835037,
+        "query_max_ms": 2029.731273651123,
+        "query_median_ms": 2005.7463571429253,
+        "query_min_ms": 2004.554532468319,
+        "query_repeat": 3,
+        "query_warmup": 1,
+        "segment_ray_build_median_ms": 736.9784042239189,
+        "total": 22048.127077519894
+      },
+      "triangle_count_matches_expected": true
+    }
+  ],
+  "status": "segmented_rt_2a1_paper_dataset_validation"
+}

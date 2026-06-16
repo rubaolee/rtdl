@@ -130,10 +130,18 @@ generated 800,000-triangle oracle with 1,200,000 directed edge triangles,
 `two_hop_summary_materialized=false`. This is internal route evidence, not a
 triangle-counting RT-core speedup claim.
 
+Goal4462 applies that route to the real `com-lj` paper dataset that previously
+failed both RTDL 2A1 and 1A2 with a 7,429,851,776-byte CUDA allocation failure.
+The segmented route matched the expected 177,820,130 triangles with 33,895,259
+directed edge triangles, 928,731,472 duplicate two-hop rays, 186 segments, and
+`global_two_hop_summary_materialized=false`. This is a correctness and
+scalability milestone, not refreshed public speedup wording.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
 - `docs/reports/goal4461_v3_0_m65_triangle_segmented_2a1_2026-06-16.md`
+- `docs/reports/goal4462_v3_0_m66_triangle_segmented_com_lj_2026-06-16.md`
 
 ## Engine Boundary
 

@@ -1,0 +1,30 @@
+{
+  "datasets": {
+    "com_lj": {
+      "binary_edge_path": "build/goal2593_snap_edges/com-lj.edge",
+      "convert": {
+        "bytes": 277449512,
+        "comment_count": 4,
+        "edge_count": 34681189,
+        "elapsed_ms": 52168.67948323488,
+        "max_vertex": 4036537,
+        "min_vertex": 0,
+        "status": "converted"
+      },
+      "download": {
+        "bytes": 124262769,
+        "elapsed_ms": 18637.005753815174,
+        "status": "downloaded"
+      },
+      "edge_count_matches_snap": true,
+      "expected_edges": 34681189,
+      "expected_nodes": 3997962,
+      "expected_triangles": 177820130,
+      "gzip_path": "build/goal2593_snap_raw/com-lj.txt.gz",
+      "name": "com_lj",
+      "snap_name": "com-lj",
+      "source_url": "https://snap.stanford.edu/data/bigdata/communities/com-lj.ungraph.txt.gz"
+    }
+  },
+  "source": "SNAP datasets used by RT-Graph SIGMETRICS 2025 TC section"
+}
