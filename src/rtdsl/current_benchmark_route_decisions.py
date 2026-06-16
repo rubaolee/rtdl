@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4456.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4457.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -77,7 +77,9 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "no-C++ Python-source reference. Goal4456 extends the Numba direct-binary "
     "summary builder with a bounded-id remap fast path for gapped but bounded "
     "nonnegative graph ids, reducing avoidable `np.unique(return_inverse)` "
-    "compaction work without changing the claim boundary."
+    "compaction work without changing the claim boundary. Goal4457 removes "
+    "host-column materialization from the app's CuPy device-column summary route "
+    "while keeping the reusable builder's compatibility default."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -612,6 +614,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4456 extends the Numba summary fast path from dense labels to bounded-id "
             "gapped nonnegative labels, with a 4.71x compaction subphase win on a stride-2 "
             "200,000 K4-clique fixture. "
+            "Goal4457 removes host-column materialization from the app's CuPy device-column "
+            "summary route, improving CuPy total time by about 1.37x-1.40x versus Goal4455 "
+            "on the dense 200,000 K4-clique fixture. "
             "CuPy remains the current large-scale performance route until the remaining graph-summary "
             "construction and segmented paper-dataset lowering debts are closed."
         ),
@@ -626,7 +631,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "construction, Goal4453 for partner-resident Numba geometry fill, Goal4454 "
             "for dense-label/sorted-key summary fast paths, and Goal4455 for the post-M58 "
             "CuPy-vs-Numba rerank. Cite Goal4456 when gapped but bounded nonnegative graph ids "
-            "are the reason the Numba path avoids `np.unique(return_inverse)` remapping."
+            "are the reason the Numba path avoids `np.unique(return_inverse)` remapping. "
+            "Cite Goal4457 for the current CuPy app route that skips host-column materialization."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -636,6 +642,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "treating dense-label/sorted-key summary fast paths as universal graph input behavior",
             "promoting Numba over CuPy after Goal4454 without the Goal4455 rerank evidence",
             "treating bounded-id remap as safe for huge sparse id spaces",
+            "requiring CuPy host-column materialization in app summary mode after Goal4457",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -656,13 +663,14 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4454",
             "Goal4455",
             "Goal4456",
+            "Goal4457",
         ),
         pod_needed_next=False,
     ),
 )
 
 
-def _refresh_goal4456_route_decisions(
+def _refresh_goal4457_route_decisions(
     rows: tuple[CurrentBenchmarkRouteDecision, ...],
 ) -> tuple[CurrentBenchmarkRouteDecision, ...]:
     refreshed: list[CurrentBenchmarkRouteDecision] = []
@@ -782,7 +790,7 @@ def _refresh_goal4456_route_decisions(
     return tuple(refreshed)
 
 
-CURRENT_BENCHMARK_ROUTE_DECISIONS = _refresh_goal4456_route_decisions(
+CURRENT_BENCHMARK_ROUTE_DECISIONS = _refresh_goal4457_route_decisions(
     CURRENT_BENCHMARK_ROUTE_DECISIONS
 )
 

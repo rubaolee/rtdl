@@ -1,0 +1,91 @@
+{
+  "goal": 4457,
+  "milestone": "v3.0_m61",
+  "app": "triangle_counting",
+  "implementation": "cupy_no_host_columns_summary_route",
+  "status": "measured_on_pod_median_full_runs",
+  "measurement_basis": {
+    "fixture": "k4_cliques",
+    "cliques": 200000,
+    "edge_count": 1200000,
+    "expected_triangle_count": 800000,
+    "backend": "optix",
+    "partner": "cupy",
+    "warmup": 1,
+    "query_repeat_per_full_run": 3,
+    "full_app_repeats_per_mode": 3
+  },
+  "baseline_m59": {
+    "rt_graph_2a1_generic_rt": {
+      "build_contract_ms": 51.8319234251976,
+      "total_ms": 70.48553228378296
+    },
+    "rt_graph_1a2_generic_rt": {
+      "build_contract_ms": 50.47272890806198,
+      "total_ms": 74.2105096578598
+    }
+  },
+  "rows": [
+    {
+      "mode": "rt_graph_2a1_generic_rt",
+      "triangle_count_matches_oracle": true,
+      "timing_ms": {
+        "build_contract": 32.90446847677231,
+        "build_geometry": 0.4089623689651489,
+        "prepare_scene_ms": 7.558293640613556,
+        "query_median_ms": 1.984231173992157,
+        "total": 51.59561336040497
+      },
+      "partner_timing_ms": {
+        "compact_unique_ms": 2.829,
+        "degree_ms": 6.165,
+        "device_count_summary_ms": 0.064,
+        "directed_csr_ms": 7.252,
+        "host_columns_materialized": false,
+        "load_np_ms": 9.971,
+        "total_partner_ms": 32.215,
+        "two_hop_and_count_ms": 2.764,
+        "upload_ms": 3.322
+      },
+      "speedup_vs_m59_total": 1.366116633169003,
+      "speedup_vs_m59_build_contract": 1.5752442541074413
+    },
+    {
+      "mode": "rt_graph_1a2_generic_rt",
+      "triangle_count_matches_oracle": true,
+      "timing_ms": {
+        "build_contract": 29.60404008626938,
+        "build_geometry": 2.5499090552330017,
+        "prepare_scene_ms": 5.765251815319061,
+        "query_median_ms": 3.152213990688324,
+        "total": 52.91158705949783
+      },
+      "partner_timing_ms": {
+        "compact_unique_ms": 2.829,
+        "degree_ms": 6.164,
+        "device_count_summary_ms": 0.07,
+        "directed_csr_ms": 7.206,
+        "host_columns_materialized": false,
+        "load_np_ms": 6.617,
+        "total_partner_ms": 28.913,
+        "two_hop_and_count_ms": 2.746,
+        "upload_ms": 3.274
+      },
+      "speedup_vs_m59_total": 1.402538191763177,
+      "speedup_vs_m59_build_contract": 1.7049270190839235
+    }
+  ],
+  "comparison": {
+    "all_triangle_counts_match_oracle": true,
+    "host_columns_materialized": false,
+    "current_performance_partner": "cupy",
+    "numba_role": "no_cpp_python_source_reference",
+    "claim_boundary_unchanged": true
+  },
+  "claim_boundary": {
+    "automatic_partner_selection_authorized": false,
+    "triangle_counting_rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false
+  }
+}

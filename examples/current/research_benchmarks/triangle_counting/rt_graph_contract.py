@@ -133,6 +133,27 @@ class RTGraphTriangleSummaryContract:
         return self.duplicate_two_hop_relation_count_value
 
 
+@dataclass(frozen=True)
+class RTGraphHostColumnPlaceholder:
+    length: int
+    shape: tuple[int, ...]
+    dtype: str = "int64"
+    reason: str = "host materialization intentionally skipped"
+
+    @property
+    def size(self) -> int:
+        total = 1
+        for value in self.shape:
+            total *= int(value)
+        return total
+
+    def __len__(self) -> int:
+        return self.length
+
+    def tolist(self) -> list[object]:
+        raise ValueError(self.reason)
+
+
 def fixture_edges(name: str) -> tuple[Edge, ...]:
     if name == "single_triangle":
         return ((10, 20), (10, 30), (20, 30))
@@ -174,7 +195,11 @@ def write_binary_edges(path: str | Path, edges: Iterable[Edge]) -> None:
     Path(path).write_bytes(bytes(payload))
 
 
-def build_rt_graph_triangle_summary_contract_cupy_binary(path: str | Path) -> RTGraphTriangleSummaryContract:
+def build_rt_graph_triangle_summary_contract_cupy_binary(
+    path: str | Path,
+    *,
+    materialize_host_columns: bool = True,
+) -> RTGraphTriangleSummaryContract:
     import time
 
     import cupy as cp
@@ -283,33 +308,70 @@ def build_rt_graph_triangle_summary_contract_cupy_binary(path: str | Path) -> RT
         build_two_hop_and_count,
     )
 
-    def download_needed_columns():
-        directed_edges_host = np.column_stack((cp.asnumpy(directed_src), cp.asnumpy(column_indices)))
-        two_hop_host = np.column_stack(
-            (
-                cp.asnumpy(two_hop_src),
-                cp.asnumpy(two_hop_dst),
-                cp.asnumpy(two_hop_weights),
+    if materialize_host_columns:
+        def download_needed_columns():
+            directed_edges_host = np.column_stack((cp.asnumpy(directed_src), cp.asnumpy(column_indices)))
+            two_hop_host = np.column_stack(
+                (
+                    cp.asnumpy(two_hop_src),
+                    cp.asnumpy(two_hop_dst),
+                    cp.asnumpy(two_hop_weights),
+                )
             )
-        )
-        return (
-            directed_edges_host,
-            cp.asnumpy(row_offsets),
-            cp.asnumpy(column_indices),
-            two_hop_host,
-            int(triangle_count_device.get()),
-        )
+            return (
+                directed_edges_host,
+                cp.asnumpy(row_offsets),
+                cp.asnumpy(column_indices),
+                two_hop_host,
+                int(triangle_count_device.get()),
+                int(two_hop_host[:, 2].sum()) if len(two_hop_host) else 0,
+            )
 
-    directed_edges_host, row_offsets_host, column_indices_host, two_hop_host, triangle_count = sync_time(
-        "download_needed_columns_ms",
-        download_needed_columns,
-    )
+        (
+            directed_edges_host,
+            row_offsets_host,
+            column_indices_host,
+            two_hop_host,
+            triangle_count,
+            duplicate_two_hop_count,
+        ) = sync_time(
+            "download_needed_columns_ms",
+            download_needed_columns,
+        )
+    else:
+        def collect_device_summary_counts():
+            duplicate_count = int(two_hop_weights.sum().get()) if int(two_hop_weights.size) else 0
+            return int(triangle_count_device.get()), duplicate_count
+
+        triangle_count, duplicate_two_hop_count = sync_time(
+            "device_count_summary_ms",
+            collect_device_summary_counts,
+        )
+        directed_edges_host = RTGraphHostColumnPlaceholder(
+            length=int(column_indices.size),
+            shape=(int(column_indices.size), 2),
+            reason="CuPy summary route skipped directed_edges host materialization",
+        )
+        row_offsets_host = RTGraphHostColumnPlaceholder(
+            length=int(row_offsets.size),
+            shape=(int(row_offsets.size),),
+            reason="CuPy summary route skipped row_offsets host materialization",
+        )
+        column_indices_host = RTGraphHostColumnPlaceholder(
+            length=int(column_indices.size),
+            shape=(int(column_indices.size),),
+            reason="CuPy summary route skipped column_indices host materialization",
+        )
+        two_hop_host = RTGraphHostColumnPlaceholder(
+            length=int(two_hop_src.size),
+            shape=(int(two_hop_src.size), 3),
+            reason="CuPy summary route skipped two_hop_rays_2a1 host materialization",
+        )
     timing_ms["total_partner_ms"] = sum(value for key, value in timing_ms.items() if key.endswith("_ms"))
 
     removed_low_degree_vertex_count = int(node_count - directed_node_count)
     removed_low_degree_edge_count = int((~keep_edge).sum().get())
     removed_duplicate_or_self_edge_count = int(edges_np.shape[0] - removed_low_degree_edge_count - len(directed_edges_host))
-    duplicate_two_hop_count = int(two_hop_host[:, 2].sum()) if len(two_hop_host) else 0
     return RTGraphTriangleSummaryContract(
         original_edge_count=int(edges_np.shape[0]),
         compacted_vertex_count=node_count,
@@ -324,7 +386,8 @@ def build_rt_graph_triangle_summary_contract_cupy_binary(path: str | Path) -> RT
         removed_low_degree_edge_count=removed_low_degree_edge_count,
         removed_duplicate_or_self_edge_count=removed_duplicate_or_self_edge_count,
         partner="cupy",
-        partner_timing_ms={key: round(value, 3) for key, value in timing_ms.items()},
+        partner_timing_ms={key: round(value, 3) for key, value in timing_ms.items()}
+        | {"host_columns_materialized": bool(materialize_host_columns)},
         device_arrays={
             "row_offsets": row_offsets,
             "column_indices": column_indices,

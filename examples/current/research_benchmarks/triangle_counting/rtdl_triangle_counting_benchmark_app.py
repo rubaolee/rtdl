@@ -1246,7 +1246,7 @@ def _use_summary_partner(
 
 def _build_rt_graph_triangle_summary_contract_binary(edge_file: str, *, partner: str):
     if partner == "cupy":
-        return build_rt_graph_triangle_summary_contract_cupy_binary(edge_file)
+        return build_rt_graph_triangle_summary_contract_cupy_binary(edge_file, materialize_host_columns=False)
     if partner == "numba":
         return build_rt_graph_triangle_summary_contract_numba_binary(edge_file)
     raise ValueError(f"unsupported summary partner: {partner}")
@@ -2059,6 +2059,23 @@ def _contract_neighbors(contract, vertex: int) -> tuple[int, ...]:
 def _max_out_degree(contract) -> int:
     if contract.vertex_count == 0:
         return 0
+    device_arrays = getattr(contract, "device_arrays", None)
+    if isinstance(device_arrays, dict) and "row_offsets" in device_arrays:
+        row_offsets = device_arrays["row_offsets"]
+        try:
+            if int(row_offsets.size) <= 1:
+                return 0
+            degrees = row_offsets[1:] - row_offsets[:-1]
+            if int(degrees.size) == 0:
+                return 0
+            max_degree = degrees.max()
+            if hasattr(max_degree, "get"):
+                return int(max_degree.get())
+            if hasattr(max_degree, "copy_to_host"):
+                return int(max_degree.copy_to_host())
+            return int(max_degree)
+        except Exception:
+            pass
     return max(len(_contract_neighbors(contract, vertex)) for vertex in range(contract.vertex_count))
 
 

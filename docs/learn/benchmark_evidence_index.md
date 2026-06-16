@@ -99,7 +99,7 @@ v2.14 evidence:
 | Barnes-Hut | `barnes_hut_mixed_explicit_cpu_numba_cuda_or_optix_numba` | Goal4450 exposes the fused Numba CUDA reusable API as the `fused_frontier_force_sum_bucketized_numba_cuda` app front door, with Goal4448 scale evidence beating the prepared RTDL/OptiX+Numba aggregate-frontier route; fused CPU/Numba remains the strongest CPU fused baseline; prepared RTDL/OptiX+Numba remains device-column RT evidence | NVIDIA/CUDA pod for Numba CUDA and OptiX; Numba CPU for CPU fused baseline |
 | LibRTS spatial index | `librts_spatial_index_optix_aabb_index` | prepared AABB-index benchmark slice, not full mutable LibRTS | NVIDIA pod for OptiX timing |
 | RTNN | `rtnn_mixed_exact_aggregate_or_graph_partner_bridge` | exact float64 aggregate for same-contract OptiX-vs-Embree comparison; prepared graph plus explicit CuPy/Numba same-stream partner bridge for resident app evidence | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
-| Triangle counting | `triangle_counting_optix_native_summary` | scalar answer stays primitive-first; Goal4444 fixes the no-C++ Numba summary-contract staging debt, Goal4453 fills RT-1A2/RT-2A1 Numba geometry from partner-resident device columns, Goal4454 adds dense-label/sorted-key summary fast paths, Goal4455 confirms CuPy remains the large-scale performance partner, and Goal4456 extends Numba's summary remap fast path to bounded gapped ids | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
+| Triangle counting | `triangle_counting_optix_native_summary` | scalar answer stays primitive-first; Goal4444 fixes the no-C++ Numba summary-contract staging debt, Goal4453 fills RT-1A2/RT-2A1 Numba geometry from partner-resident device columns, Goal4454 adds dense-label/sorted-key summary fast paths, Goal4455 confirms CuPy remains the large-scale performance partner, Goal4456 extends Numba's summary remap fast path to bounded gapped ids, and Goal4457 removes CuPy app-route host-column materialization | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
 
 ## Evidence Reports
 
@@ -126,6 +126,7 @@ v2.14 evidence:
 - [Goal4454 Triangle Numba summary fast paths](../reports/goal4454_v3_0_m58_triangle_numba_summary_fast_paths_2026-06-16.md)
 - [Goal4455 Triangle partner rerank after M58](../reports/goal4455_v3_0_m59_triangle_partner_rerank_after_m58_2026-06-16.md)
 - [Goal4456 Triangle bounded-id remap fast path](../reports/goal4456_v3_0_m60_triangle_bounded_id_remap_fast_path_2026-06-16.md)
+- [Goal4457 Triangle CuPy no-host-column summary route](../reports/goal4457_v3_0_m61_triangle_cupy_no_host_columns_2026-06-16.md)
 
 ## Reading Rules
 
