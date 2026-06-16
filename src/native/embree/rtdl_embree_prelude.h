@@ -307,6 +307,7 @@ struct RtdlEmbreeKnnRows2D;
 struct RtdlEmbreeAabbIndex2D;
 struct RtdlEmbreeSegmentPairIntersections2D;
 struct RtdlEmbreePointPrimitiveAnyHit2D;
+struct RtdlEmbreeShapePairActiveCount2D;
 struct RtdlEmbreeRayjoinCdbPointLocation2D;
 
 struct RtdlKnnNeighborRow {
@@ -486,6 +487,26 @@ int rtdl_embree_run_shape_pair_relation_flags(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
+int rtdl_embree_shape_pair_active_count_2d_create(
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    RtdlEmbreeShapePairActiveCount2D** handle_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_shape_pair_active_count_2d_count(
+    RtdlEmbreeShapePairActiveCount2D* handle,
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    size_t* active_count_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size);
+void rtdl_embree_shape_pair_active_count_2d_destroy(
+    RtdlEmbreeShapePairActiveCount2D* handle);
 int rtdl_embree_run_ray_hitcount(
     const RtdlRay2D* rays,
     size_t ray_count,

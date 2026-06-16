@@ -1060,10 +1060,12 @@ from .embree_runtime import prepare_embree_fixed_radius_neighbors_3d
 from .embree_runtime import prepare_grouped_segment_query_3d
 from .embree_runtime import prepare_embree_knn_rows_2d
 from .embree_runtime import prepare_embree_aabb_index_2d
+from .embree_runtime import prepare_embree_shape_pair_active_count_2d
 from .embree_runtime import prepare_directed_segment_point_location_2d_embree
 from .embree_runtime import prepare_rayjoin_cdb_point_location_2d_embree
 from .embree_runtime import prepare_embree_static_triangle_scene_3d
 from .embree_runtime import PreparedEmbreeAabbIndex2D
+from .embree_runtime import PreparedEmbreeShapePairActiveCount2D
 from .embree_runtime import PreparedEmbreeFixedRadiusCountThreshold2D
 from .embree_runtime import PreparedEmbreeFixedRadiusCountThreshold3D
 from .embree_runtime import PreparedEmbreeFixedRadiusNeighbors3D
@@ -3052,6 +3054,7 @@ __all__ = [
     "prepare_grouped_segment_query_3d",
     "prepare_embree_knn_rows_2d",
     "prepare_embree_aabb_index_2d",
+    "prepare_embree_shape_pair_active_count_2d",
     "prepare_directed_segment_point_location_2d_embree",
     "prepare_rayjoin_cdb_point_location_2d_embree",
     "prepare_embree_static_triangle_scene_3d",
@@ -3060,6 +3063,7 @@ __all__ = [
     "EmbreeRowView",
     "EmbreeThreadConfig",
     "PreparedEmbreeAabbIndex2D",
+    "PreparedEmbreeShapePairActiveCount2D",
     "PreparedEmbreeFixedRadiusCountThreshold2D",
     "PreparedEmbreeFixedRadiusCountThreshold3D",
     "PreparedEmbreeFixedRadiusNeighbors3D",

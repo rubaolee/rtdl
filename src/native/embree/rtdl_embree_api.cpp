@@ -358,6 +358,53 @@ struct PreparedSegmentPairIntersections2DImpl {
   }
 };
 
+struct PreparedShapePairActiveCount2DImpl {
+  std::vector<Polygon2D> right_values;
+  std::vector<Bounds2D> right_bounds;
+  PolygonSceneData scene_data;
+  EmbreeDevice device;
+  SceneHolder holder;
+
+  explicit PreparedShapePairActiveCount2DImpl(std::vector<Polygon2D> right_polygons)
+      : right_values(std::move(right_polygons)),
+        scene_data {&right_values},
+        device(),
+        holder(device.device) {
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(right_values.size()));
+    rtcSetGeometryUserData(holder.geometry, &scene_data);
+    rtcSetGeometryBoundsFunction(holder.geometry, polygon_bounds, nullptr);
+        rtcSetGeometryIntersectFunction(holder.geometry, polygon_intersect);
+    rtcSetGeometryIntersectFilterFunction(holder.geometry, polygon_intersect_filter);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+    right_bounds.reserve(right_values.size());
+    for (const Polygon2D& polygon : right_values) {
+      right_bounds.push_back(bounds_for_polygon(polygon));
+    }
+  }
+};
+
+bool shape_pair_needs_containment_continuation(
+    const Polygon2D& left_polygon,
+    const Bounds2D& left_bounds,
+    const Polygon2D& right_polygon,
+    const Bounds2D& right_bounds) {
+  if (left_polygon.vertices.empty() || right_polygon.vertices.empty() ||
+      !bounds_overlap(left_bounds, right_bounds)) {
+    return false;
+  }
+  const Point2D left_point {left_polygon.id, left_polygon.vertices.front()};
+  if (bounds_overlap({left_point.p.x, left_point.p.y, left_point.p.x, left_point.p.y}, right_bounds) &&
+      point_in_polygon(left_point, right_polygon)) {
+    return true;
+  }
+  const Point2D right_point {right_polygon.id, right_polygon.vertices.front()};
+  return bounds_overlap({right_point.p.x, right_point.p.y, right_point.p.x, right_point.p.y}, left_bounds) &&
+         point_in_polygon(right_point, left_polygon);
+}
+
 void build_segment_scene(
     EmbreeDevice& device,
     SceneHolder& holder,
@@ -2422,6 +2469,109 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_shape_pair_relation_flags(
     *rows_out = copy_rows_out(rows);
     *row_count_out = rows.size();
   }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_shape_pair_active_count_2d_create(
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    RtdlEmbreeShapePairActiveCount2D** handle_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (handle_out == nullptr) {
+      throw std::runtime_error("handle_out must not be null");
+    }
+    *handle_out = nullptr;
+    std::vector<Polygon2D> right_values = decode_polygons(
+        right_polygons,
+        right_count,
+        right_vertices_xy,
+        right_vertex_xy_count);
+    auto* impl = new PreparedShapePairActiveCount2DImpl(std::move(right_values));
+    *handle_out = reinterpret_cast<RtdlEmbreeShapePairActiveCount2D*>(impl);
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_shape_pair_active_count_2d_count(
+    RtdlEmbreeShapePairActiveCount2D* handle,
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    size_t* active_count_out,
+    double* traversal_seconds_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (handle == nullptr || active_count_out == nullptr) {
+      throw std::runtime_error("handle and active_count_out must not be null");
+    }
+    auto* impl = reinterpret_cast<PreparedShapePairActiveCount2DImpl*>(handle);
+    std::vector<Polygon2D> left_values = decode_polygons(
+        left_polygons,
+        left_count,
+        left_vertices_xy,
+        left_vertex_xy_count);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    std::atomic<size_t> total_count {0};
+    run_query_index_ranges(left_values.size(), [&](size_t begin, size_t end) {
+      size_t local_count = 0;
+      for (size_t left_index = begin; left_index < end; ++left_index) {
+        const Polygon2D& left_polygon = left_values[left_index];
+        const Bounds2D left_bounds = bounds_for_polygon(left_polygon);
+        std::unordered_map<uint32_t, ShapePairRelationFlags> flags_by_right_id;
+        ShapePairRelationQueryState state {&left_polygon, &flags_by_right_id};
+        g_query_kind = QueryKind::kShapePairRelation;
+        g_query_state = &state;
+        for (size_t i = 0; i < left_polygon.vertices.size(); ++i) {
+          Vec2 start = left_polygon.vertices[i];
+          Vec2 end = left_polygon.vertices[(i + 1) % left_polygon.vertices.size()];
+          Vec2 dir = sub(end, start);
+          RTCRayHit rayhit;
+          set_ray(&rayhit, start, dir, 1.0f);
+          RTCIntersectArguments args;
+          rtcInitIntersectArguments(&args);
+          rtdlRtcIntersect1(impl->holder.scene, &rayhit, &args);
+        }
+        for (size_t right_index = 0; right_index < impl->right_values.size(); ++right_index) {
+          const Polygon2D& right_polygon = impl->right_values[right_index];
+          ShapePairRelationFlags flags {};
+          auto found = flags_by_right_id.find(right_polygon.id);
+          if (found != flags_by_right_id.end()) {
+            flags = found->second;
+          }
+          bool active = flags.requires_segment_intersection != 0u || flags.requires_point_containment != 0u;
+          if (!active && shape_pair_needs_containment_continuation(
+                             left_polygon,
+                             left_bounds,
+                             right_polygon,
+                             impl->right_bounds[right_index])) {
+            active = true;
+          }
+          if (active) {
+            local_count += 1;
+          }
+        }
+      }
+      total_count.fetch_add(local_count, std::memory_order_relaxed);
+    });
+    g_query_kind = QueryKind::kNone;
+    g_query_state = nullptr;
+    if (traversal_seconds_out != nullptr) {
+      const auto traversal_end = std::chrono::steady_clock::now();
+      *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+    }
+    *active_count_out = total_count.load(std::memory_order_relaxed);
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT void rtdl_embree_shape_pair_active_count_2d_destroy(
+    RtdlEmbreeShapePairActiveCount2D* handle) {
+  auto* impl = reinterpret_cast<PreparedShapePairActiveCount2DImpl*>(handle);
+  delete impl;
 }
 
 RTDL_EMBREE_EXPORT int rtdl_embree_run_ray_hitcount(

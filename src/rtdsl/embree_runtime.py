@@ -126,6 +126,9 @@ EMBREE_REQUIRED_SYMBOLS = (
     "rtdl_embree_run_segment_pair_intersection",
     "rtdl_embree_run_point_primitive_anyhit_packet",
     "rtdl_embree_run_shape_pair_relation_flags",
+    "rtdl_embree_shape_pair_active_count_2d_create",
+    "rtdl_embree_shape_pair_active_count_2d_count",
+    "rtdl_embree_shape_pair_active_count_2d_destroy",
     "rtdl_embree_run_ray_hitcount",
     "rtdl_embree_run_segment_shape_hitcount",
     "rtdl_embree_run_segment_shape_anyhit_rows",
@@ -1706,6 +1709,91 @@ def pack_polygons(
         vertices_xy=vertex_array,
         vertex_xy_count=len(vertices_list),
     )
+
+
+class PreparedEmbreeShapePairActiveCount2D:
+    """Prepared generic 2-D shape-pair active-count scene for Embree."""
+
+    def __init__(self, packed_right: PackedPolygons, *, library=None) -> None:
+        self._library = _load_embree_library() if library is None else library
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        error = ctypes.create_string_buffer(4096)
+        status = self._library.rtdl_embree_shape_pair_active_count_2d_create(
+            packed_right.refs,
+            packed_right.polygon_count,
+            packed_right.vertices_xy,
+            packed_right.vertex_xy_count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        self.right_polygon_count = int(packed_right.polygon_count)
+
+    def close(self) -> None:
+        if not self._closed:
+            self._library.rtdl_embree_shape_pair_active_count_2d_destroy(self._handle)
+            self._closed = True
+
+    def __enter__(self) -> "PreparedEmbreeShapePairActiveCount2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def count_active_packed(self, packed_left: PackedPolygons) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared Embree shape-pair active-count handle is closed")
+        active_count = ctypes.c_size_t()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = self._library.rtdl_embree_shape_pair_active_count_2d_count(
+            self._handle,
+            packed_left.refs,
+            packed_left.polygon_count,
+            packed_left.vertices_xy,
+            packed_left.vertex_xy_count,
+            ctypes.byref(active_count),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return {
+            "backend": "embree",
+            "primitive": "PREPARED_SHAPE_PAIR_ACTIVE_COUNT_2D",
+            "native_symbol": "rtdl_embree_shape_pair_active_count_2d_count",
+            "output_contract": "overlay_active_pair_dependency_count",
+            "active_count": int(active_count.value),
+            "left_polygon_count": int(packed_left.polygon_count),
+            "right_polygon_count": int(self.right_polygon_count),
+            "traversal_seconds": float(traversal_seconds.value),
+            "row_materialization_avoided": True,
+            "generic_shape_pair_primitive": True,
+            "claim_boundary": {
+                "full_rayjoin_reproduction": False,
+                "paper_scale_perf_claim_authorized": False,
+                "rtdl_beats_rayjoin_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
+        }
+
+    def count_active(self, left_polygons) -> dict[str, object]:
+        return self.count_active_packed(pack_polygons(records=left_polygons))
+
+
+def prepare_embree_shape_pair_active_count_2d(right_polygons) -> PreparedEmbreeShapePairActiveCount2D:
+    return PreparedEmbreeShapePairActiveCount2D(pack_polygons(records=right_polygons))
 
 
 def collect_polygon_pair_candidates_bounded_embree(
@@ -7024,6 +7112,31 @@ def _load_embree_library():
         ctypes.c_size_t,
     ]
     library.rtdl_embree_run_shape_pair_relation_flags.restype = ctypes.c_int
+
+    library.rtdl_embree_shape_pair_active_count_2d_create.argtypes = [
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_void_p),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_embree_shape_pair_active_count_2d_create.restype = ctypes.c_int
+    library.rtdl_embree_shape_pair_active_count_2d_count.argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_embree_shape_pair_active_count_2d_count.restype = ctypes.c_int
+    library.rtdl_embree_shape_pair_active_count_2d_destroy.argtypes = [ctypes.c_void_p]
+    library.rtdl_embree_shape_pair_active_count_2d_destroy.restype = None
 
     library.rtdl_embree_run_ray_hitcount.argtypes = [
         ctypes.POINTER(_RtdlRay2D),
