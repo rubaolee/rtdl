@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import time
 from typing import Iterable, Sequence
 
 from ..aggregate_tree_reference import AggregateNodeRow
@@ -27,6 +28,9 @@ VECTOR_SUM_MATERIALIZATION_PRESSURE_2D_CONTRACT = (
 )
 AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT = (
     "generic_aggregate_frontier_weighted_vector_sum_2d_v1"
+)
+AGGREGATE_FRONTIER_DEVICE_COLUMNS_WEIGHTED_VECTOR_SUM_2D_CONTRACT = (
+    "generic_aggregate_frontier_device_columns_weighted_vector_sum_2d_v1"
 )
 
 
@@ -591,5 +595,160 @@ def sum_aggregate_frontier_weighted_vectors_2d(
             "paper_reproduction": False,
             "authors_code_comparison": False,
             "public_speedup_claim_authorized": False,
+        },
+    }
+
+
+def sum_aggregate_frontier_device_columns_weighted_vectors_2d_cupy(
+    frontier_device_columns: object,
+    source_points: Iterable[object],
+    target_points: Iterable[object],
+    tree_nodes: Iterable[object],
+    *,
+    softening: float = 0.0,
+) -> dict[str, object]:
+    """Consume M36 frontier device columns with a CuPy Barnes-Hut-style partner.
+
+    This is deliberately app-scoped partner math. It consumes the generic
+    frontier schema on device and computes inverse-square vector sums without
+    materializing frontier rows on host.
+    """
+
+    softening = float(softening)
+    if softening < 0.0:
+        raise ValueError("softening must be non-negative")
+    if not hasattr(frontier_device_columns, "as_cupy_columns"):
+        raise ValueError("frontier_device_columns must expose as_cupy_columns()")
+    if bool(getattr(frontier_device_columns, "overflow", False)):
+        raise ValueError("cannot consume overflowed aggregate-frontier device columns")
+
+    import cupy as cp  # type: ignore
+
+    sources = normalize_weighted_point_rows(source_points)
+    targets = normalize_weighted_point_rows(target_points)
+    nodes = _tree_node_rows(tree_nodes)
+    if not sources:
+        raise ValueError("at least one source point is required")
+    if not targets:
+        raise ValueError("at least one target point is required")
+    if not nodes:
+        raise ValueError("at least one aggregate tree node is required")
+
+    source_ids_host = [int(point.id) for point in sources]
+    target_ids_host = [int(point.id) for point in targets]
+    node_ids_host = [int(node.id) for node in nodes]
+    if min(source_ids_host) < 0 or min(target_ids_host) < 0 or min(node_ids_host) < 0:
+        raise ValueError("CuPy aggregate-frontier vector continuation requires non-negative dense ids")
+    max_point_id = max(max(source_ids_host), max(target_ids_host))
+    max_node_id = max(node_ids_host)
+
+    columns = frontier_device_columns.as_cupy_columns()
+    row_count = int(getattr(frontier_device_columns, "row_count", len(columns["source_id"])))
+    if row_count != int(columns["source_id"].shape[0]):
+        raise ValueError("frontier row_count does not match source_id column length")
+
+    cp.cuda.Stream.null.synchronize()
+    start = time.perf_counter()
+
+    source_ids = cp.asarray(source_ids_host, dtype=cp.int64)
+    target_ids = cp.asarray(target_ids_host, dtype=cp.int64)
+    node_ids = cp.asarray(node_ids_host, dtype=cp.int64)
+
+    point_x_by_id = cp.zeros((max_point_id + 1,), dtype=cp.float64)
+    point_y_by_id = cp.zeros((max_point_id + 1,), dtype=cp.float64)
+    point_mass_by_id = cp.zeros((max_point_id + 1,), dtype=cp.float64)
+    source_x_values = cp.asarray([float(point.x) for point in sources], dtype=cp.float64)
+    source_y_values = cp.asarray([float(point.y) for point in sources], dtype=cp.float64)
+    source_mass_values = cp.asarray([float(point.mass) for point in sources], dtype=cp.float64)
+    target_x = cp.asarray([float(point.x) for point in targets], dtype=cp.float64)
+    target_y = cp.asarray([float(point.y) for point in targets], dtype=cp.float64)
+    target_mass = cp.asarray([float(point.mass) for point in targets], dtype=cp.float64)
+    point_x_by_id[source_ids] = source_x_values
+    point_y_by_id[source_ids] = source_y_values
+    point_mass_by_id[source_ids] = source_mass_values
+    point_x_by_id[target_ids] = target_x
+    point_y_by_id[target_ids] = target_y
+    point_mass_by_id[target_ids] = target_mass
+
+    source_ordinal_by_id = cp.zeros((max_point_id + 1,), dtype=cp.int64)
+    source_ordinal_by_id[source_ids] = cp.arange(len(sources), dtype=cp.int64)
+
+    node_cx_by_id = cp.zeros((max_node_id + 1,), dtype=cp.float64)
+    node_cy_by_id = cp.zeros((max_node_id + 1,), dtype=cp.float64)
+    node_mass_by_id = cp.zeros((max_node_id + 1,), dtype=cp.float64)
+    node_cx_by_id[node_ids] = cp.asarray([float(node.cx) for node in nodes], dtype=cp.float64)
+    node_cy_by_id[node_ids] = cp.asarray([float(node.cy) for node in nodes], dtype=cp.float64)
+    node_mass_by_id[node_ids] = cp.asarray([float(node.mass) for node in nodes], dtype=cp.float64)
+
+    if row_count == 0:
+        sum_x = cp.zeros((len(sources),), dtype=cp.float64)
+        sum_y = cp.zeros((len(sources),), dtype=cp.float64)
+        aggregate_count = 0
+        exact_count = 0
+    else:
+        frontier_source_ids = columns["source_id"].astype(cp.int64, copy=False)
+        kind_codes = columns["frontier_kind_code"].astype(cp.int64, copy=False)
+        item_ids = columns["item_id"].astype(cp.int64, copy=False)
+        aggregate_mask = kind_codes == 1
+        exact_mask = kind_codes == 2
+        safe_node_item_ids = cp.where(aggregate_mask, item_ids, 0)
+        safe_point_item_ids = cp.where(exact_mask, item_ids, 0)
+
+        source_x = point_x_by_id[frontier_source_ids]
+        source_y = point_y_by_id[frontier_source_ids]
+        source_mass = point_mass_by_id[frontier_source_ids]
+
+        aggregate_x = node_cx_by_id[safe_node_item_ids]
+        aggregate_y = node_cy_by_id[safe_node_item_ids]
+        aggregate_mass = node_mass_by_id[safe_node_item_ids]
+        exact_x = point_x_by_id[safe_point_item_ids]
+        exact_y = point_y_by_id[safe_point_item_ids]
+        exact_mass = point_mass_by_id[safe_point_item_ids]
+
+        contribution_x_target = cp.where(aggregate_mask, aggregate_x, exact_x)
+        contribution_y_target = cp.where(aggregate_mask, aggregate_y, exact_y)
+        contribution_mass_target = cp.where(aggregate_mask, aggregate_mass, exact_mass)
+        dx = contribution_x_target - source_x
+        dy = contribution_y_target - source_y
+        dist_sq = dx * dx + dy * dy + softening * softening
+        safe_dist_sq = cp.where(dist_sq == 0.0, 1.0, dist_sq)
+        inv_dist = 1.0 / cp.sqrt(safe_dist_sq)
+        scale = source_mass * contribution_mass_target * inv_dist * inv_dist * inv_dist
+        scale = cp.where(dist_sq == 0.0, 0.0, scale)
+        values_x = dx * scale
+        values_y = dy * scale
+
+        group_ids = source_ordinal_by_id[frontier_source_ids]
+        sum_x = cp.bincount(group_ids, weights=values_x, minlength=len(sources)).astype(cp.float64, copy=False)
+        sum_y = cp.bincount(group_ids, weights=values_y, minlength=len(sources)).astype(cp.float64, copy=False)
+        aggregate_count = int(cp.count_nonzero(aggregate_mask).item())
+        exact_count = int(cp.count_nonzero(exact_mask).item())
+
+    cp.cuda.Stream.null.synchronize()
+    elapsed = time.perf_counter() - start
+    return {
+        "columns": {
+            "source_ids": source_ids,
+            "vector_x": sum_x,
+            "vector_y": sum_y,
+        },
+        "metadata": {
+            "contract": AGGREGATE_FRONTIER_DEVICE_COLUMNS_WEIGHTED_VECTOR_SUM_2D_CONTRACT,
+            "logical_reference_contract": AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT,
+            "partner": "cupy",
+            "softening": softening,
+            "source_count": len(sources),
+            "frontier_row_count": row_count,
+            "aggregate_contribution_row_count": aggregate_count,
+            "exact_contribution_row_count": exact_count,
+            "partner_seconds": elapsed,
+            "frontier_columns_materialized_on_host": False,
+            "contribution_rows_materialized_on_host": False,
+            "app_reference_math": True,
+            "native_engine_app_specific": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
         },
     }

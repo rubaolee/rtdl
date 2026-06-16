@@ -975,6 +975,7 @@ from .segment_columns import SegmentColumns2D
 from .segment_columns import segment_columns_2d
 from .segment_columns import segment_columns_with_ids
 from .app_reference import AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT
+from .app_reference import AGGREGATE_FRONTIER_DEVICE_COLUMNS_WEIGHTED_VECTOR_SUM_2D_CONTRACT
 from .app_reference import GROUPED_VECTOR_SUM_ROWS_2D_CONTRACT
 from .app_reference import VECTOR_SUM_MATERIALIZATION_PRESSURE_2D_CONTRACT
 from .app_reference import WEIGHTED_INVERSE_SQUARE_CONTRIBUTION_ROWS_2D_CONTRACT
@@ -982,6 +983,7 @@ from .app_reference import WEIGHTED_INVERSE_SQUARE_VECTOR_SUM_2D_CONTRACT
 from .app_reference import estimate_vector_sum_materialization_pressure_2d
 from .app_reference import evaluate_weighted_inverse_square_contribution_rows_2d
 from .app_reference import sum_aggregate_frontier_weighted_vectors_2d
+from .app_reference import sum_aggregate_frontier_device_columns_weighted_vectors_2d_cupy
 from .app_reference import sum_vector_contribution_rows_2d
 from .app_reference import sum_weighted_inverse_square_contributions_2d
 from .datasets import arcgis_pages_to_cdb
@@ -2136,6 +2138,7 @@ __all__ = [
     "AGGREGATE_FRONTIER_DEVICE_COLUMNS_REQUIRED_SYMBOLS",
     "AGGREGATE_OPENING_ROWS_2D_CONTRACT",
     "AGGREGATE_TREE_OPENING_FRONTIER_2D_CONTRACT",
+    "AGGREGATE_FRONTIER_DEVICE_COLUMNS_WEIGHTED_VECTOR_SUM_2D_CONTRACT",
     "GROUPED_VECTOR_SUM_ROWS_2D_CONTRACT",
     "WEIGHTED_INVERSE_SQUARE_CONTRIBUTION_ROWS_2D_CONTRACT",
     "WEIGHTED_INVERSE_SQUARE_VECTOR_SUM_2D_CONTRACT",
@@ -2220,6 +2223,8 @@ __all__ = [
     "evaluate_aggregate_tree_opening_frontier_2d",
     "evaluate_weighted_inverse_square_contribution_rows_2d",
     "estimate_vector_sum_materialization_pressure_2d",
+    "sum_aggregate_frontier_weighted_vectors_2d",
+    "sum_aggregate_frontier_device_columns_weighted_vectors_2d_cupy",
     "evaluate_columnar_grouped_aggregate",
     "merge_columnar_grouped_sum_count_rows",
     "GroupedAggregateQuery",

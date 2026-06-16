@@ -1,0 +1,47 @@
+{
+  "claims": {
+    "contribution_rows_materialized_on_host": false,
+    "frontier_rows_materialized_on_host": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "frontier_native_traversal_seconds": 0.016584214,
+  "frontier_overflow": false,
+  "frontier_row_count": 3440003,
+  "goal": "4434_v3_0_m37_aggregate_frontier_device_columns_cupy_vector_sum",
+  "partner_seconds_median": 0.013083003461360931,
+  "partner_seconds_repeats": [
+    0.16568168997764587,
+    0.012954913079738617,
+    0.013083003461360931
+  ],
+  "point_count": 8192,
+  "tree_summary": {
+    "bucket_size": 64,
+    "leaf_node_count": 256,
+    "max_depth": 4,
+    "max_leaf_member_count": 36,
+    "morton_bits": 16,
+    "source_count": 8192,
+    "tree_node_count": 341
+  },
+  "vector_metadata": {
+    "aggregate_contribution_row_count": 479913,
+    "app_reference_math": true,
+    "contract": "generic_aggregate_frontier_device_columns_weighted_vector_sum_2d_v1",
+    "contribution_rows_materialized_on_host": false,
+    "exact_contribution_row_count": 2960090,
+    "frontier_columns_materialized_on_host": false,
+    "frontier_row_count": 3440003,
+    "logical_reference_contract": "generic_aggregate_frontier_weighted_vector_sum_2d_v1",
+    "native_engine_app_specific": false,
+    "partner": "cupy",
+    "partner_seconds": 0.013083003461360931,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "softening": 0.01,
+    "source_count": 8192,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  }
+}
