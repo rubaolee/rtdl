@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4464.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4465.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -107,7 +107,9 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "`com-orkut`, where 8M and 4M directed-edge scene caps still OOMed during "
     "OptiX scene preparation but a 2M cap matched 627,584,181 expected triangles "
     "with 59 scenes, 1,744 ray segments, and no global two-hop or triangle-scene "
-    "materialization."
+    "materialization. Goal4465 replaces per-directed-edge Python segment planning "
+    "with NumPy prefix/searchsorted planning, reducing `com-orkut` planner median "
+    "from 28.885s to 3.665s without changing the generic engine contract."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -700,7 +702,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "directed edge triangles, 8,579,930,671 duplicate two-hop rays, 59 scenes, "
             "and 1,744 ray segments. CuPy remains the current large-scale performance "
             "partner for this explicit route; this is still not a triangle-count RT-core "
-            "speedup claim."
+            "speedup claim. Goal4465 removes the avoidable Python per-edge planner loop "
+            "from that route with NumPy prefix/searchsorted segmentation, reducing the "
+            "`com-orkut` planner median from 28.885s to 3.665s while preserving the same "
+            "scene/ray counts and exact triangle result."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -724,7 +729,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "now matches the expected triangle count exactly. Cite Goal4464 when the "
             "largest paper row is requested: `com-orkut` now matches exactly with a "
             "2M directed-edge scene cap, after larger scene caps OOMed during OptiX "
-            "scene preparation."
+            "scene preparation. Cite Goal4465 when discussing the current optimized "
+            "segmented planner: it is a partner-side prefix/searchsorted optimization, "
+            "not a native-engine specialization."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -739,6 +746,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "treating the Goal4462 com-lj success as a refreshed full paper-dataset speedup matrix",
             "treating the Goal4463 soc-LiveJournal1 success as a refreshed full paper-dataset speedup matrix",
             "treating the Goal4464 com-orkut success as a public RTDL-vs-cuGraph or RTDL-vs-authors speedup claim",
+            "treating the Goal4465 planner speedup as an RT-core traversal speedup",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -747,8 +755,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "`com-lj`, `soc-LiveJournal1`, and `com-orkut` rows against the CuPy "
             "global-summary route where it fits, the no-C++ Numba reference where it fits, "
             "cuGraph, and authors' RT-Graph code under one explicit timing contract, then "
-            "reduce the segmented route's planning and duplicate-ray build costs without "
-            "adding graph-specific native engine logic"
+            "reduce duplicate-ray build and traversal costs without adding graph-specific "
+            "native engine logic"
         ),
         evidence_refs=(
             "Goal2797",
@@ -767,6 +775,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4462",
             "Goal4463",
             "Goal4464",
+            "Goal4465",
         ),
         pod_needed_next=False,
     ),

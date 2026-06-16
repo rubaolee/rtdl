@@ -157,6 +157,13 @@ global materialization gates false. This closes the largest OOM row as a
 correctness and scalability milestone. It is not a public RTDL-vs-cuGraph,
 RTDL-vs-authors, or RT-core speedup claim.
 
+Goal4465 optimizes the segmented planner used by the same route. The previous
+planner walked every directed-edge count in Python; on `com-orkut` that meant
+117,117,316 Python-loop iterations to create 1,744 ray segments. The current
+planner uses NumPy prefix sums plus `searchsorted`, reducing the `com-orkut`
+planner median from 28.885s to 3.665s while preserving the same 59 scenes,
+1,744 ray segments, and exact 627,584,181-triangle result.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
@@ -164,6 +171,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4462_v3_0_m66_triangle_segmented_com_lj_2026-06-16.md`
 - `docs/reports/goal4463_v3_0_m67_triangle_segmented_scene_soc_livejournal1_2026-06-16.md`
 - `docs/reports/goal4464_v3_0_m68_triangle_segmented_scene_com_orkut_2026-06-16.md`
+- `docs/reports/goal4465_v3_0_m69_triangle_segment_planner_com_orkut_2026-06-16.md`
 
 ## Engine Boundary
 

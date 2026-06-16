@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4464.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4465.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -35,6 +35,10 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4464 closes Triangle Counting's largest paper-dataset OOM validation row "
     "by running source-range segmented RT-2A1 on `com-orkut` with a measured 2M "
     "directed-edge scene cap, while keeping public speedup claims blocked. "
+    "Goal4465 removes the Triangle Counting segmented planner's per-edge Python "
+    "loop with NumPy prefix/searchsorted planning, making the remaining large-row "
+    "debts duplicate-ray construction, traversal, and comparison rather than "
+    "avoidable planning overhead. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -425,7 +429,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "default scene cap to the measured 2M directed-edge configuration: it matches "
             "627,584,181 expected triangles with no global two-hop summary or global "
             "triangle scene, while exposing planning and duplicate-ray build as the "
-            "remaining performance debt."
+            "remaining performance debt. Goal4465 reduces the `com-orkut` planner "
+            "median from 28.885s to 3.665s by replacing Python per-edge segmentation "
+            "with NumPy prefix/searchsorted planning; duplicate-ray build and traversal "
+            "are now the main route-level debts."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -435,7 +442,8 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "global two-hop summary materialization; cite Goal4462 for the currently "
             "passing `com-lj` paper-dataset segmented row, Goal4463 for the "
             "source-range segmented-scene `soc-LiveJournal1` row, and Goal4464 for "
-            "the `com-orkut` row that needs the measured 2M scene cap"
+            "the `com-orkut` row that needs the measured 2M scene cap. Cite Goal4465 "
+            "for the current vectorized segmented planner."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
@@ -448,7 +456,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "paper reproduction or broad triangle-count acceleration; next work is an "
             "explicit comparison against CuPy global-summary where it fits, Numba, "
             "cuGraph, and authors' RT-Graph code, plus lowering/fusing the segmented "
-            "RT-2A1 route's planning and duplicate-ray build costs"
+            "RT-2A1 route's duplicate-ray build and traversal costs"
         ),
         "evidence_refs": (
             "Goal2797",
@@ -465,6 +473,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4462",
             "Goal4463",
             "Goal4464",
+            "Goal4465",
         ),
     },
 }

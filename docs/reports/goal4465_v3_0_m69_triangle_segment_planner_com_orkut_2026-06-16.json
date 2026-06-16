@@ -1,0 +1,87 @@
+{
+  "build_contract_ms": 5740.3473779559135,
+  "claim_boundary": {
+    "app_partner_optimization_only": true,
+    "native_engine_customization": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "counts_download_ms_median": 175.38723349571228,
+  "dataset": "com_orkut",
+  "edge_file": "build/goal2593_snap_edges/com-orkut.edge",
+  "goal": 4465,
+  "implementation": "vectorized_prefix_searchsorted_segment_planner",
+  "milestone": "v3_0_m69",
+  "old_goal4464_build_geometry_ms": 28884.99293476343,
+  "parameters": {
+    "repeat": 5,
+    "scene_max_directed_edges": 2000000,
+    "segment_max_two_hop_rows": 5000000
+  },
+  "plan_ms_median": 3664.5446717739105,
+  "plan_ms_values": [
+    4041.876718401909,
+    3665.4426604509354,
+    3664.5446717739105,
+    3656.1286225914955,
+    3646.756462752819
+  ],
+  "planner_speedup_vs_goal4464_build_geometry": 7.882287029340799,
+  "runs": [
+    {
+      "counts_download_ms": 176.84055119752884,
+      "max_scene_directed_edge_count": 2000000,
+      "max_scene_two_hop_rows": 279026541,
+      "plan_ms": 4041.876718401909,
+      "ray_segment_count": 1744,
+      "run_index": 0,
+      "scene_count": 59,
+      "total_directed_edges": 117117316,
+      "total_two_hop_rows": 8579930671
+    },
+    {
+      "counts_download_ms": 173.3056977391243,
+      "max_scene_directed_edge_count": 2000000,
+      "max_scene_two_hop_rows": 279026541,
+      "plan_ms": 3665.4426604509354,
+      "ray_segment_count": 1744,
+      "run_index": 1,
+      "scene_count": 59,
+      "total_directed_edges": 117117316,
+      "total_two_hop_rows": 8579930671
+    },
+    {
+      "counts_download_ms": 177.5422915816307,
+      "max_scene_directed_edge_count": 2000000,
+      "max_scene_two_hop_rows": 279026541,
+      "plan_ms": 3664.5446717739105,
+      "ray_segment_count": 1744,
+      "run_index": 2,
+      "scene_count": 59,
+      "total_directed_edges": 117117316,
+      "total_two_hop_rows": 8579930671
+    },
+    {
+      "counts_download_ms": 175.35797506570816,
+      "max_scene_directed_edge_count": 2000000,
+      "max_scene_two_hop_rows": 279026541,
+      "plan_ms": 3656.1286225914955,
+      "ray_segment_count": 1744,
+      "run_index": 3,
+      "scene_count": 59,
+      "total_directed_edges": 117117316,
+      "total_two_hop_rows": 8579930671
+    },
+    {
+      "counts_download_ms": 175.38723349571228,
+      "max_scene_directed_edge_count": 2000000,
+      "max_scene_two_hop_rows": 279026541,
+      "plan_ms": 3646.756462752819,
+      "ray_segment_count": 1744,
+      "run_index": 4,
+      "scene_count": 59,
+      "total_directed_edges": 117117316,
+      "total_two_hop_rows": 8579930671
+    }
+  ]
+}

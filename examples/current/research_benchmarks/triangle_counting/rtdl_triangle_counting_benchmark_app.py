@@ -1928,25 +1928,34 @@ def _segment_edge_ranges_from_counts(
 ) -> tuple[tuple[int, int, int], ...]:
     if max_two_hop_rows <= 0:
         raise ValueError("max_two_hop_rows must be positive")
+    np = __import__("numpy")
+    counts_array = np.asarray(counts, dtype=np.int64)
+    if counts_array.ndim != 1:
+        counts_array = counts_array.reshape(-1)
+    if counts_array.size == 0:
+        return ()
+    if bool(np.any(counts_array < 0)):
+        raise ValueError("two-hop segment counts must be nonnegative")
+
+    counts_prefix = np.empty(counts_array.size + 1, dtype=np.int64)
+    counts_prefix[0] = 0
+    counts_prefix[1:] = np.cumsum(counts_array, dtype=np.int64)
+
     ranges: list[tuple[int, int, int]] = []
     start = 0
-    running = 0
-    for index, raw_count in enumerate(counts):
-        count = int(raw_count)
-        if count < 0:
-            raise ValueError("two-hop segment counts must be nonnegative")
-        if index > start and running + count > max_two_hop_rows:
-            ranges.append((start, index, running))
-            start = index
-            running = 0
-        running += count
-        if running >= max_two_hop_rows:
-            if running > 0:
-                ranges.append((start, index + 1, running))
-            start = index + 1
-            running = 0
-    if start < len(counts) and running > 0:
-        ranges.append((start, len(counts), running))
+    total_count = int(counts_array.size)
+    while start < total_count:
+        target = int(counts_prefix[start]) + int(max_two_hop_rows)
+        end = int(np.searchsorted(counts_prefix, target, side="right") - 1)
+        if end <= start:
+            end = start + 1
+        if end > total_count:
+            end = total_count
+        segment_rows = int(counts_prefix[end] - counts_prefix[start])
+        if segment_rows == 0 and end >= total_count:
+            break
+        ranges.append((start, end, segment_rows))
+        start = end
     return tuple(ranges)
 
 
