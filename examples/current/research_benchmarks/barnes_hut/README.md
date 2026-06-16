@@ -227,6 +227,12 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   evidence. This is still row collection evidence, not RT-core speedup evidence.
   Default frontier rows are ID-only; distance/opening-ratio diagnostics are an
   explicit debug side channel, not primitive output.
+- Current V3 M45 route guidance makes
+  `fused_frontier_force_sum_bucketized_cpu_numba` the current fastest measured
+  no-C++ Barnes-Hut app route at tested scales. It is a CPU/Numba route, not an
+  Embree implementation and not evidence that RT cores accelerate Barnes-Hut.
+  The prepared RTDL/OptiX aggregate-frontier route remains useful RT device-column
+  evidence and a same-contract partner comparison target.
 - Current expanded-membership lowering evidence routes Barnes-Hut
   aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
   near-zone candidate rows. The engine still only sees points, boxes, IDs, and

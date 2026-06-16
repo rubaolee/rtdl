@@ -106,6 +106,11 @@ flags, counts, summaries, bounded witnesses, typed columns, or candidate rows.
 | Hausdorff exact witness | Threshold decision or frontier | Exact nearest-witness continuation | v2.14 reports threshold decision only, not exact witness-distance acceleration. |
 | Triangle candidate interpretation | Scalar any-hit/count summary | Candidate compaction and app-owned interpretation | v2.14 scalar answer is primitive-first; candidate-row interpretation is a separate app-owned continuation. |
 
+Current V3 note for Barnes-Hut: Goal4442 moves beyond this v2.14 snapshot.
+The fastest measured no-C++ Barnes-Hut app route is now fused CPU/Numba; the
+prepared RTDL/OptiX aggregate-frontier route remains device-column evidence and
+same-contract partner evidence, not Barnes-Hut RT-core speedup wording.
+
 Partners are not hidden backend selection. The app chooses them explicitly and
 the report must name them.
 
@@ -244,7 +249,7 @@ Status scope:
 | RayDB-style | Use fused grouped reductions when they exactly answer the query. |
 | LibRTS AABB | Prepared AABB index is a strong RTDL spatial-index pattern. |
 | Triangle counting | Any-hit hot query can be excellent, but graph lowering and prepare affect total time. |
-| Barnes-Hut | Node coverage is accelerated; full force solver needs explicit continuation. |
+| Barnes-Hut | v2.14 node coverage was the RT-core row; current V3 evidence makes fused CPU/Numba the fastest measured no-C++ app route and keeps RTDL/OptiX aggregate frontier as device-column evidence, not RT-core speedup wording. |
 | Hausdorff/X-HD | Threshold decision is a primitive row; exact witness distance is a different app. |
 | Robot collision | Grouped any-hit flags are a clean traversal primitive; full planning is out of scope. |
 | Contact manifold | Broadphase can benefit; exact manifold refinement remains app-owned. |

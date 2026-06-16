@@ -68,7 +68,7 @@ class Goal4438V30M41BarnesHutPreparedFrontierPartnerScaleLadderTest(unittest.Tes
         ):
             self.assertIn(phrase, report)
         self.assertIn("Goal4438/4439", partner_matrix)
-        self.assertIn("Numba wins that measured partner route", evidence_index)
+        self.assertIn("Numba wins the prepared RTDL/OptiX device-column partner route", evidence_index)
         self.assertIn("Goal4438/4439 show RTDL/OptiX can emit aggregate-frontier device columns", rt_core_matrix)
         self.assertIn("Goal4442 adds a fused CPU/Numba route", rt_core_matrix)
 

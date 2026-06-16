@@ -9,6 +9,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
 README = ROOT / "examples/current/research_benchmarks/barnes_hut/README.md"
+EVIDENCE_INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
+PARTNER_CHOICE = ROOT / "docs/learn/partner_choice_for_custom_logic.md"
+AUTHOR_STRATEGY = ROOT / "docs/learn/v2_14_app_author_implementation_strategy.md"
 REPORT = ROOT / "docs/reports/goal4442_v3_0_m45_barnes_hut_fused_numba_cpu_frontier_2026-06-16.md"
 SMOKE = ROOT / "docs/reports/goal4442_v3_0_m45_barnes_hut_fused_numba_cpu_128_smoke_2026-06-16.json"
 FUSED_8192 = ROOT / "docs/reports/goal4442_v3_0_m45_barnes_hut_fused_numba_cpu_8192_r11_2026-06-16.json"
@@ -67,6 +70,25 @@ class Goal4442V30M45BarnesHutFusedNumbaCpuFrontierTest(unittest.TestCase):
             "mixed explicit choice",
         ):
             self.assertIn(phrase, report)
+
+    def test_current_guidance_docs_do_not_carry_old_barnes_hut_partner_winner(self) -> None:
+        readme = README.read_text(encoding="utf-8")
+        evidence_index = EVIDENCE_INDEX.read_text(encoding="utf-8")
+        partner_choice = PARTNER_CHOICE.read_text(encoding="utf-8")
+        author_strategy = AUTHOR_STRATEGY.read_text(encoding="utf-8")
+        readme_flat = " ".join(readme.split())
+
+        self.assertNotIn(
+            "CuPy remains the faster measured force-vector partner path overall",
+            partner_choice,
+        )
+        self.assertIn("Goal4442's fused CPU/Numba route", partner_choice)
+        self.assertIn(
+            "Numba wins the prepared RTDL/OptiX device-column partner route",
+            evidence_index,
+        )
+        self.assertIn("current fastest measured no-C++ Barnes-Hut app route", readme_flat)
+        self.assertIn("Current V3 note for Barnes-Hut", author_strategy)
 
     def test_pod_evidence_records_fused_cpu_numba_scale_ladder(self) -> None:
         smoke = json.loads(SMOKE.read_text(encoding="utf-8"))

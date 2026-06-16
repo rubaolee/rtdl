@@ -129,18 +129,18 @@ v2.14 evidence:
   be read by exact app, command, hardware, backend, partner, and dataset.
 - CuPy/Numba comparison rows are partner-continuation evidence only. They do
   not become RT-core or whole-application speedup claims.
-- For Barnes-Hut, Goal4438 supersedes the old partner-choice wording only for
-  the prepared aggregate-frontier device-column weighted-vector contract:
-  Numba wins that measured partner route. Goal4439 exposes the route through
-  the benchmark app as `prepared_aggregate_frontier_weighted_vector_optix`.
-  Goal4440 adds CPU/Embree host-materialized logical baselines for that route;
-  Goal4441 replaces the Python host vector continuation with Numba CPU
-  continuation and shows the remaining debt is frontier collection and host
-  materialization. Goal4442 adds a fused CPU/Numba route that avoids frontier
-  and contribution row materialization and is faster than the current
-  RTDL/OptiX+Numba route for tested Barnes-Hut scales. These rows are
-  correctness and bottleneck evidence, not public backend speedup wording. This
-  is not a universal Numba, RT-core, or whole N-body speedup claim.
+- For Barnes-Hut, Goal4438/4439 supersede the old partner-choice wording for
+  the prepared RTDL/OptiX aggregate-frontier device-column weighted-vector
+  contract: Numba wins the prepared RTDL/OptiX device-column partner route,
+  while CuPy remains the same-contract GPU comparison partner. Goal4440 adds
+  CPU/Embree host-materialized logical baselines for that route; Goal4441
+  replaces the Python host vector continuation with Numba CPU continuation and
+  shows the remaining debt is frontier collection and host materialization.
+  Goal4442 then adds a fused CPU/Numba route that avoids frontier and
+  contribution row materialization and is the fastest measured no-C++ Barnes-Hut
+  app route at the tested scales. These rows are correctness, route-choice, and
+  bottleneck evidence, not public backend speedup wording. This is not a
+  universal Numba, RT-core, or whole N-body speedup claim.
 - The RayJoin external comparison is useful for LSI/PIP diagnosis, but it is
   not a full RayJoin paper reproduction and does not authorize RTDL-beats-RayJoin
   wording.
