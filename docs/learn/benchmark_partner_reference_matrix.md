@@ -45,9 +45,9 @@ continuation work not covered by the primitive.
 | Benchmark app / contract | Current user path | Partner guidance | Evidence boundary |
 | --- | --- | --- | --- |
 | Hausdorff / X-HD style | OptiX active-frontier exact path for the current app contract | CuPy remains a CUDA-core baseline; Numba is contract evidence, not the default winner | cite Goal3046/3048/3143 artifacts before publishing |
-| RTNN exact aggregate | prepared fixed-radius ranked-summary aggregate | no partner needed for exact float64 aggregate; use the graph bridge row when resident same-stream partner reductions are the target | compare exact contract, precision, and dataset scale; Goal4381/4443 are current large evidence, not paper reproduction |
+| RTNN exact aggregate | prepared fixed-radius ranked-summary aggregate | no partner needed for exact float64 aggregate; use the `prepared_ranked_summary_graph_partner_bridge` row when resident same-stream partner reductions are the target | compare exact contract, precision, and dataset scale; Goal4381/4443 are current large evidence, not paper reproduction |
 | RayDB fused count/sum | fused columnar grouped reductions | no partner needed when the fused primitive exactly answers the query | do not force partner continuation onto fused primitive rows |
-| Triangle scalar answer | generic RT graph relationship-count composition | no partner needed for the scalar answer; Goal4444 partner evidence applies only to explicit RT-Graph summary-contract experiments | app interpretation of candidate rows stays outside engine; no RT-core triangle-count paper claim |
+| Triangle scalar answer | generic RT graph relationship-count composition | no partner needed for the scalar answer; Goal4444 partner evidence applies only to explicit RT-Graph summary-contract experiments | app interpretation of candidate rows stays outside engine; no RT-core triangle-count claim and no RT-Graph paper claim |
 | Robot collision | generic grouped-segment any-hit flag/count primitive with NumPy vectorized app lowering for large prepared queries | no partner needed on the promoted path; use Goal4446's `lowering_mode="numpy_arrays"` for large timing/summary probes | robotics policy stays app code; no planner, continuous collision, exact solid collision, or true-zero-copy claim |
 | Contact manifold | bounded collect and fail-closed witness primitives | no partner needed on the accepted current path | no arbitrary manifold-generation claim |
 | LibRTS-style spatial index | generic point/range query rows where supported | no partner needed on the prepared AABB index path | index mutation policy stays app code |
@@ -72,7 +72,8 @@ useful for smoke tests, not for user-facing partner recommendations.
 For the practical decision guide, read
 [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md).
 
-The current benchmark adequacy recommendations are available as advisory
+The current benchmark adequacy recommendations are refreshed through Goal4447
+and are available as advisory
 metadata through `rtdsl.current_benchmark_adequacy()` and
 `rtdsl.summarize_current_benchmark_adequacy()`. These helpers are explanatory
 only; they do not auto-select a partner or authorize performance wording.

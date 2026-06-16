@@ -14,7 +14,7 @@ class Goal3840CurrentBenchmarkAdequacyAfterGoal3838Test(unittest.TestCase):
     def test_current_adequacy_version_and_summary_remain_fail_closed(self) -> None:
         self.assertEqual(
             rt.CURRENT_BENCHMARK_ADEQUACY_VERSION,
-            "rtdl.v2_10.benchmark_adequacy_after_goal3936.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4447.v1",
         )
         validation = rt.validate_current_benchmark_adequacy()
         self.assertEqual(validation["status"], "accept")

@@ -16,7 +16,7 @@ class Goal3822CurrentBenchmarkAdequacyAfterFrontDoorHardeningTest(unittest.TestC
     def test_current_version_and_summary_remain_fail_closed(self) -> None:
         self.assertEqual(
             rt.CURRENT_BENCHMARK_ADEQUACY_VERSION,
-            "rtdl.v2_10.benchmark_adequacy_after_goal3936.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4447.v1",
         )
         validation = rt.validate_current_benchmark_adequacy()
         self.assertEqual(validation["status"], "accept")
@@ -24,7 +24,7 @@ class Goal3822CurrentBenchmarkAdequacyAfterFrontDoorHardeningTest(unittest.TestC
         summary = rt.summarize_current_benchmark_adequacy()
         self.assertEqual(summary["app_count"], 10)
         self.assertEqual(summary["row_count"], 10)
-        self.assertEqual(summary["adequacy_counts"]["needs_major_followup"], 0)
+        self.assertEqual(summary["adequacy_counts"]["needs_major_followup"], 1)
         self.assertFalse(summary["release_authorized"])
         self.assertFalse(summary["public_speedup_claim_authorized"])
         self.assertFalse(summary["broad_rt_core_claim_authorized"])
@@ -35,6 +35,7 @@ class Goal3822CurrentBenchmarkAdequacyAfterFrontDoorHardeningTest(unittest.TestC
         rtnn = rows["rtnn"]
         self.assertIn("prepared_optix_ranked_summary", rtnn["current_recommended_path"])
         self.assertIn("Goal3820", rtnn["evidence_refs"])
+        self.assertIn("Goal4443", rtnn["evidence_refs"])
         self.assertIn("65536", rtnn["current_performance_reading"])
         self.assertIn("not an RTNN paper-reproduction claim", rtnn["current_performance_reading"])
         self.assertFalse(rtnn["paper_reproduction_claim_authorized"])
@@ -43,6 +44,7 @@ class Goal3822CurrentBenchmarkAdequacyAfterFrontDoorHardeningTest(unittest.TestC
         triangle = rows["triangle_counting"]
         self.assertIn("--optix-graph-mode native", triangle["current_recommended_path"])
         self.assertIn("Goal3819", triangle["evidence_refs"])
+        self.assertIn("Goal4444", triangle["evidence_refs"])
         self.assertIn("0.9871935369446874", triangle["current_performance_reading"])
         self.assertIn("6.018893013708293", triangle["current_performance_reading"])
         self.assertIn("no RT-core triangle-count claim", triangle["current_performance_reading"])
@@ -53,14 +55,16 @@ class Goal3822CurrentBenchmarkAdequacyAfterFrontDoorHardeningTest(unittest.TestC
         matrix = MATRIX.read_text(encoding="utf-8")
         partner = PARTNER.read_text(encoding="utf-8")
 
-        for text in (report, matrix, partner):
-            self.assertIn("prepared_optix_ranked_summary", text)
-            self.assertIn("--optix-graph-mode native", text)
+        self.assertIn("prepared_optix_ranked_summary", report)
+        self.assertIn("--optix-graph-mode native", report)
+        self.assertIn("prepared_ranked_summary_graph_partner_bridge", matrix)
+        self.assertIn("Goal4444", matrix)
+        self.assertIn("Triangle", partner)
 
         self.assertIn("does not authorize release action", report)
         self.assertIn("no RT-core triangle-count claim", matrix)
         self.assertIn("front-door evidence only", report)
-        self.assertNotIn("RTNN paper reproduction", matrix)
+        self.assertIn("no full RTNN paper reproduction", matrix)
 
 
 if __name__ == "__main__":

@@ -21,11 +21,11 @@ class Goal4055BarnesHutRouteMetadataAfterNumbaSessionTest(unittest.TestCase):
     def test_route_decision_mentions_prepared_numba_session_without_promoting_whole_app(self) -> None:
         row = _by_app(rt.current_benchmark_route_decisions(), "barnes_hut")
 
-        self.assertIn("Goal4053", row["current_reader_decision"])
-        self.assertIn("prepared grouped-vector session", row["user_choice_guidance"])
-        self.assertIn("deeper hierarchical vector primitive design", row["next_runtime_action"])
-        self.assertIn("Goal4052", row["evidence_refs"])
-        self.assertIn("Goal4053", row["evidence_refs"])
+        self.assertIn("Goal4442", row["current_reader_decision"])
+        self.assertIn("prepared_aggregate_frontier", row["user_choice_guidance"])
+        self.assertIn("fused RT-native/device", row["next_runtime_action"])
+        self.assertIn("Goal4438", row["evidence_refs"])
+        self.assertIn("Goal4442", row["evidence_refs"])
         self.assertFalse(row["public_speedup_claim_authorized"])
         self.assertFalse(row["whole_app_speedup_claim_authorized"])
         self.assertFalse(row["app_specific_native_engine_logic_allowed"])

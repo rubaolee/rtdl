@@ -14,17 +14,11 @@ class Goal4049RtDbscanRouteMetadataAfterSignatureModeTest(unittest.TestCase):
     def test_route_records_signature_output_without_default_promotion(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertIn("Goal4046/4047", route["current_reader_decision"])
-        self.assertIn("component-size signature", route["current_reader_decision"])
-        self.assertIn("graph-component contract", route["current_reader_decision"])
-        self.assertIn(
-            "partition_convergence_hybrid full-DBSCAN promotion after Goal4047 graph-component-only app mode",
-            route["rejected_or_unpromoted_candidates"],
-        )
-        self.assertIn("component-size signature mode explicit", route["next_runtime_action"])
-        self.assertIn("fused resident component-label continuation", route["next_runtime_action"])
-        self.assertIn("Goal4046", route["evidence_refs"])
-        self.assertIn("Goal4047", route["evidence_refs"])
+        self.assertIn("prepared direct-status", route["current_reader_decision"])
+        self.assertIn("all-items direct-status", route["current_reader_decision"])
+        self.assertIn("hidden factor selection", route["next_runtime_action"])
+        self.assertIn("Goal4108", route["evidence_refs"])
+        self.assertIn("Goal4177", route["evidence_refs"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(route["release_authorized"])
 
