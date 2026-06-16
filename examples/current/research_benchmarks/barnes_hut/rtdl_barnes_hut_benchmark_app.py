@@ -57,6 +57,8 @@ MODES = (
     "aggregate_frontier_expanded_membership_cpu",
     "aggregate_frontier_expanded_membership_embree",
     "aggregate_frontier_expanded_membership_optix",
+    "aggregate_frontier_weighted_vector_cpu_host",
+    "aggregate_frontier_weighted_vector_embree_host",
     "force_contributions_bucketized_cpu",
     "bucketized_force_cpu",
     "streamed_force_sum_bucketized_cpu",
@@ -126,6 +128,7 @@ def scope_payload() -> dict[str, Any]:
             "generic_bucketized_aggregate_tree_2d_v1",
             "generic_aggregate_tree_opening_frontier_2d_v1",
             "generic_aggregate_frontier_collect_2d_v1",
+            "generic_aggregate_frontier_collect_2d_host_weighted_vector_sum_baseline",
             "generic_expanded_aabb_point_membership_rows_2d_v1",
             "generic_weighted_inverse_square_contribution_rows_2d_v1",
             "generic_grouped_vector_sum_rows_2d_v1",
@@ -874,6 +877,240 @@ def _force_rows_from_frontier(
         }
         for body in bodies
     ), contributions, vector_sums
+
+
+def _host_weighted_vector_sum_from_frontier_rows(
+    bodies: tuple[app.Body, ...],
+    tree_nodes: tuple[rt.AggregateTreeNodeRow, ...],
+    frontier_rows: tuple[dict[str, object], ...],
+    *,
+    softening: float,
+) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
+    source_by_id = {int(body.id): body for body in bodies}
+    target_by_id = dict(source_by_id)
+    node_by_id = {int(node.id): node for node in tree_nodes}
+    vector_x_by_id = {int(body.id): 0.0 for body in bodies}
+    vector_y_by_id = {int(body.id): 0.0 for body in bodies}
+    aggregate_count_by_id = {int(body.id): 0 for body in bodies}
+    exact_count_by_id = {int(body.id): 0 for body in bodies}
+    softening_sq = float(softening) * float(softening)
+    aggregate_count = 0
+    exact_count = 0
+
+    for row in frontier_rows:
+        source_id = int(row["source_id"])
+        source = source_by_id[source_id]
+        kind_code = int(row["frontier_kind_code"])
+        if kind_code == 1:
+            node = node_by_id[int(row["item_id"])]
+            target_x = float(node.cx)
+            target_y = float(node.cy)
+            target_mass = float(node.mass)
+            aggregate_count += 1
+            aggregate_count_by_id[source_id] += 1
+        elif kind_code == 2:
+            target = target_by_id[int(row["item_id"])]
+            target_x = float(target.x)
+            target_y = float(target.y)
+            target_mass = float(target.mass)
+            exact_count += 1
+            exact_count_by_id[source_id] += 1
+        else:
+            raise ValueError(f"unsupported aggregate-frontier kind code: {kind_code}")
+
+        dx = target_x - float(source.x)
+        dy = target_y - float(source.y)
+        dist_sq = dx * dx + dy * dy + softening_sq
+        if dist_sq == 0.0:
+            continue
+        inv_dist = 1.0 / (dist_sq ** 0.5)
+        scale = float(source.mass) * target_mass * inv_dist * inv_dist * inv_dist
+        vector_x_by_id[source_id] += dx * scale
+        vector_y_by_id[source_id] += dy * scale
+
+    force_rows = tuple(
+        {
+            "body_id": int(body.id),
+            "force_x": float(vector_x_by_id[int(body.id)]),
+            "force_y": float(vector_y_by_id[int(body.id)]),
+            "contribution_count": int(aggregate_count_by_id[int(body.id)] + exact_count_by_id[int(body.id)]),
+            "aggregate_contribution_count": int(aggregate_count_by_id[int(body.id)]),
+            "exact_contribution_count": int(exact_count_by_id[int(body.id)]),
+        }
+        for body in bodies
+    )
+    return force_rows, {
+        "frontier_row_count": len(frontier_rows),
+        "aggregate_contribution_row_count": aggregate_count,
+        "exact_contribution_row_count": exact_count,
+        "source_count": len(bodies),
+        "softening": float(softening),
+        "contribution_rows_materialized_on_host": False,
+        "streamed_host_accumulation": True,
+    }
+
+
+def _aggregate_frontier_weighted_vector_host_payload(
+    *,
+    body_count: int | None,
+    theta: float,
+    bucket_size: int,
+    max_depth: int,
+    backend: str,
+    skip_validation: bool,
+    force_output_mode: str,
+    frontier_row_capacity: int | None,
+    frontier_capacity_multiplier: int,
+) -> dict[str, Any]:
+    if backend not in {"cpu", "embree"}:
+        raise ValueError("host aggregate-frontier baseline backend must be cpu or embree")
+    if frontier_row_capacity is not None and frontier_row_capacity <= 0:
+        raise ValueError("frontier_row_capacity must be positive when provided")
+    if frontier_capacity_multiplier <= 0:
+        raise ValueError("frontier_capacity_multiplier must be positive")
+
+    total_start = time.perf_counter()
+    body_start = time.perf_counter()
+    bodies = _make_bodies(body_count)
+    body_generation_sec = time.perf_counter() - body_start
+
+    tree_start = time.perf_counter()
+    tree = rt.build_bucketized_aggregate_tree_2d(
+        bodies,
+        bucket_size=bucket_size,
+        max_depth=max_depth,
+    )
+    tree_nodes = tuple(tree["nodes"])
+    tree_build_sec = time.perf_counter() - tree_start
+
+    row_capacity = (
+        int(frontier_row_capacity)
+        if frontier_row_capacity is not None
+        else max(1024, len(bodies) * int(frontier_capacity_multiplier))
+    )
+    collect_start = time.perf_counter()
+    if backend == "embree":
+        collected = rt.collect_aggregate_frontier_2d_embree(
+            bodies,
+            tree_nodes,
+            theta=theta,
+            max_total_rows=row_capacity,
+        )
+    else:
+        collected = rt.collect_aggregate_frontier_2d(
+            bodies,
+            tree_nodes,
+            theta=theta,
+            max_total_rows=row_capacity,
+        )
+    frontier_collect_sec = time.perf_counter() - collect_start
+
+    vector_start = time.perf_counter()
+    force_rows, vector_summary = _host_weighted_vector_sum_from_frontier_rows(
+        bodies,
+        tree_nodes,
+        tuple(collected["frontier_rows"]),
+        softening=app.SOFTENING,
+    )
+    vector_sum_sec = time.perf_counter() - vector_start
+    total_sec = time.perf_counter() - total_start
+    force_sample, force_truncated = _truncate_rows(force_rows)
+
+    validation: dict[str, object]
+    if skip_validation or len(bodies) > 2048:
+        validation = {
+            "skipped": True,
+            "reason": "user_skip_validation" if skip_validation else "body_count_above_2048",
+        }
+    else:
+        reference = rt.sum_aggregate_frontier_weighted_vectors_2d(
+            bodies,
+            bodies,
+            tree_nodes,
+            theta=theta,
+            softening=app.SOFTENING,
+        )
+        expected_by_id = {
+            int(row["source_id"]): (float(row["vector_x"]), float(row["vector_y"]))
+            for row in reference["vector_sum_rows"]
+        }
+        max_abs_diff_x = max(
+            abs(float(row["force_x"]) - expected_by_id[int(row["body_id"])][0])
+            for row in force_rows
+        )
+        max_abs_diff_y = max(
+            abs(float(row["force_y"]) - expected_by_id[int(row["body_id"])][1])
+            for row in force_rows
+        )
+        validation = {
+            "skipped": False,
+            "compared_against": "sum_aggregate_frontier_weighted_vectors_2d_cpu_reference",
+            "tolerance": 1.0e-7,
+            "max_abs_diff_x": max_abs_diff_x,
+            "max_abs_diff_y": max_abs_diff_y,
+            "passed": max_abs_diff_x <= 1.0e-7 and max_abs_diff_y <= 1.0e-7,
+            "reference_frontier_row_count": int(reference["summary"]["contribution_row_count"]),
+        }
+        if not bool(validation["passed"]):
+            raise AssertionError("host aggregate-frontier weighted-vector baseline failed validation")
+
+    return {
+        "app": "barnes_hut_force_app",
+        "backend": f"{backend}+host_python_vector_sum",
+        "mode": f"aggregate_frontier_weighted_vector_{backend}_host",
+        "body_count": len(bodies),
+        "theta": theta,
+        "softening": app.SOFTENING,
+        "bucket_size": bucket_size,
+        "max_depth": max_depth,
+        "tree_summary": tree["summary"],
+        "row_capacity": row_capacity,
+        "run_phases": {
+            "body_generation_sec": body_generation_sec,
+            "tree_build_sec": tree_build_sec,
+            "frontier_collect_sec": frontier_collect_sec,
+            "vector_sum_sec": vector_sum_sec,
+            "total_sec": total_sec,
+        },
+        "frontier_collection": {
+            "contract": collected["metadata"]["contract"],
+            "backend": backend,
+            "native_symbol": collected["metadata"].get("native_symbol"),
+            "frontier_row_count": int(collected["summary"]["frontier_row_count"]),
+            "accepted_aggregate_row_count": int(collected["summary"]["accepted_aggregate_row_count"]),
+            "fallback_exact_row_count": int(collected["summary"]["fallback_exact_row_count"]),
+            "frontier_rows_materialized_on_host": True,
+        },
+        "vector_sum_summary": {
+            **vector_summary,
+            "contract": "generic_aggregate_frontier_collect_2d_host_weighted_vector_sum_baseline",
+            "force_rows": force_sample if force_output_mode == "full" else [],
+            "force_rows_truncated": force_truncated if force_output_mode == "full" else True,
+            "force_output_mode": force_output_mode,
+            "checksum_force_x": sum(float(row["force_x"]) for row in force_rows),
+            "checksum_force_y": sum(float(row["force_y"]) for row in force_rows),
+        },
+        "validation": validation,
+        "claim_flags": {
+            "same_logical_frontier_contract": True,
+            "same_device_resident_contract": False,
+            "frontier_rows_materialized_on_host": True,
+            "contribution_rows_materialized_on_host": False,
+            "native_engine_app_specific": False,
+            "automatic_partner_selection_allowed": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+        },
+        "boundary": (
+            f"Host baseline for {backend} aggregate-frontier collection plus "
+            "streamed Python weighted-vector accumulation. It shares the logical "
+            "frontier/vector output contract with the prepared OptiX app mode, "
+            "but it intentionally materializes frontier rows on host and is not "
+            "the same device-resident handoff contract."
+        ),
+    }
 
 
 def _force_contributions_payload(
@@ -1637,6 +1874,29 @@ def run_benchmark(
                 "python_opening_and_force_interpretation"
             ),
             rt_core_accelerated=True,
+        )
+    if mode in {"aggregate_frontier_weighted_vector_cpu_host", "aggregate_frontier_weighted_vector_embree_host"}:
+        if require_rt_core:
+            raise ValueError("--require-rt-core requires prepared_aggregate_frontier_weighted_vector_optix")
+        backend = "embree" if mode == "aggregate_frontier_weighted_vector_embree_host" else "cpu"
+        return _annotate(
+            _aggregate_frontier_weighted_vector_host_payload(
+                body_count=body_count,
+                theta=theta,
+                bucket_size=bucket_size,
+                max_depth=max_depth,
+                backend=backend,
+                skip_validation=skip_validation,
+                force_output_mode=force_output_mode,
+                frontier_row_capacity=frontier_row_capacity,
+                frontier_capacity_multiplier=frontier_capacity_multiplier,
+            ),
+            mode=mode,
+            contract=(
+                f"{rt.AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT}+"
+                "generic_aggregate_frontier_collect_2d_host_weighted_vector_sum_baseline"
+            ),
+            rt_core_accelerated=False,
         )
     if mode == "force_contributions_bucketized_cpu":
         return _annotate(

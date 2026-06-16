@@ -96,7 +96,7 @@ v2.14 evidence:
 | Robot collision | `robot_collision_optix_prepared_device_count` | primitive-only prepared static-scene collision count path | NVIDIA pod for OptiX timing |
 | Contact manifold | `contact_manifold_optix_native_collect_k` | bounded collect/witness primitive path; no manifold-native ABI | NVIDIA pod for OptiX timing |
 | RayDB-style | `raydb_style_optix_count_primitive_first` | primitive-first grouped count path; partner rows only for unfused continuations | NVIDIA pod; CUDA pod for CuPy/Numba partner comparison |
-| Barnes-Hut | `barnes_hut_prepared_aggregate_frontier_numba` | prepared aggregate-frontier device columns plus Numba weighted-vector continuation; CuPy remains same-contract comparison | NVIDIA/CUDA pod with OptiX, CuPy, and Numba |
+| Barnes-Hut | `barnes_hut_prepared_aggregate_frontier_numba` | prepared aggregate-frontier device columns plus Numba weighted-vector continuation; CuPy remains same-contract comparison; CPU/Embree host baselines are diagnostic only | NVIDIA/CUDA pod with OptiX, CuPy, and Numba |
 | LibRTS spatial index | `librts_spatial_index_optix_aabb_index` | prepared AABB-index benchmark slice, not full mutable LibRTS | NVIDIA pod for OptiX timing |
 | RTNN | `rtnn_prepared_optix_ranked_summary` | prepared fixed-radius ranked summary path | NVIDIA pod for OptiX timing |
 | Triangle counting | `triangle_counting_optix_native_summary` | explicit native graph summary path; candidate-row interpretation stays app code | NVIDIA pod for OptiX timing |
@@ -109,6 +109,7 @@ v2.14 evidence:
 - [Large-scale CuPy/Numba partner comparison](../reports/goal4266_large_scale_cupy_numba_partner_comparison_2026-06-09.md)
 - [Barnes-Hut prepared aggregate-frontier partner scale ladder](../reports/goal4438_v3_0_m41_barnes_hut_prepared_frontier_partner_scale_ladder_2026-06-16.md)
 - [Barnes-Hut prepared aggregate-frontier app mode](../reports/goal4439_v3_0_m42_barnes_hut_prepared_frontier_app_mode_2026-06-16.md)
+- [Barnes-Hut host baselines for the prepared app route](../reports/goal4440_v3_0_m43_barnes_hut_host_baselines_2026-06-16.md)
 
 ## Reading Rules
 
@@ -130,7 +131,10 @@ v2.14 evidence:
   the prepared aggregate-frontier device-column weighted-vector contract:
   Numba wins that measured partner route. Goal4439 exposes the route through
   the benchmark app as `prepared_aggregate_frontier_weighted_vector_optix`.
-  This is not a universal Numba, RT-core, or whole N-body speedup claim.
+  Goal4440 adds CPU/Embree host-materialized logical baselines for that route;
+  they are correctness and bottleneck evidence, not public backend speedup
+  wording. This is not a universal Numba, RT-core, or whole N-body speedup
+  claim.
 - The RayJoin external comparison is useful for LSI/PIP diagnosis, but it is
   not a full RayJoin paper reproduction and does not authorize RTDL-beats-RayJoin
   wording.

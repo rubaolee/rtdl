@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4439.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4440.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -30,7 +30,9 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Numba is currently fastest there, while CuPy remains the measured comparison "
     "partner, not the default winner for that contract. Goal4439 exposes that "
     "route as the explicit Barnes-Hut app mode "
-    "`prepared_aggregate_frontier_weighted_vector_optix`."
+    "`prepared_aggregate_frontier_weighted_vector_optix`. Goal4440 adds "
+    "CPU and Embree host-materialized logical baselines for that route and "
+    "keeps them diagnostic, not public GPU-vs-CPU or OptiX-vs-Embree wording."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -430,7 +432,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "that favored CuPy remain scoped to their older contract. Goal4053 still records a "
             "prepared grouped-vector session for presegmented typed streams. Goal4439 exposes "
             "the current route as the explicit app mode "
-            "prepared_aggregate_frontier_weighted_vector_optix."
+            "prepared_aggregate_frontier_weighted_vector_optix. Goal4440 adds CPU and Embree "
+            "host-materialized logical baselines; they match frontier/vector semantics but are "
+            "not same device-resident backend comparisons."
         ),
         primary_route="RTDL/OptiX membership primitive plus explicit force-vector partner continuation",
         partner_policy="numba_fastest_cupy_comparison",
@@ -448,11 +452,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "universal CuPy fastest claim",
             "whole Barnes-Hut speedup claim",
             "RT-core N-body speedup claim",
+            "public backend speedup claim from host-materialized CPU/Embree baselines",
         ),
         next_runtime_action=(
-            "build same-contract CPU/Embree evidence for the explicit app mode before any "
-            "public whole-app or backend speedup wording; deeper hierarchical vector primitive "
-            "design remains future work"
+            "build a fused or device/engine-resident CPU-side baseline before any public "
+            "whole-app or backend speedup wording; Goal4440 host baselines are diagnostic only, "
+            "and deeper hierarchical vector primitive design remains future work"
         ),
         evidence_refs=(
             "Goal2803",
@@ -465,6 +470,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4436",
             "Goal4438",
             "Goal4439",
+            "Goal4440",
         ),
         pod_needed_next=False,
     ),
