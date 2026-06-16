@@ -124,6 +124,7 @@ from .numba_partner_continuation import NUMBA_SEGMENTED_MIN_F64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_SUM_F64_OPERATION
 from .numba_partner_continuation import NUMBA_SQRT_F64_OPERATION
 from .numba_partner_continuation import describe_numba_compact_mask_i64
+from .numba_partner_continuation import configure_numba_cuda_toolchain_environment
 from .numba_partner_continuation import describe_numba_global_argmax_u32_f64
 from .numba_partner_continuation import describe_numba_grouped_argmax_f64
 from .numba_partner_continuation import describe_numba_grouped_argmin_f64
@@ -2435,6 +2436,7 @@ __all__ = [
     "NUMBA_SEGMENTED_SUM_F64_OPERATION",
     "NUMBA_SQRT_F64_OPERATION",
     "describe_numba_compact_mask_i64",
+    "configure_numba_cuda_toolchain_environment",
     "describe_numba_global_argmax_u32_f64",
     "describe_numba_grouped_argmax_f64",
     "describe_numba_grouped_argmin_f64",

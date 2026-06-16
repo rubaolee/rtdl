@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import os
+import site
+from pathlib import Path
 from time import perf_counter
 from typing import Any
 
@@ -31,6 +34,7 @@ NUMBA_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 NUMBA_GROUP_ID_VALIDATION_MODE = "device_resident_error_flag"
 NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION = "rtdl.v2_9.numba_grouped_vector_sum_offsets_session.v1"
 _NUMBA_KERNEL_CACHE: dict[tuple[int, str], Any] = {}
+_NUMBA_CUDA_TOOLCHAIN_ENVIRONMENT: dict[str, object] | None = None
 
 
 def numba_partner_available() -> bool:
@@ -2014,13 +2018,173 @@ def _import_numba_stack() -> tuple[Any, Any]:
     return cuda, np
 
 
+def configure_numba_cuda_toolchain_environment() -> dict[str, object]:
+    """Make pip-installed CUDA compiler bits visible to Numba when available.
+
+    Driver-550 pods need Numba to use a CUDA 12.4 `ptxas`/NVVM package instead
+    of a newer PTX producer. This helper is intentionally environment-only: it
+    does not install packages and it does not affect RTDL's native OptiX build.
+    """
+
+    global _NUMBA_CUDA_TOOLCHAIN_ENVIRONMENT
+    if _NUMBA_CUDA_TOOLCHAIN_ENVIRONMENT is not None:
+        return dict(_NUMBA_CUDA_TOOLCHAIN_ENVIRONMENT)
+
+    prefix = _locate_numba_cuda_prefix()
+    if prefix is None:
+        _NUMBA_CUDA_TOOLCHAIN_ENVIRONMENT = {
+            "configured": False,
+            "reason": "nvidia_cuda_nvcc_package_not_found",
+            "numba_cuda_prefix": os.environ.get("NUMBA_CUDA_PREFIX"),
+        }
+        return dict(_NUMBA_CUDA_TOOLCHAIN_ENVIRONMENT)
+
+    bin_dir = prefix / "bin"
+    nvvm_lib_dir = prefix / "nvvm" / "lib64"
+    system_cuda_prefix = _locate_system_cuda_prefix()
+    os.environ.setdefault("NUMBA_CUDA_PREFIX", str(prefix))
+    os.environ.setdefault("CUDA_HOME", str(prefix))
+    os.environ.setdefault("CUDA_PATH", str(prefix))
+    system_cuda_lib_dirs: list[str] = []
+    if system_cuda_prefix is not None:
+        system_bin_dir = system_cuda_prefix / "bin"
+        if system_bin_dir.exists():
+            _prepend_env_path("PATH", system_bin_dir)
+        for candidate in (
+            system_cuda_prefix / "targets" / "x86_64-linux" / "lib",
+            system_cuda_prefix / "lib64",
+        ):
+            if candidate.exists():
+                _prepend_env_path("LD_LIBRARY_PATH", candidate)
+                system_cuda_lib_dirs.append(str(candidate))
+    _prepend_env_path("PATH", bin_dir)
+    if nvvm_lib_dir.exists():
+        _prepend_env_path("LD_LIBRARY_PATH", nvvm_lib_dir)
+    cuda_driver = _locate_cuda_driver_library()
+    if cuda_driver is not None:
+        os.environ.setdefault("NUMBA_CUDA_DRIVER", str(cuda_driver))
+
+    _NUMBA_CUDA_TOOLCHAIN_ENVIRONMENT = {
+        "configured": True,
+        "numba_cuda_prefix": str(prefix),
+        "ptxas": str(_ptxas_path(prefix)),
+        "nvvm_lib_dir": str(nvvm_lib_dir),
+        "system_cuda_prefix": None if system_cuda_prefix is None else str(system_cuda_prefix),
+        "system_cuda_lib_dirs": tuple(system_cuda_lib_dirs),
+        "numba_cuda_driver": os.environ.get("NUMBA_CUDA_DRIVER"),
+        "set_cuda_home": os.environ.get("CUDA_HOME") == str(prefix),
+        "set_cuda_path": os.environ.get("CUDA_PATH") == str(prefix),
+        "prepended_path": str(bin_dir) in os.environ.get("PATH", "").split(os.pathsep),
+        "prepended_ld_library_path": str(nvvm_lib_dir) in os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep),
+        "does_not_install_packages": True,
+        "does_not_configure_rtdl_native_optix": True,
+    }
+    return dict(_NUMBA_CUDA_TOOLCHAIN_ENVIRONMENT)
+
+
 def _activate_numba_cuda_redirector() -> None:
     """Activate numba-cuda's redirector when installed via --target/PYTHONPATH."""
 
+    configure_numba_cuda_toolchain_environment()
     try:
         import _numba_cuda_redirector  # noqa: F401
     except ImportError:
         pass
+
+
+def _locate_numba_cuda_prefix() -> Path | None:
+    env_prefix = os.environ.get("NUMBA_CUDA_PREFIX")
+    candidates: list[Path] = []
+    if env_prefix:
+        candidates.append(Path(env_prefix))
+    for raw_root in _site_package_roots():
+        candidates.append(Path(raw_root) / "nvidia" / "cuda_nvcc")
+    for candidate in candidates:
+        if _ptxas_path(candidate).exists() and _nvvm_library_present(candidate):
+            return candidate
+    return None
+
+
+def _locate_cuda_driver_library() -> Path | None:
+    env_driver = os.environ.get("NUMBA_CUDA_DRIVER")
+    if env_driver and Path(env_driver).exists():
+        return Path(env_driver)
+    for raw in (
+        "/lib/x86_64-linux-gnu/libcuda.so.1",
+        "/lib/x86_64-linux-gnu/libcuda.so",
+        "/usr/lib/x86_64-linux-gnu/libcuda.so.1",
+        "/usr/lib/x86_64-linux-gnu/libcuda.so",
+        "/usr/lib/wsl/lib/libcuda.so.1",
+        "/usr/lib/wsl/lib/libcuda.so",
+    ):
+        candidate = Path(raw)
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def _locate_system_cuda_prefix() -> Path | None:
+    candidates: list[Path] = []
+    env_prefix = os.environ.get("RTDL_CUDA_PREFIX")
+    if env_prefix:
+        candidates.append(Path(env_prefix))
+    candidates.extend(
+        Path(raw)
+        for raw in (
+            "/usr/local/cuda-12",
+            "/usr/local/cuda",
+            "/usr/local/cuda-12.8",
+        )
+    )
+    for candidate in candidates:
+        if (candidate / "targets" / "x86_64-linux" / "lib").exists() or (candidate / "lib64").exists():
+            return candidate
+    return None
+
+
+def _site_package_roots() -> tuple[str, ...]:
+    roots: list[str] = []
+    try:
+        roots.extend(site.getsitepackages())
+    except Exception:
+        pass
+    try:
+        roots.append(site.getusersitepackages())
+    except Exception:
+        pass
+    seen: set[str] = set()
+    unique: list[str] = []
+    for root in roots:
+        if root and root not in seen:
+            seen.add(root)
+            unique.append(root)
+    return tuple(unique)
+
+
+def _ptxas_path(prefix: Path) -> Path:
+    executable = "ptxas.exe" if os.name == "nt" else "ptxas"
+    return prefix / "bin" / executable
+
+
+def _nvvm_library_present(prefix: Path) -> bool:
+    return any(
+        path.exists()
+        for path in (
+            prefix / "nvvm" / "lib64" / "libnvvm.so",
+            prefix / "nvvm" / "bin" / "nvvm64_40_0.dll",
+            prefix / "nvvm" / "lib" / "x64" / "nvvm.lib",
+        )
+    )
+
+
+def _prepend_env_path(name: str, path: Path) -> None:
+    if not path.exists():
+        return
+    value = str(path)
+    parts = [part for part in os.environ.get(name, "").split(os.pathsep) if part]
+    if value in parts:
+        return
+    os.environ[name] = os.pathsep.join((value, *parts)) if parts else value
 
 
 def _as_numba_cuda_vector(array: Any, *, name: str, dtype: Any, cuda: Any, np: Any) -> Any:

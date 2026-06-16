@@ -17,6 +17,9 @@ sys.path.insert(0, str(ROOT / "src"))
 def _has_cupy_numba_cuda() -> bool:
     try:
         import cupy  # noqa: F401
+        import rtdsl as rt
+
+        rt.configure_numba_cuda_toolchain_environment()
         from numba import cuda
     except Exception:
         return False
