@@ -229,6 +229,15 @@ def command_plan_payload() -> dict[str, Any]:
             "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay "
             "--segment-unique-key-builder numba_direct_sort_rle"
         ),
+        "rt_graph_2a1_segmented_prepared_fused_output_candidate": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
+            "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay "
+            "--segment-unique-key-builder numba_direct_sort_rle "
+            "--segment-ray-output-builder numba_fused_decode_project"
+        ),
         "rt_graph_2a1_segmented_scene_generic_rt_optix_cupy_partner": (
             "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
@@ -1022,6 +1031,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
     segment_query_schedule: str,
     segment_unique_key_builder: str,
     segment_ray_column_layout: str,
+    segment_ray_output_builder: str,
     segment_ray_build_telemetry: str,
     validate_oracle: bool = False,
 ) -> dict[str, Any]:
@@ -1030,6 +1040,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
     _validate_segment_query_schedule(segment_query_schedule)
     _validate_segment_unique_key_builder(segment_unique_key_builder)
     _validate_segment_ray_column_layout(segment_ray_column_layout)
+    _validate_segment_ray_output_builder(segment_ray_output_builder)
     _validate_segment_ray_build_telemetry(segment_ray_build_telemetry)
     normalized_backend = backend.lower().replace("-", "_")
     if normalized_backend != "optix" or detail != "summary" or partner != "cupy":
@@ -1041,6 +1052,13 @@ def rt_graph_2a1_segmented_generic_rt_payload(
         raise ValueError(
             "segment_ray_column_layout xz_constant_y_direction requires "
             "segment_query_schedule prepared_segment_replay"
+        )
+    if segment_ray_output_builder == "numba_fused_decode_project" and (
+        segment_ray_representation != "unique_weighted" or segment_ray_column_layout != "full"
+    ):
+        raise ValueError(
+            "segment_ray_output_builder numba_fused_decode_project requires "
+            "unique_weighted rays and full ray columns"
         )
     if edge_file is None or edge_format != "binary":
         raise ValueError("rt_graph_2a1_segmented_generic_rt requires --edge-file with --edge-format binary")
@@ -1102,6 +1120,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                     ray_representation=segment_ray_representation,
                     unique_key_builder=segment_unique_key_builder,
                     ray_column_layout=segment_ray_column_layout,
+                    ray_output_builder=segment_ray_output_builder,
                     segment_ray_build_telemetry=segment_ray_build_telemetry,
                     phase_timing_ms=replay_segment_ray_build_phase_ms
                     if segment_ray_build_telemetry != "none"
@@ -1164,6 +1183,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                         ray_representation=segment_ray_representation,
                         unique_key_builder=segment_unique_key_builder,
                         ray_column_layout=segment_ray_column_layout,
+                        ray_output_builder=segment_ray_output_builder,
                         segment_ray_build_telemetry=segment_ray_build_telemetry,
                         phase_timing_ms=run_segment_ray_build_phase_ms
                         if segment_ray_build_telemetry != "none"
@@ -1436,6 +1456,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     segment_query_schedule: str,
     segment_unique_key_builder: str,
     segment_ray_column_layout: str,
+    segment_ray_output_builder: str,
     segment_ray_build_telemetry: str,
 ) -> dict[str, Any]:
     _validate_repetition(warmup=warmup, repeat=repeat)
@@ -1443,6 +1464,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     _validate_segment_query_schedule(segment_query_schedule)
     _validate_segment_unique_key_builder(segment_unique_key_builder)
     _validate_segment_ray_column_layout(segment_ray_column_layout)
+    _validate_segment_ray_output_builder(segment_ray_output_builder)
     _validate_segment_ray_build_telemetry(segment_ray_build_telemetry)
     normalized_backend = backend.lower().replace("-", "_")
     if normalized_backend != "optix" or detail != "summary" or partner != "cupy":
@@ -1454,6 +1476,13 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
         raise ValueError(
             "segment_ray_column_layout xz_constant_y_direction requires "
             "segment_query_schedule prepared_segment_replay"
+        )
+    if segment_ray_output_builder == "numba_fused_decode_project" and (
+        segment_ray_representation != "unique_weighted" or segment_ray_column_layout != "full"
+    ):
+        raise ValueError(
+            "segment_ray_output_builder numba_fused_decode_project requires "
+            "unique_weighted rays and full ray columns"
         )
     if edge_file is None or edge_format != "binary":
         raise ValueError("rt_graph_2a1_segmented_scene_generic_rt requires --edge-file with --edge-format binary")
@@ -1524,6 +1553,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                         ray_representation=segment_ray_representation,
                         unique_key_builder=segment_unique_key_builder,
                         ray_column_layout=segment_ray_column_layout,
+                        ray_output_builder=segment_ray_output_builder,
                         segment_ray_build_telemetry=segment_ray_build_telemetry,
                         phase_timing_ms=replay_segment_ray_build_phase_ms
                         if segment_ray_build_telemetry != "none"
@@ -1602,6 +1632,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                             ray_representation=segment_ray_representation,
                             unique_key_builder=segment_unique_key_builder,
                             ray_column_layout=segment_ray_column_layout,
+                            ray_output_builder=segment_ray_output_builder,
                             segment_ray_build_telemetry=segment_ray_build_telemetry,
                             phase_timing_ms=run_segment_ray_build_phase_ms
                             if segment_ray_build_telemetry != "none"
@@ -1708,6 +1739,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                 "segment_query_schedule": segment_query_schedule,
                 "segment_unique_key_builder": segment_unique_key_builder,
                 "segment_ray_column_layout": segment_ray_column_layout,
+                "segment_ray_output_builder": segment_ray_output_builder,
                 "segment_ray_build_telemetry": segment_ray_build_telemetry,
             },
         },
@@ -1719,6 +1751,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
             "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_output_builder": segment_ray_output_builder,
             "segment_ray_build_telemetry": segment_ray_build_telemetry,
         },
         partner=partner,
@@ -1769,6 +1802,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
             "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_output_builder": segment_ray_output_builder,
             "segment_ray_build_telemetry": segment_ray_build_telemetry,
             "triangle_eps": 0.2,
             "ray_tmax": 0.2,
@@ -1796,6 +1830,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
             "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_output_builder": segment_ray_output_builder,
             "segment_ray_build_telemetry": segment_ray_build_telemetry,
             "counts_download_ms": float(scene_plan["counts_download_ms"]),
             "scenes_preview": scene_preview,
@@ -1839,6 +1874,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
             "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_output_builder": segment_ray_output_builder,
             "segment_ray_build_telemetry": segment_ray_build_telemetry,
             "reduce_hits": _elapsed_ms(ran, reduced),
             "total": _elapsed_ms(started, reduced),
@@ -2303,6 +2339,13 @@ def _validate_segment_unique_key_builder(value: str) -> None:
 def _validate_segment_ray_column_layout(value: str) -> None:
     if value not in {"full", "xz_constant_y_direction"}:
         raise ValueError("segment_ray_column_layout must be full or xz_constant_y_direction")
+
+
+def _validate_segment_ray_output_builder(value: str) -> None:
+    if value not in {"cupy_vectorized", "numba_fused_decode_project"}:
+        raise ValueError(
+            "segment_ray_output_builder must be cupy_vectorized or numba_fused_decode_project"
+        )
 
 
 def _validate_segment_ray_build_telemetry(value: str) -> None:
@@ -2775,13 +2818,21 @@ def _build_rt_graph_2a1_cupy_segment_rays(
     ray_representation: str = "duplicate",
     unique_key_builder: str = "cupy_repeat",
     ray_column_layout: str = "full",
+    ray_output_builder: str = "cupy_vectorized",
     segment_ray_build_telemetry: str = "none",
     phase_timing_ms: dict[str, float] | None = None,
 ):
     _validate_segment_ray_representation(ray_representation)
     _validate_segment_unique_key_builder(unique_key_builder)
     _validate_segment_ray_column_layout(ray_column_layout)
+    _validate_segment_ray_output_builder(ray_output_builder)
     _validate_segment_ray_build_telemetry(segment_ray_build_telemetry)
+    if ray_output_builder == "numba_fused_decode_project" and (
+        ray_representation != "unique_weighted" or ray_column_layout != "full"
+    ):
+        raise ValueError(
+            "ray_output_builder numba_fused_decode_project requires unique_weighted rays and full ray columns"
+        )
     cp = __import__("cupy")
     if segment_ray_build_telemetry == "sync_subphases":
         cp.cuda.Stream.null.synchronize()
@@ -2962,6 +3013,57 @@ def _build_rt_graph_2a1_cupy_segment_rays(
     axis_offset_x = contract.vertex_count / 2.0
     axis_offset_z = contract.vertex_count / 2.0
 
+    if ray_output_builder == "numba_fused_decode_project":
+        ids = cp.empty(ray_count, dtype=cp.uint32)
+        ox = cp.empty(ray_count, dtype=cp.float64)
+        oy = cp.empty(ray_count, dtype=cp.float64)
+        oz = cp.empty(ray_count, dtype=cp.float64)
+        dx = cp.empty(ray_count, dtype=cp.float64)
+        dy = cp.empty(ray_count, dtype=cp.float64)
+        dz = cp.empty(ray_count, dtype=cp.float64)
+        tmax = cp.empty(ray_count, dtype=cp.float64)
+        ray_weights = cp.empty(ray_count, dtype=cp.uint64)
+        from numba import cuda
+
+        kernel = _get_rt_graph_2a1_fill_weighted_rays_numba_kernel(cuda)
+        threads_per_block = 128
+        blocks = (int(ray_count) + threads_per_block - 1) // threads_per_block
+        kernel[blocks, threads_per_block](
+            unique_keys,
+            unique_counts,
+            ids,
+            ox,
+            oy,
+            oz,
+            dx,
+            dy,
+            dz,
+            tmax,
+            ray_weights,
+            int(contract.vertex_count),
+            float(axis_offset_x),
+            float(axis_offset_z),
+            int(ray_count),
+        )
+        cuda.synchronize()
+        _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "numba_fused_decode_project",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
+        return {
+            "ids": ids,
+            "ox": ox,
+            "oy": oy,
+            "oz": oz,
+            "dx": dx,
+            "dy": dy,
+            "dz": dz,
+            "tmax": tmax,
+        }, ray_weights
+
     if ray_column_layout == "xz_constant_y_direction":
         rays = {
             "ids": cp.arange(ray_count, dtype=cp.uint32),
@@ -3008,6 +3110,7 @@ _RT_GRAPH_1A2_FILL_RAYS_NUMBA_KERNEL = None
 _RT_GRAPH_2A1_FILL_TRIANGLES_NUMBA_KERNEL = None
 _RT_GRAPH_2A1_FILL_RAYS_NUMBA_KERNEL = None
 _RT_GRAPH_2A1_FILL_UNIQUE_KEYS_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_FILL_WEIGHTED_RAYS_NUMBA_KERNEL = None
 
 
 def _get_rt_graph_1a2_fill_triangles_numba_kernel(cuda):
@@ -3085,6 +3188,48 @@ def _get_rt_graph_2a1_fill_unique_keys_numba_kernel(cuda):
 
         _RT_GRAPH_2A1_FILL_UNIQUE_KEYS_NUMBA_KERNEL = _fill
     return _RT_GRAPH_2A1_FILL_UNIQUE_KEYS_NUMBA_KERNEL
+
+
+def _get_rt_graph_2a1_fill_weighted_rays_numba_kernel(cuda):
+    global _RT_GRAPH_2A1_FILL_WEIGHTED_RAYS_NUMBA_KERNEL
+    if _RT_GRAPH_2A1_FILL_WEIGHTED_RAYS_NUMBA_KERNEL is None:
+
+        @cuda.jit
+        def _fill(
+            unique_keys,
+            unique_counts,
+            ids,
+            ox,
+            oy,
+            oz,
+            dx,
+            dy,
+            dz,
+            tmax,
+            ray_weights,
+            key_base,
+            axis_offset_x,
+            axis_offset_z,
+            ray_count,
+        ):
+            ray_idx = cuda.grid(1)
+            if ray_idx >= ray_count:
+                return
+            key = unique_keys[ray_idx]
+            src = key // key_base
+            dst = key - src * key_base
+            ids[ray_idx] = ray_idx
+            ox[ray_idx] = float(src) - axis_offset_x
+            oy[ray_idx] = -0.1
+            oz[ray_idx] = float(dst) - axis_offset_z
+            dx[ray_idx] = 0.0
+            dy[ray_idx] = 1.0
+            dz[ray_idx] = 0.0
+            tmax[ray_idx] = 0.2
+            ray_weights[ray_idx] = unique_counts[ray_idx]
+
+        _RT_GRAPH_2A1_FILL_WEIGHTED_RAYS_NUMBA_KERNEL = _fill
+    return _RT_GRAPH_2A1_FILL_WEIGHTED_RAYS_NUMBA_KERNEL
 
 
 def _get_rt_graph_1a2_fill_rays_numba_kernel(cuda):
@@ -3797,6 +3942,7 @@ def run_app(
     segment_query_schedule: str = "per_run",
     segment_unique_key_builder: str = "cupy_repeat",
     segment_ray_column_layout: str = "full",
+    segment_ray_output_builder: str = "cupy_vectorized",
     segment_ray_build_telemetry: str = "none",
     validate_oracle: bool = False,
 ) -> dict[str, Any]:
@@ -3862,6 +4008,7 @@ def run_app(
             segment_query_schedule=segment_query_schedule,
             segment_unique_key_builder=segment_unique_key_builder,
             segment_ray_column_layout=segment_ray_column_layout,
+            segment_ray_output_builder=segment_ray_output_builder,
             segment_ray_build_telemetry=segment_ray_build_telemetry,
             validate_oracle=validate_oracle,
         )
@@ -3880,6 +4027,7 @@ def run_app(
             segment_query_schedule=segment_query_schedule,
             segment_unique_key_builder=segment_unique_key_builder,
             segment_ray_column_layout=segment_ray_column_layout,
+            segment_ray_output_builder=segment_ray_output_builder,
             segment_ray_build_telemetry=segment_ray_build_telemetry,
         )
     if mode == "rt_graph_1a2_generic_rt":
@@ -3989,6 +4137,16 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--segment-ray-output-builder",
+        choices=("cupy_vectorized", "numba_fused_decode_project"),
+        default="cupy_vectorized",
+        help=(
+            "Segment ray output builder: existing CuPy vectorized decode/projection "
+            "or explicit no-C++ Numba fused decode/project candidate for unique "
+            "weighted full-column rays."
+        ),
+    )
+    parser.add_argument(
         "--segment-ray-build-telemetry",
         choices=("none", "sync_subphases"),
         default="none",
@@ -4032,6 +4190,7 @@ def main(argv: list[str] | None = None) -> int:
                 segment_query_schedule=args.segment_query_schedule,
                 segment_unique_key_builder=args.segment_unique_key_builder,
                 segment_ray_column_layout=args.segment_ray_column_layout,
+                segment_ray_output_builder=args.segment_ray_output_builder,
                 segment_ray_build_telemetry=args.segment_ray_build_telemetry,
                 validate_oracle=args.validate_oracle,
             ),
