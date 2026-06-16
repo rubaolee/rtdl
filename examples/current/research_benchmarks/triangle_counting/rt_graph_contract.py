@@ -337,10 +337,11 @@ def build_rt_graph_triangle_summary_contract_cupy_binary(path: str | Path) -> RT
 def build_rt_graph_triangle_summary_contract_numba_binary(path: str | Path) -> RTGraphTriangleSummaryContract:
     """Build a summary contract with Numba CUDA device columns.
 
-    This is a no-C++ reference partner route. Graph normalization and CSR/two-hop
-    construction reuse the existing Python contract builder, then the compact
-    summary columns are uploaded to Numba device arrays for the OptiX
-    device-column ABI.
+    This is a no-C++ reference partner route. M27 used the transitional
+    ``cpu_contract_then_numba_device_upload`` path. The current route reads the
+    binary edge file directly, builds the compact CSR/two-hop summary with
+    vectorized array operations, then uploads the summary columns to Numba
+    device arrays for the OptiX device-column ABI.
     """
     import time
 
@@ -354,23 +355,20 @@ def build_rt_graph_triangle_summary_contract_numba_binary(path: str | Path) -> R
     if edges_np.size % 2 != 0:
         raise ValueError("RT-Graph binary edge file size must be a multiple of two int32 values")
     edges_np = edges_np.reshape(-1, 2).astype(np.int64, copy=False)
+    if np.any(edges_np < 0):
+        raise ValueError("RT-Graph edge endpoints must be non-negative integers")
     timing_ms["load_np_ms"] = (time.perf_counter() - started) * 1000.0
 
     started = time.perf_counter()
-    contract = build_rt_graph_triangle_contract(
-        (tuple(map(int, edge)) for edge in edges_np.tolist()),
-        include_id_ascending_adapter=False,
-    )
-    timing_ms["cpu_contract_ms"] = (time.perf_counter() - started) * 1000.0
+    summary = _build_rt_graph_triangle_summary_arrays_numpy(edges_np)
+    timing_ms["direct_binary_summary_ms"] = (time.perf_counter() - started) * 1000.0
 
-    started = time.perf_counter()
-    directed_edges_host = _edges_to_numpy(contract.directed_edges)
-    row_offsets_host = np.asarray(contract.row_offsets, dtype=np.int64)
-    column_indices_host = np.asarray(contract.column_indices, dtype=np.int64)
-    two_hop_host = _two_hop_to_numpy(contract.two_hop_rays_2a1)
-    triangle_count = int(contract.triangle_count)
+    directed_edges_host = summary["directed_edges"]
+    row_offsets_host = summary["row_offsets"]
+    column_indices_host = summary["column_indices"]
+    two_hop_host = summary["two_hop_rays_2a1"]
+    triangle_count = int(summary["triangle_count"])
     duplicate_two_hop_count = int(two_hop_host[:, 2].sum(dtype=np.int64)) if two_hop_host.size else 0
-    timing_ms["host_summary_column_ms"] = (time.perf_counter() - started) * 1000.0
 
     started = time.perf_counter()
     device_arrays = {
@@ -387,26 +385,160 @@ def build_rt_graph_triangle_summary_contract_numba_binary(path: str | Path) -> R
 
     return RTGraphTriangleSummaryContract(
         original_edge_count=int(edges_np.shape[0]),
-        compacted_vertex_count=len(contract.compacted_vertex_ids),
-        directed_vertex_count=contract.vertex_count,
+        compacted_vertex_count=int(summary["compacted_vertex_count"]),
+        directed_vertex_count=int(summary["directed_vertex_count"]),
         directed_edges=directed_edges_host,
         row_offsets=row_offsets_host,
         column_indices=column_indices_host,
         triangle_count_value=triangle_count,
         two_hop_rays_2a1=two_hop_host,
         duplicate_two_hop_relation_count_value=duplicate_two_hop_count,
-        removed_low_degree_vertex_count=contract.removed_low_degree_vertex_count,
-        removed_low_degree_edge_count=contract.removed_low_degree_edge_count,
-        removed_duplicate_or_self_edge_count=contract.removed_duplicate_or_self_edge_count,
+        removed_low_degree_vertex_count=int(summary["removed_low_degree_vertex_count"]),
+        removed_low_degree_edge_count=int(summary["removed_low_degree_edge_count"]),
+        removed_duplicate_or_self_edge_count=int(summary["removed_duplicate_or_self_edge_count"]),
         partner="numba",
         partner_timing_ms={
             key: round(value, 3) for key, value in timing_ms.items()
         }
         | {
-            "construction_mode": "cpu_contract_then_numba_device_upload",
+            "construction_mode": "direct_binary_numpy_summary_then_numba_device_upload",
+            "supersedes_construction_mode": "cpu_contract_then_numba_device_upload",
         },
         device_arrays=device_arrays,
     )
+
+
+def _build_rt_graph_triangle_summary_arrays_numpy(edges_np):
+    import numpy as np
+
+    if edges_np.size == 0:
+        return {
+            "compacted_vertex_count": 0,
+            "directed_vertex_count": 0,
+            "directed_edges": np.empty((0, 2), dtype=np.int64),
+            "row_offsets": np.zeros(1, dtype=np.int64),
+            "column_indices": np.empty(0, dtype=np.int64),
+            "triangle_count": 0,
+            "two_hop_rays_2a1": np.empty((0, 3), dtype=np.int64),
+            "removed_low_degree_vertex_count": 0,
+            "removed_low_degree_edge_count": 0,
+            "removed_duplicate_or_self_edge_count": 0,
+        }
+
+    endpoints = edges_np.reshape(-1)
+    compacted_vertex_ids, inverse = np.unique(endpoints, return_inverse=True)
+    compacted_edges = inverse.reshape(-1, 2).astype(np.int64, copy=False)
+    node_count = int(compacted_vertex_ids.size)
+    degree = np.bincount(compacted_edges.reshape(-1), minlength=node_count).astype(np.int64, copy=False)
+
+    src = compacted_edges[:, 0]
+    dst = compacted_edges[:, 1]
+    deg_src = degree[src]
+    deg_dst = degree[dst]
+    swap = (deg_src > deg_dst) | ((deg_src == deg_dst) & (src > dst))
+    oriented_src = np.where(swap, dst, src)
+    oriented_dst = np.where(swap, src, dst)
+
+    keep_vertex = degree > 1
+    remap = np.cumsum(keep_vertex.astype(np.int64)) - 1
+    keep_edge = keep_vertex[oriented_src] & keep_vertex[oriented_dst]
+    directed_node_count = int(keep_vertex.sum())
+    removed_low_degree_edge_count = int((~keep_edge).sum())
+
+    if directed_node_count == 0 or not np.any(keep_edge):
+        directed_edge_keys = np.empty(0, dtype=np.int64)
+        directed_src = np.empty(0, dtype=np.int64)
+        column_indices = np.empty(0, dtype=np.int64)
+        row_offsets = np.zeros(directed_node_count + 1, dtype=np.int64)
+    else:
+        vsrc = remap[oriented_src[keep_edge]]
+        vdst = remap[oriented_dst[keep_edge]]
+        nonself = vsrc != vdst
+        vsrc = vsrc[nonself]
+        vdst = vdst[nonself]
+        if vsrc.size:
+            directed_edge_keys = np.unique(vsrc * directed_node_count + vdst).astype(np.int64, copy=False)
+            directed_src = (directed_edge_keys // directed_node_count).astype(np.int64, copy=False)
+            column_indices = (directed_edge_keys - directed_src * directed_node_count).astype(np.int64, copy=False)
+            row_counts = np.bincount(directed_src, minlength=directed_node_count).astype(np.int64, copy=False)
+            row_offsets = np.empty(directed_node_count + 1, dtype=np.int64)
+            row_offsets[0] = 0
+            row_offsets[1:] = np.cumsum(row_counts)
+        else:
+            directed_edge_keys = np.empty(0, dtype=np.int64)
+            directed_src = np.empty(0, dtype=np.int64)
+            column_indices = np.empty(0, dtype=np.int64)
+            row_offsets = np.zeros(directed_node_count + 1, dtype=np.int64)
+
+    two_hop_host, triangle_count = _build_two_hop_summary_numpy(
+        directed_edge_keys=directed_edge_keys,
+        directed_node_count=directed_node_count,
+        row_offsets=row_offsets,
+        column_indices=column_indices,
+    )
+    directed_edges_host = (
+        np.column_stack((directed_src, column_indices)).astype(np.int64, copy=False)
+        if directed_src.size
+        else np.empty((0, 2), dtype=np.int64)
+    )
+    removed_duplicate_or_self_edge_count = int(
+        edges_np.shape[0] - removed_low_degree_edge_count - directed_edges_host.shape[0]
+    )
+    return {
+        "compacted_vertex_count": node_count,
+        "directed_vertex_count": directed_node_count,
+        "directed_edges": directed_edges_host,
+        "row_offsets": row_offsets,
+        "column_indices": column_indices,
+        "triangle_count": int(triangle_count),
+        "two_hop_rays_2a1": two_hop_host,
+        "removed_low_degree_vertex_count": int(node_count - directed_node_count),
+        "removed_low_degree_edge_count": removed_low_degree_edge_count,
+        "removed_duplicate_or_self_edge_count": removed_duplicate_or_self_edge_count,
+    }
+
+
+def _build_two_hop_summary_numpy(
+    *,
+    directed_edge_keys,
+    directed_node_count: int,
+    row_offsets,
+    column_indices,
+):
+    import numpy as np
+
+    if directed_node_count == 0 or column_indices.size == 0:
+        return np.empty((0, 3), dtype=np.int64), 0
+    out_degree = row_offsets[1:] - row_offsets[:-1]
+    edge_src = np.repeat(np.arange(directed_node_count, dtype=np.int64), out_degree)
+    edge_mid = column_indices
+    counts = out_degree[edge_mid]
+    nonempty = counts > 0
+    counts = counts[nonempty]
+    if counts.size == 0:
+        return np.empty((0, 3), dtype=np.int64), 0
+    edge_src = edge_src[nonempty]
+    starts = row_offsets[edge_mid[nonempty]]
+    total_two_hop = int(counts.sum())
+    repeated_starts = np.repeat(starts, counts)
+    repeated_prefix = np.repeat(np.cumsum(counts) - counts, counts)
+    dst_index = repeated_starts + (np.arange(total_two_hop, dtype=np.int64) - repeated_prefix)
+    two_hop_dst = column_indices[dst_index]
+    two_hop_src = np.repeat(edge_src, counts)
+    two_hop_keys = two_hop_src * directed_node_count + two_hop_dst
+    unique_keys, unique_counts = np.unique(two_hop_keys, return_counts=True)
+    unique_keys = unique_keys.astype(np.int64, copy=False)
+    unique_counts = unique_counts.astype(np.int64, copy=False)
+
+    positions = np.searchsorted(directed_edge_keys, unique_keys)
+    in_range = positions < directed_edge_keys.size
+    found = np.zeros(unique_keys.shape, dtype=bool)
+    found[in_range] = directed_edge_keys[positions[in_range]] == unique_keys[in_range]
+    triangle_count = int(unique_counts[found].sum(dtype=np.int64))
+    ray_src = unique_keys // directed_node_count
+    ray_dst = unique_keys - ray_src * directed_node_count
+    two_hop_host = np.column_stack((ray_src, ray_dst, unique_counts)).astype(np.int64, copy=False)
+    return two_hop_host, triangle_count
 
 
 def build_rt_graph_triangle_contract(

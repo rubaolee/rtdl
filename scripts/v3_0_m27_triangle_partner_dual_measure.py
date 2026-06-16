@@ -103,8 +103,8 @@ def main() -> int:
     for row in rows:
         signatures_by_mode.setdefault(str(row["mode"]), set()).add(json.dumps(row["signature"], sort_keys=True))
     payload = {
-        "version": "rtdl.v3_0.triangle_partner_dual.m27",
-        "status": "m27_triangle_counting_exposes_cupy_and_numba_partner_summary_routes",
+        "version": "rtdl.v3_0.triangle_partner_dual.m48",
+        "status": "m48_triangle_counting_uses_direct_binary_numba_summary_construction",
         "parameters": {
             "cliques": args.cliques,
             "edge_count": args.cliques * 6,
@@ -131,7 +131,8 @@ def main() -> int:
         },
         "claim_boundary": {
             "cupy_route": "gpu_graph_contract_builder_and_optix_device_column_summary",
-            "numba_route": "cpu_contract_then_numba_device_upload_and_optix_device_column_summary",
+            "numba_route": "direct_binary_numpy_summary_then_numba_device_upload_and_optix_device_column_summary",
+            "numba_route_previous": "cpu_contract_then_numba_device_upload_and_optix_device_column_summary",
             "native_engine_customization": False,
             "app_specific_native_engine_logic_allowed": False,
             "automatic_partner_selection_authorized": False,

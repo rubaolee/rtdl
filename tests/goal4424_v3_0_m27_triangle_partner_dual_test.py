@@ -26,6 +26,7 @@ class Goal4424V30M27TrianglePartnerDualTest(unittest.TestCase):
         source = APP.read_text(encoding="utf-8")
         contract = CONTRACT.read_text(encoding="utf-8")
         self.assertIn("build_rt_graph_triangle_summary_contract_numba_binary", contract)
+        self.assertIn("direct_binary_numpy_summary_then_numba_device_upload", contract)
         self.assertIn("cpu_contract_then_numba_device_upload", contract)
         self.assertIn("cuda.to_device", contract)
         self.assertIn("partner not in {\"cupy\", \"numba\"}", source)
@@ -67,6 +68,7 @@ class Goal4424V30M27TrianglePartnerDualTest(unittest.TestCase):
             "cupy,numba",
             "signature_match_by_mode",
             "cpu_contract_then_numba_device_upload",
+            "direct_binary_numpy_summary_then_numba_device_upload",
             "v2_4_input_source_protocols",
             "prewarm",
         ):
