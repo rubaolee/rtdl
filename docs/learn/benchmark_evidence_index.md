@@ -121,6 +121,7 @@ v2.14 evidence:
 - [Goal4446 Robot Collision NumPy lowering](../reports/goal4446_v3_0_m50_robot_numpy_lowering_2026-06-16.md)
 - [Goal4447 current benchmark adequacy refresh](../reports/goal4447_v3_0_m51_current_benchmark_adequacy_refresh_2026-06-16.md)
 - [Goal4451 RayJoin PIP graph fail-closed](../reports/goal4451_v3_0_m55_rayjoin_pip_graph_fail_closed_2026-06-16.md)
+- [Goal4452 RT-DBSCAN route decision refresh](../reports/goal4452_v3_0_m56_rtdbscan_route_decision_refresh_2026-06-16.md)
 
 ## Reading Rules
 

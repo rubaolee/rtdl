@@ -16,7 +16,7 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_route_decisions()
         summary = rt.summarize_current_benchmark_route_decisions()
 
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4451.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4452.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
         self.assertEqual(10, summary["app_count"])
@@ -53,8 +53,9 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
 
         self.assertEqual("mixed_explicit", route["decision_kind"])
         self.assertEqual("mixed_explicit_user_choice", route["partner_policy"])
-        self.assertIn("unblocked", route["current_reader_decision"])
-        self.assertIn("conservative fallback/reference", route["user_choice_guidance"])
+        self.assertIn('output_mode="component_signature"', route["current_reader_decision"])
+        self.assertIn('output_mode="full"', route["current_reader_decision"])
+        self.assertIn("Choose the output contract first", route["user_choice_guidance"])
         self.assertIn("partition_cell_factor", route["user_choice_guidance"])
         self.assertIn("blocked grouped stream candidate from Goal3936", route["rejected_or_unpromoted_candidates"])
         self.assertIn("profile/reuse advisor", route["next_runtime_action"])
@@ -68,11 +69,14 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         self.assertIn("Goal4105", route["evidence_refs"])
         self.assertIn("Goal4108", route["evidence_refs"])
         self.assertIn("Goal4109", route["evidence_refs"])
+        self.assertIn("Goal4445", route["evidence_refs"])
+        self.assertIn("Goal4452", route["evidence_refs"])
         self.assertIn(
             "partition_convergence_hybrid universal default promotion after Goal4108 prepared replay and Goal4109 app smoke",
             route["rejected_or_unpromoted_candidates"],
         )
         self.assertIn("hidden factor selection", route["next_runtime_action"])
+        self.assertIn("automatic output_mode/partner selection after Goal4452 route refresh", route["rejected_or_unpromoted_candidates"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
 
     def test_barnes_hut_is_honest_about_mixed_cpu_fastest_route(self) -> None:

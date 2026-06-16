@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4451.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4452.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -58,7 +58,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "vectorized endpoint arrays for large prepared probes. Goal4451 hardens "
     "Spatial RayJoin repeated-PIP guidance by fail-closing the unsafe "
     "prepared-points CUDA graph replay path and preserving the prepared batch "
-    "executor as the correctness-preserving repeated-request path."
+    "executor as the correctness-preserving repeated-request path. Goal4452 "
+    "refreshes RT-DBSCAN route guidance so Goal4445's compact "
+    "`output_mode=\"component_signature\"` summary contract is the current "
+    "front-door reading, while full Python rows, direct-status candidates, "
+    "partition factors, and border policies remain explicit user choices."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -610,6 +614,131 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
         evidence_refs=("Goal2797", "Goal3567", "Goal3782", "Goal3819", "Goal3856", "Goal4424", "Goal4444"),
         pod_needed_next=False,
     ),
+)
+
+
+def _refresh_goal4452_route_decisions(
+    rows: tuple[CurrentBenchmarkRouteDecision, ...],
+) -> tuple[CurrentBenchmarkRouteDecision, ...]:
+    refreshed: list[CurrentBenchmarkRouteDecision] = []
+    for row in rows:
+        if row.app != "rt_dbscan":
+            refreshed.append(row)
+            continue
+        refreshed.append(
+            CurrentBenchmarkRouteDecision(
+                app="rt_dbscan",
+                decision_kind="mixed_explicit",
+                current_reader_decision=(
+                    "Use the RTDL/OptiX fixed-radius grouped-stream component front door. "
+                    "Set `output_mode=\"component_signature\"` when the user needs a "
+                    "cluster-size/noise/core summary; set `output_mode=\"full\"` only "
+                    "when per-point Python cluster rows are actually required. Keep "
+                    "prepared direct-status, partition_convergence_hybrid, and "
+                    "all-predicate/all-items direct-status routes as explicit "
+                    "profile/policy candidates, not hidden defaults."
+                ),
+                primary_route=(
+                    "RTDL/OptiX fixed-radius grouped stream plus explicit compact "
+                    "component-signature partner aggregation"
+                ),
+                partner_policy="mixed_explicit_user_choice",
+                primitive_contract=(
+                    "fixed-radius core flags and grouped-stream component labels with "
+                    "explicit compact component-signature or full-row output"
+                ),
+                user_choice_guidance=(
+                    "Choose the output contract first. Use `output_mode=\"component_signature\"` "
+                    "for compact summaries and measure CuPy and Numba explicitly when "
+                    "partner aggregation matters; use `output_mode=\"full\"` only for "
+                    "row consumers that truly need per-point labels in Python. Use the "
+                    "profile/reuse advisor only for explicit prepared direct-status or "
+                    "partition_convergence_hybrid experiments, set `partition_cell_factor` "
+                    "explicitly, and do not auto-select the partner, route, factor, output "
+                    "contract, or border policy."
+                ),
+                rejected_or_unpromoted_candidates=(
+                    "blocked grouped stream candidate from Goal3936",
+                    "partition_convergence_hybrid default promotion after Goal4041 mixed timing",
+                    "partition_convergence_hybrid full-DBSCAN promotion after Goal4047 graph-component-only app mode",
+                    "partition_convergence_hybrid universal default promotion after Goal4108 prepared replay and Goal4109 app smoke",
+                    "automatic partition-cell-factor tuning after Goal4117 explicit factor sweep",
+                    "mixed predicate direct-status broad promotion after Goal4165 policy-variant probe",
+                    "component-size signature as the only mixed-predicate semantic contract after Goal4166",
+                    "full-row materialization as the default summary-output contract after Goal4445",
+                    "automatic output_mode/partner selection after Goal4452 route refresh",
+                ),
+                next_runtime_action=(
+                    "keep compact component_signature as the recommended summary output; "
+                    "keep full Python row materialization explicit; keep the historical "
+                    "profile/reuse advisor, direct-status, partition factor, and border-policy "
+                    "routes explicit; next serious runtime work is a fused/resident component "
+                    "continuation or prepare-cost reduction only if new evidence requires it. "
+                    "hidden factor selection, hidden output-contract selection, hidden border-policy "
+                    "selection, and automatic partner selection remain blocked."
+                ),
+                evidence_refs=(
+                    "Goal3758",
+                    "Goal3859",
+                    "Goal3918",
+                    "Goal3920",
+                    "Goal3936",
+                    "Goal3937",
+                    "Goal4040",
+                    "Goal4041",
+                    "Goal4046",
+                    "Goal4047",
+                    "Goal4071",
+                    "Goal4074",
+                    "Goal4075",
+                    "Goal4078",
+                    "Goal4079",
+                    "Goal4080",
+                    "Goal4084",
+                    "Goal4085",
+                    "Goal4086",
+                    "Goal4087",
+                    "Goal4088",
+                    "Goal4093",
+                    "Goal4096",
+                    "Goal4100",
+                    "Goal4104",
+                    "Goal4105",
+                    "Goal4108",
+                    "Goal4109",
+                    "Goal4114",
+                    "Goal4116",
+                    "Goal4117",
+                    "Goal4121",
+                    "Goal4122",
+                    "Goal4126",
+                    "Goal4130",
+                    "Goal4134",
+                    "Goal4138",
+                    "Goal4158",
+                    "Goal4159",
+                    "Goal4160",
+                    "Goal4164",
+                    "Goal4165",
+                    "Goal4166",
+                    "Goal4167",
+                    "Goal4169",
+                    "Goal4172",
+                    "Goal4173",
+                    "Goal4174",
+                    "Goal4176",
+                    "Goal4177",
+                    "Goal4445",
+                    "Goal4452",
+                ),
+                pod_needed_next=False,
+            )
+        )
+    return tuple(refreshed)
+
+
+CURRENT_BENCHMARK_ROUTE_DECISIONS = _refresh_goal4452_route_decisions(
+    CURRENT_BENCHMARK_ROUTE_DECISIONS
 )
 
 
