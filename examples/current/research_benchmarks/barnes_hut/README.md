@@ -145,6 +145,17 @@ No-C++ Numba CUDA fused-subtree prototype on an NVIDIA machine:
 PYTHONPATH=src:. python scripts/v3_0_m52_barnes_hut_numba_cuda_fused_subtree.py --body-counts 8192,16384,32768 --repeat 11 --warmup 2 --output docs/reports/goal4448_v3_0_m52_barnes_hut_numba_cuda_fused_subtree_scale_r11_2026-06-16.json
 ```
 
+Reusable no-C++ fused partner API:
+
+```python
+prepared = rt.prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda(
+    source_points,
+    target_points,
+    tree_nodes,
+)
+actual = prepared.sum(theta=0.5, softening=0.05)
+```
+
 Older Torch/CUDA fused vector-sum prototypes on an NVIDIA machine:
 
 ```bash
@@ -236,9 +247,11 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
 - Current V3 M45/M52 route guidance separates fused baselines from RT evidence.
   `fused_frontier_force_sum_bucketized_cpu_numba` is the strongest measured CPU
   fused baseline. `scripts/v3_0_m52_barnes_hut_numba_cuda_fused_subtree.py`
-  is the current no-C++ fused GPU partner prototype and beats the prepared
+  provides the scale evidence, and
+  `prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda` is the reusable
+  no-C++ fused GPU partner API. The fused Numba CUDA route beats the prepared
   RTDL/OptiX+Numba aggregate-frontier route at the measured 8192/16384/32768
-  scales. Neither row is an Embree implementation or evidence that RT cores
+  scales. Neither route is an Embree implementation or evidence that RT cores
   accelerate Barnes-Hut. The prepared RTDL/OptiX aggregate-frontier route remains
   useful RT device-column evidence and a same-contract partner comparison target.
 - Current expanded-membership lowering evidence routes Barnes-Hut

@@ -96,7 +96,7 @@ v2.14 evidence:
 | Robot collision | `robot_collision_prepared_grouped_segment_any_hit_numpy_lowering` | primitive-only prepared static-scene grouped-segment any-hit path; Goal4446 removes the major Python query-lowering debt while preserving the M31 same-contract backend comparison | NVIDIA pod for OptiX/Embree timing |
 | Contact manifold | `contact_manifold_optix_native_collect_k` | bounded collect/witness primitive path; no manifold-native ABI | NVIDIA pod for OptiX timing |
 | RayDB-style | `raydb_style_optix_count_primitive_first` | primitive-first grouped count path; partner rows only for unfused continuations | NVIDIA pod; CUDA pod for CuPy/Numba partner comparison |
-| Barnes-Hut | `barnes_hut_mixed_explicit_cpu_numba_cuda_or_optix_numba` | fused Numba CUDA is the current no-C++ fused GPU partner prototype and beats the prepared RTDL/OptiX+Numba aggregate-frontier route; fused CPU/Numba remains the strongest CPU fused baseline; prepared RTDL/OptiX+Numba remains device-column RT evidence | NVIDIA/CUDA pod for Numba CUDA and OptiX; Numba CPU for CPU fused baseline |
+| Barnes-Hut | `barnes_hut_mixed_explicit_cpu_numba_cuda_or_optix_numba` | fused Numba CUDA is now a reusable no-C++ app-reference partner API after Goal4449, with Goal4448 scale evidence beating the prepared RTDL/OptiX+Numba aggregate-frontier route; fused CPU/Numba remains the strongest CPU fused baseline; prepared RTDL/OptiX+Numba remains device-column RT evidence | NVIDIA/CUDA pod for Numba CUDA and OptiX; Numba CPU for CPU fused baseline |
 | LibRTS spatial index | `librts_spatial_index_optix_aabb_index` | prepared AABB-index benchmark slice, not full mutable LibRTS | NVIDIA pod for OptiX timing |
 | RTNN | `rtnn_mixed_exact_aggregate_or_graph_partner_bridge` | exact float64 aggregate for same-contract OptiX-vs-Embree comparison; prepared graph plus explicit CuPy/Numba same-stream partner bridge for resident app evidence | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
 | Triangle counting | `triangle_counting_optix_native_summary` | scalar answer stays primitive-first; Goal4444 fixes the no-C++ Numba summary-contract staging debt for explicit partner experiments while CuPy remains the large-scale performance route | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
@@ -113,6 +113,7 @@ v2.14 evidence:
 - [Barnes-Hut host Numba CPU baselines](../reports/goal4441_v3_0_m44_barnes_hut_host_numba_cpu_baselines_2026-06-16.md)
 - [Barnes-Hut fused Numba CPU frontier baseline](../reports/goal4442_v3_0_m45_barnes_hut_fused_numba_cpu_frontier_2026-06-16.md)
 - [Barnes-Hut Numba CUDA fused subtree prototype](../reports/goal4448_v3_0_m52_barnes_hut_numba_cuda_fused_subtree_2026-06-16.md)
+- [Reusable aggregate-tree fused Numba CUDA partner API](../reports/goal4449_v3_0_m53_aggregate_tree_fused_numba_cuda_partner_2026-06-16.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)
 - [Goal4444 Triangle Numba direct-binary summary refresh](../reports/goal4444_v3_0_m48_triangle_numba_direct_binary_summary_2026-06-16.md)
 - [Goal4445 DBSCAN compact component signature](../reports/goal4445_v3_0_m49_dbscan_component_signature_2026-06-16.md)
@@ -147,10 +148,12 @@ v2.14 evidence:
   Goal4442 then adds a fused CPU/Numba route that avoids frontier and
   contribution row materialization. Goal4448 adds a Python-source Numba CUDA
   fused-subtree prototype that also avoids those rows and is faster than the
-  current prepared RTDL/OptiX+Numba route on the measured scale ladder. These
-  rows are correctness, route-choice, and bottleneck evidence, not public
-  backend speedup wording. This is not a universal Numba, RT-core, or whole
-  N-body speedup claim.
+  current prepared RTDL/OptiX+Numba route on the measured scale ladder.
+  Goal4449 turns that fused shape into a reusable
+  `prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda` app-reference
+  partner API. These rows are correctness, route-choice, and bottleneck
+  evidence, not public backend speedup wording. This is not a universal Numba,
+  RT-core, or whole N-body speedup claim.
 - The RayJoin external comparison is useful for LSI/PIP diagnosis, but it is
   not a full RayJoin paper reproduction and does not authorize RTDL-beats-RayJoin
   wording.

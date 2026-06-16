@@ -38,6 +38,9 @@ AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARED_WEIGHTED_VECTOR_SUM_2D_CONTRACT = (
 AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CONTRACT = (
     "generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_numba_v1"
 )
+AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CUDA_CONTRACT = (
+    "generic_aggregate_tree_fused_weighted_vector_sum_2d_numba_cuda_v1"
+)
 
 
 def _optional_value(row, names: Sequence[str]):
@@ -1277,3 +1280,404 @@ def prepare_aggregate_frontier_device_columns_weighted_vectors_2d_numba(
         tree_nodes,
         block_size=block_size,
     )
+
+
+def _numba_aggregate_tree_fused_weighted_vector_sum_kernel(cuda):
+    import math
+
+    @cuda.jit
+    def kernel(
+        source_ids,
+        source_x,
+        source_y,
+        source_mass,
+        target_ids,
+        target_x,
+        target_y,
+        target_mass,
+        node_cx,
+        node_cy,
+        node_half_size,
+        node_mass,
+        node_resume_index,
+        node_subtree_end_index,
+        source_leaf_node_index,
+        member_offsets,
+        member_indices,
+        child_offsets,
+        child_indices,
+        root_index,
+        theta,
+        softening_sq,
+        out_x,
+        out_y,
+        out_visited,
+        out_aggregate,
+        out_exact,
+        status,
+    ):
+        source_index = cuda.grid(1)
+        source_count = source_ids.shape[0]
+        if source_index >= source_count:
+            return
+
+        node_count = node_cx.shape[0]
+        if node_count < 1:
+            cuda.atomic.max(status, 0, 1)
+            return
+        if root_index < 0 or root_index >= node_count:
+            cuda.atomic.max(status, 0, 2)
+            return
+
+        source_leaf = source_leaf_node_index[source_index]
+        if source_leaf < 0 or source_leaf >= node_count:
+            cuda.atomic.max(status, 0, 4)
+            return
+
+        source_id = source_ids[source_index]
+        sx = source_x[source_index]
+        sy = source_y[source_index]
+        smass = source_mass[source_index]
+        sum_x = 0.0
+        sum_y = 0.0
+        visited = 0
+        aggregate_count = 0
+        exact_count = 0
+        node_index = root_index
+
+        while node_index >= 0:
+            if node_index >= node_count:
+                cuda.atomic.max(status, 0, 3)
+                return
+            visited += 1
+            dx_node = node_cx[node_index] - sx
+            dy_node = node_cy[node_index] - sy
+            distance = math.sqrt(dx_node * dx_node + dy_node * dy_node)
+            if distance == 0.0:
+                opening_ratio = 1.0e300
+            else:
+                opening_ratio = (2.0 * node_half_size[node_index]) / distance
+
+            subtree_end = node_subtree_end_index[node_index]
+            contains_source = node_index <= source_leaf and source_leaf < subtree_end
+
+            if (not contains_source) and opening_ratio < theta:
+                dist_sq = dx_node * dx_node + dy_node * dy_node + softening_sq
+                if dist_sq != 0.0:
+                    inv_dist = 1.0 / math.sqrt(dist_sq)
+                    scale = smass * node_mass[node_index] * inv_dist * inv_dist * inv_dist
+                    sum_x += dx_node * scale
+                    sum_y += dy_node * scale
+                aggregate_count += 1
+                node_index = node_resume_index[node_index]
+                continue
+
+            child_begin = child_offsets[node_index]
+            child_end = child_offsets[node_index + 1]
+            if child_begin < child_end:
+                node_index = child_indices[child_begin]
+                continue
+
+            member_begin = member_offsets[node_index]
+            member_end = member_offsets[node_index + 1]
+            for offset in range(member_begin, member_end):
+                target_index = member_indices[offset]
+                target_id = target_ids[target_index]
+                if target_id == source_id:
+                    continue
+                dx = target_x[target_index] - sx
+                dy = target_y[target_index] - sy
+                dist_sq = dx * dx + dy * dy + softening_sq
+                if dist_sq != 0.0:
+                    inv_dist = 1.0 / math.sqrt(dist_sq)
+                    scale = smass * target_mass[target_index] * inv_dist * inv_dist * inv_dist
+                    sum_x += dx * scale
+                    sum_y += dy * scale
+                exact_count += 1
+            node_index = node_resume_index[node_index]
+
+        out_x[source_index] = sum_x
+        out_y[source_index] = sum_y
+        out_visited[source_index] = visited
+        out_aggregate[source_index] = aggregate_count
+        out_exact[source_index] = exact_count
+
+    return kernel
+
+
+class PreparedAggregateTreeFusedWeightedVectorSum2DNumbaCuda:
+    """Prepared no-C++ Numba CUDA fused aggregate-tree vector-sum partner.
+
+    This consumes generic weighted points and DFS/resume-index aggregate tree
+    rows. It fuses tree traversal, opening-rule acceptance, exact fallback, and
+    vector accumulation in one Numba CUDA kernel without emitting frontier rows.
+    """
+
+    def __init__(
+        self,
+        source_points: Iterable[object],
+        target_points: Iterable[object],
+        tree_nodes: Iterable[object],
+        *,
+        block_size: int = 128,
+    ) -> None:
+        from ..numba_partner_continuation import _import_numba_stack
+
+        self.cuda, self.np = _import_numba_stack()
+        self.block_size = int(block_size)
+        if self.block_size <= 0:
+            raise ValueError("block_size must be positive")
+        self.sources = normalize_weighted_point_rows(source_points)
+        self.targets = normalize_weighted_point_rows(target_points)
+        self.nodes = _tree_node_rows(tree_nodes)
+        roots = _tree_roots(self.nodes)
+        if len(roots) != 1:
+            raise ValueError("Numba CUDA fused aggregate-tree vector sum requires exactly one tree root")
+        self.root_id = int(roots[0])
+
+        source_ids_host = [int(point.id) for point in self.sources]
+        target_ids_host = [int(point.id) for point in self.targets]
+        if min(source_ids_host) < 0 or min(target_ids_host) < 0:
+            raise ValueError("Numba CUDA fused aggregate-tree vector sum requires non-negative point ids")
+        target_id_to_index = {point_id: index for index, point_id in enumerate(target_ids_host)}
+        if len(target_id_to_index) != len(target_ids_host):
+            raise ValueError("target point ids must be unique")
+        source_leaf_by_id = _source_leaf_dfs_by_id(self.nodes)
+        missing_sources = [source_id for source_id in source_ids_host if source_id not in source_leaf_by_id]
+        if missing_sources:
+            raise ValueError("every source point id must appear in exactly one aggregate-tree leaf")
+
+        node_id_to_index = {int(node.id): index for index, node in enumerate(self.nodes)}
+        self.root_index = int(node_id_to_index[self.root_id])
+        node_count = len(self.nodes)
+        child_offsets = [0]
+        child_indices: list[int] = []
+        member_offsets = [0]
+        member_indices: list[int] = []
+        for node in self.nodes:
+            for child_id in node.child_ids:
+                child_indices.append(int(node_id_to_index[int(child_id)]))
+            child_offsets.append(len(child_indices))
+            for member_id in node.member_ids:
+                if int(member_id) not in target_id_to_index:
+                    raise ValueError("aggregate tree member ids must all be present in target points")
+                member_indices.append(int(target_id_to_index[int(member_id)]))
+            member_offsets.append(len(member_indices))
+
+        cuda = self.cuda
+        np = self.np
+        cuda.synchronize()
+        start = time.perf_counter()
+
+        self.source_ids = cuda.to_device(np.asarray(source_ids_host, dtype=np.int64))
+        self.source_x = cuda.to_device(np.asarray([float(point.x) for point in self.sources], dtype=np.float64))
+        self.source_y = cuda.to_device(np.asarray([float(point.y) for point in self.sources], dtype=np.float64))
+        self.source_mass = cuda.to_device(np.asarray([float(point.mass) for point in self.sources], dtype=np.float64))
+        self.target_ids = cuda.to_device(np.asarray(target_ids_host, dtype=np.int64))
+        self.target_x = cuda.to_device(np.asarray([float(point.x) for point in self.targets], dtype=np.float64))
+        self.target_y = cuda.to_device(np.asarray([float(point.y) for point in self.targets], dtype=np.float64))
+        self.target_mass = cuda.to_device(np.asarray([float(point.mass) for point in self.targets], dtype=np.float64))
+        self.node_cx = cuda.to_device(np.asarray([float(node.cx) for node in self.nodes], dtype=np.float64))
+        self.node_cy = cuda.to_device(np.asarray([float(node.cy) for node in self.nodes], dtype=np.float64))
+        self.node_half_size = cuda.to_device(
+            np.asarray([float(node.half_size) for node in self.nodes], dtype=np.float64)
+        )
+        self.node_mass = cuda.to_device(np.asarray([float(node.mass) for node in self.nodes], dtype=np.float64))
+        self.node_resume_index = cuda.to_device(
+            np.asarray(
+                [-1 if node.resume_index is None else int(node.resume_index) for node in self.nodes],
+                dtype=np.int64,
+            )
+        )
+        self.node_subtree_end_index = cuda.to_device(
+            np.asarray(
+                [node_count if node.resume_index is None else int(node.resume_index) for node in self.nodes],
+                dtype=np.int64,
+            )
+        )
+        self.source_leaf_node_index = cuda.to_device(
+            np.asarray([int(source_leaf_by_id[source_id]) for source_id in source_ids_host], dtype=np.int64)
+        )
+        self.member_offsets = cuda.to_device(np.asarray(member_offsets, dtype=np.int64))
+        self.member_indices = cuda.to_device(np.asarray(member_indices, dtype=np.int64))
+        self.child_offsets = cuda.to_device(np.asarray(child_offsets, dtype=np.int64))
+        self.child_indices = cuda.to_device(np.asarray(child_indices, dtype=np.int64))
+        self.vector_x = cuda.device_array((len(self.sources),), dtype=np.float64)
+        self.vector_y = cuda.device_array((len(self.sources),), dtype=np.float64)
+        self.visited_counts = cuda.device_array((len(self.sources),), dtype=np.int64)
+        self.aggregate_counts = cuda.device_array((len(self.sources),), dtype=np.int64)
+        self.exact_counts = cuda.device_array((len(self.sources),), dtype=np.int64)
+        self.status = cuda.to_device(np.zeros((1,), dtype=np.int32))
+
+        cuda.synchronize()
+        self.prepare_seconds = time.perf_counter() - start
+
+    @property
+    def source_count(self) -> int:
+        return len(self.sources)
+
+    @property
+    def target_count(self) -> int:
+        return len(self.targets)
+
+    @property
+    def tree_node_count(self) -> int:
+        return len(self.nodes)
+
+    def sum(
+        self,
+        *,
+        theta: float,
+        softening: float = 0.0,
+        use_cuda_events: bool = False,
+    ) -> dict[str, object]:
+        from ..numba_partner_continuation import _cached_numba_kernel
+
+        theta = float(theta)
+        softening = float(softening)
+        if theta <= 0.0:
+            raise ValueError("theta must be positive")
+        if softening < 0.0:
+            raise ValueError("softening must be non-negative")
+
+        cuda = self.cuda
+        np = self.np
+        self.status.copy_to_device(np.zeros((1,), dtype=np.int32))
+        grid = ((self.source_count + self.block_size - 1) // self.block_size,)
+        stream = cuda.stream()
+        kernel = _cached_numba_kernel(cuda, _numba_aggregate_tree_fused_weighted_vector_sum_kernel)
+        start_event = cuda.event(timing=True) if use_cuda_events else None
+        end_event = cuda.event(timing=True) if use_cuda_events else None
+
+        cuda.synchronize()
+        start = time.perf_counter()
+        if start_event is not None:
+            start_event.record(stream)
+        kernel[grid, self.block_size, stream](
+            self.source_ids,
+            self.source_x,
+            self.source_y,
+            self.source_mass,
+            self.target_ids,
+            self.target_x,
+            self.target_y,
+            self.target_mass,
+            self.node_cx,
+            self.node_cy,
+            self.node_half_size,
+            self.node_mass,
+            self.node_resume_index,
+            self.node_subtree_end_index,
+            self.source_leaf_node_index,
+            self.member_offsets,
+            self.member_indices,
+            self.child_offsets,
+            self.child_indices,
+            self.root_index,
+            theta,
+            softening * softening,
+            self.vector_x,
+            self.vector_y,
+            self.visited_counts,
+            self.aggregate_counts,
+            self.exact_counts,
+            self.status,
+        )
+        if end_event is not None:
+            end_event.record(stream)
+            end_event.synchronize()
+            kernel_event_ms = float(start_event.elapsed_time(end_event))
+        else:
+            stream.synchronize()
+            kernel_event_ms = None
+
+        status = int(self.status.copy_to_host()[0])
+        if status != 0:
+            raise RuntimeError(f"Numba CUDA fused aggregate-tree vector sum failed with status {status}")
+        aggregate_host = self.aggregate_counts.copy_to_host()
+        exact_host = self.exact_counts.copy_to_host()
+        visited_host = self.visited_counts.copy_to_host()
+        cuda.synchronize()
+        elapsed = time.perf_counter() - start
+        aggregate_count = int(aggregate_host.sum())
+        exact_count = int(exact_host.sum())
+        return {
+            "columns": {
+                "source_ids": self.source_ids,
+                "vector_x": self.vector_x,
+                "vector_y": self.vector_y,
+            },
+            "metadata": {
+                "contract": AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CUDA_CONTRACT,
+                "logical_reference_contract": AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT,
+                "partner": "numba_cuda",
+                "theta": theta,
+                "softening": softening,
+                "source_count": self.source_count,
+                "target_count": self.target_count,
+                "tree_node_count": self.tree_node_count,
+                "aggregate_contribution_row_count": aggregate_count,
+                "exact_contribution_row_count": exact_count,
+                "contribution_row_count": aggregate_count + exact_count,
+                "visited_node_count": int(visited_host.sum()),
+                "prepare_seconds": self.prepare_seconds,
+                "partner_seconds": elapsed,
+                "kernel_event_ms": kernel_event_ms,
+                "block_size": self.block_size,
+                "prepared_lookup_columns_resident": True,
+                "source_columns_reused": True,
+                "target_columns_reused": True,
+                "aggregate_tree_columns_resident": True,
+                "output_columns_reused": True,
+                "setup_seconds_excluded_from_hot_path": True,
+                "frontier_rows_emitted": False,
+                "frontier_rows_materialized_on_host": False,
+                "contribution_rows_materialized_on_host": False,
+                "count_columns_copied_to_host_for_metadata": True,
+                "numba_cuda_jit_used": True,
+                "raw_cuda_kernel_required": False,
+                "app_reference_math": True,
+                "native_engine_app_specific": False,
+                "rt_cores_used": False,
+                "rt_core_speedup_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
+        }
+
+
+def prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda(
+    source_points: Iterable[object],
+    target_points: Iterable[object],
+    tree_nodes: Iterable[object],
+    *,
+    block_size: int = 128,
+) -> PreparedAggregateTreeFusedWeightedVectorSum2DNumbaCuda:
+    return PreparedAggregateTreeFusedWeightedVectorSum2DNumbaCuda(
+        source_points,
+        target_points,
+        tree_nodes,
+        block_size=block_size,
+    )
+
+
+def sum_aggregate_tree_fused_weighted_vectors_2d_numba_cuda(
+    source_points: Iterable[object],
+    target_points: Iterable[object],
+    tree_nodes: Iterable[object],
+    *,
+    theta: float,
+    softening: float = 0.0,
+    block_size: int = 128,
+) -> dict[str, object]:
+    prepared = prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda(
+        source_points,
+        target_points,
+        tree_nodes,
+        block_size=block_size,
+    )
+    actual = prepared.sum(theta=theta, softening=softening)
+    actual["metadata"]["one_shot_wrapper"] = True
+    actual["metadata"]["setup_seconds_excluded_from_hot_path"] = False
+    return actual
