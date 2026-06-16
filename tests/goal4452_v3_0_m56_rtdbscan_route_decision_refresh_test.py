@@ -15,7 +15,7 @@ class Goal4452V30M56RtdbscanRouteDecisionRefreshTest(unittest.TestCase):
     def test_rtdbscan_route_is_current_output_contract_first(self) -> None:
         route = rt.explain_current_benchmark_route("rt_dbscan")
 
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4470.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4471.v1", route["version"])
         self.assertEqual("mixed_explicit", route["decision_kind"])
         self.assertEqual("mixed_explicit_user_choice", route["partner_policy"])
         self.assertIn('output_mode="component_signature"', route["current_reader_decision"])
@@ -59,3 +59,4 @@ class Goal4452V30M56RtdbscanRouteDecisionRefreshTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

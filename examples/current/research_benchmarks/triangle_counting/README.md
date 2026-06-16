@@ -201,6 +201,15 @@ still wins all three rows. Authors pure count kernels remain much faster than
 RTDL query, even though RTDL M73 beats the authors full pipeline on two rows
 where preprocessing dominates.
 
+Goal4471 adds explicit `phase_split_ms` telemetry for the prepared segmented
+route. This separates paid-once build cost from measured replay query
+throughput: `com-lj` is 2.341s build-once / 0.925s median replay query,
+`soc-LiveJournal1` is 3.035s / 1.282s, and `com-orkut` is 15.243s / 8.216s.
+Legacy `segment_ray_build_total_ms` is retained for compatibility but should
+not be read as paid wall-time build cost under prepared replay. The next
+engineering target is cheaper unique-key compression/ray construction or a
+reusable prepared ray-batch API, not more batch-cap tuning.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
@@ -214,6 +223,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4468_v3_0_m72_triangle_unique_weighted_comparison_packet_2026-06-16.md`
 - `docs/reports/goal4469_v3_0_m73_triangle_prepared_segment_replay_packet_2026-06-16.md`
 - `docs/reports/goal4470_v3_0_m74_triangle_post_m73_comparison_packet_2026-06-16.md`
+- `docs/reports/goal4471_v3_0_m75_triangle_phase_split_packet_2026-06-16.md`
 
 ## Engine Boundary
 

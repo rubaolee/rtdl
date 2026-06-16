@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4470.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4471.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -50,7 +50,10 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "explicit prepared segment replay, improving Triangle Counting large-row "
     "totals by 1.43x-1.84x versus Goal4467 while preserving claim boundaries. "
     "Goal4470 refreshes the post-M73 comparison: cuGraph remains faster by "
-    "5.58x-8.64x and authors pure kernels remain much faster. "
+    "5.58x-8.64x and authors pure kernels remain much faster. Goal4471 adds "
+    "explicit Triangle Counting phase-split telemetry so build-once cost, "
+    "warmup query time, and measured replay query throughput are no longer "
+    "collapsed into legacy aggregate fields. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -459,7 +462,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "17.986s on `soc-LiveJournal1`, and 62.428s on `com-orkut`. "
             "Goal4470 refreshes the current comparison packet after M73: cuGraph "
             "is still 5.58x-8.64x faster end to end, and authors pure count "
-            "kernels are still much faster than RTDL query."
+            "kernels are still much faster than RTDL query. Goal4471 adds "
+            "phase-split telemetry for the same prepared replay route: build-once "
+            "cost is 2.341s/3.035s/15.243s on `com-lj`/`soc-LiveJournal1`/"
+            "`com-orkut`, while median measured replay query is "
+            "0.925s/1.282s/8.216s."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -479,7 +486,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4469 for explicit `prepared_segment_replay` when the workload is "
             "prepared/repeated and the user accepts the schedule choice. Cite "
             "Goal4470 for the current post-M73 comparison packet and no-speedup "
-            "boundary."
+            "boundary. Cite Goal4471 when explaining cold/build versus hot/replay "
+            "phase split or why legacy build-total fields are not wall-time build "
+            "costs for prepared replay."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
@@ -491,9 +500,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
         ),
         "next_generic_runtime_action": (
             "keep scalar triangle-count wording primitive-first; do not claim RT-Graph "
-            "paper reproduction or broad triangle-count acceleration; after Goal4469, "
-            "next work is separating one-shot build cost from replay throughput and "
-            "making unique-key compression cheaper; do not spend more time on "
+            "paper reproduction or broad triangle-count acceleration; after Goal4471, "
+            "the one-shot build versus replay-throughput split is explicit, so next "
+            "work is making unique-key compression cheaper or adding a reusable "
+            "prepared ray-batch API; do not spend more time on "
             "batch-cap tuning unless hardware changes"
         ),
         "evidence_refs": (
@@ -517,6 +527,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4468",
             "Goal4469",
             "Goal4470",
+            "Goal4471",
         ),
     },
 }

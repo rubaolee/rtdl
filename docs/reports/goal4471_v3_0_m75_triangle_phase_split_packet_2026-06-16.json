@@ -1,0 +1,82 @@
+{
+  "goal": 4471,
+  "milestone": "v3_0_m75",
+  "status": "triangle_prepared_replay_phase_split_validated",
+  "implementation": "top-level phase_split_ms telemetry for segmented RT-2A1 prepared replay",
+  "claim_boundary": {
+    "current_route_phase_split": true,
+    "generic_rt_engine_contract_preserved": true,
+    "native_engine_graph_specialization_added": false,
+    "public_speedup_claim_authorized": false,
+    "triangle_count_rt_core_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "automatic_partner_selection_authorized": false
+  },
+  "rows": [
+    {
+      "dataset": "com_lj",
+      "mode": "rt_graph_2a1_segmented_generic_rt",
+      "count": 177820130,
+      "expected_count": 177820130,
+      "count_matches_expected": true,
+      "total_s": 9.65672668069601,
+      "run_backend_s": 6.849877066910267,
+      "build_once_total_s": 2.340881295502186,
+      "build_once_prepare_scene_s": 0.79763313382864,
+      "build_once_triangle_build_s": 0.0,
+      "build_once_segment_ray_s": 1.5432481616735458,
+      "warmup_query_s": 0.9647331312298775,
+      "measured_replay_query_total_s": 2.772173836827278,
+      "measured_replay_query_median_s": 0.9248651266098022,
+      "amortized_backend_per_measured_query_s": 1.7043517107764878,
+      "legacy_segment_ray_build_total_s": 4.6297444850206375
+    },
+    {
+      "dataset": "soc_livejournal1",
+      "mode": "rt_graph_2a1_segmented_scene_generic_rt",
+      "count": 285730264,
+      "expected_count": 285730264,
+      "count_matches_expected": true,
+      "total_s": 17.569270446896553,
+      "run_backend_s": 9.554629147052765,
+      "build_once_total_s": 3.0354001820087433,
+      "build_once_prepare_scene_s": 0.7368956133723259,
+      "build_once_triangle_build_s": 0.004227757453918457,
+      "build_once_segment_ray_s": 2.294276811182499,
+      "warmup_query_s": 1.3307551145553589,
+      "measured_replay_query_total_s": 3.8635307028889656,
+      "measured_replay_query_median_s": 1.2823935821652412,
+      "amortized_backend_per_measured_query_s": 2.2996436282992363,
+      "legacy_segment_ray_build_total_s": 6.882830433547497
+    },
+    {
+      "dataset": "com_orkut",
+      "mode": "rt_graph_2a1_segmented_scene_generic_rt",
+      "count": 627584181,
+      "expected_count": 627584181,
+      "count_matches_expected": true,
+      "total_s": 61.74501071125269,
+      "run_backend_s": 52.25075124204159,
+      "build_once_total_s": 15.243291713297367,
+      "build_once_prepare_scene_s": 1.1916339918971062,
+      "build_once_triangle_build_s": 0.01612991839647293,
+      "build_once_segment_ray_s": 14.035527803003788,
+      "warmup_query_s": 7.963418424129486,
+      "measured_replay_query_total_s": 24.657008454203606,
+      "measured_replay_query_median_s": 8.216493770480156,
+      "amortized_backend_per_measured_query_s": 13.300100055833658,
+      "legacy_segment_ray_build_total_s": 42.106583409011364
+    }
+  ],
+  "interpretation": {
+    "main_result": "The prepared replay route now reports paid-once build cost separately from measured replay query throughput.",
+    "legacy_field_warning": "For prepared_segment_replay, legacy timing_ms segment_ray_build_total_ms repeats the build-once value across measured runs and must not be used as paid wall-time build cost.",
+    "optimization_reading": "The remaining large-row bottlenecks are unique-key compression/ray construction and RT traversal, especially com-orkut; more ray-batch cap tuning is lower value unless hardware changes.",
+    "next_action": "Work on cheaper unique-key compression or a reusable prepared ray-batch API while preserving the app-agnostic weighted any-hit RT primitive."
+  },
+  "evidence_files": [
+    "docs/reports/goal4471_v3_0_m75_triangle_phase_split_com_lj_w1r3_2026-06-16.json",
+    "docs/reports/goal4471_v3_0_m75_triangle_phase_split_soc_livejournal1_w1r3_2026-06-16.json",
+    "docs/reports/goal4471_v3_0_m75_triangle_phase_split_com_orkut_w1r3_2026-06-16.json"
+  ]
+}

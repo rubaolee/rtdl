@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import importlib
+import json
 import os
 from pathlib import Path
 import tempfile
@@ -11,6 +13,11 @@ from examples.current.research_benchmarks.triangle_counting import rtdl_triangle
 
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
+REPORT = ROOT / "docs" / "reports" / "goal4471_v3_0_m75_triangle_phase_split_packet_2026-06-16.md"
+PACKET = ROOT / "docs" / "reports" / "goal4471_v3_0_m75_triangle_phase_split_packet_2026-06-16.json"
+
+routes = importlib.import_module("rtdsl.current_benchmark_route_decisions")
+adequacy = importlib.import_module("rtdsl.current_benchmark_adequacy")
 
 
 def _has_cupy_optix() -> bool:
@@ -52,6 +59,39 @@ class Goal4471V30M75TrianglePhaseSplitTest(unittest.TestCase):
         self.assertIn('"schema_version": "triangle_counting.segmented_phase_split.v1"', source)
         self.assertIn('"segment_ray_build_total_ms"', source)
         self.assertIn("legacy_timing_note", source)
+
+    def test_packet_records_large_row_phase_split(self) -> None:
+        packet = json.loads(PACKET.read_text(encoding="utf-8"))
+        rows = {row["dataset"]: row for row in packet["rows"]}
+
+        self.assertEqual(4471, packet["goal"])
+        self.assertEqual("triangle_prepared_replay_phase_split_validated", packet["status"])
+        self.assertFalse(packet["claim_boundary"]["public_speedup_claim_authorized"])
+        self.assertTrue(rows["com_lj"]["count_matches_expected"])
+        self.assertTrue(rows["soc_livejournal1"]["count_matches_expected"])
+        self.assertTrue(rows["com_orkut"]["count_matches_expected"])
+        self.assertLess(rows["com_lj"]["build_once_total_s"], rows["com_lj"]["legacy_segment_ray_build_total_s"])
+        self.assertLess(rows["com_orkut"]["build_once_total_s"], rows["com_orkut"]["legacy_segment_ray_build_total_s"])
+        self.assertGreater(rows["com_orkut"]["measured_replay_query_median_s"], 8.0)
+        self.assertIn("unique-key compression", packet["interpretation"]["next_action"])
+
+    def test_report_and_registry_mark_phase_split_done(self) -> None:
+        report = REPORT.read_text(encoding="utf-8")
+        route = routes.explain_current_benchmark_route("triangle_counting")
+        rows = {row["app"]: row for row in adequacy.current_benchmark_adequacy()}
+        triangle = rows["triangle_counting"]
+
+        self.assertIn("phase_split_ms", report)
+        self.assertIn("15.243s", report)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4471.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4471.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertIn("Goal4471", route["evidence_refs"])
+        self.assertIn("Goal4471", triangle["evidence_refs"])
+        self.assertIn("phase_split_ms", route["user_choice_guidance"])
+        self.assertIn("separates one-shot build cost", route["next_runtime_action"])
+        self.assertIn("reusable prepared ray-batch API", triangle["next_generic_runtime_action"])
+        self.assertFalse(route["automatic_partner_selection_authorized"])
+        self.assertFalse(triangle["public_speedup_claim_authorized"])
 
     @unittest.skipUnless(_has_cupy_optix(), "CuPy plus RTDL OptiX library are not available")
     def test_live_segmented_scene_prepared_replay_reports_phase_split(self) -> None:

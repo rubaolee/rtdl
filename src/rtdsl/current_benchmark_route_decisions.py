@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4470.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4471.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -126,7 +126,12 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "improving large-row totals by 1.43x-1.84x versus Goal4467 while preserving "
     "the no-public-speedup boundary. Goal4470 refreshes the current comparison "
     "packet after M73: the cuGraph gap narrows to 5.58x-8.64x, but cuGraph and "
-    "authors pure kernels still remain faster on their relevant contracts."
+    "authors pure kernels still remain faster on their relevant contracts. "
+    "Goal4471 adds explicit `phase_split_ms` telemetry for the prepared "
+    "segmented Triangle Counting rows, separating paid-once scene/ray build "
+    "from warmup and measured replay query throughput so the next optimization "
+    "target is unique-key compression or reusable prepared ray batches, not "
+    "more timing interpretation."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -742,7 +747,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "and 62.428s on `com-orkut`, or 1.43x-1.84x faster than Goal4467. "
             "Goal4470 refreshes the comparison packet after M73: the cuGraph gap "
             "narrows from 8.26x-15.91x to 5.58x-8.64x, but cuGraph still wins "
-            "end to end and authors pure count kernels remain much faster."
+            "end to end and authors pure count kernels remain much faster. "
+            "Goal4471 then reruns the three large rows with explicit `phase_split_ms`: "
+            "`com-lj` pays 2.341s build-once and 0.925s median replay query, "
+            "`soc-LiveJournal1` pays 3.035s build-once and 1.282s median replay "
+            "query, and `com-orkut` pays 15.243s build-once and 8.216s median "
+            "replay query. Counts match the known expected paper-dataset counts."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -778,7 +788,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4469 when the user wants the explicit prepared/repeated schedule: "
             "`prepared_segment_replay` builds each compressed segment once, replays "
             "queries, and releases it. Cite Goal4470 for the current post-M73 "
-            "comparison packet and its still-blocked public-speedup boundary."
+            "comparison packet and its still-blocked public-speedup boundary. Cite "
+            "Goal4471 when wording needs cold/build versus hot/replay phase split: "
+            "the app now emits `phase_split_ms`, and legacy build totals must not "
+            "be read as paid every measured replay."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -801,6 +814,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "making Goal4469 prepared segment replay a hidden automatic default",
             "claiming Goal4469 authorizes public RT-core triangle-count speedups",
             "claiming Goal4470 shows RTDL beats cuGraph or authors pure kernels",
+            "reading legacy segment_ray_build_total_ms as actual paid wall time after Goal4471",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -809,8 +823,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "large former-OOM rows (`com-lj`, `soc-LiveJournal1`, and `com-orkut`), "
             "Goal4468 proves unique-weighted segment rays reduce traversal pressure, "
             "and Goal4469 proves explicit prepared segment replay improves large-row "
-            "totals; next work is separating one-shot build cost from replay throughput "
-            "and cheaper unique-key compression without graph-specific native engine logic"
+            "totals; Goal4471 separates one-shot build cost from replay throughput; "
+            "next work is cheaper unique-key compression or a reusable prepared "
+            "ray-batch API without graph-specific native engine logic"
         ),
         evidence_refs=(
             "Goal2797",
@@ -835,6 +850,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4468",
             "Goal4469",
             "Goal4470",
+            "Goal4471",
         ),
         pod_needed_next=False,
     ),

@@ -48,10 +48,10 @@ class Goal4467V30M71TriangleCurrentComparisonPacketTest(unittest.TestCase):
 
         self.assertIn("cuGraph remains 8.26x-15.91x faster", report)
         self.assertIn("authors pure count kernels are much faster", report)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4470.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4471.v1", route["version"])
         self.assertIn("Goal4467", route["evidence_refs"])
         self.assertIn("no-speedup boundary", route["user_choice_guidance"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4470.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4471.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
         self.assertIn("Goal4467", triangle["evidence_refs"])
         self.assertIn("unique-key compression", triangle["next_generic_runtime_action"])
         self.assertFalse(route["public_speedup_claim_authorized"])
@@ -60,3 +60,4 @@ class Goal4467V30M71TriangleCurrentComparisonPacketTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

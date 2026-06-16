@@ -16,7 +16,7 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_route_decisions()
         summary = rt.summarize_current_benchmark_route_decisions()
 
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4470.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4471.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
         self.assertEqual(10, summary["app_count"])
@@ -156,3 +156,4 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
