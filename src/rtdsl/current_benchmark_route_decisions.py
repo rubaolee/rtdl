@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4443.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4444.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -45,7 +45,12 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "large RTNN-shaped data, while the prepared graph plus same-stream CuPy "
     "and Numba partner bridge is the explicit resident app route. RTNN route "
     "guidance is mixed explicit because exact float64 aggregate and float32 "
-    "resident graph rows must not be collapsed into one automatic backend claim."
+    "resident graph rows must not be collapsed into one automatic backend claim. "
+    "Goal4444 refreshes triangle-counting partner guidance after replacing the "
+    "transitional Numba CPU-contract builder with a direct binary vectorized "
+    "summary path before Numba device upload. It materially reduces the no-C++ "
+    "Numba staging debt while preserving CuPy as the current large-scale "
+    "performance route and keeping scalar triangle-count wording primitive-first."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -550,19 +555,37 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
         app="triangle_counting",
         decision_kind="primitive_first",
         current_reader_decision=(
-            "Use the generic RT graph relationship-count composition for the "
-            "scalar answer."
+            "Use the generic RT graph relationship-count composition for the scalar answer. "
+            "When the user explicitly wants the RT-Graph summary-contract partner route, "
+            "Goal4444 makes Numba a much fairer no-C++ reference by replacing the old "
+            "cpu_contract_then_numba_device_upload staging path with "
+            "direct_binary_numpy_summary_then_numba_device_upload. CuPy remains the current "
+            "large-scale performance route at 200,000 K4 cliques, but Numba total time improves "
+            "19.96x-23.07x over M27 on the same two mappings."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
         primitive_contract="canonical graph-cycle scalar count",
-        user_choice_guidance="Choose Numba only if the user explicitly needs candidate-row compaction, not for the scalar answer.",
-        rejected_or_unpromoted_candidates=("auto fallback timing route", "RT-core triangle-count paper claim"),
-        next_runtime_action=(
-            "preserve the generic graph relationship-count route and avoid "
-            "claiming RT-core triangle-count acceleration"
+        user_choice_guidance=(
+            "For the scalar answer, stay on the primitive-first relationship-count route. "
+            "For explicit RT-Graph summary-contract experiments, choose CuPy for the current "
+            "fastest large-scale graph-contract builder and choose Numba when no-C++ "
+            "Python-source partner code matters; cite Goal4444 rather than the older M27 "
+            "Numba timings."
         ),
-        evidence_refs=("Goal2797", "Goal3567", "Goal3782", "Goal3819", "Goal3856"),
+        rejected_or_unpromoted_candidates=(
+            "auto fallback timing route",
+            "RT-core triangle-count paper claim",
+            "old M27 cpu_contract_then_numba_device_upload timing as current Numba guidance",
+            "automatic CuPy-vs-Numba partner selection",
+        ),
+        next_runtime_action=(
+            "preserve the generic graph relationship-count route and avoid claiming RT-core "
+            "triangle-count acceleration; remaining partner work is a fully device-side "
+            "Numba/CUDA graph-construction path or segmented paper-dataset lowering that avoids "
+            "global two-hop materialization"
+        ),
+        evidence_refs=("Goal2797", "Goal3567", "Goal3782", "Goal3819", "Goal3856", "Goal4424", "Goal4444"),
         pod_needed_next=False,
     ),
 )

@@ -99,7 +99,7 @@ v2.14 evidence:
 | Barnes-Hut | `barnes_hut_mixed_explicit_cpu_numba_or_optix_numba` | fused CPU/Numba is current fastest measured no-C++ app route; prepared RTDL/OptiX+Numba remains device-column RT evidence; CuPy remains same-contract GPU comparison | NVIDIA/CUDA pod for OptiX; Numba CPU for fastest measured app route |
 | LibRTS spatial index | `librts_spatial_index_optix_aabb_index` | prepared AABB-index benchmark slice, not full mutable LibRTS | NVIDIA pod for OptiX timing |
 | RTNN | `rtnn_mixed_exact_aggregate_or_graph_partner_bridge` | exact float64 aggregate for same-contract OptiX-vs-Embree comparison; prepared graph plus explicit CuPy/Numba same-stream partner bridge for resident app evidence | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
-| Triangle counting | `triangle_counting_optix_native_summary` | explicit native graph summary path; candidate-row interpretation stays app code | NVIDIA pod for OptiX timing |
+| Triangle counting | `triangle_counting_optix_native_summary` | scalar answer stays primitive-first; Goal4444 fixes the no-C++ Numba summary-contract staging debt for explicit partner experiments while CuPy remains the large-scale performance route | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
 
 ## Evidence Reports
 
@@ -113,6 +113,7 @@ v2.14 evidence:
 - [Barnes-Hut host Numba CPU baselines](../reports/goal4441_v3_0_m44_barnes_hut_host_numba_cpu_baselines_2026-06-16.md)
 - [Barnes-Hut fused Numba CPU frontier baseline](../reports/goal4442_v3_0_m45_barnes_hut_fused_numba_cpu_frontier_2026-06-16.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)
+- [Goal4444 Triangle Numba direct-binary summary refresh](../reports/goal4444_v3_0_m48_triangle_numba_direct_binary_summary_2026-06-16.md)
 
 ## Reading Rules
 

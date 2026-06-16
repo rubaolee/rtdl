@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import tempfile
 import unittest
 
 import numpy as np
+import rtdsl as rt
 
 from examples.current.research_benchmarks.triangle_counting import rt_graph_contract as contract_mod
 
@@ -12,6 +14,17 @@ from examples.current.research_benchmarks.triangle_counting import rt_graph_cont
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / "examples/current/research_benchmarks/triangle_counting/rt_graph_contract.py"
 RUNNER = ROOT / "scripts/v3_0_m27_triangle_partner_dual_measure.py"
+REPORT = ROOT / "docs/reports/goal4444_v3_0_m48_triangle_numba_direct_binary_summary_2026-06-16.md"
+OLD_EVIDENCE = {
+    5_000: ROOT / "docs/reports/goal4424_v3_0_m27_triangle_partner_dual_cliques5000_2026-06-15.json",
+    50_000: ROOT / "docs/reports/goal4424_v3_0_m27_triangle_partner_dual_cliques50000_2026-06-15.json",
+    200_000: ROOT / "docs/reports/goal4424_v3_0_m27_triangle_partner_dual_cliques200000_2026-06-15.json",
+}
+NEW_EVIDENCE = {
+    5_000: ROOT / "docs/reports/goal4444_v3_0_m48_triangle_partner_dual_cliques5000_2026-06-16.json",
+    50_000: ROOT / "docs/reports/goal4444_v3_0_m48_triangle_partner_dual_cliques50000_2026-06-16.json",
+    200_000: ROOT / "docs/reports/goal4444_v3_0_m48_triangle_partner_dual_cliques200000_2026-06-16.json",
+}
 
 
 class Goal4444V30M48TriangleNumbaDirectBinarySummaryTest(unittest.TestCase):
@@ -69,6 +82,56 @@ class Goal4444V30M48TriangleNumbaDirectBinarySummaryTest(unittest.TestCase):
         self.assertIn("direct_binary_numpy_summary_then_numba_device_upload", runner)
         self.assertIn("numba_route_previous", runner)
         self.assertIn("cpu_contract_then_numba_device_upload", runner)
+
+    def test_pod_evidence_records_m48_speedup_without_overclaiming(self) -> None:
+        for cliques, path in NEW_EVIDENCE.items():
+            with self.subTest(cliques=cliques):
+                old_payload = json.loads(OLD_EVIDENCE[cliques].read_text(encoding="utf-8"))
+                new_payload = json.loads(path.read_text(encoding="utf-8"))
+                self.assertEqual(new_payload["version"], "rtdl.v3_0.triangle_partner_dual.m48")
+                self.assertTrue(new_payload["comparison"]["all_triangle_counts_match_oracle"])
+                self.assertTrue(all(new_payload["comparison"]["signature_match_by_mode"].values()))
+                self.assertFalse(new_payload["comparison"]["public_speedup_claim_authorized"])
+                old_rows = {(row["mode"], row["partner"]): row for row in old_payload["rows"]}
+                new_rows = {(row["mode"], row["partner"]): row for row in new_payload["rows"]}
+                for mode in ("rt_graph_2a1_generic_rt", "rt_graph_1a2_generic_rt"):
+                    old_numba = old_rows[(mode, "numba")]
+                    new_numba = new_rows[(mode, "numba")]
+                    self.assertEqual(
+                        new_numba["partner_construction_mode"],
+                        "direct_binary_numpy_summary_then_numba_device_upload",
+                    )
+                    self.assertGreater(
+                        old_numba["partner_timing_ms"]["total_partner_ms"]
+                        / new_numba["partner_timing_ms"]["total_partner_ms"],
+                        9.0,
+                    )
+                    self.assertGreater(old_numba["timing_ms"]["total"] / new_numba["timing_ms"]["total"], 9.0)
+        large = json.loads(NEW_EVIDENCE[200_000].read_text(encoding="utf-8"))
+        rows = {(row["mode"], row["partner"]): row for row in large["rows"]}
+        self.assertGreater(
+            rows[("rt_graph_2a1_generic_rt", "numba")]["timing_ms"]["total"]
+            / rows[("rt_graph_2a1_generic_rt", "cupy")]["timing_ms"]["total"],
+            2.0,
+        )
+        self.assertGreater(
+            rows[("rt_graph_1a2_generic_rt", "numba")]["timing_ms"]["total"]
+            / rows[("rt_graph_1a2_generic_rt", "cupy")]["timing_ms"]["total"],
+            5.0,
+        )
+
+    def test_report_and_route_registry_carry_m48_boundary(self) -> None:
+        report = REPORT.read_text(encoding="utf-8")
+        route = rt.explain_current_benchmark_route("triangle_counting")
+        validation = rt.validate_current_benchmark_route_decisions()
+
+        self.assertEqual("accept", validation["status"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4444.v1", route["version"])
+        self.assertIn("Goal4444", route["evidence_refs"])
+        self.assertIn("direct_binary_numpy_summary_then_numba_device_upload", route["current_reader_decision"])
+        self.assertIn("CuPy remains the large-scale performance route", report)
+        self.assertIn("CuPy remains the current large-scale", report)
+        self.assertIn("no full RT-Graph paper reproduction claim", report)
 
     def test_numba_builder_smoke_when_cuda_is_available(self) -> None:
         try:

@@ -82,6 +82,16 @@ Python+partner+RTDL split: graph preprocessing remains outside the native RTDL
 engine, while the engine still sees generic rays, triangles, weights, and scalar
 summary primitives.
 
+Goal4444 refreshes the optional `--partner numba` path. The old M27 Numba row
+used `cpu_contract_then_numba_device_upload`, which made the Numba comparison
+mostly a Python contract-construction timing. The current Numba path reads the
+binary edge list directly, builds the compact CSR/two-hop summary with
+vectorized array operations, and uploads Numba CUDA device columns. On the
+200,000-K4-clique synthetic row this cuts Numba total time by `19.96x-23.07x`
+versus M27 while keeping the same OptiX summary primitive and oracle signature.
+CuPy remains the current large-scale performance route; the Numba row is now a
+fairer no-C++ Python-source reference, not a broad paper-speedup claim.
+
 For the synthetic app-summary route, prefer passing `--optix-graph-mode native`
 when you want the current native summary timing path. The default `auto` mode is
 conservative and may report the host-indexed fallback. Even with explicit

@@ -16,7 +16,7 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_route_decisions()
         summary = rt.summarize_current_benchmark_route_decisions()
 
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4443.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4444.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
         self.assertEqual(10, summary["app_count"])
@@ -98,6 +98,21 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         self.assertIn("exact float64 RTDL/OptiX native ranked-summary aggregate", route["current_reader_decision"])
         self.assertIn("prepared_ranked_summary_graph_partner_bridge", route["current_reader_decision"])
         self.assertIn("automatic exact-vs-float32 route selection", route["rejected_or_unpromoted_candidates"])
+
+    def test_triangle_route_mentions_m48_numba_debt_fix(self) -> None:
+        route = rt.explain_current_benchmark_route("triangle_counting")
+
+        self.assertEqual("primitive_first", route["decision_kind"])
+        self.assertEqual("primitive_only", route["partner_policy"])
+        self.assertIn("Goal4444", route["evidence_refs"])
+        self.assertIn("direct_binary_numpy_summary_then_numba_device_upload", route["current_reader_decision"])
+        self.assertIn("19.96x-23.07x", route["current_reader_decision"])
+        self.assertTrue(
+            any(
+                "old M27 cpu_contract_then_numba_device_upload" in candidate
+                for candidate in route["rejected_or_unpromoted_candidates"]
+            )
+        )
 
     def test_unknown_app_fails_to_advisory_no_current_route(self) -> None:
         route = rt.explain_current_benchmark_route("new_app")
