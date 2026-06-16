@@ -73,8 +73,8 @@ class Goal4472V30M76TriangleNumbaDirectUniqueKeysTest(unittest.TestCase):
 
         self.assertIn("numba_direct", report)
         self.assertIn("hidden default", report)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4476.v1", route["version"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4476.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4477.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4477.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
         self.assertIn("Goal4472", route["evidence_refs"])
         self.assertIn("Goal4472", triangle["evidence_refs"])
         self.assertIn("numba_direct", route["user_choice_guidance"])

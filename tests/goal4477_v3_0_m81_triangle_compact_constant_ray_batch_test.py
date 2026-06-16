@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import importlib
+import json
 import os
 from pathlib import Path
 import tempfile
@@ -17,6 +19,11 @@ OPTIX_API = ROOT / "src/native/optix/rtdl_optix_api.cpp"
 OPTIX_WORKLOADS = ROOT / "src/native/optix/rtdl_optix_workloads.cpp"
 OPTIX_CUDA_HELPERS = ROOT / "src/native/optix/rtdl_optix_cuda_helpers.cu"
 OPTIX_PRELUDE = ROOT / "src/native/optix/rtdl_optix_prelude.h"
+REPORT = ROOT / "docs" / "reports" / "goal4477_v3_0_m81_triangle_compact_constant_ray_batch_packet_2026-06-16.md"
+PACKET = ROOT / "docs" / "reports" / "goal4477_v3_0_m81_triangle_compact_constant_ray_batch_packet_2026-06-16.json"
+
+routes = importlib.import_module("rtdsl.current_benchmark_route_decisions")
+adequacy = importlib.import_module("rtdsl.current_benchmark_adequacy")
 
 
 def _has_cupy_optix() -> bool:
@@ -75,6 +82,45 @@ class Goal4477V30M81TriangleCompactConstantRayBatchTest(unittest.TestCase):
                 segment_query_schedule="per_run",
                 segment_ray_column_layout="xz_constant_y_direction",
             )
+
+    def test_packet_records_negative_result_and_keeps_m78_current_best(self) -> None:
+        packet = json.loads(PACKET.read_text(encoding="utf-8"))
+        rows = {row["dataset"]: row for row in packet["rows"]}
+        report = REPORT.read_text(encoding="utf-8")
+
+        self.assertEqual(4477, packet["goal"])
+        self.assertEqual("compact_constant_ray_batch_negative_result", packet["status"])
+        self.assertTrue(packet["claim_boundary"]["app_agnostic_compact_ray_batch_abi_added"])
+        self.assertFalse(packet["claim_boundary"]["current_best_route_changed"])
+        self.assertFalse(packet["claim_boundary"]["public_speedup_claim_authorized"])
+        self.assertIn("M78", packet["current_best_route_remains"])
+        self.assertTrue(all(row["count_matches_m78"] for row in rows.values()))
+        self.assertLess(rows["com_lj"]["m78_over_m81_total"], 1.0)
+        self.assertLess(rows["soc_livejournal1"]["m78_over_m81_total"], 1.0)
+        self.assertLess(rows["com_orkut"]["m78_over_m81_total"], 1.0)
+        self.assertGreater(rows["com_orkut"]["m81_best_total_s"], rows["com_orkut"]["m78_total_s"])
+        self.assertIn("not the current Triangle Counting performance route", report)
+        self.assertIn("RT traversal and native query pack medians remain essentially unchanged", report)
+
+    def test_registry_records_m81_boundary_without_route_switch(self) -> None:
+        route = routes.explain_current_benchmark_route("triangle_counting")
+        rows = {row["app"]: row for row in adequacy.current_benchmark_adequacy()}
+        triangle = rows["triangle_counting"]
+
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4477.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4477.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertIn("Goal4477", route["evidence_refs"])
+        self.assertIn("Goal4477", triangle["evidence_refs"])
+        self.assertIn("compact constant-ray prepared batch ABI", route["user_choice_guidance"])
+        self.assertIn("valid generic runtime surface", triangle["current_recommended_path"])
+        self.assertIn("keeps M78 as current best", route["next_runtime_action"])
+        self.assertIn("keeps M78 as current best", triangle["next_generic_runtime_action"])
+        self.assertTrue(
+            any(
+                "promoting the Goal4477 compact constant-ray batch layout" in candidate
+                for candidate in route["rejected_or_unpromoted_candidates"]
+            )
+        )
 
     @unittest.skipUnless(_has_cupy_optix(), "CuPy plus RTDL OptiX library are not available")
     def test_live_compact_constant_layout_matches_k4_oracle(self) -> None:

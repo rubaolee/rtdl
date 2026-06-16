@@ -80,8 +80,8 @@ class Goal4474V30M78TrianglePreparedRayBatchWeightedSumTest(unittest.TestCase):
 
         self.assertIn("5.404s", report)
         self.assertIn("prepared ray-batch weighted any-hit", report)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4476.v1", route["version"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4476.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4477.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4477.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
         self.assertIn("Goal4474", route["evidence_refs"])
         self.assertIn("Goal4474", triangle["evidence_refs"])
         self.assertIn("prepared_ray_batch_build", route["user_choice_guidance"])

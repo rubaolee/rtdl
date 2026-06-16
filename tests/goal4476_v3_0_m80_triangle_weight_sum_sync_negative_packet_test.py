@@ -36,12 +36,13 @@ class Goal4476V30M80TriangleWeightSumSyncNegativePacketTest(unittest.TestCase):
 
         self.assertIn("negative-result packet", report)
         self.assertIn("Both implementation commits were reverted", report)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4476.v1", route["version"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4476.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4477.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4477.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
         self.assertIn("Goal4476", route["evidence_refs"])
         self.assertIn("Goal4476", triangle["evidence_refs"])
         self.assertIn("weight-sum telemetry", route["next_runtime_action"])
-        self.assertIn("prepared-ray-batch build", triangle["next_generic_runtime_action"])
+        self.assertIn("partner materialization", triangle["next_generic_runtime_action"])
+        self.assertIn("segment-ray construction", triangle["next_generic_runtime_action"])
         self.assertFalse(route["public_speedup_claim_authorized"])
         self.assertFalse(triangle["whole_app_speedup_claim_authorized"])
 

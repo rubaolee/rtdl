@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4476.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4477.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -146,7 +146,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "end-to-end gap to 3.15x-4.89x but still does not authorize RTDL-beats-cuGraph "
     "or public RT-core triangle-count speedup wording. Goal4476 audits and "
     "reverts a no-weight-sum-sync M80 candidate because query medians are "
-    "unchanged and total/backend timing does not improve."
+    "unchanged and total/backend timing does not improve. Goal4477 adds a "
+    "generic compact constant-ray prepared batch ABI and tests it as M81; the "
+    "ABI is correct, but large-row totals are 0.83x/0.86x/0.94x versus M78, "
+    "so M78 remains the current best route."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -790,7 +793,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "faster than RTDL M78 query. Goal4476 tests and rejects removing "
             "per-segment weight-sum reduction/sync telemetry: M80 no-sync and "
             "explicit-sync variants do not improve total/backend timing, so "
-            "M78 remains the current best internal route."
+            "M78 remains the current best internal route. Goal4477 adds the "
+            "app-agnostic compact `xz_constant_y_direction` prepared ray-batch "
+            "ABI and tests it on all three large rows. It preserves counts and "
+            "RT traversal medians are essentially unchanged, but best M81 totals "
+            "are slower than M78 by 20.9%/16.2%/6.3%, so the current route does "
+            "not switch."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -843,7 +851,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "is still 3.15x-4.89x faster end to end, while RTDL's full-pipeline "
             "authors-code reading remains distinct from pure counting-kernel timing. "
             "Cite Goal4476 when ruling out scalar weight-sum telemetry/copy-back "
-            "as the main remaining debt."
+            "as the main remaining debt. Cite Goal4477 when discussing the "
+            "compact constant-ray prepared batch ABI: it is a valid generic ABI, "
+            "but it is not the Triangle Counting current-best route because it "
+            "does not improve the large-row totals."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -874,6 +885,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "claiming Goal4474 alone refreshes RTDL-vs-cuGraph or authors-code comparisons",
             "claiming Goal4475 shows RTDL beats cuGraph or authors pure kernels",
             "promoting the Goal4476 no-weight-sum-sync candidate as an optimization",
+            "promoting the Goal4477 compact constant-ray batch layout as the current Triangle Counting route",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -889,10 +901,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "adds the reusable prepared ray-batch weighted-sum API and makes it "
             "the prepared replay path; Goal4475 refreshes the post-M78 comparison "
             "packet and keeps public speedup wording blocked; Goal4476 rules out "
-            "weight-sum telemetry/sync cleanup as a useful next optimization; next "
-            "work is targeting partner materialization, segment-ray construction, "
-            "or prepared-ray-batch build without breaking the app-agnostic primitive "
-            "contract"
+            "weight-sum telemetry/sync cleanup as a useful next optimization; "
+            "Goal4477 adds and tests a compact constant-ray prepared batch ABI "
+            "but keeps M78 as current best because totals regress; next work is "
+            "targeting partner materialization and segment-ray construction, "
+            "especially unique-key materialization and large temporary allocation "
+            "pressure, without breaking the app-agnostic primitive contract"
         ),
         evidence_refs=(
             "Goal2797",
@@ -923,6 +937,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4474",
             "Goal4475",
             "Goal4476",
+            "Goal4477",
         ),
         pod_needed_next=False,
     ),

@@ -80,7 +80,7 @@ class Goal4438V30M41BarnesHutPreparedFrontierPartnerScaleLadderTest(unittest.Tes
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4476.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4477.v1",
             route["version"],
         )
         self.assertEqual("mixed_explicit", route["decision_kind"])
