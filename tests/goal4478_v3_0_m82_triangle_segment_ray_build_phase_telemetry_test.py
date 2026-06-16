@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import importlib
+import json
 import os
 from pathlib import Path
 import tempfile
@@ -11,6 +13,14 @@ from examples.current.research_benchmarks.triangle_counting import rtdl_triangle
 
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
+REPORT = (
+    ROOT
+    / "docs/reports/goal4478_v3_0_m82_triangle_segment_build_phase_telemetry_packet_2026-06-16.md"
+)
+PACKET = (
+    ROOT
+    / "docs/reports/goal4478_v3_0_m82_triangle_segment_build_phase_telemetry_packet_2026-06-16.json"
+)
 
 
 def _has_cupy_optix() -> bool:
@@ -94,6 +104,55 @@ class Goal4478V30M82TriangleSegmentRayBuildPhaseTelemetryTest(unittest.TestCase)
         self.assertIn("unique_decode_weights", phase_names)
         self.assertIn("ray_column_projection_full", phase_names)
         self.assertGreater(summary["phases"]["cupy_unique_counts"]["median_ms"], 0.0)
+
+    def test_packet_records_cupy_unique_counts_as_next_target(self) -> None:
+        packet = json.loads(PACKET.read_text(encoding="utf-8"))
+        report = REPORT.read_text(encoding="utf-8")
+
+        self.assertEqual(4478, packet["goal"])
+        self.assertEqual("segment_ray_build_phase_telemetry_recorded", packet["status"])
+        self.assertFalse(packet["claim_boundary"]["performance_optimization_claim"])
+        self.assertTrue(packet["claim_boundary"]["instrumentation_claim"])
+        self.assertFalse(packet["claim_boundary"]["current_best_route_changed"])
+        self.assertIn("not a speedup claim", report)
+        self.assertIn("next optimization target is `cupy_unique_counts`", report)
+
+        rows = {row["dataset"]: row for row in packet["rows"]}
+        self.assertEqual({"com_lj", "soc_livejournal1", "com_orkut"}, set(rows))
+        for row in rows.values():
+            self.assertEqual("cupy_unique_counts", row["top_phase"])
+            self.assertIn("cupy_unique_counts", row["phases_ms"])
+            self.assertGreater(row["segment_ray_build_ms"], row["top_phase_ms"])
+        self.assertGreater(rows["com_orkut"]["top_phase_percent"], 50.0)
+
+    def test_registry_records_m82_next_target(self) -> None:
+        routes = importlib.import_module("rtdsl.current_benchmark_route_decisions")
+        adequacy = importlib.import_module("rtdsl.current_benchmark_adequacy")
+
+        self.assertEqual(
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4478.v1",
+            routes.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION,
+        )
+        self.assertEqual(
+            "rtdl.v3_0.current_benchmark_adequacy.goal4478.v1",
+            adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION,
+        )
+
+        route_rows = {
+            row["app"]: row for row in routes.current_benchmark_route_decisions()
+        }
+        adequacy_rows = {
+            row["app"]: row for row in adequacy.current_benchmark_adequacy()
+        }
+        route_row = route_rows["triangle_counting"]
+        adequacy_row = adequacy_rows["triangle_counting"]
+
+        self.assertIn("Goal4478", route_row["evidence_refs"])
+        self.assertIn("Goal4478", adequacy_row["evidence_refs"])
+        self.assertIn("cp.unique(return_counts)", route_row["next_runtime_action"])
+        self.assertIn("cupy_unique_counts", route_row["next_runtime_action"])
+        self.assertIn("cp.unique(return_counts)", adequacy_row["next_generic_runtime_action"])
+        self.assertIn("cupy_unique_counts", adequacy_row["current_performance_reading"])
 
 
 if __name__ == "__main__":

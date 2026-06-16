@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4477.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4478.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -149,7 +149,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "unchanged and total/backend timing does not improve. Goal4477 adds a "
     "generic compact constant-ray prepared batch ABI and tests it as M81; the "
     "ABI is correct, but large-row totals are 0.83x/0.86x/0.94x versus M78, "
-    "so M78 remains the current best route."
+    "so M78 remains the current best route. Goal4478 adds opt-in synchronized "
+    "segment-ray build subphase telemetry and shows `cupy_unique_counts` is "
+    "the scaling hotspot at 41.6%/46.8%/53.3% of segment-ray construction on "
+    "the three large rows."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -798,7 +801,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "ABI and tests it on all three large rows. It preserves counts and "
             "RT traversal medians are essentially unchanged, but best M81 totals "
             "are slower than M78 by 20.9%/16.2%/6.3%, so the current route does "
-            "not switch."
+            "not switch. Goal4478 adds explicit `sync_subphases` telemetry for "
+            "segment-ray construction. The three large rows show "
+            "`cupy_unique_counts` as the top subphase: 0.694s/1.035s/6.306s, "
+            "or 41.6%/46.8%/53.3% of segment-ray construction."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -854,7 +860,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "as the main remaining debt. Cite Goal4477 when discussing the "
             "compact constant-ray prepared batch ABI: it is a valid generic ABI, "
             "but it is not the Triangle Counting current-best route because it "
-            "does not improve the large-row totals."
+            "does not improve the large-row totals. Cite Goal4478 when discussing "
+            "the current segment-ray construction bottleneck: `cupy_unique_counts` "
+            "is now the measured first target."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -886,6 +894,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "claiming Goal4475 shows RTDL beats cuGraph or authors pure kernels",
             "promoting the Goal4476 no-weight-sum-sync candidate as an optimization",
             "promoting the Goal4477 compact constant-ray batch layout as the current Triangle Counting route",
+            "spending the next Triangle Counting optimization cycle on counts/filter, duplicate count sum, or RT traversal before addressing Goal4478 cupy_unique_counts",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -904,9 +913,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "weight-sum telemetry/sync cleanup as a useful next optimization; "
             "Goal4477 adds and tests a compact constant-ray prepared batch ABI "
             "but keeps M78 as current best because totals regress; next work is "
-            "targeting partner materialization and segment-ray construction, "
-            "especially unique-key materialization and large temporary allocation "
-            "pressure, without breaking the app-agnostic primitive contract"
+            "targeting partner materialization and segment-ray construction; "
+            "Goal4478 identifies `cupy_unique_counts` as the scaling hotspot, "
+            "so the next concrete target is reducing, replacing, or avoiding "
+            "generic `cp.unique(return_counts)` over duplicate two-hop keys "
+            "without breaking the app-agnostic primitive contract"
         ),
         evidence_refs=(
             "Goal2797",
@@ -938,6 +949,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4475",
             "Goal4476",
             "Goal4477",
+            "Goal4478",
         ),
         pod_needed_next=False,
     ),

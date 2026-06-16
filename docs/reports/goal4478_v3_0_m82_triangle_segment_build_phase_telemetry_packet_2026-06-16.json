@@ -1,0 +1,93 @@
+{
+  "goal": 4478,
+  "milestone": "v3_0_m82",
+  "status": "segment_ray_build_phase_telemetry_recorded",
+  "date": "2026-06-16",
+  "claim_boundary": {
+    "performance_optimization_claim": false,
+    "instrumentation_claim": true,
+    "current_best_route_changed": false,
+    "public_speedup_claim_authorized": false,
+    "triangle_count_rt_core_claim_authorized": false,
+    "automatic_partner_selection_authorized": false
+  },
+  "route_profiled": "M78 current-best route: unique_weighted + numba_direct + prepared_segment_replay + full ray columns",
+  "telemetry_mode": "sync_subphases",
+  "rows": [
+    {
+      "dataset": "com_lj",
+      "display_name": "com-lj",
+      "count": 177820130,
+      "segment_ray_build_ms": 1669.8884069919586,
+      "phase_sum_ms": 1668.6996966600418,
+      "top_phase": "cupy_unique_counts",
+      "top_phase_ms": 694.1795274615288,
+      "top_phase_percent": 41.60,
+      "phases_ms": {
+        "cupy_unique_counts": 694.1795274615288,
+        "numba_key_fill": 390.7545208930969,
+        "numba_kernel_lookup": 230.5898815393448,
+        "ray_column_projection_full": 182.31850862503052,
+        "unique_decode_weights": 126.13808363676071,
+        "edge_slice_starts": 19.175373017787933,
+        "filter_nonempty_counts": 17.762772738933563,
+        "numba_offsets_key_alloc": 4.300452768802643,
+        "duplicate_ray_count_sum": 3.480575978755951
+      }
+    },
+    {
+      "dataset": "soc_livejournal1",
+      "display_name": "soc-LiveJournal1",
+      "count": 285730264,
+      "segment_ray_build_ms": 2215.175896883011,
+      "phase_sum_ms": 2213.3994176983833,
+      "top_phase": "cupy_unique_counts",
+      "top_phase_ms": 1035.1762473583221,
+      "top_phase_percent": 46.77,
+      "phases_ms": {
+        "cupy_unique_counts": 1035.1762473583221,
+        "numba_key_fill": 478.132002055645,
+        "ray_column_projection_full": 258.56863707304,
+        "numba_kernel_lookup": 190.04260003566742,
+        "unique_decode_weights": 178.80260944366455,
+        "filter_nonempty_counts": 32.89603441953659,
+        "edge_slice_starts": 28.182238340377808,
+        "numba_offsets_key_alloc": 6.507463753223419,
+        "duplicate_ray_count_sum": 5.091585218906403
+      }
+    },
+    {
+      "dataset": "com_orkut",
+      "display_name": "com-orkut",
+      "count": 627584181,
+      "segment_ray_build_ms": 11838.388696312904,
+      "phase_sum_ms": 11826.63418352604,
+      "top_phase": "cupy_unique_counts",
+      "top_phase_ms": 6306.463456273079,
+      "top_phase_percent": 53.32,
+      "phases_ms": {
+        "cupy_unique_counts": 6306.463456273079,
+        "numba_key_fill": 2185.15403175354,
+        "ray_column_projection_full": 1640.2764159440994,
+        "unique_decode_weights": 1135.7633301019669,
+        "numba_kernel_lookup": 189.38968151807785,
+        "edge_slice_starts": 150.51527798175812,
+        "filter_nonempty_counts": 145.45499992370605,
+        "numba_offsets_key_alloc": 41.5786327123642,
+        "duplicate_ray_count_sum": 32.03835731744766
+      }
+    }
+  ],
+  "interpretation": {
+    "headline": "Segment-ray construction is dominated by cupy_unique_counts on all three large rows.",
+    "main_hotspot": "cupy_unique_counts grows from 41.6% on com-lj to 53.3% on com-orkut.",
+    "secondary_hotspots": "numba_key_fill is second, while ray_column_projection_full plus unique_decode_weights become material on com-orkut.",
+    "not_the_next_target": "counts/filter, duplicate count sum, and offset allocation are small. Numba kernel lookup is visible on smaller rows but not the scaling bottleneck.",
+    "next_optimization_target": "Reduce or replace cp.unique(return_counts) over the duplicate two-hop key stream, or change segmentation/partner lowering so fewer duplicate keys reach that global unique/count phase."
+  },
+  "artifacts": [
+    "goal4478_v3_0_m82_triangle_segment_build_telemetry_com_lj_w1r1_2026-06-16.json",
+    "goal4478_v3_0_m82_triangle_segment_build_telemetry_soc_livejournal1_w1r1_2026-06-16.json",
+    "goal4478_v3_0_m82_triangle_segment_build_telemetry_com_orkut_w1r1_2026-06-16.json"
+  ]
+}

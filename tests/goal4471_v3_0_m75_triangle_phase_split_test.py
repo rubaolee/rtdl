@@ -83,8 +83,8 @@ class Goal4471V30M75TrianglePhaseSplitTest(unittest.TestCase):
 
         self.assertIn("phase_split_ms", report)
         self.assertIn("15.243s", report)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4477.v1", route["version"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4477.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4478.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4478.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
         self.assertIn("Goal4471", route["evidence_refs"])
         self.assertIn("Goal4471", triangle["evidence_refs"])
         self.assertIn("phase_split_ms", route["user_choice_guidance"])

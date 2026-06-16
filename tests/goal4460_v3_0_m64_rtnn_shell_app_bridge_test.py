@@ -99,7 +99,7 @@ class Goal4460V30M64RtnnShellAppBridgeTest(unittest.TestCase):
         rt_core_matrix = RT_CORE_MATRIX.read_text(encoding="utf-8")
 
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4477.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4478.v1",
             route["version"],
         )
         self.assertIn("Goal4460", route["evidence_refs"])
@@ -115,7 +115,7 @@ class Goal4460V30M64RtnnShellAppBridgeTest(unittest.TestCase):
         self.assertFalse(route["automatic_partner_selection_authorized"])
 
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4477.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4478.v1",
             adequacy["version"],
         )
         self.assertEqual("strong", adequacy["adequacy"])
