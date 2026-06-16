@@ -1,0 +1,102 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "engine_contract": "generic prepared triangle scene plus generic ray/triangle weighted any-hit sum",
+    "native_engine_customization": false,
+    "partner_role": "CuPy app partner builds directed CSR and segmented duplicate two-hop ray batches",
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparison": {
+    "global_two_hop_summary_materialized": false,
+    "max_segment_two_hop_rows": 200000,
+    "public_speedup_claim_authorized": false,
+    "rt_core_accelerated": true,
+    "segment_count": 4,
+    "total_two_hop_rows": 800000,
+    "triangle_count_matches_oracle": true,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": 4461,
+  "implementation": "segmented_2a1_cupy_directed_csr",
+  "milestone": "v3_0_m65",
+  "parameters": {
+    "cliques": 200000,
+    "edge_count": 1200000,
+    "edge_file": "build/goal4461_m65_triangle_k4_cliques.edge",
+    "expected_triangle_count": 800000,
+    "hardware": "RTX 4000 Ada pod",
+    "repeat": 3,
+    "segment_max_two_hop_rows": 200000,
+    "warmup": 1
+  },
+  "row": {
+    "backend": "optix",
+    "expected_triangle_count": 800000,
+    "mode": "rt_graph_2a1_segmented_generic_rt",
+    "observed_triangle_count": 800000,
+    "partner": "cupy",
+    "partner_timing_ms": {
+      "compact_unique_ms": 150.233,
+      "degree_ms": 66.916,
+      "directed_csr_ms": 9.391,
+      "estimated_two_hop_relation_count": 800000,
+      "host_columns_materialized": false,
+      "load_np_ms": 53.107,
+      "max_two_hop_per_directed_edge": 2,
+      "total_partner_ms": 315.119,
+      "triangle_count_available": false,
+      "two_hop_estimate_ms": 0.216,
+      "two_hop_summary_materialized": false,
+      "upload_ms": 35.255
+    },
+    "primitive_count": 1200000,
+    "ray_count": 800000,
+    "rt_core_accelerated": true,
+    "segmentation": {
+      "count_column_rows": 1200000,
+      "counts_download_ms": 2.113841474056244,
+      "max_segment_two_hop_rows": 200000,
+      "max_two_hop_rows": 200000,
+      "ranges_preview": [
+        {
+          "end_edge": 299998,
+          "start_edge": 0,
+          "two_hop_rows": 200000
+        },
+        {
+          "end_edge": 599998,
+          "start_edge": 299998,
+          "two_hop_rows": 200000
+        },
+        {
+          "end_edge": 899998,
+          "start_edge": 599998,
+          "two_hop_rows": 200000
+        },
+        {
+          "end_edge": 1199998,
+          "start_edge": 899998,
+          "two_hop_rows": 200000
+        }
+      ],
+      "ranges_truncated": false,
+      "segment_count": 4,
+      "total_two_hop_rows": 800000
+    },
+    "timing_ms": {
+      "build_contract": 671.5845987200737,
+      "build_geometry": 274.9122306704521,
+      "prepare_scene_ms": 494.2537099123001,
+      "query_max_ms": 4.911504685878754,
+      "query_median_ms": 4.883110523223877,
+      "query_min_ms": 4.882603883743286,
+      "segment_ray_build_median_ms": 5.6113749742507935,
+      "total": 1568.8074603676796
+    },
+    "triangle_count_matches_generated_oracle": true
+  },
+  "status": "segmented_rt_2a1_avoids_global_two_hop_summary_materialization"
+}

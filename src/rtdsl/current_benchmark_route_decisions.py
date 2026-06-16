@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4460.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4461.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -92,7 +92,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "confirms that fused CPU/Numba is fastest on the RTX 4000 Ada pod at "
     "8192/16384/32768 bodies, fused Numba CUDA is the no-C++ GPU partner lane, "
     "and prepared RTDL/OptiX remains RT-core device-column evidence rather than "
-    "a Barnes-Hut RT-core speedup claim."
+    "a Barnes-Hut RT-core speedup claim. Goal4461 adds the Triangle Counting "
+    "segmented RT-2A1 route: CuPy builds a directed CSR and two-hop count estimate, "
+    "then bounded duplicate two-hop ray batches reuse one generic OptiX triangle "
+    "scene. This removes the previous global two-hop summary materialization from "
+    "that explicit route while keeping triangle-count RT-core speedup claims blocked."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -665,8 +669,13 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4457 removes host-column materialization from the app's CuPy device-column "
             "summary route, improving CuPy total time by about 1.37x-1.40x versus Goal4455 "
             "on the dense 200,000 K4-clique fixture. "
-            "CuPy remains the current large-scale performance route until the remaining graph-summary "
-            "construction and segmented paper-dataset lowering debts are closed."
+            "Goal4461 adds an explicit segmented duplicate two-hop RT-2A1 CuPy route that "
+            "builds only a directed CSR and two-hop count estimate, then reuses one generic "
+            "OptiX triangle scene across bounded ray batches. On the 200,000 K4-clique row "
+            "it matched the generated 800,000-triangle oracle with 1,200,000 directed edge "
+            "triangles, 800,000 duplicate two-hop rays, four segments, and no global two-hop "
+            "summary materialization. CuPy remains the current large-scale performance route; "
+            "paper-dataset segmented evidence is the next validation step."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -681,6 +690,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "CuPy-vs-Numba rerank. Cite Goal4456 when gapped but bounded nonnegative graph ids "
             "are the reason the Numba path avoids `np.unique(return_inverse)` remapping. "
             "Cite Goal4457 for the current CuPy app route that skips host-column materialization."
+            " Cite Goal4461 when the user needs the segmented RT-2A1 route that avoids global "
+            "two-hop summary materialization by lowering duplicate two-hop rays in bounded "
+            "generic RT batches."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -691,13 +703,16 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "promoting Numba over CuPy after Goal4454 without the Goal4455 rerank evidence",
             "treating bounded-id remap as safe for huge sparse id spaces",
             "requiring CuPy host-column materialization in app summary mode after Goal4457",
+            "treating the Goal4461 segmented RT-2A1 route as a public triangle-count RT-core speedup claim",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
             "preserve the generic graph relationship-count route and avoid claiming RT-core "
-            "triangle-count acceleration; remaining partner work is deeper graph-summary construction "
-            "that avoids host/global two-hop materialization on unsorted or huge-sparse-id inputs plus "
-            "segmented paper-dataset lowering"
+            "triangle-count acceleration; the remaining graph-summary construction validation "
+            "is to run the segmented RT-2A1 route on the RT-Graph paper datasets that "
+            "previously OOMed, then compare it against the CuPy global-summary route, "
+            "the no-C++ Numba reference, cuGraph, and authors' RT-Graph code under one "
+            "explicit timing contract"
         ),
         evidence_refs=(
             "Goal2797",
@@ -712,6 +727,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4455",
             "Goal4456",
             "Goal4457",
+            "Goal4461",
         ),
         pod_needed_next=False,
     ),

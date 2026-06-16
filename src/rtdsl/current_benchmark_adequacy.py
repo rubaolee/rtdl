@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4460.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4461.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -411,22 +411,29 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "partner row by replacing the old Numba CPU-contract builder with direct "
             "binary vectorized summary construction before Numba device upload, "
             "cutting Numba construction debt by 19.96x-23.07x while CuPy remains the "
-            "large-scale performance route."
+            "large-scale performance route. Goal4461 adds a segmented RT-2A1 CuPy "
+            "route that avoids global two-hop summary materialization and matches the "
+            "generated 800,000-triangle oracle on the 200,000-K4-clique pod row."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
             "use explicit `--optix-graph-mode native` for current native timing and "
-            "use Goal4444 partner rows only for RT-Graph summary-contract experiments"
+            "use Goal4444/Goal4457 partner rows for RT-Graph global-summary experiments; "
+            "use Goal4461 segmented RT-2A1 only when the explicit goal is avoiding "
+            "global two-hop summary materialization"
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
             "large-scale performance for explicit summary-contract construction and "
-            "Numba is now a much fairer no-C++ Python-source reference"
+            "the segmented RT-2A1 route; Numba is now a much fairer no-C++ "
+            "Python-source reference for the global-summary path"
         ),
         "next_generic_runtime_action": (
             "keep scalar triangle-count wording primitive-first; do not claim RT-Graph "
-            "paper reproduction or broad triangle-count acceleration; remaining "
-            "construction debt is fully device-side or segmented summary construction"
+            "paper reproduction or broad triangle-count acceleration; next validation "
+            "is segmented RT-2A1 on the RT-Graph paper datasets that previously OOMed "
+            "and an explicit comparison against CuPy global-summary, Numba, cuGraph, "
+            "and authors' RT-Graph code"
         ),
         "evidence_refs": (
             "Goal2797",
@@ -438,6 +445,8 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal3856",
             "Goal4424",
             "Goal4444",
+            "Goal4457",
+            "Goal4461",
         ),
     },
 }

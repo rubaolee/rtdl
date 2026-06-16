@@ -38,6 +38,7 @@ PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/r
 PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_1a2_generic_rt --fixture degree_oriented_two_triangles --backend cpu
 PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_2a1_generic_rt --edge-file build/goal2588_rt_graph/k4_cliques_10000.edge --edge-format binary --backend optix --detail summary
 PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_2a1_generic_rt --edge-file build/goal2588_rt_graph/k4_cliques_10000.edge --edge-format binary --backend optix --detail summary --partner cupy
+PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_2a1_segmented_generic_rt --edge-file build/goal2588_rt_graph/k4_cliques_10000.edge --edge-format binary --backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000
 PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_1a2_generic_rt --edge-file build/goal2588_rt_graph/k4_cliques_10000.edge --edge-format binary --backend optix --detail summary --partner cupy
 PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode run --backend optix --output-mode summary --optix-graph-mode native --copies 128 --repeat 2 --warmup 1
 PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode command_plan
@@ -120,9 +121,19 @@ not a paper-dataset speedup claim. The next RTDL target is segmented/streamed
 RT-Graph lowering that preserves the generic engine contract while avoiding
 global two-hop materialization.
 
+Goal4461 adds the first explicit segmented RT-2A1 route for that target. It
+builds a CuPy directed CSR, estimates two-hop row counts, prepares one generic
+OptiX 3-D triangle scene, then lowers duplicate two-hop rays in bounded
+segments with unit weights. On the 200,000-K4-clique pod row it matched the
+generated 800,000-triangle oracle with 1,200,000 directed edge triangles,
+800,000 duplicate two-hop rays, four segments, and
+`two_hop_summary_materialized=false`. This is internal route evidence, not a
+triangle-counting RT-core speedup claim.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
+- `docs/reports/goal4461_v3_0_m65_triangle_segmented_2a1_2026-06-16.md`
 
 ## Engine Boundary
 

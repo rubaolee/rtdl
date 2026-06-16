@@ -185,6 +185,12 @@ def command_plan_payload() -> dict[str, Any]:
             "--mode rt_graph_2a1_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy"
         ),
+        "rt_graph_2a1_segmented_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000"
+        ),
         "rt_graph_1a2_generic_rt_optix": (
             "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
@@ -942,6 +948,234 @@ def rt_graph_2a1_generic_rt_payload(
     }
 
 
+def rt_graph_2a1_segmented_generic_rt_payload(
+    *,
+    edge_file: str | None,
+    edge_format: str,
+    backend: str,
+    detail: str,
+    partner: str,
+    warmup: int,
+    repeat: int,
+    segment_max_two_hop_rows: int,
+    validate_oracle: bool = False,
+) -> dict[str, Any]:
+    _validate_repetition(warmup=warmup, repeat=repeat)
+    normalized_backend = backend.lower().replace("-", "_")
+    if normalized_backend != "optix" or detail != "summary" or partner != "cupy":
+        raise ValueError(
+            "rt_graph_2a1_segmented_generic_rt currently requires "
+            "--backend optix --detail summary --partner cupy"
+        )
+    if edge_file is None or edge_format != "binary":
+        raise ValueError("rt_graph_2a1_segmented_generic_rt requires --edge-file with --edge-format binary")
+    if segment_max_two_hop_rows <= 0:
+        raise ValueError("segment_max_two_hop_rows must be positive")
+
+    started = time.perf_counter()
+    input_source = {"kind": "edge_file", "format": "binary", "path": edge_file}
+    loaded = time.perf_counter()
+    oracle_triangle_count: int | None = None
+    if validate_oracle:
+        oracle_contract = build_rt_graph_triangle_contract(read_binary_edges(edge_file), include_id_ascending_adapter=False)
+        oracle_triangle_count = int(oracle_contract.triangle_count)
+    oracle_checked = time.perf_counter()
+    contract = build_rt_graph_triangle_summary_contract_cupy_binary(
+        edge_file,
+        materialize_host_columns=False,
+        materialize_two_hop_summary=False,
+    )
+    built = time.perf_counter()
+    segment_plan = _plan_rt_graph_2a1_cupy_segments(
+        contract,
+        max_two_hop_rows=segment_max_two_hop_rows,
+    )
+    triangles = _build_rt_graph_2a1_cupy_directed_edge_triangles(contract)
+    lowered = time.perf_counter()
+
+    summary_result = None
+    query_timings_ms: list[float] = []
+    segment_ray_build_timings_ms: list[float] = []
+    prepare_started = time.perf_counter()
+    scene = rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangles)
+    prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+    hit_weight_sum = 0
+    with scene:
+        for index in range(warmup + repeat):
+            run_segment_build_ms = 0.0
+            run_query_ms = 0.0
+            run_hit_weight_sum = 0
+            for start_edge, end_edge, _two_hop_rows in segment_plan["ranges"]:
+                if int(_two_hop_rows) <= 0:
+                    continue
+                segment_build_started = time.perf_counter()
+                rays, ray_weights = _build_rt_graph_2a1_cupy_segment_rays(
+                    contract,
+                    start_edge=int(start_edge),
+                    end_edge=int(end_edge),
+                )
+                run_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
+                query_started = time.perf_counter()
+                summary_result = scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
+                run_query_ms += _elapsed_ms(query_started, time.perf_counter())
+                run_hit_weight_sum += int(summary_result["weighted_hit_sum"])
+            if index >= warmup:
+                query_timings_ms.append(run_query_ms)
+                segment_ray_build_timings_ms.append(run_segment_build_ms)
+                hit_weight_sum = int(run_hit_weight_sum)
+    ran = time.perf_counter()
+    reduced = time.perf_counter()
+
+    primitive_count = _record_count(triangles)
+    ray_count = int(segment_plan["total_two_hop_rows"])
+    v2_4_session = describe_rt_graph_v2_4_prepared_session(
+        backend=backend,
+        paper_method="RT-2A1",
+        primitive_count=primitive_count,
+        ray_count=ray_count,
+        device_column_summary=True,
+        partner=partner,
+    )
+    v2_4_phase_timing = rt.v2_4_phase_timing_metadata(
+        {
+            "query_preparation": lowered - built,
+            "scene_build": prepare_scene_ms / 1000.0,
+            "rt_traversal": _median(query_timings_ms) / 1000.0,
+            "materialization": _median(segment_ray_build_timings_ms) / 1000.0,
+        },
+        promoted_performance_path=True,
+        same_phase_contract_as_basis=True,
+        source="triangle_counting.rt_graph_2a1_segmented_generic_rt",
+    )
+    session_key = rt.make_prepared_session_cache_key(
+        primitive="ray_triangle_weighted_any_hit_sum_3d",
+        backend=normalized_backend,
+        input_fingerprints={
+            "triangles": {"count": primitive_count, "edge_file": edge_file},
+            "rays": {
+                "count": ray_count,
+                "edge_file": edge_file,
+                "segmented": True,
+                "segment_max_two_hop_rows": int(segment_max_two_hop_rows),
+            },
+        },
+        parameters={"detail": detail, "summary": True, "segmented": True},
+        partner=partner,
+        device="cuda:0",
+    )
+    session_policy = rt.RtdlPreparedSessionResidencyPolicy(
+        cache_key=session_key,
+        cache_enabled=False,
+        lifetime_state="session_retained",
+        reuse_scope="explicit_user_session",
+        invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
+    )
+    segment_ranges = tuple(
+        {
+            "start_edge": int(start_edge),
+            "end_edge": int(end_edge),
+            "two_hop_rows": int(two_hop_rows),
+        }
+        for start_edge, end_edge, two_hop_rows in segment_plan["ranges"][:8]
+    )
+    triangle_count_matches_oracle = (
+        None if oracle_triangle_count is None else int(hit_weight_sum) == int(oracle_triangle_count)
+    )
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "rt_graph_2a1_segmented_generic_rt",
+        "input_source": input_source,
+        "backend": backend,
+        "contract": "rt_graph_2a1_segmented_to_generic_ray_triangle_any_hit",
+        "authors_code_reproduction": False,
+        "same_contract_native_timing": True,
+        "ray_tracing_accelerated": True,
+        "rt_core_accelerated": True,
+        "rt_core_path": "segmented_generic_prepared_triangle_scene_3d_any_hit_weighted_sum",
+        "partner": partner,
+        "partner_summary_contract_used": True,
+        "partner_timing_ms": getattr(contract, "partner_timing_ms", None),
+        "primitive_layout": {
+            "paper_method": "RT-2A1",
+            "primitive_side": "directed 1-hop edges as Triangle3D primitives",
+            "ray_side": "segmented duplicate 2-hop relation rays with unit weights",
+            "triangle_eps": 0.2,
+            "ray_tmax": 0.2,
+            "device_column_lowering": True,
+            "global_two_hop_summary_materialized": False,
+        },
+        "segmentation": {
+            "segment_count": int(segment_plan["segment_count"]),
+            "max_two_hop_rows": int(segment_plan["max_two_hop_rows"]),
+            "max_segment_two_hop_rows": int(segment_plan["max_segment_two_hop_rows"]),
+            "total_two_hop_rows": int(segment_plan["total_two_hop_rows"]),
+            "count_column_rows": int(segment_plan["count_column_rows"]),
+            "counts_download_ms": float(segment_plan["counts_download_ms"]),
+            "ranges_preview": segment_ranges,
+            "ranges_truncated": len(segment_plan["ranges"]) > len(segment_ranges),
+        },
+        "primitive_count": primitive_count,
+        "ray_count": ray_count,
+        "oracle_triangle_count": oracle_triangle_count,
+        "generic_rt_weighted_triangle_count": int(hit_weight_sum),
+        "triangle_count_matches_oracle": triangle_count_matches_oracle,
+        "timing_ms": {
+            "load_edges": _elapsed_ms(started, loaded),
+            "validate_oracle": _elapsed_ms(loaded, oracle_checked),
+            "build_contract": _elapsed_ms(oracle_checked, built),
+            "build_geometry": _elapsed_ms(built, lowered),
+            "run_backend": _elapsed_ms(lowered, ran),
+            "prepare_scene_ms": prepare_scene_ms,
+            "segment_ray_build_median_ms": _median(segment_ray_build_timings_ms),
+            "segment_ray_build_total_ms": float(sum(segment_ray_build_timings_ms)),
+            "query_median_ms": _median(query_timings_ms),
+            "query_total_ms": float(sum(query_timings_ms)),
+            "query_mean_ms": float(sum(query_timings_ms) / len(query_timings_ms)),
+            "query_min_ms": min(query_timings_ms),
+            "query_max_ms": max(query_timings_ms),
+            "query_repeat": repeat,
+            "query_warmup": warmup,
+            "query_measured_runs": len(query_timings_ms),
+            "reduce_hits": _elapsed_ms(ran, reduced),
+            "total": _elapsed_ms(started, reduced),
+        },
+        "hit_rows": {
+            "row_count": ray_count,
+            "materialized": False,
+            "summary_primitive": "segmented_ray_triangle_weighted_any_hit_sum_3d",
+        },
+        "generic_rt_summary": (
+            None
+            if summary_result is None
+            else {
+                "contract": "segmented_ray_triangle_weighted_any_hit_sum_3d",
+                "last_segment_summary": summary_result,
+            }
+        ),
+        "v2_4_prepared_session": v2_4_session,
+        "prepared_session_residency": {
+            "cache_key": session_key.to_metadata(),
+            "policy": session_policy.to_metadata(),
+            "explicit_reuse_helper": "get_or_prepare_explicit_session",
+            "cache_enabled_by_default": False,
+            "prepare_once_query_many_pattern": True,
+            "automatic_partner_selection_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
+        "v2_4_phase_timing": v2_4_phase_timing,
+        "rt_graph_contract": _contract_payload(contract, detail=detail),
+        "claim_boundary": CLAIM_BOUNDARY
+        | {
+            "segmented_two_hop_lowering": True,
+            "global_two_hop_summary_materialized": False,
+            "triangle_count_rt_core_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
+    }
+
+
 def rt_graph_1a2_generic_rt_payload(
     *,
     fixture: str,
@@ -1290,6 +1524,21 @@ def _require_summary_device_arrays(contract, *, partner: str) -> dict[str, objec
     return device_arrays
 
 
+def _require_directed_csr_device_arrays(contract, *, partner: str) -> dict[str, object]:
+    device_arrays = getattr(contract, "device_arrays", None)
+    if not isinstance(device_arrays, dict):
+        raise ValueError(f"{partner} contract is missing partner-resident directed CSR arrays")
+    required = {
+        "row_offsets",
+        "column_indices",
+        "directed_src",
+    }
+    missing = sorted(required - set(device_arrays))
+    if missing:
+        raise ValueError(f"{partner} contract missing directed CSR arrays: {', '.join(missing)}")
+    return device_arrays
+
+
 def _build_rt_graph_1a2_device_geometry(contract, *, partner: str = "cupy"):
     if partner == "numba":
         return _build_rt_graph_1a2_numba_device_geometry(contract)
@@ -1370,6 +1619,150 @@ def _build_rt_graph_1a2_device_geometry(contract, *, partner: str = "cupy"):
         "tmax": tmax,
     }
     return triangles, rays
+
+
+def _build_rt_graph_2a1_cupy_directed_edge_triangles(contract):
+    cp = __import__("cupy")
+
+    device_arrays = _require_directed_csr_device_arrays(contract, partner="cupy")
+    directed_src = device_arrays["directed_src"]
+    directed_dst = device_arrays["column_indices"]
+    axis_offset_x = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+
+    edge_count = int(directed_dst.size)
+    if edge_count:
+        center_x = directed_src.astype(cp.float64) - axis_offset_x
+        center_z = directed_dst.astype(cp.float64) - axis_offset_z
+    else:
+        center_x = cp.empty(0, dtype=cp.float64)
+        center_z = cp.empty(0, dtype=cp.float64)
+    zero = cp.zeros(edge_count, dtype=cp.float64)
+    return {
+        "ids": cp.arange(edge_count, dtype=cp.uint32),
+        "x0": center_x,
+        "y0": zero,
+        "z0": center_z + eps,
+        "x1": center_x - eps,
+        "y1": zero,
+        "z1": center_z - eps,
+        "x2": center_x + eps,
+        "y2": zero,
+        "z2": center_z - eps,
+    }
+
+
+def _segment_edge_ranges_from_counts(
+    counts: object,
+    *,
+    max_two_hop_rows: int,
+) -> tuple[tuple[int, int, int], ...]:
+    if max_two_hop_rows <= 0:
+        raise ValueError("max_two_hop_rows must be positive")
+    ranges: list[tuple[int, int, int]] = []
+    start = 0
+    running = 0
+    for index, raw_count in enumerate(counts):
+        count = int(raw_count)
+        if count < 0:
+            raise ValueError("two-hop segment counts must be nonnegative")
+        if index > start and running + count > max_two_hop_rows:
+            ranges.append((start, index, running))
+            start = index
+            running = 0
+        running += count
+        if running >= max_two_hop_rows:
+            if running > 0:
+                ranges.append((start, index + 1, running))
+            start = index + 1
+            running = 0
+    if start < len(counts) and running > 0:
+        ranges.append((start, len(counts), running))
+    return tuple(ranges)
+
+
+def _plan_rt_graph_2a1_cupy_segments(contract, *, max_two_hop_rows: int) -> dict[str, object]:
+    cp = __import__("cupy")
+
+    device_arrays = _require_directed_csr_device_arrays(contract, partner="cupy")
+    row_offsets = device_arrays["row_offsets"]
+    column_indices = device_arrays["column_indices"]
+    counts_device = device_arrays.get("two_hop_counts_per_directed_edge")
+    if counts_device is None:
+        out_degrees = row_offsets[1:] - row_offsets[:-1]
+        counts_device = out_degrees[column_indices].astype(cp.int64, copy=False)
+
+    cp.cuda.Stream.null.synchronize()
+    started = time.perf_counter()
+    counts_host = cp.asnumpy(counts_device.astype(cp.int64, copy=False))
+    cp.cuda.Stream.null.synchronize()
+    counts_download_ms = _elapsed_ms(started, time.perf_counter())
+    ranges = _segment_edge_ranges_from_counts(counts_host, max_two_hop_rows=max_two_hop_rows)
+    total_two_hop_rows = int(counts_host.sum()) if counts_host.size else 0
+    max_segment_rows = max((two_hop_rows for _, _, two_hop_rows in ranges), default=0)
+    return {
+        "ranges": ranges,
+        "segment_count": len(ranges),
+        "max_two_hop_rows": int(max_two_hop_rows),
+        "total_two_hop_rows": total_two_hop_rows,
+        "max_segment_two_hop_rows": int(max_segment_rows),
+        "counts_download_ms": counts_download_ms,
+        "count_column_rows": int(counts_host.size),
+    }
+
+
+def _build_rt_graph_2a1_cupy_segment_rays(contract, *, start_edge: int, end_edge: int):
+    cp = __import__("cupy")
+
+    device_arrays = _require_directed_csr_device_arrays(contract, partner="cupy")
+    row_offsets = device_arrays["row_offsets"]
+    column_indices = device_arrays["column_indices"]
+    directed_src = device_arrays["directed_src"]
+    out_degrees = row_offsets[1:] - row_offsets[:-1]
+    edge_mid = column_indices[start_edge:end_edge]
+    edge_src = directed_src[start_edge:end_edge]
+    counts = out_degrees[edge_mid].astype(cp.int64, copy=False)
+    nonempty = counts > 0
+    counts = counts[nonempty]
+    if int(counts.size) == 0:
+        empty_f64 = cp.empty(0, dtype=cp.float64)
+        empty_u32 = cp.empty(0, dtype=cp.uint32)
+        rays = {
+            "ids": empty_u32,
+            "ox": empty_f64,
+            "oy": empty_f64,
+            "oz": empty_f64,
+            "dx": empty_f64,
+            "dy": empty_f64,
+            "dz": empty_f64,
+            "tmax": empty_f64,
+        }
+        return rays, cp.empty(0, dtype=cp.uint64)
+
+    edge_mid = edge_mid[nonempty]
+    edge_src = edge_src[nonempty]
+    starts = row_offsets[edge_mid]
+    ray_count = int(counts.sum().get())
+    repeated_starts = cp.repeat(starts, counts)
+    repeated_prefix = cp.repeat(cp.cumsum(counts) - counts, counts)
+    dst_index = repeated_starts + (cp.arange(ray_count, dtype=cp.int64) - repeated_prefix)
+    ray_src = cp.repeat(edge_src, counts)
+    ray_dst = column_indices[dst_index]
+    axis_offset_x = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+
+    rays = {
+        "ids": cp.arange(ray_count, dtype=cp.uint32),
+        "ox": ray_src.astype(cp.float64) - axis_offset_x,
+        "oy": cp.full(ray_count, -0.1, dtype=cp.float64),
+        "oz": ray_dst.astype(cp.float64) - axis_offset_z,
+        "dx": cp.zeros(ray_count, dtype=cp.float64),
+        "dy": cp.ones(ray_count, dtype=cp.float64),
+        "dz": cp.zeros(ray_count, dtype=cp.float64),
+        "tmax": cp.full(ray_count, 0.2, dtype=cp.float64),
+    }
+    return rays, cp.ones(ray_count, dtype=cp.uint64)
 
 
 _RT_GRAPH_1A2_FILL_TRIANGLES_NUMBA_KERNEL = None
@@ -2138,6 +2531,8 @@ def run_app(
     warmup: int = 0,
     repeat: int = 1,
     rt_graph_copies: int = 1,
+    segment_max_two_hop_rows: int = 1_000_000,
+    validate_oracle: bool = False,
 ) -> dict[str, Any]:
     if mode == "scope":
         return scope_payload()
@@ -2187,6 +2582,18 @@ def run_app(
             repeat=repeat,
             rt_graph_copies=rt_graph_copies,
         )
+    if mode == "rt_graph_2a1_segmented_generic_rt":
+        return rt_graph_2a1_segmented_generic_rt_payload(
+            edge_file=edge_file,
+            edge_format=edge_format,
+            backend=backend,
+            detail=detail,
+            partner=partner,
+            warmup=warmup,
+            repeat=repeat,
+            segment_max_two_hop_rows=segment_max_two_hop_rows,
+            validate_oracle=validate_oracle,
+        )
     if mode == "rt_graph_1a2_generic_rt":
         return rt_graph_1a2_generic_rt_payload(
             fixture=fixture,
@@ -2219,6 +2626,7 @@ def main(argv: list[str] | None = None) -> int:
             "rt_graph_contract",
             "rt_graph_rtdl_adapter",
             "rt_graph_2a1_generic_rt",
+            "rt_graph_2a1_segmented_generic_rt",
             "rt_graph_1a2_generic_rt",
         ),
         default="scope",
@@ -2243,6 +2651,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--warmup", type=int, default=0)
     parser.add_argument("--repeat", type=int, default=1)
     parser.add_argument(
+        "--segment-max-two-hop-rows",
+        type=int,
+        default=1_000_000,
+        help="Maximum duplicate two-hop rays to lower per segmented RT-2A1 primitive call.",
+    )
+    parser.add_argument(
+        "--validate-oracle",
+        action="store_true",
+        help="Build the Python oracle for small binary edge files and compare the segmented result.",
+    )
+    parser.add_argument(
         "--rt-graph-copies",
         type=int,
         default=1,
@@ -2260,12 +2679,14 @@ def main(argv: list[str] | None = None) -> int:
                 fixture=args.fixture,
                 edge_file=args.edge_file,
                 edge_format=args.edge_format,
-            detail=args.detail,
-            partner=args.partner,
-            warmup=args.warmup,
-            repeat=args.repeat,
-            rt_graph_copies=args.rt_graph_copies,
-        ),
+                detail=args.detail,
+                partner=args.partner,
+                warmup=args.warmup,
+                repeat=args.repeat,
+                rt_graph_copies=args.rt_graph_copies,
+                segment_max_two_hop_rows=args.segment_max_two_hop_rows,
+                validate_oracle=args.validate_oracle,
+            ),
             indent=2,
             sort_keys=True,
         )

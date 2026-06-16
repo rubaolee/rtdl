@@ -199,6 +199,7 @@ def build_rt_graph_triangle_summary_contract_cupy_binary(
     path: str | Path,
     *,
     materialize_host_columns: bool = True,
+    materialize_two_hop_summary: bool = True,
 ) -> RTGraphTriangleSummaryContract:
     import time
 
@@ -270,6 +271,78 @@ def build_rt_graph_triangle_summary_contract_cupy_binary(
         "directed_csr_ms",
         build_directed_csr,
     )
+
+    if not materialize_two_hop_summary:
+        def estimate_two_hop_relation_count():
+            if directed_node_count == 0 or column_indices.size == 0:
+                empty_counts = cp.empty(0, dtype=cp.int64)
+                return empty_counts, 0, 0
+            out_degree = row_offsets[1:] - row_offsets[:-1]
+            two_hop_counts = out_degree[column_indices].astype(cp.int64, copy=False)
+            total_two_hop = int(two_hop_counts.sum().get()) if int(two_hop_counts.size) else 0
+            max_two_hop_per_edge = int(two_hop_counts.max().get()) if int(two_hop_counts.size) else 0
+            return two_hop_counts, total_two_hop, max_two_hop_per_edge
+
+        two_hop_counts, total_two_hop, max_two_hop_per_edge = sync_time(
+            "two_hop_estimate_ms",
+            estimate_two_hop_relation_count,
+        )
+        directed_edges_host = RTGraphHostColumnPlaceholder(
+            length=int(column_indices.size),
+            shape=(int(column_indices.size), 2),
+            reason="CuPy directed-CSR route skipped directed_edges host materialization",
+        )
+        row_offsets_host = RTGraphHostColumnPlaceholder(
+            length=int(row_offsets.size),
+            shape=(int(row_offsets.size),),
+            reason="CuPy directed-CSR route skipped row_offsets host materialization",
+        )
+        column_indices_host = RTGraphHostColumnPlaceholder(
+            length=int(column_indices.size),
+            shape=(int(column_indices.size),),
+            reason="CuPy directed-CSR route skipped column_indices host materialization",
+        )
+        two_hop_host = RTGraphHostColumnPlaceholder(
+            length=int(total_two_hop),
+            shape=(int(total_two_hop), 3),
+            reason="CuPy directed-CSR route skipped global two-hop summary materialization",
+        )
+        timing_ms["total_partner_ms"] = sum(value for key, value in timing_ms.items() if key.endswith("_ms"))
+
+        removed_low_degree_vertex_count = int(node_count - directed_node_count)
+        removed_low_degree_edge_count = int((~keep_edge).sum().get())
+        removed_duplicate_or_self_edge_count = int(
+            edges_np.shape[0] - removed_low_degree_edge_count - len(directed_edges_host)
+        )
+        return RTGraphTriangleSummaryContract(
+            original_edge_count=int(edges_np.shape[0]),
+            compacted_vertex_count=node_count,
+            directed_vertex_count=directed_node_count,
+            directed_edges=directed_edges_host,
+            row_offsets=row_offsets_host,
+            column_indices=column_indices_host,
+            triangle_count_value=-1,
+            two_hop_rays_2a1=two_hop_host,
+            duplicate_two_hop_relation_count_value=int(total_two_hop),
+            removed_low_degree_vertex_count=removed_low_degree_vertex_count,
+            removed_low_degree_edge_count=removed_low_degree_edge_count,
+            removed_duplicate_or_self_edge_count=removed_duplicate_or_self_edge_count,
+            partner="cupy_directed_csr",
+            partner_timing_ms={key: round(value, 3) for key, value in timing_ms.items()}
+            | {
+                "host_columns_materialized": False,
+                "two_hop_summary_materialized": False,
+                "triangle_count_available": False,
+                "estimated_two_hop_relation_count": int(total_two_hop),
+                "max_two_hop_per_directed_edge": int(max_two_hop_per_edge),
+            },
+            device_arrays={
+                "row_offsets": row_offsets,
+                "column_indices": column_indices,
+                "directed_src": directed_src,
+                "two_hop_counts_per_directed_edge": two_hop_counts,
+            },
+        )
 
     def build_two_hop_and_count():
         if directed_node_count == 0 or column_indices.size == 0:
@@ -387,7 +460,11 @@ def build_rt_graph_triangle_summary_contract_cupy_binary(
         removed_duplicate_or_self_edge_count=removed_duplicate_or_self_edge_count,
         partner="cupy",
         partner_timing_ms={key: round(value, 3) for key, value in timing_ms.items()}
-        | {"host_columns_materialized": bool(materialize_host_columns)},
+        | {
+            "host_columns_materialized": bool(materialize_host_columns),
+            "two_hop_summary_materialized": True,
+            "triangle_count_available": True,
+        },
         device_arrays={
             "row_offsets": row_offsets,
             "column_indices": column_indices,
