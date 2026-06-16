@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4458.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4459.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -46,6 +46,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "and Numba partner bridge is the explicit resident app route. RTNN route "
     "guidance is mixed explicit because exact float64 aggregate and float32 "
     "resident graph rows must not be collapsed into one automatic backend claim. "
+    "Goal4459 extends that RTNN app bridge from the uniform M47 row to a "
+    "clustered 1,048,576-point / 65,536-query / repeat=1000 row, preserving "
+    "signature, CUDA graph replay, same-stream CuPy and Numba reductions, and "
+    "no-hidden-column-copy gates while keeping public and paper-reproduction "
+    "claims blocked. "
     "Goal4444 refreshes triangle-counting partner guidance after replacing the "
     "transitional Numba CPU-contract builder with a direct binary vectorized "
     "summary path before Numba device upload. It materially reduces the no-C++ "
@@ -583,7 +588,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "when the user wants the current resident app bridge: Goal4443 records a 1,048,576 "
             "resident search scene with a 65,536-query batch, repeat=1000, signature-matched "
             "CuPy and Numba same-stream partner reductions, and about 5ms hot median per batch "
-            "for both partners. Keep exact float64 aggregate and float32 graph-bridge rows separate."
+            "for both partners. Goal4459 extends the same resident app-bridge contract to a "
+            "clustered 1,048,576-point scene with 65,536-query batches and repeat=1000: "
+            "CuPy measures 130.079ms hot median per batch, Numba measures 131.442ms, both "
+            "partners preserve the same signature, use CUDA graph replay and same-stream "
+            "device reductions, and pass the no-hidden-column-copy hot-window gate. Keep exact "
+            "float64 aggregate and float32 graph-bridge rows separate."
         ),
         primary_route=(
             "mixed explicit RTNN route: exact RTDL/OptiX native aggregate for same-contract "
@@ -596,22 +606,23 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Choose prepared_ranked_summary_raw or the native aggregate runner row when exact float64 "
             "backend comparison is required. Choose prepared_ranked_summary_graph_partner_bridge for "
             "the resident float32 app bridge and keep both CuPy and Numba visible; CuPy is the slightly "
-            "faster measured M47 partner at 1M/65K, while Numba is near parity and remains the no-C++ "
-            "Python-source reference. Do not auto-select across exact aggregate, float32 graph bridge, "
-            "or official RTNN diagnostic rows."
+            "faster measured partner in both the M47 uniform row and the M63 clustered row, while "
+            "Numba is near parity and remains the no-C++ Python-source reference. Do not auto-select "
+            "across exact aggregate, float32 graph bridge, distribution, or official RTNN diagnostic rows."
         ),
         rejected_or_unpromoted_candidates=(
             "RTNN paper reproduction",
             "official RTNN comparison without output-contract equivalence",
             "automatic exact-vs-float32 route selection",
             "arbitrary ANN index speedup claim",
+            "treating the clustered resident app bridge as a full RTNN paper row",
         ),
         next_runtime_action=(
             "preserve exact aggregate and resident graph bridge as separate front-door rows; future "
             "work is paper-dataset acquisition, official RTNN same-output-contract comparison, and "
-            "broader distribution/scale ladders rather than more toy repeat-only timing"
+            "shell or paper-distribution rows if sources become available rather than more toy timing"
         ),
-        evidence_refs=("Goal2821", "Goal2822", "Goal3820", "Goal3937", "Goal4381", "Goal4422", "Goal4443"),
+        evidence_refs=("Goal2821", "Goal2822", "Goal3820", "Goal3937", "Goal4381", "Goal4422", "Goal4443", "Goal4459"),
         pod_needed_next=False,
     ),
     CurrentBenchmarkRouteDecision(
@@ -690,7 +701,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
 )
 
 
-def _refresh_goal4458_route_decisions(
+def _refresh_goal4459_route_decisions(
     rows: tuple[CurrentBenchmarkRouteDecision, ...],
 ) -> tuple[CurrentBenchmarkRouteDecision, ...]:
     refreshed: list[CurrentBenchmarkRouteDecision] = []
@@ -810,7 +821,7 @@ def _refresh_goal4458_route_decisions(
     return tuple(refreshed)
 
 
-CURRENT_BENCHMARK_ROUTE_DECISIONS = _refresh_goal4458_route_decisions(
+CURRENT_BENCHMARK_ROUTE_DECISIONS = _refresh_goal4459_route_decisions(
     CURRENT_BENCHMARK_ROUTE_DECISIONS
 )
 

@@ -98,7 +98,7 @@ v2.14 evidence:
 | RayDB-style | `raydb_style_optix_count_primitive_first` | primitive-first grouped count path; partner rows only for unfused continuations | NVIDIA pod; CUDA pod for CuPy/Numba partner comparison |
 | Barnes-Hut | `barnes_hut_mixed_explicit_cpu_numba_cuda_or_optix_numba` | Goal4458 reranks the current force-summary app front doors: `fused_frontier_force_sum_bucketized_cpu_numba` is fastest on the RTX 4000 Ada pod at 8192/16384/32768 bodies, `fused_frontier_force_sum_bucketized_numba_cuda` is the no-C++ GPU fused partner lane, and prepared RTDL/OptiX+Numba remains RT-core device-column evidence rather than Barnes-Hut RT-core speedup wording | NVIDIA/CUDA pod for Numba CUDA and OptiX; Numba CPU for CPU fused baseline |
 | LibRTS spatial index | `librts_spatial_index_optix_aabb_index` | prepared AABB-index benchmark slice, not full mutable LibRTS | NVIDIA pod for OptiX timing |
-| RTNN | `rtnn_mixed_exact_aggregate_or_graph_partner_bridge` | exact float64 aggregate for same-contract OptiX-vs-Embree comparison; prepared graph plus explicit CuPy/Numba same-stream partner bridge for resident app evidence | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
+| RTNN | `rtnn_mixed_exact_aggregate_or_graph_partner_bridge` | exact float64 aggregate for same-contract OptiX-vs-Embree comparison; prepared graph plus explicit CuPy/Numba same-stream partner bridge for uniform and clustered resident app evidence | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
 | Triangle counting | `triangle_counting_optix_native_summary` | scalar answer stays primitive-first; Goal4444 fixes the no-C++ Numba summary-contract staging debt, Goal4453 fills RT-1A2/RT-2A1 Numba geometry from partner-resident device columns, Goal4454 adds dense-label/sorted-key summary fast paths, Goal4455 confirms CuPy remains the large-scale performance partner, Goal4456 extends Numba's summary remap fast path to bounded gapped ids, and Goal4457 removes CuPy app-route host-column materialization | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
 
 ## Evidence Reports
@@ -117,6 +117,7 @@ v2.14 evidence:
 - [Barnes-Hut fused Numba CUDA app front-door mode](../reports/goal4450_v3_0_m54_barnes_hut_numba_cuda_app_mode_2026-06-16.md)
 - [Goal4458 Barnes-Hut current route rerank](../reports/goal4458_v3_0_m62_barnes_hut_current_route_rerank_2026-06-16.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)
+- [Goal4459 RTNN clustered app-front-door graph bridge](../reports/goal4459_v3_0_m63_rtnn_clustered_app_bridge_2026-06-16.md)
 - [Goal4444 Triangle Numba direct-binary summary refresh](../reports/goal4444_v3_0_m48_triangle_numba_direct_binary_summary_2026-06-16.md)
 - [Goal4445 DBSCAN compact component signature](../reports/goal4445_v3_0_m49_dbscan_component_signature_2026-06-16.md)
 - [Goal4446 Robot Collision NumPy lowering](../reports/goal4446_v3_0_m50_robot_numpy_lowering_2026-06-16.md)
@@ -141,8 +142,9 @@ v2.14 evidence:
   performance lane after Goal4451.
   Goal4368 separately records an OptiX-over-Embree exact PIP engineering win
   that still does not beat RayJoin RT, and RTNN now has large RTDL-internal
-  same-contract aggregate and app-front-door graph-bridge evidence while still
-  not claiming full RTNN paper reproduction or arbitrary ANN-index speedup.
+  same-contract aggregate plus uniform and clustered app-front-door graph-bridge
+  evidence while still not claiming full RTNN paper reproduction or arbitrary
+  ANN-index speedup.
   RayJoin overlay reports the available 2/8
   exact CDB subset, not a full 8/8 Section 5.7 reproduction.
 - A scale-profile row is more useful for performance planning, but still must

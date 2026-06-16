@@ -70,6 +70,13 @@ the same signature, use CUDA graph replay and same-stream partner reduction, and
 measure about `5ms` hot median per batch. Exact float64 aggregate rows and
 float32 graph-bridge rows must remain separate.
 
+Goal4459 extends the resident graph-bridge evidence from the uniform M47 row to
+a heavier clustered 1,048,576-point scene with 65,536-query batches and
+repeat=1000. CuPy measures `130.079ms` hot median per batch and Numba measures
+`131.442ms`; both rows preserve the same signature, use CUDA graph replay and
+same-stream partner reduction, and pass the no-hidden-column-copy hot-window
+gate. This is RTDL-internal app-bridge evidence, not a full RTNN paper row.
+
 The important boundary is that RTDL exact aggregate and app graph-bridge rows
 are RTDL-internal same-contract evidence; the official RTNN rows are diagnostic
 unless a future goal proves output-contract equivalence.

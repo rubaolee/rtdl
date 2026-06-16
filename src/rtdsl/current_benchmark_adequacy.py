@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4451.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4459.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -20,13 +20,17 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "app front door, with Goal4458 later reranking the current Barnes-Hut front "
     "doors and keeping prepared RTDL/OptiX as RT-core device-column evidence "
     "rather than a Barnes-Hut RT-core speedup row; RTNN separates "
-    "Goal4381 exact float64 aggregate rows from Goal4443 resident graph-bridge "
-    "rows; triangle counting keeps scalar primitive wording while Goal4444 fixes "
+    "Goal4381 exact float64 aggregate rows from Goal4443 uniform resident "
+    "graph-bridge rows and Goal4459 clustered resident graph-bridge rows; "
+    "triangle counting keeps scalar primitive wording while Goal4444 fixes "
     "the no-C++ Numba construction debt; RT-DBSCAN adds Goal4445 compact "
     "component-signature output; and robot collision adds Goal4446 NumPy "
     "vectorized grouped-segment query lowering. Goal4451 updates Spatial "
     "RayJoin repeated-PIP guidance by preserving the prepared batch executor "
-    "and fail-closing unsafe prepared-points CUDA graph replay. This advisory does not authorize "
+    "and fail-closing unsafe prepared-points CUDA graph replay. Goal4459 also "
+    "makes the RTNN app bridge non-toy on a clustered 1M/65K/repeat=1000 row "
+    "while preserving signature, same-stream partner, and no-hidden-copy gates. "
+    "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
     "automatic partner selection, AMD performance wording, or app-specific "
@@ -349,7 +353,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "the 1M uniform row and 11.80x faster on the 262K shell row. Goal4443 "
             "shows the resident graph bridge can run a 1M resident search scene with "
             "65K query batches, CUDA graph replay, and same-stream CuPy/Numba "
-            "reductions at about 5ms per batch with 1000-repeat second-level hot evidence."
+            "reductions at about 5ms per batch with 1000-repeat second-level hot evidence. "
+            "Goal4459 extends the same app-bridge contract to a clustered 1M resident "
+            "scene: CuPy measures 130.079ms hot median per 65K-query batch and Numba "
+            "measures 131.442ms, with signature, CUDA graph replay, same-stream partner "
+            "reduction, and no-hidden-copy gates still passing."
         ),
         "adequacy": "strong",
         "current_recommended_path": (
@@ -383,6 +391,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4381",
             "Goal4422",
             "Goal4443",
+            "Goal4459",
         ),
     },
     "triangle_counting": {
