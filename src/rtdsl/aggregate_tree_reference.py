@@ -13,6 +13,13 @@ AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT = "generic_aggregate_frontier_collect_2d_
 AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT = (
     "generic_aggregate_frontier_collect_2d_native_abi_v1"
 )
+AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_PRIMITIVE = "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D"
+AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CONTRACT = (
+    "generic_aggregate_frontier_device_columns_2d_v1"
+)
+AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_NATIVE_ABI_CONTRACT = (
+    "generic_aggregate_frontier_device_columns_2d_native_abi_v1"
+)
 AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA = (
     "source_id",
     "frontier_kind_code",
@@ -34,6 +41,11 @@ AGGREGATE_FRONTIER_COLLECT_NATIVE_REQUIRED_SYMBOLS = (
     "rtdl_embree_collect_aggregate_frontier_2d",
     "rtdl_optix_collect_aggregate_frontier_2d",
     "rtdl_hiprt_collect_aggregate_frontier_2d",
+)
+AGGREGATE_FRONTIER_DEVICE_COLUMNS_REQUIRED_SYMBOLS = (
+    "rtdl_optix_prepare_aggregate_frontier_device_columns_2d",
+    "rtdl_optix_run_aggregate_frontier_device_columns_2d",
+    "rtdl_optix_destroy_aggregate_frontier_device_columns_2d",
 )
 @dataclass(frozen=True)
 class WeightedPointRow:
@@ -992,6 +1004,137 @@ def validate_aggregate_frontier_collect_native_abi_contract() -> dict[str, objec
     for phrase in ("invalid partial workspace", "no partial result", "generic aggregate-frontier row collection"):
         if phrase not in boundary_text:
             raise ValueError("aggregate-frontier native ABI claim boundary is incomplete")
+    return contract
+
+
+def aggregate_frontier_device_columns_native_abi_contract() -> dict[str, object]:
+    """Return the device-column ABI target for clean frontier continuations."""
+
+    return {
+        "primitive": AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_PRIMITIVE,
+        "contract": AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_NATIVE_ABI_CONTRACT,
+        "logical_contract": AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CONTRACT,
+        "row_contract_replaced": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
+        "status": "specified_not_implemented",
+        "executable": False,
+        "app_generic": True,
+        "required_native_symbols": AGGREGATE_FRONTIER_DEVICE_COLUMNS_REQUIRED_SYMBOLS,
+        "required_first_backend": "optix",
+        "source_point_struct": (
+            "id:int64",
+            "x:float64",
+            "y:float64",
+        ),
+        "tree_node_struct": (
+            "id:int64",
+            "cx:float64",
+            "cy:float64",
+            "half_size:float64",
+            "depth:int32",
+            "dfs_index:int64",
+            "resume_index:int64_or_minus_one",
+            "is_leaf:uint32",
+        ),
+        "prepared_inputs": (
+            "tree_nodes",
+            "child_offsets",
+            "child_ids",
+            "member_offsets",
+            "member_ids",
+            "theta",
+            "deduplicate_fallback_targets",
+        ),
+        "run_inputs": (
+            "source_columns_device_ptrs",
+            "source_count",
+            "row_capacity",
+            "stream_or_event_token",
+        ),
+        "output_device_columns": (
+            "source_id:int64[row_capacity]",
+            "frontier_kind_code:int64[row_capacity]",
+            "item_id:int64[row_capacity]",
+            "owner_aggregate_id:int64[row_capacity]",
+            "dfs_index:int64[row_capacity]",
+            "resume_index:int64[row_capacity]",
+            "metadata_flags:int64[row_capacity]",
+            "row_offsets:uint64[source_count+1]",
+        ),
+        "small_host_outputs_allowed": (
+            "emitted_count",
+            "attempted_count",
+            "overflowed",
+            "producer_event_or_stream_token",
+        ),
+        "hot_path_forbidden_outputs": (
+            "frontier_i64_rows_host_tuple",
+            "frontier_rows_host_dicts",
+            "per_source_summary_host_dict",
+        ),
+        "handoff_contract": {
+            "device_resident_payload_required": True,
+            "same_stream_or_explicit_event_required": True,
+            "partner_can_consume_without_frontier_d2h": True,
+            "host_row_materialization_before_partner_forbidden": True,
+            "output_schema_matches_row_contract": True,
+        },
+        "overflow_policy": AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY,
+        "engine_exclusions": (
+            "force_law",
+            "scoring",
+            "app_reduction",
+            "whole_solver",
+            "automatic_partner_selection",
+        ),
+        "claim_boundary": {
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "paper_reproduction_claim_authorized": False,
+            "implementation_claim_authorized": False,
+        },
+    }
+
+
+def validate_aggregate_frontier_device_columns_native_abi_contract() -> dict[str, object]:
+    """Validate and return the clean device-column frontier ABI contract."""
+
+    contract = aggregate_frontier_device_columns_native_abi_contract()
+    if contract["primitive"] != AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_PRIMITIVE:
+        raise ValueError("unexpected aggregate-frontier device-column primitive")
+    if contract["contract"] != AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_NATIVE_ABI_CONTRACT:
+        raise ValueError("unexpected aggregate-frontier device-column native ABI")
+    if contract["logical_contract"] != AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CONTRACT:
+        raise ValueError("unexpected aggregate-frontier device-column logical contract")
+    if contract["status"] != "specified_not_implemented":
+        raise ValueError("device-column frontier ABI must remain fail-closed until implemented")
+    if bool(contract["executable"]):
+        raise ValueError("device-column frontier ABI must not claim executable implementation yet")
+    if not bool(contract["app_generic"]):
+        raise ValueError("device-column frontier ABI must be app-generic")
+    if tuple(contract["required_native_symbols"]) != AGGREGATE_FRONTIER_DEVICE_COLUMNS_REQUIRED_SYMBOLS:
+        raise ValueError("device-column frontier ABI symbol list drifted")
+    handoff = contract["handoff_contract"]
+    if not isinstance(handoff, Mapping):
+        raise ValueError("device-column frontier ABI must include a handoff contract")
+    for key in (
+        "device_resident_payload_required",
+        "same_stream_or_explicit_event_required",
+        "partner_can_consume_without_frontier_d2h",
+        "host_row_materialization_before_partner_forbidden",
+        "output_schema_matches_row_contract",
+    ):
+        if handoff.get(key) is not True:
+            raise ValueError(f"device-column frontier handoff must require {key}")
+    if not any("host" in item for item in tuple(contract["hot_path_forbidden_outputs"])):
+        raise ValueError("device-column frontier ABI must forbid host row materialization")
+    claim_boundary = contract["claim_boundary"]
+    if not isinstance(claim_boundary, Mapping):
+        raise ValueError("device-column frontier ABI must include a claim boundary")
+    for key, value in claim_boundary.items():
+        if bool(value):
+            raise ValueError(f"device-column frontier ABI must not authorize {key}")
     return contract
 
 
