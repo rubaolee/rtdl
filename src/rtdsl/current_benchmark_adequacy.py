@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4473.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4474.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -60,7 +60,10 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "M77 same-commit packet has `numba_direct` faster end to end on all three "
     "large rows while native query pack/traversal stay essentially equal; the "
     "remaining query-wall movement is replay envelope work, not native RT "
-    "traversal evidence. "
+    "traversal evidence. Goal4474 adds a generic prepared ray-batch weighted "
+    "any-hit sum and uses it in Triangle Counting prepared replay, improving "
+    "large-row query medians by about 4.8x-5.2x versus M77 while keeping the "
+    "engine contract app-agnostic. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -481,7 +484,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "faster end to end by 1.09x/1.08x/1.12x, while native query pack "
             "plus traversal remains about 1.00x versus `cupy_repeat`. The "
             "observed query-wall movement is therefore replay/envelope cost, "
-            "not native RT traversal regression."
+            "not native RT traversal regression. Goal4474 adds the generic "
+            "prepared ray-batch weighted any-hit primitive and wires it into "
+            "prepared segmented replay. Query medians improve by about "
+            "4.8x-5.2x versus M77, and current `numba_direct` totals are "
+            "5.404s/11.669s/35.379s on the three large rows."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -506,13 +513,17 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "costs for prepared replay. Cite Goal4472 when the explicit no-C++ "
             "`numba_direct` key builder is relevant; do not auto-select it. Cite "
             "Goal4473 when explaining that M77's native pack/traversal telemetry "
-            "does not support a native RT regression reading for query-wall movement."
+            "does not support a native RT regression reading for query-wall movement. "
+            "Cite Goal4474 for the current prepared replay path: generic prepared "
+            "ray batches move repeated ray-column packing into a paid-once "
+            "`prepared_ray_batch_build` phase."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
             "large-scale performance for explicit summary-contract construction and "
             "the segmented RT-2A1 route, including the explicit unique-weighted "
-            "segment-ray representation and prepared segment replay schedule; "
+            "segment-ray representation, prepared segment replay schedule, and "
+            "partner-owned device weights consumed by generic prepared ray batches; "
             "Numba is now a much fairer no-C++ Python-source reference for the "
             "global-summary path and an explicit direct key-fill option for the "
             "segmented route"
@@ -523,9 +534,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "the one-shot build versus replay-throughput split is explicit, and "
             "Goal4472 partially reduces unique-key construction with an explicit "
             "Numba direct-fill route; Goal4473 shows native pack/traversal are not "
-            "the query-wall regression source; next work is reducing prepared replay "
-            "envelope costs or adding a reusable prepared ray-batch API; do not "
-            "spend more time on batch-cap tuning unless hardware changes"
+            "the query-wall regression source; Goal4474 adds the reusable prepared "
+            "ray-batch weighted-sum API and makes it the prepared replay path; next "
+            "work is refreshing the post-M78 comparison packet and then deciding "
+            "whether scalar-sum allocation/download is still worth optimizing"
         ),
         "evidence_refs": (
             "Goal2797",
@@ -551,6 +563,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4471",
             "Goal4472",
             "Goal4473",
+            "Goal4474",
         ),
     },
 }

@@ -226,6 +226,15 @@ native pack/traversal phases, not evidence that RT traversal got worse. Keep
 `numba_direct` explicit; the next target is reducing prepared replay envelope
 overhead or adding a reusable prepared ray-batch API.
 
+Goal4474 adds that reusable prepared ray-batch path for the generic weighted
+any-hit primitive. Prepared segmented replay now prepares each segment ray
+batch once and replays weighted sums with partner-owned device weights. Query
+median improves by about 4.8x-5.2x versus M77 on the three large rows, and the
+current fastest internal route is `numba_direct` plus prepared ray batch:
+`com-lj` 5.404s, `soc-LiveJournal1` 11.669s, and `com-orkut` 35.379s. This is
+still internal route evidence, not public RTDL-vs-cuGraph or triangle-count
+RT-core speedup wording.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
@@ -242,6 +251,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4471_v3_0_m75_triangle_phase_split_packet_2026-06-16.md`
 - `docs/reports/goal4472_v3_0_m76_triangle_numba_direct_unique_key_packet_2026-06-16.md`
 - `docs/reports/goal4473_v3_0_m77_triangle_query_phase_packet_2026-06-16.md`
+- `docs/reports/goal4474_v3_0_m78_triangle_prepared_ray_batch_packet_2026-06-16.md`
 
 ## Engine Boundary
 

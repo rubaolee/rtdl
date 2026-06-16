@@ -15,7 +15,7 @@ class Goal4447V30M51CurrentBenchmarkAdequacyRefreshTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_adequacy()
         summary = rt.summarize_current_benchmark_adequacy()
 
-        self.assertEqual(rt.CURRENT_BENCHMARK_ADEQUACY_VERSION, "rtdl.v3_0.current_benchmark_adequacy.goal4473.v1")
+        self.assertEqual(rt.CURRENT_BENCHMARK_ADEQUACY_VERSION, "rtdl.v3_0.current_benchmark_adequacy.goal4474.v1")
         self.assertEqual(validation["status"], "accept")
         self.assertEqual(validation["errors"], ())
         self.assertEqual(summary["app_count"], 10)
@@ -72,7 +72,7 @@ class Goal4447V30M51CurrentBenchmarkAdequacyRefreshTest(unittest.TestCase):
         self.assertIn("Goal4444", triangle["evidence_refs"])
         self.assertIn("Goal4461", triangle["evidence_refs"])
         self.assertIn("19.96x-23.07x", triangle["current_performance_reading"])
-        self.assertIn("prepared replay envelope", triangle["next_generic_runtime_action"])
+        self.assertIn("post-M78 comparison packet", triangle["next_generic_runtime_action"])
 
     def test_report_documents_overlay_boundary(self) -> None:
         text = REPORT.read_text(encoding="utf-8")

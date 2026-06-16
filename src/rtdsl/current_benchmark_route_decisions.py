@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4473.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4474.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -138,7 +138,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "query-phase telemetry for the same route and shows the M77 native query_pack "
     "plus traversal medians are essentially equal between `cupy_repeat` and "
     "`numba_direct`; the remaining query-wall movement is therefore replay/envelope "
-    "work, not native RT traversal evidence."
+    "work, not native RT traversal evidence. Goal4474 adds a generic prepared "
+    "ray-batch weighted any-hit sum and uses it in Triangle Counting prepared "
+    "segment replay, moving repeated ray-column packing out of the measured query "
+    "path and improving M78 query medians by about 4.8x-5.2x versus M77."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -769,7 +772,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "packet, segment-ray build is 1.18x/1.34x/1.64x faster, and native "
             "query pack plus traversal is about 1.00x between key builders. The "
             "remaining query-wall movement is therefore non-native replay envelope "
-            "cost, not evidence of slower RT traversal."
+            "cost, not evidence of slower RT traversal. Goal4474 adds a generic "
+            "prepared ray-batch weighted any-hit sum and wires prepared segment "
+            "replay through it. This moves ray-column packing to an explicit "
+            "build-once `prepared_ray_batch_build` phase and improves query median "
+            "by about 4.8x-5.2x versus M77; current `numba_direct` totals are "
+            "5.404s, 11.669s, and 35.379s on the three large rows."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -814,7 +822,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "in the large-row packet but is not a hidden default. Cite Goal4473 "
             "when the user asks whether M76's query-side movement is native RT "
             "traversal: M77 shows native query pack/traversal are essentially "
-            "unchanged, while total time favors `numba_direct` on all three rows."
+            "unchanged, while total time favors `numba_direct` on all three rows. "
+            "Cite Goal4474 when discussing the current prepared replay route: it "
+            "uses generic prepared ray batches so repeated ray-column packing is "
+            "paid once as `prepared_ray_batch_build`, not on every replay query."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -841,6 +852,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "making Goal4472 numba_direct unique-key fill a hidden default",
             "making Goal4473 query-phase telemetry a hidden automatic key-builder selector",
             "treating Goal4473 query-wall movement as native RT traversal regression",
+            "treating Goal4474 prepared ray batches as graph-specific native engine callbacks",
+            "claiming Goal4474 alone refreshes RTDL-vs-cuGraph or authors-code comparisons",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -852,9 +865,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "totals; Goal4471 separates one-shot build cost from replay throughput; "
             "Goal4472 adds explicit no-C++ numba_direct unique-key fill with "
             "build/backend wins, and Goal4473 shows M77 totals favor numba_direct "
-            "while native query pack/traversal are effectively unchanged; next work "
-            "is reducing prepared replay envelope costs or adding a reusable "
-            "prepared ray-batch API without graph-specific native engine logic"
+            "while native query pack/traversal are effectively unchanged; Goal4474 "
+            "adds the reusable prepared ray-batch weighted-sum API and makes it "
+            "the prepared replay path; next work is refreshing the post-M78 "
+            "comparison packet and deciding whether scalar-sum allocation/download "
+            "is still worth optimizing"
         ),
         evidence_refs=(
             "Goal2797",
@@ -882,6 +897,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4471",
             "Goal4472",
             "Goal4473",
+            "Goal4474",
         ),
         pod_needed_next=False,
     ),

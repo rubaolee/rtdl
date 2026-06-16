@@ -83,13 +83,13 @@ class Goal4471V30M75TrianglePhaseSplitTest(unittest.TestCase):
 
         self.assertIn("phase_split_ms", report)
         self.assertIn("15.243s", report)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4473.v1", route["version"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4473.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4474.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4474.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
         self.assertIn("Goal4471", route["evidence_refs"])
         self.assertIn("Goal4471", triangle["evidence_refs"])
         self.assertIn("phase_split_ms", route["user_choice_guidance"])
         self.assertIn("separates one-shot build cost", route["next_runtime_action"])
-        self.assertIn("reusable prepared ray-batch API", triangle["next_generic_runtime_action"])
+        self.assertIn("prepared ray-batch weighted-sum API", triangle["next_generic_runtime_action"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(triangle["public_speedup_claim_authorized"])
 

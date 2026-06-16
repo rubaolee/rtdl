@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import importlib
+import json
 import os
 from pathlib import Path
 import tempfile
@@ -15,6 +17,11 @@ OPTIX_RUNTIME = ROOT / "src/rtdsl/optix_runtime.py"
 OPTIX_API = ROOT / "src/native/optix/rtdl_optix_api.cpp"
 OPTIX_WORKLOADS = ROOT / "src/native/optix/rtdl_optix_workloads.cpp"
 OPTIX_PRELUDE = ROOT / "src/native/optix/rtdl_optix_prelude.h"
+REPORT = ROOT / "docs" / "reports" / "goal4474_v3_0_m78_triangle_prepared_ray_batch_packet_2026-06-16.md"
+PACKET = ROOT / "docs" / "reports" / "goal4474_v3_0_m78_triangle_prepared_ray_batch_packet_2026-06-16.json"
+
+routes = importlib.import_module("rtdsl.current_benchmark_route_decisions")
+adequacy = importlib.import_module("rtdsl.current_benchmark_adequacy")
 
 
 def _has_cupy_optix() -> bool:
@@ -47,6 +54,41 @@ class Goal4474V30M78TrianglePreparedRayBatchWeightedSumTest(unittest.TestCase):
         self.assertIn("prepare_ray_batch_device_columns", source)
         self.assertIn("ray_batch_any_hit_weighted_sum_device_weights", source)
         self.assertIn("prepared_ray_batch_build", source)
+
+    def test_packet_records_large_row_speedups(self) -> None:
+        packet = json.loads(PACKET.read_text(encoding="utf-8"))
+        rows = {
+            (row["dataset"], row["segment_unique_key_builder"]): row
+            for row in packet["rows"]
+        }
+
+        self.assertEqual(4474, packet["goal"])
+        self.assertFalse(packet["claim_boundary"]["native_engine_graph_specialization_added"])
+        self.assertFalse(packet["claim_boundary"]["public_speedup_claim_authorized"])
+        self.assertGreater(rows[("com_lj", "numba_direct")]["total_speedup_vs_m77"], 1.6)
+        self.assertGreater(rows[("soc_livejournal1", "numba_direct")]["total_speedup_vs_m77"], 1.39)
+        self.assertGreater(rows[("com_orkut", "numba_direct")]["total_speedup_vs_m77"], 1.58)
+        self.assertGreater(rows[("com_orkut", "numba_direct")]["query_median_speedup_vs_m77"], 4.9)
+        self.assertGreater(rows[("com_orkut", "numba_direct")]["m78_prepared_ray_batch_build_once_s"], 6.0)
+        self.assertTrue(all(row["count_matches_expected"] for row in packet["rows"]))
+
+    def test_report_and_registry_record_m78_route_boundary(self) -> None:
+        report = REPORT.read_text(encoding="utf-8")
+        route = routes.explain_current_benchmark_route("triangle_counting")
+        rows = {row["app"]: row for row in adequacy.current_benchmark_adequacy()}
+        triangle = rows["triangle_counting"]
+
+        self.assertIn("5.404s", report)
+        self.assertIn("prepared ray-batch weighted any-hit", report)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4474.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4474.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertIn("Goal4474", route["evidence_refs"])
+        self.assertIn("Goal4474", triangle["evidence_refs"])
+        self.assertIn("prepared_ray_batch_build", route["user_choice_guidance"])
+        self.assertIn("post-M78 comparison packet", route["next_runtime_action"])
+        self.assertIn("prepared ray-batch weighted-sum API", triangle["next_generic_runtime_action"])
+        self.assertFalse(route["app_specific_native_engine_logic_allowed"])
+        self.assertFalse(triangle["whole_app_speedup_claim_authorized"])
 
     @unittest.skipUnless(_has_cupy_optix(), "CuPy plus RTDL OptiX library are not available")
     def test_live_segmented_prepared_replay_reports_prepared_ray_batch_build(self) -> None:
