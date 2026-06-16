@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4452.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4453.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -62,7 +62,13 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "refreshes RT-DBSCAN route guidance so Goal4445's compact "
     "`output_mode=\"component_signature\"` summary contract is the current "
     "front-door reading, while full Python rows, direct-status candidates, "
-    "partition factors, and border policies remain explicit user choices."
+    "partition factors, and border policies remain explicit user choices. "
+    "Goal4453 refreshes triangle-counting Numba partner guidance after moving "
+    "RT-1A2/RT-2A1 geometry fill from host materialization and re-upload to "
+    "partner-resident Numba device columns. It removes unnecessary data movement "
+    "inside the explicit summary-contract route, but does not authorize a "
+    "triangle-counting RT-core speedup claim; the remaining debt is graph-summary "
+    "construction and segmented paper-dataset lowering."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -585,9 +591,13 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "When the user explicitly wants the RT-Graph summary-contract partner route, "
             "Goal4444 makes Numba a much fairer no-C++ reference by replacing the old "
             "cpu_contract_then_numba_device_upload staging path with "
-            "direct_binary_numpy_summary_then_numba_device_upload. CuPy remains the current "
-            "large-scale performance route at 200,000 K4 cliques, but Numba total time improves "
-            "19.96x-23.07x over M27 on the same two mappings."
+            "direct_binary_numpy_summary_then_numba_device_upload, and Goal4453 removes "
+            "the follow-on host geometry materialization/re-upload by filling RT-1A2/RT-2A1 "
+            "geometry from partner-resident Numba device columns. The Goal4444 staging fix "
+            "measured a 19.96x-23.07x Numba total-time improvement over M27 on the same two "
+            "mappings. CuPy remains the current "
+            "large-scale performance route at 200,000 K4 cliques until the remaining graph-summary "
+            "construction and segmented paper-dataset lowering debts are closed."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -596,28 +606,38 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "For the scalar answer, stay on the primitive-first relationship-count route. "
             "For explicit RT-Graph summary-contract experiments, choose CuPy for the current "
             "fastest large-scale graph-contract builder and choose Numba when no-C++ "
-            "Python-source partner code matters; cite Goal4444 rather than the older M27 "
-            "Numba timings."
+            "Python-source partner code matters; cite Goal4444 for direct binary summary "
+            "construction and Goal4453 for partner-resident Numba geometry fill rather than "
+            "the older M27 Numba timings."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
             "RT-core triangle-count paper claim",
             "old M27 cpu_contract_then_numba_device_upload timing as current Numba guidance",
+            "host-materialized Numba geometry upload as current Numba guidance",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
             "preserve the generic graph relationship-count route and avoid claiming RT-core "
-            "triangle-count acceleration; remaining partner work is a fully device-side "
-            "Numba/CUDA graph-construction path or segmented paper-dataset lowering that avoids "
-            "global two-hop materialization"
+            "triangle-count acceleration; remaining partner work is graph-summary construction "
+            "that avoids host/global two-hop materialization plus segmented paper-dataset lowering"
         ),
-        evidence_refs=("Goal2797", "Goal3567", "Goal3782", "Goal3819", "Goal3856", "Goal4424", "Goal4444"),
+        evidence_refs=(
+            "Goal2797",
+            "Goal3567",
+            "Goal3782",
+            "Goal3819",
+            "Goal3856",
+            "Goal4424",
+            "Goal4444",
+            "Goal4453",
+        ),
         pod_needed_next=False,
     ),
 )
 
 
-def _refresh_goal4452_route_decisions(
+def _refresh_goal4453_route_decisions(
     rows: tuple[CurrentBenchmarkRouteDecision, ...],
 ) -> tuple[CurrentBenchmarkRouteDecision, ...]:
     refreshed: list[CurrentBenchmarkRouteDecision] = []
@@ -737,7 +757,7 @@ def _refresh_goal4452_route_decisions(
     return tuple(refreshed)
 
 
-CURRENT_BENCHMARK_ROUTE_DECISIONS = _refresh_goal4452_route_decisions(
+CURRENT_BENCHMARK_ROUTE_DECISIONS = _refresh_goal4453_route_decisions(
     CURRENT_BENCHMARK_ROUTE_DECISIONS
 )
 

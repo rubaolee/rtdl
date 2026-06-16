@@ -1372,6 +1372,196 @@ def _build_rt_graph_1a2_device_geometry(contract, *, partner: str = "cupy"):
     return triangles, rays
 
 
+_RT_GRAPH_1A2_FILL_TRIANGLES_NUMBA_KERNEL = None
+_RT_GRAPH_1A2_FILL_RAYS_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_FILL_TRIANGLES_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_FILL_RAYS_NUMBA_KERNEL = None
+
+
+def _get_rt_graph_1a2_fill_triangles_numba_kernel(cuda):
+    global _RT_GRAPH_1A2_FILL_TRIANGLES_NUMBA_KERNEL
+    if _RT_GRAPH_1A2_FILL_TRIANGLES_NUMBA_KERNEL is None:
+
+        @cuda.jit
+        def _fill(
+            row_offsets,
+            column_indices,
+            directed_src,
+            primitive_offsets,
+            ids,
+            x0,
+            y0,
+            z0,
+            x1,
+            y1,
+            z1,
+            x2,
+            y2,
+            z2,
+            axis_offset_x,
+            axis_offset_y,
+            axis_offset_z,
+            eps,
+            edge_count,
+        ):
+            edge_idx = cuda.grid(1)
+            if edge_idx >= edge_count:
+                return
+            src = directed_src[edge_idx]
+            mid = column_indices[edge_idx]
+            start = row_offsets[mid]
+            end = row_offsets[mid + 1]
+            base = primitive_offsets[edge_idx]
+            local_edge_index = edge_idx - row_offsets[src]
+            for neighbor_index in range(start, end):
+                out = base + (neighbor_index - start)
+                dst = column_indices[neighbor_index]
+                center_x = float(local_edge_index) - axis_offset_x
+                center_y = float(src) - axis_offset_y
+                center_z = float(dst) - axis_offset_z
+                ids[out] = out
+                x0[out] = center_x
+                y0[out] = center_y
+                z0[out] = center_z + eps
+                x1[out] = center_x
+                y1[out] = center_y - eps
+                z1[out] = center_z - eps
+                x2[out] = center_x
+                y2[out] = center_y + eps
+                z2[out] = center_z - eps
+
+        _RT_GRAPH_1A2_FILL_TRIANGLES_NUMBA_KERNEL = _fill
+    return _RT_GRAPH_1A2_FILL_TRIANGLES_NUMBA_KERNEL
+
+
+def _get_rt_graph_1a2_fill_rays_numba_kernel(cuda):
+    global _RT_GRAPH_1A2_FILL_RAYS_NUMBA_KERNEL
+    if _RT_GRAPH_1A2_FILL_RAYS_NUMBA_KERNEL is None:
+
+        @cuda.jit
+        def _fill(
+            row_offsets,
+            column_indices,
+            directed_src,
+            ids,
+            ox,
+            oy,
+            oz,
+            dx,
+            dy,
+            dz,
+            tmax,
+            axis_offset_x,
+            axis_offset_y,
+            axis_offset_z,
+            ray_origin_x,
+            edge_count,
+        ):
+            edge_idx = cuda.grid(1)
+            if edge_idx >= edge_count:
+                return
+            src = directed_src[edge_idx]
+            dst = column_indices[edge_idx]
+            ids[edge_idx] = edge_idx
+            ox[edge_idx] = ray_origin_x
+            oy[edge_idx] = float(src) - axis_offset_y
+            oz[edge_idx] = float(dst) - axis_offset_z
+            dx[edge_idx] = 1.0
+            dy[edge_idx] = 0.0
+            dz[edge_idx] = 0.0
+            tmax[edge_idx] = float(row_offsets[src + 1] - row_offsets[src])
+
+        _RT_GRAPH_1A2_FILL_RAYS_NUMBA_KERNEL = _fill
+    return _RT_GRAPH_1A2_FILL_RAYS_NUMBA_KERNEL
+
+
+def _get_rt_graph_2a1_fill_triangles_numba_kernel(cuda):
+    global _RT_GRAPH_2A1_FILL_TRIANGLES_NUMBA_KERNEL
+    if _RT_GRAPH_2A1_FILL_TRIANGLES_NUMBA_KERNEL is None:
+
+        @cuda.jit
+        def _fill(
+            directed_src,
+            directed_dst,
+            ids,
+            x0,
+            y0,
+            z0,
+            x1,
+            y1,
+            z1,
+            x2,
+            y2,
+            z2,
+            axis_offset_x,
+            axis_offset_z,
+            eps,
+            edge_count,
+        ):
+            edge_idx = cuda.grid(1)
+            if edge_idx >= edge_count:
+                return
+            center_x = float(directed_src[edge_idx]) - axis_offset_x
+            center_z = float(directed_dst[edge_idx]) - axis_offset_z
+            ids[edge_idx] = edge_idx
+            x0[edge_idx] = center_x
+            y0[edge_idx] = 0.0
+            z0[edge_idx] = center_z + eps
+            x1[edge_idx] = center_x - eps
+            y1[edge_idx] = 0.0
+            z1[edge_idx] = center_z - eps
+            x2[edge_idx] = center_x + eps
+            y2[edge_idx] = 0.0
+            z2[edge_idx] = center_z - eps
+
+        _RT_GRAPH_2A1_FILL_TRIANGLES_NUMBA_KERNEL = _fill
+    return _RT_GRAPH_2A1_FILL_TRIANGLES_NUMBA_KERNEL
+
+
+def _get_rt_graph_2a1_fill_rays_numba_kernel(cuda):
+    global _RT_GRAPH_2A1_FILL_RAYS_NUMBA_KERNEL
+    if _RT_GRAPH_2A1_FILL_RAYS_NUMBA_KERNEL is None:
+
+        @cuda.jit
+        def _fill(
+            two_hop_src,
+            two_hop_dst,
+            ids,
+            ox,
+            oy,
+            oz,
+            dx,
+            dy,
+            dz,
+            tmax,
+            axis_offset_x,
+            axis_offset_z,
+            ray_count,
+        ):
+            ray_idx = cuda.grid(1)
+            if ray_idx >= ray_count:
+                return
+            ids[ray_idx] = ray_idx
+            ox[ray_idx] = float(two_hop_src[ray_idx]) - axis_offset_x
+            oy[ray_idx] = -0.1
+            oz[ray_idx] = float(two_hop_dst[ray_idx]) - axis_offset_z
+            dx[ray_idx] = 0.0
+            dy[ray_idx] = 1.0
+            dz[ray_idx] = 0.0
+            tmax[ray_idx] = 0.2
+
+        _RT_GRAPH_2A1_FILL_RAYS_NUMBA_KERNEL = _fill
+    return _RT_GRAPH_2A1_FILL_RAYS_NUMBA_KERNEL
+
+
+def _launch_1d_numba_kernel(kernel, item_count: int, *args) -> None:
+    if item_count <= 0:
+        return
+    threads = 256
+    blocks = (int(item_count) + threads - 1) // threads
+    kernel[blocks, threads](*args)
+
+
 def _build_rt_graph_1a2_numba_device_geometry(contract):
     import numpy as np
     from numba import cuda
@@ -1384,71 +1574,91 @@ def _build_rt_graph_1a2_numba_device_geometry(contract):
     axis_offset_y = contract.vertex_count / 2.0
     axis_offset_z = contract.vertex_count / 2.0
     eps = 0.2
+    device_arrays = _require_summary_device_arrays(contract, partner="numba")
+    row_offsets_device = device_arrays["row_offsets"]
+    column_indices_device = device_arrays["column_indices"]
+    directed_src_device = device_arrays["directed_src"]
 
     edge_count = int(column_indices.size)
     if edge_count:
-        edge_src = np.repeat(np.arange(contract.vertex_count, dtype=np.int64), out_degrees)
-        edge_starts = np.repeat(row_offsets[:-1], out_degrees)
-        edge_local_index = np.arange(edge_count, dtype=np.int64) - edge_starts
-        edge_mid = column_indices
-        two_hop_counts = out_degrees[edge_mid]
-        nonempty = two_hop_counts > 0
-        active_counts = two_hop_counts[nonempty]
-        if active_counts.size:
-            primitive_count = int(active_counts.sum())
-            center_x = np.repeat(edge_local_index[nonempty], active_counts).astype(np.float64) - axis_offset_x
-            center_y = np.repeat(edge_src[nonempty], active_counts).astype(np.float64) - axis_offset_y
-            starts = row_offsets[edge_mid[nonempty]]
-            repeated_starts = np.repeat(starts, active_counts)
-            repeated_prefix = np.repeat(np.cumsum(active_counts) - active_counts, active_counts)
-            dst_index = repeated_starts + (np.arange(primitive_count, dtype=np.int64) - repeated_prefix)
-            center_z = column_indices[dst_index].astype(np.float64) - axis_offset_z
-        else:
-            primitive_count = 0
-            center_x = np.empty(0, dtype=np.float64)
-            center_y = np.empty(0, dtype=np.float64)
-            center_z = np.empty(0, dtype=np.float64)
+        two_hop_counts = out_degrees[column_indices]
+        primitive_offsets_host = np.empty(edge_count, dtype=np.int64)
+        primitive_offsets_host[0] = 0
+        if edge_count > 1:
+            primitive_offsets_host[1:] = np.cumsum(two_hop_counts[:-1], dtype=np.int64)
+        primitive_count = int(two_hop_counts.sum(dtype=np.int64))
+        primitive_offsets = cuda.to_device(primitive_offsets_host)
     else:
         primitive_count = 0
-        center_x = np.empty(0, dtype=np.float64)
-        center_y = np.empty(0, dtype=np.float64)
-        center_z = np.empty(0, dtype=np.float64)
+        primitive_offsets = cuda.to_device(np.empty(0, dtype=np.int64))
 
     triangles = {
-        "ids": cuda.to_device(np.arange(primitive_count, dtype=np.uint32)),
-        "x0": cuda.to_device(center_x),
-        "y0": cuda.to_device(center_y),
-        "z0": cuda.to_device(center_z + eps),
-        "x1": cuda.to_device(center_x),
-        "y1": cuda.to_device(center_y - eps),
-        "z1": cuda.to_device(center_z - eps),
-        "x2": cuda.to_device(center_x),
-        "y2": cuda.to_device(center_y + eps),
-        "z2": cuda.to_device(center_z - eps),
+        "ids": cuda.device_array(primitive_count, dtype=np.uint32),
+        "x0": cuda.device_array(primitive_count, dtype=np.float64),
+        "y0": cuda.device_array(primitive_count, dtype=np.float64),
+        "z0": cuda.device_array(primitive_count, dtype=np.float64),
+        "x1": cuda.device_array(primitive_count, dtype=np.float64),
+        "y1": cuda.device_array(primitive_count, dtype=np.float64),
+        "z1": cuda.device_array(primitive_count, dtype=np.float64),
+        "x2": cuda.device_array(primitive_count, dtype=np.float64),
+        "y2": cuda.device_array(primitive_count, dtype=np.float64),
+        "z2": cuda.device_array(primitive_count, dtype=np.float64),
     }
+    _launch_1d_numba_kernel(
+        _get_rt_graph_1a2_fill_triangles_numba_kernel(cuda),
+        edge_count,
+        row_offsets_device,
+        column_indices_device,
+        directed_src_device,
+        primitive_offsets,
+        triangles["ids"],
+        triangles["x0"],
+        triangles["y0"],
+        triangles["z0"],
+        triangles["x1"],
+        triangles["y1"],
+        triangles["z1"],
+        triangles["x2"],
+        triangles["y2"],
+        triangles["z2"],
+        float(axis_offset_x),
+        float(axis_offset_y),
+        float(axis_offset_z),
+        float(eps),
+        edge_count,
+    )
 
     ray_count = edge_count
-    if ray_count:
-        directed_edges = np.asarray(contract.directed_edges, dtype=np.int64).reshape(-1, 2)
-        src_i = directed_edges[:, 0]
-        dst_i = directed_edges[:, 1]
-        tmax = out_degrees[src_i].astype(np.float64)
-        oy = src_i.astype(np.float64) - axis_offset_y
-        oz = dst_i.astype(np.float64) - axis_offset_z
-    else:
-        tmax = np.empty(0, dtype=np.float64)
-        oy = np.empty(0, dtype=np.float64)
-        oz = np.empty(0, dtype=np.float64)
     rays = {
-        "ids": cuda.to_device(np.arange(ray_count, dtype=np.uint32)),
-        "ox": cuda.to_device(np.full(ray_count, -0.5 - axis_offset_x, dtype=np.float64)),
-        "oy": cuda.to_device(oy),
-        "oz": cuda.to_device(oz),
-        "dx": cuda.to_device(np.ones(ray_count, dtype=np.float64)),
-        "dy": cuda.to_device(np.zeros(ray_count, dtype=np.float64)),
-        "dz": cuda.to_device(np.zeros(ray_count, dtype=np.float64)),
-        "tmax": cuda.to_device(tmax),
+        "ids": cuda.device_array(ray_count, dtype=np.uint32),
+        "ox": cuda.device_array(ray_count, dtype=np.float64),
+        "oy": cuda.device_array(ray_count, dtype=np.float64),
+        "oz": cuda.device_array(ray_count, dtype=np.float64),
+        "dx": cuda.device_array(ray_count, dtype=np.float64),
+        "dy": cuda.device_array(ray_count, dtype=np.float64),
+        "dz": cuda.device_array(ray_count, dtype=np.float64),
+        "tmax": cuda.device_array(ray_count, dtype=np.float64),
     }
+    _launch_1d_numba_kernel(
+        _get_rt_graph_1a2_fill_rays_numba_kernel(cuda),
+        ray_count,
+        row_offsets_device,
+        column_indices_device,
+        directed_src_device,
+        rays["ids"],
+        rays["ox"],
+        rays["oy"],
+        rays["oz"],
+        rays["dx"],
+        rays["dy"],
+        rays["dz"],
+        rays["tmax"],
+        float(axis_offset_x),
+        float(axis_offset_y),
+        float(axis_offset_z),
+        float(-0.5 - axis_offset_x),
+        ray_count,
+    )
     cuda.synchronize()
     return triangles, rays
 
@@ -1645,53 +1855,78 @@ def _build_rt_graph_2a1_numba_device_geometry(contract):
     import numpy as np
     from numba import cuda
 
-    directed_edges = np.asarray(contract.directed_edges, dtype=np.int64).reshape(-1, 2)
-    two_hop = np.asarray(contract.two_hop_rays_2a1, dtype=np.int64).reshape(-1, 3)
+    device_arrays = _require_summary_device_arrays(contract, partner="numba")
+    directed_src_device = device_arrays["directed_src"]
+    directed_dst_device = device_arrays["column_indices"]
+    two_hop_src_device = device_arrays["two_hop_src"]
+    two_hop_dst_device = device_arrays["two_hop_dst"]
     axis_offset_x = contract.vertex_count / 2.0
     axis_offset_z = contract.vertex_count / 2.0
     eps = 0.2
 
-    edge_count = int(directed_edges.shape[0])
-    if edge_count:
-        center_x = directed_edges[:, 0].astype(np.float64) - axis_offset_x
-        center_z = directed_edges[:, 1].astype(np.float64) - axis_offset_z
-    else:
-        center_x = np.empty(0, dtype=np.float64)
-        center_z = np.empty(0, dtype=np.float64)
-    zero = np.zeros(edge_count, dtype=np.float64)
+    edge_count = int(directed_dst_device.size)
     triangles = {
-        "ids": cuda.to_device(np.arange(edge_count, dtype=np.uint32)),
-        "x0": cuda.to_device(center_x),
-        "y0": cuda.to_device(zero),
-        "z0": cuda.to_device(center_z + eps),
-        "x1": cuda.to_device(center_x - eps),
-        "y1": cuda.to_device(zero),
-        "z1": cuda.to_device(center_z - eps),
-        "x2": cuda.to_device(center_x + eps),
-        "y2": cuda.to_device(zero),
-        "z2": cuda.to_device(center_z - eps),
+        "ids": cuda.device_array(edge_count, dtype=np.uint32),
+        "x0": cuda.device_array(edge_count, dtype=np.float64),
+        "y0": cuda.device_array(edge_count, dtype=np.float64),
+        "z0": cuda.device_array(edge_count, dtype=np.float64),
+        "x1": cuda.device_array(edge_count, dtype=np.float64),
+        "y1": cuda.device_array(edge_count, dtype=np.float64),
+        "z1": cuda.device_array(edge_count, dtype=np.float64),
+        "x2": cuda.device_array(edge_count, dtype=np.float64),
+        "y2": cuda.device_array(edge_count, dtype=np.float64),
+        "z2": cuda.device_array(edge_count, dtype=np.float64),
     }
+    _launch_1d_numba_kernel(
+        _get_rt_graph_2a1_fill_triangles_numba_kernel(cuda),
+        edge_count,
+        directed_src_device,
+        directed_dst_device,
+        triangles["ids"],
+        triangles["x0"],
+        triangles["y0"],
+        triangles["z0"],
+        triangles["x1"],
+        triangles["y1"],
+        triangles["z1"],
+        triangles["x2"],
+        triangles["y2"],
+        triangles["z2"],
+        float(axis_offset_x),
+        float(axis_offset_z),
+        float(eps),
+        edge_count,
+    )
 
-    ray_count = int(two_hop.shape[0])
-    if ray_count:
-        ox = two_hop[:, 0].astype(np.float64) - axis_offset_x
-        oz = two_hop[:, 1].astype(np.float64) - axis_offset_z
-        ray_weights_host = two_hop[:, 2].astype(np.uint64)
-    else:
-        ox = np.empty(0, dtype=np.float64)
-        oz = np.empty(0, dtype=np.float64)
-        ray_weights_host = np.empty(0, dtype=np.uint64)
+    ray_count = int(two_hop_src_device.size)
     rays = {
-        "ids": cuda.to_device(np.arange(ray_count, dtype=np.uint32)),
-        "ox": cuda.to_device(ox),
-        "oy": cuda.to_device(np.full(ray_count, -0.1, dtype=np.float64)),
-        "oz": cuda.to_device(oz),
-        "dx": cuda.to_device(np.zeros(ray_count, dtype=np.float64)),
-        "dy": cuda.to_device(np.ones(ray_count, dtype=np.float64)),
-        "dz": cuda.to_device(np.zeros(ray_count, dtype=np.float64)),
-        "tmax": cuda.to_device(np.full(ray_count, 0.2, dtype=np.float64)),
+        "ids": cuda.device_array(ray_count, dtype=np.uint32),
+        "ox": cuda.device_array(ray_count, dtype=np.float64),
+        "oy": cuda.device_array(ray_count, dtype=np.float64),
+        "oz": cuda.device_array(ray_count, dtype=np.float64),
+        "dx": cuda.device_array(ray_count, dtype=np.float64),
+        "dy": cuda.device_array(ray_count, dtype=np.float64),
+        "dz": cuda.device_array(ray_count, dtype=np.float64),
+        "tmax": cuda.device_array(ray_count, dtype=np.float64),
     }
-    ray_weights = cuda.to_device(ray_weights_host)
+    _launch_1d_numba_kernel(
+        _get_rt_graph_2a1_fill_rays_numba_kernel(cuda),
+        ray_count,
+        two_hop_src_device,
+        two_hop_dst_device,
+        rays["ids"],
+        rays["ox"],
+        rays["oy"],
+        rays["oz"],
+        rays["dx"],
+        rays["dy"],
+        rays["dz"],
+        rays["tmax"],
+        float(axis_offset_x),
+        float(axis_offset_z),
+        ray_count,
+    )
+    ray_weights = device_arrays["two_hop_weights"]
     cuda.synchronize()
     return triangles, rays, ray_weights
 
