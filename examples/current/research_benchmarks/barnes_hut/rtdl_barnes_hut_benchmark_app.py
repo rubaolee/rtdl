@@ -4,6 +4,7 @@ import argparse
 from dataclasses import asdict
 import json
 from pathlib import Path
+import statistics
 import sys
 import time
 from typing import Any
@@ -61,6 +62,7 @@ MODES = (
     "streamed_force_sum_bucketized_cpu",
     "materialization_pressure_bucketized_cpu",
     "fused_frontier_force_sum_bucketized_cpu",
+    "prepared_aggregate_frontier_weighted_vector_optix",
     "grouped_vector_sum_typed_stream_plan",
     "v2_8_grouped_vector_sum_plan",
     "embree_node_coverage_prepared",
@@ -130,6 +132,9 @@ def scope_payload() -> dict[str, Any]:
             "generic_weighted_inverse_square_vector_sum_2d_v1",
             "generic_vector_sum_materialization_pressure_2d_v1",
             "generic_aggregate_frontier_weighted_vector_sum_2d_v1",
+            "generic_aggregate_frontier_device_columns_2d_v1",
+            "generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_v1",
+            "generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_numba_v1",
             "generic_weighted_point_pairwise_inverse_square_force_partner_reference",
         ),
         "current_non_goals": (
@@ -141,6 +146,7 @@ def scope_payload() -> dict[str, Any]:
             "native grouped vector-sum reductions",
             "native aggregate-frontier collection lowering",
             "native fused frontier-to-vector-sum lowering",
+            "automatic partner selection across prepared aggregate-frontier routes",
             "timestep integration or full N-body solver",
             "public speedup wording",
         ),
@@ -1168,6 +1174,289 @@ def _fused_frontier_force_sum_payload(
     return payload
 
 
+def _device_column_to_list(column: object, *, value_type: type) -> list[object]:
+    if hasattr(column, "copy_to_host"):
+        values = column.copy_to_host()
+    elif hasattr(column, "get"):
+        values = column.get()
+    else:
+        values = column
+    if hasattr(values, "tolist"):
+        values = values.tolist()
+    return [value_type(value) for value in values]
+
+
+def _median_fields(rows: list[dict[str, float]], field_names: tuple[str, ...]) -> dict[str, float]:
+    return {
+        field: float(statistics.median(float(row[field]) for row in rows))
+        for field in field_names
+    }
+
+
+def _prepared_aggregate_frontier_weighted_vector_optix_payload(
+    *,
+    body_count: int | None,
+    theta: float,
+    bucket_size: int,
+    max_depth: int,
+    partner: str,
+    skip_validation: bool,
+    query_repeat: int,
+    warmup: int,
+    force_output_mode: str,
+    frontier_row_capacity: int | None,
+    frontier_capacity_multiplier: int,
+) -> dict[str, Any]:
+    if partner not in {"cupy", "numba"}:
+        raise ValueError("prepared aggregate-frontier route supports --partner cupy or numba")
+    if query_repeat < 1:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+    if frontier_row_capacity is not None and frontier_row_capacity <= 0:
+        raise ValueError("frontier_row_capacity must be positive when provided")
+    if frontier_capacity_multiplier <= 0:
+        raise ValueError("frontier_capacity_multiplier must be positive")
+    if force_output_mode not in {"full", "force_summary"}:
+        raise ValueError("force_output_mode must be 'full' or 'force_summary'")
+
+    setup_start = time.perf_counter()
+    bodies = _make_bodies(body_count)
+    body_generation_sec = time.perf_counter() - setup_start
+
+    tree_start = time.perf_counter()
+    tree = rt.build_bucketized_aggregate_tree_2d(
+        bodies,
+        bucket_size=bucket_size,
+        max_depth=max_depth,
+    )
+    tree_nodes = tuple(tree["nodes"])
+    tree_build_sec = time.perf_counter() - tree_start
+
+    frontier_prepare_start = time.perf_counter()
+    prepared_frontier = rt.prepare_aggregate_frontier_device_columns_2d_optix(
+        tree_nodes,
+        theta=theta,
+    )
+    frontier_prepare_wall_sec = time.perf_counter() - frontier_prepare_start
+
+    vector_prepare_start = time.perf_counter()
+    if partner == "numba":
+        prepared_vector = rt.prepare_aggregate_frontier_device_columns_weighted_vectors_2d_numba(
+            bodies,
+            bodies,
+            tree_nodes,
+        )
+        partner_contract = rt.AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CONTRACT
+    else:
+        prepared_vector = rt.prepare_aggregate_frontier_device_columns_weighted_vectors_2d_cupy(
+            bodies,
+            bodies,
+            tree_nodes,
+        )
+        partner_contract = rt.AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARED_WEIGHTED_VECTOR_SUM_2D_CONTRACT
+    vector_prepare_wall_sec = time.perf_counter() - vector_prepare_start
+
+    initial_capacity = (
+        int(frontier_row_capacity)
+        if frontier_row_capacity is not None
+        else max(1024, len(bodies) * int(frontier_capacity_multiplier))
+    )
+    capacity_attempts: list[dict[str, object]] = []
+    repeats: list[dict[str, float]] = []
+    last_result: dict[str, object] | None = None
+
+    with prepared_frontier:
+        capacity = initial_capacity
+        for attempt_index in range(4):
+            frontier = prepared_frontier.run_device_columns(
+                row_capacity=capacity,
+                **prepared_vector.frontier_source_device_args(),
+            )
+            attempt = {
+                "attempt_index": attempt_index,
+                "capacity": int(capacity),
+                "overflow": bool(frontier.overflow),
+                "row_count": int(frontier.row_count),
+                "attempted_count": int(frontier.attempted_count),
+                "traversal_seconds": float(frontier.traversal_seconds),
+            }
+            capacity_attempts.append(attempt)
+            if not frontier.overflow:
+                capacity = int(frontier.attempted_count) + 1024
+                break
+            capacity = int(frontier.attempted_count) + 1024
+        else:
+            raise RuntimeError("aggregate-frontier device-column capacity probe overflowed four times")
+
+        for _ in range(warmup):
+            prepared_vector.run_with_prepared_frontier(
+                prepared_frontier,
+                row_capacity=capacity,
+                softening=app.SOFTENING,
+            )
+
+        for repeat_index in range(query_repeat):
+            wall_start = time.perf_counter()
+            actual = prepared_vector.run_with_prepared_frontier(
+                prepared_frontier,
+                row_capacity=capacity,
+                softening=app.SOFTENING,
+            )
+            wall_seconds = time.perf_counter() - wall_start
+            frontier = actual["frontier"]
+            vector_sum = actual["vector_sum"]
+            vector_metadata = vector_sum["metadata"]
+            metadata = actual["metadata"]
+            if bool(frontier.overflow):
+                raise RuntimeError("prepared aggregate-frontier hot run overflowed after capacity probe")
+            repeats.append(
+                {
+                    "repeat_index": float(repeat_index),
+                    "frontier_traversal_seconds": float(metadata["frontier_traversal_seconds"]),
+                    "partner_seconds": float(metadata["partner_seconds"]),
+                    "hot_seconds_native_plus_partner": float(metadata["hot_seconds"]),
+                    "wall_seconds": float(wall_seconds),
+                    "frontier_row_count": float(vector_metadata["frontier_row_count"]),
+                    "aggregate_contribution_row_count": float(
+                        vector_metadata["aggregate_contribution_row_count"]
+                    ),
+                    "exact_contribution_row_count": float(vector_metadata["exact_contribution_row_count"]),
+                }
+            )
+            last_result = actual
+
+    if last_result is None:
+        raise RuntimeError("no prepared aggregate-frontier hot repeat executed")
+
+    vector_sum = last_result["vector_sum"]
+    vector_metadata = vector_sum["metadata"]
+    columns = vector_sum["columns"]
+    source_ids = _device_column_to_list(columns["source_ids"], value_type=int)
+    vector_x = _device_column_to_list(columns["vector_x"], value_type=float)
+    vector_y = _device_column_to_list(columns["vector_y"], value_type=float)
+    force_rows = tuple(
+        {
+            "body_id": int(source_id),
+            "force_x": float(force_x),
+            "force_y": float(force_y),
+        }
+        for source_id, force_x, force_y in zip(source_ids, vector_x, vector_y)
+    )
+    force_sample, force_truncated = _truncate_rows(force_rows)
+
+    validation: dict[str, object]
+    validation_skipped = bool(skip_validation or len(bodies) > 2048)
+    if validation_skipped:
+        validation = {
+            "skipped": True,
+            "reason": "user_skip_validation" if skip_validation else "body_count_above_2048",
+        }
+    else:
+        reference = rt.sum_aggregate_frontier_weighted_vectors_2d(
+            bodies,
+            bodies,
+            tree_nodes,
+            theta=theta,
+            softening=app.SOFTENING,
+        )
+        expected_by_id = {
+            int(row["source_id"]): (float(row["vector_x"]), float(row["vector_y"]))
+            for row in reference["vector_sum_rows"]
+        }
+        max_abs_diff_x = max(
+            abs(float(row["force_x"]) - expected_by_id[int(row["body_id"])][0])
+            for row in force_rows
+        )
+        max_abs_diff_y = max(
+            abs(float(row["force_y"]) - expected_by_id[int(row["body_id"])][1])
+            for row in force_rows
+        )
+        validation = {
+            "skipped": False,
+            "compared_against": "sum_aggregate_frontier_weighted_vectors_2d_cpu_reference",
+            "tolerance": 1.0e-7,
+            "max_abs_diff_x": max_abs_diff_x,
+            "max_abs_diff_y": max_abs_diff_y,
+            "passed": max_abs_diff_x <= 1.0e-7 and max_abs_diff_y <= 1.0e-7,
+            "reference_frontier_row_count": int(reference["summary"]["contribution_row_count"]),
+        }
+        if not bool(validation["passed"]):
+            raise AssertionError("prepared aggregate-frontier vector output failed CPU validation")
+
+    medians = _median_fields(
+        repeats,
+        (
+            "frontier_traversal_seconds",
+            "partner_seconds",
+            "hot_seconds_native_plus_partner",
+            "wall_seconds",
+        ),
+    )
+    return {
+        "app": "barnes_hut_force_app",
+        "backend": "optix+partner",
+        "mode": "prepared_aggregate_frontier_weighted_vector_optix",
+        "partner": partner,
+        "body_count": len(bodies),
+        "theta": theta,
+        "softening": app.SOFTENING,
+        "bucket_size": bucket_size,
+        "max_depth": max_depth,
+        "tree_summary": tree["summary"],
+        "run_phases": {
+            "body_generation_sec": body_generation_sec,
+            "tree_build_sec": tree_build_sec,
+            "frontier_prepare_wall_sec": frontier_prepare_wall_sec,
+            "vector_prepare_wall_sec": vector_prepare_wall_sec,
+            "partner_prepare_seconds": float(getattr(prepared_vector, "prepare_seconds", 0.0)),
+        },
+        "capacity": {
+            "initial_capacity": initial_capacity,
+            "final_row_capacity": int(capacity),
+            "frontier_capacity_multiplier": int(frontier_capacity_multiplier),
+            "capacity_attempts": capacity_attempts,
+        },
+        "hot_repeats": repeats,
+        "medians": medians,
+        "vector_sum_summary": {
+            "contract": str(vector_metadata["contract"]),
+            "frontier_contract": rt.AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CONTRACT,
+            "partner_contract": partner_contract,
+            "source_count": int(vector_metadata["source_count"]),
+            "frontier_row_count": int(vector_metadata["frontier_row_count"]),
+            "aggregate_contribution_row_count": int(vector_metadata["aggregate_contribution_row_count"]),
+            "exact_contribution_row_count": int(vector_metadata["exact_contribution_row_count"]),
+            "checksum_force_x": sum(float(row["force_x"]) for row in force_rows),
+            "checksum_force_y": sum(float(row["force_y"]) for row in force_rows),
+            "force_rows": force_sample if force_output_mode == "full" else [],
+            "force_rows_truncated": force_truncated if force_output_mode == "full" else True,
+            "force_output_mode": force_output_mode,
+        },
+        "validation": validation,
+        "claim_flags": {
+            "same_frontier_contract": True,
+            "explicit_partner_choice": True,
+            "automatic_partner_selection_allowed": False,
+            "native_engine_app_specific": False,
+            "frontier_columns_materialized_on_host": False,
+            "contribution_rows_materialized_on_host": False,
+            "prepared_lookup_columns_resident": True,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+        },
+        "boundary": (
+            "Prepared RTDL/OptiX aggregate-frontier device columns plus explicit "
+            f"{partner} Barnes-Hut weighted-vector partner continuation. The "
+            "native engine remains app-agnostic; force-law math and partner "
+            "choice remain app code. This is not an automatic partner dispatch, "
+            "not an OptiX-vs-Embree comparison, and not public speedup wording."
+        ),
+    }
+
+
 def run_benchmark(
     mode: str = "scope",
     *,
@@ -1183,6 +1472,8 @@ def run_benchmark(
     query_repeat: int = 1,
     warmup: int = 0,
     force_output_mode: str = "full",
+    frontier_row_capacity: int | None = None,
+    frontier_capacity_multiplier: int = 700,
 ) -> dict[str, Any]:
     if mode not in MODES:
         raise ValueError(f"unsupported Barnes-Hut benchmark mode: {mode}")
@@ -1420,6 +1711,30 @@ def run_benchmark(
             ),
             rt_core_accelerated=False,
         )
+    if mode == "prepared_aggregate_frontier_weighted_vector_optix":
+        return _annotate(
+            _prepared_aggregate_frontier_weighted_vector_optix_payload(
+                body_count=body_count,
+                theta=theta,
+                bucket_size=bucket_size,
+                max_depth=max_depth,
+                partner=partner,
+                skip_validation=skip_validation,
+                query_repeat=query_repeat,
+                warmup=warmup,
+                force_output_mode=force_output_mode,
+                frontier_row_capacity=frontier_row_capacity,
+                frontier_capacity_multiplier=frontier_capacity_multiplier,
+            ),
+            mode=mode,
+            contract=(
+                f"{rt.AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CONTRACT}+"
+                f"{rt.AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARED_WEIGHTED_VECTOR_SUM_2D_CONTRACT}/"
+                f"{rt.AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CONTRACT}+"
+                "explicit_partner_force_interpretation"
+            ),
+            rt_core_accelerated=True,
+        )
     if mode in {"grouped_vector_sum_typed_stream_plan", "v2_8_grouped_vector_sum_plan"}:
         descriptor = (
             describe_barnes_hut_grouped_vector_sum_typed_stream(partner=partner)
@@ -1509,6 +1824,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
     parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
     parser.add_argument(
+        "--frontier-row-capacity",
+        type=int,
+        default=None,
+        help="Explicit row capacity for prepared aggregate-frontier device-column mode.",
+    )
+    parser.add_argument(
+        "--frontier-capacity-multiplier",
+        type=int,
+        default=700,
+        help="Initial rows-per-body capacity multiplier for prepared aggregate-frontier probing.",
+    )
+    parser.add_argument(
         "--force-output-mode",
         choices=("full", "force_summary"),
         default="full",
@@ -1531,6 +1858,8 @@ def main(argv: list[str] | None = None) -> int:
         query_repeat=args.repeat,
         warmup=args.warmup,
         force_output_mode=args.force_output_mode,
+        frontier_row_capacity=args.frontier_row_capacity,
+        frontier_capacity_multiplier=args.frontier_capacity_multiplier,
     )
     text = json.dumps(payload, indent=2, sort_keys=True)
     if args.json_out is not None:

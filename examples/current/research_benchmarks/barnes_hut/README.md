@@ -57,6 +57,7 @@ PYTHONPATH=src:. .venv-rtdl-scipy/bin/python examples/current/research_benchmark
 | `streamed_force_sum_bucketized_cpu` | Generic weighted inverse-square vector sums without materializing contribution rows | Local precursor to native/partner fused frontier-to-vector-sum lowering |
 | `materialization_pressure_bucketized_cpu` | Estimate contribution-row memory pressure from the opening frontier summary | Planning guard for materialized vs streamed/native execution |
 | `fused_frontier_force_sum_bucketized_cpu` | Generic aggregate-tree opening traversal fused directly into weighted vector sums | Reference contract for native/partner fused lowering; avoids frontier and contribution rows |
+| `prepared_aggregate_frontier_weighted_vector_optix` | Prepared RTDL/OptiX aggregate-frontier device columns plus explicit CuPy or Numba weighted-vector continuation | Current device-resident app route; no frontier/contribution host rows; no automatic partner selection or public speedup claim |
 | `optix_node_coverage_prepared` | Prepared OptiX fixed-radius threshold traversal for node coverage | RT-core decision subpath |
 | `partner_exact_force` | Generic weighted-point pairwise inverse-square force via CuPy or Numba CUDA JIT | Partner force-vector reference |
 
@@ -99,6 +100,15 @@ PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_bar
 PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode streamed_force_sum_bucketized_cpu --body-count 2048 --bucket-size 32
 PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode materialization_pressure_bucketized_cpu --body-count 8192 --bucket-size 32
 PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode fused_frontier_force_sum_bucketized_cpu --body-count 8192 --bucket-size 32
+```
+
+Prepared OptiX aggregate-frontier device columns plus explicit partner
+continuation on an NVIDIA machine:
+
+```bash
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode prepared_aggregate_frontier_weighted_vector_optix --partner numba --body-count 8192 --bucket-size 64 --theta 0.5 --repeat 5 --warmup 1 --skip-validation --force-output-mode force_summary
+PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode prepared_aggregate_frontier_weighted_vector_optix --partner cupy --body-count 8192 --bucket-size 64 --theta 0.5 --repeat 5 --warmup 1 --skip-validation --force-output-mode force_summary
 ```
 
 Local multithreaded exact-force CPU baseline:

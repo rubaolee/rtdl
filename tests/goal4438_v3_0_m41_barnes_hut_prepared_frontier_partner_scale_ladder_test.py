@@ -69,7 +69,7 @@ class Goal4438V30M41BarnesHutPreparedFrontierPartnerScaleLadderTest(unittest.Tes
             self.assertIn(phrase, report)
         self.assertIn("Goal4436/Goal4438", partner_matrix)
         self.assertIn("Numba wins that measured partner route", evidence_index)
-        self.assertIn("Goal4438 compares partners after the same RTDL/OptiX frontier contract", rt_core_matrix)
+        self.assertIn("Goal4438/4439 compare partners after the same RTDL/OptiX frontier contract", rt_core_matrix)
 
     def test_route_registry_uses_numba_fastest_policy_for_this_contract(self) -> None:
         import rtdsl as rt
@@ -79,13 +79,14 @@ class Goal4438V30M41BarnesHutPreparedFrontierPartnerScaleLadderTest(unittest.Tes
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4438.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4439.v1",
             route["version"],
         )
         self.assertEqual("numba_fastest_with_cupy_comparison", route["decision_kind"])
         self.assertEqual("numba_fastest_cupy_comparison", route["partner_policy"])
         self.assertIn("Goal4436", route["evidence_refs"])
         self.assertIn("Goal4438", route["evidence_refs"])
+        self.assertIn("Goal4439", route["evidence_refs"])
         self.assertIn("Numba is currently the fastest measured partner", route["current_reader_decision"])
         self.assertIn("CuPy remains the same-contract measured comparison partner", route["current_reader_decision"])
         self.assertIn("universal Numba fastest claim", route["rejected_or_unpromoted_candidates"])

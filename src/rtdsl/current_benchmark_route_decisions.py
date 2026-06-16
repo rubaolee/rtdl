@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4438.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4439.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -28,7 +28,9 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "wording, or app-specific native-engine logic. Goal4438 updates the Barnes-Hut "
     "partner guidance for the prepared aggregate-frontier device-column contract: "
     "Numba is currently fastest there, while CuPy remains the measured comparison "
-    "partner, not the default winner for that contract."
+    "partner, not the default winner for that contract. Goal4439 exposes that "
+    "route as the explicit Barnes-Hut app mode "
+    "`prepared_aggregate_frontier_weighted_vector_optix`."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -426,7 +428,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Numba is currently the fastest measured partner and the no-C++ Python-source route; "
             "CuPy remains the same-contract measured comparison partner. Older exact-force rows "
             "that favored CuPy remain scoped to their older contract. Goal4053 still records a "
-            "prepared grouped-vector session for presegmented typed streams."
+            "prepared grouped-vector session for presegmented typed streams. Goal4439 exposes "
+            "the current route as the explicit app mode "
+            "prepared_aggregate_frontier_weighted_vector_optix."
         ),
         primary_route="RTDL/OptiX membership primitive plus explicit force-vector partner continuation",
         partner_policy="numba_fastest_cupy_comparison",
@@ -446,10 +450,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "RT-core N-body speedup claim",
         ),
         next_runtime_action=(
-            "integrate the prepared aggregate-frontier Numba route into the benchmark app as an "
-            "explicit mode, then build same-contract Embree/CPU evidence before any public "
-            "whole-app or backend speedup wording; deeper hierarchical vector primitive design "
-            "remains future work"
+            "build same-contract CPU/Embree evidence for the explicit app mode before any "
+            "public whole-app or backend speedup wording; deeper hierarchical vector primitive "
+            "design remains future work"
         ),
         evidence_refs=(
             "Goal2803",
@@ -461,6 +464,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4053",
             "Goal4436",
             "Goal4438",
+            "Goal4439",
         ),
         pod_needed_next=False,
     ),

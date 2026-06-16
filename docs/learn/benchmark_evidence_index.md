@@ -108,6 +108,7 @@ v2.14 evidence:
 - [RTX 4000 Ada scale-profile refresh](../reports/goal4215_current_benchmark_scale_profile_after_rtdbscan_policy_2026-06-09.md)
 - [Large-scale CuPy/Numba partner comparison](../reports/goal4266_large_scale_cupy_numba_partner_comparison_2026-06-09.md)
 - [Barnes-Hut prepared aggregate-frontier partner scale ladder](../reports/goal4438_v3_0_m41_barnes_hut_prepared_frontier_partner_scale_ladder_2026-06-16.md)
+- [Barnes-Hut prepared aggregate-frontier app mode](../reports/goal4439_v3_0_m42_barnes_hut_prepared_frontier_app_mode_2026-06-16.md)
 
 ## Reading Rules
 
@@ -127,8 +128,9 @@ v2.14 evidence:
   not become RT-core or whole-application speedup claims.
 - For Barnes-Hut, Goal4438 supersedes the old partner-choice wording only for
   the prepared aggregate-frontier device-column weighted-vector contract:
-  Numba wins that measured partner route; this is not a universal Numba,
-  RT-core, or whole N-body speedup claim.
+  Numba wins that measured partner route. Goal4439 exposes the route through
+  the benchmark app as `prepared_aggregate_frontier_weighted_vector_optix`.
+  This is not a universal Numba, RT-core, or whole N-body speedup claim.
 - The RayJoin external comparison is useful for LSI/PIP diagnosis, but it is
   not a full RayJoin paper reproduction and does not authorize RTDL-beats-RayJoin
   wording.
