@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4478.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4479.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -152,7 +152,12 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "so M78 remains the current best route. Goal4478 adds opt-in synchronized "
     "segment-ray build subphase telemetry and shows `cupy_unique_counts` is "
     "the scaling hotspot at 41.6%/46.8%/53.3% of segment-ray construction on "
-    "the three large rows."
+    "the three large rows. Goal4479 adds an explicit `numba_direct_sort_rle` "
+    "candidate that replaces `cp.unique(return_counts)` with in-place CuPy "
+    "sort plus run-length counting; same-commit w1/r3 rows improve total time "
+    "by 1.126x/1.090x/1.071x and segment-ray build by 1.145x/1.149x/1.187x, "
+    "so it becomes the current internal Triangle Counting route while public "
+    "speedup wording remains blocked."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -804,7 +809,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "not switch. Goal4478 adds explicit `sync_subphases` telemetry for "
             "segment-ray construction. The three large rows show "
             "`cupy_unique_counts` as the top subphase: 0.694s/1.035s/6.306s, "
-            "or 41.6%/46.8%/53.3% of segment-ray construction."
+            "or 41.6%/46.8%/53.3% of segment-ray construction. Goal4479 tests "
+            "an explicit `numba_direct_sort_rle` replacement for that phase. "
+            "Counts, lowered ray counts, and weight sums match `numba_direct`, "
+            "while same-commit w1/r3 totals improve to 6.489s/13.273s/35.990s "
+            "from 7.308s/14.467s/38.564s."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -845,8 +854,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "the app now emits `phase_split_ms`, and legacy build totals must not "
             "be read as paid every measured replay. Cite Goal4472 when the user "
             "asks for the no-C++ direct unique-key builder: "
-            "`--segment-unique-key-builder numba_direct` reduces segment-ray build "
-            "in the large-row packet but is not a hidden default. Cite Goal4473 "
+            "`--segment-unique-key-builder numba_direct_sort_rle` is now the "
+            "current measured internal route; use `numba_direct` as the "
+            "Goal4472/Goal4478 baseline. It is still not a hidden default. Cite Goal4473 "
             "when the user asks whether M76's query-side movement is native RT "
             "traversal: M77 shows native query pack/traversal are essentially "
             "unchanged, while total time favors `numba_direct` on all three rows. "
@@ -861,8 +871,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "compact constant-ray prepared batch ABI: it is a valid generic ABI, "
             "but it is not the Triangle Counting current-best route because it "
             "does not improve the large-row totals. Cite Goal4478 when discussing "
-            "the current segment-ray construction bottleneck: `cupy_unique_counts` "
-            "is now the measured first target."
+            "the segment-ray construction bottleneck: `cupy_unique_counts` was "
+            "the measured first target. Cite Goal4479 for the current "
+            "`numba_direct_sort_rle` route and its still-unsolved unique/count "
+            "materialization boundary."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -894,7 +906,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "claiming Goal4475 shows RTDL beats cuGraph or authors pure kernels",
             "promoting the Goal4476 no-weight-sum-sync candidate as an optimization",
             "promoting the Goal4477 compact constant-ray batch layout as the current Triangle Counting route",
-            "spending the next Triangle Counting optimization cycle on counts/filter, duplicate count sum, or RT traversal before addressing Goal4478 cupy_unique_counts",
+            "claiming Goal4479 solves Triangle Counting partner materialization rather than improving the unique/count boundary",
+            "spending the next Triangle Counting optimization cycle on counts/filter, duplicate count sum, or RT traversal before further reducing Goal4479 sort/RLE unique-count cost",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -915,9 +928,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "but keeps M78 as current best because totals regress; next work is "
             "targeting partner materialization and segment-ray construction; "
             "Goal4478 identifies `cupy_unique_counts` as the scaling hotspot, "
-            "so the next concrete target is reducing, replacing, or avoiding "
-            "generic `cp.unique(return_counts)` over duplicate two-hop keys "
-            "without breaking the app-agnostic primitive contract"
+            "and Goal4479 replaces it with explicit in-place sort/RLE counting, "
+            "making `numba_direct_sort_rle` the current internal route; next "
+            "work is further reducing sort/RLE unique-count cost, Numba key "
+            "fill, and ray-column projection without breaking the app-agnostic "
+            "primitive contract"
         ),
         evidence_refs=(
             "Goal2797",
@@ -950,6 +965,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4476",
             "Goal4477",
             "Goal4478",
+            "Goal4479",
         ),
         pod_needed_next=False,
     ),

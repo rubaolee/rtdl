@@ -1,0 +1,85 @@
+{
+  "goal": 4479,
+  "milestone": "v3_0_m83",
+  "status": "sort_rle_unique_count_candidate_positive",
+  "date": "2026-06-16",
+  "claim_boundary": {
+    "internal_performance_optimization_claim": true,
+    "current_best_route_changed": true,
+    "public_speedup_claim_authorized": false,
+    "triangle_count_rt_core_claim_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "native_engine_customization": false
+  },
+  "route_compared": {
+    "baseline": "unique_weighted + numba_direct + prepared_segment_replay + full ray columns",
+    "candidate": "unique_weighted + numba_direct_sort_rle + prepared_segment_replay + full ray columns",
+    "only_changed_step": "replace cp.unique(return_counts) over Numba-filled duplicate two-hop keys with in-place CuPy sort plus explicit run-length count",
+    "telemetry_mode_for_phase_rows": "sync_subphases",
+    "performance_rows_use_sync_telemetry": false
+  },
+  "performance_rows": [
+    {
+      "dataset": "com_lj",
+      "display_name": "com-lj",
+      "count": 177820130,
+      "same_count_rays_weights": true,
+      "baseline_total_s": 7.308,
+      "candidate_total_s": 6.489,
+      "total_speedup": 1.1261,
+      "baseline_segment_build_s": 1.316,
+      "candidate_segment_build_s": 1.149,
+      "segment_build_speedup": 1.1449,
+      "query_speedup": 0.9987,
+      "candidate_telemetry_segment_build_s": 1.557,
+      "candidate_telemetry_sort_rle_s": 0.596
+    },
+    {
+      "dataset": "soc_livejournal1",
+      "display_name": "soc-LiveJournal1",
+      "count": 285730264,
+      "same_count_rays_weights": true,
+      "baseline_total_s": 14.467,
+      "candidate_total_s": 13.273,
+      "total_speedup": 1.0899,
+      "baseline_segment_build_s": 1.719,
+      "candidate_segment_build_s": 1.496,
+      "segment_build_speedup": 1.1491,
+      "query_speedup": 1.0047,
+      "candidate_telemetry_segment_build_s": 2.153,
+      "candidate_telemetry_sort_rle_s": 0.890
+    },
+    {
+      "dataset": "com_orkut",
+      "display_name": "com-orkut",
+      "count": 627584181,
+      "same_count_rays_weights": true,
+      "baseline_total_s": 38.564,
+      "candidate_total_s": 35.990,
+      "total_speedup": 1.0715,
+      "baseline_segment_build_s": 8.646,
+      "candidate_segment_build_s": 7.281,
+      "segment_build_speedup": 1.1874,
+      "query_speedup": 0.9978,
+      "candidate_telemetry_segment_build_s": 10.970,
+      "candidate_telemetry_sort_rle_s": 5.458
+    }
+  ],
+  "interpretation": {
+    "headline": "M83 is a real internal improvement over the same-commit M78-style numba_direct baseline.",
+    "why_it_helps": "The RT query is unchanged; the win comes from reducing the unique/count phase identified by Goal4478.",
+    "what_remains": "sort/RLE is still the largest segment-ray build phase on large rows, so it is an improvement rather than the end of Triangle Counting partner-materialization work.",
+    "route_decision": "Promote numba_direct_sort_rle as the current internal Triangle Counting route, while keeping public speedup and broad RT-core wording blocked."
+  },
+  "artifacts": [
+    "goal4479_v3_0_m83_triangle_sort_rle_candidate_com_lj_numba_direct_w1r3_2026-06-16.json",
+    "goal4479_v3_0_m83_triangle_sort_rle_candidate_com_lj_numba_direct_sort_rle_w1r3_2026-06-16.json",
+    "goal4479_v3_0_m83_triangle_sort_rle_candidate_com_lj_numba_direct_sort_rle_w1r1_telemetry_2026-06-16.json",
+    "goal4479_v3_0_m83_triangle_sort_rle_candidate_soc_livejournal1_numba_direct_w1r3_2026-06-16.json",
+    "goal4479_v3_0_m83_triangle_sort_rle_candidate_soc_livejournal1_numba_direct_sort_rle_w1r3_2026-06-16.json",
+    "goal4479_v3_0_m83_triangle_sort_rle_candidate_soc_livejournal1_numba_direct_sort_rle_w1r1_telemetry_2026-06-16.json",
+    "goal4479_v3_0_m83_triangle_sort_rle_candidate_com_orkut_numba_direct_w1r3_2026-06-16.json",
+    "goal4479_v3_0_m83_triangle_sort_rle_candidate_com_orkut_numba_direct_sort_rle_w1r3_2026-06-16.json",
+    "goal4479_v3_0_m83_triangle_sort_rle_candidate_com_orkut_numba_direct_sort_rle_w1r1_telemetry_2026-06-16.json"
+  ]
+}

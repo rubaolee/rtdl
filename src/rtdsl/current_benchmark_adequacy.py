@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4478.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4479.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -75,6 +75,12 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "`cupy_unique_counts` is the scaling hotspot at 41.6%/46.8%/53.3% of "
     "segment-ray construction on `com-lj`/`soc-LiveJournal1`/`com-orkut`; "
     "this identifies the next optimization target but is not a speedup claim. "
+    "Goal4479 adds explicit `numba_direct_sort_rle`, replacing "
+    "`cp.unique(return_counts)` with in-place CuPy sort plus run-length "
+    "counting; same-commit w1/r3 rows improve total time by "
+    "1.126x/1.090x/1.071x and segment-ray build by 1.145x/1.149x/1.187x, "
+    "so it becomes the current internal Triangle Counting route while public "
+    "speedup wording remains blocked. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -516,7 +522,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "`sync_subphases` telemetry and identifies `cupy_unique_counts` "
             "as the top segment-ray build subphase on all three large rows: "
             "0.694s/1.035s/6.306s, or 41.6%/46.8%/53.3% of segment-ray "
-            "construction."
+            "construction. Goal4479 tests explicit `numba_direct_sort_rle`: "
+            "counts, lowered ray counts, and weight sums match `numba_direct`, "
+            "while same-commit w1/r3 totals improve to 6.489s/13.273s/35.990s "
+            "from 7.308s/14.467s/38.564s."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -551,19 +560,22 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "when discussing the compact constant-ray prepared batch ABI: it is "
             "valid generic runtime surface, but not a Triangle Counting "
             "performance route promotion. Cite Goal4478 when discussing the "
-            "current segment-ray construction bottleneck: `cupy_unique_counts` "
-            "dominates the large rows and is the next measured target."
+            "segment-ray construction bottleneck: `cupy_unique_counts` was "
+            "the measured first target. Cite Goal4479 when choosing the "
+            "current measured internal route: `numba_direct_sort_rle` improves "
+            "that boundary but does not solve partner materialization."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
             "large-scale performance for explicit global summary-contract construction; "
-            "for the segmented RT-2A1 route, keep CuPy and `numba_direct` as explicit "
-            "choices and treat current `numba_direct` plus prepared ray batches as "
-            "the fastest measured internal route; partner-owned device weights are "
-            "consumed by generic prepared ray batches, and Numba remains the no-C++ "
-            "Python-source reference/direct key-fill option; Goal4478 shows that "
-            "global `cp.unique(return_counts)` over duplicate two-hop keys is now "
-            "the primary partner-side construction hotspot"
+            "for the segmented RT-2A1 route, keep CuPy and Numba builders as explicit "
+            "choices and treat current `numba_direct_sort_rle` plus prepared ray "
+            "batches as the fastest measured internal route; partner-owned device "
+            "weights are consumed by generic prepared ray batches, and Numba remains "
+            "the no-C++ Python-source reference/direct key-fill option; Goal4479 "
+            "improves the Goal4478 `cp.unique(return_counts)` hotspot with explicit "
+            "sort/RLE counting, but the unique/count boundary remains partner-side "
+            "construction debt"
         ),
         "next_generic_runtime_action": (
             "keep scalar triangle-count wording primitive-first; do not claim RT-Graph "
@@ -578,10 +590,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "cleanup as a useful next optimization; Goal4477 adds and tests a "
             "compact constant-ray prepared batch ABI but keeps M78 as current best "
             "because totals regress; Goal4478 narrows partner materialization "
-            "and segment-ray construction work to reducing, replacing, or "
-            "avoiding generic `cp.unique(return_counts)` over the duplicate "
-            "two-hop key stream before spending more work on counts/filter, "
-            "duplicate count sum, offset allocation, or RT traversal, without "
+            "and segment-ray construction work to the duplicate-key unique/count "
+            "boundary; Goal4479 replaces generic `cp.unique(return_counts)` with "
+            "explicit sort/RLE counting and promotes `numba_direct_sort_rle` as "
+            "the current internal route; next work is further reducing sort/RLE "
+            "unique-count cost, Numba key fill, and ray-column projection without "
             "breaking the app-agnostic primitive contract"
         ),
         "evidence_refs": (
@@ -613,6 +626,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4476",
             "Goal4477",
             "Goal4478",
+            "Goal4479",
         ),
     },
 }

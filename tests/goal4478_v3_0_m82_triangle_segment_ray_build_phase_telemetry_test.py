@@ -125,16 +125,16 @@ class Goal4478V30M82TriangleSegmentRayBuildPhaseTelemetryTest(unittest.TestCase)
             self.assertGreater(row["segment_ray_build_ms"], row["top_phase_ms"])
         self.assertGreater(rows["com_orkut"]["top_phase_percent"], 50.0)
 
-    def test_registry_records_m82_next_target(self) -> None:
+    def test_registry_preserves_m82_evidence_after_m83_route_update(self) -> None:
         routes = importlib.import_module("rtdsl.current_benchmark_route_decisions")
         adequacy = importlib.import_module("rtdsl.current_benchmark_adequacy")
 
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4478.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4479.v1",
             routes.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION,
         )
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4478.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4479.v1",
             adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
 
@@ -149,9 +149,11 @@ class Goal4478V30M82TriangleSegmentRayBuildPhaseTelemetryTest(unittest.TestCase)
 
         self.assertIn("Goal4478", route_row["evidence_refs"])
         self.assertIn("Goal4478", adequacy_row["evidence_refs"])
-        self.assertIn("cp.unique(return_counts)", route_row["next_runtime_action"])
-        self.assertIn("cupy_unique_counts", route_row["next_runtime_action"])
-        self.assertIn("cp.unique(return_counts)", adequacy_row["next_generic_runtime_action"])
+        self.assertIn("Goal4479", route_row["evidence_refs"])
+        self.assertIn("Goal4479", adequacy_row["evidence_refs"])
+        self.assertIn("cupy_unique_counts", route_row["current_reader_decision"])
+        self.assertIn("numba_direct_sort_rle", route_row["next_runtime_action"])
+        self.assertIn("sort/RLE", adequacy_row["next_generic_runtime_action"])
         self.assertIn("cupy_unique_counts", adequacy_row["current_performance_reading"])
 
 
