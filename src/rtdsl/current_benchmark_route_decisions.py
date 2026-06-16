@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4454.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4455.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -71,7 +71,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "construction and segmented paper-dataset lowering. Goal4454 adds generic "
     "dense-label and sorted-key fast paths to the NumPy direct-binary summary "
     "builder, reducing the explicit no-C++ Numba summary-contract route on dense "
-    "sorted graph inputs while preserving the same claim boundary."
+    "sorted graph inputs while preserving the same claim boundary. Goal4455 "
+    "re-ranks triangle CuPy versus optimized Numba after Goal4454 and confirms "
+    "CuPy remains the measured performance partner while Numba remains the "
+    "no-C++ Python-source reference."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -600,8 +603,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "measured a 19.96x-23.07x Numba total-time improvement over M27 on the same two "
             "mappings, and Goal4454 adds dense-label plus sorted-key summary fast paths that "
             "improve the same explicit Numba route by about 1.60x-1.65x total time on the "
-            "200,000 K4-clique dense/sorted fixture. CuPy remains the current "
-            "large-scale performance route at 200,000 K4 cliques until the remaining graph-summary "
+            "200,000 K4-clique dense/sorted fixture. Goal4455 re-ranks after that improvement: "
+            "CuPy remains the measured performance partner, about 2.85x faster than optimized "
+            "Numba total time on the same 200,000 K4-clique fixture. "
+            "CuPy remains the current large-scale performance route until the remaining graph-summary "
             "construction and segmented paper-dataset lowering debts are closed."
         ),
         primary_route="generic RT graph relationship-count composition",
@@ -610,10 +615,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
         user_choice_guidance=(
             "For the scalar answer, stay on the primitive-first relationship-count route. "
             "For explicit RT-Graph summary-contract experiments, choose CuPy for the current "
-            "fastest large-scale graph-contract builder and choose Numba when no-C++ "
-            "Python-source partner code matters; cite Goal4444 for direct binary summary "
-            "construction, Goal4453 for partner-resident Numba geometry fill, and Goal4454 "
-            "for dense-label/sorted-key summary fast paths rather than the older M27 Numba timings."
+            "fastest large-scale graph-contract builder. Numba remains the no-C++ reference "
+            "when Python-source partner code matters; cite Goal4444 for direct binary summary "
+            "construction, Goal4453 for partner-resident Numba geometry fill, Goal4454 "
+            "for dense-label/sorted-key summary fast paths, and Goal4455 for the post-M58 "
+            "CuPy-vs-Numba rerank rather than the older M27 Numba timings."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -621,6 +627,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "old M27 cpu_contract_then_numba_device_upload timing as current Numba guidance",
             "host-materialized Numba geometry upload as current Numba guidance",
             "treating dense-label/sorted-key summary fast paths as universal graph input behavior",
+            "promoting Numba over CuPy after Goal4454 without the Goal4455 rerank evidence",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -639,13 +646,14 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4444",
             "Goal4453",
             "Goal4454",
+            "Goal4455",
         ),
         pod_needed_next=False,
     ),
 )
 
 
-def _refresh_goal4454_route_decisions(
+def _refresh_goal4455_route_decisions(
     rows: tuple[CurrentBenchmarkRouteDecision, ...],
 ) -> tuple[CurrentBenchmarkRouteDecision, ...]:
     refreshed: list[CurrentBenchmarkRouteDecision] = []
@@ -765,7 +773,7 @@ def _refresh_goal4454_route_decisions(
     return tuple(refreshed)
 
 
-CURRENT_BENCHMARK_ROUTE_DECISIONS = _refresh_goal4454_route_decisions(
+CURRENT_BENCHMARK_ROUTE_DECISIONS = _refresh_goal4455_route_decisions(
     CURRENT_BENCHMARK_ROUTE_DECISIONS
 )
 

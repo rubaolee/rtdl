@@ -1,0 +1,134 @@
+{
+  "goal": 4455,
+  "milestone": "v3.0_m59",
+  "app": "triangle_counting",
+  "implementation": "triangle_partner_rerank_after_m58",
+  "status": "measured_on_pod_median_full_runs",
+  "measurement_basis": {
+    "fixture": "k4_cliques",
+    "cliques": 200000,
+    "edge_count": 1200000,
+    "expected_triangle_count": 800000,
+    "backend": "optix",
+    "warmup": 1,
+    "query_repeat_per_full_run": 3,
+    "full_app_repeats_per_mode_partner": 3,
+    "partners": [
+      "cupy",
+      "numba"
+    ],
+    "modes": [
+      "rt_graph_2a1_generic_rt",
+      "rt_graph_1a2_generic_rt"
+    ]
+  },
+  "rows": [
+    {
+      "mode": "rt_graph_2a1_generic_rt",
+      "partner": "cupy",
+      "triangle_count_matches_oracle": true,
+      "timing_ms": {
+        "build_contract": 51.8319234251976,
+        "build_geometry": 0.4928484559059143,
+        "prepare_scene_ms": 7.534973323345184,
+        "query_median_ms": 1.965552568435669,
+        "total": 70.48553228378296
+      },
+      "partner_timing_ms": {
+        "compact_unique_ms": 2.833,
+        "degree_ms": 6.155,
+        "directed_csr_ms": 7.244,
+        "download_needed_columns_ms": 17.3,
+        "load_np_ms": 10.563,
+        "total_partner_ms": 50.175,
+        "two_hop_and_count_ms": 2.755,
+        "upload_ms": 3.336
+      }
+    },
+    {
+      "mode": "rt_graph_2a1_generic_rt",
+      "partner": "numba",
+      "triangle_count_matches_oracle": true,
+      "timing_ms": {
+        "build_contract": 176.8202930688858,
+        "build_geometry": 5.796864628791809,
+        "prepare_scene_ms": 7.359251379966736,
+        "query_median_ms": 1.951664686203003,
+        "total": 200.6901055574417
+      },
+      "partner_timing_ms": {
+        "construction_mode": "direct_binary_numpy_summary_then_numba_device_upload",
+        "dense_label_fast_path": true,
+        "direct_binary_summary_ms": 153.306,
+        "directed_sorted_unique_fast_path": true,
+        "load_np_ms": 11.811,
+        "numba_device_upload_ms": 11.084,
+        "supersedes_construction_mode": "cpu_contract_then_numba_device_upload",
+        "total_partner_ms": 175.892,
+        "two_hop_sorted_rle_fast_path": true
+      }
+    },
+    {
+      "mode": "rt_graph_1a2_generic_rt",
+      "partner": "cupy",
+      "triangle_count_matches_oracle": true,
+      "timing_ms": {
+        "build_contract": 50.47272890806198,
+        "build_geometry": 2.722710371017456,
+        "prepare_scene_ms": 5.820967257022858,
+        "query_median_ms": 3.285638988018036,
+        "total": 74.2105096578598
+      },
+      "partner_timing_ms": {
+        "compact_unique_ms": 2.845,
+        "degree_ms": 6.184,
+        "directed_csr_ms": 7.25,
+        "download_needed_columns_ms": 16.796,
+        "load_np_ms": 9.868,
+        "total_partner_ms": 48.888,
+        "two_hop_and_count_ms": 2.722,
+        "upload_ms": 3.354
+      }
+    },
+    {
+      "mode": "rt_graph_1a2_generic_rt",
+      "partner": "numba",
+      "triangle_count_matches_oracle": true,
+      "timing_ms": {
+        "build_contract": 176.7546534538269,
+        "build_geometry": 14.36980813741684,
+        "prepare_scene_ms": 5.638375878334045,
+        "query_median_ms": 3.2831132411956787,
+        "total": 211.92150563001633
+      },
+      "partner_timing_ms": {
+        "construction_mode": "direct_binary_numpy_summary_then_numba_device_upload",
+        "dense_label_fast_path": true,
+        "direct_binary_summary_ms": 152.736,
+        "directed_sorted_unique_fast_path": true,
+        "load_np_ms": 10.989,
+        "numba_device_upload_ms": 11.039,
+        "supersedes_construction_mode": "cpu_contract_then_numba_device_upload",
+        "total_partner_ms": 175.83,
+        "two_hop_sorted_rle_fast_path": true
+      }
+    }
+  ],
+  "comparison": {
+    "all_triangle_counts_match_oracle": true,
+    "cupy_faster_than_numba_by_mode": {
+      "rt_graph_2a1_generic_rt": 2.847257350066868,
+      "rt_graph_1a2_generic_rt": 2.855677636469284
+    },
+    "current_performance_partner": "cupy",
+    "numba_role": "no_cpp_python_source_reference",
+    "rt_query_times_near_equal": true,
+    "dominant_gap": "partner summary construction and device-column production"
+  },
+  "claim_boundary": {
+    "automatic_partner_selection_authorized": false,
+    "triangle_counting_rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false
+  }
+}
