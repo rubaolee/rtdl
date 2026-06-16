@@ -3,7 +3,9 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import statistics
 import sys
+import time
 from pathlib import Path
 from typing import Iterable
 
@@ -256,6 +258,146 @@ def _run_scipy_density_count(case: dict[str, tuple[rt.Point, ...]]) -> dict[str,
     }
 
 
+def _partner_column_to_list(column, partner: str) -> list[object]:
+    if partner == "torch":
+        return column.detach().cpu().tolist()
+    if partner == "cupy":
+        import cupy
+
+        return cupy.asnumpy(column).tolist()
+    if partner == "numba":
+        return column.copy_to_host().tolist()
+    raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
+
+
+def _run_optix_device_density_rows(
+    points: tuple[rt.Point, ...],
+    *,
+    partner: str,
+    query_repeat: int = 1,
+    warmup: int = 0,
+) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
+    if partner not in {"cupy", "numba"}:
+        raise ValueError("optix_device_density requires partner='cupy' or partner='numba'")
+    if int(query_repeat) < 1:
+        raise ValueError("query_repeat must be at least 1")
+    if int(warmup) < 0:
+        raise ValueError("warmup must be non-negative")
+
+    column_start = time.perf_counter()
+    point_columns = rt.point_rows_to_partner_columns(points, partner=partner, id_dtype="uint32")
+    input_column_build_sec = time.perf_counter() - column_start
+    prepare_start = time.perf_counter()
+    measured_runs: list[dict[str, object]] = []
+    last_result: dict[str, object] | None = None
+    with rt.prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene(
+        point_columns,
+        max_radius=RADIUS,
+        partner=partner,
+    ) as prepared:
+        prepare_sec = time.perf_counter() - prepare_start
+        output_columns = rt.allocate_fixed_radius_count_threshold_2d_partner_device_output_columns(
+            len(points),
+            partner=partner,
+        )
+        total_runs = int(warmup) + int(query_repeat)
+        for iteration in range(total_runs):
+            run_start = time.perf_counter()
+            result = rt.fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
+                prepared,
+                point_columns,
+                radius=RADIUS,
+                threshold=MIN_NEIGHBORS_INCLUDING_SELF,
+                partner=partner,
+                output_columns=output_columns,
+                return_metadata=True,
+            )
+            elapsed = time.perf_counter() - run_start
+            last_result = result
+            if iteration >= int(warmup):
+                measured_runs.append(
+                    {
+                        "iteration": iteration - int(warmup),
+                        "elapsed_sec": elapsed,
+                        "metadata": dict(result["metadata"]),
+                    }
+                )
+    if last_result is None or not measured_runs:
+        raise RuntimeError("OptiX device-density route produced no measured run")
+
+    materialize_start = time.perf_counter()
+    columns = last_result["columns"]
+    point_ids = _partner_column_to_list(columns["query_ids"], partner)
+    neighbor_counts = _partner_column_to_list(columns["neighbor_counts"], partner)
+    threshold_flags = _partner_column_to_list(columns["threshold_flags"], partner)
+    rows = tuple(
+        sorted(
+            (
+                {
+                    "point_id": int(point_id),
+                    "neighbor_count": int(neighbor_count),
+                    "is_outlier": int(flag) == 0,
+                }
+                for point_id, neighbor_count, flag in zip(point_ids, neighbor_counts, threshold_flags)
+            ),
+            key=lambda row: int(row["point_id"]),
+        )
+    )
+    materialize_sec = time.perf_counter() - materialize_start
+    elapsed_samples = tuple(float(row["elapsed_sec"]) for row in measured_runs)
+    metadata = dict(last_result["metadata"])
+    native_metadata = dict(metadata.get("native_metadata") or {})
+    metadata.update(
+        {
+            "adapter": "outlier_app_optix_device_density_threshold_columns",
+            "app_contract": "outlier_density_rows_from_generic_fixed_radius_count_threshold_2d_device_columns",
+            "app_specific_native_engine_logic_allowed": False,
+            "automatic_partner_selection_authorized": False,
+            "backend": "optix",
+            "partner": partner,
+            "front_door": "fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns",
+            "front_door_operation": "fixed_radius_count_threshold_2d_prepared_device_columns",
+            "native_execution_path": native_metadata.get(
+                "native_symbol",
+                "prepared_optix_fixed_radius_count_threshold_2d_device_query_columns",
+            ),
+            "native_engine_summary_contract": metadata.get(
+                "native_engine_row_contract",
+                "generic_fixed_radius_count_threshold_2d_device_columns",
+            ),
+            "partner_reference_contract": "not_partner_reference_native_optix_writes_device_columns",
+            "input_column_build_sec": input_column_build_sec,
+            "prepare_sec": prepare_sec,
+            "hot_device_density_elapsed_sec_median": statistics.median(elapsed_samples),
+            "hot_device_density_elapsed_sec_min": min(elapsed_samples),
+            "hot_device_density_elapsed_sec_max": max(elapsed_samples),
+            "prepared_query_repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "measured_iterations": len(measured_runs),
+            },
+            "device_result_materialization_after_hot_window": True,
+            "post_window_row_materialization_sec": materialize_sec,
+            "materializes_python_rows": True,
+            "materializes_neighbor_rows": False,
+            "host_row_materialization_before_consumer": False,
+            "rt_core_accelerated": bool(
+                native_metadata.get("rt_core_accelerated", native_metadata.get("native_acceleration_structure_required", True))
+            ),
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "boundary": (
+                "Outlier app bridge over the generic prepared OptiX fixed-radius "
+                "count-threshold device-column front door; outlier labels and JSON "
+                "row materialization remain app logic."
+            ),
+        }
+    )
+    return rows, metadata
+
+
 def _native_continuation_backend(
     backend: str,
     *,
@@ -272,6 +414,8 @@ def _native_continuation_backend(
         output_mode == "density_summary" or embree_summary_mode in {"rt_count_threshold", "rt_count_threshold_prepared"}
     ):
         return "embree_threshold_count"
+    if backend == "optix_device_density":
+        return "optix_device_density_threshold_columns"
     return "none"
 
 
@@ -393,6 +537,9 @@ def run_app(
     optix_summary_mode: str = "rows",
     embree_summary_mode: str = "rows",
     output_mode: str = "full",
+    partner: str = "cupy",
+    query_repeat: int = 1,
+    warmup: int = 0,
 ) -> dict[str, object]:
     if optix_summary_mode not in {"rows", "rt_count_threshold", "rt_count_threshold_prepared"}:
         raise ValueError("optix_summary_mode must be 'rows', 'rt_count_threshold', or 'rt_count_threshold_prepared'")
@@ -403,7 +550,19 @@ def run_app(
     case = make_outlier_case(copies=copies)
     native_summary_rows: tuple[dict[str, object], ...] = ()
     scalar_density_count: dict[str, int | str | None] | None = None
-    if output_mode == "density_count" and backend == "optix":
+    partner_metadata: dict[str, object] | None = None
+    if backend == "optix_device_density":
+        if output_mode not in {"full", "density_summary"}:
+            raise ValueError("optix_device_density currently supports output_mode='full' or 'density_summary'")
+        neighbor_rows = ()
+        density_rows, partner_metadata = _run_optix_device_density_rows(
+            case["points"],
+            partner=partner,
+            query_repeat=query_repeat,
+            warmup=warmup,
+        )
+        native_summary_rows = density_rows
+    elif output_mode == "density_count" and backend == "optix":
         neighbor_rows = ()
         density_rows = ()
         scalar_density_count = _run_optix_prepared_density_count(case)
@@ -455,7 +614,7 @@ def run_app(
         density_rows = density_rows_from_neighbor_rows(case["points"], neighbor_rows)
     oracle_rows = (
         expected_tiled_density_rows(copies=copies)
-        if output_mode in {"density_summary", "density_count"}
+        if output_mode in {"density_summary", "density_count"} or backend == "optix_device_density"
         else brute_force_outlier_rows(case["points"])
     )
     outlier_ids = [int(row["point_id"]) for row in density_rows if bool(row["is_outlier"])]
@@ -478,6 +637,7 @@ def run_app(
         "output_mode": output_mode,
         "optix_summary_mode": optix_summary_mode if backend == "optix" else "not_applicable",
         "embree_summary_mode": embree_summary_mode if backend == "embree" else "not_applicable",
+        "partner": partner if backend == "optix_device_density" else None,
         "radius": RADIUS,
         "k_max": K_MAX,
         "min_neighbors_including_self": MIN_NEIGHBORS_INCLUDING_SELF,
@@ -495,16 +655,34 @@ def run_app(
         "outlier_point_ids": None if scalar_density_count is not None else outlier_ids,
         "oracle_density_rows": oracle_rows,
         "oracle_outlier_count": oracle_outlier_count,
-        "summary_mode": scalar_density_count["summary_mode"] if scalar_density_count is not None else None,
+        "summary_mode": (
+            scalar_density_count["summary_mode"]
+            if scalar_density_count is not None
+            else "device_density_threshold_columns"
+            if partner_metadata is not None
+            else None
+        ),
         "generic_primitive": (
-            scalar_density_count.get("generic_primitive") if scalar_density_count is not None else None
+            scalar_density_count.get("generic_primitive")
+            if scalar_density_count is not None
+            else "fixed_radius_count_threshold_2d"
+            if partner_metadata is not None
+            else None
         ),
         "summary_primitive": (
-            scalar_density_count.get("summary_primitive") if scalar_density_count is not None else None
+            scalar_density_count.get("summary_primitive")
+            if scalar_density_count is not None
+            else "prepared_optix_partner_device_count_threshold_columns"
+            if partner_metadata is not None
+            else None
         ),
+        "partner_reference_contract": (
+            partner_metadata["partner_reference_contract"] if partner_metadata else None
+        ),
+        "partner_metadata": partner_metadata,
         "matches_oracle": matches_oracle,
-        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. The compact density paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.",
-        "boundary": "Bounded density-threshold outlier demo only; Embree/OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim. One-shot CLI runs cannot fully amortize backend preparation; prepared app/session mode is intended for repeated probes.",
+        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. The compact density paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization. The optix_device_density path keeps the prepared OptiX count/flag result in partner-owned device columns until the app explicitly materializes per-point density rows.",
+        "boundary": "Bounded density-threshold outlier demo only; Embree/OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim. optix_device_density is a generic fixed-radius count-threshold device-column route, not an outlier-specific native engine ABI, automatic partner choice, public speedup claim, or true-zero-copy claim.",
     }
 
 
@@ -514,9 +692,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--backend",
-        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "scipy"),
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "scipy", "optix_device_density"),
         default="cpu_python_reference",
     )
+    parser.add_argument("--partner", choices=("cupy", "numba"), default="cupy")
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument(
         "--output-mode",
@@ -536,6 +715,8 @@ def main(argv: list[str] | None = None) -> int:
         default="rows",
         help="when backend=embree, use native fixed-radius threshold counts instead of neighbor rows; prepared mode reuses an Embree BVH handle inside the run",
     )
+    parser.add_argument("--query-repeat", type=int, default=1, help="measured prepared device-density repeats")
+    parser.add_argument("--warmup", type=int, default=0, help="unmeasured prepared device-density warmup repeats")
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -545,6 +726,9 @@ def main(argv: list[str] | None = None) -> int:
                 optix_summary_mode=args.optix_summary_mode,
                 embree_summary_mode=args.embree_summary_mode,
                 output_mode=args.output_mode,
+                partner=args.partner,
+                query_repeat=args.query_repeat,
+                warmup=args.warmup,
             ),
             indent=2,
             sort_keys=True,

@@ -1,0 +1,121 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparison": {
+    "all_match_oracle": true,
+    "inlier_counts_match": true,
+    "native_continuation_active": true,
+    "outlier_counts_match": true,
+    "partner_count": 2,
+    "public_claim_authorized": false,
+    "rt_core_accelerated": true
+  },
+  "parameters": {
+    "copies": 65536,
+    "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+    "min_neighbors_including_self": 3,
+    "partners": [
+      "cupy",
+      "numba"
+    ],
+    "point_count": 524288,
+    "radius": 0.35,
+    "repeats": 3,
+    "warmups": 1
+  },
+  "rows": [
+    {
+      "app": "outlier_detection",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "backend": "optix_device_density",
+      "copies": 65536,
+      "density_row_count": 524288,
+      "device_result_materialization_after_hot_window": true,
+      "hot_device_density_elapsed_sec_median": 0.0004005506634712219,
+      "inlier_count": 393216,
+      "input_column_build_sec": 0.5053360536694527,
+      "matches_oracle": true,
+      "materializes_neighbor_rows": false,
+      "materializes_python_rows": true,
+      "min_neighbors_including_self": 3,
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_device_density_threshold_columns",
+      "native_engine_summary_contract": "generic_fixed_radius_count_threshold_2d_device_columns",
+      "native_execution_path": "rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns",
+      "native_summary_row_count": 524288,
+      "oracle_outlier_count": 131072,
+      "outlier_count": 131072,
+      "partner": "cupy",
+      "partner_reference_contract": "not_partner_reference_native_optix_writes_device_columns",
+      "point_count": 524288,
+      "post_window_row_materialization_sec": 0.3556530475616455,
+      "prepare_sec": 1.0064837411046028,
+      "prepared_query_repeat_protocol": {
+        "measured_iterations": 3,
+        "repeat": 3,
+        "warmup": 1
+      },
+      "public_speedup_claim_authorized": false,
+      "radius": 0.35,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "app": "outlier_detection",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "backend": "optix_device_density",
+      "copies": 65536,
+      "density_row_count": 524288,
+      "device_result_materialization_after_hot_window": true,
+      "hot_device_density_elapsed_sec_median": 0.0008372440934181213,
+      "inlier_count": 393216,
+      "input_column_build_sec": 0.3887951597571373,
+      "matches_oracle": true,
+      "materializes_neighbor_rows": false,
+      "materializes_python_rows": true,
+      "min_neighbors_including_self": 3,
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_device_density_threshold_columns",
+      "native_engine_summary_contract": "generic_fixed_radius_count_threshold_2d_device_columns",
+      "native_execution_path": "rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns",
+      "native_summary_row_count": 524288,
+      "oracle_outlier_count": 131072,
+      "outlier_count": 131072,
+      "partner": "numba",
+      "partner_reference_contract": "not_partner_reference_native_optix_writes_device_columns",
+      "point_count": 524288,
+      "post_window_row_materialization_sec": 0.3452840894460678,
+      "prepare_sec": 0.0044871121644973755,
+      "prepared_query_repeat_protocol": {
+        "measured_iterations": 3,
+        "repeat": 3,
+        "warmup": 1
+      },
+      "public_speedup_claim_authorized": false,
+      "radius": 0.35,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    }
+  ],
+  "runner_numba_cuda_home": {
+    "bin_dir": "/tmp/rtdl_cuda124_home/bin",
+    "configured": true,
+    "cuda_home": "/tmp/rtdl_cuda124_home",
+    "nvvm_dir": "/tmp/rtdl_cuda124_home/nvvm/lib64",
+    "ptxas_version": "ptxas: NVIDIA (R) Ptx optimizing assembler\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Mar_28_02:14:54_PDT_2024\nCuda compilation tools, release 12.4, V12.4.131\nBuild cuda_12.4.r12.4/compiler.34097967_0\n"
+  },
+  "status": "m24_outlier_app_uses_generic_optix_prepared_fixed_radius_device_columns_internal_claims_gated",
+  "version": "rtdl.v3_0.outlier_device_density.m24"
+}

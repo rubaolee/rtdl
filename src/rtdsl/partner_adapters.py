@@ -1890,14 +1890,20 @@ def _segment_ray_columns(segments: tuple[_CanonicalSegment, ...], partner: dict)
     }
 
 
-def _point_columns(points, partner: dict) -> dict[str, object]:
+def _point_columns(points, partner: dict, *, id_dtype: str = "default") -> dict[str, object]:
+    if id_dtype not in {"default", "uint32"}:
+        raise ValueError("id_dtype must be 'default' or 'uint32'")
     device = partner["device"]
     rows = tuple(points)
-    id_dtype = partner["int64"] if partner["name"] == "numba" else partner["uint32"]
+    point_id_dtype = (
+        partner["int64"]
+        if partner["name"] == "numba" and id_dtype == "default"
+        else partner["uint32"]
+    )
     columns = {
         "ids": partner["tensor"](
             [_require_uint32_id(point.id, "point") for point in rows],
-            id_dtype,
+            point_id_dtype,
             device,
         ),
         "x": partner["tensor"]([point.x for point in rows], partner["float64"], device),
@@ -1952,12 +1958,17 @@ def _numba_topk_query_id_distance_kernel(cuda):
     return kernel
 
 
-def point_rows_to_partner_columns(points, *, partner: str = "torch") -> dict[str, object]:
+def point_rows_to_partner_columns(
+    points,
+    *,
+    partner: str = "torch",
+    id_dtype: str = "default",
+) -> dict[str, object]:
     """Convert point rows into partner-owned generic point columns."""
     if partner == "numba":
-        return _point_columns(tuple(points), _numba_runtime_for_point_columns())
+        return _point_columns(tuple(points), _numba_runtime_for_point_columns(), id_dtype=id_dtype)
     runtime = _partner_module(partner)
-    return _point_columns(tuple(points), runtime)
+    return _point_columns(tuple(points), runtime, id_dtype=id_dtype)
 
 
 def weighted_point_rows_to_partner_columns(points, *, partner: str = "torch") -> dict[str, object]:
@@ -10565,7 +10576,7 @@ def prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene(
     partner: str = "torch",
 ):
     """Prepare a reusable OptiX fixed-radius scene from partner point columns."""
-    _partner_module(partner)
+    _numba_runtime_for_point_columns() if partner == "numba" else _partner_module(partner)
     return _optix.prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
         search_point_columns,
         max_radius=max_radius,
@@ -10581,6 +10592,13 @@ def allocate_fixed_radius_count_threshold_2d_partner_device_output_columns(
     query_count = int(query_count)
     if query_count < 0:
         raise ValueError("query_count must be non-negative")
+    if partner == "numba":
+        cuda, np = _numba_cuda_stack_for_radius_graph()
+        return {
+            "query_ids": _NumbaDeviceColumnView(cuda.device_array((query_count,), dtype=np.uint32)),
+            "neighbor_counts": _NumbaDeviceColumnView(cuda.device_array((query_count,), dtype=np.uint32)),
+            "threshold_flags": _NumbaDeviceColumnView(cuda.device_array((query_count,), dtype=np.uint32)),
+        }
     runtime = _partner_module(partner)
     return {
         "query_ids": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
@@ -10614,7 +10632,7 @@ def fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
         raise ValueError("radius must be non-negative")
     if threshold < 0:
         raise ValueError("threshold must be non-negative")
-    runtime = _partner_module(partner)
+    runtime = _numba_runtime_for_point_columns() if partner == "numba" else _partner_module(partner)
     query_count = _column_length(query_point_columns, "ids")
     output_reuse_authorized = output_columns is not None
     if output_columns is None:
