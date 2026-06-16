@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT))
 
 EPSILON = 1.0e-9
 DATASETS = ("tiny", "scaled")
+LOWERING_MODES = ("python_objects", "numpy_arrays")
 MODES = (
     "cpu_reference",
     "embree_prepared",
@@ -97,9 +98,9 @@ class ProbeGroup:
 @dataclass(frozen=True)
 class SegmentProbeContract:
     static_triangles_3d: tuple[object, ...]
-    segment_start_xyz: tuple[tuple[float, float, float], ...]
-    segment_end_xyz: tuple[tuple[float, float, float], ...]
-    segment_group_offsets: tuple[int, ...]
+    segment_start_xyz: object
+    segment_end_xyz: object
+    segment_group_offsets: object
     groups: tuple[ProbeGroup, ...]
     probe_points_per_group: int
     lowering_policy: str
@@ -430,10 +431,10 @@ def _triangle2_to_triangle3(triangle: Triangle2):
     )
 
 
-def _sample_link_probe_points(link: LinkMesh2D, pose: Pose2D) -> tuple[Point2, ...]:
+def _link_probe_local_points(link: LinkMesh2D) -> tuple[tuple[float, float], ...]:
     half_w = link.width / 2.0
     half_h = link.height / 2.0
-    local_points = (
+    return (
         (link.local_center_x, link.local_center_y),
         (link.local_center_x - half_w, link.local_center_y - half_h),
         (link.local_center_x + half_w, link.local_center_y - half_h),
@@ -444,11 +445,24 @@ def _sample_link_probe_points(link: LinkMesh2D, pose: Pose2D) -> tuple[Point2, .
         (link.local_center_x, link.local_center_y + half_h),
         (link.local_center_x - half_w, link.local_center_y),
     )
+
+
+def _sample_link_probe_points(link: LinkMesh2D, pose: Pose2D) -> tuple[Point2, ...]:
+    local_points = _link_probe_local_points(link)
     return tuple(_transform_point(x, y, pose) for x, y in local_points)
 
 
-def build_segment_probe_contract(case: RobotCollisionCase) -> SegmentProbeContract:
+def build_segment_probe_contract(
+    case: RobotCollisionCase,
+    *,
+    lowering_mode: str = "python_objects",
+    include_group_metadata: bool = True,
+) -> SegmentProbeContract:
     """Lower app geometry to the Goal2481 app-agnostic segment-probe contract."""
+    if lowering_mode not in LOWERING_MODES:
+        raise ValueError(f"lowering_mode must be one of: {', '.join(LOWERING_MODES)}")
+    if lowering_mode == "numpy_arrays":
+        return _build_segment_probe_contract_numpy_arrays(case, include_group_metadata=include_group_metadata)
     starts: list[tuple[float, float, float]] = []
     ends: list[tuple[float, float, float]] = []
     offsets = [0]
@@ -475,6 +489,72 @@ def build_segment_probe_contract(case: RobotCollisionCase) -> SegmentProbeContra
             "center_corners_and_edge_midpoints_per_pose_link"
         ),
     )
+
+
+def _build_segment_probe_contract_numpy_arrays(
+    case: RobotCollisionCase,
+    *,
+    include_group_metadata: bool,
+) -> SegmentProbeContract:
+    import numpy as np
+
+    pose_count = len(case.poses)
+    link_count = len(case.links)
+    if pose_count < 1 or link_count < 1:
+        raise ValueError("robot collision case must contain at least one pose and one link")
+    probe_points_per_group = len(_link_probe_local_points(case.links[0]))
+    if any(len(_link_probe_local_points(link)) != probe_points_per_group for link in case.links):
+        raise ValueError("all links must use the same probe-point count for numpy lowering")
+
+    base_x = np.asarray([pose.base_x for pose in case.poses], dtype=np.float64)
+    base_y = np.asarray([pose.base_y for pose in case.poses], dtype=np.float64)
+    theta = np.radians(np.asarray([pose.theta_degrees for pose in case.poses], dtype=np.float64))
+    cos_t = np.cos(theta)
+    sin_t = np.sin(theta)
+    group_count = pose_count * link_count
+    segment_count = group_count * probe_points_per_group
+    starts = np.empty((segment_count, 3), dtype=np.float64)
+    ends = np.empty((segment_count, 3), dtype=np.float64)
+    starts_view = starts.reshape(pose_count, link_count, probe_points_per_group, 3)
+    ends_view = ends.reshape(pose_count, link_count, probe_points_per_group, 3)
+    for link_index, link in enumerate(case.links):
+        local = np.asarray(_link_probe_local_points(link), dtype=np.float64)
+        local_x = local[:, 0][None, :]
+        local_y = local[:, 1][None, :]
+        world_x = base_x[:, None] + local_x * cos_t[:, None] - local_y * sin_t[:, None]
+        world_y = base_y[:, None] + local_x * sin_t[:, None] + local_y * cos_t[:, None]
+        starts_view[:, link_index, :, 0] = world_x
+        starts_view[:, link_index, :, 1] = world_y
+        starts_view[:, link_index, :, 2] = PROBE_Z_START
+        ends_view[:, link_index, :, 0] = world_x
+        ends_view[:, link_index, :, 1] = world_y
+        ends_view[:, link_index, :, 2] = PROBE_Z_END
+    group_offsets = np.arange(0, segment_count + 1, probe_points_per_group, dtype=np.uint32)
+    groups = (
+        tuple(
+            ProbeGroup(pose.pose_id, pose.label, link.link_id, link.name)
+            for pose in case.poses
+            for link in case.links
+        )
+        if include_group_metadata
+        else ()
+    )
+    return SegmentProbeContract(
+        static_triangles_3d=tuple(_triangle2_to_triangle3(triangle) for triangle in case.obstacle_triangles),
+        segment_start_xyz=starts,
+        segment_end_xyz=ends,
+        segment_group_offsets=group_offsets,
+        groups=groups,
+        probe_points_per_group=probe_points_per_group,
+        lowering_policy=(
+            "numpy_vectorized_sampled_link_points_to_vertical_finite_segments_3d;"
+            "center_corners_and_edge_midpoints_per_pose_link"
+        ),
+    )
+
+
+def _segment_probe_group_count(contract: SegmentProbeContract) -> int:
+    return len(contract.segment_group_offsets) - 1
 
 
 def _probe_reference_flags(contract: SegmentProbeContract) -> list[int]:
@@ -785,9 +865,13 @@ def run_prepared_reuse_probe(
     reuse_native_device_query_count: bool = False,
     validate_probe_reference: bool = True,
     summary_only_runs: bool = False,
+    lowering_mode: str = "python_objects",
+    materialize_group_metadata: bool | None = None,
 ) -> dict[str, object]:
     if backend not in PREPARED_BACKENDS:
         raise ValueError(f"backend must be one of: {', '.join(PREPARED_BACKENDS)}")
+    if lowering_mode not in LOWERING_MODES:
+        raise ValueError(f"lowering_mode must be one of: {', '.join(LOWERING_MODES)}")
     reuse_choices = [
         bool(reuse_query_buffers),
         bool(reuse_native_device_query_buffers),
@@ -809,7 +893,12 @@ def run_prepared_reuse_probe(
         link_count=link_count,
     )
     lowering_start = time.perf_counter()
-    contract = build_segment_probe_contract(case)
+    include_group_metadata = (not summary_only_runs) if materialize_group_metadata is None else bool(materialize_group_metadata)
+    contract = build_segment_probe_contract(
+        case,
+        lowering_mode=lowering_mode,
+        include_group_metadata=include_group_metadata,
+    )
     app_lowering_seconds = time.perf_counter() - lowering_start
     probe_reference_seconds = None
     probe_reference_flags = None
@@ -1021,7 +1110,7 @@ def run_prepared_reuse_probe(
             "case_shape": {
                 "pose_count": len(case.poses),
                 "link_count": len(case.links),
-                "group_count": len(contract.groups),
+                "group_count": _segment_probe_group_count(contract),
                 "static_obstacle_triangle_count": len(contract.static_triangles_3d),
                 "segment_count": len(contract.segment_start_xyz),
                 "probe_points_per_group": contract.probe_points_per_group,
@@ -1030,6 +1119,8 @@ def run_prepared_reuse_probe(
             "probe_reference_compact_link_flags": probe_reference_flags,
             "probe_reference_signature": None if probe_reference_flags is None else _signature(probe_reference_flags),
             "lowering_policy": contract.lowering_policy,
+            "lowering_mode": lowering_mode,
+            "group_metadata_materialized": bool(contract.groups),
             "reuse_metadata": reuse_metadata,
             "benchmark_timing_sec": benchmark_timing_sec,
             "run_details_suppressed": bool(summary_only_runs),
@@ -1204,6 +1295,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--link-count", type=int, default=2)
     parser.add_argument("--repeats", type=int, default=DEFAULT_REPEAT_COUNT)
     parser.add_argument("--warmup", type=int, default=DEFAULT_WARMUP_COUNT)
+    parser.add_argument("--lowering-mode", choices=LOWERING_MODES, default="python_objects")
     parser.add_argument("--matrix", action="store_true")
     parser.add_argument("--final-matrix", action="store_true")
     parser.add_argument("--skip-optix", action="store_true")
@@ -1223,6 +1315,11 @@ def main(argv: list[str] | None = None) -> int:
             "Suppress per-repeat prepared run details for high-repeat hot-path probes; "
             "run_summary and tail_medians remain populated."
         ),
+    )
+    parser.add_argument(
+        "--skip-group-metadata",
+        action="store_true",
+        help="Skip app-level ProbeGroup metadata materialization for summary/timing prepared probes.",
     )
     parser.add_argument("--json-out", default=None)
     args = parser.parse_args(argv)
@@ -1250,6 +1347,8 @@ def main(argv: list[str] | None = None) -> int:
             reuse_native_device_query_buffers=True,
             validate_probe_reference=not args.no_probe_reference,
             summary_only_runs=args.summary_only_runs,
+            lowering_mode=args.lowering_mode,
+            materialize_group_metadata=not args.skip_group_metadata,
         )
     elif args.mode == "optix_prepared_device_count":
         payload = run_prepared_reuse_probe(
@@ -1263,6 +1362,8 @@ def main(argv: list[str] | None = None) -> int:
             reuse_native_device_query_count=True,
             validate_probe_reference=not args.no_probe_reference,
             summary_only_runs=args.summary_only_runs,
+            lowering_mode=args.lowering_mode,
+            materialize_group_metadata=not args.skip_group_metadata,
         )
     elif args.mode.endswith("_prepared_buffers") or (args.mode.endswith("_prepared") and args.repeats != 1):
         reuse_query_buffers = args.mode.endswith("_prepared_buffers")
@@ -1277,6 +1378,8 @@ def main(argv: list[str] | None = None) -> int:
             reuse_query_buffers=reuse_query_buffers,
             validate_probe_reference=not args.no_probe_reference,
             summary_only_runs=args.summary_only_runs,
+            lowering_mode=args.lowering_mode,
+            materialize_group_metadata=not args.skip_group_metadata,
         )
     else:
         payload = run_robot_collision_benchmark(

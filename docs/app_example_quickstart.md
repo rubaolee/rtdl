@@ -47,7 +47,7 @@ What this does not show:
 | ANN candidate app | `examples/current/apps/ml/rtdl_ann_candidate_app.py` | KNN over a Python-selected candidate subset | full ANN index/ranking speedup |
 | Outlier app | `examples/current/apps/ml/rtdl_outlier_detection_app.py` | fixed-radius density rows or scalar density count | production anomaly system |
 | DBSCAN app | `examples/current/apps/ml/rtdl_dbscan_clustering_app.py` | fixed-radius core-count/core-flag phases and grouped-stream component signatures | automatic or broad full cluster expansion speedup |
-| Robot screening app | `examples/current/apps/robotics/rtdl_robot_collision_screening_app.py` | ray/triangle any-hit pose flags/counts | whole robot-planning speedup |
+| Robot screening app | `examples/current/apps/robotics/rtdl_robot_collision_screening_app.py` | ray/triangle any-hit pose flags/counts; benchmark route uses grouped-segment any-hit with NumPy lowering | whole robot-planning speedup |
 | Barnes-Hut app | `examples/current/apps/simulation/rtdl_barnes_hut_force_app.py` | node-candidate discovery or node-coverage decision | force-vector/opening-rule speedup |
 | DB analytics app | `examples/current/apps/analytics/rtdl_database_analytics_app.py` | bounded DB-style compact summaries | SQL engine or DBMS behavior |
 | Graph analytics app | `examples/current/apps/analytics/rtdl_graph_analytics_app.py` | bounded graph rows and native summaries | graph database/distributed analytics |

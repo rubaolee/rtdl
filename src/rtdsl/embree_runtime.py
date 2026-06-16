@@ -2522,6 +2522,9 @@ def _pack_static_triangles_3d(triangles) -> PackedTriangles:
 
 
 def _pack_segments_3d_from_endpoints(segment_start_xyz, segment_end_xyz) -> tuple[object, int]:
+    fast_packed = _try_pack_segments_3d_numpy_endpoint_arrays(segment_start_xyz, segment_end_xyz)
+    if fast_packed is not None:
+        return fast_packed
     starts = _coerce_xyz_triplets("segment_start_xyz", segment_start_xyz)
     ends = _coerce_xyz_triplets("segment_end_xyz", segment_end_xyz)
     if len(starts) != len(ends):
@@ -2538,7 +2541,61 @@ def _pack_segments_3d_from_endpoints(segment_start_xyz, segment_end_xyz) -> tupl
     return array, len(records)
 
 
+def _try_pack_segments_3d_numpy_endpoint_arrays(segment_start_xyz, segment_end_xyz) -> tuple[object, int] | None:
+    try:
+        import numpy as _np
+    except ImportError:  # pragma: no cover
+        return None
+
+    if not isinstance(segment_start_xyz, _np.ndarray) or not isinstance(segment_end_xyz, _np.ndarray):
+        return None
+    starts = _np.asarray(segment_start_xyz, dtype=_np.float64)
+    ends = _np.asarray(segment_end_xyz, dtype=_np.float64)
+    if starts.ndim != 2 or starts.shape[1] != 3:
+        raise ValueError("segment_start_xyz must be a two-dimensional array with shape (N, 3)")
+    if ends.ndim != 2 or ends.shape[1] != 3:
+        raise ValueError("segment_end_xyz must be a two-dimensional array with shape (N, 3)")
+    if starts.shape[0] != ends.shape[0]:
+        raise ValueError("segment_start_xyz and segment_end_xyz must have the same length")
+    segment_count = int(starts.shape[0])
+    if segment_count > 0xFFFFFFFF:
+        raise ValueError("segment count must fit uint32")
+    if segment_count and (not bool(_np.isfinite(starts).all()) or not bool(_np.isfinite(ends).all())):
+        raise ValueError("segment endpoint coordinates must be finite")
+    deltas = ends - starts
+    if segment_count and bool(((deltas[:, 0] == 0.0) & (deltas[:, 1] == 0.0) & (deltas[:, 2] == 0.0)).any()):
+        raise ValueError("segments must have non-zero length")
+
+    dtype = _np.dtype(
+        [
+            ("id", _np.uint32),
+            ("x0", _np.float64),
+            ("y0", _np.float64),
+            ("z0", _np.float64),
+            ("x1", _np.float64),
+            ("y1", _np.float64),
+            ("z1", _np.float64),
+        ],
+        align=False,
+    )
+    records = _np.empty(segment_count, dtype=dtype)
+    records["id"] = _np.arange(segment_count, dtype=_np.uint32)
+    records["x0"] = starts[:, 0]
+    records["y0"] = starts[:, 1]
+    records["z0"] = starts[:, 2]
+    records["x1"] = ends[:, 0]
+    records["y1"] = ends[:, 1]
+    records["z1"] = ends[:, 2]
+    pointer = records.ctypes.data_as(ctypes.POINTER(_RtdlSegment3D))
+    pointer._rtdl_numpy_owner = records
+    pointer._rtdl_buffer_kind = "numpy_structured_host_rtdl_segment3d_array"
+    return pointer, segment_count
+
+
 def _pack_group_offsets_u32(segment_group_offsets, segment_count: int) -> tuple[object, int]:
+    fast_packed = _try_pack_group_offsets_u32_numpy_array(segment_group_offsets, segment_count)
+    if fast_packed is not None:
+        return fast_packed
     if isinstance(segment_group_offsets, (str, bytes)) or not isinstance(segment_group_offsets, Iterable):
         raise ValueError("segment_group_offsets must be an iterable of offsets")
     offsets = [int(value) for value in segment_group_offsets]
@@ -2555,6 +2612,42 @@ def _pack_group_offsets_u32(segment_group_offsets, segment_count: int) -> tuple[
             raise ValueError("segment_group_offsets must be monotonic")
     array = (ctypes.c_uint32 * len(offsets))(*offsets)
     return array, len(offsets) - 1
+
+
+def _try_pack_group_offsets_u32_numpy_array(segment_group_offsets, segment_count: int) -> tuple[object, int] | None:
+    try:
+        import numpy as _np
+    except ImportError:  # pragma: no cover
+        return None
+
+    if not isinstance(segment_group_offsets, _np.ndarray):
+        return None
+    raw = _np.asarray(segment_group_offsets)
+    if raw.ndim != 1:
+        raise ValueError("segment_group_offsets must be one-dimensional")
+    if raw.size == 0:
+        raise ValueError("segment_group_offsets must contain at least one offset")
+    if raw.dtype.kind not in "iu":
+        raise ValueError("segment_group_offsets entries must fit uint32")
+    max_u32 = _np.iinfo(_np.uint32).max
+    if raw.dtype.kind == "i" and raw.size and bool(((raw < 0) | (raw > max_u32)).any()):
+        raise ValueError("segment_group_offsets entries must fit uint32")
+    if raw.dtype.kind == "u" and raw.size and bool((raw > max_u32).any()):
+        raise ValueError("segment_group_offsets entries must fit uint32")
+    try:
+        offsets = _np.ascontiguousarray(raw, dtype=_np.uint32)
+    except OverflowError as exc:
+        raise ValueError("segment_group_offsets entries must fit uint32") from exc
+    if int(offsets[0]) != 0:
+        raise ValueError("segment_group_offsets[0] must be 0")
+    if int(offsets[-1]) != int(segment_count):
+        raise ValueError("final segment_group_offsets entry must equal the segment count")
+    if offsets.size > 1 and bool((offsets[1:] < offsets[:-1]).any()):
+        raise ValueError("segment_group_offsets must be monotonic")
+    pointer = offsets.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32))
+    pointer._rtdl_numpy_owner = offsets
+    pointer._rtdl_buffer_kind = "numpy_host_uint32_offsets"
+    return pointer, int(offsets.size) - 1
 
 
 def _pack_uint32_values(values, expected_count: int, *, label: str):
@@ -2652,8 +2745,16 @@ class PreparedGroupedSegmentQuery3D:
             "contract": self.contract,
             "segment_count": int(self.segment_count),
             "group_count": int(self.group_count),
-            "query_buffer_kind": "ctypes_host_rtdl_segment3d_array",
-            "group_offsets_buffer_kind": "ctypes_host_uint32_offsets",
+            "query_buffer_kind": getattr(
+                self.segments,
+                "_rtdl_buffer_kind",
+                "ctypes_host_rtdl_segment3d_array",
+            ),
+            "group_offsets_buffer_kind": getattr(
+                self.group_offsets,
+                "_rtdl_buffer_kind",
+                "ctypes_host_uint32_offsets",
+            ),
             "output_buffer_kind": "ctypes_host_uint8_group_flags",
             "copy_boundary": "python_ctypes_host_buffer",
             "device": "host",

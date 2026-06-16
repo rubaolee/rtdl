@@ -93,7 +93,7 @@ v2.14 evidence:
 | Hausdorff / X-HD | `hausdorff_xhd_current_optix_threshold` | primitive-first OptiX path; CuPy/Numba are comparison/reference lanes | NVIDIA pod for OptiX timing |
 | Spatial RayJoin | `spatial_rayjoin_pip_count_current_prepared_optix` | contract-split RayJoin-style path; scalar/count paths are stronger than full paper reproduction | NVIDIA pod plus public-CDB fixture for representative route |
 | RT-DBSCAN | `rt_dbscan_optix_grouped_stream_component_signature` | Generic OptiX fixed-radius/grouped-stream component labels plus explicit CuPy/Numba compact component-signature continuation; full rows remain a slower output contract | CUDA pod with CuPy and Numba |
-| Robot collision | `robot_collision_optix_prepared_device_count` | primitive-only prepared static-scene collision count path | NVIDIA pod for OptiX timing |
+| Robot collision | `robot_collision_prepared_grouped_segment_any_hit_numpy_lowering` | primitive-only prepared static-scene grouped-segment any-hit path; Goal4446 removes the major Python query-lowering debt while preserving the M31 same-contract backend comparison | NVIDIA pod for OptiX/Embree timing |
 | Contact manifold | `contact_manifold_optix_native_collect_k` | bounded collect/witness primitive path; no manifold-native ABI | NVIDIA pod for OptiX timing |
 | RayDB-style | `raydb_style_optix_count_primitive_first` | primitive-first grouped count path; partner rows only for unfused continuations | NVIDIA pod; CUDA pod for CuPy/Numba partner comparison |
 | Barnes-Hut | `barnes_hut_mixed_explicit_cpu_numba_or_optix_numba` | fused CPU/Numba is current fastest measured no-C++ app route; prepared RTDL/OptiX+Numba remains device-column RT evidence; CuPy remains same-contract GPU comparison | NVIDIA/CUDA pod for OptiX; Numba CPU for fastest measured app route |
@@ -115,6 +115,7 @@ v2.14 evidence:
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)
 - [Goal4444 Triangle Numba direct-binary summary refresh](../reports/goal4444_v3_0_m48_triangle_numba_direct_binary_summary_2026-06-16.md)
 - [Goal4445 DBSCAN compact component signature](../reports/goal4445_v3_0_m49_dbscan_component_signature_2026-06-16.md)
+- [Goal4446 Robot Collision NumPy lowering](../reports/goal4446_v3_0_m50_robot_numpy_lowering_2026-06-16.md)
 
 ## Reading Rules
 

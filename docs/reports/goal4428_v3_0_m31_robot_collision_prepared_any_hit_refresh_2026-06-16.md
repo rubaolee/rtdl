@@ -8,6 +8,8 @@ Evidence:
 
 Status: complete. M31 refreshes the robot-collision row as a primitive-first benchmark over the same generic prepared grouped-segment any-hit contract. It intentionally does not mix the OptiX-only native device-buffer/count paths into the Embree-vs-OptiX table.
 
+Update: Goal4446/M50 keeps the same contract and replaces the Python-heavy query lowering with a NumPy vectorized lowering path, cutting prepared query descriptor construction by about 113x on the xlarge fixture. Use Goal4446 for current cold/setup wording.
+
 ## Contract
 
 Both backends run:

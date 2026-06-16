@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4444.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4446.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -50,7 +50,12 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "transitional Numba CPU-contract builder with a direct binary vectorized "
     "summary path before Numba device upload. It materially reduces the no-C++ "
     "Numba staging debt while preserving CuPy as the current large-scale "
-    "performance route and keeping scalar triangle-count wording primitive-first."
+    "performance route and keeping scalar triangle-count wording primitive-first. "
+    "Goal4445 adds a compact RT-DBSCAN component-signature output path that "
+    "avoids per-point Python cluster rows when the user only needs the cluster "
+    "size/noise/core summary. Goal4446 refreshes robot-collision setup guidance "
+    "by replacing the Python-heavy grouped-segment query lowering with NumPy "
+    "vectorized endpoint arrays for large prepared probes."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -404,14 +409,26 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
     CurrentBenchmarkRouteDecision(
         app="robot_collision",
         decision_kind="no_partner_needed",
-        current_reader_decision="Use prepared RTDL/OptiX any-hit collision flags; no partner continuation is needed.",
-        primary_route="prepared RTDL/OptiX any-hit flag primitive",
+        current_reader_decision=(
+            "Use the prepared grouped-segment any-hit primitive. For large prepared "
+            "timing or summary probes, use Goal4446's NumPy vectorized query lowering; "
+            "no partner continuation is needed on the promoted path."
+        ),
+        primary_route="prepared grouped-segment any-hit primitive with NumPy vectorized query lowering",
         partner_policy="none",
-        primitive_contract="prepared any-hit collision flag and scalar count",
-        user_choice_guidance="Use a custom partner only for app-owned postprocessing outside the promoted flag contract.",
+        primitive_contract="PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+        user_choice_guidance=(
+            "Use `lowering_mode=\"numpy_arrays\"` for large prepared probes to avoid "
+            "Python endpoint/ctypes materialization debt. Use a custom partner only "
+            "for app-owned postprocessing outside the promoted flag/count contract."
+        ),
         rejected_or_unpromoted_candidates=("custom partner flag-reduction route",),
-        next_runtime_action="preserve prepared device-buffer/scalar-count split and validate AMD functional parity later",
-        evidence_refs=("Goal2654", "Goal3567", "Goal3755", "Goal3757"),
+        next_runtime_action=(
+            "preserve the prepared-buffer and device-buffer/count split; do not turn "
+            "the sampled grouped-segment contract into robot-planner wording; validate "
+            "AMD functional parity later"
+        ),
+        evidence_refs=("Goal2654", "Goal3567", "Goal3755", "Goal3757", "Goal4428", "Goal4446"),
         pod_needed_next=False,
     ),
     CurrentBenchmarkRouteDecision(

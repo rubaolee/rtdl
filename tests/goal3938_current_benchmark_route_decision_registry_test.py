@@ -16,7 +16,7 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_route_decisions()
         summary = rt.summarize_current_benchmark_route_decisions()
 
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4444.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4446.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
         self.assertEqual("accept", validation["status"])
         self.assertEqual((), validation["errors"])
         self.assertEqual(10, summary["app_count"])
@@ -113,6 +113,17 @@ class Goal3938CurrentBenchmarkRouteDecisionRegistryTest(unittest.TestCase):
                 for candidate in route["rejected_or_unpromoted_candidates"]
             )
         )
+
+    def test_robot_route_mentions_m50_numpy_lowering(self) -> None:
+        route = rt.explain_current_benchmark_route("robot_collision")
+
+        self.assertEqual("no_partner_needed", route["decision_kind"])
+        self.assertEqual("none", route["partner_policy"])
+        self.assertEqual("PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1", route["primitive_contract"])
+        self.assertIn("Goal4446", route["evidence_refs"])
+        self.assertIn("NumPy vectorized query lowering", route["current_reader_decision"])
+        self.assertIn('lowering_mode="numpy_arrays"', route["user_choice_guidance"])
+        self.assertFalse(route["automatic_partner_selection_authorized"])
 
     def test_unknown_app_fails_to_advisory_no_current_route(self) -> None:
         route = rt.explain_current_benchmark_route("new_app")

@@ -94,7 +94,7 @@ These are not partner-choice examples:
 | RTNN-style nearest-neighbor studies | Use exact native ranked-summary aggregate when comparing OptiX and Embree under the same float64 contract. Use `prepared_ranked_summary_graph_partner_bridge` when the purpose is resident graph replay plus same-stream partner reduction; M47 keeps CuPy and Numba both visible at 1M resident search / 65K query batch, with CuPy slightly faster and Numba near parity as the no-C++ Python-source reference. |
 | RayDB fused count/sum | Use the fused generic grouped-reduction primitive when it exactly answers the query. |
 | Triangle scalar answer | Use the generic graph relationship-count composition; do not turn it into a CuPy-vs-Numba choice. |
-| Robot collision, contact manifold, LibRTS-style spatial index | Current promoted paths are primitive-first or no-promoted-partner rows. Add partner code only as app-owned continuation with new same-contract evidence. |
+| Robot collision, contact manifold, LibRTS-style spatial index | Current promoted paths are primitive-first or no-promoted-partner rows. For robot collision, use Goal4446's NumPy vectorized lowering for large prepared grouped-segment queries before considering any custom partner. Add partner code only as app-owned continuation with new same-contract evidence. |
 
 ## Claim Boundary
 

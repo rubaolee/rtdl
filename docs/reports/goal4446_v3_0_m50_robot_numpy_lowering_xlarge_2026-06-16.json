@@ -1,0 +1,257 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "continuous_collision_claim_authorized": false,
+    "exact_solid_collision_claim_authorized": false,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "partner_continuation_required": false,
+    "primitive_first_no_partner_needed": true,
+    "public_speedup_claim_authorized": false,
+    "robot_planner_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparison": {
+    "all_flagged_group_counts_match_cross_backend": true,
+    "all_host_buffer_reuse_same_contract": true,
+    "all_primitive_first_no_partner": true,
+    "all_same_contract": true,
+    "all_signature_hashes_match_cross_backend": true,
+    "public_speedup_claim_authorized": false,
+    "same_contract_backend_pair": {
+      "comparison_scope": "internal_same_contract_prepared_grouped_segment_any_hit_refresh_not_public_speedup",
+      "embree_over_optix_total_run_median": 1.8886682052511368,
+      "embree_over_optix_traversal_median": 6.826271383982697,
+      "embree_total_run_median_sec": 1.152658548206091,
+      "embree_total_run_window_sec": 4.6106158047914505,
+      "embree_traversal_median_sec": 0.4172349875,
+      "optix_total_run_median_sec": 0.6103022992610931,
+      "optix_total_run_window_sec": 2.4563898891210556,
+      "optix_traversal_median_sec": 0.0611219455,
+      "same_case_shape": true,
+      "same_contract": true,
+      "same_flagged_group_counts": true,
+      "same_signature_hashes": true
+    }
+  },
+  "environment": {
+    "git_head": "34ea1b54beb4aaf4a84551bdbf2c95725bdcc1fd",
+    "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64"
+  },
+  "goal": "Goal4446 V3.0 M50 Robot Collision NumPy vectorized query lowering",
+  "parameters": {
+    "backends": [
+      "embree",
+      "optix"
+    ],
+    "dataset": "scaled",
+    "link_count": 4,
+    "lowering_mode": "numpy_arrays",
+    "obstacle_count": 8192,
+    "pose_count": 262144,
+    "reuse_query_buffers": true,
+    "skip_group_metadata": true,
+    "summary_only_runs": false,
+    "validate_probe_reference": false,
+    "warmup": 1
+  },
+  "planned_rows": [
+    {
+      "backend": "embree",
+      "dataset": "scaled",
+      "link_count": 4,
+      "lowering_mode": "numpy_arrays",
+      "materialize_group_metadata": false,
+      "obstacle_count": 8192,
+      "pose_count": 262144,
+      "repeat": 5,
+      "reuse_query_buffers": true,
+      "warmup": 1
+    },
+    {
+      "backend": "optix",
+      "dataset": "scaled",
+      "link_count": 4,
+      "lowering_mode": "numpy_arrays",
+      "materialize_group_metadata": false,
+      "obstacle_count": 8192,
+      "pose_count": 262144,
+      "repeat": 5,
+      "reuse_query_buffers": true,
+      "warmup": 1
+    }
+  ],
+  "rows": [
+    {
+      "all_run_signatures_identical": true,
+      "app_lowering_seconds": 2.783385492861271,
+      "backend": "embree",
+      "case_shape": {
+        "group_count": 1048576,
+        "link_count": 4,
+        "pose_count": 262144,
+        "probe_points_per_group": 9,
+        "segment_count": 9437184,
+        "static_obstacle_triangle_count": 16384
+      },
+      "claim_boundary": {
+        "continuous_collision_claim_authorized": false,
+        "exact_solid_collision_claim_authorized": false,
+        "native_engine_customization": false,
+        "partner_continuation_required": false,
+        "primitive_first_no_partner_needed": true,
+        "public_speedup_claim_authorized": false,
+        "robot_planner_claim_authorized": false
+      },
+      "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+      "dataset": "scaled",
+      "flagged_group_count_values": [
+        345374
+      ],
+      "group_count": 1048576,
+      "group_metadata_materialized": false,
+      "host_query_output_buffers_reused": true,
+      "link_count": 4,
+      "lowering_mode": "numpy_arrays",
+      "measured_run_count": 4,
+      "measured_signature_hashes": [
+        "72074ff2a580c123bba8474289995bd74132becfc085dbeaf0ec57738825a7b0"
+      ],
+      "mode": "embree_prepared_buffers",
+      "native_query_output_buffers_reused": false,
+      "phase_median_sec": {
+        "output_clear": 0.08303913101553917,
+        "output_postprocess": 0.12568428367376328,
+        "prepare_build": 0.011585526168346405,
+        "prepared_query_build": 0.4089837297797203,
+        "query_pack": 0.0,
+        "traversal": 0.4172349875
+      },
+      "phase_window_sec": {
+        "output_clear": 0.3320249393582344,
+        "output_postprocess": 0.5028284937143326,
+        "prepare_build": 0.04634210467338562,
+        "prepared_query_build": 1.6359349191188812,
+        "query_pack": 0.0,
+        "traversal": 1.669421394
+      },
+      "pose_count": 262144,
+      "prepared_query_descriptor": {
+        "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+        "copy_boundary": "python_ctypes_host_buffer",
+        "device": "host",
+        "group_count": 1048576,
+        "group_offsets_buffer_kind": "numpy_host_uint32_offsets",
+        "host_output_buffer_reused": true,
+        "host_query_buffers_reused": true,
+        "native_device_query_buffers_reused": false,
+        "output_buffer_kind": "ctypes_host_uint8_group_flags",
+        "owner": "python_runtime_wrapper",
+        "public_speedup_claim_authorized": false,
+        "query_buffer_kind": "numpy_structured_host_rtdl_segment3d_array",
+        "segment_count": 9437184,
+        "true_zero_copy_authorized": false
+      },
+      "prepared_query_run_indices_strictly_increase": true,
+      "prepared_run_indices_strictly_increase": true,
+      "prepared_scene_reused": true,
+      "probe_reference_flagged_group_count": null,
+      "probe_reference_validated": false,
+      "query_input_sequences_reused": true,
+      "repeat": 5,
+      "segment_count": 9437184,
+      "static_obstacle_triangle_count": 16384,
+      "tail_total_run_median_sec": 1.152658548206091,
+      "tail_total_run_window_sec": 4.6106158047914505,
+      "warmup": 1
+    },
+    {
+      "all_run_signatures_identical": true,
+      "app_lowering_seconds": 0.5348233953118324,
+      "backend": "optix",
+      "case_shape": {
+        "group_count": 1048576,
+        "link_count": 4,
+        "pose_count": 262144,
+        "probe_points_per_group": 9,
+        "segment_count": 9437184,
+        "static_obstacle_triangle_count": 16384
+      },
+      "claim_boundary": {
+        "continuous_collision_claim_authorized": false,
+        "exact_solid_collision_claim_authorized": false,
+        "native_engine_customization": false,
+        "partner_continuation_required": false,
+        "primitive_first_no_partner_needed": true,
+        "public_speedup_claim_authorized": false,
+        "robot_planner_claim_authorized": false
+      },
+      "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+      "dataset": "scaled",
+      "flagged_group_count_values": [
+        345374
+      ],
+      "group_count": 1048576,
+      "group_metadata_materialized": false,
+      "host_query_output_buffers_reused": true,
+      "link_count": 4,
+      "lowering_mode": "numpy_arrays",
+      "measured_run_count": 4,
+      "measured_signature_hashes": [
+        "72074ff2a580c123bba8474289995bd74132becfc085dbeaf0ec57738825a7b0"
+      ],
+      "mode": "optix_prepared_buffers",
+      "native_query_output_buffers_reused": false,
+      "phase_median_sec": {
+        "output_clear": 0.0836666151881218,
+        "output_postprocess": 0.1263059675693512,
+        "prepare_build": 0.08135896176099777,
+        "prepared_query_build": 0.4262213334441185,
+        "query_pack": 0.0,
+        "traversal": 0.0611219455
+      },
+      "phase_window_sec": {
+        "output_clear": 0.3352523222565651,
+        "output_postprocess": 0.5084932893514633,
+        "prepare_build": 0.3254358470439911,
+        "prepared_query_build": 1.704885333776474,
+        "query_pack": 0.0,
+        "traversal": 0.248085811
+      },
+      "pose_count": 262144,
+      "prepared_query_descriptor": {
+        "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+        "copy_boundary": "python_ctypes_host_buffer",
+        "device": "host",
+        "group_count": 1048576,
+        "group_offsets_buffer_kind": "numpy_host_uint32_offsets",
+        "host_output_buffer_reused": true,
+        "host_query_buffers_reused": true,
+        "native_device_query_buffers_reused": false,
+        "output_buffer_kind": "ctypes_host_uint8_group_flags",
+        "owner": "python_runtime_wrapper",
+        "public_speedup_claim_authorized": false,
+        "query_buffer_kind": "numpy_structured_host_rtdl_segment3d_array",
+        "segment_count": 9437184,
+        "true_zero_copy_authorized": false
+      },
+      "prepared_query_run_indices_strictly_increase": true,
+      "prepared_run_indices_strictly_increase": true,
+      "prepared_scene_reused": true,
+      "probe_reference_flagged_group_count": null,
+      "probe_reference_validated": false,
+      "query_input_sequences_reused": true,
+      "repeat": 5,
+      "segment_count": 9437184,
+      "static_obstacle_triangle_count": 16384,
+      "tail_total_run_median_sec": 0.6103022992610931,
+      "tail_total_run_window_sec": 2.4563898891210556,
+      "warmup": 1
+    }
+  ],
+  "status": "ok",
+  "version": "rtdl.v3_0.robot_collision_numpy_lowering.m50"
+}

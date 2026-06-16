@@ -20,6 +20,7 @@ DEFAULT_REPEATS = {
 }
 
 EXPECTED_CONTRACT = "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1"
+LOWERING_MODES = ("python_objects", "numpy_arrays")
 
 
 def main() -> int:
@@ -31,6 +32,7 @@ def main() -> int:
     parser.add_argument("--obstacle-count", type=int, default=8_192)
     parser.add_argument("--link-count", type=int, default=4)
     parser.add_argument("--backends", default="embree,optix")
+    parser.add_argument("--lowering-mode", choices=LOWERING_MODES, default="python_objects")
     parser.add_argument("--warmup", type=int, default=1)
     parser.add_argument(
         "--repeat-overrides",
@@ -41,6 +43,12 @@ def main() -> int:
         "--validate-probe-reference",
         action="store_true",
         help="Run the exact CPU probe reference. Intended only for small diagnostics.",
+    )
+    parser.add_argument("--summary-only-runs", action="store_true")
+    parser.add_argument(
+        "--skip-group-metadata",
+        action="store_true",
+        help="Do not materialize app-level ProbeGroup metadata during lowering.",
     )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
@@ -68,6 +76,8 @@ def main() -> int:
             "warmup": int(args.warmup),
             "repeat": int(repeat_overrides.get(backend, DEFAULT_REPEATS[backend])),
             "reuse_query_buffers": True,
+            "lowering_mode": args.lowering_mode,
+            "materialize_group_metadata": not bool(args.skip_group_metadata),
         }
         for backend in backends
     )
@@ -105,7 +115,9 @@ def main() -> int:
             warmup=int(planned["warmup"]),
             reuse_query_buffers=True,
             validate_probe_reference=bool(args.validate_probe_reference),
-            summary_only_runs=False,
+            summary_only_runs=bool(args.summary_only_runs),
+            lowering_mode=str(args.lowering_mode),
+            materialize_group_metadata=not bool(args.skip_group_metadata),
         )
         rows.append(_compact_row(result))
 
@@ -142,8 +154,16 @@ def _validate_args(args: argparse.Namespace) -> None:
 
 def _base_payload(*, args: argparse.Namespace, backends: tuple[str, ...]) -> dict[str, object]:
     return {
-        "version": "rtdl.v3_0.robot_collision_prepared_any_hit_refresh.m31",
-        "goal": "Goal4428 V3.0 M31 Robot Collision prepared grouped-segment any-hit refresh",
+        "version": (
+            "rtdl.v3_0.robot_collision_numpy_lowering.m50"
+            if args.lowering_mode == "numpy_arrays"
+            else "rtdl.v3_0.robot_collision_prepared_any_hit_refresh.m31"
+        ),
+        "goal": (
+            "Goal4446 V3.0 M50 Robot Collision NumPy vectorized query lowering"
+            if args.lowering_mode == "numpy_arrays"
+            else "Goal4428 V3.0 M31 Robot Collision prepared grouped-segment any-hit refresh"
+        ),
         "parameters": {
             "dataset": args.dataset,
             "pose_count": int(args.pose_count),
@@ -153,6 +173,9 @@ def _base_payload(*, args: argparse.Namespace, backends: tuple[str, ...]) -> dic
             "warmup": int(args.warmup),
             "validate_probe_reference": bool(args.validate_probe_reference),
             "reuse_query_buffers": True,
+            "lowering_mode": str(args.lowering_mode),
+            "summary_only_runs": bool(args.summary_only_runs),
+            "skip_group_metadata": bool(args.skip_group_metadata),
         },
         "environment": _environment_snapshot(),
         "claim_boundary": {
@@ -225,6 +248,8 @@ def _compact_row(result: dict[str, object]) -> dict[str, object]:
         ),
         "prepared_query_descriptor": reuse["prepared_query_descriptor"],
         "app_lowering_seconds": float(result["app_lowering_seconds"]),
+        "lowering_mode": result.get("lowering_mode"),
+        "group_metadata_materialized": result.get("group_metadata_materialized"),
         "claim_boundary": {
             "primitive_first_no_partner_needed": True,
             "partner_continuation_required": False,
@@ -242,6 +267,8 @@ def _compare_rows(rows: list[dict[str, object]]) -> dict[str, object]:
     all_same_contract = all(row["contract"] == EXPECTED_CONTRACT for row in rows)
     signature_sets = {tuple(row["measured_signature_hashes"]) for row in rows}
     flagged_count_sets = {tuple(row["flagged_group_count_values"]) for row in rows}
+    has_signature_rows = bool(rows) and all(bool(row["measured_signature_hashes"]) for row in rows)
+    has_flagged_count_rows = bool(rows) and all(bool(row["flagged_group_count_values"]) for row in rows)
     pair = None
     optix = by_backend.get("optix")
     embree = by_backend.get("embree")
@@ -270,8 +297,8 @@ def _compare_rows(rows: list[dict[str, object]]) -> dict[str, object]:
         }
     return {
         "all_same_contract": all_same_contract,
-        "all_signature_hashes_match_cross_backend": len(signature_sets) == 1,
-        "all_flagged_group_counts_match_cross_backend": len(flagged_count_sets) == 1,
+        "all_signature_hashes_match_cross_backend": has_signature_rows and len(signature_sets) == 1,
+        "all_flagged_group_counts_match_cross_backend": has_flagged_count_rows and len(flagged_count_sets) == 1,
         "all_primitive_first_no_partner": all(
             not bool(row["claim_boundary"]["partner_continuation_required"]) for row in rows
         ),
