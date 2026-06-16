@@ -86,3 +86,70 @@ void rtdl_cuda_pack_ray3d_device_columns_precompiled(
     rtdl_cuda_check(cudaGetLastError(), "launching 3-D ray-column pack kernel");
     rtdl_cuda_check(cudaDeviceSynchronize(), "synchronizing 3-D ray-column pack kernel");
 }
+
+static __global__ void rtdl_pack_ray3d_xz_constant_y_direction_kernel(
+        const uint32_t* ids,
+        const double* ox,
+        const double* oz,
+        double oy,
+        double dx,
+        double dy,
+        double dz,
+        double tmax,
+        RtdlCudaGpuRay3DHost* rays,
+        uint32_t ray_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= ray_count) return;
+    const float fdx = static_cast<float>(dx);
+    const float fdy = static_cast<float>(dy);
+    const float fdz = static_cast<float>(dz);
+    const float len = sqrtf(fdx * fdx + fdy * fdy + fdz * fdz);
+    RtdlCudaGpuRay3DHost ray;
+    ray.ox = static_cast<float>(ox[idx]);
+    ray.oy = static_cast<float>(oy);
+    ray.oz = static_cast<float>(oz[idx]);
+    if (len > 1.0e-10f) {
+        ray.dx = fdx / len;
+        ray.dy = fdy / len;
+        ray.dz = fdz / len;
+        ray.tmax = static_cast<float>(tmax) * len;
+    } else {
+        ray.dx = 0.0f;
+        ray.dy = 0.0f;
+        ray.dz = 0.0f;
+        ray.tmax = 0.0f;
+    }
+    ray.id = ids[idx];
+    rays[idx] = ray;
+}
+
+void rtdl_cuda_pack_ray3d_xz_constant_y_direction_precompiled(
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oz,
+        double ray_oy,
+        double ray_dx,
+        double ray_dy,
+        double ray_dz,
+        double ray_tmax,
+        void* rays_out,
+        uint32_t ray_count)
+{
+    if (ray_count == 0) return;
+    const unsigned block = 256;
+    const unsigned grid = (ray_count + block - 1u) / block;
+    rtdl_pack_ray3d_xz_constant_y_direction_kernel<<<grid, block>>>(
+        ray_ids,
+        ray_ox,
+        ray_oz,
+        ray_oy,
+        ray_dx,
+        ray_dy,
+        ray_dz,
+        ray_tmax,
+        static_cast<RtdlCudaGpuRay3DHost*>(rays_out),
+        ray_count);
+    rtdl_cuda_check(cudaGetLastError(), "launching compact 3-D ray-column pack kernel");
+    rtdl_cuda_check(cudaDeviceSynchronize(), "synchronizing compact 3-D ray-column pack kernel");
+}

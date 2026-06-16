@@ -14796,6 +14796,43 @@ static void pack_ray3d_device_columns_to_buffer(
         rc);
 }
 
+static void pack_ray3d_xz_constant_y_direction_to_buffer(
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oz,
+        double ray_oy,
+        double ray_dx,
+        double ray_dy,
+        double ray_dz,
+        double ray_tmax,
+        size_t ray_count,
+        CUdeviceptr d_rays)
+{
+    if (ray_count == 0) return;
+    if (!ray_ids || !ray_ox || !ray_oz)
+        throw std::runtime_error("compact partner device 3-D ray column pointers must not be null when ray_count is nonzero");
+    if (!std::isfinite(ray_oy) || !std::isfinite(ray_dx) || !std::isfinite(ray_dy) ||
+            !std::isfinite(ray_dz) || !std::isfinite(ray_tmax))
+        throw std::runtime_error("compact partner device 3-D ray constants must be finite");
+    if (!d_rays)
+        throw std::runtime_error("destination 3-D ray device buffer must not be null");
+    if (ray_count > std::numeric_limits<uint32_t>::max())
+        throw std::runtime_error("compact partner device 3-D ray column count exceeds uint32_t launch limit");
+
+    uint32_t rc = static_cast<uint32_t>(ray_count);
+    rtdl_cuda_pack_ray3d_xz_constant_y_direction_precompiled(
+        ray_ids,
+        ray_ox,
+        ray_oz,
+        ray_oy,
+        ray_dx,
+        ray_dy,
+        ray_dz,
+        ray_tmax,
+        reinterpret_cast<void*>(d_rays),
+        rc);
+}
+
 struct PreparedStaticTriangleScene3D {
     size_t triangle_count = 0;
     DevPtr d_triangles;
@@ -15008,6 +15045,39 @@ struct PreparedRayBatch3D {
             ray_ox,
             ray_oy,
             ray_oz,
+            ray_dx,
+            ray_dy,
+            ray_dz,
+            ray_tmax,
+            count,
+            d_rays.ptr);
+    }
+
+    PreparedRayBatch3D(
+            const uint32_t* ray_ids_in,
+            const double* ray_ox,
+            const double* ray_oz,
+            double ray_oy,
+            double ray_dx,
+            double ray_dy,
+            double ray_dz,
+            double ray_tmax,
+            size_t count)
+        : ray_count(count),
+          d_rays(sizeof(GpuRay3DHost) * count),
+          d_closest_hit_output(sizeof(GpuRayClosestHitRecord) * count)
+    {
+        if (count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("ray_count exceeds uint32 launch limit");
+        if (count == 0)
+            return;
+        if (!ray_ids_in || !ray_ox || !ray_oz)
+            throw std::runtime_error("compact device ray column pointers must not be null when ray_count is nonzero");
+        pack_ray3d_xz_constant_y_direction_to_buffer(
+            ray_ids_in,
+            ray_ox,
+            ray_oz,
+            ray_oy,
             ray_dx,
             ray_dy,
             ray_dz,
@@ -18148,6 +18218,29 @@ static PreparedRayBatch3D* prepare_ray_batch_3d_device_rays_optix(
         ray_ox,
         ray_oy,
         ray_oz,
+        ray_dx,
+        ray_dy,
+        ray_dz,
+        ray_tmax,
+        ray_count);
+}
+
+static PreparedRayBatch3D* prepare_ray_batch_3d_device_xz_constant_y_direction_optix(
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oz,
+        double ray_oy,
+        double ray_dx,
+        double ray_dy,
+        double ray_dz,
+        double ray_tmax,
+        size_t ray_count)
+{
+    return new PreparedRayBatch3D(
+        ray_ids,
+        ray_ox,
+        ray_oz,
+        ray_oy,
         ray_dx,
         ray_dy,
         ray_dz,

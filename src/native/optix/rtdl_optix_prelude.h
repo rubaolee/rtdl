@@ -77,6 +77,17 @@ void rtdl_cuda_pack_ray3d_device_columns_precompiled(
         const double* ray_tmax,
         void* rays_out,
         uint32_t ray_count);
+void rtdl_cuda_pack_ray3d_xz_constant_y_direction_precompiled(
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oz,
+        double ray_oy,
+        double ray_dx,
+        double ray_dy,
+        double ray_dz,
+        double ray_tmax,
+        void* rays_out,
+        uint32_t ray_count);
 
 #if defined(__has_include)
 #  if __has_include(<geos_c.h>)
@@ -1303,6 +1314,18 @@ int rtdl_optix_ray_batch_3d_create_device_rays(
          const double* ray_dy,
          const double* ray_dz,
          const double* ray_tmax,
+         size_t ray_count,
+         void** ray_batch_handle_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_ray_batch_3d_create_device_xz_constant_y_direction(
+         const uint32_t* ray_ids,
+         const double* ray_ox,
+         const double* ray_oz,
+         double ray_oy,
+         double ray_dx,
+         double ray_dy,
+         double ray_dz,
+         double ray_tmax,
          size_t ray_count,
          void** ray_batch_handle_out,
          char* error_out, size_t error_size);

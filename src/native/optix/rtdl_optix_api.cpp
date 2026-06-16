@@ -2203,6 +2203,36 @@ extern "C" int rtdl_optix_ray_batch_3d_create_device_rays(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_ray_batch_3d_create_device_xz_constant_y_direction(
+        const uint32_t* ray_ids,
+        const double* ray_ox,
+        const double* ray_oz,
+        double ray_oy,
+        double ray_dx,
+        double ray_dy,
+        double ray_dz,
+        double ray_tmax,
+        size_t ray_count,
+        void** ray_batch_handle_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!ray_batch_handle_out)
+            throw std::runtime_error("ray batch handle output pointer must not be null");
+        *ray_batch_handle_out = nullptr;
+        *ray_batch_handle_out = prepare_ray_batch_3d_device_xz_constant_y_direction_optix(
+            ray_ids,
+            ray_ox,
+            ray_oz,
+            ray_oy,
+            ray_dx,
+            ray_dy,
+            ray_dz,
+            ray_tmax,
+            ray_count);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_closest_hit_grouped_argmin_inputs_3d_create(
         const uint32_t* ray_group_ids,
         size_t ray_group_id_count,

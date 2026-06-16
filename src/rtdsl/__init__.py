@@ -1348,6 +1348,7 @@ from .optix_runtime import pack_optix_ray_any_hit_2d_device_witness_outputs
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_all_witness_outputs
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_triangle_inputs
 from .optix_runtime import pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs
+from .optix_runtime import pack_optix_ray_batch_3d_device_xz_constant_y_direction_inputs
 from .optix_runtime import pack_optix_static_triangle_scene_3d_device_ray_inputs
 from .optix_runtime import pack_optix_static_triangle_scene_3d_device_triangle_inputs
 from .optix_runtime import pack_optix_static_triangle_scene_3d_device_weighted_ray_inputs
@@ -1369,6 +1370,7 @@ from .optix_runtime import OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D
 from .optix_runtime import OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL
 from .optix_runtime import OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL
 from .optix_runtime import OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL
+from .optix_runtime import OPTIX_RAY_BATCH_3D_CREATE_DEVICE_XZ_CONSTANT_Y_DIRECTION_SYMBOL
 from .optix_runtime import OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL
 from .optix_runtime import prepare_optix
 from .optix_runtime import prepare_optix_columnar_payload
@@ -3138,6 +3140,7 @@ __all__ = [
     "pack_optix_ray_any_hit_2d_device_all_witness_outputs",
     "pack_optix_ray_any_hit_2d_device_triangle_inputs",
     "pack_optix_ray_any_hit_2d_device_triangle_zero_copy_scene_inputs",
+    "pack_optix_ray_batch_3d_device_xz_constant_y_direction_inputs",
     "pack_optix_static_triangle_scene_3d_device_ray_inputs",
     "pack_optix_static_triangle_scene_3d_device_triangle_inputs",
     "pack_optix_static_triangle_scene_3d_device_weighted_ray_inputs",
@@ -3159,6 +3162,7 @@ __all__ = [
     "OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL",
     "OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL",
     "OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL",
+    "OPTIX_RAY_BATCH_3D_CREATE_DEVICE_XZ_CONSTANT_Y_DIRECTION_SYMBOL",
     "OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL",
     "prepare_optix",
     "prepare_optix_columnar_payload",

@@ -205,6 +205,14 @@ def command_plan_payload() -> dict[str, Any]:
             "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
             "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay"
         ),
+        "rt_graph_2a1_segmented_prepared_compact_constant_ray_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
+            "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay "
+            "--segment-ray-column-layout xz_constant_y_direction"
+        ),
         "rt_graph_2a1_segmented_scene_generic_rt_optix_cupy_partner": (
             "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
@@ -997,17 +1005,24 @@ def rt_graph_2a1_segmented_generic_rt_payload(
     segment_ray_representation: str,
     segment_query_schedule: str,
     segment_unique_key_builder: str,
+    segment_ray_column_layout: str,
     validate_oracle: bool = False,
 ) -> dict[str, Any]:
     _validate_repetition(warmup=warmup, repeat=repeat)
     _validate_segment_ray_representation(segment_ray_representation)
     _validate_segment_query_schedule(segment_query_schedule)
     _validate_segment_unique_key_builder(segment_unique_key_builder)
+    _validate_segment_ray_column_layout(segment_ray_column_layout)
     normalized_backend = backend.lower().replace("-", "_")
     if normalized_backend != "optix" or detail != "summary" or partner != "cupy":
         raise ValueError(
             "rt_graph_2a1_segmented_generic_rt currently requires "
             "--backend optix --detail summary --partner cupy"
+        )
+    if segment_ray_column_layout == "xz_constant_y_direction" and segment_query_schedule != "prepared_segment_replay":
+        raise ValueError(
+            "segment_ray_column_layout xz_constant_y_direction requires "
+            "segment_query_schedule prepared_segment_replay"
         )
     if edge_file is None or edge_format != "binary":
         raise ValueError("rt_graph_2a1_segmented_generic_rt requires --edge-file with --edge-format binary")
@@ -1066,12 +1081,17 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                     end_edge=int(end_edge),
                     ray_representation=segment_ray_representation,
                     unique_key_builder=segment_unique_key_builder,
+                    ray_column_layout=segment_ray_column_layout,
                 )
                 replay_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                 replay_lowered_ray_count += _record_count(rays)
                 replay_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
                 ray_batch_prepare_started = time.perf_counter()
-                with scene.prepare_ray_batch_device_columns(rays) as ray_batch:
+                with _prepare_rt_graph_2a1_segment_ray_batch(
+                    scene,
+                    rays,
+                    ray_column_layout=segment_ray_column_layout,
+                ) as ray_batch:
                     replay_prepared_ray_batch_build_ms += _elapsed_ms(
                         ray_batch_prepare_started,
                         time.perf_counter(),
@@ -1116,6 +1136,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                         end_edge=int(end_edge),
                         ray_representation=segment_ray_representation,
                         unique_key_builder=segment_unique_key_builder,
+                        ray_column_layout=segment_ray_column_layout,
                     )
                     run_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                     run_lowered_ray_count += _record_count(rays)
@@ -1199,6 +1220,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                 "segment_ray_representation": segment_ray_representation,
                 "segment_query_schedule": segment_query_schedule,
                 "segment_unique_key_builder": segment_unique_key_builder,
+                "segment_ray_column_layout": segment_ray_column_layout,
             },
         },
         parameters={
@@ -1208,6 +1230,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "segment_ray_representation": segment_ray_representation,
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
         },
         partner=partner,
         device="cuda:0",
@@ -1255,9 +1278,13 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "segment_ray_representation": segment_ray_representation,
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
             "triangle_eps": 0.2,
             "ray_tmax": 0.2,
+            "ray_origin_y": -0.1,
+            "ray_direction": (0.0, 1.0, 0.0),
             "device_column_lowering": True,
+            "compact_constant_ray_batch": segment_ray_column_layout == "xz_constant_y_direction",
             "global_two_hop_summary_materialized": False,
         },
         "segmentation": {
@@ -1272,6 +1299,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "segment_ray_representation": segment_ray_representation,
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
             "count_column_rows": int(segment_plan["count_column_rows"]),
             "counts_download_ms": float(segment_plan["counts_download_ms"]),
             "ranges_preview": segment_ranges,
@@ -1309,6 +1337,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "query_measured_runs": len(query_timings_ms),
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
             "reduce_hits": _elapsed_ms(ran, reduced),
             "total": _elapsed_ms(started, reduced),
         },
@@ -1365,16 +1394,23 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     segment_ray_representation: str,
     segment_query_schedule: str,
     segment_unique_key_builder: str,
+    segment_ray_column_layout: str,
 ) -> dict[str, Any]:
     _validate_repetition(warmup=warmup, repeat=repeat)
     _validate_segment_ray_representation(segment_ray_representation)
     _validate_segment_query_schedule(segment_query_schedule)
     _validate_segment_unique_key_builder(segment_unique_key_builder)
+    _validate_segment_ray_column_layout(segment_ray_column_layout)
     normalized_backend = backend.lower().replace("-", "_")
     if normalized_backend != "optix" or detail != "summary" or partner != "cupy":
         raise ValueError(
             "rt_graph_2a1_segmented_scene_generic_rt currently requires "
             "--backend optix --detail summary --partner cupy"
+        )
+    if segment_ray_column_layout == "xz_constant_y_direction" and segment_query_schedule != "prepared_segment_replay":
+        raise ValueError(
+            "segment_ray_column_layout xz_constant_y_direction requires "
+            "segment_query_schedule prepared_segment_replay"
         )
     if edge_file is None or edge_format != "binary":
         raise ValueError("rt_graph_2a1_segmented_scene_generic_rt requires --edge-file with --edge-format binary")
@@ -1442,12 +1478,17 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                         end_edge=int(end_edge),
                         ray_representation=segment_ray_representation,
                         unique_key_builder=segment_unique_key_builder,
+                        ray_column_layout=segment_ray_column_layout,
                     )
                     replay_segment_ray_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                     replay_lowered_ray_count += _record_count(rays)
                     replay_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
                     ray_batch_prepare_started = time.perf_counter()
-                    with prepared_scene.prepare_ray_batch_device_columns(rays) as ray_batch:
+                    with _prepare_rt_graph_2a1_segment_ray_batch(
+                        prepared_scene,
+                        rays,
+                        ray_column_layout=segment_ray_column_layout,
+                    ) as ray_batch:
                         replay_prepared_ray_batch_build_ms += _elapsed_ms(
                             ray_batch_prepare_started,
                             time.perf_counter(),
@@ -1508,6 +1549,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                             end_edge=int(end_edge),
                             ray_representation=segment_ray_representation,
                             unique_key_builder=segment_unique_key_builder,
+                            ray_column_layout=segment_ray_column_layout,
                         )
                         run_segment_ray_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                         run_lowered_ray_count += _record_count(rays)
@@ -1607,6 +1649,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                 "segment_ray_representation": segment_ray_representation,
                 "segment_query_schedule": segment_query_schedule,
                 "segment_unique_key_builder": segment_unique_key_builder,
+                "segment_ray_column_layout": segment_ray_column_layout,
             },
         },
         parameters={
@@ -1616,6 +1659,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "segment_ray_representation": segment_ray_representation,
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
         },
         partner=partner,
         device="cuda:0",
@@ -1664,9 +1708,13 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "segment_ray_representation": segment_ray_representation,
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
             "triangle_eps": 0.2,
             "ray_tmax": 0.2,
+            "ray_origin_y": -0.1,
+            "ray_direction": (0.0, 1.0, 0.0),
             "device_column_lowering": True,
+            "compact_constant_ray_batch": segment_ray_column_layout == "xz_constant_y_direction",
             "global_two_hop_summary_materialized": False,
             "global_triangle_scene_materialized": False,
         },
@@ -1686,6 +1734,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "segment_ray_representation": segment_ray_representation,
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
             "counts_download_ms": float(scene_plan["counts_download_ms"]),
             "scenes_preview": scene_preview,
             "scenes_truncated": len(scene_plan["scenes"]) > len(scene_preview),
@@ -1724,6 +1773,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "query_measured_runs": len(query_timings_ms),
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
             "reduce_hits": _elapsed_ms(ran, reduced),
             "total": _elapsed_ms(started, reduced),
         },
@@ -2150,6 +2200,11 @@ def _validate_segment_query_schedule(value: str) -> None:
 def _validate_segment_unique_key_builder(value: str) -> None:
     if value not in {"cupy_repeat", "numba_direct"}:
         raise ValueError("segment_unique_key_builder must be cupy_repeat or numba_direct")
+
+
+def _validate_segment_ray_column_layout(value: str) -> None:
+    if value not in {"full", "xz_constant_y_direction"}:
+        raise ValueError("segment_ray_column_layout must be full or xz_constant_y_direction")
 
 
 def _record_count(records) -> int:
@@ -2599,9 +2654,11 @@ def _build_rt_graph_2a1_cupy_segment_rays(
     end_edge: int,
     ray_representation: str = "duplicate",
     unique_key_builder: str = "cupy_repeat",
+    ray_column_layout: str = "full",
 ):
     _validate_segment_ray_representation(ray_representation)
     _validate_segment_unique_key_builder(unique_key_builder)
+    _validate_segment_ray_column_layout(ray_column_layout)
     cp = __import__("cupy")
 
     device_arrays = _require_directed_csr_device_arrays(contract, partner="cupy")
@@ -2617,16 +2674,19 @@ def _build_rt_graph_2a1_cupy_segment_rays(
     if int(counts.size) == 0:
         empty_f64 = cp.empty(0, dtype=cp.float64)
         empty_u32 = cp.empty(0, dtype=cp.uint32)
-        rays = {
-            "ids": empty_u32,
-            "ox": empty_f64,
-            "oy": empty_f64,
-            "oz": empty_f64,
-            "dx": empty_f64,
-            "dy": empty_f64,
-            "dz": empty_f64,
-            "tmax": empty_f64,
-        }
+        if ray_column_layout == "xz_constant_y_direction":
+            rays = {"ids": empty_u32, "ox": empty_f64, "oz": empty_f64}
+        else:
+            rays = {
+                "ids": empty_u32,
+                "ox": empty_f64,
+                "oy": empty_f64,
+                "oz": empty_f64,
+                "dx": empty_f64,
+                "dy": empty_f64,
+                "dz": empty_f64,
+                "tmax": empty_f64,
+            }
         return rays, cp.empty(0, dtype=cp.uint64)
 
     edge_mid = edge_mid[nonempty]
@@ -2676,17 +2736,36 @@ def _build_rt_graph_2a1_cupy_segment_rays(
     axis_offset_x = contract.vertex_count / 2.0
     axis_offset_z = contract.vertex_count / 2.0
 
-    rays = {
-        "ids": cp.arange(ray_count, dtype=cp.uint32),
-        "ox": ray_src.astype(cp.float64) - axis_offset_x,
-        "oy": cp.full(ray_count, -0.1, dtype=cp.float64),
-        "oz": ray_dst.astype(cp.float64) - axis_offset_z,
-        "dx": cp.zeros(ray_count, dtype=cp.float64),
-        "dy": cp.ones(ray_count, dtype=cp.float64),
-        "dz": cp.zeros(ray_count, dtype=cp.float64),
-        "tmax": cp.full(ray_count, 0.2, dtype=cp.float64),
-    }
+    if ray_column_layout == "xz_constant_y_direction":
+        rays = {
+            "ids": cp.arange(ray_count, dtype=cp.uint32),
+            "ox": ray_src.astype(cp.float64) - axis_offset_x,
+            "oz": ray_dst.astype(cp.float64) - axis_offset_z,
+        }
+    else:
+        rays = {
+            "ids": cp.arange(ray_count, dtype=cp.uint32),
+            "ox": ray_src.astype(cp.float64) - axis_offset_x,
+            "oy": cp.full(ray_count, -0.1, dtype=cp.float64),
+            "oz": ray_dst.astype(cp.float64) - axis_offset_z,
+            "dx": cp.zeros(ray_count, dtype=cp.float64),
+            "dy": cp.ones(ray_count, dtype=cp.float64),
+            "dz": cp.zeros(ray_count, dtype=cp.float64),
+            "tmax": cp.full(ray_count, 0.2, dtype=cp.float64),
+        }
     return rays, ray_weights
+
+
+def _prepare_rt_graph_2a1_segment_ray_batch(scene, rays, *, ray_column_layout: str):
+    _validate_segment_ray_column_layout(ray_column_layout)
+    if ray_column_layout == "xz_constant_y_direction":
+        return scene.prepare_ray_batch_device_xz_constant_y_direction(
+            rays,
+            origin_y=-0.1,
+            direction=(0.0, 1.0, 0.0),
+            tmax=0.2,
+        )
+    return scene.prepare_ray_batch_device_columns(rays)
 
 
 _RT_GRAPH_1A2_FILL_TRIANGLES_NUMBA_KERNEL = None
@@ -3482,6 +3561,7 @@ def run_app(
     segment_ray_representation: str = "duplicate",
     segment_query_schedule: str = "per_run",
     segment_unique_key_builder: str = "cupy_repeat",
+    segment_ray_column_layout: str = "full",
     validate_oracle: bool = False,
 ) -> dict[str, Any]:
     if mode == "scope":
@@ -3545,6 +3625,7 @@ def run_app(
             segment_ray_representation=segment_ray_representation,
             segment_query_schedule=segment_query_schedule,
             segment_unique_key_builder=segment_unique_key_builder,
+            segment_ray_column_layout=segment_ray_column_layout,
             validate_oracle=validate_oracle,
         )
     if mode == "rt_graph_2a1_segmented_scene_generic_rt":
@@ -3561,6 +3642,7 @@ def run_app(
             segment_ray_representation=segment_ray_representation,
             segment_query_schedule=segment_query_schedule,
             segment_unique_key_builder=segment_unique_key_builder,
+            segment_ray_column_layout=segment_ray_column_layout,
         )
     if mode == "rt_graph_1a2_generic_rt":
         return rt_graph_1a2_generic_rt_payload(
@@ -3659,6 +3741,15 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--segment-ray-column-layout",
+        choices=("full", "xz_constant_y_direction"),
+        default="full",
+        help=(
+            "Segment ray column layout for prepared replay: full 3-D ray columns or "
+            "compact x/z-varying columns with constant y-origin, direction, and tmax."
+        ),
+    )
+    parser.add_argument(
         "--validate-oracle",
         action="store_true",
         help="Build the Python oracle for small binary edge files and compare the segmented result.",
@@ -3691,6 +3782,7 @@ def main(argv: list[str] | None = None) -> int:
                 segment_ray_representation=args.segment_ray_representation,
                 segment_query_schedule=args.segment_query_schedule,
                 segment_unique_key_builder=args.segment_unique_key_builder,
+                segment_ray_column_layout=args.segment_ray_column_layout,
                 validate_oracle=args.validate_oracle,
             ),
             indent=2,

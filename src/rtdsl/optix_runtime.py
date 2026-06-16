@@ -33,6 +33,7 @@ from __future__ import annotations
 import ctypes
 import ctypes.util
 import functools
+import math
 import os
 import platform
 import time
@@ -456,6 +457,9 @@ OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction"
 )
 OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL = "rtdl_optix_ray_batch_3d_create_device_rays"
+OPTIX_RAY_BATCH_3D_CREATE_DEVICE_XZ_CONSTANT_Y_DIRECTION_SYMBOL = (
+    "rtdl_optix_ray_batch_3d_create_device_xz_constant_y_direction"
+)
 OPTIX_CLOSEST_HIT_GROUPED_ARGMIN_INPUTS_3D_CREATE_DEVICE_PER_RAY_GROUPS_SYMBOL = (
     "rtdl_optix_closest_hit_grouped_argmin_inputs_3d_create_device_per_ray_groups"
 )
@@ -12492,6 +12496,90 @@ def pack_optix_static_triangle_scene_3d_device_ray_inputs(ray_columns: dict) -> 
     }
 
 
+def pack_optix_ray_batch_3d_device_xz_constant_y_direction_inputs(
+    ray_columns: dict,
+    *,
+    origin_y: float,
+    direction: tuple[float, float, float],
+    tmax: float,
+) -> dict[str, object]:
+    """Validate compact partner-owned CUDA 3-D ray columns for prepared OptiX batches.
+
+    This ABI is intentionally app-agnostic: callers provide ids plus varying
+    origin x/z columns and declare the shared y-origin, direction, and tmax
+    constants. The native engine only packs those generic ray fields.
+    """
+    ray_handoffs, timings = _partner_device_descriptor_columns(
+        ray_columns,
+        ("ids", "ox", "oz"),
+        label="ray3d_xz_constant_y_direction",
+    )
+    expected_dtypes = {
+        "ids": {"uint32"},
+        "ox": {"float64", "double"},
+        "oz": {"float64", "double"},
+    }
+    expected_count = None
+    expected_device = None
+    for name, allowed in expected_dtypes.items():
+        handoff = ray_handoffs[name]
+        dtype = _partner_dtype_token(handoff.dtype)
+        if dtype not in allowed:
+            allowed_text = ", ".join(sorted(allowed))
+            raise ValueError(
+                f"partner device compact 3-D ray column {name!r} must use dtype {allowed_text}"
+            )
+        if not _partner_contiguous_column_strides(
+            handoff.strides,
+            itemsize=_partner_dtype_itemsize(dtype),
+        ):
+            raise ValueError(f"partner device compact 3-D ray column {name!r} must be contiguous")
+        count = int(handoff.shape[0])
+        if expected_count is None:
+            expected_count = count
+        elif count != expected_count:
+            raise ValueError("partner device compact 3-D ray columns must have matching lengths")
+        device = (handoff.device_type, handoff.device_id)
+        if expected_device is None:
+            expected_device = device
+        elif device != expected_device:
+            raise ValueError("partner device compact 3-D ray columns must live on the same CUDA device")
+
+    if len(direction) != 3:
+        raise ValueError("direction must contain exactly three constants")
+    constants = {
+        "origin_y": float(origin_y),
+        "direction_x": float(direction[0]),
+        "direction_y": float(direction[1]),
+        "direction_z": float(direction[2]),
+        "tmax": float(tmax),
+    }
+    if not all(math.isfinite(value) for value in constants.values()):
+        raise ValueError("compact 3-D ray constants must be finite")
+
+    descriptors = tuple(ray_handoffs[name] for name in ("ids", "ox", "oz"))
+    return {
+        "rays": ray_handoffs,
+        "constants": constants,
+        "metadata": {
+            "backend": "optix",
+            "transfer_mode": "device_ray3d_xz_constant_y_direction_gpu_pack",
+            "native_symbol": OPTIX_RAY_BATCH_3D_CREATE_DEVICE_XZ_CONSTANT_Y_DIRECTION_SYMBOL,
+            "source_protocols": tuple(sorted({handoff.source_protocol for handoff in descriptors})),
+            "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in descriptors})),
+            "ray_count": int(ray_handoffs["ids"].shape[0]),
+            "direct_device_pointer_observed": True,
+            "direct_device_handoff_authorized": True,
+            "compact_constant_ray_columns": True,
+            "ray_columns_true_zero_copy_authorized": False,
+            "partner_tensor_handoff_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
+            "ray_y_direction_tmax_constants": dict(constants),
+            "partner_phase_timings_s": timings,
+        },
+    }
+
+
 def pack_optix_closest_hit_grouped_argmin_3d_device_per_ray_inputs(
     *,
     per_ray_group_ids,
@@ -16426,6 +16514,73 @@ class PreparedOptixRayBatch3D:
         }
         return self
 
+    @classmethod
+    def from_device_xz_constant_y_direction(
+        cls,
+        lib,
+        ray_columns: dict,
+        *,
+        origin_y: float,
+        direction: tuple[float, float, float],
+        tmax: float,
+    ) -> "PreparedOptixRayBatch3D":
+        self = cls.__new__(cls)
+        self._lib = lib
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        packet = pack_optix_ray_batch_3d_device_xz_constant_y_direction_inputs(
+            ray_columns,
+            origin_y=origin_y,
+            direction=direction,
+            tmax=tmax,
+        )
+        rays = packet["rays"]
+        constants = packet["constants"]
+        self.ray_count = int(packet["metadata"]["ray_count"])
+        self._packed_rays_owner = packet
+        self._device_ray_expected_device = (rays["ids"].device_type, rays["ids"].device_id)
+        create_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RAY_BATCH_3D_CREATE_DEVICE_XZ_CONSTANT_Y_DIRECTION_SYMBOL,
+        )
+        if create_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RAY_BATCH_3D_CREATE_DEVICE_XZ_CONSTANT_Y_DIRECTION_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        prepare_start = time.perf_counter()
+        status = create_symbol(
+            ctypes.c_void_p(rays["ids"].data_ptr),
+            ctypes.c_void_p(rays["ox"].data_ptr),
+            ctypes.c_void_p(rays["oz"].data_ptr),
+            ctypes.c_double(constants["origin_y"]),
+            ctypes.c_double(constants["direction_x"]),
+            ctypes.c_double(constants["direction_y"]),
+            ctypes.c_double(constants["direction_z"]),
+            ctypes.c_double(constants["tmax"]),
+            self.ray_count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        self.prepare_seconds = time.perf_counter() - prepare_start
+        _check_status(status, error)
+        self.transfer_metadata = {
+            **packet["metadata"],
+            "query_rays_uploaded_each_run": False,
+            "query_rays_packed_on_device_once": True,
+            "prepared_rays_resident_on_device": True,
+            "ray_batch_created_from": "partner_device_xz_constant_y_direction",
+            "ray_columns_partner_owned": True,
+            "ray_id_host_bookkeeping_downloaded": False,
+            "host_ray_ids_available": False,
+            "grouped_host_ray_id_contract_available": False,
+            "true_zero_copy_authorized": False,
+        }
+        return self
+
     def close(self) -> None:
         if self._closed:
             return
@@ -18599,6 +18754,24 @@ class PreparedOptixStaticTriangleScene3D:
         if self._closed:
             raise RuntimeError("prepared OptiX static triangle scene handle is closed")
         return PreparedOptixRayBatch3D.from_device_ray_columns(self._lib, ray_columns)
+
+    def prepare_ray_batch_device_xz_constant_y_direction(
+        self,
+        ray_columns: dict,
+        *,
+        origin_y: float,
+        direction: tuple[float, float, float],
+        tmax: float,
+    ) -> PreparedOptixRayBatch3D:
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        return PreparedOptixRayBatch3D.from_device_xz_constant_y_direction(
+            self._lib,
+            ray_columns,
+            origin_y=origin_y,
+            direction=direction,
+            tmax=tmax,
+        )
 
     def prepare_ray_triangle_hit_stream_device_column_buffers(
         self,
@@ -24871,6 +25044,26 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_ray_batch_3d_create_device.restype = ctypes.c_int
+    optional_ray_batch_3d_create_device_xz_constant = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RAY_BATCH_3D_CREATE_DEVICE_XZ_CONSTANT_Y_DIRECTION_SYMBOL,
+    )
+    if optional_ray_batch_3d_create_device_xz_constant is not None:
+        optional_ray_batch_3d_create_device_xz_constant.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_ray_batch_3d_create_device_xz_constant.restype = ctypes.c_int
     optional_grouped_argmin_inputs_3d_create = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_closest_hit_grouped_argmin_inputs_3d_create",
