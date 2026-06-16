@@ -99,7 +99,7 @@ class RTGraphTriangleSummaryContract:
     removed_low_degree_edge_count: int
     removed_duplicate_or_self_edge_count: int
     partner: str
-    partner_timing_ms: dict[str, float]
+    partner_timing_ms: dict[str, object]
     device_arrays: object | None = None
     id_ascending_adapter_materialized: bool = False
     original_edges: tuple[Edge, ...] = ()
@@ -334,6 +334,81 @@ def build_rt_graph_triangle_summary_contract_cupy_binary(path: str | Path) -> RT
     )
 
 
+def build_rt_graph_triangle_summary_contract_numba_binary(path: str | Path) -> RTGraphTriangleSummaryContract:
+    """Build a summary contract with Numba CUDA device columns.
+
+    This is a no-C++ reference partner route. Graph normalization and CSR/two-hop
+    construction reuse the existing Python contract builder, then the compact
+    summary columns are uploaded to Numba device arrays for the OptiX
+    device-column ABI.
+    """
+    import time
+
+    import numpy as np
+    from numba import cuda
+
+    timing_ms: dict[str, float] = {}
+
+    started = time.perf_counter()
+    edges_np = np.fromfile(path, dtype=np.int32)
+    if edges_np.size % 2 != 0:
+        raise ValueError("RT-Graph binary edge file size must be a multiple of two int32 values")
+    edges_np = edges_np.reshape(-1, 2).astype(np.int64, copy=False)
+    timing_ms["load_np_ms"] = (time.perf_counter() - started) * 1000.0
+
+    started = time.perf_counter()
+    contract = build_rt_graph_triangle_contract(
+        (tuple(map(int, edge)) for edge in edges_np.tolist()),
+        include_id_ascending_adapter=False,
+    )
+    timing_ms["cpu_contract_ms"] = (time.perf_counter() - started) * 1000.0
+
+    started = time.perf_counter()
+    directed_edges_host = _edges_to_numpy(contract.directed_edges)
+    row_offsets_host = np.asarray(contract.row_offsets, dtype=np.int64)
+    column_indices_host = np.asarray(contract.column_indices, dtype=np.int64)
+    two_hop_host = _two_hop_to_numpy(contract.two_hop_rays_2a1)
+    triangle_count = int(contract.triangle_count)
+    duplicate_two_hop_count = int(two_hop_host[:, 2].sum(dtype=np.int64)) if two_hop_host.size else 0
+    timing_ms["host_summary_column_ms"] = (time.perf_counter() - started) * 1000.0
+
+    started = time.perf_counter()
+    device_arrays = {
+        "row_offsets": cuda.to_device(row_offsets_host),
+        "column_indices": cuda.to_device(column_indices_host),
+        "directed_src": cuda.to_device(directed_edges_host[:, 0].copy()),
+        "two_hop_src": cuda.to_device(two_hop_host[:, 0].copy()),
+        "two_hop_dst": cuda.to_device(two_hop_host[:, 1].copy()),
+        "two_hop_weights": cuda.to_device(two_hop_host[:, 2].astype(np.uint64, copy=True)),
+    }
+    cuda.synchronize()
+    timing_ms["numba_device_upload_ms"] = (time.perf_counter() - started) * 1000.0
+    timing_ms["total_partner_ms"] = sum(value for key, value in timing_ms.items() if key.endswith("_ms"))
+
+    return RTGraphTriangleSummaryContract(
+        original_edge_count=int(edges_np.shape[0]),
+        compacted_vertex_count=len(contract.compacted_vertex_ids),
+        directed_vertex_count=contract.vertex_count,
+        directed_edges=directed_edges_host,
+        row_offsets=row_offsets_host,
+        column_indices=column_indices_host,
+        triangle_count_value=triangle_count,
+        two_hop_rays_2a1=two_hop_host,
+        duplicate_two_hop_relation_count_value=duplicate_two_hop_count,
+        removed_low_degree_vertex_count=contract.removed_low_degree_vertex_count,
+        removed_low_degree_edge_count=contract.removed_low_degree_edge_count,
+        removed_duplicate_or_self_edge_count=contract.removed_duplicate_or_self_edge_count,
+        partner="numba",
+        partner_timing_ms={
+            key: round(value, 3) for key, value in timing_ms.items()
+        }
+        | {
+            "construction_mode": "cpu_contract_then_numba_device_upload",
+        },
+        device_arrays=device_arrays,
+    )
+
+
 def build_rt_graph_triangle_contract(
     edges: Iterable[Edge],
     *,
@@ -422,6 +497,24 @@ def build_rt_graph_triangle_contract(
         removed_duplicate_or_self_edge_count=duplicate_or_self_count,
         id_ascending_adapter_materialized=include_id_ascending_adapter,
     )
+
+
+def _edges_to_numpy(edges: Iterable[Edge]):
+    import numpy as np
+
+    rows = tuple(edges)
+    if not rows:
+        return np.empty((0, 2), dtype=np.int64)
+    return np.asarray(rows, dtype=np.int64).reshape(-1, 2)
+
+
+def _two_hop_to_numpy(rows: Iterable[tuple[int, int, int]]):
+    import numpy as np
+
+    materialized = tuple(rows)
+    if not materialized:
+        return np.empty((0, 3), dtype=np.int64)
+    return np.asarray(materialized, dtype=np.int64).reshape(-1, 3)
 
 
 def _normalize_edges(edges: Iterable[Edge]) -> tuple[Edge, ...]:

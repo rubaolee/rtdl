@@ -20,6 +20,9 @@ from examples.current.research_benchmarks.triangle_counting.rt_graph_contract im
 from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import (
     build_rt_graph_triangle_summary_contract_cupy_binary,
 )
+from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import (
+    build_rt_graph_triangle_summary_contract_numba_binary,
+)
 from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import fixture_edges
 from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import read_binary_edges
 from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import read_text_edges
@@ -514,7 +517,15 @@ def describe_rt_graph_v2_4_prepared_session(
 
     is_2a1 = method == "RT-2A1"
     primitive = V2_4_RT_GRAPH_2A1_PRIMITIVE if is_2a1 else V2_4_RT_GRAPH_1A2_PRIMITIVE
-    source_protocol = "cupy_device_columns" if device_column_summary else "rtdl_packed_host_buffer"
+    partner_device_protocols = {
+        "cupy": "cupy_device_columns",
+        "numba": "numba_device_columns",
+    }
+    source_protocol = (
+        partner_device_protocols.get(partner, "cuda_array_interface_device_columns")
+        if device_column_summary
+        else "rtdl_packed_host_buffer"
+    )
     geometry_device = "cuda" if device_column_summary else "cpu"
     native_symbols: tuple[str, ...] = ()
     if normalized_backend == "optix" and is_2a1:
@@ -613,7 +624,7 @@ def rt_graph_contract_payload(
     edge_file: str | None,
     edge_format: str,
     detail: str,
-    rt_graph_copies: int,
+    rt_graph_copies: int = 1,
 ) -> dict[str, Any]:
     started = time.perf_counter()
     edges, input_source = _load_rt_graph_edges(
@@ -655,7 +666,7 @@ def rt_graph_rtdl_adapter_payload(
     edge_format: str,
     backend: str,
     detail: str,
-    rt_graph_copies: int,
+    rt_graph_copies: int = 1,
 ) -> dict[str, Any]:
     started = time.perf_counter()
     edges, input_source = _load_rt_graph_edges(
@@ -716,18 +727,18 @@ def rt_graph_2a1_generic_rt_payload(
     partner: str,
     warmup: int,
     repeat: int,
-    rt_graph_copies: int,
+    rt_graph_copies: int = 1,
 ) -> dict[str, Any]:
     _validate_repetition(warmup=warmup, repeat=repeat)
     started = time.perf_counter()
-    use_cupy_summary = _use_cupy_summary_partner(
+    use_partner_summary = _use_summary_partner(
         partner=partner,
         backend=backend,
         detail=detail,
         edge_file=edge_file,
         edge_format=edge_format,
     )
-    if use_cupy_summary:
+    if use_partner_summary:
         if rt_graph_copies != 1:
             raise ValueError("--rt-graph-copies applies only to fixture inputs")
         edges = None
@@ -740,15 +751,15 @@ def rt_graph_2a1_generic_rt_payload(
             fixture_copies=rt_graph_copies,
         )
     loaded = time.perf_counter()
-    if use_cupy_summary:
-        contract = build_rt_graph_triangle_summary_contract_cupy_binary(edge_file)
+    if use_partner_summary:
+        contract = _build_rt_graph_triangle_summary_contract_binary(edge_file, partner=partner)
     else:
         contract = build_rt_graph_triangle_contract(edges, include_id_ascending_adapter=detail == "full")
     built = time.perf_counter()
     normalized_backend = backend.lower().replace("-", "_")
-    device_column_summary = use_cupy_summary and normalized_backend == "optix" and detail == "summary"
+    device_column_summary = use_partner_summary and normalized_backend == "optix" and detail == "summary"
     if device_column_summary:
-        triangles, rays, ray_weights = _build_rt_graph_2a1_device_geometry(contract)
+        triangles, rays, ray_weights = _build_rt_graph_2a1_device_geometry(contract, partner=partner)
     elif normalized_backend == "optix" and detail == "summary":
         triangles, rays, ray_weights = _build_rt_graph_2a1_packed_geometry(contract)
     else:
@@ -868,7 +879,7 @@ def rt_graph_2a1_generic_rt_payload(
             )
         ),
         "partner": partner,
-        "partner_summary_contract_used": use_cupy_summary,
+        "partner_summary_contract_used": use_partner_summary,
         "partner_timing_ms": getattr(contract, "partner_timing_ms", None),
         "primitive_layout": {
             "paper_method": "RT-2A1",
@@ -941,18 +952,18 @@ def rt_graph_1a2_generic_rt_payload(
     partner: str,
     warmup: int,
     repeat: int,
-    rt_graph_copies: int,
+    rt_graph_copies: int = 1,
 ) -> dict[str, Any]:
     _validate_repetition(warmup=warmup, repeat=repeat)
     started = time.perf_counter()
-    use_cupy_summary = _use_cupy_summary_partner(
+    use_partner_summary = _use_summary_partner(
         partner=partner,
         backend=backend,
         detail=detail,
         edge_file=edge_file,
         edge_format=edge_format,
     )
-    if use_cupy_summary:
+    if use_partner_summary:
         if rt_graph_copies != 1:
             raise ValueError("--rt-graph-copies applies only to fixture inputs")
         edges = None
@@ -965,15 +976,15 @@ def rt_graph_1a2_generic_rt_payload(
             fixture_copies=rt_graph_copies,
         )
     loaded = time.perf_counter()
-    if use_cupy_summary:
-        contract = build_rt_graph_triangle_summary_contract_cupy_binary(edge_file)
+    if use_partner_summary:
+        contract = _build_rt_graph_triangle_summary_contract_binary(edge_file, partner=partner)
     else:
         contract = build_rt_graph_triangle_contract(edges, include_id_ascending_adapter=detail == "full")
     built = time.perf_counter()
     normalized_backend = backend.lower().replace("-", "_")
-    device_column_summary = use_cupy_summary and normalized_backend == "optix" and detail == "summary"
+    device_column_summary = use_partner_summary and normalized_backend == "optix" and detail == "summary"
     if device_column_summary:
-        triangles, rays = _build_rt_graph_1a2_device_geometry(contract)
+        triangles, rays = _build_rt_graph_1a2_device_geometry(contract, partner=partner)
     elif normalized_backend == "optix" and detail == "summary":
         triangles, rays = _build_rt_graph_1a2_packed_geometry(contract)
     else:
@@ -1059,7 +1070,7 @@ def rt_graph_1a2_generic_rt_payload(
             else ("generic_ray_triangle_hit_count_rows" if normalized_backend == "optix" else None)
         ),
         "partner": partner,
-        "partner_summary_contract_used": use_cupy_summary,
+        "partner_summary_contract_used": use_partner_summary,
         "partner_timing_ms": getattr(contract, "partner_timing_ms", None),
         "primitive_layout": {
             "paper_method": "RT-1A2",
@@ -1213,7 +1224,7 @@ def _contract_count(contract, count_attr: str, records_attr: str) -> int:
     return len(getattr(contract, records_attr))
 
 
-def _use_cupy_summary_partner(
+def _use_summary_partner(
     *,
     partner: str,
     backend: str,
@@ -1223,14 +1234,22 @@ def _use_cupy_summary_partner(
 ) -> bool:
     if partner == "none":
         return False
-    if partner != "cupy":
+    if partner not in {"cupy", "numba"}:
         raise ValueError(f"unsupported partner: {partner}")
     normalized_backend = backend.lower().replace("-", "_")
     if normalized_backend != "optix" or detail != "summary":
-        raise ValueError("--partner cupy currently supports only --backend optix --detail summary")
+        raise ValueError(f"--partner {partner} currently supports only --backend optix --detail summary")
     if edge_file is None or edge_format != "binary":
-        raise ValueError("--partner cupy currently requires --edge-file with --edge-format binary")
+        raise ValueError(f"--partner {partner} currently requires --edge-file with --edge-format binary")
     return True
+
+
+def _build_rt_graph_triangle_summary_contract_binary(edge_file: str, *, partner: str):
+    if partner == "cupy":
+        return build_rt_graph_triangle_summary_contract_cupy_binary(edge_file)
+    if partner == "numba":
+        return build_rt_graph_triangle_summary_contract_numba_binary(edge_file)
+    raise ValueError(f"unsupported summary partner: {partner}")
 
 
 def _require_cupy_device_arrays(contract) -> dict[str, object]:
@@ -1251,10 +1270,34 @@ def _require_cupy_device_arrays(contract) -> dict[str, object]:
     return device_arrays
 
 
-def _build_rt_graph_1a2_device_geometry(contract):
+def _require_summary_device_arrays(contract, *, partner: str) -> dict[str, object]:
+    if partner == "cupy":
+        return _require_cupy_device_arrays(contract)
+    device_arrays = getattr(contract, "device_arrays", None)
+    if not isinstance(device_arrays, dict):
+        raise ValueError(f"{partner} summary contract is missing partner-resident device arrays")
+    required = {
+        "row_offsets",
+        "column_indices",
+        "directed_src",
+        "two_hop_src",
+        "two_hop_dst",
+        "two_hop_weights",
+    }
+    missing = sorted(required - set(device_arrays))
+    if missing:
+        raise ValueError(f"{partner} summary contract missing device arrays: {', '.join(missing)}")
+    return device_arrays
+
+
+def _build_rt_graph_1a2_device_geometry(contract, *, partner: str = "cupy"):
+    if partner == "numba":
+        return _build_rt_graph_1a2_numba_device_geometry(contract)
+    if partner != "cupy":
+        raise ValueError(f"unsupported summary partner: {partner}")
     cp = __import__("cupy")
 
-    device_arrays = _require_cupy_device_arrays(contract)
+    device_arrays = _require_summary_device_arrays(contract, partner=partner)
     row_offsets = device_arrays["row_offsets"]
     column_indices = device_arrays["column_indices"]
     out_degrees = row_offsets[1:] - row_offsets[:-1]
@@ -1326,6 +1369,87 @@ def _build_rt_graph_1a2_device_geometry(contract):
         "dz": cp.zeros(ray_count, dtype=cp.float64),
         "tmax": tmax,
     }
+    return triangles, rays
+
+
+def _build_rt_graph_1a2_numba_device_geometry(contract):
+    import numpy as np
+    from numba import cuda
+
+    row_offsets = np.asarray(contract.row_offsets, dtype=np.int64)
+    column_indices = np.asarray(contract.column_indices, dtype=np.int64)
+    out_degrees = row_offsets[1:] - row_offsets[:-1]
+    max_adj_len = int(out_degrees.max()) if out_degrees.size else 0
+    axis_offset_x = max_adj_len / 2.0
+    axis_offset_y = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+
+    edge_count = int(column_indices.size)
+    if edge_count:
+        edge_src = np.repeat(np.arange(contract.vertex_count, dtype=np.int64), out_degrees)
+        edge_starts = np.repeat(row_offsets[:-1], out_degrees)
+        edge_local_index = np.arange(edge_count, dtype=np.int64) - edge_starts
+        edge_mid = column_indices
+        two_hop_counts = out_degrees[edge_mid]
+        nonempty = two_hop_counts > 0
+        active_counts = two_hop_counts[nonempty]
+        if active_counts.size:
+            primitive_count = int(active_counts.sum())
+            center_x = np.repeat(edge_local_index[nonempty], active_counts).astype(np.float64) - axis_offset_x
+            center_y = np.repeat(edge_src[nonempty], active_counts).astype(np.float64) - axis_offset_y
+            starts = row_offsets[edge_mid[nonempty]]
+            repeated_starts = np.repeat(starts, active_counts)
+            repeated_prefix = np.repeat(np.cumsum(active_counts) - active_counts, active_counts)
+            dst_index = repeated_starts + (np.arange(primitive_count, dtype=np.int64) - repeated_prefix)
+            center_z = column_indices[dst_index].astype(np.float64) - axis_offset_z
+        else:
+            primitive_count = 0
+            center_x = np.empty(0, dtype=np.float64)
+            center_y = np.empty(0, dtype=np.float64)
+            center_z = np.empty(0, dtype=np.float64)
+    else:
+        primitive_count = 0
+        center_x = np.empty(0, dtype=np.float64)
+        center_y = np.empty(0, dtype=np.float64)
+        center_z = np.empty(0, dtype=np.float64)
+
+    triangles = {
+        "ids": cuda.to_device(np.arange(primitive_count, dtype=np.uint32)),
+        "x0": cuda.to_device(center_x),
+        "y0": cuda.to_device(center_y),
+        "z0": cuda.to_device(center_z + eps),
+        "x1": cuda.to_device(center_x),
+        "y1": cuda.to_device(center_y - eps),
+        "z1": cuda.to_device(center_z - eps),
+        "x2": cuda.to_device(center_x),
+        "y2": cuda.to_device(center_y + eps),
+        "z2": cuda.to_device(center_z - eps),
+    }
+
+    ray_count = edge_count
+    if ray_count:
+        directed_edges = np.asarray(contract.directed_edges, dtype=np.int64).reshape(-1, 2)
+        src_i = directed_edges[:, 0]
+        dst_i = directed_edges[:, 1]
+        tmax = out_degrees[src_i].astype(np.float64)
+        oy = src_i.astype(np.float64) - axis_offset_y
+        oz = dst_i.astype(np.float64) - axis_offset_z
+    else:
+        tmax = np.empty(0, dtype=np.float64)
+        oy = np.empty(0, dtype=np.float64)
+        oz = np.empty(0, dtype=np.float64)
+    rays = {
+        "ids": cuda.to_device(np.arange(ray_count, dtype=np.uint32)),
+        "ox": cuda.to_device(np.full(ray_count, -0.5 - axis_offset_x, dtype=np.float64)),
+        "oy": cuda.to_device(oy),
+        "oz": cuda.to_device(oz),
+        "dx": cuda.to_device(np.ones(ray_count, dtype=np.float64)),
+        "dy": cuda.to_device(np.zeros(ray_count, dtype=np.float64)),
+        "dz": cuda.to_device(np.zeros(ray_count, dtype=np.float64)),
+        "tmax": cuda.to_device(tmax),
+    }
+    cuda.synchronize()
     return triangles, rays
 
 
@@ -1459,10 +1583,14 @@ def _build_rt_graph_1a2_packed_geometry(contract):
     return triangles, rays
 
 
-def _build_rt_graph_2a1_device_geometry(contract):
+def _build_rt_graph_2a1_device_geometry(contract, *, partner: str = "cupy"):
+    if partner == "numba":
+        return _build_rt_graph_2a1_numba_device_geometry(contract)
+    if partner != "cupy":
+        raise ValueError(f"unsupported summary partner: {partner}")
     cp = __import__("cupy")
 
-    device_arrays = _require_cupy_device_arrays(contract)
+    device_arrays = _require_summary_device_arrays(contract, partner=partner)
     directed_src = device_arrays["directed_src"]
     directed_dst = device_arrays["column_indices"]
     axis_offset_x = contract.vertex_count / 2.0
@@ -1510,6 +1638,61 @@ def _build_rt_graph_2a1_device_geometry(contract):
         "tmax": cp.full(ray_count, 0.2, dtype=cp.float64),
     }
     ray_weights = device_arrays["two_hop_weights"].astype(cp.uint64, copy=False)
+    return triangles, rays, ray_weights
+
+
+def _build_rt_graph_2a1_numba_device_geometry(contract):
+    import numpy as np
+    from numba import cuda
+
+    directed_edges = np.asarray(contract.directed_edges, dtype=np.int64).reshape(-1, 2)
+    two_hop = np.asarray(contract.two_hop_rays_2a1, dtype=np.int64).reshape(-1, 3)
+    axis_offset_x = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+
+    edge_count = int(directed_edges.shape[0])
+    if edge_count:
+        center_x = directed_edges[:, 0].astype(np.float64) - axis_offset_x
+        center_z = directed_edges[:, 1].astype(np.float64) - axis_offset_z
+    else:
+        center_x = np.empty(0, dtype=np.float64)
+        center_z = np.empty(0, dtype=np.float64)
+    zero = np.zeros(edge_count, dtype=np.float64)
+    triangles = {
+        "ids": cuda.to_device(np.arange(edge_count, dtype=np.uint32)),
+        "x0": cuda.to_device(center_x),
+        "y0": cuda.to_device(zero),
+        "z0": cuda.to_device(center_z + eps),
+        "x1": cuda.to_device(center_x - eps),
+        "y1": cuda.to_device(zero),
+        "z1": cuda.to_device(center_z - eps),
+        "x2": cuda.to_device(center_x + eps),
+        "y2": cuda.to_device(zero),
+        "z2": cuda.to_device(center_z - eps),
+    }
+
+    ray_count = int(two_hop.shape[0])
+    if ray_count:
+        ox = two_hop[:, 0].astype(np.float64) - axis_offset_x
+        oz = two_hop[:, 1].astype(np.float64) - axis_offset_z
+        ray_weights_host = two_hop[:, 2].astype(np.uint64)
+    else:
+        ox = np.empty(0, dtype=np.float64)
+        oz = np.empty(0, dtype=np.float64)
+        ray_weights_host = np.empty(0, dtype=np.uint64)
+    rays = {
+        "ids": cuda.to_device(np.arange(ray_count, dtype=np.uint32)),
+        "ox": cuda.to_device(ox),
+        "oy": cuda.to_device(np.full(ray_count, -0.1, dtype=np.float64)),
+        "oz": cuda.to_device(oz),
+        "dx": cuda.to_device(np.zeros(ray_count, dtype=np.float64)),
+        "dy": cuda.to_device(np.ones(ray_count, dtype=np.float64)),
+        "dz": cuda.to_device(np.zeros(ray_count, dtype=np.float64)),
+        "tmax": cuda.to_device(np.full(ray_count, 0.2, dtype=np.float64)),
+    }
+    ray_weights = cuda.to_device(ray_weights_host)
+    cuda.synchronize()
     return triangles, rays, ray_weights
 
 

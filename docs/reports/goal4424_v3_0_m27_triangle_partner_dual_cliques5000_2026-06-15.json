@@ -1,0 +1,245 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "cupy_route": "gpu_graph_contract_builder_and_optix_device_column_summary",
+    "native_engine_customization": false,
+    "numba_route": "cpu_contract_then_numba_device_upload_and_optix_device_column_summary",
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparison": {
+    "all_triangle_counts_match_oracle": true,
+    "modes_covered": [
+      "rt_graph_1a2_generic_rt",
+      "rt_graph_2a1_generic_rt"
+    ],
+    "partners_covered": [
+      "cupy",
+      "numba"
+    ],
+    "public_speedup_claim_authorized": false,
+    "rt_core_accelerated": true,
+    "signature_match_by_mode": {
+      "rt_graph_1a2_generic_rt": true,
+      "rt_graph_2a1_generic_rt": true
+    },
+    "whole_app_speedup_claim_authorized": false
+  },
+  "parameters": {
+    "cliques": 5000,
+    "edge_count": 30000,
+    "edge_file": "build/goal4424_m27_triangle_k4_cliques.edge",
+    "expected_triangle_count": 20000,
+    "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+    "modes": [
+      "rt_graph_2a1_generic_rt",
+      "rt_graph_1a2_generic_rt"
+    ],
+    "partners": [
+      "cupy",
+      "numba"
+    ],
+    "prewarm": {
+      "cliques": 10,
+      "edge_file": "build/goal4424_m27_triangle_k4_cliques.prewarm.edge",
+      "enabled": true
+    },
+    "repeat": 3,
+    "warmup": 1
+  },
+  "rows": [
+    {
+      "backend": "optix",
+      "mode": "rt_graph_2a1_generic_rt",
+      "oracle_triangle_count": 20000,
+      "partner": "cupy",
+      "partner_construction_mode": null,
+      "partner_contract_label": "cupy",
+      "partner_summary_contract_used": true,
+      "partner_timing_ms": {
+        "compact_unique_ms": 2.021,
+        "degree_ms": 13.647,
+        "directed_csr_ms": 1.261,
+        "download_needed_columns_ms": 0.714,
+        "load_np_ms": 3.392,
+        "total_partner_ms": 24.436,
+        "two_hop_and_count_ms": 3.198,
+        "upload_ms": 0.202
+      },
+      "primitive_count": 30000,
+      "ray_count": 15000,
+      "rt_core_accelerated": true,
+      "signature": {
+        "oracle_triangle_count": 20000,
+        "primitive_count": 30000,
+        "ray_count": 15000,
+        "result_triangle_count": 20000
+      },
+      "summary_contract": "PREPARED_TRIANGLE_SCENE_3D_RAY_ANY_HIT_WEIGHTED_SUM_DEVICE_COLUMNS_V1",
+      "timing_ms": {
+        "build_contract": 38.56971859931946,
+        "build_geometry": 0.4144906997680664,
+        "prepare_scene_ms": 1.9084811210632324,
+        "query_max_ms": 0.39824843406677246,
+        "query_median_ms": 0.39087235927581787,
+        "query_min_ms": 0.37932395935058594,
+        "total": 42.958877980709076
+      },
+      "transfer_source_protocols": [
+        "cupy"
+      ],
+      "triangle_count_matches_oracle": true,
+      "v2_4_input_source_protocols": [
+        "cupy_device_columns",
+        "cupy_device_columns",
+        "cupy_device_columns"
+      ]
+    },
+    {
+      "backend": "optix",
+      "mode": "rt_graph_2a1_generic_rt",
+      "oracle_triangle_count": 20000,
+      "partner": "numba",
+      "partner_construction_mode": "cpu_contract_then_numba_device_upload",
+      "partner_contract_label": "numba",
+      "partner_summary_contract_used": true,
+      "partner_timing_ms": {
+        "construction_mode": "cpu_contract_then_numba_device_upload",
+        "cpu_contract_ms": 186.001,
+        "host_summary_column_ms": 13.966,
+        "load_np_ms": 3.808,
+        "numba_device_upload_ms": 1.828,
+        "total_partner_ms": 205.604
+      },
+      "primitive_count": 30000,
+      "ray_count": 15000,
+      "rt_core_accelerated": true,
+      "signature": {
+        "oracle_triangle_count": 20000,
+        "primitive_count": 30000,
+        "ray_count": 15000,
+        "result_triangle_count": 20000
+      },
+      "summary_contract": "PREPARED_TRIANGLE_SCENE_3D_RAY_ANY_HIT_WEIGHTED_SUM_DEVICE_COLUMNS_V1",
+      "timing_ms": {
+        "build_contract": 211.03550493717194,
+        "build_geometry": 4.1955262422561646,
+        "prepare_scene_ms": 2.1482035517692566,
+        "query_max_ms": 0.38283318281173706,
+        "query_median_ms": 0.37261098623275757,
+        "query_min_ms": 0.37172436714172363,
+        "total": 219.41978484392166
+      },
+      "transfer_source_protocols": [
+        "cuda_array_interface"
+      ],
+      "triangle_count_matches_oracle": true,
+      "v2_4_input_source_protocols": [
+        "numba_device_columns",
+        "numba_device_columns",
+        "numba_device_columns"
+      ]
+    },
+    {
+      "backend": "optix",
+      "mode": "rt_graph_1a2_generic_rt",
+      "oracle_triangle_count": 20000,
+      "partner": "cupy",
+      "partner_construction_mode": null,
+      "partner_contract_label": "cupy",
+      "partner_summary_contract_used": true,
+      "partner_timing_ms": {
+        "compact_unique_ms": 0.674,
+        "degree_ms": 0.235,
+        "directed_csr_ms": 1.125,
+        "download_needed_columns_ms": 0.399,
+        "load_np_ms": 2.881,
+        "total_partner_ms": 7.979,
+        "two_hop_and_count_ms": 2.48,
+        "upload_ms": 0.185
+      },
+      "primitive_count": 20000,
+      "ray_count": 30000,
+      "rt_core_accelerated": true,
+      "signature": {
+        "oracle_triangle_count": 20000,
+        "primitive_count": 20000,
+        "ray_count": 30000,
+        "result_triangle_count": 20000
+      },
+      "summary_contract": "PREPARED_TRIANGLE_SCENE_3D_RAY_HIT_COUNT_SUM_DEVICE_COLUMNS_V1",
+      "timing_ms": {
+        "build_contract": 8.60121101140976,
+        "build_geometry": 2.4388134479522705,
+        "prepare_scene_ms": 1.5556961297988892,
+        "query_max_ms": 0.3746300935745239,
+        "query_median_ms": 0.3667771816253662,
+        "query_min_ms": 0.3662034869194031,
+        "total": 14.38959687948227
+      },
+      "transfer_source_protocols": [
+        "cupy"
+      ],
+      "triangle_count_matches_oracle": true,
+      "v2_4_input_source_protocols": [
+        "cupy_device_columns",
+        "cupy_device_columns"
+      ]
+    },
+    {
+      "backend": "optix",
+      "mode": "rt_graph_1a2_generic_rt",
+      "oracle_triangle_count": 20000,
+      "partner": "numba",
+      "partner_construction_mode": "cpu_contract_then_numba_device_upload",
+      "partner_contract_label": "numba",
+      "partner_summary_contract_used": true,
+      "partner_timing_ms": {
+        "construction_mode": "cpu_contract_then_numba_device_upload",
+        "cpu_contract_ms": 180.841,
+        "host_summary_column_ms": 14.077,
+        "load_np_ms": 2.613,
+        "numba_device_upload_ms": 1.382,
+        "total_partner_ms": 198.914
+      },
+      "primitive_count": 20000,
+      "ray_count": 30000,
+      "rt_core_accelerated": true,
+      "signature": {
+        "oracle_triangle_count": 20000,
+        "primitive_count": 20000,
+        "ray_count": 30000,
+        "result_triangle_count": 20000
+      },
+      "summary_contract": "PREPARED_TRIANGLE_SCENE_3D_RAY_HIT_COUNT_SUM_DEVICE_COLUMNS_V1",
+      "timing_ms": {
+        "build_contract": 204.26669716835022,
+        "build_geometry": 5.319565534591675,
+        "prepare_scene_ms": 1.9606277346611023,
+        "query_max_ms": 0.8527413010597229,
+        "query_median_ms": 0.8410438895225525,
+        "query_min_ms": 0.8406490087509155,
+        "total": 215.1876538991928
+      },
+      "transfer_source_protocols": [
+        "cuda_array_interface"
+      ],
+      "triangle_count_matches_oracle": true,
+      "v2_4_input_source_protocols": [
+        "numba_device_columns",
+        "numba_device_columns"
+      ]
+    }
+  ],
+  "runner_numba_cuda_home": {
+    "bin_dir": "/tmp/rtdl_cuda124_home/bin",
+    "configured": true,
+    "cuda_home": "/tmp/rtdl_cuda124_home",
+    "nvvm_dir": "/tmp/rtdl_cuda124_home/nvvm/lib64",
+    "ptxas_version": "ptxas: NVIDIA (R) Ptx optimizing assembler\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Mar_28_02:14:54_PDT_2024\nCuda compilation tools, release 12.4, V12.4.131\nBuild cuda_12.4.r12.4/compiler.34097967_0\n"
+  },
+  "status": "m27_triangle_counting_exposes_cupy_and_numba_partner_summary_routes",
+  "version": "rtdl.v3_0.triangle_partner_dual.m27"
+}
