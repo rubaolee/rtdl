@@ -209,7 +209,9 @@ def _partner_column_to_list(column, partner: str) -> list[object]:
         import cupy
 
         return cupy.asnumpy(column).tolist()
-    raise ValueError("partner must be 'torch' or 'cupy'")
+    if partner == "numba":
+        return column.copy_to_host().tolist()
+    raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
 
 
 def _run_partner_exact_top_k(
@@ -241,7 +243,7 @@ def _run_partner_exact_top_k(
         }
         for query_id, neighbor_id, distance, rank in zip(query_ids, neighbor_ids, distances, ranks)
     )
-    return rows, result["metadata"]
+    return tuple(sorted(rows, key=lambda row: (int(row["query_id"]), int(row["neighbor_rank"])))), result["metadata"]
 
 
 def run_case(
@@ -378,7 +380,7 @@ def main(argv: list[str] | None = None) -> int:
         choices=("cpu_python_reference", "cpu", "embree", "optix", "scipy", "partner_exact"),
         default="cpu_python_reference",
     )
-    parser.add_argument("--partner", choices=("torch", "cupy"), default="cupy")
+    parser.add_argument("--partner", choices=("torch", "cupy", "numba"), default="cupy")
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument(
         "--output-mode",

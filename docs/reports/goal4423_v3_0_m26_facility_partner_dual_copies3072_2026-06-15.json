@@ -1,0 +1,111 @@
+{
+  "claim_boundary": {
+    "automatic_partner_selection_authorized": false,
+    "best_partner_and_numba_reference_exposed": true,
+    "exact_partner_reference_path": true,
+    "native_engine_customization": false,
+    "required_dual_partners": [
+      "cupy",
+      "numba"
+    ],
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparison": {
+    "best_observed_partner_by_full_app_median": "numba",
+    "native_engine_customization": false,
+    "partner_count": 2,
+    "public_speedup_claim_authorized": false,
+    "rt_core_accelerated": false,
+    "signature_match": true,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "parameters": {
+    "copies": 3072,
+    "customer_count": 12288,
+    "depot_count": 12288,
+    "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+    "k": 1,
+    "logical_pair_count": 150994944,
+    "output_mode": "summary",
+    "partners": [
+      "cupy",
+      "numba"
+    ],
+    "repeats": 3,
+    "warmups": 1
+  },
+  "rows": [
+    {
+      "customer_count": 12288,
+      "depot_count": 12288,
+      "full_app_wall_seconds": [
+        0.624374695122242,
+        0.6240977719426155,
+        0.6239368170499802
+      ],
+      "full_app_wall_seconds_max": 0.624374695122242,
+      "full_app_wall_seconds_median": 0.6240977719426155,
+      "full_app_wall_seconds_min": 0.6239368170499802,
+      "metadata_adapter": "top_k_nearest_points_2d_partner_columns",
+      "metadata_host_rank_materialization_used": null,
+      "metadata_numba_device_rank_used": null,
+      "metadata_numba_score_row_count": null,
+      "metadata_numba_status": null,
+      "metadata_partner": "cupy",
+      "metadata_v2_5_partner_continuation_operation": null,
+      "native_continuation_active": false,
+      "partner": "cupy",
+      "partner_reference_contract": "generic_exact_top_k_nearest_points_2d",
+      "row_count": 12288,
+      "rt_core_accelerated": false,
+      "signature": {
+        "assigned_customer_count": 12288,
+        "depot_load_checksum": 1886957568,
+        "depot_load_key_count": 9216,
+        "depot_load_weighted_checksum": 11595146575872,
+        "row_count": 12288
+      }
+    },
+    {
+      "customer_count": 12288,
+      "depot_count": 12288,
+      "full_app_wall_seconds": [
+        0.45420317351818085,
+        0.5065106451511383,
+        0.5093870535492897
+      ],
+      "full_app_wall_seconds_max": 0.5093870535492897,
+      "full_app_wall_seconds_median": 0.5065106451511383,
+      "full_app_wall_seconds_min": 0.45420317351818085,
+      "metadata_adapter": "top_k_nearest_points_2d_partner_columns",
+      "metadata_host_rank_materialization_used": false,
+      "metadata_numba_device_rank_used": true,
+      "metadata_numba_score_row_count": 150994944,
+      "metadata_numba_status": "device_grouped_topk_after_device_score_rows",
+      "metadata_partner": "numba",
+      "metadata_v2_5_partner_continuation_operation": "grouped_topk_f64",
+      "native_continuation_active": false,
+      "partner": "numba",
+      "partner_reference_contract": "generic_exact_top_k_nearest_points_2d",
+      "row_count": 12288,
+      "rt_core_accelerated": false,
+      "signature": {
+        "assigned_customer_count": 12288,
+        "depot_load_checksum": 1886957568,
+        "depot_load_key_count": 9216,
+        "depot_load_weighted_checksum": 11595146575872,
+        "row_count": 12288
+      }
+    }
+  ],
+  "runner_numba_cuda_home": {
+    "bin_dir": "/tmp/rtdl_cuda124_home/bin",
+    "configured": true,
+    "cuda_home": "/tmp/rtdl_cuda124_home",
+    "nvvm_dir": "/tmp/rtdl_cuda124_home/nvvm/lib64",
+    "ptxas_version": "ptxas: NVIDIA (R) Ptx optimizing assembler\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Mar_28_02:14:54_PDT_2024\nCuda compilation tools, release 12.4, V12.4.131\nBuild cuda_12.4.r12.4/compiler.34097967_0\n"
+  },
+  "status": "m26_facility_exact_topk_exposes_best_and_no_cpp_partner_paths",
+  "version": "rtdl.v3_0.facility_partner_dual.m26"
+}
