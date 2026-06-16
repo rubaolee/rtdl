@@ -147,6 +147,12 @@ No-C++ Numba CUDA fused-subtree prototype on an NVIDIA machine:
 PYTHONPATH=src:. python scripts/v3_0_m52_barnes_hut_numba_cuda_fused_subtree.py --body-counts 8192,16384,32768 --repeat 11 --warmup 2 --output docs/reports/goal4448_v3_0_m52_barnes_hut_numba_cuda_fused_subtree_scale_r11_2026-06-16.json
 ```
 
+Current force-summary front-door rerank:
+
+```bash
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python scripts/v3_0_m62_barnes_hut_current_route_rerank.py --body-counts 8192,16384,32768 --repeat 31 --warmup 3 --output docs/reports/goal4458_v3_0_m62_barnes_hut_current_route_rerank_2026-06-16.json
+```
+
 Reusable no-C++ fused partner API:
 
 ```python
@@ -254,7 +260,7 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   evidence. This is still row collection evidence, not RT-core speedup evidence.
   Default frontier rows are ID-only; distance/opening-ratio diagnostics are an
   explicit debug side channel, not primitive output.
-- Current V3 M45/M52/M53/M54 route guidance separates fused baselines from RT evidence.
+- Current V3 M45/M52/M53/M54/M62 route guidance separates fused baselines from RT evidence.
   `fused_frontier_force_sum_bucketized_cpu_numba` is the strongest measured CPU
   fused baseline. `scripts/v3_0_m52_barnes_hut_numba_cuda_fused_subtree.py`
   provides the scale evidence,
@@ -262,10 +268,14 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   no-C++ fused GPU partner API, and
   `fused_frontier_force_sum_bucketized_numba_cuda` is the app front-door wrapper
   over that API. The fused Numba CUDA route beats the prepared RTDL/OptiX+Numba
-  aggregate-frontier route at the measured 8192/16384/32768 scales. Neither
-  fused route is an Embree implementation or evidence that RT cores accelerate
-  Barnes-Hut. The prepared RTDL/OptiX aggregate-frontier route remains useful RT
-  device-column evidence and a same-contract partner comparison target.
+  aggregate-frontier route at the measured 8192/16384/32768 scales. Goal4458
+  reranks the current app front doors and keeps fused CPU/Numba as the fastest
+  measured force-summary route on the RTX 4000 Ada pod, with fused Numba CUDA as
+  the no-C++ GPU fused route and prepared RTDL/OptiX+Numba as RT-core
+  device-column evidence. Neither fused route is an Embree implementation or
+  evidence that RT cores accelerate Barnes-Hut. The prepared RTDL/OptiX
+  aggregate-frontier route remains useful RT device-column evidence and a
+  same-contract partner comparison target.
 - Current expanded-membership lowering evidence routes Barnes-Hut
   aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
   near-zone candidate rows. The engine still only sees points, boxes, IDs, and

@@ -128,7 +128,7 @@ class Goal4439V30M42BarnesHutPreparedFrontierAppModeTest(unittest.TestCase):
 
         route = rt.explain_current_benchmark_route("barnes_hut")
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4457.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4458.v1",
             route["version"],
         )
         self.assertEqual("mixed_explicit", route["decision_kind"])

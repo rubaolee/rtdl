@@ -17,7 +17,9 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "materialization bottleneck and beat the current prepared RTDL/OptiX route at "
     "tested scales, while Goal4449 turns the fused CUDA shape into a reusable "
     "app-reference partner API and Goal4450 wires that API into the Barnes-Hut "
-    "app front door; RTNN separates "
+    "app front door, with Goal4458 later reranking the current Barnes-Hut front "
+    "doors and keeping prepared RTDL/OptiX as RT-core device-column evidence "
+    "rather than a Barnes-Hut RT-core speedup row; RTNN separates "
     "Goal4381 exact float64 aggregate rows from Goal4443 resident graph-bridge "
     "rows; triangle counting keeps scalar primitive wording while Goal4444 fixes "
     "the no-C++ Numba construction debt; RT-DBSCAN adds Goal4445 compact "
@@ -281,7 +283,12 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "at 8192/16384. Goal4449 promotes the same fused CUDA shape to the "
             "reusable `prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda` "
             "app-reference partner API, and Goal4450 exposes it as the "
-            "`fused_frontier_force_sum_bucketized_numba_cuda` app front-door mode."
+            "`fused_frontier_force_sum_bucketized_numba_cuda` app front-door mode. "
+            "Goal4458 reranks the current force-summary front doors and keeps fused "
+            "CPU/Numba as the fastest measured route on the RTX 4000 Ada pod at "
+            "8192/16384/32768 bodies, fused Numba CUDA as the no-C++ GPU fused "
+            "partner lane, and prepared RTDL/OptiX+Numba as RT-core device-column "
+            "evidence rather than Barnes-Hut RT-core speedup evidence."
         ),
         "adequacy": "adequate",
         "current_recommended_path": (
@@ -329,6 +336,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4448",
             "Goal4449",
             "Goal4450",
+            "Goal4458",
         ),
     },
     "rtnn": {
