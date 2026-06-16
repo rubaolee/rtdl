@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4481.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4482.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -162,7 +162,12 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "all three large rows, so full ray columns remain the current internal route. "
     "Goal4481 tests a no-C++ Numba fused decode/project output builder; it is "
     "correct but segment-ray build is 0.661x/0.701x/0.664x versus the current "
-    "CuPy-vectorized output route, so it remains rejected."
+    "CuPy-vectorized output route, so it remains rejected. Goal4482 scouts an "
+    "already-sorted source-group skip-sort fast path for the remaining "
+    "unique/count boundary. It is rejected because sorted source groups cover "
+    "only 0.131%/0.617%/0.001% of two-hop rows on the three large paper rows; "
+    "the next useful grouped/local unique-count work must be a true bounded-kernel "
+    "strategy, not a sortedness shortcut."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -824,7 +829,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "compact layout remains rejected for this route. Goal4481 tests "
             "`numba_fused_decode_project`; counts/rays/weights match, but "
             "total time is 0.899x/0.945x/0.953x and segment-ray build is "
-            "0.661x/0.701x/0.664x, so CuPy vectorized output remains current."
+            "0.661x/0.701x/0.664x, so CuPy vectorized output remains current. "
+            "Goal4482 scouts whether the remaining unique/count boundary can "
+            "use an already-sorted source-group skip-sort fast path. It cannot: "
+            "sorted source groups cover only 0.131%/0.617%/0.001% of two-hop "
+            "rows on `com-lj`/`soc-LiveJournal1`/`com-orkut`, so that shortcut "
+            "is rejected and the current internal route remains unchanged."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -887,7 +897,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "`numba_direct_sort_rle` route and its still-unsolved unique/count "
             "materialization boundary. Cite Goal4480 when rejecting compact "
             "constant-ray columns on top of the sort/RLE route. Cite Goal4481 "
-            "when rejecting the no-C++ Numba fused decode/project output builder."
+            "when rejecting the no-C++ Numba fused decode/project output builder. "
+            "Cite Goal4482 when rejecting an already-sorted source-group "
+            "skip-sort fast path: sorted two-hop row coverage is below 1% on "
+            "all three large rows, so the useful grouped/local direction needs "
+            "a true bounded-kernel strategy."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -922,6 +936,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "claiming Goal4479 solves Triangle Counting partner materialization rather than improving the unique/count boundary",
             "promoting the Goal4480 compact constant-ray layout retest on top of sort/RLE",
             "promoting the Goal4481 numba_fused_decode_project output builder",
+            "promoting an already-sorted source-group skip-sort fast path after Goal4482",
             "spending the next Triangle Counting optimization cycle on counts/filter, duplicate count sum, or RT traversal before further reducing Goal4479 sort/RLE unique-count cost",
             "automatic CuPy-vs-Numba partner selection",
         ),
@@ -949,8 +964,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "fill, or fused decode/projection; Goal4480 shows compact "
             "constant-ray columns should not be the next route-promotion target, "
             "and Goal4481 shows a simple no-C++ Numba fused decode/project "
-            "output builder should not be promoted; next useful work is a "
-            "lower-overhead grouped/local unique-count strategy, "
+            "output builder should not be promoted; Goal4482 shows an "
+            "already-sorted source-group skip-sort fast path should not be "
+            "promoted because sorted two-hop row coverage is below 1% on all "
+            "large rows; next useful work is a true lower-overhead "
+            "grouped/local unique-count strategy, "
             "without breaking the app-agnostic primitive contract"
         ),
         evidence_refs=(
@@ -987,6 +1005,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4479",
             "Goal4480",
             "Goal4481",
+            "Goal4482",
         ),
         pod_needed_next=False,
     ),

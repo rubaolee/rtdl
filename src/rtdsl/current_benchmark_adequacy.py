@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4481.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4482.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -85,7 +85,11 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "all three large rows, so full ray columns remain the current internal route. "
     "Goal4481 tests a no-C++ Numba fused decode/project output builder; it is "
     "correct but segment-ray build is 0.661x/0.701x/0.664x versus the current "
-    "CuPy-vectorized output route, so it remains rejected. "
+    "CuPy-vectorized output route, so it remains rejected. Goal4482 rejects an "
+    "already-sorted source-group skip-sort fast path for Triangle Counting "
+    "because sorted groups cover only 0.131%/0.617%/0.001% of two-hop rows on "
+    "the three large paper rows; future grouped/local unique-count work must be "
+    "a true bounded-kernel strategy, not a sortedness shortcut. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -536,7 +540,12 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "ray columns remain the current route. Goal4481 tests "
             "`numba_fused_decode_project`; counts/rays/weights match, but "
             "total time is 0.899x/0.945x/0.953x and segment-ray build is "
-            "0.661x/0.701x/0.664x, so CuPy vectorized output remains current."
+            "0.661x/0.701x/0.664x, so CuPy vectorized output remains current. "
+            "Goal4482 scouts the possible already-sorted source-group skip-sort "
+            "fast path for the remaining unique/count boundary. Sorted source "
+            "groups cover only 0.131%/0.617%/0.001% of two-hop rows on "
+            "`com-lj`/`soc-LiveJournal1`/`com-orkut`, so that shortcut is "
+            "rejected and the current route remains unchanged."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -577,7 +586,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "that boundary but does not solve partner materialization. Cite "
             "Goal4480 when rejecting compact constant-ray columns on top of "
             "the sort/RLE route. Cite Goal4481 when rejecting the no-C++ Numba "
-            "fused decode/project output builder."
+            "fused decode/project output builder. Cite Goal4482 when rejecting "
+            "an already-sorted source-group skip-sort fast path: sorted two-hop "
+            "row coverage is below 1% on all three large rows."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
@@ -611,8 +622,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "unique-count cost, Numba key fill, or fused decode/projection; "
             "Goal4480 shows compact constant-ray columns should not be the next "
             "route-promotion target, and Goal4481 shows a simple no-C++ Numba "
-            "fused decode/project output builder should not be promoted; next "
-            "useful work is a lower-overhead grouped/local unique-count strategy, "
+            "fused decode/project output builder should not be promoted; "
+            "Goal4482 shows an already-sorted source-group skip-sort fast path "
+            "should not be promoted because sorted two-hop row coverage is below "
+            "1% on all large rows; next useful work is a true lower-overhead "
+            "grouped/local unique-count strategy, "
             "without breaking the app-agnostic primitive contract"
         ),
         "evidence_refs": (
@@ -647,6 +661,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4479",
             "Goal4480",
             "Goal4481",
+            "Goal4482",
         ),
     },
 }

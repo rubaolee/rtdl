@@ -1,0 +1,163 @@
+{
+  "goal": 4482,
+  "milestone": "v3_0_m86",
+  "status": "source_group_sorted_fast_path_feasibility_rejected",
+  "date": "2026-06-16",
+  "measurement_host": "RTX 4000 Ada pod",
+  "route_context": "Triangle Counting unique_weighted + numba_direct_sort_rle + prepared_segment_replay source-group feasibility scout",
+  "rows": [
+    {
+      "dataset": "com_lj",
+      "display_name": "com-lj",
+      "edge_file": "build/goal2593_snap_edges/com-lj.edge",
+      "max_two_hop_rows": 15000000,
+      "contract_partner": "cupy_directed_csr",
+      "directed_edge_count": 33895259,
+      "vertex_count": 3212032,
+      "segment_count": 62,
+      "source_groups": 3204408,
+      "segment_edge_count": {
+        "p50": 571244.5,
+        "p90": 808313.0,
+        "p95": 871112.0,
+        "p99": 1159214.6,
+        "max": 1182724
+      },
+      "segment_twohop_count": {
+        "p50": 14999982.5,
+        "p90": 14999997.9,
+        "p95": 14999999.0,
+        "p99": 14999999.0,
+        "max": 14999999
+      },
+      "group_edges": {
+        "sum": 33895259,
+        "p50": 7.0,
+        "p90": 22.0,
+        "p95": 31.0,
+        "p99": 61.0,
+        "max": 524
+      },
+      "group_twohop": {
+        "sum": 928731472,
+        "p50": 94.0,
+        "p90": 545.0,
+        "p95": 969.0,
+        "p99": 3500.0,
+        "max": 69880
+      },
+      "sorted_fast_path": {
+        "sorted_groups": 124250,
+        "sorted_groups_pct": 3.877,
+        "sorted_twohop_rows": 1215925,
+        "sorted_twohop_pct": 0.131,
+        "single_edge_groups": 72251,
+        "single_edge_groups_pct": 2.255,
+        "single_edge_twohop_rows": 717488,
+        "single_edge_twohop_pct": 0.077
+      }
+    },
+    {
+      "dataset": "soc_livejournal1",
+      "display_name": "soc-LiveJournal1",
+      "edge_file": "build/goal2593_snap_edges/soc-LiveJournal1.edge",
+      "max_two_hop_rows": 15000000,
+      "contract_partner": "cupy_directed_csr",
+      "directed_edge_count": 42260523,
+      "vertex_count": 4256557,
+      "segment_count": 93,
+      "source_groups": 4244167,
+      "segment_edge_count": {
+        "p50": 467224.0,
+        "p90": 710474.2,
+        "p95": 797727.0,
+        "p99": 1010789.72,
+        "max": 1050404
+      },
+      "segment_twohop_count": {
+        "p50": 14999981.0,
+        "p90": 14999998.0,
+        "p95": 14999999.4,
+        "p99": 15000000.0,
+        "max": 15000000
+      },
+      "group_edges": {
+        "sum": 42260523,
+        "p50": 5.0,
+        "p90": 22.0,
+        "p95": 32.0,
+        "p99": 70.0,
+        "max": 742
+      },
+      "group_twohop": {
+        "sum": 1383299326,
+        "p50": 76.0,
+        "p90": 576.0,
+        "p95": 1127.0,
+        "p99": 4538.0,
+        "max": 96990
+      },
+      "sorted_fast_path": {
+        "sorted_groups": 636956,
+        "sorted_groups_pct": 15.008,
+        "sorted_twohop_rows": 8531186,
+        "sorted_twohop_pct": 0.617,
+        "single_edge_groups": 566704,
+        "single_edge_groups_pct": 13.353,
+        "single_edge_twohop_rows": 7787972,
+        "single_edge_twohop_pct": 0.563
+      }
+    },
+    {
+      "dataset": "com_orkut",
+      "display_name": "com-orkut",
+      "edge_file": "build/goal2593_snap_edges/com-orkut.edge",
+      "max_two_hop_rows": 15000000,
+      "contract_partner": "cupy_directed_csr",
+      "directed_edge_count": 117117316,
+      "vertex_count": 3004674,
+      "segment_count": 572,
+      "source_groups": 3004513,
+      "segment_edge_count": {
+        "p50": 172819.0,
+        "p90": 348336.9,
+        "p95": 358336.45,
+        "p99": 370614.3,
+        "max": 381401
+      },
+      "segment_twohop_count": {
+        "p50": 14999959.0,
+        "p90": 14999993.0,
+        "p95": 14999996.0,
+        "p99": 14999999.0,
+        "max": 15000000
+      },
+      "group_edges": {
+        "sum": 117117316,
+        "p50": 32.0,
+        "p90": 71.0,
+        "p95": 92.0,
+        "p99": 197.0,
+        "max": 535
+      },
+      "group_twohop": {
+        "sum": 8579930671,
+        "p50": 1386.0,
+        "p90": 5148.0,
+        "p95": 8932.0,
+        "p99": 35064.0,
+        "max": 118057
+      },
+      "sorted_fast_path": {
+        "sorted_groups": 1764,
+        "sorted_groups_pct": 0.059,
+        "sorted_twohop_rows": 57653,
+        "sorted_twohop_pct": 0.001,
+        "single_edge_groups": 719,
+        "single_edge_groups_pct": 0.024,
+        "single_edge_twohop_rows": 25672,
+        "single_edge_twohop_pct": 0.0
+      }
+    }
+  ]
+}
