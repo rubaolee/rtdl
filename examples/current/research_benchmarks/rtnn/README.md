@@ -77,6 +77,13 @@ repeat=1000. CuPy measures `130.079ms` hot median per batch and Numba measures
 same-stream partner reduction, and pass the no-hidden-column-copy hot-window
 gate. This is RTDL-internal app-bridge evidence, not a full RTNN paper row.
 
+Goal4460 closes the app-bridge shell distribution gap. The generic M19
+ranked-summary graph bridge now accepts `uniform`, `clustered`, and `shell`;
+the M64 shell row uses the same 1,048,576-point / 65,536-query / repeat=1000
+contract and measures `38.588ms` CuPy hot median per batch and `39.267ms`
+Numba hot median per batch. This keeps shell as RTDL-internal distribution
+evidence, not a synthetic substitute for an official RTNN paper dataset.
+
 The important boundary is that RTDL exact aggregate and app graph-bridge rows
 are RTDL-internal same-contract evidence; the official RTNN rows are diagnostic
 unless a future goal proves output-contract equivalence.

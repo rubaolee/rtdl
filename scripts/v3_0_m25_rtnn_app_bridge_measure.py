@@ -80,7 +80,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run V3.0 M25 RTNN app-level ranked-summary bridge evidence.")
     parser.add_argument("--point-count", type=int, default=65_536)
     parser.add_argument("--query-count", type=int, default=None)
-    parser.add_argument("--distribution", default="uniform", choices=("uniform", "clustered"))
+    parser.add_argument("--distribution", default="uniform", choices=("uniform", "clustered", "shell"))
     parser.add_argument("--warmups", type=int, default=2)
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--hardware", default=None)

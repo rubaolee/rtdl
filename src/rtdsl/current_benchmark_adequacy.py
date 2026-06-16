@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4459.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4460.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -21,7 +21,8 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "doors and keeping prepared RTDL/OptiX as RT-core device-column evidence "
     "rather than a Barnes-Hut RT-core speedup row; RTNN separates "
     "Goal4381 exact float64 aggregate rows from Goal4443 uniform resident "
-    "graph-bridge rows and Goal4459 clustered resident graph-bridge rows; "
+    "graph-bridge rows, Goal4459 clustered resident graph-bridge rows, and "
+    "Goal4460 shell resident graph-bridge rows; "
     "triangle counting keeps scalar primitive wording while Goal4444 fixes "
     "the no-C++ Numba construction debt; RT-DBSCAN adds Goal4445 compact "
     "component-signature output; and robot collision adds Goal4446 NumPy "
@@ -30,6 +31,7 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "and fail-closing unsafe prepared-points CUDA graph replay. Goal4459 also "
     "makes the RTNN app bridge non-toy on a clustered 1M/65K/repeat=1000 row "
     "while preserving signature, same-stream partner, and no-hidden-copy gates. "
+    "Goal4460 closes the app-bridge shell distribution gap with the same gates. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -357,7 +359,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4459 extends the same app-bridge contract to a clustered 1M resident "
             "scene: CuPy measures 130.079ms hot median per 65K-query batch and Numba "
             "measures 131.442ms, with signature, CUDA graph replay, same-stream partner "
-            "reduction, and no-hidden-copy gates still passing."
+            "reduction, and no-hidden-copy gates still passing. Goal4460 adds the shell "
+            "distribution row under the same app-bridge contract: CuPy measures 38.588ms "
+            "hot median per 65K-query batch and Numba measures 39.267ms, with the same "
+            "parity and hot-window gates."
         ),
         "adequacy": "strong",
         "current_recommended_path": (
@@ -375,8 +380,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
         "next_generic_runtime_action": (
             "keep exact aggregate and resident graph-bridge contracts separate; "
             "prove output-contract equivalence before comparing with official RTNN "
-            "authors-code rows; run actual AMD functional validation before AMD "
-            "performance work"
+            "authors-code rows; do not add more synthetic distribution timing unless "
+            "it changes a route decision; run actual AMD functional validation before "
+            "AMD performance work"
         ),
         "evidence_refs": (
             "Goal2800",
@@ -392,6 +398,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4422",
             "Goal4443",
             "Goal4459",
+            "Goal4460",
         ),
     },
     "triangle_counting": {

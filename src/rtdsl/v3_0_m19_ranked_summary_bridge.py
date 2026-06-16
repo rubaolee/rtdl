@@ -22,6 +22,7 @@ V3_M19_RANKED_SUMMARY_BRIDGE_STATUS = (
 V3_M19_GRAPH_ID = "prepared_ranked_summary_graph_partner_bridge"
 V3_M19_CONTRACT_KEY = "prepared_fixed_radius_ranked_summary_graph_partials_same_stream_partner_v1"
 V3_M19_PARTNERS = ("cupy", "numba")
+V3_M19_DISTRIBUTIONS = ("uniform", "clustered", "shell")
 V3_M19_ALLOWED_NON_COLUMN_HOST_TO_DEVICE_BYTES = (
     V3_NO_HIDDEN_COPY_DEFAULT_ALLOWED_NON_COLUMN_HOST_TO_DEVICE_BYTES
 )
@@ -187,6 +188,17 @@ def make_v3_m19_ranked_summary_points(point_count: int, *, distribution: str = "
         centers = rng.random((center_count, 3), dtype=np.float64)
         assignments = rng.integers(0, center_count, size=count)
         coords = centers[assignments] + rng.normal(0.0, 0.018, size=(count, 3))
+        coords = np.clip(coords, 0.0, 1.0)
+    elif distribution == "shell":
+        rng = np.random.default_rng(4421)
+        theta = rng.random(count, dtype=np.float64) * (2.0 * np.pi)
+        shell_z = rng.uniform(-1.0, 1.0, size=count)
+        radial = np.sqrt(np.maximum(0.0, 1.0 - shell_z * shell_z))
+        radius = np.clip(rng.normal(0.34, 0.025, size=count), 0.0, 0.49)
+        coords = np.empty((count, 3), dtype=np.float64)
+        coords[:, 0] = 0.5 + radius * radial * np.cos(theta)
+        coords[:, 1] = 0.5 + radius * radial * np.sin(theta)
+        coords[:, 2] = 0.5 + radius * shell_z
         coords = np.clip(coords, 0.0, 1.0)
     else:
         raise GraphValidationError(f"unsupported M19 ranked-summary distribution: {distribution}")

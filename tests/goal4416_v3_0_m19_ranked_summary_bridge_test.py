@@ -36,6 +36,7 @@ class Goal4416V30M19RankedSummaryBridgeTest(unittest.TestCase):
         module = MODULE.read_text(encoding="utf-8")
         runner = RUNNER.read_text(encoding="utf-8")
         self.assertIn('V3_M19_PARTNERS = ("cupy", "numba")', module)
+        self.assertIn('V3_M19_DISTRIBUTIONS = ("uniform", "clustered", "shell")', module)
         self.assertIn("prepared_ranked_summary_graph_partner_bridge", module)
         self.assertIn("point_count: int = 65_536", module)
         self.assertIn("prepared_scene_and_query_resident_before_hot_window", module)
@@ -46,6 +47,17 @@ class Goal4416V30M19RankedSummaryBridgeTest(unittest.TestCase):
         self.assertIn("--numba-cuda-home", runner)
         self.assertIn("runner_numba_cuda_home", runner)
         self.assertIn("run_v3_m19_ranked_summary_bridge_case", runner)
+
+    def test_shell_distribution_is_supported_by_generic_point_generator(self) -> None:
+        points = rt.make_v3_m19_ranked_summary_points(256, distribution="shell")
+        radii = [((point.x - 0.5) ** 2 + (point.y - 0.5) ** 2 + (point.z - 0.5) ** 2) ** 0.5 for point in points]
+
+        self.assertEqual(("uniform", "clustered", "shell"), rt.V3_M19_DISTRIBUTIONS)
+        self.assertEqual(256, len(points))
+        self.assertEqual(tuple(range(256)), tuple(point.id for point in points))
+        self.assertGreater(min(radii), 0.20)
+        self.assertLess(max(radii), 0.49)
+        self.assertGreater(sum(abs(point.z - 0.5) for point in points) / len(points), 0.12)
 
     def test_validator_accepts_synthetic_m19_payload(self) -> None:
         payload = _synthetic_payload()

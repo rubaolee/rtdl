@@ -65,6 +65,7 @@ class Goal4422V30M25RtnnAppBridgeTest(unittest.TestCase):
         self.assertIn('"prepared_ranked_summary_graph_partner_bridge"', source)
         self.assertIn("_ensure_transfer_counter_preloaded", source)
         self.assertIn("--query-count", source)
+        self.assertIn('choices=("uniform", "clustered", "shell")', source)
         self.assertIn("--numba-cuda-home", source)
         self.assertIn("compact_summary", source)
 
