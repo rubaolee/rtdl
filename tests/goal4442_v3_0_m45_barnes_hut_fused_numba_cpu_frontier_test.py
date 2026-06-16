@@ -150,7 +150,7 @@ class Goal4442V30M45BarnesHutFusedNumbaCpuFrontierTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4471.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4472.v1",
             route["version"],
         )
         self.assertEqual("mixed_explicit", route["decision_kind"])
@@ -193,4 +193,5 @@ class Goal4442V30M45BarnesHutFusedNumbaCpuFrontierTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
 

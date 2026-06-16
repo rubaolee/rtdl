@@ -126,7 +126,7 @@ class Goal4444V30M48TriangleNumbaDirectBinarySummaryTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_route_decisions()
 
         self.assertEqual("accept", validation["status"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4471.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4472.v1", route["version"])
         self.assertIn("Goal4444", route["evidence_refs"])
         self.assertIn("direct_binary_numpy_summary_then_numba_device_upload", route["current_reader_decision"])
         self.assertIn("CuPy remains the large-scale performance route", report)
@@ -156,4 +156,5 @@ class Goal4444V30M48TriangleNumbaDirectBinarySummaryTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
 

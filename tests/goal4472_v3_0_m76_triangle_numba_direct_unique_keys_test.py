@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import importlib
+import json
 import os
 from pathlib import Path
 import tempfile
@@ -11,6 +13,11 @@ from examples.current.research_benchmarks.triangle_counting import rtdl_triangle
 
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
+REPORT = ROOT / "docs" / "reports" / "goal4472_v3_0_m76_triangle_numba_direct_unique_key_packet_2026-06-16.md"
+PACKET = ROOT / "docs" / "reports" / "goal4472_v3_0_m76_triangle_numba_direct_unique_key_packet_2026-06-16.json"
+
+routes = importlib.import_module("rtdsl.current_benchmark_route_decisions")
+adequacy = importlib.import_module("rtdsl.current_benchmark_adequacy")
 
 
 def _has_cupy_optix() -> bool:
@@ -44,6 +51,37 @@ class Goal4472V30M76TriangleNumbaDirectUniqueKeysTest(unittest.TestCase):
                 segment_query_schedule="prepared_segment_replay",
                 segment_unique_key_builder="magic_keys",
             )
+
+    def test_packet_records_mixed_total_but_backend_build_wins(self) -> None:
+        packet = json.loads(PACKET.read_text(encoding="utf-8"))
+        rows = {row["dataset"]: row for row in packet["rows"]}
+
+        self.assertEqual(4472, packet["goal"])
+        self.assertFalse(packet["claim_boundary"]["hidden_default_promotion_authorized"])
+        self.assertGreater(rows["com_lj"]["segment_ray_build_speedup"], 1.1)
+        self.assertGreater(rows["soc_livejournal1"]["segment_ray_build_speedup"], 1.3)
+        self.assertGreater(rows["com_orkut"]["segment_ray_build_speedup"], 1.6)
+        self.assertGreater(rows["com_orkut"]["backend_speedup"], 1.09)
+        self.assertLess(rows["soc_livejournal1"]["total_speedup"], 1.0)
+        self.assertIn("not a hidden default", packet["interpretation"]["route_decision"])
+
+    def test_report_and_registry_record_explicit_not_default_decision(self) -> None:
+        report = REPORT.read_text(encoding="utf-8")
+        route = routes.explain_current_benchmark_route("triangle_counting")
+        rows = {row["app"]: row for row in adequacy.current_benchmark_adequacy()}
+        triangle = rows["triangle_counting"]
+
+        self.assertIn("numba_direct", report)
+        self.assertIn("hidden default", report)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4472.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4472.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertIn("Goal4472", route["evidence_refs"])
+        self.assertIn("Goal4472", triangle["evidence_refs"])
+        self.assertIn("numba_direct", route["user_choice_guidance"])
+        self.assertIn("query-side regression", route["next_runtime_action"])
+        self.assertIn("do not auto-select it", triangle["current_recommended_path"])
+        self.assertFalse(route["automatic_partner_selection_authorized"])
+        self.assertFalse(triangle["whole_app_speedup_claim_authorized"])
 
     @unittest.skipUnless(_has_cupy_optix(), "CuPy, Numba, and RTDL OptiX library are not available")
     def test_live_numba_direct_unique_keys_match_cupy_repeat(self) -> None:

@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4471.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4472.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -53,7 +53,10 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "5.58x-8.64x and authors pure kernels remain much faster. Goal4471 adds "
     "explicit Triangle Counting phase-split telemetry so build-once cost, "
     "warmup query time, and measured replay query throughput are no longer "
-    "collapsed into legacy aggregate fields. "
+    "collapsed into legacy aggregate fields. Goal4472 adds explicit no-C++ "
+    "Numba direct unique-key fill for Triangle Counting; it improves build and "
+    "backend phases but has mixed end-to-end total timing, so default promotion "
+    "remains blocked. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -466,7 +469,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "phase-split telemetry for the same prepared replay route: build-once "
             "cost is 2.341s/3.035s/15.243s on `com-lj`/`soc-LiveJournal1`/"
             "`com-orkut`, while median measured replay query is "
-            "0.925s/1.282s/8.216s."
+            "0.925s/1.282s/8.216s. Goal4472 adds explicit no-C++ "
+            "`numba_direct` unique-key fill. It improves segment-ray build by "
+            "1.17x/1.36x/1.64x and backend phase by 1.05x/1.03x/1.09x on the "
+            "large rows, while end-to-end total remains mixed."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -488,7 +494,8 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4470 for the current post-M73 comparison packet and no-speedup "
             "boundary. Cite Goal4471 when explaining cold/build versus hot/replay "
             "phase split or why legacy build-total fields are not wall-time build "
-            "costs for prepared replay."
+            "costs for prepared replay. Cite Goal4472 when the explicit no-C++ "
+            "`numba_direct` key builder is relevant; do not auto-select it."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
@@ -501,9 +508,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
         "next_generic_runtime_action": (
             "keep scalar triangle-count wording primitive-first; do not claim RT-Graph "
             "paper reproduction or broad triangle-count acceleration; after Goal4471, "
-            "the one-shot build versus replay-throughput split is explicit, so next "
-            "work is making unique-key compression cheaper or adding a reusable "
-            "prepared ray-batch API; do not spend more time on "
+            "the one-shot build versus replay-throughput split is explicit, and "
+            "Goal4472 partially reduces unique-key construction with an explicit "
+            "Numba direct-fill route; next work is query-side regression/variance "
+            "or a reusable prepared ray-batch API; do not spend more time on "
             "batch-cap tuning unless hardware changes"
         ),
         "evidence_refs": (
@@ -528,6 +536,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4469",
             "Goal4470",
             "Goal4471",
+            "Goal4472",
         ),
     },
 }

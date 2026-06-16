@@ -136,7 +136,7 @@ class Goal4441V30M44BarnesHutHostNumbaCpuBaselinesTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4471.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4472.v1",
             route["version"],
         )
         self.assertIn("Goal4441", route["evidence_refs"])
@@ -171,4 +171,5 @@ class Goal4441V30M44BarnesHutHostNumbaCpuBaselinesTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
 

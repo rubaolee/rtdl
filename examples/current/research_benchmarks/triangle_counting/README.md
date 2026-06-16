@@ -210,6 +210,13 @@ not be read as paid wall-time build cost under prepared replay. The next
 engineering target is cheaper unique-key compression/ray construction or a
 reusable prepared ray-batch API, not more batch-cap tuning.
 
+Goal4472 adds explicit `--segment-unique-key-builder numba_direct`, a no-C++
+Numba CUDA direct key-fill path before the same CuPy unique/count reduction.
+It reduces segment-ray build on the three large rows by 1.17x/1.36x/1.64x and
+backend phase by 1.05x/1.03x/1.09x, but end-to-end total is mixed
+(`soc-LiveJournal1` is slightly slower). Keep it explicit; do not make it a
+hidden default.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
@@ -224,6 +231,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4469_v3_0_m73_triangle_prepared_segment_replay_packet_2026-06-16.md`
 - `docs/reports/goal4470_v3_0_m74_triangle_post_m73_comparison_packet_2026-06-16.md`
 - `docs/reports/goal4471_v3_0_m75_triangle_phase_split_packet_2026-06-16.md`
+- `docs/reports/goal4472_v3_0_m76_triangle_numba_direct_unique_key_packet_2026-06-16.md`
 
 ## Engine Boundary
 

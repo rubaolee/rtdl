@@ -77,9 +77,9 @@ class Goal4468V30M72TriangleUniqueWeightedSegmentRaysTest(unittest.TestCase):
         self.assertIn("2.44x-2.50x slower", report)
         self.assertIn("Goal4468", route["evidence_refs"])
         self.assertIn("unique_weighted", route["user_choice_guidance"])
-        self.assertIn("unique-key compression", route["next_runtime_action"])
+        self.assertIn("reusable prepared ray-batch API", route["next_runtime_action"])
         self.assertIn("Goal4468", triangle["evidence_refs"])
-        self.assertIn("unique-key compression", triangle["next_generic_runtime_action"])
+        self.assertIn("reusable prepared ray-batch API", triangle["next_generic_runtime_action"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(triangle["public_speedup_claim_authorized"])
 
@@ -138,12 +138,14 @@ class Goal4468V30M72TriangleUniqueWeightedSegmentRaysTest(unittest.TestCase):
         rows = {row["app"]: row for row in adequacy.current_benchmark_adequacy()}
         triangle = rows["triangle_counting"]
 
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4471.v1", route["version"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4471.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4472.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4472.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
         self.assertFalse(route["public_speedup_claim_authorized"])
         self.assertFalse(triangle["broad_rt_core_claim_authorized"])
 
 
 if __name__ == "__main__":
     unittest.main()
+
+
 

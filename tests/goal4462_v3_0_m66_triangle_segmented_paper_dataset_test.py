@@ -57,13 +57,13 @@ class Goal4462V30M66TriangleSegmentedPaperDatasetTest(unittest.TestCase):
         triangle = rows["triangle_counting"]
 
         self.assertIn("rt_graph_2a1_segmented_generic_rt", script)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4471.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4472.v1", route["version"])
         self.assertIn("Goal4462", route["evidence_refs"])
         self.assertIn("com-lj", route["current_reader_decision"])
         self.assertIn("com-orkut", route["next_runtime_action"])
-        self.assertIn("unique-key compression", route["next_runtime_action"])
+        self.assertIn("reusable prepared ray-batch API", route["next_runtime_action"])
         self.assertFalse(route["public_speedup_claim_authorized"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4471.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4472.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
         self.assertIn("Goal4462", triangle["evidence_refs"])
         self.assertIn("com-lj", triangle["current_performance_reading"])
         self.assertFalse(triangle["paper_reproduction_claim_authorized"])
@@ -71,4 +71,6 @@ class Goal4462V30M66TriangleSegmentedPaperDatasetTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
 

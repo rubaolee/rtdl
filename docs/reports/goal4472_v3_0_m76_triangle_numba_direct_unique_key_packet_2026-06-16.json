@@ -1,0 +1,90 @@
+{
+  "goal": 4472,
+  "milestone": "v3_0_m76",
+  "status": "numba_direct_unique_key_builder_evaluated",
+  "implementation": "explicit --segment-unique-key-builder numba_direct path fills packed two-hop keys with a Numba CUDA kernel before the same CuPy unique/count reduction",
+  "claim_boundary": {
+    "current_route_phase_split": true,
+    "generic_rt_engine_contract_preserved": true,
+    "native_engine_graph_specialization_added": false,
+    "hidden_default_promotion_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "triangle_count_rt_core_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "automatic_partner_selection_authorized": false
+  },
+  "rows": [
+    {
+      "dataset": "com_lj",
+      "count": 177820130,
+      "cupy_repeat_total_s": 9.480931535363197,
+      "numba_direct_total_s": 9.222083456814289,
+      "total_speedup": 1.0280682862783728,
+      "cupy_repeat_backend_s": 6.718768358230591,
+      "numba_direct_backend_s": 6.415749296545982,
+      "backend_speedup": 1.0472305022653774,
+      "cupy_repeat_build_once_s": 2.2025317177176476,
+      "numba_direct_build_once_s": 1.9789045974612236,
+      "build_once_speedup": 1.1130055084733845,
+      "cupy_repeat_segment_ray_build_s": 1.5463726371526718,
+      "numba_direct_segment_ray_build_s": 1.325579546391964,
+      "segment_ray_build_speedup": 1.1665634411466854,
+      "cupy_repeat_query_median_s": 0.9326489046216011,
+      "numba_direct_query_median_s": 0.8973857536911964,
+      "amortized_backend_speedup": 1.0586032137324144
+    },
+    {
+      "dataset": "soc_livejournal1",
+      "count": 285730264,
+      "cupy_repeat_total_s": 17.631958715617657,
+      "numba_direct_total_s": 17.992246456444263,
+      "total_speedup": 0.9799753887487705,
+      "cupy_repeat_backend_s": 9.493645906448364,
+      "numba_direct_backend_s": 9.177924007177353,
+      "backend_speedup": 1.0344001431068846,
+      "cupy_repeat_build_once_s": 3.0109180361032486,
+      "numba_direct_build_once_s": 2.4132666289806366,
+      "build_once_speedup": 1.2476524557815063,
+      "cupy_repeat_segment_ray_build_s": 2.2973557859659195,
+      "numba_direct_segment_ray_build_s": 1.6908486187458038,
+      "segment_ray_build_speedup": 1.3586998625991697,
+      "cupy_repeat_query_median_s": 1.284725584089756,
+      "numba_direct_query_median_s": 1.3698821142315865,
+      "amortized_backend_speedup": 1.0541637925793717
+    },
+    {
+      "dataset": "com_orkut",
+      "count": 627584181,
+      "cupy_repeat_total_s": 62.32460007071495,
+      "numba_direct_total_s": 58.01262257993221,
+      "total_speedup": 1.0743282633851197,
+      "cupy_repeat_backend_s": 52.3222614005208,
+      "numba_direct_backend_s": 47.83686551451683,
+      "backend_speedup": 1.093764418670843,
+      "cupy_repeat_build_once_s": 15.381650872528553,
+      "numba_direct_build_once_s": 9.803636893630028,
+      "build_once_speedup": 1.5689739470586548,
+      "cupy_repeat_segment_ray_build_s": 14.049790598452091,
+      "numba_direct_segment_ray_build_s": 8.545704126358032,
+      "segment_ray_build_speedup": 1.6440764143843305,
+      "cupy_repeat_query_median_s": 8.17790623754263,
+      "numba_direct_query_median_s": 8.576554000377655,
+      "amortized_backend_speedup": 1.1253847427760224
+    }
+  ],
+  "interpretation": {
+    "build_result": "numba_direct reduces segment-ray build on all three large rows by 1.17x, 1.36x, and 1.64x.",
+    "backend_result": "numba_direct improves the measured backend phase on all three rows by 1.03x-1.09x.",
+    "total_result": "end-to-end total is mixed: faster on com_lj and com_orkut, slightly slower on soc_livejournal1 because non-backend graph-contract/plan timing moved against it.",
+    "route_decision": "keep numba_direct as an explicit key-builder option, not a hidden default, until repeated-run variance and query-side effects are characterized.",
+    "next_action": "next useful work is reducing query-side regression/variance or making a reusable prepared ray-batch API; the direct key-fill idea is useful but not a universal route promotion."
+  },
+  "evidence_files": [
+    "docs/reports/goal4472_v3_0_m76_triangle_cupy_repeat_com_lj_w1r3_2026-06-16.json",
+    "docs/reports/goal4472_v3_0_m76_triangle_numba_direct_com_lj_w1r3_2026-06-16.json",
+    "docs/reports/goal4472_v3_0_m76_triangle_cupy_repeat_soc_livejournal1_w1r3_2026-06-16.json",
+    "docs/reports/goal4472_v3_0_m76_triangle_numba_direct_soc_livejournal1_w1r3_2026-06-16.json",
+    "docs/reports/goal4472_v3_0_m76_triangle_cupy_repeat_com_orkut_w1r3_2026-06-16.json",
+    "docs/reports/goal4472_v3_0_m76_triangle_numba_direct_com_orkut_w1r3_2026-06-16.json"
+  ]
+}
