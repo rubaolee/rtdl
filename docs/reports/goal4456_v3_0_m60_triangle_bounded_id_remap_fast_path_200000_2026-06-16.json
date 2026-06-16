@@ -1,0 +1,85 @@
+{
+  "goal": 4456,
+  "milestone": "v3.0_m60",
+  "app": "triangle_counting",
+  "implementation": "bounded_id_remap_fast_path",
+  "status": "measured_on_pod_median_full_runs",
+  "measurement_basis": {
+    "fixture": "k4_cliques_stride2_vertex_ids",
+    "cliques": 200000,
+    "edge_count": 1200000,
+    "expected_triangle_count": 800000,
+    "backend": "optix",
+    "partner": "numba",
+    "warmup": 1,
+    "query_repeat_per_full_run": 3,
+    "full_app_repeats_per_mode": 3
+  },
+  "compaction_subphase": {
+    "old_unique_return_inverse_ms": 117.33776330947876,
+    "bounded_id_remap_ms": 24.91319179534912,
+    "speedup_vs_old_unique": 4.709864728428084,
+    "bounded_id_remap_fast_path": true,
+    "dense_label_fast_path": false
+  },
+  "rows": [
+    {
+      "mode": "rt_graph_2a1_generic_rt",
+      "triangle_count_matches_oracle": true,
+      "timing_ms": {
+        "build_contract": 188.32337856292725,
+        "build_geometry": 5.860194563865662,
+        "prepare_scene_ms": 7.344536483287811,
+        "query_median_ms": 1.948535442352295,
+        "total": 212.3722955584526
+      },
+      "partner_timing_ms": {
+        "bounded_id_remap_fast_path": true,
+        "construction_mode": "direct_binary_numpy_summary_then_numba_device_upload",
+        "dense_label_fast_path": false,
+        "direct_binary_summary_ms": 165.774,
+        "directed_sorted_unique_fast_path": true,
+        "load_np_ms": 10.777,
+        "numba_device_upload_ms": 10.868,
+        "supersedes_construction_mode": "cpu_contract_then_numba_device_upload",
+        "total_partner_ms": 187.419,
+        "two_hop_sorted_rle_fast_path": true
+      }
+    },
+    {
+      "mode": "rt_graph_1a2_generic_rt",
+      "triangle_count_matches_oracle": true,
+      "timing_ms": {
+        "build_contract": 188.5559931397438,
+        "build_geometry": 14.163926243782043,
+        "prepare_scene_ms": 5.625054240226746,
+        "query_median_ms": 3.2885000109672546,
+        "total": 223.6657664179802
+      },
+      "partner_timing_ms": {
+        "bounded_id_remap_fast_path": true,
+        "construction_mode": "direct_binary_numpy_summary_then_numba_device_upload",
+        "dense_label_fast_path": false,
+        "direct_binary_summary_ms": 166.411,
+        "directed_sorted_unique_fast_path": true,
+        "load_np_ms": 10.022,
+        "numba_device_upload_ms": 11.183,
+        "supersedes_construction_mode": "cpu_contract_then_numba_device_upload",
+        "total_partner_ms": 187.465,
+        "two_hop_sorted_rle_fast_path": true
+      }
+    }
+  ],
+  "comparison": {
+    "all_triangle_counts_match_oracle": true,
+    "bounded_id_remap_active": true,
+    "dense_label_fast_path_active": false,
+    "claim_boundary_unchanged": true
+  },
+  "claim_boundary": {
+    "automatic_partner_selection_authorized": false,
+    "triangle_counting_rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false
+  }
+}

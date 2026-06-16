@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4455.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4456.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -74,7 +74,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "sorted graph inputs while preserving the same claim boundary. Goal4455 "
     "re-ranks triangle CuPy versus optimized Numba after Goal4454 and confirms "
     "CuPy remains the measured performance partner while Numba remains the "
-    "no-C++ Python-source reference."
+    "no-C++ Python-source reference. Goal4456 extends the Numba direct-binary "
+    "summary builder with a bounded-id remap fast path for gapped but bounded "
+    "nonnegative graph ids, reducing avoidable `np.unique(return_inverse)` "
+    "compaction work without changing the claim boundary."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -606,6 +609,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "200,000 K4-clique dense/sorted fixture. Goal4455 re-ranks after that improvement: "
             "CuPy remains the measured performance partner, about 2.85x faster than optimized "
             "Numba total time on the same 200,000 K4-clique fixture. "
+            "Goal4456 extends the Numba summary fast path from dense labels to bounded-id "
+            "gapped nonnegative labels, with a 4.71x compaction subphase win on a stride-2 "
+            "200,000 K4-clique fixture. "
             "CuPy remains the current large-scale performance route until the remaining graph-summary "
             "construction and segmented paper-dataset lowering debts are closed."
         ),
@@ -619,7 +625,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "when Python-source partner code matters; cite Goal4444 for direct binary summary "
             "construction, Goal4453 for partner-resident Numba geometry fill, Goal4454 "
             "for dense-label/sorted-key summary fast paths, and Goal4455 for the post-M58 "
-            "CuPy-vs-Numba rerank rather than the older M27 Numba timings."
+            "CuPy-vs-Numba rerank. Cite Goal4456 when gapped but bounded nonnegative graph ids "
+            "are the reason the Numba path avoids `np.unique(return_inverse)` remapping."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -628,12 +635,13 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "host-materialized Numba geometry upload as current Numba guidance",
             "treating dense-label/sorted-key summary fast paths as universal graph input behavior",
             "promoting Numba over CuPy after Goal4454 without the Goal4455 rerank evidence",
+            "treating bounded-id remap as safe for huge sparse id spaces",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
             "preserve the generic graph relationship-count route and avoid claiming RT-core "
             "triangle-count acceleration; remaining partner work is deeper graph-summary construction "
-            "that avoids host/global two-hop materialization on non-dense or unsorted inputs plus "
+            "that avoids host/global two-hop materialization on unsorted or huge-sparse-id inputs plus "
             "segmented paper-dataset lowering"
         ),
         evidence_refs=(
@@ -647,13 +655,14 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4453",
             "Goal4454",
             "Goal4455",
+            "Goal4456",
         ),
         pod_needed_next=False,
     ),
 )
 
 
-def _refresh_goal4455_route_decisions(
+def _refresh_goal4456_route_decisions(
     rows: tuple[CurrentBenchmarkRouteDecision, ...],
 ) -> tuple[CurrentBenchmarkRouteDecision, ...]:
     refreshed: list[CurrentBenchmarkRouteDecision] = []
@@ -773,7 +782,7 @@ def _refresh_goal4455_route_decisions(
     return tuple(refreshed)
 
 
-CURRENT_BENCHMARK_ROUTE_DECISIONS = _refresh_goal4455_route_decisions(
+CURRENT_BENCHMARK_ROUTE_DECISIONS = _refresh_goal4456_route_decisions(
     CURRENT_BENCHMARK_ROUTE_DECISIONS
 )
 

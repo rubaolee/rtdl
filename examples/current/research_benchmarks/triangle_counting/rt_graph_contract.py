@@ -10,6 +10,8 @@ from typing import Iterable
 
 Edge = tuple[int, int]
 
+_TRIANGLE_SUMMARY_BOUNDED_ID_REMAP_MAX_RANGE_FACTOR = 4
+
 
 @dataclass(frozen=True)
 class RTGraphTriangleContract:
@@ -403,6 +405,7 @@ def build_rt_graph_triangle_summary_contract_numba_binary(path: str | Path) -> R
         | {
             "construction_mode": "direct_binary_numpy_summary_then_numba_device_upload",
             "supersedes_construction_mode": "cpu_contract_then_numba_device_upload",
+            "bounded_id_remap_fast_path": bool(summary.get("bounded_id_remap_fast_path")),
             "dense_label_fast_path": bool(summary.get("dense_label_fast_path")),
             "directed_sorted_unique_fast_path": bool(summary.get("directed_sorted_unique_fast_path")),
             "two_hop_sorted_rle_fast_path": bool(summary.get("two_hop_sorted_rle_fast_path")),
@@ -426,21 +429,23 @@ def _build_rt_graph_triangle_summary_arrays_numpy(edges_np):
             "removed_low_degree_vertex_count": 0,
             "removed_low_degree_edge_count": 0,
             "removed_duplicate_or_self_edge_count": 0,
+            "bounded_id_remap_fast_path": False,
             "dense_label_fast_path": False,
             "directed_sorted_unique_fast_path": False,
             "two_hop_sorted_rle_fast_path": False,
         }
 
     endpoints = edges_np.reshape(-1)
-    dense_inputs = _try_dense_label_triangle_summary_inputs_numpy(edges_np, endpoints)
-    dense_label_fast_path = dense_inputs is not None
-    if dense_inputs is None:
+    bounded_inputs = _try_bounded_id_triangle_summary_inputs_numpy(edges_np, endpoints)
+    bounded_id_remap_fast_path = bounded_inputs is not None
+    dense_label_fast_path = False
+    if bounded_inputs is None:
         compacted_vertex_ids, inverse = np.unique(endpoints, return_inverse=True)
         compacted_edges = inverse.reshape(-1, 2).astype(np.int64, copy=False)
         node_count = int(compacted_vertex_ids.size)
         degree = np.bincount(compacted_edges.reshape(-1), minlength=node_count).astype(np.int64, copy=False)
     else:
-        compacted_edges, node_count, degree = dense_inputs
+        compacted_edges, node_count, degree, dense_label_fast_path = bounded_inputs
 
     src = compacted_edges[:, 0]
     dst = compacted_edges[:, 1]
@@ -511,27 +516,45 @@ def _build_rt_graph_triangle_summary_arrays_numpy(edges_np):
         "removed_low_degree_vertex_count": int(node_count - directed_node_count),
         "removed_low_degree_edge_count": removed_low_degree_edge_count,
         "removed_duplicate_or_self_edge_count": removed_duplicate_or_self_edge_count,
+        "bounded_id_remap_fast_path": bounded_id_remap_fast_path,
         "dense_label_fast_path": dense_label_fast_path,
         "directed_sorted_unique_fast_path": directed_sorted_unique_fast_path,
         "two_hop_sorted_rle_fast_path": two_hop_sorted_rle_fast_path,
     }
 
 
-def _try_dense_label_triangle_summary_inputs_numpy(edges_np, endpoints):
+def _try_bounded_id_triangle_summary_inputs_numpy(edges_np, endpoints):
     import numpy as np
 
     if endpoints.size == 0 or np.any(endpoints < 0):
         return None
     max_endpoint = int(endpoints.max())
-    # Dense labels cannot hold when the id range is larger than the number of
-    # observed endpoint values; avoid an accidental huge bincount on sparse ids.
-    if max_endpoint + 1 > endpoints.size:
+    # Avoid accidental huge bincount/remap arrays for sparse id spaces. When the
+    # observed id range is bounded by the input size, bincount-based remapping is
+    # a generic fast path for dense and moderately gapped nonnegative ids.
+    max_range = endpoints.size * _TRIANGLE_SUMMARY_BOUNDED_ID_REMAP_MAX_RANGE_FACTOR
+    if max_endpoint + 1 > max_range:
         return None
-    degree = np.bincount(endpoints, minlength=max_endpoint + 1).astype(np.int64, copy=False)
-    if int(np.count_nonzero(degree)) != max_endpoint + 1:
+    degree_by_original_id = np.bincount(endpoints, minlength=max_endpoint + 1).astype(np.int64, copy=False)
+    touched = degree_by_original_id > 0
+    node_count = int(np.count_nonzero(touched))
+    if node_count == 0:
         return None
-    compacted_edges = edges_np.astype(np.int64, copy=False)
-    return compacted_edges, max_endpoint + 1, degree
+    remap = np.cumsum(touched.astype(np.int64)) - 1
+    compacted_edges = remap[edges_np].astype(np.int64, copy=False)
+    degree = degree_by_original_id[touched].astype(np.int64, copy=False)
+    dense_label_fast_path = node_count == max_endpoint + 1
+    return compacted_edges, node_count, degree, dense_label_fast_path
+
+
+def _try_dense_label_triangle_summary_inputs_numpy(edges_np, endpoints):
+    bounded = _try_bounded_id_triangle_summary_inputs_numpy(edges_np, endpoints)
+    if bounded is None:
+        return None
+    compacted_edges, node_count, degree, dense_label_fast_path = bounded
+    if not dense_label_fast_path:
+        return None
+    return compacted_edges, node_count, degree
 
 
 def _unique_int64_keys_numpy(keys):
