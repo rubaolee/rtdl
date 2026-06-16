@@ -315,6 +315,28 @@ struct RtdlNativeDeviceGroupedCountI64Columns {
     uint64_t ambiguous_count_device_ptr;
 };
 
+struct RtdlAggregateFrontierDeviceColumns2D {
+    uint64_t source_ids_device_ptr;
+    uint64_t frontier_kind_codes_device_ptr;
+    uint64_t item_ids_device_ptr;
+    uint64_t owner_aggregate_ids_device_ptr;
+    uint64_t dfs_indices_device_ptr;
+    uint64_t resume_indices_device_ptr;
+    uint64_t metadata_flags_device_ptr;
+    uint64_t row_offsets_device_ptr;
+    uint64_t row_count;
+    uint64_t attempted_count;
+    uint64_t capacity;
+    uint64_t source_count;
+    uint32_t overflow;
+    int32_t device_ordinal;
+    void* owner_handle;
+    double traversal_seconds;
+    uint64_t row_count_device_ptr;
+    uint64_t attempted_count_device_ptr;
+    uint64_t overflow_device_ptr;
+};
+
 struct RtdlNativeClosedShapeBoundaryEventDeviceColumns {
     uint64_t point_ids_device_ptr;
     uint64_t shape_ids_device_ptr;
@@ -1637,6 +1659,23 @@ int  rtdl_optix_collect_aggregate_frontier_2d(
          uint64_t* emitted_count_out, uint64_t* attempted_count_out,
          uint32_t* overflowed_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_aggregate_frontier_device_columns_2d(
+         const RtdlAggregateFrontierNode2D* nodes, size_t node_count,
+         const uint64_t* child_offsets, const int64_t* child_ids,
+         const uint64_t* member_offsets, const int64_t* member_ids,
+         double theta, uint32_t deduplicate_fallback_targets,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_aggregate_frontier_device_columns_2d(
+         void* prepared,
+         uint64_t source_ids_device_ptr,
+         uint64_t source_x_device_ptr,
+         uint64_t source_y_device_ptr,
+         size_t source_count,
+         uint64_t row_capacity,
+         RtdlAggregateFrontierDeviceColumns2D* columns_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_aggregate_frontier_device_columns_2d(void* prepared);
 int  rtdl_optix_collect_k_bounded_i64_device(
          uint64_t candidate_rows_device_ptr, size_t candidate_count,
          size_t row_width, uint64_t rows_out_device_ptr, size_t row_capacity,

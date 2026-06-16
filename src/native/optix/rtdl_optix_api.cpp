@@ -3469,6 +3469,677 @@ extern "C" int rtdl_optix_collect_aggregate_frontier_2d(
     }, error_out, error_size);
 }
 
+struct AggregateFrontierDeviceNode2D {
+    int64_t id = 0;
+    double cx = 0.0;
+    double cy = 0.0;
+    double half_size = 0.0;
+    int64_t dfs_index = 0;
+    int64_t resume_index = -1;
+    uint64_t child_begin = 0;
+    uint64_t child_end = 0;
+    uint64_t member_begin = 0;
+    uint64_t member_end = 0;
+    uint32_t is_leaf = 0;
+};
+
+struct AggregateFrontierDeviceColumnsOutput2D {
+    CUdeviceptr source_ids = 0;
+    CUdeviceptr frontier_kind_codes = 0;
+    CUdeviceptr item_ids = 0;
+    CUdeviceptr owner_aggregate_ids = 0;
+    CUdeviceptr dfs_indices = 0;
+    CUdeviceptr resume_indices = 0;
+    CUdeviceptr metadata_flags = 0;
+    CUdeviceptr row_offsets = 0;
+    CUdeviceptr per_source_counts = 0;
+    CUdeviceptr row_count = 0;
+    CUdeviceptr attempted_count = 0;
+    CUdeviceptr overflow = 0;
+    uint64_t capacity = 0;
+    uint64_t source_count = 0;
+
+    ~AggregateFrontierDeviceColumnsOutput2D() {
+        if (overflow) cuMemFree(overflow);
+        if (attempted_count) cuMemFree(attempted_count);
+        if (row_count) cuMemFree(row_count);
+        if (per_source_counts) cuMemFree(per_source_counts);
+        if (row_offsets) cuMemFree(row_offsets);
+        if (metadata_flags) cuMemFree(metadata_flags);
+        if (resume_indices) cuMemFree(resume_indices);
+        if (dfs_indices) cuMemFree(dfs_indices);
+        if (owner_aggregate_ids) cuMemFree(owner_aggregate_ids);
+        if (item_ids) cuMemFree(item_ids);
+        if (frontier_kind_codes) cuMemFree(frontier_kind_codes);
+        if (source_ids) cuMemFree(source_ids);
+    }
+};
+
+struct AggregateFrontierDeviceColumnsPrepared2D {
+    CUdeviceptr nodes = 0;
+    CUdeviceptr child_indices = 0;
+    CUdeviceptr member_ids = 0;
+    CUdeviceptr root_indices = 0;
+    uint64_t node_count = 0;
+    uint64_t child_count = 0;
+    uint64_t member_count = 0;
+    uint64_t root_count = 0;
+    double theta = 0.0;
+    uint32_t deduplicate_fallback_targets = 1u;
+    int32_t device_ordinal = -1;
+    std::unique_ptr<AggregateFrontierDeviceColumnsOutput2D> last_output;
+    std::mutex mutex;
+
+    ~AggregateFrontierDeviceColumnsPrepared2D() {
+        last_output.reset();
+        if (root_indices) cuMemFree(root_indices);
+        if (member_ids) cuMemFree(member_ids);
+        if (child_indices) cuMemFree(child_indices);
+        if (nodes) cuMemFree(nodes);
+    }
+};
+
+struct AggregateFrontierDeviceColumnsCuFunctions {
+    CUmodule module = nullptr;
+    CUfunction count_fn = nullptr;
+    CUfunction prefix_fn = nullptr;
+    CUfunction write_fn = nullptr;
+    std::once_flag init;
+};
+
+static AggregateFrontierDeviceColumnsCuFunctions g_aggregate_frontier_device_columns_2d;
+
+static const char* kAggregateFrontierDeviceColumns2DKernelSrc = R"CUDA(
+#include <math.h>
+#include <stdint.h>
+
+struct AggregateFrontierDeviceNode2D {
+    long long id;
+    double cx;
+    double cy;
+    double half_size;
+    long long dfs_index;
+    long long resume_index;
+    unsigned long long child_begin;
+    unsigned long long child_end;
+    unsigned long long member_begin;
+    unsigned long long member_end;
+    unsigned int is_leaf;
+};
+
+static __device__ __forceinline__ int rtdl_af_node_contains_source(
+        const AggregateFrontierDeviceNode2D* nodes,
+        const long long* member_ids,
+        unsigned long long node_index,
+        long long source_id)
+{
+    const AggregateFrontierDeviceNode2D node = nodes[node_index];
+    for (unsigned long long member_index = node.member_begin; member_index < node.member_end; ++member_index) {
+        if (member_ids[member_index] == source_id) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static __device__ unsigned long long rtdl_af_count_source_rows(
+        const AggregateFrontierDeviceNode2D* nodes,
+        const unsigned long long* child_indices,
+        const long long* member_ids,
+        const unsigned long long* root_indices,
+        unsigned long long root_count,
+        long long source_id,
+        double source_x,
+        double source_y,
+        double theta,
+        unsigned int* overflow)
+{
+    const int kMaxStack = 256;
+    unsigned long long stack[kMaxStack];
+    int top = 0;
+    if (root_count > (unsigned long long)kMaxStack) {
+        atomicExch(overflow, 1u);
+        return 0ull;
+    }
+    for (unsigned long long root_pos = root_count; root_pos > 0ull; --root_pos) {
+        stack[top++] = root_indices[root_pos - 1ull];
+    }
+
+    unsigned long long count = 0ull;
+    while (top > 0) {
+        const unsigned long long node_index = stack[--top];
+        const AggregateFrontierDeviceNode2D node = nodes[node_index];
+        const double dx = node.cx - source_x;
+        const double dy = node.cy - source_y;
+        const double distance = sqrt(dx * dx + dy * dy);
+        const double opening_ratio = distance == 0.0 ? INFINITY : (2.0 * node.half_size) / distance;
+        const int contains_source = rtdl_af_node_contains_source(nodes, member_ids, node_index, source_id);
+        if (!contains_source && opening_ratio < theta) {
+            ++count;
+            continue;
+        }
+        if (node.child_begin != node.child_end) {
+            const unsigned long long child_count = node.child_end - node.child_begin;
+            if (top + (int)child_count > kMaxStack) {
+                atomicExch(overflow, 1u);
+                return 0ull;
+            }
+            for (unsigned long long child_pos = node.child_end; child_pos > node.child_begin; --child_pos) {
+                stack[top++] = child_indices[child_pos - 1ull];
+            }
+            continue;
+        }
+        for (unsigned long long member_index = node.member_begin; member_index < node.member_end; ++member_index) {
+            if (member_ids[member_index] != source_id) {
+                ++count;
+            }
+        }
+    }
+    return count;
+}
+
+extern "C" __global__ void rtdl_aggregate_frontier_count_2d(
+        const AggregateFrontierDeviceNode2D* nodes,
+        const unsigned long long* child_indices,
+        const long long* member_ids,
+        const unsigned long long* root_indices,
+        unsigned long long root_count,
+        const long long* source_ids,
+        const double* source_xs,
+        const double* source_ys,
+        unsigned long long source_count,
+        double theta,
+        unsigned long long* per_source_counts,
+        unsigned int* overflow)
+{
+    const unsigned long long source_index =
+        (unsigned long long)blockIdx.x * (unsigned long long)blockDim.x + (unsigned long long)threadIdx.x;
+    if (source_index >= source_count) {
+        return;
+    }
+    per_source_counts[source_index] = rtdl_af_count_source_rows(
+        nodes,
+        child_indices,
+        member_ids,
+        root_indices,
+        root_count,
+        source_ids[source_index],
+        source_xs[source_index],
+        source_ys[source_index],
+        theta,
+        overflow);
+}
+
+extern "C" __global__ void rtdl_aggregate_frontier_prefix_2d(
+        const unsigned long long* per_source_counts,
+        unsigned long long source_count,
+        unsigned long long row_capacity,
+        unsigned long long* row_offsets,
+        unsigned long long* row_count,
+        unsigned long long* attempted_count,
+        unsigned int* overflow)
+{
+    if (threadIdx.x != 0 || blockIdx.x != 0) {
+        return;
+    }
+    unsigned long long total = 0ull;
+    row_offsets[0] = 0ull;
+    for (unsigned long long source_index = 0ull; source_index < source_count; ++source_index) {
+        total += per_source_counts[source_index];
+        row_offsets[source_index + 1ull] = total;
+    }
+    *attempted_count = total;
+    if (*overflow != 0u || total > row_capacity) {
+        *overflow = 1u;
+        *row_count = 0ull;
+        return;
+    }
+    *row_count = total;
+}
+
+extern "C" __global__ void rtdl_aggregate_frontier_write_2d(
+        const AggregateFrontierDeviceNode2D* nodes,
+        const unsigned long long* child_indices,
+        const long long* member_ids,
+        const unsigned long long* root_indices,
+        unsigned long long root_count,
+        const long long* source_ids,
+        const double* source_xs,
+        const double* source_ys,
+        unsigned long long source_count,
+        double theta,
+        const unsigned long long* row_offsets,
+        long long* output_source_ids,
+        long long* output_kind_codes,
+        long long* output_item_ids,
+        long long* output_owner_aggregate_ids,
+        long long* output_dfs_indices,
+        long long* output_resume_indices,
+        long long* output_metadata_flags,
+        const unsigned int* overflow)
+{
+    if (*overflow != 0u) {
+        return;
+    }
+    const unsigned long long source_index =
+        (unsigned long long)blockIdx.x * (unsigned long long)blockDim.x + (unsigned long long)threadIdx.x;
+    if (source_index >= source_count) {
+        return;
+    }
+
+    const int kMaxStack = 256;
+    unsigned long long stack[kMaxStack];
+    int top = 0;
+    if (root_count > (unsigned long long)kMaxStack) {
+        return;
+    }
+    for (unsigned long long root_pos = root_count; root_pos > 0ull; --root_pos) {
+        stack[top++] = root_indices[root_pos - 1ull];
+    }
+
+    const long long source_id = source_ids[source_index];
+    const double source_x = source_xs[source_index];
+    const double source_y = source_ys[source_index];
+    unsigned long long local_row = 0ull;
+    const unsigned long long base_row = row_offsets[source_index];
+
+    while (top > 0) {
+        const unsigned long long node_index = stack[--top];
+        const AggregateFrontierDeviceNode2D node = nodes[node_index];
+        const double dx = node.cx - source_x;
+        const double dy = node.cy - source_y;
+        const double distance = sqrt(dx * dx + dy * dy);
+        const double opening_ratio = distance == 0.0 ? INFINITY : (2.0 * node.half_size) / distance;
+        const int contains_source = rtdl_af_node_contains_source(nodes, member_ids, node_index, source_id);
+        if (!contains_source && opening_ratio < theta) {
+            const unsigned long long out_index = base_row + local_row++;
+            output_source_ids[out_index] = source_id;
+            output_kind_codes[out_index] = 1ll;
+            output_item_ids[out_index] = node.id;
+            output_owner_aggregate_ids[out_index] = node.id;
+            output_dfs_indices[out_index] = node.dfs_index;
+            output_resume_indices[out_index] = node.resume_index >= 0ll ? node.resume_index : -1ll;
+            output_metadata_flags[out_index] = 0ll;
+            continue;
+        }
+        if (node.child_begin != node.child_end) {
+            const unsigned long long child_count = node.child_end - node.child_begin;
+            if (top + (int)child_count > kMaxStack) {
+                return;
+            }
+            for (unsigned long long child_pos = node.child_end; child_pos > node.child_begin; --child_pos) {
+                stack[top++] = child_indices[child_pos - 1ull];
+            }
+            continue;
+        }
+        for (unsigned long long member_index = node.member_begin; member_index < node.member_end; ++member_index) {
+            const long long target_id = member_ids[member_index];
+            if (target_id == source_id) {
+                continue;
+            }
+            const unsigned long long out_index = base_row + local_row++;
+            output_source_ids[out_index] = source_id;
+            output_kind_codes[out_index] = 2ll;
+            output_item_ids[out_index] = target_id;
+            output_owner_aggregate_ids[out_index] = node.id;
+            output_dfs_indices[out_index] = node.dfs_index;
+            output_resume_indices[out_index] = node.resume_index >= 0ll ? node.resume_index : -1ll;
+            output_metadata_flags[out_index] = 0ll;
+        }
+    }
+}
+)CUDA";
+
+static void ensure_aggregate_frontier_device_columns_2d_kernels()
+{
+    std::call_once(g_aggregate_frontier_device_columns_2d.init, [&]() {
+        const std::string cubin = compile_to_cubin(
+            kAggregateFrontierDeviceColumns2DKernelSrc,
+            "aggregate_frontier_device_columns_2d_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_aggregate_frontier_device_columns_2d.module, cubin.data()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_aggregate_frontier_device_columns_2d.count_fn,
+            g_aggregate_frontier_device_columns_2d.module,
+            "rtdl_aggregate_frontier_count_2d"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_aggregate_frontier_device_columns_2d.prefix_fn,
+            g_aggregate_frontier_device_columns_2d.module,
+            "rtdl_aggregate_frontier_prefix_2d"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_aggregate_frontier_device_columns_2d.write_fn,
+            g_aggregate_frontier_device_columns_2d.module,
+            "rtdl_aggregate_frontier_write_2d"));
+    });
+}
+
+static std::unique_ptr<AggregateFrontierDeviceColumnsOutput2D>
+allocate_aggregate_frontier_device_columns_output_2d(uint64_t source_count, uint64_t row_capacity)
+{
+    auto output = std::make_unique<AggregateFrontierDeviceColumnsOutput2D>();
+    output->source_count = source_count;
+    output->capacity = row_capacity;
+
+    if (row_capacity != 0) {
+        const size_t bytes = sizeof(int64_t) * static_cast<size_t>(row_capacity);
+        CU_CHECK(cuMemAlloc(&output->source_ids, bytes));
+        CU_CHECK(cuMemAlloc(&output->frontier_kind_codes, bytes));
+        CU_CHECK(cuMemAlloc(&output->item_ids, bytes));
+        CU_CHECK(cuMemAlloc(&output->owner_aggregate_ids, bytes));
+        CU_CHECK(cuMemAlloc(&output->dfs_indices, bytes));
+        CU_CHECK(cuMemAlloc(&output->resume_indices, bytes));
+        CU_CHECK(cuMemAlloc(&output->metadata_flags, bytes));
+    }
+    CU_CHECK(cuMemAlloc(&output->row_offsets, sizeof(uint64_t) * (static_cast<size_t>(source_count) + 1u)));
+    CU_CHECK(cuMemsetD8(output->row_offsets, 0, sizeof(uint64_t) * (static_cast<size_t>(source_count) + 1u)));
+    if (source_count != 0) {
+        CU_CHECK(cuMemAlloc(&output->per_source_counts, sizeof(uint64_t) * static_cast<size_t>(source_count)));
+        CU_CHECK(cuMemsetD8(output->per_source_counts, 0, sizeof(uint64_t) * static_cast<size_t>(source_count)));
+    }
+    CU_CHECK(cuMemAlloc(&output->row_count, sizeof(uint64_t)));
+    CU_CHECK(cuMemAlloc(&output->attempted_count, sizeof(uint64_t)));
+    CU_CHECK(cuMemAlloc(&output->overflow, sizeof(uint32_t)));
+    const uint64_t zero64 = 0ull;
+    const uint32_t zero32 = 0u;
+    upload(output->row_count, &zero64, 1);
+    upload(output->attempted_count, &zero64, 1);
+    upload(output->overflow, &zero32, 1);
+    return output;
+}
+
+extern "C" int rtdl_optix_prepare_aggregate_frontier_device_columns_2d(
+        const RtdlAggregateFrontierNode2D* nodes, size_t node_count,
+        const uint64_t* child_offsets, const int64_t* child_ids,
+        const uint64_t* member_offsets, const int64_t* member_ids,
+        double theta, uint32_t deduplicate_fallback_targets,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("aggregate-frontier device-column prepared_out must not be null");
+        *prepared_out = nullptr;
+        if (theta <= 0.0 || !std::isfinite(theta))
+            throw std::runtime_error("aggregate-frontier device-column theta must be positive and finite");
+        if (!nodes && node_count != 0)
+            throw std::runtime_error("aggregate-frontier device-column nodes must not be null when node_count is nonzero");
+        if (node_count != 0 && (!child_offsets || !member_offsets))
+            throw std::runtime_error("aggregate-frontier device-column CSR offsets must not be null when node_count is nonzero");
+
+        (void)get_optix_context();
+        auto prepared = std::make_unique<AggregateFrontierDeviceColumnsPrepared2D>();
+        prepared->node_count = static_cast<uint64_t>(node_count);
+        prepared->theta = theta;
+        prepared->deduplicate_fallback_targets = deduplicate_fallback_targets != 0 ? 1u : 0u;
+        CUdevice current_device = 0;
+        CU_CHECK(cuCtxGetDevice(&current_device));
+        prepared->device_ordinal = static_cast<int32_t>(current_device);
+
+        if (node_count == 0) {
+            *prepared_out = prepared.release();
+            return;
+        }
+
+        for (size_t node_index = 0; node_index < node_count; ++node_index) {
+            if (nodes[node_index].dfs_index != static_cast<int64_t>(node_index))
+                throw std::runtime_error("aggregate-frontier device-column nodes must be supplied in contiguous DFS order");
+            if (nodes[node_index].half_size < 0.0)
+                throw std::runtime_error("aggregate-frontier device-column node half_size must be non-negative");
+            if (child_offsets[node_index] > child_offsets[node_index + 1] ||
+                    member_offsets[node_index] > member_offsets[node_index + 1])
+                throw std::runtime_error("aggregate-frontier device-column CSR offsets must be monotonic");
+        }
+        const uint64_t child_count = child_offsets[node_count];
+        const uint64_t member_count = member_offsets[node_count];
+        if (child_count != 0 && !child_ids)
+            throw std::runtime_error("aggregate-frontier device-column child_ids must not be null when child CSR is non-empty");
+        if (member_count != 0 && !member_ids)
+            throw std::runtime_error("aggregate-frontier device-column member_ids must not be null when member CSR is non-empty");
+
+        std::unordered_map<int64_t, uint64_t> node_index_by_id;
+        node_index_by_id.reserve(node_count);
+        for (size_t node_index = 0; node_index < node_count; ++node_index) {
+            const auto inserted = node_index_by_id.emplace(nodes[node_index].id, static_cast<uint64_t>(node_index));
+            if (!inserted.second)
+                throw std::runtime_error("aggregate-frontier device-column duplicate node id");
+        }
+
+        std::vector<uint64_t> child_indices(static_cast<size_t>(child_count));
+        std::unordered_set<int64_t> child_id_set;
+        child_id_set.reserve(static_cast<size_t>(child_count));
+        for (uint64_t child_index = 0; child_index < child_count; ++child_index) {
+            const int64_t child_id = child_ids[child_index];
+            const auto found = node_index_by_id.find(child_id);
+            if (found == node_index_by_id.end())
+                throw std::runtime_error("aggregate-frontier device-column child id is not present in node array");
+            child_indices[static_cast<size_t>(child_index)] = found->second;
+            child_id_set.insert(child_id);
+        }
+
+        std::vector<uint64_t> root_indices;
+        for (size_t node_index = 0; node_index < node_count; ++node_index) {
+            if (child_id_set.find(nodes[node_index].id) == child_id_set.end())
+                root_indices.push_back(static_cast<uint64_t>(node_index));
+        }
+        if (root_indices.empty())
+            throw std::runtime_error("aggregate-frontier device-column tree must contain at least one root");
+
+        std::vector<AggregateFrontierDeviceNode2D> device_nodes(node_count);
+        for (size_t node_index = 0; node_index < node_count; ++node_index) {
+            device_nodes[node_index] = {
+                nodes[node_index].id,
+                nodes[node_index].cx,
+                nodes[node_index].cy,
+                nodes[node_index].half_size,
+                nodes[node_index].dfs_index,
+                nodes[node_index].resume_index >= 0 ? nodes[node_index].resume_index : -1,
+                child_offsets[node_index],
+                child_offsets[node_index + 1],
+                member_offsets[node_index],
+                member_offsets[node_index + 1],
+                nodes[node_index].is_leaf != 0 ? 1u : 0u,
+            };
+        }
+
+        prepared->child_count = child_count;
+        prepared->member_count = member_count;
+        prepared->root_count = static_cast<uint64_t>(root_indices.size());
+        CU_CHECK(cuMemAlloc(&prepared->nodes, sizeof(AggregateFrontierDeviceNode2D) * device_nodes.size()));
+        upload(prepared->nodes, device_nodes.data(), device_nodes.size());
+        if (!child_indices.empty()) {
+            CU_CHECK(cuMemAlloc(&prepared->child_indices, sizeof(uint64_t) * child_indices.size()));
+            upload(prepared->child_indices, child_indices.data(), child_indices.size());
+        }
+        if (member_count != 0) {
+            CU_CHECK(cuMemAlloc(&prepared->member_ids, sizeof(int64_t) * static_cast<size_t>(member_count)));
+            upload(prepared->member_ids, member_ids, static_cast<size_t>(member_count));
+        }
+        CU_CHECK(cuMemAlloc(&prepared->root_indices, sizeof(uint64_t) * root_indices.size()));
+        upload(prepared->root_indices, root_indices.data(), root_indices.size());
+
+        *prepared_out = prepared.release();
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_aggregate_frontier_device_columns_2d(
+        void* prepared_handle,
+        uint64_t source_ids_device_ptr,
+        uint64_t source_x_device_ptr,
+        uint64_t source_y_device_ptr,
+        size_t source_count,
+        uint64_t row_capacity,
+        RtdlAggregateFrontierDeviceColumns2D* columns_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_handle)
+            throw std::runtime_error("aggregate-frontier device-column prepared handle must not be null");
+        if (!columns_out)
+            throw std::runtime_error("aggregate-frontier device-column columns_out must not be null");
+        if (source_count != 0 && (source_ids_device_ptr == 0 || source_x_device_ptr == 0 || source_y_device_ptr == 0))
+            throw std::runtime_error("aggregate-frontier device-column source device pointers must be nonzero when source_count is nonzero");
+        *columns_out = {};
+
+        auto* prepared = reinterpret_cast<AggregateFrontierDeviceColumnsPrepared2D*>(prepared_handle);
+        std::lock_guard<std::mutex> lock(prepared->mutex);
+        (void)get_optix_context();
+        ensure_aggregate_frontier_device_columns_2d_kernels();
+
+        auto output = allocate_aggregate_frontier_device_columns_output_2d(
+            static_cast<uint64_t>(source_count),
+            row_capacity);
+        const auto traversal_start = std::chrono::steady_clock::now();
+        CUstream stream = 0;
+
+        if (source_count != 0 && prepared->root_count != 0) {
+            CUdeviceptr nodes_ptr = prepared->nodes;
+            CUdeviceptr child_indices_ptr = prepared->child_indices;
+            CUdeviceptr member_ids_ptr = prepared->member_ids;
+            CUdeviceptr root_indices_ptr = prepared->root_indices;
+            CUdeviceptr source_ids_ptr = static_cast<CUdeviceptr>(source_ids_device_ptr);
+            CUdeviceptr source_x_ptr = static_cast<CUdeviceptr>(source_x_device_ptr);
+            CUdeviceptr source_y_ptr = static_cast<CUdeviceptr>(source_y_device_ptr);
+            uint64_t root_count = prepared->root_count;
+            uint64_t source_count64 = static_cast<uint64_t>(source_count);
+            double theta = prepared->theta;
+            CUdeviceptr per_source_counts_ptr = output->per_source_counts;
+            CUdeviceptr overflow_ptr = output->overflow;
+            void* count_args[] = {
+                &nodes_ptr,
+                &child_indices_ptr,
+                &member_ids_ptr,
+                &root_indices_ptr,
+                &root_count,
+                &source_ids_ptr,
+                &source_x_ptr,
+                &source_y_ptr,
+                &source_count64,
+                &theta,
+                &per_source_counts_ptr,
+                &overflow_ptr,
+            };
+            const unsigned threads = 128u;
+            const unsigned blocks = static_cast<unsigned>((source_count + threads - 1u) / threads);
+            CU_CHECK(cuLaunchKernel(
+                g_aggregate_frontier_device_columns_2d.count_fn,
+                blocks, 1, 1,
+                threads, 1, 1,
+                0, stream, count_args, nullptr));
+        }
+
+        {
+            CUdeviceptr counts_ptr = output->per_source_counts;
+            uint64_t source_count64 = static_cast<uint64_t>(source_count);
+            uint64_t capacity64 = row_capacity;
+            CUdeviceptr offsets_ptr = output->row_offsets;
+            CUdeviceptr row_count_ptr = output->row_count;
+            CUdeviceptr attempted_count_ptr = output->attempted_count;
+            CUdeviceptr overflow_ptr = output->overflow;
+            void* prefix_args[] = {
+                &counts_ptr,
+                &source_count64,
+                &capacity64,
+                &offsets_ptr,
+                &row_count_ptr,
+                &attempted_count_ptr,
+                &overflow_ptr,
+            };
+            CU_CHECK(cuLaunchKernel(
+                g_aggregate_frontier_device_columns_2d.prefix_fn,
+                1, 1, 1,
+                1, 1, 1,
+                0, stream, prefix_args, nullptr));
+        }
+
+        if (source_count != 0 && row_capacity != 0 && prepared->root_count != 0) {
+            CUdeviceptr nodes_ptr = prepared->nodes;
+            CUdeviceptr child_indices_ptr = prepared->child_indices;
+            CUdeviceptr member_ids_ptr = prepared->member_ids;
+            CUdeviceptr root_indices_ptr = prepared->root_indices;
+            uint64_t root_count = prepared->root_count;
+            CUdeviceptr source_ids_ptr = static_cast<CUdeviceptr>(source_ids_device_ptr);
+            CUdeviceptr source_x_ptr = static_cast<CUdeviceptr>(source_x_device_ptr);
+            CUdeviceptr source_y_ptr = static_cast<CUdeviceptr>(source_y_device_ptr);
+            uint64_t source_count64 = static_cast<uint64_t>(source_count);
+            double theta = prepared->theta;
+            CUdeviceptr offsets_ptr = output->row_offsets;
+            CUdeviceptr output_source_ids_ptr = output->source_ids;
+            CUdeviceptr output_kind_codes_ptr = output->frontier_kind_codes;
+            CUdeviceptr output_item_ids_ptr = output->item_ids;
+            CUdeviceptr output_owner_aggregate_ids_ptr = output->owner_aggregate_ids;
+            CUdeviceptr output_dfs_indices_ptr = output->dfs_indices;
+            CUdeviceptr output_resume_indices_ptr = output->resume_indices;
+            CUdeviceptr output_metadata_flags_ptr = output->metadata_flags;
+            CUdeviceptr overflow_ptr = output->overflow;
+            void* write_args[] = {
+                &nodes_ptr,
+                &child_indices_ptr,
+                &member_ids_ptr,
+                &root_indices_ptr,
+                &root_count,
+                &source_ids_ptr,
+                &source_x_ptr,
+                &source_y_ptr,
+                &source_count64,
+                &theta,
+                &offsets_ptr,
+                &output_source_ids_ptr,
+                &output_kind_codes_ptr,
+                &output_item_ids_ptr,
+                &output_owner_aggregate_ids_ptr,
+                &output_dfs_indices_ptr,
+                &output_resume_indices_ptr,
+                &output_metadata_flags_ptr,
+                &overflow_ptr,
+            };
+            const unsigned threads = 128u;
+            const unsigned blocks = static_cast<unsigned>((source_count + threads - 1u) / threads);
+            CU_CHECK(cuLaunchKernel(
+                g_aggregate_frontier_device_columns_2d.write_fn,
+                blocks, 1, 1,
+                threads, 1, 1,
+                0, stream, write_args, nullptr));
+        }
+
+        CU_CHECK(cuStreamSynchronize(stream));
+        const auto traversal_end = std::chrono::steady_clock::now();
+
+        uint64_t row_count = 0;
+        uint64_t attempted_count = 0;
+        uint32_t overflow = 0u;
+        download(&row_count, output->row_count, 1);
+        download(&attempted_count, output->attempted_count, 1);
+        download(&overflow, output->overflow, 1);
+
+        columns_out->source_ids_device_ptr = static_cast<uint64_t>(output->source_ids);
+        columns_out->frontier_kind_codes_device_ptr = static_cast<uint64_t>(output->frontier_kind_codes);
+        columns_out->item_ids_device_ptr = static_cast<uint64_t>(output->item_ids);
+        columns_out->owner_aggregate_ids_device_ptr = static_cast<uint64_t>(output->owner_aggregate_ids);
+        columns_out->dfs_indices_device_ptr = static_cast<uint64_t>(output->dfs_indices);
+        columns_out->resume_indices_device_ptr = static_cast<uint64_t>(output->resume_indices);
+        columns_out->metadata_flags_device_ptr = static_cast<uint64_t>(output->metadata_flags);
+        columns_out->row_offsets_device_ptr = static_cast<uint64_t>(output->row_offsets);
+        columns_out->row_count = row_count;
+        columns_out->attempted_count = attempted_count;
+        columns_out->capacity = row_capacity;
+        columns_out->source_count = static_cast<uint64_t>(source_count);
+        columns_out->overflow = overflow;
+        columns_out->device_ordinal = prepared->device_ordinal;
+        columns_out->owner_handle = prepared;
+        columns_out->traversal_seconds = std::chrono::duration<double>(
+            traversal_end - traversal_start).count();
+        columns_out->row_count_device_ptr = static_cast<uint64_t>(output->row_count);
+        columns_out->attempted_count_device_ptr = static_cast<uint64_t>(output->attempted_count);
+        columns_out->overflow_device_ptr = static_cast<uint64_t>(output->overflow);
+
+        prepared->last_output = std::move(output);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_aggregate_frontier_device_columns_2d(void* prepared)
+{
+    delete reinterpret_cast<AggregateFrontierDeviceColumnsPrepared2D*>(prepared);
+}
+
 struct CollectKStageProfile {
     using Clock = std::chrono::steady_clock;
 

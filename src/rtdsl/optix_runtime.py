@@ -153,6 +153,9 @@ from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_OVERFLOW_POLICY
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_NATIVE_ABI_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_PRIMITIVE
 from .aggregate_tree_reference import AggregateFrontierOverflowError
 from .aggregate_tree_reference import _tree_node_rows
 from .aggregate_tree_reference import normalize_weighted_point_rows
@@ -373,6 +376,15 @@ OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_COUNT_SYMBOL = (
 )
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_DEVICE_FILTERED_PREPARED_POINTS_BATCH_COUNT_SYMBOL = (
     "rtdl_optix_count_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_2d"
+)
+OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARE_SYMBOL = (
+    "rtdl_optix_prepare_aggregate_frontier_device_columns_2d"
+)
+OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_RUN_SYMBOL = (
+    "rtdl_optix_run_aggregate_frontier_device_columns_2d"
+)
+OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_DESTROY_SYMBOL = (
+    "rtdl_optix_destroy_aggregate_frontier_device_columns_2d"
 )
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CORRECTED_PREPARED_POINTS_COUNT_SYMBOL = (
     "rtdl_optix_count_prepared_point_closed_shape_membership_relation_status_corrected_prepared_points_2d"
@@ -1187,6 +1199,30 @@ class _RtdlNativeDeviceGroupedCountI64Columns(ctypes.Structure):
         ("source_row_count_device_ptr", ctypes.c_uint64),
         ("overflow_device_ptr", ctypes.c_uint64),
         ("ambiguous_count_device_ptr", ctypes.c_uint64),
+    ]
+
+
+class _RtdlAggregateFrontierDeviceColumns2D(ctypes.Structure):
+    _fields_ = [
+        ("source_ids_device_ptr", ctypes.c_uint64),
+        ("frontier_kind_codes_device_ptr", ctypes.c_uint64),
+        ("item_ids_device_ptr", ctypes.c_uint64),
+        ("owner_aggregate_ids_device_ptr", ctypes.c_uint64),
+        ("dfs_indices_device_ptr", ctypes.c_uint64),
+        ("resume_indices_device_ptr", ctypes.c_uint64),
+        ("metadata_flags_device_ptr", ctypes.c_uint64),
+        ("row_offsets_device_ptr", ctypes.c_uint64),
+        ("row_count", ctypes.c_uint64),
+        ("attempted_count", ctypes.c_uint64),
+        ("capacity", ctypes.c_uint64),
+        ("source_count", ctypes.c_uint64),
+        ("overflow", ctypes.c_uint32),
+        ("device_ordinal", ctypes.c_int32),
+        ("owner_handle", ctypes.c_void_p),
+        ("traversal_seconds", ctypes.c_double),
+        ("row_count_device_ptr", ctypes.c_uint64),
+        ("attempted_count_device_ptr", ctypes.c_uint64),
+        ("overflow_device_ptr", ctypes.c_uint64),
     ]
 
 
@@ -2050,6 +2086,343 @@ class OptixNativeDeviceGroupedCountI64CompactOutput:
             self.close()
         except Exception:
             pass
+
+
+@dataclass
+class OptixAggregateFrontierDeviceColumns2DOutput:
+    library: ctypes.CDLL
+    prepared_owner: "PreparedOptixAggregateFrontierDeviceColumns2D"
+    source_ids_device_ptr: int
+    frontier_kind_codes_device_ptr: int
+    item_ids_device_ptr: int
+    owner_aggregate_ids_device_ptr: int
+    dfs_indices_device_ptr: int
+    resume_indices_device_ptr: int
+    metadata_flags_device_ptr: int
+    row_offsets_device_ptr: int
+    row_count: int
+    attempted_count: int
+    capacity: int
+    source_count: int
+    overflow: bool
+    device_ordinal: int
+    traversal_seconds: float
+    row_count_device_ptr: int
+    attempted_count_device_ptr: int
+    overflow_device_ptr: int
+    _source_column_owners: tuple[object, ...] = ()
+
+    @property
+    def device_resident(self) -> bool:
+        if self.overflow:
+            return False
+        if self.row_offsets_device_ptr <= 0:
+            return False
+        if self.row_count == 0:
+            return True
+        return all(
+            int(ptr) > 0
+            for ptr in (
+                self.source_ids_device_ptr,
+                self.frontier_kind_codes_device_ptr,
+                self.item_ids_device_ptr,
+                self.owner_aggregate_ids_device_ptr,
+                self.dfs_indices_device_ptr,
+                self.resume_indices_device_ptr,
+                self.metadata_flags_device_ptr,
+            )
+        )
+
+    @property
+    def row_schema(self) -> tuple[str, ...]:
+        return AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "primitive": AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_PRIMITIVE,
+            "contract": AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CONTRACT,
+            "native_abi_contract": AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_NATIVE_ABI_CONTRACT,
+            "native_symbol": OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_RUN_SYMBOL,
+            "backend": "optix",
+            "device_resident": self.device_resident,
+            "output_residency": "device_resident_aggregate_frontier_columns",
+            "row_schema": self.row_schema,
+            "row_count": int(self.row_count),
+            "attempted_count": int(self.attempted_count),
+            "capacity": int(self.capacity),
+            "source_count": int(self.source_count),
+            "overflow": bool(self.overflow),
+            "device_ordinal": int(self.device_ordinal),
+            "traversal_seconds": float(self.traversal_seconds),
+            "row_count_device_ptr_nonzero": self.row_count_device_ptr > 0,
+            "attempted_count_device_ptr_nonzero": self.attempted_count_device_ptr > 0,
+            "overflow_device_ptr_nonzero": self.overflow_device_ptr > 0,
+            "row_offsets_device_ptr_nonzero": self.row_offsets_device_ptr > 0,
+            "frontier_columns_materialized_on_host": False,
+            "row_offsets_materialized_on_host": False,
+            "small_host_outputs_materialized": ("row_count", "attempted_count", "overflow"),
+            "lifecycle": "valid until prepared aggregate-frontier device-column handle is run again or closed",
+            "true_zero_copy_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+
+    def _cupy_i64_column(self, device_ptr: int):
+        if self.overflow:
+            raise RuntimeError("cannot wrap overflowed aggregate-frontier device columns")
+        if int(device_ptr) <= 0:
+            raise RuntimeError("aggregate-frontier output does not own the requested device column")
+        import cupy as cp  # type: ignore
+
+        memory = cp.cuda.UnownedMemory(
+            int(device_ptr),
+            int(self.capacity) * ctypes.sizeof(ctypes.c_int64),
+            self.prepared_owner,
+        )
+        memory_pointer = cp.cuda.MemoryPointer(memory, 0)
+        return cp.ndarray((int(self.row_count),), dtype=cp.int64, memptr=memory_pointer)
+
+    def as_cupy_row_offsets(self):
+        if int(self.row_offsets_device_ptr) <= 0:
+            raise RuntimeError("aggregate-frontier output does not own row_offsets")
+        import cupy as cp  # type: ignore
+
+        memory = cp.cuda.UnownedMemory(
+            int(self.row_offsets_device_ptr),
+            (int(self.source_count) + 1) * ctypes.sizeof(ctypes.c_uint64),
+            self.prepared_owner,
+        )
+        memory_pointer = cp.cuda.MemoryPointer(memory, 0)
+        return cp.ndarray((int(self.source_count) + 1,), dtype=cp.uint64, memptr=memory_pointer)
+
+    def as_cupy_columns(self) -> dict[str, object]:
+        return {
+            "source_id": self._cupy_i64_column(self.source_ids_device_ptr),
+            "frontier_kind_code": self._cupy_i64_column(self.frontier_kind_codes_device_ptr),
+            "item_id": self._cupy_i64_column(self.item_ids_device_ptr),
+            "owner_aggregate_id": self._cupy_i64_column(self.owner_aggregate_ids_device_ptr),
+            "dfs_index": self._cupy_i64_column(self.dfs_indices_device_ptr),
+            "resume_index": self._cupy_i64_column(self.resume_indices_device_ptr),
+            "metadata_flags": self._cupy_i64_column(self.metadata_flags_device_ptr),
+            "row_offsets": self.as_cupy_row_offsets(),
+        }
+
+    def close(self) -> None:
+        self.prepared_owner.close()
+
+    def __enter__(self) -> "OptixAggregateFrontierDeviceColumns2DOutput":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+
+class PreparedOptixAggregateFrontierDeviceColumns2D:
+    def __init__(self, library: ctypes.CDLL, prepared_handle: ctypes.c_void_p, *, node_count: int) -> None:
+        self.library = library
+        self.prepared_handle = prepared_handle
+        self.node_count = int(node_count)
+        self._closed = False
+
+    @property
+    def handle_value(self) -> int:
+        return 0 if self.prepared_handle.value is None else int(self.prepared_handle.value)
+
+    def run_device_columns(
+        self,
+        *,
+        source_ids_device_ptr: int,
+        source_x_device_ptr: int,
+        source_y_device_ptr: int,
+        source_count: int,
+        row_capacity: int,
+        source_column_owners: tuple[object, ...] = (),
+    ) -> OptixAggregateFrontierDeviceColumns2DOutput:
+        if self._closed:
+            raise RuntimeError("prepared OptiX aggregate-frontier device-column handle is closed")
+        if int(source_count) < 0:
+            raise ValueError("source_count must be non-negative")
+        if int(row_capacity) < 0:
+            raise ValueError("row_capacity must be non-negative")
+        if int(source_count) and (
+            int(source_ids_device_ptr) == 0
+            or int(source_x_device_ptr) == 0
+            or int(source_y_device_ptr) == 0
+        ):
+            raise ValueError("source device pointers must be nonzero when source_count is nonzero")
+        run_symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_RUN_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_RUN_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        columns = _RtdlAggregateFrontierDeviceColumns2D()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self.prepared_handle,
+            ctypes.c_uint64(int(source_ids_device_ptr)),
+            ctypes.c_uint64(int(source_x_device_ptr)),
+            ctypes.c_uint64(int(source_y_device_ptr)),
+            ctypes.c_size_t(int(source_count)),
+            ctypes.c_uint64(int(row_capacity)),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return OptixAggregateFrontierDeviceColumns2DOutput(
+            library=self.library,
+            prepared_owner=self,
+            source_ids_device_ptr=int(columns.source_ids_device_ptr),
+            frontier_kind_codes_device_ptr=int(columns.frontier_kind_codes_device_ptr),
+            item_ids_device_ptr=int(columns.item_ids_device_ptr),
+            owner_aggregate_ids_device_ptr=int(columns.owner_aggregate_ids_device_ptr),
+            dfs_indices_device_ptr=int(columns.dfs_indices_device_ptr),
+            resume_indices_device_ptr=int(columns.resume_indices_device_ptr),
+            metadata_flags_device_ptr=int(columns.metadata_flags_device_ptr),
+            row_offsets_device_ptr=int(columns.row_offsets_device_ptr),
+            row_count=int(columns.row_count),
+            attempted_count=int(columns.attempted_count),
+            capacity=int(columns.capacity),
+            source_count=int(columns.source_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            traversal_seconds=float(columns.traversal_seconds),
+            row_count_device_ptr=int(columns.row_count_device_ptr),
+            attempted_count_device_ptr=int(columns.attempted_count_device_ptr),
+            overflow_device_ptr=int(columns.overflow_device_ptr),
+            _source_column_owners=tuple(source_column_owners),
+        )
+
+    def run_cupy(
+        self,
+        source_points: Iterable[object],
+        *,
+        row_capacity: int | None = None,
+    ) -> OptixAggregateFrontierDeviceColumns2DOutput:
+        sources = normalize_weighted_point_rows(source_points)
+        import cupy as cp  # type: ignore
+
+        ids = cp.asarray([int(source.id) for source in sources], dtype=cp.int64)
+        xs = cp.asarray([float(source.x) for source in sources], dtype=cp.float64)
+        ys = cp.asarray([float(source.y) for source in sources], dtype=cp.float64)
+        capacity = (
+            _aggregate_frontier_capacity_upper_bound(len(sources), self.node_count)
+            if row_capacity is None
+            else int(row_capacity)
+        )
+        return self.run_device_columns(
+            source_ids_device_ptr=int(ids.data.ptr),
+            source_x_device_ptr=int(xs.data.ptr),
+            source_y_device_ptr=int(ys.data.ptr),
+            source_count=len(sources),
+            row_capacity=capacity,
+            source_column_owners=(ids, xs, ys),
+        )
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        handle = self.prepared_handle
+        self.prepared_handle = ctypes.c_void_p()
+        if not handle.value:
+            return
+        destroy = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_DESTROY_SYMBOL,
+        )
+        if destroy is not None:
+            destroy(handle)
+
+    def __enter__(self) -> "PreparedOptixAggregateFrontierDeviceColumns2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_aggregate_frontier_device_columns_2d_optix(
+    tree_nodes: Iterable[object],
+    *,
+    theta: float,
+    deduplicate_fallback_targets: bool = True,
+) -> PreparedOptixAggregateFrontierDeviceColumns2D:
+    theta_value = float(theta)
+    if theta_value <= 0.0:
+        raise ValueError("theta must be positive")
+    nodes = _tree_node_rows(tree_nodes)
+    node_array = (_RtdlAggregateFrontierNode2D * len(nodes))(
+        *(
+            _RtdlAggregateFrontierNode2D(
+                int(node.id),
+                float(node.cx),
+                float(node.cy),
+                float(node.half_size),
+                int(node.depth),
+                int(node.dfs_index),
+                -1 if node.resume_index is None else int(node.resume_index),
+                1 if node.is_leaf else 0,
+            )
+            for node in nodes
+        )
+    )
+    child_offsets = [0]
+    child_ids: list[int] = []
+    member_offsets = [0]
+    member_ids: list[int] = []
+    for node in nodes:
+        child_ids.extend(int(child_id) for child_id in node.child_ids)
+        child_offsets.append(len(child_ids))
+        member_ids.extend(int(member_id) for member_id in node.member_ids)
+        member_offsets.append(len(member_ids))
+
+    child_offsets_array = (ctypes.c_uint64 * len(child_offsets))(*child_offsets)
+    child_ids_array = (ctypes.c_int64 * len(child_ids))(*child_ids) if child_ids else None
+    member_offsets_array = (ctypes.c_uint64 * len(member_offsets))(*member_offsets)
+    member_ids_array = (ctypes.c_int64 * len(member_ids))(*member_ids) if member_ids else None
+
+    library = _load_optix_library()
+    prepare_symbol = _find_optional_backend_symbol(
+        library,
+        OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARE_SYMBOL,
+    )
+    if prepare_symbol is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export "
+            f"{OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARE_SYMBOL}; rebuild the OptiX backend from current main"
+        )
+    prepared = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = prepare_symbol(
+        node_array,
+        len(nodes),
+        child_offsets_array,
+        child_ids_array,
+        member_offsets_array,
+        member_ids_array,
+        ctypes.c_double(theta_value),
+        ctypes.c_uint32(1 if deduplicate_fallback_targets else 0),
+        ctypes.byref(prepared),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return PreparedOptixAggregateFrontierDeviceColumns2D(
+        library,
+        prepared,
+        node_count=len(nodes),
+    )
 
 
 PAIR_COLUMN_STREAM_OVERFLOW_POLICY_FAIL_CLOSED = "fail_closed"
@@ -25161,6 +25534,50 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_aggregate_frontier_collect.restype = ctypes.c_int
+
+    optional_aggregate_frontier_device_prepare = _find_optional_backend_symbol(
+        lib,
+        OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARE_SYMBOL,
+    )
+    if optional_aggregate_frontier_device_prepare is not None:
+        optional_aggregate_frontier_device_prepare.argtypes = [
+            ctypes.POINTER(_RtdlAggregateFrontierNode2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_double,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_aggregate_frontier_device_prepare.restype = ctypes.c_int
+    optional_aggregate_frontier_device_run = _find_optional_backend_symbol(
+        lib,
+        OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_RUN_SYMBOL,
+    )
+    if optional_aggregate_frontier_device_run is not None:
+        optional_aggregate_frontier_device_run.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_size_t,
+            ctypes.c_uint64,
+            ctypes.POINTER(_RtdlAggregateFrontierDeviceColumns2D),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_aggregate_frontier_device_run.restype = ctypes.c_int
+    optional_aggregate_frontier_device_destroy = _find_optional_backend_symbol(
+        lib,
+        OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_DESTROY_SYMBOL,
+    )
+    if optional_aggregate_frontier_device_destroy is not None:
+        optional_aggregate_frontier_device_destroy.argtypes = [ctypes.c_void_p]
+        optional_aggregate_frontier_device_destroy.restype = None
 
     optional_prepare_segment_polygon_anyhit_rows = _find_optional_backend_symbol(
         lib,

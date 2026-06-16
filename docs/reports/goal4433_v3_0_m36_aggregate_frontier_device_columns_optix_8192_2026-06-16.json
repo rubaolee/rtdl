@@ -1,0 +1,68 @@
+{
+  "attempted_count": 3440003,
+  "expected_m34_same_config_row_count": 3440003,
+  "goal": "4433_v3_0_m36_aggregate_frontier_device_columns_optix",
+  "matches_m34_same_config_row_count": true,
+  "metadata": {
+    "attempted_count": 3440003,
+    "attempted_count_device_ptr_nonzero": true,
+    "backend": "optix",
+    "capacity": 3441027,
+    "contract": "generic_aggregate_frontier_device_columns_2d_v1",
+    "device_ordinal": 0,
+    "device_resident": true,
+    "frontier_columns_materialized_on_host": false,
+    "lifecycle": "valid until prepared aggregate-frontier device-column handle is run again or closed",
+    "native_abi_contract": "generic_aggregate_frontier_device_columns_2d_native_abi_v1",
+    "native_symbol": "rtdl_optix_run_aggregate_frontier_device_columns_2d",
+    "output_residency": "device_resident_aggregate_frontier_columns",
+    "overflow": false,
+    "overflow_device_ptr_nonzero": true,
+    "primitive": "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D",
+    "public_speedup_claim_authorized": false,
+    "row_count": 3440003,
+    "row_count_device_ptr_nonzero": true,
+    "row_offsets_device_ptr_nonzero": true,
+    "row_offsets_materialized_on_host": false,
+    "row_schema": [
+      "source_id",
+      "frontier_kind_code",
+      "item_id",
+      "owner_aggregate_id",
+      "dfs_index",
+      "resume_index",
+      "metadata_flags"
+    ],
+    "rt_core_speedup_claim_authorized": false,
+    "small_host_outputs_materialized": [
+      "row_count",
+      "attempted_count",
+      "overflow"
+    ],
+    "source_count": 8192,
+    "traversal_seconds": 0.014224568,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "native_traversal_seconds_median": 0.014224568,
+  "native_traversal_seconds_repeats": [
+    0.014160577,
+    0.014192177,
+    0.014259675,
+    0.01426223,
+    0.014224568
+  ],
+  "overflow": false,
+  "point_count": 8192,
+  "row_capacity": 3441027,
+  "row_count": 3440003,
+  "tree_summary": {
+    "bucket_size": 64,
+    "leaf_node_count": 256,
+    "max_depth": 4,
+    "max_leaf_member_count": 36,
+    "morton_bits": 16,
+    "source_count": 8192,
+    "tree_node_count": 341
+  }
+}

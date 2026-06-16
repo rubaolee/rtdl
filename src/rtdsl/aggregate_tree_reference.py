@@ -1015,11 +1015,17 @@ def aggregate_frontier_device_columns_native_abi_contract() -> dict[str, object]
         "contract": AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_NATIVE_ABI_CONTRACT,
         "logical_contract": AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CONTRACT,
         "row_contract_replaced": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
-        "status": "specified_not_implemented",
-        "executable": False,
+        "status": "implemented_optix_device_columns",
+        "executable": True,
         "app_generic": True,
         "required_native_symbols": AGGREGATE_FRONTIER_DEVICE_COLUMNS_REQUIRED_SYMBOLS,
         "required_first_backend": "optix",
+        "implemented_backend": "optix",
+        "implementation_notes": (
+            "First producer writes the generic aggregate-frontier row schema as "
+            "device-resident columns and row_offsets. It does not embed app force "
+            "math, scoring, or reductions."
+        ),
         "source_point_struct": (
             "id:int64",
             "x:float64",
@@ -1092,7 +1098,7 @@ def aggregate_frontier_device_columns_native_abi_contract() -> dict[str, object]
             "whole_app_speedup_claim_authorized": False,
             "true_zero_copy_claim_authorized": False,
             "paper_reproduction_claim_authorized": False,
-            "implementation_claim_authorized": False,
+            "implementation_claim_authorized": True,
         },
     }
 
@@ -1107,10 +1113,10 @@ def validate_aggregate_frontier_device_columns_native_abi_contract() -> dict[str
         raise ValueError("unexpected aggregate-frontier device-column native ABI")
     if contract["logical_contract"] != AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CONTRACT:
         raise ValueError("unexpected aggregate-frontier device-column logical contract")
-    if contract["status"] != "specified_not_implemented":
-        raise ValueError("device-column frontier ABI must remain fail-closed until implemented")
-    if bool(contract["executable"]):
-        raise ValueError("device-column frontier ABI must not claim executable implementation yet")
+    if contract["status"] != "implemented_optix_device_columns":
+        raise ValueError("device-column frontier ABI implementation status drifted")
+    if bool(contract["executable"]) is not True:
+        raise ValueError("device-column frontier ABI must expose the OptiX implementation")
     if not bool(contract["app_generic"]):
         raise ValueError("device-column frontier ABI must be app-generic")
     if tuple(contract["required_native_symbols"]) != AGGREGATE_FRONTIER_DEVICE_COLUMNS_REQUIRED_SYMBOLS:
@@ -1133,6 +1139,10 @@ def validate_aggregate_frontier_device_columns_native_abi_contract() -> dict[str
     if not isinstance(claim_boundary, Mapping):
         raise ValueError("device-column frontier ABI must include a claim boundary")
     for key, value in claim_boundary.items():
+        if key == "implementation_claim_authorized":
+            if bool(value) is not True:
+                raise ValueError("device-column frontier ABI should authorize the implementation claim")
+            continue
         if bool(value):
             raise ValueError(f"device-column frontier ABI must not authorize {key}")
     return contract

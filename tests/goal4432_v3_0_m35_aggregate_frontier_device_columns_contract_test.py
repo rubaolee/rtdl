@@ -15,15 +15,15 @@ sys.path.insert(0, str(ROOT / "src"))
 
 
 class Goal4432V30M35AggregateFrontierDeviceColumnsContractTest(unittest.TestCase):
-    def test_contract_is_exported_and_fail_closed(self) -> None:
+    def test_contract_is_exported_and_implemented_by_m36(self) -> None:
         import rtdsl as rt
 
         contract = rt.validate_aggregate_frontier_device_columns_native_abi_contract()
         self.assertEqual(contract["primitive"], rt.AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_PRIMITIVE)
         self.assertEqual(contract["contract"], rt.AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_NATIVE_ABI_CONTRACT)
         self.assertEqual(contract["logical_contract"], rt.AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CONTRACT)
-        self.assertEqual(contract["status"], "specified_not_implemented")
-        self.assertFalse(contract["executable"])
+        self.assertEqual(contract["status"], "implemented_optix_device_columns")
+        self.assertTrue(contract["executable"])
         self.assertTrue(contract["app_generic"])
         self.assertEqual(
             tuple(contract["required_native_symbols"]),
@@ -52,7 +52,10 @@ class Goal4432V30M35AggregateFrontierDeviceColumnsContractTest(unittest.TestCase
             self.assertNotIn(forbidden, payload)
         for key, value in contract["claim_boundary"].items():
             with self.subTest(key=key):
-                self.assertFalse(value)
+                if key == "implementation_claim_authorized":
+                    self.assertTrue(value)
+                else:
+                    self.assertFalse(value)
         self.assertIn("force_law", contract["engine_exclusions"])
         self.assertIn("app_reduction", contract["engine_exclusions"])
 
