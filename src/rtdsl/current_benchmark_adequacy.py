@@ -8,15 +8,16 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4449.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4450.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
-    "Goal4449 refreshes the current benchmark adequacy advisory after V3 M41-M53 "
+    "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
     "evidence: Barnes-Hut is now mixed explicit because Goal4442's fused CPU/Numba "
     "route and Goal4448's fused Numba CUDA subtree prototype expose the frontier "
     "materialization bottleneck and beat the current prepared RTDL/OptiX route at "
     "tested scales, while Goal4449 turns the fused CUDA shape into a reusable "
-    "app-reference partner API; RTNN separates "
+    "app-reference partner API and Goal4450 wires that API into the Barnes-Hut "
+    "app front door; RTNN separates "
     "Goal4381 exact float64 aggregate rows from Goal4443 resident graph-bridge "
     "rows; triangle counting keeps scalar primitive wording while Goal4444 fixes "
     "the no-C++ Numba construction debt; RT-DBSCAN adds Goal4445 compact "
@@ -216,14 +217,17 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "beats the fused CPU/Numba route at 32768 bodies while remaining slower "
             "at 8192/16384. Goal4449 promotes the same fused CUDA shape to the "
             "reusable `prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda` "
-            "app-reference partner API."
+            "app-reference partner API, and Goal4450 exposes it as the "
+            "`fused_frontier_force_sum_bucketized_numba_cuda` app front-door mode."
         ),
         "adequacy": "adequate",
         "current_recommended_path": (
             "choose `fused_frontier_force_sum_bucketized_cpu_numba` for the current "
             "strongest CPU fused baseline; choose "
-            "`prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda` for the "
-            "current reusable no-C++ fused GPU partner API; choose "
+            "`fused_frontier_force_sum_bucketized_numba_cuda` for the current "
+            "app-front-door no-C++ fused GPU partner route, or "
+            "`prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda` when "
+            "embedding the reusable API directly; choose "
             "`prepared_aggregate_frontier_weighted_vector_optix --partner numba` "
             "when the purpose is RTDL/OptiX device-column evidence"
         ),
@@ -261,6 +265,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4442",
             "Goal4448",
             "Goal4449",
+            "Goal4450",
         ),
     },
     "rtnn": {

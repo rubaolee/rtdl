@@ -1606,6 +1606,9 @@ class PreparedAggregateTreeFusedWeightedVectorSum2DNumbaCuda:
                 "source_ids": self.source_ids,
                 "vector_x": self.vector_x,
                 "vector_y": self.vector_y,
+                "visited_counts": self.visited_counts,
+                "aggregate_counts": self.aggregate_counts,
+                "exact_counts": self.exact_counts,
             },
             "metadata": {
                 "contract": AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CUDA_CONTRACT,

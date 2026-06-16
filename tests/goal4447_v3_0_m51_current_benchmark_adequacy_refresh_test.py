@@ -15,7 +15,7 @@ class Goal4447V30M51CurrentBenchmarkAdequacyRefreshTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_adequacy()
         summary = rt.summarize_current_benchmark_adequacy()
 
-        self.assertEqual(rt.CURRENT_BENCHMARK_ADEQUACY_VERSION, "rtdl.v3_0.current_benchmark_adequacy.goal4449.v1")
+        self.assertEqual(rt.CURRENT_BENCHMARK_ADEQUACY_VERSION, "rtdl.v3_0.current_benchmark_adequacy.goal4450.v1")
         self.assertEqual(validation["status"], "accept")
         self.assertEqual(validation["errors"], ())
         self.assertEqual(summary["app_count"], 10)
@@ -27,7 +27,7 @@ class Goal4447V30M51CurrentBenchmarkAdequacyRefreshTest(unittest.TestCase):
         self.assertFalse(summary["public_speedup_claim_authorized"])
         self.assertFalse(summary["whole_app_speedup_claim_authorized"])
         self.assertFalse(summary["automatic_partner_selection_authorized"])
-        self.assertIn("Goal4449", summary["claim_boundary"])
+        self.assertIn("Goal4450", summary["claim_boundary"])
 
     def test_v3_changed_rows_are_current(self) -> None:
         rows = {row["app"]: row for row in rt.current_benchmark_adequacy()}
@@ -47,7 +47,9 @@ class Goal4447V30M51CurrentBenchmarkAdequacyRefreshTest(unittest.TestCase):
         self.assertIn("Goal4442", barnes["evidence_refs"])
         self.assertIn("Goal4448", barnes["evidence_refs"])
         self.assertIn("Goal4449", barnes["evidence_refs"])
+        self.assertIn("Goal4450", barnes["evidence_refs"])
         self.assertIn("fused-subtree prototype", barnes["current_performance_reading"])
+        self.assertIn("fused_frontier_force_sum_bucketized_numba_cuda", barnes["current_recommended_path"])
         self.assertIn("prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda", barnes["current_recommended_path"])
         self.assertIn("RT-native/device primitive", barnes["next_generic_runtime_action"])
 

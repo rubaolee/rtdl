@@ -62,6 +62,7 @@ PYTHONPATH=src:. .venv-rtdl-scipy/bin/python examples/current/research_benchmark
 | `materialization_pressure_bucketized_cpu` | Estimate contribution-row memory pressure from the opening frontier summary | Planning guard for materialized vs streamed/native execution |
 | `fused_frontier_force_sum_bucketized_cpu` | Generic aggregate-tree opening traversal fused directly into weighted vector sums | Reference contract for native/partner fused lowering; avoids frontier and contribution rows |
 | `fused_frontier_force_sum_bucketized_cpu_numba` | Numba CPU aggregate-tree opening traversal fused directly into weighted vector sums | Strongest measured CPU fused baseline; avoids frontier and contribution rows, but is not RT-core evidence |
+| `fused_frontier_force_sum_bucketized_numba_cuda` | App front-door route for the reusable Numba CUDA aggregate-tree fused weighted-vector partner API | Current no-C++ fused GPU partner route; avoids frontier and contribution rows, but is not RT-core evidence |
 | `prepared_aggregate_frontier_weighted_vector_optix` | Prepared RTDL/OptiX aggregate-frontier device columns plus explicit CuPy or Numba weighted-vector continuation | Current device-resident app route; no frontier/contribution host rows; no automatic partner selection or public speedup claim |
 | `optix_node_coverage_prepared` | Prepared OptiX fixed-radius threshold traversal for node coverage | RT-core decision subpath |
 | `partner_exact_force` | Generic weighted-point pairwise inverse-square force via CuPy or Numba CUDA JIT | Partner force-vector reference |
@@ -106,6 +107,7 @@ PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_bar
 PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode materialization_pressure_bucketized_cpu --body-count 8192 --bucket-size 32
 PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode fused_frontier_force_sum_bucketized_cpu --body-count 8192 --bucket-size 32
 PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode fused_frontier_force_sum_bucketized_cpu_numba --body-count 8192 --bucket-size 64 --theta 0.5 --skip-validation --warmup 2 --repeat 11 --force-output-mode force_summary
+PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode fused_frontier_force_sum_bucketized_numba_cuda --body-count 8192 --bucket-size 64 --theta 0.5 --skip-validation --warmup 2 --repeat 11 --force-output-mode force_summary
 ```
 
 Host-materialized logical CPU/Embree baselines for the prepared aggregate-frontier
@@ -156,6 +158,11 @@ prepared = rt.prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda(
 actual = prepared.sum(theta=0.5, softening=0.05)
 ```
 
+Goal4450 wires that reusable API into the app front door as
+`fused_frontier_force_sum_bucketized_numba_cuda`. Use the app mode for benchmark
+evidence and the direct API when embedding the same generic aggregate-tree fused
+weighted-vector contract in a custom program.
+
 Older Torch/CUDA fused vector-sum prototypes on an NVIDIA machine:
 
 ```bash
@@ -205,6 +212,9 @@ The current promoted benchmark starts from three existing RTDL surfaces:
 - generic vector-sum materialization-pressure estimates;
 - generic fused aggregate-frontier weighted vector sums that avoid both
   opening-frontier and contribution-row materialization;
+- generic aggregate-tree fused Numba CUDA weighted-vector sums exposed both as a
+  reusable API and as the `fused_frontier_force_sum_bucketized_numba_cuda` app
+  mode;
 - generic resident-state aggregate-frontier execution;
 - generic 3-D scalar inverse-square aggregate-frontier sums for authors-facing
   contract alignment;
@@ -244,16 +254,18 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   evidence. This is still row collection evidence, not RT-core speedup evidence.
   Default frontier rows are ID-only; distance/opening-ratio diagnostics are an
   explicit debug side channel, not primitive output.
-- Current V3 M45/M52 route guidance separates fused baselines from RT evidence.
+- Current V3 M45/M52/M53/M54 route guidance separates fused baselines from RT evidence.
   `fused_frontier_force_sum_bucketized_cpu_numba` is the strongest measured CPU
   fused baseline. `scripts/v3_0_m52_barnes_hut_numba_cuda_fused_subtree.py`
-  provides the scale evidence, and
+  provides the scale evidence,
   `prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda` is the reusable
-  no-C++ fused GPU partner API. The fused Numba CUDA route beats the prepared
-  RTDL/OptiX+Numba aggregate-frontier route at the measured 8192/16384/32768
-  scales. Neither route is an Embree implementation or evidence that RT cores
-  accelerate Barnes-Hut. The prepared RTDL/OptiX aggregate-frontier route remains
-  useful RT device-column evidence and a same-contract partner comparison target.
+  no-C++ fused GPU partner API, and
+  `fused_frontier_force_sum_bucketized_numba_cuda` is the app front-door wrapper
+  over that API. The fused Numba CUDA route beats the prepared RTDL/OptiX+Numba
+  aggregate-frontier route at the measured 8192/16384/32768 scales. Neither
+  fused route is an Embree implementation or evidence that RT cores accelerate
+  Barnes-Hut. The prepared RTDL/OptiX aggregate-frontier route remains useful RT
+  device-column evidence and a same-contract partner comparison target.
 - Current expanded-membership lowering evidence routes Barnes-Hut
   aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
   near-zone candidate rows. The engine still only sees points, boxes, IDs, and

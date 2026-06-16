@@ -149,7 +149,8 @@ class Goal4448V30M52BarnesHutNumbaCudaFusedSubtreeTest(unittest.TestCase):
         self.assertIn("not an RT-core primitive", report)
         self.assertEqual("adequate", barnes["adequacy"])
         self.assertIn("Goal4448", barnes["evidence_refs"])
-        self.assertIn("reusable no-C++ fused GPU partner API", barnes["current_recommended_path"])
+        self.assertIn("fused_frontier_force_sum_bucketized_numba_cuda", barnes["current_recommended_path"])
+        self.assertIn("reusable API", barnes["current_recommended_path"])
         self.assertFalse(barnes["broad_rt_core_claim_authorized"])
 
 

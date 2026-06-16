@@ -88,7 +88,8 @@ class Goal4442V30M45BarnesHutFusedNumbaCpuFrontierTest(unittest.TestCase):
             evidence_index,
         )
         self.assertIn("strongest measured CPU fused baseline", readme_flat)
-        self.assertIn("current no-C++ fused GPU partner prototype", readme_flat)
+        self.assertIn("no-C++ fused GPU partner route", readme_flat)
+        self.assertIn("fused_frontier_force_sum_bucketized_numba_cuda", readme_flat)
         self.assertIn("Current V3 note for Barnes-Hut", author_strategy)
 
     def test_pod_evidence_records_fused_cpu_numba_scale_ladder(self) -> None:
