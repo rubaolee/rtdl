@@ -92,7 +92,7 @@ v2.14 evidence:
 | --- | --- | --- | --- |
 | Hausdorff / X-HD | `hausdorff_xhd_current_optix_threshold` | primitive-first OptiX path; CuPy/Numba are comparison/reference lanes | NVIDIA pod for OptiX timing |
 | Spatial RayJoin | `spatial_rayjoin_pip_count_current_prepared_optix` | contract-split RayJoin-style path; scalar/count paths are stronger than full paper reproduction | NVIDIA pod plus public-CDB fixture for representative route |
-| RT-DBSCAN | `rt_dbscan_optix_numba_prepared_grid` | OptiX fixed-radius flags plus explicit Numba component continuation | CUDA pod with Numba |
+| RT-DBSCAN | `rt_dbscan_optix_grouped_stream_component_signature` | Generic OptiX fixed-radius/grouped-stream component labels plus explicit CuPy/Numba compact component-signature continuation; full rows remain a slower output contract | CUDA pod with CuPy and Numba |
 | Robot collision | `robot_collision_optix_prepared_device_count` | primitive-only prepared static-scene collision count path | NVIDIA pod for OptiX timing |
 | Contact manifold | `contact_manifold_optix_native_collect_k` | bounded collect/witness primitive path; no manifold-native ABI | NVIDIA pod for OptiX timing |
 | RayDB-style | `raydb_style_optix_count_primitive_first` | primitive-first grouped count path; partner rows only for unfused continuations | NVIDIA pod; CUDA pod for CuPy/Numba partner comparison |
@@ -114,6 +114,7 @@ v2.14 evidence:
 - [Barnes-Hut fused Numba CPU frontier baseline](../reports/goal4442_v3_0_m45_barnes_hut_fused_numba_cpu_frontier_2026-06-16.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)
 - [Goal4444 Triangle Numba direct-binary summary refresh](../reports/goal4444_v3_0_m48_triangle_numba_direct_binary_summary_2026-06-16.md)
+- [Goal4445 DBSCAN compact component signature](../reports/goal4445_v3_0_m49_dbscan_component_signature_2026-06-16.md)
 
 ## Reading Rules
 

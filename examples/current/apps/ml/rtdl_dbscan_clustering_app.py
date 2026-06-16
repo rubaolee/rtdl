@@ -250,6 +250,20 @@ def expected_tiled_cluster_rows(*, copies: int) -> tuple[dict[str, object], ...]
     return tuple(rows)
 
 
+def expected_tiled_component_signature(*, copies: int) -> dict[str, object]:
+    """Compact exact component summary for make_dbscan_case without per-point rows."""
+    return {
+        "point_count": 8 * int(copies),
+        "cluster_count": 2 * int(copies),
+        "clustered_point_count": 7 * int(copies),
+        "noise_count": int(copies),
+        "core_count": 7 * int(copies),
+        "size_histogram": {"3": int(copies), "4": int(copies)},
+        "min_size": 3,
+        "max_size": 4,
+    }
+
+
 def _core_flag_rows_from_count_rows(
     points: tuple[rt.Point, ...],
     count_rows: Iterable[dict[str, object]],
@@ -377,6 +391,142 @@ def _partner_column_to_list(column, partner: str) -> list[object]:
     raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
 
 
+def _component_signature_from_numpy_arrays(labels, core_flags, *, aggregation_backend: str) -> dict[str, object]:
+    import numpy as np
+
+    labels_np = np.asarray(labels)
+    core_np = np.asarray(core_flags)
+    if labels_np.shape[0] != core_np.shape[0]:
+        raise ValueError("component_labels and is_core columns must have the same length")
+    clustered_labels = labels_np[labels_np != NOISE_CLUSTER_ID]
+    if clustered_labels.size:
+        _, counts = np.unique(clustered_labels, return_counts=True)
+        sizes, size_counts = np.unique(counts, return_counts=True)
+        size_histogram = {str(int(size)): int(count) for size, count in zip(sizes, size_counts)}
+        min_size = int(counts.min())
+        max_size = int(counts.max())
+        cluster_count = int(counts.size)
+        clustered_point_count = int(counts.sum())
+    else:
+        size_histogram = {}
+        min_size = None
+        max_size = None
+        cluster_count = 0
+        clustered_point_count = 0
+    return {
+        "point_count": int(labels_np.shape[0]),
+        "cluster_count": cluster_count,
+        "clustered_point_count": clustered_point_count,
+        "noise_count": int(np.count_nonzero(labels_np == NOISE_CLUSTER_ID)),
+        "core_count": int(np.count_nonzero(core_np)),
+        "size_histogram": dict(sorted(size_histogram.items(), key=lambda item: int(item[0]))),
+        "min_size": min_size,
+        "max_size": max_size,
+        "aggregation_backend": aggregation_backend,
+        "materialized_python_rows": False,
+    }
+
+
+def _component_signature_from_cupy_arrays(labels_dev, core_flags_dev, *, aggregation_backend: str) -> dict[str, object]:
+    import cupy
+
+    if int(labels_dev.size) != int(core_flags_dev.size):
+        raise ValueError("component_labels and is_core columns must have the same length")
+    clustered_labels = labels_dev[labels_dev != NOISE_CLUSTER_ID]
+    if int(clustered_labels.size):
+        _, counts = cupy.unique(clustered_labels, return_counts=True)
+        sizes, size_counts = cupy.unique(counts, return_counts=True)
+        sizes_host = cupy.asnumpy(sizes)
+        size_counts_host = cupy.asnumpy(size_counts)
+        size_histogram = {
+            str(int(size)): int(count) for size, count in zip(sizes_host.tolist(), size_counts_host.tolist())
+        }
+        min_size = int(cupy.min(counts).item())
+        max_size = int(cupy.max(counts).item())
+        cluster_count = int(counts.size)
+        clustered_point_count = int(cupy.sum(counts).item())
+    else:
+        size_histogram = {}
+        min_size = None
+        max_size = None
+        cluster_count = 0
+        clustered_point_count = 0
+    return {
+        "point_count": int(labels_dev.size),
+        "cluster_count": cluster_count,
+        "clustered_point_count": clustered_point_count,
+        "noise_count": int(cupy.sum(labels_dev == NOISE_CLUSTER_ID).item()),
+        "core_count": int(cupy.sum(core_flags_dev != 0).item()),
+        "size_histogram": dict(sorted(size_histogram.items(), key=lambda item: int(item[0]))),
+        "min_size": min_size,
+        "max_size": max_size,
+        "aggregation_backend": aggregation_backend,
+        "materialized_python_rows": False,
+    }
+
+
+def _host_numpy_from_partner_column(column, partner: str):
+    import numpy as np
+
+    if partner == "numba":
+        host = column.copy_to_host()
+        return np.asarray(host.tolist() if hasattr(host, "tolist") else host)
+    if partner == "cupy":
+        import cupy
+
+        return cupy.asnumpy(column)
+    if partner == "torch":
+        return np.asarray(column.detach().cpu())
+    raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
+
+
+def _component_signature_from_partner_columns(columns: dict[str, object], partner: str) -> dict[str, object]:
+    labels_column = columns["component_labels"]
+    core_column = columns["is_core"]
+    if partner == "cupy":
+        import cupy
+
+        return _component_signature_from_cupy_arrays(
+            cupy.asarray(labels_column),
+            cupy.asarray(core_column),
+            aggregation_backend="cupy_device_unique",
+        )
+    if partner == "numba":
+        try:
+            import cupy
+
+            return _component_signature_from_cupy_arrays(
+                cupy.asarray(labels_column),
+                cupy.asarray(core_column),
+                aggregation_backend="numba_device_columns_via_cupy_cuda_array_interface",
+            )
+        except Exception as exc:
+            signature = _component_signature_from_numpy_arrays(
+                _host_numpy_from_partner_column(labels_column, partner),
+                _host_numpy_from_partner_column(core_column, partner),
+                aggregation_backend="numba_host_numpy_compact_fallback",
+            )
+            signature["aggregation_fallback_reason"] = type(exc).__name__
+            return signature
+    raise ValueError("partner must be 'cupy' or 'numba'")
+
+
+def _component_signature_matches(actual: dict[str, object] | None, expected: dict[str, object] | None) -> bool:
+    if actual is None or expected is None:
+        return False
+    comparable_fields = (
+        "point_count",
+        "cluster_count",
+        "clustered_point_count",
+        "noise_count",
+        "core_count",
+        "size_histogram",
+        "min_size",
+        "max_size",
+    )
+    return all(actual.get(field) == expected.get(field) for field in comparable_fields)
+
+
 def _points_to_3d_rows(points: tuple[rt.Point, ...]) -> tuple[rt.Point3D, ...]:
     return tuple(rt.Point3D(id=point.id, x=point.x, y=point.y, z=0.0) for point in points)
 
@@ -411,9 +561,12 @@ def _run_optix_grouped_stream_clusters(
     query_repeat: int = 1,
     warmup: int = 0,
     grouped_union_query_block_size: int | None = None,
-) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
+    output_mode: str = "full",
+) -> tuple[tuple[dict[str, object], ...], dict[str, object] | None, dict[str, object]]:
     if partner not in {"cupy", "numba"}:
         raise ValueError("optix_grouped_stream_components requires partner='cupy' or partner='numba'")
+    if output_mode not in {"full", "component_signature"}:
+        raise ValueError("optix_grouped_stream_components supports output_mode='full' or 'component_signature'")
     if int(query_repeat) < 1:
         raise ValueError("query_repeat must be at least 1")
     if int(warmup) < 0:
@@ -456,24 +609,29 @@ def _run_optix_grouped_stream_clusters(
 
     materialize_start = time.perf_counter()
     columns = last_result["columns"]
-    point_ids = _partner_column_to_list(columns["point_ids"], partner)
-    labels = _partner_column_to_list(columns["component_labels"], partner)
-    core_flags = _partner_column_to_list(columns["is_core"], partner)
-    neighbor_counts = _partner_column_to_list(columns["neighbor_counts"], partner)
-    rows = _densify_cluster_labels(
-        {
-            "point_id": int(point_id),
-            "cluster_id": int(cluster_id),
-            "is_core": bool(is_core),
-            "neighbor_count": int(neighbor_count),
-        }
-        for point_id, cluster_id, is_core, neighbor_count in zip(
-            point_ids,
-            labels,
-            core_flags,
-            neighbor_counts,
+    component_signature: dict[str, object] | None = None
+    if output_mode == "component_signature":
+        rows = ()
+        component_signature = _component_signature_from_partner_columns(columns, partner)
+    else:
+        point_ids = _partner_column_to_list(columns["point_ids"], partner)
+        labels = _partner_column_to_list(columns["component_labels"], partner)
+        core_flags = _partner_column_to_list(columns["is_core"], partner)
+        neighbor_counts = _partner_column_to_list(columns["neighbor_counts"], partner)
+        rows = _densify_cluster_labels(
+            {
+                "point_id": int(point_id),
+                "cluster_id": int(cluster_id),
+                "is_core": bool(is_core),
+                "neighbor_count": int(neighbor_count),
+            }
+            for point_id, cluster_id, is_core, neighbor_count in zip(
+                point_ids,
+                labels,
+                core_flags,
+                neighbor_counts,
+            )
         )
-    )
     materialize_sec = time.perf_counter() - materialize_start
     elapsed_samples = tuple(float(row["elapsed_sec"]) for row in measured_runs)
     metadata = dict(last_result["metadata"])
@@ -487,6 +645,7 @@ def _run_optix_grouped_stream_clusters(
             "partner": partner,
             "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
             "front_door_operation": "fixed_radius_graph_component_labels_3d",
+            "output_mode": output_mode,
             "native_execution_path": metadata.get("native_execution_path", "prepared_rt_core_grouped_union_3d_self_query"),
             "native_engine_summary_contract": metadata.get(
                 "native_engine_row_contract",
@@ -506,8 +665,16 @@ def _run_optix_grouped_stream_clusters(
                 "measured_iterations": len(measured_runs),
             },
             "device_result_materialization_after_hot_window": True,
-            "post_window_row_materialization_sec": materialize_sec,
-            "materializes_python_rows": True,
+            "post_window_row_materialization_sec": materialize_sec if output_mode == "full" else None,
+            "post_window_component_signature_sec": materialize_sec if output_mode == "component_signature" else None,
+            "component_signature_after_hot_window": output_mode == "component_signature",
+            "signature_aggregation_backend": (
+                component_signature.get("aggregation_backend") if component_signature is not None else None
+            ),
+            "signature_materializes_python_rows": (
+                component_signature.get("materialized_python_rows") if component_signature is not None else None
+            ),
+            "materializes_python_rows": output_mode == "full",
             "host_row_materialization_before_consumer": False,
             "materializes_neighbor_rows": False,
             "materializes_directed_adjacency_stream": False,
@@ -523,7 +690,7 @@ def _run_optix_grouped_stream_clusters(
             ),
         }
     )
-    return rows, metadata
+    return rows, component_signature, metadata
 
 
 def _run_partner_exact_clusters(
@@ -731,23 +898,29 @@ def run_app(
         raise ValueError("optix_summary_mode must be 'rows', 'rt_core_flags', or 'rt_core_flags_prepared'")
     if embree_summary_mode not in {"rows", "rt_core_flags", "rt_core_flags_prepared"}:
         raise ValueError("embree_summary_mode must be 'rows', 'rt_core_flags', or 'rt_core_flags_prepared'")
-    if output_mode not in {"full", "core_flags", "core_count"}:
-        raise ValueError("output_mode must be 'full', 'core_flags', or 'core_count'")
+    if output_mode not in {"full", "core_flags", "core_count", "component_signature"}:
+        raise ValueError("output_mode must be 'full', 'core_flags', 'core_count', or 'component_signature'")
     case = make_dbscan_case(copies=copies)
     points = case["points"]
     core_flag_rows: tuple[dict[str, object], ...] = ()
     scalar_core_count: dict[str, int | str | None] | None = None
+    component_signature: dict[str, object] | None = None
+    oracle_component_signature: dict[str, object] | None = None
     partner_metadata: dict[str, object] | None = None
     if backend == "optix_grouped_stream_components":
-        if output_mode != "full":
-            raise ValueError("optix_grouped_stream_components currently supports output_mode='full'")
+        if output_mode not in {"full", "component_signature"}:
+            raise ValueError(
+                "optix_grouped_stream_components currently supports output_mode='full' "
+                "or 'component_signature'"
+            )
         neighbor_rows = ()
-        cluster_rows, partner_metadata = _run_optix_grouped_stream_clusters(
+        cluster_rows, component_signature, partner_metadata = _run_optix_grouped_stream_clusters(
             points,
             partner=partner,
             query_repeat=query_repeat,
             warmup=warmup,
             grouped_union_query_block_size=grouped_union_query_block_size,
+            output_mode=output_mode,
         )
     elif backend in {"partner_exact_clusters", "partner_spatial_exact_clusters"}:
         neighbor_rows = ()
@@ -776,6 +949,8 @@ def run_app(
             "row_count": None,
             "summary_mode": "scalar_threshold_count_oracle",
         }
+    elif output_mode == "component_signature":
+        raise ValueError("output_mode='component_signature' is currently supported only by optix_grouped_stream_components")
     elif output_mode == "core_flags" and backend == "embree":
         neighbor_rows = ()
         cluster_rows = ()
@@ -815,6 +990,10 @@ def run_app(
     if validation_skipped:
         oracle_rows = ()
         oracle_core_flag_rows = ()
+    elif backend == "optix_grouped_stream_components" and output_mode == "component_signature":
+        oracle_rows = ()
+        oracle_core_flag_rows = ()
+        oracle_component_signature = expected_tiled_component_signature(copies=copies)
     elif backend == "optix_grouped_stream_components":
         oracle_rows = expected_tiled_cluster_rows(copies=copies)
         oracle_core_flag_rows = expected_tiled_core_flag_rows(copies=copies)
@@ -824,7 +1003,9 @@ def run_app(
     else:
         oracle_rows = brute_force_dbscan(points)
         oracle_core_flag_rows = brute_force_core_flag_rows(points)
-    if scalar_core_count is not None:
+    if component_signature is not None and oracle_component_signature is not None:
+        matches_oracle = _component_signature_matches(component_signature, oracle_component_signature)
+    elif scalar_core_count is not None:
         oracle_core_count = sum(1 for row in oracle_core_flag_rows if bool(row["is_core"]))
         matches_oracle = int(scalar_core_count["core_count"]) == oracle_core_count
     elif core_flag_rows:
@@ -840,6 +1021,25 @@ def run_app(
         output_mode=output_mode,
         optix_summary_mode=optix_summary_mode,
         embree_summary_mode=embree_summary_mode,
+    )
+
+    cluster_sizes = _cluster_sizes(cluster_rows)
+    noise_point_ids = [
+        int(row["point_id"]) for row in cluster_rows if int(row["cluster_id"]) == NOISE_CLUSTER_ID
+    ]
+    core_count = (
+        int(component_signature["core_count"])
+        if component_signature is not None
+        else int(scalar_core_count["core_count"])
+        if scalar_core_count is not None
+        else sum(1 for row in core_flag_rows if bool(row.get("is_core", False)))
+        if core_flag_rows
+        else sum(1 for row in cluster_rows if bool(row.get("is_core", False)))
+    )
+    oracle_core_count = (
+        int(oracle_component_signature["core_count"])
+        if oracle_component_signature is not None
+        else sum(1 for row in oracle_core_flag_rows if bool(row.get("is_core", False)))
     )
 
     return {
@@ -861,24 +1061,23 @@ def run_app(
         "point_count": len(points),
         "neighbor_row_count": len(neighbor_rows),
         "cluster_rows": cluster_rows,
-        "cluster_sizes": _cluster_sizes(cluster_rows),
+        "cluster_sizes": cluster_sizes,
+        "component_signature": component_signature,
+        "oracle_component_signature": oracle_component_signature,
         "core_flag_rows": core_flag_rows,
         "threshold_reached_count": (
             int(scalar_core_count["threshold_reached_count"]) if scalar_core_count is not None else None
         ),
-        "core_count": (
-            int(scalar_core_count["core_count"])
-            if scalar_core_count is not None
-            else sum(1 for row in core_flag_rows if bool(row.get("is_core", False)))
-            if core_flag_rows
-            else sum(1 for row in cluster_rows if bool(row.get("is_core", False)))
-        ),
+        "core_count": core_count,
         "native_continuation_active": native_continuation_backend != "none",
         "native_continuation_backend": native_continuation_backend,
-        "noise_point_ids": [int(row["point_id"]) for row in cluster_rows if int(row["cluster_id"]) == NOISE_CLUSTER_ID],
+        "noise_point_ids": noise_point_ids,
+        "noise_count": (
+            int(component_signature["noise_count"]) if component_signature is not None else len(noise_point_ids)
+        ),
         "oracle_cluster_rows": oracle_rows,
         "oracle_core_flag_rows": oracle_core_flag_rows,
-        "oracle_core_count": sum(1 for row in oracle_core_flag_rows if bool(row.get("is_core", False))),
+        "oracle_core_count": oracle_core_count,
         "validation_skipped": validation_skipped,
         "summary_mode": scalar_core_count["summary_mode"] if scalar_core_count is not None else None,
         "generic_primitive": (
@@ -892,7 +1091,7 @@ def run_app(
         ),
         "partner_metadata": partner_metadata,
         "matches_oracle": matches_oracle,
-        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The optix_grouped_stream_components path uses the generic fixed-radius graph component front door with an explicit CuPy or Numba partner continuation.",
+        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The optix_grouped_stream_components path uses the generic fixed-radius graph component front door with explicit CuPy or Numba partner continuation for full rows or compact component signatures.",
         "boundary": "Bounded app-level DBSCAN demo only. The default rows/core predicate prototype still does not yet expose clustering expansion as a native engine primitive. The grouped-stream path is a generic fixed-radius graph component route, not a DBSCAN-specific native engine ABI, automatic partner choice, public speedup claim, or true-zero-copy claim. The spatial-bucket path uses a host-built sparse bucket index as an explicit transitional debt.",
     }
 
@@ -920,9 +1119,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--copies", type=int, default=1, help="tile the authored clustering fixture")
     parser.add_argument(
         "--output-mode",
-        choices=("full", "core_flags", "core_count"),
+        choices=("full", "core_flags", "core_count", "component_signature"),
         default="full",
-        help="full emits neighbor/cluster rows; core_flags emits compact DBSCAN core predicates; core_count emits only scalar core counts",
+        help=(
+            "full emits neighbor/cluster rows; core_flags emits compact DBSCAN core predicates; "
+            "core_count emits only scalar core counts; component_signature emits compact grouped-stream "
+            "cluster-size aggregates"
+        ),
     )
     parser.add_argument(
         "--optix-summary-mode",

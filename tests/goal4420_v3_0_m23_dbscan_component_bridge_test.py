@@ -43,6 +43,11 @@ class _FakeNumbaColumn:
         return _FakeHostColumn(self._values)
 
 
+class _ExplodingNumbaColumn:
+    def copy_to_host(self) -> _FakeHostColumn:
+        raise AssertionError("component_signature mode must not materialize point rows")
+
+
 def _fake_component_result() -> dict[str, object]:
     point_ids = (1, 2, 3, 4, 5, 6, 7, 8, 101, 102, 103, 104, 105, 106, 107, 108)
     component_labels = (1, 1, 1, 1, 5, 5, 5, -1, 101, 101, 101, 101, 105, 105, 105, -1)
@@ -64,6 +69,14 @@ def _fake_component_result() -> dict[str, object]:
             "materializes_directed_adjacency_stream": False,
         },
     }
+
+
+def _fake_component_signature_result() -> dict[str, object]:
+    result = _fake_component_result()
+    result["columns"] = dict(result["columns"])
+    result["columns"]["point_ids"] = _ExplodingNumbaColumn()
+    result["columns"]["neighbor_counts"] = _ExplodingNumbaColumn()
+    return result
 
 
 class Goal4420V30M23DbscanComponentBridgeTest(unittest.TestCase):
@@ -123,12 +136,53 @@ class Goal4420V30M23DbscanComponentBridgeTest(unittest.TestCase):
         self.assertFalse(metadata["app_specific_native_engine_logic_allowed"])
         self.assertFalse(metadata["public_speedup_claim_authorized"])
 
+    def test_mocked_component_signature_mode_avoids_python_cluster_rows(self) -> None:
+        fake_prepared = _FakePrepared()
+        with mock.patch.object(
+            app.rt,
+            "prepare_v2_8_fixed_radius_graph_component_continuation_3d",
+            return_value=fake_prepared,
+        ):
+            with mock.patch.object(
+                app.rt,
+                "fixed_radius_graph_component_labels_3d_v2_8",
+                return_value=_fake_component_signature_result(),
+            ):
+                payload = app.run_app(
+                    "optix_grouped_stream_components",
+                    copies=2,
+                    partner="numba",
+                    query_repeat=2,
+                    warmup=1,
+                    output_mode="component_signature",
+                )
+
+        self.assertEqual(payload["output_mode"], "component_signature")
+        self.assertEqual(payload["cluster_rows"], ())
+        self.assertEqual(payload["cluster_sizes"], {})
+        self.assertEqual(payload["noise_point_ids"], [])
+        self.assertEqual(payload["noise_count"], 2)
+        self.assertEqual(payload["core_count"], 14)
+        self.assertTrue(payload["matches_oracle"])
+        signature = payload["component_signature"]
+        self.assertEqual(signature["cluster_count"], 4)
+        self.assertEqual(signature["clustered_point_count"], 14)
+        self.assertEqual(signature["size_histogram"], {"3": 2, "4": 2})
+        self.assertFalse(signature["materialized_python_rows"])
+        metadata = payload["partner_metadata"]
+        self.assertTrue(metadata["component_signature_after_hot_window"])
+        self.assertIsNone(metadata["post_window_row_materialization_sec"])
+        self.assertIsNotNone(metadata["post_window_component_signature_sec"])
+        self.assertFalse(metadata["materializes_python_rows"])
+        self.assertFalse(metadata["signature_materializes_python_rows"])
+
     def test_runner_records_both_partner_choices_and_compacts_payloads(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")
         self.assertIn('for partner in ("cupy", "numba")', source)
         self.assertIn('"optix_grouped_stream_components"', source)
         self.assertIn("_compact_app_row", source)
         self.assertIn("cluster_row_count", source)
+        self.assertIn("--output-mode", source)
         self.assertIn("--numba-cuda-home", source)
 
     def test_report_and_optional_evidence_capture_claim_boundary(self) -> None:

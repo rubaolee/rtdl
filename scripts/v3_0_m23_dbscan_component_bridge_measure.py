@@ -9,11 +9,23 @@ from pathlib import Path
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run V3.0 M23 DBSCAN component-label bridge evidence.")
+    parser = argparse.ArgumentParser(description="Run V3.0 DBSCAN grouped-stream component bridge evidence.")
     parser.add_argument("--copies", type=int, default=8192)
     parser.add_argument("--warmups", type=int, default=2)
     parser.add_argument("--repeats", type=int, default=5)
+    parser.add_argument(
+        "--app-call-warmups",
+        type=int,
+        default=0,
+        help="discard this many whole app calls per partner before recording the measured row.",
+    )
     parser.add_argument("--grouped-union-query-block-size", type=int, default=None)
+    parser.add_argument(
+        "--output-mode",
+        choices=("full", "component_signature"),
+        default="full",
+        help="full materializes per-point rows after the hot window; component_signature aggregates compactly.",
+    )
     parser.add_argument("--hardware", default=None)
     parser.add_argument(
         "--numba-cuda-home",
@@ -33,6 +45,16 @@ def main() -> int:
 
     rows = []
     for partner in ("cupy", "numba"):
+        for _ in range(max(0, int(args.app_call_warmups))):
+            app.run_app(
+                "optix_grouped_stream_components",
+                copies=args.copies,
+                partner=partner,
+                query_repeat=args.repeats,
+                warmup=args.warmups,
+                grouped_union_query_block_size=args.grouped_union_query_block_size,
+                output_mode=args.output_mode,
+            )
         row = app.run_app(
             "optix_grouped_stream_components",
             copies=args.copies,
@@ -40,6 +62,7 @@ def main() -> int:
             query_repeat=args.repeats,
             warmup=args.warmups,
             grouped_union_query_block_size=args.grouped_union_query_block_size,
+            output_mode=args.output_mode,
         )
         rows.append(_compact_app_row(row))
 
@@ -47,8 +70,16 @@ def main() -> int:
     noise_counts = {int(row["noise_count"]) for row in rows}
     core_counts = {int(row["core_count"]) for row in rows}
     payload = {
-        "version": "rtdl.v3_0.dbscan_component_bridge.m23",
-        "status": "m23_dbscan_app_uses_generic_optix_grouped_stream_component_front_door_internal_claims_gated",
+        "version": (
+            "rtdl.v3_0.dbscan_component_signature.m49"
+            if args.output_mode == "component_signature"
+            else "rtdl.v3_0.dbscan_component_bridge.m23"
+        ),
+        "status": (
+            "m49_dbscan_app_uses_compact_component_signature_without_python_row_materialization"
+            if args.output_mode == "component_signature"
+            else "m23_dbscan_app_uses_generic_optix_grouped_stream_component_front_door_internal_claims_gated"
+        ),
         "parameters": {
             "copies": args.copies,
             "point_count": args.copies * 8,
@@ -56,7 +87,9 @@ def main() -> int:
             "min_points": app.MIN_POINTS,
             "warmups": args.warmups,
             "repeats": args.repeats,
+            "app_call_warmups": max(0, int(args.app_call_warmups)),
             "partners": ("cupy", "numba"),
+            "output_mode": args.output_mode,
             "grouped_union_query_block_size": args.grouped_union_query_block_size,
             "hardware": args.hardware or _hardware_label(),
         },
@@ -94,16 +127,25 @@ def main() -> int:
 
 def _compact_app_row(row: dict[str, object]) -> dict[str, object]:
     metadata = dict(row.get("partner_metadata") or {})
+    component_signature = row.get("component_signature")
+    if isinstance(component_signature, dict):
+        cluster_size_signature = _cluster_size_signature_from_component_signature(component_signature)
+        noise_count = int(component_signature["noise_count"])
+    else:
+        cluster_size_signature = _cluster_size_signature(row["cluster_sizes"])
+        noise_count = len(row.get("noise_point_ids", ()))
     compact = {
         "app": row["app"],
         "backend": row["backend"],
+        "output_mode": row["output_mode"],
         "partner": row["partner"],
         "point_count": row["point_count"],
         "copies": row["copies"],
         "epsilon": row["epsilon"],
         "min_points": row["min_points"],
-        "cluster_size_signature": _cluster_size_signature(row["cluster_sizes"]),
-        "noise_count": len(row.get("noise_point_ids", ())),
+        "cluster_size_signature": cluster_size_signature,
+        "component_signature": component_signature,
+        "noise_count": noise_count,
         "core_count": row["core_count"],
         "cluster_row_count": len(row.get("cluster_rows", ())),
         "oracle_cluster_row_count": len(row.get("oracle_cluster_rows", ())),
@@ -114,6 +156,10 @@ def _compact_app_row(row: dict[str, object]) -> dict[str, object]:
         "rt_core_accelerated": bool(metadata.get("rt_core_accelerated", False)),
         "hot_component_label_elapsed_sec_median": metadata.get("hot_component_label_elapsed_sec_median"),
         "post_window_row_materialization_sec": metadata.get("post_window_row_materialization_sec"),
+        "post_window_component_signature_sec": metadata.get("post_window_component_signature_sec"),
+        "component_signature_after_hot_window": metadata.get("component_signature_after_hot_window"),
+        "signature_aggregation_backend": metadata.get("signature_aggregation_backend"),
+        "signature_materializes_python_rows": metadata.get("signature_materializes_python_rows"),
         "prepare_sec": metadata.get("prepare_sec"),
         "prepared_query_repeat_protocol": metadata.get("prepared_query_repeat_protocol"),
         "device_result_materialization_after_hot_window": metadata.get(
@@ -132,6 +178,16 @@ def _compact_app_row(row: dict[str, object]) -> dict[str, object]:
         "native_engine_summary_contract": metadata.get("native_engine_summary_contract"),
     }
     return compact
+
+
+def _cluster_size_signature_from_component_signature(component_signature: dict[str, object]) -> dict[str, object]:
+    return {
+        "cluster_count": int(component_signature["cluster_count"]),
+        "clustered_point_count": int(component_signature["clustered_point_count"]),
+        "size_histogram": dict(component_signature["size_histogram"]),
+        "min_size": component_signature["min_size"],
+        "max_size": component_signature["max_size"],
+    }
 
 
 def _cluster_size_signature(cluster_sizes: object) -> dict[str, object]:

@@ -4,6 +4,8 @@ Status: `accept-with-boundary`
 
 M23 carries the existing generic fixed-radius graph component front door into the current DBSCAN app. The new app backend is `optix_grouped_stream_components`: DBSCAN's 2D point fixture is lifted to generic 3D point rows with `z=0`, RTDL/OptiX runs the prepared grouped-stream component-label route, and the selected partner owns the device columns consumed by app-level label densification and validation.
 
+Update: Goal4445 adds the compact `component_signature` output mode recommended by this report, so use Goal4445 for current DBSCAN signature-performance wording.
+
 This is an internal V3 integration step, not a public speedup claim.
 
 ## What Changed

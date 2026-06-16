@@ -21,7 +21,7 @@ evidence, not automatically performance evidence.
 | --- | --- | --- | --- |
 | Hausdorff / X-HD | Mixed RT evidence | RTDL/OptiX threshold and active-frontier style paths exercise RT traversal for bounded distance decisions. | Exact Hausdorff, witness extraction, and whole-app speedup are not broad public claims. |
 | Spatial RayJoin | Strong LSI RT evidence; mixed PIP evidence | LSI prepared scalar/count routes show prepared OptiX value. PIP is mixed: the refreshed human-scale public CDB slice is near parity and slightly Embree-faster, while Goal4368 shows the stricter full same-stream exact executor is faster on OptiX than Embree but still slower than RayJoin RT. | This is not a full RayJoin paper reproduction, not RTDL-beats-RayJoin wording, and not a single whole-app speedup claim. |
-| RT-DBSCAN | Mixed RT + partner evidence | OptiX fixed-radius/grouped-stream primitives pair with explicit Numba continuation for component signatures. | RTDL does not claim arbitrary DBSCAN clustering acceleration or automatic partner optimization. |
+| RT-DBSCAN | Mixed RT + partner evidence | OptiX fixed-radius/grouped-stream primitives pair with explicit CuPy or Numba continuation. Goal4445 adds a compact component-signature output path that avoids per-point Python row materialization when the user only needs cluster-size/noise/core summaries. | RTDL does not claim arbitrary DBSCAN clustering acceleration, automatic partner optimization, or a DBSCAN-specific native engine ABI. Full per-point cluster rows remain the slower output contract. |
 | Robot collision | Strong RT evidence | Prepared static-scene collision count paths exercise repeated RT traversal with clean parity. | The row is a collision-screening contract, not a full robotics planning stack. |
 | Contact manifold | Mixed/coverage evidence | Bounded collect and witness primitives exercise generic RT row emission. | Rich manifold construction and downstream contact solving remain app logic. |
 | RayDB-style | Strong primitive evidence | Fused generic grouped count/sum primitives can beat unfused partner continuation when the primitive exactly matches the query. | Arbitrary SQL/database acceleration is not claimed. |
@@ -78,3 +78,4 @@ RTDL accelerates all ten benchmark apps on RT cores.
 - [Goal4364 RayDB-style same-contract evidence](../reports/goal4364_rtx_a4000_v2_12_raydb_same_contract_2026-06-13.md)
 - [v2.13 release scoped RT-core vs Embree CPU comparison](../release_reports/v2_13/public_rt_vs_embree_comparison.md)
 - [v2.14 release scoped RT-core vs Embree CPU comparison](../release_reports/v2_14/public_rt_vs_embree_comparison.md)
+- [Goal4445 DBSCAN compact component signature](../reports/goal4445_v3_0_m49_dbscan_component_signature_2026-06-16.md)

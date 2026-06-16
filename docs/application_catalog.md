@@ -132,7 +132,7 @@ benchmark claims.
 | Hausdorff distance | `examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py` | nearest-candidate rows or threshold summaries | exact rich witness extraction is app/partner work unless documented |
 | RTNN neighbor search | `examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py` | candidate-subset reranking, coverage summaries, and prepared 3-D ranked neighbor summaries | not a general ANN index or full RTNN paper reproduction |
 | Outlier detection | `examples/current/apps/ml/rtdl_outlier_detection_app.py` | radius density rows/counts | final anomaly policy is Python/app code |
-| DBSCAN clustering | `examples/current/apps/ml/rtdl_dbscan_clustering_app.py` | core-count/core-flag primitives | cluster expansion remains app/partner graph work |
+| DBSCAN clustering | `examples/current/apps/ml/rtdl_dbscan_clustering_app.py` | core-count/core-flag primitives and grouped-stream component signatures | DBSCAN policy and per-point full-row expansion remain app/partner work |
 
 ## Analytical, Graph, And Simulation Apps
 
