@@ -1,0 +1,53 @@
+{
+  "dataset": "com_orkut",
+  "goal": 4466,
+  "implementation": "ray_batch_cap_planner_sweep",
+  "milestone": "v3_0_m70",
+  "rows": [
+    {
+      "max_scene_two_hop_rows": 279026541,
+      "max_segment_two_hop_rows_config": 5000000,
+      "plan_ms": 4026.646740734577,
+      "ray_segment_count": 1744,
+      "scene_count": 59,
+      "segment_max_two_hop_rows": 5000000,
+      "total_two_hop_rows": 8579930671
+    },
+    {
+      "max_scene_two_hop_rows": 279026541,
+      "max_segment_two_hop_rows_config": 10000000,
+      "plan_ms": 3711.6288244724274,
+      "ray_segment_count": 885,
+      "scene_count": 59,
+      "segment_max_two_hop_rows": 10000000,
+      "total_two_hop_rows": 8579930671
+    },
+    {
+      "max_scene_two_hop_rows": 279026541,
+      "max_segment_two_hop_rows_config": 20000000,
+      "plan_ms": 3630.743630230427,
+      "ray_segment_count": 456,
+      "scene_count": 59,
+      "segment_max_two_hop_rows": 20000000,
+      "total_two_hop_rows": 8579930671
+    },
+    {
+      "max_scene_two_hop_rows": 279026541,
+      "max_segment_two_hop_rows_config": 40000000,
+      "plan_ms": 3644.967243075371,
+      "ray_segment_count": 246,
+      "scene_count": 59,
+      "segment_max_two_hop_rows": 40000000,
+      "total_two_hop_rows": 8579930671
+    },
+    {
+      "max_scene_two_hop_rows": 279026541,
+      "max_segment_two_hop_rows_config": 80000000,
+      "plan_ms": 3957.7884450554848,
+      "ray_segment_count": 147,
+      "scene_count": 59,
+      "segment_max_two_hop_rows": 80000000,
+      "total_two_hop_rows": 8579930671
+    }
+  ]
+}

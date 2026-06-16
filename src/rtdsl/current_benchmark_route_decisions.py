@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4465.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4466.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -109,7 +109,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "with 59 scenes, 1,744 ray segments, and no global two-hop or triangle-scene "
     "materialization. Goal4465 replaces per-directed-edge Python segment planning "
     "with NumPy prefix/searchsorted planning, reducing `com-orkut` planner median "
-    "from 28.885s to 3.665s without changing the generic engine contract."
+    "from 28.885s to 3.665s without changing the generic engine contract. "
+    "Goal4466 tunes `com-orkut` ray-batch caps on the RTX 4000 Ada pod: 15M is "
+    "the best measured explicit cap, while 18M/20M OOM during query and must not "
+    "become hidden automatic defaults."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -705,7 +708,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "speedup claim. Goal4465 removes the avoidable Python per-edge planner loop "
             "from that route with NumPy prefix/searchsorted segmentation, reducing the "
             "`com-orkut` planner median from 28.885s to 3.665s while preserving the same "
-            "scene/ray counts and exact triangle result."
+            "scene/ray counts and exact triangle result. Goal4466 then tunes ray batch "
+            "size for `com-orkut`: 15M reduces the warmup-0 repeat-1 probe to 34.231s "
+            "and ray build to 5.629s, while 18M and 20M fail with CUDA OOM during query."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -731,7 +736,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "2M directed-edge scene cap, after larger scene caps OOMed during OptiX "
             "scene preparation. Cite Goal4465 when discussing the current optimized "
             "segmented planner: it is a partner-side prefix/searchsorted optimization, "
-            "not a native-engine specialization."
+            "not a native-engine specialization. Cite Goal4466 when discussing explicit "
+            "ray-batch cap tuning: use 5M as conservative and 15M as the measured "
+            "`com-orkut`/RTX 4000 Ada tuned cap; do not auto-hide larger caps."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -747,6 +754,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "treating the Goal4463 soc-LiveJournal1 success as a refreshed full paper-dataset speedup matrix",
             "treating the Goal4464 com-orkut success as a public RTDL-vs-cuGraph or RTDL-vs-authors speedup claim",
             "treating the Goal4465 planner speedup as an RT-core traversal speedup",
+            "making the Goal4466 15M ray-batch cap a universal or hidden automatic default",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -755,8 +763,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "`com-lj`, `soc-LiveJournal1`, and `com-orkut` rows against the CuPy "
             "global-summary route where it fits, the no-C++ Numba reference where it fits, "
             "cuGraph, and authors' RT-Graph code under one explicit timing contract, then "
-            "reduce duplicate-ray build and traversal costs without adding graph-specific "
-            "native engine logic"
+            "investigate duplicate-ray representation and traversal reductions "
+            "without adding graph-specific native engine logic"
         ),
         evidence_refs=(
             "Goal2797",
@@ -776,6 +784,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4463",
             "Goal4464",
             "Goal4465",
+            "Goal4466",
         ),
         pod_needed_next=False,
     ),

@@ -104,10 +104,10 @@ class Goal4453V30M57TriangleNumbaDeviceGeometryTest(unittest.TestCase):
     def test_route_guidance_records_device_geometry_but_not_speedup_claim(self) -> None:
         route = routes.explain_current_benchmark_route("triangle_counting")
 
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4465.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4466.v1", route["version"])
         self.assertIn("Goal4453", route["evidence_refs"])
         self.assertIn("partner-resident Numba device columns", route["current_reader_decision"])
-        self.assertIn("duplicate-ray build and traversal", route["next_runtime_action"])
+        self.assertIn("duplicate-ray representation and traversal", route["next_runtime_action"])
         self.assertFalse(route["public_speedup_claim_authorized"])
         self.assertFalse(route["broad_rt_core_claim_authorized"])
 

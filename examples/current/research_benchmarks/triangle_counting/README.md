@@ -164,6 +164,12 @@ planner uses NumPy prefix sums plus `searchsorted`, reducing the `com-orkut`
 planner median from 28.885s to 3.665s while preserving the same 59 scenes,
 1,744 ray segments, and exact 627,584,181-triangle result.
 
+Goal4466 tunes the ray-batch cap for `com-orkut` on the RTX 4000 Ada pod. The
+5M cap remains the conservative setting; 15M is the measured explicit tuned cap
+for this row/hardware, reducing the warmup-0 repeat-1 probe from 35.409s to
+34.231s and ray build from 6.725s to 5.629s. Larger 18M/20M caps reached CUDA
+OOM during query, so 15M is not a universal default.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
@@ -172,6 +178,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4463_v3_0_m67_triangle_segmented_scene_soc_livejournal1_2026-06-16.md`
 - `docs/reports/goal4464_v3_0_m68_triangle_segmented_scene_com_orkut_2026-06-16.md`
 - `docs/reports/goal4465_v3_0_m69_triangle_segment_planner_com_orkut_2026-06-16.md`
+- `docs/reports/goal4466_v3_0_m70_triangle_ray_batch_cap_tuning_com_orkut_2026-06-16.md`
 
 ## Engine Boundary
 

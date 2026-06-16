@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4465.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4466.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -38,7 +38,9 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4465 removes the Triangle Counting segmented planner's per-edge Python "
     "loop with NumPy prefix/searchsorted planning, making the remaining large-row "
     "debts duplicate-ray construction, traversal, and comparison rather than "
-    "avoidable planning overhead. "
+    "avoidable planning overhead. Goal4466 records explicit ray-batch cap tuning "
+    "for `com-orkut`: 15M is the measured RTX 4000 Ada cap, while 18M/20M are "
+    "unsafe during query and cannot be hidden defaults. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -432,7 +434,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "remaining performance debt. Goal4465 reduces the `com-orkut` planner "
             "median from 28.885s to 3.665s by replacing Python per-edge segmentation "
             "with NumPy prefix/searchsorted planning; duplicate-ray build and traversal "
-            "are now the main route-level debts."
+            "are now the main route-level debts. Goal4466 tunes the explicit ray-batch "
+            "cap on the RTX 4000 Ada pod: 15M lowers the warmup-0 repeat-1 probe to "
+            "34.231s, but 18M/20M OOM during query, so this is tuning guidance rather "
+            "than a universal default."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -443,7 +448,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "passing `com-lj` paper-dataset segmented row, Goal4463 for the "
             "source-range segmented-scene `soc-LiveJournal1` row, and Goal4464 for "
             "the `com-orkut` row that needs the measured 2M scene cap. Cite Goal4465 "
-            "for the current vectorized segmented planner."
+            "for the current vectorized segmented planner. Cite Goal4466 for explicit "
+            "ray-batch cap tuning: 5M conservative, 15M measured for `com-orkut` on "
+            "RTX 4000 Ada, larger tested caps unsafe."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
@@ -456,7 +463,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "paper reproduction or broad triangle-count acceleration; next work is an "
             "explicit comparison against CuPy global-summary where it fits, Numba, "
             "cuGraph, and authors' RT-Graph code, plus lowering/fusing the segmented "
-            "RT-2A1 route's duplicate-ray build and traversal costs"
+            "RT-2A1 route's duplicate-ray representation and traversal costs"
         ),
         "evidence_refs": (
             "Goal2797",
@@ -474,6 +481,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4463",
             "Goal4464",
             "Goal4465",
+            "Goal4466",
         ),
     },
 }
