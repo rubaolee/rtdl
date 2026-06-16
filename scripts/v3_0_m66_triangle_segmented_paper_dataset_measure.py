@@ -26,7 +26,7 @@ def main() -> int:
         default="segmented_rays",
     )
     parser.add_argument("--segment-max-two-hop-rows", type=int, default=5_000_000)
-    parser.add_argument("--scene-max-directed-edges", type=int, default=8_000_000)
+    parser.add_argument("--scene-max-directed-edges", type=int, default=2_000_000)
     parser.add_argument("--hardware", default=None)
     parser.add_argument("--goal", type=int, default=4462)
     parser.add_argument("--milestone", default=None)

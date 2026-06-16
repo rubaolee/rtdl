@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4463.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4464.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -32,6 +32,9 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "makes the RTNN app bridge non-toy on a clustered 1M/65K/repeat=1000 row "
     "while preserving signature, same-stream partner, and no-hidden-copy gates. "
     "Goal4460 closes the app-bridge shell distribution gap with the same gates. "
+    "Goal4464 closes Triangle Counting's largest paper-dataset OOM validation row "
+    "by running source-range segmented RT-2A1 on `com-orkut` with a measured 2M "
+    "directed-edge scene cap, while keeping public speedup claims blocked. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -417,7 +420,12 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4462 validates that route on the real `com-lj` paper dataset that "
             "previously OOMed, matching 177,820,130 expected triangles. Goal4463 adds "
             "source-range triangle-scene segmentation and validates `soc-LiveJournal1`, "
-            "matching 285,730,264 expected triangles without global scene materialization."
+            "matching 285,730,264 expected triangles without global scene materialization. "
+            "Goal4464 validates the largest paper row, `com-orkut`, after lowering the "
+            "default scene cap to the measured 2M directed-edge configuration: it matches "
+            "627,584,181 expected triangles with no global two-hop summary or global "
+            "triangle scene, while exposing planning and duplicate-ray build as the "
+            "remaining performance debt."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -425,8 +433,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "use Goal4444/Goal4457 partner rows for RT-Graph global-summary experiments; "
             "use Goal4461 segmented RT-2A1 only when the explicit goal is avoiding "
             "global two-hop summary materialization; cite Goal4462 for the currently "
-            "passing `com-lj` paper-dataset segmented row and Goal4463 for the "
-            "source-range segmented-scene `soc-LiveJournal1` row"
+            "passing `com-lj` paper-dataset segmented row, Goal4463 for the "
+            "source-range segmented-scene `soc-LiveJournal1` row, and Goal4464 for "
+            "the `com-orkut` row that needs the measured 2M scene cap"
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
@@ -436,10 +445,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
         ),
         "next_generic_runtime_action": (
             "keep scalar triangle-count wording primitive-first; do not claim RT-Graph "
-            "paper reproduction or broad triangle-count acceleration; next validation "
-            "is source-range segmented RT-2A1 on `com-orkut`, followed by an explicit "
-            "comparison against CuPy global-summary, Numba, cuGraph, and authors' "
-            "RT-Graph code"
+            "paper reproduction or broad triangle-count acceleration; next work is an "
+            "explicit comparison against CuPy global-summary where it fits, Numba, "
+            "cuGraph, and authors' RT-Graph code, plus lowering/fusing the segmented "
+            "RT-2A1 route's planning and duplicate-ray build costs"
         ),
         "evidence_refs": (
             "Goal2797",
@@ -455,6 +464,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4461",
             "Goal4462",
             "Goal4463",
+            "Goal4464",
         ),
     },
 }

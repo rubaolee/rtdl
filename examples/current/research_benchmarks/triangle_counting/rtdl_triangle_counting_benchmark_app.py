@@ -195,7 +195,7 @@ def command_plan_payload() -> dict[str, Any]:
             "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_segmented_scene_generic_rt --edge-file graph.edge --edge-format binary "
-            "--backend optix --detail summary --partner cupy --scene-max-directed-edges 8000000 "
+            "--backend optix --detail summary --partner cupy --scene-max-directed-edges 2000000 "
             "--segment-max-two-hop-rows 5000000"
         ),
         "rt_graph_1a2_generic_rt_optix": (
@@ -2935,7 +2935,7 @@ def run_app(
     repeat: int = 1,
     rt_graph_copies: int = 1,
     segment_max_two_hop_rows: int = 1_000_000,
-    scene_max_directed_edges: int = 8_000_000,
+    scene_max_directed_edges: int = 2_000_000,
     validate_oracle: bool = False,
 ) -> dict[str, Any]:
     if mode == "scope":
@@ -3076,7 +3076,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--scene-max-directed-edges",
         type=int,
-        default=8_000_000,
+        default=2_000_000,
         help="Maximum directed-edge triangles to lower per source-range segmented RT-2A1 scene.",
     )
     parser.add_argument(

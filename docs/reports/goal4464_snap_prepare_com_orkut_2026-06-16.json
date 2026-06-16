@@ -1,0 +1,30 @@
+{
+  "datasets": {
+    "com_orkut": {
+      "binary_edge_path": "build/goal2593_snap_edges/com-orkut.edge",
+      "convert": {
+        "bytes": 937480664,
+        "comment_count": 4,
+        "edge_count": 117185083,
+        "elapsed_ms": 176360.7620820403,
+        "max_vertex": 3072626,
+        "min_vertex": 1,
+        "status": "converted"
+      },
+      "download": {
+        "bytes": 447251958,
+        "elapsed_ms": 89999.80069696903,
+        "status": "downloaded"
+      },
+      "edge_count_matches_snap": true,
+      "expected_edges": 117185083,
+      "expected_nodes": 3072441,
+      "expected_triangles": 627584181,
+      "gzip_path": "build/goal2593_snap_raw/com-orkut.txt.gz",
+      "name": "com_orkut",
+      "snap_name": "com-orkut",
+      "source_url": "https://snap.stanford.edu/data/bigdata/communities/com-orkut.ungraph.txt.gz"
+    }
+  },
+  "source": "SNAP datasets used by RT-Graph SIGMETRICS 2025 TC section"
+}

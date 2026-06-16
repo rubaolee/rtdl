@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4463.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4464.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -103,7 +103,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "summary materialization. Goal4463 adds source-range triangle-scene segmentation "
     "for `soc-LiveJournal1`, where one global directed-edge OptiX scene OOMed; "
     "segmented scenes match 285,730,264 expected triangles without global two-hop "
-    "or global triangle-scene materialization."
+    "or global triangle-scene materialization. Goal4464 extends that route to "
+    "`com-orkut`, where 8M and 4M directed-edge scene caps still OOMed during "
+    "OptiX scene preparation but a 2M cap matched 627,584,181 expected triangles "
+    "with 59 scenes, 1,744 ray segments, and no global two-hop or triangle-scene "
+    "materialization."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -689,8 +693,14 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "and runs `soc-LiveJournal1`, matching 285,730,264 / 285,730,264 expected "
             "triangles over 42,260,523 directed edge triangles, 1,383,299,326 duplicate "
             "two-hop rays, 6 scenes, and 280 ray segments, with neither global two-hop "
-            "summary nor global triangle scene materialized. CuPy remains the current "
-            "large-scale performance route; `com-orkut` is the next validation step."
+            "summary nor global triangle scene materialized. Goal4464 then extends the "
+            "same source-range segmented route to `com-orkut`: 8M and 4M directed-edge "
+            "scene caps still OOMed at OptiX scene preparation, while the measured 2M "
+            "cap matched 627,584,181 / 627,584,181 expected triangles over 117,117,316 "
+            "directed edge triangles, 8,579,930,671 duplicate two-hop rays, 59 scenes, "
+            "and 1,744 ray segments. CuPy remains the current large-scale performance "
+            "partner for this explicit route; this is still not a triangle-count RT-core "
+            "speedup claim."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -711,7 +721,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "route actually runs a formerly OOM paper dataset: `com-lj` now matches the "
             "expected triangle count exactly. Cite Goal4463 when the requested dataset "
             "also needs source-range triangle-scene segmentation: `soc-LiveJournal1` "
-            "now matches the expected triangle count exactly."
+            "now matches the expected triangle count exactly. Cite Goal4464 when the "
+            "largest paper row is requested: `com-orkut` now matches exactly with a "
+            "2M directed-edge scene cap, after larger scene caps OOMed during OptiX "
+            "scene preparation."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -725,15 +738,17 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "treating the Goal4461 segmented RT-2A1 route as a public triangle-count RT-core speedup claim",
             "treating the Goal4462 com-lj success as a refreshed full paper-dataset speedup matrix",
             "treating the Goal4463 soc-LiveJournal1 success as a refreshed full paper-dataset speedup matrix",
+            "treating the Goal4464 com-orkut success as a public RTDL-vs-cuGraph or RTDL-vs-authors speedup claim",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
             "preserve the generic graph relationship-count route and avoid claiming RT-core "
-            "triangle-count acceleration; the remaining graph-summary construction validation "
-            "is to extend segmented source-range scenes to `com-orkut`, then compare "
-            "the now-passing `com-lj` and `soc-LiveJournal1` rows against the CuPy "
+            "triangle-count acceleration; the remaining work is to compare the now-passing "
+            "`com-lj`, `soc-LiveJournal1`, and `com-orkut` rows against the CuPy "
             "global-summary route where it fits, the no-C++ Numba reference where it fits, "
-            "cuGraph, and authors' RT-Graph code under one explicit timing contract"
+            "cuGraph, and authors' RT-Graph code under one explicit timing contract, then "
+            "reduce the segmented route's planning and duplicate-ray build costs without "
+            "adding graph-specific native engine logic"
         ),
         evidence_refs=(
             "Goal2797",
@@ -751,6 +766,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4461",
             "Goal4462",
             "Goal4463",
+            "Goal4464",
         ),
         pod_needed_next=False,
     ),

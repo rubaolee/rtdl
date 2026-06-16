@@ -39,6 +39,7 @@ PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/r
 PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_2a1_generic_rt --edge-file build/goal2588_rt_graph/k4_cliques_10000.edge --edge-format binary --backend optix --detail summary
 PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_2a1_generic_rt --edge-file build/goal2588_rt_graph/k4_cliques_10000.edge --edge-format binary --backend optix --detail summary --partner cupy
 PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_2a1_segmented_generic_rt --edge-file build/goal2588_rt_graph/k4_cliques_10000.edge --edge-format binary --backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000
+PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_2a1_segmented_scene_generic_rt --edge-file build/goal2593_snap_edges/com-orkut.edge --edge-format binary --backend optix --detail summary --partner cupy --scene-max-directed-edges 2000000 --segment-max-two-hop-rows 5000000
 PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_1a2_generic_rt --edge-file build/goal2588_rt_graph/k4_cliques_10000.edge --edge-format binary --backend optix --detail summary --partner cupy
 PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode run --backend optix --output-mode summary --optix-graph-mode native --copies 128 --repeat 2 --warmup 1
 PYTHONPATH=src:. python examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode command_plan
@@ -145,12 +146,24 @@ two-hop rays, 6 scenes, 280 ray segments, and both
 `global_two_hop_summary_materialized=false` and
 `global_triangle_scene_materialized=false`.
 
+Goal4464 extends the same source-range segmented-scene route to the largest
+paper row, `com-orkut`. The earlier Goal2593 RTDL 2A1/1A2 rows both failed
+with a 68,639,445,368-byte CUDA allocation request, and the first M68 probes
+showed that 8M and 4M directed-edge scene caps still OOM during OptiX scene
+preparation. With the measured 2M cap, the route matched the expected
+627,584,181 triangles with 117,117,316 directed edge triangles,
+8,579,930,671 duplicate two-hop rays, 59 scenes, 1,744 ray segments, and both
+global materialization gates false. This closes the largest OOM row as a
+correctness and scalability milestone. It is not a public RTDL-vs-cuGraph,
+RTDL-vs-authors, or RT-core speedup claim.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
 - `docs/reports/goal4461_v3_0_m65_triangle_segmented_2a1_2026-06-16.md`
 - `docs/reports/goal4462_v3_0_m66_triangle_segmented_com_lj_2026-06-16.md`
 - `docs/reports/goal4463_v3_0_m67_triangle_segmented_scene_soc_livejournal1_2026-06-16.md`
+- `docs/reports/goal4464_v3_0_m68_triangle_segmented_scene_com_orkut_2026-06-16.md`
 
 ## Engine Boundary
 
