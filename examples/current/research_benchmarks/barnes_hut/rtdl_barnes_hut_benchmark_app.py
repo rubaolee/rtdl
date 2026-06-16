@@ -188,8 +188,9 @@ def describe_barnes_hut_v2_8_grouped_vector_sum_typed_stream(
         "partner_policy": {
             "explicit_user_partner_choice_required": True,
             "automatic_partner_selection_allowed": False,
-            "supported_partners": ("cupy", "torch", "triton"),
-            "numba_status": "not_promoted_for_grouped_vector_sum_f64x2",
+            "supported_partners": ("cupy", "numba", "torch", "triton"),
+            "numba_status": "preview_supported_no_cpp_reference_for_grouped_vector_sum_f64x2",
+            "numba_reference_partner_supported": True,
         },
         "claim_boundary": {
             "research_benchmark": True,

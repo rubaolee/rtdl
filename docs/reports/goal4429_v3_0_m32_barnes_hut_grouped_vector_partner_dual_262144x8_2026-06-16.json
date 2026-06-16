@@ -1,0 +1,210 @@
+{
+  "claim_boundary": {
+    "benchmark_app": "barnes_hut",
+    "best_partner_plus_numba_reference_required": true,
+    "bridge_debt_target": "grouped_vector_sum_partner_continuation_front_door",
+    "caller_supplied_partner_columns_no_hidden_host_rows": true,
+    "embree_comparison_claim_authorized": false,
+    "full_rt_barneshut_paper_reproduction": false,
+    "native_rt_traversal_executed": false,
+    "partner_continuation_required": true,
+    "primitive_first_contract": true,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparison": {
+    "all_front_doors_report_no_hidden_host_rows": true,
+    "all_global_atomic_add_avoided": true,
+    "all_output_signatures_match_reference": false,
+    "all_outputs_match_reference_with_tolerance": true,
+    "all_presegmented_offsets_used": true,
+    "cupy_over_numba_median": 0.845149257800265,
+    "numba_over_cupy_median": 1.1832229523608373,
+    "partners": [
+      "cupy",
+      "numba"
+    ],
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "signatures_match_between_cupy_and_numba": true,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "descriptor_policy": [
+    {
+      "execution_path": "generic_grouped_vector_sum_typed_stream_partner_columns",
+      "numba_reference_partner_supported": true,
+      "numba_status": "preview_supported_no_cpp_reference_for_grouped_vector_sum_f64x2",
+      "operation": "grouped_vector_sum_f64x2",
+      "partner": "cupy",
+      "rt_core_speedup_claim_authorized": false,
+      "source_materialization": "caller_supplied_partner_columns_no_hidden_host_rows",
+      "supported_partners": [
+        "cupy",
+        "numba",
+        "torch",
+        "triton"
+      ]
+    },
+    {
+      "execution_path": "generic_grouped_vector_sum_typed_stream_partner_columns",
+      "numba_reference_partner_supported": true,
+      "numba_status": "preview_supported_no_cpp_reference_for_grouped_vector_sum_f64x2",
+      "operation": "grouped_vector_sum_f64x2",
+      "partner": "numba",
+      "rt_core_speedup_claim_authorized": false,
+      "source_materialization": "caller_supplied_partner_columns_no_hidden_host_rows",
+      "supported_partners": [
+        "cupy",
+        "numba",
+        "torch",
+        "triton"
+      ]
+    }
+  ],
+  "environment": {
+    "git_head": "c9cbcf30",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "goal": "Goal4429 V3.0 M32 Barnes-Hut grouped-vector partner-dual refresh",
+  "parameters": {
+    "group_count": 262144,
+    "partners": [
+      "cupy",
+      "numba"
+    ],
+    "presegmented_offsets": true,
+    "repeat": 80,
+    "row_count": 2097152,
+    "rows_per_group": 8,
+    "validate_row_offsets": false,
+    "warmup": 2
+  },
+  "planned_rows": [
+    {
+      "caller_supplied_partner_columns": true,
+      "group_count": 262144,
+      "partner": "cupy",
+      "presegmented_offsets": true,
+      "repeat": 80,
+      "row_count": 2097152,
+      "rows_per_group": 8,
+      "validate_row_offsets": false,
+      "warmup": 2
+    },
+    {
+      "caller_supplied_partner_columns": true,
+      "group_count": 262144,
+      "partner": "numba",
+      "presegmented_offsets": true,
+      "repeat": 80,
+      "row_count": 2097152,
+      "rows_per_group": 8,
+      "validate_row_offsets": false,
+      "warmup": 2
+    }
+  ],
+  "rows": [
+    {
+      "checksum_x": 8262.184000000358,
+      "checksum_y": -18386.868000000068,
+      "claim_boundary": {
+        "full_rt_barneshut_paper_reproduction": false,
+        "native_rt_traversal_executed": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "continuation_plan_partner": "cupy",
+      "contract_version": "rtdl.barnes_hut.v2_8.grouped_vector_sum_typed_stream.v1",
+      "device_input_setup_sec": 0.41807273775339127,
+      "execution_path": "generic_grouped_vector_sum_typed_stream_partner_columns",
+      "front_door_reports_no_hidden_host_rows": true,
+      "group_count": 262144,
+      "matches_reference_signature": false,
+      "matches_reference_tolerance": true,
+      "max_abs_diff_x": 1.7763568394002505e-15,
+      "max_abs_diff_y": 3.552713678800501e-15,
+      "operation": "grouped_vector_sum_f64x2",
+      "output_signature": "6fc9e20bfba0d380261f94415988facb5c8aa5c5cce261a4dda9cc3b2287de78",
+      "partner": "cupy",
+      "partner_metadata_adapter": "grouped_vector_sum_2d_partner_columns",
+      "partner_metadata_global_atomic_add_used": false,
+      "partner_metadata_kernel": "cupy_grouped_vector_sum_offsets_f64x2_kernel",
+      "partner_metadata_partner": "cupy",
+      "partner_metadata_presegmented_offsets_used": true,
+      "partner_metadata_row_offset_validation_host_sync_used": null,
+      "reference_checksum_x": 8262.184000000358,
+      "reference_checksum_y": -18386.86800000013,
+      "reference_signature": "087fe4a508c508e678a75a43de7f87b925ca590e882de588c29433e0de7f9c50",
+      "reference_tolerance_abs": 1e-09,
+      "repeat": 80,
+      "row_count": 2097152,
+      "rows_per_group": 8,
+      "source_materialization": "caller_supplied_partner_columns_no_hidden_host_rows",
+      "status": "completed_partner_consumer",
+      "timed_max_sec": 0.02098284661769867,
+      "timed_mean_sec": 0.018818122521042823,
+      "timed_median_sec": 0.01876690983772278,
+      "timed_min_sec": 0.018504470586776733,
+      "timed_total_sec": 1.505449801683426,
+      "typed_stream_column_count": 4,
+      "warmup": 2,
+      "warmup_total_sec": 0.13954269886016846
+    },
+    {
+      "checksum_x": 8262.184000000358,
+      "checksum_y": -18386.868000000068,
+      "claim_boundary": {
+        "full_rt_barneshut_paper_reproduction": false,
+        "native_rt_traversal_executed": false,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "continuation_plan_partner": "numba",
+      "contract_version": "rtdl.barnes_hut.v2_8.grouped_vector_sum_typed_stream.v1",
+      "device_input_setup_sec": 0.20462825149297714,
+      "execution_path": "generic_grouped_vector_sum_typed_stream_partner_columns",
+      "front_door_reports_no_hidden_host_rows": true,
+      "group_count": 262144,
+      "matches_reference_signature": false,
+      "matches_reference_tolerance": true,
+      "max_abs_diff_x": 1.7763568394002505e-15,
+      "max_abs_diff_y": 3.552713678800501e-15,
+      "operation": "grouped_vector_sum_f64x2",
+      "output_signature": "6fc9e20bfba0d380261f94415988facb5c8aa5c5cce261a4dda9cc3b2287de78",
+      "partner": "numba",
+      "partner_metadata_adapter": "grouped_vector_sum_2d_partner_columns",
+      "partner_metadata_global_atomic_add_used": false,
+      "partner_metadata_kernel": "numba_grouped_vector_sum_offsets_f64x2_kernel",
+      "partner_metadata_partner": "numba",
+      "partner_metadata_presegmented_offsets_used": true,
+      "partner_metadata_row_offset_validation_host_sync_used": false,
+      "reference_checksum_x": 8262.184000000358,
+      "reference_checksum_y": -18386.86800000013,
+      "reference_signature": "087fe4a508c508e678a75a43de7f87b925ca590e882de588c29433e0de7f9c50",
+      "reference_tolerance_abs": 1e-09,
+      "repeat": 80,
+      "row_count": 2097152,
+      "rows_per_group": 8,
+      "source_materialization": "caller_supplied_partner_columns_no_hidden_host_rows",
+      "status": "completed_partner_consumer",
+      "timed_max_sec": 0.02437998354434967,
+      "timed_mean_sec": 0.022377441637218,
+      "timed_median_sec": 0.02220543846487999,
+      "timed_min_sec": 0.021416187286376953,
+      "timed_total_sec": 1.7901953309774399,
+      "typed_stream_column_count": 4,
+      "warmup": 2,
+      "warmup_total_sec": 0.2676134556531906
+    }
+  ],
+  "status": "ok",
+  "version": "rtdl.v3_0.barnes_hut_grouped_vector_partner_dual.m32"
+}
