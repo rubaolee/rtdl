@@ -35,6 +35,9 @@ AGGREGATE_FRONTIER_DEVICE_COLUMNS_WEIGHTED_VECTOR_SUM_2D_CONTRACT = (
 AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARED_WEIGHTED_VECTOR_SUM_2D_CONTRACT = (
     "generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_v1"
 )
+AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CONTRACT = (
+    "generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_numba_v1"
+)
 
 
 def _optional_value(row, names: Sequence[str]):
@@ -893,3 +896,384 @@ def sum_aggregate_frontier_device_columns_weighted_vectors_2d_cupy(
     actual["metadata"]["one_shot_wrapper"] = True
     actual["metadata"]["setup_seconds_excluded_from_hot_path"] = False
     return actual
+
+
+def _numba_device_pointer(array: object) -> int:
+    pointer = getattr(array, "device_ctypes_pointer", None)
+    value = getattr(pointer, "value", None)
+    if value is None:
+        raise ValueError("Numba CUDA device array does not expose a device pointer")
+    return int(value)
+
+
+def _numba_aggregate_frontier_vector_sum_zero_kernel(cuda):
+    @cuda.jit
+    def kernel(sum_x, sum_y, counts, source_count):
+        index = cuda.grid(1)
+        if index < source_count:
+            sum_x[index] = 0.0
+            sum_y[index] = 0.0
+        if index < 2:
+            counts[index] = 0
+
+    return kernel
+
+
+def _numba_aggregate_frontier_weighted_vector_sum_kernel(cuda):
+    import math
+
+    @cuda.jit(fastmath=True)
+    def kernel(
+        frontier_source_ids,
+        kind_codes,
+        item_ids,
+        source_x_by_id,
+        source_y_by_id,
+        source_mass_by_id,
+        target_x_by_id,
+        target_y_by_id,
+        target_mass_by_id,
+        node_cx_by_id,
+        node_cy_by_id,
+        node_mass_by_id,
+        source_ordinal_by_id,
+        softening_sq,
+        sum_x,
+        sum_y,
+        counts,
+        row_count,
+        source_count,
+    ):
+        index = cuda.grid(1)
+        if index >= row_count:
+            return
+
+        kind = kind_codes[index]
+        if kind != 1 and kind != 2:
+            return
+
+        source_id = frontier_source_ids[index]
+        source_x = source_x_by_id[source_id]
+        source_y = source_y_by_id[source_id]
+        source_mass = source_mass_by_id[source_id]
+        item_id = item_ids[index]
+        if kind == 1:
+            target_x = node_cx_by_id[item_id]
+            target_y = node_cy_by_id[item_id]
+            target_mass = node_mass_by_id[item_id]
+            cuda.atomic.add(counts, 0, 1)
+        else:
+            target_x = target_x_by_id[item_id]
+            target_y = target_y_by_id[item_id]
+            target_mass = target_mass_by_id[item_id]
+            cuda.atomic.add(counts, 1, 1)
+
+        dx = target_x - source_x
+        dy = target_y - source_y
+        dist_sq = dx * dx + dy * dy + softening_sq
+        if dist_sq == 0.0:
+            return
+        inv_dist = 1.0 / math.sqrt(dist_sq)
+        scale = source_mass * target_mass * inv_dist * inv_dist * inv_dist
+        group = source_ordinal_by_id[source_id]
+        if 0 <= group < source_count:
+            cuda.atomic.add(sum_x, group, dx * scale)
+            cuda.atomic.add(sum_y, group, dy * scale)
+
+    return kernel
+
+
+class PreparedAggregateFrontierDeviceColumnsWeightedVectorSum2DNumba:
+    """Prepared no-C++ Numba partner for M36 aggregate-frontier device columns.
+
+    CuPy is used only as the current OptiX device-column carrier exposed by
+    `as_cupy_columns()`. The continuation math and output accumulation are
+    Numba CUDA JIT kernels.
+    """
+
+    def __init__(
+        self,
+        source_points: Iterable[object],
+        target_points: Iterable[object],
+        tree_nodes: Iterable[object],
+        *,
+        block_size: int = 256,
+    ) -> None:
+        from ..numba_partner_continuation import _import_numba_stack
+
+        self.cuda, self.np = _import_numba_stack()
+        self.block_size = int(block_size)
+        if self.block_size <= 0:
+            raise ValueError("block_size must be positive")
+        self.sources = normalize_weighted_point_rows(source_points)
+        self.targets = normalize_weighted_point_rows(target_points)
+        self.nodes = _tree_node_rows(tree_nodes)
+        if not self.sources:
+            raise ValueError("at least one source point is required")
+        if not self.targets:
+            raise ValueError("at least one target point is required")
+        if not self.nodes:
+            raise ValueError("at least one aggregate tree node is required")
+
+        source_ids_host = [int(point.id) for point in self.sources]
+        target_ids_host = [int(point.id) for point in self.targets]
+        node_ids_host = [int(node.id) for node in self.nodes]
+        if min(source_ids_host) < 0 or min(target_ids_host) < 0 or min(node_ids_host) < 0:
+            raise ValueError("Numba aggregate-frontier vector continuation requires non-negative dense ids")
+        if len(set(source_ids_host)) != len(source_ids_host):
+            raise ValueError("source point ids must be unique")
+        if len(set(target_ids_host)) != len(target_ids_host):
+            raise ValueError("target point ids must be unique")
+        if len(set(node_ids_host)) != len(node_ids_host):
+            raise ValueError("aggregate tree node ids must be unique")
+
+        self.cuda.synchronize()
+        start = time.perf_counter()
+
+        np = self.np
+        cuda = self.cuda
+        self.source_ids = cuda.to_device(np.asarray(source_ids_host, dtype=np.int64))
+        self.source_x = cuda.to_device(np.asarray([float(point.x) for point in self.sources], dtype=np.float64))
+        self.source_y = cuda.to_device(np.asarray([float(point.y) for point in self.sources], dtype=np.float64))
+        self.source_mass = cuda.to_device(np.asarray([float(point.mass) for point in self.sources], dtype=np.float64))
+
+        target_ids = np.asarray(target_ids_host, dtype=np.int64)
+        node_ids = np.asarray(node_ids_host, dtype=np.int64)
+        max_source_id = max(source_ids_host)
+        max_target_id = max(target_ids_host)
+        max_node_id = max(node_ids_host)
+
+        source_x_by_id = np.zeros((max_source_id + 1,), dtype=np.float64)
+        source_y_by_id = np.zeros((max_source_id + 1,), dtype=np.float64)
+        source_mass_by_id = np.zeros((max_source_id + 1,), dtype=np.float64)
+        source_x_by_id[source_ids_host] = [float(point.x) for point in self.sources]
+        source_y_by_id[source_ids_host] = [float(point.y) for point in self.sources]
+        source_mass_by_id[source_ids_host] = [float(point.mass) for point in self.sources]
+        source_ordinal_by_id = np.zeros((max_source_id + 1,), dtype=np.int64)
+        source_ordinal_by_id[source_ids_host] = np.arange(len(self.sources), dtype=np.int64)
+
+        target_x_by_id = np.zeros((max_target_id + 1,), dtype=np.float64)
+        target_y_by_id = np.zeros((max_target_id + 1,), dtype=np.float64)
+        target_mass_by_id = np.zeros((max_target_id + 1,), dtype=np.float64)
+        target_x_by_id[target_ids] = [float(point.x) for point in self.targets]
+        target_y_by_id[target_ids] = [float(point.y) for point in self.targets]
+        target_mass_by_id[target_ids] = [float(point.mass) for point in self.targets]
+
+        node_cx_by_id = np.zeros((max_node_id + 1,), dtype=np.float64)
+        node_cy_by_id = np.zeros((max_node_id + 1,), dtype=np.float64)
+        node_mass_by_id = np.zeros((max_node_id + 1,), dtype=np.float64)
+        node_cx_by_id[node_ids] = [float(node.cx) for node in self.nodes]
+        node_cy_by_id[node_ids] = [float(node.cy) for node in self.nodes]
+        node_mass_by_id[node_ids] = [float(node.mass) for node in self.nodes]
+
+        self.source_x_by_id = cuda.to_device(source_x_by_id)
+        self.source_y_by_id = cuda.to_device(source_y_by_id)
+        self.source_mass_by_id = cuda.to_device(source_mass_by_id)
+        self.source_ordinal_by_id = cuda.to_device(source_ordinal_by_id)
+        self.target_x_by_id = cuda.to_device(target_x_by_id)
+        self.target_y_by_id = cuda.to_device(target_y_by_id)
+        self.target_mass_by_id = cuda.to_device(target_mass_by_id)
+        self.node_cx_by_id = cuda.to_device(node_cx_by_id)
+        self.node_cy_by_id = cuda.to_device(node_cy_by_id)
+        self.node_mass_by_id = cuda.to_device(node_mass_by_id)
+        self.vector_x = cuda.device_array((len(self.sources),), dtype=np.float64)
+        self.vector_y = cuda.device_array((len(self.sources),), dtype=np.float64)
+        self.counts = cuda.device_array((2,), dtype=np.int64)
+
+        cuda.synchronize()
+        self.prepare_seconds = time.perf_counter() - start
+
+    @property
+    def source_count(self) -> int:
+        return len(self.sources)
+
+    @property
+    def source_ids_device_ptr(self) -> int:
+        return _numba_device_pointer(self.source_ids)
+
+    @property
+    def source_x_device_ptr(self) -> int:
+        return _numba_device_pointer(self.source_x)
+
+    @property
+    def source_y_device_ptr(self) -> int:
+        return _numba_device_pointer(self.source_y)
+
+    def frontier_source_device_args(self) -> dict[str, object]:
+        return {
+            "source_ids_device_ptr": self.source_ids_device_ptr,
+            "source_x_device_ptr": self.source_x_device_ptr,
+            "source_y_device_ptr": self.source_y_device_ptr,
+            "source_count": self.source_count,
+            "source_column_owners": (self,),
+        }
+
+    def sum(
+        self,
+        frontier_device_columns: object,
+        *,
+        softening: float = 0.0,
+    ) -> dict[str, object]:
+        softening = float(softening)
+        if softening < 0.0:
+            raise ValueError("softening must be non-negative")
+        if not hasattr(frontier_device_columns, "as_cupy_columns"):
+            raise ValueError("frontier_device_columns must expose as_cupy_columns()")
+        if bool(getattr(frontier_device_columns, "overflow", False)):
+            raise ValueError("cannot consume overflowed aggregate-frontier device columns")
+
+        from ..numba_partner_continuation import _as_numba_cuda_vector
+        from ..numba_partner_continuation import _cached_numba_kernel
+
+        columns = frontier_device_columns.as_cupy_columns()
+        row_count = int(getattr(frontier_device_columns, "row_count", len(columns["source_id"])))
+        if row_count != int(columns["source_id"].shape[0]):
+            raise ValueError("frontier row_count does not match source_id column length")
+        cuda = self.cuda
+        np = self.np
+        frontier_source_ids = _as_numba_cuda_vector(
+            columns["source_id"],
+            name="frontier_source_ids",
+            dtype=np.int64,
+            cuda=cuda,
+            np=np,
+        )
+        kind_codes = _as_numba_cuda_vector(
+            columns["frontier_kind_code"],
+            name="kind_codes",
+            dtype=np.int64,
+            cuda=cuda,
+            np=np,
+        )
+        item_ids = _as_numba_cuda_vector(
+            columns["item_id"],
+            name="item_ids",
+            dtype=np.int64,
+            cuda=cuda,
+            np=np,
+        )
+
+        cuda.synchronize()
+        start = time.perf_counter()
+
+        zero_grid = ((max(self.source_count, 2) + self.block_size - 1) // self.block_size,)
+        _cached_numba_kernel(cuda, _numba_aggregate_frontier_vector_sum_zero_kernel)[
+            zero_grid,
+            self.block_size,
+        ](self.vector_x, self.vector_y, self.counts, self.source_count)
+        if row_count:
+            grid = ((row_count + self.block_size - 1) // self.block_size,)
+            _cached_numba_kernel(cuda, _numba_aggregate_frontier_weighted_vector_sum_kernel)[
+                grid,
+                self.block_size,
+            ](
+                frontier_source_ids,
+                kind_codes,
+                item_ids,
+                self.source_x_by_id,
+                self.source_y_by_id,
+                self.source_mass_by_id,
+                self.target_x_by_id,
+                self.target_y_by_id,
+                self.target_mass_by_id,
+                self.node_cx_by_id,
+                self.node_cy_by_id,
+                self.node_mass_by_id,
+                self.source_ordinal_by_id,
+                softening * softening,
+                self.vector_x,
+                self.vector_y,
+                self.counts,
+                row_count,
+                self.source_count,
+            )
+        counts_host = self.counts.copy_to_host()
+        cuda.synchronize()
+        elapsed = time.perf_counter() - start
+        return {
+            "columns": {
+                "source_ids": self.source_ids,
+                "vector_x": self.vector_x,
+                "vector_y": self.vector_y,
+            },
+            "metadata": {
+                "contract": AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CONTRACT,
+                "logical_reference_contract": AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT,
+                "partner": "numba",
+                "softening": softening,
+                "source_count": self.source_count,
+                "frontier_row_count": row_count,
+                "aggregate_contribution_row_count": int(counts_host[0]),
+                "exact_contribution_row_count": int(counts_host[1]),
+                "prepare_seconds": self.prepare_seconds,
+                "partner_seconds": elapsed,
+                "block_size": self.block_size,
+                "prepared_lookup_columns_resident": True,
+                "source_columns_reused": True,
+                "output_columns_reused": True,
+                "setup_seconds_excluded_from_hot_path": True,
+                "frontier_columns_materialized_on_host": False,
+                "contribution_rows_materialized_on_host": False,
+                "requires_cupy_frontier_adapter": True,
+                "numba_cuda_jit_used": True,
+                "global_atomic_add_used": True,
+                "raw_cuda_kernel_required": False,
+                "app_reference_math": True,
+                "native_engine_app_specific": False,
+                "rt_core_speedup_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
+        }
+
+    def run_with_prepared_frontier(
+        self,
+        prepared_frontier: object,
+        *,
+        row_capacity: int,
+        softening: float = 0.0,
+    ) -> dict[str, object]:
+        if not hasattr(prepared_frontier, "run_device_columns"):
+            raise ValueError("prepared_frontier must expose run_device_columns()")
+        frontier = prepared_frontier.run_device_columns(
+            row_capacity=int(row_capacity),
+            **self.frontier_source_device_args(),
+        )
+        vector_sum = self.sum(frontier, softening=softening)
+        return {
+            "frontier": frontier,
+            "vector_sum": vector_sum,
+            "metadata": {
+                "contract": AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CONTRACT,
+                "frontier_traversal_seconds": float(getattr(frontier, "traversal_seconds", 0.0)),
+                "partner_seconds": float(vector_sum["metadata"]["partner_seconds"]),
+                "hot_seconds": float(getattr(frontier, "traversal_seconds", 0.0))
+                + float(vector_sum["metadata"]["partner_seconds"]),
+                "prepared_lookup_columns_resident": True,
+                "source_columns_reused": True,
+                "output_columns_reused": True,
+                "frontier_columns_materialized_on_host": False,
+                "contribution_rows_materialized_on_host": False,
+                "requires_cupy_frontier_adapter": True,
+                "numba_cuda_jit_used": True,
+                "whole_app_speedup_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
+        }
+
+
+def prepare_aggregate_frontier_device_columns_weighted_vectors_2d_numba(
+    source_points: Iterable[object],
+    target_points: Iterable[object],
+    tree_nodes: Iterable[object],
+    *,
+    block_size: int = 256,
+) -> PreparedAggregateFrontierDeviceColumnsWeightedVectorSum2DNumba:
+    return PreparedAggregateFrontierDeviceColumnsWeightedVectorSum2DNumba(
+        source_points,
+        target_points,
+        tree_nodes,
+        block_size=block_size,
+    )
