@@ -191,12 +191,26 @@ def command_plan_payload() -> dict[str, Any]:
             "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000"
         ),
+        "rt_graph_2a1_segmented_unique_weighted_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
+            "--segment-ray-representation unique_weighted"
+        ),
         "rt_graph_2a1_segmented_scene_generic_rt_optix_cupy_partner": (
             "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_segmented_scene_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy --scene-max-directed-edges 2000000 "
             "--segment-max-two-hop-rows 5000000"
+        ),
+        "rt_graph_2a1_segmented_scene_unique_weighted_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_scene_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --scene-max-directed-edges 2000000 "
+            "--segment-max-two-hop-rows 5000000 --segment-ray-representation unique_weighted"
         ),
         "rt_graph_1a2_generic_rt_optix": (
             "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
@@ -965,9 +979,11 @@ def rt_graph_2a1_segmented_generic_rt_payload(
     warmup: int,
     repeat: int,
     segment_max_two_hop_rows: int,
+    segment_ray_representation: str,
     validate_oracle: bool = False,
 ) -> dict[str, Any]:
     _validate_repetition(warmup=warmup, repeat=repeat)
+    _validate_segment_ray_representation(segment_ray_representation)
     normalized_backend = backend.lower().replace("-", "_")
     if normalized_backend != "optix" or detail != "summary" or partner != "cupy":
         raise ValueError(
@@ -1003,6 +1019,8 @@ def rt_graph_2a1_segmented_generic_rt_payload(
     summary_result = None
     query_timings_ms: list[float] = []
     segment_ray_build_timings_ms: list[float] = []
+    lowered_ray_count_runs: list[int] = []
+    lowered_ray_weight_sum_runs: list[int] = []
     prepare_started = time.perf_counter()
     scene = rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangles)
     prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
@@ -1012,6 +1030,8 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             run_segment_build_ms = 0.0
             run_query_ms = 0.0
             run_hit_weight_sum = 0
+            run_lowered_ray_count = 0
+            run_lowered_ray_weight_sum = 0
             for start_edge, end_edge, _two_hop_rows in segment_plan["ranges"]:
                 if int(_two_hop_rows) <= 0:
                     continue
@@ -1020,8 +1040,11 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                     contract,
                     start_edge=int(start_edge),
                     end_edge=int(end_edge),
+                    ray_representation=segment_ray_representation,
                 )
                 run_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
+                run_lowered_ray_count += _record_count(rays)
+                run_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
                 query_started = time.perf_counter()
                 summary_result = scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
                 run_query_ms += _elapsed_ms(query_started, time.perf_counter())
@@ -1029,17 +1052,26 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             if index >= warmup:
                 query_timings_ms.append(run_query_ms)
                 segment_ray_build_timings_ms.append(run_segment_build_ms)
+                lowered_ray_count_runs.append(int(run_lowered_ray_count))
+                lowered_ray_weight_sum_runs.append(int(run_lowered_ray_weight_sum))
                 hit_weight_sum = int(run_hit_weight_sum)
+            if segment_ray_representation == "unique_weighted":
+                _release_cupy_cached_blocks()
     ran = time.perf_counter()
     reduced = time.perf_counter()
 
     primitive_count = _record_count(triangles)
-    ray_count = int(segment_plan["total_two_hop_rows"])
+    logical_ray_count = int(segment_plan["total_two_hop_rows"])
+    lowered_ray_count = lowered_ray_count_runs[-1] if lowered_ray_count_runs else 0
+    lowered_ray_weight_sum = lowered_ray_weight_sum_runs[-1] if lowered_ray_weight_sum_runs else 0
+    ray_compression_ratio = (
+        float(logical_ray_count) / float(lowered_ray_count) if lowered_ray_count > 0 else None
+    )
     v2_4_session = describe_rt_graph_v2_4_prepared_session(
         backend=backend,
         paper_method="RT-2A1",
         primitive_count=primitive_count,
-        ray_count=ray_count,
+        ray_count=lowered_ray_count,
         device_column_summary=True,
         partner=partner,
     )
@@ -1060,13 +1092,20 @@ def rt_graph_2a1_segmented_generic_rt_payload(
         input_fingerprints={
             "triangles": {"count": primitive_count, "edge_file": edge_file},
             "rays": {
-                "count": ray_count,
+                "count": lowered_ray_count,
+                "logical_two_hop_count": logical_ray_count,
                 "edge_file": edge_file,
                 "segmented": True,
                 "segment_max_two_hop_rows": int(segment_max_two_hop_rows),
+                "segment_ray_representation": segment_ray_representation,
             },
         },
-        parameters={"detail": detail, "summary": True, "segmented": True},
+        parameters={
+            "detail": detail,
+            "summary": True,
+            "segmented": True,
+            "segment_ray_representation": segment_ray_representation,
+        },
         partner=partner,
         device="cuda:0",
     )
@@ -1105,7 +1144,12 @@ def rt_graph_2a1_segmented_generic_rt_payload(
         "primitive_layout": {
             "paper_method": "RT-2A1",
             "primitive_side": "directed 1-hop edges as Triangle3D primitives",
-            "ray_side": "segmented duplicate 2-hop relation rays with unit weights",
+            "ray_side": (
+                "segmented unique weighted 2-hop relation rays"
+                if segment_ray_representation == "unique_weighted"
+                else "segmented duplicate 2-hop relation rays with unit weights"
+            ),
+            "segment_ray_representation": segment_ray_representation,
             "triangle_eps": 0.2,
             "ray_tmax": 0.2,
             "device_column_lowering": True,
@@ -1116,13 +1160,19 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "max_two_hop_rows": int(segment_plan["max_two_hop_rows"]),
             "max_segment_two_hop_rows": int(segment_plan["max_segment_two_hop_rows"]),
             "total_two_hop_rows": int(segment_plan["total_two_hop_rows"]),
+            "logical_ray_count": logical_ray_count,
+            "lowered_ray_count": int(lowered_ray_count),
+            "lowered_ray_weight_sum": int(lowered_ray_weight_sum),
+            "ray_compression_ratio": ray_compression_ratio,
+            "segment_ray_representation": segment_ray_representation,
             "count_column_rows": int(segment_plan["count_column_rows"]),
             "counts_download_ms": float(segment_plan["counts_download_ms"]),
             "ranges_preview": segment_ranges,
             "ranges_truncated": len(segment_plan["ranges"]) > len(segment_ranges),
         },
         "primitive_count": primitive_count,
-        "ray_count": ray_count,
+        "ray_count": int(lowered_ray_count),
+        "logical_ray_count": logical_ray_count,
         "oracle_triangle_count": oracle_triangle_count,
         "generic_rt_weighted_triangle_count": int(hit_weight_sum),
         "triangle_count_matches_oracle": triangle_count_matches_oracle,
@@ -1147,7 +1197,8 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "total": _elapsed_ms(started, reduced),
         },
         "hit_rows": {
-            "row_count": ray_count,
+            "row_count": int(lowered_ray_count),
+            "logical_row_count": logical_ray_count,
             "materialized": False,
             "summary_primitive": "segmented_ray_triangle_weighted_any_hit_sum_3d",
         },
@@ -1194,8 +1245,10 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     repeat: int,
     segment_max_two_hop_rows: int,
     scene_max_directed_edges: int,
+    segment_ray_representation: str,
 ) -> dict[str, Any]:
     _validate_repetition(warmup=warmup, repeat=repeat)
+    _validate_segment_ray_representation(segment_ray_representation)
     normalized_backend = backend.lower().replace("-", "_")
     if normalized_backend != "optix" or detail != "summary" or partner != "cupy":
         raise ValueError(
@@ -1229,6 +1282,8 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     segment_ray_build_timings_ms: list[float] = []
     triangle_build_timings_ms: list[float] = []
     prepare_scene_timings_ms: list[float] = []
+    lowered_ray_count_runs: list[int] = []
+    lowered_ray_weight_sum_runs: list[int] = []
     hit_weight_sum = 0
     summary_result = None
     for index in range(warmup + repeat):
@@ -1237,6 +1292,8 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
         run_triangle_build_ms = 0.0
         run_prepare_scene_ms = 0.0
         run_hit_weight_sum = 0
+        run_lowered_ray_count = 0
+        run_lowered_ray_weight_sum = 0
         for scene in scene_plan["scenes"]:
             triangle_started = time.perf_counter()
             triangles = _build_rt_graph_2a1_cupy_directed_edge_triangles(
@@ -1257,8 +1314,11 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                         contract,
                         start_edge=int(start_edge),
                         end_edge=int(end_edge),
+                        ray_representation=segment_ray_representation,
                     )
                     run_segment_ray_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
+                    run_lowered_ray_count += _record_count(rays)
+                    run_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
                     query_started = time.perf_counter()
                     summary_result = prepared_scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
                     run_query_ms += _elapsed_ms(query_started, time.perf_counter())
@@ -1268,17 +1328,26 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             segment_ray_build_timings_ms.append(run_segment_ray_build_ms)
             triangle_build_timings_ms.append(run_triangle_build_ms)
             prepare_scene_timings_ms.append(run_prepare_scene_ms)
+            lowered_ray_count_runs.append(int(run_lowered_ray_count))
+            lowered_ray_weight_sum_runs.append(int(run_lowered_ray_weight_sum))
             hit_weight_sum = int(run_hit_weight_sum)
+        if segment_ray_representation == "unique_weighted":
+            _release_cupy_cached_blocks()
     ran = time.perf_counter()
     reduced = time.perf_counter()
 
     primitive_count = int(scene_plan["total_directed_edges"])
-    ray_count = int(scene_plan["total_two_hop_rows"])
+    logical_ray_count = int(scene_plan["total_two_hop_rows"])
+    lowered_ray_count = lowered_ray_count_runs[-1] if lowered_ray_count_runs else 0
+    lowered_ray_weight_sum = lowered_ray_weight_sum_runs[-1] if lowered_ray_weight_sum_runs else 0
+    ray_compression_ratio = (
+        float(logical_ray_count) / float(lowered_ray_count) if lowered_ray_count > 0 else None
+    )
     v2_4_session = describe_rt_graph_v2_4_prepared_session(
         backend=backend,
         paper_method="RT-2A1",
         primitive_count=primitive_count,
-        ray_count=ray_count,
+        ray_count=lowered_ray_count,
         device_column_summary=True,
         partner=partner,
     )
@@ -1307,13 +1376,20 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                 "scene_max_directed_edges": int(scene_max_directed_edges),
             },
             "rays": {
-                "count": ray_count,
+                "count": lowered_ray_count,
+                "logical_two_hop_count": logical_ray_count,
                 "edge_file": edge_file,
                 "segmented": True,
                 "segment_max_two_hop_rows": int(segment_max_two_hop_rows),
+                "segment_ray_representation": segment_ray_representation,
             },
         },
-        parameters={"detail": detail, "summary": True, "segmented_scenes": True},
+        parameters={
+            "detail": detail,
+            "summary": True,
+            "segmented_scenes": True,
+            "segment_ray_representation": segment_ray_representation,
+        },
         partner=partner,
         device="cuda:0",
     )
@@ -1353,7 +1429,12 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
         "primitive_layout": {
             "paper_method": "RT-2A1",
             "primitive_side": "source-range segmented directed 1-hop edges as Triangle3D primitives",
-            "ray_side": "segmented duplicate 2-hop relation rays with unit weights",
+            "ray_side": (
+                "segmented unique weighted 2-hop relation rays"
+                if segment_ray_representation == "unique_weighted"
+                else "segmented duplicate 2-hop relation rays with unit weights"
+            ),
+            "segment_ray_representation": segment_ray_representation,
             "triangle_eps": 0.2,
             "ray_tmax": 0.2,
             "device_column_lowering": True,
@@ -1369,12 +1450,18 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "max_two_hop_rows": int(scene_plan["max_two_hop_rows"]),
             "total_directed_edges": int(scene_plan["total_directed_edges"]),
             "total_two_hop_rows": int(scene_plan["total_two_hop_rows"]),
+            "logical_ray_count": logical_ray_count,
+            "lowered_ray_count": int(lowered_ray_count),
+            "lowered_ray_weight_sum": int(lowered_ray_weight_sum),
+            "ray_compression_ratio": ray_compression_ratio,
+            "segment_ray_representation": segment_ray_representation,
             "counts_download_ms": float(scene_plan["counts_download_ms"]),
             "scenes_preview": scene_preview,
             "scenes_truncated": len(scene_plan["scenes"]) > len(scene_preview),
         },
         "primitive_count": primitive_count,
-        "ray_count": ray_count,
+        "ray_count": int(lowered_ray_count),
+        "logical_ray_count": logical_ray_count,
         "oracle_triangle_count": None,
         "generic_rt_weighted_triangle_count": int(hit_weight_sum),
         "triangle_count_matches_oracle": None,
@@ -1401,7 +1488,8 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "total": _elapsed_ms(started, reduced),
         },
         "hit_rows": {
-            "row_count": ray_count,
+            "row_count": int(lowered_ray_count),
+            "logical_row_count": logical_ray_count,
             "materialized": False,
             "summary_primitive": "source_range_segmented_ray_triangle_weighted_any_hit_sum_3d",
         },
@@ -1706,6 +1794,11 @@ def _validate_repetition(*, warmup: int, repeat: int) -> None:
         raise ValueError("repeat must be positive")
 
 
+def _validate_segment_ray_representation(value: str) -> None:
+    if value not in {"duplicate", "unique_weighted"}:
+        raise ValueError("segment_ray_representation must be duplicate or unique_weighted")
+
+
 def _record_count(records) -> int:
     if isinstance(records, dict) and "ids" in records:
         return int(records["ids"].size)
@@ -1719,6 +1812,28 @@ def _contract_count(contract, count_attr: str, records_attr: str) -> int:
     if hasattr(contract, count_attr):
         return int(getattr(contract, count_attr))
     return len(getattr(contract, records_attr))
+
+
+def _sum_uint64_like(values) -> int:
+    size = getattr(values, "size", None)
+    if size is not None and int(size) == 0:
+        return 0
+    total = values.sum() if hasattr(values, "sum") else sum(values)
+    if hasattr(total, "get"):
+        return int(total.get())
+    if hasattr(total, "copy_to_host"):
+        return int(total.copy_to_host())
+    return int(total)
+
+
+def _release_cupy_cached_blocks() -> None:
+    try:
+        cp = __import__("cupy")
+        cp.cuda.Stream.null.synchronize()
+        cp.get_default_memory_pool().free_all_blocks()
+        cp.get_default_pinned_memory_pool().free_all_blocks()
+    except Exception:
+        return
 
 
 def _use_summary_partner(
@@ -2124,7 +2239,14 @@ def _make_rt_graph_2a1_scene_plan_row(
     }
 
 
-def _build_rt_graph_2a1_cupy_segment_rays(contract, *, start_edge: int, end_edge: int):
+def _build_rt_graph_2a1_cupy_segment_rays(
+    contract,
+    *,
+    start_edge: int,
+    end_edge: int,
+    ray_representation: str = "duplicate",
+):
+    _validate_segment_ray_representation(ray_representation)
     cp = __import__("cupy")
 
     device_arrays = _require_directed_csr_device_arrays(contract, partner="cupy")
@@ -2161,6 +2283,16 @@ def _build_rt_graph_2a1_cupy_segment_rays(contract, *, start_edge: int, end_edge
     dst_index = repeated_starts + (cp.arange(ray_count, dtype=cp.int64) - repeated_prefix)
     ray_src = cp.repeat(edge_src, counts)
     ray_dst = column_indices[dst_index]
+    if ray_representation == "unique_weighted":
+        key_base = int(contract.vertex_count)
+        two_hop_keys = ray_src.astype(cp.int64, copy=False) * key_base + ray_dst.astype(cp.int64, copy=False)
+        unique_keys, unique_counts = cp.unique(two_hop_keys, return_counts=True)
+        ray_src = (unique_keys // key_base).astype(cp.int64, copy=False)
+        ray_dst = (unique_keys - ray_src * key_base).astype(cp.int64, copy=False)
+        ray_weights = unique_counts.astype(cp.uint64, copy=False)
+        ray_count = int(unique_keys.size)
+    else:
+        ray_weights = cp.ones(ray_count, dtype=cp.uint64)
     axis_offset_x = contract.vertex_count / 2.0
     axis_offset_z = contract.vertex_count / 2.0
 
@@ -2174,7 +2306,7 @@ def _build_rt_graph_2a1_cupy_segment_rays(contract, *, start_edge: int, end_edge
         "dz": cp.zeros(ray_count, dtype=cp.float64),
         "tmax": cp.full(ray_count, 0.2, dtype=cp.float64),
     }
-    return rays, cp.ones(ray_count, dtype=cp.uint64)
+    return rays, ray_weights
 
 
 _RT_GRAPH_1A2_FILL_TRIANGLES_NUMBA_KERNEL = None
@@ -2945,6 +3077,7 @@ def run_app(
     rt_graph_copies: int = 1,
     segment_max_two_hop_rows: int = 1_000_000,
     scene_max_directed_edges: int = 2_000_000,
+    segment_ray_representation: str = "duplicate",
     validate_oracle: bool = False,
 ) -> dict[str, Any]:
     if mode == "scope":
@@ -3005,6 +3138,7 @@ def run_app(
             warmup=warmup,
             repeat=repeat,
             segment_max_two_hop_rows=segment_max_two_hop_rows,
+            segment_ray_representation=segment_ray_representation,
             validate_oracle=validate_oracle,
         )
     if mode == "rt_graph_2a1_segmented_scene_generic_rt":
@@ -3018,6 +3152,7 @@ def run_app(
             repeat=repeat,
             segment_max_two_hop_rows=segment_max_two_hop_rows,
             scene_max_directed_edges=scene_max_directed_edges,
+            segment_ray_representation=segment_ray_representation,
         )
     if mode == "rt_graph_1a2_generic_rt":
         return rt_graph_1a2_generic_rt_payload(
@@ -3089,6 +3224,15 @@ def main(argv: list[str] | None = None) -> int:
         help="Maximum directed-edge triangles to lower per source-range segmented RT-2A1 scene.",
     )
     parser.add_argument(
+        "--segment-ray-representation",
+        choices=("duplicate", "unique_weighted"),
+        default="duplicate",
+        help=(
+            "Ray representation for segmented RT-2A1 lowering: duplicate physical "
+            "two-hop rays or unique rays with uint64 weights."
+        ),
+    )
+    parser.add_argument(
         "--validate-oracle",
         action="store_true",
         help="Build the Python oracle for small binary edge files and compare the segmented result.",
@@ -3118,6 +3262,7 @@ def main(argv: list[str] | None = None) -> int:
                 rt_graph_copies=args.rt_graph_copies,
                 segment_max_two_hop_rows=args.segment_max_two_hop_rows,
                 scene_max_directed_edges=args.scene_max_directed_edges,
+                segment_ray_representation=args.segment_ray_representation,
                 validate_oracle=args.validate_oracle,
             ),
             indent=2,

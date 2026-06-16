@@ -113,7 +113,7 @@ class Goal4458V30M62BarnesHutCurrentRouteRerankTest(unittest.TestCase):
             self.assertIn("fused_frontier_force_sum_bucketized_numba_cuda", text)
         self.assertIn("not a Barnes-Hut RT-core speedup claim", report)
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4467.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4468.v1",
             route["version"],
         )
         self.assertIn("Goal4458", route["evidence_refs"])

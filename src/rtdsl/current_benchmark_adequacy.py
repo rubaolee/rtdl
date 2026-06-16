@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4467.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4468.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -43,7 +43,10 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "unsafe during query and cannot be hidden defaults. Goal4467 refreshes the "
     "Triangle Counting current comparison packet and records that RTDL completes "
     "the large rows exactly while cuGraph remains much faster and authors pure "
-    "count kernels remain much faster than RTDL query traversal. "
+    "count kernels remain much faster than RTDL query traversal. Goal4468 adds "
+    "explicit unique-weighted segment rays for Triangle Counting: physical ray "
+    "count and traversal drop materially, but partner unique compression becomes "
+    "the bottleneck and whole-route speedup remains blocked. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -443,7 +446,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "than a universal default. Goal4467 refreshes current RTDL large-row totals "
             "to 14.153s on `com-lj`, 25.747s on `soc-LiveJournal1`, and 115.032s on "
             "`com-orkut`, while documenting that cuGraph is still 8.26x-15.91x faster "
-            "end to end and authors pure kernels remain much faster than RTDL query."
+            "end to end and authors pure kernels remain much faster than RTDL query. "
+            "Goal4468 adds explicit unique-weighted segment rays: physical rays fall "
+            "by 1.76x-1.84x and traversal median improves by 2.36x-2.47x, but "
+            "partner unique compression makes construction 2.44x-2.50x slower, so "
+            "whole-route speedup remains blocked."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -457,20 +464,22 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "for the current vectorized segmented planner. Cite Goal4466 for explicit "
             "ray-batch cap tuning: 5M conservative, 15M measured for `com-orkut` on "
             "RTX 4000 Ada, larger tested caps unsafe. Cite Goal4467 for the current "
-            "large-row comparison packet and its no-speedup boundary."
+            "large-row comparison packet and its no-speedup boundary. Cite Goal4468 "
+            "for the explicit `unique_weighted` segmented ray representation; it is "
+            "a traversal-pressure reduction route, not an automatic default."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
             "large-scale performance for explicit summary-contract construction and "
-            "the segmented RT-2A1 route; Numba is now a much fairer no-C++ "
+            "the segmented RT-2A1 route, including the explicit unique-weighted "
+            "segment-ray representation; Numba is now a much fairer no-C++ "
             "Python-source reference for the global-summary path"
         ),
         "next_generic_runtime_action": (
             "keep scalar triangle-count wording primitive-first; do not claim RT-Graph "
-            "paper reproduction or broad triangle-count acceleration; next work is an "
-            "explicit segmented RT-2A1 duplicate-ray representation and traversal "
-            "reduction plan; do not spend more time on batch-cap tuning unless hardware "
-            "changes"
+            "paper reproduction or broad triangle-count acceleration; next work is "
+            "cheaper or reusable segmented unique-key compression after Goal4468; "
+            "do not spend more time on batch-cap tuning unless hardware changes"
         ),
         "evidence_refs": (
             "Goal2797",
@@ -490,6 +499,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4465",
             "Goal4466",
             "Goal4467",
+            "Goal4468",
         ),
     },
 }

@@ -177,6 +177,16 @@ the large former-OOM rows, but cuGraph remains 8.26x-15.91x faster end to end,
 and the authors specialized count kernels remain much faster than RTDL query
 traversal even when RTDL beats the authors full pipeline on two rows.
 
+Goal4468 adds an explicit `--segment-ray-representation unique_weighted` route
+for segmented RT-2A1. The CuPy partner compresses per-segment duplicate
+two-hop `(src, dst)` rays into unique rays with uint64 weights, while RTDL still
+uses the same generic weighted any-hit primitive. On the three large rows it
+cuts physical ray count by 1.76x-1.84x and traversal median by 2.36x-2.47x, but
+per-segment unique compression makes ray construction 2.44x-2.50x slower. Net
+build+query improves 1.11x-1.13x; whole formal total is slightly better on
+`com-lj` and `soc-LiveJournal1` and slightly worse on `com-orkut`. The current
+next target is cheaper or reusable unique compression, not more cap tuning.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
@@ -187,6 +197,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4465_v3_0_m69_triangle_segment_planner_com_orkut_2026-06-16.md`
 - `docs/reports/goal4466_v3_0_m70_triangle_ray_batch_cap_tuning_com_orkut_2026-06-16.md`
 - `docs/reports/goal4467_v3_0_m71_triangle_current_comparison_packet_2026-06-16.md`
+- `docs/reports/goal4468_v3_0_m72_triangle_unique_weighted_comparison_packet_2026-06-16.md`
 
 ## Engine Boundary
 

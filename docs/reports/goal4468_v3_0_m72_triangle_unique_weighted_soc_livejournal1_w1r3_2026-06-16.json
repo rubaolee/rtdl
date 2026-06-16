@@ -1,0 +1,500 @@
+{
+  "app": "triangle_counting",
+  "authors_code_reproduction": false,
+  "backend": "optix",
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "benchmark_app": true,
+    "bfs_in_benchmark": false,
+    "distributed_graph_claim": false,
+    "full_graph_database_claim": false,
+    "generic_ray_triangle_rt_core_subpath_authorized": true,
+    "global_triangle_scene_materialized": false,
+    "global_two_hop_summary_materialized": false,
+    "native_engine_customization": false,
+    "paper_code_intake_complete": true,
+    "paper_reproduction": false,
+    "public_speedup_claim_authorized": false,
+    "rt_graph_1a2_generic_rt_mapping": true,
+    "rt_graph_2a1_generic_rt_mapping": true,
+    "rt_graph_id_ascending_adapter": true,
+    "rt_graph_preprocessing_oracle": true,
+    "segmented_triangle_scene_lowering": true,
+    "segmented_two_hop_lowering": true,
+    "triangle_count_rt_core_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "visibility_edges_in_benchmark": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "contract": "rt_graph_2a1_source_range_segmented_scenes_to_generic_ray_triangle_any_hit",
+  "generic_rt_summary": {
+    "contract": "source_range_segmented_ray_triangle_weighted_any_hit_sum_3d",
+    "last_segment_summary": {
+      "backend": "optix",
+      "claim_boundary": {
+        "native_app_api": false,
+        "public_speedup_claim": false,
+        "row_witnesses": false,
+        "true_zero_copy": false
+      },
+      "contract": "PREPARED_TRIANGLE_SCENE_3D_RAY_ANY_HIT_WEIGHTED_SUM_DEVICE_COLUMNS_V1",
+      "phase_timing_seconds": {
+        "prepare_build": 0.01812022179365158,
+        "query_pack": 0.00026744604110717773,
+        "traversal": 0.000226511
+      },
+      "prepared_reused": true,
+      "prepared_run_index": 3,
+      "prepared_scene_used": true,
+      "ray_count": 523955,
+      "result_kind": "uint64_weighted_any_hit_sum",
+      "rows_materialized": false,
+      "transfer_metadata": {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "direct_device_pointer_observed": true,
+        "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum_device_rays",
+        "partner_phase_timings_s": {
+          "descriptor_validation_s": 0.00021757930517196655,
+          "weight_descriptor_validation_s": 2.8304755687713623e-05
+        },
+        "partner_tensor_handoff_authorized": true,
+        "per_ray_records_downloaded_to_host": false,
+        "query_rays_packed_on_device_each_run": true,
+        "query_rays_uploaded_each_run": false,
+        "ray_columns_true_zero_copy_authorized": false,
+        "ray_count": 523955,
+        "ray_weights_device_resident": true,
+        "ray_weights_uploaded_each_run": false,
+        "rt_core_speedup_claim_authorized": false,
+        "scalar_sum_returned_to_python": true,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "static_scene_prepared_on_device": true,
+        "transfer_mode": "device_ray3d_columns_gpu_pack",
+        "true_zero_copy_authorized": false
+      },
+      "triangle_count": 2260547,
+      "weighted_hit_sum": 1113208
+    }
+  },
+  "generic_rt_weighted_triangle_count": 285730264,
+  "hit_rows": {
+    "logical_row_count": 1383299326,
+    "materialized": false,
+    "row_count": 750099466,
+    "summary_primitive": "source_range_segmented_ray_triangle_weighted_any_hit_sum_3d"
+  },
+  "input_source": {
+    "format": "binary",
+    "kind": "edge_file",
+    "path": "build/goal2593_snap_edges/soc-LiveJournal1.edge"
+  },
+  "logical_ray_count": 1383299326,
+  "mode": "rt_graph_2a1_segmented_scene_generic_rt",
+  "oracle_triangle_count": null,
+  "partner": "cupy",
+  "partner_summary_contract_used": true,
+  "partner_timing_ms": {
+    "compact_unique_ms": 334.773,
+    "degree_ms": 144.534,
+    "directed_csr_ms": 145.077,
+    "estimated_two_hop_relation_count": 1383299326,
+    "host_columns_materialized": false,
+    "load_np_ms": 308.06,
+    "max_two_hop_per_directed_edge": 742,
+    "total_partner_ms": 2888.757,
+    "triangle_count_available": false,
+    "two_hop_estimate_ms": 5.119,
+    "two_hop_summary_materialized": false,
+    "upload_ms": 1951.194
+  },
+  "prepared_session_residency": {
+    "automatic_partner_selection_authorized": false,
+    "cache_enabled_by_default": false,
+    "cache_key": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "backend": "optix",
+      "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+      "device": "cuda:0",
+      "explicit_key_required": true,
+      "input_fingerprints": [
+        [
+          "rays",
+          "6bb68e9c4e7ac6d7d474e406"
+        ],
+        [
+          "triangles",
+          "a99cb938027a258d986d3193"
+        ]
+      ],
+      "parameter_fingerprint": [
+        [
+          "detail",
+          "fa7209f7c1fdc81517fd09d6"
+        ],
+        [
+          "segment_ray_representation",
+          "c4577c9e47b3e3a5ab3ea6d5"
+        ],
+        [
+          "segmented_scenes",
+          "b5bea41b6c623f7c09f1bf24"
+        ],
+        [
+          "summary",
+          "b5bea41b6c623f7c09f1bf24"
+        ]
+      ],
+      "partner": "cupy",
+      "primitive": "ray_triangle_weighted_any_hit_sum_3d",
+      "stable_id": "daa723775a378d86ad1ab8cc"
+    },
+    "explicit_reuse_helper": "get_or_prepare_explicit_session",
+    "policy": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "cache_enabled": false,
+      "cache_key": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "backend": "optix",
+        "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "device": "cuda:0",
+        "explicit_key_required": true,
+        "input_fingerprints": [
+          [
+            "rays",
+            "6bb68e9c4e7ac6d7d474e406"
+          ],
+          [
+            "triangles",
+            "a99cb938027a258d986d3193"
+          ]
+        ],
+        "parameter_fingerprint": [
+          [
+            "detail",
+            "fa7209f7c1fdc81517fd09d6"
+          ],
+          [
+            "segment_ray_representation",
+            "c4577c9e47b3e3a5ab3ea6d5"
+          ],
+          [
+            "segmented_scenes",
+            "b5bea41b6c623f7c09f1bf24"
+          ],
+          [
+            "summary",
+            "b5bea41b6c623f7c09f1bf24"
+          ]
+        ],
+        "partner": "cupy",
+        "primitive": "ray_triangle_weighted_any_hit_sum_3d",
+        "stable_id": "daa723775a378d86ad1ab8cc"
+      },
+      "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+      "cold_prepare_phase": "prepare_scene_or_payload",
+      "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+      "hot_query_phase": "prepared_query",
+      "invalidation_events": [
+        "explicit_invalidate",
+        "backend_context_reset",
+        "close"
+      ],
+      "lifetime_state": "session_retained",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "reuse_scope": "explicit_user_session",
+      "status": "internal_contract_not_release_authorization",
+      "true_zero_copy_claim_authorized": false
+    },
+    "prepare_once_query_many_pattern": false,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "primitive_count": 42260523,
+  "primitive_layout": {
+    "device_column_lowering": true,
+    "global_triangle_scene_materialized": false,
+    "global_two_hop_summary_materialized": false,
+    "paper_method": "RT-2A1",
+    "primitive_side": "source-range segmented directed 1-hop edges as Triangle3D primitives",
+    "ray_side": "segmented unique weighted 2-hop relation rays",
+    "ray_tmax": 0.2,
+    "segment_ray_representation": "unique_weighted",
+    "triangle_eps": 0.2
+  },
+  "ray_count": 750099466,
+  "ray_tracing_accelerated": true,
+  "rt_core_accelerated": true,
+  "rt_core_path": "source_range_segmented_generic_prepared_triangle_scene_3d_any_hit_weighted_sum",
+  "rt_graph_contract": {
+    "compacted_vertex_count": 4847571,
+    "directed_edge_count": 42260523,
+    "directed_vertex_count": 4256557,
+    "duplicate_two_hop_relation_count": 1383299326,
+    "id_ascending_adapter_materialized": false,
+    "id_ascending_edge_count": 0,
+    "id_ascending_triangle_count": 0,
+    "original_edge_count": 68993773,
+    "partner": "cupy_directed_csr",
+    "partner_timing_ms": {
+      "compact_unique_ms": 334.773,
+      "degree_ms": 144.534,
+      "directed_csr_ms": 145.077,
+      "estimated_two_hop_relation_count": 1383299326,
+      "host_columns_materialized": false,
+      "load_np_ms": 308.06,
+      "max_two_hop_per_directed_edge": 742,
+      "total_partner_ms": 2888.757,
+      "triangle_count_available": false,
+      "two_hop_estimate_ms": 5.119,
+      "two_hop_summary_materialized": false,
+      "upload_ms": 1951.194
+    },
+    "removed_duplicate_or_self_edge_count": 26142536,
+    "removed_low_degree_edge_count": 590714,
+    "removed_low_degree_vertex_count": 591014,
+    "triangle_count": -1,
+    "two_hop_ray_count_2a1": 1383299326
+  },
+  "same_contract_native_timing": true,
+  "segmentation": {
+    "counts_download_ms": 70.5564022064209,
+    "logical_ray_count": 1383299326,
+    "lowered_ray_count": 750099466,
+    "lowered_ray_weight_sum": 1383299326,
+    "max_scene_directed_edge_count": 7999999,
+    "max_scene_directed_edges": 8000000,
+    "max_scene_two_hop_rows": 341669111,
+    "max_two_hop_rows": 15000000,
+    "ray_compression_ratio": 1.8441545271010764,
+    "ray_segment_count": 96,
+    "scene_count": 6,
+    "scenes_preview": [
+      {
+        "directed_edge_count": 7999991,
+        "edge_end": 7999991,
+        "edge_start": 0,
+        "ray_segment_count": 20,
+        "source_end": 368089,
+        "source_start": 0,
+        "two_hop_rows": 291634474
+      },
+      {
+        "directed_edge_count": 7999992,
+        "edge_end": 15999983,
+        "edge_start": 7999991,
+        "ray_segment_count": 23,
+        "source_end": 755165,
+        "source_start": 368089,
+        "two_hop_rows": 341669111
+      },
+      {
+        "directed_edge_count": 7999996,
+        "edge_end": 23999979,
+        "edge_start": 15999983,
+        "ray_segment_count": 19,
+        "source_end": 1314259,
+        "source_start": 755165,
+        "two_hop_rows": 273538396
+      },
+      {
+        "directed_edge_count": 7999999,
+        "edge_end": 31999978,
+        "edge_start": 23999979,
+        "ray_segment_count": 19,
+        "source_end": 2077597,
+        "source_start": 1314259,
+        "two_hop_rows": 273650996
+      },
+      {
+        "directed_edge_count": 7999998,
+        "edge_end": 39999976,
+        "edge_start": 31999978,
+        "ray_segment_count": 12,
+        "source_end": 3533713,
+        "source_start": 2077597,
+        "two_hop_rows": 170951695
+      },
+      {
+        "directed_edge_count": 2260547,
+        "edge_end": 42260523,
+        "edge_start": 39999976,
+        "ray_segment_count": 3,
+        "source_end": 4256557,
+        "source_start": 3533713,
+        "two_hop_rows": 31854654
+      }
+    ],
+    "scenes_truncated": false,
+    "segment_ray_representation": "unique_weighted",
+    "total_directed_edges": 42260523,
+    "total_two_hop_rows": 1383299326
+  },
+  "timing_ms": {
+    "build_contract": 3348.6772179603577,
+    "load_edges": 0.0014379620552062988,
+    "plan_segments": 3819.3747252225876,
+    "prepare_scene_median_ms": 247.9703575372696,
+    "prepare_scene_total_ms": 745.0412958860397,
+    "query_max_ms": 1270.9439098834991,
+    "query_mean_ms": 1243.9280897378922,
+    "query_measured_runs": 3,
+    "query_median_ms": 1231.610156595707,
+    "query_min_ms": 1229.2302027344704,
+    "query_repeat": 3,
+    "query_total_ms": 3731.7842692136765,
+    "query_warmup": 1,
+    "reduce_hits": 0.0001862645149230957,
+    "run_backend": 17936.93934381008,
+    "segment_ray_build_median_ms": 2285.1782366633415,
+    "segment_ray_build_total_ms": 6857.234947383404,
+    "total": 25104.992911219597,
+    "triangle_build_median_ms": 1.3879463076591492,
+    "triangle_build_total_ms": 4.160493612289429
+  },
+  "triangle_count_matches_oracle": null,
+  "v2_4_phase_timing": {
+    "phase_contract_version": "rtdl.partner.v2.4",
+    "phases_sec": {
+      "materialization": 2.2865661829710007,
+      "query_preparation": 3.8193747252225876,
+      "rt_traversal": 1.231610156595707,
+      "scene_build": 0.2479703575372696
+    },
+    "promoted_performance_path": true,
+    "same_phase_contract_as_basis": true,
+    "source": "triangle_counting.rt_graph_2a1_segmented_scene_generic_rt",
+    "validation": {
+      "errors": [],
+      "known_phases": [
+        "scene_build",
+        "query_preparation",
+        "rt_traversal",
+        "materialization"
+      ],
+      "status": "accept"
+    }
+  },
+  "v2_4_prepared_session": {
+    "app_owned_preprocessing": "Graph orientation, two-hop relation construction, and RT-Graph interpretation remain benchmark/app code. RTDL sees generic rays, triangles, optional weights, and a scalar summary.",
+    "app_specific_native_vocab_allowed": false,
+    "backend": "optix",
+    "descriptor_only": true,
+    "device_column_lowering": true,
+    "input_buffers": [
+      {
+        "access_mode": "read",
+        "alignment_bytes": 1,
+        "byte_offset": 0,
+        "capacity_elements": 42260523,
+        "data_ptr_observed": false,
+        "device": "cuda:0",
+        "dtype": "rtdl_packed_triangle3d",
+        "element_count": 42260523,
+        "lifetime": "session_retained",
+        "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+        "mutability": "immutable",
+        "name": "triangles",
+        "scope": "rtdl_primitive_handoff_only",
+        "shape": [
+          42260523
+        ],
+        "source_protocol": "cupy_device_columns",
+        "stream_handle": 0,
+        "strides_bytes": null
+      },
+      {
+        "access_mode": "read",
+        "alignment_bytes": 1,
+        "byte_offset": 0,
+        "capacity_elements": 750099466,
+        "data_ptr_observed": false,
+        "device": "cuda:0",
+        "dtype": "rtdl_packed_ray3d",
+        "element_count": 750099466,
+        "lifetime": "session_retained",
+        "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+        "mutability": "immutable",
+        "name": "rays",
+        "scope": "rtdl_primitive_handoff_only",
+        "shape": [
+          750099466
+        ],
+        "source_protocol": "cupy_device_columns",
+        "stream_handle": 0,
+        "strides_bytes": null
+      },
+      {
+        "access_mode": "read",
+        "alignment_bytes": 1,
+        "byte_offset": 0,
+        "capacity_elements": 750099466,
+        "data_ptr_observed": false,
+        "device": "cuda:0",
+        "dtype": "uint64",
+        "element_count": 750099466,
+        "lifetime": "session_retained",
+        "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+        "mutability": "immutable",
+        "name": "ray_weights",
+        "scope": "rtdl_primitive_handoff_only",
+        "shape": [
+          750099466
+        ],
+        "source_protocol": "cupy_device_columns",
+        "stream_handle": 0,
+        "strides_bytes": null
+      }
+    ],
+    "native_engine_boundary": "app_agnostic_native_engine",
+    "native_symbols": [
+      "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum_device_rays"
+    ],
+    "output_buffers": [
+      {
+        "access_mode": "write",
+        "alignment_bytes": 1,
+        "byte_offset": 0,
+        "capacity_elements": 1,
+        "data_ptr_observed": false,
+        "device": "cpu:0",
+        "dtype": "uint64",
+        "element_count": 1,
+        "lifetime": "session_retained",
+        "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+        "mutability": "mutable",
+        "name": "weighted_hit_sum",
+        "scope": "rtdl_primitive_handoff_only",
+        "shape": [
+          1
+        ],
+        "source_protocol": "rtdl_scalar_summary",
+        "stream_handle": 0,
+        "strides_bytes": null
+      }
+    ],
+    "paper_method": "RT-2A1",
+    "partner": "cupy",
+    "phase_contract": "prepared_ray_triangle_summary",
+    "primitive": "ray_triangle_weighted_any_hit_sum_3d",
+    "requires_phase_timing": true,
+    "reusable_output_buffers": true,
+    "reusable_query_buffers": true,
+    "reusable_scene": true,
+    "same_phase_contract_as_basis_required": true,
+    "session_id": "generic_ray_triangle_summary_rt2a1_optix_42260523x750099466",
+    "status": "protocol_descriptor_only",
+    "v2_4_protocol_version": "rtdl.partner.v2.4"
+  }
+}

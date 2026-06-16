@@ -1,0 +1,112 @@
+{
+  "goal": 4468,
+  "milestone": "v3_0_m72",
+  "status": "unique_weighted_segment_ray_representation_validated",
+  "implementation": "segmented_unique_weighted_two_hop_rays_with_generic_weighted_any_hit",
+  "claim_boundary": {
+    "generic_rt_engine_contract_preserved": true,
+    "app_partner_compresses_graph_two_hop_keys": true,
+    "native_engine_graph_specialization_added": false,
+    "public_speedup_claim_authorized": false,
+    "triangle_count_rt_core_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "automatic_partner_selection_authorized": false
+  },
+  "rows": [
+    {
+      "dataset": "com_lj",
+      "expected_triangle_count": 177820130,
+      "observed_triangle_count": 177820130,
+      "route": "rt_graph_2a1_segmented_generic_rt",
+      "scene_cap": null,
+      "ray_cap": 15000000,
+      "logical_ray_count": 928731472,
+      "duplicate_lowered_ray_count": 928731472,
+      "unique_weighted_lowered_ray_count": 528793097,
+      "ray_compression_ratio": 1.7563229877034496,
+      "duplicate_total_s": 14.153179064393044,
+      "unique_weighted_total_s": 14.072569198906422,
+      "total_speedup": 1.0057281555590352,
+      "duplicate_query_median_s": 2.0192866772413254,
+      "unique_weighted_query_median_s": 0.8560877293348312,
+      "query_speedup": 2.358738021873394,
+      "duplicate_ray_build_median_s": 0.6290002316236496,
+      "unique_weighted_ray_build_median_s": 1.5330514460802078,
+      "ray_build_slowdown": 2.4372828005530534,
+      "build_plus_query_speedup": 1.1084690821349563
+    },
+    {
+      "dataset": "soc_livejournal1",
+      "expected_triangle_count": 285730264,
+      "observed_triangle_count": 285730264,
+      "route": "rt_graph_2a1_segmented_scene_generic_rt",
+      "scene_cap": 8000000,
+      "ray_cap": 15000000,
+      "logical_ray_count": 1383299326,
+      "duplicate_lowered_ray_count": 1383299326,
+      "unique_weighted_lowered_ray_count": 750099466,
+      "ray_compression_ratio": 1.8441545271010764,
+      "duplicate_total_s": 25.747323013842106,
+      "unique_weighted_total_s": 25.104992911219597,
+      "total_speedup": 1.0255857512047115,
+      "duplicate_query_median_s": 3.0475049391388893,
+      "unique_weighted_query_median_s": 1.231610156595707,
+      "query_speedup": 2.4744071188585326,
+      "duplicate_ray_build_median_s": 0.936135783791542,
+      "unique_weighted_ray_build_median_s": 2.2851782366633415,
+      "ray_build_slowdown": 2.4410756176928743,
+      "build_plus_query_speedup": 1.132749621946615
+    },
+    {
+      "dataset": "com_orkut",
+      "expected_triangle_count": 627584181,
+      "observed_triangle_count": 627584181,
+      "route": "rt_graph_2a1_segmented_scene_generic_rt",
+      "scene_cap": 2000000,
+      "ray_cap": 15000000,
+      "logical_ray_count": 8579930671,
+      "duplicate_lowered_ray_count": 8579930671,
+      "unique_weighted_lowered_ray_count": 4759226031,
+      "ray_compression_ratio": 1.8027995760472844,
+      "duplicate_total_s": 115.03237361460924,
+      "unique_weighted_total_s": 116.52718239277601,
+      "total_speedup": 0.9871720164559695,
+      "duplicate_query_median_s": 19.135911621153355,
+      "unique_weighted_query_median_s": 7.917937144637108,
+      "query_speedup": 2.4167799354298087,
+      "duplicate_ray_build_median_s": 5.609756499528885,
+      "unique_weighted_ray_build_median_s": 14.019036009907722,
+      "ray_build_slowdown": 2.4990453705227775,
+      "build_plus_query_speedup": 1.1280347542183828
+    }
+  ],
+  "probe_rows": [
+    {
+      "dataset": "com_orkut",
+      "ray_cap": 20000000,
+      "warmup": 0,
+      "repeat": 1,
+      "status": "completed_but_not_better_than_15m_probe",
+      "ray_segment_count": 456,
+      "logical_ray_count": 8579930671,
+      "unique_weighted_lowered_ray_count": 4759058086,
+      "ray_compression_ratio": 1.802863196026139,
+      "total_s": 37.671755194664,
+      "query_median_s": 7.976486143656075,
+      "ray_build_median_s": 13.953570972196758
+    }
+  ],
+  "interpretation": {
+    "primary_win": "unique_weighted lowers physical rays by 1.76x-1.84x and improves RT traversal median by 2.36x-2.47x",
+    "primary_cost": "per-segment CuPy unique compression slows ray construction by 2.44x-2.50x",
+    "net_reading": "median build+query improves 1.11x-1.13x, but formal total is only slightly better on com-lj and soc-LiveJournal1 and slightly worse on com-orkut",
+    "next_action": "make unique two-hop compression cheaper or prepared/reusable; do not spend more time only on segment caps"
+  },
+  "evidence_files": [
+    "docs/reports/goal4468_v3_0_m72_triangle_unique_weighted_com_lj_w1r3_2026-06-16.json",
+    "docs/reports/goal4468_v3_0_m72_triangle_unique_weighted_soc_livejournal1_w1r3_2026-06-16.json",
+    "docs/reports/goal4468_v3_0_m72_triangle_unique_weighted_com_orkut_w1r3_2026-06-16.json",
+    "docs/reports/goal4468_v3_0_m72_triangle_unique_weighted_com_orkut_20m_probe_w0r1_2026-06-16.json",
+    "docs/reports/goal4467_v3_0_m71_triangle_current_comparison_packet_2026-06-16.json"
+  ]
+}
