@@ -54,6 +54,8 @@ PYTHONPATH=src:. .venv-rtdl-scipy/bin/python examples/current/research_benchmark
 | `aggregate_frontier_expanded_membership_optix` | Same lowering with OptiX-backed generic near-zone candidate rows | RT-core candidate-discovery subpath; force math remains app or partner code |
 | `aggregate_frontier_weighted_vector_cpu_host` | Generic aggregate-frontier collection plus streamed host weighted-vector accumulation | Logical CPU baseline for the prepared OptiX app route; materializes frontier rows on host |
 | `aggregate_frontier_weighted_vector_embree_host` | Embree-backed aggregate-frontier collection plus streamed host weighted-vector accumulation | Logical Embree baseline for the prepared OptiX app route; materializes frontier rows on host |
+| `aggregate_frontier_weighted_vector_cpu_host_numba` | Generic aggregate-frontier collection plus Numba CPU weighted-vector accumulation over row offsets | Optimized no-C++ CPU continuation baseline; still materializes frontier rows on host |
+| `aggregate_frontier_weighted_vector_embree_host_numba` | Embree-backed aggregate-frontier collection plus Numba CPU weighted-vector accumulation over row offsets | Optimized no-C++ Embree continuation baseline; still materializes frontier rows on host |
 | `force_contributions_bucketized_cpu` | Generic weighted inverse-square vector contribution rows from accepted aggregate and fallback exact rows | App-agnostic force contribution pressure point |
 | `bucketized_force_cpu` | Python Barnes-Hut force interpretation over generic bucketized tree/frontier/contribution/vector-sum rows | Full local app behavior without claiming native acceleration |
 | `streamed_force_sum_bucketized_cpu` | Generic weighted inverse-square vector sums without materializing contribution rows | Local precursor to native/partner fused frontier-to-vector-sum lowering |
@@ -110,6 +112,8 @@ route:
 ```bash
 PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode aggregate_frontier_weighted_vector_cpu_host --body-count 8192 --bucket-size 64 --theta 0.5 --skip-validation --force-output-mode force_summary
 PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode aggregate_frontier_weighted_vector_embree_host --body-count 8192 --bucket-size 64 --theta 0.5 --skip-validation --force-output-mode force_summary
+PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode aggregate_frontier_weighted_vector_cpu_host_numba --body-count 8192 --bucket-size 64 --theta 0.5 --skip-validation --warmup 1 --repeat 5 --force-output-mode force_summary
+PYTHONPATH=src:. python examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py --mode aggregate_frontier_weighted_vector_embree_host_numba --body-count 8192 --bucket-size 64 --theta 0.5 --skip-validation --warmup 1 --repeat 5 --force-output-mode force_summary
 ```
 
 Prepared OptiX aggregate-frontier device columns plus explicit partner

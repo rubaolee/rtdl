@@ -128,15 +128,16 @@ class Goal4439V30M42BarnesHutPreparedFrontierAppModeTest(unittest.TestCase):
 
         route = rt.explain_current_benchmark_route("barnes_hut")
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4440.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4441.v1",
             route["version"],
         )
         self.assertEqual("numba_fastest_with_cupy_comparison", route["decision_kind"])
         self.assertEqual("numba_fastest_cupy_comparison", route["partner_policy"])
         self.assertIn("Goal4439", route["evidence_refs"])
         self.assertIn("Goal4440", route["evidence_refs"])
+        self.assertIn("Goal4441", route["evidence_refs"])
         self.assertIn("prepared_aggregate_frontier_weighted_vector_optix", route["current_reader_decision"])
-        self.assertIn("fused or device/engine-resident CPU-side baseline", route["next_runtime_action"])
+        self.assertIn("frontier collection and host row materialization", route["next_runtime_action"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(route["public_speedup_claim_authorized"])
 

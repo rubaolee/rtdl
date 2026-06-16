@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4440.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4441.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -32,7 +32,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "route as the explicit Barnes-Hut app mode "
     "`prepared_aggregate_frontier_weighted_vector_optix`. Goal4440 adds "
     "CPU and Embree host-materialized logical baselines for that route and "
-    "keeps them diagnostic, not public GPU-vs-CPU or OptiX-vs-Embree wording."
+    "keeps them diagnostic, not public GPU-vs-CPU or OptiX-vs-Embree wording. "
+    "Goal4441 replaces the Python host vector continuation with a Numba CPU "
+    "continuation for those baselines and shows the remaining bottleneck is "
+    "frontier collection and host materialization."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -434,7 +437,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "the current route as the explicit app mode "
             "prepared_aggregate_frontier_weighted_vector_optix. Goal4440 adds CPU and Embree "
             "host-materialized logical baselines; they match frontier/vector semantics but are "
-            "not same device-resident backend comparisons."
+            "not same device-resident backend comparisons. Goal4441 adds optimized host+Numba "
+            "CPU continuation baselines and shows the remaining debt is frontier collection "
+            "and host row materialization."
         ),
         primary_route="RTDL/OptiX membership primitive plus explicit force-vector partner continuation",
         partner_policy="numba_fastest_cupy_comparison",
@@ -455,9 +460,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "public backend speedup claim from host-materialized CPU/Embree baselines",
         ),
         next_runtime_action=(
-            "build a fused or device/engine-resident CPU-side baseline before any public "
-            "whole-app or backend speedup wording; Goal4440 host baselines are diagnostic only, "
-            "and deeper hierarchical vector primitive design remains future work"
+            "attack aggregate-frontier collection and host row materialization before any "
+            "public whole-app or backend speedup wording; Goal4440/4441 host baselines are "
+            "diagnostic only, and deeper hierarchical vector primitive design remains future work"
         ),
         evidence_refs=(
             "Goal2803",
@@ -471,6 +476,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4438",
             "Goal4439",
             "Goal4440",
+            "Goal4441",
         ),
         pod_needed_next=False,
     ),

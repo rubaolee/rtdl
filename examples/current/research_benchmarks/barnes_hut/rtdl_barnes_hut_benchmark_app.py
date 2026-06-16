@@ -59,6 +59,8 @@ MODES = (
     "aggregate_frontier_expanded_membership_optix",
     "aggregate_frontier_weighted_vector_cpu_host",
     "aggregate_frontier_weighted_vector_embree_host",
+    "aggregate_frontier_weighted_vector_cpu_host_numba",
+    "aggregate_frontier_weighted_vector_embree_host_numba",
     "force_contributions_bucketized_cpu",
     "bucketized_force_cpu",
     "streamed_force_sum_bucketized_cpu",
@@ -129,6 +131,7 @@ def scope_payload() -> dict[str, Any]:
             "generic_aggregate_tree_opening_frontier_2d_v1",
             "generic_aggregate_frontier_collect_2d_v1",
             "generic_aggregate_frontier_collect_2d_host_weighted_vector_sum_baseline",
+            "generic_aggregate_frontier_collect_2d_host_numba_cpu_weighted_vector_sum_baseline",
             "generic_expanded_aabb_point_membership_rows_2d_v1",
             "generic_weighted_inverse_square_contribution_rows_2d_v1",
             "generic_grouped_vector_sum_rows_2d_v1",
@@ -950,6 +953,228 @@ def _host_weighted_vector_sum_from_frontier_rows(
     }
 
 
+_HOST_NUMBA_CPU_FRONTIER_VECTOR_SUM_KERNEL = None
+
+
+def _host_numba_cpu_frontier_vector_sum_kernel() -> object:
+    global _HOST_NUMBA_CPU_FRONTIER_VECTOR_SUM_KERNEL
+    if _HOST_NUMBA_CPU_FRONTIER_VECTOR_SUM_KERNEL is not None:
+        return _HOST_NUMBA_CPU_FRONTIER_VECTOR_SUM_KERNEL
+
+    try:
+        from numba import njit, prange
+    except Exception as exc:  # pragma: no cover - environment dependent
+        raise RuntimeError("Numba CPU host baseline requires Numba") from exc
+
+    @njit(parallel=True)
+    def kernel(
+        frontier_i64_rows,
+        row_offsets,
+        source_ids,
+        source_x_by_id,
+        source_y_by_id,
+        source_mass_by_id,
+        target_x_by_id,
+        target_y_by_id,
+        target_mass_by_id,
+        node_cx_by_id,
+        node_cy_by_id,
+        node_mass_by_id,
+        softening_sq,
+        vector_x,
+        vector_y,
+        aggregate_counts,
+        exact_counts,
+    ):
+        for source_index in prange(source_ids.shape[0]):
+            source_id = source_ids[source_index]
+            source_x = source_x_by_id[source_id]
+            source_y = source_y_by_id[source_id]
+            source_mass = source_mass_by_id[source_id]
+            sum_x = 0.0
+            sum_y = 0.0
+            aggregate_count = 0
+            exact_count = 0
+            start = row_offsets[source_index]
+            end = row_offsets[source_index + 1]
+            for row_index in range(start, end):
+                kind_code = frontier_i64_rows[row_index, 1]
+                item_id = frontier_i64_rows[row_index, 2]
+                if kind_code == 1:
+                    target_x = node_cx_by_id[item_id]
+                    target_y = node_cy_by_id[item_id]
+                    target_mass = node_mass_by_id[item_id]
+                    aggregate_count += 1
+                elif kind_code == 2:
+                    target_x = target_x_by_id[item_id]
+                    target_y = target_y_by_id[item_id]
+                    target_mass = target_mass_by_id[item_id]
+                    exact_count += 1
+                else:
+                    continue
+
+                dx = target_x - source_x
+                dy = target_y - source_y
+                dist_sq = dx * dx + dy * dy + softening_sq
+                if dist_sq != 0.0:
+                    inv_dist = 1.0 / (dist_sq ** 0.5)
+                    scale = source_mass * target_mass * inv_dist * inv_dist * inv_dist
+                    sum_x += dx * scale
+                    sum_y += dy * scale
+            vector_x[source_index] = sum_x
+            vector_y[source_index] = sum_y
+            aggregate_counts[source_index] = aggregate_count
+            exact_counts[source_index] = exact_count
+
+    _HOST_NUMBA_CPU_FRONTIER_VECTOR_SUM_KERNEL = kernel
+    return kernel
+
+
+def _host_numba_cpu_weighted_vector_sum_from_frontier_i64_rows(
+    bodies: tuple[app.Body, ...],
+    tree_nodes: tuple[rt.AggregateTreeNodeRow, ...],
+    collection: dict[str, object],
+    *,
+    softening: float,
+    query_repeat: int,
+    warmup: int,
+) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
+    try:
+        import numpy as np
+    except Exception as exc:  # pragma: no cover - environment dependent
+        raise RuntimeError("Numba CPU host baseline requires NumPy") from exc
+
+    start_prepare = time.perf_counter()
+    frontier_i64_rows = np.asarray(collection["frontier_i64_rows"], dtype=np.int64)
+    if frontier_i64_rows.size == 0:
+        frontier_i64_rows = np.empty((0, len(collection["row_schema"])), dtype=np.int64)
+    row_offsets = np.asarray(collection["row_offsets"], dtype=np.int64)
+    source_ids = np.asarray(collection["source_ids"], dtype=np.int64)
+    if row_offsets.shape[0] != source_ids.shape[0] + 1:
+        raise ValueError("row_offsets must have source_count + 1 entries")
+    if frontier_i64_rows.ndim != 2 or frontier_i64_rows.shape[1] != len(collection["row_schema"]):
+        raise ValueError("frontier_i64_rows has an unexpected shape")
+
+    body_ids = [int(body.id) for body in bodies]
+    node_ids = [int(node.id) for node in tree_nodes]
+    if not body_ids or not node_ids:
+        raise ValueError("Numba CPU host baseline requires non-empty body and node rows")
+    if min(body_ids) < 0 or min(node_ids) < 0:
+        raise ValueError("Numba CPU host baseline requires non-negative ids")
+
+    max_body_id = max(body_ids)
+    max_node_id = max(node_ids)
+    source_x_by_id = np.zeros((max_body_id + 1,), dtype=np.float64)
+    source_y_by_id = np.zeros((max_body_id + 1,), dtype=np.float64)
+    source_mass_by_id = np.zeros((max_body_id + 1,), dtype=np.float64)
+    target_x_by_id = np.zeros((max_body_id + 1,), dtype=np.float64)
+    target_y_by_id = np.zeros((max_body_id + 1,), dtype=np.float64)
+    target_mass_by_id = np.zeros((max_body_id + 1,), dtype=np.float64)
+    for body in bodies:
+        body_id = int(body.id)
+        source_x_by_id[body_id] = float(body.x)
+        source_y_by_id[body_id] = float(body.y)
+        source_mass_by_id[body_id] = float(body.mass)
+        target_x_by_id[body_id] = float(body.x)
+        target_y_by_id[body_id] = float(body.y)
+        target_mass_by_id[body_id] = float(body.mass)
+
+    node_cx_by_id = np.zeros((max_node_id + 1,), dtype=np.float64)
+    node_cy_by_id = np.zeros((max_node_id + 1,), dtype=np.float64)
+    node_mass_by_id = np.zeros((max_node_id + 1,), dtype=np.float64)
+    for node in tree_nodes:
+        node_id = int(node.id)
+        node_cx_by_id[node_id] = float(node.cx)
+        node_cy_by_id[node_id] = float(node.cy)
+        node_mass_by_id[node_id] = float(node.mass)
+
+    vector_x = np.empty((source_ids.shape[0],), dtype=np.float64)
+    vector_y = np.empty((source_ids.shape[0],), dtype=np.float64)
+    aggregate_counts = np.empty((source_ids.shape[0],), dtype=np.int64)
+    exact_counts = np.empty((source_ids.shape[0],), dtype=np.int64)
+    kernel = _host_numba_cpu_frontier_vector_sum_kernel()
+    prepare_seconds = time.perf_counter() - start_prepare
+
+    softening_sq = float(softening) * float(softening)
+    warmup_count = max(0, int(warmup))
+    repeat_count = max(1, int(query_repeat))
+    for _ in range(warmup_count):
+        kernel(
+            frontier_i64_rows,
+            row_offsets,
+            source_ids,
+            source_x_by_id,
+            source_y_by_id,
+            source_mass_by_id,
+            target_x_by_id,
+            target_y_by_id,
+            target_mass_by_id,
+            node_cx_by_id,
+            node_cy_by_id,
+            node_mass_by_id,
+            softening_sq,
+            vector_x,
+            vector_y,
+            aggregate_counts,
+            exact_counts,
+        )
+
+    repeat_seconds: list[float] = []
+    for _ in range(repeat_count):
+        start_run = time.perf_counter()
+        kernel(
+            frontier_i64_rows,
+            row_offsets,
+            source_ids,
+            source_x_by_id,
+            source_y_by_id,
+            source_mass_by_id,
+            target_x_by_id,
+            target_y_by_id,
+            target_mass_by_id,
+            node_cx_by_id,
+            node_cy_by_id,
+            node_mass_by_id,
+            softening_sq,
+            vector_x,
+            vector_y,
+            aggregate_counts,
+            exact_counts,
+        )
+        repeat_seconds.append(time.perf_counter() - start_run)
+
+    run_median_seconds = statistics.median(repeat_seconds)
+    force_rows = tuple(
+        {
+            "body_id": int(source_ids[index]),
+            "force_x": float(vector_x[index]),
+            "force_y": float(vector_y[index]),
+            "contribution_count": int(aggregate_counts[index] + exact_counts[index]),
+            "aggregate_contribution_count": int(aggregate_counts[index]),
+            "exact_contribution_count": int(exact_counts[index]),
+        }
+        for index in range(source_ids.shape[0])
+    )
+    return force_rows, {
+        "frontier_row_count": int(frontier_i64_rows.shape[0]),
+        "aggregate_contribution_row_count": int(aggregate_counts.sum()),
+        "exact_contribution_row_count": int(exact_counts.sum()),
+        "source_count": int(source_ids.shape[0]),
+        "softening": float(softening),
+        "prepare_seconds": prepare_seconds,
+        "repeat_seconds": tuple(float(value) for value in repeat_seconds),
+        "run_median_seconds": float(run_median_seconds),
+        "warmup": warmup_count,
+        "repeat": repeat_count,
+        "contribution_rows_materialized_on_host": False,
+        "frontier_i64_rows_materialized_on_host": True,
+        "streamed_host_accumulation": True,
+        "numba_cpu_njit_used": True,
+        "parallel_by_source_offsets": True,
+        "raw_c_or_cuda_kernel_required": False,
+    }
+
+
 def _aggregate_frontier_weighted_vector_host_payload(
     *,
     body_count: int | None,
@@ -1109,6 +1334,186 @@ def _aggregate_frontier_weighted_vector_host_payload(
             "frontier/vector output contract with the prepared OptiX app mode, "
             "but it intentionally materializes frontier rows on host and is not "
             "the same device-resident handoff contract."
+        ),
+    }
+
+
+def _aggregate_frontier_weighted_vector_host_numba_payload(
+    *,
+    body_count: int | None,
+    theta: float,
+    bucket_size: int,
+    max_depth: int,
+    backend: str,
+    skip_validation: bool,
+    force_output_mode: str,
+    frontier_row_capacity: int | None,
+    frontier_capacity_multiplier: int,
+    query_repeat: int,
+    warmup: int,
+) -> dict[str, Any]:
+    if backend not in {"cpu", "embree"}:
+        raise ValueError("host+Numba aggregate-frontier baseline backend must be cpu or embree")
+    if frontier_row_capacity is not None and frontier_row_capacity <= 0:
+        raise ValueError("frontier_row_capacity must be positive when provided")
+    if frontier_capacity_multiplier <= 0:
+        raise ValueError("frontier_capacity_multiplier must be positive")
+
+    total_start = time.perf_counter()
+    body_start = time.perf_counter()
+    bodies = _make_bodies(body_count)
+    body_generation_sec = time.perf_counter() - body_start
+
+    tree_start = time.perf_counter()
+    tree = rt.build_bucketized_aggregate_tree_2d(
+        bodies,
+        bucket_size=bucket_size,
+        max_depth=max_depth,
+    )
+    tree_nodes = tuple(tree["nodes"])
+    tree_build_sec = time.perf_counter() - tree_start
+
+    row_capacity = (
+        int(frontier_row_capacity)
+        if frontier_row_capacity is not None
+        else max(1024, len(bodies) * int(frontier_capacity_multiplier))
+    )
+    collect_start = time.perf_counter()
+    if backend == "embree":
+        collected = rt.collect_aggregate_frontier_2d_embree(
+            bodies,
+            tree_nodes,
+            theta=theta,
+            max_total_rows=row_capacity,
+        )
+    else:
+        collected = rt.collect_aggregate_frontier_2d(
+            bodies,
+            tree_nodes,
+            theta=theta,
+            max_total_rows=row_capacity,
+        )
+    frontier_collect_sec = time.perf_counter() - collect_start
+
+    vector_start = time.perf_counter()
+    force_rows, vector_summary = _host_numba_cpu_weighted_vector_sum_from_frontier_i64_rows(
+        bodies,
+        tree_nodes,
+        collected,
+        softening=app.SOFTENING,
+        query_repeat=query_repeat,
+        warmup=warmup,
+    )
+    vector_total_sec = time.perf_counter() - vector_start
+    total_sec = time.perf_counter() - total_start
+    force_sample, force_truncated = _truncate_rows(force_rows)
+
+    validation: dict[str, object]
+    if skip_validation or len(bodies) > 2048:
+        validation = {
+            "skipped": True,
+            "reason": "user_skip_validation" if skip_validation else "body_count_above_2048",
+        }
+    else:
+        reference = rt.sum_aggregate_frontier_weighted_vectors_2d(
+            bodies,
+            bodies,
+            tree_nodes,
+            theta=theta,
+            softening=app.SOFTENING,
+        )
+        expected_by_id = {
+            int(row["source_id"]): (float(row["vector_x"]), float(row["vector_y"]))
+            for row in reference["vector_sum_rows"]
+        }
+        max_abs_diff_x = max(
+            abs(float(row["force_x"]) - expected_by_id[int(row["body_id"])][0])
+            for row in force_rows
+        )
+        max_abs_diff_y = max(
+            abs(float(row["force_y"]) - expected_by_id[int(row["body_id"])][1])
+            for row in force_rows
+        )
+        validation = {
+            "skipped": False,
+            "compared_against": "sum_aggregate_frontier_weighted_vectors_2d_cpu_reference",
+            "tolerance": 1.0e-7,
+            "max_abs_diff_x": max_abs_diff_x,
+            "max_abs_diff_y": max_abs_diff_y,
+            "passed": max_abs_diff_x <= 1.0e-7 and max_abs_diff_y <= 1.0e-7,
+            "reference_frontier_row_count": int(reference["summary"]["contribution_row_count"]),
+        }
+        if not bool(validation["passed"]):
+            raise AssertionError("host+Numba aggregate-frontier weighted-vector baseline failed validation")
+
+    vector_run_median_sec = float(vector_summary["run_median_seconds"])
+    return {
+        "app": "barnes_hut_force_app",
+        "backend": f"{backend}+host_numba_cpu_vector_sum",
+        "mode": f"aggregate_frontier_weighted_vector_{backend}_host_numba",
+        "body_count": len(bodies),
+        "theta": theta,
+        "softening": app.SOFTENING,
+        "bucket_size": bucket_size,
+        "max_depth": max_depth,
+        "tree_summary": tree["summary"],
+        "row_capacity": row_capacity,
+        "run_phases": {
+            "body_generation_sec": body_generation_sec,
+            "tree_build_sec": tree_build_sec,
+            "frontier_collect_sec": frontier_collect_sec,
+            "vector_prepare_sec": float(vector_summary["prepare_seconds"]),
+            "vector_run_median_sec": vector_run_median_sec,
+            "vector_total_wall_sec": vector_total_sec,
+            "total_sec": total_sec,
+        },
+        "medians": {
+            "frontier_collect_seconds": frontier_collect_sec,
+            "numba_cpu_vector_seconds": vector_run_median_sec,
+            "frontier_collect_plus_numba_cpu_vector_seconds": frontier_collect_sec + vector_run_median_sec,
+        },
+        "frontier_collection": {
+            "contract": collected["metadata"]["contract"],
+            "backend": backend,
+            "native_symbol": collected["metadata"].get("native_symbol"),
+            "frontier_row_count": int(collected["summary"]["frontier_row_count"]),
+            "accepted_aggregate_row_count": int(collected["summary"]["accepted_aggregate_row_count"]),
+            "fallback_exact_row_count": int(collected["summary"]["fallback_exact_row_count"]),
+            "frontier_rows_materialized_on_host": True,
+            "frontier_i64_rows_materialized_on_host": True,
+        },
+        "vector_sum_summary": {
+            **vector_summary,
+            "contract": "generic_aggregate_frontier_collect_2d_host_numba_cpu_weighted_vector_sum_baseline",
+            "force_rows": force_sample if force_output_mode == "full" else [],
+            "force_rows_truncated": force_truncated if force_output_mode == "full" else True,
+            "force_output_mode": force_output_mode,
+            "checksum_force_x": sum(float(row["force_x"]) for row in force_rows),
+            "checksum_force_y": sum(float(row["force_y"]) for row in force_rows),
+        },
+        "validation": validation,
+        "claim_flags": {
+            "same_logical_frontier_contract": True,
+            "same_device_resident_contract": False,
+            "frontier_rows_materialized_on_host": True,
+            "frontier_i64_rows_materialized_on_host": True,
+            "contribution_rows_materialized_on_host": False,
+            "python_vector_sum_used": False,
+            "numba_cpu_njit_used": True,
+            "raw_c_or_cuda_kernel_required": False,
+            "native_engine_app_specific": False,
+            "automatic_partner_selection_allowed": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+        },
+        "boundary": (
+            f"Host-materialized baseline for {backend} aggregate-frontier collection plus "
+            "Numba CPU weighted-vector accumulation over row_offsets. It improves the "
+            "CPU-side continuation without C++ or CUDA source, but it still materializes "
+            "frontier rows on host and is not the same device-resident handoff contract "
+            "as the prepared OptiX app route."
         ),
     }
 
@@ -1895,6 +2300,34 @@ def run_benchmark(
             contract=(
                 f"{rt.AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT}+"
                 "generic_aggregate_frontier_collect_2d_host_weighted_vector_sum_baseline"
+            ),
+            rt_core_accelerated=False,
+        )
+    if mode in {
+        "aggregate_frontier_weighted_vector_cpu_host_numba",
+        "aggregate_frontier_weighted_vector_embree_host_numba",
+    }:
+        if require_rt_core:
+            raise ValueError("--require-rt-core requires prepared_aggregate_frontier_weighted_vector_optix")
+        backend = "embree" if mode == "aggregate_frontier_weighted_vector_embree_host_numba" else "cpu"
+        return _annotate(
+            _aggregate_frontier_weighted_vector_host_numba_payload(
+                body_count=body_count,
+                theta=theta,
+                bucket_size=bucket_size,
+                max_depth=max_depth,
+                backend=backend,
+                skip_validation=skip_validation,
+                force_output_mode=force_output_mode,
+                frontier_row_capacity=frontier_row_capacity,
+                frontier_capacity_multiplier=frontier_capacity_multiplier,
+                query_repeat=query_repeat,
+                warmup=warmup,
+            ),
+            mode=mode,
+            contract=(
+                f"{rt.AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT}+"
+                "generic_aggregate_frontier_collect_2d_host_numba_cpu_weighted_vector_sum_baseline"
             ),
             rt_core_accelerated=False,
         )

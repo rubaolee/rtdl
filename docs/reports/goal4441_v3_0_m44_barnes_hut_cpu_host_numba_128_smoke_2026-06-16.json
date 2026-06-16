@@ -1,0 +1,128 @@
+{
+  "app": "barnes_hut_force_app",
+  "app_boundary": "Host-materialized baseline for cpu aggregate-frontier collection plus Numba CPU weighted-vector accumulation over row_offsets. It improves the CPU-side continuation without C++ or CUDA source, but it still materializes frontier rows on host and is not the same device-resident handoff contract as the prepared OptiX app route.",
+  "backend": "cpu+host_numba_cpu_vector_sum",
+  "benchmark_metadata": {
+    "authors_code_comparison": false,
+    "benchmark": "barnes_hut_ppopp2025_style",
+    "benchmark_scope": "RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.",
+    "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+    "contract": "generic_aggregate_frontier_collect_2d_v1+generic_aggregate_frontier_collect_2d_host_numba_cpu_weighted_vector_sum_baseline",
+    "mode": "aggregate_frontier_weighted_vector_cpu_host_numba",
+    "native_engine_app_specific": false,
+    "paper_reference": {
+      "authors": [
+        "Vani Nagarajan",
+        "Rohan Gangaraju",
+        "Kirshanthan Sundararajah",
+        "Artem Pelenitsyn",
+        "Milind Kulkarni"
+      ],
+      "authors_code_comparison": false,
+      "doi": "10.1145/3710848.3710885",
+      "paper_reproduction": false,
+      "title": "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+      "venue": "PPoPP 2025"
+    },
+    "paper_reproduction": false,
+    "public_speedup_claim_authorized": false,
+    "reconstruction_instrument": true,
+    "research_benchmark": true,
+    "rt_core_accelerated": false
+  },
+  "body_count": 128,
+  "boundary": "Host-materialized baseline for cpu aggregate-frontier collection plus Numba CPU weighted-vector accumulation over row_offsets. It improves the CPU-side continuation without C++ or CUDA source, but it still materializes frontier rows on host and is not the same device-resident handoff contract as the prepared OptiX app route.",
+  "bucket_size": 16,
+  "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+  "claim_flags": {
+    "automatic_partner_selection_allowed": false,
+    "contribution_rows_materialized_on_host": false,
+    "frontier_i64_rows_materialized_on_host": true,
+    "frontier_rows_materialized_on_host": true,
+    "native_engine_app_specific": false,
+    "numba_cpu_njit_used": true,
+    "public_speedup_claim_authorized": false,
+    "python_vector_sum_used": false,
+    "raw_c_or_cuda_kernel_required": false,
+    "rt_core_speedup_claim_authorized": false,
+    "same_device_resident_contract": false,
+    "same_logical_frontier_contract": true,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "frontier_collection": {
+    "accepted_aggregate_row_count": 1051,
+    "backend": "cpu",
+    "contract": "generic_aggregate_frontier_collect_2d_v1",
+    "fallback_exact_row_count": 7715,
+    "frontier_i64_rows_materialized_on_host": true,
+    "frontier_row_count": 8766,
+    "frontier_rows_materialized_on_host": true,
+    "native_symbol": null
+  },
+  "max_depth": 32,
+  "medians": {
+    "frontier_collect_plus_numba_cpu_vector_seconds": 0.032801032066345215,
+    "frontier_collect_seconds": 0.029861830174922943,
+    "numba_cpu_vector_seconds": 0.0029392018914222717
+  },
+  "mode": "aggregate_frontier_weighted_vector_cpu_host_numba",
+  "row_capacity": 89600,
+  "run_phases": {
+    "body_generation_sec": 0.00025128573179244995,
+    "frontier_collect_sec": 0.029861830174922943,
+    "total_sec": 1.0437666475772858,
+    "tree_build_sec": 0.001705177128314972,
+    "vector_prepare_sec": 0.15301093459129333,
+    "vector_run_median_sec": 0.0029392018914222717,
+    "vector_total_wall_sec": 1.0119453370571136
+  },
+  "softening": 0.05,
+  "theta": 0.5,
+  "tree_summary": {
+    "bucket_size": 16,
+    "leaf_node_count": 16,
+    "max_depth": 2,
+    "max_leaf_member_count": 9,
+    "morton_bits": 16,
+    "source_count": 128,
+    "tree_node_count": 21
+  },
+  "validation": {
+    "compared_against": "sum_aggregate_frontier_weighted_vectors_2d_cpu_reference",
+    "max_abs_diff_x": 0.0,
+    "max_abs_diff_y": 0.0,
+    "passed": true,
+    "reference_frontier_row_count": 8766,
+    "skipped": false,
+    "tolerance": 1e-07
+  },
+  "vector_sum_summary": {
+    "aggregate_contribution_row_count": 1051,
+    "checksum_force_x": 0.3970966741133506,
+    "checksum_force_y": 0.8785242642144172,
+    "contract": "generic_aggregate_frontier_collect_2d_host_numba_cpu_weighted_vector_sum_baseline",
+    "contribution_rows_materialized_on_host": false,
+    "exact_contribution_row_count": 7715,
+    "force_output_mode": "force_summary",
+    "force_rows": [],
+    "force_rows_truncated": true,
+    "frontier_i64_rows_materialized_on_host": true,
+    "frontier_row_count": 8766,
+    "numba_cpu_njit_used": true,
+    "parallel_by_source_offsets": true,
+    "prepare_seconds": 0.15301093459129333,
+    "raw_c_or_cuda_kernel_required": false,
+    "repeat": 3,
+    "repeat_seconds": [
+      0.0015425235033035278,
+      0.004860304296016693,
+      0.0029392018914222717
+    ],
+    "run_median_seconds": 0.0029392018914222717,
+    "softening": 0.05,
+    "source_count": 128,
+    "streamed_host_accumulation": true,
+    "warmup": 1
+  }
+}
