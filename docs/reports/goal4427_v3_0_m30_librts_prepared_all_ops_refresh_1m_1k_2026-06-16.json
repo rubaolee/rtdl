@@ -1,0 +1,183 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "authors_code_comparison": false,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "partner_continuation_required": false,
+    "primitive_first_no_partner_needed": true,
+    "public_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparison": {
+    "all_counts_match_cross_backend": true,
+    "all_primitive_first_no_partner": true,
+    "all_public_speedup_disabled": true,
+    "all_same_contract": true,
+    "public_speedup_claim_authorized": false,
+    "same_contract_backend_pair": {
+      "comparison_scope": "internal_same_contract_prepared_aabb_all_ops_refresh_not_public_speedup",
+      "embree_over_optix_query_median": 11.22587320362081,
+      "embree_query_median_sec": 0.017218440771102905,
+      "embree_query_total_sec": 10.297737814486027,
+      "embree_repeat": 240,
+      "optix_query_median_sec": 0.0015338174998760223,
+      "optix_query_total_sec": 5.099806979298592,
+      "optix_repeat": 3200,
+      "same_contract": true,
+      "same_counts": true,
+      "same_dataset": true
+    }
+  },
+  "environment": {
+    "git_head": "2ca72b05f5be8055a25d9fafcb8bc711f6c203a3",
+    "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64"
+  },
+  "goal": "Goal4427 V3.0 M30 LibRTS prepared AABB all-ops refresh",
+  "parameters": {
+    "backends": [
+      "embree",
+      "optix"
+    ],
+    "box_count": 1000000,
+    "dataset": "uniform",
+    "max_box_height": 0.005,
+    "max_box_width": 0.005,
+    "max_query_height": 0.005,
+    "max_query_width": 0.005,
+    "operation": "all",
+    "paper_like_widths": true,
+    "query_count": 1000,
+    "seed": 2025,
+    "validate_cpu_reference": false,
+    "warmup": 1
+  },
+  "planned_rows": [
+    {
+      "backend": "embree",
+      "box_count": 1000000,
+      "operation": "all",
+      "query_count": 1000,
+      "repeat": 240,
+      "warmup": 1
+    },
+    {
+      "backend": "optix",
+      "box_count": 1000000,
+      "operation": "all",
+      "query_count": 1000,
+      "repeat": 3200,
+      "warmup": 1
+    }
+  ],
+  "rows": [
+    {
+      "backend": "embree",
+      "box_count": 1000000,
+      "box_query_count": 1000,
+      "counts": {
+        "point_contains": 6251,
+        "range_contains": 693,
+        "range_intersects": 25079
+      },
+      "counts_signature": "{\"point_contains\": 6251, \"range_contains\": 693, \"range_intersects\": 25079}",
+      "cpu_reference_skipped": true,
+      "elapsed_cold_plus_hot_median_sec": 6.886683352291584,
+      "fixture": {
+        "box_count": 1000000,
+        "box_query_count": 1000,
+        "dataset": "uniform",
+        "paper_equivalent_dataset": false,
+        "point_query_count": 1000,
+        "seed": 2025
+      },
+      "generic_primitive": "AABB_INDEX_QUERY_2D",
+      "matches_cpu_reference": null,
+      "mode": "embree_aabb_index",
+      "multi_operation_native_used": true,
+      "native_engine_customization": false,
+      "operation": "all",
+      "partner_continuation_required": false,
+      "point_query_count": 1000,
+      "prepared_queries": true,
+      "primitive_contract": "generic_prepared_aabb_index_query_2d",
+      "public_speedup_claim_authorized": false,
+      "query_median_sec": 0.017218440771102905,
+      "query_prepare_sec": {},
+      "query_repeat": 240,
+      "query_sec": {
+        "all": 0.017218440771102905
+      },
+      "query_summed_median_sec": 0.017218440771102905,
+      "query_total_sec": 10.297737814486027,
+      "query_warmup": 1,
+      "repeat_protocol": {
+        "measured_run_count": 240,
+        "query_sec_median": 0.017218440771102905,
+        "query_sec_total": 10.297737814486027,
+        "repeat": 240,
+        "warmup": 1
+      },
+      "rt_core_accelerated": false,
+      "scene_prepare_sec": 6.869464911520481
+    },
+    {
+      "backend": "optix",
+      "box_count": 1000000,
+      "box_query_count": 1000,
+      "counts": {
+        "point_contains": 6251,
+        "range_contains": 693,
+        "range_intersects": 25079
+      },
+      "counts_signature": "{\"point_contains\": 6251, \"range_contains\": 693, \"range_intersects\": 25079}",
+      "cpu_reference_skipped": true,
+      "elapsed_cold_plus_hot_median_sec": 2.8121294490993023,
+      "fixture": {
+        "box_count": 1000000,
+        "box_query_count": 1000,
+        "dataset": "uniform",
+        "paper_equivalent_dataset": false,
+        "point_query_count": 1000,
+        "seed": 2025
+      },
+      "generic_primitive": "AABB_INDEX_QUERY_2D",
+      "matches_cpu_reference": null,
+      "mode": "optix_aabb_index",
+      "multi_operation_native_used": true,
+      "native_engine_customization": false,
+      "operation": "all",
+      "partner_continuation_required": false,
+      "point_query_count": 1000,
+      "prepared_queries": true,
+      "primitive_contract": "generic_prepared_aabb_index_query_2d",
+      "public_speedup_claim_authorized": false,
+      "query_median_sec": 0.0015338174998760223,
+      "query_prepare_sec": {
+        "point_contains": 0.0010293126106262207,
+        "range_contains": 0.012412376701831818,
+        "range_intersects": 0.0
+      },
+      "query_repeat": 3200,
+      "query_sec": {
+        "multi_operation_packed_queries": 0.0015338174998760223
+      },
+      "query_summed_median_sec": 0.0015338174998760223,
+      "query_total_sec": 5.099806979298592,
+      "query_warmup": 1,
+      "repeat_protocol": {
+        "measured_run_count": 3200,
+        "query_sec_median": 0.0015338174998760223,
+        "query_sec_total": 5.099806979298592,
+        "repeat": 3200,
+        "warmup": 1
+      },
+      "rt_core_accelerated": true,
+      "scene_prepare_sec": 2.7971539422869682
+    }
+  ],
+  "status": "ok",
+  "version": "rtdl.v3_0.librts_prepared_all_ops_refresh.m30"
+}
