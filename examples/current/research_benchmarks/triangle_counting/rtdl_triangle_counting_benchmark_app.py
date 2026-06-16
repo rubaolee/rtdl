@@ -213,6 +213,14 @@ def command_plan_payload() -> dict[str, Any]:
             "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay "
             "--segment-ray-column-layout xz_constant_y_direction"
         ),
+        "rt_graph_2a1_segmented_prepared_segment_build_telemetry": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
+            "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay "
+            "--segment-unique-key-builder numba_direct --segment-ray-build-telemetry sync_subphases"
+        ),
         "rt_graph_2a1_segmented_scene_generic_rt_optix_cupy_partner": (
             "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
@@ -1006,6 +1014,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
     segment_query_schedule: str,
     segment_unique_key_builder: str,
     segment_ray_column_layout: str,
+    segment_ray_build_telemetry: str,
     validate_oracle: bool = False,
 ) -> dict[str, Any]:
     _validate_repetition(warmup=warmup, repeat=repeat)
@@ -1013,6 +1022,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
     _validate_segment_query_schedule(segment_query_schedule)
     _validate_segment_unique_key_builder(segment_unique_key_builder)
     _validate_segment_ray_column_layout(segment_ray_column_layout)
+    _validate_segment_ray_build_telemetry(segment_ray_build_telemetry)
     normalized_backend = backend.lower().replace("-", "_")
     if normalized_backend != "optix" or detail != "summary" or partner != "cupy":
         raise ValueError(
@@ -1055,6 +1065,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
     query_phase_samples_ms: list[dict[str, float]] = []
     warmup_query_timings_ms: list[float] = []
     segment_ray_build_timings_ms: list[float] = []
+    segment_ray_build_phase_samples_ms: list[dict[str, float]] = []
     prepared_ray_batch_build_timings_ms: list[float] = []
     lowered_ray_count_runs: list[int] = []
     lowered_ray_weight_sum_runs: list[int] = []
@@ -1071,6 +1082,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             replay_prepared_ray_batch_build_ms = 0.0
             replay_lowered_ray_count = 0
             replay_lowered_ray_weight_sum = 0
+            replay_segment_ray_build_phase_ms: dict[str, float] = {}
             for start_edge, end_edge, _two_hop_rows in segment_plan["ranges"]:
                 if int(_two_hop_rows) <= 0:
                     continue
@@ -1082,6 +1094,10 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                     ray_representation=segment_ray_representation,
                     unique_key_builder=segment_unique_key_builder,
                     ray_column_layout=segment_ray_column_layout,
+                    segment_ray_build_telemetry=segment_ray_build_telemetry,
+                    phase_timing_ms=replay_segment_ray_build_phase_ms
+                    if segment_ray_build_telemetry != "none"
+                    else None,
                 )
                 replay_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                 replay_lowered_ray_count += _record_count(rays)
@@ -1114,6 +1130,8 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                 query_timings_ms.append(float(replay_query_ms[index]))
                 query_phase_samples_ms.append(dict(replay_query_phase_ms[index]))
                 segment_ray_build_timings_ms.append(float(replay_segment_build_ms))
+                if segment_ray_build_telemetry != "none":
+                    segment_ray_build_phase_samples_ms.append(dict(replay_segment_ray_build_phase_ms))
                 prepared_ray_batch_build_timings_ms.append(float(replay_prepared_ray_batch_build_ms))
                 lowered_ray_count_runs.append(int(replay_lowered_ray_count))
                 lowered_ray_weight_sum_runs.append(int(replay_lowered_ray_weight_sum))
@@ -1126,6 +1144,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                 run_hit_weight_sum = 0
                 run_lowered_ray_count = 0
                 run_lowered_ray_weight_sum = 0
+                run_segment_ray_build_phase_ms: dict[str, float] = {}
                 for start_edge, end_edge, _two_hop_rows in segment_plan["ranges"]:
                     if int(_two_hop_rows) <= 0:
                         continue
@@ -1137,6 +1156,10 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                         ray_representation=segment_ray_representation,
                         unique_key_builder=segment_unique_key_builder,
                         ray_column_layout=segment_ray_column_layout,
+                        segment_ray_build_telemetry=segment_ray_build_telemetry,
+                        phase_timing_ms=run_segment_ray_build_phase_ms
+                        if segment_ray_build_telemetry != "none"
+                        else None,
                     )
                     run_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                     run_lowered_ray_count += _record_count(rays)
@@ -1150,6 +1173,8 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                     query_timings_ms.append(run_query_ms)
                     query_phase_samples_ms.append(dict(run_query_phase_ms))
                     segment_ray_build_timings_ms.append(run_segment_build_ms)
+                    if segment_ray_build_telemetry != "none":
+                        segment_ray_build_phase_samples_ms.append(dict(run_segment_ray_build_phase_ms))
                     lowered_ray_count_runs.append(int(run_lowered_ray_count))
                     lowered_ray_weight_sum_runs.append(int(run_lowered_ray_weight_sum))
                     hit_weight_sum = int(run_hit_weight_sum)
@@ -1221,6 +1246,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                 "segment_query_schedule": segment_query_schedule,
                 "segment_unique_key_builder": segment_unique_key_builder,
                 "segment_ray_column_layout": segment_ray_column_layout,
+                "segment_ray_build_telemetry": segment_ray_build_telemetry,
             },
         },
         parameters={
@@ -1231,6 +1257,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
             "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
         },
         partner=partner,
         device="cuda:0",
@@ -1279,6 +1306,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
             "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
             "triangle_eps": 0.2,
             "ray_tmax": 0.2,
             "ray_origin_y": -0.1,
@@ -1300,6 +1328,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
             "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
             "count_column_rows": int(segment_plan["count_column_rows"]),
             "counts_download_ms": float(segment_plan["counts_download_ms"]),
             "ranges_preview": segment_ranges,
@@ -1326,6 +1355,9 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                 else 0.0
             ),
             "prepared_ray_batch_build_total_ms": float(sum(prepared_ray_batch_build_timings_ms)),
+            "segment_ray_build_phase_summary_ms": _segment_ray_build_phase_summary_ms(
+                segment_ray_build_phase_samples_ms
+            ),
             "query_median_ms": _median(query_timings_ms),
             "query_total_ms": float(sum(query_timings_ms)),
             "query_mean_ms": float(sum(query_timings_ms) / len(query_timings_ms)),
@@ -1338,6 +1370,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
             "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
             "reduce_hits": _elapsed_ms(ran, reduced),
             "total": _elapsed_ms(started, reduced),
         },
@@ -1395,12 +1428,14 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     segment_query_schedule: str,
     segment_unique_key_builder: str,
     segment_ray_column_layout: str,
+    segment_ray_build_telemetry: str,
 ) -> dict[str, Any]:
     _validate_repetition(warmup=warmup, repeat=repeat)
     _validate_segment_ray_representation(segment_ray_representation)
     _validate_segment_query_schedule(segment_query_schedule)
     _validate_segment_unique_key_builder(segment_unique_key_builder)
     _validate_segment_ray_column_layout(segment_ray_column_layout)
+    _validate_segment_ray_build_telemetry(segment_ray_build_telemetry)
     normalized_backend = backend.lower().replace("-", "_")
     if normalized_backend != "optix" or detail != "summary" or partner != "cupy":
         raise ValueError(
@@ -1439,6 +1474,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     query_phase_samples_ms: list[dict[str, float]] = []
     warmup_query_timings_ms: list[float] = []
     segment_ray_build_timings_ms: list[float] = []
+    segment_ray_build_phase_samples_ms: list[dict[str, float]] = []
     prepared_ray_batch_build_timings_ms: list[float] = []
     triangle_build_timings_ms: list[float] = []
     prepare_scene_timings_ms: list[float] = []
@@ -1456,6 +1492,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
         replay_prepare_scene_ms = 0.0
         replay_lowered_ray_count = 0
         replay_lowered_ray_weight_sum = 0
+        replay_segment_ray_build_phase_ms: dict[str, float] = {}
         for scene in scene_plan["scenes"]:
             triangle_started = time.perf_counter()
             triangles = _build_rt_graph_2a1_cupy_directed_edge_triangles(
@@ -1479,6 +1516,10 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                         ray_representation=segment_ray_representation,
                         unique_key_builder=segment_unique_key_builder,
                         ray_column_layout=segment_ray_column_layout,
+                        segment_ray_build_telemetry=segment_ray_build_telemetry,
+                        phase_timing_ms=replay_segment_ray_build_phase_ms
+                        if segment_ray_build_telemetry != "none"
+                        else None,
                     )
                     replay_segment_ray_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                     replay_lowered_ray_count += _record_count(rays)
@@ -1511,6 +1552,8 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             query_timings_ms.append(float(replay_query_ms[index]))
             query_phase_samples_ms.append(dict(replay_query_phase_ms[index]))
             segment_ray_build_timings_ms.append(float(replay_segment_ray_build_ms))
+            if segment_ray_build_telemetry != "none":
+                segment_ray_build_phase_samples_ms.append(dict(replay_segment_ray_build_phase_ms))
             prepared_ray_batch_build_timings_ms.append(float(replay_prepared_ray_batch_build_ms))
             triangle_build_timings_ms.append(float(replay_triangle_build_ms))
             prepare_scene_timings_ms.append(float(replay_prepare_scene_ms))
@@ -1527,6 +1570,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             run_hit_weight_sum = 0
             run_lowered_ray_count = 0
             run_lowered_ray_weight_sum = 0
+            run_segment_ray_build_phase_ms: dict[str, float] = {}
             for scene in scene_plan["scenes"]:
                 triangle_started = time.perf_counter()
                 triangles = _build_rt_graph_2a1_cupy_directed_edge_triangles(
@@ -1550,6 +1594,10 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                             ray_representation=segment_ray_representation,
                             unique_key_builder=segment_unique_key_builder,
                             ray_column_layout=segment_ray_column_layout,
+                            segment_ray_build_telemetry=segment_ray_build_telemetry,
+                            phase_timing_ms=run_segment_ray_build_phase_ms
+                            if segment_ray_build_telemetry != "none"
+                            else None,
                         )
                         run_segment_ray_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
                         run_lowered_ray_count += _record_count(rays)
@@ -1563,6 +1611,8 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                 query_timings_ms.append(run_query_ms)
                 query_phase_samples_ms.append(dict(run_query_phase_ms))
                 segment_ray_build_timings_ms.append(run_segment_ray_build_ms)
+                if segment_ray_build_telemetry != "none":
+                    segment_ray_build_phase_samples_ms.append(dict(run_segment_ray_build_phase_ms))
                 triangle_build_timings_ms.append(run_triangle_build_ms)
                 prepare_scene_timings_ms.append(run_prepare_scene_ms)
                 lowered_ray_count_runs.append(int(run_lowered_ray_count))
@@ -1650,6 +1700,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                 "segment_query_schedule": segment_query_schedule,
                 "segment_unique_key_builder": segment_unique_key_builder,
                 "segment_ray_column_layout": segment_ray_column_layout,
+                "segment_ray_build_telemetry": segment_ray_build_telemetry,
             },
         },
         parameters={
@@ -1660,6 +1711,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
             "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
         },
         partner=partner,
         device="cuda:0",
@@ -1709,6 +1761,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
             "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
             "triangle_eps": 0.2,
             "ray_tmax": 0.2,
             "ray_origin_y": -0.1,
@@ -1735,6 +1788,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
             "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
             "counts_download_ms": float(scene_plan["counts_download_ms"]),
             "scenes_preview": scene_preview,
             "scenes_truncated": len(scene_plan["scenes"]) > len(scene_preview),
@@ -1762,6 +1816,9 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                 else 0.0
             ),
             "prepared_ray_batch_build_total_ms": float(sum(prepared_ray_batch_build_timings_ms)),
+            "segment_ray_build_phase_summary_ms": _segment_ray_build_phase_summary_ms(
+                segment_ray_build_phase_samples_ms
+            ),
             "query_median_ms": _median(query_timings_ms),
             "query_total_ms": float(sum(query_timings_ms)),
             "query_mean_ms": float(sum(query_timings_ms) / len(query_timings_ms)),
@@ -1774,6 +1831,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "segment_query_schedule": segment_query_schedule,
             "segment_unique_key_builder": segment_unique_key_builder,
             "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
             "reduce_hits": _elapsed_ms(ran, reduced),
             "total": _elapsed_ms(started, reduced),
         },
@@ -2162,6 +2220,20 @@ def _accumulate_backend_query_phase_ms(target: dict[str, float], result: dict[st
 
 
 def _backend_query_phase_summary_ms(samples: list[dict[str, float]]) -> dict[str, object]:
+    return _phase_summary_ms(
+        samples,
+        schema_version="triangle_counting.backend_query_phase_summary.v1",
+    )
+
+
+def _segment_ray_build_phase_summary_ms(samples: list[dict[str, float]]) -> dict[str, object]:
+    return _phase_summary_ms(
+        samples,
+        schema_version="triangle_counting.segment_ray_build_phase_summary.v1",
+    )
+
+
+def _phase_summary_ms(samples: list[dict[str, float]], *, schema_version: str) -> dict[str, object]:
     names = sorted({name for sample in samples for name in sample})
     phases = {
         name: {
@@ -2173,11 +2245,27 @@ def _backend_query_phase_summary_ms(samples: list[dict[str, float]]) -> dict[str
         for name in names
     }
     return {
-        "schema_version": "triangle_counting.backend_query_phase_summary.v1",
+        "schema_version": schema_version,
         "run_count": len(samples),
         "phase_names": tuple(names),
         "phases": phases,
     }
+
+
+def _finish_segment_ray_build_phase_ms(
+    started: float,
+    phase_name: str,
+    *,
+    phase_timing_ms: dict[str, float] | None,
+    segment_ray_build_telemetry: str,
+    cupy_module,
+) -> float:
+    if segment_ray_build_telemetry == "sync_subphases":
+        cupy_module.cuda.Stream.null.synchronize()
+    ended = time.perf_counter()
+    if phase_timing_ms is not None:
+        phase_timing_ms[phase_name] = phase_timing_ms.get(phase_name, 0.0) + _elapsed_ms(started, ended)
+    return time.perf_counter()
 
 
 def _validate_repetition(*, warmup: int, repeat: int) -> None:
@@ -2205,6 +2293,11 @@ def _validate_segment_unique_key_builder(value: str) -> None:
 def _validate_segment_ray_column_layout(value: str) -> None:
     if value not in {"full", "xz_constant_y_direction"}:
         raise ValueError("segment_ray_column_layout must be full or xz_constant_y_direction")
+
+
+def _validate_segment_ray_build_telemetry(value: str) -> None:
+    if value not in {"none", "sync_subphases"}:
+        raise ValueError("segment_ray_build_telemetry must be none or sync_subphases")
 
 
 def _record_count(records) -> int:
@@ -2655,12 +2748,18 @@ def _build_rt_graph_2a1_cupy_segment_rays(
     ray_representation: str = "duplicate",
     unique_key_builder: str = "cupy_repeat",
     ray_column_layout: str = "full",
+    segment_ray_build_telemetry: str = "none",
+    phase_timing_ms: dict[str, float] | None = None,
 ):
     _validate_segment_ray_representation(ray_representation)
     _validate_segment_unique_key_builder(unique_key_builder)
     _validate_segment_ray_column_layout(ray_column_layout)
+    _validate_segment_ray_build_telemetry(segment_ray_build_telemetry)
     cp = __import__("cupy")
+    if segment_ray_build_telemetry == "sync_subphases":
+        cp.cuda.Stream.null.synchronize()
 
+    phase_started = time.perf_counter()
     device_arrays = _require_directed_csr_device_arrays(contract, partner="cupy")
     row_offsets = device_arrays["row_offsets"]
     column_indices = device_arrays["column_indices"]
@@ -2671,6 +2770,13 @@ def _build_rt_graph_2a1_cupy_segment_rays(
     counts = out_degrees[edge_mid].astype(cp.int64, copy=False)
     nonempty = counts > 0
     counts = counts[nonempty]
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "filter_nonempty_counts",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
     if int(counts.size) == 0:
         empty_f64 = cp.empty(0, dtype=cp.float64)
         empty_u32 = cp.empty(0, dtype=cp.uint32)
@@ -2687,21 +2793,57 @@ def _build_rt_graph_2a1_cupy_segment_rays(
                 "dz": empty_f64,
                 "tmax": empty_f64,
             }
+        _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "empty_ray_alloc",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
         return rays, cp.empty(0, dtype=cp.uint64)
 
     edge_mid = edge_mid[nonempty]
     edge_src = edge_src[nonempty].astype(cp.int64, copy=False)
     starts = row_offsets[edge_mid]
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "edge_slice_starts",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
     ray_count = int(counts.sum().get())
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "duplicate_ray_count_sum",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
     if ray_representation == "unique_weighted" and unique_key_builder == "numba_direct":
         key_base = int(contract.vertex_count)
         output_offsets = cp.cumsum(counts) - counts
         two_hop_keys = cp.empty(ray_count, dtype=cp.int64)
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "numba_offsets_key_alloc",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
         from numba import cuda
 
+        kernel = _get_rt_graph_2a1_fill_unique_keys_numba_kernel(cuda)
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "numba_kernel_lookup",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
         threads_per_block = 128
         blocks = (int(counts.size) + threads_per_block - 1) // threads_per_block
-        _get_rt_graph_2a1_fill_unique_keys_numba_kernel(cuda)[blocks, threads_per_block](
+        kernel[blocks, threads_per_block](
             starts,
             counts,
             output_offsets,
@@ -2712,27 +2854,76 @@ def _build_rt_graph_2a1_cupy_segment_rays(
             int(counts.size),
         )
         cuda.synchronize()
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "numba_key_fill",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
         unique_keys, unique_counts = cp.unique(two_hop_keys, return_counts=True)
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "cupy_unique_counts",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
         ray_src = (unique_keys // key_base).astype(cp.int64, copy=False)
         ray_dst = (unique_keys - ray_src * key_base).astype(cp.int64, copy=False)
         ray_weights = unique_counts.astype(cp.uint64, copy=False)
         ray_count = int(unique_keys.size)
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "unique_decode_weights",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
     else:
         repeated_starts = cp.repeat(starts, counts)
         repeated_prefix = cp.repeat(cp.cumsum(counts) - counts, counts)
         dst_index = repeated_starts + (cp.arange(ray_count, dtype=cp.int64) - repeated_prefix)
         ray_src = cp.repeat(edge_src, counts)
         ray_dst = column_indices[dst_index]
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "cupy_repeat_expand",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
         if ray_representation == "unique_weighted":
             key_base = int(contract.vertex_count)
             two_hop_keys = ray_src.astype(cp.int64, copy=False) * key_base + ray_dst.astype(cp.int64, copy=False)
             unique_keys, unique_counts = cp.unique(two_hop_keys, return_counts=True)
+            phase_started = _finish_segment_ray_build_phase_ms(
+                phase_started,
+                "cupy_unique_counts",
+                phase_timing_ms=phase_timing_ms,
+                segment_ray_build_telemetry=segment_ray_build_telemetry,
+                cupy_module=cp,
+            )
             ray_src = (unique_keys // key_base).astype(cp.int64, copy=False)
             ray_dst = (unique_keys - ray_src * key_base).astype(cp.int64, copy=False)
             ray_weights = unique_counts.astype(cp.uint64, copy=False)
             ray_count = int(unique_keys.size)
+            phase_started = _finish_segment_ray_build_phase_ms(
+                phase_started,
+                "unique_decode_weights",
+                phase_timing_ms=phase_timing_ms,
+                segment_ray_build_telemetry=segment_ray_build_telemetry,
+                cupy_module=cp,
+            )
         else:
             ray_weights = cp.ones(ray_count, dtype=cp.uint64)
+            phase_started = _finish_segment_ray_build_phase_ms(
+                phase_started,
+                "unit_weights",
+                phase_timing_ms=phase_timing_ms,
+                segment_ray_build_telemetry=segment_ray_build_telemetry,
+                cupy_module=cp,
+            )
     axis_offset_x = contract.vertex_count / 2.0
     axis_offset_z = contract.vertex_count / 2.0
 
@@ -2742,6 +2933,7 @@ def _build_rt_graph_2a1_cupy_segment_rays(
             "ox": ray_src.astype(cp.float64) - axis_offset_x,
             "oz": ray_dst.astype(cp.float64) - axis_offset_z,
         }
+        phase_name = "ray_column_projection_compact"
     else:
         rays = {
             "ids": cp.arange(ray_count, dtype=cp.uint32),
@@ -2753,6 +2945,14 @@ def _build_rt_graph_2a1_cupy_segment_rays(
             "dz": cp.zeros(ray_count, dtype=cp.float64),
             "tmax": cp.full(ray_count, 0.2, dtype=cp.float64),
         }
+        phase_name = "ray_column_projection_full"
+    _finish_segment_ray_build_phase_ms(
+        phase_started,
+        phase_name,
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
     return rays, ray_weights
 
 
@@ -3562,6 +3762,7 @@ def run_app(
     segment_query_schedule: str = "per_run",
     segment_unique_key_builder: str = "cupy_repeat",
     segment_ray_column_layout: str = "full",
+    segment_ray_build_telemetry: str = "none",
     validate_oracle: bool = False,
 ) -> dict[str, Any]:
     if mode == "scope":
@@ -3626,6 +3827,7 @@ def run_app(
             segment_query_schedule=segment_query_schedule,
             segment_unique_key_builder=segment_unique_key_builder,
             segment_ray_column_layout=segment_ray_column_layout,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
             validate_oracle=validate_oracle,
         )
     if mode == "rt_graph_2a1_segmented_scene_generic_rt":
@@ -3643,6 +3845,7 @@ def run_app(
             segment_query_schedule=segment_query_schedule,
             segment_unique_key_builder=segment_unique_key_builder,
             segment_ray_column_layout=segment_ray_column_layout,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
         )
     if mode == "rt_graph_1a2_generic_rt":
         return rt_graph_1a2_generic_rt_payload(
@@ -3750,6 +3953,16 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--segment-ray-build-telemetry",
+        choices=("none", "sync_subphases"),
+        default="none",
+        help=(
+            "Optional segmented RT-2A1 ray-construction telemetry. sync_subphases "
+            "adds CUDA stream synchronizations between build subphases and is for "
+            "profiling, not promoted performance timing."
+        ),
+    )
+    parser.add_argument(
         "--validate-oracle",
         action="store_true",
         help="Build the Python oracle for small binary edge files and compare the segmented result.",
@@ -3783,6 +3996,7 @@ def main(argv: list[str] | None = None) -> int:
                 segment_query_schedule=args.segment_query_schedule,
                 segment_unique_key_builder=args.segment_unique_key_builder,
                 segment_ray_column_layout=args.segment_ray_column_layout,
+                segment_ray_build_telemetry=args.segment_ray_build_telemetry,
                 validate_oracle=args.validate_oracle,
             ),
             indent=2,
