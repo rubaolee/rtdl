@@ -1,0 +1,215 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "continuous_collision_detection_claim_authorized": false,
+    "full_contact_manifold_solver_claim_authorized": false,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "partner_continuation_required": false,
+    "primitive_first_no_partner_needed": true,
+    "public_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparison": {
+    "all_complete_candidate_coverage": true,
+    "all_match_cpu_reference": true,
+    "all_non_overflowed": true,
+    "candidate_compactness_consistent": true,
+    "no_partner_continuation_required": true,
+    "public_speedup_claim_authorized": false,
+    "same_contract_backend_pair": {
+      "both_match_cpu_reference": true,
+      "comparison_scope": "internal_same_contract_prepared_broadphase_refresh_not_public_speedup",
+      "embree_hot_sec": 0.9495704919099808,
+      "embree_over_optix_hot": 1.0596978246515194,
+      "embree_over_optix_query_median": 1.16003521437016,
+      "embree_query_median_sec": 0.6768191456794739,
+      "optix_hot_sec": 0.8960766643285751,
+      "optix_query_median_sec": 0.5834470689296722,
+      "same_candidate_count": true,
+      "same_contract": true,
+      "same_dataset": true
+    }
+  },
+  "environment": {
+    "git_head": "021559b0d4721fa9330cb377be7c367be0ee4b26",
+    "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64"
+  },
+  "goal": "Goal4426 V3.0 M29 contact prepared AABB broadphase refresh",
+  "parameters": {
+    "backends": [
+      "embree",
+      "optix"
+    ],
+    "dataset": "jittered_grid",
+    "discovery_row_capacity": null,
+    "grid_count": 65536,
+    "resolution": null,
+    "warmup": 1,
+    "witness_capacity": 65536
+  },
+  "planned_rows": [
+    {
+      "backend": "embree",
+      "dataset": "jittered_grid",
+      "grid_count": 65536,
+      "repeat": 20,
+      "warmup": 1,
+      "witness_capacity": 65536
+    },
+    {
+      "backend": "optix",
+      "dataset": "jittered_grid",
+      "grid_count": 65536,
+      "repeat": 20,
+      "warmup": 1,
+      "witness_capacity": 65536
+    }
+  ],
+  "rows": [
+    {
+      "aabb_candidate_pair_count": 65536,
+      "all_pairs_count": 4294967296,
+      "all_pairs_per_candidate": 65536.0,
+      "backend": "embree",
+      "candidate_compactness": 1.52587890625e-05,
+      "candidate_discovery_contract": "generic_aabb_intersection_pair_rows_2d",
+      "candidate_discovery_primitive": "AABB_INDEX_QUERY_2D",
+      "candidate_to_valid_ratio": 1.0,
+      "claim_boundary": {
+        "full_contact_manifold_solver_claim_authorized": false,
+        "native_engine_customization": false,
+        "partner_continuation_required": false,
+        "primitive_first_no_partner_needed": true,
+        "public_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "collect_k_bounded_rows_sec": 0.17204969376325607,
+      "complete_candidate_coverage": true,
+      "dataset": "jittered_grid_65536",
+      "discovery_row_capacity": null,
+      "exact_refinement_checks": 65536,
+      "exact_refinement_checks_avoided": 4294901760,
+      "generic_aabb_broadphase_wall_sec": 15.013602674007416,
+      "grid_count": 65536,
+      "hot_query_plus_refinement_plus_collect_sec": 0.9495704919099808,
+      "matches_cpu_reference": true,
+      "mode": "aabb_broadphase_collect_k",
+      "overflowed": false,
+      "prepare_aabb_index_2d_sec": 0.6715271174907684,
+      "primitive_under_test": "COLLECT_K_BOUNDED",
+      "python_exact_refinement_sec": 0.10070165246725082,
+      "query_max_sec": 0.7721956223249435,
+      "query_measured_count": 20,
+      "query_median_sec": 0.6768191456794739,
+      "query_min_sec": 0.5840709209442139,
+      "query_total_sec": 13.552396513521671,
+      "query_triangle_count": 65536,
+      "repeat": 20,
+      "resolution": 256,
+      "resolution_policy": "adaptive_sqrt_capped_16_256",
+      "scene_triangle_count": 65536,
+      "v2_4_backend": "embree",
+      "v2_4_phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.17204969376325607,
+          "partner_continuation": 0.10070165246725082,
+          "rt_traversal": 0.6768191456794739,
+          "scene_build": 0.6715271174907684
+        },
+        "promoted_performance_path": true,
+        "same_phase_contract_as_basis": true,
+        "source": "contact_manifold.aabb_broadphase_collect_k",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "v2_4_primitive": "aabb_index_2d_bounded_i64_rows",
+      "valid_count": 65536,
+      "warmup": 1,
+      "witness_capacity": 65536
+    },
+    {
+      "aabb_candidate_pair_count": 65536,
+      "all_pairs_count": 4294967296,
+      "all_pairs_per_candidate": 65536.0,
+      "backend": "optix",
+      "candidate_compactness": 1.52587890625e-05,
+      "candidate_discovery_contract": "generic_aabb_intersection_pair_rows_2d",
+      "candidate_discovery_primitive": "AABB_INDEX_QUERY_2D",
+      "candidate_to_valid_ratio": 1.0,
+      "claim_boundary": {
+        "full_contact_manifold_solver_claim_authorized": false,
+        "native_engine_customization": false,
+        "partner_continuation_required": false,
+        "primitive_first_no_partner_needed": true,
+        "public_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "collect_k_bounded_rows_sec": 0.1916501447558403,
+      "complete_candidate_coverage": true,
+      "dataset": "jittered_grid_65536",
+      "discovery_row_capacity": 131072,
+      "exact_refinement_checks": 65536,
+      "exact_refinement_checks_avoided": 4294901760,
+      "generic_aabb_broadphase_wall_sec": 13.767621137201786,
+      "grid_count": 65536,
+      "hot_query_plus_refinement_plus_collect_sec": 0.8960766643285751,
+      "matches_cpu_reference": true,
+      "mode": "aabb_broadphase_collect_k",
+      "overflowed": false,
+      "prepare_aabb_index_2d_sec": 1.0212786719202995,
+      "primitive_under_test": "COLLECT_K_BOUNDED",
+      "python_exact_refinement_sec": 0.12097945064306259,
+      "query_max_sec": 0.7212030217051506,
+      "query_measured_count": 20,
+      "query_median_sec": 0.5834470689296722,
+      "query_min_sec": 0.5051184296607971,
+      "query_total_sec": 11.956547632813454,
+      "query_triangle_count": 65536,
+      "repeat": 20,
+      "resolution": 256,
+      "resolution_policy": "adaptive_sqrt_capped_16_256",
+      "scene_triangle_count": 65536,
+      "v2_4_backend": "optix",
+      "v2_4_phase_timing": {
+        "phase_contract_version": "rtdl.partner.v2.4",
+        "phases_sec": {
+          "materialization": 0.1916501447558403,
+          "partner_continuation": 0.12097945064306259,
+          "rt_traversal": 0.5834470689296722,
+          "scene_build": 1.0212786719202995
+        },
+        "promoted_performance_path": true,
+        "same_phase_contract_as_basis": true,
+        "source": "contact_manifold.aabb_broadphase_collect_k",
+        "validation": {
+          "errors": [],
+          "known_phases": [
+            "scene_build",
+            "rt_traversal",
+            "partner_continuation",
+            "materialization"
+          ],
+          "status": "accept"
+        }
+      },
+      "v2_4_primitive": "aabb_index_2d_bounded_i64_rows",
+      "valid_count": 65536,
+      "warmup": 1,
+      "witness_capacity": 65536
+    }
+  ],
+  "status": "ok",
+  "version": "rtdl.v3_0.contact_prepared_broadphase_refresh.m29"
+}
