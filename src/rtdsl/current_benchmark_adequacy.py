@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4480.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4481.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -83,6 +83,9 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "speedup wording remains blocked. Goal4480 retests the compact constant-ray "
     "layout on top of Goal4479; it remains correct but total time is worse on "
     "all three large rows, so full ray columns remain the current internal route. "
+    "Goal4481 tests a no-C++ Numba fused decode/project output builder; it is "
+    "correct but segment-ray build is 0.661x/0.701x/0.664x versus the current "
+    "CuPy-vectorized output route, so it remains rejected. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -530,7 +533,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "from 7.308s/14.467s/38.564s. Goal4480 retests compact constant-ray "
             "columns with `numba_direct_sort_rle`; prepared batch build improves "
             "only 1.02x-1.03x and total time is 0.924x/0.945x/0.986x, so full "
-            "ray columns remain the current route."
+            "ray columns remain the current route. Goal4481 tests "
+            "`numba_fused_decode_project`; counts/rays/weights match, but "
+            "total time is 0.899x/0.945x/0.953x and segment-ray build is "
+            "0.661x/0.701x/0.664x, so CuPy vectorized output remains current."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -570,7 +576,8 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "current measured internal route: `numba_direct_sort_rle` improves "
             "that boundary but does not solve partner materialization. Cite "
             "Goal4480 when rejecting compact constant-ray columns on top of "
-            "the sort/RLE route."
+            "the sort/RLE route. Cite Goal4481 when rejecting the no-C++ Numba "
+            "fused decode/project output builder."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
@@ -603,8 +610,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "the current internal route; next work is further reducing sort/RLE "
             "unique-count cost, Numba key fill, or fused decode/projection; "
             "Goal4480 shows compact constant-ray columns should not be the next "
-            "route-promotion target, without breaking the app-agnostic primitive "
-            "contract"
+            "route-promotion target, and Goal4481 shows a simple no-C++ Numba "
+            "fused decode/project output builder should not be promoted; next "
+            "useful work is a lower-overhead grouped/local unique-count strategy, "
+            "without breaking the app-agnostic primitive contract"
         ),
         "evidence_refs": (
             "Goal2797",
@@ -637,6 +646,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4478",
             "Goal4479",
             "Goal4480",
+            "Goal4481",
         ),
     },
 }

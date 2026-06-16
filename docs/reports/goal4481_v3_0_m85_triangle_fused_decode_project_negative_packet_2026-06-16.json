@@ -1,0 +1,71 @@
+{
+  "goal": 4481,
+  "milestone": "v3_0_m85",
+  "status": "fused_decode_project_candidate_rejected",
+  "date": "2026-06-16",
+  "claim_boundary": {
+    "performance_optimization_claim": false,
+    "negative_result_recorded": true,
+    "current_best_route_changed": false,
+    "public_speedup_claim_authorized": false,
+    "triangle_count_rt_core_claim_authorized": false,
+    "automatic_partner_selection_authorized": false
+  },
+  "route_compared": {
+    "current": "unique_weighted + numba_direct_sort_rle + prepared_segment_replay + full ray columns + cupy_vectorized output builder",
+    "candidate": "unique_weighted + numba_direct_sort_rle + prepared_segment_replay + full ray columns + numba_fused_decode_project output builder",
+    "only_changed_step": "replace CuPy vectorized unique-key decode, weight cast, and ray-column projection with one Numba CUDA output-fill kernel"
+  },
+  "rows": [
+    {
+      "dataset": "com_lj",
+      "display_name": "com-lj",
+      "same_count_rays_weights": true,
+      "current_total_s": 6.489,
+      "candidate_total_s": 7.216,
+      "candidate_total_speedup": 0.8993,
+      "current_segment_build_s": 1.149,
+      "candidate_segment_build_s": 1.740,
+      "segment_build_speedup": 0.6605,
+      "prepared_batch_speedup": 1.0359,
+      "query_speedup": 1.0030
+    },
+    {
+      "dataset": "soc_livejournal1",
+      "display_name": "soc-LiveJournal1",
+      "same_count_rays_weights": true,
+      "current_total_s": 13.273,
+      "candidate_total_s": 14.047,
+      "candidate_total_speedup": 0.9449,
+      "current_segment_build_s": 1.496,
+      "candidate_segment_build_s": 2.135,
+      "segment_build_speedup": 0.7009,
+      "prepared_batch_speedup": 1.0112,
+      "query_speedup": 1.0010
+    },
+    {
+      "dataset": "com_orkut",
+      "display_name": "com-orkut",
+      "same_count_rays_weights": true,
+      "current_total_s": 35.990,
+      "candidate_total_s": 37.780,
+      "candidate_total_speedup": 0.9526,
+      "current_segment_build_s": 7.281,
+      "candidate_segment_build_s": 10.962,
+      "segment_build_speedup": 0.6642,
+      "prepared_batch_speedup": 1.0034,
+      "query_speedup": 1.0009
+    }
+  ],
+  "interpretation": {
+    "headline": "The no-C++ fused Numba decode/project output builder is correct but slower than the CuPy vectorized output builder.",
+    "why_rejected": "The candidate slightly improves prepared batch build but makes segment-ray build much slower, so total wall time is worse on all three rows.",
+    "route_decision": "Keep Goal4479 full-column numba_direct_sort_rle with cupy_vectorized output as the current internal Triangle Counting route.",
+    "next_target": "Do not promote the fused output builder; next useful work is still reducing sort/RLE unique-count cost or designing a genuinely lower-overhead grouped/local unique-count strategy."
+  },
+  "artifacts": [
+    "goal4481_v3_0_m85_triangle_fused_decode_project_com_lj_w1r3_2026-06-16.json",
+    "goal4481_v3_0_m85_triangle_fused_decode_project_soc_livejournal1_w1r3_2026-06-16.json",
+    "goal4481_v3_0_m85_triangle_fused_decode_project_com_orkut_w1r3_2026-06-16.json"
+  ]
+}
