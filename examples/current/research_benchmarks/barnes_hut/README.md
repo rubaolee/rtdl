@@ -61,7 +61,7 @@ PYTHONPATH=src:. .venv-rtdl-scipy/bin/python examples/current/research_benchmark
 | `streamed_force_sum_bucketized_cpu` | Generic weighted inverse-square vector sums without materializing contribution rows | Local precursor to native/partner fused frontier-to-vector-sum lowering |
 | `materialization_pressure_bucketized_cpu` | Estimate contribution-row memory pressure from the opening frontier summary | Planning guard for materialized vs streamed/native execution |
 | `fused_frontier_force_sum_bucketized_cpu` | Generic aggregate-tree opening traversal fused directly into weighted vector sums | Reference contract for native/partner fused lowering; avoids frontier and contribution rows |
-| `fused_frontier_force_sum_bucketized_cpu_numba` | Numba CPU aggregate-tree opening traversal fused directly into weighted vector sums | Current fastest measured no-C++ Barnes-Hut app route; avoids frontier and contribution rows, but is not RT-core evidence |
+| `fused_frontier_force_sum_bucketized_cpu_numba` | Numba CPU aggregate-tree opening traversal fused directly into weighted vector sums | Strongest measured CPU fused baseline; avoids frontier and contribution rows, but is not RT-core evidence |
 | `prepared_aggregate_frontier_weighted_vector_optix` | Prepared RTDL/OptiX aggregate-frontier device columns plus explicit CuPy or Numba weighted-vector continuation | Current device-resident app route; no frontier/contribution host rows; no automatic partner selection or public speedup claim |
 | `optix_node_coverage_prepared` | Prepared OptiX fixed-radius threshold traversal for node coverage | RT-core decision subpath |
 | `partner_exact_force` | Generic weighted-point pairwise inverse-square force via CuPy or Numba CUDA JIT | Partner force-vector reference |
@@ -139,7 +139,13 @@ Same-contract multithreaded Barnes-Hut C++ baseline:
 PYTHONPATH=src:. python scripts/goal2539_barnes_hut_same_contract_cpp_baseline.py --body-count 8192 --thread-counts 1,4,16
 ```
 
-Torch/CUDA fused vector-sum prototype on an NVIDIA machine:
+No-C++ Numba CUDA fused-subtree prototype on an NVIDIA machine:
+
+```bash
+PYTHONPATH=src:. python scripts/v3_0_m52_barnes_hut_numba_cuda_fused_subtree.py --body-counts 8192,16384,32768 --repeat 11 --warmup 2 --output docs/reports/goal4448_v3_0_m52_barnes_hut_numba_cuda_fused_subtree_scale_r11_2026-06-16.json
+```
+
+Older Torch/CUDA fused vector-sum prototypes on an NVIDIA machine:
 
 ```bash
 PYTHONPATH=src:. python scripts/goal2541_barnes_hut_torch_cuda_fused_vector_sum.py --body-count 8192 --repeats 5
@@ -227,12 +233,14 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   evidence. This is still row collection evidence, not RT-core speedup evidence.
   Default frontier rows are ID-only; distance/opening-ratio diagnostics are an
   explicit debug side channel, not primitive output.
-- Current V3 M45 route guidance makes
-  `fused_frontier_force_sum_bucketized_cpu_numba` the current fastest measured
-  no-C++ Barnes-Hut app route at tested scales. It is a CPU/Numba route, not an
-  Embree implementation and not evidence that RT cores accelerate Barnes-Hut.
-  The prepared RTDL/OptiX aggregate-frontier route remains useful RT device-column
-  evidence and a same-contract partner comparison target.
+- Current V3 M45/M52 route guidance separates fused baselines from RT evidence.
+  `fused_frontier_force_sum_bucketized_cpu_numba` is the strongest measured CPU
+  fused baseline. `scripts/v3_0_m52_barnes_hut_numba_cuda_fused_subtree.py`
+  is the current no-C++ fused GPU partner prototype and beats the prepared
+  RTDL/OptiX+Numba aggregate-frontier route at the measured 8192/16384/32768
+  scales. Neither row is an Embree implementation or evidence that RT cores
+  accelerate Barnes-Hut. The prepared RTDL/OptiX aggregate-frontier route remains
+  useful RT device-column evidence and a same-contract partner comparison target.
 - Current expanded-membership lowering evidence routes Barnes-Hut
   aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
   near-zone candidate rows. The engine still only sees points, boxes, IDs, and

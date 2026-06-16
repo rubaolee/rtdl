@@ -8,12 +8,14 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4447.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4448.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
-    "Goal4447 refreshes the current benchmark adequacy advisory after V3 M41-M50 "
+    "Goal4448 refreshes the current benchmark adequacy advisory after V3 M41-M52 "
     "evidence: Barnes-Hut is now mixed explicit because Goal4442's fused CPU/Numba "
-    "route beats the current RTDL/OptiX route at tested scales; RTNN separates "
+    "route and Goal4448's fused Numba CUDA subtree prototype expose the frontier "
+    "materialization bottleneck and beat the current prepared RTDL/OptiX route at "
+    "tested scales; RTNN separates "
     "Goal4381 exact float64 aggregate rows from Goal4443 resident graph-bridge "
     "rows; triangle counting keeps scalar primitive wording while Goal4444 fixes "
     "the no-C++ Numba construction debt; RT-DBSCAN adds Goal4445 compact "
@@ -197,7 +199,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
     },
     "barnes_hut": {
         "current_performance_reading": (
-            "mixed explicit / currently CPU-faster: Goal4052 adds a generic no-atomic "
+            "mixed explicit / fused partner evidence: Goal4052 adds a generic no-atomic "
             "Numba offset kernel for presegmented grouped-vector streams, and "
             "Goal4053 wraps it in a prepared session that is 3.77x-3.89x faster than "
             "the old atomic Numba path on tested generic shapes. Goal4438/4439 show "
@@ -206,26 +208,35 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "dominated by frontier collection and host materialization. Goal4442 adds "
             "a fused CPU/Numba route that avoids frontier and contribution row "
             "materialization and is faster than the current RTDL/OptiX+Numba route "
-            "at tested 8192/16384/32768-body scales."
+            "at tested 8192/16384/32768-body scales. Goal4448 adds a no-C++ "
+            "Python-source Numba CUDA fused-subtree prototype that also avoids "
+            "frontier and contribution row materialization, beats the prepared "
+            "RTDL/OptiX+Numba route by 3.38x-7.82x on the same scale ladder, and "
+            "beats the fused CPU/Numba route at 32768 bodies while remaining slower "
+            "at 8192/16384."
         ),
-        "adequacy": "needs_major_followup",
+        "adequacy": "adequate",
         "current_recommended_path": (
             "choose `fused_frontier_force_sum_bucketized_cpu_numba` for the current "
-            "fastest measured no-C++ app route; choose "
+            "strongest CPU fused baseline; choose "
+            "`scripts/v3_0_m52_barnes_hut_numba_cuda_fused_subtree.py` for the "
+            "current no-C++ fused GPU partner prototype; choose "
             "`prepared_aggregate_frontier_weighted_vector_optix --partner numba` "
             "when the purpose is RTDL/OptiX device-column evidence"
         ),
         "current_partner_role": (
-            "Numba is the fastest measured partner for the current prepared "
-            "aggregate-frontier RTDL/OptiX device-column contract and also powers the "
-            "current fastest fused CPU route; CuPy remains the measured comparison "
-            "partner, not the default winner for this contract"
+            "Numba powers the current no-C++ fused CPU and CUDA prototype routes "
+            "and is also the fastest measured partner for the current prepared "
+            "aggregate-frontier RTDL/OptiX device-column contract; CuPy remains "
+            "the measured comparison partner, not the default winner for this "
+            "contract"
         ),
         "next_generic_runtime_action": (
-            "treat as covered for Numba-reference, presegmented grouped-vector "
-            "continuation, and route-choice evidence; Barnes-Hut RT-core speedup "
-            "requires a deeper hierarchical vector primitive design or fused "
-            "RT-native/device route, not more host-row optimization"
+            "treat as covered for Numba-reference, fused CPU/GPU partner, "
+            "presegmented grouped-vector continuation, and route-choice evidence; "
+            "Barnes-Hut RT-core speedup requires promoting the fused subtree "
+            "traversal plus vector accumulation shape into an app-agnostic "
+            "RT-native/device primitive, not more host-row optimization"
         ),
         "evidence_refs": (
             "Goal2803",
@@ -245,6 +256,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4440",
             "Goal4441",
             "Goal4442",
+            "Goal4448",
         ),
     },
     "rtnn": {

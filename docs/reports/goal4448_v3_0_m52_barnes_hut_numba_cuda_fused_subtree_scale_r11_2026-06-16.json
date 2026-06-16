@@ -1,0 +1,466 @@
+{
+  "goal": "Goal4448 / V3.0 M52 - Barnes-Hut Numba CUDA fused subtree prototype",
+  "mode": "numba_cuda_fused_subtree_force_sum_prototype",
+  "rows": [
+    {
+      "app": "barnes_hut_force_app",
+      "backend": "numba_cuda_partner_prototype",
+      "blocks": 64,
+      "body_count": 8192,
+      "boundary": "M52 is a Python-source Numba CUDA fused-subtree partner prototype. It measures whether a no-C++ fused CUDA partner can remove the frontier-materialization bottleneck seen in Barnes-Hut. It is not an RT-core primitive, not an OptiX/Embree comparison row, and not public speedup wording.",
+      "bucket_size": 64,
+      "child_edge_count": 340,
+      "claim_flags": {
+        "app_specific_native_engine_logic_used": false,
+        "automatic_partner_selection_authorized": false,
+        "contribution_rows_materialized_on_host": false,
+        "cxx_cuda_extension_used": false,
+        "final_vector_rows_copied_to_host_for_evidence": true,
+        "frontier_rows_materialized_on_host": false,
+        "numba_cuda_python_source_used": true,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rt_cores_used": false,
+        "rtdl_native_optix_primitive_used_for_hot_kernel": false,
+        "torch_extension_used": false
+      },
+      "comparison_baselines": {
+        "m41_optix_numba_over_m52_event_sec": 4.586912100788707,
+        "m41_prepared_optix_numba_hot_sec": 0.014712025072696686,
+        "m42_app_mode_optix_numba_hot_sec": 0.016139463325687407,
+        "m42_app_optix_numba_over_m52_event_sec": 5.031958500819868,
+        "m45_cpu_fused_hot_sec": 0.0013038069009780884,
+        "m52_event_sec_over_m45_cpu_fused": 2.460020709281461
+      },
+      "goal": "Goal4448 / V3.0 M52 - Barnes-Hut Numba CUDA fused subtree prototype",
+      "max_depth": 32,
+      "member_count": 40960,
+      "mode": "numba_cuda_fused_subtree_force_sum_prototype",
+      "node_count": 341,
+      "numba_cuda_toolchain_environment": {
+        "configured": true,
+        "does_not_configure_rtdl_native_optix": true,
+        "does_not_install_packages": true,
+        "numba_cuda_driver": "/lib/x86_64-linux-gnu/libcuda.so.1",
+        "numba_cuda_prefix": "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc",
+        "nvvm_lib_dir": "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc/nvvm/lib64",
+        "prepended_ld_library_path": true,
+        "prepended_path": true,
+        "ptxas": "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc/bin/ptxas",
+        "set_cuda_home": true,
+        "set_cuda_path": true,
+        "system_cuda_lib_dirs": [
+          "/usr/local/cuda-12/targets/x86_64-linux/lib",
+          "/usr/local/cuda-12/lib64"
+        ],
+        "system_cuda_prefix": "/usr/local/cuda-12"
+      },
+      "repeat_rows": [
+        {
+          "kernel_event_ms": 3.223520040512085,
+          "kernel_wall_sec": 0.003251880407333374,
+          "repeat_index": 0.0
+        },
+        {
+          "kernel_event_ms": 3.2120320796966553,
+          "kernel_wall_sec": 0.003221675753593445,
+          "repeat_index": 1.0
+        },
+        {
+          "kernel_event_ms": 3.2209599018096924,
+          "kernel_wall_sec": 0.0032302290201187134,
+          "repeat_index": 2.0
+        },
+        {
+          "kernel_event_ms": 3.2073919773101807,
+          "kernel_wall_sec": 0.0032165423035621643,
+          "repeat_index": 3.0
+        },
+        {
+          "kernel_event_ms": 3.2171199321746826,
+          "kernel_wall_sec": 0.0032260864973068237,
+          "repeat_index": 4.0
+        },
+        {
+          "kernel_event_ms": 3.2030720710754395,
+          "kernel_wall_sec": 0.0032121464610099792,
+          "repeat_index": 5.0
+        },
+        {
+          "kernel_event_ms": 3.2049920558929443,
+          "kernel_wall_sec": 0.003214441239833832,
+          "repeat_index": 6.0
+        },
+        {
+          "kernel_event_ms": 3.214560031890869,
+          "kernel_wall_sec": 0.003223530948162079,
+          "repeat_index": 7.0
+        },
+        {
+          "kernel_event_ms": 3.202591896057129,
+          "kernel_wall_sec": 0.0032117217779159546,
+          "repeat_index": 8.0
+        },
+        {
+          "kernel_event_ms": 3.2020161151885986,
+          "kernel_wall_sec": 0.0032108724117279053,
+          "repeat_index": 9.0
+        },
+        {
+          "kernel_event_ms": 3.2013440132141113,
+          "kernel_wall_sec": 0.0032104328274726868,
+          "repeat_index": 10.0
+        }
+      ],
+      "run_phases": {
+        "compile_and_first_launch_wall_sec": 0.4423772841691971,
+        "host_to_device_wall_sec": 0.1174793615937233,
+        "kernel_event_median_sec": 0.0032073919773101807,
+        "kernel_wall_median_sec": 0.0032165423035621643,
+        "output_copy_back_wall_sec": 0.00021157413721084595,
+        "repeat": 11,
+        "total_wall_sec": 0.9951794669032097,
+        "tree_prepare_wall_sec": 0.11129220575094223,
+        "warmup": 2
+      },
+      "softening": 0.05,
+      "source_count": 8192,
+      "theta": 0.5,
+      "threads": 128,
+      "tree_summary": {
+        "bucket_size": 64,
+        "leaf_node_count": 256,
+        "max_depth": 4,
+        "max_leaf_member_count": 36,
+        "morton_bits": 16,
+        "source_count": 8192,
+        "tree_node_count": 341
+      },
+      "validation": {
+        "reason": "not_requested",
+        "skipped": true
+      },
+      "vector_sum_summary": {
+        "aggregate_contribution_count": 477919,
+        "checksum_force_x": -1836.5717739960237,
+        "checksum_force_y": 4948.32060488686,
+        "contribution_row_count": 3406489,
+        "exact_contribution_count": 2928570,
+        "repeat": 11,
+        "visited_node_count": 757196,
+        "warmup": 2
+      },
+      "version": "rtdl.v3_0.barnes_hut_numba_cuda_fused_subtree.goal4448.v1"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "backend": "numba_cuda_partner_prototype",
+      "blocks": 128,
+      "body_count": 16384,
+      "boundary": "M52 is a Python-source Numba CUDA fused-subtree partner prototype. It measures whether a no-C++ fused CUDA partner can remove the frontier-materialization bottleneck seen in Barnes-Hut. It is not an RT-core primitive, not an OptiX/Embree comparison row, and not public speedup wording.",
+      "bucket_size": 64,
+      "child_edge_count": 340,
+      "claim_flags": {
+        "app_specific_native_engine_logic_used": false,
+        "automatic_partner_selection_authorized": false,
+        "contribution_rows_materialized_on_host": false,
+        "cxx_cuda_extension_used": false,
+        "final_vector_rows_copied_to_host_for_evidence": true,
+        "frontier_rows_materialized_on_host": false,
+        "numba_cuda_python_source_used": true,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rt_cores_used": false,
+        "rtdl_native_optix_primitive_used_for_hot_kernel": false,
+        "torch_extension_used": false
+      },
+      "comparison_baselines": {
+        "m41_optix_numba_over_m52_event_sec": 3.3838096374571385,
+        "m41_prepared_optix_numba_hot_sec": 0.030269341140293123,
+        "m42_app_mode_optix_numba_hot_sec": null,
+        "m45_cpu_fused_hot_sec": 0.004121541976928711,
+        "m52_event_sec_over_m45_cpu_fused": 2.1703876901718053
+      },
+      "goal": "Goal4448 / V3.0 M52 - Barnes-Hut Numba CUDA fused subtree prototype",
+      "max_depth": 32,
+      "member_count": 81920,
+      "mode": "numba_cuda_fused_subtree_force_sum_prototype",
+      "node_count": 341,
+      "numba_cuda_toolchain_environment": {
+        "configured": true,
+        "does_not_configure_rtdl_native_optix": true,
+        "does_not_install_packages": true,
+        "numba_cuda_driver": "/lib/x86_64-linux-gnu/libcuda.so.1",
+        "numba_cuda_prefix": "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc",
+        "nvvm_lib_dir": "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc/nvvm/lib64",
+        "prepended_ld_library_path": true,
+        "prepended_path": true,
+        "ptxas": "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc/bin/ptxas",
+        "set_cuda_home": true,
+        "set_cuda_path": true,
+        "system_cuda_lib_dirs": [
+          "/usr/local/cuda-12/targets/x86_64-linux/lib",
+          "/usr/local/cuda-12/lib64"
+        ],
+        "system_cuda_prefix": "/usr/local/cuda-12"
+      },
+      "repeat_rows": [
+        {
+          "kernel_event_ms": 8.942815780639648,
+          "kernel_wall_sec": 0.008953988552093506,
+          "repeat_index": 0.0
+        },
+        {
+          "kernel_event_ms": 8.935872077941895,
+          "kernel_wall_sec": 0.008945532143115997,
+          "repeat_index": 1.0
+        },
+        {
+          "kernel_event_ms": 8.950943946838379,
+          "kernel_wall_sec": 0.008960016071796417,
+          "repeat_index": 2.0
+        },
+        {
+          "kernel_event_ms": 8.963264465332031,
+          "kernel_wall_sec": 0.008972316980361938,
+          "repeat_index": 3.0
+        },
+        {
+          "kernel_event_ms": 8.943648338317871,
+          "kernel_wall_sec": 0.008952639997005463,
+          "repeat_index": 4.0
+        },
+        {
+          "kernel_event_ms": 8.955360412597656,
+          "kernel_wall_sec": 0.008964478969573975,
+          "repeat_index": 5.0
+        },
+        {
+          "kernel_event_ms": 8.948863983154297,
+          "kernel_wall_sec": 0.00895795226097107,
+          "repeat_index": 6.0
+        },
+        {
+          "kernel_event_ms": 8.93286418914795,
+          "kernel_wall_sec": 0.008942008018493652,
+          "repeat_index": 7.0
+        },
+        {
+          "kernel_event_ms": 8.95900821685791,
+          "kernel_wall_sec": 0.008968055248260498,
+          "repeat_index": 8.0
+        },
+        {
+          "kernel_event_ms": 8.945343971252441,
+          "kernel_wall_sec": 0.008960284292697906,
+          "repeat_index": 9.0
+        },
+        {
+          "kernel_event_ms": 8.94262409210205,
+          "kernel_wall_sec": 0.00895208865404129,
+          "repeat_index": 10.0
+        }
+      ],
+      "run_phases": {
+        "compile_and_first_launch_wall_sec": 0.009054705500602722,
+        "host_to_device_wall_sec": 0.007727213203907013,
+        "kernel_event_median_sec": 0.008945343971252441,
+        "kernel_wall_median_sec": 0.00895795226097107,
+        "output_copy_back_wall_sec": 0.0002398267388343811,
+        "repeat": 11,
+        "total_wall_sec": 0.39762989431619644,
+        "tree_prepare_wall_sec": 0.25960102677345276,
+        "warmup": 2
+      },
+      "softening": 0.05,
+      "source_count": 16384,
+      "theta": 0.5,
+      "threads": 128,
+      "tree_summary": {
+        "bucket_size": 64,
+        "leaf_node_count": 256,
+        "max_depth": 4,
+        "max_leaf_member_count": 64,
+        "morton_bits": 16,
+        "source_count": 16384,
+        "tree_node_count": 341
+      },
+      "validation": {
+        "reason": "not_requested",
+        "skipped": true
+      },
+      "vector_sum_summary": {
+        "aggregate_contribution_count": 950336,
+        "checksum_force_x": -7.811550599360999,
+        "checksum_force_y": 229.87095042318106,
+        "contribution_row_count": 12727680,
+        "exact_contribution_count": 11777344,
+        "repeat": 11,
+        "visited_node_count": 1507356,
+        "warmup": 2
+      },
+      "version": "rtdl.v3_0.barnes_hut_numba_cuda_fused_subtree.goal4448.v1"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "backend": "numba_cuda_partner_prototype",
+      "blocks": 256,
+      "body_count": 32768,
+      "boundary": "M52 is a Python-source Numba CUDA fused-subtree partner prototype. It measures whether a no-C++ fused CUDA partner can remove the frontier-materialization bottleneck seen in Barnes-Hut. It is not an RT-core primitive, not an OptiX/Embree comparison row, and not public speedup wording.",
+      "bucket_size": 64,
+      "child_edge_count": 1364,
+      "claim_flags": {
+        "app_specific_native_engine_logic_used": false,
+        "automatic_partner_selection_authorized": false,
+        "contribution_rows_materialized_on_host": false,
+        "cxx_cuda_extension_used": false,
+        "final_vector_rows_copied_to_host_for_evidence": true,
+        "frontier_rows_materialized_on_host": false,
+        "numba_cuda_python_source_used": true,
+        "public_speedup_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rt_cores_used": false,
+        "rtdl_native_optix_primitive_used_for_hot_kernel": false,
+        "torch_extension_used": false
+      },
+      "comparison_baselines": {
+        "m41_optix_numba_over_m52_event_sec": 7.822068228303986,
+        "m41_prepared_optix_numba_hot_sec": 0.0825402173339386,
+        "m42_app_mode_optix_numba_hot_sec": null,
+        "m45_cpu_fused_hot_sec": 0.01516096293926239,
+        "m52_event_sec_over_m45_cpu_fused": 0.6960127929548324
+      },
+      "goal": "Goal4448 / V3.0 M52 - Barnes-Hut Numba CUDA fused subtree prototype",
+      "max_depth": 32,
+      "member_count": 196608,
+      "mode": "numba_cuda_fused_subtree_force_sum_prototype",
+      "node_count": 1365,
+      "numba_cuda_toolchain_environment": {
+        "configured": true,
+        "does_not_configure_rtdl_native_optix": true,
+        "does_not_install_packages": true,
+        "numba_cuda_driver": "/lib/x86_64-linux-gnu/libcuda.so.1",
+        "numba_cuda_prefix": "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc",
+        "nvvm_lib_dir": "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc/nvvm/lib64",
+        "prepended_ld_library_path": true,
+        "prepended_path": true,
+        "ptxas": "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc/bin/ptxas",
+        "set_cuda_home": true,
+        "set_cuda_path": true,
+        "system_cuda_lib_dirs": [
+          "/usr/local/cuda-12/targets/x86_64-linux/lib",
+          "/usr/local/cuda-12/lib64"
+        ],
+        "system_cuda_prefix": "/usr/local/cuda-12"
+      },
+      "repeat_rows": [
+        {
+          "kernel_event_ms": 10.527263641357422,
+          "kernel_wall_sec": 0.010538533329963684,
+          "repeat_index": 0.0
+        },
+        {
+          "kernel_event_ms": 10.552224159240723,
+          "kernel_wall_sec": 0.010561138391494751,
+          "repeat_index": 1.0
+        },
+        {
+          "kernel_event_ms": 10.530912399291992,
+          "kernel_wall_sec": 0.010539859533309937,
+          "repeat_index": 2.0
+        },
+        {
+          "kernel_event_ms": 10.520383834838867,
+          "kernel_wall_sec": 0.010529682040214539,
+          "repeat_index": 3.0
+        },
+        {
+          "kernel_event_ms": 10.556575775146484,
+          "kernel_wall_sec": 0.010567806661128998,
+          "repeat_index": 4.0
+        },
+        {
+          "kernel_event_ms": 10.554368019104004,
+          "kernel_wall_sec": 0.010562814772129059,
+          "repeat_index": 5.0
+        },
+        {
+          "kernel_event_ms": 10.530112266540527,
+          "kernel_wall_sec": 0.010538682341575623,
+          "repeat_index": 6.0
+        },
+        {
+          "kernel_event_ms": 10.557984352111816,
+          "kernel_wall_sec": 0.01056680828332901,
+          "repeat_index": 7.0
+        },
+        {
+          "kernel_event_ms": 10.521759986877441,
+          "kernel_wall_sec": 0.010531485080718994,
+          "repeat_index": 8.0
+        },
+        {
+          "kernel_event_ms": 10.554047584533691,
+          "kernel_wall_sec": 0.010563075542449951,
+          "repeat_index": 9.0
+        },
+        {
+          "kernel_event_ms": 10.560799598693848,
+          "kernel_wall_sec": 0.010569795966148376,
+          "repeat_index": 10.0
+        }
+      ],
+      "run_phases": {
+        "compile_and_first_launch_wall_sec": 0.010645367205142975,
+        "host_to_device_wall_sec": 0.015114717185497284,
+        "kernel_event_median_sec": 0.010552224159240722,
+        "kernel_wall_median_sec": 0.010561138391494751,
+        "output_copy_back_wall_sec": 0.0003369748592376709,
+        "repeat": 11,
+        "total_wall_sec": 0.7408346235752106,
+        "tree_prepare_wall_sec": 0.5720217525959015,
+        "warmup": 2
+      },
+      "softening": 0.05,
+      "source_count": 32768,
+      "theta": 0.5,
+      "threads": 128,
+      "tree_summary": {
+        "bucket_size": 64,
+        "leaf_node_count": 1024,
+        "max_depth": 5,
+        "max_leaf_member_count": 36,
+        "morton_bits": 16,
+        "source_count": 32768,
+        "tree_node_count": 1365
+      },
+      "validation": {
+        "reason": "not_requested",
+        "skipped": true
+      },
+      "vector_sum_summary": {
+        "aggregate_contribution_count": 3008815,
+        "checksum_force_x": -7263.897075521643,
+        "checksum_force_y": 45639.640956401825,
+        "contribution_row_count": 15514679,
+        "exact_contribution_count": 12505864,
+        "repeat": 11,
+        "visited_node_count": 4522372,
+        "warmup": 2
+      },
+      "version": "rtdl.v3_0.barnes_hut_numba_cuda_fused_subtree.goal4448.v1"
+    }
+  ],
+  "summary": {
+    "best_event_median_sec": 0.0032073919773101807,
+    "body_counts": [
+      8192,
+      16384,
+      32768
+    ],
+    "claim_boundary": "prototype CUDA-core partner evidence only; no RT-core or public backend speedup claim is authorized",
+    "repeat": 11,
+    "warmup": 2
+  },
+  "version": "rtdl.v3_0.barnes_hut_numba_cuda_fused_subtree.goal4448.v1"
+}

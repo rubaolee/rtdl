@@ -15,19 +15,19 @@ class Goal4447V30M51CurrentBenchmarkAdequacyRefreshTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_adequacy()
         summary = rt.summarize_current_benchmark_adequacy()
 
-        self.assertEqual(rt.CURRENT_BENCHMARK_ADEQUACY_VERSION, "rtdl.v3_0.current_benchmark_adequacy.goal4447.v1")
+        self.assertEqual(rt.CURRENT_BENCHMARK_ADEQUACY_VERSION, "rtdl.v3_0.current_benchmark_adequacy.goal4448.v1")
         self.assertEqual(validation["status"], "accept")
         self.assertEqual(validation["errors"], ())
         self.assertEqual(summary["app_count"], 10)
         self.assertEqual(summary["row_count"], 10)
         self.assertEqual(summary["adequacy_counts"]["strong"], 4)
-        self.assertEqual(summary["adequacy_counts"]["adequate"], 5)
-        self.assertEqual(summary["adequacy_counts"]["needs_major_followup"], 1)
+        self.assertEqual(summary["adequacy_counts"]["adequate"], 6)
+        self.assertEqual(summary["adequacy_counts"]["needs_major_followup"], 0)
         self.assertFalse(summary["release_authorized"])
         self.assertFalse(summary["public_speedup_claim_authorized"])
         self.assertFalse(summary["whole_app_speedup_claim_authorized"])
         self.assertFalse(summary["automatic_partner_selection_authorized"])
-        self.assertIn("Goal4447", summary["claim_boundary"])
+        self.assertIn("Goal4448", summary["claim_boundary"])
 
     def test_v3_changed_rows_are_current(self) -> None:
         rows = {row["app"]: row for row in rt.current_benchmark_adequacy()}
@@ -43,10 +43,11 @@ class Goal4447V30M51CurrentBenchmarkAdequacyRefreshTest(unittest.TestCase):
         self.assertIn("NumPy vectorized endpoint arrays", robot["current_performance_reading"])
 
         barnes = rows["barnes_hut"]
-        self.assertEqual("needs_major_followup", barnes["adequacy"])
+        self.assertEqual("adequate", barnes["adequacy"])
         self.assertIn("Goal4442", barnes["evidence_refs"])
-        self.assertIn("fused CPU/Numba route", barnes["current_performance_reading"])
-        self.assertIn("fused RT-native/device route", barnes["next_generic_runtime_action"])
+        self.assertIn("Goal4448", barnes["evidence_refs"])
+        self.assertIn("fused-subtree prototype", barnes["current_performance_reading"])
+        self.assertIn("RT-native/device primitive", barnes["next_generic_runtime_action"])
 
         rtnn = rows["rtnn"]
         self.assertEqual("strong", rtnn["adequacy"])
