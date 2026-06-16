@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4468.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4469.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -120,7 +120,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "partner compresses duplicate two-hop keys into unique rays plus uint64 "
     "weights before calling the same generic weighted any-hit primitive. This "
     "reduces physical rays by 1.76x-1.84x and traversal median by 2.36x-2.47x "
-    "on the large rows, but shifts the bottleneck to partner unique compression."
+    "on the large rows, but shifts the bottleneck to partner unique compression. "
+    "Goal4469 adds explicit prepared segment replay so each compressed segment "
+    "is built once and replayed for warmup/repeat queries before release, "
+    "improving large-row totals by 1.43x-1.84x versus Goal4467 while preserving "
+    "the no-public-speedup boundary."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -729,7 +733,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "primitive runs. On the three large rows this reduces physical rays by "
             "1.76x-1.84x and improves traversal median by 2.36x-2.47x, but the "
             "CuPy unique compression cost makes whole totals only slightly better on "
-            "`com-lj`/`soc-LiveJournal1` and slightly worse on `com-orkut`."
+            "`com-lj`/`soc-LiveJournal1` and slightly worse on `com-orkut`. "
+            "Goal4469 adds explicit prepared segment replay: build one compressed "
+            "segment, replay warmup/repeat queries, then release it. This improves "
+            "formal totals to 9.552s on `com-lj`, 17.986s on `soc-LiveJournal1`, "
+            "and 62.428s on `com-orkut`, or 1.43x-1.84x faster than Goal4467."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -761,7 +769,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Cite Goal4467 for the current comparison packet and its no-speedup boundary. "
             "Cite Goal4468 when choosing the explicit `unique_weighted` segmented "
             "ray representation: it reduces traversal pressure but makes partner "
-            "compression the bottleneck, so it is not an automatic default."
+            "compression the bottleneck, so it is not an automatic default. Cite "
+            "Goal4469 when the user wants the explicit prepared/repeated schedule: "
+            "`prepared_segment_replay` builds each compressed segment once, replays "
+            "queries, and releases it."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -781,15 +792,18 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "claiming Goal4467 shows RTDL beats cuGraph or authors pure kernels",
             "making Goal4468 unique-weighted rays a hidden automatic default",
             "claiming Goal4468 solves whole-route triangle-count performance",
+            "making Goal4469 prepared segment replay a hidden automatic default",
+            "claiming Goal4469 authorizes public RT-core triangle-count speedups",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
             "preserve the generic graph relationship-count route and avoid claiming RT-core "
             "triangle-count acceleration; current comparison packet is complete for the "
             "large former-OOM rows (`com-lj`, `soc-LiveJournal1`, and `com-orkut`), "
-            "and Goal4468 proves unique-weighted segment rays reduce traversal pressure, "
-            "so next work is cheaper or reusable segmented unique-key compression without "
-            "adding graph-specific native engine logic"
+            "Goal4468 proves unique-weighted segment rays reduce traversal pressure, "
+            "and Goal4469 proves explicit prepared segment replay improves large-row "
+            "totals; next work is separating one-shot build cost from replay throughput "
+            "and cheaper unique-key compression without graph-specific native engine logic"
         ),
         evidence_refs=(
             "Goal2797",
@@ -812,6 +826,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4466",
             "Goal4467",
             "Goal4468",
+            "Goal4469",
         ),
         pod_needed_next=False,
     ),

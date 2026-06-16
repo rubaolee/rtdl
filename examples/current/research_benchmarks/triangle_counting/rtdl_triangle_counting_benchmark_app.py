@@ -198,6 +198,13 @@ def command_plan_payload() -> dict[str, Any]:
             "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
             "--segment-ray-representation unique_weighted"
         ),
+        "rt_graph_2a1_segmented_prepared_unique_weighted_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
+            "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay"
+        ),
         "rt_graph_2a1_segmented_scene_generic_rt_optix_cupy_partner": (
             "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
@@ -211,6 +218,14 @@ def command_plan_payload() -> dict[str, Any]:
             "--mode rt_graph_2a1_segmented_scene_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy --scene-max-directed-edges 2000000 "
             "--segment-max-two-hop-rows 5000000 --segment-ray-representation unique_weighted"
+        ),
+        "rt_graph_2a1_segmented_scene_prepared_unique_weighted_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_scene_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --scene-max-directed-edges 2000000 "
+            "--segment-max-two-hop-rows 5000000 --segment-ray-representation unique_weighted "
+            "--segment-query-schedule prepared_segment_replay"
         ),
         "rt_graph_1a2_generic_rt_optix": (
             "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
@@ -980,10 +995,12 @@ def rt_graph_2a1_segmented_generic_rt_payload(
     repeat: int,
     segment_max_two_hop_rows: int,
     segment_ray_representation: str,
+    segment_query_schedule: str,
     validate_oracle: bool = False,
 ) -> dict[str, Any]:
     _validate_repetition(warmup=warmup, repeat=repeat)
     _validate_segment_ray_representation(segment_ray_representation)
+    _validate_segment_query_schedule(segment_query_schedule)
     normalized_backend = backend.lower().replace("-", "_")
     if normalized_backend != "optix" or detail != "summary" or partner != "cupy":
         raise ValueError(
@@ -1026,12 +1043,12 @@ def rt_graph_2a1_segmented_generic_rt_payload(
     prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
     hit_weight_sum = 0
     with scene:
-        for index in range(warmup + repeat):
-            run_segment_build_ms = 0.0
-            run_query_ms = 0.0
-            run_hit_weight_sum = 0
-            run_lowered_ray_count = 0
-            run_lowered_ray_weight_sum = 0
+        if segment_query_schedule == "prepared_segment_replay":
+            replay_query_ms = [0.0 for _ in range(warmup + repeat)]
+            replay_hit_weight_sums = [0 for _ in range(warmup + repeat)]
+            replay_segment_build_ms = 0.0
+            replay_lowered_ray_count = 0
+            replay_lowered_ray_weight_sum = 0
             for start_edge, end_edge, _two_hop_rows in segment_plan["ranges"]:
                 if int(_two_hop_rows) <= 0:
                     continue
@@ -1042,20 +1059,55 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                     end_edge=int(end_edge),
                     ray_representation=segment_ray_representation,
                 )
-                run_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
-                run_lowered_ray_count += _record_count(rays)
-                run_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
-                query_started = time.perf_counter()
-                summary_result = scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
-                run_query_ms += _elapsed_ms(query_started, time.perf_counter())
-                run_hit_weight_sum += int(summary_result["weighted_hit_sum"])
-            if index >= warmup:
-                query_timings_ms.append(run_query_ms)
-                segment_ray_build_timings_ms.append(run_segment_build_ms)
-                lowered_ray_count_runs.append(int(run_lowered_ray_count))
-                lowered_ray_weight_sum_runs.append(int(run_lowered_ray_weight_sum))
-                hit_weight_sum = int(run_hit_weight_sum)
-            if segment_ray_representation == "unique_weighted":
+                replay_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
+                replay_lowered_ray_count += _record_count(rays)
+                replay_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
+                for index in range(warmup + repeat):
+                    query_started = time.perf_counter()
+                    summary_result = scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
+                    replay_query_ms[index] += _elapsed_ms(query_started, time.perf_counter())
+                    replay_hit_weight_sums[index] += int(summary_result["weighted_hit_sum"])
+                if segment_ray_representation == "unique_weighted":
+                    del rays, ray_weights
+                    _release_cupy_cached_blocks()
+            for index in range(warmup, warmup + repeat):
+                query_timings_ms.append(float(replay_query_ms[index]))
+                segment_ray_build_timings_ms.append(float(replay_segment_build_ms))
+                lowered_ray_count_runs.append(int(replay_lowered_ray_count))
+                lowered_ray_weight_sum_runs.append(int(replay_lowered_ray_weight_sum))
+                hit_weight_sum = int(replay_hit_weight_sums[index])
+        else:
+            for index in range(warmup + repeat):
+                run_segment_build_ms = 0.0
+                run_query_ms = 0.0
+                run_hit_weight_sum = 0
+                run_lowered_ray_count = 0
+                run_lowered_ray_weight_sum = 0
+                for start_edge, end_edge, _two_hop_rows in segment_plan["ranges"]:
+                    if int(_two_hop_rows) <= 0:
+                        continue
+                    segment_build_started = time.perf_counter()
+                    rays, ray_weights = _build_rt_graph_2a1_cupy_segment_rays(
+                        contract,
+                        start_edge=int(start_edge),
+                        end_edge=int(end_edge),
+                        ray_representation=segment_ray_representation,
+                    )
+                    run_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
+                    run_lowered_ray_count += _record_count(rays)
+                    run_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
+                    query_started = time.perf_counter()
+                    summary_result = scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
+                    run_query_ms += _elapsed_ms(query_started, time.perf_counter())
+                    run_hit_weight_sum += int(summary_result["weighted_hit_sum"])
+                if index >= warmup:
+                    query_timings_ms.append(run_query_ms)
+                    segment_ray_build_timings_ms.append(run_segment_build_ms)
+                    lowered_ray_count_runs.append(int(run_lowered_ray_count))
+                    lowered_ray_weight_sum_runs.append(int(run_lowered_ray_weight_sum))
+                    hit_weight_sum = int(run_hit_weight_sum)
+                if segment_ray_representation == "unique_weighted":
+                    _release_cupy_cached_blocks()
                 _release_cupy_cached_blocks()
     ran = time.perf_counter()
     reduced = time.perf_counter()
@@ -1098,6 +1150,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                 "segmented": True,
                 "segment_max_two_hop_rows": int(segment_max_two_hop_rows),
                 "segment_ray_representation": segment_ray_representation,
+                "segment_query_schedule": segment_query_schedule,
             },
         },
         parameters={
@@ -1105,6 +1158,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "summary": True,
             "segmented": True,
             "segment_ray_representation": segment_ray_representation,
+            "segment_query_schedule": segment_query_schedule,
         },
         partner=partner,
         device="cuda:0",
@@ -1150,6 +1204,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
                 else "segmented duplicate 2-hop relation rays with unit weights"
             ),
             "segment_ray_representation": segment_ray_representation,
+            "segment_query_schedule": segment_query_schedule,
             "triangle_eps": 0.2,
             "ray_tmax": 0.2,
             "device_column_lowering": True,
@@ -1165,6 +1220,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "lowered_ray_weight_sum": int(lowered_ray_weight_sum),
             "ray_compression_ratio": ray_compression_ratio,
             "segment_ray_representation": segment_ray_representation,
+            "segment_query_schedule": segment_query_schedule,
             "count_column_rows": int(segment_plan["count_column_rows"]),
             "counts_download_ms": float(segment_plan["counts_download_ms"]),
             "ranges_preview": segment_ranges,
@@ -1193,6 +1249,7 @@ def rt_graph_2a1_segmented_generic_rt_payload(
             "query_repeat": repeat,
             "query_warmup": warmup,
             "query_measured_runs": len(query_timings_ms),
+            "segment_query_schedule": segment_query_schedule,
             "reduce_hits": _elapsed_ms(ran, reduced),
             "total": _elapsed_ms(started, reduced),
         },
@@ -1246,9 +1303,11 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     segment_max_two_hop_rows: int,
     scene_max_directed_edges: int,
     segment_ray_representation: str,
+    segment_query_schedule: str,
 ) -> dict[str, Any]:
     _validate_repetition(warmup=warmup, repeat=repeat)
     _validate_segment_ray_representation(segment_ray_representation)
+    _validate_segment_query_schedule(segment_query_schedule)
     normalized_backend = backend.lower().replace("-", "_")
     if normalized_backend != "optix" or detail != "summary" or partner != "cupy":
         raise ValueError(
@@ -1286,14 +1345,14 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
     lowered_ray_weight_sum_runs: list[int] = []
     hit_weight_sum = 0
     summary_result = None
-    for index in range(warmup + repeat):
-        run_query_ms = 0.0
-        run_segment_ray_build_ms = 0.0
-        run_triangle_build_ms = 0.0
-        run_prepare_scene_ms = 0.0
-        run_hit_weight_sum = 0
-        run_lowered_ray_count = 0
-        run_lowered_ray_weight_sum = 0
+    if segment_query_schedule == "prepared_segment_replay":
+        replay_query_ms = [0.0 for _ in range(warmup + repeat)]
+        replay_hit_weight_sums = [0 for _ in range(warmup + repeat)]
+        replay_segment_ray_build_ms = 0.0
+        replay_triangle_build_ms = 0.0
+        replay_prepare_scene_ms = 0.0
+        replay_lowered_ray_count = 0
+        replay_lowered_ray_weight_sum = 0
         for scene in scene_plan["scenes"]:
             triangle_started = time.perf_counter()
             triangles = _build_rt_graph_2a1_cupy_directed_edge_triangles(
@@ -1301,10 +1360,10 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                 start_edge=int(scene["edge_start"]),
                 end_edge=int(scene["edge_end"]),
             )
-            run_triangle_build_ms += _elapsed_ms(triangle_started, time.perf_counter())
+            replay_triangle_build_ms += _elapsed_ms(triangle_started, time.perf_counter())
             prepare_started = time.perf_counter()
             prepared_scene = rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangles)
-            run_prepare_scene_ms += _elapsed_ms(prepare_started, time.perf_counter())
+            replay_prepare_scene_ms += _elapsed_ms(prepare_started, time.perf_counter())
             with prepared_scene:
                 for start_edge, end_edge, two_hop_rows in scene["ray_ranges"]:
                     if int(two_hop_rows) <= 0:
@@ -1316,23 +1375,73 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                         end_edge=int(end_edge),
                         ray_representation=segment_ray_representation,
                     )
-                    run_segment_ray_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
-                    run_lowered_ray_count += _record_count(rays)
-                    run_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
-                    query_started = time.perf_counter()
-                    summary_result = prepared_scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
-                    run_query_ms += _elapsed_ms(query_started, time.perf_counter())
-                    run_hit_weight_sum += int(summary_result["weighted_hit_sum"])
-        if index >= warmup:
-            query_timings_ms.append(run_query_ms)
-            segment_ray_build_timings_ms.append(run_segment_ray_build_ms)
-            triangle_build_timings_ms.append(run_triangle_build_ms)
-            prepare_scene_timings_ms.append(run_prepare_scene_ms)
-            lowered_ray_count_runs.append(int(run_lowered_ray_count))
-            lowered_ray_weight_sum_runs.append(int(run_lowered_ray_weight_sum))
-            hit_weight_sum = int(run_hit_weight_sum)
-        if segment_ray_representation == "unique_weighted":
-            _release_cupy_cached_blocks()
+                    replay_segment_ray_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
+                    replay_lowered_ray_count += _record_count(rays)
+                    replay_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
+                    for index in range(warmup + repeat):
+                        query_started = time.perf_counter()
+                        summary_result = prepared_scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
+                        replay_query_ms[index] += _elapsed_ms(query_started, time.perf_counter())
+                        replay_hit_weight_sums[index] += int(summary_result["weighted_hit_sum"])
+                    if segment_ray_representation == "unique_weighted":
+                        del rays, ray_weights
+                        _release_cupy_cached_blocks()
+        for index in range(warmup, warmup + repeat):
+            query_timings_ms.append(float(replay_query_ms[index]))
+            segment_ray_build_timings_ms.append(float(replay_segment_ray_build_ms))
+            triangle_build_timings_ms.append(float(replay_triangle_build_ms))
+            prepare_scene_timings_ms.append(float(replay_prepare_scene_ms))
+            lowered_ray_count_runs.append(int(replay_lowered_ray_count))
+            lowered_ray_weight_sum_runs.append(int(replay_lowered_ray_weight_sum))
+            hit_weight_sum = int(replay_hit_weight_sums[index])
+    else:
+        for index in range(warmup + repeat):
+            run_query_ms = 0.0
+            run_segment_ray_build_ms = 0.0
+            run_triangle_build_ms = 0.0
+            run_prepare_scene_ms = 0.0
+            run_hit_weight_sum = 0
+            run_lowered_ray_count = 0
+            run_lowered_ray_weight_sum = 0
+            for scene in scene_plan["scenes"]:
+                triangle_started = time.perf_counter()
+                triangles = _build_rt_graph_2a1_cupy_directed_edge_triangles(
+                    contract,
+                    start_edge=int(scene["edge_start"]),
+                    end_edge=int(scene["edge_end"]),
+                )
+                run_triangle_build_ms += _elapsed_ms(triangle_started, time.perf_counter())
+                prepare_started = time.perf_counter()
+                prepared_scene = rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangles)
+                run_prepare_scene_ms += _elapsed_ms(prepare_started, time.perf_counter())
+                with prepared_scene:
+                    for start_edge, end_edge, two_hop_rows in scene["ray_ranges"]:
+                        if int(two_hop_rows) <= 0:
+                            continue
+                        segment_build_started = time.perf_counter()
+                        rays, ray_weights = _build_rt_graph_2a1_cupy_segment_rays(
+                            contract,
+                            start_edge=int(start_edge),
+                            end_edge=int(end_edge),
+                            ray_representation=segment_ray_representation,
+                        )
+                        run_segment_ray_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
+                        run_lowered_ray_count += _record_count(rays)
+                        run_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
+                        query_started = time.perf_counter()
+                        summary_result = prepared_scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
+                        run_query_ms += _elapsed_ms(query_started, time.perf_counter())
+                        run_hit_weight_sum += int(summary_result["weighted_hit_sum"])
+            if index >= warmup:
+                query_timings_ms.append(run_query_ms)
+                segment_ray_build_timings_ms.append(run_segment_ray_build_ms)
+                triangle_build_timings_ms.append(run_triangle_build_ms)
+                prepare_scene_timings_ms.append(run_prepare_scene_ms)
+                lowered_ray_count_runs.append(int(run_lowered_ray_count))
+                lowered_ray_weight_sum_runs.append(int(run_lowered_ray_weight_sum))
+                hit_weight_sum = int(run_hit_weight_sum)
+            if segment_ray_representation == "unique_weighted":
+                _release_cupy_cached_blocks()
     ran = time.perf_counter()
     reduced = time.perf_counter()
 
@@ -1382,6 +1491,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                 "segmented": True,
                 "segment_max_two_hop_rows": int(segment_max_two_hop_rows),
                 "segment_ray_representation": segment_ray_representation,
+                "segment_query_schedule": segment_query_schedule,
             },
         },
         parameters={
@@ -1389,6 +1499,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "summary": True,
             "segmented_scenes": True,
             "segment_ray_representation": segment_ray_representation,
+            "segment_query_schedule": segment_query_schedule,
         },
         partner=partner,
         device="cuda:0",
@@ -1435,6 +1546,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
                 else "segmented duplicate 2-hop relation rays with unit weights"
             ),
             "segment_ray_representation": segment_ray_representation,
+            "segment_query_schedule": segment_query_schedule,
             "triangle_eps": 0.2,
             "ray_tmax": 0.2,
             "device_column_lowering": True,
@@ -1455,6 +1567,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "lowered_ray_weight_sum": int(lowered_ray_weight_sum),
             "ray_compression_ratio": ray_compression_ratio,
             "segment_ray_representation": segment_ray_representation,
+            "segment_query_schedule": segment_query_schedule,
             "counts_download_ms": float(scene_plan["counts_download_ms"]),
             "scenes_preview": scene_preview,
             "scenes_truncated": len(scene_plan["scenes"]) > len(scene_preview),
@@ -1484,6 +1597,7 @@ def rt_graph_2a1_segmented_scene_generic_rt_payload(
             "query_repeat": repeat,
             "query_warmup": warmup,
             "query_measured_runs": len(query_timings_ms),
+            "segment_query_schedule": segment_query_schedule,
             "reduce_hits": _elapsed_ms(ran, reduced),
             "total": _elapsed_ms(started, reduced),
         },
@@ -1797,6 +1911,11 @@ def _validate_repetition(*, warmup: int, repeat: int) -> None:
 def _validate_segment_ray_representation(value: str) -> None:
     if value not in {"duplicate", "unique_weighted"}:
         raise ValueError("segment_ray_representation must be duplicate or unique_weighted")
+
+
+def _validate_segment_query_schedule(value: str) -> None:
+    if value not in {"per_run", "prepared_segment_replay"}:
+        raise ValueError("segment_query_schedule must be per_run or prepared_segment_replay")
 
 
 def _record_count(records) -> int:
@@ -3078,6 +3197,7 @@ def run_app(
     segment_max_two_hop_rows: int = 1_000_000,
     scene_max_directed_edges: int = 2_000_000,
     segment_ray_representation: str = "duplicate",
+    segment_query_schedule: str = "per_run",
     validate_oracle: bool = False,
 ) -> dict[str, Any]:
     if mode == "scope":
@@ -3139,6 +3259,7 @@ def run_app(
             repeat=repeat,
             segment_max_two_hop_rows=segment_max_two_hop_rows,
             segment_ray_representation=segment_ray_representation,
+            segment_query_schedule=segment_query_schedule,
             validate_oracle=validate_oracle,
         )
     if mode == "rt_graph_2a1_segmented_scene_generic_rt":
@@ -3153,6 +3274,7 @@ def run_app(
             segment_max_two_hop_rows=segment_max_two_hop_rows,
             scene_max_directed_edges=scene_max_directed_edges,
             segment_ray_representation=segment_ray_representation,
+            segment_query_schedule=segment_query_schedule,
         )
     if mode == "rt_graph_1a2_generic_rt":
         return rt_graph_1a2_generic_rt_payload(
@@ -3233,6 +3355,15 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--segment-query-schedule",
+        choices=("per_run", "prepared_segment_replay"),
+        default="per_run",
+        help=(
+            "Segmented RT-2A1 schedule: rebuild segment rays for each measured run "
+            "or build each segment once and replay warmup/repeat queries before release."
+        ),
+    )
+    parser.add_argument(
         "--validate-oracle",
         action="store_true",
         help="Build the Python oracle for small binary edge files and compare the segmented result.",
@@ -3263,6 +3394,7 @@ def main(argv: list[str] | None = None) -> int:
                 segment_max_two_hop_rows=args.segment_max_two_hop_rows,
                 scene_max_directed_edges=args.scene_max_directed_edges,
                 segment_ray_representation=args.segment_ray_representation,
+                segment_query_schedule=args.segment_query_schedule,
                 validate_oracle=args.validate_oracle,
             ),
             indent=2,

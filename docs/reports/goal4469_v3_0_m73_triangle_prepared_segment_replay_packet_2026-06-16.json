@@ -1,0 +1,72 @@
+{
+  "goal": 4469,
+  "milestone": "v3_0_m73",
+  "status": "prepared_segment_replay_validated",
+  "implementation": "build_each_segment_ray_batch_once_then_replay_warmup_repeat_queries",
+  "claim_boundary": {
+    "generic_rt_engine_contract_preserved": true,
+    "app_partner_compresses_graph_two_hop_keys": true,
+    "native_engine_graph_specialization_added": false,
+    "public_speedup_claim_authorized": false,
+    "triangle_count_rt_core_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "automatic_partner_selection_authorized": false
+  },
+  "rows": [
+    {
+      "dataset": "com_lj",
+      "count": 177820130,
+      "logical_ray_count": 928731472,
+      "prepared_unique_weighted_ray_count": 528793097,
+      "ray_compression_ratio": 1.7563229877034496,
+      "m71_duplicate_per_run_total_s": 14.153179064393044,
+      "m72_unique_per_run_total_s": 14.072569198906422,
+      "m73_prepared_segment_replay_total_s": 9.552394539117813,
+      "m73_speedup_vs_m71_total": 1.4816367777141797,
+      "m73_speedup_vs_m72_total": 1.4731980699999498,
+      "m73_query_median_s": 0.950075164437294,
+      "m73_segment_ray_build_once_s": 1.543259158730507
+    },
+    {
+      "dataset": "soc_livejournal1",
+      "count": 285730264,
+      "logical_ray_count": 1383299326,
+      "prepared_unique_weighted_ray_count": 750099466,
+      "ray_compression_ratio": 1.8441545271010764,
+      "m71_duplicate_per_run_total_s": 25.747323013842106,
+      "m72_unique_per_run_total_s": 25.104992911219597,
+      "m73_prepared_segment_replay_total_s": 17.985594153404236,
+      "m73_speedup_vs_m71_total": 1.431552541119069,
+      "m73_speedup_vs_m72_total": 1.3958389529471191,
+      "m73_query_median_s": 1.3412888199090958,
+      "m73_segment_ray_build_once_s": 2.2967199459671974
+    },
+    {
+      "dataset": "com_orkut",
+      "count": 627584181,
+      "logical_ray_count": 8579930671,
+      "prepared_unique_weighted_ray_count": 4759226031,
+      "ray_compression_ratio": 1.8027995760472844,
+      "m71_duplicate_per_run_total_s": 115.03237361460924,
+      "m72_unique_per_run_total_s": 116.52718239277601,
+      "m73_prepared_segment_replay_total_s": 62.427946127951145,
+      "m73_speedup_vs_m71_total": 1.8426422900225012,
+      "m73_speedup_vs_m72_total": 1.8665868352283141,
+      "m73_query_median_s": 8.231899239122868,
+      "m73_segment_ray_build_once_s": 14.051948703825474
+    }
+  ],
+  "interpretation": {
+    "primary_win": "prepared segment replay avoids rebuilding compressed rays and scenes for every warmup/repeat pass while keeping memory bounded to one segment at a time",
+    "large_row_total_speedup": "1.43x-1.84x versus M71 duplicate-per-run totals and 1.40x-1.87x versus M72 unique-per-run totals",
+    "remaining_gap": "cuGraph and authors pure count kernels are still much faster; M73 is a current-route engineering improvement, not public RT-core speedup wording",
+    "next_action": "separate one-shot prepared-build cost from replay throughput and decide whether cheaper unique compression or prepared ray-batch reuse should become the recommended explicit route"
+  },
+  "evidence_files": [
+    "docs/reports/goal4469_v3_0_m73_triangle_prepared_unique_weighted_com_lj_w1r3_2026-06-16.json",
+    "docs/reports/goal4469_v3_0_m73_triangle_prepared_unique_weighted_soc_livejournal1_w1r3_2026-06-16.json",
+    "docs/reports/goal4469_v3_0_m73_triangle_prepared_unique_weighted_com_orkut_w1r3_2026-06-16.json",
+    "docs/reports/goal4468_v3_0_m72_triangle_unique_weighted_comparison_packet_2026-06-16.json",
+    "docs/reports/goal4467_v3_0_m71_triangle_current_comparison_packet_2026-06-16.json"
+  ]
+}

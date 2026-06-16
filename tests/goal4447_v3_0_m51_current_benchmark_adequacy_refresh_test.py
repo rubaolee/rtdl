@@ -15,7 +15,7 @@ class Goal4447V30M51CurrentBenchmarkAdequacyRefreshTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_adequacy()
         summary = rt.summarize_current_benchmark_adequacy()
 
-        self.assertEqual(rt.CURRENT_BENCHMARK_ADEQUACY_VERSION, "rtdl.v3_0.current_benchmark_adequacy.goal4468.v1")
+        self.assertEqual(rt.CURRENT_BENCHMARK_ADEQUACY_VERSION, "rtdl.v3_0.current_benchmark_adequacy.goal4469.v1")
         self.assertEqual(validation["status"], "accept")
         self.assertEqual(validation["errors"], ())
         self.assertEqual(summary["app_count"], 10)

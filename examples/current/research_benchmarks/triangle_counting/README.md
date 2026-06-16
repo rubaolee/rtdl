@@ -187,6 +187,14 @@ build+query improves 1.11x-1.13x; whole formal total is slightly better on
 `com-lj` and `soc-LiveJournal1` and slightly worse on `com-orkut`. The current
 next target is cheaper or reusable unique compression, not more cap tuning.
 
+Goal4469 adds the explicit `--segment-query-schedule prepared_segment_replay`
+schedule. Instead of rebuilding the same unique-weighted segment rays for every
+warmup/repeat pass, it builds one segment, replays the repeated queries, then
+releases it. This keeps memory bounded and improves the formal large-row totals
+to `com-lj` 9.552s, `soc-LiveJournal1` 17.986s, and `com-orkut` 62.428s. That
+is a 1.43x-1.84x improvement versus the Goal4467 duplicate-ray totals, but it
+still does not authorize public RT-core triangle-count speedup wording.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
@@ -198,6 +206,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4466_v3_0_m70_triangle_ray_batch_cap_tuning_com_orkut_2026-06-16.md`
 - `docs/reports/goal4467_v3_0_m71_triangle_current_comparison_packet_2026-06-16.md`
 - `docs/reports/goal4468_v3_0_m72_triangle_unique_weighted_comparison_packet_2026-06-16.md`
+- `docs/reports/goal4469_v3_0_m73_triangle_prepared_segment_replay_packet_2026-06-16.md`
 
 ## Engine Boundary
 
