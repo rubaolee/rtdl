@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4446.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4451.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -55,7 +55,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "avoids per-point Python cluster rows when the user only needs the cluster "
     "size/noise/core summary. Goal4446 refreshes robot-collision setup guidance "
     "by replacing the Python-heavy grouped-segment query lowering with NumPy "
-    "vectorized endpoint arrays for large prepared probes."
+    "vectorized endpoint arrays for large prepared probes. Goal4451 hardens "
+    "Spatial RayJoin repeated-PIP guidance by fail-closing the unsafe "
+    "prepared-points CUDA graph replay path and preserving the prepared batch "
+    "executor as the correctness-preserving repeated-request path."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -197,13 +200,15 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "universal PIP dominance",
             "RayJoin paper reproduction",
             "RTDL-beats-RayJoin whole-app claim",
-            "prepared-points CUDA graph replay after Goal4050 OptiX/CUDA prepare failure",
+            "prepared-points CUDA graph replay retired after Goal4451 fail-closed guard",
         ),
         next_runtime_action=(
             "next major work is larger generic route evidence, not more one-off RayJoin tuning; "
-            "treat prepared-points CUDA graph replay as quarantined until a real OptiX-capture fix exists"
+            "use the reusable prepared-points batch executor for repeated PIP; prepared-points "
+            "CUDA graph replay is fail-closed and quarantined after Goal4050/Goal4451 until "
+            "OptiX/CUDA capture can pass hardware validation without zero-count replay"
         ),
-        evidence_refs=("Goal3866", "Goal3867", "Goal3933", "Goal3934", "Goal3935", "Goal3936", "Goal3937", "Goal4039", "Goal4050"),
+        evidence_refs=("Goal3866", "Goal3867", "Goal3933", "Goal3934", "Goal3935", "Goal3936", "Goal3937", "Goal4039", "Goal4050", "Goal4451"),
         pod_needed_next=False,
     ),
     CurrentBenchmarkRouteDecision(

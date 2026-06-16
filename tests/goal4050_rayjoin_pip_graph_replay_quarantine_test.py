@@ -31,9 +31,11 @@ class Goal4050RayJoinPipGraphReplayQuarantineTest(unittest.TestCase):
 
         self.assertIn("Goal4050", route["evidence_refs"])
         self.assertIn("Goal4050", spatial["evidence_refs"])
+        self.assertIn("Goal4451", route["evidence_refs"])
+        self.assertIn("Goal4451", spatial["evidence_refs"])
         self.assertIn("CUDA graph replay", route["rejected_or_unpromoted_candidates"][-1])
         self.assertIn("quarantined", route["next_runtime_action"])
-        self.assertIn("OptiX/CUDA prepare failure", spatial["next_generic_runtime_action"])
+        self.assertIn("fail-closes unsafe graph replay", spatial["next_generic_runtime_action"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(spatial["public_speedup_claim_authorized"])
 

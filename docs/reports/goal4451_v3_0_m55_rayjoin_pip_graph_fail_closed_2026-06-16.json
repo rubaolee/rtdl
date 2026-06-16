@@ -1,0 +1,30 @@
+{
+  "goal": 4451,
+  "date": "2026-06-16",
+  "app": "spatial_rayjoin",
+  "contract": "prepared point/closed-shape repeated PIP scalar count",
+  "fixture": {
+    "polygons": 1,
+    "points": 3,
+    "expected_positive_count": 2
+  },
+  "single_count": 2,
+  "batch_counts": [2, 2, 2],
+  "executor_counts": [2, 2, 2],
+  "unvalidated_graph_status": "failed_closed_before_native_prepare",
+  "unvalidated_graph_error": "prepared OptiX point/closed-shape batch CUDA graph replay is quarantined: current OptiX/CUDA launches can fail native capture after prior launches or replay zero counts. Use prepare_device_filtered_prepared_points_batch_executor(...) for repeated PIP requests. Set RTDL_OPTIX_ALLOW_UNVALIDATED_PREPARED_POINTS_BATCH_GRAPH=1 only for diagnostic negative probes; unvalidated graph replay is not a correctness path.",
+  "validated_graph_status": "failed_closed_native_prepare",
+  "validated_graph_error": "prepared OptiX point/closed-shape batch CUDA graph replay is quarantined: current OptiX/CUDA launches can fail native capture after prior launches or replay zero counts. Use prepare_device_filtered_prepared_points_batch_executor(...) for repeated PIP requests. Native graph prepare failed before validation. Original error: OptiX error: CUDA error",
+  "native_capture_experiment": {
+    "candidate": "CU_STREAM_CAPTURE_MODE_RELAXED",
+    "result": "did_not_fix",
+    "final_source_capture_mode": "CU_STREAM_CAPTURE_MODE_GLOBAL"
+  },
+  "claim_boundary": {
+    "performance_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "automatic_partner_selection_authorized": false
+  }
+}

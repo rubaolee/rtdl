@@ -416,6 +416,15 @@ OPTIX_PREPARED_POINTS_BATCH_GRAPH_REPLAY_SYMBOL = (
 OPTIX_PREPARED_POINTS_BATCH_GRAPH_DESTROY_SYMBOL = (
     "rtdl_optix_destroy_prepared_point_closed_shape_membership_device_filtered_prepared_points_batch_graph_2d"
 )
+OPTIX_PREPARED_POINTS_BATCH_GRAPH_UNVALIDATED_OVERRIDE_ENV = (
+    "RTDL_OPTIX_ALLOW_UNVALIDATED_PREPARED_POINTS_BATCH_GRAPH"
+)
+OPTIX_PREPARED_POINTS_BATCH_GRAPH_QUARANTINE_MESSAGE = (
+    "prepared OptiX point/closed-shape batch CUDA graph replay is quarantined: "
+    "current OptiX/CUDA launches can fail native capture after prior launches "
+    "or replay zero counts. Use prepare_device_filtered_prepared_points_batch_executor(...) "
+    "for repeated PIP requests."
+)
 OPTIX_CLOSED_SHAPE_FIRST_BOUNDARY_CROSSING_SYMBOL = (
     "rtdl_optix_run_prepared_point_closed_shape_first_boundary_crossing_2d"
 )
@@ -13579,6 +13588,15 @@ class PreparedOptixPointClosedShapeBatchCountGraph2D:
         request_count = int(request_count)
         if request_count <= 0:
             raise ValueError("request_count must be positive")
+        if (
+            not validate_on_prepare
+            and os.environ.get(OPTIX_PREPARED_POINTS_BATCH_GRAPH_UNVALIDATED_OVERRIDE_ENV) != "1"
+        ):
+            raise RuntimeError(
+                f"{OPTIX_PREPARED_POINTS_BATCH_GRAPH_QUARANTINE_MESSAGE} "
+                f"Set {OPTIX_PREPARED_POINTS_BATCH_GRAPH_UNVALIDATED_OVERRIDE_ENV}=1 only for "
+                "diagnostic negative probes; unvalidated graph replay is not a correctness path."
+            )
         self._prepared_owner = prepared
         self._prepared_points_owner = prepared_points
         self.request_count = request_count
@@ -13603,7 +13621,13 @@ class PreparedOptixPointClosedShapeBatchCountGraph2D:
             error,
             len(error),
         )
-        _check_status(status, error)
+        try:
+            _check_status(status, error)
+        except RuntimeError as exc:
+            raise RuntimeError(
+                f"{OPTIX_PREPARED_POINTS_BATCH_GRAPH_QUARANTINE_MESSAGE} "
+                f"Native graph prepare failed before validation. Original error: {exc}"
+            ) from exc
         self._validation_counts: tuple[int, ...] | None = None
         if validate_on_prepare:
             expected = prepared.count_device_filtered_prepared_points_batch(
@@ -13614,7 +13638,8 @@ class PreparedOptixPointClosedShapeBatchCountGraph2D:
             if observed != expected:
                 self.close()
                 raise RuntimeError(
-                    "prepared OptiX batch-count graph replay failed validation: "
+                    f"{OPTIX_PREPARED_POINTS_BATCH_GRAPH_QUARANTINE_MESSAGE} "
+                    "Native graph replay failed validation: "
                     f"{observed[:5]} != {expected[:5]}"
                 )
             self._validation_counts = expected
@@ -13655,6 +13680,8 @@ class PreparedOptixPointClosedShapeBatchCountGraph2D:
             "native_prepare_symbol": OPTIX_PREPARED_POINTS_BATCH_GRAPH_PREPARE_SYMBOL,
             "native_replay_symbol": OPTIX_PREPARED_POINTS_BATCH_GRAPH_REPLAY_SYMBOL,
             "replayable_launch_object": True,
+            "quarantined": True,
+            "quarantine_reason": OPTIX_PREPARED_POINTS_BATCH_GRAPH_QUARANTINE_MESSAGE,
             "validated_on_prepare": self._validation_counts is not None,
             "true_zero_copy_claim_authorized": False,
         }

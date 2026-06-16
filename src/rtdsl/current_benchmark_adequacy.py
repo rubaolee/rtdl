@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4450.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4451.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -22,7 +22,9 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "rows; triangle counting keeps scalar primitive wording while Goal4444 fixes "
     "the no-C++ Numba construction debt; RT-DBSCAN adds Goal4445 compact "
     "component-signature output; and robot collision adds Goal4446 NumPy "
-    "vectorized grouped-segment query lowering. This advisory does not authorize "
+    "vectorized grouped-segment query lowering. Goal4451 updates Spatial "
+    "RayJoin repeated-PIP guidance by preserving the prepared batch executor "
+    "and fail-closing unsafe prepared-points CUDA graph replay. This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
     "automatic partner selection, AMD performance wording, or app-specific "
@@ -113,6 +115,67 @@ class CurrentBenchmarkAdequacyRow:
 
 
 _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
+    "spatial_rayjoin": {
+        "current_performance_reading": (
+            "strong but contract-specific: current evidence supports RTDL/OptiX "
+            "prepared scalar-count and active-count subcontracts for repeated PIP, "
+            "LSI, and overlay-style active counts, not a universal PIP dominance or "
+            "RayJoin paper-reproduction claim. Goal4039 is the latest representative "
+            "mixed-route confirmation on RTX 4000 Ada after the Numba CUDA toolchain "
+            "repair: one-shot bounded PIP still favors Numba, while repeated PIP uses "
+            "the RTDL/OptiX prepared batch executor and LSI/overlay remain "
+            "RTDL/OptiX-favorable versus Numba. Goal4050 found the prepared-points "
+            "CUDA graph replay path unsafe. Goal4451 turns that finding into runtime "
+            "policy: unvalidated graph replay now fails closed by default, validated "
+            "graph prepare/replay errors are reported as quarantined, and the batch "
+            "executor remains the recommended repeated-PIP path."
+        ),
+        "current_recommended_path": (
+            "mixed explicit route: use Numba for bounded PIP one-shot when that is "
+            "the measured contract; use RTDL/OptiX prepared point/closed-shape batch "
+            "executor for repeated PIP requests; use exact RTDL/OptiX prepared "
+            "segment-pair count for LSI; use RTDL/OptiX prepared-left shape-pair "
+            "active-count executor for overlay active count. Do not use prepared-points "
+            "CUDA graph replay as a correctness or performance path after Goal4451."
+        ),
+        "current_partner_role": (
+            "Numba remains an explicit no-C++ comparison/reference lane for bounded "
+            "PIP and scalar-count continuations; CuPy remains a dense CUDA-core "
+            "baseline/opponent. Partner choice is explicit user policy, not automatic "
+            "dispatch hidden behind the RayJoin front door."
+        ),
+        "next_generic_runtime_action": (
+            "treat Numba-reference and scalar-count OptiX contracts as covered for "
+            "current V3 guidance; Goal4451 fail-closes unsafe graph replay, so use "
+            "the batch executor for repeated PIP and revisit graph replay only after "
+            "OptiX/CUDA capture passes hardware validation without zero-count replay"
+        ),
+        "evidence_refs": (
+            "Goal3688",
+            "Goal3713",
+            "Goal3733",
+            "Goal3734",
+            "Goal3737",
+            "Goal3749",
+            "Goal3761",
+            "Goal3766",
+            "Goal3767",
+            "Goal3784",
+            "Goal3785",
+            "Goal3834",
+            "Goal3838",
+            "Goal3842",
+            "Goal3866",
+            "Goal3867",
+            "Goal3933",
+            "Goal3934",
+            "Goal3935",
+            "Goal3936",
+            "Goal4039",
+            "Goal4050",
+            "Goal4451",
+        ),
+    },
     "rt_dbscan": {
         "current_performance_reading": (
             "strong at scale with boundary: Goal3758 A5000 prepared-repeat evidence shows "

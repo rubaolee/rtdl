@@ -91,7 +91,7 @@ v2.14 evidence:
 | App | Current front-door row | Partner/native note | Pod need |
 | --- | --- | --- | --- |
 | Hausdorff / X-HD | `hausdorff_xhd_current_optix_threshold` | primitive-first OptiX path; CuPy/Numba are comparison/reference lanes | NVIDIA pod for OptiX timing |
-| Spatial RayJoin | `spatial_rayjoin_pip_count_current_prepared_optix` | contract-split RayJoin-style path; scalar/count paths are stronger than full paper reproduction | NVIDIA pod plus public-CDB fixture for representative route |
+| Spatial RayJoin | `spatial_rayjoin_pip_count_current_prepared_optix` | contract-split RayJoin-style path; scalar/count paths are stronger than full paper reproduction; Goal4451 fail-closes unsafe prepared-points CUDA graph replay and keeps the batch executor as the repeated-PIP path | NVIDIA pod plus public-CDB fixture for representative route |
 | RT-DBSCAN | `rt_dbscan_optix_grouped_stream_component_signature` | Generic OptiX fixed-radius/grouped-stream component labels plus explicit CuPy/Numba compact component-signature continuation; full rows remain a slower output contract | CUDA pod with CuPy and Numba |
 | Robot collision | `robot_collision_prepared_grouped_segment_any_hit_numpy_lowering` | primitive-only prepared static-scene grouped-segment any-hit path; Goal4446 removes the major Python query-lowering debt while preserving the M31 same-contract backend comparison | NVIDIA pod for OptiX/Embree timing |
 | Contact manifold | `contact_manifold_optix_native_collect_k` | bounded collect/witness primitive path; no manifold-native ABI | NVIDIA pod for OptiX timing |
@@ -120,6 +120,7 @@ v2.14 evidence:
 - [Goal4445 DBSCAN compact component signature](../reports/goal4445_v3_0_m49_dbscan_component_signature_2026-06-16.md)
 - [Goal4446 Robot Collision NumPy lowering](../reports/goal4446_v3_0_m50_robot_numpy_lowering_2026-06-16.md)
 - [Goal4447 current benchmark adequacy refresh](../reports/goal4447_v3_0_m51_current_benchmark_adequacy_refresh_2026-06-16.md)
+- [Goal4451 RayJoin PIP graph fail-closed](../reports/goal4451_v3_0_m55_rayjoin_pip_graph_fail_closed_2026-06-16.md)
 
 ## Reading Rules
 
@@ -129,6 +130,8 @@ v2.14 evidence:
   exact contract before using it as performance evidence.
 - The v2.14 release packet keeps mixed rows explicit: Spatial RayJoin PIP is
   near parity and slightly Embree-faster in the refreshed human-scale slice,
+  and prepared-points CUDA graph replay is not a current Spatial RayJoin
+  performance lane after Goal4451.
   Goal4368 separately records an OptiX-over-Embree exact PIP engineering win
   that still does not beat RayJoin RT, and RTNN now has large RTDL-internal
   same-contract aggregate and app-front-door graph-bridge evidence while still
