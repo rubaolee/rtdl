@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4472.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4473.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -134,7 +134,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "more timing interpretation. Goal4472 adds an explicit no-C++ "
     "`--segment-unique-key-builder numba_direct` path that reduces segment-ray "
     "build and backend time on the three large rows, but keeps hidden default "
-    "promotion blocked because end-to-end total is mixed."
+    "promotion blocked because end-to-end total is mixed. Goal4473 adds backend "
+    "query-phase telemetry for the same route and shows the M77 native query_pack "
+    "plus traversal medians are essentially equal between `cupy_repeat` and "
+    "`numba_direct`; the remaining query-wall movement is therefore replay/envelope "
+    "work, not native RT traversal evidence."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -759,7 +763,13 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4472 then adds explicit `numba_direct` unique-key fill: segment-ray "
             "build improves by 1.17x/1.36x/1.64x and backend phase by "
             "1.05x/1.03x/1.09x on `com-lj`/`soc-LiveJournal1`/`com-orkut`, "
-            "but total wall time is mixed, so this remains an explicit option."
+            "but total wall time is mixed, so this remains an explicit option. "
+            "Goal4473 adds backend query-phase telemetry on the same three large "
+            "rows: `numba_direct` total is 1.09x/1.08x/1.12x faster in the M77 "
+            "packet, segment-ray build is 1.18x/1.34x/1.64x faster, and native "
+            "query pack plus traversal is about 1.00x between key builders. The "
+            "remaining query-wall movement is therefore non-native replay envelope "
+            "cost, not evidence of slower RT traversal."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -801,7 +811,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "be read as paid every measured replay. Cite Goal4472 when the user "
             "asks for the no-C++ direct unique-key builder: "
             "`--segment-unique-key-builder numba_direct` reduces segment-ray build "
-            "in the large-row packet but is not a hidden default."
+            "in the large-row packet but is not a hidden default. Cite Goal4473 "
+            "when the user asks whether M76's query-side movement is native RT "
+            "traversal: M77 shows native query pack/traversal are essentially "
+            "unchanged, while total time favors `numba_direct` on all three rows."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -826,6 +839,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "claiming Goal4470 shows RTDL beats cuGraph or authors pure kernels",
             "reading legacy segment_ray_build_total_ms as actual paid wall time after Goal4471",
             "making Goal4472 numba_direct unique-key fill a hidden default",
+            "making Goal4473 query-phase telemetry a hidden automatic key-builder selector",
+            "treating Goal4473 query-wall movement as native RT traversal regression",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -836,9 +851,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "and Goal4469 proves explicit prepared segment replay improves large-row "
             "totals; Goal4471 separates one-shot build cost from replay throughput; "
             "Goal4472 adds explicit no-C++ numba_direct unique-key fill with "
-            "build/backend wins but mixed end-to-end totals; next work is reducing "
-            "query-side regression/variance or adding a reusable prepared ray-batch "
-            "API without graph-specific native engine logic"
+            "build/backend wins, and Goal4473 shows M77 totals favor numba_direct "
+            "while native query pack/traversal are effectively unchanged; next work "
+            "is reducing prepared replay envelope costs or adding a reusable "
+            "prepared ray-batch API without graph-specific native engine logic"
         ),
         evidence_refs=(
             "Goal2797",
@@ -865,6 +881,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4470",
             "Goal4471",
             "Goal4472",
+            "Goal4473",
         ),
         pod_needed_next=False,
     ),

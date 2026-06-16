@@ -217,6 +217,15 @@ backend phase by 1.05x/1.03x/1.09x, but end-to-end total is mixed
 (`soc-LiveJournal1` is slightly slower). Keep it explicit; do not make it a
 hidden default.
 
+Goal4473 adds backend query-phase telemetry for the same prepared segmented
+route. On the three large rows, the M77 packet shows `numba_direct` faster
+end-to-end by 1.09x/1.08x/1.12x, while native `query_pack` plus `traversal`
+medians are essentially unchanged versus `cupy_repeat`. The query-wall
+movement that remains is therefore replay/envelope cost outside the measured
+native pack/traversal phases, not evidence that RT traversal got worse. Keep
+`numba_direct` explicit; the next target is reducing prepared replay envelope
+overhead or adding a reusable prepared ray-batch API.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
@@ -232,6 +241,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4470_v3_0_m74_triangle_post_m73_comparison_packet_2026-06-16.md`
 - `docs/reports/goal4471_v3_0_m75_triangle_phase_split_packet_2026-06-16.md`
 - `docs/reports/goal4472_v3_0_m76_triangle_numba_direct_unique_key_packet_2026-06-16.md`
+- `docs/reports/goal4473_v3_0_m77_triangle_query_phase_packet_2026-06-16.md`
 
 ## Engine Boundary
 

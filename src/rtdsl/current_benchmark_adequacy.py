@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4472.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4473.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -56,7 +56,11 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "collapsed into legacy aggregate fields. Goal4472 adds explicit no-C++ "
     "Numba direct unique-key fill for Triangle Counting; it improves build and "
     "backend phases but has mixed end-to-end total timing, so default promotion "
-    "remains blocked. "
+    "remains blocked. Goal4473 adds backend query-phase telemetry and shows the "
+    "M77 same-commit packet has `numba_direct` faster end to end on all three "
+    "large rows while native query pack/traversal stay essentially equal; the "
+    "remaining query-wall movement is replay envelope work, not native RT "
+    "traversal evidence. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -472,7 +476,12 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "0.925s/1.282s/8.216s. Goal4472 adds explicit no-C++ "
             "`numba_direct` unique-key fill. It improves segment-ray build by "
             "1.17x/1.36x/1.64x and backend phase by 1.05x/1.03x/1.09x on the "
-            "large rows, while end-to-end total remains mixed."
+            "large rows, while end-to-end total remains mixed. Goal4473 adds "
+            "backend query-phase telemetry: the M77 packet shows `numba_direct` "
+            "faster end to end by 1.09x/1.08x/1.12x, while native query pack "
+            "plus traversal remains about 1.00x versus `cupy_repeat`. The "
+            "observed query-wall movement is therefore replay/envelope cost, "
+            "not native RT traversal regression."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -495,24 +504,28 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "boundary. Cite Goal4471 when explaining cold/build versus hot/replay "
             "phase split or why legacy build-total fields are not wall-time build "
             "costs for prepared replay. Cite Goal4472 when the explicit no-C++ "
-            "`numba_direct` key builder is relevant; do not auto-select it."
+            "`numba_direct` key builder is relevant; do not auto-select it. Cite "
+            "Goal4473 when explaining that M77's native pack/traversal telemetry "
+            "does not support a native RT regression reading for query-wall movement."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
             "large-scale performance for explicit summary-contract construction and "
             "the segmented RT-2A1 route, including the explicit unique-weighted "
             "segment-ray representation and prepared segment replay schedule; "
-            "Numba is now a much fairer no-C++ "
-            "Python-source reference for the global-summary path"
+            "Numba is now a much fairer no-C++ Python-source reference for the "
+            "global-summary path and an explicit direct key-fill option for the "
+            "segmented route"
         ),
         "next_generic_runtime_action": (
             "keep scalar triangle-count wording primitive-first; do not claim RT-Graph "
             "paper reproduction or broad triangle-count acceleration; after Goal4471, "
             "the one-shot build versus replay-throughput split is explicit, and "
             "Goal4472 partially reduces unique-key construction with an explicit "
-            "Numba direct-fill route; next work is query-side regression/variance "
-            "or a reusable prepared ray-batch API; do not spend more time on "
-            "batch-cap tuning unless hardware changes"
+            "Numba direct-fill route; Goal4473 shows native pack/traversal are not "
+            "the query-wall regression source; next work is reducing prepared replay "
+            "envelope costs or adding a reusable prepared ray-batch API; do not "
+            "spend more time on batch-cap tuning unless hardware changes"
         ),
         "evidence_refs": (
             "Goal2797",
@@ -537,6 +550,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4470",
             "Goal4471",
             "Goal4472",
+            "Goal4473",
         ),
     },
 }

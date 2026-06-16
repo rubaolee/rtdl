@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import importlib
+import json
 import os
 from pathlib import Path
 import tempfile
@@ -11,6 +13,11 @@ from examples.current.research_benchmarks.triangle_counting import rtdl_triangle
 
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
+REPORT = ROOT / "docs" / "reports" / "goal4473_v3_0_m77_triangle_query_phase_packet_2026-06-16.md"
+PACKET = ROOT / "docs" / "reports" / "goal4473_v3_0_m77_triangle_query_phase_packet_2026-06-16.json"
+
+routes = importlib.import_module("rtdsl.current_benchmark_route_decisions")
+adequacy = importlib.import_module("rtdsl.current_benchmark_adequacy")
 
 
 def _has_cupy_optix() -> bool:
@@ -44,6 +51,40 @@ class Goal4473V30M77TriangleQueryPhaseTelemetryTest(unittest.TestCase):
         self.assertIn("backend_query_phase_summary_ms", source)
         self.assertIn("_accumulate_backend_query_phase_ms", source)
         self.assertIn("triangle_counting.backend_query_phase_summary.v1", source)
+
+    def test_packet_records_m77_query_phase_reading(self) -> None:
+        packet = json.loads(PACKET.read_text(encoding="utf-8"))
+        rows = {row["dataset"]: row for row in packet["rows"]}
+
+        self.assertEqual(4473, packet["goal"])
+        self.assertFalse(packet["claim_boundary"]["hidden_default_promotion_authorized"])
+        self.assertFalse(packet["claim_boundary"]["public_speedup_claim_authorized"])
+        self.assertGreater(rows["com_lj"]["total_speedup"], 1.08)
+        self.assertGreater(rows["soc_livejournal1"]["total_speedup"], 1.07)
+        self.assertGreater(rows["com_orkut"]["total_speedup"], 1.11)
+        self.assertGreater(rows["com_orkut"]["segment_ray_build_speedup"], 1.6)
+        self.assertAlmostEqual(1.0, rows["com_lj"]["native_traversal_speedup"], delta=0.01)
+        self.assertAlmostEqual(1.0, rows["soc_livejournal1"]["native_known_query_speedup"], delta=0.01)
+        self.assertAlmostEqual(1.0, rows["com_orkut"]["native_known_query_speedup"], delta=0.01)
+        self.assertIn("replay/envelope", packet["interpretation"]["query_wall_result"])
+
+    def test_report_and_registry_record_query_phase_boundary(self) -> None:
+        report = REPORT.read_text(encoding="utf-8")
+        route = routes.explain_current_benchmark_route("triangle_counting")
+        rows = {row["app"]: row for row in adequacy.current_benchmark_adequacy()}
+        triangle = rows["triangle_counting"]
+
+        self.assertIn("Native pack median", report)
+        self.assertIn("replay envelope", report)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4473.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4473.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertIn("Goal4473", route["evidence_refs"])
+        self.assertIn("Goal4473", triangle["evidence_refs"])
+        self.assertIn("native query pack/traversal", route["user_choice_guidance"])
+        self.assertIn("prepared replay envelope", route["next_runtime_action"])
+        self.assertIn("native pack/traversal", triangle["next_generic_runtime_action"])
+        self.assertFalse(route["automatic_partner_selection_authorized"])
+        self.assertFalse(triangle["public_speedup_claim_authorized"])
 
     @unittest.skipUnless(_has_cupy_optix(), "CuPy plus RTDL OptiX library are not available")
     def test_live_prepared_segment_replay_reports_pack_and_traversal(self) -> None:
