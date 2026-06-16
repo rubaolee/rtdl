@@ -1,0 +1,30 @@
+{
+  "datasets": {
+    "soc_livejournal1": {
+      "binary_edge_path": "build/goal2593_snap_edges/soc-LiveJournal1.edge",
+      "convert": {
+        "bytes": 551950184,
+        "comment_count": 4,
+        "edge_count": 68993773,
+        "elapsed_ms": 105994.15330588818,
+        "max_vertex": 4847570,
+        "min_vertex": 0,
+        "status": "converted"
+      },
+      "download": {
+        "bytes": 259619239,
+        "elapsed_ms": 24081.557132303715,
+        "status": "downloaded"
+      },
+      "edge_count_matches_snap": true,
+      "expected_edges": 68993773,
+      "expected_nodes": 4847571,
+      "expected_triangles": 285730264,
+      "gzip_path": "build/goal2593_snap_raw/soc-LiveJournal1.txt.gz",
+      "name": "soc_livejournal1",
+      "snap_name": "soc-LiveJournal1",
+      "source_url": "https://snap.stanford.edu/data/soc-LiveJournal1.txt.gz"
+    }
+  },
+  "source": "SNAP datasets used by RT-Graph SIGMETRICS 2025 TC section"
+}

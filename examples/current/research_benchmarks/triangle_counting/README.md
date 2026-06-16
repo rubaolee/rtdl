@@ -137,11 +137,20 @@ directed edge triangles, 928,731,472 duplicate two-hop rays, 186 segments, and
 `global_two_hop_summary_materialized=false`. This is a correctness and
 scalability milestone, not refreshed public speedup wording.
 
+Goal4463 adds source-range triangle-scene segmentation for larger paper rows
+where one global directed-edge OptiX scene is itself too large. On
+`soc-LiveJournal1`, the segmented-scene route matched the expected 285,730,264
+triangles with 42,260,523 directed edge triangles, 1,383,299,326 duplicate
+two-hop rays, 6 scenes, 280 ray segments, and both
+`global_two_hop_summary_materialized=false` and
+`global_triangle_scene_materialized=false`.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
 - `docs/reports/goal4461_v3_0_m65_triangle_segmented_2a1_2026-06-16.md`
 - `docs/reports/goal4462_v3_0_m66_triangle_segmented_com_lj_2026-06-16.md`
+- `docs/reports/goal4463_v3_0_m67_triangle_segmented_scene_soc_livejournal1_2026-06-16.md`
 
 ## Engine Boundary
 

@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4462.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4463.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -100,7 +100,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4462 validates that route on the real `com-lj` paper dataset that failed "
     "Goal2593 RTDL 2A1/1A2 with a 7,429,851,776-byte CUDA allocation failure; "
     "segmented RTDL matches 177,820,130 expected triangles without global two-hop "
-    "summary materialization."
+    "summary materialization. Goal4463 adds source-range triangle-scene segmentation "
+    "for `soc-LiveJournal1`, where one global directed-edge OptiX scene OOMed; "
+    "segmented scenes match 285,730,264 expected triangles without global two-hop "
+    "or global triangle-scene materialization."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -682,8 +685,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "`com-lj` paper dataset, replacing the Goal2593 7,429,851,776-byte CUDA allocation "
             "failure with an exact 177,820,130 / 177,820,130 triangle-count match over "
             "33,895,259 directed edge triangles, 928,731,472 duplicate two-hop rays, and "
-            "186 segments. CuPy remains the current large-scale performance route; broader "
-            "paper-dataset segmented evidence is the next validation step."
+            "186 segments. Goal4463 then adds source-range triangle-scene segmentation "
+            "and runs `soc-LiveJournal1`, matching 285,730,264 / 285,730,264 expected "
+            "triangles over 42,260,523 directed edge triangles, 1,383,299,326 duplicate "
+            "two-hop rays, 6 scenes, and 280 ray segments, with neither global two-hop "
+            "summary nor global triangle scene materialized. CuPy remains the current "
+            "large-scale performance route; `com-orkut` is the next validation step."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -702,7 +709,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "two-hop summary materialization by lowering duplicate two-hop rays in bounded "
             "generic RT batches. Cite Goal4462 when the user asks whether this segmented "
             "route actually runs a formerly OOM paper dataset: `com-lj` now matches the "
-            "expected triangle count exactly."
+            "expected triangle count exactly. Cite Goal4463 when the requested dataset "
+            "also needs source-range triangle-scene segmentation: `soc-LiveJournal1` "
+            "now matches the expected triangle count exactly."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -715,15 +724,16 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "requiring CuPy host-column materialization in app summary mode after Goal4457",
             "treating the Goal4461 segmented RT-2A1 route as a public triangle-count RT-core speedup claim",
             "treating the Goal4462 com-lj success as a refreshed full paper-dataset speedup matrix",
+            "treating the Goal4463 soc-LiveJournal1 success as a refreshed full paper-dataset speedup matrix",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
             "preserve the generic graph relationship-count route and avoid claiming RT-core "
             "triangle-count acceleration; the remaining graph-summary construction validation "
-            "is to extend the segmented RT-2A1 route from the now-passing `com-lj` row to "
-            "`soc-LiveJournal1` and `com-orkut`, then compare it against the CuPy "
-            "global-summary route, the no-C++ Numba reference, cuGraph, and authors' "
-            "RT-Graph code under one explicit timing contract"
+            "is to extend segmented source-range scenes to `com-orkut`, then compare "
+            "the now-passing `com-lj` and `soc-LiveJournal1` rows against the CuPy "
+            "global-summary route where it fits, the no-C++ Numba reference where it fits, "
+            "cuGraph, and authors' RT-Graph code under one explicit timing contract"
         ),
         evidence_refs=(
             "Goal2797",
@@ -740,6 +750,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4457",
             "Goal4461",
             "Goal4462",
+            "Goal4463",
         ),
         pod_needed_next=False,
     ),

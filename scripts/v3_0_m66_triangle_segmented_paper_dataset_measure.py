@@ -20,8 +20,16 @@ def main() -> int:
     )
     parser.add_argument("--warmup", type=int, default=0)
     parser.add_argument("--repeat", type=int, default=1)
+    parser.add_argument(
+        "--mode",
+        choices=("segmented_rays", "segmented_scenes"),
+        default="segmented_rays",
+    )
     parser.add_argument("--segment-max-two-hop-rows", type=int, default=5_000_000)
+    parser.add_argument("--scene-max-directed-edges", type=int, default=8_000_000)
     parser.add_argument("--hardware", default=None)
+    parser.add_argument("--goal", type=int, default=4462)
+    parser.add_argument("--milestone", default=None)
     parser.add_argument(
         "--output",
         type=Path,
@@ -35,6 +43,8 @@ def main() -> int:
         raise ValueError("--repeat must be at least 1")
     if args.segment_max_two_hop_rows < 1:
         raise ValueError("--segment-max-two-hop-rows must be at least 1")
+    if args.scene_max_directed_edges < 1:
+        raise ValueError("--scene-max-directed-edges must be at least 1")
 
     from examples.current.research_benchmarks.triangle_counting import (
         rtdl_triangle_counting_benchmark_app as app,
@@ -46,8 +56,13 @@ def main() -> int:
         expected = int(expected_text)
         if not edge_file.exists():
             raise FileNotFoundError(edge_file)
+        app_mode = (
+            "rt_graph_2a1_segmented_scene_generic_rt"
+            if args.mode == "segmented_scenes"
+            else "rt_graph_2a1_segmented_generic_rt"
+        )
         payload = app.run_app(
-            "rt_graph_2a1_segmented_generic_rt",
+            app_mode,
             edge_file=str(edge_file),
             edge_format="binary",
             backend="optix",
@@ -56,6 +71,7 @@ def main() -> int:
             warmup=args.warmup,
             repeat=args.repeat,
             segment_max_two_hop_rows=args.segment_max_two_hop_rows,
+            scene_max_directed_edges=args.scene_max_directed_edges,
         )
         row = _compact_row(
             payload,
@@ -71,14 +87,20 @@ def main() -> int:
         rows.append(row)
 
     evidence = {
-        "goal": 4462,
-        "milestone": "v3_0_m66",
-        "implementation": "segmented_2a1_cupy_paper_dataset",
+        "goal": args.goal,
+        "milestone": args.milestone or ("v3_0_m67" if args.mode == "segmented_scenes" else "v3_0_m66"),
+        "implementation": (
+            "segmented_scene_2a1_cupy_paper_dataset"
+            if args.mode == "segmented_scenes"
+            else "segmented_2a1_cupy_paper_dataset"
+        ),
         "status": "segmented_rt_2a1_paper_dataset_validation",
         "parameters": {
             "warmup": args.warmup,
             "repeat": args.repeat,
+            "mode": args.mode,
             "segment_max_two_hop_rows": args.segment_max_two_hop_rows,
+            "scene_max_directed_edges": args.scene_max_directed_edges,
             "hardware": args.hardware or _hardware_label(),
         },
         "rows": rows,
@@ -87,6 +109,9 @@ def main() -> int:
             "all_triangle_counts_match_expected": all(row["triangle_count_matches_expected"] for row in rows),
             "global_two_hop_summary_materialized": any(
                 row["global_two_hop_summary_materialized"] for row in rows
+            ),
+            "global_triangle_scene_materialized": any(
+                row["global_triangle_scene_materialized"] for row in rows
             ),
             "previous_goal2593_blocker_addressed_for": tuple(
                 row["dataset"] for row in rows if row["triangle_count_matches_expected"]
@@ -139,12 +164,18 @@ def _compact_row(
         "global_two_hop_summary_materialized": bool(
             payload["primitive_layout"]["global_two_hop_summary_materialized"]
         ),
+        "global_triangle_scene_materialized": bool(
+            payload["primitive_layout"].get("global_triangle_scene_materialized", True)
+        ),
         "segmentation": payload["segmentation"],
         "partner_timing_ms": payload["partner_timing_ms"],
         "timing_ms": {
             "build_contract": timing.get("build_contract"),
-            "build_geometry": timing.get("build_geometry"),
-            "prepare_scene_ms": timing.get("prepare_scene_ms"),
+            "build_geometry": timing.get("build_geometry", timing.get("plan_segments")),
+            "prepare_scene_ms": timing.get("prepare_scene_ms", timing.get("prepare_scene_median_ms")),
+            "prepare_scene_total_ms": timing.get("prepare_scene_total_ms"),
+            "triangle_build_median_ms": timing.get("triangle_build_median_ms"),
+            "triangle_build_total_ms": timing.get("triangle_build_total_ms"),
             "segment_ray_build_median_ms": timing.get("segment_ray_build_median_ms"),
             "query_median_ms": timing.get("query_median_ms"),
             "query_min_ms": timing.get("query_min_ms"),
