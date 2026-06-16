@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4469.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4470.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -49,6 +49,8 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "the bottleneck and whole-route speedup remains blocked. Goal4469 adds "
     "explicit prepared segment replay, improving Triangle Counting large-row "
     "totals by 1.43x-1.84x versus Goal4467 while preserving claim boundaries. "
+    "Goal4470 refreshes the post-M73 comparison: cuGraph remains faster by "
+    "5.58x-8.64x and authors pure kernels remain much faster. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -454,7 +456,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "partner unique compression makes construction 2.44x-2.50x slower, so "
             "whole-route speedup remains blocked. Goal4469 adds explicit prepared "
             "segment replay, improving formal totals to 9.552s on `com-lj`, "
-            "17.986s on `soc-LiveJournal1`, and 62.428s on `com-orkut`."
+            "17.986s on `soc-LiveJournal1`, and 62.428s on `com-orkut`. "
+            "Goal4470 refreshes the current comparison packet after M73: cuGraph "
+            "is still 5.58x-8.64x faster end to end, and authors pure count "
+            "kernels are still much faster than RTDL query."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -472,7 +477,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "for the explicit `unique_weighted` segmented ray representation; it is "
             "a traversal-pressure reduction route, not an automatic default. Cite "
             "Goal4469 for explicit `prepared_segment_replay` when the workload is "
-            "prepared/repeated and the user accepts the schedule choice."
+            "prepared/repeated and the user accepts the schedule choice. Cite "
+            "Goal4470 for the current post-M73 comparison packet and no-speedup "
+            "boundary."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
@@ -509,6 +516,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4467",
             "Goal4468",
             "Goal4469",
+            "Goal4470",
         ),
     },
 }

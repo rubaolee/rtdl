@@ -138,8 +138,8 @@ class Goal4468V30M72TriangleUniqueWeightedSegmentRaysTest(unittest.TestCase):
         rows = {row["app"]: row for row in adequacy.current_benchmark_adequacy()}
         triangle = rows["triangle_counting"]
 
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4469.v1", route["version"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4469.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4470.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4470.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
         self.assertFalse(route["public_speedup_claim_authorized"])
         self.assertFalse(triangle["broad_rt_core_claim_authorized"])
 

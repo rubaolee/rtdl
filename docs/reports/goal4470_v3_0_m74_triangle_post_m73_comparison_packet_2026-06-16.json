@@ -1,0 +1,77 @@
+{
+  "goal": 4470,
+  "milestone": "v3_0_m74",
+  "status": "post_m73_current_comparison_packet",
+  "claim_boundary": {
+    "current_route_comparison": true,
+    "public_speedup_claim_authorized": false,
+    "triangle_count_rt_core_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false
+  },
+  "rows": [
+    {
+      "dataset": "com_lj",
+      "count": 177820130,
+      "rtdl_m73_total_s": 9.552394539117813,
+      "rtdl_m73_query_median_s": 0.950075164437294,
+      "rtdl_m71_total_s": 14.153179064393044,
+      "m73_speedup_vs_m71_total": 1.4816367777141797,
+      "cugraph_goal2593_total_s": 1.7130286134779453,
+      "cugraph_faster_than_m73_total": 5.576319311866998,
+      "author_rt_pipeline_wall_s": 43.17651651054621,
+      "author_rt_count_s": 0.0729684,
+      "m73_total_faster_than_author_rt_pipeline": 4.51996788174263,
+      "m73_query_slower_than_author_rt_count": 13.020364492537784,
+      "author_bs_pipeline_wall_s": 42.67099915072322,
+      "author_bs_count_s": 0.010614768,
+      "m73_total_faster_than_author_bs_pipeline": 4.467047395915452,
+      "m73_query_slower_than_author_bs_count": 89.50503340603338
+    },
+    {
+      "dataset": "soc_livejournal1",
+      "count": 285730264,
+      "rtdl_m73_total_s": 17.985594153404236,
+      "rtdl_m73_query_median_s": 1.3412888199090958,
+      "rtdl_m71_total_s": 25.747323013842106,
+      "m73_speedup_vs_m71_total": 1.431552541119069,
+      "cugraph_goal2593_total_s": 2.378237119410187,
+      "cugraph_faster_than_m73_total": 7.56480901779757,
+      "author_rt_pipeline_wall_s": 69.11780151724815,
+      "author_rt_count_s": 0.103401,
+      "m73_total_faster_than_author_rt_pipeline": 3.8429534730808896,
+      "m73_query_slower_than_author_rt_count": 12.971720001828762,
+      "author_bs_pipeline_wall_s": 65.91902570426464,
+      "author_bs_count_s": 0.01368672,
+      "m73_total_faster_than_author_bs_pipeline": 3.6651013662391447,
+      "m73_query_slower_than_author_bs_count": 97.99928835463105
+    },
+    {
+      "dataset": "com_orkut",
+      "count": 627584181,
+      "rtdl_m73_total_s": 62.427946127951145,
+      "rtdl_m73_query_median_s": 8.231899239122868,
+      "rtdl_m71_total_s": 115.03237361460924,
+      "m73_speedup_vs_m71_total": 1.8426422900225012,
+      "cugraph_goal2593_total_s": 7.22908637765795,
+      "cugraph_faster_than_m73_total": 8.635645204671842,
+      "author_rt_status": "failed_sigkill_after_149151_ms",
+      "author_bs_status": "failed_sigkill_after_147387_ms"
+    }
+  ],
+  "interpretation": {
+    "main_change_vs_goal4467": "M73 narrows the cuGraph end-to-end gap from 8.26x-15.91x to 5.58x-8.64x and keeps all three former-OOM rows exact.",
+    "authors_code_reading": "RTDL M73 beats authors full pipeline on com-lj and soc-LiveJournal1 because authors preprocessing/ray construction dominates, but authors pure count kernels remain 12.97x-98.00x faster than M73 query.",
+    "public_wording": "Not public speedup wording. This is current internal route evidence for a generic RTDL primitive plus CuPy partner schedule."
+  },
+  "evidence_files": [
+    "docs/reports/goal4469_v3_0_m73_triangle_prepared_segment_replay_packet_2026-06-16.json",
+    "docs/reports/goal4469_v3_0_m73_triangle_prepared_unique_weighted_com_lj_w1r3_2026-06-16.json",
+    "docs/reports/goal4469_v3_0_m73_triangle_prepared_unique_weighted_soc_livejournal1_w1r3_2026-06-16.json",
+    "docs/reports/goal4469_v3_0_m73_triangle_prepared_unique_weighted_com_orkut_w1r3_2026-06-16.json",
+    "docs/reports/goal4467_v3_0_m71_triangle_current_comparison_packet_2026-06-16.json",
+    "docs/reports/goal2593_paper_dataset_raw/goal2593_eval_com_lj_author_cugraph.json",
+    "docs/reports/goal2593_paper_dataset_raw/goal2593_eval_soc_lj_author_cugraph.json",
+    "docs/reports/goal2593_paper_dataset_raw/goal2593_eval_com_orkut_cugraph.json"
+  ]
+}

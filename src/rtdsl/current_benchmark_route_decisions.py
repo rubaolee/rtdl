@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4469.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4470.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -124,7 +124,9 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4469 adds explicit prepared segment replay so each compressed segment "
     "is built once and replayed for warmup/repeat queries before release, "
     "improving large-row totals by 1.43x-1.84x versus Goal4467 while preserving "
-    "the no-public-speedup boundary."
+    "the no-public-speedup boundary. Goal4470 refreshes the current comparison "
+    "packet after M73: the cuGraph gap narrows to 5.58x-8.64x, but cuGraph and "
+    "authors pure kernels still remain faster on their relevant contracts."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -737,7 +739,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4469 adds explicit prepared segment replay: build one compressed "
             "segment, replay warmup/repeat queries, then release it. This improves "
             "formal totals to 9.552s on `com-lj`, 17.986s on `soc-LiveJournal1`, "
-            "and 62.428s on `com-orkut`, or 1.43x-1.84x faster than Goal4467."
+            "and 62.428s on `com-orkut`, or 1.43x-1.84x faster than Goal4467. "
+            "Goal4470 refreshes the comparison packet after M73: the cuGraph gap "
+            "narrows from 8.26x-15.91x to 5.58x-8.64x, but cuGraph still wins "
+            "end to end and authors pure count kernels remain much faster."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -772,7 +777,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "compression the bottleneck, so it is not an automatic default. Cite "
             "Goal4469 when the user wants the explicit prepared/repeated schedule: "
             "`prepared_segment_replay` builds each compressed segment once, replays "
-            "queries, and releases it."
+            "queries, and releases it. Cite Goal4470 for the current post-M73 "
+            "comparison packet and its still-blocked public-speedup boundary."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -794,6 +800,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "claiming Goal4468 solves whole-route triangle-count performance",
             "making Goal4469 prepared segment replay a hidden automatic default",
             "claiming Goal4469 authorizes public RT-core triangle-count speedups",
+            "claiming Goal4470 shows RTDL beats cuGraph or authors pure kernels",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -827,6 +834,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4467",
             "Goal4468",
             "Goal4469",
+            "Goal4470",
         ),
         pod_needed_next=False,
     ),

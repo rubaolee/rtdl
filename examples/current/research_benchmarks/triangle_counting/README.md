@@ -195,6 +195,12 @@ to `com-lj` 9.552s, `soc-LiveJournal1` 17.986s, and `com-orkut` 62.428s. That
 is a 1.43x-1.84x improvement versus the Goal4467 duplicate-ray totals, but it
 still does not authorize public RT-core triangle-count speedup wording.
 
+Goal4470 refreshes the current comparison packet after Goal4469. The cuGraph
+end-to-end gap narrows from Goal4467's 8.26x-15.91x to 5.58x-8.64x, but cuGraph
+still wins all three rows. Authors pure count kernels remain much faster than
+RTDL query, even though RTDL M73 beats the authors full pipeline on two rows
+where preprocessing dominates.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
@@ -207,6 +213,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4467_v3_0_m71_triangle_current_comparison_packet_2026-06-16.md`
 - `docs/reports/goal4468_v3_0_m72_triangle_unique_weighted_comparison_packet_2026-06-16.md`
 - `docs/reports/goal4469_v3_0_m73_triangle_prepared_segment_replay_packet_2026-06-16.md`
+- `docs/reports/goal4470_v3_0_m74_triangle_post_m73_comparison_packet_2026-06-16.md`
 
 ## Engine Boundary
 
