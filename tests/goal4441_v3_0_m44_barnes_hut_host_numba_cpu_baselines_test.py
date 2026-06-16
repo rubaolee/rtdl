@@ -136,12 +136,13 @@ class Goal4441V30M44BarnesHutHostNumbaCpuBaselinesTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4441.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4442.v1",
             route["version"],
         )
         self.assertIn("Goal4441", route["evidence_refs"])
-        self.assertIn("optimized host+Numba CPU continuation baselines", route["current_reader_decision"])
-        self.assertIn("frontier collection and host row materialization", route["next_runtime_action"])
+        self.assertIn("Goal4442", route["evidence_refs"])
+        self.assertIn("fused_frontier_force_sum_bucketized_cpu_numba", route["current_reader_decision"])
+        self.assertIn("fused RT-native/device route", route["next_runtime_action"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(route["public_speedup_claim_authorized"])
 

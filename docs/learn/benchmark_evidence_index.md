@@ -96,7 +96,7 @@ v2.14 evidence:
 | Robot collision | `robot_collision_optix_prepared_device_count` | primitive-only prepared static-scene collision count path | NVIDIA pod for OptiX timing |
 | Contact manifold | `contact_manifold_optix_native_collect_k` | bounded collect/witness primitive path; no manifold-native ABI | NVIDIA pod for OptiX timing |
 | RayDB-style | `raydb_style_optix_count_primitive_first` | primitive-first grouped count path; partner rows only for unfused continuations | NVIDIA pod; CUDA pod for CuPy/Numba partner comparison |
-| Barnes-Hut | `barnes_hut_prepared_aggregate_frontier_numba` | prepared aggregate-frontier device columns plus Numba weighted-vector continuation; CuPy remains same-contract comparison; CPU/Embree host+Numba baselines are diagnostic only | NVIDIA/CUDA pod with OptiX, CuPy, and Numba |
+| Barnes-Hut | `barnes_hut_mixed_explicit_cpu_numba_or_optix_numba` | fused CPU/Numba is current fastest measured no-C++ app route; prepared RTDL/OptiX+Numba remains device-column RT evidence; CuPy remains same-contract GPU comparison | NVIDIA/CUDA pod for OptiX; Numba CPU for fastest measured app route |
 | LibRTS spatial index | `librts_spatial_index_optix_aabb_index` | prepared AABB-index benchmark slice, not full mutable LibRTS | NVIDIA pod for OptiX timing |
 | RTNN | `rtnn_prepared_optix_ranked_summary` | prepared fixed-radius ranked summary path | NVIDIA pod for OptiX timing |
 | Triangle counting | `triangle_counting_optix_native_summary` | explicit native graph summary path; candidate-row interpretation stays app code | NVIDIA pod for OptiX timing |
@@ -111,6 +111,7 @@ v2.14 evidence:
 - [Barnes-Hut prepared aggregate-frontier app mode](../reports/goal4439_v3_0_m42_barnes_hut_prepared_frontier_app_mode_2026-06-16.md)
 - [Barnes-Hut host baselines for the prepared app route](../reports/goal4440_v3_0_m43_barnes_hut_host_baselines_2026-06-16.md)
 - [Barnes-Hut host Numba CPU baselines](../reports/goal4441_v3_0_m44_barnes_hut_host_numba_cpu_baselines_2026-06-16.md)
+- [Barnes-Hut fused Numba CPU frontier baseline](../reports/goal4442_v3_0_m45_barnes_hut_fused_numba_cpu_frontier_2026-06-16.md)
 
 ## Reading Rules
 
@@ -135,9 +136,11 @@ v2.14 evidence:
   Goal4440 adds CPU/Embree host-materialized logical baselines for that route;
   Goal4441 replaces the Python host vector continuation with Numba CPU
   continuation and shows the remaining debt is frontier collection and host
-  materialization. These rows are correctness and bottleneck evidence, not
-  public backend speedup wording. This is not a universal Numba, RT-core, or
-  whole N-body speedup claim.
+  materialization. Goal4442 adds a fused CPU/Numba route that avoids frontier
+  and contribution row materialization and is faster than the current
+  RTDL/OptiX+Numba route for tested Barnes-Hut scales. These rows are
+  correctness and bottleneck evidence, not public backend speedup wording. This
+  is not a universal Numba, RT-core, or whole N-body speedup claim.
 - The RayJoin external comparison is useful for LSI/PIP diagnosis, but it is
   not a full RayJoin paper reproduction and does not authorize RTDL-beats-RayJoin
   wording.

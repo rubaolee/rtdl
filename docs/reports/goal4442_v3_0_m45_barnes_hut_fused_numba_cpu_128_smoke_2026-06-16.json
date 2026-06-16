@@ -1,0 +1,114 @@
+{
+  "app": "barnes_hut_force_app",
+  "app_boundary": "Fused CPU/Numba aggregate-frontier weighted-vector baseline. This avoids frontier and contribution row materialization and requires no C++ or CUDA source, but it is still app partner code rather than an Embree/OptiX backend comparison or public speedup claim.",
+  "backend": "cpu_numba_fused_frontier_vector_sum",
+  "benchmark_metadata": {
+    "authors_code_comparison": false,
+    "benchmark": "barnes_hut_ppopp2025_style",
+    "benchmark_scope": "RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.",
+    "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+    "contract": "generic_bucketized_aggregate_tree_2d_v1+generic_aggregate_frontier_weighted_vector_sum_2d_numba_cpu_v1+explicit_numba_cpu_partner_force_interpretation",
+    "mode": "fused_frontier_force_sum_bucketized_cpu_numba",
+    "native_engine_app_specific": false,
+    "paper_reference": {
+      "authors": [
+        "Vani Nagarajan",
+        "Rohan Gangaraju",
+        "Kirshanthan Sundararajah",
+        "Artem Pelenitsyn",
+        "Milind Kulkarni"
+      ],
+      "authors_code_comparison": false,
+      "doi": "10.1145/3710848.3710885",
+      "paper_reproduction": false,
+      "title": "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+      "venue": "PPoPP 2025"
+    },
+    "paper_reproduction": false,
+    "public_speedup_claim_authorized": false,
+    "reconstruction_instrument": true,
+    "research_benchmark": true,
+    "rt_core_accelerated": false
+  },
+  "body_count": 128,
+  "boundary": "Fused CPU/Numba aggregate-frontier weighted-vector baseline. This avoids frontier and contribution row materialization and requires no C++ or CUDA source, but it is still app partner code rather than an Embree/OptiX backend comparison or public speedup claim.",
+  "bucket_size": 16,
+  "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+  "claim_flags": {
+    "automatic_partner_selection_allowed": false,
+    "contribution_rows_materialized_on_host": false,
+    "frontier_rows_materialized_on_host": false,
+    "native_engine_app_specific": false,
+    "numba_cpu_njit_used": true,
+    "public_speedup_claim_authorized": false,
+    "python_vector_sum_used": false,
+    "raw_c_or_cuda_kernel_required": false,
+    "rt_core_speedup_claim_authorized": false,
+    "same_device_resident_contract": false,
+    "same_logical_frontier_contract": true,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "max_depth": 32,
+  "medians": {
+    "fused_numba_cpu_vector_seconds": 0.0018495097756385803
+  },
+  "run_phases": {
+    "body_generation_sec": 0.0005824863910675049,
+    "total_sec": 1.9080905467271805,
+    "tree_build_sec": 0.005062080919742584,
+    "vector_prepare_sec": 0.19731003791093826,
+    "vector_run_median_sec": 0.0018495097756385803
+  },
+  "softening": 0.05,
+  "theta": 0.5,
+  "tree_summary": {
+    "bucket_size": 16,
+    "leaf_node_count": 16,
+    "max_depth": 2,
+    "max_leaf_member_count": 9,
+    "morton_bits": 16,
+    "source_count": 128,
+    "tree_node_count": 21
+  },
+  "validation": {
+    "compared_against": "sum_aggregate_frontier_weighted_vectors_2d_cpu_reference",
+    "max_abs_diff_x": 0.0,
+    "max_abs_diff_y": 0.0,
+    "passed": true,
+    "reference_frontier_row_count": 8766,
+    "skipped": false,
+    "tolerance": 1e-07
+  },
+  "vector_sum_summary": {
+    "aggregate_contribution_row_count": 1051,
+    "checksum_force_x": 0.3970966741133506,
+    "checksum_force_y": 0.8785242642144172,
+    "contract": "generic_aggregate_frontier_weighted_vector_sum_2d_numba_cpu_v1",
+    "contribution_row_count": 8766,
+    "contribution_rows_materialized_on_host": false,
+    "exact_contribution_row_count": 7715,
+    "force_output_mode": "force_summary",
+    "force_rows": [],
+    "force_rows_truncated": true,
+    "frontier_rows_materialized_on_host": false,
+    "materialized_contribution_rows": false,
+    "materialized_frontier_rows": false,
+    "numba_cpu_njit_used": true,
+    "parallel_by_source": true,
+    "prepare_seconds": 0.19731003791093826,
+    "raw_c_or_cuda_kernel_required": false,
+    "repeat": 3,
+    "repeat_seconds": [
+      0.0013258978724479675,
+      0.00464823842048645,
+      0.0018495097756385803
+    ],
+    "run_median_seconds": 0.0018495097756385803,
+    "source_count": 128,
+    "target_count": 128,
+    "tree_node_count": 21,
+    "visited_node_total": 2676,
+    "warmup": 1
+  }
+}

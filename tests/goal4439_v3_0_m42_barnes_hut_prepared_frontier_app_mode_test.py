@@ -128,16 +128,18 @@ class Goal4439V30M42BarnesHutPreparedFrontierAppModeTest(unittest.TestCase):
 
         route = rt.explain_current_benchmark_route("barnes_hut")
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4441.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4442.v1",
             route["version"],
         )
-        self.assertEqual("numba_fastest_with_cupy_comparison", route["decision_kind"])
-        self.assertEqual("numba_fastest_cupy_comparison", route["partner_policy"])
+        self.assertEqual("mixed_explicit", route["decision_kind"])
+        self.assertEqual("explicit_route_choice_cpu_numba_or_optix_numba_cupy_comparison", route["partner_policy"])
         self.assertIn("Goal4439", route["evidence_refs"])
         self.assertIn("Goal4440", route["evidence_refs"])
         self.assertIn("Goal4441", route["evidence_refs"])
+        self.assertIn("Goal4442", route["evidence_refs"])
         self.assertIn("prepared_aggregate_frontier_weighted_vector_optix", route["current_reader_decision"])
-        self.assertIn("frontier collection and host row materialization", route["next_runtime_action"])
+        self.assertIn("fused_frontier_force_sum_bucketized_cpu_numba", route["current_reader_decision"])
+        self.assertIn("fused RT-native/device route", route["next_runtime_action"])
         self.assertFalse(route["automatic_partner_selection_authorized"])
         self.assertFalse(route["public_speedup_claim_authorized"])
 

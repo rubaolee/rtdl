@@ -67,10 +67,10 @@ class Goal4438V30M41BarnesHutPreparedFrontierPartnerScaleLadderTest(unittest.Tes
             "It is not an OptiX-vs-Embree or GPU-vs-CPU claim",
         ):
             self.assertIn(phrase, report)
-        self.assertIn("Goal4436/Goal4438", partner_matrix)
+        self.assertIn("Goal4438/4439", partner_matrix)
         self.assertIn("Numba wins that measured partner route", evidence_index)
-        self.assertIn("Goal4438/4439 compare partners after the same RTDL/OptiX frontier contract", rt_core_matrix)
-        self.assertIn("Goal4440/4441 host baselines are diagnostic", rt_core_matrix)
+        self.assertIn("Goal4438/4439 show RTDL/OptiX can emit aggregate-frontier device columns", rt_core_matrix)
+        self.assertIn("Goal4442 adds a fused CPU/Numba route", rt_core_matrix)
 
     def test_route_registry_uses_numba_fastest_policy_for_this_contract(self) -> None:
         import rtdsl as rt
@@ -80,18 +80,19 @@ class Goal4438V30M41BarnesHutPreparedFrontierPartnerScaleLadderTest(unittest.Tes
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4441.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4442.v1",
             route["version"],
         )
-        self.assertEqual("numba_fastest_with_cupy_comparison", route["decision_kind"])
-        self.assertEqual("numba_fastest_cupy_comparison", route["partner_policy"])
+        self.assertEqual("mixed_explicit", route["decision_kind"])
+        self.assertEqual("explicit_route_choice_cpu_numba_or_optix_numba_cupy_comparison", route["partner_policy"])
         self.assertIn("Goal4436", route["evidence_refs"])
         self.assertIn("Goal4438", route["evidence_refs"])
         self.assertIn("Goal4439", route["evidence_refs"])
         self.assertIn("Goal4440", route["evidence_refs"])
         self.assertIn("Goal4441", route["evidence_refs"])
-        self.assertIn("Numba is currently the fastest measured partner", route["current_reader_decision"])
-        self.assertIn("CuPy remains the same-contract measured comparison partner", route["current_reader_decision"])
+        self.assertIn("Goal4442", route["evidence_refs"])
+        self.assertIn("Numba remains the fastest measured GPU partner", route["current_reader_decision"])
+        self.assertIn("fused_frontier_force_sum_bucketized_cpu_numba", route["current_reader_decision"])
         self.assertIn("universal Numba fastest claim", route["rejected_or_unpromoted_candidates"])
         self.assertIn("universal CuPy fastest claim", route["rejected_or_unpromoted_candidates"])
         self.assertFalse(route["automatic_partner_selection_authorized"])

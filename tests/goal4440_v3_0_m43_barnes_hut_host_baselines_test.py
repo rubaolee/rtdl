@@ -129,13 +129,15 @@ class Goal4440V30M43BarnesHutHostBaselinesTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4441.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4442.v1",
             route["version"],
         )
         self.assertIn("Goal4440", route["evidence_refs"])
         self.assertIn("Goal4441", route["evidence_refs"])
+        self.assertIn("Goal4442", route["evidence_refs"])
         self.assertIn("host-materialized logical baselines", route["current_reader_decision"])
-        self.assertIn("frontier collection and host row materialization", route["next_runtime_action"])
+        self.assertIn("fused_frontier_force_sum_bucketized_cpu_numba", route["current_reader_decision"])
+        self.assertIn("fused RT-native/device route", route["next_runtime_action"])
         self.assertIn(
             "public backend speedup claim from host-materialized CPU/Embree baselines",
             route["rejected_or_unpromoted_candidates"],

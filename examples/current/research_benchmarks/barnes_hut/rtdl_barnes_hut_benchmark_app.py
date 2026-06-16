@@ -66,6 +66,7 @@ MODES = (
     "streamed_force_sum_bucketized_cpu",
     "materialization_pressure_bucketized_cpu",
     "fused_frontier_force_sum_bucketized_cpu",
+    "fused_frontier_force_sum_bucketized_cpu_numba",
     "prepared_aggregate_frontier_weighted_vector_optix",
     "grouped_vector_sum_typed_stream_plan",
     "v2_8_grouped_vector_sum_plan",
@@ -138,6 +139,7 @@ def scope_payload() -> dict[str, Any]:
             "generic_weighted_inverse_square_vector_sum_2d_v1",
             "generic_vector_sum_materialization_pressure_2d_v1",
             "generic_aggregate_frontier_weighted_vector_sum_2d_v1",
+            "generic_aggregate_frontier_weighted_vector_sum_2d_numba_cpu_v1",
             "generic_aggregate_frontier_device_columns_2d_v1",
             "generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_v1",
             "generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_numba_v1",
@@ -1748,6 +1750,443 @@ def _materialization_pressure_payload(
     }
 
 
+_HOST_NUMBA_CPU_FUSED_FRONTIER_VECTOR_SUM_KERNEL = None
+
+
+def _host_numba_cpu_fused_frontier_vector_sum_kernel() -> object:
+    global _HOST_NUMBA_CPU_FUSED_FRONTIER_VECTOR_SUM_KERNEL
+    if _HOST_NUMBA_CPU_FUSED_FRONTIER_VECTOR_SUM_KERNEL is not None:
+        return _HOST_NUMBA_CPU_FUSED_FRONTIER_VECTOR_SUM_KERNEL
+
+    try:
+        from numba import njit, prange
+    except Exception as exc:  # pragma: no cover - environment dependent
+        raise RuntimeError("fused Numba CPU frontier baseline requires Numba") from exc
+
+    @njit(parallel=True)
+    def kernel(
+        source_ids,
+        source_x_by_id,
+        source_y_by_id,
+        source_mass_by_id,
+        target_x_by_id,
+        target_y_by_id,
+        target_mass_by_id,
+        source_leaf_dfs_by_id,
+        root_ordinals,
+        node_cx,
+        node_cy,
+        node_half_size,
+        node_mass,
+        node_dfs_index,
+        node_subtree_end,
+        child_offsets,
+        child_ordinals,
+        member_offsets,
+        member_ids,
+        theta,
+        softening_sq,
+        stack_workspace,
+        vector_x,
+        vector_y,
+        aggregate_counts,
+        exact_counts,
+        visited_counts,
+    ):
+        for source_index in prange(source_ids.shape[0]):
+            source_id = source_ids[source_index]
+            source_x = source_x_by_id[source_id]
+            source_y = source_y_by_id[source_id]
+            source_mass = source_mass_by_id[source_id]
+            source_leaf_dfs = source_leaf_dfs_by_id[source_id]
+            stack_size = 0
+            for root_index in range(root_ordinals.shape[0] - 1, -1, -1):
+                stack_workspace[source_index, stack_size] = root_ordinals[root_index]
+                stack_size += 1
+
+            sum_x = 0.0
+            sum_y = 0.0
+            aggregate_count = 0
+            exact_count = 0
+            visited_count = 0
+
+            while stack_size > 0:
+                stack_size -= 1
+                node_ordinal = stack_workspace[source_index, stack_size]
+                visited_count += 1
+                dx_node = node_cx[node_ordinal] - source_x
+                dy_node = node_cy[node_ordinal] - source_y
+                distance = (dx_node * dx_node + dy_node * dy_node) ** 0.5
+                if distance == 0.0:
+                    opening_ratio = 1.0e308
+                else:
+                    opening_ratio = (2.0 * node_half_size[node_ordinal]) / distance
+                contains_source = (
+                    source_leaf_dfs >= 0
+                    and node_dfs_index[node_ordinal] <= source_leaf_dfs
+                    and source_leaf_dfs < node_subtree_end[node_ordinal]
+                )
+
+                if (not contains_source) and opening_ratio < theta:
+                    dist_sq = dx_node * dx_node + dy_node * dy_node + softening_sq
+                    if dist_sq != 0.0:
+                        inv_dist = 1.0 / (dist_sq ** 0.5)
+                        scale = source_mass * node_mass[node_ordinal] * inv_dist * inv_dist * inv_dist
+                        sum_x += dx_node * scale
+                        sum_y += dy_node * scale
+                    aggregate_count += 1
+                    continue
+
+                child_start = child_offsets[node_ordinal]
+                child_end = child_offsets[node_ordinal + 1]
+                if child_end > child_start:
+                    for child_index in range(child_end - 1, child_start - 1, -1):
+                        stack_workspace[source_index, stack_size] = child_ordinals[child_index]
+                        stack_size += 1
+                    continue
+
+                member_start = member_offsets[node_ordinal]
+                member_end = member_offsets[node_ordinal + 1]
+                for member_index in range(member_start, member_end):
+                    target_id = member_ids[member_index]
+                    if target_id == source_id:
+                        continue
+                    dx = target_x_by_id[target_id] - source_x
+                    dy = target_y_by_id[target_id] - source_y
+                    dist_sq = dx * dx + dy * dy + softening_sq
+                    if dist_sq != 0.0:
+                        inv_dist = 1.0 / (dist_sq ** 0.5)
+                        scale = source_mass * target_mass_by_id[target_id] * inv_dist * inv_dist * inv_dist
+                        sum_x += dx * scale
+                        sum_y += dy * scale
+                    exact_count += 1
+
+            vector_x[source_index] = sum_x
+            vector_y[source_index] = sum_y
+            aggregate_counts[source_index] = aggregate_count
+            exact_counts[source_index] = exact_count
+            visited_counts[source_index] = visited_count
+
+    _HOST_NUMBA_CPU_FUSED_FRONTIER_VECTOR_SUM_KERNEL = kernel
+    return kernel
+
+
+def _fused_frontier_force_sum_numba_payload(
+    *,
+    body_count: int | None,
+    theta: float,
+    bucket_size: int,
+    max_depth: int,
+    skip_validation: bool,
+    query_repeat: int,
+    warmup: int,
+    force_output_mode: str,
+) -> dict[str, Any]:
+    try:
+        import numpy as np
+    except Exception as exc:  # pragma: no cover - environment dependent
+        raise RuntimeError("fused Numba CPU frontier baseline requires NumPy") from exc
+
+    total_start = time.perf_counter()
+    body_start = time.perf_counter()
+    bodies = _make_bodies(body_count)
+    body_generation_sec = time.perf_counter() - body_start
+
+    tree_start = time.perf_counter()
+    tree = rt.build_bucketized_aggregate_tree_2d(
+        bodies,
+        bucket_size=bucket_size,
+        max_depth=max_depth,
+    )
+    tree_nodes = tuple(tree["nodes"])
+    tree_build_sec = time.perf_counter() - tree_start
+
+    prepare_start = time.perf_counter()
+    body_ids = [int(body.id) for body in bodies]
+    node_ids = [int(node.id) for node in tree_nodes]
+    if not body_ids or not node_ids:
+        raise ValueError("fused Numba CPU frontier baseline requires non-empty bodies and tree nodes")
+    if min(body_ids) < 0 or min(node_ids) < 0:
+        raise ValueError("fused Numba CPU frontier baseline requires non-negative ids")
+    max_body_id = max(body_ids)
+    max_node_id = max(node_ids)
+
+    source_ids = np.asarray(body_ids, dtype=np.int64)
+    source_x_by_id = np.zeros((max_body_id + 1,), dtype=np.float64)
+    source_y_by_id = np.zeros((max_body_id + 1,), dtype=np.float64)
+    source_mass_by_id = np.zeros((max_body_id + 1,), dtype=np.float64)
+    target_x_by_id = np.zeros((max_body_id + 1,), dtype=np.float64)
+    target_y_by_id = np.zeros((max_body_id + 1,), dtype=np.float64)
+    target_mass_by_id = np.zeros((max_body_id + 1,), dtype=np.float64)
+    for body in bodies:
+        body_id = int(body.id)
+        source_x_by_id[body_id] = float(body.x)
+        source_y_by_id[body_id] = float(body.y)
+        source_mass_by_id[body_id] = float(body.mass)
+        target_x_by_id[body_id] = float(body.x)
+        target_y_by_id[body_id] = float(body.y)
+        target_mass_by_id[body_id] = float(body.mass)
+
+    node_ordinal_by_id = np.full((max_node_id + 1,), -1, dtype=np.int64)
+    for ordinal, node in enumerate(tree_nodes):
+        node_ordinal_by_id[int(node.id)] = ordinal
+
+    node_count = len(tree_nodes)
+    node_cx = np.empty((node_count,), dtype=np.float64)
+    node_cy = np.empty((node_count,), dtype=np.float64)
+    node_half_size = np.empty((node_count,), dtype=np.float64)
+    node_mass = np.empty((node_count,), dtype=np.float64)
+    node_dfs_index = np.empty((node_count,), dtype=np.int64)
+    node_subtree_end = np.empty((node_count,), dtype=np.int64)
+    source_leaf_dfs_by_id = np.full((max_body_id + 1,), -1, dtype=np.int64)
+    child_lengths = []
+    member_lengths = []
+    child_id_set: set[int] = set()
+    for ordinal, node in enumerate(tree_nodes):
+        node_cx[ordinal] = float(node.cx)
+        node_cy[ordinal] = float(node.cy)
+        node_half_size[ordinal] = float(node.half_size)
+        node_mass[ordinal] = float(node.mass)
+        node_dfs_index[ordinal] = int(node.dfs_index)
+        node_subtree_end[ordinal] = int(node.resume_index) if node.resume_index is not None else node_count
+        child_lengths.append(len(node.child_ids))
+        member_lengths.append(len(node.member_ids))
+        for child_id in node.child_ids:
+            child_id_set.add(int(child_id))
+        if bool(node.is_leaf):
+            for member_id in node.member_ids:
+                if 0 <= int(member_id) <= max_body_id and source_leaf_dfs_by_id[int(member_id)] < 0:
+                    source_leaf_dfs_by_id[int(member_id)] = int(node.dfs_index)
+
+    root_ordinals = np.asarray(
+        [ordinal for ordinal, node in enumerate(tree_nodes) if int(node.id) not in child_id_set],
+        dtype=np.int64,
+    )
+    child_offsets = np.zeros((node_count + 1,), dtype=np.int64)
+    member_offsets = np.zeros((node_count + 1,), dtype=np.int64)
+    for index in range(node_count):
+        child_offsets[index + 1] = child_offsets[index] + child_lengths[index]
+        member_offsets[index + 1] = member_offsets[index] + member_lengths[index]
+    child_ordinals = np.empty((int(child_offsets[-1]),), dtype=np.int64)
+    member_ids = np.empty((int(member_offsets[-1]),), dtype=np.int64)
+    child_cursor = 0
+    member_cursor = 0
+    for node in tree_nodes:
+        for child_id in node.child_ids:
+            child_ordinal = int(node_ordinal_by_id[int(child_id)])
+            if child_ordinal < 0:
+                raise ValueError(f"child node id {child_id} is not present")
+            child_ordinals[child_cursor] = child_ordinal
+            child_cursor += 1
+        for member_id in node.member_ids:
+            member_ids[member_cursor] = int(member_id)
+            member_cursor += 1
+
+    stack_workspace = np.empty((len(bodies), max(1, node_count)), dtype=np.int64)
+    vector_x = np.empty((len(bodies),), dtype=np.float64)
+    vector_y = np.empty((len(bodies),), dtype=np.float64)
+    aggregate_counts = np.empty((len(bodies),), dtype=np.int64)
+    exact_counts = np.empty((len(bodies),), dtype=np.int64)
+    visited_counts = np.empty((len(bodies),), dtype=np.int64)
+    kernel = _host_numba_cpu_fused_frontier_vector_sum_kernel()
+    vector_prepare_sec = time.perf_counter() - prepare_start
+
+    softening_sq = app.SOFTENING * app.SOFTENING
+    warmup_count = max(0, int(warmup))
+    repeat_count = max(1, int(query_repeat))
+    for _ in range(warmup_count):
+        kernel(
+            source_ids,
+            source_x_by_id,
+            source_y_by_id,
+            source_mass_by_id,
+            target_x_by_id,
+            target_y_by_id,
+            target_mass_by_id,
+            source_leaf_dfs_by_id,
+            root_ordinals,
+            node_cx,
+            node_cy,
+            node_half_size,
+            node_mass,
+            node_dfs_index,
+            node_subtree_end,
+            child_offsets,
+            child_ordinals,
+            member_offsets,
+            member_ids,
+            float(theta),
+            softening_sq,
+            stack_workspace,
+            vector_x,
+            vector_y,
+            aggregate_counts,
+            exact_counts,
+            visited_counts,
+        )
+
+    repeat_seconds: list[float] = []
+    for _ in range(repeat_count):
+        run_start = time.perf_counter()
+        kernel(
+            source_ids,
+            source_x_by_id,
+            source_y_by_id,
+            source_mass_by_id,
+            target_x_by_id,
+            target_y_by_id,
+            target_mass_by_id,
+            source_leaf_dfs_by_id,
+            root_ordinals,
+            node_cx,
+            node_cy,
+            node_half_size,
+            node_mass,
+            node_dfs_index,
+            node_subtree_end,
+            child_offsets,
+            child_ordinals,
+            member_offsets,
+            member_ids,
+            float(theta),
+            softening_sq,
+            stack_workspace,
+            vector_x,
+            vector_y,
+            aggregate_counts,
+            exact_counts,
+            visited_counts,
+        )
+        repeat_seconds.append(time.perf_counter() - run_start)
+
+    vector_run_median_sec = float(statistics.median(repeat_seconds))
+    force_rows = tuple(
+        {
+            "body_id": int(source_ids[index]),
+            "force_x": float(vector_x[index]),
+            "force_y": float(vector_y[index]),
+            "contribution_count": int(aggregate_counts[index] + exact_counts[index]),
+            "aggregate_contribution_count": int(aggregate_counts[index]),
+            "exact_contribution_count": int(exact_counts[index]),
+            "visited_node_count": int(visited_counts[index]),
+        }
+        for index in range(len(bodies))
+    )
+    total_sec = time.perf_counter() - total_start
+    force_sample, force_truncated = _truncate_rows(force_rows)
+
+    validation: dict[str, object]
+    if skip_validation or len(bodies) > 2048:
+        validation = {
+            "skipped": True,
+            "reason": "user_skip_validation" if skip_validation else "body_count_above_2048",
+        }
+    else:
+        reference = rt.sum_aggregate_frontier_weighted_vectors_2d(
+            bodies,
+            bodies,
+            tree_nodes,
+            theta=theta,
+            softening=app.SOFTENING,
+        )
+        expected_by_id = {
+            int(row["source_id"]): (float(row["vector_x"]), float(row["vector_y"]))
+            for row in reference["vector_sum_rows"]
+        }
+        max_abs_diff_x = max(
+            abs(float(row["force_x"]) - expected_by_id[int(row["body_id"])][0])
+            for row in force_rows
+        )
+        max_abs_diff_y = max(
+            abs(float(row["force_y"]) - expected_by_id[int(row["body_id"])][1])
+            for row in force_rows
+        )
+        validation = {
+            "skipped": False,
+            "compared_against": "sum_aggregate_frontier_weighted_vectors_2d_cpu_reference",
+            "tolerance": 1.0e-7,
+            "max_abs_diff_x": max_abs_diff_x,
+            "max_abs_diff_y": max_abs_diff_y,
+            "passed": max_abs_diff_x <= 1.0e-7 and max_abs_diff_y <= 1.0e-7,
+            "reference_frontier_row_count": int(reference["summary"]["contribution_row_count"]),
+        }
+        if not bool(validation["passed"]):
+            raise AssertionError("fused Numba CPU frontier baseline failed validation")
+
+    aggregate_count = int(aggregate_counts.sum())
+    exact_count = int(exact_counts.sum())
+    return {
+        "app": "barnes_hut_force_app",
+        "backend": "cpu_numba_fused_frontier_vector_sum",
+        "mode": "fused_frontier_force_sum_bucketized_cpu_numba",
+        "body_count": len(bodies),
+        "theta": theta,
+        "softening": app.SOFTENING,
+        "bucket_size": bucket_size,
+        "max_depth": max_depth,
+        "tree_summary": tree["summary"],
+        "run_phases": {
+            "body_generation_sec": body_generation_sec,
+            "tree_build_sec": tree_build_sec,
+            "vector_prepare_sec": vector_prepare_sec,
+            "vector_run_median_sec": vector_run_median_sec,
+            "total_sec": total_sec,
+        },
+        "medians": {
+            "fused_numba_cpu_vector_seconds": vector_run_median_sec,
+        },
+        "vector_sum_summary": {
+            "contract": "generic_aggregate_frontier_weighted_vector_sum_2d_numba_cpu_v1",
+            "source_count": len(bodies),
+            "target_count": len(bodies),
+            "tree_node_count": len(tree_nodes),
+            "visited_node_total": int(visited_counts.sum()),
+            "contribution_row_count": aggregate_count + exact_count,
+            "aggregate_contribution_row_count": aggregate_count,
+            "exact_contribution_row_count": exact_count,
+            "materialized_frontier_rows": False,
+            "materialized_contribution_rows": False,
+            "frontier_rows_materialized_on_host": False,
+            "contribution_rows_materialized_on_host": False,
+            "numba_cpu_njit_used": True,
+            "parallel_by_source": True,
+            "raw_c_or_cuda_kernel_required": False,
+            "prepare_seconds": vector_prepare_sec,
+            "repeat_seconds": tuple(float(value) for value in repeat_seconds),
+            "run_median_seconds": vector_run_median_sec,
+            "warmup": warmup_count,
+            "repeat": repeat_count,
+            "checksum_force_x": sum(float(row["force_x"]) for row in force_rows),
+            "checksum_force_y": sum(float(row["force_y"]) for row in force_rows),
+            "force_rows": force_sample if force_output_mode == "full" else [],
+            "force_rows_truncated": force_truncated if force_output_mode == "full" else True,
+            "force_output_mode": force_output_mode,
+        },
+        "validation": validation,
+        "claim_flags": {
+            "same_logical_frontier_contract": True,
+            "same_device_resident_contract": False,
+            "frontier_rows_materialized_on_host": False,
+            "contribution_rows_materialized_on_host": False,
+            "python_vector_sum_used": False,
+            "numba_cpu_njit_used": True,
+            "raw_c_or_cuda_kernel_required": False,
+            "native_engine_app_specific": False,
+            "automatic_partner_selection_allowed": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+        },
+        "boundary": (
+            "Fused CPU/Numba aggregate-frontier weighted-vector baseline. This "
+            "avoids frontier and contribution row materialization and requires "
+            "no C++ or CUDA source, but it is still app partner code rather than "
+            "an Embree/OptiX backend comparison or public speedup claim."
+        ),
+    }
+
+
 def _fused_frontier_force_sum_payload(
     *,
     body_count: int | None,
@@ -2401,6 +2840,28 @@ def run_benchmark(
                 f"{rt.AGGREGATE_BUCKETIZED_TREE_2D_CONTRACT}+"
                 f"{rt.AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT}+"
                 "python_force_interpretation"
+            ),
+            rt_core_accelerated=False,
+        )
+    if mode == "fused_frontier_force_sum_bucketized_cpu_numba":
+        if require_rt_core:
+            raise ValueError("--require-rt-core requires prepared_aggregate_frontier_weighted_vector_optix")
+        return _annotate(
+            _fused_frontier_force_sum_numba_payload(
+                body_count=body_count,
+                theta=theta,
+                bucket_size=bucket_size,
+                max_depth=max_depth,
+                skip_validation=skip_validation,
+                query_repeat=query_repeat,
+                warmup=warmup,
+                force_output_mode=force_output_mode,
+            ),
+            mode=mode,
+            contract=(
+                f"{rt.AGGREGATE_BUCKETIZED_TREE_2D_CONTRACT}+"
+                "generic_aggregate_frontier_weighted_vector_sum_2d_numba_cpu_v1+"
+                "explicit_numba_cpu_partner_force_interpretation"
             ),
             rt_core_accelerated=False,
         )
