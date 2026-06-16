@@ -47,11 +47,12 @@ class Goal4434V30M37AggregateFrontierDeviceColumnsCupyVectorSumTest(unittest.Tes
 
     def test_partner_source_keeps_engine_boundary(self) -> None:
         source = SOURCE.read_text(encoding="utf-8")
-        start = source.index("def sum_aggregate_frontier_device_columns_weighted_vectors_2d_cupy")
+        start = source.index("class PreparedAggregateFrontierDeviceColumnsWeightedVectorSum2DCupy")
         body = source[start:]
         self.assertIn("app-scoped partner math", body)
         self.assertIn("frontier_device_columns.as_cupy_columns()", body)
         self.assertIn("cp.bincount", body)
+        self.assertIn("prepare_aggregate_frontier_device_columns_weighted_vectors_2d_cupy", body)
         self.assertNotIn("rtdl_optix_collect_aggregate_frontier_2d", body)
 
     @unittest.skipUnless(_has_cupy(), "CuPy is required for device-column partner parity")

@@ -1,0 +1,143 @@
+{
+  "claims": {
+    "contribution_rows_materialized_on_host": false,
+    "frontier_rows_materialized_on_host": false,
+    "prepared_lookup_columns_resident": true,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "source_columns_reused": true,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "frontier_source_device_args": {
+    "source_count": 8192,
+    "source_ids_device_ptr_nonzero": true,
+    "source_x_device_ptr_nonzero": true,
+    "source_y_device_ptr_nonzero": true,
+    "used": true
+  },
+  "goal": "4435_v3_0_m38_prepared_aggregate_frontier_cupy_pipeline",
+  "median_record": {
+    "aggregate_contribution_row_count": 479913,
+    "attempted_count": 3440003,
+    "exact_contribution_row_count": 2960090,
+    "frontier_traversal_seconds": 0.014174433,
+    "hot_seconds_native_plus_partner": 0.022645355708511353,
+    "overflow": false,
+    "partner_seconds": 0.008470922708511353,
+    "row_count": 3440003,
+    "wall_seconds": 0.035187073051929474
+  },
+  "medians": {
+    "frontier_traversal_seconds": 0.014187549,
+    "hot_seconds_native_plus_partner": 0.022645355708511353,
+    "partner_seconds": 0.008447133004665375,
+    "wall_seconds": 0.029040686786174774
+  },
+  "point_count": 8192,
+  "repeats": [
+    {
+      "aggregate_contribution_row_count": 479913,
+      "attempted_count": 3440003,
+      "exact_contribution_row_count": 2960090,
+      "frontier_traversal_seconds": 0.01421504,
+      "hot_seconds_native_plus_partner": 0.02269969412855148,
+      "overflow": false,
+      "partner_seconds": 0.008484654128551483,
+      "row_count": 3440003,
+      "wall_seconds": 0.029885172843933105
+    },
+    {
+      "aggregate_contribution_row_count": 479913,
+      "attempted_count": 3440003,
+      "exact_contribution_row_count": 2960090,
+      "frontier_traversal_seconds": 0.014178962,
+      "hot_seconds_native_plus_partner": 0.022590727098571777,
+      "overflow": false,
+      "partner_seconds": 0.008411765098571777,
+      "row_count": 3440003,
+      "wall_seconds": 0.02890685945749283
+    },
+    {
+      "aggregate_contribution_row_count": 479913,
+      "attempted_count": 3440003,
+      "exact_contribution_row_count": 2960090,
+      "frontier_traversal_seconds": 0.014187549,
+      "hot_seconds_native_plus_partner": 0.022634682004665375,
+      "overflow": false,
+      "partner_seconds": 0.008447133004665375,
+      "row_count": 3440003,
+      "wall_seconds": 0.028932571411132812
+    },
+    {
+      "aggregate_contribution_row_count": 479913,
+      "attempted_count": 3440003,
+      "exact_contribution_row_count": 2960090,
+      "frontier_traversal_seconds": 0.014174433,
+      "hot_seconds_native_plus_partner": 0.022645355708511353,
+      "overflow": false,
+      "partner_seconds": 0.008470922708511353,
+      "row_count": 3440003,
+      "wall_seconds": 0.035187073051929474
+    },
+    {
+      "aggregate_contribution_row_count": 479913,
+      "attempted_count": 3440003,
+      "exact_contribution_row_count": 2960090,
+      "frontier_traversal_seconds": 0.01431468,
+      "hot_seconds_native_plus_partner": 0.022757238348178863,
+      "overflow": false,
+      "partner_seconds": 0.008442558348178864,
+      "row_count": 3440003,
+      "wall_seconds": 0.029040686786174774
+    }
+  ],
+  "row_capacity": 3441027,
+  "setup_seconds": {
+    "cupy_partner_prepare_seconds": 0.03840113431215286,
+    "frontier_prepare_seconds": 0.28726186603307724,
+    "points_and_tree_seconds": 0.08927973359823227
+  },
+  "softening": 0.01,
+  "theta": 0.5,
+  "tree_summary": {
+    "bucket_size": 64,
+    "leaf_node_count": 256,
+    "max_depth": 4,
+    "max_leaf_member_count": 36,
+    "morton_bits": 16,
+    "source_count": 8192,
+    "tree_node_count": 341
+  },
+  "vector_metadata": {
+    "aggregate_contribution_row_count": 479913,
+    "app_reference_math": true,
+    "contract": "generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_v1",
+    "contribution_rows_materialized_on_host": false,
+    "exact_contribution_row_count": 2960090,
+    "frontier_columns_materialized_on_host": false,
+    "frontier_row_count": 3440003,
+    "logical_reference_contract": "generic_aggregate_frontier_weighted_vector_sum_2d_v1",
+    "native_engine_app_specific": false,
+    "one_shot_contract": "generic_aggregate_frontier_device_columns_weighted_vector_sum_2d_v1",
+    "partner": "cupy",
+    "partner_seconds": 0.15293294191360474,
+    "prepare_seconds": 0.03840113431215286,
+    "prepared_lookup_columns_resident": true,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "setup_seconds_excluded_from_hot_path": true,
+    "softening": 0.01,
+    "source_columns_reused": true,
+    "source_count": 8192,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "warmup": {
+    "frontier_traversal_seconds": 0.015455548,
+    "hot_seconds_native_plus_partner": 0.16838848991360472,
+    "overflow": false,
+    "partner_seconds": 0.15293294191360474,
+    "row_count": 3440003
+  }
+}
