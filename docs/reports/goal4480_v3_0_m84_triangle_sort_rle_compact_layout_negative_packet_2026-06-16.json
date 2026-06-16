@@ -1,0 +1,74 @@
+{
+  "goal": 4480,
+  "milestone": "v3_0_m84",
+  "status": "compact_layout_sort_rle_candidate_rejected",
+  "date": "2026-06-16",
+  "claim_boundary": {
+    "performance_optimization_claim": false,
+    "negative_result_recorded": true,
+    "current_best_route_changed": false,
+    "public_speedup_claim_authorized": false,
+    "triangle_count_rt_core_claim_authorized": false,
+    "automatic_partner_selection_authorized": false
+  },
+  "route_compared": {
+    "current": "unique_weighted + numba_direct_sort_rle + prepared_segment_replay + full ray columns",
+    "candidate": "unique_weighted + numba_direct_sort_rle + prepared_segment_replay + xz_constant_y_direction compact ray columns",
+    "only_changed_step": "prepared ray batch uses compact x/z-varying ray-column layout instead of full 3-D ray columns"
+  },
+  "rows": [
+    {
+      "dataset": "com_lj",
+      "display_name": "com-lj",
+      "same_count_rays_weights": true,
+      "current_total_s": 6.489,
+      "candidate_total_s": 7.025,
+      "candidate_total_speedup": 0.9238,
+      "current_segment_build_s": 1.149,
+      "candidate_segment_build_s": 1.153,
+      "current_prepared_batch_s": 0.695,
+      "candidate_prepared_batch_s": 0.681,
+      "prepared_batch_speedup": 1.0203,
+      "query_speedup": 1.0037
+    },
+    {
+      "dataset": "soc_livejournal1",
+      "display_name": "soc-LiveJournal1",
+      "same_count_rays_weights": true,
+      "current_total_s": 13.273,
+      "candidate_total_s": 14.041,
+      "candidate_total_speedup": 0.9453,
+      "current_segment_build_s": 1.496,
+      "candidate_segment_build_s": 1.500,
+      "current_prepared_batch_s": 0.967,
+      "candidate_prepared_batch_s": 0.943,
+      "prepared_batch_speedup": 1.0262,
+      "query_speedup": 0.9999
+    },
+    {
+      "dataset": "com_orkut",
+      "display_name": "com-orkut",
+      "same_count_rays_weights": true,
+      "current_total_s": 35.990,
+      "candidate_total_s": 36.510,
+      "candidate_total_speedup": 0.9858,
+      "current_segment_build_s": 7.281,
+      "candidate_segment_build_s": 7.276,
+      "current_prepared_batch_s": 6.124,
+      "candidate_prepared_batch_s": 5.953,
+      "prepared_batch_speedup": 1.0288,
+      "query_speedup": 1.0011
+    }
+  ],
+  "interpretation": {
+    "headline": "The compact constant-ray layout remains correct but does not improve the M83 current route.",
+    "why_rejected": "Prepared batch build improves only about 2-3%, while total wall time is worse on all three rows.",
+    "route_decision": "Keep Goal4479 full-column numba_direct_sort_rle as the current internal Triangle Counting route.",
+    "next_target": "Do not spend the next cycle on compact ray-column layout; target sort/RLE unique-count cost, Numba key fill, or fused decode/projection instead."
+  },
+  "artifacts": [
+    "goal4480_v3_0_m84_triangle_sort_rle_compact_layout_com_lj_w1r3_2026-06-16.json",
+    "goal4480_v3_0_m84_triangle_sort_rle_compact_layout_soc_livejournal1_w1r3_2026-06-16.json",
+    "goal4480_v3_0_m84_triangle_sort_rle_compact_layout_com_orkut_w1r3_2026-06-16.json"
+  ]
+}

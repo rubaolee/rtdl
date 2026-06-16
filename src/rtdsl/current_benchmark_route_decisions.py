@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4479.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4480.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -157,7 +157,9 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "sort plus run-length counting; same-commit w1/r3 rows improve total time "
     "by 1.126x/1.090x/1.071x and segment-ray build by 1.145x/1.149x/1.187x, "
     "so it becomes the current internal Triangle Counting route while public "
-    "speedup wording remains blocked."
+    "speedup wording remains blocked. Goal4480 retests the compact constant-ray "
+    "layout on top of Goal4479; it remains correct but total time is worse on "
+    "all three large rows, so full ray columns remain the current internal route."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -813,7 +815,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "an explicit `numba_direct_sort_rle` replacement for that phase. "
             "Counts, lowered ray counts, and weight sums match `numba_direct`, "
             "while same-commit w1/r3 totals improve to 6.489s/13.273s/35.990s "
-            "from 7.308s/14.467s/38.564s."
+            "from 7.308s/14.467s/38.564s. Goal4480 retests compact constant-ray "
+            "columns with `numba_direct_sort_rle`; prepared batch build improves "
+            "only 1.02x-1.03x and total time is 0.924x/0.945x/0.986x, so the "
+            "compact layout remains rejected for this route."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -874,7 +879,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "the segment-ray construction bottleneck: `cupy_unique_counts` was "
             "the measured first target. Cite Goal4479 for the current "
             "`numba_direct_sort_rle` route and its still-unsolved unique/count "
-            "materialization boundary."
+            "materialization boundary. Cite Goal4480 when rejecting compact "
+            "constant-ray columns on top of the sort/RLE route."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -907,6 +913,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "promoting the Goal4476 no-weight-sum-sync candidate as an optimization",
             "promoting the Goal4477 compact constant-ray batch layout as the current Triangle Counting route",
             "claiming Goal4479 solves Triangle Counting partner materialization rather than improving the unique/count boundary",
+            "promoting the Goal4480 compact constant-ray layout retest on top of sort/RLE",
             "spending the next Triangle Counting optimization cycle on counts/filter, duplicate count sum, or RT traversal before further reducing Goal4479 sort/RLE unique-count cost",
             "automatic CuPy-vs-Numba partner selection",
         ),
@@ -931,8 +938,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "and Goal4479 replaces it with explicit in-place sort/RLE counting, "
             "making `numba_direct_sort_rle` the current internal route; next "
             "work is further reducing sort/RLE unique-count cost, Numba key "
-            "fill, and ray-column projection without breaking the app-agnostic "
-            "primitive contract"
+            "fill, or fused decode/projection; Goal4480 shows compact "
+            "constant-ray columns should not be the next route-promotion target, "
+            "without breaking the app-agnostic primitive contract"
         ),
         evidence_refs=(
             "Goal2797",
@@ -966,6 +974,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4477",
             "Goal4478",
             "Goal4479",
+            "Goal4480",
         ),
         pod_needed_next=False,
     ),
