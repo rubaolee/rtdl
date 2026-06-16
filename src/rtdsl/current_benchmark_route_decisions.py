@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4475.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4476.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -144,7 +144,9 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "path and improving M78 query medians by about 4.8x-5.2x versus M77. "
     "Goal4475 refreshes the post-M78 comparison: RTDL M78 narrows the cuGraph "
     "end-to-end gap to 3.15x-4.89x but still does not authorize RTDL-beats-cuGraph "
-    "or public RT-core triangle-count speedup wording."
+    "or public RT-core triangle-count speedup wording. Goal4476 audits and "
+    "reverts a no-weight-sum-sync M80 candidate because query medians are "
+    "unchanged and total/backend timing does not improve."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -785,7 +787,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "faster end to end, RTDL M78 is 5.92x-7.99x faster than the authors "
             "`rt_tc` full pipeline on the two completed rows because authors "
             "preprocessing dominates, and authors pure count kernels remain "
-            "faster than RTDL M78 query."
+            "faster than RTDL M78 query. Goal4476 tests and rejects removing "
+            "per-segment weight-sum reduction/sync telemetry: M80 no-sync and "
+            "explicit-sync variants do not improve total/backend timing, so "
+            "M78 remains the current best internal route."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -836,7 +841,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "paid once as `prepared_ray_batch_build`, not on every replay query. "
             "Cite Goal4475 for the current post-M78 comparison packet: cuGraph "
             "is still 3.15x-4.89x faster end to end, while RTDL's full-pipeline "
-            "authors-code reading remains distinct from pure counting-kernel timing."
+            "authors-code reading remains distinct from pure counting-kernel timing. "
+            "Cite Goal4476 when ruling out scalar weight-sum telemetry/copy-back "
+            "as the main remaining debt."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -866,6 +873,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "treating Goal4474 prepared ray batches as graph-specific native engine callbacks",
             "claiming Goal4474 alone refreshes RTDL-vs-cuGraph or authors-code comparisons",
             "claiming Goal4475 shows RTDL beats cuGraph or authors pure kernels",
+            "promoting the Goal4476 no-weight-sum-sync candidate as an optimization",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -880,9 +888,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "while native query pack/traversal are effectively unchanged; Goal4474 "
             "adds the reusable prepared ray-batch weighted-sum API and makes it "
             "the prepared replay path; Goal4475 refreshes the post-M78 comparison "
-            "packet and keeps public speedup wording blocked; next work is deciding "
-            "whether scalar-sum allocation/download or partner materialization "
-            "can be reduced without breaking the app-agnostic primitive contract"
+            "packet and keeps public speedup wording blocked; Goal4476 rules out "
+            "weight-sum telemetry/sync cleanup as a useful next optimization; next "
+            "work is targeting partner materialization, segment-ray construction, "
+            "or prepared-ray-batch build without breaking the app-agnostic primitive "
+            "contract"
         ),
         evidence_refs=(
             "Goal2797",
@@ -912,6 +922,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4473",
             "Goal4474",
             "Goal4475",
+            "Goal4476",
         ),
         pod_needed_next=False,
     ),

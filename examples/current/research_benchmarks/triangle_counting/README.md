@@ -243,6 +243,14 @@ full pipeline is dominated by preprocessing and ray/GPU construction; that
 must not be worded as a faster counting kernel. Authors pure count kernels
 remain faster than RTDL M78 query on the rows where they completed.
 
+Goal4476 tests a narrow M80 idea: replace per-segment weight-sum telemetry
+device reductions with planner-known logical two-hop row counts. Both no-sync
+and explicit-sync variants fail to improve total/backend timing, while query
+medians are effectively unchanged. The implementation commits were reverted.
+Do not treat scalar weight-sum telemetry/copy-back as the main remaining
+Triangle Counting debt; target partner materialization, segment-ray
+construction, or prepared-ray-batch build instead.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
@@ -261,6 +269,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4473_v3_0_m77_triangle_query_phase_packet_2026-06-16.md`
 - `docs/reports/goal4474_v3_0_m78_triangle_prepared_ray_batch_packet_2026-06-16.md`
 - `docs/reports/goal4475_v3_0_m79_triangle_post_m78_comparison_packet_2026-06-16.md`
+- `docs/reports/goal4476_v3_0_m80_triangle_weight_sum_sync_negative_packet_2026-06-16.md`
 
 ## Engine Boundary
 

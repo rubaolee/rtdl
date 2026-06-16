@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4475.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4476.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -66,6 +66,8 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "engine contract app-agnostic. Goal4475 refreshes the post-M78 comparison: "
     "cuGraph remains 3.15x-4.89x faster end to end, while RTDL M78 full-pipeline "
     "wins over authors-code full pipeline remain separate from pure kernel timing. "
+    "Goal4476 audits and reverts a no-weight-sum-sync M80 candidate because "
+    "query medians are unchanged and total/backend timing does not improve. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -494,7 +496,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "the post-M78 comparison: the cuGraph gap is now 3.15x-4.89x, RTDL "
             "M78 is 5.92x-7.99x faster than the authors `rt_tc` full pipeline "
             "on the two completed rows because authors preprocessing dominates, "
-            "and authors pure count kernels remain faster than RTDL M78 query."
+            "and authors pure count kernels remain faster than RTDL M78 query. "
+            "Goal4476 tests and rejects removing per-segment weight-sum "
+            "reduction/sync telemetry: M80 no-sync and explicit-sync variants "
+            "do not improve total/backend timing, so M78 remains the current "
+            "best internal route."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -524,7 +530,8 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "ray batches move repeated ray-column packing into a paid-once "
             "`prepared_ray_batch_build` phase. Cite Goal4475 for the current "
             "post-M78 comparison packet and its still-blocked public-speedup "
-            "boundary."
+            "boundary. Cite Goal4476 when ruling out scalar weight-sum "
+            "telemetry/copy-back as the main remaining debt."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
@@ -544,9 +551,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "the query-wall regression source; Goal4474 adds the reusable prepared "
             "ray-batch weighted-sum API and makes it the prepared replay path; "
             "Goal4475 refreshes the post-M78 comparison packet and keeps public "
-            "speedup wording blocked; next work is deciding whether scalar-sum "
-            "allocation/download or partner materialization can be reduced without "
-            "breaking the app-agnostic primitive contract"
+            "speedup wording blocked; Goal4476 rules out weight-sum telemetry/sync "
+            "cleanup as a useful next optimization; next work is targeting partner "
+            "materialization, segment-ray construction, or prepared-ray-batch build "
+            "without breaking the app-agnostic primitive contract"
         ),
         "evidence_refs": (
             "Goal2797",
@@ -574,6 +582,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4473",
             "Goal4474",
             "Goal4475",
+            "Goal4476",
         ),
     },
 }

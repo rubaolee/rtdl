@@ -1,0 +1,92 @@
+{
+  "goal": 4476,
+  "milestone": "v3_0_m80",
+  "status": "negative_result_reverted",
+  "tested_change": "replace per-segment _sum_uint64_like(ray_weights) telemetry with planner logical two-hop row counts, with and without explicit CuPy default-stream synchronization before native handoff",
+  "claim_boundary": {
+    "optimization_promoted": false,
+    "current_best_route_changed": false,
+    "public_speedup_claim_authorized": false,
+    "triangle_count_rt_core_claim_authorized": false,
+    "automatic_partner_selection_authorized": false
+  },
+  "rows": [
+    {
+      "dataset": "com_lj",
+      "display_name": "com-lj",
+      "count": 177820130,
+      "m78_total_s": 5.403957821428776,
+      "m78_backend_s": 3.7295880913734436,
+      "m78_query_median_s": 0.17983490228652954,
+      "m80_no_sync_total_s_median2": 9.595511309802532,
+      "m80_no_sync_backend_s_median2": 4.4253784865140915,
+      "m80_no_sync_query_median_s_median2": 0.1817030943930149,
+      "m80_no_sync_total_slower_than_m78": 1.7756451154656743,
+      "m80_no_sync_backend_slower_than_m78": 1.1865595819415058,
+      "m80_explicit_sync_total_s": 10.10246691852808,
+      "m80_explicit_sync_backend_s": 4.408968947827816,
+      "m80_explicit_sync_query_median_s": 0.18129540234804153,
+      "m80_explicit_sync_total_slower_than_m78": 1.8694570261943764,
+      "m80_explicit_sync_backend_slower_than_m78": 1.1821597559327754
+    },
+    {
+      "dataset": "soc_livejournal1",
+      "display_name": "soc-LiveJournal1",
+      "count": 285730264,
+      "m78_total_s": 11.668851613998413,
+      "m78_backend_s": 5.058323800563812,
+      "m78_query_median_s": 0.26429492235183716,
+      "m80_no_sync_total_s_median2": 13.761386200785637,
+      "m80_no_sync_backend_s_median2": 5.992206271737814,
+      "m80_no_sync_query_median_s_median2": 0.2637067399919033,
+      "m80_no_sync_total_slower_than_m78": 1.179326522952519,
+      "m80_no_sync_backend_slower_than_m78": 1.1846229122520604,
+      "m80_explicit_sync_total_s": 14.241226337850094,
+      "m80_explicit_sync_backend_s": 6.112695001065731,
+      "m80_explicit_sync_query_median_s": 0.2629866600036621,
+      "m80_explicit_sync_total_slower_than_m78": 1.220447976282924,
+      "m80_explicit_sync_backend_slower_than_m78": 1.2084428047853315
+    },
+    {
+      "dataset": "com_orkut",
+      "display_name": "com-orkut",
+      "count": 627584181,
+      "m78_total_s": 35.379293747246265,
+      "m78_backend_s": 27.921033531427383,
+      "m78_query_median_s": 1.7320657223463058,
+      "m80_no_sync_total_s_median2": 37.00725656747818,
+      "m80_no_sync_backend_s_median2": 28.02240366116166,
+      "m80_no_sync_query_median_s_median2": 1.7294169403612614,
+      "m80_no_sync_total_slower_than_m78": 1.0460145652387034,
+      "m80_no_sync_backend_slower_than_m78": 1.0036306009095322,
+      "m80_explicit_sync_total_s": 38.235427394509315,
+      "m80_explicit_sync_backend_s": 28.592243172228336,
+      "m80_explicit_sync_query_median_s": 1.7295154854655266,
+      "m80_explicit_sync_total_slower_than_m78": 1.080728961625622,
+      "m80_explicit_sync_backend_slower_than_m78": 1.0240395700268563
+    }
+  ],
+  "interpretation": {
+    "result": "Do not promote the M80 no-weight-sum-sync change. It does not improve query median and is slower on total/backend timing across the measured rows.",
+    "engineering_reading": "The old _sum_uint64_like(ray_weights) call was not the dominant scalar-summary bottleneck. It also acted as a CUDA stream synchronization point before native prepared-ray-batch handoff. Removing it shifts or exposes pending CUDA work rather than reducing the true route cost.",
+    "reverted_commits": [
+      "4ff360e7 Revert \"Synchronize triangle segment rays before native handoff\"",
+      "4c6029d9 Revert \"Avoid triangle segment weight-sum device sync\""
+    ],
+    "current_best_route": "Goal4474/Goal4475 M78 remains the current best internal Triangle Counting route: numba_direct plus prepared ray batch.",
+    "next_action": "Stop treating scalar weight-sum telemetry/copy-back as the main debt. Target partner materialization, segment-ray construction, or prepared-ray-batch build only if the change preserves the generic RTDL primitive contract."
+  },
+  "evidence_files": [
+    "docs/reports/goal4476_v3_0_m80_triangle_no_weight_sum_sync_com_lj_w1r3_2026-06-16.json",
+    "docs/reports/goal4476_v3_0_m80_triangle_no_weight_sum_sync_com_lj_w1r3_rerun_2026-06-16.json",
+    "docs/reports/goal4476_v3_0_m80_triangle_no_weight_sum_sync_soc_livejournal1_w1r3_2026-06-16.json",
+    "docs/reports/goal4476_v3_0_m80_triangle_no_weight_sum_sync_soc_livejournal1_w1r3_rerun_2026-06-16.json",
+    "docs/reports/goal4476_v3_0_m80_triangle_no_weight_sum_sync_com_orkut_w1r3_2026-06-16.json",
+    "docs/reports/goal4476_v3_0_m80_triangle_no_weight_sum_sync_com_orkut_w1r3_rerun_2026-06-16.json",
+    "docs/reports/goal4476_v3_0_m80_triangle_no_weight_sum_reduction_sync_com_lj_w1r3_2026-06-16.json",
+    "docs/reports/goal4476_v3_0_m80_triangle_no_weight_sum_reduction_sync_soc_livejournal1_w1r3_2026-06-16.json",
+    "docs/reports/goal4476_v3_0_m80_triangle_no_weight_sum_reduction_sync_com_orkut_w1r3_2026-06-16.json",
+    "docs/reports/goal4474_v3_0_m78_triangle_prepared_ray_batch_packet_2026-06-16.json",
+    "docs/reports/goal4475_v3_0_m79_triangle_post_m78_comparison_packet_2026-06-16.json"
+  ]
+}
