@@ -36,6 +36,7 @@ def run_v3_m19_ranked_summary_bridge_case(
     *,
     transfer_counter_library: str | Path,
     point_count: int = 65_536,
+    query_count: int | None = None,
     distribution: str = "uniform",
     requests: tuple[Mapping[str, object], ...] = V3_M19_DEFAULT_REQUESTS,
     warmups: int = 2,
@@ -44,10 +45,17 @@ def run_v3_m19_ranked_summary_bridge_case(
 ) -> dict[str, object]:
     validate_v3_public_name(V3_M19_GRAPH_ID, label="M19 graph id")
     point_count = int(point_count)
+    query_count = point_count if query_count is None else int(query_count)
     warmups = int(warmups)
     repeats = int(repeats)
     if point_count <= 0:
         raise GraphValidationError("point_count must be positive")
+    if query_count <= 0:
+        raise GraphValidationError("query_count must be positive")
+    if query_count > point_count:
+        raise GraphValidationError("query_count must not exceed point_count")
+    if query_count > 65_536:
+        raise GraphValidationError("query_count must be <= 65536 for the current prepared graph path")
     if warmups < 0 or repeats <= 0:
         raise GraphValidationError("warmups/repeats are invalid")
     normalized_requests = _normalize_requests(requests)
@@ -61,7 +69,7 @@ def run_v3_m19_ranked_summary_bridge_case(
     prepare_start = time.perf_counter()
     try:
         scene = prepare_optix_fixed_radius_neighbors_3d(points, max_radius=max_radius)
-        queries = scene.prepare_query_points(points)
+        queries = scene.prepare_query_points(points[:query_count])
         graph = scene.prepare_ranked_summary_prepared_queries_batch_graph(
             queries,
             normalized_requests,
@@ -98,7 +106,7 @@ def run_v3_m19_ranked_summary_bridge_case(
         "contract_key": V3_M19_CONTRACT_KEY,
         "parameters": {
             "point_count": point_count,
-            "query_count": point_count,
+            "query_count": query_count,
             "distribution": distribution,
             "requests": tuple(dict(request) for request in normalized_requests),
             "request_count": len(normalized_requests),

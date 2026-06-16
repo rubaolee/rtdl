@@ -5,6 +5,7 @@ import contextlib
 import io
 from argparse import Namespace
 import json
+import os
 import sys
 import tempfile
 from pathlib import Path
@@ -509,6 +510,75 @@ def rtnn_prepared_ranked_summary_raw_payload(
     }
 
 
+def rtnn_prepared_ranked_summary_graph_partner_bridge_payload(
+    *,
+    point_count: int,
+    query_count: int | None = None,
+    distribution: str,
+    warmups: int,
+    repeats: int,
+    transfer_counter_library: str | Path | None = None,
+    hardware: str = "unspecified",
+) -> dict[str, Any]:
+    """Run the V3 prepared ranked-summary graph bridge from the RTNN app.
+
+    The underlying graph is app-agnostic: RTDL prepares an OptiX 3-D fixed-radius
+    ranked-summary graph, keeps partial aggregates on device, and explicitly
+    runs both CuPy and Numba same-stream partner reductions before materializing.
+    """
+
+    if point_count <= 0:
+        raise ValueError("point_count must be positive")
+    normalized_query_count = point_count if query_count is None else int(query_count)
+    if normalized_query_count <= 0:
+        raise ValueError("query_count must be positive")
+    if normalized_query_count > point_count:
+        raise ValueError("query_count must not exceed point_count")
+    if warmups < 0:
+        raise ValueError("warmups must be non-negative")
+    if repeats <= 0:
+        raise ValueError("repeats must be positive")
+    library = transfer_counter_library or os.environ.get("RTDL_CUDA_TRANSFER_COUNTER_LIBRARY")
+    if not library:
+        raise ValueError(
+            "prepared_ranked_summary_graph_partner_bridge requires a transfer counter library; "
+            "use --transfer-counter-library or set RTDL_CUDA_TRANSFER_COUNTER_LIBRARY"
+        )
+    payload = rt.run_v3_m19_ranked_summary_bridge_case(
+        transfer_counter_library=Path(library),
+        point_count=point_count,
+        query_count=normalized_query_count,
+        distribution=distribution,
+        warmups=warmups,
+        repeats=repeats,
+        hardware=hardware,
+    )
+    validation = rt.validate_v3_m19_ranked_summary_bridge_payload(payload)
+    return {
+        "benchmark_app": BENCHMARK_NAME,
+        "mode": "prepared_ranked_summary_graph_partner_bridge",
+        "contract": "prepared 3-D fixed-radius ranked-summary graph partials plus CuPy/Numba same-stream device reductions",
+        "point_count": point_count,
+        "query_count": normalized_query_count,
+        "distribution": distribution,
+        "warmups": warmups,
+        "repeats": repeats,
+        "uses_v3_m19_bridge": True,
+        "runner_payload": payload,
+        "validation": validation,
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "native_engine_customization": False,
+            "full_rtnn_paper_reproduction": False,
+            "public_speedup_claim_authorized": False,
+            "broad_rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "automatic_partner_selection_authorized": False,
+            "same_stream_partner_continuation_evidence": True,
+        },
+    }
+
+
 def rtnn_prepared_session_reuse_idiom_payload(
     *,
     point_count: int,
@@ -769,6 +839,12 @@ def run_app(
     backend: str = "optix",
     operation: str = "grouped_topk_f64",
     k: int = 8,
+    distribution: str = "uniform",
+    warmups: int = 2,
+    repeats: int = 5,
+    query_count: int | None = None,
+    transfer_counter_library: str | Path | None = None,
+    hardware: str = "unspecified",
 ) -> dict[str, Any]:
     if mode == "scope":
         return scope_payload()
@@ -803,6 +879,16 @@ def run_app(
             distribution="uniform",
             seed=20260519,
         )
+    if mode == "prepared_ranked_summary_graph_partner_bridge":
+        return rtnn_prepared_ranked_summary_graph_partner_bridge_payload(
+            point_count=copies,
+            query_count=query_count,
+            distribution=distribution,
+            warmups=warmups,
+            repeats=repeats,
+            transfer_counter_library=transfer_counter_library,
+            hardware=hardware,
+        )
     if mode == "prepared_session_reuse_idiom":
         return rtnn_prepared_session_reuse_idiom_payload(
             point_count=copies,
@@ -833,6 +919,7 @@ def main(argv: list[str] | None = None) -> int:
             "rtnn_command_plan",
             "prepared_optix_ranked_summary",
             "prepared_ranked_summary_raw",
+            "prepared_ranked_summary_graph_partner_bridge",
             "prepared_session_reuse_idiom",
             "ranked_summary_typed_stream_plan",
             "rtnn_v2_8_ranked_summary_plan",
@@ -841,13 +928,17 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument("--point-count", type=int, default=None)
+    parser.add_argument("--query-count", type=int, default=None)
     parser.add_argument("--radius", type=float, default=0.02)
     parser.add_argument("--repeat", type=int, default=1)
+    parser.add_argument("--warmups", type=int, default=2)
     parser.add_argument("--query-batch-size", type=int, default=None)
     parser.add_argument("--distribution", choices=("uniform", "clustered", "shell"), default="uniform")
     parser.add_argument("--seed", type=int, default=20260519)
     parser.add_argument("--backend", choices=("optix", "embree"), default="optix")
     parser.add_argument("--partner", choices=("torch", "cupy", "numba", "triton"), default="torch")
+    parser.add_argument("--transfer-counter-library", type=Path, default=None)
+    parser.add_argument("--hardware", default="unspecified")
     parser.add_argument(
         "--operation",
         choices=("grouped_argmin_f64", "grouped_argmax_f64", "grouped_topk_f64"),
@@ -876,6 +967,16 @@ def main(argv: list[str] | None = None) -> int:
             distribution=args.distribution,
             seed=args.seed,
         )
+    elif args.mode == "prepared_ranked_summary_graph_partner_bridge":
+        payload = rtnn_prepared_ranked_summary_graph_partner_bridge_payload(
+            point_count=args.point_count or args.copies,
+            query_count=args.query_count,
+            distribution=args.distribution,
+            warmups=args.warmups,
+            repeats=args.repeat,
+            transfer_counter_library=args.transfer_counter_library,
+            hardware=args.hardware,
+        )
     elif args.mode == "prepared_session_reuse_idiom":
         payload = rtnn_prepared_session_reuse_idiom_payload(
             point_count=args.point_count or args.copies,
@@ -892,6 +993,12 @@ def main(argv: list[str] | None = None) -> int:
             backend=args.backend,
             operation=args.operation,
             k=args.k,
+            distribution=args.distribution,
+            warmups=args.warmups,
+            repeats=args.repeat,
+            query_count=args.query_count,
+            transfer_counter_library=args.transfer_counter_library,
+            hardware=args.hardware,
         )
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0
