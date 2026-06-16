@@ -403,6 +403,9 @@ def build_rt_graph_triangle_summary_contract_numba_binary(path: str | Path) -> R
         | {
             "construction_mode": "direct_binary_numpy_summary_then_numba_device_upload",
             "supersedes_construction_mode": "cpu_contract_then_numba_device_upload",
+            "dense_label_fast_path": bool(summary.get("dense_label_fast_path")),
+            "directed_sorted_unique_fast_path": bool(summary.get("directed_sorted_unique_fast_path")),
+            "two_hop_sorted_rle_fast_path": bool(summary.get("two_hop_sorted_rle_fast_path")),
         },
         device_arrays=device_arrays,
     )
@@ -423,13 +426,21 @@ def _build_rt_graph_triangle_summary_arrays_numpy(edges_np):
             "removed_low_degree_vertex_count": 0,
             "removed_low_degree_edge_count": 0,
             "removed_duplicate_or_self_edge_count": 0,
+            "dense_label_fast_path": False,
+            "directed_sorted_unique_fast_path": False,
+            "two_hop_sorted_rle_fast_path": False,
         }
 
     endpoints = edges_np.reshape(-1)
-    compacted_vertex_ids, inverse = np.unique(endpoints, return_inverse=True)
-    compacted_edges = inverse.reshape(-1, 2).astype(np.int64, copy=False)
-    node_count = int(compacted_vertex_ids.size)
-    degree = np.bincount(compacted_edges.reshape(-1), minlength=node_count).astype(np.int64, copy=False)
+    dense_inputs = _try_dense_label_triangle_summary_inputs_numpy(edges_np, endpoints)
+    dense_label_fast_path = dense_inputs is not None
+    if dense_inputs is None:
+        compacted_vertex_ids, inverse = np.unique(endpoints, return_inverse=True)
+        compacted_edges = inverse.reshape(-1, 2).astype(np.int64, copy=False)
+        node_count = int(compacted_vertex_ids.size)
+        degree = np.bincount(compacted_edges.reshape(-1), minlength=node_count).astype(np.int64, copy=False)
+    else:
+        compacted_edges, node_count, degree = dense_inputs
 
     src = compacted_edges[:, 0]
     dst = compacted_edges[:, 1]
@@ -444,6 +455,7 @@ def _build_rt_graph_triangle_summary_arrays_numpy(edges_np):
     keep_edge = keep_vertex[oriented_src] & keep_vertex[oriented_dst]
     directed_node_count = int(keep_vertex.sum())
     removed_low_degree_edge_count = int((~keep_edge).sum())
+    directed_sorted_unique_fast_path = False
 
     if directed_node_count == 0 or not np.any(keep_edge):
         directed_edge_keys = np.empty(0, dtype=np.int64)
@@ -457,7 +469,10 @@ def _build_rt_graph_triangle_summary_arrays_numpy(edges_np):
         vsrc = vsrc[nonself]
         vdst = vdst[nonself]
         if vsrc.size:
-            directed_edge_keys = np.unique(vsrc * directed_node_count + vdst).astype(np.int64, copy=False)
+            directed_key_candidates = (vsrc * directed_node_count + vdst).astype(np.int64, copy=False)
+            directed_edge_keys, directed_sorted_unique_fast_path = _unique_int64_keys_numpy(
+                directed_key_candidates
+            )
             directed_src = (directed_edge_keys // directed_node_count).astype(np.int64, copy=False)
             column_indices = (directed_edge_keys - directed_src * directed_node_count).astype(np.int64, copy=False)
             row_counts = np.bincount(directed_src, minlength=directed_node_count).astype(np.int64, copy=False)
@@ -470,12 +485,13 @@ def _build_rt_graph_triangle_summary_arrays_numpy(edges_np):
             column_indices = np.empty(0, dtype=np.int64)
             row_offsets = np.zeros(directed_node_count + 1, dtype=np.int64)
 
-    two_hop_host, triangle_count = _build_two_hop_summary_numpy(
+    two_hop_host, triangle_count, two_hop_meta = _build_two_hop_summary_numpy(
         directed_edge_keys=directed_edge_keys,
         directed_node_count=directed_node_count,
         row_offsets=row_offsets,
         column_indices=column_indices,
     )
+    two_hop_sorted_rle_fast_path = bool(two_hop_meta["sorted_rle_fast_path"])
     directed_edges_host = (
         np.column_stack((directed_src, column_indices)).astype(np.int64, copy=False)
         if directed_src.size
@@ -495,7 +511,70 @@ def _build_rt_graph_triangle_summary_arrays_numpy(edges_np):
         "removed_low_degree_vertex_count": int(node_count - directed_node_count),
         "removed_low_degree_edge_count": removed_low_degree_edge_count,
         "removed_duplicate_or_self_edge_count": removed_duplicate_or_self_edge_count,
+        "dense_label_fast_path": dense_label_fast_path,
+        "directed_sorted_unique_fast_path": directed_sorted_unique_fast_path,
+        "two_hop_sorted_rle_fast_path": two_hop_sorted_rle_fast_path,
     }
+
+
+def _try_dense_label_triangle_summary_inputs_numpy(edges_np, endpoints):
+    import numpy as np
+
+    if endpoints.size == 0 or np.any(endpoints < 0):
+        return None
+    max_endpoint = int(endpoints.max())
+    # Dense labels cannot hold when the id range is larger than the number of
+    # observed endpoint values; avoid an accidental huge bincount on sparse ids.
+    if max_endpoint + 1 > endpoints.size:
+        return None
+    degree = np.bincount(endpoints, minlength=max_endpoint + 1).astype(np.int64, copy=False)
+    if int(np.count_nonzero(degree)) != max_endpoint + 1:
+        return None
+    compacted_edges = edges_np.astype(np.int64, copy=False)
+    return compacted_edges, max_endpoint + 1, degree
+
+
+def _unique_int64_keys_numpy(keys):
+    import numpy as np
+
+    keys = keys.astype(np.int64, copy=False)
+    if keys.size <= 1:
+        return keys, True
+    if np.all(keys[1:] >= keys[:-1]):
+        boundary = np.empty(keys.size, dtype=bool)
+        boundary[0] = True
+        boundary[1:] = keys[1:] != keys[:-1]
+        if np.all(boundary):
+            return keys, True
+        return keys[boundary].astype(np.int64, copy=False), True
+    return np.unique(keys).astype(np.int64, copy=False), False
+
+
+def _unique_int64_keys_counts_numpy(keys):
+    import numpy as np
+
+    keys = keys.astype(np.int64, copy=False)
+    if keys.size == 0:
+        return keys, np.empty(0, dtype=np.int64), True
+    if keys.size == 1:
+        return keys, np.ones(1, dtype=np.int64), True
+    if np.all(keys[1:] >= keys[:-1]):
+        boundary = np.empty(keys.size, dtype=bool)
+        boundary[0] = True
+        boundary[1:] = keys[1:] != keys[:-1]
+        starts = np.flatnonzero(boundary).astype(np.int64, copy=False)
+        ends = np.empty(starts.size, dtype=np.int64)
+        if starts.size > 1:
+            ends[:-1] = starts[1:]
+        ends[-1] = keys.size
+        counts = (ends - starts).astype(np.int64, copy=False)
+        return keys[starts].astype(np.int64, copy=False), counts, True
+    unique_keys, unique_counts = np.unique(keys, return_counts=True)
+    return (
+        unique_keys.astype(np.int64, copy=False),
+        unique_counts.astype(np.int64, copy=False),
+        False,
+    )
 
 
 def _build_two_hop_summary_numpy(
@@ -508,7 +587,7 @@ def _build_two_hop_summary_numpy(
     import numpy as np
 
     if directed_node_count == 0 or column_indices.size == 0:
-        return np.empty((0, 3), dtype=np.int64), 0
+        return np.empty((0, 3), dtype=np.int64), 0, {"sorted_rle_fast_path": False}
     out_degree = row_offsets[1:] - row_offsets[:-1]
     edge_src = np.repeat(np.arange(directed_node_count, dtype=np.int64), out_degree)
     edge_mid = column_indices
@@ -516,7 +595,7 @@ def _build_two_hop_summary_numpy(
     nonempty = counts > 0
     counts = counts[nonempty]
     if counts.size == 0:
-        return np.empty((0, 3), dtype=np.int64), 0
+        return np.empty((0, 3), dtype=np.int64), 0, {"sorted_rle_fast_path": False}
     edge_src = edge_src[nonempty]
     starts = row_offsets[edge_mid[nonempty]]
     total_two_hop = int(counts.sum())
@@ -526,9 +605,7 @@ def _build_two_hop_summary_numpy(
     two_hop_dst = column_indices[dst_index]
     two_hop_src = np.repeat(edge_src, counts)
     two_hop_keys = two_hop_src * directed_node_count + two_hop_dst
-    unique_keys, unique_counts = np.unique(two_hop_keys, return_counts=True)
-    unique_keys = unique_keys.astype(np.int64, copy=False)
-    unique_counts = unique_counts.astype(np.int64, copy=False)
+    unique_keys, unique_counts, sorted_rle_fast_path = _unique_int64_keys_counts_numpy(two_hop_keys)
 
     positions = np.searchsorted(directed_edge_keys, unique_keys)
     in_range = positions < directed_edge_keys.size
@@ -538,7 +615,7 @@ def _build_two_hop_summary_numpy(
     ray_src = unique_keys // directed_node_count
     ray_dst = unique_keys - ray_src * directed_node_count
     two_hop_host = np.column_stack((ray_src, ray_dst, unique_counts)).astype(np.int64, copy=False)
-    return two_hop_host, triangle_count
+    return two_hop_host, triangle_count, {"sorted_rle_fast_path": sorted_rle_fast_path}
 
 
 def build_rt_graph_triangle_contract(
