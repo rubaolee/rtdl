@@ -170,6 +170,13 @@ for this row/hardware, reducing the warmup-0 repeat-1 probe from 35.409s to
 34.231s and ray build from 6.725s to 5.629s. Larger 18M/20M caps reached CUDA
 OOM during query, so 15M is not a universal default.
 
+Goal4467 refreshes the large-row comparison packet with current optimized RTDL
+timings: `com-lj` 14.153s, `soc-LiveJournal1` 25.747s, and `com-orkut`
+115.032s, all exact. The packet shows the boundary plainly: RTDL now completes
+the large former-OOM rows, but cuGraph remains 8.26x-15.91x faster end to end,
+and the authors specialized count kernels remain much faster than RTDL query
+traversal even when RTDL beats the authors full pipeline on two rows.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
@@ -179,6 +186,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4464_v3_0_m68_triangle_segmented_scene_com_orkut_2026-06-16.md`
 - `docs/reports/goal4465_v3_0_m69_triangle_segment_planner_com_orkut_2026-06-16.md`
 - `docs/reports/goal4466_v3_0_m70_triangle_ray_batch_cap_tuning_com_orkut_2026-06-16.md`
+- `docs/reports/goal4467_v3_0_m71_triangle_current_comparison_packet_2026-06-16.md`
 
 ## Engine Boundary
 

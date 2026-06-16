@@ -1,0 +1,142 @@
+{
+  "claim_boundary": {
+    "apples_to_apples_note": "Current RTDL rows are current optimized RTDL route evidence; cuGraph/authors rows are Goal2593 baseline evidence and use different implementations/contracts.",
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": 4467,
+  "hardware": "RTX 4000 Ada pod for current RTDL rows; Goal2593 rows used the same evidence family as cited in raw files",
+  "milestone": "v3_0_m71",
+  "rows": [
+    {
+      "author_bs_goal2593": {
+        "counting_ms": 10.614768,
+        "gpu_preprocessing_ms": 38963.571003000005,
+        "pipeline_excluding_file_read_ms": 40758.952771,
+        "pipeline_wall_ms": 42670.99915072322,
+        "status": "ok"
+      },
+      "author_rt_goal2593": {
+        "compute_rays_ms": 38321.45,
+        "counting_ms": 72.9684,
+        "pipeline_excluding_file_read_ms": 40801.618105999994,
+        "pipeline_wall_ms": 43176.51651054621,
+        "status": "ok"
+      },
+      "cugraph_goal2593": {
+        "status": "ok",
+        "total_ms": 1713.0286134779453,
+        "triangle_count_ms": 861.012626439333
+      },
+      "dataset": "com_lj",
+      "edge_count": 34681189,
+      "expected_triangle_count": 177820130,
+      "observed_triangle_count": 177820130,
+      "ratios": {
+        "cugraph_faster_than_rtdl_total": 8.26207977673997,
+        "rtdl_query_slower_than_author_bs_count": 190.2337080981257,
+        "rtdl_query_slower_than_author_rt_count": 27.673440520024084,
+        "rtdl_total_faster_than_author_bs_pipeline_wall": 3.01494095118715,
+        "rtdl_total_faster_than_author_rt_pipeline_wall": 3.050658535026302
+      },
+      "rt_dl_current": {
+        "build_contract_ms": 2541.476249694824,
+        "build_geometry_ms": 259.00667905807495,
+        "global_triangle_scene_materialized": true,
+        "global_two_hop_summary_materialized": false,
+        "max_two_hop_rows": 15000000,
+        "mode": "rt_graph_2a1_segmented_generic_rt",
+        "query_median_ms": 2019.2866772413254,
+        "ray_build_median_ms": 629.0002316236496,
+        "ray_segment_count": 62,
+        "scene_count": null,
+        "total_ms": 14153.179064393044
+      }
+    },
+    {
+      "author_bs_goal2593": {
+        "counting_ms": 13.68672,
+        "gpu_preprocessing_ms": 60154.455179,
+        "pipeline_excluding_file_read_ms": 63205.346899,
+        "pipeline_wall_ms": 65919.02570426464,
+        "status": "ok"
+      },
+      "author_rt_goal2593": {
+        "compute_rays_ms": 61627.7,
+        "counting_ms": 103.401,
+        "pipeline_excluding_file_read_ms": 65658.37492,
+        "pipeline_wall_ms": 69117.80151724815,
+        "status": "ok"
+      },
+      "cugraph_goal2593": {
+        "status": "ok",
+        "total_ms": 2377.5344640016556,
+        "triangle_count_ms": 1136.9237154722214
+      },
+      "dataset": "soc_livejournal1",
+      "edge_count": 68993773,
+      "expected_triangle_count": 285730264,
+      "observed_triangle_count": 285730264,
+      "ratios": {
+        "cugraph_faster_than_rtdl_total": 10.82942157250856,
+        "rtdl_query_slower_than_author_bs_count": 222.66145132938274,
+        "rtdl_query_slower_than_author_rt_count": 29.47268342800253,
+        "rtdl_total_faster_than_author_bs_pipeline_wall": 2.560228326215727,
+        "rtdl_total_faster_than_author_rt_pipeline_wall": 2.6844655454118276
+      },
+      "rt_dl_current": {
+        "build_contract_ms": 4337.832286953926,
+        "build_geometry_ms": 3821.869745850563,
+        "global_triangle_scene_materialized": false,
+        "global_two_hop_summary_materialized": false,
+        "max_two_hop_rows": 15000000,
+        "mode": "rt_graph_2a1_segmented_scene_generic_rt",
+        "query_median_ms": 3047.5049391388893,
+        "ray_build_median_ms": 936.135783791542,
+        "ray_segment_count": 96,
+        "scene_count": 6,
+        "total_ms": 25747.323013842106
+      }
+    },
+    {
+      "author_bs_goal2593": {
+        "elapsed_ms_before_failure": 147387.18970119953,
+        "error": "Command '['/root/rtdl_python_only/scratch/external/RT-Graph/tc/bin/bs_tc', 'build/goal2593_snap_edges/com-orkut.edge', '0']' died with <Signals.SIGKILL: 9>.",
+        "status": "failed"
+      },
+      "author_rt_goal2593": {
+        "elapsed_ms_before_failure": 149151.58234536648,
+        "error": "Command '['/root/rtdl_python_only/scratch/external/RT-Graph/tc/bin/rt_tc', 'build/goal2593_snap_edges/com-orkut.edge', '0']' died with <Signals.SIGKILL: 9>.",
+        "status": "failed"
+      },
+      "cugraph_goal2593": {
+        "status": "ok",
+        "total_ms": 7229.10039126873,
+        "triangle_count_ms": 5190.751440823078
+      },
+      "dataset": "com_orkut",
+      "edge_count": 117185083,
+      "expected_triangle_count": 627584181,
+      "observed_triangle_count": 627584181,
+      "ratios": {
+        "cugraph_faster_than_rtdl_total": 15.912405055758354
+      },
+      "rt_dl_current": {
+        "build_contract_ms": 5601.890116930008,
+        "build_geometry_ms": 4261.238180100918,
+        "global_triangle_scene_materialized": false,
+        "global_two_hop_summary_materialized": false,
+        "max_two_hop_rows": 15000000,
+        "mode": "rt_graph_2a1_segmented_scene_generic_rt",
+        "query_median_ms": 19135.911621153355,
+        "ray_build_median_ms": 5609.756499528885,
+        "ray_segment_count": 600,
+        "scene_count": 59,
+        "total_ms": 115032.37361460924
+      }
+    }
+  ],
+  "title": "Triangle Counting current RTDL versus Goal2593 cuGraph/authors packet"
+}

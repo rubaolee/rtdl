@@ -1,0 +1,136 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "engine_contract": "generic prepared triangle scene plus generic ray/triangle weighted any-hit sum",
+    "native_engine_customization": false,
+    "paper_dataset_speedup_claim_authorized": false,
+    "partner_role": "CuPy app partner builds directed CSR and segmented duplicate two-hop ray batches",
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparison": {
+    "all_triangle_counts_match_expected": true,
+    "datasets": [
+      "com_lj"
+    ],
+    "global_triangle_scene_materialized": true,
+    "global_two_hop_summary_materialized": false,
+    "previous_goal2593_blocker_addressed_for": [
+      "com_lj"
+    ],
+    "public_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal": 4467,
+  "implementation": "segmented_2a1_cupy_paper_dataset",
+  "milestone": "v3_0_m71",
+  "parameters": {
+    "hardware": "RTX 4000 Ada pod",
+    "mode": "segmented_rays",
+    "repeat": 3,
+    "scene_max_directed_edges": 2000000,
+    "segment_max_two_hop_rows": 15000000,
+    "warmup": 1
+  },
+  "rows": [
+    {
+      "backend": "optix",
+      "dataset": "com_lj",
+      "edge_count": 34681189,
+      "edge_file": "build/goal2593_snap_edges/com-lj.edge",
+      "expected_triangle_count": 177820130,
+      "global_triangle_scene_materialized": true,
+      "global_two_hop_summary_materialized": false,
+      "mode": "rt_graph_2a1_segmented_generic_rt",
+      "observed_triangle_count": 177820130,
+      "partner": "cupy",
+      "partner_timing_ms": {
+        "compact_unique_ms": 225.475,
+        "degree_ms": 117.725,
+        "directed_csr_ms": 82.266,
+        "estimated_two_hop_relation_count": 928731472,
+        "host_columns_materialized": false,
+        "load_np_ms": 715.597,
+        "max_two_hop_per_directed_edge": 524,
+        "total_partner_ms": 2133.827,
+        "triangle_count_available": false,
+        "two_hop_estimate_ms": 3.953,
+        "two_hop_summary_materialized": false,
+        "upload_ms": 988.811
+      },
+      "primitive_count": 33895259,
+      "ray_count": 928731472,
+      "rt_core_accelerated": true,
+      "segmentation": {
+        "count_column_rows": 33895259,
+        "counts_download_ms": 50.27589201927185,
+        "max_segment_two_hop_rows": 14999999,
+        "max_two_hop_rows": 15000000,
+        "ranges_preview": [
+          {
+            "end_edge": 394187,
+            "start_edge": 0,
+            "two_hop_rows": 14999935
+          },
+          {
+            "end_edge": 995658,
+            "start_edge": 394187,
+            "two_hop_rows": 14999960
+          },
+          {
+            "end_edge": 1303616,
+            "start_edge": 995658,
+            "two_hop_rows": 14999934
+          },
+          {
+            "end_edge": 1534442,
+            "start_edge": 1303616,
+            "two_hop_rows": 14999989
+          },
+          {
+            "end_edge": 1761369,
+            "start_edge": 1534442,
+            "two_hop_rows": 14999996
+          },
+          {
+            "end_edge": 2004056,
+            "start_edge": 1761369,
+            "two_hop_rows": 14999986
+          },
+          {
+            "end_edge": 2230511,
+            "start_edge": 2004056,
+            "two_hop_rows": 14999965
+          },
+          {
+            "end_edge": 2456072,
+            "start_edge": 2230511,
+            "two_hop_rows": 14999942
+          }
+        ],
+        "ranges_truncated": true,
+        "segment_count": 62,
+        "total_two_hop_rows": 928731472
+      },
+      "timing_ms": {
+        "build_contract": 2541.476249694824,
+        "build_geometry": 259.00667905807495,
+        "prepare_scene_ms": 664.0303730964661,
+        "prepare_scene_total_ms": null,
+        "query_max_ms": 2019.455946981907,
+        "query_median_ms": 2019.2866772413254,
+        "query_min_ms": 2018.2278752326965,
+        "query_repeat": 3,
+        "query_warmup": 1,
+        "segment_ray_build_median_ms": 629.0002316236496,
+        "total": 14153.179064393044,
+        "triangle_build_median_ms": null,
+        "triangle_build_total_ms": null
+      },
+      "triangle_count_matches_expected": true
+    }
+  ],
+  "status": "segmented_rt_2a1_paper_dataset_validation"
+}

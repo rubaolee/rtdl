@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4466.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4467.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -112,7 +112,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "from 28.885s to 3.665s without changing the generic engine contract. "
     "Goal4466 tunes `com-orkut` ray-batch caps on the RTX 4000 Ada pod: 15M is "
     "the best measured explicit cap, while 18M/20M OOM during query and must not "
-    "become hidden automatic defaults."
+    "become hidden automatic defaults. Goal4467 refreshes the current large-row "
+    "comparison packet: RTDL now completes `com-lj`, `soc-LiveJournal1`, and "
+    "`com-orkut` exactly, but cuGraph remains 8.26x-15.91x faster end to end "
+    "and authors pure count kernels remain much faster than RTDL query traversal."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -710,7 +713,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "`com-orkut` planner median from 28.885s to 3.665s while preserving the same "
             "scene/ray counts and exact triangle result. Goal4466 then tunes ray batch "
             "size for `com-orkut`: 15M reduces the warmup-0 repeat-1 probe to 34.231s "
-            "and ray build to 5.629s, while 18M and 20M fail with CUDA OOM during query."
+            "and ray build to 5.629s, while 18M and 20M fail with CUDA OOM during query. "
+            "Goal4467 refreshes the current comparison packet with exact current RTDL "
+            "large-row totals: 14.153s on `com-lj`, 25.747s on `soc-LiveJournal1`, "
+            "and 115.032s on `com-orkut`. cuGraph remains 8.26x-15.91x faster "
+            "end to end, and authors pure count kernels remain much faster than RTDL "
+            "query traversal."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -738,7 +746,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "segmented planner: it is a partner-side prefix/searchsorted optimization, "
             "not a native-engine specialization. Cite Goal4466 when discussing explicit "
             "ray-batch cap tuning: use 5M as conservative and 15M as the measured "
-            "`com-orkut`/RTX 4000 Ada tuned cap; do not auto-hide larger caps."
+            "`com-orkut`/RTX 4000 Ada tuned cap; do not auto-hide larger caps. "
+            "Cite Goal4467 for the current comparison packet and its no-speedup boundary."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -755,16 +764,15 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "treating the Goal4464 com-orkut success as a public RTDL-vs-cuGraph or RTDL-vs-authors speedup claim",
             "treating the Goal4465 planner speedup as an RT-core traversal speedup",
             "making the Goal4466 15M ray-batch cap a universal or hidden automatic default",
+            "claiming Goal4467 shows RTDL beats cuGraph or authors pure kernels",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
             "preserve the generic graph relationship-count route and avoid claiming RT-core "
-            "triangle-count acceleration; the remaining work is to compare the now-passing "
-            "`com-lj`, `soc-LiveJournal1`, and `com-orkut` rows against the CuPy "
-            "global-summary route where it fits, the no-C++ Numba reference where it fits, "
-            "cuGraph, and authors' RT-Graph code under one explicit timing contract, then "
-            "investigate duplicate-ray representation and traversal reductions "
-            "without adding graph-specific native engine logic"
+            "triangle-count acceleration; current comparison packet is complete for the "
+            "large former-OOM rows (`com-lj`, `soc-LiveJournal1`, and `com-orkut`), "
+            "so next work is segmented RT-2A1 duplicate-ray representation and traversal "
+            "reduction without adding graph-specific native engine logic"
         ),
         evidence_refs=(
             "Goal2797",
@@ -785,6 +793,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4464",
             "Goal4465",
             "Goal4466",
+            "Goal4467",
         ),
         pod_needed_next=False,
     ),
