@@ -74,7 +74,7 @@ class Goal4443V30M47RtnnLargeAppBridgeTest(unittest.TestCase):
         validation = rt.validate_current_benchmark_route_decisions()
 
         self.assertEqual("accept", validation["status"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4474.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4475.v1", route["version"])
         self.assertEqual("mixed_explicit", route["decision_kind"])
         self.assertEqual("mixed_explicit_user_choice", route["partner_policy"])
         self.assertIn("Goal4443", route["evidence_refs"])

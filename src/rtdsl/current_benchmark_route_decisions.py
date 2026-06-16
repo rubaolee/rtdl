@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4474.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4475.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -141,7 +141,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "work, not native RT traversal evidence. Goal4474 adds a generic prepared "
     "ray-batch weighted any-hit sum and uses it in Triangle Counting prepared "
     "segment replay, moving repeated ray-column packing out of the measured query "
-    "path and improving M78 query medians by about 4.8x-5.2x versus M77."
+    "path and improving M78 query medians by about 4.8x-5.2x versus M77. "
+    "Goal4475 refreshes the post-M78 comparison: RTDL M78 narrows the cuGraph "
+    "end-to-end gap to 3.15x-4.89x but still does not authorize RTDL-beats-cuGraph "
+    "or public RT-core triangle-count speedup wording."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -777,7 +780,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "replay through it. This moves ray-column packing to an explicit "
             "build-once `prepared_ray_batch_build` phase and improves query median "
             "by about 4.8x-5.2x versus M77; current `numba_direct` totals are "
-            "5.404s, 11.669s, and 35.379s on the three large rows."
+            "5.404s, 11.669s, and 35.379s on the three large rows. Goal4475 "
+            "refreshes the post-M78 comparison: cuGraph remains 3.15x-4.89x "
+            "faster end to end, RTDL M78 is 5.92x-7.99x faster than the authors "
+            "`rt_tc` full pipeline on the two completed rows because authors "
+            "preprocessing dominates, and authors pure count kernels remain "
+            "faster than RTDL M78 query."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -825,7 +833,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "unchanged, while total time favors `numba_direct` on all three rows. "
             "Cite Goal4474 when discussing the current prepared replay route: it "
             "uses generic prepared ray batches so repeated ray-column packing is "
-            "paid once as `prepared_ray_batch_build`, not on every replay query."
+            "paid once as `prepared_ray_batch_build`, not on every replay query. "
+            "Cite Goal4475 for the current post-M78 comparison packet: cuGraph "
+            "is still 3.15x-4.89x faster end to end, while RTDL's full-pipeline "
+            "authors-code reading remains distinct from pure counting-kernel timing."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -854,6 +865,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "treating Goal4473 query-wall movement as native RT traversal regression",
             "treating Goal4474 prepared ray batches as graph-specific native engine callbacks",
             "claiming Goal4474 alone refreshes RTDL-vs-cuGraph or authors-code comparisons",
+            "claiming Goal4475 shows RTDL beats cuGraph or authors pure kernels",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -867,9 +879,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "build/backend wins, and Goal4473 shows M77 totals favor numba_direct "
             "while native query pack/traversal are effectively unchanged; Goal4474 "
             "adds the reusable prepared ray-batch weighted-sum API and makes it "
-            "the prepared replay path; next work is refreshing the post-M78 "
-            "comparison packet and deciding whether scalar-sum allocation/download "
-            "is still worth optimizing"
+            "the prepared replay path; Goal4475 refreshes the post-M78 comparison "
+            "packet and keeps public speedup wording blocked; next work is deciding "
+            "whether scalar-sum allocation/download or partner materialization "
+            "can be reduced without breaking the app-agnostic primitive contract"
         ),
         evidence_refs=(
             "Goal2797",
@@ -898,6 +911,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4472",
             "Goal4473",
             "Goal4474",
+            "Goal4475",
         ),
         pod_needed_next=False,
     ),

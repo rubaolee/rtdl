@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4474.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4475.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -63,7 +63,9 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "traversal evidence. Goal4474 adds a generic prepared ray-batch weighted "
     "any-hit sum and uses it in Triangle Counting prepared replay, improving "
     "large-row query medians by about 4.8x-5.2x versus M77 while keeping the "
-    "engine contract app-agnostic. "
+    "engine contract app-agnostic. Goal4475 refreshes the post-M78 comparison: "
+    "cuGraph remains 3.15x-4.89x faster end to end, while RTDL M78 full-pipeline "
+    "wins over authors-code full pipeline remain separate from pure kernel timing. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -488,7 +490,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "prepared ray-batch weighted any-hit primitive and wires it into "
             "prepared segmented replay. Query medians improve by about "
             "4.8x-5.2x versus M77, and current `numba_direct` totals are "
-            "5.404s/11.669s/35.379s on the three large rows."
+            "5.404s/11.669s/35.379s on the three large rows. Goal4475 refreshes "
+            "the post-M78 comparison: the cuGraph gap is now 3.15x-4.89x, RTDL "
+            "M78 is 5.92x-7.99x faster than the authors `rt_tc` full pipeline "
+            "on the two completed rows because authors preprocessing dominates, "
+            "and authors pure count kernels remain faster than RTDL M78 query."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -516,17 +522,18 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "does not support a native RT regression reading for query-wall movement. "
             "Cite Goal4474 for the current prepared replay path: generic prepared "
             "ray batches move repeated ray-column packing into a paid-once "
-            "`prepared_ray_batch_build` phase."
+            "`prepared_ray_batch_build` phase. Cite Goal4475 for the current "
+            "post-M78 comparison packet and its still-blocked public-speedup "
+            "boundary."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
-            "large-scale performance for explicit summary-contract construction and "
-            "the segmented RT-2A1 route, including the explicit unique-weighted "
-            "segment-ray representation, prepared segment replay schedule, and "
-            "partner-owned device weights consumed by generic prepared ray batches; "
-            "Numba is now a much fairer no-C++ Python-source reference for the "
-            "global-summary path and an explicit direct key-fill option for the "
-            "segmented route"
+            "large-scale performance for explicit global summary-contract construction; "
+            "for the segmented RT-2A1 route, keep CuPy and `numba_direct` as explicit "
+            "choices and treat current `numba_direct` plus prepared ray batches as "
+            "the fastest measured internal route; partner-owned device weights are "
+            "consumed by generic prepared ray batches, and Numba remains the no-C++ "
+            "Python-source reference/direct key-fill option"
         ),
         "next_generic_runtime_action": (
             "keep scalar triangle-count wording primitive-first; do not claim RT-Graph "
@@ -535,9 +542,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4472 partially reduces unique-key construction with an explicit "
             "Numba direct-fill route; Goal4473 shows native pack/traversal are not "
             "the query-wall regression source; Goal4474 adds the reusable prepared "
-            "ray-batch weighted-sum API and makes it the prepared replay path; next "
-            "work is refreshing the post-M78 comparison packet and then deciding "
-            "whether scalar-sum allocation/download is still worth optimizing"
+            "ray-batch weighted-sum API and makes it the prepared replay path; "
+            "Goal4475 refreshes the post-M78 comparison packet and keeps public "
+            "speedup wording blocked; next work is deciding whether scalar-sum "
+            "allocation/download or partner materialization can be reduced without "
+            "breaking the app-agnostic primitive contract"
         ),
         "evidence_refs": (
             "Goal2797",
@@ -564,6 +573,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4472",
             "Goal4473",
             "Goal4474",
+            "Goal4475",
         ),
     },
 }

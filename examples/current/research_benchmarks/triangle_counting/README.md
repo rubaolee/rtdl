@@ -235,6 +235,14 @@ current fastest internal route is `numba_direct` plus prepared ray batch:
 still internal route evidence, not public RTDL-vs-cuGraph or triangle-count
 RT-core speedup wording.
 
+Goal4475 refreshes the post-M78 comparison packet. M78 narrows the cuGraph
+end-to-end gap from Goal4470/M73's 5.58x-8.64x to 3.15x-4.89x, but cuGraph
+still wins all three large rows. RTDL M78 is 5.92x-7.99x faster than the
+authors `rt_tc` full pipeline on the two completed rows because the authors
+full pipeline is dominated by preprocessing and ray/GPU construction; that
+must not be worded as a faster counting kernel. Authors pure count kernels
+remain faster than RTDL M78 query on the rows where they completed.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
@@ -252,6 +260,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4472_v3_0_m76_triangle_numba_direct_unique_key_packet_2026-06-16.md`
 - `docs/reports/goal4473_v3_0_m77_triangle_query_phase_packet_2026-06-16.md`
 - `docs/reports/goal4474_v3_0_m78_triangle_prepared_ray_batch_packet_2026-06-16.md`
+- `docs/reports/goal4475_v3_0_m79_triangle_post_m78_comparison_packet_2026-06-16.md`
 
 ## Engine Boundary
 
