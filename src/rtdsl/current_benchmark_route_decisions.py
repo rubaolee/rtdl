@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v2_10.current_benchmark_route_decisions.goal4180.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4438.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -25,7 +25,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "explicitly. It does not authorize release action, public speedup wording, "
     "whole-app acceleration wording, broad RT-core wording, paper-reproduction "
     "wording, true-zero-copy wording, automatic partner selection, AMD performance "
-    "wording, or app-specific native-engine logic."
+    "wording, or app-specific native-engine logic. Goal4438 updates the Barnes-Hut "
+    "partner guidance for the prepared aggregate-frontier device-column contract: "
+    "Numba is currently fastest there, while CuPy remains the measured comparison "
+    "partner, not the default winner for that contract."
 )
 
 ROUTE_DECISION_KINDS = (
@@ -34,11 +37,13 @@ ROUTE_DECISION_KINDS = (
     "mixed_explicit",
     "no_partner_needed",
     "fastest_partner_with_numba_reference",
+    "numba_fastest_with_cupy_comparison",
 )
 PARTNER_POLICIES = (
     "none",
     "numba",
     "cupy_fastest_numba_reference",
+    "numba_fastest_cupy_comparison",
     "mixed_explicit_user_choice",
     "primitive_only",
 )
@@ -414,27 +419,49 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
     ),
     CurrentBenchmarkRouteDecision(
         app="barnes_hut",
-        decision_kind="fastest_partner_with_numba_reference",
+        decision_kind="numba_fastest_with_cupy_comparison",
         current_reader_decision=(
-            "Use RTDL/OptiX for membership/frontier work; CuPy remains fastest measured force continuation, "
-            "with Numba available as the no-RawKernel reference. Goal4053 adds a prepared Numba "
-            "grouped-vector continuation session for presegmented typed streams, but it is not a "
-            "full force-law route promotion."
+            "Use RTDL/OptiX for aggregate-frontier device-column work. For the prepared "
+            "aggregate-frontier weighted-vector contract measured in Goal4436 and Goal4438, "
+            "Numba is currently the fastest measured partner and the no-C++ Python-source route; "
+            "CuPy remains the same-contract measured comparison partner. Older exact-force rows "
+            "that favored CuPy remain scoped to their older contract. Goal4053 still records a "
+            "prepared grouped-vector session for presegmented typed streams."
         ),
         primary_route="RTDL/OptiX membership primitive plus explicit force-vector partner continuation",
-        partner_policy="cupy_fastest_numba_reference",
+        partner_policy="numba_fastest_cupy_comparison",
         primitive_contract="aggregate-frontier membership plus grouped vector continuation",
         user_choice_guidance=(
-            "Choose CuPy for fastest measured force continuation or Numba for no-RawKernel Python JIT "
-            "custom logic; use the Goal4053 prepared grouped-vector session when the user already has "
-            "presegmented vector streams and wants repeated resident reductions."
+            "Choose the prepared Numba continuation for the Goal4436/Goal4438 aggregate-frontier "
+            "device-column weighted-vector route. Keep CuPy available as the same-contract "
+            "comparison partner and for older exact-force rows where the evidence says it wins. "
+            "Use the Goal4053 prepared grouped-vector session when the user already has "
+            "presegmented vector streams and wants repeated resident reductions. Do not "
+            "auto-select a partner across contracts."
         ),
-        rejected_or_unpromoted_candidates=("Numba-as-fastest-force-route", "whole Barnes-Hut speedup claim"),
+        rejected_or_unpromoted_candidates=(
+            "universal Numba fastest claim",
+            "universal CuPy fastest claim",
+            "whole Barnes-Hut speedup claim",
+            "RT-core N-body speedup claim",
+        ),
         next_runtime_action=(
-            "prepared Numba grouped-vector session is available for presegmented streams; future major "
-            "work is deeper hierarchical vector primitive design, not app-only tuning"
+            "integrate the prepared aggregate-frontier Numba route into the benchmark app as an "
+            "explicit mode, then build same-contract Embree/CPU evidence before any public "
+            "whole-app or backend speedup wording; deeper hierarchical vector primitive design "
+            "remains future work"
         ),
-        evidence_refs=("Goal2803", "Goal3599", "Goal3746", "Goal3762", "Goal3869", "Goal4052", "Goal4053"),
+        evidence_refs=(
+            "Goal2803",
+            "Goal3599",
+            "Goal3746",
+            "Goal3762",
+            "Goal3869",
+            "Goal4052",
+            "Goal4053",
+            "Goal4436",
+            "Goal4438",
+        ),
         pod_needed_next=False,
     ),
     CurrentBenchmarkRouteDecision(

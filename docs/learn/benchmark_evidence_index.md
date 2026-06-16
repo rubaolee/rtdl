@@ -96,7 +96,7 @@ v2.14 evidence:
 | Robot collision | `robot_collision_optix_prepared_device_count` | primitive-only prepared static-scene collision count path | NVIDIA pod for OptiX timing |
 | Contact manifold | `contact_manifold_optix_native_collect_k` | bounded collect/witness primitive path; no manifold-native ABI | NVIDIA pod for OptiX timing |
 | RayDB-style | `raydb_style_optix_count_primitive_first` | primitive-first grouped count path; partner rows only for unfused continuations | NVIDIA pod; CUDA pod for CuPy/Numba partner comparison |
-| Barnes-Hut | `barnes_hut_numba_exact_force` | aggregate-frontier pressure plus Numba exact-force reference | CUDA pod with Numba |
+| Barnes-Hut | `barnes_hut_prepared_aggregate_frontier_numba` | prepared aggregate-frontier device columns plus Numba weighted-vector continuation; CuPy remains same-contract comparison | NVIDIA/CUDA pod with OptiX, CuPy, and Numba |
 | LibRTS spatial index | `librts_spatial_index_optix_aabb_index` | prepared AABB-index benchmark slice, not full mutable LibRTS | NVIDIA pod for OptiX timing |
 | RTNN | `rtnn_prepared_optix_ranked_summary` | prepared fixed-radius ranked summary path | NVIDIA pod for OptiX timing |
 | Triangle counting | `triangle_counting_optix_native_summary` | explicit native graph summary path; candidate-row interpretation stays app code | NVIDIA pod for OptiX timing |
@@ -107,6 +107,7 @@ v2.14 evidence:
 - [Current benchmark scale-profile registry](../reports/goal3828_current_benchmark_scale_profile_registry_2026-06-07.md)
 - [RTX 4000 Ada scale-profile refresh](../reports/goal4215_current_benchmark_scale_profile_after_rtdbscan_policy_2026-06-09.md)
 - [Large-scale CuPy/Numba partner comparison](../reports/goal4266_large_scale_cupy_numba_partner_comparison_2026-06-09.md)
+- [Barnes-Hut prepared aggregate-frontier partner scale ladder](../reports/goal4438_v3_0_m41_barnes_hut_prepared_frontier_partner_scale_ladder_2026-06-16.md)
 
 ## Reading Rules
 
@@ -124,6 +125,10 @@ v2.14 evidence:
   be read by exact app, command, hardware, backend, partner, and dataset.
 - CuPy/Numba comparison rows are partner-continuation evidence only. They do
   not become RT-core or whole-application speedup claims.
+- For Barnes-Hut, Goal4438 supersedes the old partner-choice wording only for
+  the prepared aggregate-frontier device-column weighted-vector contract:
+  Numba wins that measured partner route; this is not a universal Numba,
+  RT-core, or whole N-body speedup claim.
 - The RayJoin external comparison is useful for LSI/PIP diagnosis, but it is
   not a full RayJoin paper reproduction and does not authorize RTDL-beats-RayJoin
   wording.
