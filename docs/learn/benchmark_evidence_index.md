@@ -1,6 +1,7 @@
 # Benchmark Evidence Index
 
-Status: current v2.14 source-tree evidence map.
+Status: current source-tree evidence map for v2.14 release evidence plus V3
+internal benchmark work.
 
 Use this page when you want to reproduce or audit the ten benchmark-app front
 doors. It is intentionally narrower than the full report history: it tells you
@@ -98,7 +99,7 @@ v2.14 evidence:
 | RayDB-style | `raydb_style_optix_count_primitive_first` | primitive-first grouped count path; partner rows only for unfused continuations | NVIDIA pod; CUDA pod for CuPy/Numba partner comparison |
 | Barnes-Hut | `barnes_hut_mixed_explicit_cpu_numba_cuda_or_optix_numba` | Goal4458 reranks the current force-summary app front doors at 8192/16384/32768 bodies, where `fused_frontier_force_sum_bucketized_cpu_numba` is fastest. Goal4483 extends the same rerank to 65536/131072 bodies, where `fused_frontier_force_sum_bucketized_numba_cuda` is fastest. Goal4497 records the RT-native fused feasibility gate: prepared RTDL/OptiX+Numba remains RT-core device-column evidence rather than Barnes-Hut RT-core speedup wording until a generic fused weighted-vector RT-native primitive exists | NVIDIA/CUDA pod for Numba CUDA and OptiX; Numba CPU for CPU fused baseline |
 | LibRTS spatial index | `librts_spatial_index_optix_aabb_index` | prepared AABB-index benchmark slice, not full mutable LibRTS | NVIDIA pod for OptiX timing |
-| RTNN | `rtnn_mixed_exact_aggregate_full_batch_or_graph_partner_bridge` | exact float64 aggregate for same-contract OptiX-vs-Embree comparison; full-batch non-graph prepared direct aggregate is the current KITTI-1M aggregate-only RTDL route and Goal4503 exposes it through the app front door with `--point-file`; prepared graph plus explicit CuPy/Numba same-stream partner bridge remains the partner-continuation route for uniform, shell, and clustered resident app evidence; Goal4498 defines the nine paper dataset targets, Goal4499 adds a deterministic KITTI bounded-family recipe layer, Goal4500 exports the same bounded KITTI CSV for RTDL OptiX/Embree exact aggregate gating, Goal4501 adds author same-input comparison, Goal4502 reranks aggregate-only batch size, Goal4504 codifies the size-aware execution-path policy, Goal4505 adds a dry-run 16-chunk plan for 1,048,576-query partner continuation, Goal4506 executes the 1,048,576-query uniform chunked partner route, and Goal4507 extends it to shell and clustered while keeping exact paper reproduction blocked until dataset recipes are frozen | NVIDIA/CUDA pod for OptiX, CuPy, Numba, and author-code diagnostics |
+| RTNN | `rtnn_mixed_exact_aggregate_full_batch_or_graph_partner_bridge` | exact float64 aggregate for same-contract OptiX-vs-Embree comparison; full-batch non-graph prepared direct aggregate is the current KITTI-1M aggregate-only RTDL route and Goal4503 exposes it through the app front door with `--point-file`; prepared graph plus explicit CuPy/Numba same-stream partner bridge remains the partner-continuation route for uniform, shell, and clustered resident app evidence; Goal4498 defines the nine paper dataset targets, Goal4499 adds a deterministic KITTI bounded-family recipe layer, Goal4500 exports the same bounded KITTI CSV for RTDL OptiX/Embree exact aggregate gating, Goal4501 adds author same-input comparison, Goal4502 reranks aggregate-only batch size, Goal4504 codifies the size-aware execution-path policy, Goal4505 adds a dry-run 16-chunk plan for 1,048,576-query partner continuation, Goal4506 executes the 1,048,576-query uniform chunked partner route, Goal4507 extends it to shell and clustered, and Goal4508 closes RTNN as an internal V3 clean target while keeping public speedup, same-output author, and exact paper reproduction claims blocked | NVIDIA/CUDA pod for OptiX, CuPy, Numba, and author-code diagnostics |
 | Triangle counting | `triangle_counting_optix_native_summary` | scalar answer stays primitive-first; Goal4444 fixes the no-C++ Numba summary-contract staging debt, Goal4453 fills RT-1A2/RT-2A1 Numba geometry from partner-resident device columns, Goal4454 adds dense-label/sorted-key summary fast paths, Goal4455 confirms CuPy remains the large-scale performance partner, Goal4456 extends Numba's summary remap fast path to bounded gapped ids, Goal4457 removes CuPy app-route host-column materialization, Goal4492 rejects a single small-bound local unique-count kernel as a full replacement, Goal4493 validates a bounded local-hash prototype for the small-group side of a hybrid/two-pass source-group strategy, and Goal4494 rejects the integrated per-segment local-hash plus large-tail sort/RLE candidate because backend and segment build regress on all three paper rows | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
 
 ## Evidence Reports
@@ -131,6 +132,7 @@ v2.14 evidence:
 - [Goal4505 RTNN partner-continuation chunk plan](../reports/goal4505_v3_0_m109_rtnn_partner_chunk_plan_2026-06-17.md)
 - [Goal4506 RTNN chunked partner runtime](../reports/goal4506_v3_0_m110_rtnn_chunked_runtime_2026-06-17.md)
 - [Goal4507 RTNN chunked distribution matrix](../reports/goal4507_v3_0_m111_rtnn_chunked_distribution_matrix_2026-06-17.md)
+- [Goal4508 RTNN clean-target closeout](../reports/goal4508_v3_0_m112_rtnn_clean_target_closeout_2026-06-17.md)
 - [Goal4444 Triangle Numba direct-binary summary refresh](../reports/goal4444_v3_0_m48_triangle_numba_direct_binary_summary_2026-06-16.md)
 - [Goal4445 DBSCAN compact component signature](../reports/goal4445_v3_0_m49_dbscan_component_signature_2026-06-16.md)
 - [Goal4446 Robot Collision NumPy lowering](../reports/goal4446_v3_0_m50_robot_numpy_lowering_2026-06-16.md)
@@ -176,7 +178,8 @@ v2.14 evidence:
   bounded KITTI CSV for the RTDL OptiX/Embree gate, with a tie-sensitive kth-id
   checksum caveat; uniform/shell/clustered rows remain scoped to RTDL-internal
   distribution evidence until exact KITTI, Stanford, and Millennium recipes are
-  frozen.
+  frozen. Goal4508 is the current RTNN reader closeout: internal V3 target
+  closed, public speedup and same-output author claims still blocked.
   RayJoin overlay reports the available 2/8
   exact CDB subset, not a full 8/8 Section 5.7 reproduction.
 - A scale-profile row is more useful for performance planning, but still must

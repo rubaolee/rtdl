@@ -32,6 +32,7 @@ RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/curre
 PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_graph_partner_bridge_plan --point-count 1048576 --query-count 1048576 --distribution uniform
 RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_raw --backend optix --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
 RTDL_EMBREE_LIBRARY=build/librtdl_embree.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_raw --backend embree --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
+PYTHONPATH=src:. python scripts/goal4508_m112_rtnn_clean_target_closeout.py
 ```
 
 ## GPU Evidence
@@ -147,6 +148,13 @@ current synthetic distribution family. Hot median-sums are `0.082908s` CuPy /
 `0.083390s` Numba for uniform, `0.609413s` CuPy / `0.609404s` Numba for shell,
 and `2.041410s` CuPy / `2.036964s` Numba for clustered, with signature and
 hot no-hidden-column-copy gates passing on all rows.
+Goal4508 is the RTNN clean-target closeout. It collects the Goal4500
+same-input OptiX/Embree gate, Goal4502 current aggregate-only route, Goal4503
+point-file app front door, Goal4501/4502 author diagnostic comparison, and
+Goal4507 CuPy/Numba chunked partner matrix into one reader-facing packet. The
+internal V3 RTNN target is closed by that packet, but exact paper reproduction,
+same-output author comparison, public RT-core speedup, whole-app speedup, and
+automatic partner-selection claims remain blocked.
 
 The important boundary is that RTDL exact aggregate and app graph-bridge rows
 are RTDL-internal same-contract evidence; the official RTNN rows are diagnostic

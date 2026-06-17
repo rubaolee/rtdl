@@ -1,0 +1,120 @@
+{
+  "chunked_partner_matrix": [
+    {
+      "chunk_count": 16,
+      "cupy_hot_device_run_seconds_median_sum": 0.0829082652926445,
+      "distribution": "uniform",
+      "hot_no_hidden_column_copy_ready": true,
+      "numba_hot_device_run_seconds_median_sum": 0.08339004218578339,
+      "signature_match": true
+    },
+    {
+      "chunk_count": 16,
+      "cupy_hot_device_run_seconds_median_sum": 0.609413206577301,
+      "distribution": "shell",
+      "hot_no_hidden_column_copy_ready": true,
+      "numba_hot_device_run_seconds_median_sum": 0.6094037219882011,
+      "signature_match": true
+    },
+    {
+      "chunk_count": 16,
+      "cupy_hot_device_run_seconds_median_sum": 2.0414103865623474,
+      "distribution": "clustered",
+      "hot_no_hidden_column_copy_ready": true,
+      "numba_hot_device_run_seconds_median_sum": 2.0369639173150063,
+      "signature_match": true
+    }
+  ],
+  "conclusion": "RTNN is internally closed as a V3 clean target: RTDL has a same-input OptiX/Embree gate, a current full-batch aggregate-only OptiX route, an app front door for external point files, a same-input author-code diagnostic comparison, and measured CuPy plus Numba chunked partner-continuation runtime at 1,048,576 queries. The closeout is intentionally not a public RTNN paper-reproduction or RTDL-beats-author claim.",
+  "contract_rows": [
+    {
+      "boundary": "RTDL-internal backend comparison only; strict kth-id checksum remains tie-sensitive, and this is not exact RTNN paper reproduction.",
+      "contract": "exact float64 prepared fixed-radius ranked-summary aggregate",
+      "dataset": "Goal4500 bounded KITTI-1M paper-family CSV",
+      "evidence": "Goal4500 / V3 M104",
+      "lane": "RTDL OptiX vs Embree same-input backend gate",
+      "primary_measure": "OptiX 7.802572s; Embree 120.927761s",
+      "reading": "RTDL/OptiX is 15.50x faster than RTDL/Embree for this same-input, same-contract gate."
+    },
+    {
+      "boundary": "Aggregate output surface differs from the author full K-id materialization surface; do not collapse these rows into author-output equivalence.",
+      "contract": "hot prepared float32 ranked-summary aggregate, no full neighbor-id materialization",
+      "dataset": "same Goal4500 bounded KITTI-1M CSV",
+      "evidence": "Goal4502 / V3 M106",
+      "lane": "Current RTDL aggregate-only route",
+      "primary_measure": "hot query 0.153553s; cold load+pack+prepare+query 4.823698s",
+      "reading": "Full-batch non-graph prepared direct aggregate is the current fastest RTDL aggregate-only route; graph/device partials are not the aggregate-only default."
+    },
+    {
+      "boundary": "Front-door proof only; it does not change paper-reproduction or public-speedup boundaries.",
+      "contract": "benchmark app `--point-file` path into the M106 full-batch aggregate route",
+      "dataset": "same Goal4500 bounded KITTI-1M CSV",
+      "evidence": "Goal4503 / V3 M107",
+      "lane": "RTNN app front door",
+      "primary_measure": "hot query 0.153737s; cold load+pack+prepare+query 4.833464s",
+      "reading": "The promoted RTNN app can ingest an external point file and reaches the current full-batch aggregate route without regenerating synthetic data."
+    },
+    {
+      "boundary": "Useful diagnostic, not an RTDL-beats-author same-output claim.",
+      "contract": "same input, different output surfaces: author full K-id buffer vs RTDL aggregate",
+      "dataset": "same Goal4500 bounded KITTI-1M CSV",
+      "evidence": "Goal4501 / V3 M105 plus Goal4502 / V3 M106",
+      "lane": "Author-code diagnostic comparison",
+      "primary_measure": "author total-search 0.347280s; author pure compute 0.010274s; author cold process 2.049657s; RTDL aggregate hot 0.153553s",
+      "reading": "RTDL's aggregate query is faster than the author synchronized total-search timer for this aggregate surface, while the author remains much faster in pure compute and cold whole-process timing."
+    },
+    {
+      "boundary": "Partner-continuation evidence only; not an aggregate-only full-batch direct comparison and not a paper dataset substitute.",
+      "contract": "prepared graph plus same-stream CuPy/Numba device reductions over 16 explicit chunks",
+      "dataset": "current synthetic M19 uniform, shell, and clustered 1,048,576-query family",
+      "evidence": "Goal4505 / V3 M109 through Goal4507 / V3 M111",
+      "lane": "Partner-continuation chunked runtime",
+      "primary_measure": "uniform CuPy 0.082908s / Numba 0.083390s; shell CuPy 0.609413s / Numba 0.609404s; clustered CuPy 2.041410s / Numba 2.036964s",
+      "reading": "Large partner continuation now has real runtime evidence for both partners, with signatures matching and materialization outside the hot window."
+    }
+  ],
+  "goal": "Goal4508 / V3 M112",
+  "implementation_strategy": {
+    "aggregate_only_choice": "use the full-batch prepared direct aggregate route when the app needs only the final ranked summary",
+    "author_comparison_choice": "compare author RTNN as a diagnostic baseline only until same-output full K-id materialization or an agreed aggregate-output contract is implemented on both sides",
+    "cpu_choice": "use Embree as the same-contract CPU fallback/proof route, not as the primary RT-core target",
+    "native_engine_contract": "generic prepared fixed-radius 3-D ranked-summary primitives; no RTNN-specific native ABI",
+    "partner_continuation_choice": "use the explicit prepared graph chunk plan when the app needs same-stream device partials for CuPy or Numba continuation"
+  },
+  "input_contract": {
+    "dataset": "KITTI-1M bounded paper-family CSV from Goal4500",
+    "k_max": 50,
+    "paper_equivalence": "bounded_family_recipe_not_exact_paper_recipe",
+    "point_count": 1000000,
+    "query_count": 1000000,
+    "query_relation": "self_query",
+    "radius": 1.0,
+    "same_input_csv": "/workspace/data/kitti/rtdl_goal4500/kitti_1m_points.csv"
+  },
+  "next_v3_target": "abstract the M19 chunked partner runtime into a reusable prepared graph chunk executor, then use the same audit style on RT-DBSCAN and Triangle Counting.",
+  "readiness": {
+    "author_same_input_diagnostic_ready": true,
+    "current_aggregate_route_selected": true,
+    "dual_partner_chunked_runtime_ready": true,
+    "internal_clean_target_closed": true,
+    "official_paper_dataset_reproduction_ready": false,
+    "point_file_app_front_door_ready": true,
+    "public_rt_core_speedup_claim_ready": false,
+    "same_input_rtdl_optix_embree_gate_ready": true,
+    "same_output_author_comparison_ready": false
+  },
+  "remaining_debt": [
+    "freeze/acquire exact RTNN paper datasets and frame/scan recipes",
+    "keep author-code comparison contract-explicit or add a same-output full K-id RTDL route if needed",
+    "lift the M19 chunked graph/partner pattern into an app-agnostic prepared graph chunk executor",
+    "do not publish RT-core speedup or RTDL-beats-author wording from this closeout alone"
+  ],
+  "source_packets": [
+    "docs/reports/goal4500_v3_0_m104_rtnn_kitti_same_input_rtdl_gate_2026-06-17.json",
+    "docs/reports/goal4502_v3_0_m106_rtnn_full_batch_route_refresh_2026-06-17.json",
+    "docs/reports/goal4503_v3_0_m107_rtnn_point_file_front_door_2026-06-17.json",
+    "docs/reports/goal4507_v3_0_m111_rtnn_chunked_distribution_matrix_2026-06-17.json"
+  ],
+  "status": "rtnn_clean_target_internally_closed_with_public_claim_gates",
+  "version": "rtdl.v3_0.rtnn_clean_target_closeout.goal4508.v1"
+}
