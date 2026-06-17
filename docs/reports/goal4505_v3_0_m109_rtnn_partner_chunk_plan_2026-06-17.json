@@ -1,0 +1,115 @@
+{
+  "app_mode": "prepared_ranked_summary_graph_partner_bridge_plan",
+  "chunk_contract": {
+    "cuda_graph_per_chunk": true,
+    "host_materialization_before_partner": false,
+    "prepared_query_points_per_chunk": true,
+    "prepared_scene_reused": true,
+    "same_stream_partner_device_reduction_per_chunk": true
+  },
+  "claim_boundary": {
+    "aggregate_only_full_batch_direct_substitute_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "hidden_auto_dispatch_allowed": false,
+    "large_runtime_evidence_required": true,
+    "planner_only": true,
+    "public_speedup_claim_authorized": false,
+    "runtime_executed": false
+  },
+  "conclusion": "The RTNN same-stream partner-continuation route now has an explicit front-door chunk plan. A 1,048,576-query partner-continuation workload is planned as 16 chunks of at most 65,536 queries, reusing the prepared scene but preparing query points, a CUDA graph, and the same-stream partner reduction per chunk. This is planner evidence only; large chunked runtime evidence remains required before performance wording.",
+  "goal": "Goal4505 / V3 M109",
+  "large_partner_continuation_plan": {
+    "aggregate_only_full_batch_direct_substitute_allowed": false,
+    "chunk_count": 16,
+    "first_chunk": {
+      "chunk_index": 0,
+      "cuda_graph_per_chunk": true,
+      "host_materialization_before_partner": false,
+      "prepared_query_points_per_chunk": true,
+      "prepared_scene_reused": true,
+      "query_count": 65536,
+      "query_end_exclusive": 65536,
+      "query_offset": 0,
+      "query_start_inclusive": 0,
+      "same_stream_partner_device_reduction_per_chunk": true
+    },
+    "hidden_auto_dispatch_allowed": false,
+    "large_chunk_runtime_evidence_required": true,
+    "last_chunk": {
+      "chunk_index": 15,
+      "cuda_graph_per_chunk": true,
+      "host_materialization_before_partner": false,
+      "prepared_query_points_per_chunk": true,
+      "prepared_scene_reused": true,
+      "query_count": 65536,
+      "query_end_exclusive": 1048576,
+      "query_offset": 983040,
+      "query_start_inclusive": 983040,
+      "same_stream_partner_device_reduction_per_chunk": true
+    },
+    "max_query_count": 65536,
+    "plan_status": "chunked_partner_continuation_required",
+    "point_count": 1048576,
+    "public_speedup_claim_authorized": false,
+    "query_count": 1048576,
+    "single_graph_cap_exceeded": true,
+    "version": "rtdl.v3_0.m19.ranked_summary_bridge_chunk_plan.v1"
+  },
+  "large_plan_validation": {
+    "chunk_count": 16,
+    "public_claim_authorized": false,
+    "query_count": 1048576,
+    "runtime_executed": false,
+    "single_graph_cap_exceeded": true,
+    "status": "accept",
+    "version": "rtdl.v3_0.m19.ranked_summary_bridge_chunk_plan.v1"
+  },
+  "planner": "plan_v3_m19_ranked_summary_bridge_chunks",
+  "single_graph_plan": {
+    "aggregate_only_full_batch_direct_substitute_allowed": false,
+    "chunk_count": 1,
+    "first_chunk": {
+      "chunk_index": 0,
+      "cuda_graph_per_chunk": true,
+      "host_materialization_before_partner": false,
+      "prepared_query_points_per_chunk": true,
+      "prepared_scene_reused": true,
+      "query_count": 65536,
+      "query_end_exclusive": 65536,
+      "query_offset": 0,
+      "query_start_inclusive": 0,
+      "same_stream_partner_device_reduction_per_chunk": true
+    },
+    "hidden_auto_dispatch_allowed": false,
+    "large_chunk_runtime_evidence_required": false,
+    "last_chunk": {
+      "chunk_index": 0,
+      "cuda_graph_per_chunk": true,
+      "host_materialization_before_partner": false,
+      "prepared_query_points_per_chunk": true,
+      "prepared_scene_reused": true,
+      "query_count": 65536,
+      "query_end_exclusive": 65536,
+      "query_offset": 0,
+      "query_start_inclusive": 0,
+      "same_stream_partner_device_reduction_per_chunk": true
+    },
+    "max_query_count": 65536,
+    "plan_status": "single_graph_partner_continuation",
+    "point_count": 65536,
+    "public_speedup_claim_authorized": false,
+    "query_count": 65536,
+    "single_graph_cap_exceeded": false,
+    "version": "rtdl.v3_0.m19.ranked_summary_bridge_chunk_plan.v1"
+  },
+  "single_plan_validation": {
+    "chunk_count": 1,
+    "public_claim_authorized": false,
+    "query_count": 65536,
+    "runtime_executed": false,
+    "single_graph_cap_exceeded": false,
+    "status": "accept",
+    "version": "rtdl.v3_0.m19.ranked_summary_bridge_chunk_plan.v1"
+  },
+  "version": "rtdl.v3_0.rtnn_partner_chunk_plan.goal4505.v1"
+}

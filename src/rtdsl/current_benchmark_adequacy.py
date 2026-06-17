@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4504.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4505.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -551,6 +551,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "unknown or small aggregate-only OptiX work keeps the direct-graph policy, "
             "large aggregate-only work uses the full-batch direct aggregate, and "
             "same-stream graph/device-partials remain the partner-continuation route. "
+            "Goal4505 adds a dry-run chunk plan for large partner-continuation work: "
+            "1,048,576 queries become 16 chunks of at most 65,536 queries, with "
+            "prepared scene reuse and per-chunk query preparation, graph capture, and "
+            "same-stream partner reduction. It is planner evidence only, not measured "
+            "large chunked runtime performance evidence. "
             "This is strong evidence for RTDL V3 route selection, "
             "but not a same-output author-code victory claim."
         ),
@@ -567,7 +572,8 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "--point-file ...` for the app-front-door full-batch non-graph prepared "
             "direct aggregate on real CSV inputs; use the Goal4504 size-aware policy "
             "to keep aggregate-only full-batch direct and partner-continuation graph "
-            "routes separate"
+            "routes separate; use `prepared_ranked_summary_graph_partner_bridge_plan` "
+            "to inspect the dry-run chunk plan for large partner-continuation workloads"
         ),
         "current_partner_role": (
             "no partner needed for exact float64 native aggregate; CuPy and Numba are "
@@ -607,6 +613,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4502",
             "Goal4503",
             "Goal4504",
+            "Goal4505",
         ),
         "pod_needed_next": False,
     },

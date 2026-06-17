@@ -78,11 +78,11 @@ class Goal4504V30M108ExecutionPathPolicyRefreshTest(unittest.TestCase):
         }["rtnn"]
 
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4504.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4505.v1",
             route["version"],
         )
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4504.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4505.v1",
             adequacy["version"],
         )
         self.assertIn("Goal4504", route["evidence_refs"])

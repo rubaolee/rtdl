@@ -622,6 +622,54 @@ def rtnn_prepared_ranked_summary_graph_partner_bridge_payload(
     }
 
 
+def rtnn_prepared_ranked_summary_graph_partner_bridge_plan_payload(
+    *,
+    point_count: int,
+    query_count: int | None = None,
+    distribution: str,
+) -> dict[str, Any]:
+    """Return the explicit M19 partner-continuation chunk plan without running CUDA."""
+
+    if point_count <= 0:
+        raise ValueError("point_count must be positive")
+    normalized_query_count = point_count if query_count is None else int(query_count)
+    if normalized_query_count <= 0:
+        raise ValueError("query_count must be positive")
+    if normalized_query_count > point_count:
+        raise ValueError("query_count must not exceed point_count")
+    plan = rt.plan_v3_m19_ranked_summary_bridge_chunks(
+        point_count=point_count,
+        query_count=normalized_query_count,
+        distribution=distribution,
+    )
+    validation = rt.validate_v3_m19_ranked_summary_bridge_chunk_plan(plan)
+    return {
+        "benchmark_app": BENCHMARK_NAME,
+        "mode": "prepared_ranked_summary_graph_partner_bridge_plan",
+        "contract": "dry-run explicit chunk plan for prepared ranked-summary graph partials plus same-stream partners",
+        "point_count": point_count,
+        "query_count": normalized_query_count,
+        "distribution": distribution,
+        "uses_v3_m19_bridge": True,
+        "runtime_executed": False,
+        "execution_path_plan": plan,
+        "validation": validation,
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "native_engine_customization": False,
+            "full_rtnn_paper_reproduction": False,
+            "public_speedup_claim_authorized": False,
+            "broad_rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "automatic_partner_selection_authorized": False,
+            "aggregate_only_full_batch_direct_substitute_allowed": False,
+            "large_chunk_runtime_evidence_required": bool(
+                plan["large_chunk_runtime_evidence_required"]
+            ),
+        },
+    }
+
+
 def rtnn_prepared_session_reuse_idiom_payload(
     *,
     point_count: int,
@@ -935,6 +983,12 @@ def run_app(
             transfer_counter_library=transfer_counter_library,
             hardware=hardware,
         )
+    if mode == "prepared_ranked_summary_graph_partner_bridge_plan":
+        return rtnn_prepared_ranked_summary_graph_partner_bridge_plan_payload(
+            point_count=copies,
+            query_count=query_count,
+            distribution=distribution,
+        )
     if mode == "prepared_session_reuse_idiom":
         return rtnn_prepared_session_reuse_idiom_payload(
             point_count=copies,
@@ -966,6 +1020,7 @@ def main(argv: list[str] | None = None) -> int:
             "prepared_optix_ranked_summary",
             "prepared_ranked_summary_raw",
             "prepared_ranked_summary_graph_partner_bridge",
+            "prepared_ranked_summary_graph_partner_bridge_plan",
             "prepared_session_reuse_idiom",
             "ranked_summary_typed_stream_plan",
             "rtnn_v2_8_ranked_summary_plan",
@@ -1025,6 +1080,12 @@ def main(argv: list[str] | None = None) -> int:
             repeats=args.repeat,
             transfer_counter_library=args.transfer_counter_library,
             hardware=args.hardware,
+        )
+    elif args.mode == "prepared_ranked_summary_graph_partner_bridge_plan":
+        payload = rtnn_prepared_ranked_summary_graph_partner_bridge_plan_payload(
+            point_count=args.point_count or args.copies,
+            query_count=args.query_count,
+            distribution=args.distribution,
         )
     elif args.mode == "prepared_session_reuse_idiom":
         payload = rtnn_prepared_session_reuse_idiom_payload(

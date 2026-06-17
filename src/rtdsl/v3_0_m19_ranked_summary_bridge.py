@@ -23,6 +23,8 @@ V3_M19_GRAPH_ID = "prepared_ranked_summary_graph_partner_bridge"
 V3_M19_CONTRACT_KEY = "prepared_fixed_radius_ranked_summary_graph_partials_same_stream_partner_v1"
 V3_M19_PARTNERS = ("cupy", "numba")
 V3_M19_DISTRIBUTIONS = ("uniform", "clustered", "shell")
+V3_M19_GRAPH_QUERY_COUNT_CAP = 65_536
+V3_M19_CHUNK_PLAN_VERSION = "rtdl.v3_0.m19.ranked_summary_bridge_chunk_plan.v1"
 V3_M19_ALLOWED_NON_COLUMN_HOST_TO_DEVICE_BYTES = (
     V3_NO_HIDDEN_COPY_DEFAULT_ALLOWED_NON_COLUMN_HOST_TO_DEVICE_BYTES
 )
@@ -55,8 +57,16 @@ def run_v3_m19_ranked_summary_bridge_case(
         raise GraphValidationError("query_count must be positive")
     if query_count > point_count:
         raise GraphValidationError("query_count must not exceed point_count")
-    if query_count > 65_536:
-        raise GraphValidationError("query_count must be <= 65536 for the current prepared graph path")
+    execution_path_plan = plan_v3_m19_ranked_summary_bridge_chunks(
+        point_count=point_count,
+        query_count=query_count,
+        distribution=distribution,
+    )
+    if query_count > V3_M19_GRAPH_QUERY_COUNT_CAP:
+        raise GraphValidationError(
+            "query_count must be <= 65536 for the current prepared graph path; "
+            "use plan_v3_m19_ranked_summary_bridge_chunks for the explicit large-query chunk plan"
+        )
     if warmups < 0 or repeats <= 0:
         raise GraphValidationError("warmups/repeats are invalid")
     normalized_requests = _normalize_requests(requests)
@@ -117,6 +127,7 @@ def run_v3_m19_ranked_summary_bridge_case(
             "transfer_counter_library": str(transfer_counter_library),
             "hardware": hardware,
         },
+        "execution_path_plan": execution_path_plan,
         "preparation": {
             "prepared_scene_used": True,
             "prepared_query_points_used": True,
@@ -169,6 +180,103 @@ def run_v3_m19_ranked_summary_bridge_case(
     }
     validate_v3_m19_ranked_summary_bridge_payload(payload)
     return payload
+
+
+def plan_v3_m19_ranked_summary_bridge_chunks(
+    *,
+    point_count: int,
+    query_count: int | None = None,
+    max_query_count: int = V3_M19_GRAPH_QUERY_COUNT_CAP,
+    distribution: str = "unspecified",
+    requires_partner_continuation: bool = True,
+) -> dict[str, object]:
+    """Plan explicit query chunks for the M19 same-stream partner route.
+
+    The M19 runtime graph captures one prepared query batch with a bounded
+    query-count cap. For aggregate-only large work, Goal4502 prefers the
+    full-batch direct aggregate route. For partner continuation, however, the
+    app needs device partial rows, so large work must be chunked instead of
+    silently switching to the aggregate-only route.
+    """
+
+    normalized_point_count = int(point_count)
+    normalized_query_count = (
+        normalized_point_count if query_count is None else int(query_count)
+    )
+    normalized_max_query_count = int(max_query_count)
+    continuation_required = bool(requires_partner_continuation)
+    if normalized_point_count <= 0:
+        raise GraphValidationError("point_count must be positive")
+    if normalized_query_count <= 0:
+        raise GraphValidationError("query_count must be positive")
+    if normalized_query_count > normalized_point_count:
+        raise GraphValidationError("query_count must not exceed point_count")
+    if normalized_max_query_count <= 0:
+        raise GraphValidationError("max_query_count must be positive")
+    if not continuation_required:
+        raise GraphValidationError("M19 chunk planning is only for partner continuation")
+
+    chunks = []
+    query_offset = 0
+    while query_offset < normalized_query_count:
+        chunk_query_count = min(
+            normalized_max_query_count,
+            normalized_query_count - query_offset,
+        )
+        chunks.append(
+            {
+                "chunk_index": len(chunks),
+                "query_offset": query_offset,
+                "query_start_inclusive": query_offset,
+                "query_end_exclusive": query_offset + chunk_query_count,
+                "query_count": chunk_query_count,
+                "prepared_scene_reused": True,
+                "prepared_query_points_per_chunk": True,
+                "cuda_graph_per_chunk": True,
+                "same_stream_partner_device_reduction_per_chunk": True,
+                "host_materialization_before_partner": False,
+            }
+        )
+        query_offset += chunk_query_count
+
+    single_graph_cap_exceeded = normalized_query_count > normalized_max_query_count
+    return {
+        "version": V3_M19_CHUNK_PLAN_VERSION,
+        "graph_id": V3_M19_GRAPH_ID,
+        "contract_key": V3_M19_CONTRACT_KEY,
+        "operation": "fixed_radius_ranked_summary_graph_partials_same_stream_partner",
+        "distribution": str(distribution),
+        "point_count": normalized_point_count,
+        "query_count": normalized_query_count,
+        "max_query_count": normalized_max_query_count,
+        "graph_query_count_cap": V3_M19_GRAPH_QUERY_COUNT_CAP,
+        "chunk_count": len(chunks),
+        "chunks": tuple(chunks),
+        "single_graph_cap_exceeded": single_graph_cap_exceeded,
+        "plan_status": (
+            "chunked_partner_continuation_required"
+            if single_graph_cap_exceeded
+            else "single_graph_partner_continuation"
+        ),
+        "requires_partner_continuation": True,
+        "same_stream_partner_device_reduction_required": True,
+        "prepared_scene_reuse_required": True,
+        "prepared_query_points_per_chunk_required": True,
+        "cuda_graph_per_chunk_required": True,
+        "aggregate_only_full_batch_direct_substitute_allowed": False,
+        "aggregate_only_policy_reference": "Goal4504",
+        "large_chunk_runtime_evidence_required": single_graph_cap_exceeded,
+        "runtime_executed": False,
+        "hidden_auto_dispatch_allowed": False,
+        "automatic_partner_selection_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "claim_boundary": (
+            "This is an explicit partner-continuation chunk plan. It does not execute "
+            "the chunks, authorize automatic dispatch, or authorize public speedup "
+            "wording. Aggregate-only full-batch direct mode is not a substitute when "
+            "the app requires same-stream device partial rows for a partner."
+        ),
+    }
 
 
 def make_v3_m19_ranked_summary_points(point_count: int, *, distribution: str = "uniform") -> tuple[Point3D, ...]:
@@ -372,6 +480,9 @@ def validate_v3_m19_ranked_summary_bridge_payload(payload: Mapping[str, object])
         raise GraphValidationError("M19 requires prepared scene/query residency before hot window")
     if preparation.get("initial_host_to_device_upload_expected") is not True:
         raise GraphValidationError("M19 prepare window must explicitly mark initial upload as expected")
+    execution_path_plan = payload.get("execution_path_plan")
+    if execution_path_plan is not None:
+        validate_v3_m19_ranked_summary_bridge_chunk_plan(execution_path_plan)
 
     rows = tuple(payload.get("partner_rows", ()))
     if {str(row.get("partner")) for row in rows if isinstance(row, Mapping)} != set(V3_M19_PARTNERS):
@@ -439,5 +550,69 @@ def validate_v3_m19_ranked_summary_bridge_payload(payload: Mapping[str, object])
         "partner_count": len(rows),
         "signature_match": True,
         "hot_no_hidden_column_copy_ready": True,
+        "public_claim_authorized": False,
+    }
+
+
+def validate_v3_m19_ranked_summary_bridge_chunk_plan(
+    plan: Mapping[str, object],
+) -> dict[str, object]:
+    if not isinstance(plan, Mapping):
+        raise GraphValidationError("M19 chunk plan must be a mapping")
+    if plan.get("version") != V3_M19_CHUNK_PLAN_VERSION:
+        raise GraphValidationError("unexpected M19 chunk plan version")
+    query_count = int(plan.get("query_count", 0) or 0)
+    max_query_count = int(plan.get("max_query_count", 0) or 0)
+    chunks = tuple(plan.get("chunks", ()))
+    if query_count <= 0:
+        raise GraphValidationError("M19 chunk plan query_count must be positive")
+    if max_query_count <= 0:
+        raise GraphValidationError("M19 chunk plan max_query_count must be positive")
+    if int(plan.get("chunk_count", -1)) != len(chunks):
+        raise GraphValidationError("M19 chunk plan chunk_count does not match chunks")
+    if bool(plan.get("aggregate_only_full_batch_direct_substitute_allowed")):
+        raise GraphValidationError("M19 chunk plan must not allow aggregate-only substitute")
+    if bool(plan.get("hidden_auto_dispatch_allowed")):
+        raise GraphValidationError("M19 chunk plan must not allow hidden dispatch")
+    if bool(plan.get("automatic_partner_selection_authorized")):
+        raise GraphValidationError("M19 chunk plan must not authorize automatic partner selection")
+    if bool(plan.get("public_speedup_claim_authorized")):
+        raise GraphValidationError("M19 chunk plan must not authorize public speedup claims")
+
+    expected_offset = 0
+    for index, chunk in enumerate(chunks):
+        if not isinstance(chunk, Mapping):
+            raise GraphValidationError("M19 chunk plan chunk must be a mapping")
+        chunk_count = int(chunk.get("query_count", 0))
+        start = int(chunk.get("query_start_inclusive", -1))
+        end = int(chunk.get("query_end_exclusive", -1))
+        if int(chunk.get("chunk_index", -1)) != index:
+            raise GraphValidationError("M19 chunk plan chunk_index mismatch")
+        if start != expected_offset or int(chunk.get("query_offset", -1)) != expected_offset:
+            raise GraphValidationError("M19 chunk plan query offsets are not contiguous")
+        if chunk_count <= 0 or chunk_count > max_query_count:
+            raise GraphValidationError("M19 chunk plan chunk query_count is invalid")
+        if end - start != chunk_count:
+            raise GraphValidationError("M19 chunk plan chunk end/start does not match query_count")
+        for key in (
+            "prepared_scene_reused",
+            "prepared_query_points_per_chunk",
+            "cuda_graph_per_chunk",
+            "same_stream_partner_device_reduction_per_chunk",
+        ):
+            if chunk.get(key) is not True:
+                raise GraphValidationError(f"M19 chunk plan must prove {key}=true")
+        if chunk.get("host_materialization_before_partner") is not False:
+            raise GraphValidationError("M19 chunk plan must block host materialization before partner")
+        expected_offset = end
+    if expected_offset != query_count:
+        raise GraphValidationError("M19 chunk plan chunks do not cover query_count")
+    return {
+        "status": "accept",
+        "version": plan.get("version"),
+        "query_count": query_count,
+        "chunk_count": len(chunks),
+        "single_graph_cap_exceeded": bool(plan.get("single_graph_cap_exceeded")),
+        "runtime_executed": bool(plan.get("runtime_executed")),
         "public_claim_authorized": False,
     }

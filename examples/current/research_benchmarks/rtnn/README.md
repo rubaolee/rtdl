@@ -29,6 +29,7 @@ PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benc
 PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_session_reuse_idiom --point-count 16 --radius 0.02 --k 8
 RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_optix_ranked_summary --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
 RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_optix_ranked_summary --point-file /workspace/data/kitti/rtdl_goal4500/kitti_1m_points.csv --radius 1.0 --k 50 --repeat 3 --query-batch-size 1000000
+PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_graph_partner_bridge_plan --point-count 1048576 --query-count 1048576 --distribution uniform
 RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_raw --backend optix --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
 RTDL_EMBREE_LIBRARY=build/librtdl_embree.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_raw --backend embree --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
 ```
@@ -129,6 +130,12 @@ small aggregate-only OptiX work keeps the Goal2841 direct-graph recommendation,
 explicit large aggregate-only work uses the Goal4502 full-batch prepared direct
 aggregate recommendation, and large partner-continuation work keeps the
 same-stream graph route with an explicit chunking/future-evidence warning.
+Goal4505 adds the dry-run app front-door chunk plan for that large
+partner-continuation branch. A 1,048,576-query M19 partner-continuation
+workload is planned as 16 chunks of at most 65,536 queries, reusing the
+prepared scene while preparing query points, a CUDA graph, and same-stream
+partner reduction per chunk. This is planner evidence only, not chunked runtime
+performance evidence.
 
 The important boundary is that RTDL exact aggregate and app graph-bridge rows
 are RTDL-internal same-contract evidence; the official RTNN rows are diagnostic

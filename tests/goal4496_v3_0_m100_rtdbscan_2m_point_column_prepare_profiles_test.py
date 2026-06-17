@@ -82,11 +82,11 @@ class Goal4496M100RtDbscan2MPointColumnPrepareProfilesTest(unittest.TestCase):
         self.assertIn("isolated direct-status prepare", report)
         self.assertIn("Goal4496 RT-DBSCAN 2M point-column prepare profiles", index)
         self.assertIn('DATASETS = ("clustered3d", "ngsim_dense")', script)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4504.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4505.v1", route["version"])
         self.assertIn("Goal4496", route["evidence_refs"])
         self.assertIn("2M `clustered3d` and `ngsim_dense`", route["next_runtime_action"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4504.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4505.v1",
             adequacy_module.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         self.assertIn("Goal4496", adequacy["evidence_refs"])
