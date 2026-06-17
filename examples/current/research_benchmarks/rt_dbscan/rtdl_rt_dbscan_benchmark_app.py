@@ -77,6 +77,9 @@ RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE = "optix_rt_core_grouped_stream_numba_co
 RT_DBSCAN_PREDICATE_DIRECT_STATUS_APP_MODE = (
     "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d"
 )
+RT_DBSCAN_PREDICATE_DIRECT_STATUS_POINT_COLUMNS_APP_MODE = (
+    "optix_rt_core_flags_cupy_point_columns_predicate_direct_status_column_signature_3d"
+)
 RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE = (
     "optix_rt_core_flags_cupy_predicate_direct_status_all_true_column_signature_3d"
 )
@@ -1389,6 +1392,7 @@ def run_rt_dbscan_benchmark(
         "partner_cupy_prepared_partition_convergence_component_signature_3d",
         "partner_cupy_prepared_direct_status_union_component_signature_3d",
         "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+        "optix_rt_core_flags_cupy_point_columns_predicate_direct_status_column_signature_3d",
         "optix_rt_core_flags_cupy_predicate_direct_status_all_true_column_signature_3d",
         "partner_cupy_declared_all_true_predicate_direct_status_column_signature_3d",
     }:
@@ -2134,35 +2138,61 @@ def run_rt_dbscan_benchmark(
             reference_signature_override = _component_size_signature_payload(reference_sizes)
     elif mode in {
         RT_DBSCAN_PREDICATE_DIRECT_STATUS_APP_MODE,
+        RT_DBSCAN_PREDICATE_DIRECT_STATUS_POINT_COLUMNS_APP_MODE,
         RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE,
         RT_DBSCAN_DECLARED_ALL_TRUE_DIRECT_STATUS_APP_MODE,
     }:
         use_declared_all_predicate = mode == RT_DBSCAN_DECLARED_ALL_TRUE_DIRECT_STATUS_APP_MODE
+        use_point_column_direct_status = mode == RT_DBSCAN_PREDICATE_DIRECT_STATUS_POINT_COLUMNS_APP_MODE
         require_all_predicate_fast_path = mode in {
             RT_DBSCAN_PREDICATE_DIRECT_STATUS_ALL_TRUE_APP_MODE,
             RT_DBSCAN_DECLARED_ALL_TRUE_DIRECT_STATUS_APP_MODE,
         }
-        prepare_start = time.perf_counter()
+        point_coordinate_columns = None
+        point_coordinate_column_build_sec = 0.0
+        if use_point_column_direct_status:
+            point_column_build_start = time.perf_counter()
+            point_coordinate_columns = rt.point_rows_to_partner_coordinate_columns_3d(
+                points,
+                partner="cupy",
+            )
+            import cupy
+
+            cupy.cuda.get_current_stream().synchronize()
+            point_coordinate_column_build_sec = time.perf_counter() - point_column_build_start
         output_columns = None
         if not use_declared_all_predicate:
             output_columns = rt.allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
                 len(points),
                 partner="cupy",
             )
-        prepared_predicate_direct_status = (
-            rt.prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_preview_3d(
+        prepare_start = time.perf_counter()
+        if use_declared_all_predicate:
+            prepared_predicate_direct_status = (
+                rt.prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_preview_3d(
+                    points,
+                    radius=resolved_radius,
+                    cell_factor=resolved_partition_cell_factor,
+                )
+            )
+        elif use_point_column_direct_status:
+            prepared_predicate_direct_status = (
+                rt.prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_point_columns_preview_3d(
+                    point_coordinate_columns,
+                    radius=resolved_radius,
+                    cell_factor=resolved_partition_cell_factor,
+                )
+            )
+        else:
+            prepared_predicate_direct_status = rt.prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_preview_3d(
                 points,
                 radius=resolved_radius,
                 cell_factor=resolved_partition_cell_factor,
             )
-            if use_declared_all_predicate
-            else rt.prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_preview_3d(
-                points,
-                radius=resolved_radius,
-                cell_factor=resolved_partition_cell_factor,
-            )
-        )
         prepared_predicate_direct_status_sec = time.perf_counter() - prepare_start
+        charged_predicate_direct_status_prepare_sec = (
+            prepared_predicate_direct_status_sec + point_coordinate_column_build_sec
+        )
         prepared_runs: list[dict[str, object]] = []
         prepared_optix_count_threshold_sec = 0.0
         with prepared_predicate_direct_status:
@@ -2270,6 +2300,11 @@ def run_rt_dbscan_benchmark(
             for name in phase_names
         }
         timing_breakdown_sec["prepare_predicate_direct_status_sec"] = prepared_predicate_direct_status_sec
+        if use_point_column_direct_status:
+            timing_breakdown_sec["point_coordinate_column_build_sec"] = point_coordinate_column_build_sec
+            timing_breakdown_sec["charged_prepare_predicate_direct_status_sec"] = (
+                charged_predicate_direct_status_prepare_sec
+            )
         timing_breakdown_sec["prepare_optix_count_threshold_sec"] = prepared_optix_count_threshold_sec
         elapsed_override = float(statistics.median(float(row["elapsed_sec"]) for row in measured_runs))
         signature_override = dict(measured_runs[-1]["signature"])
@@ -2282,9 +2317,13 @@ def run_rt_dbscan_benchmark(
                     "partner_cupy_declared_all_true_predicate_direct_status_column_signature_3d"
                     if use_declared_all_predicate
                     else (
+                        "optix_rt_count_threshold_cupy_point_columns_predicate_direct_status_column_signature_3d"
+                        if use_point_column_direct_status
+                        else (
                         "optix_rt_count_threshold_cupy_predicate_direct_status_all_true_column_signature_3d"
                         if require_all_predicate_fast_path
                         else "optix_rt_count_threshold_cupy_predicate_direct_status_column_signature_3d"
+                        )
                     )
                 ),
                 "front_door_operation": "fixed_radius_graph_predicate_component_size_signature_3d",
@@ -2296,7 +2335,11 @@ def run_rt_dbscan_benchmark(
                 "native_execution_path": (
                     "prepared_direct_status_union_component_signature_wrapped_as_all_predicate_signature"
                     if use_declared_all_predicate
-                    else "prepared_rt_core_count_threshold_3d_self_query_then_partner_predicate_direct_status_union_preview"
+                    else (
+                        "prepared_rt_core_count_threshold_3d_self_query_then_partner_coordinate_columns_predicate_direct_status_union_preview"
+                        if use_point_column_direct_status
+                        else "prepared_rt_core_count_threshold_3d_self_query_then_partner_predicate_direct_status_union_preview"
+                    )
                 ),
                 "optix_backend_used": not use_declared_all_predicate,
                 "partner": "cupy",
@@ -2312,17 +2355,35 @@ def run_rt_dbscan_benchmark(
                 "prepared_optix_count_threshold_sec": prepared_optix_count_threshold_sec,
                 "prepared_optix_count_threshold_self_query_device": not use_declared_all_predicate,
                 "prepared_predicate_direct_status_plus_count_prepare_sec": (
-                    prepared_predicate_direct_status_sec + prepared_optix_count_threshold_sec
+                    charged_predicate_direct_status_prepare_sec + prepared_optix_count_threshold_sec
                 ),
                 "prepare_plus_replay_median_sec": (
-                    prepared_predicate_direct_status_sec + prepared_optix_count_threshold_sec + elapsed_override
+                    charged_predicate_direct_status_prepare_sec + prepared_optix_count_threshold_sec + elapsed_override
                 ),
+                "point_coordinate_columns_source": (
+                    "app_constructed_partner_coordinate_columns_3d"
+                    if use_point_column_direct_status
+                    else "direct_status_prepare_materialized_from_point_rows"
+                ),
+                "point_coordinate_column_helper": (
+                    "point_rows_to_partner_coordinate_columns_3d"
+                    if use_point_column_direct_status
+                    else None
+                ),
+                "point_coordinate_column_build_sec": point_coordinate_column_build_sec,
+                "point_coordinate_column_build_charged_in_total": use_point_column_direct_status,
+                "point_coordinate_column_build_hidden": False,
+                "point_column_prepare_mode": use_point_column_direct_status,
+                "caller_owned_column_speedup_claim_authorized": False,
+                "column_prepare_speedup_claim_authorized": False,
+                "already_owned_coordinate_columns_required_for_column_prepare_speedup_claim": True,
                 "materializes_neighbor_summaries": False,
                 "materializes_neighbor_rows": False,
                 "materializes_python_rows": False,
                 "signature_source": "partner_column_signature_counts_no_python_row_dicts",
                 "predicate_direct_status_candidate": True,
                 "predicate_direct_status_promoted": False,
+                "point_column_predicate_direct_status_candidate": use_point_column_direct_status,
                 "all_predicate_only_mode": require_all_predicate_fast_path,
                 "all_predicate_fast_path_required": require_all_predicate_fast_path,
                 "all_predicate_fast_path_observed": bool(metadata.get("all_predicate_fast_path", False)),
@@ -2340,13 +2401,14 @@ def run_rt_dbscan_benchmark(
                 ),
                 "threshold_metadata": threshold_metadata,
                 "prepared_predicate_direct_status_sec": prepared_predicate_direct_status_sec,
+                "charged_predicate_direct_status_prepare_sec": charged_predicate_direct_status_prepare_sec,
                 "predicate_direct_status_signature_sec": timing_breakdown_sec["predicate_direct_status_signature_sec"],
                 "prepared_predicate_direct_status_total_sec": (
-                    prepared_predicate_direct_status_sec
+                    charged_predicate_direct_status_prepare_sec
                     + timing_breakdown_sec["predicate_direct_status_signature_sec"]
                 ),
                 "prepared_predicate_direct_status_plus_count_prepare_total_sec": (
-                    prepared_predicate_direct_status_sec
+                    charged_predicate_direct_status_prepare_sec
                     + prepared_optix_count_threshold_sec
                     + timing_breakdown_sec["predicate_direct_status_signature_sec"]
                 ),
@@ -2354,10 +2416,12 @@ def run_rt_dbscan_benchmark(
                     "repeat": repeat,
                     "warmup": warmup,
                     "measured_iterations": len(measured_runs),
-                    "prepare_sec": prepared_predicate_direct_status_sec,
+                    "prepare_sec": charged_predicate_direct_status_prepare_sec,
+                    "direct_status_handle_prepare_sec": prepared_predicate_direct_status_sec,
+                    "point_coordinate_column_build_sec": point_coordinate_column_build_sec,
                     "optix_count_threshold_prepare_sec": prepared_optix_count_threshold_sec,
                     "prepare_plus_count_threshold_prepare_sec": (
-                        prepared_predicate_direct_status_sec + prepared_optix_count_threshold_sec
+                        charged_predicate_direct_status_prepare_sec + prepared_optix_count_threshold_sec
                     ),
                     "median_elapsed_sec": elapsed_override,
                     "signatures_stable": len(
@@ -3135,6 +3199,7 @@ def main(argv: list[str] | None = None) -> int:
             "partner_cupy_prepared_partition_convergence_component_signature_3d",
             "partner_cupy_prepared_direct_status_union_component_signature_3d",
             "optix_rt_core_flags_cupy_predicate_direct_status_column_signature_3d",
+            "optix_rt_core_flags_cupy_point_columns_predicate_direct_status_column_signature_3d",
             "optix_rt_core_flags_cupy_predicate_direct_status_all_true_column_signature_3d",
             "partner_cupy_declared_all_true_predicate_direct_status_column_signature_3d",
             "embree_core_flags_numba_prepared_grid_column_signature_3d",

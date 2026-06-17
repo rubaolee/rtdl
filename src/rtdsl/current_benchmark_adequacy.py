@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4489.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4490.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -38,7 +38,9 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "RT-DBSCAN direct-status prepare phase accounting; Goal4488 removes the "
     "generic tuple-of-xyz row-columnization intermediate for common Point3D, "
     "mapping, and sequence inputs; Goal4489 adds caller-owned CuPy point-column "
-    "direct-status prepare for honest shared-column handoff; and robot "
+    "direct-status prepare for honest shared-column handoff; Goal4490 wires that "
+    "path into an explicit RT-DBSCAN app mode and shows app-constructed coordinate "
+    "columns are not a stable total-time promotion when build time is charged; and robot "
     "collision adds Goal4446 NumPy "
     "vectorized grouped-segment query lowering. Goal4451 updates Spatial "
     "RayJoin repeated-PIP guidance by preserving the prepared batch executor "
@@ -286,6 +288,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "point-column entry point; when x/y/z device columns already exist, "
             "direct-status prepare improves by 12x-124x on the same 1M rows, "
             "with point-column construction timed separately and not hidden."
+            " Goal4490 adds the explicit app-level charged coordinate-column mode: "
+            "signatures match, one-shot clustered3d improves modestly, but road3d, "
+            "ngsim_dense, and warmed replay do not produce a stable total-time win "
+            "once app-side column construction is charged."
         ),
         "current_recommended_path": (
             "Explicit RTDL/OptiX self-query predicate direct-status CuPy for measured 524k/1M "
@@ -295,14 +301,15 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
         ),
         "current_partner_role": (
             "CuPy is the measured predicate direct-status compact-signature route in "
-            "Goal4484/Goal4485/Goal4486/Goal4488/Goal4489; Numba remains the no-C++ Python-source same-contract fallback "
+            "Goal4484/Goal4485/Goal4486/Goal4488/Goal4489/Goal4490; Numba remains the no-C++ Python-source same-contract fallback "
             "and grouped-stream reference route"
         ),
         "next_generic_runtime_action": (
             "keep predicate direct-status explicit for measured compact summary "
             "profiles; keep full row materialization explicit; use the shared "
             "device-coordinate-column entry point only where callers already own "
-            "partner columns; broaden profile coverage next; use "
+            "partner columns, because Goal4490 shows app-constructed columns are "
+            "not a stable default promotion after charging build time; broaden profile coverage next; use "
             "graph-only component-size signature only for the narrower "
             "graph-component contract"
         ),
@@ -328,6 +335,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4487",
             "Goal4488",
             "Goal4489",
+            "Goal4490",
         ),
     },
     "robot_collision": {

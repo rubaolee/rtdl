@@ -1493,6 +1493,7 @@ from .partner_adapters import partner_page_columns
 from .adapters.reductions import partner_unique_pair_keys
 from .partner_adapters import optix_row_view_to_partner_columns
 from .partner_adapters import point_rows_to_partner_columns
+from .partner_adapters import point_rows_to_partner_coordinate_columns_3d
 from .partner_adapters import weighted_point_rows_to_partner_columns
 from .partner_adapters import aggregate_frontier_collect_to_partner_columns
 from .partner_adapters import bounded_collect_finalize_i64_partner_columns
@@ -3289,6 +3290,7 @@ __all__ = [
     "partner_unique_pair_keys",
     "optix_row_view_to_partner_columns",
     "point_rows_to_partner_columns",
+    "point_rows_to_partner_coordinate_columns_3d",
     "weighted_point_rows_to_partner_columns",
     "bounded_collect_finalize_i64_partner_columns",
     "global_argmax_u32_f64_partner_columns",

@@ -7,6 +7,7 @@ from ..partner_adapters import partner_mask_indices
 from ..partner_adapters import partner_page_columns
 from ..partner_adapters import partner_take_columns_by_indices
 from ..partner_adapters import point_rows_to_partner_columns
+from ..partner_adapters import point_rows_to_partner_coordinate_columns_3d
 from ..partner_adapters import weighted_point_rows_to_partner_columns
 
 
@@ -18,5 +19,6 @@ __all__ = [
     "partner_page_columns",
     "partner_take_columns_by_indices",
     "point_rows_to_partner_columns",
+    "point_rows_to_partner_coordinate_columns_3d",
     "weighted_point_rows_to_partner_columns",
 ]

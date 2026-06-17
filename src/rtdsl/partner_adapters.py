@@ -1914,6 +1914,18 @@ def _point_columns(points, partner: dict, *, id_dtype: str = "default") -> dict[
     return columns
 
 
+def _point_coordinate_columns_3d(points, partner: dict) -> dict[str, object]:
+    device = partner["device"]
+    rows = tuple(points)
+    if rows and not all(hasattr(point, "z") for point in rows):
+        raise ValueError("point rows must all provide z for 3-D coordinate columns")
+    return {
+        "x": partner["tensor"]([point.x for point in rows], partner["float64"], device),
+        "y": partner["tensor"]([point.y for point in rows], partner["float64"], device),
+        "z": partner["tensor"]([point.z for point in rows], partner["float64"], device),
+    }
+
+
 def _numba_runtime_for_point_columns() -> dict[str, object]:
     try:
         import _numba_cuda_redirector  # noqa: F401
@@ -1969,6 +1981,18 @@ def point_rows_to_partner_columns(
         return _point_columns(tuple(points), _numba_runtime_for_point_columns(), id_dtype=id_dtype)
     runtime = _partner_module(partner)
     return _point_columns(tuple(points), runtime, id_dtype=id_dtype)
+
+
+def point_rows_to_partner_coordinate_columns_3d(
+    points,
+    *,
+    partner: str = "torch",
+) -> dict[str, object]:
+    """Convert 3-D point rows into partner-owned x/y/z coordinate columns only."""
+    if partner == "numba":
+        return _point_coordinate_columns_3d(tuple(points), _numba_runtime_for_point_columns())
+    runtime = _partner_module(partner)
+    return _point_coordinate_columns_3d(tuple(points), runtime)
 
 
 def weighted_point_rows_to_partner_columns(points, *, partner: str = "torch") -> dict[str, object]:

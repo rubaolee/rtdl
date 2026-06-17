@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4489.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4490.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -88,7 +88,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "phase by roughly 2.0x-2.4x on the 1M rows without changing signatures. "
     "Goal4489 adds caller-owned CuPy point-column direct-status prepare, "
     "cutting prepare by 12x-124x when x/y/z device columns already exist, "
-    "with point-column construction reported separately. "
+    "with point-column construction reported separately. Goal4490 wires that "
+    "entry point into an explicit RT-DBSCAN app mode and proves the boundary: "
+    "when the app must construct coordinate columns from Python rows and charge "
+    "that build, the route is not a stable total-time win, so it remains a "
+    "non-default integration path. "
     "Goal4453 refreshes triangle-counting Numba partner guidance after moving "
     "RT-1A2/RT-2A1 geometry fill from host materialization and re-upload to "
     "partner-resident Numba device columns. It removes unnecessary data movement "
@@ -1100,12 +1104,13 @@ def _refresh_goal4484_route_decisions(
                 ),
                 next_runtime_action=(
                     "keep predicate direct-status as the measured explicit compact-signature "
-                    "route for the Goal4484/Goal4485/Goal4486/Goal4488/Goal4489 524k and 1M profiles; "
+                    "route for the Goal4484/Goal4485/Goal4486/Goal4488/Goal4489/Goal4490 524k and 1M profiles; "
                     "keep grouped-stream Numba as fallback/reference; keep full Python row materialization explicit; "
                     "keep the profile/reuse advisor visible for explicit route choices; "
                     "Goal4488 reduces direct-status row-columnization prepare debt and Goal4489 "
-                    "adds the shared device-coordinate-column entry point; next serious runtime work is "
-                    "app integration only where the caller naturally owns partner columns, broader profile coverage, "
+                    "adds the shared device-coordinate-column entry point; Goal4490 adds an explicit charged "
+                    "app mode and shows app-constructed coordinate columns are not a default promotion; "
+                    "next serious runtime work is broader profile coverage or natural caller-owned-column reuse, "
                     "or a policy primitive only if "
                     "new evidence requires it. "
                     "hidden factor selection, hidden output-contract selection, hidden border-policy "
@@ -1170,6 +1175,7 @@ def _refresh_goal4484_route_decisions(
                     "Goal4487",
                     "Goal4488",
                     "Goal4489",
+                    "Goal4490",
                 ),
                 pod_needed_next=False,
             )
