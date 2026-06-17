@@ -8,16 +8,18 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION = (
-    "rtdl.v3_0.benchmark_implementation_queue.goal4531.v5"
+    "rtdl.v3_0.benchmark_implementation_queue.goal4533.v6"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_STATUS = (
-    "post_triangle_weighted_replay_graph_capture_fail_closed_no_runtime_queue_not_release_authorization"
+    "post_claim_scope_closeout_design_only_queue_not_release_authorization"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_CLAIM_BOUNDARY = (
     "This queue ranks post-clean-target implementation work after Goal4515 "
-    "and Goal4523. It does not change any current benchmark app route and does "
-    "not authorize public speedup, broad RT-core, paper-reproduction, automatic "
-    "partner-selection, or app-specific native-engine wording."
+    "and Goal4523. Goal4533 closes RTNN and Spatial RayJoin as claim-scoped "
+    "current targets without expanding their public/paper wording. It does not "
+    "change any current benchmark app route and does not authorize public "
+    "speedup, broad RT-core, paper-reproduction, automatic partner-selection, "
+    "or app-specific native-engine wording."
 )
 
 V3_IMPLEMENTATION_WORK_CLASSES = (
@@ -187,45 +189,51 @@ _ROWS: tuple[V3BenchmarkImplementationQueueRow, ...] = (
     ),
     V3BenchmarkImplementationQueueRow(
         app="rtnn",
-        priority=10,
-        work_class="claim_or_evidence_blocker",
+        priority=None,
+        work_class="closed_current_target",
         current_route_status=(
             "current V3 route supports exact aggregate full-batch RTDL rows and "
             "large chunked CuPy/Numba partner-continuation rows"
         ),
         remaining_gap=(
-            "public paper-reproduction and same-output author claims remain blocked "
-            "by dataset recipes and output-contract differences, not by a missing "
-            "current RTDL primitive"
+            "no current V3 app implementation blocker after Goal4508; exact "
+            "paper reproduction, same-output author comparisons, and public "
+            "RT-core speedup wording remain future optional claim-expansion work "
+            "because paper dataset recipes and output contracts are not frozen"
         ),
         next_build_target=(
-            "freeze exact paper-family dataset recipes and author output contract "
-            "comparisons before any public RTNN wording expansion"
+            "no immediate V3 build target; preserve the scoped RTNN aggregate "
+            "and partner-continuation evidence, and require exact dataset/output "
+            "contract proof before any public paper, author-superiority, or "
+            "speedup wording expansion"
         ),
-        evidence_refs=("Goal4498", "Goal4500", "Goal4501", "Goal4507", "Goal4508"),
-        pod_needed_next=True,
+        evidence_refs=("Goal4498", "Goal4500", "Goal4501", "Goal4507", "Goal4508", "Goal4533"),
+        pod_needed_next=False,
     ),
     V3BenchmarkImplementationQueueRow(
         app="spatial_rayjoin",
-        priority=11,
-        work_class="claim_or_evidence_blocker",
+        priority=None,
+        work_class="closed_current_target",
         current_route_status=(
             "current V3 route is mixed explicit: Numba for bounded one-shot PIP, "
             "prepared RTDL/OptiX for repeated PIP, and RTDL/OptiX scalar or active "
             "count primitives for LSI/overlay-style contracts"
         ),
         remaining_gap=(
-            "full RayJoin paper-reproduction wording and Section 5.7 8/8 overlay "
-            "wording remain claim-scoped; the current limitation is not a missing "
-            "generic primitive for the already scoped 2/8 overlay evidence"
+            "no current V3 app implementation blocker after Goal4514; full "
+            "RayJoin paper-reproduction wording and Section 5.7 8/8 overlay "
+            "wording remain future optional claim-expansion work because the "
+            "current feasible public packet is scoped to the mixed route and "
+            "2/8 overlay evidence"
         ),
         next_build_target=(
-            "keep the current mixed route; only expand public wording with an "
-            "explicitly scoped author/data packet that states which overlay rows "
-            "are feasible and which are not"
+            "no immediate V3 build target; preserve the current mixed route and "
+            "only expand public RayJoin wording with an explicitly scoped "
+            "author/data packet that states which overlay rows are feasible and "
+            "which are not"
         ),
-        evidence_refs=("Goal4451", "Goal4514"),
-        pod_needed_next=True,
+        evidence_refs=("Goal4451", "Goal4514", "Goal4533"),
+        pod_needed_next=False,
     ),
     V3BenchmarkImplementationQueueRow(
         app="hausdorff_xhd",
@@ -367,12 +375,11 @@ def validate_v3_benchmark_implementation_queue(
         "runtime_queue_empty": runtime_apps == (),
         "design_queue_exact": design_apps == ("barnes_hut", "triangle_counting"),
         "next_runtime_target_none": packet["summary"]["next_runtime_build_target"] is None,
-        "claim_queue_exact": tuple(packet["summary"]["claim_or_evidence_queue"])
-        == ("rtnn", "spatial_rayjoin"),
+        "claim_queue_empty": tuple(packet["summary"]["claim_or_evidence_queue"]) == (),
         "design_targets_do_not_block_runtime_queue": bool(
             packet["summary"]["design_targets_do_not_block_runtime_queue"]
         ),
-        "closed_count_is_six": len(packet["summary"]["closed_current_targets"]) == 6,
+        "closed_count_is_eight": len(packet["summary"]["closed_current_targets"]) == 8,
         "all_clean_targets_closed": bool(packet["summary"]["all_clean_targets_closed"]),
         "all_public_speedup_claims_blocked": bool(
             packet["summary"]["all_public_speedup_claims_blocked"]

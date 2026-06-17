@@ -29,7 +29,7 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.benchmark_implementation_queue.goal4531.v5",
+            "rtdl.v3_0.benchmark_implementation_queue.goal4533.v6",
             self.packet["version"],
         )
         self.assertEqual(10, summary["app_count"])
@@ -39,10 +39,11 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
             tuple(summary["runtime_build_queue"]),
         )
         self.assertEqual(("barnes_hut", "triangle_counting"), tuple(summary["design_blocker_queue"]))
+        self.assertEqual((), tuple(summary["claim_or_evidence_queue"]))
         self.assertIsNone(summary["next_runtime_build_target"])
         self.assertTrue(cls_summary["runtime_targets_need_pod"])
 
-    def test_runtime_blockers_are_separate_from_claim_evidence_blockers(self) -> None:
+    def test_runtime_blockers_are_separate_from_design_blockers(self) -> None:
         self.assertEqual("design_blocker", self.rows["barnes_hut"]["work_class"])
         self.assertIn("subtree-skip semantics", self.rows["barnes_hut"]["remaining_gap"])
         self.assertEqual("closed_current_target", self.rows["rt_dbscan"]["work_class"])
@@ -50,10 +51,12 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
         self.assertEqual("design_blocker", self.rows["triangle_counting"]["work_class"])
         self.assertIn("capture-compatible OptiX", self.rows["triangle_counting"]["next_build_target"])
 
-        self.assertEqual("claim_or_evidence_blocker", self.rows["rtnn"]["work_class"])
-        self.assertIn("output-contract differences", self.rows["rtnn"]["remaining_gap"])
-        self.assertEqual("claim_or_evidence_blocker", self.rows["spatial_rayjoin"]["work_class"])
-        self.assertIn("8/8 overlay", self.rows["spatial_rayjoin"]["remaining_gap"])
+        self.assertEqual("closed_current_target", self.rows["rtnn"]["work_class"])
+        self.assertIn("future optional claim-expansion", self.rows["rtnn"]["remaining_gap"])
+        self.assertFalse(self.rows["rtnn"]["paper_reproduction_claim_authorized"])
+        self.assertEqual("closed_current_target", self.rows["spatial_rayjoin"]["work_class"])
+        self.assertIn("future optional claim-expansion", self.rows["spatial_rayjoin"]["remaining_gap"])
+        self.assertFalse(self.rows["spatial_rayjoin"]["paper_reproduction_claim_authorized"])
 
     def test_closed_apps_have_no_current_runtime_build_target(self) -> None:
         closed = {
@@ -63,6 +66,8 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
             "raydb_style",
             "librts_spatial_index",
             "rt_dbscan",
+            "rtnn",
+            "spatial_rayjoin",
         }
         for app in closed:
             row = self.rows[app]

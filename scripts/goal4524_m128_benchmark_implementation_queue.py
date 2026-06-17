@@ -43,10 +43,11 @@ def build_packet() -> dict[str, Any]:
             "Goal4531 validates device-output weighted replay while fail-closing "
             "CUDA graph capture for that OptiX launch. There is now no runtime "
             "build target in this queue; Triangle and Barnes-Hut are design "
-            "blockers. RTNN and "
-            "Spatial RayJoin remain claim/evidence packaging blockers rather "
-            "than missing current primitives, and the other six apps have no "
-            "immediate V3 runtime blocker."
+            "blockers. Goal4533 closes RTNN and Spatial RayJoin as claim-scoped "
+            "current targets: their full paper/author wording remains blocked, "
+            "but that wording is future optional claim expansion rather than a "
+            "current V3 app implementation blocker. The other six apps also have "
+            "no immediate V3 runtime blocker."
         ),
     }
 
