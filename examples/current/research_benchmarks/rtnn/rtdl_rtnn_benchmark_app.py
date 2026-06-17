@@ -670,6 +670,71 @@ def rtnn_prepared_ranked_summary_graph_partner_bridge_plan_payload(
     }
 
 
+def rtnn_prepared_ranked_summary_graph_partner_bridge_chunked_payload(
+    *,
+    point_count: int,
+    query_count: int | None = None,
+    distribution: str,
+    warmups: int,
+    repeats: int,
+    transfer_counter_library: str | Path | None = None,
+    hardware: str = "unspecified",
+) -> dict[str, Any]:
+    """Run the explicit M19 chunked same-stream partner-continuation route."""
+
+    if point_count <= 0:
+        raise ValueError("point_count must be positive")
+    normalized_query_count = point_count if query_count is None else int(query_count)
+    if normalized_query_count <= 0:
+        raise ValueError("query_count must be positive")
+    if normalized_query_count > point_count:
+        raise ValueError("query_count must not exceed point_count")
+    if warmups < 0:
+        raise ValueError("warmups must be non-negative")
+    if repeats <= 0:
+        raise ValueError("repeats must be positive")
+    library = transfer_counter_library or os.environ.get("RTDL_CUDA_TRANSFER_COUNTER_LIBRARY")
+    if not library:
+        raise ValueError(
+            "prepared_ranked_summary_graph_partner_bridge_chunked requires a transfer counter library; "
+            "use --transfer-counter-library or set RTDL_CUDA_TRANSFER_COUNTER_LIBRARY"
+        )
+    payload = rt.run_v3_m19_ranked_summary_bridge_chunked_case(
+        transfer_counter_library=Path(library),
+        point_count=point_count,
+        query_count=normalized_query_count,
+        distribution=distribution,
+        warmups=warmups,
+        repeats=repeats,
+        hardware=hardware,
+    )
+    validation = rt.validate_v3_m19_ranked_summary_bridge_chunked_payload(payload)
+    return {
+        "benchmark_app": BENCHMARK_NAME,
+        "mode": "prepared_ranked_summary_graph_partner_bridge_chunked",
+        "contract": "prepared 3-D fixed-radius ranked-summary graph partials plus CuPy/Numba same-stream device reductions across explicit query chunks",
+        "point_count": point_count,
+        "query_count": normalized_query_count,
+        "distribution": distribution,
+        "warmups": warmups,
+        "repeats": repeats,
+        "uses_v3_m19_bridge": True,
+        "runner_payload": payload,
+        "validation": validation,
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "native_engine_customization": False,
+            "full_rtnn_paper_reproduction": False,
+            "public_speedup_claim_authorized": False,
+            "broad_rt_core_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "automatic_partner_selection_authorized": False,
+            "large_chunked_runtime_evidence": True,
+            "same_stream_partner_continuation_evidence": True,
+        },
+    }
+
+
 def rtnn_prepared_session_reuse_idiom_payload(
     *,
     point_count: int,
@@ -989,6 +1054,16 @@ def run_app(
             query_count=query_count,
             distribution=distribution,
         )
+    if mode == "prepared_ranked_summary_graph_partner_bridge_chunked":
+        return rtnn_prepared_ranked_summary_graph_partner_bridge_chunked_payload(
+            point_count=copies,
+            query_count=query_count,
+            distribution=distribution,
+            warmups=warmups,
+            repeats=repeats,
+            transfer_counter_library=transfer_counter_library,
+            hardware=hardware,
+        )
     if mode == "prepared_session_reuse_idiom":
         return rtnn_prepared_session_reuse_idiom_payload(
             point_count=copies,
@@ -1021,6 +1096,7 @@ def main(argv: list[str] | None = None) -> int:
             "prepared_ranked_summary_raw",
             "prepared_ranked_summary_graph_partner_bridge",
             "prepared_ranked_summary_graph_partner_bridge_plan",
+            "prepared_ranked_summary_graph_partner_bridge_chunked",
             "prepared_session_reuse_idiom",
             "ranked_summary_typed_stream_plan",
             "rtnn_v2_8_ranked_summary_plan",
@@ -1086,6 +1162,16 @@ def main(argv: list[str] | None = None) -> int:
             point_count=args.point_count or args.copies,
             query_count=args.query_count,
             distribution=args.distribution,
+        )
+    elif args.mode == "prepared_ranked_summary_graph_partner_bridge_chunked":
+        payload = rtnn_prepared_ranked_summary_graph_partner_bridge_chunked_payload(
+            point_count=args.point_count or args.copies,
+            query_count=args.query_count,
+            distribution=args.distribution,
+            warmups=args.warmups,
+            repeats=args.repeat,
+            transfer_counter_library=args.transfer_counter_library,
+            hardware=args.hardware,
         )
     elif args.mode == "prepared_session_reuse_idiom":
         payload = rtnn_prepared_session_reuse_idiom_payload(

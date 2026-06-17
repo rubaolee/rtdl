@@ -16,8 +16,14 @@ from .v3_0_no_hidden_copy_contract import summarize_no_hidden_copy_classificatio
 
 
 V3_M19_RANKED_SUMMARY_BRIDGE_VERSION = "rtdl.v3_0.ranked_summary_bridge.m19"
+V3_M19_CHUNKED_RANKED_SUMMARY_BRIDGE_VERSION = (
+    "rtdl.v3_0.ranked_summary_bridge.m19.chunked.v1"
+)
 V3_M19_RANKED_SUMMARY_BRIDGE_STATUS = (
     "m19_ranked_summary_prepared_graph_partner_bridge_internal_claims_gated"
+)
+V3_M19_CHUNKED_RANKED_SUMMARY_BRIDGE_STATUS = (
+    "m19_chunked_ranked_summary_partner_bridge_internal_claims_gated"
 )
 V3_M19_GRAPH_ID = "prepared_ranked_summary_graph_partner_bridge"
 V3_M19_CONTRACT_KEY = "prepared_fixed_radius_ranked_summary_graph_partials_same_stream_partner_v1"
@@ -179,6 +185,185 @@ def run_v3_m19_ranked_summary_bridge_case(
         },
     }
     validate_v3_m19_ranked_summary_bridge_payload(payload)
+    return payload
+
+
+def run_v3_m19_ranked_summary_bridge_chunked_case(
+    *,
+    transfer_counter_library: str | Path,
+    point_count: int = 131_072,
+    query_count: int | None = None,
+    max_query_count: int = V3_M19_GRAPH_QUERY_COUNT_CAP,
+    distribution: str = "uniform",
+    requests: tuple[Mapping[str, object], ...] = V3_M19_DEFAULT_REQUESTS,
+    warmups: int = 1,
+    repeats: int = 3,
+    hardware: str = "pod_rtx_4000_ada",
+) -> dict[str, object]:
+    validate_v3_public_name(V3_M19_GRAPH_ID, label="M19 graph id")
+    point_count = int(point_count)
+    query_count = point_count if query_count is None else int(query_count)
+    max_query_count = int(max_query_count)
+    warmups = int(warmups)
+    repeats = int(repeats)
+    if point_count <= 0:
+        raise GraphValidationError("point_count must be positive")
+    if query_count <= 0:
+        raise GraphValidationError("query_count must be positive")
+    if query_count > point_count:
+        raise GraphValidationError("query_count must not exceed point_count")
+    if max_query_count <= 0 or max_query_count > V3_M19_GRAPH_QUERY_COUNT_CAP:
+        raise GraphValidationError("max_query_count must be in [1, 65536]")
+    if warmups < 0 or repeats <= 0:
+        raise GraphValidationError("warmups/repeats are invalid")
+    execution_path_plan = plan_v3_m19_ranked_summary_bridge_chunks(
+        point_count=point_count,
+        query_count=query_count,
+        max_query_count=max_query_count,
+        distribution=distribution,
+    )
+    normalized_requests = _normalize_requests(requests)
+    max_radius = max(float(request["radius"]) for request in normalized_requests)
+
+    transfer_counter = CudaTransferCounter(transfer_counter_library)
+    points = make_v3_m19_ranked_summary_points(point_count, distribution=distribution)
+
+    transfer_counter.reset()
+    transfer_counter.enable()
+    scene_prepare_start = time.perf_counter()
+    try:
+        scene = prepare_optix_fixed_radius_neighbors_3d(points, max_radius=max_radius)
+        scene_prepare_seconds = time.perf_counter() - scene_prepare_start
+        scene_prepare_snapshot = transfer_counter.disable_and_snapshot()
+    except Exception:
+        transfer_counter.disable_and_snapshot()
+        raise
+
+    partner_chunk_rows: dict[str, list[dict[str, object]]] = {
+        partner: [] for partner in V3_M19_PARTNERS
+    }
+    chunk_preparation_rows: list[dict[str, object]] = []
+    try:
+        for chunk in execution_path_plan["chunks"]:
+            chunk_index = int(chunk["chunk_index"])
+            start = int(chunk["query_start_inclusive"])
+            end = int(chunk["query_end_exclusive"])
+            transfer_counter.reset()
+            transfer_counter.enable()
+            chunk_prepare_start = time.perf_counter()
+            try:
+                queries = scene.prepare_query_points(points[start:end])
+                graph = scene.prepare_ranked_summary_prepared_queries_batch_graph(
+                    queries,
+                    normalized_requests,
+                    precision="float32",
+                )
+                chunk_prepare_seconds = time.perf_counter() - chunk_prepare_start
+                chunk_prepare_snapshot = transfer_counter.disable_and_snapshot()
+            except Exception:
+                transfer_counter.disable_and_snapshot()
+                raise
+
+            try:
+                chunk_preparation_rows.append(
+                    {
+                        **dict(chunk),
+                        "prepared_query_points_used": True,
+                        "cuda_graph_prepared": True,
+                        "chunk_prepare_seconds": float(chunk_prepare_seconds),
+                        "chunk_prepare_transfer_counter_snapshot": chunk_prepare_snapshot,
+                    }
+                )
+                for partner in V3_M19_PARTNERS:
+                    row = _run_partner_row(
+                        graph=graph,
+                        partner=partner,
+                        transfer_counter=transfer_counter,
+                        warmups=warmups,
+                        repeats=repeats,
+                    )
+                    partner_chunk_rows[partner].append(
+                        {
+                            **row,
+                            "chunk_index": chunk_index,
+                            "query_start_inclusive": start,
+                            "query_end_exclusive": end,
+                        }
+                    )
+            finally:
+                graph.close()
+                queries.close()
+    finally:
+        scene.close()
+
+    partner_rows = tuple(
+        _combine_chunked_partner_rows(partner, tuple(rows))
+        for partner, rows in sorted(partner_chunk_rows.items())
+    )
+    signatures = {tuple(row["combined_validation_signature"]) for row in partner_rows}
+    payload = {
+        "version": V3_M19_CHUNKED_RANKED_SUMMARY_BRIDGE_VERSION,
+        "status": V3_M19_CHUNKED_RANKED_SUMMARY_BRIDGE_STATUS,
+        "graph_id": V3_M19_GRAPH_ID,
+        "contract_key": V3_M19_CONTRACT_KEY,
+        "parameters": {
+            "point_count": point_count,
+            "query_count": query_count,
+            "distribution": distribution,
+            "requests": tuple(dict(request) for request in normalized_requests),
+            "request_count": len(normalized_requests),
+            "max_query_count": max_query_count,
+            "chunk_count": int(execution_path_plan["chunk_count"]),
+            "warmups": warmups,
+            "repeats": repeats,
+            "allowed_non_column_host_to_device_bytes": V3_M19_ALLOWED_NON_COLUMN_HOST_TO_DEVICE_BYTES,
+            "transfer_counter_library": str(transfer_counter_library),
+            "hardware": hardware,
+        },
+        "execution_path_plan": execution_path_plan,
+        "preparation": {
+            "prepared_scene_used": True,
+            "prepared_scene_reused_across_chunks": True,
+            "prepared_query_points_per_chunk": True,
+            "cuda_graph_per_chunk": True,
+            "initial_host_to_device_upload_expected": True,
+            "scene_prepare_seconds": scene_prepare_seconds,
+            "scene_prepare_transfer_counter_snapshot": scene_prepare_snapshot,
+            "chunk_preparation_rows": tuple(chunk_preparation_rows),
+            "prepare_window_claim_boundary": (
+                "The chunked prepare windows include scene upload, per-chunk query preparation, "
+                "and per-chunk graph construction. They are recorded, not claimed as no-hidden-copy hot paths."
+            ),
+        },
+        "partner_rows": partner_rows,
+        "comparison": {
+            "signature_match": len(signatures) == 1,
+            "partners": V3_M19_PARTNERS,
+            "chunk_count": int(execution_path_plan["chunk_count"]),
+            "chunked_runtime_executed": True,
+            "hot_no_hidden_column_copy_ready": all(bool(row["hot_no_hidden_column_copy_ready"]) for row in partner_rows),
+            "device_result_materialization_after_hot_window": all(
+                bool(row["device_result_materialization_after_hot_window"]) for row in partner_rows
+            ),
+            "prepared_scene_reused_across_chunks": True,
+            "cuda_graph_per_chunk": True,
+            "public_claim_authorized": False,
+        },
+        "claim_boundary": {
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_public_claim_authorized": False,
+            "automatic_partner_selection_authorized": False,
+            "large_chunked_runtime_evidence": True,
+            "reason": (
+                "M19 chunked runtime evidence executes the explicit partner-continuation chunk plan "
+                "with prepared scene reuse and per-chunk query/graph preparation. It does not claim "
+                "paper parity, public performance, whole-app speedup, or end-to-end zero copy."
+            ),
+        },
+    }
+    validate_v3_m19_ranked_summary_bridge_chunked_payload(payload)
     return payload
 
 
@@ -441,6 +626,78 @@ def _aggregate_signature(aggregates: object) -> tuple[tuple[int, int, int, int, 
     )
 
 
+def _combine_chunked_partner_rows(
+    partner: str,
+    chunk_rows: tuple[dict[str, object], ...],
+) -> dict[str, object]:
+    if not chunk_rows:
+        raise GraphValidationError(f"M19 chunked {partner} row has no chunks")
+    combined_signature = _combine_chunk_signatures(
+        tuple(tuple(tuple(item) for item in row["validation_signature"]) for row in chunk_rows)
+    )
+    hot_median_sum = sum(float(row["hot_device_run_seconds_median"]) for row in chunk_rows)
+    materialize_median_sum = sum(float(row["materialize_seconds_median"]) for row in chunk_rows)
+    return {
+        "partner": partner,
+        "backend": "optix",
+        "route": "prepared_fixed_radius_ranked_summary_graph_partials_same_stream_partner_chunked",
+        "chunk_count": len(chunk_rows),
+        "chunk_rows": chunk_rows,
+        "prepared_scene_reused_across_chunks": True,
+        "prepared_query_points_per_chunk": all(bool(row["prepared_query_points_used"]) for row in chunk_rows),
+        "cuda_graph_per_chunk": all(bool(row["cuda_graph_replay_used"]) for row in chunk_rows),
+        "same_stream_partner_device_reduction_per_chunk": all(
+            bool(row["same_stream_partner_device_reduction_used"]) for row in chunk_rows
+        ),
+        "device_resident_partial_rows_for_partner": all(
+            bool(row["device_resident_partial_rows_for_partner"]) for row in chunk_rows
+        ),
+        "host_scalar_read_before_consumer": any(
+            bool(row["host_scalar_read_before_consumer"]) for row in chunk_rows
+        ),
+        "host_partial_materialization_before_consumer": any(
+            bool(row["host_partial_materialization_before_consumer"]) for row in chunk_rows
+        ),
+        "device_result_materialized_in_hot_window": any(
+            bool(row["device_result_materialized_in_hot_window"]) for row in chunk_rows
+        ),
+        "device_result_materialization_after_hot_window": all(
+            bool(row["device_result_materialization_after_hot_window"]) for row in chunk_rows
+        ),
+        "combined_validation_signature": combined_signature,
+        "chunk_hot_device_run_seconds_medians": tuple(
+            float(row["hot_device_run_seconds_median"]) for row in chunk_rows
+        ),
+        "chunk_materialize_seconds_medians": tuple(
+            float(row["materialize_seconds_median"]) for row in chunk_rows
+        ),
+        "hot_device_run_seconds_median_sum": float(hot_median_sum),
+        "materialize_seconds_median_sum": float(materialize_median_sum),
+        "hot_no_hidden_column_copy_ready": all(
+            bool(row["hot_no_hidden_column_copy_ready"]) for row in chunk_rows
+        ),
+        "public_claim_authorized": False,
+    }
+
+
+def _combine_chunk_signatures(
+    chunk_signatures: tuple[tuple[tuple[int, int, int, int, int], ...], ...],
+) -> tuple[tuple[int, int, int, int, int], ...]:
+    if not chunk_signatures:
+        raise GraphValidationError("M19 chunked signature requires at least one chunk")
+    request_count = len(chunk_signatures[0])
+    totals = [[0, 0, 0, 0, 0] for _ in range(request_count)]
+    for signature in chunk_signatures:
+        if len(signature) != request_count:
+            raise GraphValidationError("M19 chunked signatures have inconsistent request counts")
+        for request_index, row in enumerate(signature):
+            if len(row) != 5:
+                raise GraphValidationError("M19 chunked signature row must have five fields")
+            for value_index, value in enumerate(row):
+                totals[request_index][value_index] += int(value)
+    return tuple(tuple(row) for row in totals)
+
+
 def _m19_min_named_column_bytes(metadata: Mapping[str, object]) -> int:
     partial_count = int(metadata.get("partial_count", 0) or 0)
     request_count = int(metadata.get("request_count", 0) or 0)
@@ -614,5 +871,98 @@ def validate_v3_m19_ranked_summary_bridge_chunk_plan(
         "chunk_count": len(chunks),
         "single_graph_cap_exceeded": bool(plan.get("single_graph_cap_exceeded")),
         "runtime_executed": bool(plan.get("runtime_executed")),
+        "public_claim_authorized": False,
+    }
+
+
+def validate_v3_m19_ranked_summary_bridge_chunked_payload(
+    payload: Mapping[str, object],
+) -> dict[str, object]:
+    if not isinstance(payload, Mapping):
+        raise GraphValidationError("M19 chunked payload must be a mapping")
+    if payload.get("version") != V3_M19_CHUNKED_RANKED_SUMMARY_BRIDGE_VERSION:
+        raise GraphValidationError("unexpected M19 chunked payload version")
+    if payload.get("status") != V3_M19_CHUNKED_RANKED_SUMMARY_BRIDGE_STATUS:
+        raise GraphValidationError("unexpected M19 chunked payload status")
+    plan = payload.get("execution_path_plan", {})
+    plan_validation = validate_v3_m19_ranked_summary_bridge_chunk_plan(plan)
+    if plan_validation["chunk_count"] <= 1:
+        raise GraphValidationError("M19 chunked payload must contain more than one chunk")
+    preparation = payload.get("preparation", {})
+    if not isinstance(preparation, Mapping):
+        raise GraphValidationError("M19 chunked payload requires preparation metadata")
+    for key in (
+        "prepared_scene_used",
+        "prepared_scene_reused_across_chunks",
+        "prepared_query_points_per_chunk",
+        "cuda_graph_per_chunk",
+        "initial_host_to_device_upload_expected",
+    ):
+        if preparation.get(key) is not True:
+            raise GraphValidationError(f"M19 chunked preparation must prove {key}=true")
+
+    rows = tuple(payload.get("partner_rows", ()))
+    if {str(row.get("partner")) for row in rows if isinstance(row, Mapping)} != set(V3_M19_PARTNERS):
+        raise GraphValidationError("M19 chunked payload requires CuPy and Numba partner rows")
+    signatures = {tuple(tuple(item) for item in row.get("combined_validation_signature", ())) for row in rows}
+    if len(signatures) != 1:
+        raise GraphValidationError("M19 chunked CuPy and Numba combined signatures must match")
+    for row in rows:
+        if not isinstance(row, Mapping):
+            raise GraphValidationError("M19 chunked partner row must be a mapping")
+        partner = str(row.get("partner"))
+        if int(row.get("chunk_count", 0) or 0) != int(plan_validation["chunk_count"]):
+            raise GraphValidationError(f"{partner} chunked row chunk_count mismatch")
+        for key in (
+            "prepared_scene_reused_across_chunks",
+            "prepared_query_points_per_chunk",
+            "cuda_graph_per_chunk",
+            "same_stream_partner_device_reduction_per_chunk",
+            "device_resident_partial_rows_for_partner",
+            "device_result_materialization_after_hot_window",
+            "hot_no_hidden_column_copy_ready",
+        ):
+            if row.get(key) is not True:
+                raise GraphValidationError(f"{partner} chunked row must prove {key}=true")
+        for key in (
+            "host_scalar_read_before_consumer",
+            "host_partial_materialization_before_consumer",
+            "device_result_materialized_in_hot_window",
+            "public_claim_authorized",
+        ):
+            if row.get(key) is not False:
+                raise GraphValidationError(f"{partner} chunked row must prove {key}=false")
+
+    comparison = payload.get("comparison", {})
+    if not isinstance(comparison, Mapping):
+        raise GraphValidationError("M19 chunked payload requires comparison")
+    for key in (
+        "signature_match",
+        "chunked_runtime_executed",
+        "hot_no_hidden_column_copy_ready",
+        "device_result_materialization_after_hot_window",
+        "prepared_scene_reused_across_chunks",
+        "cuda_graph_per_chunk",
+    ):
+        if comparison.get(key) is not True:
+            raise GraphValidationError(f"M19 chunked comparison must prove {key}=true")
+    boundary = payload.get("claim_boundary", {})
+    if not isinstance(boundary, Mapping):
+        raise GraphValidationError("M19 chunked payload requires claim boundary")
+    for key in (
+        "public_speedup_claim_authorized",
+        "rt_core_speedup_claim_authorized",
+        "whole_app_speedup_claim_authorized",
+        "true_zero_copy_public_claim_authorized",
+        "automatic_partner_selection_authorized",
+    ):
+        if bool(boundary.get(key)):
+            raise GraphValidationError(f"M19 chunked must not authorize {key}")
+    return {
+        "status": V3_M19_CHUNKED_RANKED_SUMMARY_BRIDGE_STATUS,
+        "partner_count": len(rows),
+        "chunk_count": int(plan_validation["chunk_count"]),
+        "signature_match": True,
+        "hot_no_hidden_column_copy_ready": True,
         "public_claim_authorized": False,
     }

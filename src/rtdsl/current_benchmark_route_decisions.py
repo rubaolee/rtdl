@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4505.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4506.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -772,7 +772,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "branch: 1,048,576 queries split into 16 chunks of at most 65,536 queries, "
             "with prepared scene reuse and per-chunk query preparation, graph capture, "
             "and same-stream partner reduction. It is planner evidence only, not "
-            "large chunked runtime performance evidence. Report these "
+            "large chunked runtime performance evidence. Goal4506 then executes that "
+            "same 1,048,576-query uniform partner-continuation route on the pod: "
+            "16 chunks, prepared scene reuse, same-stream device reductions, signature "
+            "match, no-hidden-column-copy hot gate, and hot median-sums of about "
+            "0.083s for both CuPy and Numba. Report these "
             "as different output contracts: author full K-id materialization "
             "versus RTDL ranked-summary aggregate."
         ),
@@ -807,6 +811,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "treating the shell resident app bridge as a full RTNN paper row",
             "treating direct graph replay as the aggregate-only best route above 65,536 queries",
             "treating the Goal4505 chunk plan as measured large chunked runtime evidence",
+            "comparing Goal4506 partner-continuation chunked runtime as if it were aggregate-only full-batch direct runtime",
         ),
         next_runtime_action=(
             "preserve exact aggregate, full-batch prepared direct aggregate, same-stream "
@@ -835,6 +840,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4503",
             "Goal4504",
             "Goal4505",
+            "Goal4506",
         ),
         pod_needed_next=False,
     ),

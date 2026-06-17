@@ -69,13 +69,13 @@ class Goal4492M96TriangleSourceGroupUniqueFeasibilityTest(unittest.TestCase):
         self.assertIn("hybrid/two-pass", report)
         self.assertIn("Goal4492 Triangle source-group unique feasibility", index)
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4505.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4506.v1",
             route["version"],
         )
         self.assertIn("Goal4492", route["evidence_refs"])
         self.assertIn("Goal4494", route["next_runtime_action"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4505.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4506.v1",
             adequacy_module.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         self.assertIn("Goal4492", adequacy["evidence_refs"])

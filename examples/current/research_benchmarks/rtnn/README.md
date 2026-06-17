@@ -136,6 +136,12 @@ workload is planned as 16 chunks of at most 65,536 queries, reusing the
 prepared scene while preparing query points, a CUDA graph, and same-stream
 partner reduction per chunk. This is planner evidence only, not chunked runtime
 performance evidence.
+Goal4506 executes that large chunked route on the pod for the uniform
+1,048,576-query row with warmup=1 and repeat=3. The measured hot median-sum is
+`0.082908s` for CuPy and `0.083390s` for Numba across 16 chunks, with signature
+match, prepared scene reuse, same-stream device reductions per chunk, and
+materialization after the hot window. This is partner-continuation evidence; it
+is still not an aggregate-only full-batch direct comparison claim.
 
 The important boundary is that RTDL exact aggregate and app graph-bridge rows
 are RTDL-internal same-contract evidence; the official RTNN rows are diagnostic

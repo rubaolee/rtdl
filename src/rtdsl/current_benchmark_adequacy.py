@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4505.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4506.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -555,7 +555,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "1,048,576 queries become 16 chunks of at most 65,536 queries, with "
             "prepared scene reuse and per-chunk query preparation, graph capture, and "
             "same-stream partner reduction. It is planner evidence only, not measured "
-            "large chunked runtime performance evidence. "
+            "large chunked runtime performance evidence. Goal4506 then executes the "
+            "same 1,048,576-query uniform chunked route: 16 chunks, prepared scene "
+            "reuse, same-stream device reductions, signature match, no-hidden-column-copy "
+            "hot gate, and hot median-sums of `0.082908s` for CuPy and `0.083390s` "
+            "for Numba. "
             "This is strong evidence for RTDL V3 route selection, "
             "but not a same-output author-code victory claim."
         ),
@@ -573,7 +577,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "direct aggregate on real CSV inputs; use the Goal4504 size-aware policy "
             "to keep aggregate-only full-batch direct and partner-continuation graph "
             "routes separate; use `prepared_ranked_summary_graph_partner_bridge_plan` "
-            "to inspect the dry-run chunk plan for large partner-continuation workloads"
+            "to inspect the dry-run chunk plan for large partner-continuation workloads; "
+            "use `prepared_ranked_summary_graph_partner_bridge_chunked` for measured "
+            "large same-stream partner-continuation runtime evidence"
         ),
         "current_partner_role": (
             "no partner needed for exact float64 native aggregate; CuPy and Numba are "
@@ -614,6 +620,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4503",
             "Goal4504",
             "Goal4505",
+            "Goal4506",
         ),
         "pod_needed_next": False,
     },

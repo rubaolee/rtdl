@@ -1,0 +1,115 @@
+{
+  "claim_boundary": {
+    "aggregate_only_full_batch_direct_comparison_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "large_chunked_runtime_evidence": true,
+    "planner_only": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "same_stream_partner_continuation_evidence": true,
+    "true_zero_copy_public_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "conclusion": "The M19 RTNN partner-continuation route now has measured chunked runtime evidence on a 1,048,576-query uniform workload. The route executed 16 explicit 65,536-query chunks, reused the prepared scene across chunks, prepared query points and CUDA graph state per chunk, ran both CuPy and Numba same-stream device reductions, matched combined signatures, and kept result materialization after the hot window. This does not authorize public speedup wording or comparison against the aggregate-only full-batch direct route because the output contracts differ.",
+  "goal": "Goal4506 / V3 M110",
+  "input": {
+    "chunk_count": 16,
+    "distribution": "uniform",
+    "max_query_count": 65536,
+    "point_count": 1048576,
+    "query_count": 1048576,
+    "repeats": 3,
+    "warmups": 1
+  },
+  "mode": "prepared_ranked_summary_graph_partner_bridge_chunked",
+  "raw_evidence": "docs/reports/goal4506_rtnn_chunked_uniform_1048576q1048576_w1r3_2026-06-17.json",
+  "runtime": {
+    "chunked_runtime_executed": true,
+    "cupy_chunk_hot_medians": [
+      0.005197688937187195,
+      0.005150429904460907,
+      0.005184486508369446,
+      0.00525423139333725,
+      0.0051827505230903625,
+      0.005174823105335236,
+      0.0051603540778160095,
+      0.005172029137611389,
+      0.005196675658226013,
+      0.005146145820617676,
+      0.005201391875743866,
+      0.00519532710313797,
+      0.0051578134298324585,
+      0.005183883011341095,
+      0.005178101360797882,
+      0.005172133445739746
+    ],
+    "cupy_hot_device_run_seconds_median_sum": 0.0829082652926445,
+    "cupy_materialize_seconds_median_sum": 0.0007670149207115173,
+    "device_result_materialization_after_hot_window": true,
+    "hot_no_hidden_column_copy_ready": true,
+    "numba_chunk_hot_medians": [
+      0.005216576159000397,
+      0.00523366779088974,
+      0.00527268648147583,
+      0.005215927958488464,
+      0.005207180976867676,
+      0.005222402513027191,
+      0.0052323490381240845,
+      0.0051590800285339355,
+      0.005237668752670288,
+      0.005197659134864807,
+      0.005191467702388763,
+      0.005189172923564911,
+      0.005192473530769348,
+      0.005246542394161224,
+      0.005213022232055664,
+      0.005162164568901062
+    ],
+    "numba_hot_device_run_seconds_median_sum": 0.08339004218578339,
+    "numba_materialize_seconds_median_sum": 0.0013187453150749207,
+    "prepared_scene_reused_across_chunks": true,
+    "signature_match": true
+  },
+  "toolchain": {
+    "numba_toolchain": {
+      "configured": true,
+      "does_not_configure_rtdl_native_optix": true,
+      "does_not_install_packages": true,
+      "numba_cuda_driver": "/lib/x86_64-linux-gnu/libcuda.so.1",
+      "numba_cuda_prefix": "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc",
+      "nvvm_lib_dir": "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc/nvvm/lib64",
+      "prepended_ld_library_path": true,
+      "prepended_path": true,
+      "ptxas": "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_nvcc/bin/ptxas",
+      "ptxas_version": "ptxas: NVIDIA (R) Ptx optimizing assembler\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Mar_28_02:14:54_PDT_2024\nCuda compilation tools, release 12.4, V12.4.131\nBuild cuda_12.4.r12.4/compiler.34097967_0\n",
+      "set_cuda_home": true,
+      "set_cuda_path": true,
+      "source": "rtdsl.configure_numba_cuda_toolchain_environment",
+      "system_cuda_lib_dirs": [
+        "/usr/local/cuda-12/targets/x86_64-linux/lib",
+        "/usr/local/cuda-12/lib64"
+      ],
+      "system_cuda_prefix": "/usr/local/cuda-12"
+    },
+    "transfer_counter_bootstrap": {
+      "already_preloaded": true,
+      "build": {
+        "library_exists": true,
+        "reason": "already_preloaded",
+        "skipped": true
+      },
+      "ld_preload": "/workspace/rtdl_v3_main/build/librtdl_cuda_transfer_counter.so",
+      "library": "/workspace/rtdl_v3_main/build/librtdl_cuda_transfer_counter.so",
+      "source": "/workspace/rtdl_v3_main/src/native/tools/rtdl_cuda_transfer_counter.c"
+    }
+  },
+  "validation": {
+    "chunk_count": 16,
+    "hot_no_hidden_column_copy_ready": true,
+    "partner_count": 2,
+    "public_claim_authorized": false,
+    "signature_match": true,
+    "status": "m19_chunked_ranked_summary_partner_bridge_internal_claims_gated"
+  },
+  "version": "rtdl.v3_0.rtnn_chunked_runtime.goal4506.v1"
+}
