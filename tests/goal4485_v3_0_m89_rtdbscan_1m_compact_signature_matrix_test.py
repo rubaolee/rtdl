@@ -81,11 +81,11 @@ class Goal4485V30M89Rtdbscan1MCompactSignatureMatrixTest(unittest.TestCase):
         self.assertIn("Goal4485", report)
         self.assertIn("1,048,576", report)
         self.assertIn("Goal4485 RT-DBSCAN 1M compact-signature route matrix", index)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4486.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4507.v1", route["version"])
         self.assertIn("524k and 1M", route["current_reader_decision"])
         self.assertIn("Goal4485", route["evidence_refs"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4486.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4507.v1",
             adequacy_module.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         self.assertIn("524k/1M", adequacy["current_recommended_path"])

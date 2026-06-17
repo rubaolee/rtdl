@@ -378,6 +378,38 @@ The plan mode is a learner-visible pattern for choosing between generic RTDL
 contracts and partner continuations. It is not a release claim and not a
 paper-reproduction claim.
 
+## V3 Clean-Target Status
+
+Goal4510 closes RT-DBSCAN as an internal V3 clean target under an
+evidence-bounded compact-signature contract. The current best route is:
+
+```text
+OptiX fixed-radius count-threshold status producer
+-> explicit CuPy predicate direct-status component-signature continuation
+```
+
+That route wins all checked 524k/1M same-contract compact-signature rows across
+`clustered3d`, `road3d`, and `ngsim_dense`. The weakest measured win is still
+kept in the report: 524k `ngsim_dense` one-shot is effectively flat at about
+1.01x versus grouped-stream Numba, while replay and clustered rows are stronger.
+
+Numba remains the no-C++ grouped-stream fallback/reference path. Full Python
+cluster rows remain an explicit slower output contract for users who need
+per-point rows rather than compact component-size/noise/core summaries.
+
+The 2M point-column optimization is caller-owned-column only. If the caller
+already has device `x/y/z` columns, direct-status prepare can avoid redundant
+coordinate extraction/upload. If the app builds temporary columns solely for
+this route, that build time is charged and the measured 2M `road3d` app-total
+result is effectively flat.
+
+M113 is not the current RT-DBSCAN performance path. The current route is not a
+prepared graph chunk plus same-stream partner-reduction route; it is a prepared
+self-query count-threshold status producer followed by direct-status CuPy
+continuation. Use `plan_v3_prepared_graph_chunk_executor` only for a future
+RT-DBSCAN contract that genuinely requires bounded prepared chunks and
+per-chunk partner continuation.
+
 ## Current Boundary Policy
 
 For the OptiX+Numba grouped-stream fixed-radius component front door, the
