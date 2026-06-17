@@ -279,6 +279,16 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   that RT cores accelerate Barnes-Hut. The prepared RTDL/OptiX
   aggregate-frontier route remains useful RT device-column evidence and a
   same-contract partner comparison target.
+- Goal4512 closes Barnes-Hut as a current V3 route-policy target, not an
+  RT-core acceleration success. Use fused CPU/Numba for the tested
+  8192/16384/32768 rows, fused Numba CUDA for the tested 65536/131072 rows, and
+  prepared RTDL/OptiX+Numba only when the purpose is RT-core aggregate-frontier
+  device-column evidence. A real RT-core Barnes-Hut win still requires the
+  future app-agnostic
+  `generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1` primitive
+  from Goal4497. M113 is not the current Barnes-Hut path; the missing piece is
+  fused weighted-vector RT-native accumulation without aggregate-frontier row
+  emission, not a prepared graph chunk executor.
 - Current expanded-membership lowering evidence routes Barnes-Hut
   aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
   near-zone candidate rows. The engine still only sees points, boxes, IDs, and
