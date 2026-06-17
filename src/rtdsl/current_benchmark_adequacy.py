@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4485.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4486.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -32,7 +32,9 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "with a 524k compact-signature matrix where predicate direct-status is the "
     "measured explicit route and grouped-stream Numba remains the conservative "
     "fallback/reference path; Goal4485 extends the same RT-DBSCAN compact "
-    "signature matrix to 1M points with the same route outcome; and robot "
+    "signature matrix to 1M points with the same route outcome; Goal4486 removes "
+    "the RT-DBSCAN self-query count-threshold host-query repack/upload debt via "
+    "a generic prepared self-query fixed-radius primitive; and robot "
     "collision adds Goal4446 NumPy "
     "vectorized grouped-segment query lowering. Goal4451 updates Spatial "
     "RayJoin repeated-PIP guidance by preserving the prepared batch executor "
@@ -268,24 +270,29 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "ngsim_dense. Goal4485 extends the same matrix to 1,048,576 points "
             "and keeps predicate direct-status fastest on all three profiles for "
             "one-shot and warmed replay timing, while grouped-stream Numba remains "
-            "the conservative same-contract fallback/reference path."
+            "the conservative same-contract fallback/reference path. Goal4486 "
+            "adds a generic prepared self-query 3-D fixed-radius count-threshold "
+            "device-column primitive and wires this route to it, reducing the "
+            "count-threshold run from about 2.2s to 0.16-0.34s on the 1M rows "
+            "without changing signatures."
         ),
         "current_recommended_path": (
-            "Explicit RTDL/OptiX predicate direct-status CuPy for measured 524k/1M "
+            "Explicit RTDL/OptiX self-query predicate direct-status CuPy for measured 524k/1M "
             "`output_mode=\"component_signature\"` compact cluster summaries; "
             "grouped-stream Numba fallback/reference; "
             "`output_mode=\"full\"` only when per-point Python cluster rows are required"
         ),
         "current_partner_role": (
             "CuPy is the measured predicate direct-status compact-signature route in "
-            "Goal4484/Goal4485; Numba remains the no-C++ Python-source same-contract fallback "
+            "Goal4484/Goal4485/Goal4486; Numba remains the no-C++ Python-source same-contract fallback "
             "and grouped-stream reference route"
         ),
         "next_generic_runtime_action": (
             "keep predicate direct-status explicit for measured compact summary "
-            "profiles; keep full row materialization explicit; reduce prepare cost or "
-            "broaden profile coverage next; use graph-only component-size signature "
-            "only for the narrower graph-component contract"
+            "profiles; keep full row materialization explicit; reduce direct-status "
+            "prepare/shared-column cost or broaden profile coverage next; use "
+            "graph-only component-size signature only for the narrower "
+            "graph-component contract"
         ),
         "evidence_refs": (
             "Goal2802",
@@ -305,6 +312,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4445",
             "Goal4484",
             "Goal4485",
+            "Goal4486",
         ),
     },
     "robot_collision": {

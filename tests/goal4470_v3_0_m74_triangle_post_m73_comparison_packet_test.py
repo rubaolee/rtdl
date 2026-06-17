@@ -46,10 +46,10 @@ class Goal4470V30M74TrianglePostM73ComparisonPacketTest(unittest.TestCase):
 
         self.assertIn("5.58x-8.64x", report)
         self.assertIn("not public speedup wording", report)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4485.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4486.v1", route["version"])
         self.assertIn("Goal4470", route["evidence_refs"])
         self.assertIn("post-M73", route["user_choice_guidance"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4485.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4486.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
         self.assertIn("Goal4470", triangle["evidence_refs"])
         self.assertIn("5.58x-8.64x", triangle["current_performance_reading"])
         self.assertFalse(route["public_speedup_claim_authorized"])

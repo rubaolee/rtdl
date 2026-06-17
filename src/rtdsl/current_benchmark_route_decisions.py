@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4485.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4486.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -78,7 +78,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "the conservative fallback/reference path. Goal4485 extends the same "
     "compact-signature route matrix to 1,048,576 points and keeps predicate "
     "direct-status fastest on all three profiles for both one-shot and warmed "
-    "replay timing. "
+    "replay timing. Goal4486 adds a generic prepared self-query 3-D fixed-radius "
+    "count-threshold device-column primitive and wires RT-DBSCAN predicate "
+    "direct-status to it, eliminating host query repack/upload for self-query "
+    "workloads while keeping route selection explicit. "
     "Goal4453 refreshes triangle-counting Numba partner guidance after moving "
     "RT-1A2/RT-2A1 geometry fill from host materialization and re-upload to "
     "partner-resident Numba device columns. It removes unnecessary data movement "
@@ -468,7 +471,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
         ),
         next_runtime_action=(
             "keep the user-visible profile/reuse advisor scale-aware and policy-aware; next serious runtime work is "
-            "either one-shot prepare-cost reduction, broader profile coverage beyond the current 65k/131k/262k/524k/1M/2M packet, "
+            "either direct-status prepare/shared-column reduction, broader profile coverage beyond the current 65k/131k/262k/524k/1M/2M packet, "
             "or a generic border-assignment policy primitive if mixed-predicate component-size distributions must be contractual. "
             "Goal4088, Goal4093, Goal4096, Goal4100, Goal4104, Goal4105, Goal4108, Goal4109, "
             "Goal4114, Goal4116, Goal4117, Goal4121, Goal4122, Goal4126, Goal4130, Goal4134, Goal4138, "
@@ -1046,7 +1049,8 @@ def _refresh_goal4484_route_decisions(
                 decision_kind="mixed_explicit",
                 current_reader_decision=(
                     "Use the explicit RTDL/OptiX predicate direct-status CuPy "
-                    "column-signature route for the measured 524k and 1M compact "
+                    "column-signature route with the prepared self-query "
+                    "count-threshold producer for the measured 524k and 1M compact "
                     "cluster-size/noise/core summary profiles. Keep grouped-stream "
                     "Numba as the conservative same-contract fallback/reference path. "
                     "Set `output_mode=\"component_signature\"` when compact summaries "
@@ -1056,7 +1060,7 @@ def _refresh_goal4484_route_decisions(
                     "signatures out of full DBSCAN wording."
                 ),
                 primary_route=(
-                    "explicit RTDL/OptiX count-threshold device columns plus CuPy "
+                    "explicit RTDL/OptiX self-query count-threshold device columns plus CuPy "
                     "predicate direct-status compact signature; grouped-stream Numba fallback"
                 ),
                 partner_policy="mixed_explicit_user_choice",
@@ -1067,7 +1071,7 @@ def _refresh_goal4484_route_decisions(
                 user_choice_guidance=(
                     "Choose the output contract first. For compact summaries at the "
                     "measured 524k and 1M clustered3d/road3d/ngsim_dense profiles, choose "
-                    "the explicit predicate direct-status CuPy route with "
+                    "the explicit self-query predicate direct-status CuPy route with "
                     "`partition_cell_factor` set explicitly; use grouped-stream Numba "
                     "when a conservative same-contract fallback/reference is needed. "
                     "Keep CuPy and Numba explicitly selected and measured. "
@@ -1089,11 +1093,12 @@ def _refresh_goal4484_route_decisions(
                 ),
                 next_runtime_action=(
                     "keep predicate direct-status as the measured explicit compact-signature "
-                    "route for the Goal4484/Goal4485 524k and 1M profiles; keep grouped-stream Numba as "
+                    "route for the Goal4484/Goal4485/Goal4486 524k and 1M profiles; keep grouped-stream Numba as "
                     "fallback/reference; keep full Python row materialization explicit; "
                     "keep the profile/reuse advisor visible for explicit route choices; "
-                    "next serious runtime work is prepare-cost reduction, broader profile "
-                    "coverage, or a policy primitive only if new evidence requires it. "
+                    "next serious runtime work is direct-status prepare/shared-column "
+                    "reduction, broader profile coverage, or a policy primitive only if "
+                    "new evidence requires it. "
                     "hidden factor selection, hidden output-contract selection, hidden border-policy "
                     "selection, and automatic partner selection remain blocked."
                 ),
@@ -1152,6 +1157,7 @@ def _refresh_goal4484_route_decisions(
                     "Goal4452",
                     "Goal4484",
                     "Goal4485",
+                    "Goal4486",
                 ),
                 pod_needed_next=False,
             )

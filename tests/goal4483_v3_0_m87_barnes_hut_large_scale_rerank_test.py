@@ -71,11 +71,11 @@ class Goal4483V30M87BarnesHutLargeScaleRerankTest(unittest.TestCase):
         self.assertIn("Numba CUDA fused", report)
         self.assertIn("no Barnes-Hut RT-core speedup claim", report)
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4485.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4486.v1",
             routes.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION,
         )
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4485.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4486.v1",
             adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         route_row = {

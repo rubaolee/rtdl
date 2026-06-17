@@ -6919,6 +6919,10 @@ class PreparedOptixFixedRadiusCountThreshold3D:
     def closed(self) -> bool:
         return self._closed
 
+    @property
+    def search_count(self) -> int:
+        return int(self._packed_search.count)
+
     def write_device_count_threshold_columns(
         self,
         query_points,
@@ -7015,6 +7019,112 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in outputs.values()})),
                 "rt_core_accelerated": True,
                 "materializes_neighbor_rows": False,
+                "direct_device_handoff_authorized": True,
+                "output_columns_true_zero_copy_authorized": True,
+                "true_zero_copy_authorized": False,
+                "v2_0_release_authorized": False,
+                "paper_speedup_claim_authorized": False,
+            }
+        }
+
+    def write_device_count_threshold_self_columns(
+        self,
+        *,
+        radius: float,
+        threshold: int,
+        query_ids_out,
+        neighbor_counts_out,
+        threshold_flags_out,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius count-threshold self 3D handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+
+        outputs = {}
+        expected_device = None
+        query_count = self._packed_search.count
+        for name, value in {
+            "query_ids": query_ids_out,
+            "neighbor_counts": neighbor_counts_out,
+            "threshold_flags": threshold_flags_out,
+        }.items():
+            handoff = _partner.prepare_direct_device_pointer_handoff(value, access="write")
+            if expected_device is None:
+                expected_device = (handoff.device_type, handoff.device_id)
+            _require_partner_device_any_hit_output_layout(
+                handoff,
+                ray_count=query_count,
+                expected_device=expected_device,
+            )
+            outputs[name] = handoff
+
+        if query_count == 0:
+            return {
+                "metadata": {
+                    "backend": "optix",
+                    "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+                    "query_count": 0,
+                    "search_count": 0,
+                    "query_source": "prepared_search_points_self_query_device",
+                    "transfer_mode": "prepared_device_search_points_self_count_threshold_empty_shortcut",
+                    "rt_core_accelerated": True,
+                    "materializes_neighbor_rows": False,
+                    "direct_device_handoff_authorized": True,
+                    "output_columns_true_zero_copy_authorized": True,
+                    "true_zero_copy_authorized": False,
+                }
+            }
+
+        lib = _load_optix_library()
+        write_symbol = _find_optional_backend_symbol(
+            lib,
+            _OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+        )
+        if write_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                f"{_OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_SELF_DEVICE_OUTPUT_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        start = time.perf_counter()
+        status = write_symbol(
+            self._handle,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(threshold)),
+            ctypes.c_void_p(outputs["query_ids"].data_ptr),
+            ctypes.c_void_p(outputs["neighbor_counts"].data_ptr),
+            ctypes.c_void_p(outputs["threshold_flags"].data_ptr),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        elapsed = time.perf_counter() - start
+        return {
+            "metadata": {
+                "backend": "optix",
+                "native_symbol": _OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+                "native_engine_row_contract": "generic_prepared_fixed_radius_count_threshold_3d_self_device_columns",
+                "native_execution_path": "prepared_rt_core_count_threshold_3d_self_query",
+                "query_source": "prepared_search_points_self_query_device",
+                "query_count": query_count,
+                "search_count": self._packed_search.count,
+                "radius": float(radius),
+                "threshold": int(threshold),
+                "native_elapsed_sec": elapsed,
+                "transfer_mode": "prepared_device_search_points_self_count_threshold_columns",
+                "source_protocols": tuple(sorted({handoff.source_protocol for handoff in outputs.values()})),
+                "source_devices": tuple(sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in outputs.values()})),
+                "rt_core_accelerated": True,
+                "materializes_neighbor_rows": False,
+                "prepared_search_device_buffer_reused_as_query": True,
+                "host_query_point_repack_avoided": True,
+                "host_query_point_upload_avoided": True,
                 "direct_device_handoff_authorized": True,
                 "output_columns_true_zero_copy_authorized": True,
                 "true_zero_copy_authorized": False,
@@ -11874,6 +11984,9 @@ _OPTIX_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_QUERY_COLUMNS_SYMBOL = (
 )
 _OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_DEVICE_OUTPUT_SYMBOL = (
     "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs"
+)
+_OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_SELF_DEVICE_OUTPUT_SYMBOL = (
+    "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_self_device_outputs"
 )
 _OPTIX_PREPARED_FIXED_RADIUS_ADJACENCY_3D_DEVICE_OUTPUT_SYMBOL = (
     "rtdl_optix_write_prepared_fixed_radius_adjacency_3d_device_outputs"
@@ -26210,6 +26323,22 @@ def _register_argtypes(lib) -> None:
         symbol.argtypes = [
             ctypes.c_void_p,
             ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+    )
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
             ctypes.c_double,
             ctypes.c_size_t,
             ctypes.c_void_p,

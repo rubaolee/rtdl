@@ -1869,6 +1869,14 @@ int  rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs(
          uint32_t* neighbor_counts_out,
          uint32_t* threshold_flags_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_self_device_outputs(
+         void* prepared,
+         double radius,
+         size_t threshold,
+         uint32_t* query_ids_out,
+         uint32_t* neighbor_counts_out,
+         uint32_t* threshold_flags_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_write_prepared_fixed_radius_adjacency_3d_device_outputs(
          void* prepared,
          const RtdlPoint3D* query_points, size_t query_count,

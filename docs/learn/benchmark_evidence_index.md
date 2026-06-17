@@ -92,7 +92,7 @@ v2.14 evidence:
 | --- | --- | --- | --- |
 | Hausdorff / X-HD | `hausdorff_xhd_current_optix_threshold` | primitive-first OptiX path; CuPy/Numba are comparison/reference lanes | NVIDIA pod for OptiX timing |
 | Spatial RayJoin | `spatial_rayjoin_pip_count_current_prepared_optix` | contract-split RayJoin-style path; scalar/count paths are stronger than full paper reproduction; Goal4451 fail-closes unsafe prepared-points CUDA graph replay and keeps the batch executor as the repeated-PIP path | NVIDIA pod plus public-CDB fixture for representative route |
-| RT-DBSCAN | `rt_dbscan_optix_grouped_stream_component_signature` | Generic OptiX fixed-radius/grouped-stream component labels plus explicit CuPy/Numba compact component-signature continuation; full rows remain a slower output contract | CUDA pod with CuPy and Numba |
+| RT-DBSCAN | `rt_dbscan_predicate_direct_status_component_signature` | Generic OptiX fixed-radius count-threshold device columns, now self-query optimized for prepared self-query workloads, plus explicit CuPy predicate direct-status compact component-signature continuation; grouped-stream Numba remains the conservative fallback/reference and full rows remain a slower output contract | CUDA pod with CuPy and Numba |
 | Robot collision | `robot_collision_prepared_grouped_segment_any_hit_numpy_lowering` | primitive-only prepared static-scene grouped-segment any-hit path; Goal4446 removes the major Python query-lowering debt while preserving the M31 same-contract backend comparison | NVIDIA pod for OptiX/Embree timing |
 | Contact manifold | `contact_manifold_optix_native_collect_k` | bounded collect/witness primitive path; no manifold-native ABI | NVIDIA pod for OptiX timing |
 | RayDB-style | `raydb_style_optix_count_primitive_first` | primitive-first grouped count path; partner rows only for unfused continuations | NVIDIA pod; CUDA pod for CuPy/Numba partner comparison |
@@ -128,6 +128,7 @@ v2.14 evidence:
 - [Goal4452 RT-DBSCAN route decision refresh](../reports/goal4452_v3_0_m56_rtdbscan_route_decision_refresh_2026-06-16.md)
 - [Goal4484 RT-DBSCAN compact-signature route matrix](../reports/goal4484_v3_0_m88_rtdbscan_compact_signature_matrix_2026-06-16.md)
 - [Goal4485 RT-DBSCAN 1M compact-signature route matrix](../reports/goal4485_v3_0_m89_rtdbscan_1m_compact_signature_matrix_2026-06-16.md)
+- [Goal4486 RT-DBSCAN self-query count-threshold optimization](../reports/goal4486_v3_0_m90_rtdbscan_self_query_count_threshold_2026-06-17.md)
 - [Goal4453 Triangle Numba device geometry](../reports/goal4453_v3_0_m57_triangle_numba_device_geometry_2026-06-16.md)
 - [Goal4454 Triangle Numba summary fast paths](../reports/goal4454_v3_0_m58_triangle_numba_summary_fast_paths_2026-06-16.md)
 - [Goal4455 Triangle partner rerank after M58](../reports/goal4455_v3_0_m59_triangle_partner_rerank_after_m58_2026-06-16.md)

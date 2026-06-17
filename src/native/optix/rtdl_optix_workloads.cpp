@@ -25734,6 +25734,75 @@ static void write_prepared_fixed_radius_count_threshold_3d_device_outputs_optix(
     g_optix_last_copy_s = 0.0;
 }
 
+static void write_prepared_fixed_radius_count_threshold_3d_self_device_outputs_optix(
+        PreparedFixedRadiusCountThreshold3DRt* prepared,
+        double radius,
+        size_t threshold,
+        uint32_t* query_ids_out,
+        uint32_t* neighbor_counts_out,
+        uint32_t* threshold_flags_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius count-threshold self 3D handle must not be null");
+    if (radius < 0.0) throw std::runtime_error("fixed_radius_count_threshold_3d_self radius must be non-negative");
+    if (radius > prepared->max_radius + 1.0e-7) {
+        throw std::runtime_error("fixed_radius_count_threshold_3d_self radius exceeds prepared max_radius");
+    }
+    const size_t query_count = prepared->search_points.size();
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_count_threshold_3d_self query_count exceeds uint32 limit");
+    if (threshold > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_count_threshold_3d_self threshold exceeds uint32 limit");
+    if (query_count == 0) return;
+    if (!query_ids_out || !neighbor_counts_out || !threshold_flags_out)
+        throw std::runtime_error("fixed_radius_count_threshold_3d_self device output pointers must not be null when query_count is nonzero");
+    if (!prepared->d_search)
+        throw std::runtime_error("fixed_radius_count_threshold_3d_self prepared search device buffer is missing");
+
+    if (!prepared->accel.handle || prepared->search_points.empty()) {
+        CUstream stream = 0;
+        std::vector<uint32_t> query_ids(query_count);
+        for (size_t i = 0; i < query_count; ++i) {
+            query_ids[i] = prepared->search_points[i].id;
+        }
+        CU_CHECK(cuMemcpyHtoD(reinterpret_cast<CUdeviceptr>(query_ids_out), query_ids.data(), sizeof(uint32_t) * query_count));
+        CU_CHECK(cuMemsetD32(reinterpret_cast<CUdeviceptr>(neighbor_counts_out), 0u, query_count));
+        CU_CHECK(cuMemsetD32(reinterpret_cast<CUdeviceptr>(threshold_flags_out), threshold == 0 ? 1u : 0u, query_count));
+        CU_CHECK(cuStreamSynchronize(stream));
+        return;
+    }
+
+    constexpr float kRadiusPad = 1.0e-4f;
+    const float radius_f = static_cast<float>(radius);
+    const float aabb_radius = static_cast<float>(prepared->max_radius) + kRadiusPad;
+
+    FixedRadiusCountThreshold3DRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = reinterpret_cast<const GpuPoint3DHost*>(prepared->d_search->ptr);
+    lp.search_points = reinterpret_cast<const GpuPoint3DHost*>(prepared->d_search->ptr);
+    lp.query_ids_out = query_ids_out;
+    lp.neighbor_counts_out = neighbor_counts_out;
+    lp.threshold_flags_out = threshold_flags_out;
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.threshold = static_cast<uint32_t>(threshold);
+    lp.radius = radius_f;
+    lp.trace_tmax = std::max(1.0e-6f, 2.0f * aabb_radius);
+
+    DevPtr d_params(sizeof(FixedRadiusCountThreshold3DRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    g_optix_last_bvh_build_s = 0.0;
+    auto t_start_trav = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_frn3d_count_threshold_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(FixedRadiusCountThreshold3DRtLaunchParams),
+                             &g_frn3d_count_threshold_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+    g_optix_last_copy_s = 0.0;
+}
+
 static void write_prepared_fixed_radius_adjacency_3d_device_outputs_optix(
         PreparedFixedRadiusCountThreshold3DRt* prepared,
         const RtdlPoint3D* query_points,

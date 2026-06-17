@@ -1465,6 +1465,7 @@ from .partner_adapters import fixed_radius_count_threshold_2d_partner_columns
 from .partner_adapters import fixed_radius_count_threshold_3d_partner_columns
 from .partner_adapters import allocate_fixed_radius_count_threshold_3d_partner_device_output_columns
 from .partner_adapters import fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns
+from .partner_adapters import fixed_radius_count_threshold_3d_optix_prepared_self_partner_device_columns
 from .partner_adapters import fixed_radius_count_threshold_2d_optix_partner_device_columns
 from .partner_adapters import allocate_fixed_radius_count_threshold_2d_partner_device_output_columns
 from .partner_adapters import prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene
@@ -3257,6 +3258,7 @@ __all__ = [
     "fixed_radius_count_threshold_3d_partner_columns",
     "allocate_fixed_radius_count_threshold_3d_partner_device_output_columns",
     "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+    "fixed_radius_count_threshold_3d_optix_prepared_self_partner_device_columns",
     "fixed_radius_count_threshold_2d_optix_partner_device_columns",
     "allocate_fixed_radius_count_threshold_2d_partner_device_output_columns",
     "prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene",

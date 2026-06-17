@@ -2206,9 +2206,8 @@ def run_rt_dbscan_benchmark(
                     run_start = time.perf_counter()
                     if threshold_result is None:
                         threshold_start = time.perf_counter()
-                        threshold_result = rt.fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+                        threshold_result = rt.fixed_radius_count_threshold_3d_optix_prepared_self_partner_device_columns(
                             prepared_count,
-                            points,
                             radius=resolved_radius,
                             threshold=resolved_min_neighbors,
                             partner="cupy",
@@ -2292,12 +2291,12 @@ def run_rt_dbscan_benchmark(
                 "native_engine_summary_contract": (
                     "generic_all_items_direct_status_component_signature_wrapped_as_all_predicate_signature"
                     if use_declared_all_predicate
-                    else "generic_prepared_fixed_radius_count_threshold_3d_device_columns_plus_predicate_direct_status_union"
+                    else "generic_prepared_fixed_radius_count_threshold_3d_self_device_columns_plus_predicate_direct_status_union"
                 ),
                 "native_execution_path": (
                     "prepared_direct_status_union_component_signature_wrapped_as_all_predicate_signature"
                     if use_declared_all_predicate
-                    else "prepared_rt_core_count_threshold_3d_then_partner_predicate_direct_status_union_preview"
+                    else "prepared_rt_core_count_threshold_3d_self_query_then_partner_predicate_direct_status_union_preview"
                 ),
                 "optix_backend_used": not use_declared_all_predicate,
                 "partner": "cupy",
@@ -2311,6 +2310,7 @@ def run_rt_dbscan_benchmark(
                 "uses_generic_all_items_direct_status_signature": use_declared_all_predicate,
                 "caller_declared_predicate_columns_require_external_proof": use_declared_all_predicate,
                 "prepared_optix_count_threshold_sec": prepared_optix_count_threshold_sec,
+                "prepared_optix_count_threshold_self_query_device": not use_declared_all_predicate,
                 "prepared_predicate_direct_status_plus_count_prepare_sec": (
                     prepared_predicate_direct_status_sec + prepared_optix_count_threshold_sec
                 ),

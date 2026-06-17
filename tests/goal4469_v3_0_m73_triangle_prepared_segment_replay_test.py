@@ -72,11 +72,11 @@ class Goal4469V30M73TrianglePreparedSegmentReplayTest(unittest.TestCase):
 
         self.assertIn("1.43x-1.84x", report)
         self.assertIn("prepared_segment_replay", report)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4485.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4486.v1", route["version"])
         self.assertIn("Goal4469", route["evidence_refs"])
         self.assertIn("prepared_segment_replay", route["user_choice_guidance"])
         self.assertIn("one-shot build cost", route["next_runtime_action"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4485.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4486.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
         self.assertIn("Goal4469", triangle["evidence_refs"])
         self.assertIn("Goal4471", triangle["evidence_refs"])
         self.assertIn("prepared ray-batch weighted-sum API", triangle["next_generic_runtime_action"])

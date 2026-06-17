@@ -108,11 +108,11 @@ class Goal4484V30M88RtdbscanCompactSignatureMatrixTest(unittest.TestCase):
         self.assertIn("Goal4484", report)
         self.assertIn("predicate direct-status", report)
         self.assertIn("Goal4484 RT-DBSCAN compact-signature route matrix", index)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4485.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4486.v1", route["version"])
         self.assertIn("predicate direct-status", route["current_reader_decision"])
         self.assertIn("Goal4484", route["evidence_refs"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4485.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4486.v1",
             adequacy_module.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         self.assertIn("predicate direct-status", adequacy["current_recommended_path"])
