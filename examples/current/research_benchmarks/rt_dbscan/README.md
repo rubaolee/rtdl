@@ -410,6 +410,12 @@ continuation. Use `plan_v3_prepared_graph_chunk_executor` only for a future
 RT-DBSCAN contract that genuinely requires bounded prepared chunks and
 per-chunk partner continuation.
 
+Goal4519 refines that future M113 blocker. The current direct-status source has
+the API shape needed to prepare from caller-owned CuPy point columns, so
+chunk-local handles are plausible. M113 promotion is still blocked until a live
+chunk-handle smoke and prepared graph capture validation exist; the current
+route does not change.
+
 ## Current Boundary Policy
 
 For the OptiX+Numba grouped-stream fixed-radius component front door, the

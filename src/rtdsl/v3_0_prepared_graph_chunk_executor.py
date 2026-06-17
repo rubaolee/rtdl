@@ -18,6 +18,12 @@ V3_PREPARED_GRAPH_CHUNK_ADOPTION_GATE_VERSION = (
 V3_PREPARED_GRAPH_CHUNK_ADOPTION_GATE_STATUS = (
     "app_agnostic_prepared_graph_chunk_executor_adoption_gate"
 )
+V3_CHUNK_LOCAL_PREPARED_HANDLE_GATE_VERSION = (
+    "rtdl.v3_0.chunk_local_prepared_handle_gate.m123.v1"
+)
+V3_CHUNK_LOCAL_PREPARED_HANDLE_GATE_STATUS = (
+    "app_agnostic_chunk_local_prepared_handle_readiness_gate"
+)
 
 
 def plan_v3_prepared_graph_chunk_executor(
@@ -336,6 +342,162 @@ def validate_v3_prepared_graph_chunk_executor_adoption(
         "app_id": adoption.get("app_id"),
         "ready_for_m113_plan": ready,
         "adoption_status": adoption.get("adoption_status"),
+        "blocker_count": len(blockers),
+        "blockers": blockers,
+        "plan_status": plan_status,
+        "chunk_count": chunk_count,
+        "runtime_executed": False,
+        "public_claim_authorized": False,
+    }
+
+
+def assess_v3_chunk_local_prepared_handle_readiness(
+    *,
+    app_id: str,
+    contract_key: str,
+    operation: str,
+    item_count: int,
+    max_item_count: int,
+    whole_dataset_prepared_handle_available: bool,
+    caller_owned_item_columns_available: bool,
+    chunk_slice_prepare_api_available: bool,
+    live_chunk_handle_smoke_validated: bool,
+    prepared_graph_capture_validated: bool,
+    partner_continuation_explicit: bool,
+    partner_continuation_associative: bool,
+    host_materialization_before_partner: bool,
+    axis_name: str = "query",
+) -> dict[str, object]:
+    """Assess whether a workload has the chunk-local prepared handle layer.
+
+    This gate is narrower than the M120 adoption gate. It separates API-shape
+    readiness from runtime validation: a workload may have a whole-dataset
+    prepared handle and caller-owned item columns, but still be blocked until a
+    live chunk-handle smoke and graph capture are validated.
+    """
+
+    normalized_app_id = str(app_id).strip()
+    if not normalized_app_id:
+        raise GraphValidationError("chunk-local prepared handle app_id must be non-empty")
+    validate_v3_public_name(contract_key, label="chunk-local prepared handle contract_key")
+    validate_v3_public_name(operation, label="chunk-local prepared handle operation")
+    validate_v3_public_name(axis_name, label="chunk-local prepared handle axis_name")
+    normalized_item_count = int(item_count)
+    normalized_max_item_count = int(max_item_count)
+    if normalized_item_count <= 0:
+        raise GraphValidationError("chunk-local prepared handle item_count must be positive")
+    if normalized_max_item_count <= 0:
+        raise GraphValidationError("chunk-local prepared handle max_item_count must be positive")
+
+    api_shape_ready = (
+        bool(whole_dataset_prepared_handle_available)
+        and bool(caller_owned_item_columns_available)
+        and bool(chunk_slice_prepare_api_available)
+    )
+    blockers = []
+    if not bool(whole_dataset_prepared_handle_available):
+        blockers.append("missing_whole_dataset_prepared_handle")
+    if not bool(caller_owned_item_columns_available):
+        blockers.append("missing_caller_owned_item_columns")
+    if not bool(chunk_slice_prepare_api_available):
+        blockers.append("missing_chunk_slice_prepare_api")
+    if not bool(live_chunk_handle_smoke_validated):
+        blockers.append("live_chunk_handle_smoke_not_validated")
+    if not bool(prepared_graph_capture_validated):
+        blockers.append("prepared_graph_capture_not_validated")
+    if not bool(partner_continuation_explicit):
+        blockers.append("missing_explicit_partner_continuation")
+    if not bool(partner_continuation_associative):
+        blockers.append("partner_continuation_not_associative")
+    if bool(host_materialization_before_partner):
+        blockers.append("host_materialization_before_partner")
+
+    plan = None
+    if not blockers:
+        plan = plan_v3_prepared_graph_chunk_executor(
+            graph_id=f"{contract_key}_chunk_local_handle",
+            contract_key=contract_key,
+            operation=operation,
+            item_count=normalized_item_count,
+            max_item_count=normalized_max_item_count,
+            axis_name=axis_name,
+            requires_partner_continuation=True,
+            continuation_kind="chunk_local_prepared_handle_partner_continuation",
+        )
+
+    return {
+        "version": V3_CHUNK_LOCAL_PREPARED_HANDLE_GATE_VERSION,
+        "status": V3_CHUNK_LOCAL_PREPARED_HANDLE_GATE_STATUS,
+        "app_id": normalized_app_id,
+        "contract_key": str(contract_key),
+        "operation": str(operation),
+        "axis_name": str(axis_name),
+        "item_count": normalized_item_count,
+        "max_item_count": normalized_max_item_count,
+        "api_shape_ready": api_shape_ready,
+        "ready_for_m113_plan": not blockers,
+        "readiness_status": (
+            "ready_for_m113_plan" if not blockers else "blocked_for_m113_plan"
+        ),
+        "blockers": tuple(blockers),
+        "plan": plan,
+        "whole_dataset_prepared_handle_available": bool(
+            whole_dataset_prepared_handle_available
+        ),
+        "caller_owned_item_columns_available": bool(caller_owned_item_columns_available),
+        "chunk_slice_prepare_api_available": bool(chunk_slice_prepare_api_available),
+        "live_chunk_handle_smoke_validated": bool(live_chunk_handle_smoke_validated),
+        "prepared_graph_capture_validated": bool(prepared_graph_capture_validated),
+        "partner_continuation_explicit": bool(partner_continuation_explicit),
+        "partner_continuation_associative": bool(partner_continuation_associative),
+        "host_materialization_before_partner": bool(host_materialization_before_partner),
+        "runtime_executed": False,
+        "automatic_partner_selection_authorized": False,
+        "public_speedup_claim_authorized": False,
+    }
+
+
+def validate_v3_chunk_local_prepared_handle_readiness(
+    readiness: Mapping[str, object],
+) -> dict[str, object]:
+    if not isinstance(readiness, Mapping):
+        raise GraphValidationError("chunk-local prepared handle readiness must be a mapping")
+    if readiness.get("version") != V3_CHUNK_LOCAL_PREPARED_HANDLE_GATE_VERSION:
+        raise GraphValidationError("unexpected chunk-local prepared handle readiness version")
+    if readiness.get("status") != V3_CHUNK_LOCAL_PREPARED_HANDLE_GATE_STATUS:
+        raise GraphValidationError("unexpected chunk-local prepared handle readiness status")
+    blockers = tuple(str(blocker) for blocker in readiness.get("blockers", ()))
+    ready = bool(readiness.get("ready_for_m113_plan"))
+    if ready and blockers:
+        raise GraphValidationError("ready chunk-local prepared handle cannot have blockers")
+    if not ready and not blockers:
+        raise GraphValidationError("blocked chunk-local prepared handle must list blockers")
+    if bool(readiness.get("runtime_executed")):
+        raise GraphValidationError("chunk-local prepared handle gate must not claim runtime execution")
+    if bool(readiness.get("automatic_partner_selection_authorized")):
+        raise GraphValidationError("chunk-local prepared handle gate cannot authorize automatic partner selection")
+    if bool(readiness.get("public_speedup_claim_authorized")):
+        raise GraphValidationError("chunk-local prepared handle gate cannot authorize public speedup")
+
+    plan = readiness.get("plan")
+    if ready:
+        if not isinstance(plan, Mapping):
+            raise GraphValidationError("ready chunk-local prepared handle must include a plan")
+        plan_validation = validate_v3_prepared_graph_chunk_executor_plan(plan)
+        plan_status = plan.get("plan_status")
+        chunk_count = plan_validation["chunk_count"]
+    else:
+        if plan is not None:
+            raise GraphValidationError("blocked chunk-local prepared handle must not include a plan")
+        plan_status = "blocked_for_m113_plan"
+        chunk_count = 0
+    return {
+        "status": "accept",
+        "version": readiness.get("version"),
+        "app_id": readiness.get("app_id"),
+        "api_shape_ready": bool(readiness.get("api_shape_ready")),
+        "ready_for_m113_plan": ready,
+        "readiness_status": readiness.get("readiness_status"),
         "blocker_count": len(blockers),
         "blockers": blockers,
         "plan_status": plan_status,
