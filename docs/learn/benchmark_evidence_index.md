@@ -129,6 +129,7 @@ v2.14 evidence:
 - [Goal4533 V3 claim-scope closeout](../reports/goal4533_v3_0_m135_v3_claim_scope_closeout_2026-06-17.md)
 - [Goal4534 V3 current app completion gate](../reports/goal4534_v3_0_m136_v3_current_app_completion_gate_2026-06-17.md)
 - [Goal4535 V3 completion readiness audit](../reports/goal4535_v3_0_m137_v3_completion_readiness_audit_2026-06-17.md)
+- [Goal4536 V3 internal completion packet](../reports/goal4536_v3_0_m138_v3_internal_completion_packet_2026-06-17.md)
 - [Goal4512 Barnes-Hut clean-target audit](../reports/goal4512_v3_0_m116_barnes_hut_clean_target_audit_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)

@@ -1,0 +1,281 @@
+{
+  "app_rows": [
+    {
+      "adequacy": "adequate",
+      "app": "barnes_hut",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_recommended_path": "choose `fused_frontier_force_sum_bucketized_cpu_numba` for the current small-scale CPU-fastest rows from Goal4458; choose `fused_frontier_force_sum_bucketized_numba_cuda` for the current larger-row fastest fused Numba CUDA route from Goal4483, or `prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda` when embedding the reusable API directly; choose `prepared_aggregate_frontier_weighted_vector_optix --partner numba` when the purpose is RTDL/OptiX device-column evidence; there is no current RT-native fused Barnes-Hut route until the Goal4497 primitive boundary is implemented",
+      "current_route_status": "current V3 route is mixed explicit: CPU/Numba or Numba CUDA fused force summary by scale; prepared RTDL/OptiX remains device-column evidence, not Barnes-Hut RT-core traversal evidence",
+      "evidence_refs": [
+        "Goal4497",
+        "Goal4517",
+        "Goal4518",
+        "Goal4523",
+        "Goal4525",
+        "Goal4526",
+        "Goal4527"
+      ],
+      "next_or_future_target": "do not replace the fail-closed ABI with a direct all-node any-hit route; future work must first design and review a generic hierarchical traversal lowering that proves no double counting, keeps force math outside app-specific native engine code, and then beats fused CPU/Numba and fused Numba CUDA force-summary baselines",
+      "paper_reproduction_claim_authorized": false,
+      "partner_policy": "explicit_route_choice_cpu_numba_or_optix_numba_cupy_comparison",
+      "public_speedup_claim_authorized": false,
+      "queue_class": "future_design_target",
+      "remaining_gap": "no current V3 app implementation blocker after Goal4512; future RT-native Barnes-Hut acceleration remains a design target because Goal4527 blocks a naive node-AABB OptiX implementation: Barnes-Hut opening accepts a parent aggregate and must suppress its descendants, while a single custom-primitive GAS reports node AABBs independently and cannot enforce subtree-skip semantics without a reviewed generic hierarchical traversal design",
+      "route_decision_kind": "mixed_explicit"
+    },
+    {
+      "adequacy": "strong",
+      "app": "rt_dbscan",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_recommended_path": "Explicit RTDL/OptiX self-query predicate direct-status CuPy for measured 524k/1M `output_mode=\"component_signature\"` compact cluster summaries; grouped-stream Numba fallback/reference; `output_mode=\"full\"` only when per-point Python cluster rows are required",
+      "current_route_status": "current V3 route is predicate direct-status component signature with caller-owned CuPy point columns when the app can provide them; the future M113 chunk-local prepared graph shape is validated but does not replace the current route",
+      "evidence_refs": [
+        "Goal4509",
+        "Goal4510",
+        "Goal4516",
+        "Goal4519",
+        "Goal4520",
+        "Goal4528"
+      ],
+      "next_or_future_target": "no immediate V3 build target; preserve the current direct-status component-signature route and keep M113 as an internal future same-stream-partner experiment shape",
+      "paper_reproduction_claim_authorized": false,
+      "partner_policy": "mixed_explicit_user_choice",
+      "public_speedup_claim_authorized": false,
+      "queue_class": "closed_current_target",
+      "remaining_gap": "no current V3 runtime blocker after Goal4510 clean-target closure, Goal4520 live chunk-handle smoke, and Goal4528 prepared graph capture/replay validation",
+      "route_decision_kind": "mixed_explicit"
+    },
+    {
+      "adequacy": "adequate",
+      "app": "triangle_counting",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_recommended_path": "generic RT graph relationship-count primitive for the scalar answer; use explicit `--optix-graph-mode native` for current native timing and use Goal4444/Goal4457 partner rows for RT-Graph global-summary experiments; use Goal4461 segmented RT-2A1 only when the explicit goal is avoiding global two-hop summary materialization; cite Goal4462 for the currently passing `com-lj` paper-dataset segmented row, Goal4463 for the source-range segmented-scene `soc-LiveJournal1` row, and Goal4464 for the `com-orkut` row that needs the measured 2M scene cap. Cite Goal4465 for the current vectorized segmented planner. Cite Goal4466 for explicit ray-batch cap tuning: 5M conservative, 15M measured for `com-orkut` on RTX 4000 Ada, larger tested caps unsafe. Cite Goal4467 for the current large-row comparison packet and its no-speedup boundary. Cite Goal4468 for the explicit `unique_weighted` segmented ray representation; it is a traversal-pressure reduction route, not an automatic default. Cite Goal4469 for explicit `prepared_segment_replay` when the workload is prepared/repeated and the user accepts the schedule choice. Cite Goal4470 for the current post-M73 comparison packet and no-speedup boundary. Cite Goal4471 when explaining cold/build versus hot/replay phase split or why legacy build-total fields are not wall-time build costs for prepared replay. Cite Goal4472 when the explicit no-C++ `numba_direct` key builder is relevant; do not auto-select it. Cite Goal4473 when explaining that M77's native pack/traversal telemetry does not support a native RT regression reading for query-wall movement. Cite Goal4474 for the current prepared replay path: generic prepared ray batches move repeated ray-column packing into a paid-once `prepared_ray_batch_build` phase. Cite Goal4475 for the current post-M78 comparison packet and its still-blocked public-speedup boundary. Cite Goal4476 when ruling out scalar weight-sum telemetry/copy-back as the main remaining debt. Cite Goal4477 when discussing the compact constant-ray prepared batch ABI: it is valid generic runtime surface, but not a Triangle Counting performance route promotion. Cite Goal4478 when discussing the segment-ray construction bottleneck: `cupy_unique_counts` was the measured first target. Cite Goal4479 when choosing the current measured internal route: `numba_direct_sort_rle` improves that boundary but does not solve partner materialization. Cite Goal4480 when rejecting compact constant-ray columns on top of the sort/RLE route. Cite Goal4481 when rejecting the no-C++ Numba fused decode/project output builder. Cite Goal4482 when rejecting an already-sorted source-group skip-sort fast path: sorted two-hop row coverage is below 1% on all three large rows. Cite Goal4492 when explaining why a single small bounded local unique-count kernel is also insufficient and why the next useful shape is hybrid/two-pass source-group local unique plus large-tail sort/RLE. Cite Goal4493 when explaining that the `<=2048` local-hash branch is correct and sometimes faster on 20M-row selected small groups. Cite Goal4494 when explaining that the integrated per-segment hybrid candidate is correct but rejected because it slows backend and segment-ray build time on all three large paper rows.",
+      "current_route_status": "current V3 route is explicit numba_direct_sort_rle prepared segment replay after primitive evidence; it completes the large paper rows but remains an internal route",
+      "evidence_refs": [
+        "Goal4479",
+        "Goal4511",
+        "Goal4521",
+        "Goal4530",
+        "Goal4531"
+      ],
+      "next_or_future_target": "do not claim Triangle M113 graph readiness; future work must first design a capture-compatible OptiX weighted replay mechanism or accept the stream device-output executor as a non-graph continuation contract",
+      "paper_reproduction_claim_authorized": false,
+      "partner_policy": "primitive_only",
+      "public_speedup_claim_authorized": false,
+      "queue_class": "future_design_target",
+      "remaining_gap": "no current V3 app implementation blocker after Goal4511; future M113 graph-style Triangle replay remains a design target because Goal4530 validates app-agnostic device key/count payload merge for cross-chunk duplicate keys, and Goal4531 validates a generic prepared weighted-replay device-output stream executor; CUDA graph capture of that OptiX weighted launch is fail-closed with an OptiX/CUDA error, so future M113 graph use needs a reviewed native capture design rather than another benchmark rerun",
+      "route_decision_kind": "primitive_first"
+    },
+    {
+      "adequacy": "strong",
+      "app": "rtnn",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_recommended_path": "mixed explicit: use prepared RTDL/OptiX exact float64 ranked-summary aggregate for same-contract float64 OptiX-vs-Embree comparisons; use the historical `prepared_optix_ranked_summary` app mode for that front door; use `prepared_ranked_summary_graph_partner_bridge` for resident graph replay plus same-stream CuPy/Numba app-bridge evidence; use `rtnn_paper_dataset_targets()` when planning paper-dataset acquisition; use `write_kitti_paper_family_recipe_manifest()` for bounded KITTI-family same-contract input preparation; use `--mode prepared_optix_ranked_summary --point-file ...` for the app-front-door full-batch non-graph prepared direct aggregate on real CSV inputs; use the Goal4504 size-aware policy to keep aggregate-only full-batch direct and partner-continuation graph routes separate; use `prepared_ranked_summary_graph_partner_bridge_plan` to inspect the dry-run chunk plan for large partner-continuation workloads; use `prepared_ranked_summary_graph_partner_bridge_chunked` for measured large same-stream partner-continuation runtime evidence",
+      "current_route_status": "current V3 route supports exact aggregate full-batch RTDL rows and large chunked CuPy/Numba partner-continuation rows",
+      "evidence_refs": [
+        "Goal4498",
+        "Goal4500",
+        "Goal4501",
+        "Goal4507",
+        "Goal4508",
+        "Goal4533"
+      ],
+      "next_or_future_target": "no immediate V3 build target; preserve the scoped RTNN aggregate and partner-continuation evidence, and require exact dataset/output contract proof before any public paper, author-superiority, or speedup wording expansion",
+      "paper_reproduction_claim_authorized": false,
+      "partner_policy": "mixed_explicit_user_choice",
+      "public_speedup_claim_authorized": false,
+      "queue_class": "closed_current_target",
+      "remaining_gap": "no current V3 app implementation blocker after Goal4508; exact paper reproduction, same-output author comparisons, and public RT-core speedup wording remain future optional claim-expansion work because paper dataset recipes and output contracts are not frozen",
+      "route_decision_kind": "mixed_explicit"
+    },
+    {
+      "adequacy": "strong",
+      "app": "spatial_rayjoin",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_recommended_path": "mixed explicit route: use Numba for bounded PIP one-shot when that is the measured contract; use RTDL/OptiX prepared point/closed-shape batch executor for repeated PIP requests; use exact RTDL/OptiX prepared segment-pair count for LSI; use RTDL/OptiX prepared-left shape-pair active-count executor for overlay active count. Do not use prepared-points CUDA graph replay as a correctness or performance path after Goal4451.",
+      "current_route_status": "current V3 route is mixed explicit: Numba for bounded one-shot PIP, prepared RTDL/OptiX for repeated PIP, and RTDL/OptiX scalar or active count primitives for LSI/overlay-style contracts",
+      "evidence_refs": [
+        "Goal4451",
+        "Goal4514",
+        "Goal4533"
+      ],
+      "next_or_future_target": "no immediate V3 build target; preserve the current mixed route and only expand public RayJoin wording with an explicitly scoped author/data packet that states which overlay rows are feasible and which are not",
+      "paper_reproduction_claim_authorized": false,
+      "partner_policy": "mixed_explicit_user_choice",
+      "public_speedup_claim_authorized": false,
+      "queue_class": "closed_current_target",
+      "remaining_gap": "no current V3 app implementation blocker after Goal4514; full RayJoin paper-reproduction wording and Section 5.7 8/8 overlay wording remain future optional claim-expansion work because the current feasible public packet is scoped to the mixed route and 2/8 overlay evidence",
+      "route_decision_kind": "mixed_explicit"
+    },
+    {
+      "adequacy": "adequate",
+      "app": "hausdorff_xhd",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_recommended_path": "RTDL/OptiX nearest-witness primitives plus generic grouped max continuation",
+      "current_route_status": "closed as primitive-first exact nearest-witness/grouped-max route",
+      "evidence_refs": [
+        "Goal4513"
+      ],
+      "next_or_future_target": "no immediate V3 build target; preserve scoped claim boundary",
+      "paper_reproduction_claim_authorized": false,
+      "partner_policy": "primitive_only",
+      "public_speedup_claim_authorized": false,
+      "queue_class": "closed_current_target",
+      "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
+      "route_decision_kind": "primitive_first"
+    },
+    {
+      "adequacy": "strong",
+      "app": "robot_collision",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_recommended_path": "prepared grouped-segment any-hit flag/count primitive with `lowering_mode=\"numpy_arrays\"` for large timing or summary probes",
+      "current_route_status": "closed as no-partner prepared grouped-segment any-hit route",
+      "evidence_refs": [
+        "Goal4446",
+        "Goal4513"
+      ],
+      "next_or_future_target": "no immediate V3 build target; preserve scoped claim boundary",
+      "paper_reproduction_claim_authorized": false,
+      "partner_policy": "none",
+      "public_speedup_claim_authorized": false,
+      "queue_class": "closed_current_target",
+      "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
+      "route_decision_kind": "no_partner_needed"
+    },
+    {
+      "adequacy": "adequate",
+      "app": "contact_manifold",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_recommended_path": "prepared bounded witness collection primitive",
+      "current_route_status": "closed as no-partner bounded witness collect route",
+      "evidence_refs": [
+        "Goal4513"
+      ],
+      "next_or_future_target": "no immediate V3 build target; preserve scoped claim boundary",
+      "paper_reproduction_claim_authorized": false,
+      "partner_policy": "none",
+      "public_speedup_claim_authorized": false,
+      "queue_class": "closed_current_target",
+      "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
+      "route_decision_kind": "no_partner_needed"
+    },
+    {
+      "adequacy": "adequate",
+      "app": "raydb_style",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_recommended_path": "primitive-first RTDL/OptiX fused grouped count/sum reductions",
+      "current_route_status": "closed as primitive-first fused grouped-reduction route",
+      "evidence_refs": [
+        "Goal4513"
+      ],
+      "next_or_future_target": "no immediate V3 build target; preserve scoped claim boundary",
+      "paper_reproduction_claim_authorized": false,
+      "partner_policy": "primitive_only",
+      "public_speedup_claim_authorized": false,
+      "queue_class": "closed_current_target",
+      "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
+      "route_decision_kind": "primitive_first"
+    },
+    {
+      "adequacy": "adequate",
+      "app": "librts_spatial_index",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_recommended_path": "prepared generic AABB index query primitive",
+      "current_route_status": "closed as no-partner prepared AABB index query slice",
+      "evidence_refs": [
+        "Goal4513"
+      ],
+      "next_or_future_target": "no immediate V3 build target; preserve scoped claim boundary",
+      "paper_reproduction_claim_authorized": false,
+      "partner_policy": "none",
+      "public_speedup_claim_authorized": false,
+      "queue_class": "closed_current_target",
+      "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
+      "route_decision_kind": "no_partner_needed"
+    }
+  ],
+  "checks": {
+    "all_app_specific_native_engine_logic_blocked": true,
+    "all_automatic_partner_selection_blocked": true,
+    "all_broad_rt_core_claims_blocked": true,
+    "all_paper_reproduction_claims_blocked": true,
+    "all_public_speedup_claims_blocked": true,
+    "all_routes_have_adequacy": true,
+    "all_ten_apps_present": true,
+    "claim_queue_empty": true,
+    "closed_current_target_count_is_eight": true,
+    "design_blocker_queue_empty": true,
+    "future_design_queue_exact": true,
+    "queue_validates": true,
+    "runtime_queue_empty": true
+  },
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "current_route_changed": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "runtime_executed": false
+  },
+  "conclusion": "Goal4536 packages the V3.0 current benchmark-app implementation state. All ten apps are accounted for. Runtime, claim/evidence, and current design-blocker queues are empty. Eight apps are closed current targets; Barnes-Hut and Triangle Counting are future design targets. The packet does not authorize release or public performance claims: broad RT-core, paper-reproduction, automatic partner-selection, and app-specific native-engine claims remain blocked.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4536 / V3 M138",
+  "queue_status": "post_current_app_completion_future_design_targets_not_release_authorization",
+  "queue_version": "rtdl.v3_0.benchmark_implementation_queue.goal4534.v7",
+  "status": "internal_completion_packet_checked",
+  "summary": {
+    "all_app_specific_native_engine_logic_blocked": true,
+    "all_automatic_partner_selection_blocked": true,
+    "all_broad_rt_core_claims_blocked": true,
+    "all_clean_targets_closed": true,
+    "all_paper_reproduction_claims_blocked": true,
+    "all_public_speedup_claims_blocked": true,
+    "all_ten_benchmark_apps_accounted_for": true,
+    "app_count": 10,
+    "claim_or_evidence_queue": [],
+    "closed_current_targets": [
+      "rt_dbscan",
+      "rtnn",
+      "spatial_rayjoin",
+      "hausdorff_xhd",
+      "robot_collision",
+      "contact_manifold",
+      "raydb_style",
+      "librts_spatial_index"
+    ],
+    "design_blocker_queue": [],
+    "design_targets_do_not_block_runtime_queue": true,
+    "future_design_target_queue": [
+      "barnes_hut",
+      "triangle_counting"
+    ],
+    "future_design_targets_do_not_block_runtime_queue": true,
+    "next_runtime_build_target": null,
+    "runtime_build_queue": [],
+    "runtime_targets_need_pod": true
+  },
+  "version": "rtdl.v3_0.internal_completion_packet.goal4536.v1"
+}
