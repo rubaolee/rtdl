@@ -157,6 +157,9 @@ from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FL
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CONTRACT
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_NATIVE_ABI_CONTRACT
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_PRIMITIVE
+from .aggregate_tree_reference import AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_OUTPUT_COLUMNS
+from .aggregate_tree_reference import AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_PRIMITIVE
 from .aggregate_tree_reference import AggregateFrontierOverflowError
 from .aggregate_tree_reference import _tree_node_rows
 from .aggregate_tree_reference import normalize_weighted_point_rows
@@ -386,6 +389,15 @@ OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_RUN_SYMBOL = (
 )
 OPTIX_AGGREGATE_FRONTIER_DEVICE_COLUMNS_DESTROY_SYMBOL = (
     "rtdl_optix_destroy_aggregate_frontier_device_columns_2d"
+)
+OPTIX_AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_PREPARE_SYMBOL = (
+    "rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d"
+)
+OPTIX_AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_RUN_SYMBOL = (
+    "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d"
+)
+OPTIX_AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_DESTROY_SYMBOL = (
+    "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d"
 )
 OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CORRECTED_PREPARED_POINTS_COUNT_SYMBOL = (
     "rtdl_optix_count_prepared_point_closed_shape_membership_relation_status_corrected_prepared_points_2d"
@@ -1236,6 +1248,26 @@ class _RtdlAggregateFrontierDeviceColumns2D(ctypes.Structure):
         ("row_count_device_ptr", ctypes.c_uint64),
         ("attempted_count_device_ptr", ctypes.c_uint64),
         ("overflow_device_ptr", ctypes.c_uint64),
+    ]
+
+
+class _RtdlAggregateTreeFusedWeightedVectorSum2DOutput(ctypes.Structure):
+    _fields_ = [
+        ("source_ids_device_ptr", ctypes.c_uint64),
+        ("vector_x_device_ptr", ctypes.c_uint64),
+        ("vector_y_device_ptr", ctypes.c_uint64),
+        ("visited_counts_device_ptr", ctypes.c_uint64),
+        ("aggregate_counts_device_ptr", ctypes.c_uint64),
+        ("exact_counts_device_ptr", ctypes.c_uint64),
+        ("source_count", ctypes.c_uint64),
+        ("diagnostic_status_code", ctypes.c_int32),
+        ("overflow", ctypes.c_uint32),
+        ("device_ordinal", ctypes.c_int32),
+        ("owner_handle", ctypes.c_void_p),
+        ("bvh_build_seconds", ctypes.c_double),
+        ("traversal_seconds", ctypes.c_double),
+        ("continuation_seconds", ctypes.c_double),
+        ("copy_seconds", ctypes.c_double),
     ]
 
 
@@ -2435,6 +2467,374 @@ def prepare_aggregate_frontier_device_columns_2d_optix(
         library,
         prepared,
         node_count=len(nodes),
+    )
+
+
+@dataclass
+class OptixAggregateTreeFusedWeightedVectorSum2DOutput:
+    library: ctypes.CDLL
+    prepared_owner: "PreparedOptixAggregateTreeFusedWeightedVectorSum2D"
+    source_ids_device_ptr: int
+    vector_x_device_ptr: int
+    vector_y_device_ptr: int
+    visited_counts_device_ptr: int
+    aggregate_counts_device_ptr: int
+    exact_counts_device_ptr: int
+    source_count: int
+    diagnostic_status_code: int
+    overflow: bool
+    device_ordinal: int
+    bvh_build_seconds: float
+    traversal_seconds: float
+    continuation_seconds: float
+    copy_seconds: float
+    _source_column_owners: tuple[object, ...] = ()
+
+    @property
+    def device_resident(self) -> bool:
+        if self.overflow or int(self.diagnostic_status_code) != 0:
+            return False
+        if int(self.source_count) == 0:
+            return True
+        return all(
+            int(ptr) > 0
+            for ptr in (
+                self.source_ids_device_ptr,
+                self.vector_x_device_ptr,
+                self.vector_y_device_ptr,
+                self.visited_counts_device_ptr,
+                self.aggregate_counts_device_ptr,
+                self.exact_counts_device_ptr,
+            )
+        )
+
+    @property
+    def output_columns(self) -> tuple[str, ...]:
+        return AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_OUTPUT_COLUMNS
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "primitive": AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_PRIMITIVE,
+            "contract": AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_CONTRACT,
+            "native_prepare_symbol": (
+                OPTIX_AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_PREPARE_SYMBOL
+            ),
+            "native_run_symbol": (
+                OPTIX_AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_RUN_SYMBOL
+            ),
+            "backend": "optix",
+            "device_resident": self.device_resident,
+            "output_columns": self.output_columns,
+            "source_count": int(self.source_count),
+            "diagnostic_status_code": int(self.diagnostic_status_code),
+            "overflow": bool(self.overflow),
+            "device_ordinal": int(self.device_ordinal),
+            "bvh_build_seconds": float(self.bvh_build_seconds),
+            "traversal_seconds": float(self.traversal_seconds),
+            "continuation_seconds": float(self.continuation_seconds),
+            "copy_seconds": float(self.copy_seconds),
+            "frontier_rows_emitted": False,
+            "frontier_rows_materialized_on_host": False,
+            "contribution_rows_materialized_on_host": False,
+            "small_host_outputs_materialized": (
+                "source_count",
+                "diagnostic_status_code",
+                "overflow",
+                "phase_timings",
+            ),
+            "rt_core_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "automatic_partner_selection_authorized": False,
+        }
+
+    def _cupy_column(self, device_ptr: int, dtype: object, item_size: int):
+        if not self.device_resident:
+            raise RuntimeError("cannot wrap non-resident or failed aggregate-tree fused output")
+        if int(device_ptr) <= 0:
+            raise RuntimeError("aggregate-tree fused output does not own the requested column")
+        import cupy as cp  # type: ignore
+
+        memory = cp.cuda.UnownedMemory(
+            int(device_ptr),
+            int(self.source_count) * int(item_size),
+            self.prepared_owner,
+        )
+        memory_pointer = cp.cuda.MemoryPointer(memory, 0)
+        return cp.ndarray((int(self.source_count),), dtype=dtype, memptr=memory_pointer)
+
+    def as_cupy_columns(self) -> dict[str, object]:
+        import cupy as cp  # type: ignore
+
+        return {
+            "source_id": self._cupy_column(
+                self.source_ids_device_ptr,
+                cp.int64,
+                ctypes.sizeof(ctypes.c_int64),
+            ),
+            "vector_x": self._cupy_column(
+                self.vector_x_device_ptr,
+                cp.float64,
+                ctypes.sizeof(ctypes.c_double),
+            ),
+            "vector_y": self._cupy_column(
+                self.vector_y_device_ptr,
+                cp.float64,
+                ctypes.sizeof(ctypes.c_double),
+            ),
+            "visited_count": self._cupy_column(
+                self.visited_counts_device_ptr,
+                cp.uint64,
+                ctypes.sizeof(ctypes.c_uint64),
+            ),
+            "aggregate_count": self._cupy_column(
+                self.aggregate_counts_device_ptr,
+                cp.uint64,
+                ctypes.sizeof(ctypes.c_uint64),
+            ),
+            "exact_count": self._cupy_column(
+                self.exact_counts_device_ptr,
+                cp.uint64,
+                ctypes.sizeof(ctypes.c_uint64),
+            ),
+        }
+
+    def close(self) -> None:
+        self.prepared_owner.close()
+
+    def __enter__(self) -> "OptixAggregateTreeFusedWeightedVectorSum2DOutput":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+
+class PreparedOptixAggregateTreeFusedWeightedVectorSum2D:
+    def __init__(
+        self,
+        library: ctypes.CDLL,
+        prepared_handle: ctypes.c_void_p,
+        *,
+        target_count: int,
+        tree_node_count: int,
+        target_column_owners: tuple[object, ...] = (),
+    ) -> None:
+        self.library = library
+        self.prepared_handle = prepared_handle
+        self.target_count = int(target_count)
+        self.tree_node_count = int(tree_node_count)
+        self._target_column_owners = tuple(target_column_owners)
+        self._closed = False
+
+    @property
+    def handle_value(self) -> int:
+        return 0 if self.prepared_handle.value is None else int(self.prepared_handle.value)
+
+    def run_device_columns(
+        self,
+        *,
+        source_ids_device_ptr: int,
+        source_x_device_ptr: int,
+        source_y_device_ptr: int,
+        source_weight_device_ptr: int,
+        source_count: int,
+        theta: float,
+        softening: float = 0.0,
+        source_column_owners: tuple[object, ...] = (),
+    ) -> OptixAggregateTreeFusedWeightedVectorSum2DOutput:
+        if self._closed:
+            raise RuntimeError("prepared OptiX aggregate-tree fused vector-sum handle is closed")
+        if int(source_count) < 0:
+            raise ValueError("source_count must be non-negative")
+        if float(theta) <= 0.0:
+            raise ValueError("theta must be positive")
+        if float(softening) < 0.0:
+            raise ValueError("softening must be non-negative")
+        if int(source_count) and (
+            int(source_ids_device_ptr) == 0
+            or int(source_x_device_ptr) == 0
+            or int(source_y_device_ptr) == 0
+            or int(source_weight_device_ptr) == 0
+        ):
+            raise ValueError("source device pointers must be nonzero when source_count is nonzero")
+
+        run_symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_RUN_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_RUN_SYMBOL}; "
+                "rebuild the OptiX backend after implementing the RT-native fused traversal"
+            )
+        output = _RtdlAggregateTreeFusedWeightedVectorSum2DOutput()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self.prepared_handle,
+            ctypes.c_uint64(int(source_ids_device_ptr)),
+            ctypes.c_uint64(int(source_x_device_ptr)),
+            ctypes.c_uint64(int(source_y_device_ptr)),
+            ctypes.c_uint64(int(source_weight_device_ptr)),
+            ctypes.c_size_t(int(source_count)),
+            ctypes.c_double(float(theta)),
+            ctypes.c_double(float(softening)),
+            ctypes.byref(output),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return OptixAggregateTreeFusedWeightedVectorSum2DOutput(
+            library=self.library,
+            prepared_owner=self,
+            source_ids_device_ptr=int(output.source_ids_device_ptr),
+            vector_x_device_ptr=int(output.vector_x_device_ptr),
+            vector_y_device_ptr=int(output.vector_y_device_ptr),
+            visited_counts_device_ptr=int(output.visited_counts_device_ptr),
+            aggregate_counts_device_ptr=int(output.aggregate_counts_device_ptr),
+            exact_counts_device_ptr=int(output.exact_counts_device_ptr),
+            source_count=int(output.source_count),
+            diagnostic_status_code=int(output.diagnostic_status_code),
+            overflow=bool(output.overflow),
+            device_ordinal=int(output.device_ordinal),
+            bvh_build_seconds=float(output.bvh_build_seconds),
+            traversal_seconds=float(output.traversal_seconds),
+            continuation_seconds=float(output.continuation_seconds),
+            copy_seconds=float(output.copy_seconds),
+            _source_column_owners=tuple(source_column_owners),
+        )
+
+    def run_cupy(
+        self,
+        source_points: Iterable[object],
+        *,
+        theta: float,
+        softening: float = 0.0,
+    ) -> OptixAggregateTreeFusedWeightedVectorSum2DOutput:
+        sources = normalize_weighted_point_rows(source_points)
+        import cupy as cp  # type: ignore
+
+        source_ids = cp.asarray([int(point.id) for point in sources], dtype=cp.int64)
+        source_x = cp.asarray([float(point.x) for point in sources], dtype=cp.float64)
+        source_y = cp.asarray([float(point.y) for point in sources], dtype=cp.float64)
+        source_weight = cp.asarray([float(point.mass) for point in sources], dtype=cp.float64)
+        return self.run_device_columns(
+            source_ids_device_ptr=int(source_ids.data.ptr),
+            source_x_device_ptr=int(source_x.data.ptr),
+            source_y_device_ptr=int(source_y.data.ptr),
+            source_weight_device_ptr=int(source_weight.data.ptr),
+            source_count=len(sources),
+            theta=theta,
+            softening=softening,
+            source_column_owners=(source_ids, source_x, source_y, source_weight),
+        )
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        handle = self.prepared_handle
+        self.prepared_handle = ctypes.c_void_p()
+        if not handle.value:
+            return
+        destroy = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_DESTROY_SYMBOL,
+        )
+        if destroy is not None:
+            destroy(handle)
+
+    def __enter__(self) -> "PreparedOptixAggregateTreeFusedWeightedVectorSum2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_optix(
+    target_points: Iterable[object],
+    tree_nodes: Iterable[object],
+) -> PreparedOptixAggregateTreeFusedWeightedVectorSum2D:
+    library = _load_optix_library()
+    prepare_symbol = _find_optional_backend_symbol(
+        library,
+        OPTIX_AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_PREPARE_SYMBOL,
+    )
+    if prepare_symbol is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export "
+            f"{OPTIX_AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_PREPARE_SYMBOL}; "
+            "the Python wrapper is present, but the native RT-core fused traversal is not implemented yet"
+        )
+
+    targets = normalize_weighted_point_rows(target_points)
+    nodes = _tree_node_rows(tree_nodes)
+    import cupy as cp  # type: ignore
+
+    target_ids = cp.asarray([int(point.id) for point in targets], dtype=cp.int64)
+    target_x = cp.asarray([float(point.x) for point in targets], dtype=cp.float64)
+    target_y = cp.asarray([float(point.y) for point in targets], dtype=cp.float64)
+    target_weight = cp.asarray([float(point.mass) for point in targets], dtype=cp.float64)
+    node_array = (_RtdlAggregateFrontierNode2D * len(nodes))(
+        *(
+            _RtdlAggregateFrontierNode2D(
+                int(node.id),
+                float(node.cx),
+                float(node.cy),
+                float(node.half_size),
+                int(node.depth),
+                int(node.dfs_index),
+                -1 if node.resume_index is None else int(node.resume_index),
+                1 if node.is_leaf else 0,
+            )
+            for node in nodes
+        )
+    )
+    child_offsets = [0]
+    child_ids: list[int] = []
+    member_offsets = [0]
+    member_ids: list[int] = []
+    for node in nodes:
+        child_ids.extend(int(child_id) for child_id in node.child_ids)
+        child_offsets.append(len(child_ids))
+        member_ids.extend(int(member_id) for member_id in node.member_ids)
+        member_offsets.append(len(member_ids))
+
+    child_offsets_array = (ctypes.c_uint64 * len(child_offsets))(*child_offsets)
+    child_ids_array = (ctypes.c_int64 * len(child_ids))(*child_ids) if child_ids else None
+    member_offsets_array = (ctypes.c_uint64 * len(member_offsets))(*member_offsets)
+    member_ids_array = (ctypes.c_int64 * len(member_ids))(*member_ids) if member_ids else None
+    prepared = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = prepare_symbol(
+        ctypes.c_uint64(int(target_ids.data.ptr)),
+        ctypes.c_uint64(int(target_x.data.ptr)),
+        ctypes.c_uint64(int(target_y.data.ptr)),
+        ctypes.c_uint64(int(target_weight.data.ptr)),
+        ctypes.c_size_t(len(targets)),
+        node_array,
+        len(nodes),
+        child_offsets_array,
+        child_ids_array,
+        member_offsets_array,
+        member_ids_array,
+        ctypes.byref(prepared),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return PreparedOptixAggregateTreeFusedWeightedVectorSum2D(
+        library,
+        prepared,
+        target_count=len(targets),
+        tree_node_count=len(nodes),
+        target_column_owners=(target_ids, target_x, target_y, target_weight),
     )
 
 
@@ -26028,6 +26428,55 @@ def _register_argtypes(lib) -> None:
     if optional_aggregate_frontier_device_destroy is not None:
         optional_aggregate_frontier_device_destroy.argtypes = [ctypes.c_void_p]
         optional_aggregate_frontier_device_destroy.restype = None
+
+    optional_aggregate_tree_fused_prepare = _find_optional_backend_symbol(
+        lib,
+        OPTIX_AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_PREPARE_SYMBOL,
+    )
+    if optional_aggregate_tree_fused_prepare is not None:
+        optional_aggregate_tree_fused_prepare.argtypes = [
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlAggregateFrontierNode2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_aggregate_tree_fused_prepare.restype = ctypes.c_int
+    optional_aggregate_tree_fused_run = _find_optional_backend_symbol(
+        lib,
+        OPTIX_AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_RUN_SYMBOL,
+    )
+    if optional_aggregate_tree_fused_run is not None:
+        optional_aggregate_tree_fused_run.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.POINTER(_RtdlAggregateTreeFusedWeightedVectorSum2DOutput),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_aggregate_tree_fused_run.restype = ctypes.c_int
+    optional_aggregate_tree_fused_destroy = _find_optional_backend_symbol(
+        lib,
+        OPTIX_AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_DESTROY_SYMBOL,
+    )
+    if optional_aggregate_tree_fused_destroy is not None:
+        optional_aggregate_tree_fused_destroy.argtypes = [ctypes.c_void_p]
+        optional_aggregate_tree_fused_destroy.restype = None
 
     optional_prepare_segment_polygon_anyhit_rows = _find_optional_backend_symbol(
         lib,

@@ -25,14 +25,15 @@
         "Goal4497",
         "Goal4517",
         "Goal4518",
-        "Goal4523"
+        "Goal4523",
+        "Goal4525"
       ],
-      "next_build_target": "implement app-agnostic aggregate-tree fused weighted-vector RT-native ABI and Python prepared-handle wrapper, then validate optixLaunch/optixTrace traversal against CPU/Numba force-summary references",
+      "next_build_target": "implement app-agnostic aggregate-tree fused weighted-vector RT-native C++/OptiX ABI, then validate optixLaunch/optixTrace traversal against CPU/Numba force-summary references",
       "paper_reproduction_claim_authorized": false,
       "pod_needed_next": true,
       "priority": 1,
       "public_speedup_claim_authorized": false,
-      "remaining_gap": "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE has a generic contract, but native prepare/run/destroy symbols, Python wrappers, equivalence oracle, and timing split are still missing",
+      "remaining_gap": "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE has a generic contract and Python wrapper surface, but native prepare/run/destroy symbols, OptiX traversal proof, equivalence oracle, and timing split are still missing",
       "version": "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1",
       "work_class": "runtime_blocker"
     },

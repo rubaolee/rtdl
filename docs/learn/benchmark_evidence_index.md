@@ -122,6 +122,7 @@ v2.14 evidence:
 - [Goal4517 aggregate-tree fused RT-native contract](../reports/goal4517_v3_0_m121_aggregate_tree_fused_rt_native_contract_2026-06-17.md)
 - [Goal4518 Barnes-Hut device-column RT-core boundary audit](../reports/goal4518_v3_0_m122_barnes_hut_device_column_rtcore_boundary_2026-06-17.md)
 - [Goal4523 Barnes-Hut RT-native symbol gap](../reports/goal4523_v3_0_m127_barnes_hut_rt_native_symbol_gap_2026-06-17.md)
+- [Goal4525 Barnes-Hut RT-native Python wrapper gate](../reports/goal4525_v3_0_m129_barnes_hut_rt_native_python_wrapper_gate_2026-06-17.md)
 - [Goal4524 benchmark implementation queue](../reports/goal4524_v3_0_m128_benchmark_implementation_queue_2026-06-17.md)
 - [Goal4512 Barnes-Hut clean-target audit](../reports/goal4512_v3_0_m116_barnes_hut_clean_target_audit_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)

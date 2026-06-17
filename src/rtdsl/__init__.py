@@ -1370,8 +1370,11 @@ from .external_baselines import scipy_available
 from .optix_runtime import optix_version
 from .optix_runtime import collect_aggregate_frontier_2d_optix
 from .optix_runtime import OptixAggregateFrontierDeviceColumns2DOutput
+from .optix_runtime import OptixAggregateTreeFusedWeightedVectorSum2DOutput
 from .optix_runtime import PreparedOptixAggregateFrontierDeviceColumns2D
+from .optix_runtime import PreparedOptixAggregateTreeFusedWeightedVectorSum2D
 from .optix_runtime import prepare_aggregate_frontier_device_columns_2d_optix
+from .optix_runtime import prepare_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_optix
 from .optix_runtime import fixed_radius_count_threshold_2d_optix
 from .optix_runtime import get_last_db_phase_timings
 from .optix_runtime import get_last_fixed_radius_neighbors_3d_phase_timings
@@ -2292,11 +2295,14 @@ __all__ = [
     "collect_aggregate_frontier_2d_hiprt",
     "collect_aggregate_frontier_2d_optix",
     "OptixAggregateFrontierDeviceColumns2DOutput",
+    "OptixAggregateTreeFusedWeightedVectorSum2DOutput",
     "PreparedOptixAggregateFrontierDeviceColumns2D",
+    "PreparedOptixAggregateTreeFusedWeightedVectorSum2D",
     "PreparedAggregateFrontierDeviceColumnsWeightedVectorSum2DCupy",
     "PreparedAggregateFrontierDeviceColumnsWeightedVectorSum2DNumba",
     "PreparedAggregateTreeFusedWeightedVectorSum2DNumbaCuda",
     "prepare_aggregate_frontier_device_columns_2d_optix",
+    "prepare_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_optix",
     "prepare_aggregate_frontier_device_columns_weighted_vectors_2d_cupy",
     "prepare_aggregate_frontier_device_columns_weighted_vectors_2d_numba",
     "prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda",

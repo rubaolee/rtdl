@@ -307,6 +307,11 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   `src/native/optix/rtdl_optix_api.cpp`,
   `src/native/optix/rtdl_optix_workloads.cpp`, and
   `src/native/optix/rtdl_optix_core.cpp`.
+- Goal4525 removes the Python-wrapper part of that gap: RTDL now exposes an
+  app-agnostic OptiX prepared-handle wrapper for
+  `AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE` output columns. The
+  native C++/OptiX prepare/run/destroy symbols and optixTrace traversal proof
+  are still absent, so execution and RT-core speedup wording remain blocked.
 - Current expanded-membership lowering evidence routes Barnes-Hut
   aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
   near-zone candidate rows. The engine still only sees points, boxes, IDs, and
