@@ -149,6 +149,18 @@ Check these fields before quoting a result:
   or a threshold interval.
 - `elapsed_sec`: timing for that method on that machine.
 
+## V3 Clean-Target Status
+
+Goal4513 closes Hausdorff/X-HD as a primitive-first V3 clean target. The current
+promoted route is RTDL/OptiX nearest-witness computation plus generic grouped
+max continuation for the exact directed witness result. M113 is not the current
+path because the app needs primitive residency and backend parity work, not a
+prepared graph chunk executor.
+
+CuPy and Numba lanes remain comparison or reference lanes, not automatic partner
+selection. Broader residency, AMD validation, whole-app speedup wording, and any
+claim that RTDL universally beats X-HD or optimized CUDA remain blocked.
+
 ## Claim Boundary
 
 - `rtdl_v2_user_cuda` is a current RTDL program, but it is CUDA-core partner

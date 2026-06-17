@@ -115,6 +115,18 @@ The current CPU reference is 2D. Goal2481 must explicitly decide whether the
 native contract remains 2D for this lane, generalizes to 3D transformed
 triangles, or needs an additional 3D CPU oracle before Embree/OptiX parity work.
 
+## V3 Clean-Target Status
+
+Goal4513 closes Robot Collision as a no-partner V3 clean target. The current
+route is the prepared grouped-segment any-hit primitive with Goal4446 NumPy
+vectorized query lowering for large prepared timing and summary probes.
+M113 is not the current path: this app does not need prepared graph chunks or a
+partner continuation on the promoted route.
+
+The promoted claim remains the sampled grouped-segment any-hit contract. It is
+not robot-planner, continuous collision, exact solid-contact, whole-app speedup,
+or public broad RT-core wording.
+
 ## Claim Boundary
 
 - This app implements a CPU reference path plus generic prepared Embree/OptiX

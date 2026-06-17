@@ -68,3 +68,15 @@ collection. The promotion is limited:
 - Exact triangle-intersection refinement and contact-summary interpretation
   remain app-owned; native generic AABB row output emits only app-agnostic
   `(query_id, indexed_id)` candidate rows.
+
+## V3 Clean-Target Status
+
+Goal4513 closes Contact Manifold as a no-partner V3 clean target. The current
+route is bounded RTDL/OptiX witness collection with fail-closed capacity
+semantics; no promoted partner continuation is needed. M113 is not the current
+path because the pressure point here is bounded witness collection, not chunked
+partner continuation.
+
+The app remains a contact-flavored benchmark for a generic primitive. Exact
+manifold refinement, richer contact summaries, whole-app acceleration wording,
+and public broad speedup claims remain outside the authorized scope.

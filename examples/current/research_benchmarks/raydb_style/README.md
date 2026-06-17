@@ -81,6 +81,20 @@ contract is measured and reviewed. The current recommendation is still
 primitive-first: use fused RTDL grouped reductions when they exactly express the
 work, and use partners only for unfused continuation or explicit user choice.
 
+## V3 Clean-Target Status
+
+Goal4513 closes RayDB-style as a primitive-first V3 clean target. The current
+route keeps fused grouped `count`, `sum`, `min`, `max`, `stats`, and
+`avg_as_sum_count` reductions in the generic primitive when that fused scalar
+contract exactly expresses the work. Partner rows remain diagnostic or
+continuation evidence only for unfused work. M113 is not the current path for
+this app because the promoted route is fused grouped reduction, not chunked
+partner continuation.
+
+This remains a RayDB-style reconstruction harness, not a DBMS, SQL engine,
+authors-code timing claim, zero-copy claim, whole-app speedup claim, or public
+broad RT-core speedup statement.
+
 ## Current Scope
 
 - tiny denormalized fixture;

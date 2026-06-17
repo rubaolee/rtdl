@@ -117,6 +117,18 @@ Parse authors-code output:
 PYTHONPATH=src:. python scripts/goal2574_librts_external_runner.py parse-output --input scratch/librts_rtspatial_output.txt
 ```
 
+## V3 Clean-Target Status
+
+Goal4513 closes LibRTS Spatial Index as a no-partner V3 clean target for the
+prepared AABB index query slice. The current route is generic RTDL/OptiX
+`AABB_INDEX_QUERY_2D` for count-only point, range-contains, and
+range-intersects query operations. M113 is not the current path because the
+promoted route is a prepared index query, not chunked partner continuation.
+
+This is still not the full mutable LibRTS paper reproduction. Mutation pressure,
+authors-code headline reproduction, whole-app speedup wording, and public broad
+RT-core claims remain outside this clean target.
+
 ## Authors-Code Pod Evidence
 
 The authors code is available, so this benchmark uses the public

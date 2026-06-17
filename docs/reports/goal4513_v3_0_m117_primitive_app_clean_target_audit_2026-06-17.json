@@ -1,0 +1,178 @@
+{
+  "apps": [
+    "robot_collision",
+    "contact_manifold",
+    "raydb_style",
+    "librts_spatial_index",
+    "hausdorff_xhd"
+  ],
+  "conclusion": "Robot Collision, Contact Manifold, RayDB-style, LibRTS Spatial Index, and Hausdorff/X-HD are closed as primitive/no-partner V3 clean targets. Their current routes are explicit primitive-first or no-partner-needed paths, M113 is not their current performance path, and public broad speedup wording remains blocked.",
+  "goal": "Goal4513 / V3 M117",
+  "readiness": {
+    "automatic_partner_selection_authorized": false,
+    "internal_v3_clean_target_closed": true,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_deferred_to_separate_mixed_explicit_audit": true,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "rows": [
+    {
+      "app": "robot_collision",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_reader_decision": "Use the prepared grouped-segment any-hit primitive. For large prepared timing or summary probes, use Goal4446's NumPy vectorized query lowering; no partner continuation is needed on the promoted path.",
+      "decision_kind": "no_partner_needed",
+      "evidence_refs": [
+        "Goal2654",
+        "Goal3567",
+        "Goal3755",
+        "Goal3757",
+        "Goal4428",
+        "Goal4446"
+      ],
+      "label": "Robot Collision",
+      "m113_applicability": {
+        "current_route_should_use_m113": false,
+        "reason": "The promoted path is a prepared grouped-segment any-hit primitive with NumPy vectorized query lowering. It does not need prepared graph chunks or partner continuation."
+      },
+      "next_runtime_action": "preserve the prepared-buffer and device-buffer/count split; do not turn the sampled grouped-segment contract into robot-planner wording; validate AMD functional parity later",
+      "partner_policy": "none",
+      "pod_needed_next": false,
+      "primary_route": "prepared grouped-segment any-hit primitive with NumPy vectorized query lowering",
+      "primitive_contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+      "public_speedup_claim_authorized": false,
+      "route_version": "rtdl.v3_0.current_benchmark_route_decisions.goal4507.v1",
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "app": "contact_manifold",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_reader_decision": "Use bounded RTDL/OptiX witness collection; no promoted partner continuation is needed.",
+      "decision_kind": "no_partner_needed",
+      "evidence_refs": [
+        "Goal2654",
+        "Goal3567",
+        "Goal3775",
+        "Goal3776"
+      ],
+      "label": "Contact Manifold",
+      "m113_applicability": {
+        "current_route_should_use_m113": false,
+        "reason": "The promoted path is bounded witness collection. Its pressure point is bounded collect semantics, not chunked partner continuation."
+      },
+      "next_runtime_action": "keep as primitive-only unless richer exact refinement becomes a benchmark pressure point",
+      "partner_policy": "none",
+      "pod_needed_next": false,
+      "primary_route": "prepared bounded contact-witness collect primitive",
+      "primitive_contract": "fail-closed bounded witness collection",
+      "public_speedup_claim_authorized": false,
+      "route_version": "rtdl.v3_0.current_benchmark_route_decisions.goal4507.v1",
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "app": "raydb_style",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_reader_decision": "Use primitive-first RTDL/OptiX fused grouped reductions when the fused primitive fits.",
+      "decision_kind": "primitive_first",
+      "evidence_refs": [
+        "Goal2979",
+        "Goal3565",
+        "Goal3567",
+        "Goal3779",
+        "Goal3781"
+      ],
+      "label": "RayDB-style",
+      "m113_applicability": {
+        "current_route_should_use_m113": false,
+        "reason": "The promoted path is primitive-first grouped reduction. Fused scalar count/sum/min/max/avg reductions should stay inside the primitive when they fit."
+      },
+      "next_runtime_action": "preserve primitive-first route and avoid partner work for exact fused scalar reductions",
+      "partner_policy": "primitive_only",
+      "pod_needed_next": false,
+      "primary_route": "primitive-first RTDL/OptiX grouped count/sum reductions",
+      "primitive_contract": "columnar grouped count/sum/min/max/avg reduction",
+      "public_speedup_claim_authorized": false,
+      "route_version": "rtdl.v3_0.current_benchmark_route_decisions.goal4507.v1",
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "app": "librts_spatial_index",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_reader_decision": "Use prepared generic AABB index query; no promoted partner continuation is needed.",
+      "decision_kind": "no_partner_needed",
+      "evidence_refs": [
+        "Goal2798",
+        "Goal3601",
+        "Goal3770"
+      ],
+      "label": "LibRTS Spatial Index",
+      "m113_applicability": {
+        "current_route_should_use_m113": false,
+        "reason": "The promoted path is a prepared AABB index query, not a chunked partner-continuation graph."
+      },
+      "next_runtime_action": "keep as no-regression prepared-index row and validate AMD functional parity later",
+      "partner_policy": "none",
+      "pod_needed_next": false,
+      "primary_route": "prepared RTDL/OptiX AABB spatial-index query primitive",
+      "primitive_contract": "prepared AABB index query",
+      "public_speedup_claim_authorized": false,
+      "route_version": "rtdl.v3_0.current_benchmark_route_decisions.goal4507.v1",
+      "whole_app_speedup_claim_authorized": false
+    },
+    {
+      "app": "hausdorff_xhd",
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "current_reader_decision": "Use RTDL/OptiX nearest-witness primitives for the promoted exact route.",
+      "decision_kind": "primitive_first",
+      "evidence_refs": [
+        "Goal2801",
+        "Goal3143",
+        "Goal3567",
+        "Goal3773",
+        "Goal3774"
+      ],
+      "label": "Hausdorff / X-HD",
+      "m113_applicability": {
+        "current_route_should_use_m113": false,
+        "reason": "The promoted path is nearest-witness computation plus grouped max continuation. It needs primitive residency and backend parity work, not prepared graph chunk execution."
+      },
+      "next_runtime_action": "preserve primitive-first route; future work is broader residency and AMD validation",
+      "partner_policy": "primitive_only",
+      "pod_needed_next": false,
+      "primary_route": "RTDL/OptiX active-frontier nearest-witness plus generic grouped max continuation",
+      "primitive_contract": "directed max-of-nearest-distance witness computation",
+      "public_speedup_claim_authorized": false,
+      "route_version": "rtdl.v3_0.current_benchmark_route_decisions.goal4507.v1",
+      "whole_app_speedup_claim_authorized": false
+    }
+  ],
+  "summary": {
+    "all_app_specific_native_engine_logic_blocked": true,
+    "all_automatic_partner_selection_blocked": true,
+    "all_broad_rt_core_claims_blocked": true,
+    "all_internal_clean_targets_closed": true,
+    "all_m113_current_route_needed": false,
+    "all_public_speedup_claims_blocked": true,
+    "all_whole_app_speedup_claims_blocked": true,
+    "app_count": 5,
+    "no_partner_needed_apps": [
+      "robot_collision",
+      "contact_manifold",
+      "librts_spatial_index"
+    ],
+    "primitive_only_apps": [
+      "raydb_style",
+      "hausdorff_xhd"
+    ]
+  },
+  "version": "rtdl.v3_0.primitive_app_clean_target_audit.goal4513.v1"
+}
