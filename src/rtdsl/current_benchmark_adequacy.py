@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4502.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4503.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -66,6 +66,9 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "the RTDL aggregate-only route and makes full-batch non-graph prepared "
     "direct aggregate the current fastest hot KITTI-family aggregate row, "
     "while graph/device-partials remains the partner-continuation route. "
+    "Goal4503 wires that route through the RTNN app front door with "
+    "`--point-file`, proving the app can run the Goal4500 KITTI-1M CSV "
+    "without synthetic regeneration. "
     "Goal4464 closes Triangle Counting's largest paper-dataset OOM validation row "
     "by running source-range segmented RT-2A1 on `com-orkut` with a measured 2M "
     "directed-edge scene cap, while keeping public speedup claims blocked. "
@@ -541,7 +544,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "full 1M-query batch, 1.68x faster than the M105 direct graph row "
             "and 2.26x faster than the author synchronized total-search timer, "
             "while author RTNN remains faster on cold whole-process and pure "
-            "compute timing. This is strong evidence for RTDL V3 route selection, "
+            "compute timing. Goal4503 exposes the same full-batch aggregate route "
+            "through the RTNN app front door with `--point-file`, where the "
+            "Goal4500 KITTI-1M CSV runs without synthetic generation and matches "
+            "the M106 signature. This is strong evidence for RTDL V3 route selection, "
             "but not a same-output author-code victory claim."
         ),
         "adequacy": "strong",
@@ -553,9 +559,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "graph replay plus same-stream CuPy/Numba app-bridge evidence; use "
             "`rtnn_paper_dataset_targets()` when planning paper-dataset acquisition; "
             "use `write_kitti_paper_family_recipe_manifest()` for bounded KITTI-family "
-            "same-contract input preparation; use full-batch non-graph prepared direct "
-            "aggregate for the fastest current hot-prepared RTDL KITTI-family "
-            "ranked-summary aggregate-only row"
+            "same-contract input preparation; use `--mode prepared_optix_ranked_summary "
+            "--point-file ...` for the app-front-door full-batch non-graph prepared "
+            "direct aggregate on real CSV inputs"
         ),
         "current_partner_role": (
             "no partner needed for exact float64 native aggregate; CuPy and Numba are "
@@ -593,6 +599,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4500",
             "Goal4501",
             "Goal4502",
+            "Goal4503",
         ),
         "pod_needed_next": False,
     },

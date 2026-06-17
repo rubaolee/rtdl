@@ -74,6 +74,19 @@ def _official_timing(payload: dict[str, Any], name: str) -> float | None:
     return float(row["last_ms"])
 
 
+def _count_rtnn_csv_xyz_rows(path: Path) -> int:
+    if not path.exists():
+        raise FileNotFoundError(f"RTNN point file does not exist: {path}")
+    count = 0
+    with path.open("r", encoding="utf-8") as handle:
+        for raw_line in handle:
+            if raw_line.strip():
+                count += 1
+    if count <= 0:
+        raise ValueError("RTNN point file must contain at least one point row")
+    return count
+
+
 def scope_payload() -> dict[str, Any]:
     return {
         "app": BENCHMARK_NAME,
@@ -250,13 +263,14 @@ def rtnn_command_plan_payload() -> dict[str, Any]:
 
 def rtnn_prepared_optix_ranked_summary_payload(
     *,
-    point_count: int,
+    point_count: int | None,
     radius: float,
     k: int,
     repeat: int,
     query_batch_size: int | None,
     distribution: str,
     seed: int,
+    point_file: str | Path | None = None,
 ) -> dict[str, Any]:
     """Run the current prepared OptiX ranked-summary aggregate front door.
 
@@ -265,32 +279,42 @@ def rtnn_prepared_optix_ranked_summary_payload(
     directory instead of jumping to a historical goal script.
     """
 
-    if point_count <= 0:
+    external_point_file = Path(point_file).resolve() if point_file is not None else None
+    inferred_point_count = _count_rtnn_csv_xyz_rows(external_point_file) if external_point_file else None
+    if point_count is None:
+        point_count = inferred_point_count
+    if point_count is None or point_count <= 0:
         raise ValueError("point_count must be positive")
+    if inferred_point_count is not None and int(point_count) != inferred_point_count:
+        raise ValueError("point_count must match the external RTNN point-file row count")
     if radius <= 0.0:
         raise ValueError("radius must be positive")
     if k <= 0:
         raise ValueError("k must be positive")
     if repeat <= 0:
         raise ValueError("repeat must be positive")
+    point_count = int(point_count)
     batch_size = query_batch_size or point_count
     if batch_size <= 0:
         raise ValueError("query_batch_size must be positive")
+    point_fingerprint = (
+        {
+            "point_count": point_count,
+            "source": "external_rtnn_csv_xyz",
+            "path": str(external_point_file),
+        }
+        if external_point_file
+        else {
+            "point_count": point_count,
+            "distribution": distribution,
+            "seed": seed,
+        }
+    )
+    query_fingerprint = {**point_fingerprint, "query_batch_size": batch_size}
     session_key = rt.make_prepared_session_cache_key(
         primitive="fixed_radius_neighbors_3d_ranked_summary",
         backend="optix",
-        input_fingerprints={
-            "points": {
-                "point_count": point_count,
-                "distribution": distribution,
-                "seed": seed,
-            },
-            "queries": {
-                "query_batch_size": batch_size,
-                "distribution": distribution,
-                "seed": seed,
-            },
-        },
+        input_fingerprints={"points": point_fingerprint, "queries": query_fingerprint},
         parameters={"radius": radius, "k": k},
         partner="none",
         device="cuda:0",
@@ -305,20 +329,12 @@ def rtnn_prepared_optix_ranked_summary_payload(
 
     from scripts import goal2348_rtnn_v2_2_external_runner as rtnn_runner
 
-    with tempfile.TemporaryDirectory(prefix="rtdl_rtnn_current_") as tmp:
-        point_file = Path(tmp) / f"rtnn_{distribution}_{point_count}.csv"
-        generated = rtnn_runner.generate_point_file(
-            point_file,
-            point_count=point_count,
-            dimension=3,
-            seed=seed,
-            distribution=distribution,
-        )
+    def run_payload_with_file(active_point_file: Path) -> dict[str, Any]:
         runner_stdout = io.StringIO()
         with contextlib.redirect_stdout(runner_stdout):
-            payload = rtnn_runner.run_rtdl_batched_3d_neighbors(
+            runner_payload = rtnn_runner.run_rtdl_batched_3d_neighbors(
                 Namespace(
-                    point_file=point_file,
+                    point_file=active_point_file,
                     query_file=None,
                     radius=radius,
                     k_max=k,
@@ -332,6 +348,32 @@ def rtnn_prepared_optix_ranked_summary_payload(
                     row_label="rtnn_current_prepared_optix_ranked_summary",
                 )
             )
+        return {
+            "runner_payload": runner_payload,
+            "runner_progress": tuple(line for line in runner_stdout.getvalue().splitlines() if line.strip()),
+        }
+
+    if external_point_file:
+        generated = {
+            "path": str(external_point_file),
+            "point_count": point_count,
+            "dimension": 3,
+            "format": "rtnn_csv_xyz",
+            "source": "external_point_file",
+            "generated": False,
+        }
+        runner_result = run_payload_with_file(external_point_file)
+    else:
+        with tempfile.TemporaryDirectory(prefix="rtdl_rtnn_current_") as tmp:
+            generated_point_file = Path(tmp) / f"rtnn_{distribution}_{point_count}.csv"
+            generated = rtnn_runner.generate_point_file(
+                generated_point_file,
+                point_count=point_count,
+                dimension=3,
+                seed=seed,
+                distribution=distribution,
+            )
+            runner_result = run_payload_with_file(generated_point_file)
     return {
         "benchmark_app": BENCHMARK_NAME,
         "mode": "prepared_optix_ranked_summary",
@@ -344,8 +386,9 @@ def rtnn_prepared_optix_ranked_summary_payload(
         "query_batch_size": batch_size,
         "distribution": distribution,
         "seed": seed,
-        "runner_progress": tuple(line for line in runner_stdout.getvalue().splitlines() if line.strip()),
-        "runner_payload": payload,
+        "external_point_file_used": bool(external_point_file),
+        "runner_progress": runner_result["runner_progress"],
+        "runner_payload": runner_result["runner_payload"],
         "prepared_session_residency": {
             "cache_key": session_key.to_metadata(),
             "policy": session_policy.to_metadata(),
@@ -845,6 +888,7 @@ def run_app(
     query_count: int | None = None,
     transfer_counter_library: str | Path | None = None,
     hardware: str = "unspecified",
+    point_file: str | Path | None = None,
 ) -> dict[str, Any]:
     if mode == "scope":
         return scope_payload()
@@ -859,14 +903,16 @@ def run_app(
     if mode == "rtnn_command_plan":
         return rtnn_command_plan_payload()
     if mode == "prepared_optix_ranked_summary":
+        use_external_points = point_file is not None
         return rtnn_prepared_optix_ranked_summary_payload(
-            point_count=copies,
+            point_count=None if use_external_points else copies,
             radius=0.02,
             k=k,
             repeat=1,
-            query_batch_size=copies,
+            query_batch_size=None if use_external_points else copies,
             distribution="uniform",
             seed=20260519,
+            point_file=point_file,
         )
     if mode == "prepared_ranked_summary_raw":
         return rtnn_prepared_ranked_summary_raw_payload(
@@ -928,6 +974,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument("--point-count", type=int, default=None)
+    parser.add_argument("--point-file", type=Path, default=None)
     parser.add_argument("--query-count", type=int, default=None)
     parser.add_argument("--radius", type=float, default=0.02)
     parser.add_argument("--repeat", type=int, default=1)
@@ -947,14 +994,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--k", type=int, default=8)
     args = parser.parse_args(argv)
     if args.mode == "prepared_optix_ranked_summary":
+        point_count = args.point_count if args.point_count is not None else (None if args.point_file else args.copies)
         payload = rtnn_prepared_optix_ranked_summary_payload(
-            point_count=args.point_count or args.copies,
+            point_count=point_count,
             radius=args.radius,
             k=args.k,
             repeat=args.repeat,
             query_batch_size=args.query_batch_size,
             distribution=args.distribution,
             seed=args.seed,
+            point_file=args.point_file,
         )
     elif args.mode == "prepared_ranked_summary_raw":
         payload = rtnn_prepared_ranked_summary_raw_payload(

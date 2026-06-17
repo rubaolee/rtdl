@@ -1,0 +1,65 @@
+{
+  "app_front_door": {
+    "cold_load_pack_prepare_query_sec": 4.833463951945305,
+    "external_point_file_used": true,
+    "generated_input": {
+      "dimension": 3,
+      "format": "rtnn_csv_xyz",
+      "generated": false,
+      "path": "/workspace/data/kitti/rtdl_goal4500/kitti_1m_points.csv",
+      "point_count": 1000000,
+      "source": "external_point_file"
+    },
+    "max_query_sec": 0.156187504529953,
+    "median_query_sec": 0.15373732894659042,
+    "min_query_sec": 0.15199768543243408,
+    "mode": "prepared_optix_ranked_summary",
+    "point_count": 1000000,
+    "query_batch_size": 1000000,
+    "repeat": 5,
+    "runner_batch_count": 1,
+    "runner_result_mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+    "summary": {
+      "bounded_neighbor_count": 49248495,
+      "kth_id_checksum": 499037910242,
+      "nearest_id_checksum": 495630408863,
+      "row_count": 1000000,
+      "sum_distance": 7540726.363215236
+    }
+  },
+  "claim_boundary": {
+    "automatic_partner_selection_authorized": false,
+    "external_point_file_front_door_proven": true,
+    "paper_reproduction_wording_allowed": false,
+    "public_speedup_claim_authorized": false,
+    "same_input_author_rtdl_comparison": true,
+    "same_route_as_m106_full_batch_aggregate": true,
+    "synthetic_generation_skipped_for_point_file": true
+  },
+  "comparisons": {
+    "app_front_door_cold_total_over_m106_runner_cold_total": 1.0020246445467647,
+    "app_front_door_query_over_m106_runner_query": 1.0011985206487044
+  },
+  "conclusion": "The RTNN benchmark app now exposes the M106 full-batch prepared aggregate route through `--point-file`. On the Goal4500 KITTI-1M CSV, the app front door infers 1,000,000 points, skips synthetic generation, runs one full query batch, and matches the M106 aggregate signature while measuring the same hot-query class.",
+  "goal": "Goal4503 / V3 M107",
+  "m106_best": {
+    "cold_load_pack_prepare_query_sec": 4.823697678744793,
+    "median_query_sec": 0.1535532921552658,
+    "summary": {
+      "bounded_neighbor_count": 49248495,
+      "kth_id_checksum": 499037910242,
+      "nearest_id_checksum": 495630408863,
+      "row_count": 1000000,
+      "sum_distance": 7540726.3632152565
+    }
+  },
+  "raw_app_front_door_json": "docs/reports/goal4503_rtnn_kitti_1m_app_point_file_repeat5_2026-06-17.json",
+  "signature_delta_app_minus_m106": {
+    "bounded_neighbor_count": 0,
+    "kth_id_checksum": 0,
+    "nearest_id_checksum": 0,
+    "row_count": 0,
+    "sum_distance_delta": -2.0489096641540527e-08
+  },
+  "version": "rtdl.v3_0.rtnn_point_file_front_door.goal4503.v1"
+}

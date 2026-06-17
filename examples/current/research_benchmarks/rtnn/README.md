@@ -28,6 +28,7 @@ PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benc
 PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode rtnn_known_results
 PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_session_reuse_idiom --point-count 16 --radius 0.02 --k 8
 RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_optix_ranked_summary --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
+RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_optix_ranked_summary --point-file /workspace/data/kitti/rtdl_goal4500/kitti_1m_points.csv --radius 1.0 --k 50 --repeat 3 --query-batch-size 1000000
 RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_raw --backend optix --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
 RTDL_EMBREE_LIBRARY=build/librtdl_embree.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_raw --backend embree --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
 ```
@@ -47,6 +48,11 @@ It generates a deterministic synthetic point set and returns pure JSON with the
 runner progress captured in `runner_progress`. This is the command to use when
 you want an executable current RTDL/OptiX ranked-summary app route, not just the
 evidence summary.
+Goal4503 extends the same mode with `--point-file`, so a real prepared CSV such
+as the Goal4500 KITTI-1M package can run through the app front door without
+regenerating synthetic points. Point-file payloads set
+`external_point_file_used=true`, record the external source in `generated_input`,
+and default `--query-batch-size` to the inferred row count when it is omitted.
 
 For backend-to-backend comparison, use `--mode prepared_ranked_summary_raw` with
 `--backend optix` or `--backend embree`. That mode keeps the output contract the

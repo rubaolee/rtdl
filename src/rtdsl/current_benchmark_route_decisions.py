@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4502.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4503.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -71,7 +71,9 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "aggregate-only route ranking: for KITTI-1M the full-batch non-graph "
     "prepared direct aggregate is the current fastest RTDL hot aggregate, "
     "while graph/device-partials remains the explicit path for same-stream "
-    "partner continuation. "
+    "partner continuation. Goal4503 exposes that full-batch aggregate route "
+    "through the RTNN app front door with `--point-file`, proving the app can "
+    "run the Goal4500 KITTI-1M CSV without regenerating synthetic points. "
     "Goal4444 refreshes triangle-counting partner guidance after replacing the "
     "transitional Numba CPU-contract builder with a direct binary vectorized "
     "summary path before Numba device upload. It materially reduces the no-C++ "
@@ -757,14 +759,18 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "measures about 0.154s hot median on the full 1M-query batch, 1.68x "
             "faster than the M105 direct graph row and 2.26x faster than the "
             "author synchronized total-search timer, while author RTNN remains "
-            "faster on cold whole-process and pure compute timing. Report these "
+            "faster on cold whole-process and pure compute timing. Goal4503 "
+            "then exposes this route through the RTNN app front door with "
+            "`--point-file`, where the Goal4500 KITTI-1M CSV runs as one "
+            "full batch and matches the M106 aggregate signature. Report these "
             "as different output contracts: author full K-id materialization "
             "versus RTDL ranked-summary aggregate."
         ),
         primary_route=(
             "mixed explicit RTNN route: exact RTDL/OptiX native aggregate for same-contract "
-            "OptiX-vs-Embree comparison; full-batch non-graph prepared direct aggregate "
-            "for the current fastest hot KITTI-family aggregate-only RTDL row; explicit "
+            "OptiX-vs-Embree comparison; app-front-door `--point-file` full-batch "
+            "non-graph prepared direct aggregate for the current fastest hot "
+            "KITTI-family aggregate-only RTDL row; explicit "
             "CuPy/Numba same-stream graph/device-partial partner reductions for resident "
             "app-bridge evidence"
         ),
@@ -815,6 +821,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4500",
             "Goal4501",
             "Goal4502",
+            "Goal4503",
         ),
         pod_needed_next=False,
     ),

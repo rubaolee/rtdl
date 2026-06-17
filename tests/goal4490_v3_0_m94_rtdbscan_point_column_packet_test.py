@@ -68,10 +68,10 @@ class Goal4490M94RtDbscanPointColumnPacketTest(unittest.TestCase):
         self.assertIn("app-constructed coordinate columns", report)
         self.assertIn("not promote the route as the default", report)
         self.assertIn("Goal4490 RT-DBSCAN point-column app mode", index)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4502.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4503.v1", route["version"])
         self.assertIn("Goal4490", route["evidence_refs"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4502.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4503.v1",
             adequacy_module.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         self.assertIn("Goal4490", adequacy["evidence_refs"])
