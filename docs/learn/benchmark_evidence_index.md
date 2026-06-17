@@ -92,7 +92,7 @@ v2.14 evidence:
 | --- | --- | --- | --- |
 | Hausdorff / X-HD | `hausdorff_xhd_current_optix_threshold` | primitive-first OptiX path; CuPy/Numba are comparison/reference lanes | NVIDIA pod for OptiX timing |
 | Spatial RayJoin | `spatial_rayjoin_pip_count_current_prepared_optix` | contract-split RayJoin-style path; scalar/count paths are stronger than full paper reproduction; Goal4451 fail-closes unsafe prepared-points CUDA graph replay and keeps the batch executor as the repeated-PIP path | NVIDIA pod plus public-CDB fixture for representative route |
-| RT-DBSCAN | `rt_dbscan_predicate_direct_status_component_signature` | Generic OptiX fixed-radius count-threshold device columns, now self-query optimized for prepared self-query workloads, plus explicit CuPy predicate direct-status compact component-signature continuation; Goal4495 extends caller-owned point-column reuse evidence to 2M `road3d` while keeping app-constructed columns charged and non-default; grouped-stream Numba remains the conservative fallback/reference and full rows remain a slower output contract | CUDA pod with CuPy and Numba |
+| RT-DBSCAN | `rt_dbscan_predicate_direct_status_component_signature` | Generic OptiX fixed-radius count-threshold device columns, now self-query optimized for prepared self-query workloads, plus explicit CuPy predicate direct-status compact component-signature continuation; Goal4495 extends caller-owned point-column reuse evidence to 2M `road3d` while keeping app-constructed columns charged and non-default, and Goal4496 extends isolated 2M direct-status prepare reuse to `clustered3d` and `ngsim_dense`; grouped-stream Numba remains the conservative fallback/reference and full rows remain a slower output contract | CUDA pod with CuPy and Numba |
 | Robot collision | `robot_collision_prepared_grouped_segment_any_hit_numpy_lowering` | primitive-only prepared static-scene grouped-segment any-hit path; Goal4446 removes the major Python query-lowering debt while preserving the M31 same-contract backend comparison | NVIDIA pod for OptiX/Embree timing |
 | Contact manifold | `contact_manifold_optix_native_collect_k` | bounded collect/witness primitive path; no manifold-native ABI | NVIDIA pod for OptiX timing |
 | RayDB-style | `raydb_style_optix_count_primitive_first` | primitive-first grouped count path; partner rows only for unfused continuations | NVIDIA pod; CUDA pod for CuPy/Numba partner comparison |
@@ -135,6 +135,7 @@ v2.14 evidence:
 - [Goal4490 RT-DBSCAN point-column app mode](../reports/goal4490_v3_0_m94_rtdbscan_point_column_app_mode_2026-06-17.md)
 - [Goal4491 coordinate-column helper build cleanup](../reports/goal4491_v3_0_m95_coordinate_column_helper_build_2026-06-17.md)
 - [Goal4495 RT-DBSCAN 2M point-column reuse](../reports/goal4495_v3_0_m99_rtdbscan_2m_point_column_reuse_2026-06-17.md)
+- [Goal4496 RT-DBSCAN 2M point-column prepare profiles](../reports/goal4496_v3_0_m100_rtdbscan_2m_point_column_prepare_profiles_2026-06-17.md)
 - [Goal4453 Triangle Numba device geometry](../reports/goal4453_v3_0_m57_triangle_numba_device_geometry_2026-06-16.md)
 - [Goal4454 Triangle Numba summary fast paths](../reports/goal4454_v3_0_m58_triangle_numba_summary_fast_paths_2026-06-16.md)
 - [Goal4455 Triangle partner rerank after M58](../reports/goal4455_v3_0_m59_triangle_partner_rerank_after_m58_2026-06-16.md)

@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4495.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4496.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -301,6 +301,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "the isolated handle and 65.73x-73.21x faster inside the app route "
             "when columns already exist, while charged app-constructed columns "
             "remain essentially flat at 1.018x one-shot and 0.999x warmed replay."
+            " Goal4496 extends the isolated direct-status prepare check to 2M "
+            "`clustered3d` and `ngsim_dense`, with matching signatures and "
+            "127.93x/82.07x prepare speedups when columns already exist."
         ),
         "current_recommended_path": (
             "Explicit RTDL/OptiX self-query predicate direct-status CuPy for measured 524k/1M "
@@ -310,7 +313,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
         ),
         "current_partner_role": (
             "CuPy is the measured predicate direct-status compact-signature route in "
-            "Goal4484/Goal4485/Goal4486/Goal4488/Goal4489/Goal4490/Goal4491/Goal4495; Numba remains the no-C++ Python-source same-contract fallback "
+            "Goal4484/Goal4485/Goal4486/Goal4488/Goal4489/Goal4490/Goal4491/Goal4495/Goal4496; Numba remains the no-C++ Python-source same-contract fallback "
             "and grouped-stream reference route"
         ),
         "next_generic_runtime_action": (
@@ -319,7 +322,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "device-coordinate-column entry point only where callers already own "
             "partner columns, because Goal4490 shows app-constructed columns are "
             "not a stable default promotion after charging build time, and Goal4495 "
-            "confirms the same rule at 2M `road3d`; broaden non-road3d 2M profile coverage only if it changes a route decision; use "
+            "confirms the same rule at 2M `road3d`, while Goal4496 covers "
+            "non-road3d 2M isolated direct-status prepare; run non-road3d 2M "
+            "app-total coverage only if it changes a route decision; use "
             "graph-only component-size signature only for the narrower "
             "graph-component contract"
         ),
@@ -348,6 +353,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4490",
             "Goal4491",
             "Goal4495",
+            "Goal4496",
         ),
     },
     "robot_collision": {

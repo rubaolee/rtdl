@@ -1,0 +1,160 @@
+{
+  "case_count": 2,
+  "claim_boundary": {
+    "caller_owned_column_speedup_requires_existing_device_columns": true,
+    "isolated_direct_status_prepare_only": true,
+    "not_count_threshold_app_route": true,
+    "point_column_build_reported_separately": true,
+    "route_promotion_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "datasets": [
+    "clustered3d",
+    "ngsim_dense"
+  ],
+  "error_count": 0,
+  "goal": "Goal4496 / V3 M100",
+  "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+  "ok_count": 2,
+  "partition_cell_factor": 0.25,
+  "point_count": 2097152,
+  "rows": [
+    {
+      "claim_boundary": {
+        "counts_point_column_build_separately": true,
+        "isolates_direct_status_coordinate_handoff": true,
+        "not_count_threshold_app_route": true,
+        "not_full_rtdbscan_total": true,
+        "route_promotion_authorized": false
+      },
+      "column_prepare_metadata": {
+        "point_coordinate_host_extraction": "caller_owned_cupy_device_columns",
+        "point_coordinate_upload_avoided": true,
+        "prepare_phase_timing_sec": {
+          "coordinate_columns_sec": 1.9669532775878906e-06,
+          "partition_aabb_reduce_sec": 0.0018897280097007751,
+          "partition_keys_sec": 0.0032734721899032593,
+          "partition_offsets_sec": 0.00012177973985671997,
+          "row_xyz_extract_sec": 2.2299587726593018e-05,
+          "sort_unique_search_sec": 0.004614748060703278
+        }
+      },
+      "column_prepare_phase_total_sec": 0.009959623217582703,
+      "column_prepare_sec": 0.01000678539276123,
+      "column_run_sec": 10.422620318830013,
+      "dataset": "clustered3d",
+      "partition_cell_factor": 0.25,
+      "point_column_build_sec": 1.2552239522337914,
+      "point_count": 2097152,
+      "prepare_phase_speedup_if_columns_already_owned": 123.44418735477925,
+      "prepare_speedup_if_columns_already_owned": 127.92892051749402,
+      "radius": 0.055,
+      "row_prepare_metadata": {
+        "point_coordinate_host_extraction": "attribute_xyz_rows_direct",
+        "point_coordinate_upload_avoided": false,
+        "prepare_phase_timing_sec": {
+          "coordinate_columns_sec": 0.4688207283616066,
+          "partition_aabb_reduce_sec": 0.0030240416526794434,
+          "partition_keys_sec": 0.3708522617816925,
+          "partition_offsets_sec": 0.0005731508135795593,
+          "row_xyz_extract_sec": 0.3326869010925293,
+          "sort_unique_search_sec": 0.0531013086438179
+        }
+      },
+      "row_prepare_phase_total_sec": 1.2294575944542885,
+      "row_prepare_sec": 1.2801572531461716,
+      "row_run_sec": 10.520656019449234,
+      "signature": {
+        "component_count": 4,
+        "first_sizes": [
+          524288,
+          524288,
+          524288,
+          524288
+        ],
+        "last_sizes": [
+          524288,
+          524288,
+          524288,
+          524288
+        ],
+        "point_count": 2097152
+      },
+      "signatures_match": true,
+      "status": "ok",
+      "wall_sec": 32.8392825499177
+    },
+    {
+      "claim_boundary": {
+        "counts_point_column_build_separately": true,
+        "isolates_direct_status_coordinate_handoff": true,
+        "not_count_threshold_app_route": true,
+        "not_full_rtdbscan_total": true,
+        "route_promotion_authorized": false
+      },
+      "column_prepare_metadata": {
+        "point_coordinate_host_extraction": "caller_owned_cupy_device_columns",
+        "point_coordinate_upload_avoided": true,
+        "prepare_phase_timing_sec": {
+          "coordinate_columns_sec": 2.1383166313171387e-06,
+          "partition_aabb_reduce_sec": 0.0013312548398971558,
+          "partition_keys_sec": 0.0042719170451164246,
+          "partition_offsets_sec": 0.00011433660984039307,
+          "row_xyz_extract_sec": 2.228468656539917e-05,
+          "sort_unique_search_sec": 0.004728853702545166
+        }
+      },
+      "column_prepare_phase_total_sec": 0.010510504245758057,
+      "column_prepare_sec": 0.010556742548942566,
+      "column_run_sec": 2.292305886745453,
+      "dataset": "ngsim_dense",
+      "partition_cell_factor": 0.25,
+      "point_column_build_sec": 0.8576475381851196,
+      "point_count": 2097152,
+      "prepare_phase_speedup_if_columns_already_owned": 77.41826020630951,
+      "prepare_speedup_if_columns_already_owned": 82.06824819218266,
+      "radius": 0.012,
+      "row_prepare_metadata": {
+        "point_coordinate_host_extraction": "attribute_xyz_rows_direct",
+        "point_coordinate_upload_avoided": false,
+        "prepare_phase_timing_sec": {
+          "coordinate_columns_sec": 0.4455261528491974,
+          "partition_aabb_reduce_sec": 0.0013822466135025024,
+          "partition_keys_sec": 0.0038813352584838867,
+          "partition_offsets_sec": 0.00011536478996276855,
+          "row_xyz_extract_sec": 0.35795969516038895,
+          "sort_unique_search_sec": 0.004804894328117371
+        }
+      },
+      "row_prepare_phase_total_sec": 0.8137049525976181,
+      "row_prepare_sec": 0.8663733676075935,
+      "row_run_sec": 2.302027717232704,
+      "signature": {
+        "component_count": 1,
+        "first_sizes": [
+          2097152
+        ],
+        "last_sizes": [
+          2097152
+        ],
+        "point_count": 2097152
+      },
+      "signatures_match": true,
+      "status": "ok",
+      "wall_sec": 17.05357100814581
+    }
+  ],
+  "summary": {
+    "all_signatures_match": true,
+    "prepare_phase_speedups_if_columns_already_owned": {
+      "clustered3d": 123.44418735477925,
+      "ngsim_dense": 77.41826020630951
+    },
+    "prepare_speedups_if_columns_already_owned": {
+      "clustered3d": 127.92892051749402,
+      "ngsim_dense": 82.06824819218266
+    }
+  },
+  "version": "rtdl.v3_0.rtdbscan_2m_point_column_prepare_profiles.goal4496.v1"
+}

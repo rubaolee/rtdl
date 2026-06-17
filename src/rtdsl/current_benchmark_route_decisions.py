@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4495.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4496.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -1143,7 +1143,8 @@ def _refresh_goal4484_route_decisions(
                 next_runtime_action=(
                     "keep predicate direct-status as the measured explicit compact-signature "
                     "route for the Goal4484/Goal4485/Goal4486/Goal4488/Goal4489/Goal4490 524k and 1M profiles, "
-                    "with Goal4495 extending the caller-owned point-column reuse boundary to the 2M `road3d` profile; "
+                    "with Goal4495 extending the caller-owned point-column reuse boundary to the 2M `road3d` app profile "
+                    "and Goal4496 extending isolated direct-status prepare reuse to 2M `clustered3d` and `ngsim_dense`; "
                     "keep grouped-stream Numba as fallback/reference; keep full Python row materialization explicit; "
                     "keep the profile/reuse advisor visible for explicit route choices; "
                     "Goal4488 reduces direct-status row-columnization prepare debt and Goal4489 "
@@ -1151,8 +1152,10 @@ def _refresh_goal4484_route_decisions(
                     "app mode and shows app-constructed coordinate columns are not a default promotion; "
                     "Goal4491 removes redundant coordinate-helper pre-scan but keeps the same promotion boundary; "
                     "Goal4495 shows that existing device columns remain valuable at 2M road3d, but temporary "
-                    "app-constructed columns are still essentially flat when charged; next serious runtime work "
-                    "is broader non-road3d 2M profile coverage or a policy primitive only if new evidence requires it. "
+                    "app-constructed columns are still essentially flat when charged; Goal4496 shows the same "
+                    "coordinate-handoff prepare win at 2M `clustered3d` and `ngsim_dense` in isolated direct-status "
+                    "prepare. Next serious runtime work is non-road3d 2M app-total coverage or a policy primitive "
+                    "only if new evidence would change a route decision. "
                     "hidden factor selection, hidden output-contract selection, hidden border-policy "
                     "selection, and automatic partner selection remain blocked."
                 ),
@@ -1218,6 +1221,7 @@ def _refresh_goal4484_route_decisions(
                     "Goal4490",
                     "Goal4491",
                     "Goal4495",
+                    "Goal4496",
                 ),
                 pod_needed_next=False,
             )
