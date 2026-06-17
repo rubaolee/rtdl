@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4491.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4492.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -870,7 +870,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "use an already-sorted source-group skip-sort fast path. It cannot: "
             "sorted source groups cover only 0.131%/0.617%/0.001% of two-hop "
             "rows on `com-lj`/`soc-LiveJournal1`/`com-orkut`, so that shortcut "
-            "is rejected and the current internal route remains unchanged."
+            "is rejected and the current internal route remains unchanged. "
+            "Goal4492 then measures bounded source-group local unique-count "
+            "coverage: 16K rows covers 93.73%/89.85%/69.43% of two-hop rows "
+            "and 65K covers 99.85%/99.38%/98.44%, so a single small bounded "
+            "local kernel is not the right default; the credible next shape is "
+            "hybrid/two-pass small-source local unique plus large-tail sort/RLE fallback."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -936,8 +941,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "when rejecting the no-C++ Numba fused decode/project output builder. "
             "Cite Goal4482 when rejecting an already-sorted source-group "
             "skip-sort fast path: sorted two-hop row coverage is below 1% on "
-            "all three large rows, so the useful grouped/local direction needs "
-            "a true bounded-kernel strategy."
+            "all three large rows. Cite Goal4492 when rejecting a single small "
+            "bounded local unique-count kernel and when choosing a hybrid/two-pass "
+            "source-group plan instead."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -973,6 +979,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "promoting the Goal4480 compact constant-ray layout retest on top of sort/RLE",
             "promoting the Goal4481 numba_fused_decode_project output builder",
             "promoting an already-sorted source-group skip-sort fast path after Goal4482",
+            "promoting a single small bounded source-group local unique-count kernel after Goal4492",
             "spending the next Triangle Counting optimization cycle on counts/filter, duplicate count sum, or RT traversal before further reducing Goal4479 sort/RLE unique-count cost",
             "automatic CuPy-vs-Numba partner selection",
         ),
@@ -1003,9 +1010,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "output builder should not be promoted; Goal4482 shows an "
             "already-sorted source-group skip-sort fast path should not be "
             "promoted because sorted two-hop row coverage is below 1% on all "
-            "large rows; next useful work is a true lower-overhead "
-            "grouped/local unique-count strategy, "
-            "without breaking the app-agnostic primitive contract"
+            "large rows; Goal4492 shows a single small bounded local unique-count "
+            "kernel is also insufficient because 16K covers only 69.43% of "
+            "`com-orkut` two-hop rows, so next useful work is hybrid/two-pass "
+            "small-source local unique plus large-tail sort/RLE fallback without "
+            "breaking the app-agnostic primitive contract"
         ),
         evidence_refs=(
             "Goal2797",
@@ -1042,6 +1051,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4480",
             "Goal4481",
             "Goal4482",
+            "Goal4492",
         ),
         pod_needed_next=False,
     ),

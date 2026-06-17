@@ -1,0 +1,299 @@
+{
+  "case_count": 3,
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "feasibility_only": true,
+    "native_engine_customization": false,
+    "public_speedup_claim_authorized": false,
+    "route_changed": false
+  },
+  "decision": "Implementing a single small bounded local unique-count kernel is not justified. The next credible optimization is a hybrid/two-pass strategy: small source groups use local unique-count, while large tail groups retain sort/RLE fallback with explicit compaction.",
+  "error_count": 0,
+  "goal": "Goal4492 / V3 M96",
+  "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+  "ok_count": 3,
+  "rows": [
+    {
+      "bounded_source_group_coverage": {
+        "1024": {
+          "source_count": 3062105,
+          "source_pct": 95.3323316828724,
+          "two_hop_pct": 51.925897801383,
+          "two_hop_rows": 482252155
+        },
+        "128": {
+          "source_count": 1890132,
+          "source_pct": 58.84536642225233,
+          "two_hop_pct": 10.186774310152806,
+          "two_hop_rows": 94607779
+        },
+        "16384": {
+          "source_count": 3210101,
+          "source_pct": 99.9398822925799,
+          "two_hop_pct": 93.72996299192927,
+          "two_hop_rows": 870499665
+        },
+        "2048": {
+          "source_count": 3146591,
+          "source_pct": 97.96262926396749,
+          "two_hop_pct": 64.76662050707375,
+          "two_hop_rows": 601507988
+        },
+        "256": {
+          "source_count": 2460332,
+          "source_pct": 76.59736889296246,
+          "two_hop_pct": 21.44294255164425,
+          "two_hop_rows": 199147356
+        },
+        "4096": {
+          "source_count": 3186782,
+          "source_pct": 99.21389326133738,
+          "two_hop_pct": 77.05893819435462,
+          "two_hop_rows": 715670611
+        },
+        "512": {
+          "source_count": 2866298,
+          "source_pct": 89.2362840718897,
+          "two_hop_pct": 37.11394093900158,
+          "two_hop_rows": 344688850
+        },
+        "64": {
+          "source_count": 1287646,
+          "source_pct": 40.08820584601897,
+          "two_hop_pct": 4.153596939805223,
+          "two_hop_rows": 38575762
+        },
+        "65536": {
+          "source_count": 3212012,
+          "source_pct": 99.9993773411971,
+          "two_hop_pct": 99.8543926806865,
+          "two_hop_rows": 927379171
+        },
+        "8192": {
+          "source_count": 3205325,
+          "source_pct": 99.79119137044712,
+          "two_hop_pct": 88.19637997580423,
+          "two_hop_rows": 819107538
+        }
+      },
+      "build_contract_wall_sec": 2.6852534785866737,
+      "dataset": "com_lj",
+      "directed_edge_count": 33895259,
+      "edge_count": 34681189,
+      "edge_file": "build/goal2593_snap_edges/com-lj.edge",
+      "local_unique_kernel_reading": "single small-bound local unique is insufficient for the largest rows; a hybrid small-source local path plus large-source sort/RLE fallback is the plausible next shape",
+      "max_source_two_hop_rows": 69880,
+      "source_count": 3212032,
+      "source_two_hop_quantiles": {
+        "50": 93,
+        "75": 239,
+        "90": 544,
+        "95": 967,
+        "99": 3492,
+        "99.9": 12008
+      },
+      "status": "ok",
+      "total_two_hop_rows": 928731472
+    },
+    {
+      "bounded_source_group_coverage": {
+        "1024": {
+          "source_count": 4022481,
+          "source_pct": 94.50081368580287,
+          "two_hop_pct": 41.51324071417931,
+          "two_hop_rows": 574252379
+        },
+        "128": {
+          "source_count": 2669230,
+          "source_pct": 62.70866336337091,
+          "two_hop_pct": 8.364885663220514,
+          "two_hop_rows": 115711407
+        },
+        "16384": {
+          "source_count": 4251724,
+          "source_pct": 99.88645752893713,
+          "two_hop_pct": 89.85001674178507,
+          "two_hop_rows": 1242894676
+        },
+        "2048": {
+          "source_count": 4142703,
+          "source_pct": 97.3252090833037,
+          "two_hop_pct": 53.86855057283532,
+          "two_hop_rows": 745163297
+        },
+        "256": {
+          "source_count": 3312641,
+          "source_pct": 77.82442476395829,
+          "two_hop_pct": 16.88482554787278,
+          "two_hop_rows": 233567678
+        },
+        "4096": {
+          "source_count": 4207629,
+          "source_pct": 98.8505263761298,
+          "two_hop_pct": 67.2561855929076,
+          "two_hop_rows": 930354362
+        },
+        "512": {
+          "source_count": 3777086,
+          "source_pct": 88.73570822615555,
+          "two_hop_pct": 28.94984407734758,
+          "two_hop_rows": 400462998
+        },
+        "64": {
+          "source_count": 1969746,
+          "source_pct": 46.27556966816138,
+          "two_hop_pct": 3.672072995718354,
+          "two_hop_rows": 50795761
+        },
+        "65536": {
+          "source_count": 4256443,
+          "source_pct": 99.99732177908108,
+          "two_hop_pct": 99.38250862705907,
+          "two_hop_rows": 1374757572
+        },
+        "8192": {
+          "source_count": 4239825,
+          "source_pct": 99.60691234723275,
+          "two_hop_pct": 80.3818583657721,
+          "two_hop_rows": 1111921705
+        }
+      },
+      "build_contract_wall_sec": 4.229974918067455,
+      "dataset": "soc_livejournal1",
+      "directed_edge_count": 42260523,
+      "edge_count": 68993773,
+      "edge_file": "build/goal2593_snap_edges/soc-LiveJournal1.edge",
+      "local_unique_kernel_reading": "single small-bound local unique is insufficient for the largest rows; a hybrid small-source local path plus large-source sort/RLE fallback is the plausible next shape",
+      "max_source_two_hop_rows": 96990,
+      "source_count": 4256557,
+      "source_two_hop_quantiles": {
+        "50": 75,
+        "75": 223,
+        "90": 574,
+        "95": 1124,
+        "99": 4529,
+        "99.9": 17795
+      },
+      "status": "ok",
+      "total_two_hop_rows": 1383299326
+    },
+    {
+      "bounded_source_group_coverage": {
+        "1024": {
+          "source_count": 1143794,
+          "source_pct": 38.067158034448994,
+          "two_hop_pct": 6.996788645729605,
+          "two_hop_rows": 600319615
+        },
+        "128": {
+          "source_count": 116132,
+          "source_pct": 3.865044926670913,
+          "two_hop_pct": 0.1060034789178543,
+          "two_hop_rows": 9095025
+        },
+        "16384": {
+          "source_count": 2925188,
+          "source_pct": 97.35458821822267,
+          "two_hop_pct": 69.43466325591712,
+          "two_hop_rows": 5957445969
+        },
+        "2048": {
+          "source_count": 1969484,
+          "source_pct": 65.54734390486288,
+          "two_hop_pct": 21.20870310934474,
+          "two_hop_rows": 1819692023
+        },
+        "256": {
+          "source_count": 263318,
+          "source_pct": 8.763612957678603,
+          "two_hop_pct": 0.435436257384649,
+          "two_hop_rows": 37360129
+        },
+        "4096": {
+          "source_count": 2582855,
+          "source_pct": 85.96123905621708,
+          "two_hop_pct": 41.68035006491721,
+          "two_hop_rows": 3576145139
+        },
+        "512": {
+          "source_count": 556001,
+          "source_pct": 18.504536598645977,
+          "two_hop_pct": 1.7486660644836345,
+          "two_hop_rows": 150034336
+        },
+        "64": {
+          "source_count": 39536,
+          "source_pct": 1.3158166243659046,
+          "two_hop_pct": 0.019762304207551096,
+          "two_hop_rows": 1695592
+        },
+        "65536": {
+          "source_count": 3002862,
+          "source_pct": 99.93969395681528,
+          "two_hop_pct": 98.44388169182679,
+          "two_hop_rows": 8446416799
+        },
+        "8192": {
+          "source_count": 2839645,
+          "source_pct": 94.50759050732293,
+          "two_hop_pct": 58.143201446388474,
+          "two_hop_rows": 4988646374
+        }
+      },
+      "build_contract_wall_sec": 4.233262717723846,
+      "dataset": "com_orkut",
+      "directed_edge_count": 117117316,
+      "edge_count": 117185083,
+      "edge_file": "build/goal2593_snap_edges/com-orkut.edge",
+      "local_unique_kernel_reading": "single small-bound local unique is insufficient for the largest rows; a hybrid small-source local path plus large-source sort/RLE fallback is the plausible next shape",
+      "max_source_two_hop_rows": 118057,
+      "source_count": 3004674,
+      "source_two_hop_quantiles": {
+        "50": 1386,
+        "75": 2702,
+        "90": 5147,
+        "95": 8932,
+        "99": 35063,
+        "99.9": 61411
+      },
+      "status": "ok",
+      "total_two_hop_rows": 8579930671
+    }
+  ],
+  "summary": {
+    "all_cases_ok": true,
+    "max_source_two_hop_rows": {
+      "com_lj": 69880,
+      "com_orkut": 118057,
+      "soc_livejournal1": 96990
+    },
+    "two_hop_pct_covered_at_16384": {
+      "com_lj": 93.72996299192927,
+      "com_orkut": 69.43466325591712,
+      "soc_livejournal1": 89.85001674178507
+    },
+    "two_hop_pct_covered_at_65536": {
+      "com_lj": 99.8543926806865,
+      "com_orkut": 98.44388169182679,
+      "soc_livejournal1": 99.38250862705907
+    },
+    "two_hop_pct_covered_at_8192": {
+      "com_lj": 88.19637997580423,
+      "com_orkut": 58.143201446388474,
+      "soc_livejournal1": 80.3818583657721
+    }
+  },
+  "thresholds": [
+    64,
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096,
+    8192,
+    16384,
+    65536
+  ],
+  "version": "rtdl.v3_0.triangle_source_group_unique_feasibility.goal4492.v1"
+}
