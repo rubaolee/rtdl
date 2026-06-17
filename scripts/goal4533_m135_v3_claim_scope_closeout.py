@@ -22,9 +22,11 @@ def build_packet() -> dict[str, Any]:
         "runtime_queue_empty": tuple(summary["runtime_build_queue"]) == (),
         "claim_queue_empty": tuple(summary["claim_or_evidence_queue"]) == (),
         "design_queue_empty": tuple(summary["design_blocker_queue"]) == (),
-        "future_design_queue_exact": tuple(summary["future_design_target_queue"])
-        == ("barnes_hut",),
-        "closed_count_is_nine": len(summary["closed_current_targets"]) == 9,
+        "future_design_queue_empty_after_goal4541": tuple(
+            summary["future_design_target_queue"]
+        )
+        == (),
+        "closed_count_is_ten_after_goal4541": len(summary["closed_current_targets"]) == 10,
         "rtnn_closed_claim_scoped": (
             rows["rtnn"]["work_class"] == "closed_current_target"
             and not rows["rtnn"]["paper_reproduction_claim_authorized"]
@@ -76,8 +78,9 @@ def build_packet() -> dict[str, Any]:
             "RayJoin full RayJoin paper reproduction and Section 5.7 8/8 overlay "
             "wording remain future optional claim-expansion work. The V3 implementation "
             "queue now has no runtime blocker and no claim/evidence blocker; "
-            "Barnes-Hut remains the only future design target after Goal4540 "
-            "accepts Triangle's non-graph stream continuation contract, and "
+            "Goal4540 accepts Triangle's non-graph stream continuation contract, "
+            "Goal4541 closes Barnes-Hut only as a current mixed-explicit route "
+            "classification, and "
             "none of the public speedup, broad RT-core, paper-reproduction, or "
             "automatic partner-selection claims are authorized."
         ),

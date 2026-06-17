@@ -19,7 +19,7 @@ class Goal4522V30M126RouteAdequacyConsistencyTest(unittest.TestCase):
         cls.packet = json.loads(PACKET.read_text(encoding="utf-8"))
 
     def test_packet_checks_all_pass(self) -> None:
-        self.assertEqual("rtdl.v3_0.route_adequacy_consistency.goal4522.v2", self.packet["version"])
+        self.assertEqual("rtdl.v3_0.route_adequacy_consistency.goal4522.v3", self.packet["version"])
         self.assertEqual([], self.packet["failed_checks"])
         for name, passed in self.packet["checks"].items():
             self.assertTrue(passed, name)
@@ -31,6 +31,8 @@ class Goal4522V30M126RouteAdequacyConsistencyTest(unittest.TestCase):
         rt_dbscan_adequacy = adequacy["rt_dbscan"]
         triangle_route = routes["triangle_counting"]
         triangle_adequacy = adequacy["triangle_counting"]
+        barnes_route = routes["barnes_hut"]
+        barnes_adequacy = adequacy["barnes_hut"]
 
         self.assertIn("Goal4519", rt_dbscan_route["evidence_refs"])
         self.assertIn("Goal4520", rt_dbscan_route["evidence_refs"])
@@ -53,6 +55,16 @@ class Goal4522V30M126RouteAdequacyConsistencyTest(unittest.TestCase):
         self.assertIn("future graph wording", triangle_route["next_runtime_action"])
         self.assertIn("device-output stream", triangle_adequacy["next_generic_runtime_action"])
         self.assertIn("future graph wording", triangle_adequacy["next_generic_runtime_action"])
+        self.assertIn("Goal4527", barnes_route["evidence_refs"])
+        self.assertIn("Goal4541", barnes_route["evidence_refs"])
+        self.assertIn("Goal4527", barnes_adequacy["evidence_refs"])
+        self.assertIn("Goal4541", barnes_adequacy["evidence_refs"])
+        self.assertIn("no immediate V3 build target", barnes_route["next_runtime_action"])
+        self.assertIn("subtree-skip semantics", barnes_route["next_runtime_action"])
+        self.assertIn("no immediate V3 build target", barnes_adequacy["next_generic_runtime_action"])
+        self.assertIn("subtree-skip semantics", barnes_adequacy["next_generic_runtime_action"])
+        self.assertFalse(barnes_route["pod_needed_next"])
+        self.assertFalse(barnes_adequacy["pod_needed_next"])
 
     def test_report_index_and_claim_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")

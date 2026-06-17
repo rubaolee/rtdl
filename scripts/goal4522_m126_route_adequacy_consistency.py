@@ -7,7 +7,7 @@ from typing import Any
 import rtdsl as rt
 
 
-PACKET_VERSION = "rtdl.v3_0.route_adequacy_consistency.goal4522.v2"
+PACKET_VERSION = "rtdl.v3_0.route_adequacy_consistency.goal4522.v3"
 OUT_JSON = Path("docs/reports/goal4522_v3_0_m126_route_adequacy_consistency_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4522_v3_0_m126_route_adequacy_consistency_2026-06-17.md")
 
@@ -52,6 +52,26 @@ def build_packet() -> dict[str, Any]:
             adequacy["triangle_counting"]["next_generic_runtime_action"],
             ("Goal4539", "Goal4540", "device-output stream", "future graph wording"),
         ),
+        "barnes_hut_route_refs": all(
+            ref in routes["barnes_hut"]["evidence_refs"]
+            for ref in ("Goal4497", "Goal4527", "Goal4541")
+        ),
+        "barnes_hut_route_wording": _contains_all(
+            routes["barnes_hut"]["next_runtime_action"],
+            ("no immediate V3 build target", "subtree-skip semantics", "future RT-core research"),
+        ),
+        "barnes_hut_adequacy_refs": all(
+            ref in adequacy["barnes_hut"]["evidence_refs"]
+            for ref in ("Goal4497", "Goal4527", "Goal4541")
+        ),
+        "barnes_hut_adequacy_wording": _contains_all(
+            adequacy["barnes_hut"]["next_generic_runtime_action"],
+            ("no immediate V3 build target", "subtree-skip semantics", "Optional future"),
+        ),
+        "barnes_hut_no_next_pod": (
+            not routes["barnes_hut"]["pod_needed_next"]
+            and not adequacy["barnes_hut"]["pod_needed_next"]
+        ),
         "route_registry_valid": rt.validate_current_benchmark_route_decisions()["status"] == "accept",
         "adequacy_registry_valid": rt.validate_current_benchmark_adequacy()["status"] == "accept",
     }
@@ -67,10 +87,12 @@ def build_packet() -> dict[str, Any]:
             "rt_dbscan_reader_len": len(routes["rt_dbscan"]["current_reader_decision"]),
             "rt_dbscan_user_guidance_len": len(routes["rt_dbscan"]["user_choice_guidance"]),
             "triangle_refs_tail": routes["triangle_counting"]["evidence_refs"][-6:],
+            "barnes_hut_refs_tail": routes["barnes_hut"]["evidence_refs"][-6:],
         },
         "adequacy_summary": {
             "rt_dbscan_refs_tail": adequacy["rt_dbscan"]["evidence_refs"][-6:],
             "triangle_refs_tail": adequacy["triangle_counting"]["evidence_refs"][-6:],
+            "barnes_hut_refs_tail": adequacy["barnes_hut"]["evidence_refs"][-6:],
         },
         "claim_boundary": {
             "runtime_executed": False,
@@ -89,7 +111,9 @@ def build_packet() -> dict[str, Any]:
             "stream as valid; Goal4539 records capture-mode-independent graph "
             "failure; and Goal4540 accepts the non-graph stream continuation "
             "contract for current closure while future graph wording remains "
-            "blocked."
+            "blocked. Barnes-Hut now records Goal4541 as a current mixed-explicit "
+            "route closure while preserving Goal4527's RT-native subtree-skip "
+            "semantic blocker as future optional research/claim expansion."
         ),
     }
 

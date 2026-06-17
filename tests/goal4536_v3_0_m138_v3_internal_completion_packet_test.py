@@ -46,7 +46,8 @@ class Goal4536V30M138InternalCompletionPacketTest(unittest.TestCase):
             },
             set(rows),
         )
-        self.assertEqual("future_design_target", rows["barnes_hut"]["queue_class"])
+        self.assertEqual("closed_current_target", rows["barnes_hut"]["queue_class"])
+        self.assertIn("Goal4541", rows["barnes_hut"]["evidence_refs"])
         self.assertEqual("closed_current_target", rows["triangle_counting"]["queue_class"])
         self.assertIn("non-graph stream", rows["triangle_counting"]["remaining_gap"])
         self.assertEqual("closed_current_target", rows["rtnn"]["queue_class"])

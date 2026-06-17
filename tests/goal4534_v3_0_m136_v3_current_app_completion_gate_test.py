@@ -34,23 +34,25 @@ class Goal4534V30M136CurrentAppCompletionGateTest(unittest.TestCase):
         self.assertEqual((), tuple(summary["claim_or_evidence_queue"]))
         self.assertEqual((), tuple(summary["design_blocker_queue"]))
         self.assertEqual(
-            ("barnes_hut",),
+            (),
             tuple(summary["future_design_target_queue"]),
         )
-        self.assertEqual(9, len(summary["closed_current_targets"]))
+        self.assertEqual(10, len(summary["closed_current_targets"]))
+        self.assertIn("barnes_hut", summary["closed_current_targets"])
         self.assertIn("triangle_counting", summary["closed_current_targets"])
 
-    def test_future_design_targets_do_not_authorize_claims(self) -> None:
-        future = self.packet["future_design_targets"]
-        row = future["barnes_hut"]
-        self.assertEqual("future_design_target", row["work_class"])
+    def test_barnes_hut_current_route_closure_does_not_authorize_claims(self) -> None:
+        closed = self.packet["barnes_hut_current_route_closed_targets"]
+        row = closed["barnes_hut"]
+        self.assertEqual("closed_current_target", row["work_class"])
+        self.assertIn("Goal4541", row["evidence_refs"])
         self.assertIn("no current V3 app implementation blocker", row["remaining_gap"])
         self.assertFalse(row["public_speedup_claim_authorized"])
         self.assertFalse(row["broad_rt_core_claim_authorized"])
         self.assertFalse(row["paper_reproduction_claim_authorized"])
         self.assertFalse(row["automatic_partner_selection_authorized"])
         self.assertFalse(row["app_specific_native_engine_logic_allowed"])
-        self.assertIn("hierarchical traversal", future["barnes_hut"]["next_build_target"])
+        self.assertIn("hierarchical traversal", closed["barnes_hut"]["next_build_target"])
 
     def test_triangle_is_closed_only_by_non_graph_stream_contract(self) -> None:
         row = self.packet["non_graph_stream_closed_targets"]["triangle_counting"]

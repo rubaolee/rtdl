@@ -32,9 +32,11 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "runtime_queue_empty": tuple(summary["runtime_build_queue"]) == (),
         "claim_queue_empty": tuple(summary["claim_or_evidence_queue"]) == (),
         "design_blocker_queue_empty": tuple(summary["design_blocker_queue"]) == (),
-        "future_design_queue_barnes_only": tuple(summary["future_design_target_queue"])
-        == ("barnes_hut",),
-        "closed_current_target_count_is_nine": len(summary["closed_current_targets"]) == 9,
+        "future_design_queue_empty_after_goal4541": tuple(summary["future_design_target_queue"])
+        == (),
+        "closed_current_target_count_is_ten_after_goal4541": (
+            len(summary["closed_current_targets"]) == 10
+        ),
         "triangle_closed_current_target": triangle["work_class"] == "closed_current_target",
         "triangle_has_goal4540_evidence": "Goal4540" in triangle["evidence_refs"],
         "triangle_non_graph_stream_contract_accepted": (
@@ -45,7 +47,10 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             goal4539_acceptance["m113_graph_capture_still_blocked"]
             and "M113 graph" in triangle["next_build_target"]
         ),
-        "barnes_hut_still_future_design_target": barnes["work_class"] == "future_design_target",
+        "barnes_hut_closed_by_goal4541_successor": (
+            barnes["work_class"] == "closed_current_target"
+            and "Goal4541" in barnes["evidence_refs"]
+        ),
         "goal4539_stream_prelaunch_validated": goal4539_runtime[
             "device_output_stream_prelaunch_validated"
         ],
@@ -117,9 +122,11 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "for exactly one purpose: Triangle Counting is moved from future design "
             "target to closed current target because Goal4539 validates the "
             "non-graph device-output stream continuation evidence and confirms "
-            "CUDA graph capture remains invalid across capture modes. Barnes-Hut "
-            "remains the only future design target. This does not authorize M113 "
-            "graph readiness, release, public speedup, broad RT-core, automatic "
+            "CUDA graph capture remains invalid across capture modes. Goal4541 "
+            "later closes Barnes-Hut only as a current mixed-explicit route "
+            "classification, so the current future-design queue is empty. This "
+            "does not authorize M113 graph readiness, RT-native Barnes-Hut "
+            "traversal, release, public speedup, broad RT-core, automatic "
             "partner-selection, paper-reproduction, or app-specific native-engine "
             "wording."
         ),

@@ -8,10 +8,10 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION = (
-    "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8"
+    "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_STATUS = (
-    "post_triangle_non_graph_stream_acceptance_barnes_hut_future_design_only_not_release_authorization"
+    "all_current_benchmark_apps_closed_future_rt_native_research_not_release_authorization"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_CLAIM_BOUNDARY = (
     "This queue ranks post-clean-target implementation work after Goal4515 "
@@ -22,7 +22,10 @@ V3_BENCHMARK_IMPLEMENTATION_QUEUE_CLAIM_BOUNDARY = (
     "weighted replay graph capture remains invalid across CUDA capture modes "
     "while validating the device-output stream path, and Goal4540 accepts that "
     "non-graph stream continuation as enough to close Triangle's current V3 "
-    "future-design target. Barnes-Hut remains the only future design target. "
+    "future-design target. Goal4541 then closes Barnes-Hut only as a current "
+    "mixed-explicit route-classification target already supported by Goal4512; "
+    "RT-native hierarchical traversal remains future optional research and "
+    "claim-expansion work. "
     "This queue does not change any current benchmark app route and does not "
     "authorize public speedup, broad RT-core, paper-reproduction, automatic "
     "partner-selection, M113 graph-promotion, or app-specific native-engine "
@@ -115,16 +118,19 @@ class V3BenchmarkImplementationQueueRow:
 _ROWS: tuple[V3BenchmarkImplementationQueueRow, ...] = (
     V3BenchmarkImplementationQueueRow(
         app="barnes_hut",
-        priority=1,
-        work_class="future_design_target",
+        priority=None,
+        work_class="closed_current_target",
         current_route_status=(
             "current V3 route is mixed explicit: CPU/Numba or Numba CUDA fused "
             "force summary by scale; prepared RTDL/OptiX remains device-column "
-            "evidence, not Barnes-Hut RT-core traversal evidence"
+            "evidence, not Barnes-Hut RT-core traversal evidence; Goal4541 "
+            "closes the current route classification without implementing "
+            "RT-native hierarchical traversal"
         ),
         remaining_gap=(
-            "no current V3 app implementation blocker after Goal4512; future "
-            "RT-native Barnes-Hut acceleration remains a design target because "
+            "no current V3 app implementation blocker after Goal4512 and "
+            "Goal4541; future RT-native Barnes-Hut acceleration remains optional "
+            "research/claim-expansion work because "
             "Goal4527 blocks a naive node-AABB OptiX implementation: Barnes-Hut "
             "opening accepts a parent aggregate and must suppress its descendants, "
             "while a single custom-primitive GAS reports node AABBs independently "
@@ -132,20 +138,24 @@ _ROWS: tuple[V3BenchmarkImplementationQueueRow, ...] = (
             "hierarchical traversal design"
         ),
         next_build_target=(
-            "do not replace the fail-closed ABI with a direct all-node any-hit "
-            "route; future work must first design and review a generic "
-            "hierarchical traversal lowering that proves no double counting, "
-            "keeps force math outside app-specific native engine code, and then "
-            "beats fused CPU/Numba and fused Numba CUDA force-summary baselines"
+            "no immediate V3 build target; preserve explicit scale-dependent "
+            "CPU/Numba and Numba CUDA fused routes. Future optional RT-native "
+            "research must not replace the fail-closed ABI with a direct all-node "
+            "any-hit route until a reviewed generic hierarchical traversal "
+            "lowering proves no double counting, keeps force math outside "
+            "app-specific native engine code, and beats fused CPU/Numba plus "
+            "fused Numba CUDA force-summary baselines"
         ),
         evidence_refs=(
             "Goal4497",
+            "Goal4512",
             "Goal4517",
             "Goal4518",
             "Goal4523",
             "Goal4525",
             "Goal4526",
             "Goal4527",
+            "Goal4541",
         ),
         pod_needed_next=False,
     ),
@@ -415,7 +425,7 @@ def validate_v3_benchmark_implementation_queue(
         "all_route_apps_present": apps == route_apps,
         "runtime_queue_empty": runtime_apps == (),
         "design_queue_empty": design_apps == (),
-        "future_design_queue_exact": future_design_apps == ("barnes_hut",),
+        "future_design_queue_empty": future_design_apps == (),
         "next_runtime_target_none": packet["summary"]["next_runtime_build_target"] is None,
         "claim_queue_empty": tuple(packet["summary"]["claim_or_evidence_queue"]) == (),
         "design_targets_do_not_block_runtime_queue": bool(
@@ -424,7 +434,7 @@ def validate_v3_benchmark_implementation_queue(
         "future_design_targets_do_not_block_runtime_queue": bool(
             packet["summary"]["future_design_targets_do_not_block_runtime_queue"]
         ),
-        "closed_count_is_nine": len(packet["summary"]["closed_current_targets"]) == 9,
+        "closed_count_is_ten": len(packet["summary"]["closed_current_targets"]) == 10,
         "all_clean_targets_closed": bool(packet["summary"]["all_clean_targets_closed"]),
         "all_public_speedup_claims_blocked": bool(
             packet["summary"]["all_public_speedup_claims_blocked"]

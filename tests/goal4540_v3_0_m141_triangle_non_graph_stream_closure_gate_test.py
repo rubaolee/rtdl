@@ -49,12 +49,14 @@ class Goal4540V30M141TriangleNonGraphStreamClosureGateTest(unittest.TestCase):
         self.assertFalse(boundary["automatic_partner_selection_authorized"])
         self.assertFalse(boundary["app_specific_native_engine_logic_allowed"])
 
-    def test_barnes_hut_is_only_future_design_target(self) -> None:
+    def test_barnes_hut_is_closed_by_successor_gate(self) -> None:
         summary = self.packet["summary"]
-        self.assertEqual(("barnes_hut",), tuple(summary["future_design_target_queue"]))
-        self.assertEqual(9, len(summary["closed_current_targets"]))
+        self.assertEqual((), tuple(summary["future_design_target_queue"]))
+        self.assertEqual(10, len(summary["closed_current_targets"]))
         self.assertIn("triangle_counting", summary["closed_current_targets"])
-        self.assertEqual("future_design_target", self.packet["barnes_hut_row"]["work_class"])
+        self.assertIn("barnes_hut", summary["closed_current_targets"])
+        self.assertEqual("closed_current_target", self.packet["barnes_hut_row"]["work_class"])
+        self.assertIn("Goal4541", self.packet["barnes_hut_row"]["evidence_refs"])
 
     def test_goal4539_evidence_and_review_caveat_are_recorded(self) -> None:
         runtime = self.packet["goal4539_runtime"]

@@ -48,18 +48,18 @@ class Goal4527V30M131BarnesHutRtNativeTraversalSemanticGateTest(unittest.TestCas
         self.assertTrue(decision["current_runtime_queue_remains_empty"])
         self.assertTrue(all(source["fail_closed_fragments"].values()))
 
-    def test_queue_keeps_barnes_hut_as_future_design_target(self) -> None:
+    def test_queue_keeps_rt_native_blocker_but_successor_closes_current_route(self) -> None:
         queue = self.packet["queue_alignment"]
         checks = queue["queue_checks"]
         validation = rt.validate_v3_benchmark_implementation_queue()
 
         self.assertEqual("accept", validation["status"])
-        self.assertEqual("future_design_target", queue["barnes_hut_work_class"])
+        self.assertEqual("closed_current_target", queue["barnes_hut_work_class"])
         self.assertIsNone(queue["next_runtime_build_target"])
         self.assertEqual((), tuple(queue["runtime_build_queue"]))
         self.assertEqual((), tuple(queue["design_blocker_queue"]))
         self.assertEqual(
-            ("barnes_hut",),
+            (),
             tuple(queue["future_design_target_queue"]),
         )
         self.assertTrue(all(checks.values()))

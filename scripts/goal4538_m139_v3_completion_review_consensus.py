@@ -29,9 +29,9 @@ REVIEWERS = (
         "verdict": "approve",
         "blocking_findings": (),
         "caveat": (
-            "Barnes-Hut and Triangle are bounded as future design targets rather "
-            "than hidden current blockers; RTNN and Spatial RayJoin claim-scope "
-            "closure is honest."
+            "Triangle and Barnes-Hut are bounded as narrow route-classification "
+            "closures rather than hidden RT-native/public-performance claims; "
+            "RTNN and Spatial RayJoin claim-scope closure is honest."
         ),
     },
     {
@@ -41,9 +41,10 @@ REVIEWERS = (
         "blocking_findings": (),
         "caveat": (
             "Do not shorten the claim to generic V3 implementation complete: "
-            "Barnes-Hut still needs reviewed hierarchical traversal lowering and "
-            "Triangle still needs capture-compatible weighted replay or an "
-            "accepted non-graph continuation contract."
+            "Barnes-Hut still needs reviewed hierarchical traversal lowering for "
+            "any RT-native route, and Triangle M113 graph wording still needs "
+            "capture-compatible weighted replay beyond the accepted non-graph "
+            "continuation contract."
         ),
     },
 )
@@ -84,14 +85,14 @@ def build_packet() -> dict[str, Any]:
         "runtime_claim_design_queues_empty": tuple(summary["runtime_build_queue"]) == ()
         and tuple(summary["claim_or_evidence_queue"]) == ()
         and tuple(summary["design_blocker_queue"]) == (),
-        "goal4540_successor_future_design_targets_preserved": tuple(
+        "goal4541_successor_future_design_queue_empty": tuple(
             summary["future_design_target_queue"]
         )
-        == ("barnes_hut",),
-        "goal4540_successor_closed_current_target_count_preserved": len(
+        == (),
+        "goal4541_successor_closed_current_target_count_is_ten": len(
             summary["closed_current_targets"]
         )
-        == 9,
+        == 10,
         "goal4540_successor_triangle_closed_without_graph_claim": (
             "triangle_counting" in summary["closed_current_targets"]
             and not goal4536["claim_boundary"]["paper_reproduction_claim_authorized"]
@@ -131,10 +132,12 @@ def build_packet() -> dict[str, Any]:
             "the V3 current benchmark-app implementation queue is complete. "
             "Goal4540 later supersedes the Triangle future-design classification "
             "by explicitly accepting the non-graph stream device-output "
-            "continuation contract, so the current queue has empty runtime, "
-            "claim/evidence, and current design-blocker queues; nine apps are "
-            "closed current targets; and Barnes-Hut is the only remaining future "
-            "design target. "
+            "continuation contract. Goal4541 later closes Barnes-Hut only as a "
+            "current mixed-explicit route-classification target while keeping "
+            "RT-native hierarchical traversal as future optional research/claim "
+            "expansion. The current queue has empty runtime, claim/evidence, "
+            "current design-blocker, and future-design queues, and all ten apps "
+            "are closed current targets. "
             "The consensus does not authorize release, public speedup, broad "
             "RT-core, paper-reproduction, automatic partner-selection, or "
             "app-specific native-engine claims."
@@ -176,6 +179,7 @@ def write_report(packet: dict[str, Any], path: Path) -> None:
             f"- Future design targets: `{', '.join(summary['future_design_target_queue'])}`",
             f"- Closed current targets: `{', '.join(summary['closed_current_targets'])}`",
             "- Goal4540 successor note: `triangle_counting` is closed only through the non-graph stream continuation contract; M113 graph wording remains blocked.",
+            "- Goal4541 successor note: `barnes_hut` is closed only as a mixed-explicit current route classification; RT-native hierarchical traversal remains future optional research/claim expansion.",
             "",
             "## Checks",
             "",

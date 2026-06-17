@@ -44,14 +44,16 @@ def build_packet() -> dict[str, Any]:
             "CUDA graph capture for that OptiX launch. Goal4539 confirms the "
             "graph capture failure is capture-mode independent, and Goal4540 "
             "accepts the non-graph stream continuation contract for current "
-            "Triangle closure while keeping graph/public wording blocked. There is now no runtime "
+            "Triangle closure while keeping graph/public wording blocked. Goal4541 "
+            "then closes Barnes-Hut only as a current mixed-explicit route "
+            "classification, while RT-native hierarchical traversal remains "
+            "future optional research/claim expansion. There is now no runtime "
             "build target in this queue. Goal4533 closes RTNN and Spatial RayJoin as claim-scoped "
             "current targets: their full paper/author wording remains blocked, "
             "but that wording is future optional claim expansion rather than a "
-            "current V3 app implementation blocker. Barnes-Hut is the only "
-            "remaining future design target rather than a current app "
-            "implementation blocker. The other nine apps also have no "
-            "immediate V3 runtime blocker."
+            "current V3 app implementation blocker. All ten apps are now closed "
+            "current targets, and the future-design queue is empty. This is not "
+            "release authorization and not an RT-native Barnes-Hut speedup claim."
         ),
     }
 

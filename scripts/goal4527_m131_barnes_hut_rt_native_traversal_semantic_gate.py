@@ -40,14 +40,19 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "direct_all_node_anyhit_route_accepted": False,
     }
     queue_checks = {
-        "barnes_hut_is_future_design_target": barnes_row["work_class"] == "future_design_target",
+        "barnes_hut_current_route_closed_by_successor": (
+            barnes_row["work_class"] == "closed_current_target"
+            and "Goal4541" in barnes_row["evidence_refs"]
+        ),
         "barnes_hut_not_next_runtime_target": (
             queue["summary"]["next_runtime_build_target"] != "barnes_hut"
         ),
         "runtime_queue_empty": tuple(queue["summary"]["runtime_build_queue"]) == (),
         "goal4527_recorded": "Goal4527" in barnes_row["evidence_refs"],
-        "future_design_queue_recorded": tuple(queue["summary"]["future_design_target_queue"])
-        == ("barnes_hut",),
+        "future_design_queue_empty_after_successor": tuple(
+            queue["summary"]["future_design_target_queue"]
+        )
+        == (),
     }
     return {
         "version": PACKET_VERSION,
@@ -103,8 +108,10 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "parent aggregate suppresses all descendants; reporting nodes "
             "independently would double count unless a separate reviewed "
             "hierarchical traversal/skip design exists. The fail-closed ABI "
-            "therefore stays in place, and Barnes-Hut remains a future design "
-            "target rather than a current V3 app implementation blocker."
+            "therefore stays in place. Goal4541 later closes Barnes-Hut only "
+            "as a current mixed-explicit route-classification target; the "
+            "RT-native hierarchical traversal route remains future optional "
+            "research/claim expansion rather than a current V3 app blocker."
         ),
     }
 

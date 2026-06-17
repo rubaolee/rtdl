@@ -10,7 +10,8 @@
     "scripts/goal4527_m131_barnes_hut_rt_native_traversal_semantic_gate.py",
     "scripts/goal4533_m135_v3_claim_scope_closeout.py",
     "scripts/goal4534_m136_v3_current_app_completion_gate.py",
-    "scripts/goal4540_m141_triangle_non_graph_stream_closure_gate.py"
+    "scripts/goal4540_m141_triangle_non_graph_stream_closure_gate.py",
+    "scripts/goal4541_m142_barnes_hut_current_route_closure_gate.py"
   ],
   "checks": {
     "all_app_specific_native_engine_logic_blocked": true,
@@ -19,10 +20,10 @@
     "all_paper_reproduction_claims_blocked": true,
     "all_public_speedup_claims_blocked": true,
     "claim_queue_empty": true,
-    "closed_current_target_count_is_nine": true,
+    "closed_current_target_count_is_ten": true,
     "current_audit_files_no_stale_queue_wording": true,
     "design_blocker_queue_empty": true,
-    "future_design_queue_exact": true,
+    "future_design_queue_empty_after_goal4541": true,
     "queue_validates": true,
     "runtime_queue_empty": true
   },
@@ -36,12 +37,12 @@
     "release_authorized": false,
     "runtime_executed": false
   },
-  "conclusion": "Goal4535 audits the current V3 completion surface after Goal4534. The implementation queue validates with empty runtime, claim/evidence, and design-blocker queues; Barnes-Hut is listed as the only future design target after Goal4540 accepts Triangle's non-graph stream continuation contract. The current reader-facing docs and queue scripts checked by this audit contain no stale wording that reopens RT-DBSCAN runtime work or RTNN/Spatial RayJoin claim blockers. This audit does not authorize release or any public speedup, broad RT-core, paper-reproduction, automatic partner-selection, or app-specific native-engine claims.",
+  "conclusion": "Goal4535 audits the current V3 completion surface after Goal4534. The implementation queue validates with empty runtime, claim/evidence, design-blocker queues; Goal4540 accepts Triangle's non-graph stream continuation contract, and Goal4541 closes Barnes-Hut only as a current mixed-explicit route target while preserving RT-native hierarchical traversal as future optional research/claim expansion. The current reader-facing docs and queue scripts checked by this audit contain no stale wording that reopens RT-DBSCAN runtime work or RTNN/Spatial RayJoin claim blockers. This audit does not authorize release or any public speedup, broad RT-core, paper-reproduction, automatic partner-selection, or app-specific native-engine claims.",
   "date": "2026-06-17",
   "failed_checks": [],
   "goal": "Goal4535 / V3 M137",
-  "queue_status": "post_triangle_non_graph_stream_acceptance_barnes_hut_future_design_only_not_release_authorization",
-  "queue_version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8",
+  "queue_status": "all_current_benchmark_apps_closed_future_rt_native_research_not_release_authorization",
+  "queue_version": "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9",
   "stale_current_pattern_hits": {},
   "status": "completion_readiness_audit_checked",
   "summary": {
@@ -55,6 +56,7 @@
     "app_count": 10,
     "claim_or_evidence_queue": [],
     "closed_current_targets": [
+      "barnes_hut",
       "rt_dbscan",
       "triangle_counting",
       "rtnn",
@@ -67,9 +69,7 @@
     ],
     "design_blocker_queue": [],
     "design_targets_do_not_block_runtime_queue": true,
-    "future_design_target_queue": [
-      "barnes_hut"
-    ],
+    "future_design_target_queue": [],
     "future_design_targets_do_not_block_runtime_queue": true,
     "next_runtime_build_target": null,
     "runtime_build_queue": [],

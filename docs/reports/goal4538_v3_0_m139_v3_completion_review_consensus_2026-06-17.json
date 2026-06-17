@@ -5,9 +5,9 @@
     "goal4534_current_app_gate_accepts": true,
     "goal4535_readiness_audit_accepts": true,
     "goal4536_completion_packet_accepts": true,
-    "goal4540_successor_closed_current_target_count_preserved": true,
-    "goal4540_successor_future_design_targets_preserved": true,
     "goal4540_successor_triangle_closed_without_graph_claim": true,
+    "goal4541_successor_closed_current_target_count_is_ten": true,
+    "goal4541_successor_future_design_queue_empty": true,
     "no_blocking_review_findings": true,
     "no_review_requests_changes": true,
     "release_and_public_claims_still_blocked": true,
@@ -24,7 +24,7 @@
     "release_authorized": false,
     "runtime_executed": false
   },
-  "conclusion": "The 3-AI review consensus accepts the narrow Goal4536 conclusion: the V3 current benchmark-app implementation queue is complete. Goal4540 later supersedes the Triangle future-design classification by explicitly accepting the non-graph stream device-output continuation contract, so the current queue has empty runtime, claim/evidence, and current design-blocker queues; nine apps are closed current targets; and Barnes-Hut is the only remaining future design target. The consensus does not authorize release, public speedup, broad RT-core, paper-reproduction, automatic partner-selection, or app-specific native-engine claims.",
+  "conclusion": "The 3-AI review consensus accepts the narrow Goal4536 conclusion: the V3 current benchmark-app implementation queue is complete. Goal4540 later supersedes the Triangle future-design classification by explicitly accepting the non-graph stream device-output continuation contract. Goal4541 later closes Barnes-Hut only as a current mixed-explicit route-classification target while keeping RT-native hierarchical traversal as future optional research/claim expansion. The current queue has empty runtime, claim/evidence, current design-blocker, and future-design queues, and all ten apps are closed current targets. The consensus does not authorize release, public speedup, broad RT-core, paper-reproduction, automatic partner-selection, or app-specific native-engine claims.",
   "consensus_verdict": "approve_with_caveats",
   "date": "2026-06-17",
   "failed_checks": [],
@@ -39,14 +39,14 @@
     },
     {
       "blocking_findings": [],
-      "caveat": "Barnes-Hut and Triangle are bounded as future design targets rather than hidden current blockers; RTNN and Spatial RayJoin claim-scope closure is honest.",
+      "caveat": "Triangle and Barnes-Hut are bounded as narrow route-classification closures rather than hidden RT-native/public-performance claims; RTNN and Spatial RayJoin claim-scope closure is honest.",
       "reviewer": "harvey_external_review",
       "role": "independent_reviewer",
       "verdict": "approve"
     },
     {
       "blocking_findings": [],
-      "caveat": "Do not shorten the claim to generic V3 implementation complete: Barnes-Hut still needs reviewed hierarchical traversal lowering and Triangle still needs capture-compatible weighted replay or an accepted non-graph continuation contract.",
+      "caveat": "Do not shorten the claim to generic V3 implementation complete: Barnes-Hut still needs reviewed hierarchical traversal lowering for any RT-native route, and Triangle M113 graph wording still needs capture-compatible weighted replay beyond the accepted non-graph continuation contract.",
       "reviewer": "pascal_external_review",
       "role": "independent_reviewer",
       "verdict": "approve_with_caveats"
@@ -69,6 +69,7 @@
     "app_count": 10,
     "claim_or_evidence_queue": [],
     "closed_current_targets": [
+      "barnes_hut",
       "rt_dbscan",
       "triangle_counting",
       "rtnn",
@@ -81,9 +82,7 @@
     ],
     "design_blocker_queue": [],
     "design_targets_do_not_block_runtime_queue": true,
-    "future_design_target_queue": [
-      "barnes_hut"
-    ],
+    "future_design_target_queue": [],
     "future_design_targets_do_not_block_runtime_queue": true,
     "next_runtime_build_target": null,
     "runtime_build_queue": [],

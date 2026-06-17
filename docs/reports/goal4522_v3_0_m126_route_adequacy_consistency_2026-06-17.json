@@ -1,5 +1,13 @@
 {
   "adequacy_summary": {
+    "barnes_hut_refs_tail": [
+      "Goal4450",
+      "Goal4458",
+      "Goal4483",
+      "Goal4497",
+      "Goal4527",
+      "Goal4541"
+    ],
     "rt_dbscan_refs_tail": [
       "Goal4491",
       "Goal4495",
@@ -19,6 +27,11 @@
   },
   "checks": {
     "adequacy_registry_valid": true,
+    "barnes_hut_adequacy_refs": true,
+    "barnes_hut_adequacy_wording": true,
+    "barnes_hut_no_next_pod": true,
+    "barnes_hut_route_refs": true,
+    "barnes_hut_route_wording": true,
     "route_registry_valid": true,
     "rt_dbscan_adequacy_refs": true,
     "rt_dbscan_adequacy_wording": true,
@@ -36,11 +49,19 @@
     "rt_core_speedup_claim_authorized": false,
     "runtime_executed": false
   },
-  "conclusion": "M126 synchronizes the programmatic route-decision and adequacy registries with the later M132/M133/M134 blocker refinements. RT-DBSCAN now records Goal4528 fixed-iteration prepared graph capture/replay as validated for the future M113 shape without changing the current compact-signature route. Triangle now records Goal4530 key/count payload merge as validated and Goal4531 weighted replay device-output stream as valid; Goal4539 records capture-mode-independent graph failure; and Goal4540 accepts the non-graph stream continuation contract for current closure while future graph wording remains blocked.",
+  "conclusion": "M126 synchronizes the programmatic route-decision and adequacy registries with the later M132/M133/M134 blocker refinements. RT-DBSCAN now records Goal4528 fixed-iteration prepared graph capture/replay as validated for the future M113 shape without changing the current compact-signature route. Triangle now records Goal4530 key/count payload merge as validated and Goal4531 weighted replay device-output stream as valid; Goal4539 records capture-mode-independent graph failure; and Goal4540 accepts the non-graph stream continuation contract for current closure while future graph wording remains blocked. Barnes-Hut now records Goal4541 as a current mixed-explicit route closure while preserving Goal4527's RT-native subtree-skip semantic blocker as future optional research/claim expansion.",
   "date": "2026-06-17",
   "failed_checks": [],
   "goal": "Goal4522 / V3 M126",
   "route_summary": {
+    "barnes_hut_refs_tail": [
+      "Goal4450",
+      "Goal4458",
+      "Goal4483",
+      "Goal4497",
+      "Goal4527",
+      "Goal4541"
+    ],
     "rt_dbscan_reader_len": 732,
     "rt_dbscan_user_guidance_len": 552,
     "triangle_refs_tail": [
@@ -53,5 +74,5 @@
     ]
   },
   "status": "route_adequacy_consistency_checked",
-  "version": "rtdl.v3_0.route_adequacy_consistency.goal4522.v2"
+  "version": "rtdl.v3_0.route_adequacy_consistency.goal4522.v3"
 }

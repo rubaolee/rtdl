@@ -23,6 +23,7 @@ CURRENT_AUDIT_FILES = (
     Path("scripts/goal4533_m135_v3_claim_scope_closeout.py"),
     Path("scripts/goal4534_m136_v3_current_app_completion_gate.py"),
     Path("scripts/goal4540_m141_triangle_non_graph_stream_closure_gate.py"),
+    Path("scripts/goal4541_m142_barnes_hut_current_route_closure_gate.py"),
 )
 
 STALE_CURRENT_PATTERNS = (
@@ -31,6 +32,8 @@ STALE_CURRENT_PATTERNS = (
     "claim/evidence packaging blockers",
     "RTNN and Spatial RayJoin remain claim/evidence",
     "Barnes-Hut and Triangle Counting are listed only as future design targets",
+    "Barnes-Hut remains the only future design target",
+    "Barnes-Hut is the only future design target",
 )
 
 
@@ -54,9 +57,11 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "runtime_queue_empty": tuple(summary["runtime_build_queue"]) == (),
         "claim_queue_empty": tuple(summary["claim_or_evidence_queue"]) == (),
         "design_blocker_queue_empty": tuple(summary["design_blocker_queue"]) == (),
-        "future_design_queue_exact": tuple(summary["future_design_target_queue"])
-        == ("barnes_hut",),
-        "closed_current_target_count_is_nine": len(summary["closed_current_targets"]) == 9,
+        "future_design_queue_empty_after_goal4541": tuple(
+            summary["future_design_target_queue"]
+        )
+        == (),
+        "closed_current_target_count_is_ten": len(summary["closed_current_targets"]) == 10,
         "current_audit_files_no_stale_queue_wording": not stale_hits,
         "all_public_speedup_claims_blocked": summary["all_public_speedup_claims_blocked"],
         "all_broad_rt_core_claims_blocked": summary["all_broad_rt_core_claims_blocked"],
@@ -94,9 +99,11 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "conclusion": (
             "Goal4535 audits the current V3 completion surface after Goal4534. "
             "The implementation queue validates with empty runtime, claim/evidence, "
-            "and design-blocker queues; Barnes-Hut is listed as the only future "
-            "design target after Goal4540 accepts Triangle's non-graph stream "
-            "continuation contract. The current reader-facing docs and "
+            "design-blocker queues; Goal4540 accepts Triangle's non-graph stream "
+            "continuation contract, and Goal4541 closes Barnes-Hut only as a "
+            "current mixed-explicit route target while preserving RT-native "
+            "hierarchical traversal as future optional research/claim expansion. "
+            "The current reader-facing docs and "
             "queue scripts checked by this audit contain no stale wording that "
             "reopens RT-DBSCAN runtime work or RTNN/Spatial RayJoin claim blockers. "
             "This audit does not authorize release or any public speedup, broad "

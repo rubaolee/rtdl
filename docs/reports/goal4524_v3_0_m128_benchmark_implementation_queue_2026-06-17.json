@@ -8,10 +8,10 @@
     "release_authorized": false,
     "runtime_executed": false
   },
-  "conclusion": "M128 turns the post-clean-target app status into a concrete implementation queue. Goal4527 later fail-closes the naive Barnes-Hut all-node OptiX any-hit mapping because it cannot preserve aggregate-subtree skip semantics. Goal4528 then validates the RT-DBSCAN prepared graph capture gate without changing the current direct-status component-signature route. Goal4530 validates Triangle Counting's device key/count payload merge, and Goal4531 validates device-output weighted replay while fail-closing CUDA graph capture for that OptiX launch. Goal4539 confirms the graph capture failure is capture-mode independent, and Goal4540 accepts the non-graph stream continuation contract for current Triangle closure while keeping graph/public wording blocked. There is now no runtime build target in this queue. Goal4533 closes RTNN and Spatial RayJoin as claim-scoped current targets: their full paper/author wording remains blocked, but that wording is future optional claim expansion rather than a current V3 app implementation blocker. Barnes-Hut is the only remaining future design target rather than a current app implementation blocker. The other nine apps also have no immediate V3 runtime blocker.",
+  "conclusion": "M128 turns the post-clean-target app status into a concrete implementation queue. Goal4527 later fail-closes the naive Barnes-Hut all-node OptiX any-hit mapping because it cannot preserve aggregate-subtree skip semantics. Goal4528 then validates the RT-DBSCAN prepared graph capture gate without changing the current direct-status component-signature route. Goal4530 validates Triangle Counting's device key/count payload merge, and Goal4531 validates device-output weighted replay while fail-closing CUDA graph capture for that OptiX launch. Goal4539 confirms the graph capture failure is capture-mode independent, and Goal4540 accepts the non-graph stream continuation contract for current Triangle closure while keeping graph/public wording blocked. Goal4541 then closes Barnes-Hut only as a current mixed-explicit route classification, while RT-native hierarchical traversal remains future optional research/claim expansion. There is now no runtime build target in this queue. Goal4533 closes RTNN and Spatial RayJoin as claim-scoped current targets: their full paper/author wording remains blocked, but that wording is future optional claim expansion rather than a current V3 app implementation blocker. All ten apps are now closed current targets, and the future-design queue is empty. This is not release authorization and not an RT-native Barnes-Hut speedup claim.",
   "date": "2026-06-17",
   "goal": "Goal4524 / V3 M128",
-  "queue_status": "post_triangle_non_graph_stream_acceptance_barnes_hut_future_design_only_not_release_authorization",
+  "queue_status": "all_current_benchmark_apps_closed_future_rt_native_research_not_release_authorization",
   "rows": [
     {
       "app": "barnes_hut",
@@ -20,24 +20,26 @@
       "broad_rt_core_claim_authorized": false,
       "clean_target_closed": true,
       "current_route_changed": false,
-      "current_route_status": "current V3 route is mixed explicit: CPU/Numba or Numba CUDA fused force summary by scale; prepared RTDL/OptiX remains device-column evidence, not Barnes-Hut RT-core traversal evidence",
+      "current_route_status": "current V3 route is mixed explicit: CPU/Numba or Numba CUDA fused force summary by scale; prepared RTDL/OptiX remains device-column evidence, not Barnes-Hut RT-core traversal evidence; Goal4541 closes the current route classification without implementing RT-native hierarchical traversal",
       "evidence_refs": [
         "Goal4497",
+        "Goal4512",
         "Goal4517",
         "Goal4518",
         "Goal4523",
         "Goal4525",
         "Goal4526",
-        "Goal4527"
+        "Goal4527",
+        "Goal4541"
       ],
-      "next_build_target": "do not replace the fail-closed ABI with a direct all-node any-hit route; future work must first design and review a generic hierarchical traversal lowering that proves no double counting, keeps force math outside app-specific native engine code, and then beats fused CPU/Numba and fused Numba CUDA force-summary baselines",
+      "next_build_target": "no immediate V3 build target; preserve explicit scale-dependent CPU/Numba and Numba CUDA fused routes. Future optional RT-native research must not replace the fail-closed ABI with a direct all-node any-hit route until a reviewed generic hierarchical traversal lowering proves no double counting, keeps force math outside app-specific native engine code, and beats fused CPU/Numba plus fused Numba CUDA force-summary baselines",
       "paper_reproduction_claim_authorized": false,
       "pod_needed_next": false,
-      "priority": 1,
+      "priority": null,
       "public_speedup_claim_authorized": false,
-      "remaining_gap": "no current V3 app implementation blocker after Goal4512; future RT-native Barnes-Hut acceleration remains a design target because Goal4527 blocks a naive node-AABB OptiX implementation: Barnes-Hut opening accepts a parent aggregate and must suppress its descendants, while a single custom-primitive GAS reports node AABBs independently and cannot enforce subtree-skip semantics without a reviewed generic hierarchical traversal design",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8",
-      "work_class": "future_design_target"
+      "remaining_gap": "no current V3 app implementation blocker after Goal4512 and Goal4541; future RT-native Barnes-Hut acceleration remains optional research/claim-expansion work because Goal4527 blocks a naive node-AABB OptiX implementation: Barnes-Hut opening accepts a parent aggregate and must suppress its descendants, while a single custom-primitive GAS reports node AABBs independently and cannot enforce subtree-skip semantics without a reviewed generic hierarchical traversal design",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9",
+      "work_class": "closed_current_target"
     },
     {
       "app": "rt_dbscan",
@@ -61,7 +63,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4510 clean-target closure, Goal4520 live chunk-handle smoke, and Goal4528 prepared graph capture/replay validation",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9",
       "work_class": "closed_current_target"
     },
     {
@@ -87,7 +89,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 app implementation blocker after Goal4511 and Goal4540; future M113 graph-style Triangle replay remains blocked claim wording rather than a current app blocker because Goal4530 validates app-agnostic device key/count payload merge for cross-chunk duplicate keys, and Goal4531 validates a generic prepared weighted-replay device-output stream executor. Goal4539 confirms CUDA graph capture of that OptiX weighted launch remains fail-closed across capture modes. Goal4540 accepts the non-graph stream device-output continuation contract for current closure while keeping graph promotion blocked",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9",
       "work_class": "closed_current_target"
     },
     {
@@ -112,7 +114,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 app implementation blocker after Goal4508; exact paper reproduction, same-output author comparisons, and public RT-core speedup wording remain future optional claim-expansion work because paper dataset recipes and output contracts are not frozen",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9",
       "work_class": "closed_current_target"
     },
     {
@@ -134,7 +136,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 app implementation blocker after Goal4514; full RayJoin paper-reproduction wording and Section 5.7 8/8 overlay wording remain future optional claim-expansion work because the current feasible public packet is scoped to the mixed route and 2/8 overlay evidence",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9",
       "work_class": "closed_current_target"
     },
     {
@@ -154,7 +156,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9",
       "work_class": "closed_current_target"
     },
     {
@@ -175,7 +177,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9",
       "work_class": "closed_current_target"
     },
     {
@@ -195,7 +197,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9",
       "work_class": "closed_current_target"
     },
     {
@@ -215,7 +217,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9",
       "work_class": "closed_current_target"
     },
     {
@@ -235,7 +237,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9",
       "work_class": "closed_current_target"
     }
   ],
@@ -251,6 +253,7 @@
     "app_count": 10,
     "claim_or_evidence_queue": [],
     "closed_current_targets": [
+      "barnes_hut",
       "rt_dbscan",
       "triangle_counting",
       "rtnn",
@@ -263,9 +266,7 @@
     ],
     "design_blocker_queue": [],
     "design_targets_do_not_block_runtime_queue": true,
-    "future_design_target_queue": [
-      "barnes_hut"
-    ],
+    "future_design_target_queue": [],
     "future_design_targets_do_not_block_runtime_queue": true,
     "next_runtime_build_target": null,
     "runtime_build_queue": [],
@@ -280,10 +281,10 @@
       "all_public_speedup_claims_blocked": true,
       "all_route_apps_present": true,
       "claim_queue_empty": true,
-      "closed_count_is_nine": true,
+      "closed_count_is_ten": true,
       "design_queue_empty": true,
       "design_targets_do_not_block_runtime_queue": true,
-      "future_design_queue_exact": true,
+      "future_design_queue_empty": true,
       "future_design_targets_do_not_block_runtime_queue": true,
       "next_runtime_target_none": true,
       "runtime_queue_empty": true,
@@ -292,7 +293,7 @@
     },
     "failed_checks": [],
     "status": "accept",
-    "version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8"
+    "version": "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9"
   },
-  "version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8"
+  "version": "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9"
 }

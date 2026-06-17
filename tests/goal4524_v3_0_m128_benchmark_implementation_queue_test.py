@@ -29,7 +29,7 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8",
+            "rtdl.v3_0.benchmark_implementation_queue.goal4541.v9",
             self.packet["version"],
         )
         self.assertEqual(10, summary["app_count"])
@@ -40,7 +40,7 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
         )
         self.assertEqual((), tuple(summary["design_blocker_queue"]))
         self.assertEqual(
-            ("barnes_hut",),
+            (),
             tuple(summary["future_design_target_queue"]),
         )
         self.assertEqual((), tuple(summary["claim_or_evidence_queue"]))
@@ -48,8 +48,9 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
         self.assertTrue(cls_summary["runtime_targets_need_pod"])
 
     def test_runtime_blockers_are_separate_from_design_blockers(self) -> None:
-        self.assertEqual("future_design_target", self.rows["barnes_hut"]["work_class"])
+        self.assertEqual("closed_current_target", self.rows["barnes_hut"]["work_class"])
         self.assertIn("subtree-skip semantics", self.rows["barnes_hut"]["remaining_gap"])
+        self.assertIn("Goal4541", self.rows["barnes_hut"]["evidence_refs"])
         self.assertEqual("closed_current_target", self.rows["rt_dbscan"]["work_class"])
         self.assertIn("Goal4528 prepared graph", self.rows["rt_dbscan"]["remaining_gap"])
         self.assertEqual("closed_current_target", self.rows["triangle_counting"]["work_class"])
@@ -74,6 +75,7 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
             "rtnn",
             "spatial_rayjoin",
             "triangle_counting",
+            "barnes_hut",
         }
         for app in closed:
             row = self.rows[app]

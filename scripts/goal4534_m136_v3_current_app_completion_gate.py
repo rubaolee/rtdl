@@ -25,13 +25,14 @@ def build_packet() -> dict[str, Any]:
         "runtime_queue_empty": tuple(summary["runtime_build_queue"]) == (),
         "claim_queue_empty": tuple(summary["claim_or_evidence_queue"]) == (),
         "design_blocker_queue_empty": tuple(summary["design_blocker_queue"]) == (),
-        "future_design_queue_exact": tuple(summary["future_design_target_queue"])
-        == ("barnes_hut",),
+        "future_design_queue_empty_after_goal4541": tuple(summary["future_design_target_queue"])
+        == (),
         "all_ten_apps_accounted_as_closed_or_future_design": set(current_accounted)
         == {row["app"] for row in queue["rows"]},
-        "closed_current_target_count_is_nine": len(summary["closed_current_targets"]) == 9,
-        "barnes_hut_future_design_target": (
-            rows["barnes_hut"]["work_class"] == "future_design_target"
+        "closed_current_target_count_is_ten": len(summary["closed_current_targets"]) == 10,
+        "barnes_hut_closed_current_route_target": (
+            rows["barnes_hut"]["work_class"] == "closed_current_target"
+            and "Goal4541" in rows["barnes_hut"]["evidence_refs"]
             and "no current V3 app implementation blocker" in rows["barnes_hut"]["remaining_gap"]
         ),
         "triangle_non_graph_stream_closed_current_target": (
@@ -60,7 +61,7 @@ def build_packet() -> dict[str, Any]:
         "checks": checks,
         "failed_checks": failed,
         "summary": summary,
-        "future_design_targets": {"barnes_hut": rows["barnes_hut"]},
+        "barnes_hut_current_route_closed_targets": {"barnes_hut": rows["barnes_hut"]},
         "non_graph_stream_closed_targets": {"triangle_counting": rows["triangle_counting"]},
         "claim_boundary": {
             "current_route_changed": False,
@@ -75,10 +76,11 @@ def build_packet() -> dict[str, Any]:
         "conclusion": (
             "Goal4534 closes the V3 current app implementation queue: there are no "
             "runtime blockers, no claim/evidence blockers, and no current design "
-            "blockers. Nine apps are closed current targets. Barnes-Hut remains "
-            "the only future design target: "
-            "Barnes-Hut needs a reviewed hierarchical traversal lowering before "
-            "any RT-native subtree-skip route can replace the current mixed route. "
+            "blockers. Goal4541 later closes Barnes-Hut as the tenth closed current "
+            "target while keeping RT-native hierarchical traversal as future optional "
+            "research/claim expansion: Barnes-Hut needs a reviewed hierarchical "
+            "traversal lowering before any RT-native subtree-skip route can replace "
+            "the current mixed route. "
             "Triangle Counting is now closed as a current target because Goal4540 "
             "accepts the non-graph stream device-output continuation contract, "
             "while M113 graph wording remains blocked. This completion gate does not authorize "
@@ -90,7 +92,7 @@ def build_packet() -> dict[str, Any]:
 
 def write_report(packet: dict[str, Any], path: Path) -> None:
     summary = packet["summary"]
-    future = packet["future_design_targets"]
+    barnes_closed = packet["barnes_hut_current_route_closed_targets"]
     non_graph = packet["non_graph_stream_closed_targets"]
     lines = [
         "# Goal4534 / V3 M136 Current App Completion Gate",
@@ -109,13 +111,13 @@ def write_report(packet: dict[str, Any], path: Path) -> None:
         f"- Future design target queue: `{', '.join(summary['future_design_target_queue'])}`",
         f"- Closed current targets: `{', '.join(summary['closed_current_targets'])}`",
         "",
-        "## Future Design Targets",
+        "## Barnes-Hut Current Route Closure",
         "",
-        "| App | Future design target | Boundary |",
+        "| App | Current closure | Future RT-native boundary |",
         "| --- | --- | --- |",
     ]
     for app in ("barnes_hut",):
-        row = future[app]
+        row = barnes_closed[app]
         lines.append(
             f"| `{app}` | {row['next_build_target']} | {row['remaining_gap']} |"
         )

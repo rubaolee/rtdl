@@ -133,7 +133,11 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "valid OptiX-library CUDA aggregate-frontier device-column evidence but not a "
     "Barnes-Hut RT-core speedup route until an app-agnostic RT-native fused "
     "weighted-vector primitive is implemented and compared under the same "
-    "force-summary contract. "
+    "force-summary contract. Goal4527 rejects a naive all-node OptiX any-hit "
+    "route because it cannot preserve parent-acceptance subtree-skip semantics, "
+    "and Goal4541 closes Barnes-Hut as a current mixed-explicit route target "
+    "while leaving RT-native hierarchical traversal as future optional "
+    "research/claim expansion. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -462,7 +466,12 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "records that current RTDL/OptiX remains under-fused for Barnes-Hut: "
             "a competitive RT-core path needs a new app-agnostic RT-native fused "
             "weighted-vector primitive rather than the current aggregate-frontier "
-            "row-emission contract."
+            "row-emission contract. Goal4527 blocks a naive all-node OptiX any-hit "
+            "implementation because it cannot preserve parent-acceptance "
+            "subtree-skip semantics. Goal4541 closes the current mixed-explicit "
+            "route classification and makes that RT-native hierarchical traversal "
+            "work future optional research/claim expansion rather than a current "
+            "V3 app blocker."
         ),
         "adequacy": "adequate",
         "current_recommended_path": (
@@ -474,8 +483,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "embedding the reusable API directly; choose "
             "`prepared_aggregate_frontier_weighted_vector_optix --partner numba` "
             "when the purpose is RTDL/OptiX device-column evidence; there is no "
-            "current RT-native fused Barnes-Hut route until the Goal4497 primitive "
-            "boundary is implemented"
+            "current RT-native fused Barnes-Hut route. After Goal4541, that lack "
+            "is future optional research/claim expansion rather than a current "
+            "V3 app implementation blocker"
         ),
         "current_partner_role": (
             "Numba powers the current no-C++ fused CPU and CUDA prototype routes "
@@ -485,16 +495,18 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "contract; after Goal4483 the fused Numba CUDA path is the fastest "
             "measured larger-row Barnes-Hut app route, while prepared OptiX+Numba "
             "remains the OptiX-library CUDA device-column evidence route. Goal4497 keeps Numba CUDA fused "
-            "classified as a no-C++ GPU partner route, not an RT-core route."
+            "classified as a no-C++ GPU partner route, not an RT-core route; "
+            "Goal4541 does not authorize automatic partner selection."
         ),
         "next_generic_runtime_action": (
-            "treat as covered for Numba-reference, fused CPU/GPU partner, "
-            "presegmented grouped-vector continuation, and route-choice evidence; "
-            "Barnes-Hut RT-core speedup now requires implementing and validating "
-            "the Goal4497 app-agnostic RT-native fused weighted-vector primitive "
-            "boundary and comparing against the Goal4483 large-row fused Numba "
-            "CUDA result plus Goal4458 small-row fused CPU/Numba result, not more "
-            "host-row or aggregate-frontier row-emission optimization"
+            "no immediate V3 build target; treat Barnes-Hut as covered for "
+            "Numba-reference, fused CPU/GPU partner, presegmented grouped-vector "
+            "continuation, and route-choice evidence. Optional future Barnes-Hut "
+            "RT-core speedup work requires a reviewed generic hierarchical "
+            "traversal lowering that preserves subtree-skip semantics and then "
+            "beats the Goal4483 large-row fused Numba CUDA result plus Goal4458 "
+            "small-row fused CPU/Numba result, not more host-row or "
+            "aggregate-frontier row-emission optimization"
         ),
         "evidence_refs": (
             "Goal2803",
@@ -520,8 +532,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4458",
             "Goal4483",
             "Goal4497",
+            "Goal4527",
+            "Goal4541",
         ),
-        "pod_needed_next": True,
+        "pod_needed_next": False,
     },
     "rtnn": {
         "current_performance_reading": (

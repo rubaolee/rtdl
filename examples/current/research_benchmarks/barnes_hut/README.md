@@ -289,6 +289,11 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   from Goal4497. M113 is not the current Barnes-Hut path; the missing piece is
   fused weighted-vector RT-native accumulation without aggregate-frontier row
   emission, not a prepared graph chunk executor.
+- Goal4541 closes Barnes-Hut as a current mixed-explicit route-classification
+  target after the Goal4512 policy audit and Goal4527 semantic gate. This means
+  there is no immediate V3 app implementation blocker and no next pod action for
+  the current route. It does not mean RT-native Barnes-Hut traversal exists, and
+  it does not authorize an RT-core speedup claim.
 - Goal4517 specifies the future app-agnostic fused RT-native contract as
   `generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1`. It is a
   contract and implementation gate only: no backend symbols, RT-core speedup
@@ -321,9 +326,9 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   OptiX any-hit route. Barnes-Hut opening accepts a parent aggregate and must
   suppress its descendants; a single custom-primitive GAS reports node AABBs
   independently, so that direct mapping can double count unless a reviewed
-  generic hierarchical traversal/skip design exists. Goal4534 records that
-  reviewed hierarchical traversal lowering as future design work rather than a
-  current V3 app implementation blocker.
+  generic hierarchical traversal/skip design exists. Goal4541 records that
+  reviewed hierarchical traversal lowering as future optional research/claim
+  expansion rather than a current V3 app implementation blocker.
 - Current expanded-membership lowering evidence routes Barnes-Hut
   aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
   near-zone candidate rows. The engine still only sees points, boxes, IDs, and

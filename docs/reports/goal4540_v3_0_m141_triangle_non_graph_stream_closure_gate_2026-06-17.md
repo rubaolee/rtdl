@@ -4,15 +4,15 @@ Status: `triangle_non_graph_stream_closure_gate_checked`
 
 ## Conclusion
 
-Goal4540 explicitly supersedes Goal4539's no-reclassification boundary for exactly one purpose: Triangle Counting is moved from future design target to closed current target because Goal4539 validates the non-graph device-output stream continuation evidence and confirms CUDA graph capture remains invalid across capture modes. Barnes-Hut remains the only future design target. This does not authorize M113 graph readiness, release, public speedup, broad RT-core, automatic partner-selection, paper-reproduction, or app-specific native-engine wording.
+Goal4540 explicitly supersedes Goal4539's no-reclassification boundary for exactly one purpose: Triangle Counting is moved from future design target to closed current target because Goal4539 validates the non-graph device-output stream continuation evidence and confirms CUDA graph capture remains invalid across capture modes. Goal4541 later closes Barnes-Hut only as a current mixed-explicit route classification, so the current future-design queue is empty. This does not authorize M113 graph readiness, RT-native Barnes-Hut traversal, release, public speedup, broad RT-core, automatic partner-selection, paper-reproduction, or app-specific native-engine wording.
 
 ## Queue State
 
 - Runtime queue: ``
 - Claim/evidence queue: ``
 - Design blocker queue: ``
-- Future design targets: `barnes_hut`
-- Closed current targets: `rt_dbscan, triangle_counting, rtnn, spatial_rayjoin, hausdorff_xhd, robot_collision, contact_manifold, raydb_style, librts_spatial_index`
+- Future design targets: ``
+- Closed current targets: `barnes_hut, rt_dbscan, triangle_counting, rtnn, spatial_rayjoin, hausdorff_xhd, robot_collision, contact_manifold, raydb_style, librts_spatial_index`
 
 ## Goal4539 Evidence
 
@@ -28,13 +28,13 @@ Goal4540 explicitly supersedes Goal4539's no-reclassification boundary for exact
 | `runtime_queue_empty` | `True` |
 | `claim_queue_empty` | `True` |
 | `design_blocker_queue_empty` | `True` |
-| `future_design_queue_barnes_only` | `True` |
-| `closed_current_target_count_is_nine` | `True` |
+| `future_design_queue_empty_after_goal4541` | `True` |
+| `closed_current_target_count_is_ten_after_goal4541` | `True` |
 | `triangle_closed_current_target` | `True` |
 | `triangle_has_goal4540_evidence` | `True` |
 | `triangle_non_graph_stream_contract_accepted` | `True` |
 | `triangle_m113_graph_still_blocked` | `True` |
-| `barnes_hut_still_future_design_target` | `True` |
+| `barnes_hut_closed_by_goal4541_successor` | `True` |
 | `goal4539_stream_prelaunch_validated` | `True` |
 | `goal4539_graph_capture_modes_all_reject` | `True` |
 | `all_public_speedup_claims_blocked` | `True` |

@@ -2,7 +2,7 @@
 
 ## Conclusion
 
-M131 prevents an incorrect Barnes-Hut RT-native implementation from landing. A direct OptiX GAS containing every aggregate-tree node cannot, by itself, express the Barnes-Hut rule that accepting a parent aggregate suppresses all descendants; reporting nodes independently would double count unless a separate reviewed hierarchical traversal/skip design exists. The fail-closed ABI therefore stays in place, and Barnes-Hut remains a future design target rather than a current V3 app implementation blocker.
+M131 prevents an incorrect Barnes-Hut RT-native implementation from landing. A direct OptiX GAS containing every aggregate-tree node cannot, by itself, express the Barnes-Hut rule that accepting a parent aggregate suppresses all descendants; reporting nodes independently would double count unless a separate reviewed hierarchical traversal/skip design exists. The fail-closed ABI therefore stays in place. Goal4541 later closes Barnes-Hut only as a current mixed-explicit route-classification target; the RT-native hierarchical traversal route remains future optional research/claim expansion rather than a current V3 app blocker.
 
 ## Decision
 
@@ -12,10 +12,10 @@ M131 prevents an incorrect Barnes-Hut RT-native implementation from landing. A d
 
 ## Queue
 
-- Barnes-Hut class: `future_design_target`
+- Barnes-Hut class: `closed_current_target`
 - Runtime queue: ``
 - Design blocker queue: ``
-- Future design target queue: `barnes_hut`
+- Future design target queue: ``
 - Next runtime build target: `None`
 
 ## Future Barnes-Hut Requirement

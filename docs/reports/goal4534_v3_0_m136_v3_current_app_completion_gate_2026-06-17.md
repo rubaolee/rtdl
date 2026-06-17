@@ -4,21 +4,21 @@ Status: `current_app_completion_gate_checked`
 
 ## Conclusion
 
-Goal4534 closes the V3 current app implementation queue: there are no runtime blockers, no claim/evidence blockers, and no current design blockers. Nine apps are closed current targets. Barnes-Hut remains the only future design target: Barnes-Hut needs a reviewed hierarchical traversal lowering before any RT-native subtree-skip route can replace the current mixed route. Triangle Counting is now closed as a current target because Goal4540 accepts the non-graph stream device-output continuation contract, while M113 graph wording remains blocked. This completion gate does not authorize release, public speedup, broad RT-core, paper-reproduction, automatic partner-selection, or app-specific native-engine claims.
+Goal4534 closes the V3 current app implementation queue: there are no runtime blockers, no claim/evidence blockers, and no current design blockers. Goal4541 later closes Barnes-Hut as the tenth closed current target while keeping RT-native hierarchical traversal as future optional research/claim expansion: Barnes-Hut needs a reviewed hierarchical traversal lowering before any RT-native subtree-skip route can replace the current mixed route. Triangle Counting is now closed as a current target because Goal4540 accepts the non-graph stream device-output continuation contract, while M113 graph wording remains blocked. This completion gate does not authorize release, public speedup, broad RT-core, paper-reproduction, automatic partner-selection, or app-specific native-engine claims.
 
 ## Queue Summary
 
 - Runtime queue: ``
 - Claim/evidence queue: ``
 - Design blocker queue: ``
-- Future design target queue: `barnes_hut`
-- Closed current targets: `rt_dbscan, triangle_counting, rtnn, spatial_rayjoin, hausdorff_xhd, robot_collision, contact_manifold, raydb_style, librts_spatial_index`
+- Future design target queue: ``
+- Closed current targets: `barnes_hut, rt_dbscan, triangle_counting, rtnn, spatial_rayjoin, hausdorff_xhd, robot_collision, contact_manifold, raydb_style, librts_spatial_index`
 
-## Future Design Targets
+## Barnes-Hut Current Route Closure
 
-| App | Future design target | Boundary |
+| App | Current closure | Future RT-native boundary |
 | --- | --- | --- |
-| `barnes_hut` | do not replace the fail-closed ABI with a direct all-node any-hit route; future work must first design and review a generic hierarchical traversal lowering that proves no double counting, keeps force math outside app-specific native engine code, and then beats fused CPU/Numba and fused Numba CUDA force-summary baselines | no current V3 app implementation blocker after Goal4512; future RT-native Barnes-Hut acceleration remains a design target because Goal4527 blocks a naive node-AABB OptiX implementation: Barnes-Hut opening accepts a parent aggregate and must suppress its descendants, while a single custom-primitive GAS reports node AABBs independently and cannot enforce subtree-skip semantics without a reviewed generic hierarchical traversal design |
+| `barnes_hut` | no immediate V3 build target; preserve explicit scale-dependent CPU/Numba and Numba CUDA fused routes. Future optional RT-native research must not replace the fail-closed ABI with a direct all-node any-hit route until a reviewed generic hierarchical traversal lowering proves no double counting, keeps force math outside app-specific native engine code, and beats fused CPU/Numba plus fused Numba CUDA force-summary baselines | no current V3 app implementation blocker after Goal4512 and Goal4541; future RT-native Barnes-Hut acceleration remains optional research/claim-expansion work because Goal4527 blocks a naive node-AABB OptiX implementation: Barnes-Hut opening accepts a parent aggregate and must suppress its descendants, while a single custom-primitive GAS reports node AABBs independently and cannot enforce subtree-skip semantics without a reviewed generic hierarchical traversal design |
 
 ## Non-Graph Stream Closed Targets
 
@@ -34,10 +34,10 @@ Goal4534 closes the V3 current app implementation queue: there are no runtime bl
 | `runtime_queue_empty` | `True` |
 | `claim_queue_empty` | `True` |
 | `design_blocker_queue_empty` | `True` |
-| `future_design_queue_exact` | `True` |
+| `future_design_queue_empty_after_goal4541` | `True` |
 | `all_ten_apps_accounted_as_closed_or_future_design` | `True` |
-| `closed_current_target_count_is_nine` | `True` |
-| `barnes_hut_future_design_target` | `True` |
+| `closed_current_target_count_is_ten` | `True` |
+| `barnes_hut_closed_current_route_target` | `True` |
 | `triangle_non_graph_stream_closed_current_target` | `True` |
 | `all_public_speedup_claims_blocked` | `True` |
 | `all_broad_rt_core_claims_blocked` | `True` |

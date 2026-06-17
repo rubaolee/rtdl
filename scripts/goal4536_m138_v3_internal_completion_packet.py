@@ -59,9 +59,11 @@ def build_packet() -> dict[str, Any]:
         "runtime_queue_empty": tuple(summary["runtime_build_queue"]) == (),
         "claim_queue_empty": tuple(summary["claim_or_evidence_queue"]) == (),
         "design_blocker_queue_empty": tuple(summary["design_blocker_queue"]) == (),
-        "future_design_queue_exact": tuple(summary["future_design_target_queue"])
-        == ("barnes_hut",),
-        "closed_current_target_count_is_nine": len(summary["closed_current_targets"]) == 9,
+        "future_design_queue_empty_after_goal4541": tuple(
+            summary["future_design_target_queue"]
+        )
+        == (),
+        "closed_current_target_count_is_ten": len(summary["closed_current_targets"]) == 10,
         "all_routes_have_adequacy": all(row["adequacy"] for row in rows),
         "all_public_speedup_claims_blocked": not any(
             row["public_speedup_claim_authorized"] for row in rows
@@ -104,9 +106,10 @@ def build_packet() -> dict[str, Any]:
         "conclusion": (
             "Goal4536 packages the V3.0 current benchmark-app implementation state. "
             "All ten apps are accounted for. Runtime, claim/evidence, and current "
-            "design-blocker queues are empty. Nine apps are closed current targets; "
-            "Barnes-Hut is the only future design target after Goal4540 accepts "
-            "Triangle's non-graph stream continuation contract. The packet "
+            "design-blocker queues are empty. After Goal4540 accepts Triangle's "
+            "non-graph stream continuation contract and Goal4541 closes Barnes-Hut "
+            "as a current mixed-explicit route target, all ten apps are closed "
+            "current targets and the future-design queue is empty. The packet "
             "does not authorize release or public performance claims: broad RT-core, "
             "paper-reproduction, automatic partner-selection, and app-specific "
             "native-engine claims remain blocked."

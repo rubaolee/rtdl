@@ -144,7 +144,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "V3 guidance keeps Barnes-Hut mixed explicit until an app-agnostic "
     "`generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1`-style "
     "primitive fuses traversal, opening-rule acceptance, exact fallback, and "
-    "weighted vector accumulation inside a native RT/device path. "
+    "weighted vector accumulation inside a native RT/device path. Goal4527 then "
+    "rejects a naive all-node OptiX any-hit mapping because it cannot preserve "
+    "parent-acceptance subtree-skip semantics, and Goal4541 closes Barnes-Hut "
+    "only as a current mixed-explicit route-classification target while keeping "
+    "RT-native hierarchical traversal as future optional research/claim expansion. "
     "Goal4461 adds the Triangle Counting "
     "segmented RT-2A1 route: CuPy builds a directed CSR and two-hop count estimate, "
     "then bounded duplicate two-hop ray batches reuse one generic OptiX triangle "
@@ -645,7 +649,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "not state Barnes-Hut RT-core speedup wording. Goal4497 records that the next "
             "RT-core Barnes-Hut attempt must be a new app-agnostic RT-native fused "
             "weighted-vector primitive, not more tuning of the aggregate-frontier "
-            "row-emission contract."
+            "row-emission contract. Goal4527 rejects a naive all-node OptiX any-hit "
+            "route because it cannot prove parent-acceptance subtree suppression, and "
+            "Goal4541 closes the current route classification while leaving RT-native "
+            "hierarchical traversal as future optional research/claim expansion."
         ),
         primary_route=(
             "mixed explicit: scale-dependent fused CPU/Numba or fused Numba CUDA app route; "
@@ -681,14 +688,16 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "promoting prepared OptiX+CuPy over prepared OptiX+Numba after Goal4458",
             "treating fused Numba CUDA partner as an RT-core route before a native fused primitive exists",
             "continuing aggregate-frontier row-emission tuning as the final Barnes-Hut RT-core route after Goal4497",
+            "treating Goal4541 current-route closure as RT-native Barnes-Hut completion",
         ),
         next_runtime_action=(
-            "if Barnes-Hut RT-core acceleration remains a near-term V3 goal, implement and "
-            "validate the Goal4497 app-agnostic RT-native fused weighted-vector primitive "
-            "boundary, then compare it against Goal4483 large-row fused Numba CUDA plus "
-            "Goal4458 small-row fused CPU/Numba under the same force-summary contract; "
-            "otherwise keep Barnes-Hut as mixed explicit scale-dependent fused CPU/GPU "
-            "partner plus OptiX-library CUDA device-column evidence"
+            "no immediate V3 build target; keep Barnes-Hut as mixed explicit "
+            "scale-dependent fused CPU/GPU partner plus OptiX-library CUDA "
+            "device-column evidence. Optional future RT-core research must first "
+            "design and review a generic hierarchical traversal lowering that "
+            "preserves subtree-skip semantics, avoids double counting, and then "
+            "beats Goal4483 large-row fused Numba CUDA plus Goal4458 small-row "
+            "fused CPU/Numba under the same force-summary contract."
         ),
         evidence_refs=(
             "Goal2803",
@@ -710,8 +719,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4458",
             "Goal4483",
             "Goal4497",
+            "Goal4527",
+            "Goal4541",
         ),
-        pod_needed_next=True,
+        pod_needed_next=False,
     ),
     CurrentBenchmarkRouteDecision(
         app="librts_spatial_index",

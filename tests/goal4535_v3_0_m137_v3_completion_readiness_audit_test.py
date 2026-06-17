@@ -34,10 +34,11 @@ class Goal4535V30M137CompletionReadinessAuditTest(unittest.TestCase):
         self.assertEqual((), tuple(summary["claim_or_evidence_queue"]))
         self.assertEqual((), tuple(summary["design_blocker_queue"]))
         self.assertEqual(
-            ("barnes_hut",),
+            (),
             tuple(summary["future_design_target_queue"]),
         )
-        self.assertEqual(9, len(summary["closed_current_targets"]))
+        self.assertEqual(10, len(summary["closed_current_targets"]))
+        self.assertIn("barnes_hut", summary["closed_current_targets"])
 
     def test_current_docs_have_no_stale_queue_wording(self) -> None:
         self.assertEqual({}, self.packet["stale_current_pattern_hits"])
