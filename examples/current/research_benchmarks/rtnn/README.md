@@ -91,6 +91,14 @@ acquired as exact repo inputs. Use `rtnn_paper_dataset_targets()` when planning
 paper-dataset work, and do not report bounded KITTI packages or synthetic
 uniform/shell/clustered rows as paper reproduction.
 
+Goal4499 adds the KITTI bounded-family recipe gate. Use
+`write_kitti_paper_family_recipe_manifest()` or
+`plan_kitti_paper_family_recipe()` after `RTDL_KITTI_SOURCE_ROOT` points at a
+KITTI raw/Velodyne source tree. A ready recipe may feed same-contract author
+RTNN, RTDL OptiX, and Embree/CPU comparison, but it remains
+`bounded_family_recipe_not_exact_paper_recipe` until the paper's exact KITTI
+frame ids and merge/truncation rule are frozen.
+
 The important boundary is that RTDL exact aggregate and app graph-bridge rows
 are RTDL-internal same-contract evidence; the official RTNN rows are diagnostic
 unless a future goal proves output-contract equivalence.

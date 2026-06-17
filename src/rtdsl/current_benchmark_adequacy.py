@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4498.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4499.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -53,7 +53,10 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4498 defines the nine RTNN paper dataset targets and keeps exact "
     "paper reproduction blocked until KITTI frame recipes, Stanford scan-to-point "
     "rules, and Millennium snapshot/trace recipes are frozen; uniform, shell, "
-    "and clustered rows remain RTDL-internal distribution evidence only. "
+    "and clustered rows remain RTDL-internal distribution evidence only. Goal4499 "
+    "adds a deterministic KITTI bounded-family recipe layer, allowing bounded "
+    "same-contract comparisons on real KITTI-family input while keeping exact "
+    "paper-reproduction wording blocked. "
     "Goal4464 closes Triangle Counting's largest paper-dataset OOM validation row "
     "by running source-range segmented RT-2A1 on `com-orkut` with a measured 2M "
     "directed-edge scene cap, while keeping public speedup claims blocked. "
@@ -516,7 +519,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "hot median per 65K-query batch and Numba measures 39.267ms, with the same "
             "parity and hot-window gates. Goal4498 defines the nine RTNN paper dataset "
             "targets and keeps exact paper reproduction blocked until acquisition recipes "
-            "are frozen."
+            "are frozen. Goal4499 adds the KITTI bounded-family recipe layer so real "
+            "KITTI-family bounded inputs can be compared under one output contract "
+            "without claiming exact paper reproduction."
         ),
         "adequacy": "strong",
         "current_recommended_path": (
@@ -525,7 +530,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "the historical `prepared_optix_ranked_summary` app mode for that front "
             "door; use `prepared_ranked_summary_graph_partner_bridge` for resident "
             "graph replay plus same-stream CuPy/Numba app-bridge evidence; use "
-            "`rtnn_paper_dataset_targets()` when planning paper-dataset acquisition"
+            "`rtnn_paper_dataset_targets()` when planning paper-dataset acquisition; "
+            "use `write_kitti_paper_family_recipe_manifest()` for bounded KITTI-family "
+            "same-contract input preparation"
         ),
         "current_partner_role": (
             "no partner needed for exact float64 native aggregate; CuPy and Numba are "
@@ -535,10 +542,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
         "next_generic_runtime_action": (
             "keep exact aggregate and resident graph-bridge contracts separate; "
             "prove output-contract equivalence before comparing with official RTNN "
-            "authors-code rows; next acquire and freeze at least one Goal4498 paper-family "
-            "input recipe before any paper wording; do not add more synthetic distribution "
-            "timing unless it changes a route decision; run actual AMD functional validation "
-            "before AMD performance work"
+            "authors-code rows; next use the Goal4499 KITTI bounded-family recipe on "
+            "the pod if Velodyne source data is ready, then run author RTNN, RTDL OptiX, "
+            "and Embree/CPU under one radius+K output contract; do not add more synthetic "
+            "distribution timing unless it changes a route decision; run actual AMD "
+            "functional validation before AMD performance work"
         ),
         "evidence_refs": (
             "Goal2800",
@@ -556,6 +564,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4459",
             "Goal4460",
             "Goal4498",
+            "Goal4499",
         ),
         "pod_needed_next": True,
     },

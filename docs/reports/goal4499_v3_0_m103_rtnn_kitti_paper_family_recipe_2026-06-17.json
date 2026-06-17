@@ -1,0 +1,2244 @@
+{
+  "claim_boundary": {
+    "bounded_same_contract_author_rtdl_comparison_allowed": true,
+    "exact_paper_recipe": false,
+    "paper_family_dataset": true,
+    "paper_reproduction_wording_allowed": false,
+    "synthetic_distribution_substitution_authorized": false
+  },
+  "date": "2026-06-17",
+  "decision": "Use the generated KITTI recipe rows only as bounded paper-family inputs for same-contract author RTNN, RTDL OptiX, and Embree/CPU comparison. They are not exact paper rows until the paper's frame ids and merge/truncation rule are frozen.",
+  "goal": "Goal4499 / V3 M103",
+  "rows": [
+    {
+      "exact_recipe_status": "blocked_on_frame_recipe",
+      "frames": [
+        {
+          "cumulative_point_count": 121015,
+          "frame_id": "0000000000",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000000.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121015,
+          "take_point_count": 121015
+        },
+        {
+          "cumulative_point_count": 242166,
+          "frame_id": "0000000001",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000001.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121151,
+          "take_point_count": 121151
+        },
+        {
+          "cumulative_point_count": 363649,
+          "frame_id": "0000000002",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000002.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121483,
+          "take_point_count": 121483
+        },
+        {
+          "cumulative_point_count": 485253,
+          "frame_id": "0000000003",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000003.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121604,
+          "take_point_count": 121604
+        },
+        {
+          "cumulative_point_count": 607032,
+          "frame_id": "0000000004",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000004.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121779,
+          "take_point_count": 121779
+        },
+        {
+          "cumulative_point_count": 728980,
+          "frame_id": "0000000005",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000005.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121948,
+          "take_point_count": 121948
+        },
+        {
+          "cumulative_point_count": 850828,
+          "frame_id": "0000000006",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000006.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121848,
+          "take_point_count": 121848
+        },
+        {
+          "cumulative_point_count": 972825,
+          "frame_id": "0000000007",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000007.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121997,
+          "take_point_count": 121997
+        },
+        {
+          "cumulative_point_count": 1000000,
+          "frame_id": "0000000008",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000008.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122227,
+          "take_point_count": 27175
+        }
+      ],
+      "notes": "This recipe reaches the requested KITTI point count from a deterministic Velodyne frame order, but it is still a bounded family recipe because the paper's exact frame ids are not frozen.",
+      "paper_equivalence_status": "bounded_family_recipe_not_exact_paper_recipe",
+      "paper_label": "KITTI-1M",
+      "recipe_status": "bounded_family_recipe_ready",
+      "selected_frame_count": 9,
+      "selected_point_count": 1000000,
+      "selection_rule": "Discover KITTI Velodyne .bin files in stable sequence/frame/path order; take frames from start_index with the requested stride; preserve source point order inside each frame; truncate only the final selected frame when the requested point count is reached.",
+      "source_frame_count": 108,
+      "source_point_count": 13178862,
+      "source_root": "/workspace/data/kitti/extracted",
+      "start_index": 0,
+      "stride": 1,
+      "target_handle": "kitti_1m",
+      "target_point_count": 1000000,
+      "truncated_last_frame": true
+    },
+    {
+      "exact_recipe_status": "blocked_on_frame_recipe",
+      "frames": [
+        {
+          "cumulative_point_count": 121015,
+          "frame_id": "0000000000",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000000.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121015,
+          "take_point_count": 121015
+        },
+        {
+          "cumulative_point_count": 242166,
+          "frame_id": "0000000001",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000001.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121151,
+          "take_point_count": 121151
+        },
+        {
+          "cumulative_point_count": 363649,
+          "frame_id": "0000000002",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000002.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121483,
+          "take_point_count": 121483
+        },
+        {
+          "cumulative_point_count": 485253,
+          "frame_id": "0000000003",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000003.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121604,
+          "take_point_count": 121604
+        },
+        {
+          "cumulative_point_count": 607032,
+          "frame_id": "0000000004",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000004.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121779,
+          "take_point_count": 121779
+        },
+        {
+          "cumulative_point_count": 728980,
+          "frame_id": "0000000005",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000005.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121948,
+          "take_point_count": 121948
+        },
+        {
+          "cumulative_point_count": 850828,
+          "frame_id": "0000000006",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000006.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121848,
+          "take_point_count": 121848
+        },
+        {
+          "cumulative_point_count": 972825,
+          "frame_id": "0000000007",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000007.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121997,
+          "take_point_count": 121997
+        },
+        {
+          "cumulative_point_count": 1095052,
+          "frame_id": "0000000008",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000008.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122227,
+          "take_point_count": 122227
+        },
+        {
+          "cumulative_point_count": 1217454,
+          "frame_id": "0000000009",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000009.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122402,
+          "take_point_count": 122402
+        },
+        {
+          "cumulative_point_count": 1339940,
+          "frame_id": "0000000010",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000010.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122486,
+          "take_point_count": 122486
+        },
+        {
+          "cumulative_point_count": 1462494,
+          "frame_id": "0000000011",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000011.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122554,
+          "take_point_count": 122554
+        },
+        {
+          "cumulative_point_count": 1584954,
+          "frame_id": "0000000012",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000012.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122460,
+          "take_point_count": 122460
+        },
+        {
+          "cumulative_point_count": 1707520,
+          "frame_id": "0000000013",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000013.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122566,
+          "take_point_count": 122566
+        },
+        {
+          "cumulative_point_count": 1830021,
+          "frame_id": "0000000014",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000014.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122501,
+          "take_point_count": 122501
+        },
+        {
+          "cumulative_point_count": 1952476,
+          "frame_id": "0000000015",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000015.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122455,
+          "take_point_count": 122455
+        },
+        {
+          "cumulative_point_count": 2074772,
+          "frame_id": "0000000016",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000016.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122296,
+          "take_point_count": 122296
+        },
+        {
+          "cumulative_point_count": 2197032,
+          "frame_id": "0000000017",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000017.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122260,
+          "take_point_count": 122260
+        },
+        {
+          "cumulative_point_count": 2319251,
+          "frame_id": "0000000018",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000018.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122219,
+          "take_point_count": 122219
+        },
+        {
+          "cumulative_point_count": 2441121,
+          "frame_id": "0000000019",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000019.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121870,
+          "take_point_count": 121870
+        },
+        {
+          "cumulative_point_count": 2562981,
+          "frame_id": "0000000020",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000020.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121860,
+          "take_point_count": 121860
+        },
+        {
+          "cumulative_point_count": 2684495,
+          "frame_id": "0000000021",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000021.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121514,
+          "take_point_count": 121514
+        },
+        {
+          "cumulative_point_count": 2805811,
+          "frame_id": "0000000022",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000022.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121316,
+          "take_point_count": 121316
+        },
+        {
+          "cumulative_point_count": 2927132,
+          "frame_id": "0000000023",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000023.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121321,
+          "take_point_count": 121321
+        },
+        {
+          "cumulative_point_count": 3048312,
+          "frame_id": "0000000024",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000024.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121180,
+          "take_point_count": 121180
+        },
+        {
+          "cumulative_point_count": 3169688,
+          "frame_id": "0000000025",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000025.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121376,
+          "take_point_count": 121376
+        },
+        {
+          "cumulative_point_count": 3291232,
+          "frame_id": "0000000026",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000026.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121544,
+          "take_point_count": 121544
+        },
+        {
+          "cumulative_point_count": 3412788,
+          "frame_id": "0000000027",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000027.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121556,
+          "take_point_count": 121556
+        },
+        {
+          "cumulative_point_count": 3534312,
+          "frame_id": "0000000028",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000028.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121524,
+          "take_point_count": 121524
+        },
+        {
+          "cumulative_point_count": 3655652,
+          "frame_id": "0000000029",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000029.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121340,
+          "take_point_count": 121340
+        },
+        {
+          "cumulative_point_count": 3776781,
+          "frame_id": "0000000030",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000030.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121129,
+          "take_point_count": 121129
+        },
+        {
+          "cumulative_point_count": 3897995,
+          "frame_id": "0000000031",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000031.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121214,
+          "take_point_count": 121214
+        },
+        {
+          "cumulative_point_count": 4019234,
+          "frame_id": "0000000032",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000032.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121239,
+          "take_point_count": 121239
+        },
+        {
+          "cumulative_point_count": 4140471,
+          "frame_id": "0000000033",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000033.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121237,
+          "take_point_count": 121237
+        },
+        {
+          "cumulative_point_count": 4261737,
+          "frame_id": "0000000034",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000034.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121266,
+          "take_point_count": 121266
+        },
+        {
+          "cumulative_point_count": 4382947,
+          "frame_id": "0000000035",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000035.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121210,
+          "take_point_count": 121210
+        },
+        {
+          "cumulative_point_count": 4504141,
+          "frame_id": "0000000036",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000036.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121194,
+          "take_point_count": 121194
+        },
+        {
+          "cumulative_point_count": 4625338,
+          "frame_id": "0000000037",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000037.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121197,
+          "take_point_count": 121197
+        },
+        {
+          "cumulative_point_count": 4746716,
+          "frame_id": "0000000038",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000038.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121378,
+          "take_point_count": 121378
+        },
+        {
+          "cumulative_point_count": 4868251,
+          "frame_id": "0000000039",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000039.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121535,
+          "take_point_count": 121535
+        },
+        {
+          "cumulative_point_count": 4989838,
+          "frame_id": "0000000040",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000040.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121587,
+          "take_point_count": 121587
+        },
+        {
+          "cumulative_point_count": 5111305,
+          "frame_id": "0000000041",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000041.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121467,
+          "take_point_count": 121467
+        },
+        {
+          "cumulative_point_count": 5232692,
+          "frame_id": "0000000042",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000042.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121387,
+          "take_point_count": 121387
+        },
+        {
+          "cumulative_point_count": 5353922,
+          "frame_id": "0000000043",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000043.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121230,
+          "take_point_count": 121230
+        },
+        {
+          "cumulative_point_count": 5475071,
+          "frame_id": "0000000044",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000044.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121149,
+          "take_point_count": 121149
+        },
+        {
+          "cumulative_point_count": 5596297,
+          "frame_id": "0000000045",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000045.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121226,
+          "take_point_count": 121226
+        },
+        {
+          "cumulative_point_count": 5717760,
+          "frame_id": "0000000046",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000046.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121463,
+          "take_point_count": 121463
+        },
+        {
+          "cumulative_point_count": 5839265,
+          "frame_id": "0000000047",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000047.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121505,
+          "take_point_count": 121505
+        },
+        {
+          "cumulative_point_count": 5960872,
+          "frame_id": "0000000048",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000048.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121607,
+          "take_point_count": 121607
+        },
+        {
+          "cumulative_point_count": 6000000,
+          "frame_id": "0000000049",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000049.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121875,
+          "take_point_count": 39128
+        }
+      ],
+      "notes": "This recipe reaches the requested KITTI point count from a deterministic Velodyne frame order, but it is still a bounded family recipe because the paper's exact frame ids are not frozen.",
+      "paper_equivalence_status": "bounded_family_recipe_not_exact_paper_recipe",
+      "paper_label": "KITTI-6M",
+      "recipe_status": "bounded_family_recipe_ready",
+      "selected_frame_count": 50,
+      "selected_point_count": 6000000,
+      "selection_rule": "Discover KITTI Velodyne .bin files in stable sequence/frame/path order; take frames from start_index with the requested stride; preserve source point order inside each frame; truncate only the final selected frame when the requested point count is reached.",
+      "source_frame_count": 108,
+      "source_point_count": 13178862,
+      "source_root": "/workspace/data/kitti/extracted",
+      "start_index": 0,
+      "stride": 1,
+      "target_handle": "kitti_6m",
+      "target_point_count": 6000000,
+      "truncated_last_frame": true
+    },
+    {
+      "exact_recipe_status": "blocked_on_frame_recipe",
+      "frames": [
+        {
+          "cumulative_point_count": 121015,
+          "frame_id": "0000000000",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000000.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121015,
+          "take_point_count": 121015
+        },
+        {
+          "cumulative_point_count": 242166,
+          "frame_id": "0000000001",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000001.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121151,
+          "take_point_count": 121151
+        },
+        {
+          "cumulative_point_count": 363649,
+          "frame_id": "0000000002",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000002.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121483,
+          "take_point_count": 121483
+        },
+        {
+          "cumulative_point_count": 485253,
+          "frame_id": "0000000003",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000003.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121604,
+          "take_point_count": 121604
+        },
+        {
+          "cumulative_point_count": 607032,
+          "frame_id": "0000000004",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000004.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121779,
+          "take_point_count": 121779
+        },
+        {
+          "cumulative_point_count": 728980,
+          "frame_id": "0000000005",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000005.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121948,
+          "take_point_count": 121948
+        },
+        {
+          "cumulative_point_count": 850828,
+          "frame_id": "0000000006",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000006.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121848,
+          "take_point_count": 121848
+        },
+        {
+          "cumulative_point_count": 972825,
+          "frame_id": "0000000007",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000007.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121997,
+          "take_point_count": 121997
+        },
+        {
+          "cumulative_point_count": 1095052,
+          "frame_id": "0000000008",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000008.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122227,
+          "take_point_count": 122227
+        },
+        {
+          "cumulative_point_count": 1217454,
+          "frame_id": "0000000009",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000009.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122402,
+          "take_point_count": 122402
+        },
+        {
+          "cumulative_point_count": 1339940,
+          "frame_id": "0000000010",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000010.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122486,
+          "take_point_count": 122486
+        },
+        {
+          "cumulative_point_count": 1462494,
+          "frame_id": "0000000011",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000011.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122554,
+          "take_point_count": 122554
+        },
+        {
+          "cumulative_point_count": 1584954,
+          "frame_id": "0000000012",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000012.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122460,
+          "take_point_count": 122460
+        },
+        {
+          "cumulative_point_count": 1707520,
+          "frame_id": "0000000013",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000013.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122566,
+          "take_point_count": 122566
+        },
+        {
+          "cumulative_point_count": 1830021,
+          "frame_id": "0000000014",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000014.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122501,
+          "take_point_count": 122501
+        },
+        {
+          "cumulative_point_count": 1952476,
+          "frame_id": "0000000015",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000015.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122455,
+          "take_point_count": 122455
+        },
+        {
+          "cumulative_point_count": 2074772,
+          "frame_id": "0000000016",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000016.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122296,
+          "take_point_count": 122296
+        },
+        {
+          "cumulative_point_count": 2197032,
+          "frame_id": "0000000017",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000017.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122260,
+          "take_point_count": 122260
+        },
+        {
+          "cumulative_point_count": 2319251,
+          "frame_id": "0000000018",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000018.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122219,
+          "take_point_count": 122219
+        },
+        {
+          "cumulative_point_count": 2441121,
+          "frame_id": "0000000019",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000019.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121870,
+          "take_point_count": 121870
+        },
+        {
+          "cumulative_point_count": 2562981,
+          "frame_id": "0000000020",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000020.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121860,
+          "take_point_count": 121860
+        },
+        {
+          "cumulative_point_count": 2684495,
+          "frame_id": "0000000021",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000021.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121514,
+          "take_point_count": 121514
+        },
+        {
+          "cumulative_point_count": 2805811,
+          "frame_id": "0000000022",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000022.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121316,
+          "take_point_count": 121316
+        },
+        {
+          "cumulative_point_count": 2927132,
+          "frame_id": "0000000023",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000023.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121321,
+          "take_point_count": 121321
+        },
+        {
+          "cumulative_point_count": 3048312,
+          "frame_id": "0000000024",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000024.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121180,
+          "take_point_count": 121180
+        },
+        {
+          "cumulative_point_count": 3169688,
+          "frame_id": "0000000025",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000025.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121376,
+          "take_point_count": 121376
+        },
+        {
+          "cumulative_point_count": 3291232,
+          "frame_id": "0000000026",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000026.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121544,
+          "take_point_count": 121544
+        },
+        {
+          "cumulative_point_count": 3412788,
+          "frame_id": "0000000027",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000027.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121556,
+          "take_point_count": 121556
+        },
+        {
+          "cumulative_point_count": 3534312,
+          "frame_id": "0000000028",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000028.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121524,
+          "take_point_count": 121524
+        },
+        {
+          "cumulative_point_count": 3655652,
+          "frame_id": "0000000029",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000029.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121340,
+          "take_point_count": 121340
+        },
+        {
+          "cumulative_point_count": 3776781,
+          "frame_id": "0000000030",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000030.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121129,
+          "take_point_count": 121129
+        },
+        {
+          "cumulative_point_count": 3897995,
+          "frame_id": "0000000031",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000031.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121214,
+          "take_point_count": 121214
+        },
+        {
+          "cumulative_point_count": 4019234,
+          "frame_id": "0000000032",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000032.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121239,
+          "take_point_count": 121239
+        },
+        {
+          "cumulative_point_count": 4140471,
+          "frame_id": "0000000033",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000033.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121237,
+          "take_point_count": 121237
+        },
+        {
+          "cumulative_point_count": 4261737,
+          "frame_id": "0000000034",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000034.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121266,
+          "take_point_count": 121266
+        },
+        {
+          "cumulative_point_count": 4382947,
+          "frame_id": "0000000035",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000035.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121210,
+          "take_point_count": 121210
+        },
+        {
+          "cumulative_point_count": 4504141,
+          "frame_id": "0000000036",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000036.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121194,
+          "take_point_count": 121194
+        },
+        {
+          "cumulative_point_count": 4625338,
+          "frame_id": "0000000037",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000037.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121197,
+          "take_point_count": 121197
+        },
+        {
+          "cumulative_point_count": 4746716,
+          "frame_id": "0000000038",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000038.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121378,
+          "take_point_count": 121378
+        },
+        {
+          "cumulative_point_count": 4868251,
+          "frame_id": "0000000039",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000039.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121535,
+          "take_point_count": 121535
+        },
+        {
+          "cumulative_point_count": 4989838,
+          "frame_id": "0000000040",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000040.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121587,
+          "take_point_count": 121587
+        },
+        {
+          "cumulative_point_count": 5111305,
+          "frame_id": "0000000041",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000041.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121467,
+          "take_point_count": 121467
+        },
+        {
+          "cumulative_point_count": 5232692,
+          "frame_id": "0000000042",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000042.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121387,
+          "take_point_count": 121387
+        },
+        {
+          "cumulative_point_count": 5353922,
+          "frame_id": "0000000043",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000043.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121230,
+          "take_point_count": 121230
+        },
+        {
+          "cumulative_point_count": 5475071,
+          "frame_id": "0000000044",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000044.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121149,
+          "take_point_count": 121149
+        },
+        {
+          "cumulative_point_count": 5596297,
+          "frame_id": "0000000045",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000045.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121226,
+          "take_point_count": 121226
+        },
+        {
+          "cumulative_point_count": 5717760,
+          "frame_id": "0000000046",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000046.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121463,
+          "take_point_count": 121463
+        },
+        {
+          "cumulative_point_count": 5839265,
+          "frame_id": "0000000047",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000047.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121505,
+          "take_point_count": 121505
+        },
+        {
+          "cumulative_point_count": 5960872,
+          "frame_id": "0000000048",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000048.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121607,
+          "take_point_count": 121607
+        },
+        {
+          "cumulative_point_count": 6082747,
+          "frame_id": "0000000049",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000049.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121875,
+          "take_point_count": 121875
+        },
+        {
+          "cumulative_point_count": 6204546,
+          "frame_id": "0000000050",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000050.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121799,
+          "take_point_count": 121799
+        },
+        {
+          "cumulative_point_count": 6326281,
+          "frame_id": "0000000051",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000051.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121735,
+          "take_point_count": 121735
+        },
+        {
+          "cumulative_point_count": 6448021,
+          "frame_id": "0000000052",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000052.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121740,
+          "take_point_count": 121740
+        },
+        {
+          "cumulative_point_count": 6569944,
+          "frame_id": "0000000053",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000053.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121923,
+          "take_point_count": 121923
+        },
+        {
+          "cumulative_point_count": 6691881,
+          "frame_id": "0000000054",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000054.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121937,
+          "take_point_count": 121937
+        },
+        {
+          "cumulative_point_count": 6813953,
+          "frame_id": "0000000055",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000055.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122072,
+          "take_point_count": 122072
+        },
+        {
+          "cumulative_point_count": 6936123,
+          "frame_id": "0000000056",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000056.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122170,
+          "take_point_count": 122170
+        },
+        {
+          "cumulative_point_count": 7058346,
+          "frame_id": "0000000057",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000057.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122223,
+          "take_point_count": 122223
+        },
+        {
+          "cumulative_point_count": 7180761,
+          "frame_id": "0000000058",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000058.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122415,
+          "take_point_count": 122415
+        },
+        {
+          "cumulative_point_count": 7303166,
+          "frame_id": "0000000059",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000059.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122405,
+          "take_point_count": 122405
+        },
+        {
+          "cumulative_point_count": 7425587,
+          "frame_id": "0000000060",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000060.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122421,
+          "take_point_count": 122421
+        },
+        {
+          "cumulative_point_count": 7547893,
+          "frame_id": "0000000061",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000061.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122306,
+          "take_point_count": 122306
+        },
+        {
+          "cumulative_point_count": 7670159,
+          "frame_id": "0000000062",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000062.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122266,
+          "take_point_count": 122266
+        },
+        {
+          "cumulative_point_count": 7792429,
+          "frame_id": "0000000063",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000063.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122270,
+          "take_point_count": 122270
+        },
+        {
+          "cumulative_point_count": 7914805,
+          "frame_id": "0000000064",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000064.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122376,
+          "take_point_count": 122376
+        },
+        {
+          "cumulative_point_count": 8037279,
+          "frame_id": "0000000065",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000065.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122474,
+          "take_point_count": 122474
+        },
+        {
+          "cumulative_point_count": 8159906,
+          "frame_id": "0000000066",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000066.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122627,
+          "take_point_count": 122627
+        },
+        {
+          "cumulative_point_count": 8282669,
+          "frame_id": "0000000067",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000067.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122763,
+          "take_point_count": 122763
+        },
+        {
+          "cumulative_point_count": 8405519,
+          "frame_id": "0000000068",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000068.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122850,
+          "take_point_count": 122850
+        },
+        {
+          "cumulative_point_count": 8528464,
+          "frame_id": "0000000069",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000069.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122945,
+          "take_point_count": 122945
+        },
+        {
+          "cumulative_point_count": 8651437,
+          "frame_id": "0000000070",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000070.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122973,
+          "take_point_count": 122973
+        },
+        {
+          "cumulative_point_count": 8774475,
+          "frame_id": "0000000071",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000071.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123038,
+          "take_point_count": 123038
+        },
+        {
+          "cumulative_point_count": 8897482,
+          "frame_id": "0000000072",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000072.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123007,
+          "take_point_count": 123007
+        },
+        {
+          "cumulative_point_count": 9020494,
+          "frame_id": "0000000073",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000073.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123012,
+          "take_point_count": 123012
+        },
+        {
+          "cumulative_point_count": 9143542,
+          "frame_id": "0000000074",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000074.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123048,
+          "take_point_count": 123048
+        },
+        {
+          "cumulative_point_count": 9266634,
+          "frame_id": "0000000075",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000075.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123092,
+          "take_point_count": 123092
+        },
+        {
+          "cumulative_point_count": 9389599,
+          "frame_id": "0000000076",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000076.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122965,
+          "take_point_count": 122965
+        },
+        {
+          "cumulative_point_count": 9512628,
+          "frame_id": "0000000077",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000077.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123029,
+          "take_point_count": 123029
+        },
+        {
+          "cumulative_point_count": 9635634,
+          "frame_id": "0000000078",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000078.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123006,
+          "take_point_count": 123006
+        },
+        {
+          "cumulative_point_count": 9758660,
+          "frame_id": "0000000079",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000079.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123026,
+          "take_point_count": 123026
+        },
+        {
+          "cumulative_point_count": 9881836,
+          "frame_id": "0000000080",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000080.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123176,
+          "take_point_count": 123176
+        },
+        {
+          "cumulative_point_count": 10004972,
+          "frame_id": "0000000081",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000081.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123136,
+          "take_point_count": 123136
+        },
+        {
+          "cumulative_point_count": 10128124,
+          "frame_id": "0000000082",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000082.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123152,
+          "take_point_count": 123152
+        },
+        {
+          "cumulative_point_count": 10251233,
+          "frame_id": "0000000083",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000083.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123109,
+          "take_point_count": 123109
+        },
+        {
+          "cumulative_point_count": 10374286,
+          "frame_id": "0000000084",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000084.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123053,
+          "take_point_count": 123053
+        },
+        {
+          "cumulative_point_count": 10497410,
+          "frame_id": "0000000085",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000085.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123124,
+          "take_point_count": 123124
+        },
+        {
+          "cumulative_point_count": 10620443,
+          "frame_id": "0000000086",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000086.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123033,
+          "take_point_count": 123033
+        },
+        {
+          "cumulative_point_count": 10743398,
+          "frame_id": "0000000087",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000087.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122955,
+          "take_point_count": 122955
+        },
+        {
+          "cumulative_point_count": 10866376,
+          "frame_id": "0000000088",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000088.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122978,
+          "take_point_count": 122978
+        },
+        {
+          "cumulative_point_count": 10989295,
+          "frame_id": "0000000089",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000089.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122919,
+          "take_point_count": 122919
+        },
+        {
+          "cumulative_point_count": 11112282,
+          "frame_id": "0000000090",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000090.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122987,
+          "take_point_count": 122987
+        },
+        {
+          "cumulative_point_count": 11235322,
+          "frame_id": "0000000091",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000091.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123040,
+          "take_point_count": 123040
+        },
+        {
+          "cumulative_point_count": 11358342,
+          "frame_id": "0000000092",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000092.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123020,
+          "take_point_count": 123020
+        },
+        {
+          "cumulative_point_count": 11481469,
+          "frame_id": "0000000093",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000093.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123127,
+          "take_point_count": 123127
+        },
+        {
+          "cumulative_point_count": 11604609,
+          "frame_id": "0000000094",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000094.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123140,
+          "take_point_count": 123140
+        },
+        {
+          "cumulative_point_count": 11727771,
+          "frame_id": "0000000095",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000095.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123162,
+          "take_point_count": 123162
+        },
+        {
+          "cumulative_point_count": 11851024,
+          "frame_id": "0000000096",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000096.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123253,
+          "take_point_count": 123253
+        },
+        {
+          "cumulative_point_count": 11974283,
+          "frame_id": "0000000097",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000097.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123259,
+          "take_point_count": 123259
+        },
+        {
+          "cumulative_point_count": 12000000,
+          "frame_id": "0000000098",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000098.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123174,
+          "take_point_count": 25717
+        }
+      ],
+      "notes": "This recipe reaches the requested KITTI point count from a deterministic Velodyne frame order, but it is still a bounded family recipe because the paper's exact frame ids are not frozen.",
+      "paper_equivalence_status": "bounded_family_recipe_not_exact_paper_recipe",
+      "paper_label": "KITTI-12M",
+      "recipe_status": "bounded_family_recipe_ready",
+      "selected_frame_count": 99,
+      "selected_point_count": 12000000,
+      "selection_rule": "Discover KITTI Velodyne .bin files in stable sequence/frame/path order; take frames from start_index with the requested stride; preserve source point order inside each frame; truncate only the final selected frame when the requested point count is reached.",
+      "source_frame_count": 108,
+      "source_point_count": 13178862,
+      "source_root": "/workspace/data/kitti/extracted",
+      "start_index": 0,
+      "stride": 1,
+      "target_handle": "kitti_12m",
+      "target_point_count": 12000000,
+      "truncated_last_frame": true
+    },
+    {
+      "exact_recipe_status": "blocked_on_frame_recipe",
+      "frames": [
+        {
+          "cumulative_point_count": 121015,
+          "frame_id": "0000000000",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000000.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121015,
+          "take_point_count": 121015
+        },
+        {
+          "cumulative_point_count": 242166,
+          "frame_id": "0000000001",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000001.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121151,
+          "take_point_count": 121151
+        },
+        {
+          "cumulative_point_count": 363649,
+          "frame_id": "0000000002",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000002.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121483,
+          "take_point_count": 121483
+        },
+        {
+          "cumulative_point_count": 485253,
+          "frame_id": "0000000003",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000003.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121604,
+          "take_point_count": 121604
+        },
+        {
+          "cumulative_point_count": 607032,
+          "frame_id": "0000000004",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000004.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121779,
+          "take_point_count": 121779
+        },
+        {
+          "cumulative_point_count": 728980,
+          "frame_id": "0000000005",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000005.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121948,
+          "take_point_count": 121948
+        },
+        {
+          "cumulative_point_count": 850828,
+          "frame_id": "0000000006",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000006.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121848,
+          "take_point_count": 121848
+        },
+        {
+          "cumulative_point_count": 972825,
+          "frame_id": "0000000007",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000007.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121997,
+          "take_point_count": 121997
+        },
+        {
+          "cumulative_point_count": 1095052,
+          "frame_id": "0000000008",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000008.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122227,
+          "take_point_count": 122227
+        },
+        {
+          "cumulative_point_count": 1217454,
+          "frame_id": "0000000009",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000009.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122402,
+          "take_point_count": 122402
+        },
+        {
+          "cumulative_point_count": 1339940,
+          "frame_id": "0000000010",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000010.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122486,
+          "take_point_count": 122486
+        },
+        {
+          "cumulative_point_count": 1462494,
+          "frame_id": "0000000011",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000011.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122554,
+          "take_point_count": 122554
+        },
+        {
+          "cumulative_point_count": 1584954,
+          "frame_id": "0000000012",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000012.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122460,
+          "take_point_count": 122460
+        },
+        {
+          "cumulative_point_count": 1707520,
+          "frame_id": "0000000013",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000013.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122566,
+          "take_point_count": 122566
+        },
+        {
+          "cumulative_point_count": 1830021,
+          "frame_id": "0000000014",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000014.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122501,
+          "take_point_count": 122501
+        },
+        {
+          "cumulative_point_count": 1952476,
+          "frame_id": "0000000015",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000015.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122455,
+          "take_point_count": 122455
+        },
+        {
+          "cumulative_point_count": 2074772,
+          "frame_id": "0000000016",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000016.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122296,
+          "take_point_count": 122296
+        },
+        {
+          "cumulative_point_count": 2197032,
+          "frame_id": "0000000017",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000017.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122260,
+          "take_point_count": 122260
+        },
+        {
+          "cumulative_point_count": 2319251,
+          "frame_id": "0000000018",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000018.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122219,
+          "take_point_count": 122219
+        },
+        {
+          "cumulative_point_count": 2441121,
+          "frame_id": "0000000019",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000019.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121870,
+          "take_point_count": 121870
+        },
+        {
+          "cumulative_point_count": 2562981,
+          "frame_id": "0000000020",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000020.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121860,
+          "take_point_count": 121860
+        },
+        {
+          "cumulative_point_count": 2684495,
+          "frame_id": "0000000021",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000021.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121514,
+          "take_point_count": 121514
+        },
+        {
+          "cumulative_point_count": 2805811,
+          "frame_id": "0000000022",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000022.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121316,
+          "take_point_count": 121316
+        },
+        {
+          "cumulative_point_count": 2927132,
+          "frame_id": "0000000023",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000023.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121321,
+          "take_point_count": 121321
+        },
+        {
+          "cumulative_point_count": 3048312,
+          "frame_id": "0000000024",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000024.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121180,
+          "take_point_count": 121180
+        },
+        {
+          "cumulative_point_count": 3169688,
+          "frame_id": "0000000025",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000025.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121376,
+          "take_point_count": 121376
+        },
+        {
+          "cumulative_point_count": 3291232,
+          "frame_id": "0000000026",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000026.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121544,
+          "take_point_count": 121544
+        },
+        {
+          "cumulative_point_count": 3412788,
+          "frame_id": "0000000027",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000027.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121556,
+          "take_point_count": 121556
+        },
+        {
+          "cumulative_point_count": 3534312,
+          "frame_id": "0000000028",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000028.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121524,
+          "take_point_count": 121524
+        },
+        {
+          "cumulative_point_count": 3655652,
+          "frame_id": "0000000029",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000029.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121340,
+          "take_point_count": 121340
+        },
+        {
+          "cumulative_point_count": 3776781,
+          "frame_id": "0000000030",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000030.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121129,
+          "take_point_count": 121129
+        },
+        {
+          "cumulative_point_count": 3897995,
+          "frame_id": "0000000031",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000031.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121214,
+          "take_point_count": 121214
+        },
+        {
+          "cumulative_point_count": 4019234,
+          "frame_id": "0000000032",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000032.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121239,
+          "take_point_count": 121239
+        },
+        {
+          "cumulative_point_count": 4140471,
+          "frame_id": "0000000033",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000033.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121237,
+          "take_point_count": 121237
+        },
+        {
+          "cumulative_point_count": 4261737,
+          "frame_id": "0000000034",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000034.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121266,
+          "take_point_count": 121266
+        },
+        {
+          "cumulative_point_count": 4382947,
+          "frame_id": "0000000035",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000035.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121210,
+          "take_point_count": 121210
+        },
+        {
+          "cumulative_point_count": 4504141,
+          "frame_id": "0000000036",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000036.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121194,
+          "take_point_count": 121194
+        },
+        {
+          "cumulative_point_count": 4625338,
+          "frame_id": "0000000037",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000037.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121197,
+          "take_point_count": 121197
+        },
+        {
+          "cumulative_point_count": 4746716,
+          "frame_id": "0000000038",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000038.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121378,
+          "take_point_count": 121378
+        },
+        {
+          "cumulative_point_count": 4868251,
+          "frame_id": "0000000039",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000039.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121535,
+          "take_point_count": 121535
+        },
+        {
+          "cumulative_point_count": 4989838,
+          "frame_id": "0000000040",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000040.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121587,
+          "take_point_count": 121587
+        },
+        {
+          "cumulative_point_count": 5111305,
+          "frame_id": "0000000041",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000041.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121467,
+          "take_point_count": 121467
+        },
+        {
+          "cumulative_point_count": 5232692,
+          "frame_id": "0000000042",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000042.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121387,
+          "take_point_count": 121387
+        },
+        {
+          "cumulative_point_count": 5353922,
+          "frame_id": "0000000043",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000043.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121230,
+          "take_point_count": 121230
+        },
+        {
+          "cumulative_point_count": 5475071,
+          "frame_id": "0000000044",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000044.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121149,
+          "take_point_count": 121149
+        },
+        {
+          "cumulative_point_count": 5596297,
+          "frame_id": "0000000045",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000045.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121226,
+          "take_point_count": 121226
+        },
+        {
+          "cumulative_point_count": 5717760,
+          "frame_id": "0000000046",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000046.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121463,
+          "take_point_count": 121463
+        },
+        {
+          "cumulative_point_count": 5839265,
+          "frame_id": "0000000047",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000047.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121505,
+          "take_point_count": 121505
+        },
+        {
+          "cumulative_point_count": 5960872,
+          "frame_id": "0000000048",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000048.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121607,
+          "take_point_count": 121607
+        },
+        {
+          "cumulative_point_count": 6082747,
+          "frame_id": "0000000049",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000049.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121875,
+          "take_point_count": 121875
+        },
+        {
+          "cumulative_point_count": 6204546,
+          "frame_id": "0000000050",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000050.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121799,
+          "take_point_count": 121799
+        },
+        {
+          "cumulative_point_count": 6326281,
+          "frame_id": "0000000051",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000051.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121735,
+          "take_point_count": 121735
+        },
+        {
+          "cumulative_point_count": 6448021,
+          "frame_id": "0000000052",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000052.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121740,
+          "take_point_count": 121740
+        },
+        {
+          "cumulative_point_count": 6569944,
+          "frame_id": "0000000053",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000053.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121923,
+          "take_point_count": 121923
+        },
+        {
+          "cumulative_point_count": 6691881,
+          "frame_id": "0000000054",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000054.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 121937,
+          "take_point_count": 121937
+        },
+        {
+          "cumulative_point_count": 6813953,
+          "frame_id": "0000000055",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000055.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122072,
+          "take_point_count": 122072
+        },
+        {
+          "cumulative_point_count": 6936123,
+          "frame_id": "0000000056",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000056.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122170,
+          "take_point_count": 122170
+        },
+        {
+          "cumulative_point_count": 7058346,
+          "frame_id": "0000000057",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000057.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122223,
+          "take_point_count": 122223
+        },
+        {
+          "cumulative_point_count": 7180761,
+          "frame_id": "0000000058",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000058.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122415,
+          "take_point_count": 122415
+        },
+        {
+          "cumulative_point_count": 7303166,
+          "frame_id": "0000000059",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000059.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122405,
+          "take_point_count": 122405
+        },
+        {
+          "cumulative_point_count": 7425587,
+          "frame_id": "0000000060",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000060.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122421,
+          "take_point_count": 122421
+        },
+        {
+          "cumulative_point_count": 7547893,
+          "frame_id": "0000000061",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000061.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122306,
+          "take_point_count": 122306
+        },
+        {
+          "cumulative_point_count": 7670159,
+          "frame_id": "0000000062",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000062.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122266,
+          "take_point_count": 122266
+        },
+        {
+          "cumulative_point_count": 7792429,
+          "frame_id": "0000000063",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000063.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122270,
+          "take_point_count": 122270
+        },
+        {
+          "cumulative_point_count": 7914805,
+          "frame_id": "0000000064",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000064.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122376,
+          "take_point_count": 122376
+        },
+        {
+          "cumulative_point_count": 8037279,
+          "frame_id": "0000000065",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000065.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122474,
+          "take_point_count": 122474
+        },
+        {
+          "cumulative_point_count": 8159906,
+          "frame_id": "0000000066",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000066.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122627,
+          "take_point_count": 122627
+        },
+        {
+          "cumulative_point_count": 8282669,
+          "frame_id": "0000000067",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000067.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122763,
+          "take_point_count": 122763
+        },
+        {
+          "cumulative_point_count": 8405519,
+          "frame_id": "0000000068",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000068.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122850,
+          "take_point_count": 122850
+        },
+        {
+          "cumulative_point_count": 8528464,
+          "frame_id": "0000000069",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000069.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122945,
+          "take_point_count": 122945
+        },
+        {
+          "cumulative_point_count": 8651437,
+          "frame_id": "0000000070",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000070.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122973,
+          "take_point_count": 122973
+        },
+        {
+          "cumulative_point_count": 8774475,
+          "frame_id": "0000000071",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000071.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123038,
+          "take_point_count": 123038
+        },
+        {
+          "cumulative_point_count": 8897482,
+          "frame_id": "0000000072",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000072.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123007,
+          "take_point_count": 123007
+        },
+        {
+          "cumulative_point_count": 9020494,
+          "frame_id": "0000000073",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000073.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123012,
+          "take_point_count": 123012
+        },
+        {
+          "cumulative_point_count": 9143542,
+          "frame_id": "0000000074",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000074.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123048,
+          "take_point_count": 123048
+        },
+        {
+          "cumulative_point_count": 9266634,
+          "frame_id": "0000000075",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000075.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123092,
+          "take_point_count": 123092
+        },
+        {
+          "cumulative_point_count": 9389599,
+          "frame_id": "0000000076",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000076.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122965,
+          "take_point_count": 122965
+        },
+        {
+          "cumulative_point_count": 9512628,
+          "frame_id": "0000000077",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000077.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123029,
+          "take_point_count": 123029
+        },
+        {
+          "cumulative_point_count": 9635634,
+          "frame_id": "0000000078",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000078.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123006,
+          "take_point_count": 123006
+        },
+        {
+          "cumulative_point_count": 9758660,
+          "frame_id": "0000000079",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000079.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123026,
+          "take_point_count": 123026
+        },
+        {
+          "cumulative_point_count": 9881836,
+          "frame_id": "0000000080",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000080.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123176,
+          "take_point_count": 123176
+        },
+        {
+          "cumulative_point_count": 10004972,
+          "frame_id": "0000000081",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000081.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123136,
+          "take_point_count": 123136
+        },
+        {
+          "cumulative_point_count": 10128124,
+          "frame_id": "0000000082",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000082.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123152,
+          "take_point_count": 123152
+        },
+        {
+          "cumulative_point_count": 10251233,
+          "frame_id": "0000000083",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000083.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123109,
+          "take_point_count": 123109
+        },
+        {
+          "cumulative_point_count": 10374286,
+          "frame_id": "0000000084",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000084.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123053,
+          "take_point_count": 123053
+        },
+        {
+          "cumulative_point_count": 10497410,
+          "frame_id": "0000000085",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000085.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123124,
+          "take_point_count": 123124
+        },
+        {
+          "cumulative_point_count": 10620443,
+          "frame_id": "0000000086",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000086.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123033,
+          "take_point_count": 123033
+        },
+        {
+          "cumulative_point_count": 10743398,
+          "frame_id": "0000000087",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000087.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122955,
+          "take_point_count": 122955
+        },
+        {
+          "cumulative_point_count": 10866376,
+          "frame_id": "0000000088",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000088.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122978,
+          "take_point_count": 122978
+        },
+        {
+          "cumulative_point_count": 10989295,
+          "frame_id": "0000000089",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000089.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122919,
+          "take_point_count": 122919
+        },
+        {
+          "cumulative_point_count": 11112282,
+          "frame_id": "0000000090",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000090.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122987,
+          "take_point_count": 122987
+        },
+        {
+          "cumulative_point_count": 11235322,
+          "frame_id": "0000000091",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000091.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123040,
+          "take_point_count": 123040
+        },
+        {
+          "cumulative_point_count": 11358342,
+          "frame_id": "0000000092",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000092.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123020,
+          "take_point_count": 123020
+        },
+        {
+          "cumulative_point_count": 11481469,
+          "frame_id": "0000000093",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000093.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123127,
+          "take_point_count": 123127
+        },
+        {
+          "cumulative_point_count": 11604609,
+          "frame_id": "0000000094",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000094.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123140,
+          "take_point_count": 123140
+        },
+        {
+          "cumulative_point_count": 11727771,
+          "frame_id": "0000000095",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000095.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123162,
+          "take_point_count": 123162
+        },
+        {
+          "cumulative_point_count": 11851024,
+          "frame_id": "0000000096",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000096.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123253,
+          "take_point_count": 123253
+        },
+        {
+          "cumulative_point_count": 11974283,
+          "frame_id": "0000000097",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000097.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123259,
+          "take_point_count": 123259
+        },
+        {
+          "cumulative_point_count": 12097457,
+          "frame_id": "0000000098",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000098.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123174,
+          "take_point_count": 123174
+        },
+        {
+          "cumulative_point_count": 12220638,
+          "frame_id": "0000000099",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000099.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123181,
+          "take_point_count": 123181
+        },
+        {
+          "cumulative_point_count": 12343756,
+          "frame_id": "0000000100",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000100.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123118,
+          "take_point_count": 123118
+        },
+        {
+          "cumulative_point_count": 12466770,
+          "frame_id": "0000000101",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000101.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 123014,
+          "take_point_count": 123014
+        },
+        {
+          "cumulative_point_count": 12589734,
+          "frame_id": "0000000102",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000102.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122964,
+          "take_point_count": 122964
+        },
+        {
+          "cumulative_point_count": 12712610,
+          "frame_id": "0000000103",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000103.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122876,
+          "take_point_count": 122876
+        },
+        {
+          "cumulative_point_count": 12835328,
+          "frame_id": "0000000104",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000104.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122718,
+          "take_point_count": 122718
+        },
+        {
+          "cumulative_point_count": 12957871,
+          "frame_id": "0000000105",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000105.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122543,
+          "take_point_count": 122543
+        },
+        {
+          "cumulative_point_count": 13080540,
+          "frame_id": "0000000106",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000106.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 122669,
+          "take_point_count": 122669
+        },
+        {
+          "cumulative_point_count": 13178862,
+          "frame_id": "0000000107",
+          "relative_bin_path": "2011_09_26/2011_09_26_drive_0001_sync/velodyne_points/data/0000000107.bin",
+          "sequence": "2011_09_26_drive_0001_sync",
+          "source_point_count": 98322,
+          "take_point_count": 98322
+        }
+      ],
+      "notes": "The configured KITTI source does not contain enough selected Velodyne points to reach the requested target point count.",
+      "paper_equivalence_status": "bounded_family_recipe_not_exact_paper_recipe",
+      "paper_label": "KITTI-25M",
+      "recipe_status": "insufficient_source_points",
+      "selected_frame_count": 108,
+      "selected_point_count": 13178862,
+      "selection_rule": "Discover KITTI Velodyne .bin files in stable sequence/frame/path order; take frames from start_index with the requested stride; preserve source point order inside each frame; truncate only the final selected frame when the requested point count is reached.",
+      "source_frame_count": 108,
+      "source_point_count": 13178862,
+      "source_root": "/workspace/data/kitti/extracted",
+      "start_index": 0,
+      "stride": 1,
+      "target_handle": "kitti_25m",
+      "target_point_count": 25000000,
+      "truncated_last_frame": false
+    }
+  ],
+  "source_probe": {
+    "candidate_roots": [
+      "/workspace/data/kitti/extracted",
+      "/workspace/data/kitti",
+      "/data/kitti",
+      "data/kitti"
+    ],
+    "resolved_source_root": "/workspace/data/kitti/extracted"
+  },
+  "status": "kitti_bounded_family_recipes_ready",
+  "summary": {
+    "bounded_same_contract_comparison_ready": true,
+    "kitti_target_count": 4,
+    "largest_ready_target_point_count": 12000000,
+    "paper_equivalence_authorized": false,
+    "paper_reproduction_authorized": false,
+    "ready_bounded_recipe_count": 3,
+    "recipe_row_count": 4,
+    "source_ready": true,
+    "source_root": "/workspace/data/kitti/extracted"
+  },
+  "version": "rtdl.v3_0.rtnn_kitti_paper_family_recipe.goal4499.v1"
+}

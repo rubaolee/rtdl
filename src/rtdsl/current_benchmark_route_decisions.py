@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4498.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4499.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -57,7 +57,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4498 defines the nine RTNN paper dataset targets and keeps exact "
     "paper reproduction blocked until KITTI frame recipes, Stanford scan-to-point "
     "rules, and Millennium snapshot/trace recipes are frozen; uniform, shell, "
-    "and clustered rows remain RTDL-internal distribution evidence. "
+    "and clustered rows remain RTDL-internal distribution evidence. Goal4499 "
+    "adds a deterministic KITTI bounded-family recipe layer that can feed "
+    "same-contract author RTNN, RTDL OptiX, and Embree/CPU comparisons when "
+    "Velodyne source data is present, while still disallowing exact paper "
+    "wording until the paper's frame recipe is known. "
     "Goal4444 refreshes triangle-counting partner guidance after replacing the "
     "transitional Numba CPU-contract builder with a direct binary vectorized "
     "summary path before Numba device upload. It materially reduces the no-C++ "
@@ -730,7 +734,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "per batch and Numba measures 39.267ms, with the same parity and hot-window gates. Keep exact "
             "float64 aggregate and float32 graph-bridge rows separate. Goal4498 defines "
             "the nine RTNN paper dataset targets and keeps exact paper reproduction "
-            "blocked until the dataset recipes are acquired and frozen."
+            "blocked until the dataset recipes are acquired and frozen. Goal4499 adds "
+            "the KITTI bounded-family recipe gate for same-contract bounded comparison "
+            "without upgrading it to exact paper reproduction."
         ),
         primary_route=(
             "mixed explicit RTNN route: exact RTDL/OptiX native aggregate for same-contract "
@@ -759,10 +765,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
         ),
         next_runtime_action=(
             "preserve exact aggregate and resident graph bridge as separate front-door rows; future "
-            "work starts with Goal4498 paper-target acquisition: freeze at least one exact or "
-            "honestly bounded KITTI/Stanford/Millennium input recipe, then run author RTNN, "
-            "RTDL OptiX, and Embree/CPU under the same radius+K output contract; do not add "
-            "more synthetic distribution timing as paper evidence"
+            "work starts from the Goal4499 KITTI bounded-family recipe when Velodyne "
+            "source data is present: run author RTNN, RTDL OptiX, and Embree/CPU under "
+            "the same radius+K output contract on that bounded input, while continuing "
+            "to block exact paper wording until the paper frame recipe is acquired"
         ),
         evidence_refs=(
             "Goal2821",
@@ -775,6 +781,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4459",
             "Goal4460",
             "Goal4498",
+            "Goal4499",
         ),
         pod_needed_next=True,
     ),
