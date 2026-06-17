@@ -251,6 +251,36 @@ Do not treat scalar weight-sum telemetry/copy-back as the main remaining
 Triangle Counting debt; target partner materialization, segment-ray
 construction, or prepared-ray-batch build instead.
 
+Goal4511 closes Triangle Counting as an internal V3 clean target. The formal
+external comparison remains Goal4475/M78: RTDL is exact on the three large
+former-OOM paper rows and is faster than the authors full pipeline on completed
+rows, but cuGraph remains 3.15x-4.89x faster end to end and authors pure
+count kernels remain faster than RTDL query/native traversal. Do not write
+RTDL-beats-cuGraph, RTDL-beats-authors-pure-kernel, or public RT-core
+triangle-count speedup wording.
+
+The current internal route is Goal4479:
+
+```text
+unique_weighted segmented RT-2A1
+-> numba_direct_sort_rle unique/count
+-> prepared_segment_replay
+-> generic prepared ray-batch weighted any-hit sum
+```
+
+Goal4492 shows a single small bounded local unique-count kernel is insufficient
+for the large paper rows; Goal4493 validates the 2,048-row local-hash branch on
+selected small groups; Goal4494 integrates local hash plus large-tail sort/RLE
+and rejects it because backend and segment-ray build regress on all three paper
+rows. Keep `numba_direct_sort_rle` as the current internal route.
+
+M113 is not the current Triangle Counting performance path. This app already
+uses a generic prepared ray-batch primitive inside graph-derived segments; the
+remaining bottleneck is partner materialization and segment unique/count work,
+not a missing prepared graph chunk executor. A future coarser-batched segmented
+reduction could reuse the M113 discipline only if it genuinely has contiguous
+prepared chunks, per-chunk handles, and explicit partner continuation.
+
 Primary paper-dataset report:
 
 - `docs/reports/goal2593_rt_graph_paper_dataset_evaluation_2026-05-24.md`
@@ -270,6 +300,12 @@ Primary paper-dataset report:
 - `docs/reports/goal4474_v3_0_m78_triangle_prepared_ray_batch_packet_2026-06-16.md`
 - `docs/reports/goal4475_v3_0_m79_triangle_post_m78_comparison_packet_2026-06-16.md`
 - `docs/reports/goal4476_v3_0_m80_triangle_weight_sum_sync_negative_packet_2026-06-16.md`
+- `docs/reports/goal4477_v3_0_m81_triangle_compact_constant_ray_batch_packet_2026-06-16.md`
+- `docs/reports/goal4479_v3_0_m83_triangle_sort_rle_unique_count_packet_2026-06-16.md`
+- `docs/reports/goal4492_v3_0_m96_triangle_source_group_unique_feasibility_2026-06-17.md`
+- `docs/reports/goal4493_v3_0_m97_triangle_local_hash_unique_prototype_2026-06-17.md`
+- `docs/reports/goal4494_v3_0_m98_triangle_local_hash_integrated_candidate_2026-06-17.md`
+- `docs/reports/goal4511_v3_0_m115_triangle_clean_target_audit_2026-06-17.md`
 
 ## Engine Boundary
 

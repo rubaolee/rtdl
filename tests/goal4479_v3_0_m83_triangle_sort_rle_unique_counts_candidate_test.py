@@ -33,7 +33,7 @@ class Goal4479V30M83TriangleSortRleUniqueCountsCandidateTest(unittest.TestCase):
         self.assertIn("numba_direct_sort_rle", source)
         self.assertIn("_unique_counts_sort_rle_cupy", source)
         self.assertIn("cupy_sort_rle_counts", source)
-        self.assertIn('choices=("cupy_repeat", "numba_direct", "numba_direct_sort_rle")', source)
+        self.assertIn("numba_direct_sort_rle_local_hash_2048", source)
 
     def test_packet_records_positive_same_commit_candidate(self) -> None:
         packet = json.loads(PACKET.read_text(encoding="utf-8"))
@@ -61,11 +61,11 @@ class Goal4479V30M83TriangleSortRleUniqueCountsCandidateTest(unittest.TestCase):
         adequacy = importlib.import_module("rtdsl.current_benchmark_adequacy")
 
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4486.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4507.v1",
             routes.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION,
         )
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4486.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4507.v1",
             adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         route_rows = {

@@ -1,0 +1,199 @@
+{
+  "app": "triangle_counting",
+  "conclusion": "Triangle Counting is closed as an internal V3 clean target. RTDL now completes the three former-OOM large paper rows exactly with generic ray/triangle weighted-summary primitives and partner-side graph lowering. The current internal route is the Goal4479 numba_direct_sort_rle prepared segment replay path, while the formal external comparison remains Goal4475/M78. The honest public boundary is unchanged: do not claim RTDL beats cuGraph, authors pure kernels, or public RT-core triangle-count speedups.",
+  "current_internal_route": {
+    "route": "unique_weighted segmented RT-2A1 + numba_direct_sort_rle unique/count + prepared_segment_replay + generic prepared ray-batch weighted any-hit sum",
+    "route_promoted_internal_only": true,
+    "rows": [
+      {
+        "baseline_segment_build_s": 1.316,
+        "baseline_total_s": 7.308,
+        "candidate_segment_build_s": 1.149,
+        "candidate_total_s": 6.489,
+        "dataset": "com_lj",
+        "display_name": "com-lj",
+        "query_speedup": 0.9987,
+        "same_count_rays_weights": true,
+        "segment_build_speedup": 1.1449,
+        "sort_rle_telemetry_s": 0.596,
+        "total_speedup": 1.1261,
+        "triangle_count": 177820130
+      },
+      {
+        "baseline_segment_build_s": 1.719,
+        "baseline_total_s": 14.467,
+        "candidate_segment_build_s": 1.496,
+        "candidate_total_s": 13.273,
+        "dataset": "soc_livejournal1",
+        "display_name": "soc-LiveJournal1",
+        "query_speedup": 1.0047,
+        "same_count_rays_weights": true,
+        "segment_build_speedup": 1.1491,
+        "sort_rle_telemetry_s": 0.89,
+        "total_speedup": 1.0899,
+        "triangle_count": 285730264
+      },
+      {
+        "baseline_segment_build_s": 8.646,
+        "baseline_total_s": 38.564,
+        "candidate_segment_build_s": 7.281,
+        "candidate_total_s": 35.99,
+        "dataset": "com_orkut",
+        "display_name": "com-orkut",
+        "query_speedup": 0.9978,
+        "same_count_rays_weights": true,
+        "segment_build_speedup": 1.1874,
+        "sort_rle_telemetry_s": 5.458,
+        "total_speedup": 1.0715,
+        "triangle_count": 627584181
+      }
+    ],
+    "same_counts_all_rows": true,
+    "source": "Goal4479 same-commit M83 rerank",
+    "speedup_all_rows": true
+  },
+  "evidence_inputs": [
+    "docs\\reports\\goal4475_v3_0_m79_triangle_post_m78_comparison_packet_2026-06-16.json",
+    "docs\\reports\\goal4479_v3_0_m83_triangle_sort_rle_unique_count_packet_2026-06-16.json",
+    "docs\\reports\\goal4492_v3_0_m96_triangle_source_group_unique_feasibility_2026-06-17.json",
+    "docs\\reports\\goal4493_v3_0_m97_triangle_local_hash_unique_prototype_2026-06-17.json",
+    "docs\\reports\\goal4494_v3_0_m98_triangle_local_hash_integrated_candidate_2026-06-17.json"
+  ],
+  "formal_external_comparison": {
+    "cugraph_wins_all_rows": true,
+    "public_speedup_claim_authorized": false,
+    "reading": "RTDL M78 is exact and much faster than the authors full pipeline on completed rows, but cuGraph remains faster end to end and authors pure count kernels remain faster than RTDL query/native traversal. This packet is the formal external comparison baseline, not a public RT-core speedup claim.",
+    "rows": [
+      {
+        "author_bs_pipeline_status": "ok",
+        "author_rt_pipeline_status": "ok",
+        "cugraph_faster_than_m78_total": 3.15462204128463,
+        "dataset": "com_lj",
+        "display_name": "com-lj",
+        "m78_query_slower_than_author_bs_count": 16.941953162474164,
+        "m78_query_slower_than_author_rt_count": 2.4645586621952726,
+        "m78_speedup_vs_m71_total": 2.6190395136450237,
+        "m78_total_faster_than_author_rt_pipeline": 7.989795245872327,
+        "rtdl_m78_native_traversal_median_s": 0.17530316800000006,
+        "rtdl_m78_query_median_s": 0.17983490228652954,
+        "rtdl_m78_total_s": 5.403957821428776,
+        "triangle_count": 177820130
+      },
+      {
+        "author_bs_pipeline_status": "ok",
+        "author_rt_pipeline_status": "ok",
+        "cugraph_faster_than_m78_total": 4.906513113752231,
+        "dataset": "soc_livejournal1",
+        "display_name": "soc-LiveJournal1",
+        "m78_query_slower_than_author_bs_count": 19.3103184949964,
+        "m78_query_slower_than_author_rt_count": 2.556019016758418,
+        "m78_speedup_vs_m71_total": 2.2065001651880296,
+        "m78_total_faster_than_author_rt_pipeline": 5.923273669392772,
+        "rtdl_m78_native_traversal_median_s": 0.2572669839999999,
+        "rtdl_m78_query_median_s": 0.26429492235183716,
+        "rtdl_m78_total_s": 11.668851613998413,
+        "triangle_count": 285730264
+      },
+      {
+        "author_bs_pipeline_status": "failed_sigkill_after_147387_ms",
+        "author_rt_pipeline_status": "failed_sigkill_after_149151_ms",
+        "cugraph_faster_than_m78_total": 4.894020059932982,
+        "dataset": "com_orkut",
+        "display_name": "com-orkut",
+        "m78_query_slower_than_author_bs_count": null,
+        "m78_query_slower_than_author_rt_count": null,
+        "m78_speedup_vs_m71_total": 3.251403898461448,
+        "m78_total_faster_than_author_rt_pipeline": null,
+        "rtdl_m78_native_traversal_median_s": 1.6866311450000009,
+        "rtdl_m78_query_median_s": 1.7320657223463058,
+        "rtdl_m78_total_s": 35.379293747246265,
+        "triangle_count": 627584181
+      }
+    ],
+    "source": "Goal4475 post-M78 comparison packet"
+  },
+  "goal": "Goal4511 / V3 M115",
+  "local_hash_decision": {
+    "rows": [
+      {
+        "baseline_over_hybrid_backend": 0.8321417801405128,
+        "baseline_over_hybrid_segment_ray_build": 0.686665056111535,
+        "baseline_over_hybrid_total": 0.8855871842017535,
+        "coverage_16384_pct": 93.72996299192927,
+        "coverage_2048_pct": 64.76662050707375,
+        "coverage_65536_pct": 99.8543926806865,
+        "dataset": "com_lj",
+        "integrated_decision": "reject_hybrid_candidate",
+        "prototype_2048_speedup_vs_reference": 1.1257129018392706,
+        "prototype_validation_ok": true,
+        "two_hop_rows": 928731472
+      },
+      {
+        "baseline_over_hybrid_backend": 0.3814919908605701,
+        "baseline_over_hybrid_segment_ray_build": 0.18555318580473637,
+        "baseline_over_hybrid_total": 0.5910572327968779,
+        "coverage_16384_pct": 89.85001674178507,
+        "coverage_2048_pct": 53.86855057283532,
+        "coverage_65536_pct": 99.38250862705907,
+        "dataset": "soc_livejournal1",
+        "integrated_decision": "reject_hybrid_candidate",
+        "prototype_2048_speedup_vs_reference": 1.0068160608877224,
+        "prototype_validation_ok": true,
+        "two_hop_rows": 1383299326
+      },
+      {
+        "baseline_over_hybrid_backend": 0.950676090496157,
+        "baseline_over_hybrid_segment_ray_build": 0.8674408972765052,
+        "baseline_over_hybrid_total": 1.0213768521989355,
+        "coverage_16384_pct": 69.43466325591712,
+        "coverage_2048_pct": 21.20870310934474,
+        "coverage_65536_pct": 98.44388169182679,
+        "dataset": "com_orkut",
+        "integrated_decision": "reject_hybrid_candidate",
+        "prototype_2048_speedup_vs_reference": 1.4309239790930102,
+        "prototype_validation_ok": true,
+        "two_hop_rows": 8579930671
+      }
+    ],
+    "summary": {
+      "all_integrated_backend_regressed": true,
+      "all_integrated_segment_build_regressed": true,
+      "integrated_candidate_rejected": true,
+      "prototype_branch_validated": true,
+      "single_small_kernel_rejected": true
+    }
+  },
+  "m113_applicability": {
+    "current_route_should_use_m113": false,
+    "future_use": "A future coarser-batched segmented unique/count reduction or prepared replay executor may reuse the M113 discipline if it really has contiguous prepared chunks, per-chunk handles, and explicit partner continuation.",
+    "reason": "Triangle Counting already uses a generic prepared ray-batch weighted any-hit primitive inside graph-derived segments. The current bottleneck is segment unique/count materialization and per-segment launch/envelope work, not a missing prepared graph chunk executor contract."
+  },
+  "readiness": {
+    "all_three_large_paper_rows_exact": true,
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "current_route_evidence_bounded": true,
+    "internal_v3_clean_target_closed": true,
+    "public_rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_authors_pure_kernel_claim_authorized": false,
+    "rtdl_beats_cugraph_claim_authorized": false
+  },
+  "remaining_debt": [
+    {
+      "item": "public triangle-count RT-core speedup wording",
+      "reason": "cuGraph and authors pure kernels still beat the relevant RTDL timings",
+      "status": "blocked"
+    },
+    {
+      "item": "segment unique/count materialization",
+      "reason": "Goal4479 improves sort/RLE but leaves it as the largest materialization boundary",
+      "status": "open_for_future_optimization"
+    },
+    {
+      "item": "integrated local-hash branch",
+      "reason": "Goal4494 regresses backend and segment-ray build on all three paper rows",
+      "status": "rejected"
+    }
+  ],
+  "version": "rtdl.v3_0.triangle_clean_target_audit.goal4511.v1"
+}
