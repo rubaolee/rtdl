@@ -31,9 +31,10 @@ STALE_CURRENT_PATTERNS = (
     "runtime queue advances to RT-DBSCAN",
     "claim/evidence packaging blockers",
     "RTNN and Spatial RayJoin remain claim/evidence",
-    "Barnes-Hut and Triangle Counting are listed only as future design targets",
-    "Barnes-Hut remains the only future design target",
-    "Barnes-Hut is the only future design target",
+    "Barnes-Hut and Triangle Counting are listed only as "
+    "future design targets",
+    "Barnes-Hut remains the " "only future design target",
+    "Barnes-Hut is the " "only future design target",
 )
 
 

@@ -133,6 +133,7 @@ v2.14 evidence:
 - [Goal4536 V3 internal completion packet](../reports/goal4536_v3_0_m138_v3_internal_completion_packet_2026-06-17.md)
 - [Goal4538 V3 completion review consensus](../reports/goal4538_v3_0_m139_v3_completion_review_consensus_2026-06-17.md)
 - [Goal4512 Barnes-Hut clean-target audit](../reports/goal4512_v3_0_m116_barnes_hut_clean_target_audit_2026-06-17.md)
+- [Goal4542 post-closure surface audit](../reports/goal4542_v3_0_m143_post_closure_surface_audit_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)
