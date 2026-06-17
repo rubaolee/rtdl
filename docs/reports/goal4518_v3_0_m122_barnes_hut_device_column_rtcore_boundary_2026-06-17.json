@@ -1,0 +1,44 @@
+{
+  "aggregate_frontier_device_column_audit": {
+    "contains_cu_launch_kernel": true,
+    "contains_cu_module_load": true,
+    "contains_optix_launch": false,
+    "contains_optix_report_intersection": false,
+    "contains_optix_trace": false,
+    "contains_runtime_cuda_kernel_source": true,
+    "device_resident_claim_authorized": true,
+    "implementation_vehicle": "cuda_driver_runtime_compiled_cubin_inside_optix_backend",
+    "optix_library_backend_claim_authorized": true,
+    "rt_core_traversal_claim_authorized": false,
+    "source_path": "src/native/optix/rtdl_optix_api.cpp",
+    "symbols_audited": [
+      "rtdl_optix_prepare_aggregate_frontier_device_columns_2d",
+      "rtdl_optix_run_aggregate_frontier_device_columns_2d",
+      "rtdl_optix_destroy_aggregate_frontier_device_columns_2d"
+    ]
+  },
+  "claim_boundary": {
+    "barnes_hut_rt_core_speedup_claim_authorized": false,
+    "cuda_only_fused_kernel_sufficient_for_rt_core_claim": false,
+    "future_fused_primitive_implemented": false,
+    "prepared_aggregate_frontier_device_columns_are_device_resident": true,
+    "prepared_aggregate_frontier_device_columns_are_rt_core_traversal_evidence": false
+  },
+  "conclusion": "M122 repairs Barnes-Hut wording: the current prepared aggregate-frontier device-column route is useful device-resident work inside the OptiX backend, implemented with CUDA driver kernels, but it is not current RT-core traversal evidence. Barnes-Hut RT-core wording now requires the future fused aggregate-tree primitive plus an OptiX launch/trace proof.",
+  "date": "2026-06-17",
+  "fused_contract_rt_core_requirements": [
+    "OptiX implementation must launch an OptiX pipeline, not only CUDA kernels",
+    "device program must call optixTrace or equivalent hardware traversal",
+    "timing packet must separate BVH build, optixLaunch traversal, continuation, and copies",
+    "CUDA-only fused implementation may be useful device evidence but not RT-core evidence"
+  ],
+  "goal": "Goal4518 / V3 M122",
+  "live_guidance": {
+    "adequacy_stale_rtcore_device_column_wording": false,
+    "adequacy_uses_cuda_device_column_wording": true,
+    "route_guidance_stale_rtcore_device_column_wording": false,
+    "route_guidance_uses_cuda_device_column_wording": true
+  },
+  "status": "device_column_rtcore_boundary_repaired",
+  "version": "rtdl.v3_0.barnes_hut_device_column_rtcore_boundary.goal4518.v1"
+}

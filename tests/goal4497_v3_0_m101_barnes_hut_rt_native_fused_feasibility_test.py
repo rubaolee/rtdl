@@ -74,7 +74,7 @@ class Goal4497V30M101BarnesHutRtNativeFusedFeasibilityTest(unittest.TestCase):
         self.assertIn("Goal4497 / V3 M101", report)
         self.assertIn("generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1", report)
         self.assertIn("Goal4497 Barnes-Hut RT-native fused feasibility", index)
-        self.assertIn("Goal4497 defines the missing future generic RT-native", matrix)
+        self.assertIn("Goal4497/Goal4517 define the missing future generic RT-native", matrix)
         self.assertIn("PACKET_VERSION", script)
         self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4507.v1", route["version"])
         self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4507.v1", adequacy["version"])

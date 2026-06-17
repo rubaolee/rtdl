@@ -1248,6 +1248,12 @@ def aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract() -> dict[str
             "explicit user-selected route; no hidden partner dispatch",
             "measured comparison against CPU reference and Numba CUDA partner reference",
         ),
+        "rt_core_claim_requirements": (
+            "OptiX implementation must launch an OptiX pipeline, not only CUDA kernels",
+            "device program must call optixTrace or equivalent hardware traversal",
+            "timing packet must separate BVH build, optixLaunch traversal, continuation, and copies",
+            "CUDA-only fused implementation may be useful device evidence but not RT-core evidence",
+        ),
         "claim_boundary": {
             "runtime_implemented": False,
             "public_speedup_claim_authorized": False,
@@ -1291,6 +1297,7 @@ def validate_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract() ->
         "hot_path_forbidden_outputs",
         "must_avoid",
         "implementation_requirements",
+        "rt_core_claim_requirements",
         "claim_boundary",
         "reader_guidance",
     )
@@ -1347,6 +1354,7 @@ def validate_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract() ->
         "rt-native traversal",
         "device-resident vector/count output columns",
         "no hidden partner dispatch",
+        "cuda-only fused implementation may be useful device evidence but not rt-core evidence",
         "no runtime or performance claim",
     ):
         if phrase not in boundary_text:

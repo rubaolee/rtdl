@@ -135,7 +135,7 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "the current Barnes-Hut app front doors under one force-summary contract and "
     "confirms that fused CPU/Numba is fastest on the RTX 4000 Ada pod at "
     "8192/16384/32768 bodies, fused Numba CUDA is the no-C++ GPU partner lane, "
-    "and prepared RTDL/OptiX remains RT-core device-column evidence rather than "
+    "and prepared RTDL/OptiX remains OptiX-library CUDA device-column evidence rather than "
     "a Barnes-Hut RT-core speedup claim. Goal4483 extends that rerank to "
     "65536/131072 bodies and makes Barnes-Hut guidance scale-dependent: fused "
     "Numba CUDA is fastest there, while prepared RTDL/OptiX+Numba remains slower "
@@ -638,7 +638,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Use fused_frontier_force_sum_bucketized_numba_cuda for the no-C++ Python-source "
             "GPU fused partner lane and for the current larger tested rows. Use "
             "prepared_aggregate_frontier_weighted_vector_optix with --partner numba when the "
-            "purpose is RTDL/OptiX RT-core aggregate-frontier device-column execution evidence. "
+            "purpose is RTDL/OptiX-library CUDA aggregate-frontier device-column execution evidence. "
             "Goal4440 host-materialized logical baselines remain diagnostic. For that prepared "
             "OptiX contract, Numba remains the fastest measured GPU partner. For the prepared "
             "OptiX contract, Numba remains faster than CuPy on Goal4458 and Goal4483. Do "
@@ -649,7 +649,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
         ),
         primary_route=(
             "mixed explicit: scale-dependent fused CPU/Numba or fused Numba CUDA app route; "
-            "RTDL/OptiX+Numba for RT-core device-column evidence"
+            "RTDL/OptiX+Numba for OptiX-library CUDA device-column evidence"
         ),
         partner_policy="explicit_route_choice_cpu_numba_or_optix_numba_cupy_comparison",
         primitive_contract=(
@@ -663,7 +663,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4483 65,536 / 131,072 rows and when the user wants a GPU fused route "
             "without writing C++ or CUDA source. Choose "
             "prepared_aggregate_frontier_weighted_vector_optix with --partner numba when testing "
-            "the RTDL/OptiX RT-core device-column route. Keep CuPy available as the same-contract "
+            "the RTDL/OptiX-library CUDA device-column route. Keep CuPy available as the same-contract "
             "comparison partner, but do not promote it over Numba for the prepared OptiX "
             "aggregate-frontier route after Goal4458/Goal4483. Do not auto-select across CPU-fused, "
             "Numba CUDA fused, OptiX device-column, and older exact-force contracts."
@@ -688,7 +688,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "boundary, then compare it against Goal4483 large-row fused Numba CUDA plus "
             "Goal4458 small-row fused CPU/Numba under the same force-summary contract; "
             "otherwise keep Barnes-Hut as mixed explicit scale-dependent fused CPU/GPU "
-            "partner plus RT device-column evidence"
+            "partner plus OptiX-library CUDA device-column evidence"
         ),
         evidence_refs=(
             "Goal2803",

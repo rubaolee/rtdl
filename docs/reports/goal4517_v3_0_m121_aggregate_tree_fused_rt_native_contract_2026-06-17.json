@@ -86,6 +86,12 @@
       "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d",
       "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d"
     ],
+    "rt_core_claim_requirements": [
+      "OptiX implementation must launch an OptiX pipeline, not only CUDA kernels",
+      "device program must call optixTrace or equivalent hardware traversal",
+      "timing packet must separate BVH build, optixLaunch traversal, continuation, and copies",
+      "CUDA-only fused implementation may be useful device evidence but not RT-core evidence"
+    ],
     "run_inputs": [
       "source_id:int64[source_count]",
       "source_x:float64[source_count]",

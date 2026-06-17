@@ -274,16 +274,16 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   measured force-summary route on the RTX 4000 Ada pod at 8192/16384/32768
   bodies. Goal4483 extends that rerank to 65536/131072 bodies and shows fused
   Numba CUDA is fastest at those larger tested rows, while prepared
-  RTDL/OptiX+Numba remains RT-core device-column evidence rather than the
+  RTDL/OptiX+Numba remains OptiX-library CUDA device-column evidence rather than the
   fastest route. Neither fused route is an Embree implementation or evidence
   that RT cores accelerate Barnes-Hut. The prepared RTDL/OptiX
-  aggregate-frontier route remains useful RT device-column evidence and a
+  aggregate-frontier route remains useful device-column evidence and a
   same-contract partner comparison target.
 - Goal4512 closes Barnes-Hut as a current V3 route-policy target, not an
   RT-core acceleration success. Use fused CPU/Numba for the tested
   8192/16384/32768 rows, fused Numba CUDA for the tested 65536/131072 rows, and
-  prepared RTDL/OptiX+Numba only when the purpose is RT-core aggregate-frontier
-  device-column evidence. A real RT-core Barnes-Hut win still requires the
+  prepared RTDL/OptiX+Numba only when the purpose is OptiX-library CUDA
+  aggregate-frontier device-column evidence. A real RT-core Barnes-Hut win still requires the
   future app-agnostic
   `generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1` primitive
   from Goal4497. M113 is not the current Barnes-Hut path; the missing piece is
@@ -294,6 +294,11 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   contract and implementation gate only: no backend symbols, RT-core speedup
   claim, automatic partner dispatch, or paper-reproduction claim are authorized
   until the OptiX implementation matches the CPU and Numba CUDA oracles.
+- Goal4518 audits the current prepared aggregate-frontier device-column
+  implementation boundary: it is CUDA-kernel device work inside the OptiX
+  library, not an `optixLaunch`/`optixTrace` traversal. It remains useful
+  device-resident evidence, but it must not be called RT-core traversal
+  evidence.
 - Current expanded-membership lowering evidence routes Barnes-Hut
   aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
   near-zone candidate rows. The engine still only sees points, boxes, IDs, and
