@@ -36,11 +36,13 @@ def build_packet() -> dict[str, Any]:
             "M128 turns the post-clean-target app status into a concrete "
             "implementation queue. Goal4527 later moves Barnes-Hut into a "
             "design-blocker lane because a naive all-node OptiX any-hit mapping "
-            "cannot preserve aggregate-subtree skip semantics. The next runtime "
-            "build target is now RT-DBSCAN prepared graph capture, followed by "
-            "Triangle Counting chunked unique/count payload merge. RTNN and "
+            "cannot preserve aggregate-subtree skip semantics. Goal4528 then "
+            "validates the RT-DBSCAN prepared graph capture gate without changing "
+            "the current direct-status component-signature route. The next runtime "
+            "build target is now Triangle Counting chunked unique/count payload "
+            "merge. RTNN and "
             "Spatial RayJoin remain claim/evidence packaging blockers rather "
-            "than missing current primitives, and the other five apps have no "
+            "than missing current primitives, and the other six apps have no "
             "immediate V3 runtime blocker."
         ),
     }

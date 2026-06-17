@@ -8,10 +8,10 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION = (
-    "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2"
+    "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_STATUS = (
-    "post_clean_target_runtime_build_queue_after_barnes_hut_semantic_gate_not_release_authorization"
+    "post_rt_dbscan_prepared_graph_capture_queue_triangle_runtime_next_not_release_authorization"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_CLAIM_BOUNDARY = (
     "This queue ranks post-clean-target implementation work after Goal4515 "
@@ -139,27 +139,30 @@ _ROWS: tuple[V3BenchmarkImplementationQueueRow, ...] = (
     ),
     V3BenchmarkImplementationQueueRow(
         app="rt_dbscan",
-        priority=2,
-        work_class="runtime_blocker",
+        priority=None,
+        work_class="closed_current_target",
         current_route_status=(
             "current V3 route is predicate direct-status component signature with "
-            "caller-owned CuPy point columns when the app can provide them"
+            "caller-owned CuPy point columns when the app can provide them; the "
+            "future M113 chunk-local prepared graph shape is validated but does "
+            "not replace the current route"
         ),
         remaining_gap=(
-            "chunk-local prepared direct-status handles are live-smoke validated, "
-            "but prepared graph capture/replay for the chunked continuation is not"
+            "no current V3 runtime blocker after Goal4510 clean-target closure, "
+            "Goal4520 live chunk-handle smoke, and Goal4528 prepared graph "
+            "capture/replay validation"
         ),
         next_build_target=(
-            "add a generic prepared graph capture/replay path for chunk-local "
-            "direct-status handles and same-stream partner continuation, preserving "
-            "no-hidden-upload and no pair-row materialization gates"
+            "no immediate V3 build target; preserve the current direct-status "
+            "component-signature route and keep M113 as an internal future "
+            "same-stream-partner experiment shape"
         ),
-        evidence_refs=("Goal4509", "Goal4510", "Goal4516", "Goal4519", "Goal4520"),
-        pod_needed_next=True,
+        evidence_refs=("Goal4509", "Goal4510", "Goal4516", "Goal4519", "Goal4520", "Goal4528"),
+        pod_needed_next=False,
     ),
     V3BenchmarkImplementationQueueRow(
         app="triangle_counting",
-        priority=3,
+        priority=1,
         work_class="runtime_blocker",
         current_route_status=(
             "current V3 route is explicit numba_direct_sort_rle prepared segment "
@@ -358,17 +361,17 @@ def validate_v3_benchmark_implementation_queue(
         "version_current": packet["version"] == V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION,
         "all_promoted_apps_present": apps == set(V2_8_PROMOTED_BENCHMARK_APPS),
         "all_route_apps_present": apps == route_apps,
-        "runtime_queue_exact": runtime_apps == ("rt_dbscan", "triangle_counting"),
+        "runtime_queue_exact": runtime_apps == ("triangle_counting",),
         "design_queue_exact": design_apps == ("barnes_hut",),
-        "next_runtime_target_rt_dbscan": (
-            packet["summary"]["next_runtime_build_target"] == "rt_dbscan"
+        "next_runtime_target_triangle_counting": (
+            packet["summary"]["next_runtime_build_target"] == "triangle_counting"
         ),
         "claim_queue_exact": tuple(packet["summary"]["claim_or_evidence_queue"])
         == ("rtnn", "spatial_rayjoin"),
         "design_targets_do_not_block_runtime_queue": bool(
             packet["summary"]["design_targets_do_not_block_runtime_queue"]
         ),
-        "closed_count_is_five": len(packet["summary"]["closed_current_targets"]) == 5,
+        "closed_count_is_six": len(packet["summary"]["closed_current_targets"]) == 6,
         "all_clean_targets_closed": bool(packet["summary"]["all_clean_targets_closed"]),
         "all_public_speedup_claims_blocked": bool(
             packet["summary"]["all_public_speedup_claims_blocked"]

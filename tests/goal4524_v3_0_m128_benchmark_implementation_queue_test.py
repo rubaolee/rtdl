@@ -29,24 +29,24 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2",
+            "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3",
             self.packet["version"],
         )
         self.assertEqual(10, summary["app_count"])
         self.assertTrue(summary["all_ten_benchmark_apps_accounted_for"])
         self.assertEqual(
-            ("rt_dbscan", "triangle_counting"),
+            ("triangle_counting",),
             tuple(summary["runtime_build_queue"]),
         )
         self.assertEqual(("barnes_hut",), tuple(summary["design_blocker_queue"]))
-        self.assertEqual("rt_dbscan", summary["next_runtime_build_target"])
+        self.assertEqual("triangle_counting", summary["next_runtime_build_target"])
         self.assertTrue(cls_summary["runtime_targets_need_pod"])
 
     def test_runtime_blockers_are_separate_from_claim_evidence_blockers(self) -> None:
         self.assertEqual("design_blocker", self.rows["barnes_hut"]["work_class"])
         self.assertIn("subtree-skip semantics", self.rows["barnes_hut"]["remaining_gap"])
-        self.assertEqual("runtime_blocker", self.rows["rt_dbscan"]["work_class"])
-        self.assertIn("prepared graph capture", self.rows["rt_dbscan"]["remaining_gap"])
+        self.assertEqual("closed_current_target", self.rows["rt_dbscan"]["work_class"])
+        self.assertIn("Goal4528 prepared graph", self.rows["rt_dbscan"]["remaining_gap"])
         self.assertEqual("runtime_blocker", self.rows["triangle_counting"]["work_class"])
         self.assertIn("key/count payload", self.rows["triangle_counting"]["next_build_target"])
 
@@ -62,6 +62,7 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
             "contact_manifold",
             "raydb_style",
             "librts_spatial_index",
+            "rt_dbscan",
         }
         for app in closed:
             row = self.rows[app]
