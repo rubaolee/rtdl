@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import math
+import os
+import time
 from types import MappingProxyType
 from typing import Any
 
@@ -1790,8 +1792,28 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     import cupy
 
-    points = tuple(_point_xyz(row) for row in raw_rows)
-    if not points:
+    timing_enabled = os.environ.get("RTDL_DIRECT_STATUS_PREPARE_DIAGNOSTICS", "").lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    timing_start = time.perf_counter()
+    timing_last = timing_start
+    phase_timing: dict[str, float] = {}
+    phase_order: list[str] = []
+
+    def mark_phase(name: str) -> None:
+        nonlocal timing_last
+        if not timing_enabled:
+            return
+        cupy.cuda.get_current_stream().synchronize()
+        now = time.perf_counter()
+        phase_timing[name] = float(now - timing_last)
+        phase_order.append(name)
+        timing_last = now
+
+    if not raw_rows:
         raise ValueError("point_rows must contain at least one point")
     radius = float(radius)
     cell_factor = float(cell_factor)
@@ -1801,10 +1823,13 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
         raise ValueError("cell_factor must be positive")
 
     cell_size = radius * cell_factor
-    point_count = len(points)
-    x = cupy.asarray([point[0] for point in points], dtype=cupy.float64)
-    y = cupy.asarray([point[1] for point in points], dtype=cupy.float64)
-    z = cupy.asarray([point[2] for point in points], dtype=cupy.float64)
+    point_count = len(raw_rows)
+    x_host, y_host, z_host, coordinate_source = _point_xyz_host_columns_3d(raw_rows)
+    mark_phase("row_xyz_extract_sec")
+    x = cupy.asarray(x_host, dtype=cupy.float64)
+    y = cupy.asarray(y_host, dtype=cupy.float64)
+    z = cupy.asarray(z_host, dtype=cupy.float64)
+    mark_phase("coordinate_columns_sec")
     kx = cupy.floor(x / cell_size).astype(cupy.int64, copy=False)
     ky = cupy.floor(y / cell_size).astype(cupy.int64, copy=False)
     kz = cupy.floor(z / cell_size).astype(cupy.int64, copy=False)
@@ -1817,6 +1842,7 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
     dim_y = int(cupy.max(local_ky).item()) + 1
     dim_z = int(cupy.max(local_kz).item()) + 1
     cell_ids = (local_kx * dim_y * dim_z + local_ky * dim_z + local_kz).astype(cupy.int64)
+    mark_phase("partition_keys_sec")
     order = cupy.argsort(cell_ids).astype(cupy.int32, copy=False)
     sorted_cell_ids = cell_ids[order]
     unique_cells, _starts, counts = cupy.unique(
@@ -1826,11 +1852,13 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
     )
     partition_count = int(unique_cells.size)
     point_partition_ids = cupy.searchsorted(unique_cells, cell_ids).astype(cupy.uint32, copy=False)
+    mark_phase("sort_unique_search_sec")
     counts_u32 = counts.astype(cupy.uint32, copy=False)
     offsets = cupy.concatenate((
         cupy.zeros((1,), dtype=cupy.uint32),
         cupy.cumsum(counts_u32, dtype=cupy.uint32),
     ))
+    mark_phase("partition_offsets_sec")
     aabb_min_x64 = cupy.full((partition_count,), cupy.inf, dtype=cupy.float64)
     aabb_min_y64 = cupy.full((partition_count,), cupy.inf, dtype=cupy.float64)
     aabb_min_z64 = cupy.full((partition_count,), cupy.inf, dtype=cupy.float64)
@@ -1843,6 +1871,7 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
     cupy.maximum.at(aabb_max_x64, point_partition_ids, x)
     cupy.maximum.at(aabb_max_y64, point_partition_ids, y)
     cupy.maximum.at(aabb_max_z64, point_partition_ids, z)
+    mark_phase("partition_aabb_reduce_sec")
 
     max_offset = int(math.ceil(radius / cell_size)) + 1
     columns = {
@@ -1877,12 +1906,23 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
         "min_key_z": min_kz,
         "prepared_direct_status_runtime_columns": True,
         "prepared_point_coordinate_columns": True,
+        "point_coordinate_host_extraction": coordinate_source,
+        "point_coordinate_host_intermediate_tuple_avoided": coordinate_source != "generic_normalized_tuple_rows",
         "prepared_partition_key_columns": True,
         "prepared_partition_aabb_columns": True,
         "near_pair_columns_materialized": False,
         "partition_pair_rows_materialized": False,
         "pair_materialization_avoided": True,
         "runtime_executable": True,
+        "prepare_phase_timing_available": timing_enabled,
+        "prepare_phase_timing_diagnostic_syncs": timing_enabled,
+        "prepare_phase_timing_env_var": "RTDL_DIRECT_STATUS_PREPARE_DIAGNOSTICS",
+        "prepare_phase_timing_schema": "direct_status_runtime_columns_cupy_3d.v1",
+        "prepare_phase_timing_order": tuple(phase_order),
+        "prepare_phase_timing_sec": dict(phase_timing),
+        "prepare_phase_timing_total_observed_sec": (
+            float(time.perf_counter() - timing_start) if timing_enabled else None
+        ),
         "native_abi_added": False,
         "release_authorized": False,
         "public_speedup_claim_authorized": False,
@@ -4507,6 +4547,59 @@ def _unsupported_reason(*, backend: str, partner: str, strategy: str) -> str:
     ):
         return f"unsupported strategy {strategy!r}; supported strategies are {V2_8_FIXED_RADIUS_GRAPH_COMPONENT_SUPPORTED_STRATEGIES}"
     return ""
+
+
+def _point_xyz_host_columns_3d(raw_rows: tuple[Any, ...]) -> tuple[list[float], list[float], list[float], str]:
+    first = raw_rows[0]
+    if hasattr(first, "x") and hasattr(first, "y") and hasattr(first, "z"):
+        try:
+            return (
+                [float(row.x) for row in raw_rows],
+                [float(row.y) for row in raw_rows],
+                [float(row.z) for row in raw_rows],
+                "attribute_xyz_rows_direct",
+            )
+        except AttributeError:
+            pass
+    if isinstance(first, dict):
+        try:
+            return (
+                [float(row["x"]) for row in raw_rows],
+                [float(row["y"]) for row in raw_rows],
+                [float(row["z"]) for row in raw_rows],
+                "mapping_xyz_rows_direct",
+            )
+        except KeyError:
+            pass
+    if isinstance(first, (list, tuple)):
+        width = len(first)
+        if width == 3:
+            try:
+                return (
+                    [float(row[0]) for row in raw_rows],
+                    [float(row[1]) for row in raw_rows],
+                    [float(row[2]) for row in raw_rows],
+                    "sequence_xyz_rows_direct",
+                )
+            except (IndexError, TypeError):
+                pass
+        if width >= 4:
+            try:
+                return (
+                    [float(row[1]) for row in raw_rows],
+                    [float(row[2]) for row in raw_rows],
+                    [float(row[3]) for row in raw_rows],
+                    "sequence_id_xyz_rows_direct",
+                )
+            except (IndexError, TypeError):
+                pass
+    points = tuple(_point_xyz(row) for row in raw_rows)
+    return (
+        [point[0] for point in points],
+        [point[1] for point in points],
+        [point[2] for point in points],
+        "generic_normalized_tuple_rows",
+    )
 
 
 def _point_xyz(row) -> tuple[float, float, float]:

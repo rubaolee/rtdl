@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4486.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4488.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -81,7 +81,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "replay timing. Goal4486 adds a generic prepared self-query 3-D fixed-radius "
     "count-threshold device-column primitive and wires RT-DBSCAN predicate "
     "direct-status to it, eliminating host query repack/upload for self-query "
-    "workloads while keeping route selection explicit. "
+    "workloads while keeping route selection explicit. Goal4487 instruments "
+    "direct-status prepare phase accounting, and Goal4488 replaces generic "
+    "tuple-of-xyz materialization with direct Point3D/mapping/sequence "
+    "row-to-column lowering, cutting the diagnostic direct-status prepare "
+    "phase by roughly 2.0x-2.4x on the 1M rows without changing signatures. "
     "Goal4453 refreshes triangle-counting Numba partner guidance after moving "
     "RT-1A2/RT-2A1 geometry fill from host materialization and re-upload to "
     "partner-resident Numba device columns. It removes unnecessary data movement "
@@ -1093,11 +1097,12 @@ def _refresh_goal4484_route_decisions(
                 ),
                 next_runtime_action=(
                     "keep predicate direct-status as the measured explicit compact-signature "
-                    "route for the Goal4484/Goal4485/Goal4486 524k and 1M profiles; keep grouped-stream Numba as "
-                    "fallback/reference; keep full Python row materialization explicit; "
+                    "route for the Goal4484/Goal4485/Goal4486/Goal4488 524k and 1M profiles; "
+                    "keep grouped-stream Numba as fallback/reference; keep full Python row materialization explicit; "
                     "keep the profile/reuse advisor visible for explicit route choices; "
-                    "next serious runtime work is direct-status prepare/shared-column "
-                    "reduction, broader profile coverage, or a policy primitive only if "
+                    "Goal4488 reduces direct-status row-columnization prepare debt; "
+                    "next serious runtime work is shared device-coordinate columns where "
+                    "the caller already owns partner columns, broader profile coverage, or a policy primitive only if "
                     "new evidence requires it. "
                     "hidden factor selection, hidden output-contract selection, hidden border-policy "
                     "selection, and automatic partner selection remain blocked."
@@ -1158,6 +1163,8 @@ def _refresh_goal4484_route_decisions(
                     "Goal4484",
                     "Goal4485",
                     "Goal4486",
+                    "Goal4487",
+                    "Goal4488",
                 ),
                 pod_needed_next=False,
             )

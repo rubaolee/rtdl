@@ -76,15 +76,17 @@ class Goal4486V30M90RtdbscanSelfQueryCountThresholdTest(unittest.TestCase):
         self.assertIn("self-query", report)
         self.assertIn("Do not overclaim the warmed-replay rows", report)
         self.assertIn("Goal4486 RT-DBSCAN self-query count-threshold optimization", index)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4486.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4488.v1", route["version"])
         self.assertIn("self-query", route["current_reader_decision"])
         self.assertIn("Goal4486", route["evidence_refs"])
+        self.assertIn("Goal4488", route["evidence_refs"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4486.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4488.v1",
             adequacy_module.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         self.assertIn("self-query", adequacy["current_recommended_path"])
         self.assertIn("Goal4486", adequacy["evidence_refs"])
+        self.assertIn("Goal4488", adequacy["evidence_refs"])
 
 
 if __name__ == "__main__":
