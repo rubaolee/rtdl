@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4503.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4504.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -762,7 +762,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "faster on cold whole-process and pure compute timing. Goal4503 "
             "then exposes this route through the RTNN app front door with "
             "`--point-file`, where the Goal4500 KITTI-1M CSV runs as one "
-            "full batch and matches the M106 aggregate signature. Report these "
+            "full batch and matches the M106 aggregate signature. Goal4504 "
+            "codifies the size-aware execution-path policy: unknown or small "
+            "aggregate-only OptiX work keeps the Goal2841 direct-graph "
+            "recommendation, explicit large aggregate-only work uses the "
+            "Goal4502 full-batch prepared direct aggregate, and same-stream "
+            "graph/device-partials are reserved for partner continuation. Report these "
             "as different output contracts: author full K-id materialization "
             "versus RTDL ranked-summary aggregate."
         ),
@@ -822,6 +827,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4501",
             "Goal4502",
             "Goal4503",
+            "Goal4504",
         ),
         pod_needed_next=False,
     ),

@@ -37,6 +37,26 @@ class Goal2843V25ExecutionPathPolicyTest(unittest.TestCase):
         self.assertFalse(plan["public_speedup_claim_authorized"])
         self.assertIn("No partner continuation is required", " ".join(plan["reasons"]))
 
+    def test_large_aggregate_without_partner_prefers_full_batch_direct(self) -> None:
+        plan = rt.plan_v2_5_fixed_radius_aggregate_execution_path(
+            requires_partner_continuation=False,
+            query_count=1_000_000,
+            query_batch_size=1_000_000,
+        )
+
+        self.assertEqual(plan["selected_path"], "prepared_full_batch_direct_aggregate")
+        self.assertEqual(
+            plan["recommended_result_mode"],
+            rt.V2_5_FIXED_RADIUS_AGGREGATE_FULL_BATCH_DIRECT_MODE,
+        )
+        self.assertEqual(65_536, plan["graph_query_count_cap"])
+        self.assertFalse(plan["direct_native_graph_preferred_when_no_partner_continuation"])
+        self.assertTrue(plan["large_aggregate_only_full_batch_direct_preferred"])
+        self.assertTrue(plan["primitive_first_native_when_no_partner_continuation"])
+        self.assertFalse(plan["hidden_auto_dispatch_allowed"])
+        self.assertEqual("Goal4502", plan["evidence_goal"])
+        self.assertIn("full-batch", " ".join(plan["reasons"]))
+
     def test_same_stream_is_recommended_only_when_partner_continuation_is_required(self) -> None:
         plan = rt.plan_v2_5_fixed_radius_aggregate_execution_path(
             requires_partner_continuation=True
@@ -75,6 +95,8 @@ class Goal2843V25ExecutionPathPolicyTest(unittest.TestCase):
             "plan_v2_5_fixed_radius_aggregate_execution_path",
             "validate_v2_5_execution_path_policy",
             "V2_5_EXECUTION_PATH_POLICY_VERSION",
+            "V2_5_FIXED_RADIUS_AGGREGATE_FULL_BATCH_DIRECT_MODE",
+            "V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_CAP",
         ):
             self.assertTrue(hasattr(rt, name))
             self.assertNotIn(name, rt.__all__)

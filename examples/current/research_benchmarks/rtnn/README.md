@@ -124,6 +124,11 @@ compute timing. Keep the contracts separate: author full K-id materialization
 is not the same output surface as RTDL ranked-summary aggregate. Use graph /
 device-partials when a same-stream partner continuation is required, not as the
 aggregate-only default above the 65,536-query graph cap.
+Goal4504 codifies that as the size-aware execution-path policy: unknown or
+small aggregate-only OptiX work keeps the Goal2841 direct-graph recommendation,
+explicit large aggregate-only work uses the Goal4502 full-batch prepared direct
+aggregate recommendation, and large partner-continuation work keeps the
+same-stream graph route with an explicit chunking/future-evidence warning.
 
 The important boundary is that RTDL exact aggregate and app graph-bridge rows
 are RTDL-internal same-contract evidence; the official RTNN rows are diagnostic

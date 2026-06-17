@@ -10,10 +10,14 @@ V2_5_PRIMITIVE_FIRST_SELECTION_DOCTRINE_VERSION = (
 V2_5_FIXED_RADIUS_AGGREGATE_DIRECT_GRAPH_MODE = (
     "ranked-summary-aggregate-prepared-query-batch-graph-float32"
 )
+V2_5_FIXED_RADIUS_AGGREGATE_FULL_BATCH_DIRECT_MODE = (
+    "ranked-summary-aggregate-prepared-query-batch-float32"
+)
 V2_5_FIXED_RADIUS_AGGREGATE_SAME_STREAM_CUPY_MODE = (
     "ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32"
 )
 V2_5_FIXED_RADIUS_AGGREGATE_OPERATION = "fixed_radius_ranked_summary_aggregate_3d"
+V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_CAP = 65_536
 V2_5_EXECUTION_PATH_POLICY_CLAIM_BOUNDARY = (
     "v2.5 execution-path policy is explain-only guidance. It does not hide "
     "dispatch, force a partner, authorize public speedup wording, authorize "
@@ -133,20 +137,38 @@ def plan_v2_5_fixed_radius_aggregate_execution_path(
     backend: str = "optix",
     partner: str = "cupy_conformance",
     prefer_fastest_native_aggregate: bool = True,
+    query_count: int | None = None,
+    query_batch_size: int | None = None,
 ) -> dict[str, Any]:
     """Explain the v2.5 path choice for fixed-radius aggregate replay.
 
     Goal2841 showed that the same-stream CuPy consumer is correct and traceable,
     but slower than direct native graph replay when the app only needs the final
-    native aggregate. This helper keeps that rule explicit instead of burying it
-    in a hidden dispatcher.
+    native aggregate on the 65K graph fixture. Goal4502 later showed that the
+    aggregate-only KITTI-1M route is faster as one full-batch prepared direct
+    aggregate than as the older direct graph row. This helper keeps both rules
+    explicit instead of burying them in a hidden dispatcher.
     """
 
     normalized_backend = str(backend).strip().lower()
     normalized_partner = str(partner).strip().lower().replace("-", "_")
     continuation_required = bool(requires_partner_continuation)
+    normalized_query_count = None if query_count is None else int(query_count)
+    normalized_query_batch_size = (
+        None if query_batch_size is None else int(query_batch_size)
+    )
+    if normalized_query_count is not None and normalized_query_count <= 0:
+        raise ValueError("query_count must be positive when provided")
+    if normalized_query_batch_size is not None and normalized_query_batch_size <= 0:
+        raise ValueError("query_batch_size must be positive when provided")
     reasons: list[str] = []
     warnings: list[str] = []
+    large_aggregate_only = (
+        normalized_backend == "optix"
+        and not continuation_required
+        and normalized_query_count is not None
+        and normalized_query_count > V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_CAP
+    )
 
     if normalized_backend != "optix":
         recommended_mode = "backend_specific_policy_required"
@@ -158,6 +180,35 @@ def plan_v2_5_fixed_radius_aggregate_execution_path(
         selected_path = "same_stream_partner_continuation"
         reasons.append("A partner continuation is required, so same-stream ordering and entrypoint metadata matter.")
         reasons.append("Goal2841 proves this path is traceable but slower than direct native graph replay.")
+        if (
+            normalized_query_count is not None
+            and normalized_query_count > V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_CAP
+        ):
+            warnings.append(
+                "The current graph/device-partial partner-continuation path is sized around the "
+                "65,536-query graph cap; large partner-continuation workloads need explicit chunking "
+                "or future large-partial evidence."
+            )
+    elif large_aggregate_only:
+        recommended_mode = V2_5_FIXED_RADIUS_AGGREGATE_FULL_BATCH_DIRECT_MODE
+        selected_path = "prepared_full_batch_direct_aggregate"
+        reasons.append(
+            "No partner continuation is required and the query_count is above the graph fixture cap, "
+            "so the Goal4502 full-batch prepared direct aggregate is the current measured route."
+        )
+        reasons.append(
+            "Goal4502 measured the KITTI-1M full-batch direct aggregate at 1.68x faster than the "
+            "older M105 direct graph row while preserving the aggregate signature."
+        )
+        if (
+            normalized_query_batch_size is not None
+            and normalized_query_batch_size < normalized_query_count
+        ):
+            warnings.append(
+                "For aggregate-only large batches, Goal4502's best measured route used one full "
+                "query batch; a smaller query_batch_size should be treated as a deliberate "
+                "capacity choice requiring fresh timing."
+            )
     else:
         recommended_mode = V2_5_FIXED_RADIUS_AGGREGATE_DIRECT_GRAPH_MODE
         selected_path = "direct_native_graph_replay"
@@ -173,18 +224,30 @@ def plan_v2_5_fixed_radius_aggregate_execution_path(
         "partner": normalized_partner,
         "requires_partner_continuation": continuation_required,
         "prefer_fastest_native_aggregate": bool(prefer_fastest_native_aggregate),
+        "query_count": normalized_query_count,
+        "query_batch_size": normalized_query_batch_size,
         "selected_path": selected_path,
         "recommended_result_mode": recommended_mode,
         "direct_native_graph_result_mode": V2_5_FIXED_RADIUS_AGGREGATE_DIRECT_GRAPH_MODE,
+        "full_batch_direct_result_mode": V2_5_FIXED_RADIUS_AGGREGATE_FULL_BATCH_DIRECT_MODE,
         "same_stream_partner_result_mode": V2_5_FIXED_RADIUS_AGGREGATE_SAME_STREAM_CUPY_MODE,
+        "graph_query_count_cap": V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_CAP,
+        "large_aggregate_only_full_batch_direct_preferred": large_aggregate_only,
         "direct_native_graph_preferred_when_no_partner_continuation": normalized_backend == "optix"
-        and not continuation_required,
+        and not continuation_required
+        and not large_aggregate_only,
         "same_stream_required_for_partner_continuation": normalized_backend == "optix"
         and continuation_required,
         "same_stream_over_direct_median_ratio": 1.9232031759290225,
         "same_stream_slower_than_direct_on_goal2841_fixture": True,
-        "evidence_goal": "Goal2841",
-        "evidence_artifact": "docs/reports/goal2841_rtnn_same_stream_scale_pod/goal2841_summary.json",
+        "full_batch_direct_over_direct_graph_median_ratio": 1.6777846609491587,
+        "full_batch_direct_faster_than_direct_graph_on_goal4502_kitti_1m": True,
+        "evidence_goal": "Goal4502" if large_aggregate_only else "Goal2841",
+        "evidence_artifact": (
+            "docs/reports/goal4502_v3_0_m106_rtnn_full_batch_route_refresh_2026-06-17.json"
+            if large_aggregate_only
+            else "docs/reports/goal2841_rtnn_same_stream_scale_pod/goal2841_summary.json"
+        ),
         "explicit_result_mode_required": explicit_mode_required,
         "hidden_auto_dispatch_allowed": False,
         "primitive_first_native_when_no_partner_continuation": normalized_backend == "optix"
@@ -208,6 +271,11 @@ def validate_v2_5_execution_path_policy() -> dict[str, Any]:
     direct = plan_v2_5_fixed_radius_aggregate_execution_path(
         requires_partner_continuation=False
     )
+    large_direct = plan_v2_5_fixed_radius_aggregate_execution_path(
+        requires_partner_continuation=False,
+        query_count=1_000_000,
+        query_batch_size=1_000_000,
+    )
     same_stream = plan_v2_5_fixed_radius_aggregate_execution_path(
         requires_partner_continuation=True
     )
@@ -219,15 +287,23 @@ def validate_v2_5_execution_path_policy() -> dict[str, Any]:
         errors.append("direct path must be recommended when no partner continuation is required")
     if same_stream["recommended_result_mode"] != V2_5_FIXED_RADIUS_AGGREGATE_SAME_STREAM_CUPY_MODE:
         errors.append("same-stream path must be recommended when partner continuation is required")
+    if large_direct["recommended_result_mode"] != V2_5_FIXED_RADIUS_AGGREGATE_FULL_BATCH_DIRECT_MODE:
+        errors.append("large aggregate-only path must prefer full-batch prepared direct aggregate")
+    if large_direct["large_aggregate_only_full_batch_direct_preferred"] is not True:
+        errors.append("large aggregate-only branch must record the full-batch preference")
     if direct["hidden_auto_dispatch_allowed"] is not False:
         errors.append("hidden auto-dispatch must remain blocked")
     if direct["primitive_first_native_when_no_partner_continuation"] is not True:
         errors.append("direct path must integrate primitive-first doctrine")
+    if large_direct["primitive_first_native_when_no_partner_continuation"] is not True:
+        errors.append("large full-batch path must integrate primitive-first doctrine")
+    if large_direct["hidden_auto_dispatch_allowed"] is not False:
+        errors.append("large full-batch branch must remain explicit, not hidden dispatch")
     if same_stream["automatic_triton_selection_allowed"] is not False:
         errors.append("automatic Triton selection must remain blocked")
     if same_stream["auto_select_same_stream_for_speed_allowed"] is not False:
         errors.append("same-stream must not be auto-selected for speed")
-    for plan in (direct, same_stream):
+    for plan in (direct, large_direct, same_stream):
         for field in (
             "public_speedup_claim_authorized",
             "rt_core_speedup_claim_authorized",
