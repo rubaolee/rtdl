@@ -59,7 +59,7 @@ class Goal4527V30M131BarnesHutRtNativeTraversalSemanticGateTest(unittest.TestCas
         self.assertEqual((), tuple(queue["runtime_build_queue"]))
         self.assertEqual((), tuple(queue["design_blocker_queue"]))
         self.assertEqual(
-            ("barnes_hut", "triangle_counting"),
+            ("barnes_hut",),
             tuple(queue["future_design_target_queue"]),
         )
         self.assertTrue(all(checks.values()))

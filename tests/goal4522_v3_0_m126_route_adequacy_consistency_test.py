@@ -43,12 +43,16 @@ class Goal4522V30M126RouteAdequacyConsistencyTest(unittest.TestCase):
         self.assertIn("Goal4521", triangle_adequacy["evidence_refs"])
         self.assertIn("Goal4530", triangle_route["evidence_refs"])
         self.assertIn("Goal4531", triangle_route["evidence_refs"])
+        self.assertIn("Goal4539", triangle_route["evidence_refs"])
+        self.assertIn("Goal4540", triangle_route["evidence_refs"])
         self.assertIn("Goal4530", triangle_adequacy["evidence_refs"])
         self.assertIn("Goal4531", triangle_adequacy["evidence_refs"])
+        self.assertIn("Goal4539", triangle_adequacy["evidence_refs"])
+        self.assertIn("Goal4540", triangle_adequacy["evidence_refs"])
         self.assertIn("device-output stream", triangle_route["next_runtime_action"])
-        self.assertIn("fail-closes", triangle_route["next_runtime_action"])
+        self.assertIn("future graph wording", triangle_route["next_runtime_action"])
         self.assertIn("device-output stream", triangle_adequacy["next_generic_runtime_action"])
-        self.assertIn("fail-closes", triangle_adequacy["next_generic_runtime_action"])
+        self.assertIn("future graph wording", triangle_adequacy["next_generic_runtime_action"])
 
     def test_report_index_and_claim_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")

@@ -4,15 +4,15 @@ Status: `claim_scope_closeout_checked`
 
 ## Conclusion
 
-Goal4533 closes RTNN and Spatial RayJoin as V3 current app targets without expanding claims. RTNN exact paper reproduction and same-output author comparison remain future optional claim-expansion work; Spatial RayJoin full RayJoin paper reproduction and Section 5.7 8/8 overlay wording remain future optional claim-expansion work. The V3 implementation queue now has no runtime blocker and no claim/evidence blocker; only Barnes-Hut and Triangle Counting remain future design targets, and none of the public speedup, broad RT-core, paper-reproduction, or automatic partner-selection claims are authorized.
+Goal4533 closes RTNN and Spatial RayJoin as V3 current app targets without expanding claims. RTNN exact paper reproduction and same-output author comparison remain future optional claim-expansion work; Spatial RayJoin full RayJoin paper reproduction and Section 5.7 8/8 overlay wording remain future optional claim-expansion work. The V3 implementation queue now has no runtime blocker and no claim/evidence blocker; Barnes-Hut remains the only future design target after Goal4540 accepts Triangle's non-graph stream continuation contract, and none of the public speedup, broad RT-core, paper-reproduction, or automatic partner-selection claims are authorized.
 
 ## Queue Summary
 
 - Runtime queue: ``
 - Claim/evidence queue: ``
 - Design blocker queue: ``
-- Future design target queue: `barnes_hut, triangle_counting`
-- Closed current targets: `rt_dbscan, rtnn, spatial_rayjoin, hausdorff_xhd, robot_collision, contact_manifold, raydb_style, librts_spatial_index`
+- Future design target queue: `barnes_hut`
+- Closed current targets: `rt_dbscan, triangle_counting, rtnn, spatial_rayjoin, hausdorff_xhd, robot_collision, contact_manifold, raydb_style, librts_spatial_index`
 
 ## Closed Claim-Scoped Apps
 
@@ -30,7 +30,7 @@ Goal4533 closes RTNN and Spatial RayJoin as V3 current app targets without expan
 | `claim_queue_empty` | `True` |
 | `design_queue_empty` | `True` |
 | `future_design_queue_exact` | `True` |
-| `closed_count_is_eight` | `True` |
+| `closed_count_is_nine` | `True` |
 | `rtnn_closed_claim_scoped` | `True` |
 | `spatial_rayjoin_closed_claim_scoped` | `True` |
 | `all_public_speedup_claims_blocked` | `True` |

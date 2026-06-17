@@ -23,8 +23,7 @@
     "barnes_hut_work_class": "future_design_target",
     "design_blocker_queue": [],
     "future_design_target_queue": [
-      "barnes_hut",
-      "triangle_counting"
+      "barnes_hut"
     ],
     "next_runtime_build_target": null,
     "queue_checks": {
@@ -44,7 +43,7 @@
         "all_public_speedup_claims_blocked": true,
         "all_route_apps_present": true,
         "claim_queue_empty": true,
-        "closed_count_is_eight": true,
+        "closed_count_is_nine": true,
         "design_queue_empty": true,
         "design_targets_do_not_block_runtime_queue": true,
         "future_design_queue_exact": true,
@@ -56,7 +55,7 @@
       },
       "failed_checks": [],
       "status": "accept",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4534.v7"
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8"
     }
   },
   "semantic_constraints": {

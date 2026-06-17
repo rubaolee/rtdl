@@ -5,7 +5,7 @@ Consensus verdict: `approve_with_caveats`
 
 ## Conclusion
 
-The 3-AI review consensus accepts the narrow Goal4536 conclusion: the V3 current benchmark-app implementation queue is complete. This means runtime, claim/evidence, and current design-blocker queues are empty; eight apps are closed current targets; and Barnes-Hut plus Triangle Counting remain future design targets. The consensus does not authorize release, public speedup, broad RT-core, paper-reproduction, automatic partner-selection, or app-specific native-engine claims.
+The 3-AI review consensus accepts the narrow Goal4536 conclusion: the V3 current benchmark-app implementation queue is complete. Goal4540 later supersedes the Triangle future-design classification by explicitly accepting the non-graph stream device-output continuation contract, so the current queue has empty runtime, claim/evidence, and current design-blocker queues; nine apps are closed current targets; and Barnes-Hut is the only remaining future design target. The consensus does not authorize release, public speedup, broad RT-core, paper-reproduction, automatic partner-selection, or app-specific native-engine claims.
 
 ## Reviewer Verdicts
 
@@ -20,8 +20,9 @@ The 3-AI review consensus accepts the narrow Goal4536 conclusion: the V3 current
 - Runtime queue: ``
 - Claim/evidence queue: ``
 - Design blocker queue: ``
-- Future design targets: `barnes_hut, triangle_counting`
-- Closed current targets: `rt_dbscan, rtnn, spatial_rayjoin, hausdorff_xhd, robot_collision, contact_manifold, raydb_style, librts_spatial_index`
+- Future design targets: `barnes_hut`
+- Closed current targets: `rt_dbscan, triangle_counting, rtnn, spatial_rayjoin, hausdorff_xhd, robot_collision, contact_manifold, raydb_style, librts_spatial_index`
+- Goal4540 successor note: `triangle_counting` is closed only through the non-graph stream continuation contract; M113 graph wording remains blocked.
 
 ## Checks
 
@@ -36,8 +37,9 @@ The 3-AI review consensus accepts the narrow Goal4536 conclusion: the V3 current
 | `external_reviews_present` | `True` |
 | `consensus_verdict_is_caveated_approve` | `True` |
 | `runtime_claim_design_queues_empty` | `True` |
-| `future_design_targets_preserved` | `True` |
-| `closed_current_target_count_preserved` | `True` |
+| `goal4540_successor_future_design_targets_preserved` | `True` |
+| `goal4540_successor_closed_current_target_count_preserved` | `True` |
+| `goal4540_successor_triangle_closed_without_graph_claim` | `True` |
 | `release_and_public_claims_still_blocked` | `True` |
 
 ## Boundary

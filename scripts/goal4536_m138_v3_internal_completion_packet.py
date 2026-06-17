@@ -60,8 +60,8 @@ def build_packet() -> dict[str, Any]:
         "claim_queue_empty": tuple(summary["claim_or_evidence_queue"]) == (),
         "design_blocker_queue_empty": tuple(summary["design_blocker_queue"]) == (),
         "future_design_queue_exact": tuple(summary["future_design_target_queue"])
-        == ("barnes_hut", "triangle_counting"),
-        "closed_current_target_count_is_eight": len(summary["closed_current_targets"]) == 8,
+        == ("barnes_hut",),
+        "closed_current_target_count_is_nine": len(summary["closed_current_targets"]) == 9,
         "all_routes_have_adequacy": all(row["adequacy"] for row in rows),
         "all_public_speedup_claims_blocked": not any(
             row["public_speedup_claim_authorized"] for row in rows
@@ -104,8 +104,9 @@ def build_packet() -> dict[str, Any]:
         "conclusion": (
             "Goal4536 packages the V3.0 current benchmark-app implementation state. "
             "All ten apps are accounted for. Runtime, claim/evidence, and current "
-            "design-blocker queues are empty. Eight apps are closed current targets; "
-            "Barnes-Hut and Triangle Counting are future design targets. The packet "
+            "design-blocker queues are empty. Nine apps are closed current targets; "
+            "Barnes-Hut is the only future design target after Goal4540 accepts "
+            "Triangle's non-graph stream continuation contract. The packet "
             "does not authorize release or public performance claims: broad RT-core, "
             "paper-reproduction, automatic partner-selection, and app-specific "
             "native-engine claims remain blocked."

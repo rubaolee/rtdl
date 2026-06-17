@@ -29,7 +29,7 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.benchmark_implementation_queue.goal4534.v7",
+            "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8",
             self.packet["version"],
         )
         self.assertEqual(10, summary["app_count"])
@@ -40,7 +40,7 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
         )
         self.assertEqual((), tuple(summary["design_blocker_queue"]))
         self.assertEqual(
-            ("barnes_hut", "triangle_counting"),
+            ("barnes_hut",),
             tuple(summary["future_design_target_queue"]),
         )
         self.assertEqual((), tuple(summary["claim_or_evidence_queue"]))
@@ -52,8 +52,9 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
         self.assertIn("subtree-skip semantics", self.rows["barnes_hut"]["remaining_gap"])
         self.assertEqual("closed_current_target", self.rows["rt_dbscan"]["work_class"])
         self.assertIn("Goal4528 prepared graph", self.rows["rt_dbscan"]["remaining_gap"])
-        self.assertEqual("future_design_target", self.rows["triangle_counting"]["work_class"])
-        self.assertIn("capture-compatible OptiX", self.rows["triangle_counting"]["next_build_target"])
+        self.assertEqual("closed_current_target", self.rows["triangle_counting"]["work_class"])
+        self.assertIn("non-graph stream", self.rows["triangle_counting"]["remaining_gap"])
+        self.assertIn("Goal4540", self.rows["triangle_counting"]["evidence_refs"])
 
         self.assertEqual("closed_current_target", self.rows["rtnn"]["work_class"])
         self.assertIn("future optional claim-expansion", self.rows["rtnn"]["remaining_gap"])
@@ -72,6 +73,7 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
             "rt_dbscan",
             "rtnn",
             "spatial_rayjoin",
+            "triangle_counting",
         }
         for app in closed:
             row = self.rows[app]

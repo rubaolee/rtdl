@@ -34,24 +34,35 @@ class Goal4534V30M136CurrentAppCompletionGateTest(unittest.TestCase):
         self.assertEqual((), tuple(summary["claim_or_evidence_queue"]))
         self.assertEqual((), tuple(summary["design_blocker_queue"]))
         self.assertEqual(
-            ("barnes_hut", "triangle_counting"),
+            ("barnes_hut",),
             tuple(summary["future_design_target_queue"]),
         )
-        self.assertEqual(8, len(summary["closed_current_targets"]))
+        self.assertEqual(9, len(summary["closed_current_targets"]))
+        self.assertIn("triangle_counting", summary["closed_current_targets"])
 
     def test_future_design_targets_do_not_authorize_claims(self) -> None:
         future = self.packet["future_design_targets"]
-        for app in ("barnes_hut", "triangle_counting"):
-            row = future[app]
-            self.assertEqual("future_design_target", row["work_class"])
-            self.assertIn("no current V3 app implementation blocker", row["remaining_gap"])
-            self.assertFalse(row["public_speedup_claim_authorized"])
-            self.assertFalse(row["broad_rt_core_claim_authorized"])
-            self.assertFalse(row["paper_reproduction_claim_authorized"])
-            self.assertFalse(row["automatic_partner_selection_authorized"])
-            self.assertFalse(row["app_specific_native_engine_logic_allowed"])
+        row = future["barnes_hut"]
+        self.assertEqual("future_design_target", row["work_class"])
+        self.assertIn("no current V3 app implementation blocker", row["remaining_gap"])
+        self.assertFalse(row["public_speedup_claim_authorized"])
+        self.assertFalse(row["broad_rt_core_claim_authorized"])
+        self.assertFalse(row["paper_reproduction_claim_authorized"])
+        self.assertFalse(row["automatic_partner_selection_authorized"])
+        self.assertFalse(row["app_specific_native_engine_logic_allowed"])
         self.assertIn("hierarchical traversal", future["barnes_hut"]["next_build_target"])
-        self.assertIn("capture-compatible OptiX", future["triangle_counting"]["next_build_target"])
+
+    def test_triangle_is_closed_only_by_non_graph_stream_contract(self) -> None:
+        row = self.packet["non_graph_stream_closed_targets"]["triangle_counting"]
+        self.assertEqual("closed_current_target", row["work_class"])
+        self.assertIn("Goal4540", row["evidence_refs"])
+        self.assertIn("non-graph stream", row["remaining_gap"])
+        self.assertIn("M113 graph", row["next_build_target"])
+        self.assertFalse(row["public_speedup_claim_authorized"])
+        self.assertFalse(row["broad_rt_core_claim_authorized"])
+        self.assertFalse(row["paper_reproduction_claim_authorized"])
+        self.assertFalse(row["automatic_partner_selection_authorized"])
+        self.assertFalse(row["app_specific_native_engine_logic_allowed"])
 
     def test_report_index_and_claim_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")

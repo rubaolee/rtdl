@@ -23,8 +23,8 @@ def build_packet() -> dict[str, Any]:
         "claim_queue_empty": tuple(summary["claim_or_evidence_queue"]) == (),
         "design_queue_empty": tuple(summary["design_blocker_queue"]) == (),
         "future_design_queue_exact": tuple(summary["future_design_target_queue"])
-        == ("barnes_hut", "triangle_counting"),
-        "closed_count_is_eight": len(summary["closed_current_targets"]) == 8,
+        == ("barnes_hut",),
+        "closed_count_is_nine": len(summary["closed_current_targets"]) == 9,
         "rtnn_closed_claim_scoped": (
             rows["rtnn"]["work_class"] == "closed_current_target"
             and not rows["rtnn"]["paper_reproduction_claim_authorized"]
@@ -75,8 +75,9 @@ def build_packet() -> dict[str, Any]:
             "author comparison remain future optional claim-expansion work; Spatial "
             "RayJoin full RayJoin paper reproduction and Section 5.7 8/8 overlay "
             "wording remain future optional claim-expansion work. The V3 implementation "
-            "queue now has no runtime blocker and no claim/evidence blocker; only "
-            "Barnes-Hut and Triangle Counting remain future design targets, and "
+            "queue now has no runtime blocker and no claim/evidence blocker; "
+            "Barnes-Hut remains the only future design target after Goal4540 "
+            "accepts Triangle's non-graph stream continuation contract, and "
             "none of the public speedup, broad RT-core, paper-reproduction, or "
             "automatic partner-selection claims are authorized."
         ),

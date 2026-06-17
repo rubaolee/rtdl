@@ -15,7 +15,7 @@ M131 prevents an incorrect Barnes-Hut RT-native implementation from landing. A d
 - Barnes-Hut class: `future_design_target`
 - Runtime queue: ``
 - Design blocker queue: ``
-- Future design target queue: `barnes_hut, triangle_counting`
+- Future design target queue: `barnes_hut`
 - Next runtime build target: `None`
 
 ## Future Barnes-Hut Requirement

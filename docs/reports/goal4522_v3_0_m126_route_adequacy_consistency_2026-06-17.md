@@ -4,7 +4,7 @@ Status: `route_adequacy_consistency_checked`
 
 ## Conclusion
 
-M126 synchronizes the programmatic route-decision and adequacy registries with the later M132/M133/M134 blocker refinements. RT-DBSCAN now records Goal4528 fixed-iteration prepared graph capture/replay as validated for the future M113 shape without changing the current compact-signature route. Triangle now records Goal4530 key/count payload merge as validated and Goal4531 weighted replay device-output stream as valid while CUDA graph capture remains fail-closed for that OptiX weighted launch.
+M126 synchronizes the programmatic route-decision and adequacy registries with the later M132/M133/M134 blocker refinements. RT-DBSCAN now records Goal4528 fixed-iteration prepared graph capture/replay as validated for the future M113 shape without changing the current compact-signature route. Triangle now records Goal4530 key/count payload merge as validated and Goal4531 weighted replay device-output stream as valid; Goal4539 records capture-mode-independent graph failure; and Goal4540 accepts the non-graph stream continuation contract for current closure while future graph wording remains blocked.
 
 ## Checks
 

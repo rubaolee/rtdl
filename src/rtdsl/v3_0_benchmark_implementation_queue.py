@@ -8,20 +8,25 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION = (
-    "rtdl.v3_0.benchmark_implementation_queue.goal4534.v7"
+    "rtdl.v3_0.benchmark_implementation_queue.goal4540.v8"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_STATUS = (
-    "post_current_app_completion_future_design_targets_not_release_authorization"
+    "post_triangle_non_graph_stream_acceptance_barnes_hut_future_design_only_not_release_authorization"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_CLAIM_BOUNDARY = (
     "This queue ranks post-clean-target implementation work after Goal4515 "
     "and Goal4523. Goal4533 closes RTNN and Spatial RayJoin as claim-scoped "
     "current targets without expanding their public/paper wording. Goal4534 "
     "records Barnes-Hut and Triangle Counting as future design targets rather "
-    "than current app implementation blockers. It does not change any current "
-    "benchmark app route and does not authorize public speedup, broad RT-core, "
-    "paper-reproduction, automatic partner-selection, or app-specific "
-    "native-engine wording."
+    "than current app implementation blockers. Goal4539 then shows Triangle "
+    "weighted replay graph capture remains invalid across CUDA capture modes "
+    "while validating the device-output stream path, and Goal4540 accepts that "
+    "non-graph stream continuation as enough to close Triangle's current V3 "
+    "future-design target. Barnes-Hut remains the only future design target. "
+    "This queue does not change any current benchmark app route and does not "
+    "authorize public speedup, broad RT-core, paper-reproduction, automatic "
+    "partner-selection, M113 graph-promotion, or app-specific native-engine "
+    "wording."
 )
 
 V3_IMPLEMENTATION_WORK_CLASSES = (
@@ -169,29 +174,43 @@ _ROWS: tuple[V3BenchmarkImplementationQueueRow, ...] = (
     ),
     V3BenchmarkImplementationQueueRow(
         app="triangle_counting",
-        priority=2,
-        work_class="future_design_target",
+        priority=None,
+        work_class="closed_current_target",
         current_route_status=(
             "current V3 route is explicit numba_direct_sort_rle prepared segment "
             "replay after primitive evidence; it completes the large paper rows "
-            "but remains an internal route"
+            "but remains an internal route; Goal4540 accepts the non-graph "
+            "device-output stream continuation evidence without promoting M113 "
+            "CUDA graph wording"
         ),
         remaining_gap=(
-            "no current V3 app implementation blocker after Goal4511; future "
-            "M113 graph-style Triangle replay remains a design target because "
+            "no current V3 app implementation blocker after Goal4511 and "
+            "Goal4540; future M113 graph-style Triangle replay remains blocked "
+            "claim wording rather than a current app blocker because "
             "Goal4530 validates app-agnostic device key/count payload merge for "
             "cross-chunk duplicate keys, and Goal4531 validates a generic "
-            "prepared weighted-replay device-output stream executor; CUDA graph "
-            "capture of that OptiX weighted launch is fail-closed with an "
-            "OptiX/CUDA error, so future M113 graph use needs a reviewed native "
-            "capture design rather than another benchmark rerun"
+            "prepared weighted-replay device-output stream executor. Goal4539 "
+            "confirms CUDA graph capture of that OptiX weighted launch remains "
+            "fail-closed across capture modes. Goal4540 accepts the non-graph "
+            "stream device-output continuation contract for current closure "
+            "while keeping graph promotion blocked"
         ),
         next_build_target=(
-            "do not claim Triangle M113 graph readiness; future work must first "
-            "design a capture-compatible OptiX weighted replay mechanism or accept "
-            "the stream device-output executor as a non-graph continuation contract"
+            "no immediate V3 build target; preserve numba_direct_sort_rle plus "
+            "prepared segment replay as the current internal route, accept the "
+            "device-output stream executor only as a non-graph continuation "
+            "contract, and require a separate reviewed capture-compatible OptiX "
+            "weighted replay design before any M113 graph-readiness wording"
         ),
-        evidence_refs=("Goal4479", "Goal4511", "Goal4521", "Goal4530", "Goal4531"),
+        evidence_refs=(
+            "Goal4479",
+            "Goal4511",
+            "Goal4521",
+            "Goal4530",
+            "Goal4531",
+            "Goal4539",
+            "Goal4540",
+        ),
         pod_needed_next=False,
     ),
     V3BenchmarkImplementationQueueRow(
@@ -396,7 +415,7 @@ def validate_v3_benchmark_implementation_queue(
         "all_route_apps_present": apps == route_apps,
         "runtime_queue_empty": runtime_apps == (),
         "design_queue_empty": design_apps == (),
-        "future_design_queue_exact": future_design_apps == ("barnes_hut", "triangle_counting"),
+        "future_design_queue_exact": future_design_apps == ("barnes_hut",),
         "next_runtime_target_none": packet["summary"]["next_runtime_build_target"] is None,
         "claim_queue_empty": tuple(packet["summary"]["claim_or_evidence_queue"]) == (),
         "design_targets_do_not_block_runtime_queue": bool(
@@ -405,7 +424,7 @@ def validate_v3_benchmark_implementation_queue(
         "future_design_targets_do_not_block_runtime_queue": bool(
             packet["summary"]["future_design_targets_do_not_block_runtime_queue"]
         ),
-        "closed_count_is_eight": len(packet["summary"]["closed_current_targets"]) == 8,
+        "closed_count_is_nine": len(packet["summary"]["closed_current_targets"]) == 9,
         "all_clean_targets_closed": bool(packet["summary"]["all_clean_targets_closed"]),
         "all_public_speedup_claims_blocked": bool(
             packet["summary"]["all_public_speedup_claims_blocked"]

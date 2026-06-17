@@ -746,8 +746,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "device key/count payload merge for cross-chunk duplicates. "
             "Goal4531 validates a generic prepared weighted-replay device-output "
             "stream executor, but CUDA graph capture of that OptiX launch fails "
-            "closed with an OptiX/CUDA error, so Triangle M113 promotion is now "
-            "a graph-capture design blocker, not a missing key-count merge debt."
+            "closed with an OptiX/CUDA error. Goal4539 confirms the capture "
+            "failure is not fixed by changing CuPy stream-capture mode, and "
+            "Goal4540 accepts the non-graph device-output stream continuation "
+            "contract for current V3 closure while keeping Triangle M113 graph "
+            "promotion blocked."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -810,8 +813,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "the no-C++ Python-source reference/direct key-fill option; Goal4479 "
             "improves the Goal4478 `cp.unique(return_counts)` hotspot with explicit "
             "sort/RLE counting; Goal4530 resolves the generic cross-chunk "
-            "key/count payload merge debt, while Goal4531 leaves graph capture "
-            "of the weighted OptiX replay fail-closed"
+            "key/count payload merge debt; Goal4531 validates weighted OptiX "
+            "replay to a caller-owned device output on a stream; Goal4539 "
+            "keeps CUDA graph capture fail-closed across capture modes; and "
+            "Goal4540 accepts the non-graph stream continuation contract for "
+            "current closure"
         ),
         "next_generic_runtime_action": (
             "keep scalar triangle-count wording primitive-first; do not claim RT-Graph "
@@ -850,10 +856,12 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "key ranges; Goal4530 validates that app-agnostic merge path. "
             "Goal4531 validates generic weighted replay to a device-output stream "
             "but fail-closes CUDA graph capture of the OptiX weighted launch. "
-            "If Triangle Counting is revisited, target either a reviewed "
-            "capture-compatible OptiX weighted replay design or accept the "
-            "stream device-output executor as a non-graph continuation contract; "
-            "do not spend the next cycle re-solving the key/count merge."
+            "Goal4539 confirms the failure is capture-mode independent, and "
+            "Goal4540 accepts the stream device-output executor as a non-graph "
+            "continuation contract for current closure. If Triangle Counting is "
+            "revisited, target a reviewed capture-compatible OptiX weighted "
+            "replay design only for future graph wording; do not spend the next "
+            "cycle re-solving the key/count merge or capture-mode reruns."
         ),
         "evidence_refs": (
             "Goal2797",
@@ -894,6 +902,8 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4521",
             "Goal4530",
             "Goal4531",
+            "Goal4539",
+            "Goal4540",
         ),
     },
 }

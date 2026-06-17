@@ -47,7 +47,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "runtime_queue_empty": tuple(queue["summary"]["runtime_build_queue"]) == (),
         "goal4527_recorded": "Goal4527" in barnes_row["evidence_refs"],
         "future_design_queue_recorded": tuple(queue["summary"]["future_design_target_queue"])
-        == ("barnes_hut", "triangle_counting"),
+        == ("barnes_hut",),
     }
     return {
         "version": PACKET_VERSION,

@@ -281,6 +281,14 @@ blocker rather than a missing key/count merge blocker. This still does not
 replace the current large paper-row route or authorize public RT-core speedup
 wording.
 
+Goal4539 checks the obvious CUDA capture-mode escape hatch and rejects it:
+default, relaxed, global, and thread-local capture modes all fail closed after
+a validated device-output stream launch. Goal4540 then explicitly accepts the
+non-graph device-output stream continuation contract as enough to close
+Triangle Counting as a current V3 target. That acceptance is narrow: M113 graph
+readiness, public speedup, broad RT-core, automatic partner selection, and
+app-specific native callbacks remain blocked.
+
 The current internal route is Goal4479:
 
 ```text

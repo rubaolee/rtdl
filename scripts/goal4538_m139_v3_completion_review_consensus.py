@@ -84,9 +84,19 @@ def build_packet() -> dict[str, Any]:
         "runtime_claim_design_queues_empty": tuple(summary["runtime_build_queue"]) == ()
         and tuple(summary["claim_or_evidence_queue"]) == ()
         and tuple(summary["design_blocker_queue"]) == (),
-        "future_design_targets_preserved": tuple(summary["future_design_target_queue"])
-        == ("barnes_hut", "triangle_counting"),
-        "closed_current_target_count_preserved": len(summary["closed_current_targets"]) == 8,
+        "goal4540_successor_future_design_targets_preserved": tuple(
+            summary["future_design_target_queue"]
+        )
+        == ("barnes_hut",),
+        "goal4540_successor_closed_current_target_count_preserved": len(
+            summary["closed_current_targets"]
+        )
+        == 9,
+        "goal4540_successor_triangle_closed_without_graph_claim": (
+            "triangle_counting" in summary["closed_current_targets"]
+            and not goal4536["claim_boundary"]["paper_reproduction_claim_authorized"]
+            and not goal4536["claim_boundary"]["broad_rt_core_claim_authorized"]
+        ),
         "release_and_public_claims_still_blocked": not any(
             goal4536["claim_boundary"][name]
             for name in (
@@ -119,9 +129,12 @@ def build_packet() -> dict[str, Any]:
         "conclusion": (
             "The 3-AI review consensus accepts the narrow Goal4536 conclusion: "
             "the V3 current benchmark-app implementation queue is complete. "
-            "This means runtime, claim/evidence, and current design-blocker "
-            "queues are empty; eight apps are closed current targets; and "
-            "Barnes-Hut plus Triangle Counting remain future design targets. "
+            "Goal4540 later supersedes the Triangle future-design classification "
+            "by explicitly accepting the non-graph stream device-output "
+            "continuation contract, so the current queue has empty runtime, "
+            "claim/evidence, and current design-blocker queues; nine apps are "
+            "closed current targets; and Barnes-Hut is the only remaining future "
+            "design target. "
             "The consensus does not authorize release, public speedup, broad "
             "RT-core, paper-reproduction, automatic partner-selection, or "
             "app-specific native-engine claims."
@@ -162,6 +175,7 @@ def write_report(packet: dict[str, Any], path: Path) -> None:
             f"- Design blocker queue: `{', '.join(summary['design_blocker_queue'])}`",
             f"- Future design targets: `{', '.join(summary['future_design_target_queue'])}`",
             f"- Closed current targets: `{', '.join(summary['closed_current_targets'])}`",
+            "- Goal4540 successor note: `triangle_counting` is closed only through the non-graph stream continuation contract; M113 graph wording remains blocked.",
             "",
             "## Checks",
             "",

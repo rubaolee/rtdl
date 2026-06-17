@@ -47,7 +47,8 @@ class Goal4536V30M138InternalCompletionPacketTest(unittest.TestCase):
             set(rows),
         )
         self.assertEqual("future_design_target", rows["barnes_hut"]["queue_class"])
-        self.assertEqual("future_design_target", rows["triangle_counting"]["queue_class"])
+        self.assertEqual("closed_current_target", rows["triangle_counting"]["queue_class"])
+        self.assertIn("non-graph stream", rows["triangle_counting"]["remaining_gap"])
         self.assertEqual("closed_current_target", rows["rtnn"]["queue_class"])
 
     def test_claims_remain_blocked_for_every_app(self) -> None:

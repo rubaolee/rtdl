@@ -38,19 +38,19 @@ def build_packet() -> dict[str, Any]:
         ),
         "triangle_route_ref": all(
             ref in routes["triangle_counting"]["evidence_refs"]
-            for ref in ("Goal4521", "Goal4530", "Goal4531")
+            for ref in ("Goal4521", "Goal4530", "Goal4531", "Goal4539", "Goal4540")
         ),
         "triangle_route_wording": _contains_all(
             routes["triangle_counting"]["next_runtime_action"],
-            ("Goal4530", "Goal4531", "device-output stream", "fail-closes"),
+            ("Goal4539", "Goal4540", "device-output stream", "future graph wording"),
         ),
         "triangle_adequacy_ref": all(
             ref in adequacy["triangle_counting"]["evidence_refs"]
-            for ref in ("Goal4521", "Goal4530", "Goal4531")
+            for ref in ("Goal4521", "Goal4530", "Goal4531", "Goal4539", "Goal4540")
         ),
         "triangle_adequacy_wording": _contains_all(
             adequacy["triangle_counting"]["next_generic_runtime_action"],
-            ("Goal4530", "Goal4531", "device-output stream", "fail-closes"),
+            ("Goal4539", "Goal4540", "device-output stream", "future graph wording"),
         ),
         "route_registry_valid": rt.validate_current_benchmark_route_decisions()["status"] == "accept",
         "adequacy_registry_valid": rt.validate_current_benchmark_adequacy()["status"] == "accept",
@@ -86,8 +86,10 @@ def build_packet() -> dict[str, Any]:
             "validated for the future M113 shape without changing the current "
             "compact-signature route. Triangle now records Goal4530 key/count "
             "payload merge as validated and Goal4531 weighted replay device-output "
-            "stream as valid while CUDA graph capture remains fail-closed for "
-            "that OptiX weighted launch."
+            "stream as valid; Goal4539 records capture-mode-independent graph "
+            "failure; and Goal4540 accepts the non-graph stream continuation "
+            "contract for current closure while future graph wording remains "
+            "blocked."
         ),
     }
 

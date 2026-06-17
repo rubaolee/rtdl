@@ -40,7 +40,8 @@ class Goal4538V30M139CompletionReviewConsensusTest(unittest.TestCase):
     def test_completion_claim_stays_narrow(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
         self.assertIn("V3 current benchmark-app implementation queue is complete", report)
-        self.assertIn("Barnes-Hut plus Triangle Counting remain future design targets", report)
+        self.assertIn("Goal4540 later supersedes the Triangle future-design classification", report)
+        self.assertIn("Barnes-Hut is the only remaining future design target", report)
         self.assertIn("No release, public speedup, broad RT-core", report)
         self.assertNotIn("V3 release complete", report)
         self.assertNotIn("RT-native Barnes-Hut/Triangle complete", report)

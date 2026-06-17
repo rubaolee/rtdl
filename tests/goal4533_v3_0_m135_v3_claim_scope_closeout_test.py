@@ -34,12 +34,13 @@ class Goal4533V30M135ClaimScopeCloseoutTest(unittest.TestCase):
         self.assertEqual((), tuple(summary["claim_or_evidence_queue"]))
         self.assertEqual((), tuple(summary["design_blocker_queue"]))
         self.assertEqual(
-            ("barnes_hut", "triangle_counting"),
+            ("barnes_hut",),
             tuple(summary["future_design_target_queue"]),
         )
-        self.assertEqual(8, len(summary["closed_current_targets"]))
+        self.assertEqual(9, len(summary["closed_current_targets"]))
         self.assertIn("rtnn", summary["closed_current_targets"])
         self.assertIn("spatial_rayjoin", summary["closed_current_targets"])
+        self.assertIn("triangle_counting", summary["closed_current_targets"])
 
     def test_rtnn_and_rayjoin_are_closed_without_claim_expansion(self) -> None:
         rows = self.packet["closed_claim_scoped_apps"]

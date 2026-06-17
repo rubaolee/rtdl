@@ -26,17 +26,18 @@ def build_packet() -> dict[str, Any]:
         "claim_queue_empty": tuple(summary["claim_or_evidence_queue"]) == (),
         "design_blocker_queue_empty": tuple(summary["design_blocker_queue"]) == (),
         "future_design_queue_exact": tuple(summary["future_design_target_queue"])
-        == ("barnes_hut", "triangle_counting"),
+        == ("barnes_hut",),
         "all_ten_apps_accounted_as_closed_or_future_design": set(current_accounted)
         == {row["app"] for row in queue["rows"]},
-        "closed_current_target_count_is_eight": len(summary["closed_current_targets"]) == 8,
+        "closed_current_target_count_is_nine": len(summary["closed_current_targets"]) == 9,
         "barnes_hut_future_design_target": (
             rows["barnes_hut"]["work_class"] == "future_design_target"
             and "no current V3 app implementation blocker" in rows["barnes_hut"]["remaining_gap"]
         ),
-        "triangle_future_design_target": (
-            rows["triangle_counting"]["work_class"] == "future_design_target"
-            and "no current V3 app implementation blocker" in rows["triangle_counting"]["remaining_gap"]
+        "triangle_non_graph_stream_closed_current_target": (
+            rows["triangle_counting"]["work_class"] == "closed_current_target"
+            and "Goal4540" in rows["triangle_counting"]["evidence_refs"]
+            and "non-graph stream" in rows["triangle_counting"]["remaining_gap"]
         ),
         "all_public_speedup_claims_blocked": summary["all_public_speedup_claims_blocked"],
         "all_broad_rt_core_claims_blocked": summary["all_broad_rt_core_claims_blocked"],
@@ -59,10 +60,8 @@ def build_packet() -> dict[str, Any]:
         "checks": checks,
         "failed_checks": failed,
         "summary": summary,
-        "future_design_targets": {
-            "barnes_hut": rows["barnes_hut"],
-            "triangle_counting": rows["triangle_counting"],
-        },
+        "future_design_targets": {"barnes_hut": rows["barnes_hut"]},
+        "non_graph_stream_closed_targets": {"triangle_counting": rows["triangle_counting"]},
         "claim_boundary": {
             "current_route_changed": False,
             "runtime_executed": False,
@@ -76,13 +75,13 @@ def build_packet() -> dict[str, Any]:
         "conclusion": (
             "Goal4534 closes the V3 current app implementation queue: there are no "
             "runtime blockers, no claim/evidence blockers, and no current design "
-            "blockers. Eight apps are closed current targets. Barnes-Hut and "
-            "Triangle Counting remain explicitly listed as future design targets: "
+            "blockers. Nine apps are closed current targets. Barnes-Hut remains "
+            "the only future design target: "
             "Barnes-Hut needs a reviewed hierarchical traversal lowering before "
-            "any RT-native subtree-skip route can replace the current mixed route, "
-            "and Triangle Counting needs a capture-compatible OptiX weighted replay "
-            "design or an accepted non-graph stream continuation contract before "
-            "future M113 graph wording. This completion gate does not authorize "
+            "any RT-native subtree-skip route can replace the current mixed route. "
+            "Triangle Counting is now closed as a current target because Goal4540 "
+            "accepts the non-graph stream device-output continuation contract, "
+            "while M113 graph wording remains blocked. This completion gate does not authorize "
             "release, public speedup, broad RT-core, paper-reproduction, automatic "
             "partner-selection, or app-specific native-engine claims."
         ),
@@ -92,6 +91,7 @@ def build_packet() -> dict[str, Any]:
 def write_report(packet: dict[str, Any], path: Path) -> None:
     summary = packet["summary"]
     future = packet["future_design_targets"]
+    non_graph = packet["non_graph_stream_closed_targets"]
     lines = [
         "# Goal4534 / V3 M136 Current App Completion Gate",
         "",
@@ -114,11 +114,22 @@ def write_report(packet: dict[str, Any], path: Path) -> None:
         "| App | Future design target | Boundary |",
         "| --- | --- | --- |",
     ]
-    for app in ("barnes_hut", "triangle_counting"):
+    for app in ("barnes_hut",):
         row = future[app]
         lines.append(
             f"| `{app}` | {row['next_build_target']} | {row['remaining_gap']} |"
         )
+    lines.extend(
+        [
+            "",
+            "## Non-Graph Stream Closed Targets",
+            "",
+            "| App | Closure | Boundary |",
+            "| --- | --- | --- |",
+        ]
+    )
+    for app, row in non_graph.items():
+        lines.append(f"| `{app}` | {row['next_build_target']} | {row['remaining_gap']} |")
     lines.extend(
         [
             "",

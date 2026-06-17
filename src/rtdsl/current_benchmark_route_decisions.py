@@ -1059,7 +1059,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Cite Goal4530 when explaining that the app-agnostic device key/count "
             "payload merge is now validated. Cite Goal4531 when explaining that "
             "generic weighted replay to a device-output stream is valid but CUDA "
-            "graph capture of that OptiX launch is fail-closed."
+            "graph capture of that OptiX launch is fail-closed. Cite Goal4539 "
+            "when explaining that changing CUDA capture mode does not make the "
+            "graph capture valid, and cite Goal4540 when explaining that the "
+            "non-graph stream continuation contract is accepted for current V3 "
+            "closure without authorizing M113 graph wording."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -1101,6 +1105,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "spending the next Triangle Counting optimization cycle on counts/filter, duplicate count sum, or RT traversal before further reducing Goal4479 sort/RLE unique-count cost",
             "claiming Goal4530 makes Triangle M113 graph-ready",
             "treating the Goal4531 device-output stream executor as validated CUDA graph capture",
+            "treating Goal4539 capture-mode rejection as a reason to retry capture modes",
+            "treating Goal4540 non-graph stream acceptance as M113 graph readiness",
             "automatic CuPy-vs-Numba partner selection",
         ),
         next_runtime_action=(
@@ -1143,10 +1149,13 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "prove disjoint chunk key ranges; Goal4530 validates that generic "
             "merge path. Goal4531 validates generic weighted replay to a "
             "device-output stream but fail-closes CUDA graph capture of the "
-            "OptiX weighted launch. If Triangle Counting is revisited, the target "
-            "is a reviewed capture-compatible OptiX weighted replay design or an "
-            "explicit non-graph stream device-output continuation contract, not "
-            "another key/count merge rerun."
+            "OptiX weighted launch. Goal4539 confirms the capture failure is "
+            "capture-mode independent on the pod, and Goal4540 accepts the "
+            "explicit non-graph stream device-output continuation contract for "
+            "current V3 closure. If Triangle Counting is revisited, the target "
+            "is a reviewed capture-compatible OptiX weighted replay design for "
+            "future graph wording, not another key/count merge or capture-mode "
+            "rerun."
         ),
         evidence_refs=(
             "Goal2797",
@@ -1189,6 +1198,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4521",
             "Goal4530",
             "Goal4531",
+            "Goal4539",
+            "Goal4540",
         ),
         pod_needed_next=False,
     ),

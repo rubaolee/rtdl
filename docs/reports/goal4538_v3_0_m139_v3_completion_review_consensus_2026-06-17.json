@@ -1,12 +1,13 @@
 {
   "checks": {
-    "closed_current_target_count_preserved": true,
     "consensus_verdict_is_caveated_approve": true,
     "external_reviews_present": true,
-    "future_design_targets_preserved": true,
     "goal4534_current_app_gate_accepts": true,
     "goal4535_readiness_audit_accepts": true,
     "goal4536_completion_packet_accepts": true,
+    "goal4540_successor_closed_current_target_count_preserved": true,
+    "goal4540_successor_future_design_targets_preserved": true,
+    "goal4540_successor_triangle_closed_without_graph_claim": true,
     "no_blocking_review_findings": true,
     "no_review_requests_changes": true,
     "release_and_public_claims_still_blocked": true,
@@ -23,7 +24,7 @@
     "release_authorized": false,
     "runtime_executed": false
   },
-  "conclusion": "The 3-AI review consensus accepts the narrow Goal4536 conclusion: the V3 current benchmark-app implementation queue is complete. This means runtime, claim/evidence, and current design-blocker queues are empty; eight apps are closed current targets; and Barnes-Hut plus Triangle Counting remain future design targets. The consensus does not authorize release, public speedup, broad RT-core, paper-reproduction, automatic partner-selection, or app-specific native-engine claims.",
+  "conclusion": "The 3-AI review consensus accepts the narrow Goal4536 conclusion: the V3 current benchmark-app implementation queue is complete. Goal4540 later supersedes the Triangle future-design classification by explicitly accepting the non-graph stream device-output continuation contract, so the current queue has empty runtime, claim/evidence, and current design-blocker queues; nine apps are closed current targets; and Barnes-Hut is the only remaining future design target. The consensus does not authorize release, public speedup, broad RT-core, paper-reproduction, automatic partner-selection, or app-specific native-engine claims.",
   "consensus_verdict": "approve_with_caveats",
   "date": "2026-06-17",
   "failed_checks": [],
@@ -69,6 +70,7 @@
     "claim_or_evidence_queue": [],
     "closed_current_targets": [
       "rt_dbscan",
+      "triangle_counting",
       "rtnn",
       "spatial_rayjoin",
       "hausdorff_xhd",
@@ -80,8 +82,7 @@
     "design_blocker_queue": [],
     "design_targets_do_not_block_runtime_queue": true,
     "future_design_target_queue": [
-      "barnes_hut",
-      "triangle_counting"
+      "barnes_hut"
     ],
     "future_design_targets_do_not_block_runtime_queue": true,
     "next_runtime_build_target": null,
