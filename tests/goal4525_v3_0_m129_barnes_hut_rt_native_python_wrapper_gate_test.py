@@ -25,7 +25,7 @@ class Goal4525V30M129BarnesHutRtNativePythonWrapperGateTest(unittest.TestCase):
         cls.packet = cls.module.build_packet(ROOT)
         cls.checked_in = json.loads(PACKET.read_text(encoding="utf-8"))
 
-    def test_wrapper_surface_is_exported_but_native_symbols_remain_missing(self) -> None:
+    def test_wrapper_surface_is_exported_but_native_execution_remains_blocked(self) -> None:
         packet = self.packet
         gate = packet["implementation_gate"]
 
@@ -34,11 +34,14 @@ class Goal4525V30M129BarnesHutRtNativePythonWrapperGateTest(unittest.TestCase):
             packet["version"],
         )
         self.assertTrue(gate["python_wrapper_ready"])
+        self.assertFalse(gate["native_execution_ready"])
         self.assertFalse(gate["native_abi_symbols_ready"])
         self.assertFalse(gate["optix_traversal_proof_ready"])
-        self.assertEqual(
-            rt.AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_REQUIRED_SYMBOLS,
-            tuple(packet["native_audit"]["missing_native_symbols"]),
+        self.assertIn(gate["status"], {"blocked_missing_native_symbols", "blocked_fail_closed_native_scaffold"})
+        self.assertTrue(
+            set(packet["native_audit"]["missing_native_symbols"]).issubset(
+                set(rt.AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_REQUIRED_SYMBOLS)
+            )
         )
         self.assertTrue(hasattr(rt, "prepare_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_optix"))
         self.assertTrue(hasattr(rt, "PreparedOptixAggregateTreeFusedWeightedVectorSum2D"))

@@ -6,7 +6,7 @@
     "rt_core_speedup_claim_authorized": false,
     "runtime_executed": false
   },
-  "conclusion": "M129 removes the Python-wrapper part of the Barnes-Hut RT-native blocker: RTDL now exposes an app-agnostic OptiX prepared-handle wrapper for fused aggregate-tree weighted-vector outputs. The native C++/OptiX prepare/run/destroy symbols are still absent, so execution and RT-core wording remain blocked until those symbols launch an OptiX pipeline with optixTrace and pass equivalence/timing gates.",
+  "conclusion": "M129 removes the Python-wrapper part of the Barnes-Hut RT-native blocker: RTDL now exposes an app-agnostic OptiX prepared-handle wrapper for fused aggregate-tree weighted-vector outputs. Native execution and RT-core wording remain blocked until the C++/OptiX path launches an OptiX pipeline with optixTrace and passes equivalence/timing gates.",
   "contract": {
     "contract_key": "generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1",
     "primitive": "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE",
@@ -21,19 +21,17 @@
   "implementation_gate": {
     "current_route_changed": false,
     "equivalence_oracle_ready": false,
+    "native_abi_symbols_exported": true,
     "native_abi_symbols_ready": false,
+    "native_execution_ready": false,
     "optix_traversal_proof_ready": false,
     "python_wrapper_ready": true,
-    "status": "blocked_missing_native_symbols",
+    "status": "blocked_fail_closed_native_scaffold",
     "timing_split_ready": false
   },
   "native_audit": {
-    "missing_native_symbols": [
-      "rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d",
-      "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d",
-      "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d"
-    ],
-    "native_abi_symbols_ready": false,
+    "missing_native_symbols": [],
+    "native_abi_symbols_exported": true,
     "native_paths": [
       "src/native/optix/rtdl_optix_api.cpp",
       "src/native/optix/rtdl_optix_workloads.cpp",
@@ -41,15 +39,15 @@
     ],
     "native_symbol_checks": {
       "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d": {
-        "native_present_anywhere": false,
+        "native_present_anywhere": true,
         "python_constant_or_lookup_present": true
       },
       "rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d": {
-        "native_present_anywhere": false,
+        "native_present_anywhere": true,
         "python_constant_or_lookup_present": true
       },
       "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d": {
-        "native_present_anywhere": false,
+        "native_present_anywhere": true,
         "python_constant_or_lookup_present": true
       }
     }
@@ -60,13 +58,14 @@
       "Goal4517",
       "Goal4518",
       "Goal4523",
-      "Goal4525"
+      "Goal4525",
+      "Goal4526"
     ],
     "barnes_hut_priority": 1,
-    "barnes_hut_remaining_gap": "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE has a generic contract and Python wrapper surface, but native prepare/run/destroy symbols, OptiX traversal proof, equivalence oracle, and timing split are still missing",
+    "barnes_hut_remaining_gap": "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE has a generic contract, Python wrapper surface, and fail-closed native ABI scaffold, but real optixLaunch/optixTrace traversal, equivalence oracle, and timing split are still missing",
     "barnes_hut_work_class": "runtime_blocker"
   },
-  "status": "python_wrapper_ready_native_symbols_missing",
+  "status": "python_wrapper_ready_native_execution_blocked",
   "version": "rtdl.v3_0.barnes_hut_rt_native_python_wrapper_gate.goal4525.v1",
   "wrapper_audit": {
     "export_checks": {

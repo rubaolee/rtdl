@@ -312,6 +312,11 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   `AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE` output columns. The
   native C++/OptiX prepare/run/destroy symbols and optixTrace traversal proof
   are still absent, so execution and RT-core speedup wording remain blocked.
+- Goal4526 removes the missing-symbol cliff by adding the native
+  prepare/run/destroy ABI and matching prelude output struct, but the symbols
+  intentionally fail closed until a real optixLaunch/optixTrace traversal,
+  equivalence oracle, and timing split exist. This is a build-surface step, not
+  Barnes-Hut RT-core acceleration evidence.
 - Current expanded-membership lowering evidence routes Barnes-Hut
   aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
   near-zone candidate rows. The engine still only sees points, boxes, IDs, and

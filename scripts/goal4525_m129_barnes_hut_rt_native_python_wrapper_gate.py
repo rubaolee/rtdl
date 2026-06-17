@@ -60,7 +60,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     return {
         "version": PACKET_VERSION,
         "goal": "Goal4525 / V3 M129",
-        "status": "python_wrapper_ready_native_symbols_missing",
+        "status": "python_wrapper_ready_native_execution_blocked",
         "date": "2026-06-17",
         "contract": {
             "contract_key": contract["contract"],
@@ -78,12 +78,18 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "native_paths": tuple(native_sources),
             "native_symbol_checks": native_symbol_checks,
             "missing_native_symbols": missing_native_symbols,
-            "native_abi_symbols_ready": not missing_native_symbols,
+            "native_abi_symbols_exported": not missing_native_symbols,
         },
         "implementation_gate": {
-            "status": "blocked_missing_native_symbols",
+            "status": (
+                "blocked_missing_native_symbols"
+                if missing_native_symbols
+                else "blocked_fail_closed_native_scaffold"
+            ),
             "python_wrapper_ready": all(wrapper_checks.values()) and all(export_checks.values()),
-            "native_abi_symbols_ready": not missing_native_symbols,
+            "native_abi_symbols_exported": not missing_native_symbols,
+            "native_abi_symbols_ready": False,
+            "native_execution_ready": False,
             "optix_traversal_proof_ready": False,
             "equivalence_oracle_ready": False,
             "timing_split_ready": False,
@@ -105,10 +111,10 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "conclusion": (
             "M129 removes the Python-wrapper part of the Barnes-Hut RT-native "
             "blocker: RTDL now exposes an app-agnostic OptiX prepared-handle "
-            "wrapper for fused aggregate-tree weighted-vector outputs. The native "
-            "C++/OptiX prepare/run/destroy symbols are still absent, so execution "
-            "and RT-core wording remain blocked until those symbols launch an "
-            "OptiX pipeline with optixTrace and pass equivalence/timing gates."
+            "wrapper for fused aggregate-tree weighted-vector outputs. Native "
+            "execution and RT-core wording remain blocked until the C++/OptiX "
+            "path launches an OptiX pipeline with optixTrace and passes "
+            "equivalence/timing gates."
         ),
     }
 
@@ -125,7 +131,8 @@ def write_report(packet: dict[str, Any], path: Path) -> None:
         "## Gate",
         "",
         f"- Python wrapper ready: `{gate['python_wrapper_ready']}`",
-        f"- Native ABI symbols ready: `{gate['native_abi_symbols_ready']}`",
+        f"- Native ABI symbols exported: `{gate['native_abi_symbols_exported']}`",
+        f"- Native execution ready: `{gate['native_execution_ready']}`",
         f"- OptiX traversal proof ready: `{gate['optix_traversal_proof_ready']}`",
         f"- Equivalence oracle ready: `{gate['equivalence_oracle_ready']}`",
         f"- Timing split ready: `{gate['timing_split_ready']}`",

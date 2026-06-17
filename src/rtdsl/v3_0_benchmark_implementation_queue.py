@@ -113,16 +113,16 @@ _ROWS: tuple[V3BenchmarkImplementationQueueRow, ...] = (
         ),
         remaining_gap=(
             "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE has a generic "
-            "contract and Python wrapper surface, but native prepare/run/destroy "
-            "symbols, OptiX traversal proof, equivalence oracle, and timing split "
-            "are still missing"
+            "contract, Python wrapper surface, and fail-closed native ABI scaffold, "
+            "but real optixLaunch/optixTrace traversal, equivalence oracle, and "
+            "timing split are still missing"
         ),
         next_build_target=(
-            "implement app-agnostic aggregate-tree fused weighted-vector RT-native "
-            "C++/OptiX ABI, then validate optixLaunch/"
-            "optixTrace traversal against CPU/Numba force-summary references"
+            "replace the fail-closed scaffold with app-agnostic aggregate-tree "
+            "fused weighted-vector C++/OptiX traversal, then validate optixLaunch/"
+            "optixTrace against CPU/Numba force-summary references"
         ),
-        evidence_refs=("Goal4497", "Goal4517", "Goal4518", "Goal4523", "Goal4525"),
+        evidence_refs=("Goal4497", "Goal4517", "Goal4518", "Goal4523", "Goal4525", "Goal4526"),
         pod_needed_next=True,
     ),
     V3BenchmarkImplementationQueueRow(

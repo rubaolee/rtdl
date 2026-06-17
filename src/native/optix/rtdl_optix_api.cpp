@@ -4190,6 +4190,83 @@ extern "C" void rtdl_optix_destroy_aggregate_frontier_device_columns_2d(void* pr
     delete reinterpret_cast<AggregateFrontierDeviceColumnsPrepared2D*>(prepared);
 }
 
+extern "C" int rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d(
+        uint64_t target_ids_device_ptr,
+        uint64_t target_x_device_ptr,
+        uint64_t target_y_device_ptr,
+        uint64_t target_weight_device_ptr,
+        size_t target_count,
+        const RtdlAggregateFrontierNode2D* nodes, size_t node_count,
+        const uint64_t* child_offsets, const int64_t* child_ids,
+        const uint64_t* member_offsets, const int64_t* member_ids,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("aggregate-tree fused vector-sum prepared_out must not be null");
+        *prepared_out = nullptr;
+        if (target_count != 0 && (
+                    target_ids_device_ptr == 0
+                    || target_x_device_ptr == 0
+                    || target_y_device_ptr == 0
+                    || target_weight_device_ptr == 0))
+            throw std::runtime_error("aggregate-tree fused vector-sum target device pointers must be nonzero when target_count is nonzero");
+        if (!nodes && node_count != 0)
+            throw std::runtime_error("aggregate-tree fused vector-sum nodes must not be null when node_count is nonzero");
+        if (node_count != 0 && (!child_offsets || !member_offsets))
+            throw std::runtime_error("aggregate-tree fused vector-sum CSR offsets must not be null when node_count is nonzero");
+        if (node_count != 0 && child_offsets && child_offsets[node_count] != 0 && !child_ids)
+            throw std::runtime_error("aggregate-tree fused vector-sum child_ids must not be null when child CSR is non-empty");
+        if (node_count != 0 && member_offsets && member_offsets[node_count] != 0 && !member_ids)
+            throw std::runtime_error("aggregate-tree fused vector-sum member_ids must not be null when member CSR is non-empty");
+        throw std::runtime_error(
+            "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE native OptiX "
+            "traversal is not implemented yet; the ABI is exported fail-closed "
+            "until an optixLaunch/optixTrace implementation and equivalence gate land");
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d(
+        void* prepared,
+        uint64_t source_ids_device_ptr,
+        uint64_t source_x_device_ptr,
+        uint64_t source_y_device_ptr,
+        uint64_t source_weight_device_ptr,
+        size_t source_count,
+        double theta,
+        double softening,
+        RtdlAggregateTreeFusedWeightedVectorSum2DOutput* columns_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!columns_out)
+            throw std::runtime_error("aggregate-tree fused vector-sum columns_out must not be null");
+        *columns_out = {};
+        if (!prepared)
+            throw std::runtime_error("aggregate-tree fused vector-sum prepared handle must not be null");
+        if (source_count != 0 && (
+                    source_ids_device_ptr == 0
+                    || source_x_device_ptr == 0
+                    || source_y_device_ptr == 0
+                    || source_weight_device_ptr == 0))
+            throw std::runtime_error("aggregate-tree fused vector-sum source device pointers must be nonzero when source_count is nonzero");
+        if (theta <= 0.0 || !std::isfinite(theta))
+            throw std::runtime_error("aggregate-tree fused vector-sum theta must be positive and finite");
+        if (softening < 0.0 || !std::isfinite(softening))
+            throw std::runtime_error("aggregate-tree fused vector-sum softening must be non-negative and finite");
+        throw std::runtime_error(
+            "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE native OptiX "
+            "run path is not implemented yet; the ABI is exported fail-closed "
+            "until optixTrace traversal, device output columns, and timing split are validated");
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d(void* prepared)
+{
+    (void)prepared;
+}
+
 struct CollectKStageProfile {
     using Clock = std::chrono::steady_clock;
 

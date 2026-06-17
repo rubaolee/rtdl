@@ -1,0 +1,75 @@
+{
+  "claim_boundary": {
+    "automatic_partner_selection_authorized": false,
+    "current_route_changed": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_executed": false
+  },
+  "conclusion": "M130 removes the missing-symbol cliff for the Barnes-Hut RT-native path by adding the app-agnostic native prepare/run/destroy ABI and matching Python bindings. The symbols intentionally fail closed: native execution, OptiX traversal proof, equivalence, timing split, and RT-core wording remain blocked until the scaffold is replaced with a real optixLaunch/optixTrace implementation.",
+  "contract": {
+    "contract_key": "generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1",
+    "primitive": "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE",
+    "required_native_symbols": [
+      "rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d",
+      "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d",
+      "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d"
+    ]
+  },
+  "date": "2026-06-17",
+  "goal": "Goal4526 / V3 M130",
+  "implementation_gate": {
+    "equivalence_oracle_ready": false,
+    "native_abi_symbols_exported": true,
+    "native_execution_ready": false,
+    "optix_traversal_proof_ready": false,
+    "python_wrapper_ready": true,
+    "status": "blocked_fail_closed_native_scaffold",
+    "timing_split_ready": false
+  },
+  "queue_alignment": {
+    "barnes_hut_evidence_refs": [
+      "Goal4497",
+      "Goal4517",
+      "Goal4518",
+      "Goal4523",
+      "Goal4525",
+      "Goal4526"
+    ],
+    "barnes_hut_next_build_target": "replace the fail-closed scaffold with app-agnostic aggregate-tree fused weighted-vector C++/OptiX traversal, then validate optixLaunch/optixTrace against CPU/Numba force-summary references",
+    "barnes_hut_priority": 1,
+    "barnes_hut_work_class": "runtime_blocker"
+  },
+  "source_audit": {
+    "all_symbols_declared_defined_and_wrapped": true,
+    "api": "src/native/optix/rtdl_optix_api.cpp",
+    "export_checks": {
+      "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d": {
+        "declared_in_prelude": true,
+        "defined_in_api": true,
+        "python_wrapper_looks_up_symbol": true
+      },
+      "rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d": {
+        "declared_in_prelude": true,
+        "defined_in_api": true,
+        "python_wrapper_looks_up_symbol": true
+      },
+      "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d": {
+        "declared_in_prelude": true,
+        "defined_in_api": true,
+        "python_wrapper_looks_up_symbol": true
+      }
+    },
+    "fail_closed_checks": {
+      "ABI is exported fail-closed": true,
+      "not implemented yet": true,
+      "optixLaunch/optixTrace implementation": true
+    },
+    "fail_closed_ready": true,
+    "output_struct_declared": true,
+    "prelude": "src/native/optix/rtdl_optix_prelude.h",
+    "runtime": "src/rtdsl/optix_runtime.py"
+  },
+  "status": "native_abi_symbols_exported_fail_closed",
+  "version": "rtdl.v3_0.barnes_hut_rt_native_fail_closed_abi.goal4526.v1"
+}

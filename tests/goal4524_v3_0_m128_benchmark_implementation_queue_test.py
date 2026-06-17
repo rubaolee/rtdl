@@ -43,7 +43,7 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
 
     def test_runtime_blockers_are_separate_from_claim_evidence_blockers(self) -> None:
         self.assertEqual("runtime_blocker", self.rows["barnes_hut"]["work_class"])
-        self.assertIn("native prepare/run/destroy", self.rows["barnes_hut"]["remaining_gap"])
+        self.assertIn("fail-closed native ABI scaffold", self.rows["barnes_hut"]["remaining_gap"])
         self.assertEqual("runtime_blocker", self.rows["rt_dbscan"]["work_class"])
         self.assertIn("prepared graph capture", self.rows["rt_dbscan"]["remaining_gap"])
         self.assertEqual("runtime_blocker", self.rows["triangle_counting"]["work_class"])

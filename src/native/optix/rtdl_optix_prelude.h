@@ -348,6 +348,24 @@ struct RtdlAggregateFrontierDeviceColumns2D {
     uint64_t overflow_device_ptr;
 };
 
+struct RtdlAggregateTreeFusedWeightedVectorSum2DOutput {
+    uint64_t source_ids_device_ptr;
+    uint64_t vector_x_device_ptr;
+    uint64_t vector_y_device_ptr;
+    uint64_t visited_counts_device_ptr;
+    uint64_t aggregate_counts_device_ptr;
+    uint64_t exact_counts_device_ptr;
+    uint64_t source_count;
+    int32_t diagnostic_status_code;
+    uint32_t overflow;
+    int32_t device_ordinal;
+    void* owner_handle;
+    double bvh_build_seconds;
+    double traversal_seconds;
+    double continuation_seconds;
+    double copy_seconds;
+};
+
 struct RtdlNativeClosedShapeBoundaryEventDeviceColumns {
     uint64_t point_ids_device_ptr;
     uint64_t shape_ids_device_ptr;
@@ -1707,6 +1725,29 @@ int  rtdl_optix_run_aggregate_frontier_device_columns_2d(
          RtdlAggregateFrontierDeviceColumns2D* columns_out,
          char* error_out, size_t error_size);
 void rtdl_optix_destroy_aggregate_frontier_device_columns_2d(void* prepared);
+int  rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d(
+         uint64_t target_ids_device_ptr,
+         uint64_t target_x_device_ptr,
+         uint64_t target_y_device_ptr,
+         uint64_t target_weight_device_ptr,
+         size_t target_count,
+         const RtdlAggregateFrontierNode2D* nodes, size_t node_count,
+         const uint64_t* child_offsets, const int64_t* child_ids,
+         const uint64_t* member_offsets, const int64_t* member_ids,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d(
+         void* prepared,
+         uint64_t source_ids_device_ptr,
+         uint64_t source_x_device_ptr,
+         uint64_t source_y_device_ptr,
+         uint64_t source_weight_device_ptr,
+         size_t source_count,
+         double theta,
+         double softening,
+         RtdlAggregateTreeFusedWeightedVectorSum2DOutput* columns_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d(void* prepared);
 int  rtdl_optix_collect_k_bounded_i64_device(
          uint64_t candidate_rows_device_ptr, size_t candidate_count,
          size_t row_width, uint64_t rows_out_device_ptr, size_t row_capacity,
