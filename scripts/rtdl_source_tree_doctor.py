@@ -70,6 +70,23 @@ def _run_smoke() -> dict[str, Any]:
     return _check("hello-world smoke", "fail", message, required=True)
 
 
+def _v3_current_test_matrix_check() -> dict[str, Any]:
+    try:
+        from scripts import run_test_matrix
+
+        modules = run_test_matrix.group_modules("v3_current")
+    except Exception as exc:  # pragma: no cover - defensive import check
+        return _check("V3 current test matrix", "fail", f"could not load v3_current group: {exc}")
+
+    if not modules:
+        return _check("V3 current test matrix", "fail", "v3_current group has no modules")
+    return _check(
+        "V3 current test matrix",
+        "pass",
+        f"scripts/run_test_matrix.py --group v3_current ({len(modules)} modules)",
+    )
+
+
 def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
     if str(SRC) not in sys.path:
         sys.path.insert(0, str(SRC))
@@ -98,6 +115,8 @@ def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
     }
     for name, path in required_paths.items():
         checks.append(_check(name, "pass" if path.exists() else "fail", path.relative_to(ROOT).as_posix()))
+
+    checks.append(_v3_current_test_matrix_check())
 
     editable_metadata = ROOT / "pyproject.toml"
     checks.append(

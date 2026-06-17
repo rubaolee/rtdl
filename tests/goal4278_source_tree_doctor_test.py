@@ -31,6 +31,7 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
         self.assertIn("RTDL Source Tree Doctor", result.stdout)
         self.assertIn("version: v2.14", result.stdout)
         self.assertIn("[PASS] version marker", result.stdout)
+        self.assertIn("[PASS] V3 current test matrix", result.stdout)
         self.assertIn("optional module cupy", result.stdout)
         self.assertIn("optional OptiX library", result.stdout)
         self.assertIn("Optional warnings only affect native/partner paths", result.stdout)
@@ -54,6 +55,7 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
             "current examples",
             "v2.14 release package",
             "V3 app-author strategy",
+            "V3 current test matrix",
             "module rtdsl",
             "module numpy",
         ):
@@ -82,6 +84,7 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
         )
 
         self.assertIn("scripts/rtdl_source_tree_doctor.py", docs)
+        self.assertIn("scripts/run_test_matrix.py --group v3_current", docs)
         self.assertIn("Source-Tree Doctor", docs)
         self.assertIn("not a benchmark", docs)
         self.assertNotIn("examples/v2_0", docs)

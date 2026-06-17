@@ -4,7 +4,7 @@ Status: `source_tree_doctor_v3_refresh_checked`
 
 ## Conclusion
 
-Goal4545 refreshes the source-tree doctor to the current v2.14/V3 development surface. The required layout checks now expect VERSION `v2.14`, the v2.14 release package, and the V3 app-author strategy doc. This is an environment sanity gate only, not a benchmark or claim authorization.
+Goal4545 refreshes the source-tree doctor to the current v2.14/V3 development surface. The required layout checks now expect VERSION `v2.14`, the v2.14 release package, the V3 app-author strategy doc, and the current V3 test-matrix entrypoint. This is an environment sanity gate only, not a benchmark or claim authorization.
 
 ## Checks
 
@@ -14,6 +14,7 @@ Goal4545 refreshes the source-tree doctor to the current v2.14/V3 development su
 | `version_marker_is_v2_14` | `True` |
 | `v2_14_release_package_required` | `True` |
 | `v3_strategy_doc_required` | `True` |
+| `v3_current_test_matrix_required` | `True` |
 | `doctor_doc_mentions_v3` | `True` |
 | `required_failures_empty` | `True` |
 

@@ -4,7 +4,8 @@ Status: current v2.14 source-tree setup check for V3 development.
 
 Use the doctor before native backend or partner experiments. It checks the
 repository layout, current version marker, V3 app-author guidance, core
-imports, optional partner modules, and optional native library hints.
+imports, the current V3 test-matrix entrypoint, optional partner modules, and
+optional native library hints.
 
 ## Run It
 
@@ -44,6 +45,12 @@ Portable smoke run:
 PYTHONPATH=src:. python scripts/rtdl_source_tree_doctor.py --run-smoke
 ```
 
+Current V3 closure suite:
+
+```bash
+PYTHONPATH=src:. python scripts/run_test_matrix.py --group v3_current
+```
+
 ## How To Read It
 
 - `PASS` on required checks means the source tree is usable.
@@ -51,6 +58,9 @@ PYTHONPATH=src:. python scripts/rtdl_source_tree_doctor.py --run-smoke
   may not run in this environment.
 - `PASS` on optional editable metadata means this checkout has local editable
   install metadata.
+- `PASS` on `V3 current test matrix` means the current V3 closure-suite runner
+  is registered. The doctor does not run that suite unless you run the command
+  above.
 - Missing CuPy affects CUDA-array partner examples.
 - Missing Numba affects Python-source custom CUDA-style continuation examples.
 - Missing `RTDL_OPTIX_LIBRARY` affects OptiX examples, not portable CPU
