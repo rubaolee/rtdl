@@ -13,6 +13,9 @@ from .v3_0_no_hidden_copy_contract import CudaTransferCounter
 from .v3_0_no_hidden_copy_contract import V3_NO_HIDDEN_COPY_DEFAULT_ALLOWED_NON_COLUMN_HOST_TO_DEVICE_BYTES
 from .v3_0_no_hidden_copy_contract import classify_no_hidden_copy_transfer_snapshot
 from .v3_0_no_hidden_copy_contract import summarize_no_hidden_copy_classifications
+from .v3_0_prepared_graph_chunk_executor import combine_v3_prepared_graph_chunk_signatures
+from .v3_0_prepared_graph_chunk_executor import plan_v3_prepared_graph_chunk_executor
+from .v3_0_prepared_graph_chunk_executor import validate_v3_prepared_graph_chunk_executor_plan
 
 
 V3_M19_RANKED_SUMMARY_BRIDGE_VERSION = "rtdl.v3_0.ranked_summary_bridge.m19"
@@ -401,32 +404,41 @@ def plan_v3_m19_ranked_summary_bridge_chunks(
     if not continuation_required:
         raise GraphValidationError("M19 chunk planning is only for partner continuation")
 
+    generic_plan = plan_v3_prepared_graph_chunk_executor(
+        graph_id=V3_M19_GRAPH_ID,
+        contract_key=V3_M19_CONTRACT_KEY,
+        operation="fixed_radius_ranked_summary_graph_partials_same_stream_partner",
+        item_count=normalized_query_count,
+        max_item_count=normalized_max_query_count,
+        axis_name="query",
+        requires_partner_continuation=True,
+        continuation_kind="same_stream_partner_device_reduction",
+    )
     chunks = []
-    query_offset = 0
-    while query_offset < normalized_query_count:
-        chunk_query_count = min(
-            normalized_max_query_count,
-            normalized_query_count - query_offset,
-        )
+    for chunk in generic_plan["chunks"]:
         chunks.append(
             {
-                "chunk_index": len(chunks),
-                "query_offset": query_offset,
-                "query_start_inclusive": query_offset,
-                "query_end_exclusive": query_offset + chunk_query_count,
-                "query_count": chunk_query_count,
-                "prepared_scene_reused": True,
-                "prepared_query_points_per_chunk": True,
-                "cuda_graph_per_chunk": True,
-                "same_stream_partner_device_reduction_per_chunk": True,
-                "host_materialization_before_partner": False,
+                "chunk_index": int(chunk["chunk_index"]),
+                "query_offset": int(chunk["item_offset"]),
+                "query_start_inclusive": int(chunk["item_start_inclusive"]),
+                "query_end_exclusive": int(chunk["item_end_exclusive"]),
+                "query_count": int(chunk["item_count"]),
+                "prepared_scene_reused": bool(chunk["prepared_scene_reused"]),
+                "prepared_query_points_per_chunk": bool(chunk["prepared_item_handle_per_chunk"]),
+                "cuda_graph_per_chunk": bool(chunk["prepared_graph_per_chunk"]),
+                "same_stream_partner_device_reduction_per_chunk": bool(
+                    chunk["partner_continuation_per_chunk"]
+                ),
+                "host_materialization_before_partner": bool(
+                    chunk["host_materialization_before_partner"]
+                ),
             }
         )
-        query_offset += chunk_query_count
 
     single_graph_cap_exceeded = normalized_query_count > normalized_max_query_count
     return {
         "version": V3_M19_CHUNK_PLAN_VERSION,
+        "prepared_graph_chunk_executor_plan": generic_plan,
         "graph_id": V3_M19_GRAPH_ID,
         "contract_key": V3_M19_CONTRACT_KEY,
         "operation": "fixed_radius_ranked_summary_graph_partials_same_stream_partner",
@@ -683,19 +695,10 @@ def _combine_chunked_partner_rows(
 def _combine_chunk_signatures(
     chunk_signatures: tuple[tuple[tuple[int, int, int, int, int], ...], ...],
 ) -> tuple[tuple[int, int, int, int, int], ...]:
-    if not chunk_signatures:
-        raise GraphValidationError("M19 chunked signature requires at least one chunk")
-    request_count = len(chunk_signatures[0])
-    totals = [[0, 0, 0, 0, 0] for _ in range(request_count)]
-    for signature in chunk_signatures:
-        if len(signature) != request_count:
-            raise GraphValidationError("M19 chunked signatures have inconsistent request counts")
-        for request_index, row in enumerate(signature):
-            if len(row) != 5:
-                raise GraphValidationError("M19 chunked signature row must have five fields")
-            for value_index, value in enumerate(row):
-                totals[request_index][value_index] += int(value)
-    return tuple(tuple(row) for row in totals)
+    combined = combine_v3_prepared_graph_chunk_signatures(chunk_signatures)
+    if any(len(row) != 5 for row in combined):
+        raise GraphValidationError("M19 chunked signature row must have five fields")
+    return combined  # type: ignore[return-value]
 
 
 def _m19_min_named_column_bytes(metadata: Mapping[str, object]) -> int:
@@ -821,6 +824,13 @@ def validate_v3_m19_ranked_summary_bridge_chunk_plan(
     query_count = int(plan.get("query_count", 0) or 0)
     max_query_count = int(plan.get("max_query_count", 0) or 0)
     chunks = tuple(plan.get("chunks", ()))
+    generic_plan = plan.get("prepared_graph_chunk_executor_plan")
+    if isinstance(generic_plan, Mapping):
+        generic_validation = validate_v3_prepared_graph_chunk_executor_plan(generic_plan)
+        if int(generic_validation["item_count"]) != query_count:
+            raise GraphValidationError("M19 chunk plan generic item_count mismatch")
+        if int(generic_validation["chunk_count"]) != len(chunks):
+            raise GraphValidationError("M19 chunk plan generic chunk_count mismatch")
     if query_count <= 0:
         raise GraphValidationError("M19 chunk plan query_count must be positive")
     if max_query_count <= 0:

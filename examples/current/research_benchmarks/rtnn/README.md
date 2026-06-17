@@ -33,6 +33,7 @@ PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benc
 RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_raw --backend optix --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
 RTDL_EMBREE_LIBRARY=build/librtdl_embree.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_raw --backend embree --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
 PYTHONPATH=src:. python scripts/goal4508_m112_rtnn_clean_target_closeout.py
+PYTHONPATH=src:. python scripts/goal4509_m113_prepared_graph_chunk_executor.py
 ```
 
 ## GPU Evidence
@@ -155,6 +156,11 @@ Goal4507 CuPy/Numba chunked partner matrix into one reader-facing packet. The
 internal V3 RTNN target is closed by that packet, but exact paper reproduction,
 same-output author comparison, public RT-core speedup, whole-app speedup, and
 automatic partner-selection claims remain blocked.
+Goal4509 then lifts the M19 chunking shape into
+`plan_v3_prepared_graph_chunk_executor`. The RTNN/M19 plan now embeds that
+generic executor plan while preserving its historical query-field payload, so
+future apps can reuse the same prepared-scene, per-chunk query/graph, explicit
+partner-continuation contract without adding RTNN-specific native logic.
 
 The important boundary is that RTDL exact aggregate and app graph-bridge rows
 are RTDL-internal same-contract evidence; the official RTNN rows are diagnostic

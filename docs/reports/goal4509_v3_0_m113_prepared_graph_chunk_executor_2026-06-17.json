@@ -1,0 +1,145 @@
+{
+  "claim_boundary": {
+    "app_agnostic_contract_ready": true,
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_backend_selection_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "m19_reuses_generic_plan": true,
+    "public_speedup_claim_authorized": false,
+    "runtime_executed": false
+  },
+  "conclusion": "M113 lifts the M19 chunked partner-continuation shape into an app-agnostic prepared graph chunk executor contract. The generic planner validates contiguous chunks, prepared scene reuse, per-chunk item handles, per-chunk prepared graphs, explicit partner continuation, and blocked host materialization before the partner. M19 now embeds that generic plan while preserving its legacy query-field payload.",
+  "executor_status": "app_agnostic_prepared_graph_chunk_executor_contract",
+  "executor_version": "rtdl.v3_0.prepared_graph_chunk_executor.m113.v1",
+  "goal": "Goal4509 / V3 M113",
+  "large_chunk_plan": {
+    "chunk_count": 16,
+    "first_chunk": {
+      "chunk_index": 0,
+      "continuation_kind": "same_stream_partner_device_reduction",
+      "host_materialization_before_partner": false,
+      "item_count": 65536,
+      "item_end_exclusive": 65536,
+      "item_offset": 0,
+      "item_start_inclusive": 0,
+      "partner_continuation_per_chunk": true,
+      "prepared_graph_per_chunk": true,
+      "prepared_item_handle_per_chunk": true,
+      "prepared_scene_reused": true
+    },
+    "item_count": 1048576,
+    "last_chunk": {
+      "chunk_index": 15,
+      "continuation_kind": "same_stream_partner_device_reduction",
+      "host_materialization_before_partner": false,
+      "item_count": 65536,
+      "item_end_exclusive": 1048576,
+      "item_offset": 983040,
+      "item_start_inclusive": 983040,
+      "partner_continuation_per_chunk": true,
+      "prepared_graph_per_chunk": true,
+      "prepared_item_handle_per_chunk": true,
+      "prepared_scene_reused": true
+    },
+    "max_item_count": 65536,
+    "plan_status": "chunked_partner_continuation_required",
+    "single_graph_cap_exceeded": true,
+    "status": "app_agnostic_prepared_graph_chunk_executor_contract",
+    "validation": {
+      "chunk_count": 16,
+      "item_count": 1048576,
+      "public_claim_authorized": false,
+      "runtime_executed": false,
+      "single_graph_cap_exceeded": true,
+      "status": "accept",
+      "version": "rtdl.v3_0.prepared_graph_chunk_executor.m113.v1"
+    },
+    "version": "rtdl.v3_0.prepared_graph_chunk_executor.m113.v1"
+  },
+  "m19_reuse": {
+    "alignment": {
+      "chunk_count_matches": true,
+      "outer_plan_keeps_legacy_query_fields": true,
+      "query_count_equals_item_count": true
+    },
+    "m19_chunk_count": 16,
+    "m19_plan_version": "rtdl.v3_0.m19.ranked_summary_bridge_chunk_plan.v1",
+    "m19_validation": {
+      "chunk_count": 16,
+      "public_claim_authorized": false,
+      "query_count": 1048576,
+      "runtime_executed": false,
+      "single_graph_cap_exceeded": true,
+      "status": "accept",
+      "version": "rtdl.v3_0.m19.ranked_summary_bridge_chunk_plan.v1"
+    },
+    "nested_executor_chunk_count": 16,
+    "nested_executor_plan_version": "rtdl.v3_0.prepared_graph_chunk_executor.m113.v1",
+    "nested_executor_validation": {
+      "chunk_count": 16,
+      "item_count": 1048576,
+      "public_claim_authorized": false,
+      "runtime_executed": false,
+      "single_graph_cap_exceeded": true,
+      "status": "accept",
+      "version": "rtdl.v3_0.prepared_graph_chunk_executor.m113.v1"
+    }
+  },
+  "signature_combiner_probe": {
+    "combined_signature": [
+      [
+        131072,
+        21,
+        41,
+        61,
+        81
+      ]
+    ],
+    "input_chunk_count": 2
+  },
+  "single_graph_plan": {
+    "chunk_count": 1,
+    "first_chunk": {
+      "chunk_index": 0,
+      "continuation_kind": "same_stream_partner_device_reduction",
+      "host_materialization_before_partner": false,
+      "item_count": 65536,
+      "item_end_exclusive": 65536,
+      "item_offset": 0,
+      "item_start_inclusive": 0,
+      "partner_continuation_per_chunk": true,
+      "prepared_graph_per_chunk": true,
+      "prepared_item_handle_per_chunk": true,
+      "prepared_scene_reused": true
+    },
+    "item_count": 65536,
+    "last_chunk": {
+      "chunk_index": 0,
+      "continuation_kind": "same_stream_partner_device_reduction",
+      "host_materialization_before_partner": false,
+      "item_count": 65536,
+      "item_end_exclusive": 65536,
+      "item_offset": 0,
+      "item_start_inclusive": 0,
+      "partner_continuation_per_chunk": true,
+      "prepared_graph_per_chunk": true,
+      "prepared_item_handle_per_chunk": true,
+      "prepared_scene_reused": true
+    },
+    "max_item_count": 65536,
+    "plan_status": "single_graph_partner_continuation",
+    "single_graph_cap_exceeded": false,
+    "status": "app_agnostic_prepared_graph_chunk_executor_contract",
+    "validation": {
+      "chunk_count": 1,
+      "item_count": 65536,
+      "public_claim_authorized": false,
+      "runtime_executed": false,
+      "single_graph_cap_exceeded": false,
+      "status": "accept",
+      "version": "rtdl.v3_0.prepared_graph_chunk_executor.m113.v1"
+    },
+    "version": "rtdl.v3_0.prepared_graph_chunk_executor.m113.v1"
+  },
+  "version": "rtdl.v3_0.prepared_graph_chunk_executor.goal4509.v1"
+}
