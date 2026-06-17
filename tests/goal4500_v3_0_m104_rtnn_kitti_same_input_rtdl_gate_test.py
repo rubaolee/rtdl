@@ -91,12 +91,12 @@ class Goal4500V30M104RtnnKittiSameInputRtdlGateTest(unittest.TestCase):
         self.assertIn("Goal4500 RTNN KITTI same-input RTDL gate", index)
         self.assertIn("same bounded KITTI CSV", readme)
         self.assertIn("run_live", script)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4500.v1", route["version"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4500.v1", adequacy["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4501.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4501.v1", adequacy["version"])
         self.assertIn("Goal4500", route["evidence_refs"])
         self.assertIn("Goal4500", adequacy["evidence_refs"])
-        self.assertIn("author RTNN", route["next_runtime_action"])
-        self.assertIn("author RTNN", adequacy["next_generic_runtime_action"])
+        self.assertIn("fused RTNN-style", route["next_runtime_action"])
+        self.assertIn("fused RTNN-style", adequacy["next_generic_runtime_action"])
 
 
 if __name__ == "__main__":

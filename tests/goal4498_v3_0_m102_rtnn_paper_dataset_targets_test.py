@@ -78,14 +78,14 @@ class Goal4498V30M102RtnnPaperDatasetTargetsTest(unittest.TestCase):
         self.assertIn("Goal4498 RTNN paper dataset targets", index)
         self.assertIn("rtnn_paper_dataset_targets()", readme)
         self.assertIn("AUTHOR_REPO_PROBE_COMMIT", script)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4500.v1", route["version"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4500.v1", adequacy["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4501.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4501.v1", adequacy["version"])
         self.assertIn("Goal4498", route["evidence_refs"])
         self.assertIn("Goal4498", adequacy["evidence_refs"])
-        self.assertIn("author RTNN", route["next_runtime_action"])
-        self.assertIn("author RTNN", adequacy["next_generic_runtime_action"])
-        self.assertTrue(route["pod_needed_next"])
-        self.assertTrue(adequacy["pod_needed_next"])
+        self.assertIn("fused RTNN-style", route["next_runtime_action"])
+        self.assertIn("fused RTNN-style", adequacy["next_generic_runtime_action"])
+        self.assertFalse(route["pod_needed_next"])
+        self.assertFalse(adequacy["pod_needed_next"])
 
 
 if __name__ == "__main__":

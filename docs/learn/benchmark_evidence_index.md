@@ -124,6 +124,7 @@ v2.14 evidence:
 - [Goal4498 RTNN paper dataset targets](../reports/goal4498_v3_0_m102_rtnn_paper_dataset_targets_2026-06-17.md)
 - [Goal4499 RTNN KITTI paper-family recipe](../reports/goal4499_v3_0_m103_rtnn_kitti_paper_family_recipe_2026-06-17.md)
 - [Goal4500 RTNN KITTI same-input RTDL gate](../reports/goal4500_v3_0_m104_rtnn_kitti_same_input_rtdl_gate_2026-06-17.md)
+- [Goal4501 RTNN author same-input comparison](../reports/goal4501_v3_0_m105_rtnn_author_same_input_comparison_2026-06-17.md)
 - [Goal4444 Triangle Numba direct-binary summary refresh](../reports/goal4444_v3_0_m48_triangle_numba_direct_binary_summary_2026-06-16.md)
 - [Goal4445 DBSCAN compact component signature](../reports/goal4445_v3_0_m49_dbscan_component_signature_2026-06-16.md)
 - [Goal4446 Robot Collision NumPy lowering](../reports/goal4446_v3_0_m50_robot_numpy_lowering_2026-06-16.md)

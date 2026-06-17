@@ -1,0 +1,56 @@
+{
+  "changed_count": 8,
+  "claim_boundary": {
+    "algorithm_changed": false,
+    "external_rtnn_source_patch_only": true,
+    "rtdl_source_changed": false
+  },
+  "cuda_arch_list": "890",
+  "cuda_sm": "89",
+  "operation": "patch-rtnn-cuda12",
+  "patches": [
+    {
+      "changed": true,
+      "kind": "missing_thrust_include",
+      "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/thrust_helper.cu"
+    },
+    {
+      "changed": true,
+      "kind": "missing_thrust_include",
+      "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/sort.cpp"
+    },
+    {
+      "changed": true,
+      "kind": "thrust_cuda_arch_namespace",
+      "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/func.h"
+    },
+    {
+      "changed": true,
+      "kind": "thrust_cuda_arch_namespace",
+      "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/search.cpp"
+    },
+    {
+      "changed": true,
+      "kind": "thrust_cuda_arch_namespace",
+      "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/sort.cpp"
+    },
+    {
+      "changed": true,
+      "kind": "thrust_cuda_arch_namespace",
+      "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/util.cpp"
+    },
+    {
+      "changed": true,
+      "kind": "nvrtc_intrinsic_spelling",
+      "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/geometry.cu"
+    },
+    {
+      "changed": true,
+      "kind": "cuda_arch_defaults",
+      "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/CMakeLists.txt",
+      "present": true
+    }
+  ],
+  "rtnn_root": "/workspace/external/rtnn_goal4501_sm89_clean",
+  "runner": "goal2348_rtnn_v2_2_external_runner"
+}

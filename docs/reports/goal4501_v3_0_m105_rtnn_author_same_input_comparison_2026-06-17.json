@@ -1,0 +1,395 @@
+{
+  "author_patch": {
+    "changed_count": 8,
+    "claim_boundary": {
+      "algorithm_changed": false,
+      "external_rtnn_source_patch_only": true,
+      "rtdl_source_changed": false
+    },
+    "cuda_arch_list": "890",
+    "cuda_sm": "89",
+    "operation": "patch-rtnn-cuda12",
+    "patches": [
+      {
+        "changed": true,
+        "kind": "missing_thrust_include",
+        "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/thrust_helper.cu"
+      },
+      {
+        "changed": true,
+        "kind": "missing_thrust_include",
+        "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/sort.cpp"
+      },
+      {
+        "changed": true,
+        "kind": "thrust_cuda_arch_namespace",
+        "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/func.h"
+      },
+      {
+        "changed": true,
+        "kind": "thrust_cuda_arch_namespace",
+        "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/search.cpp"
+      },
+      {
+        "changed": true,
+        "kind": "thrust_cuda_arch_namespace",
+        "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/sort.cpp"
+      },
+      {
+        "changed": true,
+        "kind": "thrust_cuda_arch_namespace",
+        "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/util.cpp"
+      },
+      {
+        "changed": true,
+        "kind": "nvrtc_intrinsic_spelling",
+        "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/optixNSearch/geometry.cu"
+      },
+      {
+        "changed": true,
+        "kind": "cuda_arch_defaults",
+        "path": "/workspace/external/rtnn_goal4501_sm89_clean/src/CMakeLists.txt",
+        "present": true
+      }
+    ],
+    "rtnn_root": "/workspace/external/rtnn_goal4501_sm89_clean",
+    "runner": "goal2348_rtnn_v2_2_external_runner"
+  },
+  "author_rtnn": {
+    "implementation": "author_cpp_cuda_optix",
+    "median_process_elapsed_sec": 2.049657426774502,
+    "median_result_copy_d2h_sec": 0.186949,
+    "median_search_compute_sec": 0.0102743,
+    "median_sort_partition_sec": 0.141818,
+    "median_total_search_sec": 0.34728,
+    "output_contract": "full_k_id_buffer_copied_to_host",
+    "repeat": 5,
+    "rows": [
+      {
+        "create_pipeline_sec": 0.361685,
+        "elapsed_sec": 2.045635387301445,
+        "path": "docs/reports/goal4501_author_rtnn_kitti_1m_r1_k50_sm89_sync_r1.json",
+        "result_copy_d2h_sec": 0.18801099999999998,
+        "returncode": 0,
+        "search_compute_sec": 0.0108353,
+        "sort_partition_sec": 0.141818,
+        "total_search_sec": 0.348782
+      },
+      {
+        "create_pipeline_sec": 0.399661,
+        "elapsed_sec": 2.0973344668745995,
+        "path": "docs/reports/goal4501_author_rtnn_kitti_1m_r1_k50_sm89_sync_r2.json",
+        "result_copy_d2h_sec": 0.186949,
+        "returncode": 0,
+        "search_compute_sec": 0.0108812,
+        "sort_partition_sec": 0.142124,
+        "total_search_sec": 0.348088
+      },
+      {
+        "create_pipeline_sec": 0.360029,
+        "elapsed_sec": 2.049657426774502,
+        "path": "docs/reports/goal4501_author_rtnn_kitti_1m_r1_k50_sm89_sync_r3.json",
+        "result_copy_d2h_sec": 0.187109,
+        "returncode": 0,
+        "search_compute_sec": 0.0102284,
+        "sort_partition_sec": 0.141964,
+        "total_search_sec": 0.34728
+      },
+      {
+        "create_pipeline_sec": 0.385909,
+        "elapsed_sec": 2.0782488361001015,
+        "path": "docs/reports/goal4501_author_rtnn_kitti_1m_r1_k50_sm89_sync_r4.json",
+        "result_copy_d2h_sec": 0.185288,
+        "returncode": 0,
+        "search_compute_sec": 0.0102326,
+        "sort_partition_sec": 0.141117,
+        "total_search_sec": 0.344588
+      },
+      {
+        "create_pipeline_sec": 0.34461,
+        "elapsed_sec": 2.033938355743885,
+        "path": "docs/reports/goal4501_author_rtnn_kitti_1m_r1_k50_sm89_sync_r5.json",
+        "result_copy_d2h_sec": 0.186244,
+        "returncode": 0,
+        "search_compute_sec": 0.0102743,
+        "sort_partition_sec": 0.141131,
+        "total_search_sec": 0.34565199999999996
+      }
+    ]
+  },
+  "claim_boundary": {
+    "author_outputs_comparable_checksum": false,
+    "author_patch_external_compatibility_only": true,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "paper_reproduction_wording_allowed": false,
+    "public_release_wording_authorized": false,
+    "rtdl_best_is_hot_prepared_aggregate": true,
+    "rtdl_best_materializes_full_neighbor_ids": false,
+    "same_input_author_rtdl_comparison": true,
+    "same_output_contract_author_vs_rtdl": false
+  },
+  "comparisons": {
+    "author_compute_over_rtdl_direct_graph_query": 25.055305515709343,
+    "author_process_over_rtdl_direct_cold_prepared_total": 2.2978416462503906,
+    "rtdl_direct_graph_over_embree_generic_query": 469.75787283274605,
+    "rtdl_direct_graph_over_m104_generic_query": 30.309991512280828,
+    "rtdl_direct_graph_query_over_author_total_search": 1.3490493204568677
+  },
+  "conclusion": "RTDL V3 current best makes the KITTI-1M RTNN aggregate path genuinely subsecond after data and graph preparation, and it is about 30x faster than the older generic Goal4500 OptiX aggregate. The author C++/CUDA/OptiX implementation still maps the same search workload to RT cores much more efficiently at the pure compute phase, and it is faster on cold whole-process time. The comparison is useful, but it must be reported by contract: author full K-id materialization versus RTDL hot prepared ranked-summary aggregate are not the same output surface.",
+  "goal": "Goal4501 / V3 M105",
+  "input_contract": {
+    "dataset": "KITTI-1M bounded paper-family CSV from Goal4500",
+    "k_max": 50,
+    "paper_equivalence": "bounded_family_recipe_not_exact_paper_recipe",
+    "point_count": 1000000,
+    "query_count": 1000000,
+    "query_relation": "self_query",
+    "radius": 1.0,
+    "same_input_csv": "/workspace/data/kitti/rtdl_goal4500/kitti_1m_points.csv"
+  },
+  "rtdl": {
+    "m104_generic_embree": {
+      "claim_boundary": {
+        "aggregate_requests_batched": false,
+        "broad_rt_core_speedup_claim_authorized": false,
+        "device_ranked_summary_aggregate": false,
+        "device_ranked_summary_rows": false,
+        "device_resident_query_points": false,
+        "embree_ranked_summary_aggregate": true,
+        "embree_ranked_summary_rows": false,
+        "float32_precision": false,
+        "materializes_neighbor_rows": false,
+        "materializes_summary_rows": false,
+        "paper_equivalent_rtnn_row": false,
+        "partitioned_or_batched_like_rtnn": true,
+        "prepared_cuda_graph_replay": false,
+        "rt_core_neighbor_search_claim_authorized": false,
+        "rtdl_speedup_claim_authorized": false,
+        "same_stream_partner_consumer": false
+      },
+      "cold_load_pack_prepare_query_sec": 123.3073461651802,
+      "contract": {
+        "aggregate_batch_request_mode": "not_batched",
+        "aggregate_batch_requests": [],
+        "aggregate_request_count": 1,
+        "approximate": false,
+        "batched_queries": true,
+        "bounded_k": 50,
+        "exact": true,
+        "execution_path_policy_version": null,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate",
+        "precision": "float64",
+        "prepared_cuda_graph_replay": false,
+        "prepared_query_points": false,
+        "prepared_search_structure": true,
+        "same_stream_partner_consumer": false
+      },
+      "execution_prepare_sec": 0.4343350902199745,
+      "input_load_sec": 1.4720357209444046,
+      "input_pack_sec": 0.47321414947509766,
+      "label": "m104_embree_generic_aggregate",
+      "median_query_sec": 120.92776120454073,
+      "output_contract": "device_ranked_summary_aggregate",
+      "repeat": 3,
+      "result_mode": "ranked-summary-aggregate",
+      "row": "goal4500_kitti_1m_embree_ranked_summary_aggregate",
+      "summary": {
+        "bounded_neighbor_count": 49248495,
+        "kth_id_checksum": 499035080455,
+        "nearest_id_checksum": 495630408863,
+        "row_count": 1000000,
+        "sum_distance": 7540726.362602947
+      }
+    },
+    "m104_generic_optix": {
+      "claim_boundary": {
+        "aggregate_requests_batched": false,
+        "broad_rt_core_speedup_claim_authorized": false,
+        "device_ranked_summary_aggregate": true,
+        "device_ranked_summary_rows": false,
+        "device_resident_query_points": false,
+        "embree_ranked_summary_aggregate": false,
+        "embree_ranked_summary_rows": false,
+        "float32_precision": false,
+        "materializes_neighbor_rows": false,
+        "materializes_summary_rows": false,
+        "paper_equivalent_rtnn_row": false,
+        "partitioned_or_batched_like_rtnn": true,
+        "prepared_cuda_graph_replay": false,
+        "rt_core_neighbor_search_claim_authorized": false,
+        "rtdl_speedup_claim_authorized": false,
+        "same_stream_partner_consumer": false
+      },
+      "cold_load_pack_prepare_query_sec": 12.826701823621988,
+      "contract": {
+        "aggregate_batch_request_mode": "not_batched",
+        "aggregate_batch_requests": [],
+        "aggregate_request_count": 1,
+        "approximate": false,
+        "batched_queries": true,
+        "bounded_k": 50,
+        "exact": true,
+        "execution_path_policy_version": null,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate",
+        "precision": "float64",
+        "prepared_cuda_graph_replay": false,
+        "prepared_query_points": false,
+        "prepared_search_structure": true,
+        "same_stream_partner_consumer": false
+      },
+      "execution_prepare_sec": 2.5289455130696297,
+      "input_load_sec": 1.98190189152956,
+      "input_pack_sec": 0.5132828652858734,
+      "label": "m104_optix_generic_aggregate",
+      "median_query_sec": 7.802571553736925,
+      "output_contract": "device_ranked_summary_aggregate",
+      "repeat": 20,
+      "result_mode": "ranked-summary-aggregate",
+      "row": "goal4500_kitti_1m_optix_ranked_summary_aggregate",
+      "summary": {
+        "bounded_neighbor_count": 49248495,
+        "kth_id_checksum": 499033254211,
+        "nearest_id_checksum": 495630408863,
+        "row_count": 1000000,
+        "sum_distance": 7540726.362602944
+      }
+    },
+    "optix_direct_graph_best": {
+      "claim_boundary": {
+        "aggregate_requests_batched": true,
+        "broad_rt_core_speedup_claim_authorized": false,
+        "device_ranked_summary_aggregate": true,
+        "device_ranked_summary_rows": false,
+        "device_resident_query_points": true,
+        "embree_ranked_summary_aggregate": false,
+        "embree_ranked_summary_rows": false,
+        "float32_precision": true,
+        "materializes_neighbor_rows": false,
+        "materializes_summary_rows": false,
+        "paper_equivalent_rtnn_row": false,
+        "partitioned_or_batched_like_rtnn": true,
+        "prepared_cuda_graph_replay": true,
+        "rt_core_neighbor_search_claim_authorized": false,
+        "rtdl_speedup_claim_authorized": false,
+        "same_stream_partner_consumer": false
+      },
+      "cold_load_pack_prepare_query_sec": 4.70978819578886,
+      "contract": {
+        "aggregate_batch_request_mode": "homogeneous",
+        "aggregate_batch_requests": [
+          {
+            "k_max": 50,
+            "radius": 1.0
+          }
+        ],
+        "aggregate_request_count": 1,
+        "approximate": false,
+        "batched_queries": true,
+        "bounded_k": 50,
+        "exact": false,
+        "execution_path_policy_version": "rtdl.v2_5.execution_path_policy.v1",
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-prepared-query-batch-graph-float32",
+        "precision": "float32",
+        "prepared_cuda_graph_replay": true,
+        "prepared_query_points": true,
+        "prepared_search_structure": true,
+        "same_stream_partner_consumer": false
+      },
+      "execution_prepare_sec": 2.502097524702549,
+      "input_load_sec": 1.435768574476242,
+      "input_pack_sec": 0.5144963711500168,
+      "label": "rtdl_optix_direct_graph_best",
+      "median_query_sec": 0.2574257254600525,
+      "output_contract": "device_ranked_summary_aggregate",
+      "repeat": 5,
+      "result_mode": "ranked-summary-aggregate-prepared-query-batch-graph-float32",
+      "row": "goal4501_rtdl_optix_kitti_1m_r1_k50_direct_graph_best",
+      "summary": {
+        "bounded_neighbor_count": 49248495,
+        "kth_id_checksum": 499037910242,
+        "nearest_id_checksum": 495630408863,
+        "row_count": 1000000,
+        "sum_distance": 7540726.363215244
+      }
+    },
+    "optix_same_stream_partner": {
+      "claim_boundary": {
+        "aggregate_requests_batched": true,
+        "broad_rt_core_speedup_claim_authorized": false,
+        "device_ranked_summary_aggregate": true,
+        "device_ranked_summary_rows": false,
+        "device_resident_query_points": true,
+        "embree_ranked_summary_aggregate": false,
+        "embree_ranked_summary_rows": false,
+        "float32_precision": true,
+        "materializes_neighbor_rows": false,
+        "materializes_summary_rows": false,
+        "paper_equivalent_rtnn_row": false,
+        "partitioned_or_batched_like_rtnn": true,
+        "prepared_cuda_graph_replay": true,
+        "rt_core_neighbor_search_claim_authorized": false,
+        "rtdl_speedup_claim_authorized": false,
+        "same_stream_partner_consumer": true
+      },
+      "cold_load_pack_prepare_query_sec": 4.771611914038658,
+      "contract": {
+        "aggregate_batch_request_mode": "homogeneous",
+        "aggregate_batch_requests": [
+          {
+            "k_max": 50,
+            "radius": 1.0
+          }
+        ],
+        "aggregate_request_count": 1,
+        "approximate": false,
+        "batched_queries": true,
+        "bounded_k": 50,
+        "exact": false,
+        "execution_path_policy_version": "rtdl.v2_5.execution_path_policy.v1",
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32",
+        "precision": "float32",
+        "prepared_cuda_graph_replay": true,
+        "prepared_query_points": true,
+        "prepared_search_structure": true,
+        "same_stream_partner_consumer": true
+      },
+      "execution_prepare_sec": 2.5482968986034393,
+      "input_load_sec": 1.4560797289013863,
+      "input_pack_sec": 0.5053713694214821,
+      "label": "rtdl_optix_same_stream_partner",
+      "median_query_sec": 0.26186391711235046,
+      "output_contract": "device_ranked_summary_aggregate",
+      "repeat": 3,
+      "result_mode": "ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32",
+      "row": "goal4501_rtdl_optix_kitti_1m_r1_k50_same_stream_best",
+      "summary": {
+        "bounded_neighbor_count": 49248495,
+        "kth_id_checksum": 499037910242,
+        "nearest_id_checksum": 495630408863,
+        "row_count": 1000000,
+        "sum_distance": 7540726.363215244
+      }
+    }
+  },
+  "signature_deltas": {
+    "direct_graph_minus_m104_embree": {
+      "bounded_neighbor_count": 0,
+      "kth_id_checksum": 2829787,
+      "nearest_id_checksum": 0,
+      "row_count": 0,
+      "sum_distance_delta": 0.0006122970953583717
+    },
+    "direct_graph_minus_m104_optix": {
+      "bounded_neighbor_count": 0,
+      "kth_id_checksum": 4656031,
+      "nearest_id_checksum": 0,
+      "row_count": 0,
+      "sum_distance_delta": 0.0006123008206486702
+    }
+  },
+  "version": "rtdl.v3_0.rtnn_author_same_input_comparison.goal4501.v1"
+}

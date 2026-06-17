@@ -107,6 +107,14 @@ nearest-id checksum, and distance-sum signatures match, while a tie-sensitive
 kth-id checksum caveat remains. Author RTNN still needs a follow-on
 adapter/build run on the same CSV before any author-vs-RTDL wording.
 
+Goal4501 adds the author same-input comparison on that KITTI-1M CSV. The author
+C++/CUDA/OptiX code builds and runs after an external-only CUDA12/Ada
+compatibility patch. Current RTDL direct graph aggregate is subsecond on the
+hot prepared ranked-summary query and about 30x faster than the Goal4500
+generic OptiX aggregate, but author RTNN remains faster on cold whole-process
+and pure compute timing. Keep the contracts separate: author full K-id
+materialization is not the same output surface as RTDL ranked-summary aggregate.
+
 The important boundary is that RTDL exact aggregate and app graph-bridge rows
 are RTDL-internal same-contract evidence; the official RTNN rows are diagnostic
 unless a future goal proves output-contract equivalence.

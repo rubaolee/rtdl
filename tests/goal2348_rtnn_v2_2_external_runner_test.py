@@ -187,6 +187,57 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
             second = runner.patch_rtnn_cuda12_checkout(root)
             self.assertEqual(second["changed_count"], 0)
 
+    def test_cuda12_patch_can_target_ada_arch_and_update_existing_namespace(self) -> None:
+        runner = _load_runner()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            source = root / "src" / "optixNSearch"
+            source.mkdir(parents=True)
+            (root / "src" / "CMakeLists.txt").write_text(
+                "list(APPEND CUDA_NVCC_FLAGS -arch sm_60)\n"
+                "set(CUDA_NVRTC_FLAGS -arch compute_60 -use_fast_math -lineinfo)\n",
+                encoding="utf-8",
+            )
+            for filename in ("func.h", "search.cpp", "util.cpp"):
+                (source / filename).write_text(
+                    "#ifndef __CUDA_ARCH_LIST__\n"
+                    "#define __CUDA_ARCH_LIST__ 600\n"
+                    "#endif\n"
+                    "#include <thrust/device_vector.h>\n",
+                    encoding="utf-8",
+                )
+            (source / "sort.cpp").write_text(
+                "#ifndef __CUDA_ARCH_LIST__\n"
+                "#define __CUDA_ARCH_LIST__ 600\n"
+                "#endif\n"
+                "#include <thrust/gather.h>\n"
+                "#include <thrust/host_vector.h>\n",
+                encoding="utf-8",
+            )
+            (source / "thrust_helper.cu").write_text(
+                "#include <thrust/execution_policy.h>\n"
+                "#include <thrust/count.h>\n"
+                "#include <thrust/unique.h>\n"
+                "#include <thrust/tuple.h>\n",
+                encoding="utf-8",
+            )
+            (source / "geometry.cu").write_text(
+                "__uint_as_float(1); __float_as_uint(1.0f);\n",
+                encoding="utf-8",
+            )
+
+            payload = runner.patch_rtnn_cuda12_checkout(root, cuda_sm="sm_89")
+            self.assertEqual(payload["cuda_sm"], "89")
+            self.assertEqual(payload["cuda_arch_list"], "890")
+            self.assertEqual(payload["changed_count"], 5)
+            self.assertIn("__CUDA_ARCH_LIST__ 890", (source / "func.h").read_text(encoding="utf-8"))
+            self.assertIn("__CUDA_ARCH_LIST__ 890", (source / "search.cpp").read_text(encoding="utf-8"))
+            self.assertIn("__CUDA_ARCH_LIST__ 890", (source / "sort.cpp").read_text(encoding="utf-8"))
+            self.assertIn("__CUDA_ARCH_LIST__ 890", (source / "util.cpp").read_text(encoding="utf-8"))
+            cmake = (root / "src" / "CMakeLists.txt").read_text(encoding="utf-8")
+            self.assertIn("-arch sm_89", cmake)
+            self.assertIn("-arch compute_89", cmake)
+
     def test_cli_cuda12_patch_writes_boundary_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp) / "rtnn"
@@ -212,6 +263,8 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
                     "patch-rtnn-cuda12",
                     "--rtnn-root",
                     str(root),
+                    "--cuda-sm",
+                    "89",
                     "--json-out",
                     str(json_out),
                 ],
@@ -224,6 +277,8 @@ class Goal2348RtnnV22ExternalRunnerTest(unittest.TestCase):
             payload = json.loads(json_out.read_text(encoding="utf-8"))
             self.assertTrue(payload["claim_boundary"]["external_rtnn_source_patch_only"])
             self.assertEqual(payload["changed_count"], 7)
+            self.assertEqual(payload["cuda_sm"], "89")
+            self.assertEqual(payload["cuda_arch_list"], "890")
 
     def test_report_names_runner_as_next_harness(self) -> None:
         campaign = (

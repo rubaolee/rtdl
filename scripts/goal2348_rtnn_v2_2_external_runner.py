@@ -168,7 +168,59 @@ def _insert_before_first_prefixed_line(text: str, prefix: str, addition: str) ->
     raise ValueError(f"prefix anchor not found: {prefix!r}")
 
 
-def patch_rtnn_cuda12_checkout(rtnn_root: Path) -> dict[str, object]:
+def _cuda_sm_tokens(cuda_sm: str | int) -> tuple[str, str]:
+    token = str(cuda_sm).strip().lower()
+    for prefix in ("sm_", "compute_"):
+        if token.startswith(prefix):
+            token = token[len(prefix):]
+    token = token.replace(".", "")
+    if len(token) == 3 and token.endswith("0"):
+        token = token[:2]
+    if not re.fullmatch(r"[0-9]{2}", token):
+        raise ValueError(f"cuda_sm must look like 60, sm_89, or compute_89: {cuda_sm!r}")
+    return token, f"{token}0"
+
+
+def _ensure_cuda_arch_macro(text: str, arch_list: str) -> tuple[str, bool]:
+    desired = (
+        "#ifndef __CUDA_ARCH_LIST__\n"
+        f"#define __CUDA_ARCH_LIST__ {arch_list}\n"
+        "#endif\n"
+    )
+    pattern = re.compile(
+        r"#ifndef __CUDA_ARCH_LIST__\n"
+        r"#define __CUDA_ARCH_LIST__ [0-9]+\n"
+        r"#endif\n"
+    )
+    patched, count = pattern.subn(desired, text, count=1)
+    if count:
+        return patched, patched != text
+    return _insert_before_first_prefixed_line(text, "#include <thrust/", desired)
+
+
+def _patch_rtnn_cuda_arch_defaults(cmake_path: Path, cuda_sm: str) -> dict[str, object]:
+    if not cmake_path.exists():
+        return {"path": str(cmake_path), "changed": False, "kind": "cuda_arch_defaults", "present": False}
+    text = cmake_path.read_text(encoding="utf-8")
+    patched = re.sub(
+        r"list\(APPEND CUDA_NVCC_FLAGS -arch sm_[0-9]+\)",
+        f"list(APPEND CUDA_NVCC_FLAGS -arch sm_{cuda_sm})",
+        text,
+        count=1,
+    )
+    patched = re.sub(r"-arch compute_[0-9]+", f"-arch compute_{cuda_sm}", patched, count=1)
+    changed = patched != text
+    if changed:
+        cmake_path.write_text(patched, encoding="utf-8", newline="\n")
+    return {
+        "path": str(cmake_path),
+        "changed": changed,
+        "kind": "cuda_arch_defaults",
+        "present": True,
+    }
+
+
+def patch_rtnn_cuda12_checkout(rtnn_root: Path, *, cuda_sm: str | int = "60") -> dict[str, object]:
     """Apply compatibility-only patches to a disposable external RTNN checkout.
 
     RTNN's upstream code targets an older CUDA/Thrust/NVRTC stack. The patches
@@ -177,6 +229,7 @@ def patch_rtnn_cuda12_checkout(rtnn_root: Path) -> dict[str, object]:
     build/run on CUDA 12 pods used for RTDL comparison work.
     """
     patches: list[dict[str, object]] = []
+    cuda_sm_token, cuda_arch_list = _cuda_sm_tokens(cuda_sm)
 
     edits = [
         (
@@ -202,11 +255,6 @@ def patch_rtnn_cuda12_checkout(rtnn_root: Path) -> dict[str, object]:
             path.write_text(text, encoding="utf-8", newline="\n")
         patches.append({"path": str(path), "changed": changed, "kind": "missing_thrust_include"})
 
-    arch_macro = (
-        "#ifndef __CUDA_ARCH_LIST__\n"
-        "#define __CUDA_ARCH_LIST__ 600\n"
-        "#endif\n"
-    )
     for path in [
         rtnn_root / "src" / "optixNSearch" / "func.h",
         rtnn_root / "src" / "optixNSearch" / "search.cpp",
@@ -214,7 +262,7 @@ def patch_rtnn_cuda12_checkout(rtnn_root: Path) -> dict[str, object]:
         rtnn_root / "src" / "optixNSearch" / "util.cpp",
     ]:
         text = path.read_text(encoding="utf-8")
-        text, changed = _insert_before_first_prefixed_line(text, "#include <thrust/", arch_macro)
+        text, changed = _ensure_cuda_arch_macro(text, cuda_arch_list)
         if changed:
             path.write_text(text, encoding="utf-8", newline="\n")
         patches.append({"path": str(path), "changed": changed, "kind": "thrust_cuda_arch_namespace"})
@@ -231,11 +279,14 @@ def patch_rtnn_cuda12_checkout(rtnn_root: Path) -> dict[str, object]:
     if changed:
         geometry.write_text(patched, encoding="utf-8", newline="\n")
     patches.append({"path": str(geometry), "changed": changed, "kind": "nvrtc_intrinsic_spelling"})
+    patches.append(_patch_rtnn_cuda_arch_defaults(rtnn_root / "src" / "CMakeLists.txt", cuda_sm_token))
 
     return {
         "runner": "goal2348_rtnn_v2_2_external_runner",
         "operation": "patch-rtnn-cuda12",
         "rtnn_root": str(rtnn_root),
+        "cuda_sm": cuda_sm_token,
+        "cuda_arch_list": cuda_arch_list,
         "patches": patches,
         "changed_count": sum(1 for patch in patches if patch["changed"]),
         "claim_boundary": {
@@ -1998,6 +2049,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Patch a disposable external RTNN checkout for CUDA 12 build/runtime compatibility.",
     )
     patch.add_argument("--rtnn-root", type=Path, required=True)
+    patch.add_argument("--cuda-sm", default="60", help="CUDA SM target used for RTNN CUDA/Thrust compatibility patches.")
     patch.add_argument("--json-out", type=Path, required=True)
 
     rtnn = subparsers.add_parser("run-rtnn", help="Run an external RTNN optixNSearch binary.")
@@ -2127,7 +2179,7 @@ def main(argv: list[str] | None = None) -> int:
             "timings": _timing_summary(parse_rtnn_timings(text)),
         }
     elif args.command == "patch-rtnn-cuda12":
-        payload = patch_rtnn_cuda12_checkout(args.rtnn_root)
+        payload = patch_rtnn_cuda12_checkout(args.rtnn_root, cuda_sm=args.cuda_sm)
     elif args.command == "run-rtnn":
         payload = run_rtnn(args)
     elif args.command == "run-rtdl-current-2d-smoke":

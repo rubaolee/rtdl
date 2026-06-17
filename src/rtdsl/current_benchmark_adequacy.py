@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4500.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4501.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -58,8 +58,11 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "same-contract comparisons on real KITTI-family input while keeping exact "
     "paper-reproduction wording blocked. Goal4500 exports the bounded KITTI "
     "recipe to a same-input CSV and runs the RTDL OptiX/Embree exact aggregate "
-    "gate with a tie-sensitive kth-id caveat, leaving author RTNN as the next "
-    "comparison step. "
+    "gate with a tie-sensitive kth-id caveat. Goal4501 adds the same-input "
+    "author RTNN row after an external-only CUDA12/Ada compatibility patch and "
+    "shows the current RTDL direct graph aggregate is subsecond hot-prepared, "
+    "but author RTNN remains faster on cold whole-process and pure compute "
+    "timing; those output contracts must not be collapsed. "
     "Goal4464 closes Triangle Counting's largest paper-dataset OOM validation row "
     "by running source-range segmented RT-2A1 on `com-orkut` with a measured 2M "
     "directed-edge scene cap, while keeping public speedup claims blocked. "
@@ -527,8 +530,14 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "without claiming exact paper reproduction. Goal4500 exports that input "
             "as the same bounded KITTI CSV and runs the RTDL OptiX/Embree exact "
             "aggregate gate. Count, nearest-id checksum, and distance sum match, "
-            "but a tie-sensitive kth-id checksum caveat remains; author RTNN remains "
-            "the next external-code gate."
+            "but a tie-sensitive kth-id checksum caveat remains. Goal4501 adds "
+            "the same-input author RTNN row: after an external-only CUDA12/Ada "
+            "compatibility patch, author RTNN runs the same KITTI-1M CSV. The "
+            "current RTDL direct graph aggregate is subsecond hot-prepared and "
+            "about 30x faster than the Goal4500 generic OptiX aggregate, while "
+            "author RTNN remains faster on cold whole-process and pure compute "
+            "timing. This is strong evidence for the RTDL V3 graph/partner path, "
+            "but not a same-output author-code victory claim."
         ),
         "adequacy": "strong",
         "current_recommended_path": (
@@ -539,7 +548,8 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "graph replay plus same-stream CuPy/Numba app-bridge evidence; use "
             "`rtnn_paper_dataset_targets()` when planning paper-dataset acquisition; "
             "use `write_kitti_paper_family_recipe_manifest()` for bounded KITTI-family "
-            "same-contract input preparation"
+            "same-contract input preparation; use the prepared direct graph aggregate "
+            "for the fastest current hot-prepared RTDL KITTI-family ranked-summary row"
         ),
         "current_partner_role": (
             "no partner needed for exact float64 native aggregate; CuPy and Numba are "
@@ -547,13 +557,13 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "collapsed into automatic exact-vs-float32 route selection"
         ),
         "next_generic_runtime_action": (
-            "keep exact aggregate and resident graph-bridge contracts separate; "
-            "prove output-contract equivalence before comparing with official RTNN "
-            "authors-code rows; next build and run author RTNN on the same bounded KITTI "
-            "CSV used by Goal4500, then compare author RTNN, RTDL OptiX, and Embree/CPU "
-            "under one radius+K output contract; do not add more synthetic distribution "
-            "timing unless it changes a route decision; run actual AMD functional "
-            "validation before AMD performance work"
+            "keep exact aggregate, direct graph aggregate, same-stream partner bridge, "
+            "and author full-output diagnostic rows separate; next generic runtime "
+            "work is an app-agnostic fused RTNN-style ranked-summary primitive that "
+            "narrows the author compute-efficiency gap without adding RTNN-specific "
+            "native engine logic; do not add more synthetic distribution timing "
+            "unless it changes a route decision; run actual AMD functional validation "
+            "before AMD performance work"
         ),
         "evidence_refs": (
             "Goal2800",
@@ -573,8 +583,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4498",
             "Goal4499",
             "Goal4500",
+            "Goal4501",
         ),
-        "pod_needed_next": True,
+        "pod_needed_next": False,
     },
     "triangle_counting": {
         "current_performance_reading": (
