@@ -329,7 +329,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "remain essentially flat at 1.018x one-shot and 0.999x warmed replay."
             " Goal4496 extends the isolated direct-status prepare check to 2M "
             "`clustered3d` and `ngsim_dense`, with matching signatures and "
-            "127.93x/82.07x prepare speedups when columns already exist."
+            "127.93x/82.07x prepare speedups when columns already exist. "
+            "Goal4519/Goal4520 then refine the future M113 blocker: chunk-local "
+            "direct-status handles are API-shaped and live-smoked, while prepared "
+            "graph capture remains missing."
         ),
         "current_recommended_path": (
             "Explicit RTDL/OptiX self-query predicate direct-status CuPy for measured 524k/1M "
@@ -351,6 +354,8 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "confirms the same rule at 2M `road3d`, while Goal4496 covers "
             "non-road3d 2M isolated direct-status prepare; run non-road3d 2M "
             "app-total coverage only if it changes a route decision; use "
+            "Goal4519/Goal4520 to read M113 as blocked only on prepared graph "
+            "capture after the live chunk-handle smoke; use "
             "graph-only component-size signature only for the narrower "
             "graph-component contract"
         ),
@@ -380,6 +385,8 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4491",
             "Goal4495",
             "Goal4496",
+            "Goal4519",
+            "Goal4520",
         ),
     },
     "robot_collision": {
@@ -728,7 +735,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "integrated per-segment local-hash plus large-tail sort/RLE "
             "candidate and rejects it because counts match but backend and "
             "segment-ray construction are slower than the current "
-            "`numba_direct_sort_rle` route on all three paper rows."
+            "`numba_direct_sort_rle` route on all three paper rows. Goal4521 "
+            "explains the M113 blocker as generic chunked unique/count "
+            "associativity: scalar per-chunk unique counts are unsafe across "
+            "duplicate boundary keys, while key/count payload merge or disjoint "
+            "key ranges preserve the app-agnostic design."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -825,10 +836,13 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "local-hash plus large-tail sort/RLE candidate, but rejects it "
             "because backend and segment-ray build time are worse on all three "
             "paper rows. Keep `numba_direct_sort_rle` as the current complete "
-            "route. If Triangle Counting is revisited, target a coarser-batched "
-            "segmented unique/count strategy with fewer per-segment kernel "
-            "launches or a different reusable segmented reduction primitive, "
-            "not this exact per-segment local hash branch."
+            "route. Goal4521 clarifies that an M113-safe future path must carry "
+            "key/count payloads to an associative merge or prove disjoint chunk "
+            "key ranges, while also validating graph capture. If Triangle "
+            "Counting is revisited, target a coarser-batched segmented "
+            "unique/count strategy with fewer per-segment kernel launches or a "
+            "reusable key/count payload merge primitive, not this exact "
+            "per-segment local hash branch."
         ),
         "evidence_refs": (
             "Goal2797",
@@ -866,6 +880,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4492",
             "Goal4493",
             "Goal4494",
+            "Goal4521",
         ),
     },
 }

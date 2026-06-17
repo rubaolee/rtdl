@@ -978,7 +978,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "integrated per-segment local-hash plus large-tail sort/RLE candidate "
             "and rejects it: counts match, but backend and segment-ray construction "
             "are slower than the current `numba_direct_sort_rle` route on all "
-            "three paper rows."
+            "three paper rows. Goal4521 then explains the remaining M113 blocker "
+            "as generic chunked unique/count associativity: carry key/count payloads "
+            "to a final merge or prove disjoint key ranges before promotion."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -1052,6 +1054,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "per-segment local-hash plus large-tail sort/RLE candidate: it is "
             "correct, but backend and segment-ray construction are slower than "
             "the current `numba_direct_sort_rle` route on all three paper rows."
+            " Cite Goal4521 when explaining M113 applicability: scalar per-chunk "
+            "unique counts are not associative across duplicate chunk-boundary keys, "
+            "while key/count payload merge or disjoint key ranges preserve the "
+            "app-agnostic design."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -1128,11 +1134,13 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "implements the integrated local-hash plus large-tail sort/RLE "
             "candidate, but rejects it because backend and segment-ray build "
             "time are worse on all three paper rows. Keep `numba_direct_sort_rle` "
-            "as the current complete route. If Triangle Counting is revisited, "
-            "the target is a coarser-batched segmented unique/count strategy "
-            "with fewer per-segment kernel launches or a different reusable "
-            "segmented reduction primitive, not this exact per-segment local "
-            "hash branch."
+            "as the current complete route. Goal4521 clarifies that an M113-safe "
+            "future path must carry key/count payloads to an associative merge or "
+            "prove disjoint chunk key ranges, while also validating graph capture. "
+            "If Triangle Counting is revisited, the target is a coarser-batched "
+            "segmented unique/count strategy with fewer per-segment kernel launches "
+            "or a reusable key/count payload merge primitive, not this exact "
+            "per-segment local hash branch."
         ),
         evidence_refs=(
             "Goal2797",
@@ -1172,6 +1180,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4492",
             "Goal4493",
             "Goal4494",
+            "Goal4521",
         ),
         pod_needed_next=False,
     ),
@@ -1200,7 +1209,9 @@ def _refresh_goal4484_route_decisions(
                     "are sufficient. "
                     "Set `output_mode=\"full\"` only when per-point Python cluster "
                     "rows are actually required, and keep graph-only component "
-                    "signatures out of full DBSCAN wording."
+                    "signatures out of full DBSCAN wording. Goal4519/Goal4520 "
+                    "reduce the future M113 blocker to prepared graph capture only; "
+                    "the current route does not change."
                 ),
                 primary_route=(
                     "explicit RTDL/OptiX self-query count-threshold device columns plus CuPy "
@@ -1249,7 +1260,9 @@ def _refresh_goal4484_route_decisions(
                     "Goal4495 shows that existing device columns remain valuable at 2M road3d, but temporary "
                     "app-constructed columns are still essentially flat when charged; Goal4496 shows the same "
                     "coordinate-handoff prepare win at 2M `clustered3d` and `ngsim_dense` in isolated direct-status "
-                    "prepare. Next serious runtime work is non-road3d 2M app-total coverage or a policy primitive "
+                    "prepare. Goal4519/Goal4520 show chunk-local direct-status handles are API-shaped and live-smoked, "
+                    "so prepared graph capture is the remaining M113 promotion blocker. "
+                    "Next serious runtime work is non-road3d 2M app-total coverage, graph-capture validation, or a policy primitive "
                     "only if new evidence would change a route decision. "
                     "hidden factor selection, hidden output-contract selection, hidden border-policy "
                     "selection, and automatic partner selection remain blocked."
@@ -1317,6 +1330,8 @@ def _refresh_goal4484_route_decisions(
                     "Goal4491",
                     "Goal4495",
                     "Goal4496",
+                    "Goal4519",
+                    "Goal4520",
                 ),
                 pod_needed_next=False,
             )
