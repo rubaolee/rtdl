@@ -637,6 +637,11 @@ from .current_benchmark_route_decisions import current_benchmark_route_decisions
 from .current_benchmark_route_decisions import explain_current_benchmark_route
 from .current_benchmark_route_decisions import summarize_current_benchmark_route_decisions
 from .current_benchmark_route_decisions import validate_current_benchmark_route_decisions
+from .v3_0_benchmark_implementation_queue import V3_BENCHMARK_IMPLEMENTATION_QUEUE_STATUS
+from .v3_0_benchmark_implementation_queue import V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION
+from .v3_0_benchmark_implementation_queue import v3_benchmark_implementation_queue
+from .v3_0_benchmark_implementation_queue import v3_benchmark_implementation_queue_rows
+from .v3_0_benchmark_implementation_queue import validate_v3_benchmark_implementation_queue
 from .current_major_performance_targets import CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY
 from .current_major_performance_targets import CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS
 from .current_major_performance_targets import CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION
@@ -2637,6 +2642,11 @@ __all__ = [
     "explain_current_benchmark_route",
     "summarize_current_benchmark_route_decisions",
     "validate_current_benchmark_route_decisions",
+    "V3_BENCHMARK_IMPLEMENTATION_QUEUE_STATUS",
+    "V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION",
+    "v3_benchmark_implementation_queue",
+    "v3_benchmark_implementation_queue_rows",
+    "validate_v3_benchmark_implementation_queue",
     "CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY",
     "CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS",
     "CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION",
