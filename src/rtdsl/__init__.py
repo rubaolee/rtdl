@@ -1792,9 +1792,11 @@ from .rtnn_matrix import RtnnMatrixEntry
 from .rtnn_reproduction import rtnn_dataset_families
 from .rtnn_reproduction import rtnn_experiment_targets
 from .rtnn_reproduction import rtnn_local_profiles
+from .rtnn_reproduction import rtnn_paper_dataset_targets
 from .rtnn_reproduction import RtnnDatasetFamily
 from .rtnn_reproduction import RtnnExperimentTarget
 from .rtnn_reproduction import RtnnLocalProfile
+from .rtnn_reproduction import RtnnPaperDatasetTarget
 from .reference import bounded_knn_rows_cpu
 from .reference import fixed_radius_neighbors_cpu
 from .reference import knn_rows_cpu

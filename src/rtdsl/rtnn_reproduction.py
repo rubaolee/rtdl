@@ -36,6 +36,20 @@ class RtnnLocalProfile:
     notes: str
 
 
+@dataclass(frozen=True)
+class RtnnPaperDatasetTarget:
+    handle: str
+    family_handle: str
+    paper_label: str
+    point_count: int
+    distribution_reading: str
+    public_source_url: str
+    exact_recipe_status: str
+    acquisition_priority: str
+    exact_recipe_gap: str
+    bounded_fallback_policy: str
+
+
 RTNN_DATASET_FAMILIES: tuple[RtnnDatasetFamily, ...] = (
     RtnnDatasetFamily(
         handle="kitti_velodyne_point_sets",
@@ -75,6 +89,122 @@ RTNN_DATASET_FAMILIES: tuple[RtnnDatasetFamily, ...] = (
             "and add a deterministic bounded extraction rule for local comparison."
         ),
         notes="Keeps the RTNN gap summary honest about the large-particle simulation family.",
+    ),
+)
+
+
+RTNN_PAPER_DATASET_TARGETS: tuple[RtnnPaperDatasetTarget, ...] = (
+    RtnnPaperDatasetTarget(
+        handle="kitti_1m",
+        family_handle="kitti_velodyne_point_sets",
+        paper_label="KITTI-1M",
+        point_count=1_000_000,
+        distribution_reading="LiDAR surface samples, mostly xy-plane with narrow z range",
+        public_source_url="https://www.cvlibs.net/datasets/kitti/raw_data.php",
+        exact_recipe_status="blocked_on_frame_recipe",
+        acquisition_priority="phase_1",
+        exact_recipe_gap=(
+            "paper states KITTI frames are combined to reach target point counts, "
+            "but the exact frame ids and concatenation/truncation rule are not in "
+            "the author repository"
+        ),
+        bounded_fallback_policy="may use a labeled bounded KITTI package only as bounded reproduction, not paper reproduction",
+    ),
+    RtnnPaperDatasetTarget(
+        handle="kitti_6m",
+        family_handle="kitti_velodyne_point_sets",
+        paper_label="KITTI-6M",
+        point_count=6_000_000,
+        distribution_reading="LiDAR surface samples, mostly xy-plane with narrow z range",
+        public_source_url="https://www.cvlibs.net/datasets/kitti/raw_data.php",
+        exact_recipe_status="blocked_on_frame_recipe",
+        acquisition_priority="phase_1",
+        exact_recipe_gap="paper figure labels include KITTI-6M, but exact frame ids are not available in repo",
+        bounded_fallback_policy="may use a labeled bounded KITTI package only as bounded reproduction, not paper reproduction",
+    ),
+    RtnnPaperDatasetTarget(
+        handle="kitti_12m",
+        family_handle="kitti_velodyne_point_sets",
+        paper_label="KITTI-12M",
+        point_count=12_000_000,
+        distribution_reading="LiDAR surface samples, mostly xy-plane with narrow z range",
+        public_source_url="https://www.cvlibs.net/datasets/kitti/raw_data.php",
+        exact_recipe_status="blocked_on_frame_recipe",
+        acquisition_priority="phase_1",
+        exact_recipe_gap="exact KITTI frame ids and merge order are not available in repo",
+        bounded_fallback_policy="may use a labeled bounded KITTI package only as bounded reproduction, not paper reproduction",
+    ),
+    RtnnPaperDatasetTarget(
+        handle="kitti_25m",
+        family_handle="kitti_velodyne_point_sets",
+        paper_label="KITTI-25M",
+        point_count=25_000_000,
+        distribution_reading="LiDAR surface samples, mostly xy-plane with narrow z range",
+        public_source_url="https://www.cvlibs.net/datasets/kitti/raw_data.php",
+        exact_recipe_status="blocked_on_frame_recipe",
+        acquisition_priority="phase_1",
+        exact_recipe_gap="exact KITTI frame ids and merge order are not available in repo",
+        bounded_fallback_policy="may use a labeled bounded KITTI package only as bounded reproduction, not paper reproduction",
+    ),
+    RtnnPaperDatasetTarget(
+        handle="stanford_bunny_360k",
+        family_handle="stanford_3d_scan_point_sets",
+        paper_label="Bunny-360K",
+        point_count=360_000,
+        distribution_reading="3D scanned surface samples occupying full 3D space",
+        public_source_url="https://graphics.stanford.edu/data/3Dscanrep/",
+        exact_recipe_status="blocked_on_scan_to_point_recipe",
+        acquisition_priority="phase_2",
+        exact_recipe_gap="need exact Stanford file variant and point extraction/downsample rule",
+        bounded_fallback_policy="may use deterministic sampled point set only as bounded reproduction until exact rule is known",
+    ),
+    RtnnPaperDatasetTarget(
+        handle="stanford_dragon_3_6m",
+        family_handle="stanford_3d_scan_point_sets",
+        paper_label="Dragon-3.6M",
+        point_count=3_600_000,
+        distribution_reading="3D scanned surface samples occupying full 3D space",
+        public_source_url="https://graphics.stanford.edu/data/3Dscanrep/",
+        exact_recipe_status="blocked_on_scan_to_point_recipe",
+        acquisition_priority="phase_2",
+        exact_recipe_gap="need exact Asian Dragon file variant and point extraction/downsample rule",
+        bounded_fallback_policy="may use deterministic sampled point set only as bounded reproduction until exact rule is known",
+    ),
+    RtnnPaperDatasetTarget(
+        handle="stanford_buddha_4_6m",
+        family_handle="stanford_3d_scan_point_sets",
+        paper_label="Buddha-4.6M",
+        point_count=4_600_000,
+        distribution_reading="3D scanned surface samples occupying full 3D space",
+        public_source_url="https://graphics.stanford.edu/data/3Dscanrep/",
+        exact_recipe_status="blocked_on_scan_to_point_recipe",
+        acquisition_priority="phase_2",
+        exact_recipe_gap="need exact Buddha file variant and point extraction/downsample rule",
+        bounded_fallback_policy="may use deterministic sampled point set only as bounded reproduction until exact rule is known",
+    ),
+    RtnnPaperDatasetTarget(
+        handle="millennium_nbody_9m",
+        family_handle="nbody_or_millennium_snapshots",
+        paper_label="NBody-9M",
+        point_count=9_000_000,
+        distribution_reading="non-uniform cosmological particle or galaxy distribution in 3D",
+        public_source_url="https://astro.dur.ac.uk/~jch/millennium/",
+        exact_recipe_status="blocked_on_snapshot_trace_recipe",
+        acquisition_priority="phase_3",
+        exact_recipe_gap="need exact Millennium trace/snapshot id and coordinate extraction rule",
+        bounded_fallback_policy="synthetic clustered/shell data is distribution evidence only, never a paper row",
+    ),
+    RtnnPaperDatasetTarget(
+        handle="millennium_nbody_10m",
+        family_handle="nbody_or_millennium_snapshots",
+        paper_label="NBody-10M",
+        point_count=10_000_000,
+        distribution_reading="non-uniform cosmological particle or galaxy distribution in 3D",
+        public_source_url="https://astro.dur.ac.uk/~jch/millennium/",
+        exact_recipe_status="blocked_on_snapshot_trace_recipe",
+        acquisition_priority="phase_3",
+        exact_recipe_gap="need exact Millennium trace/snapshot id and coordinate extraction rule",
+        bounded_fallback_policy="synthetic clustered/shell data is distribution evidence only, never a paper row",
     ),
 )
 
@@ -170,6 +300,17 @@ def rtnn_dataset_families(*, handle: str | None = None) -> tuple[RtnnDatasetFami
     if handle is not None:
         families = tuple(family for family in families if family.handle == handle)
     return families
+
+
+def rtnn_paper_dataset_targets(
+    *, handle: str | None = None, family_handle: str | None = None
+) -> tuple[RtnnPaperDatasetTarget, ...]:
+    targets = RTNN_PAPER_DATASET_TARGETS
+    if handle is not None:
+        targets = tuple(target for target in targets if target.handle == handle)
+    if family_handle is not None:
+        targets = tuple(target for target in targets if target.family_handle == family_handle)
+    return targets
 
 
 def rtnn_experiment_targets(

@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4497.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4498.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -54,6 +54,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "generic M19 ranked-summary graph bridge and records a shell 1,048,576-point "
     "/ 65,536-query / repeat=1000 row with the same signature, same-stream "
     "partner, and no-hidden-copy gates. "
+    "Goal4498 defines the nine RTNN paper dataset targets and keeps exact "
+    "paper reproduction blocked until KITTI frame recipes, Stanford scan-to-point "
+    "rules, and Millennium snapshot/trace recipes are frozen; uniform, shell, "
+    "and clustered rows remain RTDL-internal distribution evidence. "
     "Goal4444 refreshes triangle-counting partner guidance after replacing the "
     "transitional Numba CPU-contract builder with a direct binary vectorized "
     "summary path before Numba device upload. It materially reduces the no-C++ "
@@ -724,7 +728,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "device reductions, and pass the no-hidden-column-copy hot-window gate. Goal4460 adds "
             "the shell distribution row to the same contract: CuPy measures 38.588ms hot median "
             "per batch and Numba measures 39.267ms, with the same parity and hot-window gates. Keep exact "
-            "float64 aggregate and float32 graph-bridge rows separate."
+            "float64 aggregate and float32 graph-bridge rows separate. Goal4498 defines "
+            "the nine RTNN paper dataset targets and keeps exact paper reproduction "
+            "blocked until the dataset recipes are acquired and frozen."
         ),
         primary_route=(
             "mixed explicit RTNN route: exact RTDL/OptiX native aggregate for same-contract "
@@ -745,6 +751,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
         rejected_or_unpromoted_candidates=(
             "RTNN paper reproduction",
             "official RTNN comparison without output-contract equivalence",
+            "synthetic RTNN distribution rows as paper dataset substitutes",
             "automatic exact-vs-float32 route selection",
             "arbitrary ANN index speedup claim",
             "treating the clustered resident app bridge as a full RTNN paper row",
@@ -752,8 +759,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
         ),
         next_runtime_action=(
             "preserve exact aggregate and resident graph bridge as separate front-door rows; future "
-            "work is paper-dataset acquisition and official RTNN same-output-contract comparison, "
-            "not more synthetic distribution timing"
+            "work starts with Goal4498 paper-target acquisition: freeze at least one exact or "
+            "honestly bounded KITTI/Stanford/Millennium input recipe, then run author RTNN, "
+            "RTDL OptiX, and Embree/CPU under the same radius+K output contract; do not add "
+            "more synthetic distribution timing as paper evidence"
         ),
         evidence_refs=(
             "Goal2821",
@@ -765,8 +774,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4443",
             "Goal4459",
             "Goal4460",
+            "Goal4498",
         ),
-        pod_needed_next=False,
+        pod_needed_next=True,
     ),
     CurrentBenchmarkRouteDecision(
         app="triangle_counting",

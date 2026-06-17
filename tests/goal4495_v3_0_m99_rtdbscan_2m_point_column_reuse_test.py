@@ -83,7 +83,7 @@ class Goal4495M99RtDbscan2MPointColumnReuseTest(unittest.TestCase):
         self.assertIn("true-zero-copy", report)
         self.assertIn("Goal4495 RT-DBSCAN 2M point-column reuse", index)
         self.assertIn("POINT_COUNT = 2_097_152", script)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4497.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4498.v1", route["version"])
         self.assertIn("Goal4495", route["evidence_refs"])
         self.assertIn("2M `road3d`", route["next_runtime_action"])
         self.assertIn(
@@ -91,7 +91,7 @@ class Goal4495M99RtDbscan2MPointColumnReuseTest(unittest.TestCase):
             " ".join(route["rejected_or_unpromoted_candidates"]),
         )
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4497.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4498.v1",
             adequacy_module.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         self.assertIn("Goal4495", adequacy["evidence_refs"])

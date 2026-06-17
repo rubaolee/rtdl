@@ -84,6 +84,13 @@ contract and measures `38.588ms` CuPy hot median per batch and `39.267ms`
 Numba hot median per batch. This keeps shell as RTDL-internal distribution
 evidence, not a synthetic substitute for an official RTNN paper dataset.
 
+Goal4498 defines the RTNN paper dataset target matrix: `KITTI-1M`,
+`KITTI-6M`, `KITTI-12M`, `KITTI-25M`, `Bunny-360K`, `Dragon-3.6M`,
+`Buddha-4.6M`, `NBody-9M`, and `NBody-10M`. These labels are not yet
+acquired as exact repo inputs. Use `rtnn_paper_dataset_targets()` when planning
+paper-dataset work, and do not report bounded KITTI packages or synthetic
+uniform/shell/clustered rows as paper reproduction.
+
 The important boundary is that RTDL exact aggregate and app graph-bridge rows
 are RTDL-internal same-contract evidence; the official RTNN rows are diagnostic
 unless a future goal proves output-contract equivalence.
