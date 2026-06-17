@@ -321,8 +321,9 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   OptiX any-hit route. Barnes-Hut opening accepts a parent aggregate and must
   suppress its descendants; a single custom-primitive GAS reports node AABBs
   independently, so that direct mapping can double count unless a reviewed
-  generic hierarchical traversal/skip design exists. Barnes-Hut therefore moves
-  to a design-blocker lane while the active runtime queue advances to RT-DBSCAN.
+  generic hierarchical traversal/skip design exists. Goal4534 records that
+  reviewed hierarchical traversal lowering as future design work rather than a
+  current V3 app implementation blocker.
 - Current expanded-membership lowering evidence routes Barnes-Hut
   aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
   near-zone candidate rows. The engine still only sees points, boxes, IDs, and
