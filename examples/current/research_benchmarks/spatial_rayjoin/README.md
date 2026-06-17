@@ -271,6 +271,23 @@ The lesson is practical: use RTDL/OptiX where RT traversal pays, use a partner
 where a cheap dense CUDA-core reduction is the better tool, and keep the choice
 visible rather than hiding it behind a dispatcher.
 
+## V3 Clean-Target Status
+
+Goal4514 closes Spatial RayJoin as a mixed explicit V3 clean target. The current
+route is not primitive-only and not automatic dispatch: use Numba for bounded
+PIP one-shot, RTDL/OptiX prepared point/closed-shape batch execution for
+repeated PIP, and RTDL/OptiX prepared scalar/active-count primitives for LSI and
+overlay active count. M113 is not the current promoted RayJoin path because the
+unsafe prepared-points CUDA graph replay lane is quarantined after Goal4451, and
+the repeated-PIP path is the prepared batch executor.
+
+The authors-code comparison remains scalar-count-only: RTDL/OptiX wins the LSI
+same-stream scalar-count row, while RayJoin RT wins PIP. Section 5.7 overlay is
+only complete for the available 2/8 exact-ready pairs. Full RayJoin paper
+reproduction, public RTDL-beats-RayJoin wording, whole-app speedup wording,
+automatic partner selection, and app-specific native-engine logic remain
+blocked.
+
 For a single external two-input dataset:
 
 ```bash

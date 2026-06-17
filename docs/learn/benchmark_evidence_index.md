@@ -92,7 +92,7 @@ v2.14 evidence:
 | App | Current front-door row | Partner/native note | Pod need |
 | --- | --- | --- | --- |
 | Hausdorff / X-HD | `hausdorff_xhd_current_optix_threshold` | Goal4513 closes this as a primitive-first exact nearest-witness/grouped-max route; M113 is not the current path; public speedup and automatic partner-selection wording remain blocked | NVIDIA pod for OptiX timing |
-| Spatial RayJoin | `spatial_rayjoin_pip_count_current_prepared_optix` | contract-split RayJoin-style path; scalar/count paths are stronger than full paper reproduction; Goal4451 fail-closes unsafe prepared-points CUDA graph replay and keeps the batch executor as the repeated-PIP path | NVIDIA pod plus public-CDB fixture for representative route |
+| Spatial RayJoin | `spatial_rayjoin_pip_count_current_prepared_optix` | Goal4514 closes this as a mixed-explicit app: Numba for bounded PIP one-shot, RTDL/OptiX prepared batch execution for repeated PIP, and RTDL/OptiX scalar/active-count primitives for LSI/overlay; Goal4451 fail-closes unsafe prepared-points CUDA graph replay; full RayJoin paper and Section 5.7 8/8 wording remain blocked | NVIDIA pod plus public-CDB fixture for representative route |
 | RT-DBSCAN | `rt_dbscan_predicate_direct_status_component_signature` | Generic OptiX fixed-radius count-threshold device columns, now self-query optimized for prepared self-query workloads, plus explicit CuPy predicate direct-status compact component-signature continuation; Goal4510 closes the internal V3 clean target by confirming predicate direct-status wins all 524k/1M same-contract compact-signature rows, while 2M point-column reuse remains caller-owned-column only; grouped-stream Numba remains the conservative fallback/reference and full rows remain a slower output contract | CUDA pod with CuPy and Numba |
 | Robot collision | `robot_collision_prepared_grouped_segment_any_hit_numpy_lowering` | Goal4513 closes this as a no-partner prepared grouped-segment any-hit route; Goal4446 NumPy query lowering remains current; M113 is not needed | NVIDIA pod for OptiX/Embree timing |
 | Contact manifold | `contact_manifold_optix_native_collect_k` | Goal4513 closes this as no-partner bounded witness collect; no manifold-native ABI; M113 is not the current path | NVIDIA pod for OptiX timing |
@@ -141,6 +141,7 @@ v2.14 evidence:
 - [Goal4446 Robot Collision NumPy lowering](../reports/goal4446_v3_0_m50_robot_numpy_lowering_2026-06-16.md)
 - [Goal4447 current benchmark adequacy refresh](../reports/goal4447_v3_0_m51_current_benchmark_adequacy_refresh_2026-06-16.md)
 - [Goal4451 RayJoin PIP graph fail-closed](../reports/goal4451_v3_0_m55_rayjoin_pip_graph_fail_closed_2026-06-16.md)
+- [Goal4514 RayJoin mixed-explicit clean-target audit](../reports/goal4514_v3_0_m118_rayjoin_mixed_explicit_clean_target_audit_2026-06-17.md)
 - [Goal4452 RT-DBSCAN route decision refresh](../reports/goal4452_v3_0_m56_rtdbscan_route_decision_refresh_2026-06-16.md)
 - [Goal4484 RT-DBSCAN compact-signature route matrix](../reports/goal4484_v3_0_m88_rtdbscan_compact_signature_matrix_2026-06-16.md)
 - [Goal4485 RT-DBSCAN 1M compact-signature route matrix](../reports/goal4485_v3_0_m89_rtdbscan_1m_compact_signature_matrix_2026-06-16.md)

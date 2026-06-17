@@ -1,0 +1,234 @@
+{
+  "app": "spatial_rayjoin",
+  "author_comparison": {
+    "claim_boundary": {
+      "full_rayjoin_paper_reproduction": false,
+      "public_speedup_claim_authorized": false,
+      "rtdl_beats_rayjoin_claim_authorized": false,
+      "same_query_stream_with_rayjoin_query_exec": true,
+      "scalar_count_contract_only": true,
+      "whole_application_end_to_end_claim": false
+    },
+    "direct_comparison": {
+      "lsi:embree": {
+        "rayjoin_rt_over_rtdl": 0.056,
+        "rayjoin_rt_query_ms": 0.819,
+        "readout": "RayJoin RT faster than RTDL backend for this scalar-count contract",
+        "rtdl_backend": "embree",
+        "rtdl_hot_query_ms": 14.539,
+        "workload": "lsi"
+      },
+      "lsi:optix": {
+        "rayjoin_rt_over_rtdl": 2.437,
+        "rayjoin_rt_query_ms": 0.819,
+        "readout": "RTDL backend faster than RayJoin RT for this scalar-count contract",
+        "rtdl_backend": "optix",
+        "rtdl_hot_query_ms": 0.336,
+        "workload": "lsi"
+      },
+      "pip:embree": {
+        "rayjoin_rt_over_rtdl": 0.059,
+        "rayjoin_rt_query_ms": 0.83,
+        "readout": "RayJoin RT faster than RTDL backend for this scalar-count contract",
+        "rtdl_backend": "embree",
+        "rtdl_hot_query_ms": 14.168,
+        "workload": "pip"
+      },
+      "pip:optix": {
+        "rayjoin_rt_over_rtdl": 0.069,
+        "rayjoin_rt_query_ms": 0.83,
+        "readout": "RayJoin RT faster than RTDL backend for this scalar-count contract",
+        "rtdl_backend": "optix",
+        "rtdl_hot_query_ms": 12.034,
+        "workload": "pip"
+      }
+    },
+    "direction_rule": "greater_than_1_means_rtdl_backend_faster_than_rayjoin_rt",
+    "interpretation": {
+      "lsi": "Reasonable strong RTDL result: the RTDL OptiX route is an exact prepared-left segment-pair scalar count on the same stream, counts match RayJoin RT intersections, and no row stream is materialized in the measured RTDL path.",
+      "pip": "Reasonable but not good enough for RTDL: RayJoin RT remains much faster on PIP because the current RTDL exact prepared-points path spends material time in exact membership refinement and generic orchestration. This is a v2.13 optimization debt, not a public RTDL win."
+    },
+    "source": "docs\\reports\\goal4367_rayjoin_authors_code_comparison_packet_2026-06-13.json",
+    "status": "accepted_internal_scalar_count_only"
+  },
+  "conclusion": "Spatial RayJoin is closed as a V3 mixed-explicit clean target, not as a primitive-only or public-speedup app. Use Numba for bounded PIP one-shot, RTDL/OptiX prepared batch execution for repeated PIP, and RTDL/OptiX prepared scalar/active-count primitives for LSI and overlay active count. The authors-code comparison remains scalar-count-only: RTDL/OptiX wins LSI, RayJoin RT wins PIP, and full RayJoin paper reproduction plus Section 5.7 8/8 overlay wording remain blocked.",
+  "goal": "Goal4514 / V3 M118",
+  "human_scale_optix_vs_embree": {
+    "rows": {
+      "spatial_rayjoin_lsi": {
+        "contract": "public_cdb_lsi_count",
+        "correct": true,
+        "embree_per_iter_sec": 0.0025716498494148254,
+        "embree_total_sec": 5.104709558188915,
+        "optix_per_iter_sec": 8.592009544372559e-05,
+        "optix_total_sec": 1.7565680965781212,
+        "public_wording": "Safe as a prepared segment-pair scalar-count comparison after fresh artifacts pass the stale guard.",
+        "reasonability_verdict": "reasonable",
+        "scope": "scalar count over the same public CDB slice",
+        "speedup_embree_per_iter_div_optix_per_iter": 29.930714533472077,
+        "timing_protocol": "duration_bounded_throughput"
+      },
+      "spatial_rayjoin_pip": {
+        "contract": "public_cdb_pip_count",
+        "correct": true,
+        "embree_per_iter_sec": 0.0007936879992485046,
+        "embree_total_sec": 1.603366144001484,
+        "optix_per_iter_sec": 0.0007220804691314697,
+        "optix_total_sec": 1.4465040192008018,
+        "public_wording": "Safe as a prepared point-in-polygon scalar-count comparison after fresh artifacts pass the stale guard.",
+        "reasonability_verdict": "reasonable",
+        "scope": "scalar count over the same public CDB slice",
+        "speedup_embree_per_iter_div_optix_per_iter": 1.099168351974906,
+        "timing_protocol": "same_repeat_human_scale"
+      }
+    },
+    "source": "docs\\reports\\goal4380_v2_14_benchmark_runs_2026-06-14\\human_scale_same_contract\\summary.json",
+    "timing_basis": {
+      "duration_bounded_rule": "When speedups make one repeat count impossible, keep per-iteration work identical and vary repeat count only to accumulate stable total time.",
+      "embree_selection": "Run 8-thread and 64-thread Embree variants where relevant; report the faster measured Embree row.",
+      "partner_policy": "When a partner continuation is part of the benchmark, hold the partner choice fixed across backends.",
+      "same_repeat_rule": "Use identical repeat counts when both sides can land in the target band.",
+      "target_hot_query_aggregate_sec": "1-10 seconds per backend where feasible"
+    }
+  },
+  "m113_applicability": {
+    "current_route_should_use_m113": false,
+    "reason": "Spatial RayJoin uses explicit prepared PIP batch execution and prepared scalar/active-count primitives. The unsafe PIP CUDA graph replay path is quarantined after Goal4451, and M113 prepared graph chunk execution is not the current promoted RayJoin route."
+  },
+  "overlay_active_count_same_contract": {
+    "active_count": 174,
+    "active_counts_match": true,
+    "contract": "overlay_active_pair_dependency_count",
+    "full_polygon_overlay_claim_authorized": false,
+    "optix_speedup_by_timed_median": 455.2749163116251,
+    "public_speedup_claim_authorized": false,
+    "row_materialization_avoided": true,
+    "same_output_contract": true,
+    "source": "docs\\reports\\goal4430_v3_0_m33_rayjoin_overlay_active_count_same_contract_2026-06-16.json"
+  },
+  "pip_graph_status": {
+    "batch_counts": [
+      2,
+      2,
+      2
+    ],
+    "claim_boundary": {
+      "automatic_partner_selection_authorized": false,
+      "performance_claim_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "rayjoin_paper_reproduction_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false
+    },
+    "executor_counts": [
+      2,
+      2,
+      2
+    ],
+    "graph_replay_current_path": false,
+    "recommended_repeated_pip_path": "prepared point/closed-shape batch executor",
+    "single_count": 2,
+    "source": "docs\\reports\\goal4451_v3_0_m55_rayjoin_pip_graph_fail_closed_2026-06-16.json",
+    "unvalidated_graph_status": "failed_closed_before_native_prepare",
+    "validated_graph_status": "failed_closed_native_prepare"
+  },
+  "readiness": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "full_rayjoin_paper_reproduction_claim_authorized": false,
+    "full_section57_8_of_8_reproduction_claim_authorized": false,
+    "internal_v3_mixed_explicit_target_closed": true,
+    "public_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "representative_route_matrix": [
+    {
+      "contract": "PIP one-shot scalar count",
+      "reading": "bounded one-shot PIP favors Numba, not current RTDL/OptiX",
+      "recommended_route": "Numba CUDA JIT scalar count",
+      "rtdl_optix_vs_numba": 0.23,
+      "source": "Goal4039"
+    },
+    {
+      "contract": "PIP repeated-request scalar count",
+      "median_ms_per_request_at_100_requests": 0.145265,
+      "reading": "use batch executor; do not use quarantined CUDA graph replay",
+      "recommended_route": "RTDL/OptiX prepared point/closed-shape batch executor",
+      "source": "Goal4039 and Goal4451"
+    },
+    {
+      "contract": "LSI scalar count",
+      "reading": "strong RTDL/OptiX-favorable route",
+      "recommended_route": "RTDL/OptiX prepared segment-pair count",
+      "rtdl_optix_vs_numba": 262.393,
+      "source": "Goal4039"
+    },
+    {
+      "contract": "Overlay active count",
+      "reading": "strong RTDL/OptiX-favorable active-count route",
+      "recommended_route": "RTDL/OptiX prepared shape-pair active count",
+      "rtdl_optix_vs_numba": 210.183,
+      "source": "Goal4039"
+    }
+  ],
+  "route": {
+    "app": "spatial_rayjoin",
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "current_reader_decision": "Use Numba for bounded PIP one-shot; use RTDL/OptiX prepared primitives for repeated PIP, LSI scalar count, and overlay active count.",
+    "decision_kind": "mixed_explicit",
+    "evidence_refs": [
+      "Goal3866",
+      "Goal3867",
+      "Goal3933",
+      "Goal3934",
+      "Goal3935",
+      "Goal3936",
+      "Goal3937",
+      "Goal4039",
+      "Goal4050",
+      "Goal4451"
+    ],
+    "next_runtime_action": "next major work is larger generic route evidence, not more one-off RayJoin tuning; use the reusable prepared-points batch executor for repeated PIP; prepared-points CUDA graph replay is fail-closed and quarantined after Goal4050/Goal4451 until OptiX/CUDA capture can pass hardware validation without zero-count replay",
+    "partner_policy": "mixed_explicit_user_choice",
+    "pod_needed_next": false,
+    "primary_route": "mixed explicit RayJoin route from Goal4039 RTX 4000 Ada fixed-Numba-toolchain evidence",
+    "primitive_contract": "prepared point/closed-shape batch count, segment-pair exact count, shape-pair active count",
+    "public_speedup_claim_authorized": false,
+    "route_version": "rtdl.v3_0.current_benchmark_route_decisions.goal4507.v1",
+    "user_choice_guidance": "Do not auto-dispatch. Ask the user which contract they are running: bounded PIP one-shot currently favors Numba, while LSI/overlay and repeated PIP favor RTDL/OptiX.",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "section57_overlay": {
+    "complete_rows": [
+      {
+        "author_rt_process_sec": 5.521469049155712,
+        "lsi_counts_match": true,
+        "optix_vs_embree_total_speedup": 2.615042653569056,
+        "pair_id": "county_zipcode",
+        "paper_label": "County x Zipcode",
+        "rtdl_embree_total_sec": 15.121064990758896,
+        "rtdl_optix_total_sec": 5.7823397144675255
+      },
+      {
+        "author_rt_process_sec": 27.94386315345764,
+        "lsi_counts_match": true,
+        "optix_vs_embree_total_speedup": 1.8775947637575379,
+        "pair_id": "block_water",
+        "paper_label": "Block x Water",
+        "rtdl_embree_total_sec": 53.79284838587046,
+        "rtdl_optix_total_sec": 28.649871326982975
+      }
+    ],
+    "coverage": {
+      "overlay_pairs_complete": 2,
+      "overlay_pairs_incomplete": 6,
+      "overlay_pairs_total": 8
+    },
+    "full_section57_reproduction_claim_authorized": false,
+    "source": "docs\\reports\\goal4380_v2_14_benchmark_runs_2026-06-14\\rayjoin_section57_overlay\\section57_overlay_summary.json",
+    "timing_caveat": "Paper Table 4 values are historical reference numbers. Local author_rt rows are measured process wall times. RTDL rows are warm-cache medians under the selected protocol."
+  },
+  "version": "rtdl.v3_0.rayjoin_mixed_explicit_clean_target_audit.goal4514.v1"
+}
