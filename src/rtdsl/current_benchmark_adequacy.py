@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4483.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4484.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -28,7 +28,10 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4460 shell resident graph-bridge rows; "
     "triangle counting keeps scalar primitive wording while Goal4444 fixes "
     "the no-C++ Numba construction debt; RT-DBSCAN adds Goal4445 compact "
-    "component-signature output; and robot collision adds Goal4446 NumPy "
+    "component-signature output; Goal4484 refreshes RT-DBSCAN route guidance "
+    "with a 524k compact-signature matrix where predicate direct-status is the "
+    "measured explicit route and grouped-stream Numba remains the conservative "
+    "fallback/reference path; and robot collision adds Goal4446 NumPy "
     "vectorized grouped-segment query lowering. Goal4451 updates Spatial "
     "RayJoin repeated-PIP guidance by preserving the prepared batch executor "
     "and fail-closing unsafe prepared-points CUDA graph replay. Goal4459 also "
@@ -255,26 +258,30 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "partition_convergence_hybrid timing is mixed and not promoted over grouped "
             "stream. Goal4046/4047 show a useful narrower component-size-signature "
             "contract, not for full DBSCAN core/border/noise promotion. Goal4445 adds "
-            "the current compact component-signature output mode: when the requested "
+            "the compact component-signature output mode: when the requested "
             "answer is cluster-size/noise/core summary, RTDL avoids per-point Python "
-            "cluster rows and keeps CuPy and Numba partner aggregation explicit."
+            "cluster rows and keeps CuPy and Numba partner aggregation explicit. "
+            "Goal4484 records a 524k compact-signature route matrix where explicit "
+            "predicate direct-status CuPy is fastest on clustered3d, road3d, and "
+            "ngsim_dense, while grouped-stream Numba remains the conservative "
+            "same-contract fallback/reference path."
         ),
         "current_recommended_path": (
-            "RTDL/OptiX fixed-radius grouped stream plus explicit output mode: "
-            "`output_mode=\"component_signature\"` for compact cluster summaries, "
+            "Explicit RTDL/OptiX predicate direct-status CuPy for measured 524k "
+            "`output_mode=\"component_signature\"` compact cluster summaries; "
+            "grouped-stream Numba fallback/reference; "
             "`output_mode=\"full\"` only when per-point Python cluster rows are required"
         ),
         "current_partner_role": (
-            "CuPy and Numba component continuations both exist; Goal4445 uses CuPy as "
-            "the direct device-array aggregation route and Numba as the no-C++ "
-            "Python-source reference through the CUDA array interface"
+            "CuPy is the measured predicate direct-status compact-signature route in "
+            "Goal4484; Numba remains the no-C++ Python-source same-contract fallback "
+            "and grouped-stream reference route"
         ),
         "next_generic_runtime_action": (
-            "treat compact component signatures as the recommended summary output; "
-            "keep full row materialization explicit; revisit partition_convergence_hybrid "
-            "only with a fused resident component-label continuation or prepared/native "
-            "partition handle; use the component-size signature mode only for the "
-            "narrower graph-component contract"
+            "keep predicate direct-status explicit for measured compact summary "
+            "profiles; keep full row materialization explicit; reduce prepare cost or "
+            "broaden profile coverage next; use graph-only component-size signature "
+            "only for the narrower graph-component contract"
         ),
         "evidence_refs": (
             "Goal2802",
@@ -292,6 +299,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4047",
             "Goal4389",
             "Goal4445",
+            "Goal4484",
         ),
     },
     "robot_collision": {

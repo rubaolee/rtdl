@@ -2164,98 +2164,104 @@ def run_rt_dbscan_benchmark(
         )
         prepared_predicate_direct_status_sec = time.perf_counter() - prepare_start
         prepared_runs: list[dict[str, object]] = []
-        count_context = (
-            nullcontext(None)
-            if use_declared_all_predicate
-            else rt.prepare_optix_fixed_radius_count_threshold_3d(
-                points,
-                max_radius=resolved_radius,
-            )
-        )
-        with prepared_predicate_direct_status, count_context as prepared_count:
-            if use_declared_all_predicate:
-                threshold_result = {
-                    "columns": {},
-                    "metadata": {
-                        "path": "caller_declared_all_true_predicate_no_columns_3d",
-                        "predicate_flags_source": "caller_declared_all_true",
-                        "predicate_flags_exactness": "caller_asserted_not_rt_count_threshold_verified",
-                        "neighbor_count_policy": "not_materialized_all_items_declared_predicate_true",
-                        "rt_count_threshold_executed": False,
-                        "optix_backend_used_for_threshold": False,
-                        "all_predicate_declared": True,
-                        "all_predicate_fast_path_expected": True,
-                        "predicate_columns_materialized": False,
-                        "uses_generic_all_items_direct_status_signature": True,
-                        "release_authorized": False,
-                        "public_speedup_claim_authorized": False,
-                        "route_promotion_authorized": False,
-                    },
-                }
-            else:
-                threshold_result = None
-            threshold_elapsed = 0.0
-            for iteration in range(repeat):
-                run_timing: dict[str, float] = {}
-                run_start = time.perf_counter()
-                if threshold_result is None:
-                    threshold_start = time.perf_counter()
-                    threshold_result = rt.fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
-                        prepared_count,
-                        points,
-                        radius=resolved_radius,
-                        threshold=resolved_min_neighbors,
-                        partner="cupy",
-                        output_columns=output_columns,
-                        return_metadata=True,
-                    )
-                    threshold_elapsed = time.perf_counter() - threshold_start
-                run_timing["optix_rt_count_threshold_sec"] = threshold_elapsed if iteration == 0 else 0.0
-                signature_start = time.perf_counter()
-                if use_declared_all_predicate:
-                    result = (
-                        rt.run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_direct_status_union_preview_3d(
-                            prepared_predicate_direct_status,
-                            convergence_mode=direct_status_convergence_mode,
-                        )
-                    )
-                    result_metadata = dict(result["metadata"])
-                    result_metadata["all_predicate_fast_path"] = True
-                    run_signature = _cluster_signature_from_nonnegative_label_counts(
-                        result["columns"]["component_size_signature"],
-                        core_count=len(points),
-                        noise_count=0,
-                    )
-                else:
-                    result = (
-                        rt.run_v2_8_fixed_radius_partition_convergence_predicate_signature_cupy_prepared_direct_status_union_preview_3d(
-                            prepared_predicate_direct_status,
-                            predicate_flags=threshold_result["columns"]["threshold_flags"],
-                            neighbor_counts=threshold_result["columns"]["neighbor_counts"],
-                            convergence_mode=direct_status_convergence_mode,
-                        )
-                    )
-                    result_metadata = dict(result["metadata"])
-                    run_signature = _cluster_signature_from_cupy_signature_count_columns(result["columns"])
-                if require_all_predicate_fast_path and not bool(result_metadata.get("all_predicate_fast_path", False)):
-                    raise ValueError(
-                        f"{mode} "
-                        "requires all_predicate_fast_path; use "
-                        "optix_rt_core_grouped_stream_numba_column_signature_3d for mixed predicate rows"
-                    )
-                run_timing["predicate_direct_status_signature_sec"] = time.perf_counter() - signature_start
-                prepared_runs.append(
-                    {
-                        "iteration": iteration,
-                        "is_warmup": iteration < warmup,
-                        "elapsed_sec": time.perf_counter() - run_start,
-                        "timing_sec": run_timing,
-                        "signature": run_signature,
-                        "rows": (),
-                        "metadata": result_metadata,
-                        "threshold_metadata": dict(threshold_result["metadata"]),
-                    }
+        prepared_optix_count_threshold_sec = 0.0
+        with prepared_predicate_direct_status:
+            count_prepare_start = time.perf_counter()
+            count_context = (
+                nullcontext(None)
+                if use_declared_all_predicate
+                else rt.prepare_optix_fixed_radius_count_threshold_3d(
+                    points,
+                    max_radius=resolved_radius,
                 )
+            )
+            with count_context as prepared_count:
+                prepared_optix_count_threshold_sec = (
+                    0.0 if use_declared_all_predicate else time.perf_counter() - count_prepare_start
+                )
+                if use_declared_all_predicate:
+                    threshold_result = {
+                        "columns": {},
+                        "metadata": {
+                            "path": "caller_declared_all_true_predicate_no_columns_3d",
+                            "predicate_flags_source": "caller_declared_all_true",
+                            "predicate_flags_exactness": "caller_asserted_not_rt_count_threshold_verified",
+                            "neighbor_count_policy": "not_materialized_all_items_declared_predicate_true",
+                            "rt_count_threshold_executed": False,
+                            "optix_backend_used_for_threshold": False,
+                            "all_predicate_declared": True,
+                            "all_predicate_fast_path_expected": True,
+                            "predicate_columns_materialized": False,
+                            "uses_generic_all_items_direct_status_signature": True,
+                            "release_authorized": False,
+                            "public_speedup_claim_authorized": False,
+                            "route_promotion_authorized": False,
+                        },
+                    }
+                else:
+                    threshold_result = None
+                threshold_elapsed = 0.0
+                for iteration in range(repeat):
+                    run_timing: dict[str, float] = {}
+                    run_start = time.perf_counter()
+                    if threshold_result is None:
+                        threshold_start = time.perf_counter()
+                        threshold_result = rt.fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+                            prepared_count,
+                            points,
+                            radius=resolved_radius,
+                            threshold=resolved_min_neighbors,
+                            partner="cupy",
+                            output_columns=output_columns,
+                            return_metadata=True,
+                        )
+                        threshold_elapsed = time.perf_counter() - threshold_start
+                    run_timing["optix_rt_count_threshold_sec"] = threshold_elapsed if iteration == 0 else 0.0
+                    signature_start = time.perf_counter()
+                    if use_declared_all_predicate:
+                        result = (
+                            rt.run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_direct_status_union_preview_3d(
+                                prepared_predicate_direct_status,
+                                convergence_mode=direct_status_convergence_mode,
+                            )
+                        )
+                        result_metadata = dict(result["metadata"])
+                        result_metadata["all_predicate_fast_path"] = True
+                        run_signature = _cluster_signature_from_nonnegative_label_counts(
+                            result["columns"]["component_size_signature"],
+                            core_count=len(points),
+                            noise_count=0,
+                        )
+                    else:
+                        result = (
+                            rt.run_v2_8_fixed_radius_partition_convergence_predicate_signature_cupy_prepared_direct_status_union_preview_3d(
+                                prepared_predicate_direct_status,
+                                predicate_flags=threshold_result["columns"]["threshold_flags"],
+                                neighbor_counts=threshold_result["columns"]["neighbor_counts"],
+                                convergence_mode=direct_status_convergence_mode,
+                            )
+                        )
+                        result_metadata = dict(result["metadata"])
+                        run_signature = _cluster_signature_from_cupy_signature_count_columns(result["columns"])
+                    if require_all_predicate_fast_path and not bool(result_metadata.get("all_predicate_fast_path", False)):
+                        raise ValueError(
+                            f"{mode} "
+                            "requires all_predicate_fast_path; use "
+                            "optix_rt_core_grouped_stream_numba_column_signature_3d for mixed predicate rows"
+                        )
+                    run_timing["predicate_direct_status_signature_sec"] = time.perf_counter() - signature_start
+                    prepared_runs.append(
+                        {
+                            "iteration": iteration,
+                            "is_warmup": iteration < warmup,
+                            "elapsed_sec": time.perf_counter() - run_start,
+                            "timing_sec": run_timing,
+                            "signature": run_signature,
+                            "rows": (),
+                            "metadata": result_metadata,
+                            "threshold_metadata": dict(threshold_result["metadata"]),
+                        }
+                    )
         measured_runs = [row for row in prepared_runs if not bool(row["is_warmup"])]
         if not measured_runs:
             raise RuntimeError("RT-DBSCAN predicate direct-status repeat produced no measured rows")
@@ -2265,6 +2271,7 @@ def run_rt_dbscan_benchmark(
             for name in phase_names
         }
         timing_breakdown_sec["prepare_predicate_direct_status_sec"] = prepared_predicate_direct_status_sec
+        timing_breakdown_sec["prepare_optix_count_threshold_sec"] = prepared_optix_count_threshold_sec
         elapsed_override = float(statistics.median(float(row["elapsed_sec"]) for row in measured_runs))
         signature_override = dict(measured_runs[-1]["signature"])
         rows = measured_runs[-1]["rows"]
@@ -2303,6 +2310,13 @@ def run_rt_dbscan_benchmark(
                 "predicate_columns_materialized": not use_declared_all_predicate,
                 "uses_generic_all_items_direct_status_signature": use_declared_all_predicate,
                 "caller_declared_predicate_columns_require_external_proof": use_declared_all_predicate,
+                "prepared_optix_count_threshold_sec": prepared_optix_count_threshold_sec,
+                "prepared_predicate_direct_status_plus_count_prepare_sec": (
+                    prepared_predicate_direct_status_sec + prepared_optix_count_threshold_sec
+                ),
+                "prepare_plus_replay_median_sec": (
+                    prepared_predicate_direct_status_sec + prepared_optix_count_threshold_sec + elapsed_override
+                ),
                 "materializes_neighbor_summaries": False,
                 "materializes_neighbor_rows": False,
                 "materializes_python_rows": False,
@@ -2331,11 +2345,20 @@ def run_rt_dbscan_benchmark(
                     prepared_predicate_direct_status_sec
                     + timing_breakdown_sec["predicate_direct_status_signature_sec"]
                 ),
+                "prepared_predicate_direct_status_plus_count_prepare_total_sec": (
+                    prepared_predicate_direct_status_sec
+                    + prepared_optix_count_threshold_sec
+                    + timing_breakdown_sec["predicate_direct_status_signature_sec"]
+                ),
                 "prepared_query_repeat_protocol": {
                     "repeat": repeat,
                     "warmup": warmup,
                     "measured_iterations": len(measured_runs),
                     "prepare_sec": prepared_predicate_direct_status_sec,
+                    "optix_count_threshold_prepare_sec": prepared_optix_count_threshold_sec,
+                    "prepare_plus_count_threshold_prepare_sec": (
+                        prepared_predicate_direct_status_sec + prepared_optix_count_threshold_sec
+                    ),
                     "median_elapsed_sec": elapsed_override,
                     "signatures_stable": len(
                         {json.dumps(row["signature"], sort_keys=True) for row in measured_runs}

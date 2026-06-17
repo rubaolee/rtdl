@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4483.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4484.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -71,6 +71,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "`output_mode=\"component_signature\"` summary contract is the current "
     "front-door reading, while full Python rows, direct-status candidates, "
     "partition factors, and border policies remain explicit user choices. "
+    "Goal4484 instruments the mixed predicate direct-status path to include "
+    "OptiX count-threshold prepare cost and records a 524k compact-signature "
+    "matrix where predicate direct-status is the measured explicit route for "
+    "clustered3d, road3d, and ngsim_dense while grouped-stream Numba remains "
+    "the conservative fallback/reference path. "
     "Goal4453 refreshes triangle-counting Numba partner guidance after moving "
     "RT-1A2/RT-2A1 geometry fill from host materialization and re-upload to "
     "partner-resident Numba device columns. It removes unnecessary data movement "
@@ -1024,7 +1029,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
 )
 
 
-def _refresh_goal4459_route_decisions(
+def _refresh_goal4484_route_decisions(
     rows: tuple[CurrentBenchmarkRouteDecision, ...],
 ) -> tuple[CurrentBenchmarkRouteDecision, ...]:
     refreshed: list[CurrentBenchmarkRouteDecision] = []
@@ -1037,17 +1042,19 @@ def _refresh_goal4459_route_decisions(
                 app="rt_dbscan",
                 decision_kind="mixed_explicit",
                 current_reader_decision=(
-                    "Use the RTDL/OptiX fixed-radius grouped-stream component front door. "
-                    "Set `output_mode=\"component_signature\"` when the user needs a "
-                    "cluster-size/noise/core summary; set `output_mode=\"full\"` only "
-                    "when per-point Python cluster rows are actually required. Keep "
-                    "prepared direct-status, partition_convergence_hybrid, and "
-                    "all-predicate/all-items direct-status routes as explicit "
-                    "profile/policy candidates, not hidden defaults."
+                    "Use the explicit RTDL/OptiX predicate direct-status CuPy "
+                    "column-signature route for the measured 524k compact "
+                    "cluster-size/noise/core summary profiles. Keep grouped-stream "
+                    "Numba as the conservative same-contract fallback/reference path. "
+                    "Set `output_mode=\"component_signature\"` when compact summaries "
+                    "are sufficient. "
+                    "Set `output_mode=\"full\"` only when per-point Python cluster "
+                    "rows are actually required, and keep graph-only component "
+                    "signatures out of full DBSCAN wording."
                 ),
                 primary_route=(
-                    "RTDL/OptiX fixed-radius grouped stream plus explicit compact "
-                    "component-signature partner aggregation"
+                    "explicit RTDL/OptiX count-threshold device columns plus CuPy "
+                    "predicate direct-status compact signature; grouped-stream Numba fallback"
                 ),
                 partner_policy="mixed_explicit_user_choice",
                 primitive_contract=(
@@ -1055,14 +1062,15 @@ def _refresh_goal4459_route_decisions(
                     "explicit compact component-signature or full-row output"
                 ),
                 user_choice_guidance=(
-                    "Choose the output contract first. Use `output_mode=\"component_signature\"` "
-                    "for compact summaries and measure CuPy and Numba explicitly when "
-                    "partner aggregation matters; use `output_mode=\"full\"` only for "
-                    "row consumers that truly need per-point labels in Python. Use the "
-                    "profile/reuse advisor only for explicit prepared direct-status or "
-                    "partition_convergence_hybrid experiments, set `partition_cell_factor` "
-                    "explicitly, and do not auto-select the partner, route, factor, output "
-                    "contract, or border policy."
+                    "Choose the output contract first. For compact summaries at the "
+                    "measured 524k clustered3d/road3d/ngsim_dense profiles, choose "
+                    "the explicit predicate direct-status CuPy route with "
+                    "`partition_cell_factor` set explicitly; use grouped-stream Numba "
+                    "when a conservative same-contract fallback/reference is needed. "
+                    "Keep CuPy and Numba explicitly selected and measured. "
+                    "Use `output_mode=\"full\"` only for row consumers that truly need "
+                    "per-point labels in Python. Do not auto-select the partner, route, "
+                    "factor, output contract, or border policy."
                 ),
                 rejected_or_unpromoted_candidates=(
                     "blocked grouped stream candidate from Goal3936",
@@ -1072,15 +1080,17 @@ def _refresh_goal4459_route_decisions(
                     "automatic partition-cell-factor tuning after Goal4117 explicit factor sweep",
                     "mixed predicate direct-status broad promotion after Goal4165 policy-variant probe",
                     "component-size signature as the only mixed-predicate semantic contract after Goal4166",
+                    "graph-only direct-status component signature as full DBSCAN after Goal4484",
                     "full-row materialization as the default summary-output contract after Goal4445",
                     "automatic output_mode/partner selection after Goal4452 route refresh",
                 ),
                 next_runtime_action=(
-                    "keep compact component_signature as the recommended summary output; "
-                    "keep full Python row materialization explicit; keep the historical "
-                    "profile/reuse advisor, direct-status, partition factor, and border-policy "
-                    "routes explicit; next serious runtime work is a fused/resident component "
-                    "continuation or prepare-cost reduction only if new evidence requires it. "
+                    "keep predicate direct-status as the measured explicit compact-signature "
+                    "route for the Goal4484 524k profiles; keep grouped-stream Numba as "
+                    "fallback/reference; keep full Python row materialization explicit; "
+                    "keep the profile/reuse advisor visible for explicit route choices; "
+                    "next serious runtime work is prepare-cost reduction, broader profile "
+                    "coverage, or a policy primitive only if new evidence requires it. "
                     "hidden factor selection, hidden output-contract selection, hidden border-policy "
                     "selection, and automatic partner selection remain blocked."
                 ),
@@ -1137,6 +1147,7 @@ def _refresh_goal4459_route_decisions(
                     "Goal4177",
                     "Goal4445",
                     "Goal4452",
+                    "Goal4484",
                 ),
                 pod_needed_next=False,
             )
@@ -1144,7 +1155,7 @@ def _refresh_goal4459_route_decisions(
     return tuple(refreshed)
 
 
-CURRENT_BENCHMARK_ROUTE_DECISIONS = _refresh_goal4459_route_decisions(
+CURRENT_BENCHMARK_ROUTE_DECISIONS = _refresh_goal4484_route_decisions(
     CURRENT_BENCHMARK_ROUTE_DECISIONS
 )
 

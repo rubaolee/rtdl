@@ -49,11 +49,11 @@ class Goal4482V30M86TriangleGroupedUniqueFeasibilityTest(unittest.TestCase):
         adequacy = importlib.import_module("rtdsl.current_benchmark_adequacy")
 
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4483.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4484.v1",
             routes.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION,
         )
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4483.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4484.v1",
             adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         route_row = {
