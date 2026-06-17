@@ -29,21 +29,22 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1",
+            "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2",
             self.packet["version"],
         )
         self.assertEqual(10, summary["app_count"])
         self.assertTrue(summary["all_ten_benchmark_apps_accounted_for"])
         self.assertEqual(
-            ("barnes_hut", "rt_dbscan", "triangle_counting"),
+            ("rt_dbscan", "triangle_counting"),
             tuple(summary["runtime_build_queue"]),
         )
-        self.assertEqual("barnes_hut", summary["next_runtime_build_target"])
+        self.assertEqual(("barnes_hut",), tuple(summary["design_blocker_queue"]))
+        self.assertEqual("rt_dbscan", summary["next_runtime_build_target"])
         self.assertTrue(cls_summary["runtime_targets_need_pod"])
 
     def test_runtime_blockers_are_separate_from_claim_evidence_blockers(self) -> None:
-        self.assertEqual("runtime_blocker", self.rows["barnes_hut"]["work_class"])
-        self.assertIn("fail-closed native ABI scaffold", self.rows["barnes_hut"]["remaining_gap"])
+        self.assertEqual("design_blocker", self.rows["barnes_hut"]["work_class"])
+        self.assertIn("subtree-skip semantics", self.rows["barnes_hut"]["remaining_gap"])
         self.assertEqual("runtime_blocker", self.rows["rt_dbscan"]["work_class"])
         self.assertIn("prepared graph capture", self.rows["rt_dbscan"]["remaining_gap"])
         self.assertEqual("runtime_blocker", self.rows["triangle_counting"]["work_class"])

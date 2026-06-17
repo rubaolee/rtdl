@@ -34,11 +34,12 @@
       "Goal4518",
       "Goal4523",
       "Goal4525",
-      "Goal4526"
+      "Goal4526",
+      "Goal4527"
     ],
-    "barnes_hut_next_build_target": "replace the fail-closed scaffold with app-agnostic aggregate-tree fused weighted-vector C++/OptiX traversal, then validate optixLaunch/optixTrace against CPU/Numba force-summary references",
+    "barnes_hut_next_build_target": "do not replace the fail-closed ABI with a direct all-node any-hit route; future work must first design and review a generic hierarchical traversal lowering that proves no double counting, keeps force math outside app-specific native engine code, and then beats fused CPU/Numba and fused Numba CUDA force-summary baselines",
     "barnes_hut_priority": 1,
-    "barnes_hut_work_class": "runtime_blocker"
+    "barnes_hut_work_class": "design_blocker"
   },
   "source_audit": {
     "all_symbols_declared_defined_and_wrapped": true,

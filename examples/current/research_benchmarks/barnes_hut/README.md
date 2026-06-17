@@ -317,6 +317,12 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   intentionally fail closed until a real optixLaunch/optixTrace traversal,
   equivalence oracle, and timing split exist. This is a build-surface step, not
   Barnes-Hut RT-core acceleration evidence.
+- Goal4527 blocks a naive replacement of that fail-closed ABI with an all-node
+  OptiX any-hit route. Barnes-Hut opening accepts a parent aggregate and must
+  suppress its descendants; a single custom-primitive GAS reports node AABBs
+  independently, so that direct mapping can double count unless a reviewed
+  generic hierarchical traversal/skip design exists. Barnes-Hut therefore moves
+  to a design-blocker lane while the active runtime queue advances to RT-DBSCAN.
 - Current expanded-membership lowering evidence routes Barnes-Hut
   aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
   near-zone candidate rows. The engine still only sees points, boxes, IDs, and

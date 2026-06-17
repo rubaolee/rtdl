@@ -34,12 +34,14 @@ def build_packet() -> dict[str, Any]:
         },
         "conclusion": (
             "M128 turns the post-clean-target app status into a concrete "
-            "implementation queue. The next runtime build target is Barnes-Hut "
-            "RT-native fused weighted-vector traversal, followed by RT-DBSCAN "
-            "prepared graph capture and Triangle Counting chunked unique/count "
-            "payload merge. RTNN and Spatial RayJoin remain claim/evidence "
-            "packaging blockers rather than missing current primitives, and the "
-            "other five apps have no immediate V3 runtime blocker."
+            "implementation queue. Goal4527 later moves Barnes-Hut into a "
+            "design-blocker lane because a naive all-node OptiX any-hit mapping "
+            "cannot preserve aggregate-subtree skip semantics. The next runtime "
+            "build target is now RT-DBSCAN prepared graph capture, followed by "
+            "Triangle Counting chunked unique/count payload merge. RTNN and "
+            "Spatial RayJoin remain claim/evidence packaging blockers rather "
+            "than missing current primitives, and the other five apps have no "
+            "immediate V3 runtime blocker."
         ),
     }
 
@@ -58,6 +60,7 @@ def write_report(packet: dict[str, Any], path: Path) -> None:
         "",
         f"- Next runtime build target: `{summary['next_runtime_build_target']}`",
         f"- Runtime queue: `{', '.join(summary['runtime_build_queue'])}`",
+        f"- Design blocker queue: `{', '.join(summary['design_blocker_queue'])}`",
         f"- Claim/evidence queue: `{', '.join(summary['claim_or_evidence_queue'])}`",
         f"- Closed current targets: `{', '.join(summary['closed_current_targets'])}`",
         "",

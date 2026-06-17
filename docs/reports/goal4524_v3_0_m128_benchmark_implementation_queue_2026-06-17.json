@@ -8,10 +8,10 @@
     "release_authorized": false,
     "runtime_executed": false
   },
-  "conclusion": "M128 turns the post-clean-target app status into a concrete implementation queue. The next runtime build target is Barnes-Hut RT-native fused weighted-vector traversal, followed by RT-DBSCAN prepared graph capture and Triangle Counting chunked unique/count payload merge. RTNN and Spatial RayJoin remain claim/evidence packaging blockers rather than missing current primitives, and the other five apps have no immediate V3 runtime blocker.",
+  "conclusion": "M128 turns the post-clean-target app status into a concrete implementation queue. Goal4527 later moves Barnes-Hut into a design-blocker lane because a naive all-node OptiX any-hit mapping cannot preserve aggregate-subtree skip semantics. The next runtime build target is now RT-DBSCAN prepared graph capture, followed by Triangle Counting chunked unique/count payload merge. RTNN and Spatial RayJoin remain claim/evidence packaging blockers rather than missing current primitives, and the other five apps have no immediate V3 runtime blocker.",
   "date": "2026-06-17",
   "goal": "Goal4524 / V3 M128",
-  "queue_status": "post_clean_target_runtime_build_queue_not_release_authorization",
+  "queue_status": "post_clean_target_runtime_build_queue_after_barnes_hut_semantic_gate_not_release_authorization",
   "rows": [
     {
       "app": "barnes_hut",
@@ -27,16 +27,17 @@
         "Goal4518",
         "Goal4523",
         "Goal4525",
-        "Goal4526"
+        "Goal4526",
+        "Goal4527"
       ],
-      "next_build_target": "replace the fail-closed scaffold with app-agnostic aggregate-tree fused weighted-vector C++/OptiX traversal, then validate optixLaunch/optixTrace against CPU/Numba force-summary references",
+      "next_build_target": "do not replace the fail-closed ABI with a direct all-node any-hit route; future work must first design and review a generic hierarchical traversal lowering that proves no double counting, keeps force math outside app-specific native engine code, and then beats fused CPU/Numba and fused Numba CUDA force-summary baselines",
       "paper_reproduction_claim_authorized": false,
-      "pod_needed_next": true,
+      "pod_needed_next": false,
       "priority": 1,
       "public_speedup_claim_authorized": false,
-      "remaining_gap": "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE has a generic contract, Python wrapper surface, and fail-closed native ABI scaffold, but real optixLaunch/optixTrace traversal, equivalence oracle, and timing split are still missing",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1",
-      "work_class": "runtime_blocker"
+      "remaining_gap": "Goal4527 blocks a naive node-AABB OptiX implementation: Barnes-Hut opening accepts a parent aggregate and must suppress its descendants, while a single custom-primitive GAS reports node AABBs independently and cannot enforce subtree-skip semantics without a reviewed generic hierarchical traversal design",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2",
+      "work_class": "design_blocker"
     },
     {
       "app": "rt_dbscan",
@@ -59,7 +60,7 @@
       "priority": 2,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "chunk-local prepared direct-status handles are live-smoke validated, but prepared graph capture/replay for the chunked continuation is not",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2",
       "work_class": "runtime_blocker"
     },
     {
@@ -81,7 +82,7 @@
       "priority": 3,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "scalar per-chunk unique counts are not associative when duplicate keys cross chunk boundaries; an M113-safe path needs key/count payload merge or proven disjoint key ranges plus graph capture",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2",
       "work_class": "runtime_blocker"
     },
     {
@@ -105,7 +106,7 @@
       "priority": 10,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "public paper-reproduction and same-output author claims remain blocked by dataset recipes and output-contract differences, not by a missing current RTDL primitive",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2",
       "work_class": "claim_or_evidence_blocker"
     },
     {
@@ -126,7 +127,7 @@
       "priority": 11,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "full RayJoin paper-reproduction wording and Section 5.7 8/8 overlay wording remain claim-scoped; the current limitation is not a missing generic primitive for the already scoped 2/8 overlay evidence",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2",
       "work_class": "claim_or_evidence_blocker"
     },
     {
@@ -146,7 +147,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2",
       "work_class": "closed_current_target"
     },
     {
@@ -167,7 +168,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2",
       "work_class": "closed_current_target"
     },
     {
@@ -187,7 +188,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2",
       "work_class": "closed_current_target"
     },
     {
@@ -207,7 +208,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2",
       "work_class": "closed_current_target"
     },
     {
@@ -227,7 +228,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2",
       "work_class": "closed_current_target"
     }
   ],
@@ -252,9 +253,12 @@
       "raydb_style",
       "librts_spatial_index"
     ],
-    "next_runtime_build_target": "barnes_hut",
+    "design_blocker_queue": [
+      "barnes_hut"
+    ],
+    "design_targets_do_not_block_runtime_queue": true,
+    "next_runtime_build_target": "rt_dbscan",
     "runtime_build_queue": [
-      "barnes_hut",
       "rt_dbscan",
       "triangle_counting"
     ],
@@ -270,14 +274,16 @@
       "all_route_apps_present": true,
       "claim_queue_exact": true,
       "closed_count_is_five": true,
-      "next_runtime_target_barnes_hut": true,
+      "design_queue_exact": true,
+      "design_targets_do_not_block_runtime_queue": true,
+      "next_runtime_target_rt_dbscan": true,
       "runtime_queue_exact": true,
       "runtime_targets_need_pod": true,
       "version_current": true
     },
     "failed_checks": [],
     "status": "accept",
-    "version": "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1"
+    "version": "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2"
   },
-  "version": "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1"
+  "version": "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2"
 }

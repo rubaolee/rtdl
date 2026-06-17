@@ -59,11 +59,12 @@
       "Goal4518",
       "Goal4523",
       "Goal4525",
-      "Goal4526"
+      "Goal4526",
+      "Goal4527"
     ],
     "barnes_hut_priority": 1,
-    "barnes_hut_remaining_gap": "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE has a generic contract, Python wrapper surface, and fail-closed native ABI scaffold, but real optixLaunch/optixTrace traversal, equivalence oracle, and timing split are still missing",
-    "barnes_hut_work_class": "runtime_blocker"
+    "barnes_hut_remaining_gap": "Goal4527 blocks a naive node-AABB OptiX implementation: Barnes-Hut opening accepts a parent aggregate and must suppress its descendants, while a single custom-primitive GAS reports node AABBs independently and cannot enforce subtree-skip semantics without a reviewed generic hierarchical traversal design",
+    "barnes_hut_work_class": "design_blocker"
   },
   "status": "python_wrapper_ready_native_execution_blocked",
   "version": "rtdl.v3_0.barnes_hut_rt_native_python_wrapper_gate.goal4525.v1",

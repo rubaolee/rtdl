@@ -1,0 +1,80 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "current_route_changed": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_executed": false
+  },
+  "conclusion": "M131 prevents an incorrect Barnes-Hut RT-native implementation from landing. A direct OptiX GAS containing every aggregate-tree node cannot, by itself, express the Barnes-Hut rule that accepting a parent aggregate suppresses all descendants; reporting nodes independently would double count unless a separate reviewed hierarchical traversal/skip design exists. The fail-closed ABI therefore stays in place, Barnes-Hut moves to a design-blocker lane, and the active runtime queue advances to RT-DBSCAN graph capture.",
+  "date": "2026-06-17",
+  "goal": "Goal4527 / V3 M131",
+  "implementation_decision": {
+    "advance_to_rt_dbscan_runtime_work": true,
+    "future_barnes_hut_requirements": "A future Barnes-Hut RT-native route must use a reviewed generic hierarchical traversal lowering that proves accepted aggregate subtrees are not double counted, keeps force-law code outside app-specific native engine callbacks, and beats fused CPU/Numba and fused Numba CUDA under the same force-summary contract.",
+    "implement_naive_all_node_optix_anyhit": false,
+    "replace_fail_closed_abi_now": false
+  },
+  "queue_alignment": {
+    "barnes_hut_next_build_target": "do not replace the fail-closed ABI with a direct all-node any-hit route; future work must first design and review a generic hierarchical traversal lowering that proves no double counting, keeps force math outside app-specific native engine code, and then beats fused CPU/Numba and fused Numba CUDA force-summary baselines",
+    "barnes_hut_priority": 1,
+    "barnes_hut_remaining_gap": "Goal4527 blocks a naive node-AABB OptiX implementation: Barnes-Hut opening accepts a parent aggregate and must suppress its descendants, while a single custom-primitive GAS reports node AABBs independently and cannot enforce subtree-skip semantics without a reviewed generic hierarchical traversal design",
+    "barnes_hut_work_class": "design_blocker",
+    "design_blocker_queue": [
+      "barnes_hut"
+    ],
+    "next_runtime_build_target": "rt_dbscan",
+    "queue_checks": {
+      "barnes_hut_is_design_blocker": true,
+      "barnes_hut_not_next_runtime_target": true,
+      "design_queue_recorded": true,
+      "goal4527_recorded": true,
+      "rt_dbscan_is_next_runtime_target": true
+    },
+    "runtime_build_queue": [
+      "rt_dbscan",
+      "triangle_counting"
+    ],
+    "validation": {
+      "checks": {
+        "all_broad_rt_core_claims_blocked": true,
+        "all_clean_targets_closed": true,
+        "all_paper_reproduction_claims_blocked": true,
+        "all_promoted_apps_present": true,
+        "all_public_speedup_claims_blocked": true,
+        "all_route_apps_present": true,
+        "claim_queue_exact": true,
+        "closed_count_is_five": true,
+        "design_queue_exact": true,
+        "design_targets_do_not_block_runtime_queue": true,
+        "next_runtime_target_rt_dbscan": true,
+        "runtime_queue_exact": true,
+        "runtime_targets_need_pod": true,
+        "version_current": true
+      },
+      "failed_checks": [],
+      "status": "accept",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2"
+    }
+  },
+  "semantic_constraints": {
+    "direct_all_node_anyhit_route_accepted": false,
+    "parent_acceptance_suppresses_descendants": true,
+    "single_custom_primitive_gas_reports_nodes_independently": true,
+    "single_trace_parent_subtree_skip_proof_exists": false
+  },
+  "source_audit": {
+    "api": "src/native/optix/rtdl_optix_api.cpp",
+    "fail_closed_fragments": {
+      "ABI is exported fail-closed": true,
+      "not implemented yet": true,
+      "until optixTrace traversal": true
+    },
+    "queue": "src/rtdsl/v3_0_benchmark_implementation_queue.py",
+    "queue_mentions_subtree_skip_semantics": true,
+    "queue_rejects_direct_anyhit_route": false
+  },
+  "status": "barnes_hut_rt_native_semantic_gate_safe_to_advance_runtime_queue",
+  "version": "rtdl.v3_0.barnes_hut_rt_native_traversal_semantic_gate.goal4527.v1"
+}

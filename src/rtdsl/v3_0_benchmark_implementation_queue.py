@@ -8,10 +8,10 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION = (
-    "rtdl.v3_0.benchmark_implementation_queue.goal4524.v1"
+    "rtdl.v3_0.benchmark_implementation_queue.goal4527.v2"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_STATUS = (
-    "post_clean_target_runtime_build_queue_not_release_authorization"
+    "post_clean_target_runtime_build_queue_after_barnes_hut_semantic_gate_not_release_authorization"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_CLAIM_BOUNDARY = (
     "This queue ranks post-clean-target implementation work after Goal4515 "
@@ -22,6 +22,7 @@ V3_BENCHMARK_IMPLEMENTATION_QUEUE_CLAIM_BOUNDARY = (
 
 V3_IMPLEMENTATION_WORK_CLASSES = (
     "runtime_blocker",
+    "design_blocker",
     "claim_or_evidence_blocker",
     "closed_current_target",
 )
@@ -105,25 +106,36 @@ _ROWS: tuple[V3BenchmarkImplementationQueueRow, ...] = (
     V3BenchmarkImplementationQueueRow(
         app="barnes_hut",
         priority=1,
-        work_class="runtime_blocker",
+        work_class="design_blocker",
         current_route_status=(
             "current V3 route is mixed explicit: CPU/Numba or Numba CUDA fused "
             "force summary by scale; prepared RTDL/OptiX remains device-column "
             "evidence, not Barnes-Hut RT-core traversal evidence"
         ),
         remaining_gap=(
-            "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE has a generic "
-            "contract, Python wrapper surface, and fail-closed native ABI scaffold, "
-            "but real optixLaunch/optixTrace traversal, equivalence oracle, and "
-            "timing split are still missing"
+            "Goal4527 blocks a naive node-AABB OptiX implementation: Barnes-Hut "
+            "opening accepts a parent aggregate and must suppress its descendants, "
+            "while a single custom-primitive GAS reports node AABBs independently "
+            "and cannot enforce subtree-skip semantics without a reviewed generic "
+            "hierarchical traversal design"
         ),
         next_build_target=(
-            "replace the fail-closed scaffold with app-agnostic aggregate-tree "
-            "fused weighted-vector C++/OptiX traversal, then validate optixLaunch/"
-            "optixTrace against CPU/Numba force-summary references"
+            "do not replace the fail-closed ABI with a direct all-node any-hit "
+            "route; future work must first design and review a generic "
+            "hierarchical traversal lowering that proves no double counting, "
+            "keeps force math outside app-specific native engine code, and then "
+            "beats fused CPU/Numba and fused Numba CUDA force-summary baselines"
         ),
-        evidence_refs=("Goal4497", "Goal4517", "Goal4518", "Goal4523", "Goal4525", "Goal4526"),
-        pod_needed_next=True,
+        evidence_refs=(
+            "Goal4497",
+            "Goal4517",
+            "Goal4518",
+            "Goal4523",
+            "Goal4525",
+            "Goal4526",
+            "Goal4527",
+        ),
+        pod_needed_next=False,
     ),
     V3BenchmarkImplementationQueueRow(
         app="rt_dbscan",
@@ -272,6 +284,10 @@ def v3_benchmark_implementation_queue() -> dict[str, Any]:
         (row for row in rows if row["work_class"] == "runtime_blocker"),
         key=lambda row: int(row["priority"]),
     )
+    design_rows = sorted(
+        (row for row in rows if row["work_class"] == "design_blocker"),
+        key=lambda row: int(row["priority"]),
+    )
     claim_rows = sorted(
         (row for row in rows if row["work_class"] == "claim_or_evidence_blocker"),
         key=lambda row: int(row["priority"]),
@@ -288,6 +304,7 @@ def v3_benchmark_implementation_queue() -> dict[str, Any]:
                 {row["app"] for row in rows} == set(V2_8_PROMOTED_BENCHMARK_APPS)
             ),
             "runtime_build_queue": tuple(row["app"] for row in runtime_rows),
+            "design_blocker_queue": tuple(row["app"] for row in design_rows),
             "claim_or_evidence_queue": tuple(row["app"] for row in claim_rows),
             "closed_current_targets": tuple(row["app"] for row in closed_rows),
             "next_runtime_build_target": runtime_rows[0]["app"] if runtime_rows else None,
@@ -308,6 +325,9 @@ def v3_benchmark_implementation_queue() -> dict[str, Any]:
                 not row["app_specific_native_engine_logic_allowed"] for row in rows
             ),
             "runtime_targets_need_pod": all(row["pod_needed_next"] for row in runtime_rows),
+            "design_targets_do_not_block_runtime_queue": all(
+                not row["pod_needed_next"] for row in design_rows
+            ),
         },
     }
 
@@ -327,17 +347,27 @@ def validate_v3_benchmark_implementation_queue(
             key=lambda row: int(row["priority"]),
         )
     )
+    design_apps = tuple(
+        row["app"]
+        for row in sorted(
+            (row for row in rows if row["work_class"] == "design_blocker"),
+            key=lambda row: int(row["priority"]),
+        )
+    )
     checks = {
         "version_current": packet["version"] == V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION,
         "all_promoted_apps_present": apps == set(V2_8_PROMOTED_BENCHMARK_APPS),
         "all_route_apps_present": apps == route_apps,
-        "runtime_queue_exact": runtime_apps
-        == ("barnes_hut", "rt_dbscan", "triangle_counting"),
-        "next_runtime_target_barnes_hut": (
-            packet["summary"]["next_runtime_build_target"] == "barnes_hut"
+        "runtime_queue_exact": runtime_apps == ("rt_dbscan", "triangle_counting"),
+        "design_queue_exact": design_apps == ("barnes_hut",),
+        "next_runtime_target_rt_dbscan": (
+            packet["summary"]["next_runtime_build_target"] == "rt_dbscan"
         ),
         "claim_queue_exact": tuple(packet["summary"]["claim_or_evidence_queue"])
         == ("rtnn", "spatial_rayjoin"),
+        "design_targets_do_not_block_runtime_queue": bool(
+            packet["summary"]["design_targets_do_not_block_runtime_queue"]
+        ),
         "closed_count_is_five": len(packet["summary"]["closed_current_targets"]) == 5,
         "all_clean_targets_closed": bool(packet["summary"]["all_clean_targets_closed"]),
         "all_public_speedup_claims_blocked": bool(

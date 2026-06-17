@@ -2,12 +2,13 @@
 
 ## Conclusion
 
-M128 turns the post-clean-target app status into a concrete implementation queue. The next runtime build target is Barnes-Hut RT-native fused weighted-vector traversal, followed by RT-DBSCAN prepared graph capture and Triangle Counting chunked unique/count payload merge. RTNN and Spatial RayJoin remain claim/evidence packaging blockers rather than missing current primitives, and the other five apps have no immediate V3 runtime blocker.
+M128 turns the post-clean-target app status into a concrete implementation queue. Goal4527 later moves Barnes-Hut into a design-blocker lane because a naive all-node OptiX any-hit mapping cannot preserve aggregate-subtree skip semantics. The next runtime build target is now RT-DBSCAN prepared graph capture, followed by Triangle Counting chunked unique/count payload merge. RTNN and Spatial RayJoin remain claim/evidence packaging blockers rather than missing current primitives, and the other five apps have no immediate V3 runtime blocker.
 
 ## Summary
 
-- Next runtime build target: `barnes_hut`
-- Runtime queue: `barnes_hut, rt_dbscan, triangle_counting`
+- Next runtime build target: `rt_dbscan`
+- Runtime queue: `rt_dbscan, triangle_counting`
+- Design blocker queue: `barnes_hut`
 - Claim/evidence queue: `rtnn, spatial_rayjoin`
 - Closed current targets: `hausdorff_xhd, robot_collision, contact_manifold, raydb_style, librts_spatial_index`
 
@@ -15,7 +16,7 @@ M128 turns the post-clean-target app status into a concrete implementation queue
 
 | App | Class | Priority | Remaining gap | Next build target |
 | --- | --- | ---: | --- | --- |
-| `barnes_hut` | `runtime_blocker` | 1 | AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE has a generic contract, Python wrapper surface, and fail-closed native ABI scaffold, but real optixLaunch/optixTrace traversal, equivalence oracle, and timing split are still missing | replace the fail-closed scaffold with app-agnostic aggregate-tree fused weighted-vector C++/OptiX traversal, then validate optixLaunch/optixTrace against CPU/Numba force-summary references |
+| `barnes_hut` | `design_blocker` | 1 | Goal4527 blocks a naive node-AABB OptiX implementation: Barnes-Hut opening accepts a parent aggregate and must suppress its descendants, while a single custom-primitive GAS reports node AABBs independently and cannot enforce subtree-skip semantics without a reviewed generic hierarchical traversal design | do not replace the fail-closed ABI with a direct all-node any-hit route; future work must first design and review a generic hierarchical traversal lowering that proves no double counting, keeps force math outside app-specific native engine code, and then beats fused CPU/Numba and fused Numba CUDA force-summary baselines |
 | `rt_dbscan` | `runtime_blocker` | 2 | chunk-local prepared direct-status handles are live-smoke validated, but prepared graph capture/replay for the chunked continuation is not | add a generic prepared graph capture/replay path for chunk-local direct-status handles and same-stream partner continuation, preserving no-hidden-upload and no pair-row materialization gates |
 | `triangle_counting` | `runtime_blocker` | 3 | scalar per-chunk unique counts are not associative when duplicate keys cross chunk boundaries; an M113-safe path needs key/count payload merge or proven disjoint key ranges plus graph capture | build a generic chunked key/count payload merge primitive or disjoint-key-range plan, then validate a coarser prepared continuation with fewer per-segment launches |
 | `rtnn` | `claim_or_evidence_blocker` | 10 | public paper-reproduction and same-output author claims remain blocked by dataset recipes and output-contract differences, not by a missing current RTDL primitive | freeze exact paper-family dataset recipes and author output contract comparisons before any public RTNN wording expansion |
