@@ -1,0 +1,110 @@
+{
+  "claim_boundary": {
+    "aggregate_only_full_batch_direct_comparison_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "distribution_matrix_complete_for_current_m19_synthetic_family": true,
+    "large_chunked_runtime_evidence": true,
+    "paper_dataset_reproduction_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "conclusion": "The M19 chunked partner-continuation route now has measured 1,048,576-query runtime evidence across the current uniform, shell, and clustered synthetic distribution family. All three rows execute 16 chunks, reuse the prepared scene, match CuPy/Numba signatures, pass the hot no-hidden-column-copy gate, and keep materialization after the hot window. Clustered is the expected slowest row and uniform is the fastest. These rows are still not official RTNN paper-dataset reproduction and not aggregate-only full-batch direct comparison rows.",
+  "goal": "Goal4507 / V3 M111",
+  "matrix_summary": {
+    "all_hot_no_hidden_column_copy_ready": true,
+    "all_prepared_scene_reused_across_chunks": true,
+    "all_signature_match": true,
+    "distributions": [
+      "uniform",
+      "shell",
+      "clustered"
+    ],
+    "fastest_distribution_by_cupy_hot_sum": "uniform",
+    "row_count": 3,
+    "slowest_distribution_by_cupy_hot_sum": "clustered",
+    "slowest_over_fastest_cupy_hot_sum": 24.622519592669107
+  },
+  "mode": "prepared_ranked_summary_graph_partner_bridge_chunked",
+  "rows": [
+    {
+      "chunk_count": 16,
+      "cupy_hot_device_run_seconds_median_sum": 0.0829082652926445,
+      "cupy_materialize_seconds_median_sum": 0.0007670149207115173,
+      "device_result_materialization_after_hot_window": true,
+      "distribution": "uniform",
+      "hot_no_hidden_column_copy_ready": true,
+      "max_query_count": 65536,
+      "numba_hot_device_run_seconds_median_sum": 0.08339004218578339,
+      "numba_materialize_seconds_median_sum": 0.0013187453150749207,
+      "point_count": 1048576,
+      "prepared_scene_reused_across_chunks": true,
+      "query_count": 1048576,
+      "raw_evidence": "docs/reports/goal4506_rtnn_chunked_uniform_1048576q1048576_w1r3_2026-06-17.json",
+      "repeats": 3,
+      "signature_match": true,
+      "validation": {
+        "chunk_count": 16,
+        "hot_no_hidden_column_copy_ready": true,
+        "partner_count": 2,
+        "public_claim_authorized": false,
+        "signature_match": true,
+        "status": "m19_chunked_ranked_summary_partner_bridge_internal_claims_gated"
+      },
+      "warmups": 1
+    },
+    {
+      "chunk_count": 16,
+      "cupy_hot_device_run_seconds_median_sum": 0.609413206577301,
+      "cupy_materialize_seconds_median_sum": 0.0008018836379051208,
+      "device_result_materialization_after_hot_window": true,
+      "distribution": "shell",
+      "hot_no_hidden_column_copy_ready": true,
+      "max_query_count": 65536,
+      "numba_hot_device_run_seconds_median_sum": 0.6094037219882011,
+      "numba_materialize_seconds_median_sum": 0.0013216808438301086,
+      "point_count": 1048576,
+      "prepared_scene_reused_across_chunks": true,
+      "query_count": 1048576,
+      "raw_evidence": "docs/reports/goal4507_rtnn_chunked_shell_1048576q1048576_w1r3_2026-06-17.json",
+      "repeats": 3,
+      "signature_match": true,
+      "validation": {
+        "chunk_count": 16,
+        "hot_no_hidden_column_copy_ready": true,
+        "partner_count": 2,
+        "public_claim_authorized": false,
+        "signature_match": true,
+        "status": "m19_chunked_ranked_summary_partner_bridge_internal_claims_gated"
+      },
+      "warmups": 1
+    },
+    {
+      "chunk_count": 16,
+      "cupy_hot_device_run_seconds_median_sum": 2.0414103865623474,
+      "cupy_materialize_seconds_median_sum": 0.0008673295378684998,
+      "device_result_materialization_after_hot_window": true,
+      "distribution": "clustered",
+      "hot_no_hidden_column_copy_ready": true,
+      "max_query_count": 65536,
+      "numba_hot_device_run_seconds_median_sum": 2.0369639173150063,
+      "numba_materialize_seconds_median_sum": 0.001416616141796112,
+      "point_count": 1048576,
+      "prepared_scene_reused_across_chunks": true,
+      "query_count": 1048576,
+      "raw_evidence": "docs/reports/goal4507_rtnn_chunked_clustered_1048576q1048576_w1r3_2026-06-17.json",
+      "repeats": 3,
+      "signature_match": true,
+      "validation": {
+        "chunk_count": 16,
+        "hot_no_hidden_column_copy_ready": true,
+        "partner_count": 2,
+        "public_claim_authorized": false,
+        "signature_match": true,
+        "status": "m19_chunked_ranked_summary_partner_bridge_internal_claims_gated"
+      },
+      "warmups": 1
+    }
+  ],
+  "version": "rtdl.v3_0.rtnn_chunked_distribution_matrix.goal4507.v1"
+}

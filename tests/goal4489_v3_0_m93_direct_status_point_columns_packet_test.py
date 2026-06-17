@@ -53,10 +53,10 @@ class Goal4489M93DirectStatusPointColumnsPacketTest(unittest.TestCase):
         self.assertIn("Goal4489", report)
         self.assertIn("caller-owned", report)
         self.assertIn("Goal4489 RT-DBSCAN direct-status caller-owned point columns", index)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4506.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4507.v1", route["version"])
         self.assertIn("Goal4489", route["evidence_refs"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4506.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4507.v1",
             adequacy_module.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         self.assertIn("Goal4489", adequacy["evidence_refs"])

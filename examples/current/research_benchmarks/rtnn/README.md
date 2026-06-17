@@ -142,6 +142,11 @@ Goal4506 executes that large chunked route on the pod for the uniform
 match, prepared scene reuse, same-stream device reductions per chunk, and
 materialization after the hot window. This is partner-continuation evidence; it
 is still not an aggregate-only full-batch direct comparison claim.
+Goal4507 extends the same 1,048,576-query chunked runtime method across the
+current synthetic distribution family. Hot median-sums are `0.082908s` CuPy /
+`0.083390s` Numba for uniform, `0.609413s` CuPy / `0.609404s` Numba for shell,
+and `2.041410s` CuPy / `2.036964s` Numba for clustered, with signature and
+hot no-hidden-column-copy gates passing on all rows.
 
 The important boundary is that RTDL exact aggregate and app graph-bridge rows
 are RTDL-internal same-contract evidence; the official RTNN rows are diagnostic

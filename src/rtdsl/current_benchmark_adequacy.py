@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4506.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4507.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -559,7 +559,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "same 1,048,576-query uniform chunked route: 16 chunks, prepared scene "
             "reuse, same-stream device reductions, signature match, no-hidden-column-copy "
             "hot gate, and hot median-sums of `0.082908s` for CuPy and `0.083390s` "
-            "for Numba. "
+            "for Numba. Goal4507 extends the same 1,048,576-query chunked runtime "
+            "method across the current synthetic distribution family: shell measures "
+            "`0.609413s` CuPy / `0.609404s` Numba and clustered measures "
+            "`2.041410s` CuPy / `2.036964s` Numba, with signature and hot "
+            "no-hidden-column-copy gates passing on all rows. "
             "This is strong evidence for RTDL V3 route selection, "
             "but not a same-output author-code victory claim."
         ),
@@ -621,6 +625,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4504",
             "Goal4505",
             "Goal4506",
+            "Goal4507",
         ),
         "pod_needed_next": False,
     },

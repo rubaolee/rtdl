@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4506.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4507.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -776,7 +776,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "same 1,048,576-query uniform partner-continuation route on the pod: "
             "16 chunks, prepared scene reuse, same-stream device reductions, signature "
             "match, no-hidden-column-copy hot gate, and hot median-sums of about "
-            "0.083s for both CuPy and Numba. Report these "
+            "0.083s for both CuPy and Numba. Goal4507 extends the same 1,048,576-query "
+            "chunked runtime method to shell and clustered rows: shell is about "
+            "0.609s for both partners and clustered is about 2.04s, with signature "
+            "and no-hidden-column-copy gates still passing. Report these "
             "as different output contracts: author full K-id materialization "
             "versus RTDL ranked-summary aggregate."
         ),
@@ -841,6 +844,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4504",
             "Goal4505",
             "Goal4506",
+            "Goal4507",
         ),
         pod_needed_next=False,
     ),
