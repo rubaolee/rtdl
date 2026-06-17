@@ -2,20 +2,21 @@
 
 ## Conclusion
 
-M131 prevents an incorrect Barnes-Hut RT-native implementation from landing. A direct OptiX GAS containing every aggregate-tree node cannot, by itself, express the Barnes-Hut rule that accepting a parent aggregate suppresses all descendants; reporting nodes independently would double count unless a separate reviewed hierarchical traversal/skip design exists. The fail-closed ABI therefore stays in place, Barnes-Hut moves to a design-blocker lane, and the active runtime queue advances to RT-DBSCAN graph capture.
+M131 prevents an incorrect Barnes-Hut RT-native implementation from landing. A direct OptiX GAS containing every aggregate-tree node cannot, by itself, express the Barnes-Hut rule that accepting a parent aggregate suppresses all descendants; reporting nodes independently would double count unless a separate reviewed hierarchical traversal/skip design exists. The fail-closed ABI therefore stays in place, and Barnes-Hut remains a future design target rather than a current V3 app implementation blocker.
 
 ## Decision
 
 - Replace fail-closed ABI now: `False`
 - Implement naive all-node OptiX any-hit: `False`
-- Advance to RT-DBSCAN runtime work: `True`
+- Current runtime queue remains empty: `True`
 
 ## Queue
 
-- Barnes-Hut class: `design_blocker`
-- Runtime queue: `rt_dbscan, triangle_counting`
-- Design blocker queue: `barnes_hut`
-- Next runtime build target: `rt_dbscan`
+- Barnes-Hut class: `future_design_target`
+- Runtime queue: ``
+- Design blocker queue: ``
+- Future design target queue: `barnes_hut, triangle_counting`
+- Next runtime build target: `None`
 
 ## Future Barnes-Hut Requirement
 

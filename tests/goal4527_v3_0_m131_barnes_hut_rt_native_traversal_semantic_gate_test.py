@@ -37,7 +37,7 @@ class Goal4527V30M131BarnesHutRtNativeTraversalSemanticGateTest(unittest.TestCas
         source = self.packet["source_audit"]
 
         self.assertEqual(
-            "rtdl.v3_0.barnes_hut_rt_native_traversal_semantic_gate.goal4527.v1",
+            "rtdl.v3_0.barnes_hut_rt_native_traversal_semantic_gate.goal4527.v2",
             self.packet["version"],
         )
         self.assertTrue(constraints["parent_acceptance_suppresses_descendants"])
@@ -45,19 +45,23 @@ class Goal4527V30M131BarnesHutRtNativeTraversalSemanticGateTest(unittest.TestCas
         self.assertFalse(constraints["single_trace_parent_subtree_skip_proof_exists"])
         self.assertFalse(decision["implement_naive_all_node_optix_anyhit"])
         self.assertFalse(decision["replace_fail_closed_abi_now"])
-        self.assertTrue(decision["advance_to_rt_dbscan_runtime_work"])
+        self.assertTrue(decision["current_runtime_queue_remains_empty"])
         self.assertTrue(all(source["fail_closed_fragments"].values()))
 
-    def test_queue_advances_to_rt_dbscan_with_barnes_hut_design_blocked(self) -> None:
+    def test_queue_keeps_barnes_hut_as_future_design_target(self) -> None:
         queue = self.packet["queue_alignment"]
         checks = queue["queue_checks"]
         validation = rt.validate_v3_benchmark_implementation_queue()
 
         self.assertEqual("accept", validation["status"])
-        self.assertEqual("design_blocker", queue["barnes_hut_work_class"])
-        self.assertEqual("rt_dbscan", queue["next_runtime_build_target"])
-        self.assertEqual(("rt_dbscan", "triangle_counting"), tuple(queue["runtime_build_queue"]))
-        self.assertEqual(("barnes_hut",), tuple(queue["design_blocker_queue"]))
+        self.assertEqual("future_design_target", queue["barnes_hut_work_class"])
+        self.assertIsNone(queue["next_runtime_build_target"])
+        self.assertEqual((), tuple(queue["runtime_build_queue"]))
+        self.assertEqual((), tuple(queue["design_blocker_queue"]))
+        self.assertEqual(
+            ("barnes_hut", "triangle_counting"),
+            tuple(queue["future_design_target_queue"]),
+        )
         self.assertTrue(all(checks.values()))
 
     def test_report_docs_and_boundary_are_present(self) -> None:

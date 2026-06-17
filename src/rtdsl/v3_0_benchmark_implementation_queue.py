@@ -8,23 +8,26 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION = (
-    "rtdl.v3_0.benchmark_implementation_queue.goal4533.v6"
+    "rtdl.v3_0.benchmark_implementation_queue.goal4534.v7"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_STATUS = (
-    "post_claim_scope_closeout_design_only_queue_not_release_authorization"
+    "post_current_app_completion_future_design_targets_not_release_authorization"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_CLAIM_BOUNDARY = (
     "This queue ranks post-clean-target implementation work after Goal4515 "
     "and Goal4523. Goal4533 closes RTNN and Spatial RayJoin as claim-scoped "
-    "current targets without expanding their public/paper wording. It does not "
-    "change any current benchmark app route and does not authorize public "
-    "speedup, broad RT-core, paper-reproduction, automatic partner-selection, "
-    "or app-specific native-engine wording."
+    "current targets without expanding their public/paper wording. Goal4534 "
+    "records Barnes-Hut and Triangle Counting as future design targets rather "
+    "than current app implementation blockers. It does not change any current "
+    "benchmark app route and does not authorize public speedup, broad RT-core, "
+    "paper-reproduction, automatic partner-selection, or app-specific "
+    "native-engine wording."
 )
 
 V3_IMPLEMENTATION_WORK_CLASSES = (
     "runtime_blocker",
     "design_blocker",
+    "future_design_target",
     "claim_or_evidence_blocker",
     "closed_current_target",
 )
@@ -108,13 +111,15 @@ _ROWS: tuple[V3BenchmarkImplementationQueueRow, ...] = (
     V3BenchmarkImplementationQueueRow(
         app="barnes_hut",
         priority=1,
-        work_class="design_blocker",
+        work_class="future_design_target",
         current_route_status=(
             "current V3 route is mixed explicit: CPU/Numba or Numba CUDA fused "
             "force summary by scale; prepared RTDL/OptiX remains device-column "
             "evidence, not Barnes-Hut RT-core traversal evidence"
         ),
         remaining_gap=(
+            "no current V3 app implementation blocker after Goal4512; future "
+            "RT-native Barnes-Hut acceleration remains a design target because "
             "Goal4527 blocks a naive node-AABB OptiX implementation: Barnes-Hut "
             "opening accepts a parent aggregate and must suppress its descendants, "
             "while a single custom-primitive GAS reports node AABBs independently "
@@ -165,13 +170,15 @@ _ROWS: tuple[V3BenchmarkImplementationQueueRow, ...] = (
     V3BenchmarkImplementationQueueRow(
         app="triangle_counting",
         priority=2,
-        work_class="design_blocker",
+        work_class="future_design_target",
         current_route_status=(
             "current V3 route is explicit numba_direct_sort_rle prepared segment "
             "replay after primitive evidence; it completes the large paper rows "
             "but remains an internal route"
         ),
         remaining_gap=(
+            "no current V3 app implementation blocker after Goal4511; future "
+            "M113 graph-style Triangle replay remains a design target because "
             "Goal4530 validates app-agnostic device key/count payload merge for "
             "cross-chunk duplicate keys, and Goal4531 validates a generic "
             "prepared weighted-replay device-output stream executor; CUDA graph "
@@ -302,6 +309,10 @@ def v3_benchmark_implementation_queue() -> dict[str, Any]:
         (row for row in rows if row["work_class"] == "design_blocker"),
         key=lambda row: int(row["priority"]),
     )
+    future_design_rows = sorted(
+        (row for row in rows if row["work_class"] == "future_design_target"),
+        key=lambda row: int(row["priority"]),
+    )
     claim_rows = sorted(
         (row for row in rows if row["work_class"] == "claim_or_evidence_blocker"),
         key=lambda row: int(row["priority"]),
@@ -319,6 +330,7 @@ def v3_benchmark_implementation_queue() -> dict[str, Any]:
             ),
             "runtime_build_queue": tuple(row["app"] for row in runtime_rows),
             "design_blocker_queue": tuple(row["app"] for row in design_rows),
+            "future_design_target_queue": tuple(row["app"] for row in future_design_rows),
             "claim_or_evidence_queue": tuple(row["app"] for row in claim_rows),
             "closed_current_targets": tuple(row["app"] for row in closed_rows),
             "next_runtime_build_target": runtime_rows[0]["app"] if runtime_rows else None,
@@ -341,6 +353,9 @@ def v3_benchmark_implementation_queue() -> dict[str, Any]:
             "runtime_targets_need_pod": all(row["pod_needed_next"] for row in runtime_rows),
             "design_targets_do_not_block_runtime_queue": all(
                 not row["pod_needed_next"] for row in design_rows
+            ),
+            "future_design_targets_do_not_block_runtime_queue": all(
+                not row["pod_needed_next"] for row in future_design_rows
             ),
         },
     }
@@ -368,16 +383,27 @@ def validate_v3_benchmark_implementation_queue(
             key=lambda row: int(row["priority"]),
         )
     )
+    future_design_apps = tuple(
+        row["app"]
+        for row in sorted(
+            (row for row in rows if row["work_class"] == "future_design_target"),
+            key=lambda row: int(row["priority"]),
+        )
+    )
     checks = {
         "version_current": packet["version"] == V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION,
         "all_promoted_apps_present": apps == set(V2_8_PROMOTED_BENCHMARK_APPS),
         "all_route_apps_present": apps == route_apps,
         "runtime_queue_empty": runtime_apps == (),
-        "design_queue_exact": design_apps == ("barnes_hut", "triangle_counting"),
+        "design_queue_empty": design_apps == (),
+        "future_design_queue_exact": future_design_apps == ("barnes_hut", "triangle_counting"),
         "next_runtime_target_none": packet["summary"]["next_runtime_build_target"] is None,
         "claim_queue_empty": tuple(packet["summary"]["claim_or_evidence_queue"]) == (),
         "design_targets_do_not_block_runtime_queue": bool(
             packet["summary"]["design_targets_do_not_block_runtime_queue"]
+        ),
+        "future_design_targets_do_not_block_runtime_queue": bool(
+            packet["summary"]["future_design_targets_do_not_block_runtime_queue"]
         ),
         "closed_count_is_eight": len(packet["summary"]["closed_current_targets"]) == 8,
         "all_clean_targets_closed": bool(packet["summary"]["all_clean_targets_closed"]),

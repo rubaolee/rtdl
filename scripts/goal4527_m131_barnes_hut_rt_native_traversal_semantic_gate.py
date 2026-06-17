@@ -7,7 +7,7 @@ from typing import Any
 import rtdsl as rt
 
 
-PACKET_VERSION = "rtdl.v3_0.barnes_hut_rt_native_traversal_semantic_gate.goal4527.v1"
+PACKET_VERSION = "rtdl.v3_0.barnes_hut_rt_native_traversal_semantic_gate.goal4527.v2"
 OUT_JSON = Path(
     "docs/reports/goal4527_v3_0_m131_barnes_hut_rt_native_traversal_semantic_gate_2026-06-17.json"
 )
@@ -40,16 +40,14 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "direct_all_node_anyhit_route_accepted": False,
     }
     queue_checks = {
-        "barnes_hut_is_design_blocker": barnes_row["work_class"] == "design_blocker",
+        "barnes_hut_is_future_design_target": barnes_row["work_class"] == "future_design_target",
         "barnes_hut_not_next_runtime_target": (
             queue["summary"]["next_runtime_build_target"] != "barnes_hut"
         ),
-        "rt_dbscan_is_next_runtime_target": (
-            queue["summary"]["next_runtime_build_target"] == "rt_dbscan"
-        ),
+        "runtime_queue_empty": tuple(queue["summary"]["runtime_build_queue"]) == (),
         "goal4527_recorded": "Goal4527" in barnes_row["evidence_refs"],
-        "design_queue_recorded": tuple(queue["summary"]["design_blocker_queue"])
-        == ("barnes_hut",),
+        "future_design_queue_recorded": tuple(queue["summary"]["future_design_target_queue"])
+        == ("barnes_hut", "triangle_counting"),
     }
     return {
         "version": PACKET_VERSION,
@@ -75,12 +73,13 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "next_runtime_build_target": queue["summary"]["next_runtime_build_target"],
             "runtime_build_queue": queue["summary"]["runtime_build_queue"],
             "design_blocker_queue": queue["summary"]["design_blocker_queue"],
+            "future_design_target_queue": queue["summary"]["future_design_target_queue"],
             "queue_checks": queue_checks,
         },
         "implementation_decision": {
             "replace_fail_closed_abi_now": False,
             "implement_naive_all_node_optix_anyhit": False,
-            "advance_to_rt_dbscan_runtime_work": True,
+            "current_runtime_queue_remains_empty": True,
             "future_barnes_hut_requirements": (
                 "A future Barnes-Hut RT-native route must use a reviewed generic "
                 "hierarchical traversal lowering that proves accepted aggregate "
@@ -104,8 +103,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "parent aggregate suppresses all descendants; reporting nodes "
             "independently would double count unless a separate reviewed "
             "hierarchical traversal/skip design exists. The fail-closed ABI "
-            "therefore stays in place, Barnes-Hut moves to a design-blocker lane, "
-            "and the active runtime queue advances to RT-DBSCAN graph capture."
+            "therefore stays in place, and Barnes-Hut remains a future design "
+            "target rather than a current V3 app implementation blocker."
         ),
     }
 
@@ -124,13 +123,14 @@ def write_report(packet: dict[str, Any], path: Path) -> None:
         "",
         f"- Replace fail-closed ABI now: `{decision['replace_fail_closed_abi_now']}`",
         f"- Implement naive all-node OptiX any-hit: `{decision['implement_naive_all_node_optix_anyhit']}`",
-        f"- Advance to RT-DBSCAN runtime work: `{decision['advance_to_rt_dbscan_runtime_work']}`",
+        f"- Current runtime queue remains empty: `{decision['current_runtime_queue_remains_empty']}`",
         "",
         "## Queue",
         "",
         f"- Barnes-Hut class: `{queue['barnes_hut_work_class']}`",
         f"- Runtime queue: `{', '.join(queue['runtime_build_queue'])}`",
         f"- Design blocker queue: `{', '.join(queue['design_blocker_queue'])}`",
+        f"- Future design target queue: `{', '.join(queue['future_design_target_queue'])}`",
         f"- Next runtime build target: `{queue['next_runtime_build_target']}`",
         "",
         "## Future Barnes-Hut Requirement",

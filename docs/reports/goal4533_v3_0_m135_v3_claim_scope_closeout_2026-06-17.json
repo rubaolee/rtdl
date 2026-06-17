@@ -6,7 +6,8 @@
     "all_public_speedup_claims_blocked": true,
     "claim_queue_empty": true,
     "closed_count_is_eight": true,
-    "design_queue_exact": true,
+    "design_queue_empty": true,
+    "future_design_queue_exact": true,
     "queue_validates": true,
     "rtnn_closed_claim_scoped": true,
     "runtime_queue_empty": true,
@@ -45,7 +46,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 app implementation blocker after Goal4508; exact paper reproduction, same-output author comparisons, and public RT-core speedup wording remain future optional claim-expansion work because paper dataset recipes and output contracts are not frozen",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4533.v6",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4534.v7",
       "work_class": "closed_current_target"
     },
     "spatial_rayjoin": {
@@ -67,16 +68,16 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 app implementation blocker after Goal4514; full RayJoin paper-reproduction wording and Section 5.7 8/8 overlay wording remain future optional claim-expansion work because the current feasible public packet is scoped to the mixed route and 2/8 overlay evidence",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4533.v6",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4534.v7",
       "work_class": "closed_current_target"
     }
   },
-  "conclusion": "Goal4533 closes RTNN and Spatial RayJoin as V3 current app targets without expanding claims. RTNN exact paper reproduction and same-output author comparison remain future optional claim-expansion work; Spatial RayJoin full RayJoin paper reproduction and Section 5.7 8/8 overlay wording remain future optional claim-expansion work. The V3 implementation queue now has no runtime blocker and no claim/evidence blocker; only Barnes-Hut and Triangle Counting remain design blockers, and none of the public speedup, broad RT-core, paper-reproduction, or automatic partner-selection claims are authorized.",
+  "conclusion": "Goal4533 closes RTNN and Spatial RayJoin as V3 current app targets without expanding claims. RTNN exact paper reproduction and same-output author comparison remain future optional claim-expansion work; Spatial RayJoin full RayJoin paper reproduction and Section 5.7 8/8 overlay wording remain future optional claim-expansion work. The V3 implementation queue now has no runtime blocker and no claim/evidence blocker; only Barnes-Hut and Triangle Counting remain future design targets, and none of the public speedup, broad RT-core, paper-reproduction, or automatic partner-selection claims are authorized.",
   "date": "2026-06-17",
   "failed_checks": [],
   "goal": "Goal4533 / V3 M135",
-  "queue_status": "post_claim_scope_closeout_design_only_queue_not_release_authorization",
-  "queue_version": "rtdl.v3_0.benchmark_implementation_queue.goal4533.v6",
+  "queue_status": "post_current_app_completion_future_design_targets_not_release_authorization",
+  "queue_version": "rtdl.v3_0.benchmark_implementation_queue.goal4534.v7",
   "status": "claim_scope_closeout_checked",
   "summary": {
     "all_app_specific_native_engine_logic_blocked": true,
@@ -98,11 +99,13 @@
       "raydb_style",
       "librts_spatial_index"
     ],
-    "design_blocker_queue": [
+    "design_blocker_queue": [],
+    "design_targets_do_not_block_runtime_queue": true,
+    "future_design_target_queue": [
       "barnes_hut",
       "triangle_counting"
     ],
-    "design_targets_do_not_block_runtime_queue": true,
+    "future_design_targets_do_not_block_runtime_queue": true,
     "next_runtime_build_target": null,
     "runtime_build_queue": [],
     "runtime_targets_need_pod": true

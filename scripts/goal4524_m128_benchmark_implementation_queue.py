@@ -34,20 +34,21 @@ def build_packet() -> dict[str, Any]:
         },
         "conclusion": (
             "M128 turns the post-clean-target app status into a concrete "
-            "implementation queue. Goal4527 later moves Barnes-Hut into a "
-            "design-blocker lane because a naive all-node OptiX any-hit mapping "
-            "cannot preserve aggregate-subtree skip semantics. Goal4528 then "
+            "implementation queue. Goal4527 later fail-closes the naive "
+            "Barnes-Hut all-node OptiX any-hit mapping because it cannot "
+            "preserve aggregate-subtree skip semantics. Goal4528 then "
             "validates the RT-DBSCAN prepared graph capture gate without changing "
             "the current direct-status component-signature route. Goal4530 "
             "validates Triangle Counting's device key/count payload merge, and "
             "Goal4531 validates device-output weighted replay while fail-closing "
             "CUDA graph capture for that OptiX launch. There is now no runtime "
-            "build target in this queue; Triangle and Barnes-Hut are design "
-            "blockers. Goal4533 closes RTNN and Spatial RayJoin as claim-scoped "
+            "build target in this queue. Goal4533 closes RTNN and Spatial RayJoin as claim-scoped "
             "current targets: their full paper/author wording remains blocked, "
             "but that wording is future optional claim expansion rather than a "
-            "current V3 app implementation blocker. The other six apps also have "
-            "no immediate V3 runtime blocker."
+            "current V3 app implementation blocker. Goal4534 records Triangle "
+            "Counting and Barnes-Hut as future design targets rather than current "
+            "app implementation blockers. The other six apps also have no "
+            "immediate V3 runtime blocker."
         ),
     }
 
@@ -67,6 +68,7 @@ def write_report(packet: dict[str, Any], path: Path) -> None:
         f"- Next runtime build target: `{summary['next_runtime_build_target']}`",
         f"- Runtime queue: `{', '.join(summary['runtime_build_queue'])}`",
         f"- Design blocker queue: `{', '.join(summary['design_blocker_queue'])}`",
+        f"- Future design target queue: `{', '.join(summary['future_design_target_queue'])}`",
         f"- Claim/evidence queue: `{', '.join(summary['claim_or_evidence_queue'])}`",
         f"- Closed current targets: `{', '.join(summary['closed_current_targets'])}`",
         "",
