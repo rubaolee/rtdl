@@ -19,7 +19,7 @@ class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
         self.assertTrue(GOAL4261_REPORT.is_file())
         self.assertEqual(
             rt.CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION,
-            "rtdl.v2_10.current_major_performance_targets.goal4261.v1",
+            "rtdl.v3_0.current_major_performance_targets.goal4543.v1",
         )
         self.assertTrue(callable(rt.current_major_performance_targets))
         self.assertTrue(callable(rt.summarize_current_major_performance_targets))
@@ -44,8 +44,9 @@ class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
         rows = {row["target_id"]: row for row in rt.current_major_performance_targets()}
         self.assertEqual(
             rows["ten_app_current_route_health"]["evidence_refs"],
-            ("Goal4215", "Goal4216", "Goal4217", "Goal4225", "Goal4235"),
+            ("Goal4215", "Goal4216", "Goal4217", "Goal4225", "Goal4235", "Goal4542"),
         )
+        self.assertIn("all ten V3", rows["ten_app_current_route_health"]["current_reading"])
         self.assertEqual(rows["ten_app_measurement_adequacy_closure"]["target_status"], "done_internal_evidence")
         self.assertIn("Goal4230", rows["ten_app_measurement_adequacy_closure"]["evidence_refs"])
         self.assertIn("Goal4243", rows["ten_app_measurement_adequacy_closure"]["evidence_refs"])
@@ -59,15 +60,18 @@ class Goal4219MajorPerformanceTargetMapTest(unittest.TestCase):
         self.assertIn("Goal4258", rows["release_grade_long_run_packet"]["evidence_refs"])
         self.assertIn("Goal4259", rows["release_grade_long_run_packet"]["evidence_refs"])
         self.assertIn("Goal4260", rows["release_grade_long_run_packet"]["evidence_refs"])
+        self.assertIn("Goal4542", rows["release_grade_long_run_packet"]["evidence_refs"])
         self.assertIn("Goal4257", rows["major_release_candidate_packet"]["evidence_refs"])
         self.assertIn("Goal4260", rows["major_release_candidate_packet"]["evidence_refs"])
+        self.assertIn("Goal4542", rows["major_release_candidate_packet"]["evidence_refs"])
         self.assertIn("public docs scan", rows["major_release_candidate_packet"]["current_reading"])
         self.assertIn("claim-wording repair loop", rows["major_release_candidate_packet"]["current_reading"])
         self.assertEqual(rows["rtdbscan_profile_aware_boundary_policy"]["target_status"], "done_internal_evidence")
         self.assertIn("contract", rows["rayjoin_contract_split_route_policy"]["theme"])
         self.assertIn("profile-aware", rows["rtdbscan_profile_aware_boundary_policy"]["theme"])
-        self.assertTrue(rows["release_grade_long_run_packet"]["pod_needed_next"])
+        self.assertFalse(rows["release_grade_long_run_packet"]["pod_needed_next"])
         self.assertFalse(rows["prepared_session_residency_surface"]["pod_needed_next"])
+        self.assertFalse(rows["amd_hiprt_functional_parity"]["pod_needed_next"])
         self.assertTrue(rows["amd_hiprt_functional_parity"]["amd_hardware_needed"])
 
     def test_no_target_authorizes_release_or_hidden_dispatch(self) -> None:

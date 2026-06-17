@@ -4,13 +4,16 @@ from dataclasses import dataclass
 from typing import Any
 
 
-CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v2_10.current_major_performance_targets.goal4261.v1"
+CURRENT_MAJOR_PERFORMANCE_TARGET_VERSION = "rtdl.v3_0.current_major_performance_targets.goal4543.v1"
 CURRENT_MAJOR_PERFORMANCE_TARGET_STATUS = "internal_direction_map_not_release_authorization"
 CURRENT_MAJOR_PERFORMANCE_TARGET_CLAIM_BOUNDARY = (
-    "Goal4249 summarizes the major performance direction after Goal4215, "
-    "Goal4218, Goal4222, Goal4223, Goal4230, Goal4235, Goal4239, Goal4243, "
-    "the Goal4248 public-doc claim-boundary scan, and the Goal4254/4258 "
-    "public-claim wording repair closure. It is a route/runtime planning map, not "
+    "Goal4543 refreshes the major performance direction map after the V3 "
+    "post-closure app work through Goal4542: all ten current benchmark apps "
+    "are closed current targets, the current runtime/claim/design/future-design "
+    "queues are empty, and no current target requires immediate pod execution. "
+    "Formal release validation, public performance tables, AMD/HIPRT evidence, "
+    "and future RT-native Barnes-Hut traversal remain separate future gates. "
+    "It is a route/runtime planning map, not "
     "a release packet, not "
     "a public speedup claim, not a whole-app acceleration claim, not a broad "
     "RT-core claim, not a paper-reproduction claim, not a true-zero-copy claim, "
@@ -102,14 +105,18 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
         theme="broad current-route execution evidence",
         status="done_internal_evidence",
         current_reading=(
-            "Goal4235 proves all ten current benchmark front doors pass on RTX 4000 Ada "
-            "at clean source commit 72690687 after measurement closure and external review."
+            "Goal4235 proved all ten current benchmark front doors pass on RTX 4000 Ada "
+            "at clean source commit 72690687 after measurement closure and external review. "
+            "Goal4542 supersedes the current implementation-queue view: all ten V3 "
+            "benchmark apps are closed current targets, and the runtime, claim/evidence, "
+            "design-blocker, and future-design queues are empty."
         ),
         next_action=(
-            "Use Goal4235 as the current internal health packet; do not treat it as a final "
-            "release/performance table without a separate release packet and consensus."
+            "Use Goal4542 as the current post-closure app health packet; do not treat "
+            "it as a final release/performance table without a separate release packet "
+            "and consensus."
         ),
-        evidence_refs=("Goal4215", "Goal4216", "Goal4217", "Goal4225", "Goal4235"),
+        evidence_refs=("Goal4215", "Goal4216", "Goal4217", "Goal4225", "Goal4235", "Goal4542"),
         pod_needed_next=False,
     ),
     CurrentMajorPerformanceTarget(
@@ -194,11 +201,14 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
             "evidence. Goal4248 scans the current public learner/user docs and leaves "
             "zero hard claim-boundary blockers. Goal4254 drafts exact public claim "
             "wording, and Goal4258 closes the Goal4255 repair items with focused "
-            "Claude/Gemini acceptance. This is still not a formal public release "
-            "matrix across consensus, final release commit validation, and hardware classes."
+            "Claude/Gemini acceptance. Goal4542 then closes the current V3 app surface "
+            "with all ten apps as closed current targets. This is still not a formal "
+            "public release matrix across consensus, final release commit validation, "
+            "and hardware classes."
         ),
         next_action=(
-            "Before any formal major release, assemble an explicit release packet with "
+            "No immediate pod run is required by the current app-closure map. Before "
+            "any formal major release, assemble an explicit release packet with "
             "exact artifact provenance and fresh multi-AI consensus over the final packet; "
             "rerun a final pod validation at the exact release commit, and run additional "
             "long timing only if the release claim requires a public performance table."
@@ -216,8 +226,9 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
             "Goal4258",
             "Goal4259",
             "Goal4260",
+            "Goal4542",
         ),
-        pod_needed_next=True,
+        pod_needed_next=False,
     ),
     CurrentMajorPerformanceTarget(
         target_id="amd_hiprt_functional_parity",
@@ -228,11 +239,11 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
             "evidence still requires actual AMD GPU hardware."
         ),
         next_action=(
-            "When an AMD pod is available, run HIPRT functional parity first, then only make "
+            "When an AMD pod is actually available, run HIPRT functional parity first, then only make "
             "performance claims after same-contract AMD evidence exists."
         ),
         evidence_refs=("Goal3784", "Goal3785", "Goal4215"),
-        pod_needed_next=True,
+        pod_needed_next=False,
         amd_hardware_needed=True,
     ),
     CurrentMajorPerformanceTarget(
@@ -243,7 +254,8 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
             "The project has current NVIDIA internal evidence and strict claim boundaries, "
             "and Goal4248 confirms the current public docs scan has zero hard claim-boundary "
             "blockers. Goal4257 drafts the release-candidate packet and Goal4258/4259/4260 "
-            "close the public claim-wording repair loop, but this map does not authorize a release."
+            "close the public claim-wording repair loop. Goal4542 closes the current V3 "
+            "benchmark app surface, but this map does not authorize a release."
         ),
         next_action=(
             "A formal major release needs explicit user release decision, final pod validation "
@@ -262,6 +274,7 @@ CURRENT_MAJOR_PERFORMANCE_TARGETS: tuple[CurrentMajorPerformanceTarget, ...] = (
             "Goal4258",
             "Goal4259",
             "Goal4260",
+            "Goal4542",
         ),
         pod_needed_next=False,
     ),
