@@ -51,8 +51,8 @@ class Goal4526V30M130BarnesHutRtNativeFailClosedAbiTest(unittest.TestCase):
             "scripts.goal4525_m129_barnes_hut_rt_native_python_wrapper_gate"
         ).build_packet(ROOT)
 
-        self.assertEqual("design_blocker", queue["barnes_hut_work_class"])
-        self.assertEqual(1, queue["barnes_hut_priority"])
+        self.assertEqual("closed_current_target", queue["barnes_hut_work_class"])
+        self.assertIsNone(queue["barnes_hut_priority"])
         self.assertIn("Goal4526", queue["barnes_hut_evidence_refs"])
         self.assertIn("direct all-node any-hit route", queue["barnes_hut_next_build_target"])
         self.assertEqual("blocked_fail_closed_native_scaffold", m129["implementation_gate"]["status"])

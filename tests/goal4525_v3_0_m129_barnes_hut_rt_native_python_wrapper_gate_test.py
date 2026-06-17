@@ -89,8 +89,8 @@ class Goal4525V30M129BarnesHutRtNativePythonWrapperGateTest(unittest.TestCase):
         boundary = self.packet["claim_boundary"]
 
         self.assertEqual(self.packet["version"], self.checked_in["version"])
-        self.assertEqual("design_blocker", queue["barnes_hut_work_class"])
-        self.assertEqual(1, queue["barnes_hut_priority"])
+        self.assertEqual("closed_current_target", queue["barnes_hut_work_class"])
+        self.assertIsNone(queue["barnes_hut_priority"])
         self.assertIn("Goal4525", queue["barnes_hut_evidence_refs"])
         self.assertIn("subtree-skip semantics", queue["barnes_hut_remaining_gap"])
         self.assertIn("Goal4525 / V3 M129", report)
