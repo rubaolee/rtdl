@@ -4,7 +4,7 @@ Status: `route_adequacy_consistency_checked`
 
 ## Conclusion
 
-M126 synchronizes the programmatic route-decision and adequacy registries with the M124 RT-DBSCAN and M125 Triangle Counting blocker refinements. RT-DBSCAN now reads as live chunk-handle smoke complete with graph capture still blocking M113; Triangle now reads as a generic key/count payload or disjoint-key-range associativity problem, not an app-specific callback.
+M126 synchronizes the programmatic route-decision and adequacy registries with the later M132/M133/M134 blocker refinements. RT-DBSCAN now records Goal4528 fixed-iteration prepared graph capture/replay as validated for the future M113 shape without changing the current compact-signature route. Triangle now records Goal4530 key/count payload merge as validated and Goal4531 weighted replay device-output stream as valid while CUDA graph capture remains fail-closed for that OptiX weighted launch.
 
 ## Checks
 

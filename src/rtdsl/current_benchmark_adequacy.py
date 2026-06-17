@@ -331,8 +331,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "`clustered3d` and `ngsim_dense`, with matching signatures and "
             "127.93x/82.07x prepare speedups when columns already exist. "
             "Goal4519/Goal4520 then refine the future M113 blocker: chunk-local "
-            "direct-status handles are API-shaped and live-smoked, while prepared "
-            "graph capture remains missing."
+            "direct-status handles are API-shaped and live-smoked. Goal4528 "
+            "validates fixed-iteration prepared graph capture/replay for the "
+            "future M113 shape, while the current compact-signature route stays "
+            "unchanged and automatic policy/partner selection remains blocked."
         ),
         "current_recommended_path": (
             "Explicit RTDL/OptiX self-query predicate direct-status CuPy for measured 524k/1M "
@@ -354,8 +356,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "confirms the same rule at 2M `road3d`, while Goal4496 covers "
             "non-road3d 2M isolated direct-status prepare; run non-road3d 2M "
             "app-total coverage only if it changes a route decision; use "
-            "Goal4519/Goal4520 to read M113 as blocked only on prepared graph "
-            "capture after the live chunk-handle smoke; use "
+            "Goal4528 to read fixed-iteration prepared graph capture/replay "
+            "as validated for the future M113 shape without changing the "
+            "current route; use "
             "graph-only component-size signature only for the narrower "
             "graph-component contract"
         ),
@@ -387,6 +390,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4496",
             "Goal4519",
             "Goal4520",
+            "Goal4528",
         ),
     },
     "robot_collision": {
@@ -738,8 +742,12 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "`numba_direct_sort_rle` route on all three paper rows. Goal4521 "
             "explains the M113 blocker as generic chunked unique/count "
             "associativity: scalar per-chunk unique counts are unsafe across "
-            "duplicate boundary keys, while key/count payload merge or disjoint "
-            "key ranges preserve the app-agnostic design."
+            "duplicate boundary keys. Goal4530 validates the app-agnostic "
+            "device key/count payload merge for cross-chunk duplicates. "
+            "Goal4531 validates a generic prepared weighted-replay device-output "
+            "stream executor, but CUDA graph capture of that OptiX launch fails "
+            "closed with an OptiX/CUDA error, so Triangle M113 promotion is now "
+            "a graph-capture design blocker, not a missing key-count merge debt."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -801,8 +809,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "weights are consumed by generic prepared ray batches, and Numba remains "
             "the no-C++ Python-source reference/direct key-fill option; Goal4479 "
             "improves the Goal4478 `cp.unique(return_counts)` hotspot with explicit "
-            "sort/RLE counting, but the unique/count boundary remains partner-side "
-            "construction debt"
+            "sort/RLE counting; Goal4530 resolves the generic cross-chunk "
+            "key/count payload merge debt, while Goal4531 leaves graph capture "
+            "of the weighted OptiX replay fail-closed"
         ),
         "next_generic_runtime_action": (
             "keep scalar triangle-count wording primitive-first; do not claim RT-Graph "
@@ -838,11 +847,13 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "paper rows. Keep `numba_direct_sort_rle` as the current complete "
             "route. Goal4521 clarifies that an M113-safe future path must carry "
             "key/count payloads to an associative merge or prove disjoint chunk "
-            "key ranges, while also validating graph capture. If Triangle "
-            "Counting is revisited, target a coarser-batched segmented "
-            "unique/count strategy with fewer per-segment kernel launches or a "
-            "reusable key/count payload merge primitive, not this exact "
-            "per-segment local hash branch."
+            "key ranges; Goal4530 validates that app-agnostic merge path. "
+            "Goal4531 validates generic weighted replay to a device-output stream "
+            "but fail-closes CUDA graph capture of the OptiX weighted launch. "
+            "If Triangle Counting is revisited, target either a reviewed "
+            "capture-compatible OptiX weighted replay design or accept the "
+            "stream device-output executor as a non-graph continuation contract; "
+            "do not spend the next cycle re-solving the key/count merge."
         ),
         "evidence_refs": (
             "Goal2797",
@@ -881,6 +892,8 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4493",
             "Goal4494",
             "Goal4521",
+            "Goal4530",
+            "Goal4531",
         ),
     },
 }

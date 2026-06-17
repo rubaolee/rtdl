@@ -7,7 +7,7 @@ from typing import Any
 import rtdsl as rt
 
 
-PACKET_VERSION = "rtdl.v3_0.route_adequacy_consistency.goal4522.v1"
+PACKET_VERSION = "rtdl.v3_0.route_adequacy_consistency.goal4522.v2"
 OUT_JSON = Path("docs/reports/goal4522_v3_0_m126_route_adequacy_consistency_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4522_v3_0_m126_route_adequacy_consistency_2026-06-17.md")
 
@@ -21,28 +21,36 @@ def build_packet() -> dict[str, Any]:
     adequacy = {row["app"]: row for row in rt.current_benchmark_adequacy()}
     checks = {
         "rt_dbscan_route_refs": all(
-            ref in routes["rt_dbscan"]["evidence_refs"] for ref in ("Goal4519", "Goal4520")
+            ref in routes["rt_dbscan"]["evidence_refs"]
+            for ref in ("Goal4519", "Goal4520", "Goal4528")
         ),
         "rt_dbscan_route_wording": _contains_all(
             routes["rt_dbscan"]["current_reader_decision"],
-            ("Goal4519/Goal4520", "prepared graph capture", "current route does not change"),
+            ("Goal4528", "prepared graph capture/replay", "current route does not change"),
         ),
         "rt_dbscan_adequacy_refs": all(
-            ref in adequacy["rt_dbscan"]["evidence_refs"] for ref in ("Goal4519", "Goal4520")
+            ref in adequacy["rt_dbscan"]["evidence_refs"]
+            for ref in ("Goal4519", "Goal4520", "Goal4528")
         ),
         "rt_dbscan_adequacy_wording": _contains_all(
             adequacy["rt_dbscan"]["next_generic_runtime_action"],
-            ("Goal4519/Goal4520", "live chunk-handle smoke", "prepared graph capture"),
+            ("Goal4528", "prepared graph capture/replay", "current route"),
         ),
-        "triangle_route_ref": "Goal4521" in routes["triangle_counting"]["evidence_refs"],
+        "triangle_route_ref": all(
+            ref in routes["triangle_counting"]["evidence_refs"]
+            for ref in ("Goal4521", "Goal4530", "Goal4531")
+        ),
         "triangle_route_wording": _contains_all(
             routes["triangle_counting"]["next_runtime_action"],
-            ("Goal4521", "key/count payloads", "graph capture"),
+            ("Goal4530", "Goal4531", "device-output stream", "fail-closes"),
         ),
-        "triangle_adequacy_ref": "Goal4521" in adequacy["triangle_counting"]["evidence_refs"],
+        "triangle_adequacy_ref": all(
+            ref in adequacy["triangle_counting"]["evidence_refs"]
+            for ref in ("Goal4521", "Goal4530", "Goal4531")
+        ),
         "triangle_adequacy_wording": _contains_all(
             adequacy["triangle_counting"]["next_generic_runtime_action"],
-            ("Goal4521", "key/count payloads", "graph capture"),
+            ("Goal4530", "Goal4531", "device-output stream", "fail-closes"),
         ),
         "route_registry_valid": rt.validate_current_benchmark_route_decisions()["status"] == "accept",
         "adequacy_registry_valid": rt.validate_current_benchmark_adequacy()["status"] == "accept",
@@ -73,10 +81,13 @@ def build_packet() -> dict[str, Any]:
         },
         "conclusion": (
             "M126 synchronizes the programmatic route-decision and adequacy registries "
-            "with the M124 RT-DBSCAN and M125 Triangle Counting blocker refinements. "
-            "RT-DBSCAN now reads as live chunk-handle smoke complete with graph capture "
-            "still blocking M113; Triangle now reads as a generic key/count payload "
-            "or disjoint-key-range associativity problem, not an app-specific callback."
+            "with the later M132/M133/M134 blocker refinements. RT-DBSCAN now "
+            "records Goal4528 fixed-iteration prepared graph capture/replay as "
+            "validated for the future M113 shape without changing the current "
+            "compact-signature route. Triangle now records Goal4530 key/count "
+            "payload merge as validated and Goal4531 weighted replay device-output "
+            "stream as valid while CUDA graph capture remains fail-closed for "
+            "that OptiX weighted launch."
         ),
     }
 

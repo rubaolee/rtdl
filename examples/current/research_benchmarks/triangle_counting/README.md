@@ -259,30 +259,27 @@ count kernels remain faster than RTDL query/native traversal. Do not write
 RTDL-beats-cuGraph, RTDL-beats-authors-pure-kernel, or public RT-core
 triangle-count speedup wording.
 
-Goal4521 explains the remaining M113 blocker in generic continuation terms.
+Goal4521 explains the original M113 blocker in generic continuation terms.
 Per-chunk scalar unique/count summaries are not associative when the same
 logical key can cross chunk boundaries. The generic solution is to carry
 key/count payloads into a final associative merge, or to prove disjoint chunk
-key ranges; it does not require an app-specific OptiX callback. The current
-Triangle route does not change, and M113 promotion remains blocked until the
-key-payload final merge and graph capture are both validated.
+key ranges; it does not require an app-specific OptiX callback.
 
 Goal4530 validates the key/count half of that fix on the CUDA pod with an
 app-agnostic CuPy device-side payload merge over encoded int64 keys. Duplicate
 logical keys crossing chunk boundaries are merged without pre-merge host key or
-count materialization, and the result matches the host associative reference.
-After Goal4530, the Triangle M113 gate is blocked only on prepared graph capture
-for the weighted prepared replay path. The current internal route still does not
-change.
+count materialization, and the result matches the host associative reference. It
+removes the missing key-payload merge debt.
 
 Goal4531 validates the generic prepared ray-batch weighted-summary
 device-output stream executor on a small CUDA fixture: the weighted hit sum is
 written to a caller-owned device scalar on a caller stream, matching the older
 host-scalar result without per-run ray or weight upload. CUDA graph capture of
 that OptiX weighted launch is fail-closed on the pod with an OptiX/CUDA capture
-error, so the future Triangle M113 graph shape remains blocked. This still does
-not replace the current large paper-row route or authorize public RT-core
-speedup wording.
+error, so the future Triangle M113 graph shape remains a graph-capture design
+blocker rather than a missing key/count merge blocker. This still does not
+replace the current large paper-row route or authorize public RT-core speedup
+wording.
 
 The current internal route is Goal4479:
 

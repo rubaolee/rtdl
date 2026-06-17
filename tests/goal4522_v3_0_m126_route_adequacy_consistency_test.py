@@ -19,12 +19,12 @@ class Goal4522V30M126RouteAdequacyConsistencyTest(unittest.TestCase):
         cls.packet = json.loads(PACKET.read_text(encoding="utf-8"))
 
     def test_packet_checks_all_pass(self) -> None:
-        self.assertEqual("rtdl.v3_0.route_adequacy_consistency.goal4522.v1", self.packet["version"])
+        self.assertEqual("rtdl.v3_0.route_adequacy_consistency.goal4522.v2", self.packet["version"])
         self.assertEqual([], self.packet["failed_checks"])
         for name, passed in self.packet["checks"].items():
             self.assertTrue(passed, name)
 
-    def test_route_and_adequacy_registries_contain_m124_m125_boundaries(self) -> None:
+    def test_route_and_adequacy_registries_contain_post_m134_boundaries(self) -> None:
         routes = {row["app"]: row for row in rt.current_benchmark_route_decisions()}
         adequacy = {row["app"]: row for row in rt.current_benchmark_adequacy()}
         rt_dbscan_route = routes["rt_dbscan"]
@@ -34,13 +34,21 @@ class Goal4522V30M126RouteAdequacyConsistencyTest(unittest.TestCase):
 
         self.assertIn("Goal4519", rt_dbscan_route["evidence_refs"])
         self.assertIn("Goal4520", rt_dbscan_route["evidence_refs"])
+        self.assertIn("Goal4528", rt_dbscan_route["evidence_refs"])
+        self.assertIn("Goal4528", rt_dbscan_adequacy["evidence_refs"])
         self.assertLess(len(rt_dbscan_route["current_reader_decision"]), 900)
-        self.assertIn("prepared graph capture", rt_dbscan_route["current_reader_decision"])
-        self.assertIn("live chunk-handle smoke", rt_dbscan_adequacy["next_generic_runtime_action"])
+        self.assertIn("prepared graph capture/replay", rt_dbscan_route["current_reader_decision"])
+        self.assertIn("prepared graph capture/replay", rt_dbscan_adequacy["next_generic_runtime_action"])
         self.assertIn("Goal4521", triangle_route["evidence_refs"])
         self.assertIn("Goal4521", triangle_adequacy["evidence_refs"])
-        self.assertIn("key/count payloads", triangle_route["next_runtime_action"])
-        self.assertIn("key/count payloads", triangle_adequacy["next_generic_runtime_action"])
+        self.assertIn("Goal4530", triangle_route["evidence_refs"])
+        self.assertIn("Goal4531", triangle_route["evidence_refs"])
+        self.assertIn("Goal4530", triangle_adequacy["evidence_refs"])
+        self.assertIn("Goal4531", triangle_adequacy["evidence_refs"])
+        self.assertIn("device-output stream", triangle_route["next_runtime_action"])
+        self.assertIn("fail-closes", triangle_route["next_runtime_action"])
+        self.assertIn("device-output stream", triangle_adequacy["next_generic_runtime_action"])
+        self.assertIn("fail-closes", triangle_adequacy["next_generic_runtime_action"])
 
     def test_report_index_and_claim_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
