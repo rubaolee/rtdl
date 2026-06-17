@@ -416,6 +416,13 @@ chunk-local handles are plausible. M113 promotion is still blocked until a live
 chunk-handle smoke and prepared graph capture validation exist; the current
 route does not change.
 
+Goal4520 validates the live chunk-handle smoke on the CUDA pod: caller-owned
+CuPy point-column slices can be prepared as chunk-local predicate direct-status
+handles and replayed without coordinate upload or pair-row materialization.
+M113 promotion remains blocked because prepared graph capture is still not
+validated; this is not RT-core speedup evidence and the current route still does
+not change.
+
 ## Current Boundary Policy
 
 For the OptiX+Numba grouped-stream fixed-radius component front door, the

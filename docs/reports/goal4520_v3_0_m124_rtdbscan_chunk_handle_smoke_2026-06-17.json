@@ -1,0 +1,160 @@
+{
+  "chunks": [
+    {
+      "base_x_device_pointer": 130871833133056,
+      "closed_after_smoke": true,
+      "component_signature_runs": 2,
+      "end": 6,
+      "expected_x_device_pointer_offset_bytes": 0,
+      "native_abi_added": false,
+      "pair_materialization_avoided": true,
+      "partition_count": 3,
+      "point_coordinate_columns_source": "caller_owned_cupy_device_columns",
+      "point_coordinate_host_intermediate_tuple_avoided": true,
+      "point_coordinate_upload_avoided": true,
+      "point_count": 6,
+      "repeat_rows": [
+        {
+          "elapsed_sec": 0.06610739976167679,
+          "flag_true_count": 3,
+          "handle_reused": true,
+          "label_counts_nonzero": [
+            3
+          ],
+          "metadata_status": "accept",
+          "negative_label_count": 3,
+          "repeat_index": 0,
+          "run_index": 1
+        },
+        {
+          "elapsed_sec": 0.0005548745393753052,
+          "flag_true_count": 3,
+          "handle_reused": true,
+          "label_counts_nonzero": [
+            3
+          ],
+          "metadata_status": "accept",
+          "negative_label_count": 3,
+          "repeat_index": 1,
+          "run_index": 2
+        }
+      ],
+      "start": 0,
+      "x_device_pointer": 130871833133056,
+      "x_device_pointer_offset_bytes": 0
+    },
+    {
+      "base_x_device_pointer": 130871833133056,
+      "closed_after_smoke": true,
+      "component_signature_runs": 2,
+      "end": 12,
+      "expected_x_device_pointer_offset_bytes": 48,
+      "native_abi_added": false,
+      "pair_materialization_avoided": true,
+      "partition_count": 3,
+      "point_coordinate_columns_source": "caller_owned_cupy_device_columns",
+      "point_coordinate_host_intermediate_tuple_avoided": true,
+      "point_coordinate_upload_avoided": true,
+      "point_count": 6,
+      "repeat_rows": [
+        {
+          "elapsed_sec": 0.000486716628074646,
+          "flag_true_count": 3,
+          "handle_reused": true,
+          "label_counts_nonzero": [
+            3
+          ],
+          "metadata_status": "accept",
+          "negative_label_count": 3,
+          "repeat_index": 0,
+          "run_index": 1
+        },
+        {
+          "elapsed_sec": 0.00046838074922561646,
+          "flag_true_count": 3,
+          "handle_reused": true,
+          "label_counts_nonzero": [
+            3
+          ],
+          "metadata_status": "accept",
+          "negative_label_count": 3,
+          "repeat_index": 1,
+          "run_index": 2
+        }
+      ],
+      "start": 6,
+      "x_device_pointer": 130871833133104,
+      "x_device_pointer_offset_bytes": 48
+    }
+  ],
+  "claim_boundary": {
+    "automatic_partner_selection_authorized": false,
+    "current_route_changed": false,
+    "m113_promotion_authorized": false,
+    "prepared_graph_capture_validated": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false
+  },
+  "conclusion": "M124 validates the RT-DBSCAN live chunk-handle smoke that M123 left open: caller-owned CuPy point-column slices can be prepared as chunk-local predicate direct-status handles and replayed without coordinate upload or pair-row materialization. M113 promotion remains blocked because prepared graph capture is still not validated.",
+  "date": "2026-06-17",
+  "goal": "Goal4520 / V3 M124",
+  "readiness": {
+    "api_shape_ready": true,
+    "app_id": "rt_dbscan",
+    "automatic_partner_selection_authorized": false,
+    "axis_name": "query",
+    "blockers": [
+      "prepared_graph_capture_not_validated"
+    ],
+    "caller_owned_item_columns_available": true,
+    "chunk_slice_prepare_api_available": true,
+    "contract_key": "fixed_radius_compact_status_continuation_v1",
+    "host_materialization_before_partner": false,
+    "item_count": 2000000,
+    "live_chunk_handle_smoke_validated": true,
+    "max_item_count": 65536,
+    "operation": "prepared_graph_partner_continuation",
+    "partner_continuation_associative": true,
+    "partner_continuation_explicit": true,
+    "plan": null,
+    "prepared_graph_capture_validated": false,
+    "public_speedup_claim_authorized": false,
+    "readiness_status": "blocked_for_m113_plan",
+    "ready_for_m113_plan": false,
+    "runtime_executed": false,
+    "status": "app_agnostic_chunk_local_prepared_handle_readiness_gate",
+    "version": "rtdl.v3_0.chunk_local_prepared_handle_gate.m123.v1",
+    "whole_dataset_prepared_handle_available": true
+  },
+  "runtime": {
+    "base_point_count": 12,
+    "base_x_device_pointer": 130871833133056,
+    "chunk_count": 2,
+    "cupy_version": "14.1.1",
+    "device_backend": "cuda",
+    "partner": "cupy",
+    "runtime_executed": true
+  },
+  "status": "rt_dbscan_chunk_handle_live_smoke_validated_graph_capture_blocked",
+  "validation": {
+    "errors": [],
+    "readiness": {
+      "api_shape_ready": true,
+      "app_id": "rt_dbscan",
+      "blocker_count": 1,
+      "blockers": [
+        "prepared_graph_capture_not_validated"
+      ],
+      "chunk_count": 0,
+      "plan_status": "blocked_for_m113_plan",
+      "public_claim_authorized": false,
+      "readiness_status": "blocked_for_m113_plan",
+      "ready_for_m113_plan": false,
+      "runtime_executed": false,
+      "status": "accept",
+      "version": "rtdl.v3_0.chunk_local_prepared_handle_gate.m123.v1"
+    },
+    "status": "accept"
+  },
+  "version": "rtdl.v3_0.rtdbscan_chunk_handle_smoke.goal4520.v1"
+}
