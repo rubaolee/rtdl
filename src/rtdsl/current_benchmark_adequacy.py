@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4496.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4497.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -108,6 +108,13 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "because sorted groups cover only 0.131%/0.617%/0.001% of two-hop rows on "
     "the three large paper rows; future grouped/local unique-count work must be "
     "a true bounded-kernel strategy, not a sortedness shortcut. "
+    "Goal4497 closes the Barnes-Hut RT-native fused feasibility gate: current "
+    "Barnes-Hut stays mixed explicit because the fastest measured routes are "
+    "fused CPU/Numba or fused Numba CUDA by scale, while RTDL/OptiX remains "
+    "valid RT-core aggregate-frontier device-column evidence but not a "
+    "Barnes-Hut RT-core speedup route until an app-agnostic RT-native fused "
+    "weighted-vector primitive is implemented and compared under the same "
+    "force-summary contract. "
     "This advisory does not authorize "
     "release action, public speedup wording, whole-app acceleration wording, "
     "broad RT-core wording, paper-reproduction wording, true-zero-copy wording, "
@@ -421,7 +428,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "extends the same rerank to 65536/131072 bodies and changes current "
             "guidance to scale-dependent: fused Numba CUDA is fastest at those "
             "larger rows, 2.31x-2.95x faster than fused CPU/Numba and "
-            "5.27x-13.77x faster than prepared RTDL/OptiX+Numba."
+            "5.27x-13.77x faster than prepared RTDL/OptiX+Numba. Goal4497 "
+            "records that current RTDL/OptiX remains under-fused for Barnes-Hut: "
+            "a competitive RT-core path needs a new app-agnostic RT-native fused "
+            "weighted-vector primitive rather than the current aggregate-frontier "
+            "row-emission contract."
         ),
         "adequacy": "adequate",
         "current_recommended_path": (
@@ -432,7 +443,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "`prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda` when "
             "embedding the reusable API directly; choose "
             "`prepared_aggregate_frontier_weighted_vector_optix --partner numba` "
-            "when the purpose is RTDL/OptiX device-column evidence"
+            "when the purpose is RTDL/OptiX device-column evidence; there is no "
+            "current RT-native fused Barnes-Hut route until the Goal4497 primitive "
+            "boundary is implemented"
         ),
         "current_partner_role": (
             "Numba powers the current no-C++ fused CPU and CUDA prototype routes "
@@ -441,15 +454,17 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "the measured comparison partner, not the default winner for this "
             "contract; after Goal4483 the fused Numba CUDA path is the fastest "
             "measured larger-row Barnes-Hut app route, while prepared OptiX+Numba "
-            "remains the RT-core evidence route"
+            "remains the RT-core evidence route. Goal4497 keeps Numba CUDA fused "
+            "classified as a no-C++ GPU partner route, not an RT-core route."
         ),
         "next_generic_runtime_action": (
             "treat as covered for Numba-reference, fused CPU/GPU partner, "
             "presegmented grouped-vector continuation, and route-choice evidence; "
-            "Barnes-Hut RT-core speedup requires promoting the fused subtree "
-            "traversal plus vector accumulation shape into an app-agnostic "
-            "RT-native/device primitive and comparing against the Goal4483 "
-            "large-row fused Numba CUDA result, not more host-row optimization"
+            "Barnes-Hut RT-core speedup now requires implementing and validating "
+            "the Goal4497 app-agnostic RT-native fused weighted-vector primitive "
+            "boundary and comparing against the Goal4483 large-row fused Numba "
+            "CUDA result plus Goal4458 small-row fused CPU/Numba result, not more "
+            "host-row or aggregate-frontier row-emission optimization"
         ),
         "evidence_refs": (
             "Goal2803",
@@ -474,7 +489,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4450",
             "Goal4458",
             "Goal4483",
+            "Goal4497",
         ),
+        "pod_needed_next": True,
     },
     "rtnn": {
         "current_performance_reading": (

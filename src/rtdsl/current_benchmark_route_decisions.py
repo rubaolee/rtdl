@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4496.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4497.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -120,6 +120,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "65536/131072 bodies and makes Barnes-Hut guidance scale-dependent: fused "
     "Numba CUDA is fastest there, while prepared RTDL/OptiX+Numba remains slower "
     "because aggregate-frontier row emission is still the hot-path contract. "
+    "Goal4497 closes the Barnes-Hut RT-native fused feasibility gate: current "
+    "V3 guidance keeps Barnes-Hut mixed explicit until an app-agnostic "
+    "`generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1`-style "
+    "primitive fuses traversal, opening-rule acceptance, exact fallback, and "
+    "weighted vector accumulation inside a native RT/device path. "
     "Goal4461 adds the Triangle Counting "
     "segmented RT-2A1 route: CuPy builds a directed CSR and two-hop count estimate, "
     "then bounded duplicate two-hop ray batches reuse one generic OptiX triangle "
@@ -617,14 +622,20 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4440 host-materialized logical baselines remain diagnostic. For that prepared "
             "OptiX contract, Numba remains the fastest measured GPU partner. For the prepared "
             "OptiX contract, Numba remains faster than CuPy on Goal4458 and Goal4483. Do "
-            "not state Barnes-Hut RT-core speedup wording."
+            "not state Barnes-Hut RT-core speedup wording. Goal4497 records that the next "
+            "RT-core Barnes-Hut attempt must be a new app-agnostic RT-native fused "
+            "weighted-vector primitive, not more tuning of the aggregate-frontier "
+            "row-emission contract."
         ),
         primary_route=(
             "mixed explicit: scale-dependent fused CPU/Numba or fused Numba CUDA app route; "
             "RTDL/OptiX+Numba for RT-core device-column evidence"
         ),
         partner_policy="explicit_route_choice_cpu_numba_or_optix_numba_cupy_comparison",
-        primitive_contract="aggregate-frontier fused vector sum plus prepared device-column frontier continuation",
+        primitive_contract=(
+            "aggregate-frontier fused vector sum plus prepared device-column frontier continuation; "
+            "proposed future generic RT-native fused weighted-vector primitive"
+        ),
         user_choice_guidance=(
             "Choose fused_frontier_force_sum_bucketized_cpu_numba for the small tested "
             "Goal4458 rows where CPU/Numba is fastest. Choose "
@@ -648,13 +659,16 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Barnes-Hut RT-core speedup claim after Goal4483 larger-row rerank",
             "universal CPU/Numba fastest claim after Goal4483",
             "promoting prepared OptiX+CuPy over prepared OptiX+Numba after Goal4458",
+            "treating fused Numba CUDA partner as an RT-core route before a native fused primitive exists",
+            "continuing aggregate-frontier row-emission tuning as the final Barnes-Hut RT-core route after Goal4497",
         ),
         next_runtime_action=(
-            "if Barnes-Hut RT-core acceleration remains a goal, design a fused RT-native/device "
-            "route that avoids aggregate-frontier row emission and compare it against Goal4483 "
-            "large-row fused Numba CUDA plus Goal4458 small-row fused CPU/Numba under the same "
-            "force-summary contract; otherwise keep Barnes-Hut as mixed explicit scale-dependent "
-            "fused CPU/GPU partner plus RT device-column evidence"
+            "if Barnes-Hut RT-core acceleration remains a near-term V3 goal, implement and "
+            "validate the Goal4497 app-agnostic RT-native fused weighted-vector primitive "
+            "boundary, then compare it against Goal4483 large-row fused Numba CUDA plus "
+            "Goal4458 small-row fused CPU/Numba under the same force-summary contract; "
+            "otherwise keep Barnes-Hut as mixed explicit scale-dependent fused CPU/GPU "
+            "partner plus RT device-column evidence"
         ),
         evidence_refs=(
             "Goal2803",
@@ -675,8 +689,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4450",
             "Goal4458",
             "Goal4483",
+            "Goal4497",
         ),
-        pod_needed_next=False,
+        pod_needed_next=True,
     ),
     CurrentBenchmarkRouteDecision(
         app="librts_spatial_index",
