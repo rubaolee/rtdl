@@ -8,10 +8,10 @@
     "release_authorized": false,
     "runtime_executed": false
   },
-  "conclusion": "M128 turns the post-clean-target app status into a concrete implementation queue. Goal4527 later moves Barnes-Hut into a design-blocker lane because a naive all-node OptiX any-hit mapping cannot preserve aggregate-subtree skip semantics. Goal4528 then validates the RT-DBSCAN prepared graph capture gate without changing the current direct-status component-signature route. The next runtime build target is now Triangle Counting chunked unique/count payload merge. RTNN and Spatial RayJoin remain claim/evidence packaging blockers rather than missing current primitives, and the other six apps have no immediate V3 runtime blocker.",
+  "conclusion": "M128 turns the post-clean-target app status into a concrete implementation queue. Goal4527 later moves Barnes-Hut into a design-blocker lane because a naive all-node OptiX any-hit mapping cannot preserve aggregate-subtree skip semantics. Goal4528 then validates the RT-DBSCAN prepared graph capture gate without changing the current direct-status component-signature route. The next runtime build target is now Triangle Counting prepared weighted-replay graph capture after Goal4530 validates the device key/count payload merge. RTNN and Spatial RayJoin remain claim/evidence packaging blockers rather than missing current primitives, and the other six apps have no immediate V3 runtime blocker.",
   "date": "2026-06-17",
   "goal": "Goal4524 / V3 M128",
-  "queue_status": "post_rt_dbscan_prepared_graph_capture_queue_triangle_runtime_next_not_release_authorization",
+  "queue_status": "post_triangle_device_key_payload_merge_queue_graph_capture_next_not_release_authorization",
   "rows": [
     {
       "app": "barnes_hut",
@@ -36,7 +36,7 @@
       "priority": 1,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "Goal4527 blocks a naive node-AABB OptiX implementation: Barnes-Hut opening accepts a parent aggregate and must suppress its descendants, while a single custom-primitive GAS reports node AABBs independently and cannot enforce subtree-skip semantics without a reviewed generic hierarchical traversal design",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4",
       "work_class": "design_blocker"
     },
     {
@@ -61,7 +61,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4510 clean-target closure, Goal4520 live chunk-handle smoke, and Goal4528 prepared graph capture/replay validation",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4",
       "work_class": "closed_current_target"
     },
     {
@@ -75,15 +75,16 @@
       "evidence_refs": [
         "Goal4479",
         "Goal4511",
-        "Goal4521"
+        "Goal4521",
+        "Goal4530"
       ],
-      "next_build_target": "build a generic chunked key/count payload merge primitive or disjoint-key-range plan, then validate a coarser prepared continuation with fewer per-segment launches",
+      "next_build_target": "add or fail-close a generic prepared ray-batch weighted-summary graph capture path that avoids scalar host synchronization inside capture, then rerun the Triangle M113 gate",
       "paper_reproduction_claim_authorized": false,
       "pod_needed_next": true,
       "priority": 1,
       "public_speedup_claim_authorized": false,
-      "remaining_gap": "scalar per-chunk unique counts are not associative when duplicate keys cross chunk boundaries; an M113-safe path needs key/count payload merge or proven disjoint key ranges plus graph capture",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3",
+      "remaining_gap": "Goal4530 validates app-agnostic device key/count payload merge for cross-chunk duplicate keys; the remaining M113 blocker is prepared graph capture or on-stream device-output replay for the weighted prepared segment path",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4",
       "work_class": "runtime_blocker"
     },
     {
@@ -107,7 +108,7 @@
       "priority": 10,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "public paper-reproduction and same-output author claims remain blocked by dataset recipes and output-contract differences, not by a missing current RTDL primitive",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4",
       "work_class": "claim_or_evidence_blocker"
     },
     {
@@ -128,7 +129,7 @@
       "priority": 11,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "full RayJoin paper-reproduction wording and Section 5.7 8/8 overlay wording remain claim-scoped; the current limitation is not a missing generic primitive for the already scoped 2/8 overlay evidence",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4",
       "work_class": "claim_or_evidence_blocker"
     },
     {
@@ -148,7 +149,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4",
       "work_class": "closed_current_target"
     },
     {
@@ -169,7 +170,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4",
       "work_class": "closed_current_target"
     },
     {
@@ -189,7 +190,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4",
       "work_class": "closed_current_target"
     },
     {
@@ -209,7 +210,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4",
       "work_class": "closed_current_target"
     },
     {
@@ -229,7 +230,7 @@
       "priority": null,
       "public_speedup_claim_authorized": false,
       "remaining_gap": "no current V3 runtime blocker after Goal4513 clean-target audit",
-      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3",
+      "version": "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4",
       "work_class": "closed_current_target"
     }
   ],
@@ -284,7 +285,7 @@
     },
     "failed_checks": [],
     "status": "accept",
-    "version": "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3"
+    "version": "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4"
   },
-  "version": "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3"
+  "version": "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4"
 }

@@ -29,7 +29,7 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3",
+            "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4",
             self.packet["version"],
         )
         self.assertEqual(10, summary["app_count"])
@@ -48,7 +48,7 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
         self.assertEqual("closed_current_target", self.rows["rt_dbscan"]["work_class"])
         self.assertIn("Goal4528 prepared graph", self.rows["rt_dbscan"]["remaining_gap"])
         self.assertEqual("runtime_blocker", self.rows["triangle_counting"]["work_class"])
-        self.assertIn("key/count payload", self.rows["triangle_counting"]["next_build_target"])
+        self.assertIn("weighted-summary graph capture", self.rows["triangle_counting"]["next_build_target"])
 
         self.assertEqual("claim_or_evidence_blocker", self.rows["rtnn"]["work_class"])
         self.assertIn("output-contract differences", self.rows["rtnn"]["remaining_gap"])

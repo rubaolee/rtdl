@@ -345,6 +345,7 @@ from .v3_0_prepared_graph_chunk_executor import V3_CHUNKED_UNIQUE_COUNT_CONTINUA
 from .v3_0_prepared_graph_chunk_executor import assess_v3_chunk_local_prepared_handle_readiness
 from .v3_0_prepared_graph_chunk_executor import assess_v3_chunked_unique_count_continuation_readiness
 from .v3_0_prepared_graph_chunk_executor import combine_v3_chunked_unique_count_key_payloads
+from .v3_0_prepared_graph_chunk_executor import combine_v3_chunked_unique_count_key_payloads_cupy
 from .v3_0_prepared_graph_chunk_executor import assess_v3_prepared_graph_chunk_executor_adoption
 from .v3_0_prepared_graph_chunk_executor import combine_v3_prepared_graph_chunk_signatures
 from .v3_0_prepared_graph_chunk_executor import plan_v3_prepared_graph_chunk_executor
@@ -2614,6 +2615,7 @@ __all__ = [
     "v2_8_benchmark_runtime_gap_matrix",
     "v2_8_runtime_target_summary",
     "validate_v2_8_benchmark_runtime_gap_map",
+    "combine_v3_chunked_unique_count_key_payloads_cupy",
     "V28BenchmarkMatrixRow",
     "V2_8_BENCHMARK_MATRIX_CLAIM_BOUNDARY",
     "V2_8_BENCHMARK_MATRIX_CLASSIFICATIONS",

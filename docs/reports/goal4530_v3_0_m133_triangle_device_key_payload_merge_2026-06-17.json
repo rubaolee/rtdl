@@ -1,0 +1,104 @@
+{
+  "claim_boundary": {
+    "app_specific_native_callback_required": false,
+    "automatic_partner_selection_authorized": false,
+    "current_route_changed": false,
+    "device_key_payload_merge_validated": true,
+    "m113_promotion_authorized_for_current_triangle": false,
+    "prepared_graph_capture_validated": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false
+  },
+  "conclusion": "M133 validates the app-agnostic device-side key/count payload merge needed by Triangle Counting when duplicate logical keys cross chunk boundaries. This removes the key-payload final-merge debt, but the current Triangle M113 gate remains blocked on prepared graph capture for the weighted prepared replay path.",
+  "date": "2026-06-17",
+  "device_merge": {
+    "counts": [
+      6,
+      5,
+      5,
+      1,
+      1,
+      1
+    ],
+    "cross_chunk_duplicate_delta": 3,
+    "host_count_materialization_before_merge": false,
+    "host_key_materialization_before_merge": false,
+    "key_encoding": "int64_encoded_key",
+    "scalar_chunk_sum": 9,
+    "status": "device_associative_unique_count_key_payload_merge",
+    "total_weight": 19,
+    "unique_key_count": 6,
+    "unique_keys": [
+      11,
+      17,
+      23,
+      29,
+      31,
+      37
+    ]
+  },
+  "goal": "Goal4530 / V3 M133",
+  "host_reference": {
+    "counts": [
+      6,
+      5,
+      5,
+      1,
+      1,
+      1
+    ],
+    "total_weight": 19,
+    "unique_key_count": 6,
+    "unique_keys": [
+      11,
+      17,
+      23,
+      29,
+      31,
+      37
+    ]
+  },
+  "runtime": {
+    "chunk_count": 3,
+    "cupy_version": "14.1.1",
+    "device_backend": "cuda",
+    "partner": "cupy",
+    "runtime_executed": true
+  },
+  "status": "triangle_device_key_payload_merge_validated",
+  "validation": {
+    "current_triangle_readiness": {
+      "app_id": "triangle_counting",
+      "associative_duplicate_policy_available": true,
+      "blocker_count": 1,
+      "blockers": [
+        "prepared_graph_capture_not_validated"
+      ],
+      "chunk_count": 0,
+      "plan_status": "blocked_for_m113_plan",
+      "public_claim_authorized": false,
+      "readiness_status": "blocked_for_m113_plan",
+      "ready_for_m113_plan": false,
+      "runtime_executed": false,
+      "status": "accept",
+      "version": "rtdl.v3_0.chunked_unique_count_continuation_gate.m125.v1"
+    },
+    "errors": [],
+    "future_generic_payload_readiness": {
+      "app_id": "triangle_counting",
+      "associative_duplicate_policy_available": true,
+      "blocker_count": 0,
+      "blockers": [],
+      "chunk_count": 3,
+      "plan_status": "chunked_partner_continuation_required",
+      "public_claim_authorized": false,
+      "readiness_status": "ready_for_m113_plan",
+      "ready_for_m113_plan": true,
+      "runtime_executed": false,
+      "status": "accept",
+      "version": "rtdl.v3_0.chunked_unique_count_continuation_gate.m125.v1"
+    },
+    "status": "accept"
+  },
+  "version": "rtdl.v3_0.triangle_device_key_payload_merge.goal4530.v1"
+}

@@ -570,6 +570,93 @@ def combine_v3_chunked_unique_count_key_payloads(
     }
 
 
+def combine_v3_chunked_unique_count_key_payloads_cupy(
+    chunk_payloads: tuple[Mapping[str, object], ...],
+    *,
+    cupy_module=None,
+) -> dict[str, object]:
+    """Merge encoded int64 per-chunk key/count payloads on a CuPy device."""
+
+    if not chunk_payloads:
+        raise GraphValidationError("device unique-count continuation requires at least one chunk")
+    cp = cupy_module
+    if cp is None:
+        try:
+            import cupy as cp  # type: ignore[no-redef]
+        except Exception as exc:  # pragma: no cover - exercised only without CuPy
+            raise GraphValidationError("CuPy is required for device key-payload merge") from exc
+
+    key_columns = []
+    count_columns = []
+    chunk_summaries = []
+    for chunk_index, payload in enumerate(chunk_payloads):
+        if not isinstance(payload, Mapping):
+            raise GraphValidationError("device unique-count chunk payload must be a mapping")
+        keys = cp.asarray(payload.get("keys", ()), dtype=cp.int64)
+        if keys.ndim != 1:
+            raise GraphValidationError("device unique-count keys must be one-dimensional")
+        if "counts" in payload:
+            counts = cp.asarray(payload["counts"], dtype=cp.int64)
+        else:
+            counts = cp.ones(int(keys.size), dtype=cp.int64)
+        if counts.ndim != 1:
+            raise GraphValidationError("device unique-count counts must be one-dimensional")
+        if int(keys.size) != int(counts.size):
+            raise GraphValidationError("device unique-count keys/counts length mismatch")
+        if int(counts.size):
+            if bool(cp.any(counts <= 0).get()):
+                raise GraphValidationError("device unique-count counts must be positive")
+        key_columns.append(keys)
+        count_columns.append(counts)
+        chunk_summaries.append(
+            {
+                "chunk_index": chunk_index,
+                "key_count": int(keys.size),
+                "weight_sum": int(counts.sum().get()) if int(counts.size) else 0,
+            }
+        )
+
+    if all(int(keys.size) == 0 for keys in key_columns):
+        unique_keys = cp.empty(0, dtype=cp.int64)
+        merged_counts = cp.empty(0, dtype=cp.int64)
+    else:
+        all_keys = cp.concatenate(key_columns)
+        all_counts = cp.concatenate(count_columns)
+        order = cp.argsort(all_keys)
+        sorted_keys = all_keys[order]
+        sorted_counts = all_counts[order]
+        boundaries = cp.empty(int(sorted_keys.size), dtype=cp.bool_)
+        boundaries[0] = True
+        if int(sorted_keys.size) > 1:
+            boundaries[1:] = sorted_keys[1:] != sorted_keys[:-1]
+        starts = cp.nonzero(boundaries)[0]
+        unique_keys = sorted_keys[starts]
+        merged_counts = cp.add.reduceat(sorted_counts, starts)
+
+    unique_key_count = int(unique_keys.size)
+    scalar_chunk_sum = sum(summary["key_count"] for summary in chunk_summaries)
+    return {
+        "version": V3_CHUNKED_UNIQUE_COUNT_CONTINUATION_GATE_VERSION,
+        "status": "device_associative_unique_count_key_payload_merge",
+        "partner": "cupy",
+        "chunk_count": len(chunk_payloads),
+        "chunk_summaries": tuple(chunk_summaries),
+        "columns": {
+            "unique_keys": unique_keys,
+            "counts": merged_counts,
+        },
+        "unique_key_count": unique_key_count,
+        "total_weight": int(merged_counts.sum().get()) if unique_key_count else 0,
+        "scalar_chunk_sum": scalar_chunk_sum,
+        "cross_chunk_duplicate_delta": scalar_chunk_sum - unique_key_count,
+        "key_encoding": "int64_encoded_key",
+        "host_key_materialization_before_merge": False,
+        "host_count_materialization_before_merge": False,
+        "runtime_executed": True,
+        "public_speedup_claim_authorized": False,
+    }
+
+
 def assess_v3_chunked_unique_count_continuation_readiness(
     *,
     app_id: str,

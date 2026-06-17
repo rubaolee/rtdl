@@ -8,10 +8,10 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION = (
-    "rtdl.v3_0.benchmark_implementation_queue.goal4528.v3"
+    "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_STATUS = (
-    "post_rt_dbscan_prepared_graph_capture_queue_triangle_runtime_next_not_release_authorization"
+    "post_triangle_device_key_payload_merge_queue_graph_capture_next_not_release_authorization"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_CLAIM_BOUNDARY = (
     "This queue ranks post-clean-target implementation work after Goal4515 "
@@ -170,16 +170,17 @@ _ROWS: tuple[V3BenchmarkImplementationQueueRow, ...] = (
             "but remains an internal route"
         ),
         remaining_gap=(
-            "scalar per-chunk unique counts are not associative when duplicate keys "
-            "cross chunk boundaries; an M113-safe path needs key/count payload merge "
-            "or proven disjoint key ranges plus graph capture"
+            "Goal4530 validates app-agnostic device key/count payload merge for "
+            "cross-chunk duplicate keys; the remaining M113 blocker is prepared "
+            "graph capture or on-stream device-output replay for the weighted "
+            "prepared segment path"
         ),
         next_build_target=(
-            "build a generic chunked key/count payload merge primitive or "
-            "disjoint-key-range plan, then validate a coarser prepared continuation "
-            "with fewer per-segment launches"
+            "add or fail-close a generic prepared ray-batch weighted-summary graph "
+            "capture path that avoids scalar host synchronization inside capture, "
+            "then rerun the Triangle M113 gate"
         ),
-        evidence_refs=("Goal4479", "Goal4511", "Goal4521"),
+        evidence_refs=("Goal4479", "Goal4511", "Goal4521", "Goal4530"),
         pod_needed_next=True,
     ),
     V3BenchmarkImplementationQueueRow(

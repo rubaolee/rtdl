@@ -267,6 +267,14 @@ key ranges; it does not require an app-specific OptiX callback. The current
 Triangle route does not change, and M113 promotion remains blocked until the
 key-payload final merge and graph capture are both validated.
 
+Goal4530 validates the key/count half of that fix on the CUDA pod with an
+app-agnostic CuPy device-side payload merge over encoded int64 keys. Duplicate
+logical keys crossing chunk boundaries are merged without pre-merge host key or
+count materialization, and the result matches the host associative reference.
+After Goal4530, the Triangle M113 gate is blocked only on prepared graph capture
+for the weighted prepared replay path. The current internal route still does not
+change.
+
 The current internal route is Goal4479:
 
 ```text
@@ -314,6 +322,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4493_v3_0_m97_triangle_local_hash_unique_prototype_2026-06-17.md`
 - `docs/reports/goal4494_v3_0_m98_triangle_local_hash_integrated_candidate_2026-06-17.md`
 - `docs/reports/goal4511_v3_0_m115_triangle_clean_target_audit_2026-06-17.md`
+- `docs/reports/goal4530_v3_0_m133_triangle_device_key_payload_merge_2026-06-17.md`
 
 ## Engine Boundary
 
