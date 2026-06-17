@@ -275,6 +275,15 @@ After Goal4530, the Triangle M113 gate is blocked only on prepared graph capture
 for the weighted prepared replay path. The current internal route still does not
 change.
 
+Goal4531 validates the generic prepared ray-batch weighted-summary
+device-output stream executor on a small CUDA fixture: the weighted hit sum is
+written to a caller-owned device scalar on a caller stream, matching the older
+host-scalar result without per-run ray or weight upload. CUDA graph capture of
+that OptiX weighted launch is fail-closed on the pod with an OptiX/CUDA capture
+error, so the future Triangle M113 graph shape remains blocked. This still does
+not replace the current large paper-row route or authorize public RT-core
+speedup wording.
+
 The current internal route is Goal4479:
 
 ```text
@@ -323,6 +332,7 @@ Primary paper-dataset report:
 - `docs/reports/goal4494_v3_0_m98_triangle_local_hash_integrated_candidate_2026-06-17.md`
 - `docs/reports/goal4511_v3_0_m115_triangle_clean_target_audit_2026-06-17.md`
 - `docs/reports/goal4530_v3_0_m133_triangle_device_key_payload_merge_2026-06-17.md`
+- `docs/reports/goal4531_v3_0_m134_triangle_weighted_replay_graph_capture_2026-06-17.md`
 
 ## Engine Boundary
 

@@ -1307,6 +1307,21 @@ int rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_we
          uint64_t* weighted_hit_sum_out,
          double* traversal_seconds_out,
          char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_prepare_graph_executor(
+         void* scene_handle,
+         void* ray_batch_handle,
+         const uint64_t* ray_weights,
+         size_t ray_weight_count,
+         uint64_t weighted_hit_sum_device_ptr,
+         void** executor_handle_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_launch_graph_executor_on_stream(
+         void* executor_handle,
+         uint64_t cuda_stream_ptr,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_release_graph_executor(
+         void* executor_handle,
+         char* error_out, size_t error_size);
 int rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum(
          void* scene_handle,
          const RtdlRay3D* rays, size_t ray_count,

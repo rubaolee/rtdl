@@ -29,17 +29,17 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
 
         self.assertEqual("accept", validation["status"])
         self.assertEqual(
-            "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4",
+            "rtdl.v3_0.benchmark_implementation_queue.goal4531.v5",
             self.packet["version"],
         )
         self.assertEqual(10, summary["app_count"])
         self.assertTrue(summary["all_ten_benchmark_apps_accounted_for"])
         self.assertEqual(
-            ("triangle_counting",),
+            (),
             tuple(summary["runtime_build_queue"]),
         )
-        self.assertEqual(("barnes_hut",), tuple(summary["design_blocker_queue"]))
-        self.assertEqual("triangle_counting", summary["next_runtime_build_target"])
+        self.assertEqual(("barnes_hut", "triangle_counting"), tuple(summary["design_blocker_queue"]))
+        self.assertIsNone(summary["next_runtime_build_target"])
         self.assertTrue(cls_summary["runtime_targets_need_pod"])
 
     def test_runtime_blockers_are_separate_from_claim_evidence_blockers(self) -> None:
@@ -47,8 +47,8 @@ class Goal4524V30M128BenchmarkImplementationQueueTest(unittest.TestCase):
         self.assertIn("subtree-skip semantics", self.rows["barnes_hut"]["remaining_gap"])
         self.assertEqual("closed_current_target", self.rows["rt_dbscan"]["work_class"])
         self.assertIn("Goal4528 prepared graph", self.rows["rt_dbscan"]["remaining_gap"])
-        self.assertEqual("runtime_blocker", self.rows["triangle_counting"]["work_class"])
-        self.assertIn("weighted-summary graph capture", self.rows["triangle_counting"]["next_build_target"])
+        self.assertEqual("design_blocker", self.rows["triangle_counting"]["work_class"])
+        self.assertIn("capture-compatible OptiX", self.rows["triangle_counting"]["next_build_target"])
 
         self.assertEqual("claim_or_evidence_blocker", self.rows["rtnn"]["work_class"])
         self.assertIn("output-contract differences", self.rows["rtnn"]["remaining_gap"])

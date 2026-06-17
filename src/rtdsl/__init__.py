@@ -1464,6 +1464,7 @@ from .optix_runtime import PreparedOptixAabbIndex2D
 from .optix_runtime import PreparedOptixAabbQueries2D
 from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
 from .optix_runtime import PreparedOptixStaticTriangleScene3D
+from .optix_runtime import PreparedOptixRayBatchWeightedSumDeviceOutputGraphExecutor3D
 from .optix_runtime import PreparedOptixPrimitiveGroupedI64Payload3D
 from .optix_runtime import PreparedOptixGroupedSegmentQuery3D
 from .optix_runtime import PreparedOptixGroupedCandidateArgmin
@@ -3295,6 +3296,7 @@ __all__ = [
     "PreparedOptixAabbQueries2D",
     "PreparedOptixRayTriangleAnyHit2D",
     "PreparedOptixStaticTriangleScene3D",
+    "PreparedOptixRayBatchWeightedSumDeviceOutputGraphExecutor3D",
     "PreparedOptixPrimitiveGroupedI64Payload3D",
     "PreparedOptixGroupedSegmentQuery3D",
     "PreparedOptixGroupedCandidateArgmin",

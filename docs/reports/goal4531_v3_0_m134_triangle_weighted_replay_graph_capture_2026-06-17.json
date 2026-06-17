@@ -1,0 +1,117 @@
+{
+  "claim_boundary": {
+    "app_specific_native_callback_required": false,
+    "automatic_partner_selection_authorized": false,
+    "current_route_changed": false,
+    "m113_promotion_authorized_for_future_triangle_shape": false,
+    "m113_replaces_current_triangle_route": false,
+    "prepared_weighted_replay_device_output_stream_validated": true,
+    "prepared_weighted_replay_graph_capture_validated": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false
+  },
+  "conclusion": "M134 validates a generic prepared ray-batch weighted-summary device-output executor on a caller stream, removing the host scalar read from that replay path. CUDA graph capture of the OptiX weighted launch is fail-closed on this pod with a captured CUDA/OptiX error, so the future Triangle M113 graph shape remains blocked while the current large-row Triangle route remains Goal4479/Goal4511.",
+  "date": "2026-06-17",
+  "executor_metadata": {
+    "backend": "optix",
+    "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_WEIGHTED_SUM_DEVICE_OUTPUT_GRAPH_EXECUTOR_V1",
+    "device_output_used": true,
+    "executor_prepare_seconds": 2.1539628505706787e-05,
+    "host_row_materialization_before_consumer": false,
+    "host_scalar_read_before_consumer": false,
+    "output_source_protocol": "cupy",
+    "prepared_ray_batch_seconds": 0.0038622617721557617,
+    "prepared_ray_batch_used": true,
+    "public_speedup_claim_authorized": false,
+    "query_rays_uploaded_each_run": false,
+    "ray_count": 3,
+    "ray_weights_source_protocol": "cupy",
+    "ray_weights_uploaded_each_run": false
+  },
+  "goal": "Goal4531 / V3 M134",
+  "launch_metadata": {
+    "backend": "optix",
+    "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_WEIGHTED_SUM_DEVICE_OUTPUT_GRAPH_EXECUTOR_V1",
+    "cuda_stream_ptr_nonzero": true,
+    "device_output_used": true,
+    "host_row_materialization_before_consumer": false,
+    "host_scalar_read_before_consumer": false,
+    "launch_count": 1,
+    "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_launch_graph_executor_on_stream",
+    "phase_timing_seconds": {
+      "executor_prepare": 2.1539628505706787e-05,
+      "native_stream_launch_enqueue": 3.1635165214538574e-05
+    },
+    "prepared_ray_batch_used": true,
+    "prepared_scene_used": true,
+    "public_speedup_claim_authorized": false,
+    "query_rays_uploaded_each_run": false,
+    "ray_weights_uploaded_each_run": false,
+    "true_zero_copy_authorized": false
+  },
+  "readiness": {
+    "app_id": "triangle_counting",
+    "associative_duplicate_policy_available": true,
+    "automatic_partner_selection_authorized": false,
+    "axis_name": "query",
+    "blockers": [
+      "prepared_graph_capture_not_validated"
+    ],
+    "chunk_key_ranges_disjoint": false,
+    "contract_key": "rt_graph_2a1_unique_weighted_summary_v1",
+    "duplicate_keys_can_cross_chunk_boundaries": true,
+    "final_key_payload_merge_validated": true,
+    "host_materialization_before_partner": false,
+    "item_count": 45000000,
+    "key_payload_carries_counts": true,
+    "max_item_count": 15000000,
+    "operation": "prepared_segment_replay_unique_count_continuation",
+    "per_chunk_unique_payload_available": true,
+    "plan": null,
+    "prepared_graph_capture_validated": false,
+    "prepared_item_handle_per_chunk_available": true,
+    "prepared_scene_reuse_available": true,
+    "public_speedup_claim_authorized": false,
+    "readiness_status": "blocked_for_m113_plan",
+    "ready_for_m113_plan": false,
+    "runtime_executed": false,
+    "status": "app_agnostic_chunked_unique_count_continuation_gate",
+    "version": "rtdl.v3_0.chunked_unique_count_continuation_gate.m125.v1"
+  },
+  "runtime": {
+    "backend": "optix",
+    "cupy_version": "14.1.1",
+    "device_output_stream_validated": true,
+    "device_output_stream_weighted_sum": 20,
+    "expected_weighted_sum": 20,
+    "graph_capture_error": "RuntimeError: OptiX error: CUDA error",
+    "graph_capture_validated": false,
+    "graph_replay_weighted_sums": [],
+    "normal_host_scalar_weighted_sum": 20,
+    "partner": "cupy",
+    "runtime_executed": true
+  },
+  "status": "triangle_weighted_replay_device_output_stream_validated_graph_capture_fail_closed",
+  "validation": {
+    "errors": [],
+    "graph_capture_status": "reject_fail_closed",
+    "readiness": {
+      "app_id": "triangle_counting",
+      "associative_duplicate_policy_available": true,
+      "blocker_count": 1,
+      "blockers": [
+        "prepared_graph_capture_not_validated"
+      ],
+      "chunk_count": 0,
+      "plan_status": "blocked_for_m113_plan",
+      "public_claim_authorized": false,
+      "readiness_status": "blocked_for_m113_plan",
+      "ready_for_m113_plan": false,
+      "runtime_executed": false,
+      "status": "accept",
+      "version": "rtdl.v3_0.chunked_unique_count_continuation_gate.m125.v1"
+    },
+    "status": "accept"
+  },
+  "version": "rtdl.v3_0.triangle_weighted_replay_graph_capture.goal4531.v1"
+}

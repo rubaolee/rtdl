@@ -12363,6 +12363,15 @@ _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_WEIGHTED_SUM_SYMBOL = (
 _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_DEVICE_WEIGHTED_SUM_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights"
 )
+_OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_DEVICE_WEIGHTED_SUM_PREPARE_GRAPH_EXECUTOR_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_prepare_graph_executor"
+)
+_OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_DEVICE_WEIGHTED_SUM_LAUNCH_GRAPH_EXECUTOR_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_launch_graph_executor_on_stream"
+)
+_OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_DEVICE_WEIGHTED_SUM_RELEASE_GRAPH_EXECUTOR_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_release_graph_executor"
+)
 _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_HIT_COUNT_SUM_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum_device_rays"
 )
@@ -19198,6 +19207,187 @@ class PreparedOptixHitStreamPrimitivePayloadGroupedSumBuffers:
         self.close()
 
 
+class PreparedOptixRayBatchWeightedSumDeviceOutputGraphExecutor3D:
+    """Reusable device-output weighted any-hit executor for stream graph capture."""
+
+    def __init__(
+        self,
+        lib,
+        scene: "PreparedOptixStaticTriangleScene3D",
+        ray_batch: PreparedOptixRayBatch3D,
+        ray_weights,
+        weighted_hit_sum_out,
+    ) -> None:
+        if scene._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if ray_batch._closed:
+            raise RuntimeError("prepared OptiX ray batch handle is closed")
+        expected_device = getattr(ray_batch, "_device_ray_expected_device", None)
+        if expected_device is None:
+            raise ValueError(
+                "weighted-sum graph executor requires a ray batch created from partner device columns"
+            )
+        weights_handoff = _partner.prepare_direct_device_pointer_handoff(ray_weights, access="read")
+        if len(weights_handoff.shape) != 1:
+            raise ValueError("partner device ray weight column must be one-dimensional")
+        _require_partner_device_uint64_weight_layout(
+            weights_handoff,
+            ray_count=int(ray_batch.ray_count),
+            expected_device=expected_device,
+        )
+        output_handoff = _partner.prepare_direct_device_pointer_handoff(
+            weighted_hit_sum_out,
+            access="readwrite",
+        )
+        if _partner_dtype_token(output_handoff.dtype) != "uint64":
+            raise ValueError("weighted_hit_sum_out must use dtype uint64")
+        if tuple(output_handoff.shape) != (1,):
+            raise ValueError("weighted_hit_sum_out must have shape (1,)")
+        if not _partner_contiguous_column_strides(
+            output_handoff.strides,
+            itemsize=_partner_dtype_itemsize("uint64"),
+        ):
+            raise ValueError("weighted_hit_sum_out must be contiguous")
+        if (output_handoff.device_type, output_handoff.device_id) != expected_device:
+            raise ValueError("weighted_hit_sum_out must live on the same CUDA device as ray columns")
+
+        prepare_symbol = _find_optional_backend_symbol(
+            lib,
+            _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_DEVICE_WEIGHTED_SUM_PREPARE_GRAPH_EXECUTOR_SYMBOL,
+        )
+        launch_symbol = _find_optional_backend_symbol(
+            lib,
+            _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_DEVICE_WEIGHTED_SUM_LAUNCH_GRAPH_EXECUTOR_SYMBOL,
+        )
+        release_symbol = _find_optional_backend_symbol(
+            lib,
+            _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_DEVICE_WEIGHTED_SUM_RELEASE_GRAPH_EXECUTOR_SYMBOL,
+        )
+        if prepare_symbol is None or launch_symbol is None or release_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export prepared ray-batch "
+                "weighted-sum graph executor symbols. Rebuild it with "
+                "'make build-optix' from current main."
+            )
+
+        self._lib = lib
+        self._launch_symbol = launch_symbol
+        self._release_symbol = release_symbol
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self._scene = scene
+        self._ray_batch = ray_batch
+        self._ray_weights = ray_weights
+        self._weighted_hit_sum_out = weighted_hit_sum_out
+        self._weights_handoff = weights_handoff
+        self._output_handoff = output_handoff
+        self.launch_count = 0
+
+        error = ctypes.create_string_buffer(4096)
+        prepare_start = time.perf_counter()
+        status = prepare_symbol(
+            scene._handle,
+            ray_batch._handle,
+            ctypes.c_void_p(weights_handoff.data_ptr),
+            ctypes.c_size_t(ray_batch.ray_count),
+            ctypes.c_uint64(output_handoff.data_ptr),
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        self.prepare_seconds = time.perf_counter() - prepare_start
+        _check_status(status, error)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            error = ctypes.create_string_buffer(4096)
+            status = self._release_symbol(handle, error, len(error))
+            _check_status(status, error)
+
+    def __enter__(self) -> "PreparedOptixRayBatchWeightedSumDeviceOutputGraphExecutor3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    @staticmethod
+    def _stream_ptr(cuda_stream) -> int:
+        if isinstance(cuda_stream, int):
+            return int(cuda_stream)
+        if hasattr(cuda_stream, "cuda_stream"):
+            return int(cuda_stream.cuda_stream)
+        if hasattr(cuda_stream, "ptr"):
+            return int(cuda_stream.ptr)
+        raise TypeError("cuda_stream must be an integer, a Torch stream, or a CuPy stream")
+
+    def launch(self, cuda_stream) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared weighted-sum graph executor is closed")
+        stream_ptr = self._stream_ptr(cuda_stream)
+        if stream_ptr == 0:
+            raise ValueError("weighted-sum graph executor launch requires a nonzero CUDA stream pointer")
+        error = ctypes.create_string_buffer(4096)
+        start = time.perf_counter()
+        status = self._launch_symbol(
+            self._handle,
+            ctypes.c_uint64(stream_ptr),
+            error,
+            len(error),
+        )
+        launch_seconds = time.perf_counter() - start
+        _check_status(status, error)
+        self.launch_count += 1
+        return {
+            "backend": "optix",
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_WEIGHTED_SUM_DEVICE_OUTPUT_GRAPH_EXECUTOR_V1",
+            "native_symbol": _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_DEVICE_WEIGHTED_SUM_LAUNCH_GRAPH_EXECUTOR_SYMBOL,
+            "prepared_scene_used": True,
+            "prepared_ray_batch_used": True,
+            "device_output_used": True,
+            "host_scalar_read_before_consumer": False,
+            "host_row_materialization_before_consumer": False,
+            "query_rays_uploaded_each_run": False,
+            "ray_weights_uploaded_each_run": False,
+            "cuda_stream_ptr_nonzero": True,
+            "launch_count": self.launch_count,
+            "phase_timing_seconds": {
+                "executor_prepare": float(self.prepare_seconds),
+                "native_stream_launch_enqueue": float(launch_seconds),
+            },
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_authorized": False,
+        }
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "backend": "optix",
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_WEIGHTED_SUM_DEVICE_OUTPUT_GRAPH_EXECUTOR_V1",
+            "prepared_ray_batch_used": True,
+            "device_output_used": True,
+            "ray_count": int(self._ray_batch.ray_count),
+            "prepared_ray_batch_seconds": float(self._ray_batch.prepare_seconds),
+            "executor_prepare_seconds": float(self.prepare_seconds),
+            "ray_weights_source_protocol": self._weights_handoff.source_protocol,
+            "output_source_protocol": self._output_handoff.source_protocol,
+            "host_scalar_read_before_consumer": False,
+            "host_row_materialization_before_consumer": False,
+            "query_rays_uploaded_each_run": False,
+            "ray_weights_uploaded_each_run": False,
+            "public_speedup_claim_authorized": False,
+        }
+
+
 class PreparedOptixStaticTriangleScene3D:
     """Reusable OptiX handle for grouped finite 3D segment any-hit flags."""
 
@@ -23082,6 +23272,28 @@ class PreparedOptixStaticTriangleScene3D:
                 "true_zero_copy": False,
             },
         }
+
+    def prepare_ray_batch_any_hit_weighted_sum_device_output_graph_executor(
+        self,
+        rays: PreparedOptixRayBatch3D,
+        ray_weights,
+        weighted_hit_sum_out,
+    ) -> PreparedOptixRayBatchWeightedSumDeviceOutputGraphExecutor3D:
+        """Prepare a stream-capturable device-output weighted any-hit executor."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(rays, PreparedOptixRayBatch3D):
+            raise TypeError(
+                "prepare_ray_batch_any_hit_weighted_sum_device_output_graph_executor "
+                "requires PreparedOptixRayBatch3D"
+            )
+        return PreparedOptixRayBatchWeightedSumDeviceOutputGraphExecutor3D(
+            self._lib,
+            self,
+            rays,
+            ray_weights,
+            weighted_hit_sum_out,
+        )
 
     def ray_hit_count_sum_device_columns(self, ray_columns: dict) -> dict[str, object]:
         """Return hit-count sum from partner-owned 3-D ray columns."""

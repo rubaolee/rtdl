@@ -8,10 +8,10 @@ from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION = (
-    "rtdl.v3_0.benchmark_implementation_queue.goal4530.v4"
+    "rtdl.v3_0.benchmark_implementation_queue.goal4531.v5"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_STATUS = (
-    "post_triangle_device_key_payload_merge_queue_graph_capture_next_not_release_authorization"
+    "post_triangle_weighted_replay_graph_capture_fail_closed_no_runtime_queue_not_release_authorization"
 )
 V3_BENCHMARK_IMPLEMENTATION_QUEUE_CLAIM_BOUNDARY = (
     "This queue ranks post-clean-target implementation work after Goal4515 "
@@ -162,8 +162,8 @@ _ROWS: tuple[V3BenchmarkImplementationQueueRow, ...] = (
     ),
     V3BenchmarkImplementationQueueRow(
         app="triangle_counting",
-        priority=1,
-        work_class="runtime_blocker",
+        priority=2,
+        work_class="design_blocker",
         current_route_status=(
             "current V3 route is explicit numba_direct_sort_rle prepared segment "
             "replay after primitive evidence; it completes the large paper rows "
@@ -171,17 +171,19 @@ _ROWS: tuple[V3BenchmarkImplementationQueueRow, ...] = (
         ),
         remaining_gap=(
             "Goal4530 validates app-agnostic device key/count payload merge for "
-            "cross-chunk duplicate keys; the remaining M113 blocker is prepared "
-            "graph capture or on-stream device-output replay for the weighted "
-            "prepared segment path"
+            "cross-chunk duplicate keys, and Goal4531 validates a generic "
+            "prepared weighted-replay device-output stream executor; CUDA graph "
+            "capture of that OptiX weighted launch is fail-closed with an "
+            "OptiX/CUDA error, so future M113 graph use needs a reviewed native "
+            "capture design rather than another benchmark rerun"
         ),
         next_build_target=(
-            "add or fail-close a generic prepared ray-batch weighted-summary graph "
-            "capture path that avoids scalar host synchronization inside capture, "
-            "then rerun the Triangle M113 gate"
+            "do not claim Triangle M113 graph readiness; future work must first "
+            "design a capture-compatible OptiX weighted replay mechanism or accept "
+            "the stream device-output executor as a non-graph continuation contract"
         ),
-        evidence_refs=("Goal4479", "Goal4511", "Goal4521", "Goal4530"),
-        pod_needed_next=True,
+        evidence_refs=("Goal4479", "Goal4511", "Goal4521", "Goal4530", "Goal4531"),
+        pod_needed_next=False,
     ),
     V3BenchmarkImplementationQueueRow(
         app="rtnn",
@@ -362,11 +364,9 @@ def validate_v3_benchmark_implementation_queue(
         "version_current": packet["version"] == V3_BENCHMARK_IMPLEMENTATION_QUEUE_VERSION,
         "all_promoted_apps_present": apps == set(V2_8_PROMOTED_BENCHMARK_APPS),
         "all_route_apps_present": apps == route_apps,
-        "runtime_queue_exact": runtime_apps == ("triangle_counting",),
-        "design_queue_exact": design_apps == ("barnes_hut",),
-        "next_runtime_target_triangle_counting": (
-            packet["summary"]["next_runtime_build_target"] == "triangle_counting"
-        ),
+        "runtime_queue_empty": runtime_apps == (),
+        "design_queue_exact": design_apps == ("barnes_hut", "triangle_counting"),
+        "next_runtime_target_none": packet["summary"]["next_runtime_build_target"] is None,
         "claim_queue_exact": tuple(packet["summary"]["claim_or_evidence_queue"])
         == ("rtnn", "spatial_rayjoin"),
         "design_targets_do_not_block_runtime_queue": bool(

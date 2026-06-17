@@ -2125,6 +2125,48 @@ extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_su
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_prepare_graph_executor(
+        void* scene_handle,
+        void* ray_batch_handle,
+        const uint64_t* ray_weights,
+        size_t ray_weight_count,
+        uint64_t weighted_hit_sum_device_ptr,
+        void** executor_handle_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        prepare_prepared_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_graph_executor_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedRayBatch3D*>(ray_batch_handle),
+            ray_weights,
+            ray_weight_count,
+            weighted_hit_sum_device_ptr,
+            executor_handle_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_launch_graph_executor_on_stream(
+        void* executor_handle,
+        uint64_t cuda_stream_ptr,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        launch_prepared_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_graph_executor_on_stream_optix(
+            reinterpret_cast<NativeRayBatchWeightedSumDeviceOutputGraphExecutor*>(executor_handle),
+            cuda_stream_ptr);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_release_graph_executor(
+        void* executor_handle,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        release_prepared_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_graph_executor_optix(
+            executor_handle);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum(
         void* scene_handle,
         const RtdlRay3D* rays, size_t ray_count,

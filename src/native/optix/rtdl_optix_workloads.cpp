@@ -17261,6 +17261,17 @@ struct RayAnyHitWeightedSum3DLaunchParams {
     uint32_t                  ray_count;
 };
 
+struct NativeRayBatchWeightedSumDeviceOutputGraphExecutor {
+    CUdeviceptr params = 0;
+    CUdeviceptr weighted_hit_sum = 0;
+    uint32_t ray_count = 0;
+    uint32_t triangle_count = 0;
+
+    ~NativeRayBatchWeightedSumDeviceOutputGraphExecutor() {
+        if (params) cuMemFree(params);
+    }
+};
+
 struct RayPrimitiveGroupedI64Reduction3DLaunchParams {
     OptixTraversableHandle    traversable;
     const GpuRay3DHost*       rays;
@@ -20745,6 +20756,81 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum
     const auto traversal_end = std::chrono::steady_clock::now();
     if (traversal_seconds_out)
         *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
+static void prepare_prepared_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_graph_executor_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedRayBatch3D* ray_batch,
+        const uint64_t* ray_weights,
+        size_t ray_weight_count,
+        uint64_t weighted_hit_sum_device_ptr,
+        void** executor_handle_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!ray_batch)
+        throw std::runtime_error("prepared ray batch handle must not be null");
+    if (!executor_handle_out)
+        throw std::runtime_error("executor_handle_out must not be null");
+    *executor_handle_out = nullptr;
+    if (!ray_weights && ray_batch->ray_count != 0)
+        throw std::runtime_error("partner device ray_weights pointer must not be null when ray_count is nonzero");
+    if (ray_weight_count != ray_batch->ray_count)
+        throw std::runtime_error("ray_weight_count must match prepared ray batch ray_count");
+    if (!weighted_hit_sum_device_ptr)
+        throw std::runtime_error("weighted_hit_sum_device_ptr must not be zero");
+    if (ray_batch->ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+
+    ensure_ray_anyhit_weighted_sum_3d_pipeline();
+
+    auto owner = std::make_unique<NativeRayBatchWeightedSumDeviceOutputGraphExecutor>();
+    owner->weighted_hit_sum = static_cast<CUdeviceptr>(weighted_hit_sum_device_ptr);
+    owner->ray_count = static_cast<uint32_t>(ray_batch->ray_count);
+    owner->triangle_count = static_cast<uint32_t>(prepared->triangle_count);
+
+    if (ray_batch->ray_count != 0 && prepared->triangle_count != 0) {
+        RayAnyHitWeightedSum3DLaunchParams lp;
+        lp.traversable = prepared->accel.handle;
+        lp.rays = reinterpret_cast<const GpuRay3DHost*>(ray_batch->d_rays.ptr);
+        lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+        lp.ray_weights = reinterpret_cast<const unsigned long long*>(ray_weights);
+        lp.weighted_hit_sum = reinterpret_cast<unsigned long long*>(owner->weighted_hit_sum);
+        lp.ray_count = owner->ray_count;
+
+        CU_CHECK(cuMemAlloc(&owner->params, sizeof(RayAnyHitWeightedSum3DLaunchParams)));
+        upload(owner->params, &lp, 1);
+    }
+
+    *executor_handle_out = owner.release();
+}
+
+static void launch_prepared_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_graph_executor_on_stream_optix(
+        NativeRayBatchWeightedSumDeviceOutputGraphExecutor* executor,
+        uint64_t cuda_stream_ptr)
+{
+    if (!executor)
+        throw std::runtime_error("weighted-sum graph executor handle must not be null");
+    if (!executor->weighted_hit_sum)
+        throw std::runtime_error("weighted-sum graph executor output pointer must not be zero");
+    if (cuda_stream_ptr == 0)
+        throw std::runtime_error("weighted-sum graph executor launch requires a nonzero CUDA stream pointer");
+    CUstream stream = reinterpret_cast<CUstream>(static_cast<uintptr_t>(cuda_stream_ptr));
+    CU_CHECK(cuMemsetD8Async(executor->weighted_hit_sum, 0, sizeof(unsigned long long), stream));
+    if (executor->ray_count == 0 || executor->triangle_count == 0)
+        return;
+    if (!executor->params)
+        throw std::runtime_error("weighted-sum graph executor params must not be null for non-empty launch");
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_weighted_sum3d.pipe->pipeline, stream,
+                             executor->params, sizeof(RayAnyHitWeightedSum3DLaunchParams),
+                             &g_rayanyhit_weighted_sum3d.pipe->sbt,
+                             static_cast<unsigned>(executor->ray_count), 1, 1));
+}
+
+static void release_prepared_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_graph_executor_optix(
+        void* executor_handle)
+{
+    delete reinterpret_cast<NativeRayBatchWeightedSumDeviceOutputGraphExecutor*>(executor_handle);
 }
 
 static void run_prepared_static_triangle_scene_3d_ray_hit_count_sum_device_optix(
