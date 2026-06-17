@@ -119,6 +119,7 @@ v2.14 evidence:
 - [Goal4458 Barnes-Hut current route rerank](../reports/goal4458_v3_0_m62_barnes_hut_current_route_rerank_2026-06-16.md)
 - [Goal4483 Barnes-Hut large-scale rerank](../reports/goal4483_v3_0_m87_barnes_hut_large_scale_rerank_packet_2026-06-16.md)
 - [Goal4497 Barnes-Hut RT-native fused feasibility](../reports/goal4497_v3_0_m101_barnes_hut_rt_native_fused_feasibility_2026-06-17.md)
+- [Goal4517 aggregate-tree fused RT-native contract](../reports/goal4517_v3_0_m121_aggregate_tree_fused_rt_native_contract_2026-06-17.md)
 - [Goal4512 Barnes-Hut clean-target audit](../reports/goal4512_v3_0_m116_barnes_hut_clean_target_audit_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)

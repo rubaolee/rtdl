@@ -47,6 +47,27 @@ AGGREGATE_FRONTIER_DEVICE_COLUMNS_REQUIRED_SYMBOLS = (
     "rtdl_optix_run_aggregate_frontier_device_columns_2d",
     "rtdl_optix_destroy_aggregate_frontier_device_columns_2d",
 )
+AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_PRIMITIVE = (
+    "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE"
+)
+AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_CONTRACT = (
+    "generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1"
+)
+AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_REQUIRED_SYMBOLS = (
+    "rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d",
+    "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d",
+    "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d",
+)
+AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_OUTPUT_COLUMNS = (
+    "source_id:int64[source_count]",
+    "vector_x:float64[source_count]",
+    "vector_y:float64[source_count]",
+    "visited_count:uint64[source_count]",
+    "aggregate_count:uint64[source_count]",
+    "exact_count:uint64[source_count]",
+)
+
+
 @dataclass(frozen=True)
 class WeightedPointRow:
     id: int
@@ -1145,6 +1166,191 @@ def validate_aggregate_frontier_device_columns_native_abi_contract() -> dict[str
             continue
         if bool(value):
             raise ValueError(f"device-column frontier ABI must not authorize {key}")
+    return contract
+
+
+def aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract() -> dict[str, object]:
+    """Return the app-generic RT-native fused aggregate-tree vector-sum contract."""
+
+    return {
+        "primitive": AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_PRIMITIVE,
+        "contract": AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_CONTRACT,
+        "logical_reference_contract": "generic_aggregate_frontier_weighted_vector_sum_2d_v1",
+        "cpu_reference_api": "sum_aggregate_frontier_weighted_vectors_2d",
+        "partner_reference_contract": "generic_aggregate_tree_fused_weighted_vector_sum_2d_numba_cuda_v1",
+        "partner_reference_api": "sum_aggregate_tree_fused_weighted_vectors_2d_numba_cuda",
+        "status": "specified_not_implemented",
+        "executable": False,
+        "app_generic": True,
+        "required_first_backend": "optix",
+        "future_backends": ("hiprt",),
+        "required_native_symbols": AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_REQUIRED_SYMBOLS,
+        "prepared_inputs": (
+            "target_id:int64[target_count]",
+            "target_x:float64[target_count]",
+            "target_y:float64[target_count]",
+            "target_weight:float64[target_count]",
+            "tree_node_id:int64[node_count]",
+            "tree_cx:float64[node_count]",
+            "tree_cy:float64[node_count]",
+            "tree_half_size:float64[node_count]",
+            "tree_weight:float64[node_count]",
+            "tree_dfs_index:int64[node_count]",
+            "tree_resume_index:int64[node_count]",
+            "tree_is_leaf:uint32[node_count]",
+            "child_offsets:uint64[node_count+1]",
+            "child_ids:int64[child_count]",
+            "member_offsets:uint64[node_count+1]",
+            "member_ids:int64[member_count]",
+        ),
+        "run_inputs": (
+            "source_id:int64[source_count]",
+            "source_x:float64[source_count]",
+            "source_y:float64[source_count]",
+            "source_weight:float64[source_count]",
+            "theta:float64_positive",
+            "softening:float64_non_negative",
+            "stream_or_event_token",
+        ),
+        "operator_contract": (
+            "For every source, traverse the prepared aggregate tree, accept an "
+            "aggregate when half_size / distance <= theta, fall back to leaf "
+            "members otherwise, skip source-to-identical-target self pairs, and "
+            "accumulate target_weight * displacement / softened_distance_cubed."
+        ),
+        "output_device_columns": AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_OUTPUT_COLUMNS,
+        "small_host_outputs_allowed": (
+            "source_count",
+            "producer_event_or_stream_token",
+            "overflowed:uint32_bool",
+            "diagnostic_status_code:int32",
+        ),
+        "hot_path_forbidden_outputs": (
+            "aggregate_frontier_rows_host",
+            "aggregate_frontier_rows_device_visible_to_user",
+            "weighted_contribution_rows_host",
+            "weighted_contribution_rows_device_visible_to_user",
+            "per_source_frontier_dicts",
+            "per_source_contribution_dicts",
+        ),
+        "must_avoid": (
+            "aggregate-frontier row emission",
+            "host frontier materialization",
+            "host contribution materialization",
+            "app-specific native engine callbacks",
+            "automatic partner dispatch",
+        ),
+        "implementation_requirements": (
+            "RT-native traversal or equivalent device payload accumulation",
+            "device-resident vector/count output columns",
+            "same source-id keyed vector summary as the CPU reference API",
+            "same source-id keyed vector summary as the Numba CUDA partner reference",
+            "explicit user-selected route; no hidden partner dispatch",
+            "measured comparison against CPU reference and Numba CUDA partner reference",
+        ),
+        "claim_boundary": {
+            "runtime_implemented": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "automatic_partner_selection_authorized": False,
+            "app_specific_native_engine_logic_allowed": False,
+            "paper_reproduction_claim_authorized": False,
+        },
+        "reader_guidance": (
+            "This contract is the next implementation target after the frontier "
+            "device-column route. It specifies the clean RT-native shape, but no "
+            "runtime or performance claim is authorized until backend symbols and "
+            "equivalence tests exist."
+        ),
+    }
+
+
+def validate_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract() -> dict[str, object]:
+    """Validate and return the fused aggregate-tree RT-native contract."""
+
+    contract = aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract()
+    required = (
+        "primitive",
+        "contract",
+        "logical_reference_contract",
+        "cpu_reference_api",
+        "partner_reference_contract",
+        "partner_reference_api",
+        "status",
+        "executable",
+        "app_generic",
+        "required_first_backend",
+        "future_backends",
+        "required_native_symbols",
+        "prepared_inputs",
+        "run_inputs",
+        "operator_contract",
+        "output_device_columns",
+        "small_host_outputs_allowed",
+        "hot_path_forbidden_outputs",
+        "must_avoid",
+        "implementation_requirements",
+        "claim_boundary",
+        "reader_guidance",
+    )
+    for field in required:
+        if field not in contract:
+            raise ValueError(f"missing aggregate-tree fused RT-native field: {field}")
+    if contract["primitive"] != AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_PRIMITIVE:
+        raise ValueError("aggregate-tree fused RT-native primitive mismatch")
+    if contract["contract"] != AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_CONTRACT:
+        raise ValueError("aggregate-tree fused RT-native contract mismatch")
+    if contract["status"] != "specified_not_implemented":
+        raise ValueError("aggregate-tree fused RT-native status must remain explicit")
+    if bool(contract["executable"]):
+        raise ValueError("aggregate-tree fused RT-native contract must not claim executability yet")
+    if not bool(contract["app_generic"]):
+        raise ValueError("aggregate-tree fused RT-native contract must remain app-generic")
+    if tuple(contract["required_native_symbols"]) != (
+        AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_REQUIRED_SYMBOLS
+    ):
+        raise ValueError("aggregate-tree fused RT-native symbol list drifted")
+    if tuple(contract["output_device_columns"]) != (
+        AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_OUTPUT_COLUMNS
+    ):
+        raise ValueError("aggregate-tree fused RT-native output columns drifted")
+    for required_output in ("vector_x:float64[source_count]", "vector_y:float64[source_count]"):
+        if required_output not in tuple(contract["output_device_columns"]):
+            raise ValueError("aggregate-tree fused RT-native vector outputs are incomplete")
+    for required_avoidance in (
+        "aggregate-frontier row emission",
+        "host frontier materialization",
+        "host contribution materialization",
+        "automatic partner dispatch",
+    ):
+        if required_avoidance not in tuple(contract["must_avoid"]):
+            raise ValueError("aggregate-tree fused RT-native avoidance boundary drifted")
+    claim_boundary = contract["claim_boundary"]
+    if not isinstance(claim_boundary, Mapping):
+        raise ValueError("aggregate-tree fused RT-native contract must include a claim boundary")
+    for key, value in claim_boundary.items():
+        if bool(value):
+            raise ValueError(f"aggregate-tree fused RT-native must not authorize {key}")
+    boundary_text = " ".join(str(value) for value in contract.values()).lower()
+    for forbidden in (
+        "barnes",
+        "nbody",
+        "n-body",
+        "solver",
+        "automatic dispatch",
+        "public speedup",
+    ):
+        if forbidden in boundary_text:
+            raise ValueError(f"aggregate-tree fused RT-native leaked app/promo vocabulary: {forbidden}")
+    for phrase in (
+        "rt-native traversal",
+        "device-resident vector/count output columns",
+        "no hidden partner dispatch",
+        "no runtime or performance claim",
+    ):
+        if phrase not in boundary_text:
+            raise ValueError("aggregate-tree fused RT-native guidance is incomplete")
     return contract
 
 

@@ -973,6 +973,10 @@ from .aggregate_tree_reference import AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CONTR
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_NATIVE_ABI_CONTRACT
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_PRIMITIVE
 from .aggregate_tree_reference import AGGREGATE_FRONTIER_DEVICE_COLUMNS_REQUIRED_SYMBOLS
+from .aggregate_tree_reference import AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_OUTPUT_COLUMNS
+from .aggregate_tree_reference import AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_PRIMITIVE
+from .aggregate_tree_reference import AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_REQUIRED_SYMBOLS
 from .aggregate_tree_reference import AggregateFrontierOverflowError
 from .aggregate_tree_reference import AggregateNodeRow
 from .aggregate_tree_reference import AggregateTreeNodeRow
@@ -981,6 +985,7 @@ from .aggregate_tree_reference import build_bucketized_aggregate_tree_2d
 from .aggregate_tree_reference import aggregate_frontier_collect_to_columnar_record_set
 from .aggregate_tree_reference import aggregate_frontier_collect_native_abi_contract
 from .aggregate_tree_reference import aggregate_frontier_device_columns_native_abi_contract
+from .aggregate_tree_reference import aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract
 from .aggregate_tree_reference import collect_aggregate_frontier_2d
 from .aggregate_tree_reference import evaluate_aggregate_tree_opening_frontier_2d
 from .aggregate_tree_reference import evaluate_aggregate_opening_rows_2d
@@ -990,6 +995,7 @@ from .aggregate_tree_reference import normalize_weighted_point_rows
 from .aggregate_tree_reference import plan_aggregate_frontier_collect_lowering
 from .aggregate_tree_reference import validate_aggregate_frontier_collect_native_abi_contract
 from .aggregate_tree_reference import validate_aggregate_frontier_device_columns_native_abi_contract
+from .aggregate_tree_reference import validate_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract
 from .spatial_order import SPATIAL_POINT_ORDER_MODES_2D
 from .spatial_order import SPATIAL_SEGMENT_ORDER_MODES_2D
 from .spatial_order import spatial_order_points_2d
@@ -2183,6 +2189,10 @@ __all__ = [
     "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_NATIVE_ABI_CONTRACT",
     "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_PRIMITIVE",
     "AGGREGATE_FRONTIER_DEVICE_COLUMNS_REQUIRED_SYMBOLS",
+    "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_OUTPUT_COLUMNS",
+    "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_CONTRACT",
+    "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_PRIMITIVE",
+    "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_REQUIRED_SYMBOLS",
     "AGGREGATE_OPENING_ROWS_2D_CONTRACT",
     "AGGREGATE_TREE_OPENING_FRONTIER_2D_CONTRACT",
     "AGGREGATE_FRONTIER_DEVICE_COLUMNS_PREPARED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CONTRACT",
@@ -2199,6 +2209,7 @@ __all__ = [
     "aggregate_frontier_collect_to_columnar_record_set",
     "aggregate_frontier_collect_native_abi_contract",
     "aggregate_frontier_device_columns_native_abi_contract",
+    "aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract",
     "ColumnarAggregateLoweringPlan",
     "ColumnarAggregatePlan",
     "ColumnarAggregateResult",
@@ -2297,6 +2308,7 @@ __all__ = [
     "plan_aggregate_frontier_collect_lowering",
     "validate_aggregate_frontier_collect_native_abi_contract",
     "validate_aggregate_frontier_device_columns_native_abi_contract",
+    "validate_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract",
     "sum_weighted_inverse_square_contributions_2d",
     "sum_vector_contribution_rows_2d",
     "grouped_count",

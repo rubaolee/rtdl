@@ -289,6 +289,11 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   from Goal4497. M113 is not the current Barnes-Hut path; the missing piece is
   fused weighted-vector RT-native accumulation without aggregate-frontier row
   emission, not a prepared graph chunk executor.
+- Goal4517 specifies the future app-agnostic fused RT-native contract as
+  `generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1`. It is a
+  contract and implementation gate only: no backend symbols, RT-core speedup
+  claim, automatic partner dispatch, or paper-reproduction claim are authorized
+  until the OptiX implementation matches the CPU and Numba CUDA oracles.
 - Current expanded-membership lowering evidence routes Barnes-Hut
   aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
   near-zone candidate rows. The engine still only sees points, boxes, IDs, and

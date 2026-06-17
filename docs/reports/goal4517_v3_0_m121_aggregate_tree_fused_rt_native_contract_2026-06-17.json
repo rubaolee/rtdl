@@ -1,0 +1,164 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_implemented": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "conclusion": "M121 turns the Goal4497 Barnes-Hut finding into an app-agnostic RTDL runtime target: a fused aggregate-tree weighted-vector primitive that would accumulate directly into device vector/count columns. The current status is contract-only; the existing frontier device-column route remains valid RT-core evidence but not the final accelerated shape for this workload.",
+  "contract": {
+    "app_generic": true,
+    "claim_boundary": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "paper_reproduction_claim_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "rt_core_speedup_claim_authorized": false,
+      "runtime_implemented": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "contract": "generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1",
+    "cpu_reference_api": "sum_aggregate_frontier_weighted_vectors_2d",
+    "executable": false,
+    "future_backends": [
+      "hiprt"
+    ],
+    "hot_path_forbidden_outputs": [
+      "aggregate_frontier_rows_host",
+      "aggregate_frontier_rows_device_visible_to_user",
+      "weighted_contribution_rows_host",
+      "weighted_contribution_rows_device_visible_to_user",
+      "per_source_frontier_dicts",
+      "per_source_contribution_dicts"
+    ],
+    "implementation_requirements": [
+      "RT-native traversal or equivalent device payload accumulation",
+      "device-resident vector/count output columns",
+      "same source-id keyed vector summary as the CPU reference API",
+      "same source-id keyed vector summary as the Numba CUDA partner reference",
+      "explicit user-selected route; no hidden partner dispatch",
+      "measured comparison against CPU reference and Numba CUDA partner reference"
+    ],
+    "logical_reference_contract": "generic_aggregate_frontier_weighted_vector_sum_2d_v1",
+    "must_avoid": [
+      "aggregate-frontier row emission",
+      "host frontier materialization",
+      "host contribution materialization",
+      "app-specific native engine callbacks",
+      "automatic partner dispatch"
+    ],
+    "operator_contract": "For every source, traverse the prepared aggregate tree, accept an aggregate when half_size / distance <= theta, fall back to leaf members otherwise, skip source-to-identical-target self pairs, and accumulate target_weight * displacement / softened_distance_cubed.",
+    "output_device_columns": [
+      "source_id:int64[source_count]",
+      "vector_x:float64[source_count]",
+      "vector_y:float64[source_count]",
+      "visited_count:uint64[source_count]",
+      "aggregate_count:uint64[source_count]",
+      "exact_count:uint64[source_count]"
+    ],
+    "partner_reference_api": "sum_aggregate_tree_fused_weighted_vectors_2d_numba_cuda",
+    "partner_reference_contract": "generic_aggregate_tree_fused_weighted_vector_sum_2d_numba_cuda_v1",
+    "prepared_inputs": [
+      "target_id:int64[target_count]",
+      "target_x:float64[target_count]",
+      "target_y:float64[target_count]",
+      "target_weight:float64[target_count]",
+      "tree_node_id:int64[node_count]",
+      "tree_cx:float64[node_count]",
+      "tree_cy:float64[node_count]",
+      "tree_half_size:float64[node_count]",
+      "tree_weight:float64[node_count]",
+      "tree_dfs_index:int64[node_count]",
+      "tree_resume_index:int64[node_count]",
+      "tree_is_leaf:uint32[node_count]",
+      "child_offsets:uint64[node_count+1]",
+      "child_ids:int64[child_count]",
+      "member_offsets:uint64[node_count+1]",
+      "member_ids:int64[member_count]"
+    ],
+    "primitive": "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE",
+    "reader_guidance": "This contract is the next implementation target after the frontier device-column route. It specifies the clean RT-native shape, but no runtime or performance claim is authorized until backend symbols and equivalence tests exist.",
+    "required_first_backend": "optix",
+    "required_native_symbols": [
+      "rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d",
+      "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d",
+      "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d"
+    ],
+    "run_inputs": [
+      "source_id:int64[source_count]",
+      "source_x:float64[source_count]",
+      "source_y:float64[source_count]",
+      "source_weight:float64[source_count]",
+      "theta:float64_positive",
+      "softening:float64_non_negative",
+      "stream_or_event_token"
+    ],
+    "small_host_outputs_allowed": [
+      "source_count",
+      "producer_event_or_stream_token",
+      "overflowed:uint32_bool",
+      "diagnostic_status_code:int32"
+    ],
+    "status": "specified_not_implemented"
+  },
+  "date": "2026-06-17",
+  "goal": "Goal4517 / V3 M121",
+  "implementation_gates": [
+    {
+      "acceptance": "OptiX prepare/run/destroy symbols exist and expose the declared device output columns.",
+      "gate": "native_abi_symbols",
+      "required": [
+        "rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d",
+        "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d",
+        "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d"
+      ],
+      "status": "blocked"
+    },
+    {
+      "acceptance": "RT-native output columns match CPU and Numba CUDA references by source id.",
+      "gate": "equivalence_oracles",
+      "required": [
+        "sum_aggregate_frontier_weighted_vectors_2d",
+        "sum_aggregate_tree_fused_weighted_vectors_2d_numba_cuda"
+      ],
+      "status": "blocked"
+    },
+    {
+      "acceptance": "No user-visible frontier or contribution rows are emitted on the hot path.",
+      "gate": "hot_path_materialization",
+      "required": [
+        "aggregate_frontier_rows_host",
+        "aggregate_frontier_rows_device_visible_to_user",
+        "weighted_contribution_rows_host",
+        "weighted_contribution_rows_device_visible_to_user",
+        "per_source_frontier_dicts",
+        "per_source_contribution_dicts"
+      ],
+      "status": "blocked"
+    },
+    {
+      "acceptance": "Rerank uses the same source-id keyed vector-summary contract.",
+      "gate": "measured_route_rerank",
+      "required": [
+        "Goal4458 small-row fused CPU/Numba baseline",
+        "Goal4483 large-row fused Numba CUDA baseline",
+        "new RT-native fused route"
+      ],
+      "status": "blocked"
+    }
+  ],
+  "source_evidence": {
+    "goal4497_candidate_contract": "generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1",
+    "goal4497_candidate_matches": true,
+    "goal4516_barnes_hut_m113_blockers": [
+      "missing_prepared_scene_reuse",
+      "missing_prepared_item_handle_per_chunk",
+      "prepared_graph_capture_not_validated",
+      "host_materialization_before_partner"
+    ]
+  },
+  "status": "contract_specified_runtime_not_implemented",
+  "version": "rtdl.v3_0.aggregate_tree_fused_rt_native_contract.goal4517.v1"
+}
