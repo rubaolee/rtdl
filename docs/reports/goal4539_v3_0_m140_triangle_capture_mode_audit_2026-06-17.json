@@ -1,0 +1,71 @@
+{
+  "acceptance": {
+    "m113_graph_capture_still_blocked": true,
+    "non_graph_stream_continuation_contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_WEIGHTED_SUM_DEVICE_OUTPUT_STREAM_CONTINUATION_V1",
+    "non_graph_stream_continuation_evidence_accepted": true,
+    "queue_reclassification_done": false
+  },
+  "claim_boundary": {
+    "app_specific_native_callback_required": false,
+    "automatic_partner_selection_authorized": false,
+    "current_route_changed": false,
+    "m113_promotion_authorized_for_future_triangle_shape": false,
+    "m113_replaces_current_triangle_route": false,
+    "prepared_weighted_replay_device_output_stream_validated": true,
+    "prepared_weighted_replay_graph_capture_validated": false,
+    "public_speedup_claim_authorized": false,
+    "queue_reclassification_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_executed": true
+  },
+  "conclusion": "Goal4539 confirms that Triangle weighted-replay CUDA graph capture does not become valid by switching CuPy stream-capture mode after a validated device-output stream launch. The non-graph device-output stream executor remains the accepted evidence shape for generic Triangle weighted replay, but this goal does not reclassify the V3 queue and does not authorize M113 graph, public speedup, broad RT-core, automatic partner-selection, or app-specific native-engine wording.",
+  "date": "2026-06-17",
+  "goal": "Goal4539 / V3 M140",
+  "runtime": {
+    "backend": "optix",
+    "capture_modes": [
+      {
+        "capture_status": "reject_error",
+        "error": "RuntimeError: OptiX error: CUDA error",
+        "mode": "default",
+        "mode_value": null,
+        "replay_weighted_sum": null
+      },
+      {
+        "capture_status": "reject_error",
+        "error": "RuntimeError: OptiX error: CUDA error",
+        "mode": "relaxed",
+        "mode_value": 2,
+        "replay_weighted_sum": null
+      },
+      {
+        "capture_status": "reject_error",
+        "error": "RuntimeError: OptiX error: CUDA error",
+        "mode": "global",
+        "mode_value": 0,
+        "replay_weighted_sum": null
+      },
+      {
+        "capture_status": "reject_error",
+        "error": "RuntimeError: OptiX error: CUDA error",
+        "mode": "thread_local",
+        "mode_value": 1,
+        "replay_weighted_sum": null
+      }
+    ],
+    "cupy_version": "14.1.1",
+    "device_output_stream_prelaunch_validated": true,
+    "device_output_stream_prelaunch_weighted_sum": 20,
+    "expected_weighted_sum": 20,
+    "graph_capture_mode_independent_reject": true,
+    "graph_capture_validated_modes": [],
+    "partner": "cupy",
+    "runtime_executed": true
+  },
+  "status": "triangle_capture_mode_audit_checked",
+  "validation": {
+    "errors": [],
+    "status": "accept"
+  },
+  "version": "rtdl.v3_0.triangle_capture_mode_audit.goal4539.v1"
+}

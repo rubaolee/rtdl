@@ -184,6 +184,7 @@ v2.14 evidence:
 - [Goal4521 Triangle unique-count gate](../reports/goal4521_v3_0_m125_triangle_unique_count_gate_2026-06-17.md)
 - [Goal4530 Triangle device key-payload merge](../reports/goal4530_v3_0_m133_triangle_device_key_payload_merge_2026-06-17.md)
 - [Goal4531 Triangle weighted replay graph capture](../reports/goal4531_v3_0_m134_triangle_weighted_replay_graph_capture_2026-06-17.md)
+- [Goal4539 Triangle capture-mode audit](../reports/goal4539_v3_0_m140_triangle_capture_mode_audit_2026-06-17.md)
 
 ## Reading Rules
 
