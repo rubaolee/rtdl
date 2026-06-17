@@ -299,6 +299,14 @@ RT-BarnesHut reconstruction. The runtime pressure points are:
   library, not an `optixLaunch`/`optixTrace` traversal. It remains useful
   device-resident evidence, but it must not be called RT-core traversal
   evidence.
+- Goal4523 turns the next RT-native work into an auditable native-symbol gap:
+  the generic fused weighted-vector contract exists, and OptiX traversal
+  machinery exists elsewhere in the backend, but the required aggregate-tree
+  fused prepare/run/destroy symbols and Python wrappers are still absent. The
+  next implementation surfaces are `src/rtdsl/optix_runtime.py`,
+  `src/native/optix/rtdl_optix_api.cpp`,
+  `src/native/optix/rtdl_optix_workloads.cpp`, and
+  `src/native/optix/rtdl_optix_core.cpp`.
 - Current expanded-membership lowering evidence routes Barnes-Hut
   aggregate-frontier discovery through `EXPANDED_AABB_POINT_MEMBERSHIP_2D`
   near-zone candidate rows. The engine still only sees points, boxes, IDs, and

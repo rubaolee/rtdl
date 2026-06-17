@@ -1,0 +1,88 @@
+{
+  "claim_boundary": {
+    "automatic_partner_selection_authorized": false,
+    "current_route_changed": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_executed": false
+  },
+  "conclusion": "M127 converts the Barnes-Hut RT-native future work into an auditable native-symbol gap. The generic fused weighted-vector RT-native contract exists, and the OptiX backend has traversal machinery elsewhere, but the required aggregate-tree fused prepare/run/destroy symbols and Python wrappers are still absent. Barnes-Hut RT-core wording remains blocked.",
+  "contract": {
+    "contract_key": "generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1",
+    "primitive": "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE",
+    "required_native_symbols": [
+      "rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d",
+      "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d",
+      "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d"
+    ],
+    "status": "specified_not_implemented"
+  },
+  "date": "2026-06-17",
+  "goal": "Goal4523 / V3 M127",
+  "implementation_gate": {
+    "equivalence_oracle_ready": false,
+    "native_abi_symbols_ready": false,
+    "optix_traversal_proof_ready": false,
+    "python_wrapper_ready": false,
+    "status": "blocked_missing_native_symbols",
+    "timing_split_ready": false
+  },
+  "next_implementation_surfaces": [
+    "src/rtdsl/optix_runtime.py ctypes symbols and prepared-handle wrapper",
+    "src/native/optix/rtdl_optix_api.cpp extern C prepare/run/destroy ABI",
+    "src/native/optix/rtdl_optix_workloads.cpp launch/timing path with optixLaunch",
+    "src/native/optix/rtdl_optix_core.cpp device program with optixTrace or equivalent traversal",
+    "pod equivalence packet versus CPU/Numba fused weighted-vector references"
+  ],
+  "source_audit": {
+    "fused_rt_native_block_present": false,
+    "generic_optix_traversal_available_elsewhere": true,
+    "missing_native_symbols": [
+      "rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d",
+      "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d",
+      "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d"
+    ],
+    "missing_python_wrappers": [
+      "rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d",
+      "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d",
+      "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d"
+    ],
+    "native_paths": [
+      "src/native/optix/rtdl_optix_api.cpp",
+      "src/native/optix/rtdl_optix_workloads.cpp",
+      "src/native/optix/rtdl_optix_core.cpp"
+    ],
+    "python_wrapper_path": "src/rtdsl/optix_runtime.py",
+    "symbol_checks": {
+      "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d": {
+        "native_occurrences": {
+          "src/native/optix/rtdl_optix_api.cpp": false,
+          "src/native/optix/rtdl_optix_core.cpp": false,
+          "src/native/optix/rtdl_optix_workloads.cpp": false
+        },
+        "native_present_anywhere": false,
+        "python_wrapper_present": false
+      },
+      "rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d": {
+        "native_occurrences": {
+          "src/native/optix/rtdl_optix_api.cpp": false,
+          "src/native/optix/rtdl_optix_core.cpp": false,
+          "src/native/optix/rtdl_optix_workloads.cpp": false
+        },
+        "native_present_anywhere": false,
+        "python_wrapper_present": false
+      },
+      "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d": {
+        "native_occurrences": {
+          "src/native/optix/rtdl_optix_api.cpp": false,
+          "src/native/optix/rtdl_optix_core.cpp": false,
+          "src/native/optix/rtdl_optix_workloads.cpp": false
+        },
+        "native_present_anywhere": false,
+        "python_wrapper_present": false
+      }
+    }
+  },
+  "status": "barnes_hut_rt_native_symbols_missing",
+  "version": "rtdl.v3_0.barnes_hut_rt_native_symbol_gap.goal4523.v1"
+}
