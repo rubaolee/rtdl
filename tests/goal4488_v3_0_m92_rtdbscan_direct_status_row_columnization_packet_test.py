@@ -58,13 +58,15 @@ class Goal4488M92RtdbscanDirectStatusRowColumnizationPacketTest(unittest.TestCas
         self.assertIn("Goal4488", report)
         self.assertIn("row-columnization", report)
         self.assertIn("Goal4488 RT-DBSCAN direct-status row-columnization", index)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4488.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4489.v1", route["version"])
         self.assertIn("Goal4488", route["evidence_refs"])
+        self.assertIn("Goal4489", route["evidence_refs"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4488.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4489.v1",
             adequacy_module.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         self.assertIn("Goal4488", adequacy["evidence_refs"])
+        self.assertIn("Goal4489", adequacy["evidence_refs"])
         self.assertIn("shared device-coordinate-column", adequacy["next_generic_runtime_action"])
 
 

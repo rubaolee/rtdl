@@ -1784,14 +1784,7 @@ def run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepare
     )
 
 
-def _prepare_direct_status_union_runtime_columns_cupy_3d(
-    raw_rows: tuple[Any, ...],
-    *,
-    radius: float,
-    cell_factor: float,
-) -> tuple[dict[str, Any], dict[str, Any]]:
-    import cupy
-
+def _direct_status_prepare_timing_context(cupy):
     timing_enabled = os.environ.get("RTDL_DIRECT_STATUS_PREPARE_DIAGNOSTICS", "").lower() in {
         "1",
         "true",
@@ -1813,23 +1806,28 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
         phase_order.append(name)
         timing_last = now
 
-    if not raw_rows:
-        raise ValueError("point_rows must contain at least one point")
-    radius = float(radius)
-    cell_factor = float(cell_factor)
-    if radius <= 0.0:
-        raise ValueError("radius must be positive")
-    if cell_factor <= 0.0:
-        raise ValueError("cell_factor must be positive")
+    return timing_enabled, timing_start, phase_timing, phase_order, mark_phase
 
+
+def _build_direct_status_union_runtime_columns_from_cupy_xyz_3d(
+    cupy,
+    x,
+    y,
+    z,
+    *,
+    radius: float,
+    cell_factor: float,
+    point_count: int,
+    coordinate_source: str,
+    coordinate_upload_avoided: bool,
+    coordinate_intermediate_tuple_avoided: bool,
+    timing_enabled: bool,
+    timing_start: float,
+    phase_timing: dict[str, float],
+    phase_order: list[str],
+    mark_phase,
+) -> tuple[dict[str, Any], dict[str, Any]]:
     cell_size = radius * cell_factor
-    point_count = len(raw_rows)
-    x_host, y_host, z_host, coordinate_source = _point_xyz_host_columns_3d(raw_rows)
-    mark_phase("row_xyz_extract_sec")
-    x = cupy.asarray(x_host, dtype=cupy.float64)
-    y = cupy.asarray(y_host, dtype=cupy.float64)
-    z = cupy.asarray(z_host, dtype=cupy.float64)
-    mark_phase("coordinate_columns_sec")
     kx = cupy.floor(x / cell_size).astype(cupy.int64, copy=False)
     ky = cupy.floor(y / cell_size).astype(cupy.int64, copy=False)
     kz = cupy.floor(z / cell_size).astype(cupy.int64, copy=False)
@@ -1907,7 +1905,9 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
         "prepared_direct_status_runtime_columns": True,
         "prepared_point_coordinate_columns": True,
         "point_coordinate_host_extraction": coordinate_source,
-        "point_coordinate_host_intermediate_tuple_avoided": coordinate_source != "generic_normalized_tuple_rows",
+        "point_coordinate_host_intermediate_tuple_avoided": coordinate_intermediate_tuple_avoided,
+        "point_coordinate_upload_avoided": coordinate_upload_avoided,
+        "point_coordinate_columns_source": coordinate_source,
         "prepared_partition_key_columns": True,
         "prepared_partition_aabb_columns": True,
         "near_pair_columns_materialized": False,
@@ -1917,7 +1917,7 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
         "prepare_phase_timing_available": timing_enabled,
         "prepare_phase_timing_diagnostic_syncs": timing_enabled,
         "prepare_phase_timing_env_var": "RTDL_DIRECT_STATUS_PREPARE_DIAGNOSTICS",
-        "prepare_phase_timing_schema": "direct_status_runtime_columns_cupy_3d.v1",
+        "prepare_phase_timing_schema": "direct_status_runtime_columns_cupy_3d.v2",
         "prepare_phase_timing_order": tuple(phase_order),
         "prepare_phase_timing_sec": dict(phase_timing),
         "prepare_phase_timing_total_observed_sec": (
@@ -1936,6 +1936,110 @@ def _prepare_direct_status_union_runtime_columns_cupy_3d(
         "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
     }
     return columns, metadata
+
+
+def _prepare_direct_status_union_runtime_columns_cupy_3d(
+    raw_rows: tuple[Any, ...],
+    *,
+    radius: float,
+    cell_factor: float,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    import cupy
+
+    if not raw_rows:
+        raise ValueError("point_rows must contain at least one point")
+    radius = float(radius)
+    cell_factor = float(cell_factor)
+    if radius <= 0.0:
+        raise ValueError("radius must be positive")
+    if cell_factor <= 0.0:
+        raise ValueError("cell_factor must be positive")
+
+    point_count = len(raw_rows)
+    timing_enabled, timing_start, phase_timing, phase_order, mark_phase = _direct_status_prepare_timing_context(cupy)
+    x_host, y_host, z_host, coordinate_source = _point_xyz_host_columns_3d(raw_rows)
+    mark_phase("row_xyz_extract_sec")
+    x = cupy.asarray(x_host, dtype=cupy.float64)
+    y = cupy.asarray(y_host, dtype=cupy.float64)
+    z = cupy.asarray(z_host, dtype=cupy.float64)
+    mark_phase("coordinate_columns_sec")
+    return _build_direct_status_union_runtime_columns_from_cupy_xyz_3d(
+        cupy,
+        x,
+        y,
+        z,
+        radius=radius,
+        cell_factor=cell_factor,
+        point_count=point_count,
+        coordinate_source=coordinate_source,
+        coordinate_upload_avoided=False,
+        coordinate_intermediate_tuple_avoided=coordinate_source != "generic_normalized_tuple_rows",
+        timing_enabled=timing_enabled,
+        timing_start=timing_start,
+        phase_timing=phase_timing,
+        phase_order=phase_order,
+        mark_phase=mark_phase,
+    )
+
+
+def _require_caller_owned_cupy_float64_vector(cupy, point_columns: dict[str, Any], name: str):
+    if name not in point_columns:
+        raise ValueError(f"point_columns must include {name!r}")
+    value = point_columns[name]
+    if not isinstance(value, cupy.ndarray):
+        raise TypeError(f"point_columns[{name!r}] must be a CuPy device array")
+    if int(value.ndim) != 1:
+        raise ValueError(f"point_columns[{name!r}] must be one-dimensional")
+    if value.dtype != cupy.float64:
+        raise TypeError(f"point_columns[{name!r}] must have dtype cupy.float64")
+    return value
+
+
+def _prepare_direct_status_union_runtime_columns_from_cupy_point_columns_3d(
+    point_columns: dict[str, Any],
+    *,
+    radius: float,
+    cell_factor: float,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    import cupy
+
+    radius = float(radius)
+    cell_factor = float(cell_factor)
+    if radius <= 0.0:
+        raise ValueError("radius must be positive")
+    if cell_factor <= 0.0:
+        raise ValueError("cell_factor must be positive")
+    if not isinstance(point_columns, dict):
+        raise TypeError("point_columns must be a mapping with CuPy x/y/z columns")
+
+    timing_enabled, timing_start, phase_timing, phase_order, mark_phase = _direct_status_prepare_timing_context(cupy)
+    x = _require_caller_owned_cupy_float64_vector(cupy, point_columns, "x")
+    y = _require_caller_owned_cupy_float64_vector(cupy, point_columns, "y")
+    z = _require_caller_owned_cupy_float64_vector(cupy, point_columns, "z")
+    point_count = int(x.size)
+    if point_count <= 0:
+        raise ValueError("point_columns must contain at least one point")
+    if int(y.size) != point_count or int(z.size) != point_count:
+        raise ValueError("point_columns x/y/z sizes must match")
+    mark_phase("row_xyz_extract_sec")
+    mark_phase("coordinate_columns_sec")
+    return _build_direct_status_union_runtime_columns_from_cupy_xyz_3d(
+        cupy,
+        x,
+        y,
+        z,
+        radius=radius,
+        cell_factor=cell_factor,
+        point_count=point_count,
+        coordinate_source="caller_owned_cupy_device_columns",
+        coordinate_upload_avoided=True,
+        coordinate_intermediate_tuple_avoided=True,
+        timing_enabled=timing_enabled,
+        timing_start=timing_start,
+        phase_timing=phase_timing,
+        phase_order=phase_order,
+        mark_phase=mark_phase,
+    )
 
 
 def _run_direct_status_union_signature_from_prepared_columns_cupy_3d(
@@ -2120,6 +2224,8 @@ class V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D:
         same_contract = None
         materialized_signature = None
         if validate_against_materialized_signature:
+            if not self.point_rows:
+                raise ValueError("validate_against_materialized_signature requires original point rows")
             reference = build_v2_8_fixed_radius_partition_convergence_component_signature_cupy_preview_3d(
                 self.point_rows,
                 radius=self.radius,
@@ -2180,6 +2286,28 @@ def prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_pre
     )
     return V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D(
         point_rows=raw_rows,
+        radius=float(radius),
+        cell_factor=float(cell_factor),
+        runtime_columns=runtime_columns,
+        prepare_metadata=prepare_metadata,
+    )
+
+
+def prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_point_columns_preview_3d(
+    point_columns: dict[str, Any],
+    *,
+    radius: float,
+    cell_factor: float = 0.125,
+) -> V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D:
+    """Prepare direct-status grouped union signatures from caller-owned CuPy x/y/z columns."""
+
+    runtime_columns, prepare_metadata = _prepare_direct_status_union_runtime_columns_from_cupy_point_columns_3d(
+        point_columns,
+        radius=radius,
+        cell_factor=cell_factor,
+    )
+    return V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D(
+        point_rows=(),
         radius=float(radius),
         cell_factor=float(cell_factor),
         runtime_columns=runtime_columns,
@@ -2503,6 +2631,28 @@ def prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_unio
     )
     return V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPreview3D(
         point_rows=raw_rows,
+        radius=float(radius),
+        cell_factor=float(cell_factor),
+        runtime_columns=runtime_columns,
+        prepare_metadata=prepare_metadata,
+    )
+
+
+def prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_point_columns_preview_3d(
+    point_columns: dict[str, Any],
+    *,
+    radius: float,
+    cell_factor: float = 0.125,
+) -> V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPreview3D:
+    """Prepare predicate direct-status signatures from caller-owned CuPy x/y/z columns."""
+
+    runtime_columns, prepare_metadata = _prepare_direct_status_union_runtime_columns_from_cupy_point_columns_3d(
+        point_columns,
+        radius=radius,
+        cell_factor=cell_factor,
+    )
+    return V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPreview3D(
+        point_rows=(),
         radius=float(radius),
         cell_factor=float(cell_factor),
         runtime_columns=runtime_columns,
@@ -4838,7 +4988,9 @@ __all__ = [
     "make_v2_8_fixed_radius_partition_convergence_summary_typed_stream_contract",
     "plan_v2_8_fixed_radius_graph_component_continuation",
     "prepare_v2_8_fixed_radius_graph_component_continuation_3d",
+    "prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_point_columns_preview_3d",
     "prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_preview_3d",
+    "prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_point_columns_preview_3d",
     "prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_preview_3d",
     "prepare_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d",
     "run_v2_8_fixed_radius_partition_convergence_component_labels_cupy_prepared_preview_3d",

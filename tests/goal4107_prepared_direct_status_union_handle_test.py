@@ -40,14 +40,18 @@ class Goal4107PreparedDirectStatusUnionSourceTest(unittest.TestCase):
             '"partition_convergence_hybrid_promoted": False',
             '"automatic_partner_selection_allowed": False',
             '"true_zero_copy_claim_authorized": False',
+        ):
+            self.assertIn(fragment.lower(), section)
+
+        for fragment in (
             '"prepare_phase_timing_available": timing_enabled',
             '"prepare_phase_timing_diagnostic_syncs": timing_enabled',
             '"prepare_phase_timing_env_var": "RTDL_DIRECT_STATUS_PREPARE_DIAGNOSTICS"',
-            '"prepare_phase_timing_schema": "direct_status_runtime_columns_cupy_3d.v1"',
+            '"prepare_phase_timing_schema": "direct_status_runtime_columns_cupy_3d.v2"',
             '"point_coordinate_host_extraction": coordinate_source',
-            '"point_coordinate_host_intermediate_tuple_avoided": coordinate_source != "generic_normalized_tuple_rows"',
+            '"point_coordinate_host_intermediate_tuple_avoided": coordinate_intermediate_tuple_avoided',
         ):
-            self.assertIn(fragment.lower(), section)
+            self.assertIn(fragment.lower(), source.lower())
 
 
 @unittest.skipUnless(_cupy_available(), "CuPy is not available in this environment")

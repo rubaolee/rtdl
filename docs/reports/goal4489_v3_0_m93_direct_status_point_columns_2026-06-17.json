@@ -1,0 +1,180 @@
+{
+  "case_count": 3,
+  "claim_boundary": "Column-based direct-status prepare speedups apply only when the caller already owns CuPy float64 x/y/z device columns. Point-column construction is reported separately and is not hidden.",
+  "error_count": 0,
+  "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+  "ok_count": 3,
+  "point_count": 1048576,
+  "rows": [
+    {
+      "column_prepare_metadata": {
+        "point_coordinate_host_extraction": "caller_owned_cupy_device_columns",
+        "point_coordinate_upload_avoided": true,
+        "prepare_phase_timing_sec": {
+          "coordinate_columns_sec": 1.5869736671447754e-06,
+          "partition_aabb_reduce_sec": 0.0008346438407897949,
+          "partition_keys_sec": 0.0006646066904067993,
+          "partition_offsets_sec": 0.00012179464101791382,
+          "row_xyz_extract_sec": 9.782612323760986e-06,
+          "sort_unique_search_sec": 0.004246249794960022
+        }
+      },
+      "column_prepare_phase_total_sec": 0.005914606153964996,
+      "column_prepare_sec": 0.00594717264175415,
+      "column_run_sec": 5.360611647367477,
+      "dataset": "clustered3d",
+      "point_column_build_sec": 0.5450264438986778,
+      "point_count": 1048576,
+      "prepare_phase_speedup_if_columns_already_owned": 120.55608588578374,
+      "prepare_speedup_if_columns_already_owned": 124.038166360985,
+      "row_prepare_metadata": {
+        "point_coordinate_host_extraction": "attribute_xyz_rows_direct",
+        "point_coordinate_upload_avoided": false,
+        "prepare_phase_timing_sec": {
+          "coordinate_columns_sec": 0.22554145753383636,
+          "partition_aabb_reduce_sec": 0.0017728134989738464,
+          "partition_keys_sec": 0.2591191232204437,
+          "partition_offsets_sec": 0.0005590468645095825,
+          "row_xyz_extract_sec": 0.1754886731505394,
+          "sort_unique_search_sec": 0.05015948414802551
+        }
+      },
+      "row_prepare_phase_total_sec": 0.7130417674779892,
+      "row_prepare_sec": 0.7376763895153999,
+      "row_run_sec": 5.344423443078995,
+      "signature": {
+        "component_count": 4,
+        "first_sizes": [
+          262144,
+          262144,
+          262144,
+          262144
+        ],
+        "last_sizes": [
+          262144,
+          262144,
+          262144,
+          262144
+        ],
+        "point_count": 1048576
+      },
+      "signatures_match": true,
+      "status": "ok",
+      "wall_sec": 16.686131693422794
+    },
+    {
+      "column_prepare_metadata": {
+        "point_coordinate_host_extraction": "caller_owned_cupy_device_columns",
+        "point_coordinate_upload_avoided": true,
+        "prepare_phase_timing_sec": {
+          "coordinate_columns_sec": 1.6838312149047852e-06,
+          "partition_aabb_reduce_sec": 0.0016259998083114624,
+          "partition_keys_sec": 0.0006573498249053955,
+          "partition_offsets_sec": 0.00011058896780014038,
+          "row_xyz_extract_sec": 9.335577487945557e-06,
+          "sort_unique_search_sec": 0.001221783459186554
+        }
+      },
+      "column_prepare_phase_total_sec": 0.003657221794128418,
+      "column_prepare_sec": 0.003692544996738434,
+      "column_run_sec": 2.067922607064247,
+      "dataset": "road3d",
+      "point_column_build_sec": 0.2569561004638672,
+      "point_count": 1048576,
+      "prepare_phase_speedup_if_columns_already_owned": 77.08748247987222,
+      "prepare_speedup_if_columns_already_owned": 82.72649388121589,
+      "row_prepare_metadata": {
+        "point_coordinate_host_extraction": "attribute_xyz_rows_direct",
+        "point_coordinate_upload_avoided": false,
+        "prepare_phase_timing_sec": {
+          "coordinate_columns_sec": 0.16969121992588043,
+          "partition_aabb_reduce_sec": 0.001719452440738678,
+          "partition_keys_sec": 0.0007907599210739136,
+          "partition_offsets_sec": 0.000124320387840271,
+          "row_xyz_extract_sec": 0.10826194286346436,
+          "sort_unique_search_sec": 0.0013038292527198792
+        }
+      },
+      "row_prepare_phase_total_sec": 0.2819260209798813,
+      "row_prepare_sec": 0.3054713010787964,
+      "row_run_sec": 2.083566330373287,
+      "signature": {
+        "component_count": 1,
+        "first_sizes": [
+          1048576
+        ],
+        "last_sizes": [
+          1048576
+        ],
+        "point_count": 1048576
+      },
+      "signatures_match": true,
+      "status": "ok",
+      "wall_sec": 8.496854737401009
+    },
+    {
+      "column_prepare_metadata": {
+        "point_coordinate_host_extraction": "caller_owned_cupy_device_columns",
+        "point_coordinate_upload_avoided": true,
+        "prepare_phase_timing_sec": {
+          "coordinate_columns_sec": 1.5944242477416992e-06,
+          "partition_aabb_reduce_sec": 0.0008801817893981934,
+          "partition_keys_sec": 0.0006609931588172913,
+          "partition_offsets_sec": 0.00011278688907623291,
+          "row_xyz_extract_sec": 7.875263690948486e-06,
+          "sort_unique_search_sec": 0.033223509788513184
+        }
+      },
+      "column_prepare_phase_total_sec": 0.03491818904876709,
+      "column_prepare_sec": 0.03494863957166672,
+      "column_run_sec": 1.301895298063755,
+      "dataset": "ngsim_dense",
+      "point_column_build_sec": 0.3744596615433693,
+      "point_count": 1048576,
+      "prepare_phase_speedup_if_columns_already_owned": 11.33599807111278,
+      "prepare_speedup_if_columns_already_owned": 12.075446513941229,
+      "row_prepare_metadata": {
+        "point_coordinate_host_extraction": "attribute_xyz_rows_direct",
+        "point_coordinate_upload_avoided": false,
+        "prepare_phase_timing_sec": {
+          "coordinate_columns_sec": 0.22309791296720505,
+          "partition_aabb_reduce_sec": 0.0009363964200019836,
+          "partition_keys_sec": 0.000779174268245697,
+          "partition_offsets_sec": 0.0001146271824836731,
+          "row_xyz_extract_sec": 0.16939160972833633,
+          "sort_unique_search_sec": 0.0014783293008804321
+        }
+      },
+      "row_prepare_phase_total_sec": 0.39583252370357513,
+      "row_prepare_sec": 0.42202042788267136,
+      "row_run_sec": 1.3206597194075584,
+      "signature": {
+        "component_count": 1,
+        "first_sizes": [
+          1048576
+        ],
+        "last_sizes": [
+          1048576
+        ],
+        "point_count": 1048576
+      },
+      "signatures_match": true,
+      "status": "ok",
+      "wall_sec": 8.656045578420162
+    }
+  ],
+  "summary": {
+    "all_signatures_match": true,
+    "prepare_phase_speedups_if_columns_already_owned": {
+      "clustered3d": 120.55608588578374,
+      "ngsim_dense": 11.33599807111278,
+      "road3d": 77.08748247987222
+    },
+    "prepare_speedups_if_columns_already_owned": {
+      "clustered3d": 124.038166360985,
+      "ngsim_dense": 12.075446513941229,
+      "road3d": 82.72649388121589
+    }
+  },
+  "version": "rtdl.v3_0.direct_status_point_columns.goal4489.v1"
+}
