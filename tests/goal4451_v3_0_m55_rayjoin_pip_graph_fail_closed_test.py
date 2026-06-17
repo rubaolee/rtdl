@@ -105,8 +105,8 @@ class Goal4451V30M55RayJoinPipGraphFailClosedTest(unittest.TestCase):
         route = rt.explain_current_benchmark_route("spatial_rayjoin")
         spatial = {row["app"]: row for row in rt.current_benchmark_adequacy()}["spatial_rayjoin"]
 
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4484.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4484.v1", rt.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4485.v1", rt.CURRENT_BENCHMARK_ROUTE_DECISION_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4485.v1", rt.CURRENT_BENCHMARK_ADEQUACY_VERSION)
         self.assertIn("Goal4451", route["evidence_refs"])
         self.assertIn("Goal4451", spatial["evidence_refs"])
         self.assertIn("fail-closed", route["next_runtime_action"])

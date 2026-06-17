@@ -107,8 +107,8 @@ class Goal4477V30M81TriangleCompactConstantRayBatchTest(unittest.TestCase):
         rows = {row["app"]: row for row in adequacy.current_benchmark_adequacy()}
         triangle = rows["triangle_counting"]
 
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4484.v1", route["version"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4484.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4485.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4485.v1", adequacy.CURRENT_BENCHMARK_ADEQUACY_VERSION)
         self.assertIn("Goal4477", route["evidence_refs"])
         self.assertIn("Goal4477", triangle["evidence_refs"])
         self.assertIn("compact constant-ray prepared batch ABI", route["user_choice_guidance"])

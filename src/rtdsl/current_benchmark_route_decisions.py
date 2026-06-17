@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4484.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4485.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -75,7 +75,10 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "OptiX count-threshold prepare cost and records a 524k compact-signature "
     "matrix where predicate direct-status is the measured explicit route for "
     "clustered3d, road3d, and ngsim_dense while grouped-stream Numba remains "
-    "the conservative fallback/reference path. "
+    "the conservative fallback/reference path. Goal4485 extends the same "
+    "compact-signature route matrix to 1,048,576 points and keeps predicate "
+    "direct-status fastest on all three profiles for both one-shot and warmed "
+    "replay timing. "
     "Goal4453 refreshes triangle-counting Numba partner guidance after moving "
     "RT-1A2/RT-2A1 geometry fill from host materialization and re-upload to "
     "partner-resident Numba device columns. It removes unnecessary data movement "
@@ -1043,7 +1046,7 @@ def _refresh_goal4484_route_decisions(
                 decision_kind="mixed_explicit",
                 current_reader_decision=(
                     "Use the explicit RTDL/OptiX predicate direct-status CuPy "
-                    "column-signature route for the measured 524k compact "
+                    "column-signature route for the measured 524k and 1M compact "
                     "cluster-size/noise/core summary profiles. Keep grouped-stream "
                     "Numba as the conservative same-contract fallback/reference path. "
                     "Set `output_mode=\"component_signature\"` when compact summaries "
@@ -1063,7 +1066,7 @@ def _refresh_goal4484_route_decisions(
                 ),
                 user_choice_guidance=(
                     "Choose the output contract first. For compact summaries at the "
-                    "measured 524k clustered3d/road3d/ngsim_dense profiles, choose "
+                    "measured 524k and 1M clustered3d/road3d/ngsim_dense profiles, choose "
                     "the explicit predicate direct-status CuPy route with "
                     "`partition_cell_factor` set explicitly; use grouped-stream Numba "
                     "when a conservative same-contract fallback/reference is needed. "
@@ -1086,7 +1089,7 @@ def _refresh_goal4484_route_decisions(
                 ),
                 next_runtime_action=(
                     "keep predicate direct-status as the measured explicit compact-signature "
-                    "route for the Goal4484 524k profiles; keep grouped-stream Numba as "
+                    "route for the Goal4484/Goal4485 524k and 1M profiles; keep grouped-stream Numba as "
                     "fallback/reference; keep full Python row materialization explicit; "
                     "keep the profile/reuse advisor visible for explicit route choices; "
                     "next serious runtime work is prepare-cost reduction, broader profile "
@@ -1148,6 +1151,7 @@ def _refresh_goal4484_route_decisions(
                     "Goal4445",
                     "Goal4452",
                     "Goal4484",
+                    "Goal4485",
                 ),
                 pod_needed_next=False,
             )
