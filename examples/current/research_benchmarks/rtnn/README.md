@@ -99,6 +99,14 @@ RTNN, RTDL OptiX, and Embree/CPU comparison, but it remains
 `bounded_family_recipe_not_exact_paper_recipe` until the paper's exact KITTI
 frame ids and merge/truncation rule are frozen.
 
+Goal4500 adds the same-input RTDL gate for that recipe. Use
+`write_kitti_paper_family_recipe_csv()` to export the same bounded KITTI CSV,
+then run the exact float64 ranked-summary aggregate contract on RTDL OptiX and
+RTDL Embree. This runs the RTDL side of the same-input comparison; count,
+nearest-id checksum, and distance-sum signatures match, while a tie-sensitive
+kth-id checksum caveat remains. Author RTNN still needs a follow-on
+adapter/build run on the same CSV before any author-vs-RTDL wording.
+
 The important boundary is that RTDL exact aggregate and app graph-bridge rows
 are RTDL-internal same-contract evidence; the official RTNN rows are diagnostic
 unless a future goal proves output-contract equivalence.

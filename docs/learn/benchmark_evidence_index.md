@@ -98,7 +98,7 @@ v2.14 evidence:
 | RayDB-style | `raydb_style_optix_count_primitive_first` | primitive-first grouped count path; partner rows only for unfused continuations | NVIDIA pod; CUDA pod for CuPy/Numba partner comparison |
 | Barnes-Hut | `barnes_hut_mixed_explicit_cpu_numba_cuda_or_optix_numba` | Goal4458 reranks the current force-summary app front doors at 8192/16384/32768 bodies, where `fused_frontier_force_sum_bucketized_cpu_numba` is fastest. Goal4483 extends the same rerank to 65536/131072 bodies, where `fused_frontier_force_sum_bucketized_numba_cuda` is fastest. Goal4497 records the RT-native fused feasibility gate: prepared RTDL/OptiX+Numba remains RT-core device-column evidence rather than Barnes-Hut RT-core speedup wording until a generic fused weighted-vector RT-native primitive exists | NVIDIA/CUDA pod for Numba CUDA and OptiX; Numba CPU for CPU fused baseline |
 | LibRTS spatial index | `librts_spatial_index_optix_aabb_index` | prepared AABB-index benchmark slice, not full mutable LibRTS | NVIDIA pod for OptiX timing |
-| RTNN | `rtnn_mixed_exact_aggregate_or_graph_partner_bridge` | exact float64 aggregate for same-contract OptiX-vs-Embree comparison; prepared graph plus explicit CuPy/Numba same-stream partner bridge for uniform, shell, and clustered resident app evidence; Goal4498 defines the nine paper dataset targets, and Goal4499 adds a deterministic KITTI bounded-family recipe layer while keeping exact paper reproduction blocked until dataset recipes are frozen | NVIDIA/CUDA pod for OptiX, CuPy, Numba, and future author-code comparison |
+| RTNN | `rtnn_mixed_exact_aggregate_or_graph_partner_bridge` | exact float64 aggregate for same-contract OptiX-vs-Embree comparison; prepared graph plus explicit CuPy/Numba same-stream partner bridge for uniform, shell, and clustered resident app evidence; Goal4498 defines the nine paper dataset targets, Goal4499 adds a deterministic KITTI bounded-family recipe layer, and Goal4500 exports the same bounded KITTI CSV for RTDL OptiX/Embree exact aggregate gating with a tie-sensitive kth-id caveat while keeping exact paper reproduction blocked until dataset recipes are frozen | NVIDIA/CUDA pod for OptiX, CuPy, Numba, and future author-code comparison |
 | Triangle counting | `triangle_counting_optix_native_summary` | scalar answer stays primitive-first; Goal4444 fixes the no-C++ Numba summary-contract staging debt, Goal4453 fills RT-1A2/RT-2A1 Numba geometry from partner-resident device columns, Goal4454 adds dense-label/sorted-key summary fast paths, Goal4455 confirms CuPy remains the large-scale performance partner, Goal4456 extends Numba's summary remap fast path to bounded gapped ids, Goal4457 removes CuPy app-route host-column materialization, Goal4492 rejects a single small-bound local unique-count kernel as a full replacement, Goal4493 validates a bounded local-hash prototype for the small-group side of a hybrid/two-pass source-group strategy, and Goal4494 rejects the integrated per-segment local-hash plus large-tail sort/RLE candidate because backend and segment build regress on all three paper rows | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
 
 ## Evidence Reports
@@ -123,6 +123,7 @@ v2.14 evidence:
 - [Goal4460 RTNN shell app-front-door graph bridge](../reports/goal4460_v3_0_m64_rtnn_shell_app_bridge_2026-06-16.md)
 - [Goal4498 RTNN paper dataset targets](../reports/goal4498_v3_0_m102_rtnn_paper_dataset_targets_2026-06-17.md)
 - [Goal4499 RTNN KITTI paper-family recipe](../reports/goal4499_v3_0_m103_rtnn_kitti_paper_family_recipe_2026-06-17.md)
+- [Goal4500 RTNN KITTI same-input RTDL gate](../reports/goal4500_v3_0_m104_rtnn_kitti_same_input_rtdl_gate_2026-06-17.md)
 - [Goal4444 Triangle Numba direct-binary summary refresh](../reports/goal4444_v3_0_m48_triangle_numba_direct_binary_summary_2026-06-16.md)
 - [Goal4445 DBSCAN compact component signature](../reports/goal4445_v3_0_m49_dbscan_component_signature_2026-06-16.md)
 - [Goal4446 Robot Collision NumPy lowering](../reports/goal4446_v3_0_m50_robot_numpy_lowering_2026-06-16.md)
@@ -163,10 +164,12 @@ v2.14 evidence:
   same-contract aggregate plus uniform, shell, and clustered app-front-door
   graph-bridge evidence while still not claiming full RTNN paper reproduction
   or arbitrary ANN-index speedup. Goal4498 defines the paper dataset target
-  matrix, and Goal4499 lets real KITTI-family bounded recipes feed
-  same-contract comparison when Velodyne data is present; uniform/shell/clustered
-  rows remain scoped to RTDL-internal distribution evidence until exact KITTI,
-  Stanford, and Millennium recipes are frozen.
+  matrix, Goal4499 lets real KITTI-family bounded recipes feed same-contract
+  comparison when Velodyne data is present, and Goal4500 exports the same
+  bounded KITTI CSV for the RTDL OptiX/Embree gate, with a tie-sensitive kth-id
+  checksum caveat; uniform/shell/clustered rows remain scoped to RTDL-internal
+  distribution evidence until exact KITTI, Stanford, and Millennium recipes are
+  frozen.
   RayJoin overlay reports the available 2/8
   exact CDB subset, not a full 8/8 Section 5.7 reproduction.
 - A scale-profile row is more useful for performance planning, but still must

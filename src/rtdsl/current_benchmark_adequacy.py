@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4499.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4500.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -56,7 +56,10 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "and clustered rows remain RTDL-internal distribution evidence only. Goal4499 "
     "adds a deterministic KITTI bounded-family recipe layer, allowing bounded "
     "same-contract comparisons on real KITTI-family input while keeping exact "
-    "paper-reproduction wording blocked. "
+    "paper-reproduction wording blocked. Goal4500 exports the bounded KITTI "
+    "recipe to a same-input CSV and runs the RTDL OptiX/Embree exact aggregate "
+    "gate with a tie-sensitive kth-id caveat, leaving author RTNN as the next "
+    "comparison step. "
     "Goal4464 closes Triangle Counting's largest paper-dataset OOM validation row "
     "by running source-range segmented RT-2A1 on `com-orkut` with a measured 2M "
     "directed-edge scene cap, while keeping public speedup claims blocked. "
@@ -521,7 +524,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "targets and keeps exact paper reproduction blocked until acquisition recipes "
             "are frozen. Goal4499 adds the KITTI bounded-family recipe layer so real "
             "KITTI-family bounded inputs can be compared under one output contract "
-            "without claiming exact paper reproduction."
+            "without claiming exact paper reproduction. Goal4500 exports that input "
+            "as the same bounded KITTI CSV and runs the RTDL OptiX/Embree exact "
+            "aggregate gate. Count, nearest-id checksum, and distance sum match, "
+            "but a tie-sensitive kth-id checksum caveat remains; author RTNN remains "
+            "the next external-code gate."
         ),
         "adequacy": "strong",
         "current_recommended_path": (
@@ -542,11 +549,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
         "next_generic_runtime_action": (
             "keep exact aggregate and resident graph-bridge contracts separate; "
             "prove output-contract equivalence before comparing with official RTNN "
-            "authors-code rows; next use the Goal4499 KITTI bounded-family recipe on "
-            "the pod if Velodyne source data is ready, then run author RTNN, RTDL OptiX, "
-            "and Embree/CPU under one radius+K output contract; do not add more synthetic "
-            "distribution timing unless it changes a route decision; run actual AMD "
-            "functional validation before AMD performance work"
+            "authors-code rows; next build and run author RTNN on the same bounded KITTI "
+            "CSV used by Goal4500, then compare author RTNN, RTDL OptiX, and Embree/CPU "
+            "under one radius+K output contract; do not add more synthetic distribution "
+            "timing unless it changes a route decision; run actual AMD functional "
+            "validation before AMD performance work"
         ),
         "evidence_refs": (
             "Goal2800",
@@ -565,6 +572,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4460",
             "Goal4498",
             "Goal4499",
+            "Goal4500",
         ),
         "pod_needed_next": True,
     },

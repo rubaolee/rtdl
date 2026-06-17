@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import struct
 from dataclasses import asdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -47,6 +48,20 @@ class KittiPaperFamilyRecipe:
     exact_recipe_status: str
     selection_rule: str
     frames: tuple[KittiRecipeFrame, ...]
+    notes: str
+
+
+@dataclass(frozen=True)
+class KittiRecipeCsvExport:
+    path: str
+    target_handle: str
+    paper_label: str
+    point_count: int
+    selected_frame_count: int
+    source_root: str
+    format: str
+    recipe_status: str
+    paper_equivalence_status: str
     notes: str
 
 
@@ -202,8 +217,74 @@ def write_kitti_paper_family_recipe_manifest(
     return destination
 
 
+def write_kitti_paper_family_recipe_csv(
+    destination: str | Path,
+    *,
+    target_handle: str,
+    source_root: str | Path | None = None,
+    start_index: int = 0,
+    stride: int = 1,
+    target_point_count: int | None = None,
+) -> KittiRecipeCsvExport:
+    recipe = plan_kitti_paper_family_recipe(
+        target_handle=target_handle,
+        source_root=source_root,
+        start_index=start_index,
+        stride=stride,
+        target_point_count=target_point_count,
+    )
+    if recipe.recipe_status != "bounded_family_recipe_ready":
+        raise RuntimeError(
+            f"KITTI recipe {target_handle!r} is not ready for CSV export: {recipe.recipe_status}"
+        )
+    source_root_path = Path(recipe.source_root)
+    destination = Path(destination)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+
+    written = 0
+    with destination.open("w", encoding="utf-8", newline="\n") as handle:
+        for frame in recipe.frames:
+            frame_path = source_root_path / frame.relative_bin_path
+            for index, (x, y, z, _intensity) in enumerate(_iter_kitti_frame_xyzi(frame_path)):
+                if index >= frame.take_point_count:
+                    break
+                handle.write(f"{x:.9g},{y:.9g},{z:.9g}\n")
+                written += 1
+
+    if written != recipe.selected_point_count:
+        raise RuntimeError(
+            f"KITTI CSV export wrote {written} points, expected {recipe.selected_point_count}"
+        )
+
+    return KittiRecipeCsvExport(
+        path=str(destination),
+        target_handle=recipe.target_handle,
+        paper_label=recipe.paper_label,
+        point_count=written,
+        selected_frame_count=recipe.selected_frame_count,
+        source_root=recipe.source_root,
+        format="rtnn_csv_xyz",
+        recipe_status=recipe.recipe_status,
+        paper_equivalence_status=recipe.paper_equivalence_status,
+        notes=(
+            "CSV rows preserve source frame order and per-frame point order from the "
+            "bounded KITTI family recipe. The file is suitable for same-input RTNN/RTDL "
+            "comparison, not exact paper wording."
+        ),
+    )
+
+
 def _rtnn_kitti_targets_by_handle() -> dict[str, RtnnPaperDatasetTarget]:
     return {
         target.handle: target
         for target in rtnn_paper_dataset_targets(family_handle="kitti_velodyne_point_sets")
     }
+
+
+def _iter_kitti_frame_xyzi(bin_path: Path):
+    payload = bin_path.read_bytes()
+    if len(payload) % 16 != 0:
+        raise RuntimeError(
+            f"KITTI frame file has invalid size {len(payload)} bytes; expected a multiple of 16: {bin_path}"
+        )
+    return struct.iter_unpack("<ffff", payload)

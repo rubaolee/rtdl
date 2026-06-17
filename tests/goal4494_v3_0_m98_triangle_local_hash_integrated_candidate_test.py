@@ -84,14 +84,14 @@ class Goal4494M98TriangleLocalHashIntegratedCandidateTest(unittest.TestCase):
         self.assertIn("Goal4494 Triangle integrated local-hash candidate", index)
         self.assertIn("numba_direct_sort_rle_local_hash_2048", app_source)
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4499.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4500.v1",
             route["version"],
         )
         self.assertIn("Goal4494", route["evidence_refs"])
         self.assertIn("per-segment local-hash", " ".join(route["rejected_or_unpromoted_candidates"]))
         self.assertIn("Keep `numba_direct_sort_rle`", route["next_runtime_action"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4499.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4500.v1",
             adequacy_module.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         self.assertIn("Goal4494", adequacy["evidence_refs"])
