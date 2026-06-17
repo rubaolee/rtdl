@@ -1,0 +1,156 @@
+{
+  "checks": {
+    "doctor_doc_mentions_v3": true,
+    "doctor_ok": true,
+    "required_failures_empty": true,
+    "v2_14_release_package_required": true,
+    "v3_strategy_doc_required": true,
+    "version_marker_is_v2_14": true
+  },
+  "claim_boundary": {
+    "automatic_partner_selection_authorized": false,
+    "benchmark_executed": false,
+    "broad_rt_core_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "runtime_executed": false
+  },
+  "conclusion": "Goal4545 refreshes the source-tree doctor to the current v2.14/V3 development surface. The required layout checks now expect VERSION `v2.14`, the v2.14 release package, and the V3 app-author strategy doc. This is an environment sanity gate only, not a benchmark or claim authorization.",
+  "date": "2026-06-17",
+  "doctor_payload": {
+    "checks": [
+      {
+        "detail": "v2.14",
+        "name": "version marker",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "src/rtdsl/__init__.py",
+        "name": "src/rtdsl",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "README.md",
+        "name": "front page",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "tutorials/current/README.md",
+        "name": "top-level tutorials",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "examples/current/README.md",
+        "name": "current examples",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "docs/release_reports/v2_14/README.md",
+        "name": "v2.14 release package",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "docs/learn/v3_0_app_author_implementation_strategy.md",
+        "name": "V3 app-author strategy",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "pyproject.toml",
+        "name": "optional editable source-tree metadata",
+        "required": false,
+        "status": "pass"
+      },
+      {
+        "detail": "3.11.9",
+        "name": "python version",
+        "required": false,
+        "status": "pass"
+      },
+      {
+        "detail": "rtdsl",
+        "name": "module rtdsl",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "numpy",
+        "name": "module numpy",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "imageio",
+        "name": "optional module imageio",
+        "required": false,
+        "status": "pass"
+      },
+      {
+        "detail": "imageio_ffmpeg",
+        "name": "optional module imageio-ffmpeg",
+        "required": false,
+        "status": "pass"
+      },
+      {
+        "detail": "cupy",
+        "name": "optional module cupy",
+        "required": false,
+        "status": "warn"
+      },
+      {
+        "detail": "numba",
+        "name": "optional module numba",
+        "required": false,
+        "status": "warn"
+      },
+      {
+        "detail": "set RTDL_OPTIX_LIBRARY or build/librtdl_optix.so for OptiX examples",
+        "name": "optional OptiX library",
+        "required": false,
+        "status": "warn"
+      },
+      {
+        "detail": "build/librtdl_embree.dll",
+        "name": "optional Embree library",
+        "required": false,
+        "status": "pass"
+      }
+    ],
+    "ok": true,
+    "repo": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
+    "required_failures": [],
+    "tool": "rtdl_source_tree_doctor",
+    "version": "v2.14",
+    "warnings": [
+      {
+        "detail": "cupy",
+        "name": "optional module cupy",
+        "required": false,
+        "status": "warn"
+      },
+      {
+        "detail": "numba",
+        "name": "optional module numba",
+        "required": false,
+        "status": "warn"
+      },
+      {
+        "detail": "set RTDL_OPTIX_LIBRARY or build/librtdl_optix.so for OptiX examples",
+        "name": "optional OptiX library",
+        "required": false,
+        "status": "warn"
+      }
+    ]
+  },
+  "failed_checks": [],
+  "goal": "Goal4545 / V3 M146",
+  "status": "source_tree_doctor_v3_refresh_checked",
+  "version": "rtdl.v3_0.source_tree_doctor_refresh.goal4545.v1"
+}

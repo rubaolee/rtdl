@@ -140,6 +140,7 @@ V3.0 current app-author guidance:
 - [Goal4542 post-closure surface audit](../reports/goal4542_v3_0_m143_post_closure_surface_audit_2026-06-17.md)
 - [Goal4543 major performance target refresh](../reports/goal4543_v3_0_m144_major_performance_target_refresh_2026-06-17.md)
 - [Goal4544 V3 app-author strategy doc](../reports/goal4544_v3_0_m145_app_author_strategy_doc_2026-06-17.md)
+- [Goal4545 source-tree doctor V3 refresh](../reports/goal4545_v3_0_m146_source_tree_doctor_refresh_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)

@@ -19,7 +19,7 @@ class Goal4307EditableSourceTreeOnboardingTest(unittest.TestCase):
     def test_pyproject_is_source_tree_editable_metadata_not_release_packaging(self) -> None:
         data = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
         self.assertEqual(data["project"]["name"], "rtdl-source-tree")
-        self.assertEqual(data["project"]["version"], "2.12.0")
+        self.assertEqual(data["project"]["version"], "2.14.0")
         self.assertEqual(data["tool"]["setuptools"]["packages"]["find"]["where"], ["src"])
         self.assertEqual(data["tool"]["setuptools"]["packages"]["find"]["include"], ["rtdsl*"])
         self.assertIn("numpy>=1.26", data["project"]["dependencies"])
