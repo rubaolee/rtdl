@@ -2330,9 +2330,15 @@ def _validate_segment_query_schedule(value: str) -> None:
 
 
 def _validate_segment_unique_key_builder(value: str) -> None:
-    if value not in {"cupy_repeat", "numba_direct", "numba_direct_sort_rle"}:
+    if value not in {
+        "cupy_repeat",
+        "numba_direct",
+        "numba_direct_sort_rle",
+        "numba_direct_sort_rle_local_hash_2048",
+    }:
         raise ValueError(
-            "segment_unique_key_builder must be cupy_repeat, numba_direct, or numba_direct_sort_rle"
+            "segment_unique_key_builder must be cupy_repeat, numba_direct, "
+            "numba_direct_sort_rle, or numba_direct_sort_rle_local_hash_2048"
         )
 
 
@@ -2368,6 +2374,183 @@ def _unique_counts_sort_rle_cupy(keys, *, cupy_module):
     run_ends[-1] = int(keys.size)
     unique_counts = (run_ends[1:] - run_ends[:-1]).astype(cp.int64, copy=False)
     return unique_keys, unique_counts
+
+
+def _segment_source_group_ranges_cupy(
+    *,
+    row_offsets,
+    column_indices,
+    directed_src,
+    start_edge: int,
+    end_edge: int,
+    cupy_module,
+):
+    cp = cupy_module
+    if end_edge <= start_edge:
+        empty = cp.empty(0, dtype=cp.int64)
+        return empty, empty, empty
+    edge_src = directed_src[start_edge:end_edge]
+    edge_mid = column_indices[start_edge:end_edge]
+    counts = (row_offsets[edge_mid + 1] - row_offsets[edge_mid]).astype(cp.int64, copy=False)
+    boundary = cp.empty(edge_src.shape, dtype=cp.bool_)
+    boundary[0] = True
+    boundary[1:] = edge_src[1:] != edge_src[:-1]
+    group_starts_local = cp.nonzero(boundary)[0].astype(cp.int64, copy=False)
+    group_ends_local = cp.empty_like(group_starts_local)
+    group_ends_local[:-1] = group_starts_local[1:]
+    group_ends_local[-1] = int(edge_src.size)
+    prefix = cp.empty(int(counts.size) + 1, dtype=cp.int64)
+    prefix[0] = 0
+    prefix[1:] = cp.cumsum(counts)
+    group_counts = prefix[group_ends_local] - prefix[group_starts_local]
+    nonempty = group_counts > 0
+    return (
+        group_starts_local[nonempty] + int(start_edge),
+        group_ends_local[nonempty] + int(start_edge),
+        group_counts[nonempty],
+    )
+
+
+def _unique_counts_hybrid_local_hash_2048_cupy(
+    contract,
+    *,
+    row_offsets,
+    column_indices,
+    directed_src,
+    start_edge: int,
+    end_edge: int,
+    phase_started: float,
+    phase_timing_ms: dict[str, float] | None,
+    segment_ray_build_telemetry: str,
+    cupy_module,
+):
+    cp = cupy_module
+    group_starts, group_ends, group_counts = _segment_source_group_ranges_cupy(
+        row_offsets=row_offsets,
+        column_indices=column_indices,
+        directed_src=directed_src,
+        start_edge=start_edge,
+        end_edge=end_edge,
+        cupy_module=cp,
+    )
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "hybrid_source_group_plan",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
+    if int(group_counts.size) == 0:
+        empty_i64 = cp.empty(0, dtype=cp.int64)
+        return empty_i64, empty_i64, phase_started
+
+    small_mask = group_counts <= _RT_GRAPH_2A1_LOCAL_HASH_BOUND
+    large_mask = ~small_mask
+    small_starts = group_starts[small_mask]
+    small_ends = group_ends[small_mask]
+    large_starts = group_starts[large_mask]
+    large_ends = group_ends[large_mask]
+    large_counts = group_counts[large_mask]
+
+    from numba import cuda
+
+    threads_per_block = 256
+    small_group_count = int(small_starts.size)
+    if small_group_count:
+        local_counts = cp.empty(small_group_count, dtype=cp.int64)
+        local_overflow = cp.zeros(small_group_count, dtype=cp.int32)
+        count_kernel = _get_rt_graph_2a1_local_hash_count_numba_kernel(cuda)
+        count_kernel[small_group_count, threads_per_block](
+            row_offsets,
+            column_indices,
+            directed_src,
+            small_starts,
+            small_ends,
+            local_counts,
+            local_overflow,
+        )
+        cuda.synchronize()
+        local_offsets = cp.empty(small_group_count + 1, dtype=cp.int64)
+        local_offsets[0] = 0
+        local_offsets[1:] = cp.cumsum(local_counts)
+        local_unique_total = int(local_offsets[-1].get())
+        local_keys = cp.empty(local_unique_total, dtype=cp.int64)
+        local_weights = cp.empty(local_unique_total, dtype=cp.int64)
+        emit_kernel = _get_rt_graph_2a1_local_hash_emit_numba_kernel(cuda)
+        emit_kernel[small_group_count, threads_per_block](
+            row_offsets,
+            column_indices,
+            directed_src,
+            small_starts,
+            small_ends,
+            local_offsets,
+            int(contract.vertex_count),
+            local_keys,
+            local_weights,
+            local_overflow,
+        )
+        cuda.synchronize()
+        if int(local_overflow.sum().get()):
+            raise RuntimeError("local hash overflow in numba_direct_sort_rle_local_hash_2048")
+    else:
+        local_keys = cp.empty(0, dtype=cp.int64)
+        local_weights = cp.empty(0, dtype=cp.int64)
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "hybrid_local_hash_counts",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
+
+    large_group_count = int(large_starts.size)
+    if large_group_count:
+        large_offsets = cp.empty(large_group_count + 1, dtype=cp.int64)
+        large_offsets[0] = 0
+        large_offsets[1:] = cp.cumsum(large_counts)
+        large_duplicate_count = int(large_offsets[-1].get())
+        large_keys = cp.empty(large_duplicate_count, dtype=cp.int64)
+        fill_kernel = _get_rt_graph_2a1_fill_source_group_keys_numba_kernel(cuda)
+        fill_kernel[large_group_count, threads_per_block](
+            row_offsets,
+            column_indices,
+            directed_src,
+            large_starts,
+            large_ends,
+            large_offsets,
+            int(contract.vertex_count),
+            large_keys,
+        )
+        cuda.synchronize()
+        large_unique_keys, large_unique_counts = _unique_counts_sort_rle_cupy(large_keys, cupy_module=cp)
+    else:
+        large_unique_keys = cp.empty(0, dtype=cp.int64)
+        large_unique_counts = cp.empty(0, dtype=cp.int64)
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "hybrid_large_sort_rle_counts",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
+
+    if int(local_keys.size) and int(large_unique_keys.size):
+        unique_keys = cp.concatenate((local_keys, large_unique_keys))
+        unique_counts = cp.concatenate((local_weights, large_unique_counts))
+    elif int(local_keys.size):
+        unique_keys = local_keys
+        unique_counts = local_weights
+    else:
+        unique_keys = large_unique_keys
+        unique_counts = large_unique_counts
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "hybrid_unique_concat",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
+    return unique_keys, unique_counts, phase_started
 
 
 def _record_count(records) -> int:
@@ -2898,7 +3081,35 @@ def _build_rt_graph_2a1_cupy_segment_rays(
         segment_ray_build_telemetry=segment_ray_build_telemetry,
         cupy_module=cp,
     )
-    if ray_representation == "unique_weighted" and unique_key_builder in {
+    if (
+        ray_representation == "unique_weighted"
+        and unique_key_builder == "numba_direct_sort_rle_local_hash_2048"
+    ):
+        unique_keys, unique_counts, phase_started = _unique_counts_hybrid_local_hash_2048_cupy(
+            contract,
+            row_offsets=row_offsets,
+            column_indices=column_indices,
+            directed_src=directed_src,
+            start_edge=start_edge,
+            end_edge=end_edge,
+            phase_started=phase_started,
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
+        key_base = int(contract.vertex_count)
+        ray_src = (unique_keys // key_base).astype(cp.int64, copy=False)
+        ray_dst = (unique_keys - ray_src * key_base).astype(cp.int64, copy=False)
+        ray_weights = unique_counts.astype(cp.uint64, copy=False)
+        ray_count = int(unique_keys.size)
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "hybrid_unique_decode_weights",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
+    elif ray_representation == "unique_weighted" and unique_key_builder in {
         "numba_direct",
         "numba_direct_sort_rle",
     }:
@@ -3111,6 +3322,11 @@ _RT_GRAPH_2A1_FILL_TRIANGLES_NUMBA_KERNEL = None
 _RT_GRAPH_2A1_FILL_RAYS_NUMBA_KERNEL = None
 _RT_GRAPH_2A1_FILL_UNIQUE_KEYS_NUMBA_KERNEL = None
 _RT_GRAPH_2A1_FILL_WEIGHTED_RAYS_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_LOCAL_HASH_COUNT_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_LOCAL_HASH_EMIT_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_FILL_SOURCE_GROUP_KEYS_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY = 4096
+_RT_GRAPH_2A1_LOCAL_HASH_BOUND = 2048
 
 
 def _get_rt_graph_1a2_fill_triangles_numba_kernel(cuda):
@@ -3188,6 +3404,147 @@ def _get_rt_graph_2a1_fill_unique_keys_numba_kernel(cuda):
 
         _RT_GRAPH_2A1_FILL_UNIQUE_KEYS_NUMBA_KERNEL = _fill
     return _RT_GRAPH_2A1_FILL_UNIQUE_KEYS_NUMBA_KERNEL
+
+
+def _get_rt_graph_2a1_local_hash_count_numba_kernel(cuda):
+    global _RT_GRAPH_2A1_LOCAL_HASH_COUNT_NUMBA_KERNEL
+    if _RT_GRAPH_2A1_LOCAL_HASH_COUNT_NUMBA_KERNEL is None:
+        from numba import int32
+
+        @cuda.jit
+        def _count(row_offsets, column_indices, directed_src, group_starts, group_ends, unique_counts, overflow):
+            keys = cuda.shared.array(_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, int32)
+            counts = cuda.shared.array(_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, int32)
+            total = cuda.shared.array(1, int32)
+            tid = cuda.threadIdx.x
+            group_id = cuda.blockIdx.x
+            for idx in range(tid, _RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, cuda.blockDim.x):
+                keys[idx] = -1
+                counts[idx] = 0
+            if tid == 0:
+                total[0] = 0
+            cuda.syncthreads()
+
+            start_edge = group_starts[group_id]
+            end_edge = group_ends[group_id]
+            for edge_idx in range(start_edge, end_edge):
+                mid = column_indices[edge_idx]
+                dst_start = row_offsets[mid]
+                dst_end = row_offsets[mid + 1]
+                for pos in range(dst_start + tid, dst_end, cuda.blockDim.x):
+                    dst = int32(column_indices[pos])
+                    slot = (dst * 1103515245 + 12345) & (_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY - 1)
+                    guard = 0
+                    while True:
+                        old = cuda.atomic.cas(keys, slot, -1, dst)
+                        if old == -1 or old == dst:
+                            cuda.atomic.add(counts, slot, 1)
+                            break
+                        slot = (slot + 1) & (_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY - 1)
+                        guard += 1
+                        if guard >= _RT_GRAPH_2A1_LOCAL_HASH_CAPACITY:
+                            overflow[group_id] = 1
+                            break
+
+            cuda.syncthreads()
+            for idx in range(tid, _RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, cuda.blockDim.x):
+                if keys[idx] != -1:
+                    cuda.atomic.add(total, 0, 1)
+            cuda.syncthreads()
+            if tid == 0:
+                unique_counts[group_id] = total[0]
+
+        _RT_GRAPH_2A1_LOCAL_HASH_COUNT_NUMBA_KERNEL = _count
+    return _RT_GRAPH_2A1_LOCAL_HASH_COUNT_NUMBA_KERNEL
+
+
+def _get_rt_graph_2a1_local_hash_emit_numba_kernel(cuda):
+    global _RT_GRAPH_2A1_LOCAL_HASH_EMIT_NUMBA_KERNEL
+    if _RT_GRAPH_2A1_LOCAL_HASH_EMIT_NUMBA_KERNEL is None:
+        from numba import int32
+
+        @cuda.jit
+        def _emit(
+            row_offsets,
+            column_indices,
+            directed_src,
+            group_starts,
+            group_ends,
+            out_offsets,
+            key_base,
+            unique_keys,
+            unique_weights,
+            overflow,
+        ):
+            keys = cuda.shared.array(_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, int32)
+            counts = cuda.shared.array(_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, int32)
+            write = cuda.shared.array(1, int32)
+            tid = cuda.threadIdx.x
+            group_id = cuda.blockIdx.x
+            for idx in range(tid, _RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, cuda.blockDim.x):
+                keys[idx] = -1
+                counts[idx] = 0
+            if tid == 0:
+                write[0] = 0
+            cuda.syncthreads()
+
+            start_edge = group_starts[group_id]
+            end_edge = group_ends[group_id]
+            src = directed_src[start_edge]
+            for edge_idx in range(start_edge, end_edge):
+                mid = column_indices[edge_idx]
+                dst_start = row_offsets[mid]
+                dst_end = row_offsets[mid + 1]
+                for pos in range(dst_start + tid, dst_end, cuda.blockDim.x):
+                    dst = int32(column_indices[pos])
+                    slot = (dst * 1103515245 + 12345) & (_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY - 1)
+                    guard = 0
+                    while True:
+                        old = cuda.atomic.cas(keys, slot, -1, dst)
+                        if old == -1 or old == dst:
+                            cuda.atomic.add(counts, slot, 1)
+                            break
+                        slot = (slot + 1) & (_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY - 1)
+                        guard += 1
+                        if guard >= _RT_GRAPH_2A1_LOCAL_HASH_CAPACITY:
+                            overflow[group_id] = 1
+                            break
+
+            cuda.syncthreads()
+            base = out_offsets[group_id]
+            for idx in range(tid, _RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, cuda.blockDim.x):
+                if keys[idx] != -1:
+                    pos = cuda.atomic.add(write, 0, 1)
+                    unique_keys[base + pos] = src * key_base + keys[idx]
+                    unique_weights[base + pos] = counts[idx]
+
+        _RT_GRAPH_2A1_LOCAL_HASH_EMIT_NUMBA_KERNEL = _emit
+    return _RT_GRAPH_2A1_LOCAL_HASH_EMIT_NUMBA_KERNEL
+
+
+def _get_rt_graph_2a1_fill_source_group_keys_numba_kernel(cuda):
+    global _RT_GRAPH_2A1_FILL_SOURCE_GROUP_KEYS_NUMBA_KERNEL
+    if _RT_GRAPH_2A1_FILL_SOURCE_GROUP_KEYS_NUMBA_KERNEL is None:
+
+        @cuda.jit
+        def _fill(row_offsets, column_indices, directed_src, group_starts, group_ends, row_offsets_out, key_base, out_keys):
+            tid = cuda.threadIdx.x
+            group_id = cuda.blockIdx.x
+            start_edge = group_starts[group_id]
+            end_edge = group_ends[group_id]
+            src = directed_src[start_edge]
+            out_base = row_offsets_out[group_id]
+            local_base = 0
+            for edge_idx in range(start_edge, end_edge):
+                mid = column_indices[edge_idx]
+                dst_start = row_offsets[mid]
+                dst_end = row_offsets[mid + 1]
+                for pos in range(dst_start + tid, dst_end, cuda.blockDim.x):
+                    out_keys[out_base + local_base + (pos - dst_start)] = src * key_base + column_indices[pos]
+                local_base += dst_end - dst_start
+
+        _RT_GRAPH_2A1_FILL_SOURCE_GROUP_KEYS_NUMBA_KERNEL = _fill
+    return _RT_GRAPH_2A1_FILL_SOURCE_GROUP_KEYS_NUMBA_KERNEL
 
 
 def _get_rt_graph_2a1_fill_weighted_rays_numba_kernel(cuda):
@@ -4119,12 +4476,18 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--segment-unique-key-builder",
-        choices=("cupy_repeat", "numba_direct", "numba_direct_sort_rle"),
+        choices=(
+            "cupy_repeat",
+            "numba_direct",
+            "numba_direct_sort_rle",
+            "numba_direct_sort_rle_local_hash_2048",
+        ),
         default="cupy_repeat",
         help=(
             "Unique-weighted segment key builder: existing CuPy repeat/gather path "
             "or no-C++ Numba direct packed-key fill before CuPy unique/count reduction "
-            "or explicit sort/RLE unique-count candidate."
+            "or explicit sort/RLE unique-count candidate, with an optional local-hash "
+            "small source-group branch."
         ),
     )
     parser.add_argument(

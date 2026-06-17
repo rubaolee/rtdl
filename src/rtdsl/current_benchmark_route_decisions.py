@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4493.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4494.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -879,8 +879,11 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "fallback. Goal4493 validates a bounded `<=2048` local-hash "
             "prototype over 20M selected two-hop rows per paper dataset: it "
             "matches fill plus sort/RLE and is 1.13x/1.01x/1.43x faster on "
-            "`com-lj`/`soc-LiveJournal1`/`com-orkut`, but it is not a route "
-            "change because the large-tail fallback is not implemented."
+            "`com-lj`/`soc-LiveJournal1`/`com-orkut`. Goal4494 implements the "
+            "integrated per-segment local-hash plus large-tail sort/RLE candidate "
+            "and rejects it: counts match, but backend and segment-ray construction "
+            "are slower than the current `numba_direct_sort_rle` route on all "
+            "three paper rows."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -950,7 +953,10 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "bounded local unique-count kernel and when choosing a hybrid/two-pass "
             "source-group plan instead. Cite Goal4493 when the user asks whether "
             "the local-hash branch itself is viable: it validates at 20M selected "
-            "small-group rows, but still needs a complete large-tail fallback."
+            "small-group rows. Cite Goal4494 when rejecting the integrated "
+            "per-segment local-hash plus large-tail sort/RLE candidate: it is "
+            "correct, but backend and segment-ray construction are slower than "
+            "the current `numba_direct_sort_rle` route on all three paper rows."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -987,7 +993,8 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "promoting the Goal4481 numba_fused_decode_project output builder",
             "promoting an already-sorted source-group skip-sort fast path after Goal4482",
             "promoting a single small bounded source-group local unique-count kernel after Goal4492",
-            "promoting the Goal4493 local-hash prototype before adding the large-tail fallback",
+            "treating the Goal4493 local-hash prototype as route evidence without integrated rerank",
+            "promoting the Goal4494 per-segment local-hash plus large-tail sort/RLE candidate",
             "spending the next Triangle Counting optimization cycle on counts/filter, duplicate count sum, or RT traversal before further reducing Goal4479 sort/RLE unique-count cost",
             "automatic CuPy-vs-Numba partner selection",
         ),
@@ -1020,11 +1027,17 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "promoted because sorted two-hop row coverage is below 1% on all "
             "large rows; Goal4492 shows a single small bounded local unique-count "
             "kernel is also insufficient because 16K covers only 69.43% of "
-            "`com-orkut` two-hop rows, so next useful work is hybrid/two-pass "
-            "small-source local unique plus large-tail sort/RLE fallback without "
-            "breaking the app-agnostic primitive contract; Goal4493 validates "
-            "the small-source `<=2048` local-hash branch, so next work is "
-            "implementing the complete hybrid large-tail fallback and reranking it"
+            "`com-orkut` two-hop rows, so next useful work must avoid "
+            "overfitting to only small source groups; Goal4493 validates "
+            "the small-source `<=2048` local-hash branch, and Goal4494 "
+            "implements the integrated local-hash plus large-tail sort/RLE "
+            "candidate, but rejects it because backend and segment-ray build "
+            "time are worse on all three paper rows. Keep `numba_direct_sort_rle` "
+            "as the current complete route. If Triangle Counting is revisited, "
+            "the target is a coarser-batched segmented unique/count strategy "
+            "with fewer per-segment kernel launches or a different reusable "
+            "segmented reduction primitive, not this exact per-segment local "
+            "hash branch."
         ),
         evidence_refs=(
             "Goal2797",
@@ -1063,6 +1076,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4482",
             "Goal4492",
             "Goal4493",
+            "Goal4494",
         ),
         pod_needed_next=False,
     ),

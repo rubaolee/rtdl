@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4493.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4494.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -614,8 +614,11 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4493 validates the first bounded local-hash prototype for "
             "`<=2048` source groups on 20M selected two-hop rows per paper "
             "dataset: outputs match the fill plus sort/RLE reference and "
-            "speedups are 1.13x/1.01x/1.43x, but this remains a prototype "
-            "because the large-tail fallback is not implemented."
+            "speedups are 1.13x/1.01x/1.43x. Goal4494 then implements the "
+            "integrated per-segment local-hash plus large-tail sort/RLE "
+            "candidate and rejects it because counts match but backend and "
+            "segment-ray construction are slower than the current "
+            "`numba_direct_sort_rle` route on all three paper rows."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -663,8 +666,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "kernel is also insufficient and why the next useful shape is "
             "hybrid/two-pass source-group local unique plus large-tail sort/RLE. "
             "Cite Goal4493 when explaining that the `<=2048` local-hash branch "
-            "is correct and sometimes faster on 20M-row selected small groups, "
-            "but still needs large-tail fallback before route promotion."
+            "is correct and sometimes faster on 20M-row selected small groups. "
+            "Cite Goal4494 when explaining that the integrated per-segment "
+            "hybrid candidate is correct but rejected because it slows backend "
+            "and segment-ray build time on all three large paper rows."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
@@ -704,11 +709,16 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "1% on all large rows; Goal4492 shows a single small bounded "
             "local unique-count kernel is not enough for the paper-scale tail "
             "because 16K source groups cover only 69.43% of `com-orkut` two-hop "
-            "rows, so next useful work is hybrid/two-pass small-source local "
-            "unique plus large-tail sort/RLE fallback without breaking the "
-            "app-agnostic primitive contract; Goal4493 validates the small-source "
-            "`<=2048` local-hash branch, so next work is implementing the "
-            "complete hybrid large-tail fallback and reranking it"
+            "rows, so next useful work must avoid overfitting to only small "
+            "source groups; Goal4493 validates the small-source `<=2048` "
+            "local-hash branch, and Goal4494 implements the integrated "
+            "local-hash plus large-tail sort/RLE candidate, but rejects it "
+            "because backend and segment-ray build time are worse on all three "
+            "paper rows. Keep `numba_direct_sort_rle` as the current complete "
+            "route. If Triangle Counting is revisited, target a coarser-batched "
+            "segmented unique/count strategy with fewer per-segment kernel "
+            "launches or a different reusable segmented reduction primitive, "
+            "not this exact per-segment local hash branch."
         ),
         "evidence_refs": (
             "Goal2797",
@@ -745,6 +755,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4482",
             "Goal4492",
             "Goal4493",
+            "Goal4494",
         ),
     },
 }

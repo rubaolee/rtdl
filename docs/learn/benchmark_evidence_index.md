@@ -99,7 +99,7 @@ v2.14 evidence:
 | Barnes-Hut | `barnes_hut_mixed_explicit_cpu_numba_cuda_or_optix_numba` | Goal4458 reranks the current force-summary app front doors at 8192/16384/32768 bodies, where `fused_frontier_force_sum_bucketized_cpu_numba` is fastest. Goal4483 extends the same rerank to 65536/131072 bodies, where `fused_frontier_force_sum_bucketized_numba_cuda` is fastest. Prepared RTDL/OptiX+Numba remains RT-core device-column evidence rather than Barnes-Hut RT-core speedup wording | NVIDIA/CUDA pod for Numba CUDA and OptiX; Numba CPU for CPU fused baseline |
 | LibRTS spatial index | `librts_spatial_index_optix_aabb_index` | prepared AABB-index benchmark slice, not full mutable LibRTS | NVIDIA pod for OptiX timing |
 | RTNN | `rtnn_mixed_exact_aggregate_or_graph_partner_bridge` | exact float64 aggregate for same-contract OptiX-vs-Embree comparison; prepared graph plus explicit CuPy/Numba same-stream partner bridge for uniform, shell, and clustered resident app evidence | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
-| Triangle counting | `triangle_counting_optix_native_summary` | scalar answer stays primitive-first; Goal4444 fixes the no-C++ Numba summary-contract staging debt, Goal4453 fills RT-1A2/RT-2A1 Numba geometry from partner-resident device columns, Goal4454 adds dense-label/sorted-key summary fast paths, Goal4455 confirms CuPy remains the large-scale performance partner, Goal4456 extends Numba's summary remap fast path to bounded gapped ids, Goal4457 removes CuPy app-route host-column materialization, Goal4492 rejects a single small-bound local unique-count kernel as a full replacement, and Goal4493 validates a bounded local-hash prototype for the small-group side of a future hybrid/two-pass source-group strategy | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
+| Triangle counting | `triangle_counting_optix_native_summary` | scalar answer stays primitive-first; Goal4444 fixes the no-C++ Numba summary-contract staging debt, Goal4453 fills RT-1A2/RT-2A1 Numba geometry from partner-resident device columns, Goal4454 adds dense-label/sorted-key summary fast paths, Goal4455 confirms CuPy remains the large-scale performance partner, Goal4456 extends Numba's summary remap fast path to bounded gapped ids, Goal4457 removes CuPy app-route host-column materialization, Goal4492 rejects a single small-bound local unique-count kernel as a full replacement, Goal4493 validates a bounded local-hash prototype for the small-group side of a hybrid/two-pass source-group strategy, and Goal4494 rejects the integrated per-segment local-hash plus large-tail sort/RLE candidate because backend and segment build regress on all three paper rows | NVIDIA/CUDA pod for OptiX, CuPy, and Numba timing |
 
 ## Evidence Reports
 
@@ -141,6 +141,7 @@ v2.14 evidence:
 - [Goal4457 Triangle CuPy no-host-column summary route](../reports/goal4457_v3_0_m61_triangle_cupy_no_host_columns_2026-06-16.md)
 - [Goal4492 Triangle source-group unique feasibility](../reports/goal4492_v3_0_m96_triangle_source_group_unique_feasibility_2026-06-17.md)
 - [Goal4493 Triangle local-hash unique prototype](../reports/goal4493_v3_0_m97_triangle_local_hash_unique_prototype_2026-06-17.md)
+- [Goal4494 Triangle integrated local-hash candidate](../reports/goal4494_v3_0_m98_triangle_local_hash_integrated_candidate_2026-06-17.md)
 
 ## Reading Rules
 
