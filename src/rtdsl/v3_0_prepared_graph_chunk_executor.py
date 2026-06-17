@@ -24,6 +24,12 @@ V3_CHUNK_LOCAL_PREPARED_HANDLE_GATE_VERSION = (
 V3_CHUNK_LOCAL_PREPARED_HANDLE_GATE_STATUS = (
     "app_agnostic_chunk_local_prepared_handle_readiness_gate"
 )
+V3_CHUNKED_UNIQUE_COUNT_CONTINUATION_GATE_VERSION = (
+    "rtdl.v3_0.chunked_unique_count_continuation_gate.m125.v1"
+)
+V3_CHUNKED_UNIQUE_COUNT_CONTINUATION_GATE_STATUS = (
+    "app_agnostic_chunked_unique_count_continuation_gate"
+)
 
 
 def plan_v3_prepared_graph_chunk_executor(
@@ -500,6 +506,231 @@ def validate_v3_chunk_local_prepared_handle_readiness(
         "readiness_status": readiness.get("readiness_status"),
         "blocker_count": len(blockers),
         "blockers": blockers,
+        "plan_status": plan_status,
+        "chunk_count": chunk_count,
+        "runtime_executed": False,
+        "public_claim_authorized": False,
+    }
+
+
+def combine_v3_chunked_unique_count_key_payloads(
+    chunk_payloads: tuple[Mapping[str, object], ...],
+) -> dict[str, object]:
+    """Merge per-chunk unique-key/count payloads as an associative continuation."""
+
+    if not chunk_payloads:
+        raise GraphValidationError("unique-count continuation requires at least one chunk")
+    merged_counts: dict[tuple[object, ...], int] = {}
+    chunk_summaries = []
+    for chunk_index, payload in enumerate(chunk_payloads):
+        if not isinstance(payload, Mapping):
+            raise GraphValidationError("unique-count chunk payload must be a mapping")
+        keys = tuple(payload.get("keys", ()))
+        counts = tuple(payload.get("counts", (1 for _ in keys)))
+        if len(keys) != len(counts):
+            raise GraphValidationError("unique-count chunk keys/counts length mismatch")
+        normalized_keys = []
+        for key, count in zip(keys, counts):
+            if isinstance(key, tuple):
+                normalized_key = key
+            else:
+                try:
+                    normalized_key = tuple(key)  # type: ignore[arg-type]
+                except TypeError:
+                    normalized_key = (key,)
+            normalized_count = int(count)
+            if normalized_count <= 0:
+                raise GraphValidationError("unique-count chunk counts must be positive")
+            merged_counts[normalized_key] = merged_counts.get(normalized_key, 0) + normalized_count
+            normalized_keys.append(normalized_key)
+        chunk_summaries.append(
+            {
+                "chunk_index": chunk_index,
+                "key_count": len(normalized_keys),
+                "weight_sum": sum(int(value) for value in counts),
+            }
+        )
+
+    sorted_items = tuple(sorted(merged_counts.items()))
+    return {
+        "version": V3_CHUNKED_UNIQUE_COUNT_CONTINUATION_GATE_VERSION,
+        "status": "associative_unique_count_key_payload_merge",
+        "chunk_count": len(chunk_payloads),
+        "chunk_summaries": tuple(chunk_summaries),
+        "unique_keys": tuple(key for key, _count in sorted_items),
+        "counts": tuple(count for _key, count in sorted_items),
+        "unique_key_count": len(sorted_items),
+        "total_weight": sum(count for _key, count in sorted_items),
+        "scalar_chunk_sum": sum(summary["key_count"] for summary in chunk_summaries),
+        "cross_chunk_duplicate_delta": (
+            sum(summary["key_count"] for summary in chunk_summaries) - len(sorted_items)
+        ),
+        "runtime_executed": False,
+        "public_speedup_claim_authorized": False,
+    }
+
+
+def assess_v3_chunked_unique_count_continuation_readiness(
+    *,
+    app_id: str,
+    contract_key: str,
+    operation: str,
+    item_count: int,
+    max_item_count: int,
+    prepared_scene_reuse_available: bool,
+    prepared_item_handle_per_chunk_available: bool,
+    prepared_graph_capture_validated: bool,
+    per_chunk_unique_payload_available: bool,
+    key_payload_carries_counts: bool,
+    duplicate_keys_can_cross_chunk_boundaries: bool,
+    chunk_key_ranges_disjoint: bool,
+    final_key_payload_merge_validated: bool,
+    host_materialization_before_partner: bool,
+    axis_name: str = "query",
+) -> dict[str, object]:
+    """Gate chunked unique/count continuations before adopting M113."""
+
+    normalized_app_id = str(app_id).strip()
+    if not normalized_app_id:
+        raise GraphValidationError("chunked unique-count app_id must be non-empty")
+    validate_v3_public_name(contract_key, label="chunked unique-count contract_key")
+    validate_v3_public_name(operation, label="chunked unique-count operation")
+    validate_v3_public_name(axis_name, label="chunked unique-count axis_name")
+    normalized_item_count = int(item_count)
+    normalized_max_item_count = int(max_item_count)
+    if normalized_item_count <= 0:
+        raise GraphValidationError("chunked unique-count item_count must be positive")
+    if normalized_max_item_count <= 0:
+        raise GraphValidationError("chunked unique-count max_item_count must be positive")
+
+    associative_duplicate_policy_available = (
+        not bool(duplicate_keys_can_cross_chunk_boundaries)
+        or bool(chunk_key_ranges_disjoint)
+        or (
+            bool(per_chunk_unique_payload_available)
+            and bool(key_payload_carries_counts)
+            and bool(final_key_payload_merge_validated)
+        )
+    )
+
+    blockers = []
+    if not bool(prepared_scene_reuse_available):
+        blockers.append("missing_prepared_scene_reuse")
+    if not bool(prepared_item_handle_per_chunk_available):
+        blockers.append("missing_prepared_item_handle_per_chunk")
+    if not bool(prepared_graph_capture_validated):
+        blockers.append("prepared_graph_capture_not_validated")
+    if not bool(per_chunk_unique_payload_available):
+        blockers.append("missing_per_chunk_unique_payload")
+    if bool(duplicate_keys_can_cross_chunk_boundaries):
+        if not bool(key_payload_carries_counts):
+            blockers.append("missing_key_count_payload")
+        if not associative_duplicate_policy_available:
+            blockers.append("chunk_boundary_duplicate_handling_not_associative")
+    if bool(key_payload_carries_counts) and not bool(final_key_payload_merge_validated):
+        blockers.append("final_key_payload_merge_not_validated")
+    if bool(host_materialization_before_partner):
+        blockers.append("host_materialization_before_partner")
+
+    plan = None
+    if not blockers:
+        continuation_kind = (
+            "chunked_unique_count_disjoint_scalar_sum"
+            if bool(chunk_key_ranges_disjoint)
+            else "chunked_unique_count_key_payload_merge"
+        )
+        plan = plan_v3_prepared_graph_chunk_executor(
+            graph_id=f"{contract_key}_unique_count_chunks",
+            contract_key=contract_key,
+            operation=operation,
+            item_count=normalized_item_count,
+            max_item_count=normalized_max_item_count,
+            axis_name=axis_name,
+            requires_partner_continuation=True,
+            continuation_kind=continuation_kind,
+        )
+
+    return {
+        "version": V3_CHUNKED_UNIQUE_COUNT_CONTINUATION_GATE_VERSION,
+        "status": V3_CHUNKED_UNIQUE_COUNT_CONTINUATION_GATE_STATUS,
+        "app_id": normalized_app_id,
+        "contract_key": str(contract_key),
+        "operation": str(operation),
+        "axis_name": str(axis_name),
+        "item_count": normalized_item_count,
+        "max_item_count": normalized_max_item_count,
+        "ready_for_m113_plan": not blockers,
+        "readiness_status": (
+            "ready_for_m113_plan" if not blockers else "blocked_for_m113_plan"
+        ),
+        "blockers": tuple(blockers),
+        "plan": plan,
+        "prepared_scene_reuse_available": bool(prepared_scene_reuse_available),
+        "prepared_item_handle_per_chunk_available": bool(
+            prepared_item_handle_per_chunk_available
+        ),
+        "prepared_graph_capture_validated": bool(prepared_graph_capture_validated),
+        "per_chunk_unique_payload_available": bool(per_chunk_unique_payload_available),
+        "key_payload_carries_counts": bool(key_payload_carries_counts),
+        "duplicate_keys_can_cross_chunk_boundaries": bool(
+            duplicate_keys_can_cross_chunk_boundaries
+        ),
+        "chunk_key_ranges_disjoint": bool(chunk_key_ranges_disjoint),
+        "final_key_payload_merge_validated": bool(final_key_payload_merge_validated),
+        "associative_duplicate_policy_available": associative_duplicate_policy_available,
+        "host_materialization_before_partner": bool(host_materialization_before_partner),
+        "runtime_executed": False,
+        "automatic_partner_selection_authorized": False,
+        "public_speedup_claim_authorized": False,
+    }
+
+
+def validate_v3_chunked_unique_count_continuation_readiness(
+    readiness: Mapping[str, object],
+) -> dict[str, object]:
+    if not isinstance(readiness, Mapping):
+        raise GraphValidationError("chunked unique-count readiness must be a mapping")
+    if readiness.get("version") != V3_CHUNKED_UNIQUE_COUNT_CONTINUATION_GATE_VERSION:
+        raise GraphValidationError("unexpected chunked unique-count readiness version")
+    if readiness.get("status") != V3_CHUNKED_UNIQUE_COUNT_CONTINUATION_GATE_STATUS:
+        raise GraphValidationError("unexpected chunked unique-count readiness status")
+    blockers = tuple(str(blocker) for blocker in readiness.get("blockers", ()))
+    ready = bool(readiness.get("ready_for_m113_plan"))
+    if ready and blockers:
+        raise GraphValidationError("ready chunked unique-count continuation cannot have blockers")
+    if not ready and not blockers:
+        raise GraphValidationError("blocked chunked unique-count continuation must list blockers")
+    if bool(readiness.get("runtime_executed")):
+        raise GraphValidationError("chunked unique-count gate must not claim runtime execution")
+    if bool(readiness.get("automatic_partner_selection_authorized")):
+        raise GraphValidationError("chunked unique-count gate cannot authorize automatic partner selection")
+    if bool(readiness.get("public_speedup_claim_authorized")):
+        raise GraphValidationError("chunked unique-count gate cannot authorize public speedup")
+
+    plan = readiness.get("plan")
+    if ready:
+        if not isinstance(plan, Mapping):
+            raise GraphValidationError("ready chunked unique-count continuation must include a plan")
+        plan_validation = validate_v3_prepared_graph_chunk_executor_plan(plan)
+        plan_status = plan.get("plan_status")
+        chunk_count = plan_validation["chunk_count"]
+    else:
+        if plan is not None:
+            raise GraphValidationError("blocked chunked unique-count continuation must not include a plan")
+        plan_status = "blocked_for_m113_plan"
+        chunk_count = 0
+
+    return {
+        "status": "accept",
+        "version": readiness.get("version"),
+        "app_id": readiness.get("app_id"),
+        "ready_for_m113_plan": ready,
+        "readiness_status": readiness.get("readiness_status"),
+        "blocker_count": len(blockers),
+        "blockers": blockers,
+        "associative_duplicate_policy_available": bool(
+            readiness.get("associative_duplicate_policy_available")
+        ),
         "plan_status": plan_status,
         "chunk_count": chunk_count,
         "runtime_executed": False,

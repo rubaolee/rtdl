@@ -1,0 +1,274 @@
+{
+  "associativity_counterexample": {
+    "associative_merge_validated": true,
+    "chunk_payloads": [
+      {
+        "counts": [
+          1,
+          1
+        ],
+        "keys": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      },
+      {
+        "counts": [
+          1,
+          1
+        ],
+        "keys": [
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      {
+        "counts": [
+          1
+        ],
+        "keys": [
+          [
+            3,
+            5
+          ]
+        ]
+      }
+    ],
+    "cross_chunk_duplicate_delta": 1,
+    "global_unique_count": 4,
+    "key_payload_merge": {
+      "chunk_count": 3,
+      "chunk_summaries": [
+        {
+          "chunk_index": 0,
+          "key_count": 2,
+          "weight_sum": 2
+        },
+        {
+          "chunk_index": 1,
+          "key_count": 2,
+          "weight_sum": 2
+        },
+        {
+          "chunk_index": 2,
+          "key_count": 1,
+          "weight_sum": 1
+        }
+      ],
+      "counts": [
+        1,
+        2,
+        1,
+        1
+      ],
+      "cross_chunk_duplicate_delta": 1,
+      "public_speedup_claim_authorized": false,
+      "runtime_executed": false,
+      "scalar_chunk_sum": 5,
+      "status": "associative_unique_count_key_payload_merge",
+      "total_weight": 5,
+      "unique_key_count": 4,
+      "unique_keys": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          5
+        ]
+      ],
+      "version": "rtdl.v3_0.chunked_unique_count_continuation_gate.m125.v1"
+    },
+    "scalar_chunk_sum": 5,
+    "scalar_sum_matches_global_unique": false
+  },
+  "claim_boundary": {
+    "app_specific_native_callback_required": false,
+    "automatic_partner_selection_authorized": false,
+    "current_route_changed": false,
+    "m113_promotion_authorized_for_current_triangle": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_executed": false
+  },
+  "conclusion": "M125 explains the Triangle Counting M113 blocker in app-agnostic terms. Per-chunk scalar unique counts are not associative when the same key can appear in more than one chunk. The generic fix is not an app-specific OptiX callback: carry key/count payloads to a final associative merge, or prove disjoint chunk key ranges. The current Triangle route remains blocked for M113 because graph capture and key-payload final merge are not both validated.",
+  "current_triangle_readiness": {
+    "app_id": "triangle_counting",
+    "associative_duplicate_policy_available": false,
+    "automatic_partner_selection_authorized": false,
+    "axis_name": "query",
+    "blockers": [
+      "prepared_graph_capture_not_validated",
+      "missing_key_count_payload",
+      "chunk_boundary_duplicate_handling_not_associative"
+    ],
+    "chunk_key_ranges_disjoint": false,
+    "contract_key": "rt_graph_2a1_unique_weighted_summary_v1",
+    "duplicate_keys_can_cross_chunk_boundaries": true,
+    "final_key_payload_merge_validated": false,
+    "host_materialization_before_partner": false,
+    "item_count": 8579930671,
+    "key_payload_carries_counts": false,
+    "max_item_count": 15000000,
+    "operation": "prepared_segment_replay_unique_count_continuation",
+    "per_chunk_unique_payload_available": true,
+    "plan": null,
+    "prepared_graph_capture_validated": false,
+    "prepared_item_handle_per_chunk_available": true,
+    "prepared_scene_reuse_available": true,
+    "public_speedup_claim_authorized": false,
+    "readiness_status": "blocked_for_m113_plan",
+    "ready_for_m113_plan": false,
+    "runtime_executed": false,
+    "status": "app_agnostic_chunked_unique_count_continuation_gate",
+    "version": "rtdl.v3_0.chunked_unique_count_continuation_gate.m125.v1"
+  },
+  "current_triangle_validation": {
+    "app_id": "triangle_counting",
+    "associative_duplicate_policy_available": false,
+    "blocker_count": 3,
+    "blockers": [
+      "prepared_graph_capture_not_validated",
+      "missing_key_count_payload",
+      "chunk_boundary_duplicate_handling_not_associative"
+    ],
+    "chunk_count": 0,
+    "plan_status": "blocked_for_m113_plan",
+    "public_claim_authorized": false,
+    "readiness_status": "blocked_for_m113_plan",
+    "ready_for_m113_plan": false,
+    "runtime_executed": false,
+    "status": "accept",
+    "version": "rtdl.v3_0.chunked_unique_count_continuation_gate.m125.v1"
+  },
+  "date": "2026-06-17",
+  "future_generic_payload_readiness": {
+    "app_id": "triangle_counting",
+    "associative_duplicate_policy_available": true,
+    "automatic_partner_selection_authorized": false,
+    "axis_name": "query",
+    "blockers": [],
+    "chunk_key_ranges_disjoint": false,
+    "contract_key": "rt_graph_2a1_unique_weighted_summary_v1",
+    "duplicate_keys_can_cross_chunk_boundaries": true,
+    "final_key_payload_merge_validated": true,
+    "host_materialization_before_partner": false,
+    "item_count": 45000000,
+    "key_payload_carries_counts": true,
+    "max_item_count": 15000000,
+    "operation": "prepared_segment_replay_unique_count_continuation",
+    "per_chunk_unique_payload_available": true,
+    "plan": {
+      "aggregate_only_substitute_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "axis_name": "query",
+      "chunk_count": 3,
+      "chunks": [
+        {
+          "chunk_index": 0,
+          "continuation_kind": "chunked_unique_count_key_payload_merge",
+          "host_materialization_before_partner": false,
+          "item_count": 15000000,
+          "item_end_exclusive": 15000000,
+          "item_offset": 0,
+          "item_start_inclusive": 0,
+          "partner_continuation_per_chunk": true,
+          "prepared_graph_per_chunk": true,
+          "prepared_item_handle_per_chunk": true,
+          "prepared_scene_reused": true
+        },
+        {
+          "chunk_index": 1,
+          "continuation_kind": "chunked_unique_count_key_payload_merge",
+          "host_materialization_before_partner": false,
+          "item_count": 15000000,
+          "item_end_exclusive": 30000000,
+          "item_offset": 15000000,
+          "item_start_inclusive": 15000000,
+          "partner_continuation_per_chunk": true,
+          "prepared_graph_per_chunk": true,
+          "prepared_item_handle_per_chunk": true,
+          "prepared_scene_reused": true
+        },
+        {
+          "chunk_index": 2,
+          "continuation_kind": "chunked_unique_count_key_payload_merge",
+          "host_materialization_before_partner": false,
+          "item_count": 15000000,
+          "item_end_exclusive": 45000000,
+          "item_offset": 30000000,
+          "item_start_inclusive": 30000000,
+          "partner_continuation_per_chunk": true,
+          "prepared_graph_per_chunk": true,
+          "prepared_item_handle_per_chunk": true,
+          "prepared_scene_reused": true
+        }
+      ],
+      "continuation_kind": "chunked_unique_count_key_payload_merge",
+      "contract_key": "rt_graph_2a1_unique_weighted_summary_v1",
+      "graph_id": "rt_graph_2a1_unique_weighted_summary_v1_unique_count_chunks",
+      "hidden_auto_dispatch_allowed": false,
+      "item_count": 45000000,
+      "max_item_count": 15000000,
+      "operation": "prepared_segment_replay_unique_count_continuation",
+      "partner_continuation_per_chunk_required": true,
+      "plan_status": "chunked_partner_continuation_required",
+      "prepared_graph_per_chunk_required": true,
+      "prepared_item_handle_per_chunk_required": true,
+      "prepared_scene_reuse_required": true,
+      "public_speedup_claim_authorized": false,
+      "requires_partner_continuation": true,
+      "runtime_executed": false,
+      "single_graph_cap_exceeded": true,
+      "status": "app_agnostic_prepared_graph_chunk_executor_contract",
+      "version": "rtdl.v3_0.prepared_graph_chunk_executor.m113.v1"
+    },
+    "prepared_graph_capture_validated": true,
+    "prepared_item_handle_per_chunk_available": true,
+    "prepared_scene_reuse_available": true,
+    "public_speedup_claim_authorized": false,
+    "readiness_status": "ready_for_m113_plan",
+    "ready_for_m113_plan": true,
+    "runtime_executed": false,
+    "status": "app_agnostic_chunked_unique_count_continuation_gate",
+    "version": "rtdl.v3_0.chunked_unique_count_continuation_gate.m125.v1"
+  },
+  "future_generic_payload_validation": {
+    "app_id": "triangle_counting",
+    "associative_duplicate_policy_available": true,
+    "blocker_count": 0,
+    "blockers": [],
+    "chunk_count": 3,
+    "plan_status": "chunked_partner_continuation_required",
+    "public_claim_authorized": false,
+    "readiness_status": "ready_for_m113_plan",
+    "ready_for_m113_plan": true,
+    "runtime_executed": false,
+    "status": "accept",
+    "version": "rtdl.v3_0.chunked_unique_count_continuation_gate.m125.v1"
+  },
+  "goal": "Goal4521 / V3 M125",
+  "status": "triangle_chunked_unique_count_continuation_gate",
+  "version": "rtdl.v3_0.triangle_unique_count_gate.goal4521.v1"
+}

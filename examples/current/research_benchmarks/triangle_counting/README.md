@@ -259,6 +259,14 @@ count kernels remain faster than RTDL query/native traversal. Do not write
 RTDL-beats-cuGraph, RTDL-beats-authors-pure-kernel, or public RT-core
 triangle-count speedup wording.
 
+Goal4521 explains the remaining M113 blocker in generic continuation terms.
+Per-chunk scalar unique/count summaries are not associative when the same
+logical key can cross chunk boundaries. The generic solution is to carry
+key/count payloads into a final associative merge, or to prove disjoint chunk
+key ranges; it does not require an app-specific OptiX callback. The current
+Triangle route does not change, and M113 promotion remains blocked until the
+key-payload final merge and graph capture are both validated.
+
 The current internal route is Goal4479:
 
 ```text
