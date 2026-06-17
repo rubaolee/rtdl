@@ -51,12 +51,12 @@ class Goal4501V30M105RtnnAuthorSameInputComparisonTest(unittest.TestCase):
         self.assertIn("Goal4501 RTNN author same-input comparison", index)
         self.assertIn("Goal4501 adds the author same-input comparison", readme)
         self.assertIn("AUTHOR_REPEAT_GLOB", script)
-        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4501.v1", route["version"])
-        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4501.v1", adequacy["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_route_decisions.goal4502.v1", route["version"])
+        self.assertEqual("rtdl.v3_0.current_benchmark_adequacy.goal4502.v1", adequacy["version"])
         self.assertIn("Goal4501", route["evidence_refs"])
         self.assertIn("Goal4501", adequacy["evidence_refs"])
-        self.assertIn("direct graph", route["primary_route"])
-        self.assertIn("direct graph", adequacy["current_recommended_path"])
+        self.assertIn("full-batch", route["primary_route"])
+        self.assertIn("full-batch", adequacy["current_recommended_path"])
 
 
 if __name__ == "__main__":

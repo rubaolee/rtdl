@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4501.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4502.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -67,7 +67,11 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "builds and runs author RTNN on the same bounded KITTI CSV after an "
     "external-only CUDA12/Ada compatibility patch, and compares author full "
     "K-id materialization with RTDL hot prepared aggregate contracts without "
-    "collapsing those output surfaces. "
+    "collapsing those output surfaces. Goal4502 then corrects the RTNN "
+    "aggregate-only route ranking: for KITTI-1M the full-batch non-graph "
+    "prepared direct aggregate is the current fastest RTDL hot aggregate, "
+    "while graph/device-partials remains the explicit path for same-stream "
+    "partner continuation. "
     "Goal4444 refreshes triangle-counting partner guidance after replacing the "
     "transitional Numba CPU-contract builder with a direct binary vectorized "
     "summary path before Numba device upload. It materially reduces the no-C++ "
@@ -747,26 +751,30 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "exact aggregate gate. Count, nearest-id checksum, and distance sum "
             "match, but a tie-sensitive kth-id checksum caveat remains. Goal4501 "
             "adds the author same-input row: after an external-only CUDA12/Ada "
-            "compatibility patch, author RTNN runs the same KITTI-1M CSV. Current "
-            "RTDL direct graph aggregate is subsecond hot-prepared and about 30x "
-            "faster than the Goal4500 generic OptiX aggregate, while author RTNN "
-            "remains faster on cold whole-process and pure compute timing. Report "
-            "these as different output contracts: author full K-id materialization "
+            "compatibility patch, author RTNN runs the same KITTI-1M CSV. Goal4502 "
+            "then sweeps the prepared aggregate batch size and reranks the RTDL "
+            "aggregate-only route: full-batch non-graph prepared direct aggregate "
+            "measures about 0.154s hot median on the full 1M-query batch, 1.68x "
+            "faster than the M105 direct graph row and 2.26x faster than the "
+            "author synchronized total-search timer, while author RTNN remains "
+            "faster on cold whole-process and pure compute timing. Report these "
+            "as different output contracts: author full K-id materialization "
             "versus RTDL ranked-summary aggregate."
         ),
         primary_route=(
             "mixed explicit RTNN route: exact RTDL/OptiX native aggregate for same-contract "
-            "OptiX-vs-Embree comparison; prepared direct graph aggregate for the "
-            "current fastest hot KITTI-family RTDL row; explicit CuPy/Numba "
-            "same-stream partner reductions for resident app-bridge evidence"
+            "OptiX-vs-Embree comparison; full-batch non-graph prepared direct aggregate "
+            "for the current fastest hot KITTI-family aggregate-only RTDL row; explicit "
+            "CuPy/Numba same-stream graph/device-partial partner reductions for resident "
+            "app-bridge evidence"
         ),
         partner_policy="mixed_explicit_user_choice",
         primitive_contract="fixed-radius ranked nearest summary aggregate plus resident graph partial-summary bridge",
         user_choice_guidance=(
             "Choose prepared_ranked_summary_raw or the native aggregate runner row when exact float64 "
-            "backend comparison is required. Choose the prepared direct graph aggregate when the user "
-            "needs the fastest current hot-prepared RTDL ranked-summary aggregate and accepts the "
-            "float32 aggregate boundary. Choose prepared_ranked_summary_graph_partner_bridge when a "
+            "backend comparison is required. Choose the full-batch prepared direct aggregate when the "
+            "user needs the fastest current hot-prepared RTDL ranked-summary aggregate and accepts "
+            "the float32 aggregate boundary. Choose prepared_ranked_summary_graph_partner_bridge when a "
             "same-stream partner continuation is required and keep both CuPy and Numba visible; CuPy "
             "is the slightly faster measured partner in the M47 uniform row, M63 clustered row, and "
             "M64 shell row, while Numba is near parity and remains the no-C++ Python-source reference. "
@@ -781,10 +789,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "arbitrary ANN index speedup claim",
             "treating the clustered resident app bridge as a full RTNN paper row",
             "treating the shell resident app bridge as a full RTNN paper row",
+            "treating direct graph replay as the aggregate-only best route above 65,536 queries",
         ),
         next_runtime_action=(
-            "preserve exact aggregate, direct graph aggregate, same-stream partner bridge, "
-            "and author full-output diagnostic rows as separate front-door contracts; "
+            "preserve exact aggregate, full-batch prepared direct aggregate, same-stream "
+            "graph partner bridge, and author full-output diagnostic rows as separate "
+            "front-door contracts; "
             "next generic runtime work is an app-agnostic fused RTNN-style ranked-summary "
             "primitive that narrows the author compute-efficiency gap without adding "
             "RTNN-specific native engine logic, while continuing to block exact paper "
@@ -804,6 +814,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4499",
             "Goal4500",
             "Goal4501",
+            "Goal4502",
         ),
         pod_needed_next=False,
     ),
