@@ -152,6 +152,7 @@ Current guidance lives in:
 
 - [Choosing A Partner For Custom Logic](learn/partner_choice_for_custom_logic.md)
 - [Benchmark Partner Reference Matrix](learn/benchmark_partner_reference_matrix.md)
+- `docs/learn/v3_0_app_author_implementation_strategy.md`
 - `docs/release_reports/v2_14/README.md`
 - `docs/release_reports/v2_14/public_rt_vs_embree_comparison.md`
 - `docs/learn/v2_14_app_author_implementation_strategy.md`
