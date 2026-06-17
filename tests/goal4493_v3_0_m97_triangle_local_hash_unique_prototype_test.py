@@ -72,13 +72,13 @@ class Goal4493M97TriangleLocalHashUniquePrototypeTest(unittest.TestCase):
         self.assertIn("large-tail fallback", report)
         self.assertIn("Goal4493 Triangle local-hash unique prototype", index)
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_route_decisions.goal4494.v1",
+            "rtdl.v3_0.current_benchmark_route_decisions.goal4495.v1",
             route["version"],
         )
         self.assertIn("Goal4493", route["evidence_refs"])
         self.assertIn("Goal4494", route["next_runtime_action"])
         self.assertEqual(
-            "rtdl.v3_0.current_benchmark_adequacy.goal4494.v1",
+            "rtdl.v3_0.current_benchmark_adequacy.goal4495.v1",
             adequacy_module.CURRENT_BENCHMARK_ADEQUACY_VERSION,
         )
         self.assertIn("Goal4493", adequacy["evidence_refs"])

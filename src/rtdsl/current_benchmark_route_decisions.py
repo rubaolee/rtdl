@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4494.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4495.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -1138,19 +1138,21 @@ def _refresh_goal4484_route_decisions(
                     "graph-only direct-status component signature as full DBSCAN after Goal4484",
                     "full-row materialization as the default summary-output contract after Goal4445",
                     "automatic output_mode/partner selection after Goal4452 route refresh",
+                    "promoting temporary app-constructed point columns as the default after Goal4495",
                 ),
                 next_runtime_action=(
                     "keep predicate direct-status as the measured explicit compact-signature "
-                    "route for the Goal4484/Goal4485/Goal4486/Goal4488/Goal4489/Goal4490 524k and 1M profiles; "
+                    "route for the Goal4484/Goal4485/Goal4486/Goal4488/Goal4489/Goal4490 524k and 1M profiles, "
+                    "with Goal4495 extending the caller-owned point-column reuse boundary to the 2M `road3d` profile; "
                     "keep grouped-stream Numba as fallback/reference; keep full Python row materialization explicit; "
                     "keep the profile/reuse advisor visible for explicit route choices; "
                     "Goal4488 reduces direct-status row-columnization prepare debt and Goal4489 "
                     "adds the shared device-coordinate-column entry point; Goal4490 adds an explicit charged "
                     "app mode and shows app-constructed coordinate columns are not a default promotion; "
                     "Goal4491 removes redundant coordinate-helper pre-scan but keeps the same promotion boundary; "
-                    "next serious runtime work is broader profile coverage or natural caller-owned-column reuse, "
-                    "or a policy primitive only if "
-                    "new evidence requires it. "
+                    "Goal4495 shows that existing device columns remain valuable at 2M road3d, but temporary "
+                    "app-constructed columns are still essentially flat when charged; next serious runtime work "
+                    "is broader non-road3d 2M profile coverage or a policy primitive only if new evidence requires it. "
                     "hidden factor selection, hidden output-contract selection, hidden border-policy "
                     "selection, and automatic partner selection remain blocked."
                 ),
@@ -1215,6 +1217,7 @@ def _refresh_goal4484_route_decisions(
                     "Goal4489",
                     "Goal4490",
                     "Goal4491",
+                    "Goal4495",
                 ),
                 pod_needed_next=False,
             )
