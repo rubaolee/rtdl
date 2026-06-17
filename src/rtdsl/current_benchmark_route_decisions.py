@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4492.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4493.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -875,7 +875,12 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "coverage: 16K rows covers 93.73%/89.85%/69.43% of two-hop rows "
             "and 65K covers 99.85%/99.38%/98.44%, so a single small bounded "
             "local kernel is not the right default; the credible next shape is "
-            "hybrid/two-pass small-source local unique plus large-tail sort/RLE fallback."
+            "hybrid/two-pass small-source local unique plus large-tail sort/RLE "
+            "fallback. Goal4493 validates a bounded `<=2048` local-hash "
+            "prototype over 20M selected two-hop rows per paper dataset: it "
+            "matches fill plus sort/RLE and is 1.13x/1.01x/1.43x faster on "
+            "`com-lj`/`soc-LiveJournal1`/`com-orkut`, but it is not a route "
+            "change because the large-tail fallback is not implemented."
         ),
         primary_route="generic RT graph relationship-count composition",
         partner_policy="primitive_only",
@@ -943,7 +948,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "skip-sort fast path: sorted two-hop row coverage is below 1% on "
             "all three large rows. Cite Goal4492 when rejecting a single small "
             "bounded local unique-count kernel and when choosing a hybrid/two-pass "
-            "source-group plan instead."
+            "source-group plan instead. Cite Goal4493 when the user asks whether "
+            "the local-hash branch itself is viable: it validates at 20M selected "
+            "small-group rows, but still needs a complete large-tail fallback."
         ),
         rejected_or_unpromoted_candidates=(
             "auto fallback timing route",
@@ -980,6 +987,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "promoting the Goal4481 numba_fused_decode_project output builder",
             "promoting an already-sorted source-group skip-sort fast path after Goal4482",
             "promoting a single small bounded source-group local unique-count kernel after Goal4492",
+            "promoting the Goal4493 local-hash prototype before adding the large-tail fallback",
             "spending the next Triangle Counting optimization cycle on counts/filter, duplicate count sum, or RT traversal before further reducing Goal4479 sort/RLE unique-count cost",
             "automatic CuPy-vs-Numba partner selection",
         ),
@@ -1014,7 +1022,9 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "kernel is also insufficient because 16K covers only 69.43% of "
             "`com-orkut` two-hop rows, so next useful work is hybrid/two-pass "
             "small-source local unique plus large-tail sort/RLE fallback without "
-            "breaking the app-agnostic primitive contract"
+            "breaking the app-agnostic primitive contract; Goal4493 validates "
+            "the small-source `<=2048` local-hash branch, so next work is "
+            "implementing the complete hybrid large-tail fallback and reranking it"
         ),
         evidence_refs=(
             "Goal2797",
@@ -1052,6 +1062,7 @@ CURRENT_BENCHMARK_ROUTE_DECISIONS: tuple[CurrentBenchmarkRouteDecision, ...] = (
             "Goal4481",
             "Goal4482",
             "Goal4492",
+            "Goal4493",
         ),
         pod_needed_next=False,
     ),

@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4492.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4493.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -610,7 +610,12 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "covers 93.73%/89.85%/69.43% of two-hop rows and 65K covers "
             "99.85%/99.38%/98.44%, so a single small bounded local kernel is "
             "not justified; the next credible direction is hybrid/two-pass "
-            "small-source local unique plus large-tail sort/RLE fallback."
+            "small-source local unique plus large-tail sort/RLE fallback. "
+            "Goal4493 validates the first bounded local-hash prototype for "
+            "`<=2048` source groups on 20M selected two-hop rows per paper "
+            "dataset: outputs match the fill plus sort/RLE reference and "
+            "speedups are 1.13x/1.01x/1.43x, but this remains a prototype "
+            "because the large-tail fallback is not implemented."
         ),
         "current_recommended_path": (
             "generic RT graph relationship-count primitive for the scalar answer; "
@@ -656,7 +661,10 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "row coverage is below 1% on all three large rows. Cite Goal4492 "
             "when explaining why a single small bounded local unique-count "
             "kernel is also insufficient and why the next useful shape is "
-            "hybrid/two-pass source-group local unique plus large-tail sort/RLE."
+            "hybrid/two-pass source-group local unique plus large-tail sort/RLE. "
+            "Cite Goal4493 when explaining that the `<=2048` local-hash branch "
+            "is correct and sometimes faster on 20M-row selected small groups, "
+            "but still needs large-tail fallback before route promotion."
         ),
         "current_partner_role": (
             "no partner needed for the scalar primitive answer; CuPy is current "
@@ -698,7 +706,9 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "because 16K source groups cover only 69.43% of `com-orkut` two-hop "
             "rows, so next useful work is hybrid/two-pass small-source local "
             "unique plus large-tail sort/RLE fallback without breaking the "
-            "app-agnostic primitive contract"
+            "app-agnostic primitive contract; Goal4493 validates the small-source "
+            "`<=2048` local-hash branch, so next work is implementing the "
+            "complete hybrid large-tail fallback and reranking it"
         ),
         "evidence_refs": (
             "Goal2797",
@@ -734,6 +744,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4481",
             "Goal4482",
             "Goal4492",
+            "Goal4493",
         ),
     },
 }
