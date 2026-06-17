@@ -6,7 +6,7 @@ from typing import Any
 from .v2_8_benchmark_runtime_gap import V2_8_PROMOTED_BENCHMARK_APPS
 
 
-CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4490.v1"
+CURRENT_BENCHMARK_ROUTE_DECISION_VERSION = "rtdl.v3_0.current_benchmark_route_decisions.goal4491.v1"
 CURRENT_BENCHMARK_ROUTE_DECISION_STATUS = "internal_route_guidance_not_auto_dispatch"
 CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "Goal4180 refreshes current benchmark route decisions after the Goal4074-4177 "
@@ -92,7 +92,9 @@ CURRENT_BENCHMARK_ROUTE_DECISION_CLAIM_BOUNDARY = (
     "entry point into an explicit RT-DBSCAN app mode and proves the boundary: "
     "when the app must construct coordinate columns from Python rows and charge "
     "that build, the route is not a stable total-time win, so it remains a "
-    "non-default integration path. "
+    "non-default integration path. Goal4491 removes a redundant coordinate-helper "
+    "pre-scan and improves app-constructed coordinate build by 1.04x-1.11x, "
+    "which is useful hygiene but still not a default-route promotion. "
     "Goal4453 refreshes triangle-counting Numba partner guidance after moving "
     "RT-1A2/RT-2A1 geometry fill from host materialization and re-upload to "
     "partner-resident Numba device columns. It removes unnecessary data movement "
@@ -1110,6 +1112,7 @@ def _refresh_goal4484_route_decisions(
                     "Goal4488 reduces direct-status row-columnization prepare debt and Goal4489 "
                     "adds the shared device-coordinate-column entry point; Goal4490 adds an explicit charged "
                     "app mode and shows app-constructed coordinate columns are not a default promotion; "
+                    "Goal4491 removes redundant coordinate-helper pre-scan but keeps the same promotion boundary; "
                     "next serious runtime work is broader profile coverage or natural caller-owned-column reuse, "
                     "or a policy primitive only if "
                     "new evidence requires it. "
@@ -1176,6 +1179,7 @@ def _refresh_goal4484_route_decisions(
                     "Goal4488",
                     "Goal4489",
                     "Goal4490",
+                    "Goal4491",
                 ),
                 pod_needed_next=False,
             )

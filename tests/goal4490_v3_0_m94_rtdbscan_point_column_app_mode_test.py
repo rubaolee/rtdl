@@ -40,11 +40,20 @@ class Goal4490M94RtDbscanPointColumnAppModeTest(unittest.TestCase):
 
         source = inspect.getsource(rt.point_rows_to_partner_coordinate_columns_3d)
         self.assertIn("_point_coordinate_columns_3d", source)
-        adapter_source = inspect.getsource(sys.modules["rtdsl.partner_adapters"]._point_coordinate_columns_3d)
+        adapter_module = sys.modules["rtdsl.partner_adapters"]
+        adapter_source = inspect.getsource(adapter_module._point_coordinate_columns_3d)
         self.assertIn('"x"', adapter_source)
         self.assertIn('"y"', adapter_source)
         self.assertIn('"z"', adapter_source)
         self.assertNotIn('"ids"', adapter_source)
+        self.assertNotIn("all(hasattr", adapter_source)
+
+        x, y, z = adapter_module._point_coordinate_host_columns_3d(
+            ({"x": 1, "y": 2, "z": 3}, {"x": 4, "y": 5, "z": 6})
+        )
+        self.assertEqual(([1.0, 4.0], [2.0, 5.0], [3.0, 6.0]), (x, y, z))
+        x, y, z = adapter_module._point_coordinate_host_columns_3d(((9, 1, 2, 3), (8, 4, 5, 6)))
+        self.assertEqual(([1.0, 4.0], [2.0, 5.0], [3.0, 6.0]), (x, y, z))
 
     def test_app_exposes_explicit_point_column_mode_without_default_promotion(self) -> None:
         self.assertEqual(

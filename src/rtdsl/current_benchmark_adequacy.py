@@ -8,7 +8,7 @@ from .v2_9_benchmark_adequacy import ADEQUACY_LEVELS
 from .v2_9_benchmark_adequacy import v2_9_benchmark_adequacy_rows
 
 
-CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4490.v1"
+CURRENT_BENCHMARK_ADEQUACY_VERSION = "rtdl.v3_0.current_benchmark_adequacy.goal4491.v1"
 CURRENT_BENCHMARK_ADEQUACY_STATUS = "internal_perf_triage_not_release_authorization"
 CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "Goal4450 refreshes the current benchmark adequacy advisory after V3 M41-M54 "
@@ -40,7 +40,9 @@ CURRENT_BENCHMARK_ADEQUACY_CLAIM_BOUNDARY = (
     "mapping, and sequence inputs; Goal4489 adds caller-owned CuPy point-column "
     "direct-status prepare for honest shared-column handoff; Goal4490 wires that "
     "path into an explicit RT-DBSCAN app mode and shows app-constructed coordinate "
-    "columns are not a stable total-time promotion when build time is charged; and robot "
+    "columns are not a stable total-time promotion when build time is charged; "
+    "Goal4491 removes a redundant coordinate-helper pre-scan for a modest 1.04x-1.11x "
+    "app-constructed build improvement without changing that boundary; and robot "
     "collision adds Goal4446 NumPy "
     "vectorized grouped-segment query lowering. Goal4451 updates Spatial "
     "RayJoin repeated-PIP guidance by preserving the prepared batch executor "
@@ -292,6 +294,8 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "signatures match, one-shot clustered3d improves modestly, but road3d, "
             "ngsim_dense, and warmed replay do not produce a stable total-time win "
             "once app-side column construction is charged."
+            " Goal4491 then removes the coordinate-helper pre-scan, improving "
+            "that build phase by 1.04x-1.11x while preserving the same no-promotion boundary."
         ),
         "current_recommended_path": (
             "Explicit RTDL/OptiX self-query predicate direct-status CuPy for measured 524k/1M "
@@ -301,7 +305,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
         ),
         "current_partner_role": (
             "CuPy is the measured predicate direct-status compact-signature route in "
-            "Goal4484/Goal4485/Goal4486/Goal4488/Goal4489/Goal4490; Numba remains the no-C++ Python-source same-contract fallback "
+            "Goal4484/Goal4485/Goal4486/Goal4488/Goal4489/Goal4490/Goal4491; Numba remains the no-C++ Python-source same-contract fallback "
             "and grouped-stream reference route"
         ),
         "next_generic_runtime_action": (
@@ -336,6 +340,7 @@ _CURRENT_OVERRIDES: dict[str, dict[str, object]] = {
             "Goal4488",
             "Goal4489",
             "Goal4490",
+            "Goal4491",
         ),
     },
     "robot_collision": {

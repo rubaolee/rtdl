@@ -1,0 +1,74 @@
+{
+  "baseline": "docs/reports/goal4490_v3_0_m94_rtdbscan_point_column_app_mode_2026-06-17.json",
+  "case_count": 3,
+  "claim_boundary": "This is a coordinate-column build micro-matrix only. It removes avoidable host scanning, but it does not make app-constructed columns a default route.",
+  "error_count": 0,
+  "goal": "Goal4491 / V3 M95",
+  "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.08, 20475 MiB, 00000000:01:00.0",
+  "ok_count": 3,
+  "point_count": 1048576,
+  "repeat": 3,
+  "rows": [
+    {
+      "baseline_goal4490_one_shot_coordinate_build_sec": 0.4488217458128929,
+      "build_speedup_vs_goal4490": 1.058740001742778,
+      "claim_boundary": "coordinate-column build only; does not promote app-constructed columns as a default route",
+      "dataset": "clustered3d",
+      "optimization": "remove_redundant_all_hasattr_prescan_and_support_mapping_sequence_rows",
+      "optimized_coordinate_build_median_sec": 0.4239206463098526,
+      "optimized_coordinate_build_times_sec": [
+        0.5880500301718712,
+        0.4239206463098526,
+        0.42040280997753143
+      ],
+      "point_count": 1048576,
+      "repeat": 3,
+      "status": "ok",
+      "wall_sec": 5.941628485918045
+    },
+    {
+      "baseline_goal4490_one_shot_coordinate_build_sec": 0.3368752747774124,
+      "build_speedup_vs_goal4490": 1.1105595479776047,
+      "claim_boundary": "coordinate-column build only; does not promote app-constructed columns as a default route",
+      "dataset": "road3d",
+      "optimization": "remove_redundant_all_hasattr_prescan_and_support_mapping_sequence_rows",
+      "optimized_coordinate_build_median_sec": 0.30333832651376724,
+      "optimized_coordinate_build_times_sec": [
+        0.3005494624376297,
+        0.30333832651376724,
+        0.30440741032361984
+      ],
+      "point_count": 1048576,
+      "repeat": 3,
+      "status": "ok",
+      "wall_sec": 4.808135211467743
+    },
+    {
+      "baseline_goal4490_one_shot_coordinate_build_sec": 0.44320715218782425,
+      "build_speedup_vs_goal4490": 1.0352271740059593,
+      "claim_boundary": "coordinate-column build only; does not promote app-constructed columns as a default route",
+      "dataset": "ngsim_dense",
+      "optimization": "remove_redundant_all_hasattr_prescan_and_support_mapping_sequence_rows",
+      "optimized_coordinate_build_median_sec": 0.4281255006790161,
+      "optimized_coordinate_build_times_sec": [
+        0.43255405128002167,
+        0.42577511072158813,
+        0.4281255006790161
+      ],
+      "point_count": 1048576,
+      "repeat": 3,
+      "status": "ok",
+      "wall_sec": 6.435983344912529
+    }
+  ],
+  "summary": {
+    "max_speedup": 1.1105595479776047,
+    "min_speedup": 1.0352271740059593,
+    "speedups": {
+      "clustered3d": 1.058740001742778,
+      "ngsim_dense": 1.0352271740059593,
+      "road3d": 1.1105595479776047
+    }
+  },
+  "version": "rtdl.v3_0.coordinate_column_helper_build.goal4491.v1"
+}

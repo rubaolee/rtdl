@@ -1914,15 +1914,77 @@ def _point_columns(points, partner: dict, *, id_dtype: str = "default") -> dict[
     return columns
 
 
+def _point_coordinate_xyz(row) -> tuple[float, float, float]:
+    if hasattr(row, "x") and hasattr(row, "y") and hasattr(row, "z"):
+        return float(row.x), float(row.y), float(row.z)
+    if isinstance(row, dict):
+        return float(row["x"]), float(row["y"]), float(row["z"])
+    values = tuple(row)
+    if len(values) == 3:
+        return float(values[0]), float(values[1]), float(values[2])
+    if len(values) >= 4:
+        return float(values[1]), float(values[2]), float(values[3])
+    raise TypeError("point row must expose x/y/z fields or a 3/4-item sequence")
+
+
+def _point_coordinate_host_columns_3d(rows: tuple[object, ...]) -> tuple[list[float], list[float], list[float]]:
+    if not rows:
+        return [], [], []
+    first = rows[0]
+    if hasattr(first, "x") and hasattr(first, "y") and hasattr(first, "z"):
+        try:
+            return (
+                [float(row.x) for row in rows],
+                [float(row.y) for row in rows],
+                [float(row.z) for row in rows],
+            )
+        except AttributeError:
+            pass
+    if isinstance(first, dict):
+        try:
+            return (
+                [float(row["x"]) for row in rows],
+                [float(row["y"]) for row in rows],
+                [float(row["z"]) for row in rows],
+            )
+        except KeyError:
+            pass
+    if isinstance(first, (list, tuple)):
+        width = len(first)
+        if width == 3:
+            try:
+                return (
+                    [float(row[0]) for row in rows],
+                    [float(row[1]) for row in rows],
+                    [float(row[2]) for row in rows],
+                )
+            except (IndexError, TypeError):
+                pass
+        if width >= 4:
+            try:
+                return (
+                    [float(row[1]) for row in rows],
+                    [float(row[2]) for row in rows],
+                    [float(row[3]) for row in rows],
+                )
+            except (IndexError, TypeError):
+                pass
+    points = tuple(_point_coordinate_xyz(row) for row in rows)
+    return (
+        [point[0] for point in points],
+        [point[1] for point in points],
+        [point[2] for point in points],
+    )
+
+
 def _point_coordinate_columns_3d(points, partner: dict) -> dict[str, object]:
     device = partner["device"]
     rows = tuple(points)
-    if rows and not all(hasattr(point, "z") for point in rows):
-        raise ValueError("point rows must all provide z for 3-D coordinate columns")
+    x_host, y_host, z_host = _point_coordinate_host_columns_3d(rows)
     return {
-        "x": partner["tensor"]([point.x for point in rows], partner["float64"], device),
-        "y": partner["tensor"]([point.y for point in rows], partner["float64"], device),
-        "z": partner["tensor"]([point.z for point in rows], partner["float64"], device),
+        "x": partner["tensor"](x_host, partner["float64"], device),
+        "y": partner["tensor"](y_host, partner["float64"], device),
+        "z": partner["tensor"](z_host, partner["float64"], device),
     }
 
 

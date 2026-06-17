@@ -133,6 +133,7 @@ v2.14 evidence:
 - [Goal4488 RT-DBSCAN direct-status row-columnization](../reports/goal4488_v3_0_m92_rtdbscan_direct_status_row_columnization_2026-06-17.md)
 - [Goal4489 RT-DBSCAN direct-status caller-owned point columns](../reports/goal4489_v3_0_m93_direct_status_point_columns_2026-06-17.md)
 - [Goal4490 RT-DBSCAN point-column app mode](../reports/goal4490_v3_0_m94_rtdbscan_point_column_app_mode_2026-06-17.md)
+- [Goal4491 coordinate-column helper build cleanup](../reports/goal4491_v3_0_m95_coordinate_column_helper_build_2026-06-17.md)
 - [Goal4453 Triangle Numba device geometry](../reports/goal4453_v3_0_m57_triangle_numba_device_geometry_2026-06-16.md)
 - [Goal4454 Triangle Numba summary fast paths](../reports/goal4454_v3_0_m58_triangle_numba_summary_fast_paths_2026-06-16.md)
 - [Goal4455 Triangle partner rerank after M58](../reports/goal4455_v3_0_m59_triangle_partner_rerank_after_m58_2026-06-16.md)
