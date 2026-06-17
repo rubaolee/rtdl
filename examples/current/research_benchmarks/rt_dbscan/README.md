@@ -419,9 +419,14 @@ route does not change.
 Goal4520 validates the live chunk-handle smoke on the CUDA pod: caller-owned
 CuPy point-column slices can be prepared as chunk-local predicate direct-status
 handles and replayed without coordinate upload or pair-row materialization.
-M113 promotion remains blocked because prepared graph capture is still not
-validated; this is not RT-core speedup evidence and the current route still does
-not change.
+Goal4528 adds the missing prepared graph capture check for that future M113
+shape: a fixed-iteration direct-status predicate continuation can be captured
+and replayed from chunk-local prepared handles without host D2H inside capture,
+coordinate re-upload, host tuple materialization, or pair-row materialization.
+That makes the internal M113 plan shape ready for future chunked
+same-stream-partner experiments. It is still not public RT-core speedup evidence,
+does not authorize automatic partner selection, and does not change the current
+recommended RT-DBSCAN route above.
 
 ## Current Boundary Policy
 

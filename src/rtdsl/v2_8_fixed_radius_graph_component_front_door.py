@@ -2615,6 +2615,61 @@ class V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPr
         self.close()
 
 
+@dataclass
+class V28CapturedFixedRadiusPartitionConvergencePredicateDirectStatusGraphCupyPreview3D:
+    graph: Any
+    stream: Any
+    columns: dict[str, Any]
+    capture_metadata: dict[str, Any]
+    closed: bool = False
+    replay_count: int = 0
+
+    def _ensure_open(self) -> None:
+        if self.closed:
+            raise RuntimeError("captured predicate direct-status graph is closed")
+
+    def replay(self) -> dict[str, Any]:
+        self._ensure_open()
+        self.graph.launch(stream=self.stream)
+        self.stream.synchronize()
+        self.replay_count += 1
+        metadata = {
+            **dict(self.capture_metadata),
+            "status": "accept",
+            "cuda_graph_replay": True,
+            "cuda_graph_replay_count": int(self.replay_count),
+            "prepared_graph_capture_validated": True,
+            "runtime_executable": True,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "app_specific_engine_logic_allowed": False,
+            "automatic_partner_selection_allowed": False,
+            "hidden_dispatch_allowed": False,
+            "claim_boundary": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_CLAIM_BOUNDARY,
+        }
+        return {"columns": self.columns, "metadata": metadata}
+
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            **dict(self.capture_metadata),
+            "captured_graph_handle": True,
+            "closed": self.closed,
+            "cuda_graph_replay_count": int(self.replay_count),
+        }
+
+    def close(self) -> None:
+        self.closed = True
+
+    def __enter__(self) -> "V28CapturedFixedRadiusPartitionConvergencePredicateDirectStatusGraphCupyPreview3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+
 def prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_preview_3d(
     point_rows,
     *,
@@ -2675,6 +2730,167 @@ def run_v2_8_fixed_radius_partition_convergence_predicate_signature_cupy_prepare
         max_iterations=max_iterations,
         convergence_mode=convergence_mode,
         border_assignment_policy=border_assignment_policy,
+    )
+
+
+def prepare_v2_8_fixed_radius_partition_convergence_predicate_signature_cupy_prepared_direct_status_graph_preview_3d(
+    prepared: V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPreview3D,
+    *,
+    predicate_flags,
+    neighbor_counts=None,
+    fixed_iteration_count: int = 1,
+    warmup_before_capture: bool = True,
+) -> V28CapturedFixedRadiusPartitionConvergencePredicateDirectStatusGraphCupyPreview3D:
+    """Capture a fixed-iteration predicate direct-status replay as a CuPy CUDA graph.
+
+    This is an explicit validation surface for the V3 chunk-local prepared-graph
+    gate. It intentionally does not replace the default convergence route: the
+    caller chooses a fixed iteration count and must compare graph replay output
+    against the corresponding non-graph fixed-iteration run.
+    """
+
+    import cupy
+
+    prepared._ensure_open()
+    fixed_iteration_count = int(fixed_iteration_count)
+    if fixed_iteration_count <= 0:
+        raise ValueError("fixed_iteration_count must be positive")
+    point_count = int(prepared.prepare_metadata["point_count"])
+    partition_count = int(prepared.prepare_metadata["partition_count"])
+    predicate_flags = cupy.asarray(predicate_flags, dtype=cupy.uint32)
+    if int(predicate_flags.size) != point_count:
+        raise ValueError("predicate_flags must match point_count")
+    if neighbor_counts is None:
+        neighbor_counts = cupy.zeros((point_count,), dtype=cupy.uint32)
+    else:
+        neighbor_counts = cupy.asarray(neighbor_counts, dtype=cupy.uint32)
+        if int(neighbor_counts.size) != point_count:
+            raise ValueError("neighbor_counts must match point_count")
+
+    radius_sq = float(prepared.radius) * float(prepared.radius)
+    classification_tol = 1.0e-5 * max(1.0, radius_sq)
+    runtime_columns = prepared.runtime_columns
+    if warmup_before_capture:
+        _cupy_direct_partition_status_union_predicate_signature_columns(
+            cupy,
+            partition_count=partition_count,
+            point_count=point_count,
+            unique_cells=runtime_columns["unique_cells"],
+            dim_y=int(prepared.prepare_metadata["dim_y"]),
+            dim_z=int(prepared.prepare_metadata["dim_z"]),
+            aabb_min_x64=runtime_columns["partition_aabb_min_x64"],
+            aabb_min_y64=runtime_columns["partition_aabb_min_y64"],
+            aabb_min_z64=runtime_columns["partition_aabb_min_z64"],
+            aabb_max_x64=runtime_columns["partition_aabb_max_x64"],
+            aabb_max_y64=runtime_columns["partition_aabb_max_y64"],
+            aabb_max_z64=runtime_columns["partition_aabb_max_z64"],
+            partition_offsets=runtime_columns["partition_offsets"],
+            partition_point_ordinals=runtime_columns["partition_point_ordinals"],
+            point_partition_ids=runtime_columns["point_partition_ids"],
+            predicate_flags=predicate_flags,
+            x=runtime_columns["x"],
+            y=runtime_columns["y"],
+            z=runtime_columns["z"],
+            max_offset=int(prepared.prepare_metadata["max_neighbor_offset"]),
+            radius_sq=radius_sq,
+            classification_tol=classification_tol,
+            fixed_iteration_count=fixed_iteration_count,
+        )
+        cupy.cuda.get_current_stream().synchronize()
+
+    stream = cupy.cuda.Stream(non_blocking=True)
+    with stream:
+        stream.begin_capture()
+        (
+            partition_parents_device,
+            border_candidate_device,
+            label_counts,
+            flag_true_count,
+            negative_label_count,
+            iterations,
+            safe_skip_count,
+            safe_full_count,
+            ambiguous_count,
+            comparison_count,
+            positive_count,
+            border_update_count,
+            changed,
+            convergence_proven,
+        ) = _cupy_direct_partition_status_union_predicate_signature_columns(
+            cupy,
+            partition_count=partition_count,
+            point_count=point_count,
+            unique_cells=runtime_columns["unique_cells"],
+            dim_y=int(prepared.prepare_metadata["dim_y"]),
+            dim_z=int(prepared.prepare_metadata["dim_z"]),
+            aabb_min_x64=runtime_columns["partition_aabb_min_x64"],
+            aabb_min_y64=runtime_columns["partition_aabb_min_y64"],
+            aabb_min_z64=runtime_columns["partition_aabb_min_z64"],
+            aabb_max_x64=runtime_columns["partition_aabb_max_x64"],
+            aabb_max_y64=runtime_columns["partition_aabb_max_y64"],
+            aabb_max_z64=runtime_columns["partition_aabb_max_z64"],
+            partition_offsets=runtime_columns["partition_offsets"],
+            partition_point_ordinals=runtime_columns["partition_point_ordinals"],
+            point_partition_ids=runtime_columns["point_partition_ids"],
+            predicate_flags=predicate_flags,
+            x=runtime_columns["x"],
+            y=runtime_columns["y"],
+            z=runtime_columns["z"],
+            max_offset=int(prepared.prepare_metadata["max_neighbor_offset"]),
+            radius_sq=radius_sq,
+            classification_tol=classification_tol,
+            fixed_iteration_count=fixed_iteration_count,
+            return_device_counters=True,
+        )
+        graph = stream.end_capture()
+
+    columns = {
+        "partition_parents": partition_parents_device,
+        "border_candidate": border_candidate_device,
+        "label_counts": label_counts,
+        "flag_true_count": flag_true_count,
+        "negative_label_count": negative_label_count,
+        "neighbor_counts": neighbor_counts,
+        "safe_skip_count": safe_skip_count,
+        "safe_full_count": safe_full_count,
+        "ambiguous_count": ambiguous_count,
+        "comparison_count": comparison_count,
+        "positive_count": positive_count,
+        "border_update_count": border_update_count,
+        "changed": changed,
+    }
+    capture_metadata = {
+        "version": V2_8_FIXED_RADIUS_GRAPH_COMPONENT_FRONT_DOOR_VERSION,
+        "reference": "fixed_radius_partition_convergence_predicate_signature_3d_cupy_prepared_direct_status_graph_preview",
+        "adapter": "prepare_fixed_radius_partition_convergence_predicate_signature_cupy_prepared_direct_status_graph_preview_3d",
+        "prepared_predicate_direct_status_union_handle": True,
+        "prepared_predicate_direct_status_union_partner": "cupy",
+        "prepared_predicate_direct_status_union_reused": True,
+        "cuda_graph_captured": True,
+        "cuda_graph_replay": False,
+        "prepared_graph_capture_validated": True,
+        "capture_mode": "fixed_iteration_count_no_host_d2h_inside_capture",
+        "fixed_iteration_count": fixed_iteration_count,
+        "captured_iterations": int(iterations),
+        "convergence_proven": bool(convergence_proven),
+        "point_count": point_count,
+        "partition_count": partition_count,
+        "radius": float(prepared.radius),
+        "cell_factor": float(prepared.cell_factor),
+        "max_neighbor_offset": int(prepared.prepare_metadata["max_neighbor_offset"]),
+        "near_pair_columns_materialized": False,
+        "partition_pair_rows_materialized": False,
+        "pair_materialization_avoided": True,
+        "host_materialization_before_partner": False,
+        "point_coordinate_columns_reused": True,
+        "native_abi_added": False,
+        "data_ptrs": _column_data_ptrs(columns),
+    }
+    return V28CapturedFixedRadiusPartitionConvergencePredicateDirectStatusGraphCupyPreview3D(
+        graph=graph,
+        stream=stream,
+        columns=columns,
+        capture_metadata=capture_metadata,
     )
 
 
@@ -3742,10 +3958,16 @@ def _cupy_direct_partition_status_union_predicate_signature_columns(
     classification_tol: float,
     max_iterations: int = 64,
     convergence_mode: str = "until_stable",
+    fixed_iteration_count: int | None = None,
+    return_device_counters: bool = False,
 ):
     convergence_mode = str(convergence_mode)
     if convergence_mode not in {"until_stable", "single_pass_candidate"}:
         raise ValueError("convergence_mode must be 'until_stable' or 'single_pass_candidate'")
+    if fixed_iteration_count is not None:
+        fixed_iteration_count = int(fixed_iteration_count)
+        if fixed_iteration_count <= 0:
+            raise ValueError("fixed_iteration_count must be positive when provided")
     predicate_summary_kernel = cupy.RawKernel(
         r'''
         extern "C" __global__
@@ -4082,7 +4304,11 @@ def _cupy_direct_partition_status_union_predicate_signature_columns(
     pair_blocks = ((total + threads - 1) // threads,)
     iterations = 0
     final_changed_flag = 0
-    iteration_limit = 1 if convergence_mode == "single_pass_candidate" else int(max_iterations)
+    iteration_limit = (
+        fixed_iteration_count
+        if fixed_iteration_count is not None
+        else 1 if convergence_mode == "single_pass_candidate" else int(max_iterations)
+    )
     for iteration in range(iteration_limit):
         changed.fill(0)
         union_kernel(
@@ -4124,13 +4350,16 @@ def _cupy_direct_partition_status_union_predicate_signature_columns(
         )
         compress_kernel(parent_blocks, (threads,), (parents, cupy.uint32(partition_count)))
         iterations = iteration + 1
+        if fixed_iteration_count is not None:
+            continue
         final_changed_flag = int(changed[0].item())
         if convergence_mode == "single_pass_candidate":
             break
         if final_changed_flag == 0:
             break
     else:
-        raise RuntimeError("predicate direct partition status union did not converge")
+        if fixed_iteration_count is None:
+            raise RuntimeError("predicate direct partition status union did not converge")
     label_counts = cupy.zeros((partition_count + 1,), dtype=cupy.uint64)
     flag_true_count = cupy.zeros((1,), dtype=cupy.uint64)
     negative_label_count = cupy.zeros((1,), dtype=cupy.uint64)
@@ -4148,7 +4377,29 @@ def _cupy_direct_partition_status_union_predicate_signature_columns(
             negative_label_count,
         ),
     )
-    convergence_proven = convergence_mode == "until_stable" and final_changed_flag == 0
+    if fixed_iteration_count is None:
+        convergence_proven = convergence_mode == "until_stable" and final_changed_flag == 0
+    else:
+        convergence_proven = False
+        if not return_device_counters:
+            final_changed_flag = int(changed[0].item())
+    if return_device_counters:
+        return (
+            parents,
+            border_candidate,
+            label_counts,
+            flag_true_count,
+            negative_label_count,
+            iterations,
+            safe_skip_count,
+            safe_full_count,
+            ambiguous_count,
+            comparison_count,
+            positive_count,
+            border_update_count,
+            changed,
+            convergence_proven,
+        )
     return (
         parents,
         border_candidate,
@@ -4971,6 +5222,7 @@ __all__ = [
     "V2_8_FIXED_RADIUS_GRAPH_COMPONENT_REJECTED_DEFAULT_STRATEGIES",
     "V28FixedRadiusGraphComponentPlan",
     "V28PreparedFixedRadiusGraphComponentContinuation3D",
+    "V28CapturedFixedRadiusPartitionConvergencePredicateDirectStatusGraphCupyPreview3D",
     "V28PreparedFixedRadiusPartitionConvergenceDirectStatusUnionCupyPreview3D",
     "V28PreparedFixedRadiusPartitionConvergencePredicateDirectStatusUnionCupyPreview3D",
     "V28PreparedFixedRadiusPartitionConvergenceSummaryCupyPreview3D",
@@ -4992,6 +5244,7 @@ __all__ = [
     "prepare_v2_8_fixed_radius_partition_convergence_direct_status_union_cupy_preview_3d",
     "prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_point_columns_preview_3d",
     "prepare_v2_8_fixed_radius_partition_convergence_predicate_direct_status_union_cupy_preview_3d",
+    "prepare_v2_8_fixed_radius_partition_convergence_predicate_signature_cupy_prepared_direct_status_graph_preview_3d",
     "prepare_v2_8_fixed_radius_partition_convergence_summary_cupy_preview_3d",
     "run_v2_8_fixed_radius_partition_convergence_component_labels_cupy_prepared_preview_3d",
     "run_v2_8_fixed_radius_partition_convergence_component_signature_cupy_prepared_direct_status_union_preview_3d",
