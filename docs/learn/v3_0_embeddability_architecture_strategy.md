@@ -10,7 +10,7 @@ and validation gates.
 
 ## Current Implementation Progress
 
-As of Goal4600, the first control-plane embedding slice has moved from a C-only
+As of Goal4602, the first control-plane embedding slice has moved from a C-only
 proof into a movable source-tree and prefix-stage handoff artifact:
 
 - Draft public header: `include/rtdl/rtdl.h`.
@@ -40,6 +40,8 @@ proof into a movable source-tree and prefix-stage handoff artifact:
   `find_package(rtdl-c-api CONFIG REQUIRED)` and the imported target
   `rtdl::c_api`.
 - Extract/compile/run proof for `build/rtdl-c-api-stage-0.1.3.tar.gz`.
+- Extracted source-tree stage archive CMake consumer proof for
+  `build/rtdl-c-api-stage-0.1.3.tar.gz`.
 - Source-tree doctor coverage for the prefix-stage target.
 - Prefix-stage Python `ctypes` smoke for lifecycle, host AABB2 query, and CUDA
   metadata examples against the staged shared library.
@@ -60,7 +62,8 @@ external CUDA stream semantics, OptiX/Embree query execution through the C ABI,
 generated language bindings, device-callable fusion, or V3 release wording. The
 current Python `ctypes` examples are a minimal binding base and prefix-stage
 smoke, not a generated package or stable public binding; the current CMake
-metadata is a staged-prefix consumption proof, not an installed SDK promise.
+metadata is a staged-prefix/archive consumption proof, not an installed SDK
+promise.
 
 **Purpose:** Define how RTDL prepares *now* to be embedded later inside other languages and runtimes — called from Python, C/C++, Rust, Julia, C#, and fused into GPU frameworks like PyTorch, JAX, CuPy, and Numba — without rewriting the core each time a new host shows up.
 

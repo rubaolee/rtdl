@@ -4,7 +4,7 @@
     "architecture_names_cmake_prefix_consumer": true,
     "architecture_names_python_ctypes_layout_audit": true,
     "architecture_preserves_no_sdk_or_release_boundary": true,
-    "architecture_status_reaches_goal4600": true,
+    "architecture_status_at_or_beyond_goal4600": true,
     "cmake_authorizes_prefix_stage_only": true,
     "cmake_prefix_stage_smoke_ok": true,
     "layout_audit_matches_python_ctypes": true,

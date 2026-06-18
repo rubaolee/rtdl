@@ -1,0 +1,63 @@
+{
+  "checks": {
+    "all_required_reports_accept": true,
+    "architecture_keeps_cmake_as_stage_not_sdk": true,
+    "architecture_names_archive_cmake_proof": true,
+    "architecture_status_at_or_beyond_goal4602": true,
+    "archive_cmake_authorizes_archive_stage_only": true,
+    "archive_cmake_smoke_ok": true,
+    "layout_audit_still_ok": true,
+    "prefix_cmake_still_ok": true,
+    "prior_delivery_status_keeps_device_query_blocked": true
+  },
+  "claim_boundary": {
+    "archive_cmake_stage_authorized": true,
+    "device_buffer_query_route_authorized": false,
+    "dlpack_zero_copy_authorized": false,
+    "external_cuda_stream_authorized": false,
+    "generated_language_binding_authorized": false,
+    "optix_embree_c_abi_query_authorized": false,
+    "package_manager_artifact_authorized": false,
+    "packaged_sdk_authorized": false,
+    "prefix_stage_handoff_authorized": true,
+    "python_ctypes_layout_drift_check_authorized": true,
+    "python_ctypes_smoke_authorized": true,
+    "release_authorized": false,
+    "source_tree_stage_handoff_authorized": true,
+    "stable_abi_authorized": false,
+    "system_install_authorized": false
+  },
+  "conclusion": "Goal4603 refreshes the embeddability delivery ledger after the archive CMake smoke. The current V3 source-tree handoff now has validated pkg-config and CMake consumption from both prefix-stage and extracted archive layouts, plus thin Python `ctypes` examples and C/Python layout drift checks. This remains an experimental source-tree/prefix/archive handoff slice, not a stable ABI, packaged SDK, system install, DLPack/true-zero-copy path, external CUDA stream contract, OptiX/Embree C ABI query surface, generated binding, release, or performance claim.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4603 / V3 M204",
+  "reports": {
+    "archive_cmake": "docs/reports/goal4602_v3_0_m203_c_abi_archive_cmake_smoke_2026-06-17.json",
+    "cmake_prefix": "docs/reports/goal4600_v3_0_m201_c_abi_cmake_prefix_stage_2026-06-17.json",
+    "delivery_status": "docs/reports/goal4601_v3_0_m202_embeddability_delivery_status_refresh_2026-06-17.json",
+    "layout_audit": "docs/reports/goal4599_v3_0_m200_python_ctypes_layout_audit_2026-06-17.json"
+  },
+  "status": "embeddability_delivery_archive_cmake_refreshed",
+  "status_matrix": {
+    "archive_cmake_find_package": "validated_extracted_archive_imported_target",
+    "cuda_buffer_descriptor_import_export": "validated_metadata_only",
+    "device_buffer_query_route": "blocked",
+    "dlpack_zero_copy": "blocked",
+    "external_cuda_stream_ordering": "blocked",
+    "generated_language_bindings": "blocked",
+    "host_aabb2_c_abi_query": "validated_host_f32_to_host_u64_pairs",
+    "host_external_runtime_metadata": "validated",
+    "packaged_sdk": "blocked",
+    "prefix_cmake_find_package": "validated_imported_target",
+    "prefix_layout_stage": "validated",
+    "prefix_pkg_config": "validated",
+    "python_ctypes_c_layout_audit": "validated_sizeof_offsetof_matches",
+    "python_ctypes_prefix_examples": "validated_lifecycle_host_aabb2_cuda_metadata",
+    "release": "blocked",
+    "source_tree_and_prefix_stage_handoff": "validated_pkg_config_and_cmake",
+    "source_tree_stage_archive": "validated_extract_compile_run",
+    "stable_abi": "blocked_until_1_0_gates",
+    "system_install": "blocked"
+  },
+  "version": "rtdl.v3_0.embeddability_delivery_archive_cmake.goal4603.v1"
+}

@@ -33,7 +33,7 @@ Goal4601 refreshes the V3 embeddability delivery ledger after the prefix-stage P
 | Check | Passed |
 | --- | --- |
 | `all_required_reports_accept` | `True` |
-| `architecture_status_reaches_goal4600` | `True` |
+| `architecture_status_at_or_beyond_goal4600` | `True` |
 | `architecture_names_cmake_prefix_consumer` | `True` |
 | `architecture_names_python_ctypes_layout_audit` | `True` |
 | `architecture_preserves_no_sdk_or_release_boundary` | `True` |

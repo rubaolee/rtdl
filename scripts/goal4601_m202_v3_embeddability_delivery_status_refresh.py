@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 from typing import Any
 
 
@@ -22,8 +23,14 @@ def _load_json(root: Path, path: Path) -> dict[str, Any]:
     return json.loads((root / path).read_text(encoding="utf-8"))
 
 
+def _current_progress_goal_number(doc: str) -> int | None:
+    match = re.search(r"As of Goal(\d+)", doc)
+    return int(match.group(1)) if match else None
+
+
 def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     architecture = (root / ARCHITECTURE_DOC).read_text(encoding="utf-8")
+    progress_goal = _current_progress_goal_number(architecture)
     reports = {name: _load_json(root, path) for name, path in REPORTS.items()}
     metadata = reports["metadata_readiness"]["status_matrix"]
     prefix_python = reports["prefix_python_ctypes"]
@@ -50,7 +57,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     }
     checks = {
         "all_required_reports_accept": all(not tuple(report.get("failed_checks", ())) for report in reports.values()),
-        "architecture_status_reaches_goal4600": "As of Goal4600" in architecture,
+        "architecture_status_at_or_beyond_goal4600": progress_goal is not None
+        and progress_goal >= 4600,
         "architecture_names_cmake_prefix_consumer": (
             "find_package(rtdl-c-api CONFIG REQUIRED)" in architecture and "`rtdl::c_api`" in architecture
         ),
@@ -59,7 +67,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             and "compiler-observed `sizeof`/`offsetof` evidence" in architecture
         ),
         "architecture_preserves_no_sdk_or_release_boundary": (
-            "not an installed SDK promise" in architecture and "or V3 release wording" in architecture
+            "not an installed SDK" in architecture and "or V3 release wording" in architecture
         ),
         "cmake_prefix_stage_smoke_ok": (
             cmake["cmake_prefix_stage_smoke"]["ok"]

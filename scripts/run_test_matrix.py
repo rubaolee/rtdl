@@ -154,6 +154,7 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal4600_v3_0_m201_c_abi_cmake_prefix_stage_test",
         "tests.goal4601_v3_0_m202_embeddability_delivery_status_refresh_test",
         "tests.goal4602_v3_0_m203_c_abi_archive_cmake_smoke_test",
+        "tests.goal4603_v3_0_m204_embeddability_delivery_archive_cmake_refresh_test",
     ),
     "v0_2_local": (
         "tests.goal110_baseline_runner_backend_test",
