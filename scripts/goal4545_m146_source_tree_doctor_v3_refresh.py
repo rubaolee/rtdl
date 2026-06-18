@@ -33,7 +33,9 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "v2_14_release_package_required": "v2.14 release package" in checks_by_name,
         "v3_strategy_doc_required": "V3 app-author strategy" in checks_by_name,
         "v3_current_test_matrix_required": "V3 current test matrix" in checks_by_name,
+        "v3_c_abi_embedding_surface_required": "V3 C ABI embedding surface" in checks_by_name,
         "doctor_doc_mentions_v3": "V3 development" in doc_text,
+        "doctor_doc_mentions_c_abi_surface": "V3 C ABI embedding surface" in doc_text,
         "required_failures_empty": tuple(payload["required_failures"]) == (),
     }
     failed = tuple(name for name, passed in checks.items() if not passed)
@@ -58,7 +60,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "Goal4545 refreshes the source-tree doctor to the current v2.14/V3 "
             "development surface. The required layout checks now expect VERSION "
             "`v2.14`, the v2.14 release package, the V3 app-author strategy "
-            "doc, and the current V3 test-matrix entrypoint. This is an "
+            "doc, the current V3 test-matrix entrypoint, and the V3 C ABI "
+            "embedding surface. This is an "
             "environment sanity gate only, not a benchmark or claim "
             "authorization."
         ),

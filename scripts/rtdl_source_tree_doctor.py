@@ -87,6 +87,27 @@ def _v3_current_test_matrix_check() -> dict[str, Any]:
     )
 
 
+def _v3_c_abi_surface_check() -> dict[str, Any]:
+    required_files = (
+        ROOT / "include" / "rtdl" / "rtdl.h",
+        ROOT / "src" / "native" / "rtdl_c_api.cpp",
+        ROOT / "examples" / "current" / "embedding" / "c_api_aabb2_overlap_client.c",
+        ROOT / "examples" / "current" / "embedding" / "README.md",
+    )
+    missing = [path.relative_to(ROOT).as_posix() for path in required_files if not path.exists()]
+    makefile = ROOT / "Makefile"
+    makefile_text = makefile.read_text(encoding="utf-8") if makefile.exists() else ""
+    if "build-c-api:" not in makefile_text:
+        missing.append("Makefile build-c-api target")
+    if missing:
+        return _check("V3 C ABI embedding surface", "fail", "missing: " + ", ".join(missing))
+    return _check(
+        "V3 C ABI embedding surface",
+        "pass",
+        "include/rtdl/rtdl.h, make build-c-api, examples/current/embedding",
+    )
+
+
 def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
     if str(SRC) not in sys.path:
         sys.path.insert(0, str(SRC))
@@ -117,6 +138,7 @@ def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
         checks.append(_check(name, "pass" if path.exists() else "fail", path.relative_to(ROOT).as_posix()))
 
     checks.append(_v3_current_test_matrix_check())
+    checks.append(_v3_c_abi_surface_check())
 
     editable_metadata = ROOT / "pyproject.toml"
     checks.append(

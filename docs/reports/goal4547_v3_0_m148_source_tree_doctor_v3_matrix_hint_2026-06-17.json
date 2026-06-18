@@ -64,8 +64,14 @@
         "status": "pass"
       },
       {
-        "detail": "scripts/run_test_matrix.py --group v3_current (36 modules)",
+        "detail": "scripts/run_test_matrix.py --group v3_current (54 modules)",
         "name": "V3 current test matrix",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "include/rtdl/rtdl.h, make build-c-api, examples/current/embedding",
+        "name": "V3 C ABI embedding surface",
         "required": true,
         "status": "pass"
       },

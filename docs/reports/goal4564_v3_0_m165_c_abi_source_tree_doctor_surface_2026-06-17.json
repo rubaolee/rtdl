@@ -1,25 +1,23 @@
 {
   "checks": {
-    "doctor_doc_mentions_c_abi_surface": true,
-    "doctor_doc_mentions_v3": true,
+    "c_abi_surface_check_passes": true,
+    "c_abi_surface_check_present": true,
+    "c_abi_surface_detail_names_header": true,
+    "c_abi_surface_detail_names_make_target": true,
+    "doctor_checks_header_source_make_and_example": true,
+    "doctor_doc_explains_c_abi_surface_boundary": true,
     "doctor_ok": true,
-    "required_failures_empty": true,
-    "v2_14_release_package_required": true,
-    "v3_c_abi_embedding_surface_required": true,
-    "v3_current_test_matrix_required": true,
-    "v3_strategy_doc_required": true,
-    "version_marker_is_v2_14": true
+    "process_doc_current_goal_span_refreshed": true,
+    "required_failures_empty": true
   },
   "claim_boundary": {
-    "automatic_partner_selection_authorized": false,
     "benchmark_executed": false,
-    "broad_rt_core_claim_authorized": false,
-    "paper_reproduction_claim_authorized": false,
-    "public_speedup_claim_authorized": false,
+    "c_abi_library_built_by_doctor": false,
     "release_authorized": false,
-    "runtime_executed": false
+    "runtime_executed": false,
+    "stable_abi_authorized": false
   },
-  "conclusion": "Goal4545 refreshes the source-tree doctor to the current v2.14/V3 development surface. The required layout checks now expect VERSION `v2.14`, the v2.14 release package, the V3 app-author strategy doc, the current V3 test-matrix entrypoint, and the V3 C ABI embedding surface. This is an environment sanity gate only, not a benchmark or claim authorization.",
+  "conclusion": "Goal4564 wires the V3 C ABI embedding surface into the source-tree doctor as a required layout/entrypoint check. The doctor now verifies that the public header, source implementation, Makefile target, and embedding example are discoverable, while still leaving actual library builds and runtime validation to the dedicated C ABI evidence packets.",
   "date": "2026-06-17",
   "doctor_payload": {
     "checks": [
@@ -165,7 +163,7 @@
     ]
   },
   "failed_checks": [],
-  "goal": "Goal4545 / V3 M146",
-  "status": "source_tree_doctor_v3_refresh_checked",
-  "version": "rtdl.v3_0.source_tree_doctor_refresh.goal4545.v1"
+  "goal": "Goal4564 / V3 M165",
+  "status": "c_abi_source_tree_doctor_surface_checked",
+  "version": "rtdl.v3_0.c_abi_source_tree_doctor_surface.goal4564.v1"
 }

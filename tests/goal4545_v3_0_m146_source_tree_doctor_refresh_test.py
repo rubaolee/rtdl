@@ -36,6 +36,7 @@ class Goal4545V30M146SourceTreeDoctorRefreshTest(unittest.TestCase):
         self.assertIn("v2.14 release package", checks)
         self.assertIn("V3 app-author strategy", checks)
         self.assertIn("V3 current test matrix", checks)
+        self.assertIn("V3 C ABI embedding surface", checks)
         self.assertEqual([], payload["required_failures"])
 
     def test_report_and_doc_are_wired(self) -> None:
@@ -44,6 +45,7 @@ class Goal4545V30M146SourceTreeDoctorRefreshTest(unittest.TestCase):
         self.assertEqual(self.packet["version"], self.checked_in["version"])
         self.assertIn("Goal4545 / V3 M146", report)
         self.assertIn("V3 development", doc)
+        self.assertIn("V3 C ABI embedding surface", doc)
         self.assertIn("not a benchmark", doc)
 
     def test_claim_boundary_remains_blocked(self) -> None:
