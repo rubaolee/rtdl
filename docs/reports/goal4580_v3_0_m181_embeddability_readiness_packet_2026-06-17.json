@@ -1,0 +1,53 @@
+{
+  "checks": {
+    "all_required_reports_accept": true,
+    "capability_queries_runtime_ok": true,
+    "direct_link_example_smoke_ok": true,
+    "draft_docs_name_current_capability_and_staging_surface": true,
+    "manifest_is_current_0_1_3_with_18_symbols": true,
+    "pkg_config_direct_link_smoke_ok": true,
+    "stability_policy_blocks_stable_sdk": true,
+    "staging_bundle_runtime_ok": true
+  },
+  "claim_boundary": {
+    "device_buffer_c_abi_authorized": false,
+    "language_binding_ready": false,
+    "optix_embree_c_abi_query_authorized": false,
+    "packaged_sdk_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false
+  },
+  "conclusion": "Goal4580 consolidates the V3 embeddability state after the C ABI, staging, pkg-config, capability-query, and direct-link example work. The source-tree draft is usable for host AABB2 C embedding experiments, but stable ABI, packaged SDK, language bindings, device-buffer routes, and OptiX/Embree C ABI query execution remain explicitly blocked.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4580 / V3 M181",
+  "reports": {
+    "c_client": "docs/reports/goal4553_v3_0_m154_c_abi_c_client_smoke_2026-06-17.json",
+    "capabilities": "docs/reports/goal4578_v3_0_m179_c_abi_capability_queries_2026-06-17.json",
+    "direct_link": "docs/reports/goal4579_v3_0_m180_c_abi_direct_link_example_2026-06-17.json",
+    "export_audit": "docs/reports/goal4556_v3_0_m157_c_abi_exported_symbol_audit_2026-06-17.json",
+    "header_compile": "docs/reports/goal4551_v3_0_m152_c_abi_header_compile_smoke_2026-06-17.json",
+    "host_aabb2": "docs/reports/goal4558_v3_0_m159_c_abi_host_aabb2_query_proof_2026-06-17.json",
+    "pkg_config": "docs/reports/goal4577_v3_0_m178_c_abi_pkg_config_stage_2026-06-17.json",
+    "staging_bundle": "docs/reports/goal4576_v3_0_m177_c_abi_staging_bundle_2026-06-17.json",
+    "stub_library": "docs/reports/goal4552_v3_0_m153_c_abi_stub_library_2026-06-17.json"
+  },
+  "status": "embeddability_readiness_packet_checked",
+  "status_matrix": {
+    "c_dlopen_example": "validated",
+    "capability_queries": "validated_current_surface",
+    "device_buffer_c_abi": "blocked",
+    "direct_link_example": "validated",
+    "draft_c_header": "ready_source_tree_draft",
+    "exported_symbol_manifest": "ready_draft_0_1_3",
+    "host_aabb2_query": "validated_host_only",
+    "language_bindings": "not_generated",
+    "optix_embree_c_abi_queries": "blocked",
+    "shared_library_build": "ready_source_tree_draft",
+    "stable_abi": "blocked_until_1_0_gates",
+    "staged_bundle": "validated_source_tree_stage",
+    "staged_pkg_config": "validated_source_tree_stage",
+    "system_install_or_packaged_sdk": "blocked"
+  },
+  "version": "rtdl.v3_0.embeddability_readiness_packet.goal4580.v1"
+}
