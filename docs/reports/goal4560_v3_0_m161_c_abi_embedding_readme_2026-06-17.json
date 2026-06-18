@@ -1,0 +1,26 @@
+{
+  "checks": {
+    "example_exists": true,
+    "example_matches_readme_route": true,
+    "readme_blocks_overclaims": true,
+    "readme_exists": true,
+    "readme_includes_c_compile_command": true,
+    "readme_includes_expected_output": true,
+    "readme_includes_make_build_command": true,
+    "readme_includes_run_command": true,
+    "readme_names_v3_draft_boundary": true
+  },
+  "claim_boundary": {
+    "device_buffer_query_validated": false,
+    "embree_backend_query_implemented": false,
+    "optix_backend_query_implemented": false,
+    "packaged_sdk_released": false,
+    "release_authorized": false
+  },
+  "conclusion": "Goal4560 makes the V3 C ABI example discoverable with a source-tree embedding README. It documents the exact build/run commands, expected output, and boundaries for the host AABB2 overlap example without claiming a packaged SDK, GPU backend, device-buffer route, or frozen ABI.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4560 / V3 M161",
+  "status": "c_abi_embedding_readme_checked",
+  "version": "rtdl.v3_0.c_abi_embedding_readme.goal4560.v1"
+}
