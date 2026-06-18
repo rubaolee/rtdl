@@ -36,7 +36,8 @@ class V30UserDocsHistoryBoundaryTest(unittest.TestCase):
 
     def test_release_reports_directory_is_current_only(self) -> None:
         names = {path.name for path in (ROOT / "docs" / "release_reports").iterdir()}
-        self.assertEqual({"README.md", "v3_0"}, names)
+        self.assertEqual({"README.md", "v3_0_1"}, names)
+        self.assertTrue((ROOT / "docs" / "history" / "release_reports" / "v3_0").is_dir())
         self.assertTrue((ROOT / "docs" / "history" / "release_reports" / "v2_14").is_dir())
         self.assertTrue((ROOT / "docs" / "history" / "release_reports" / "v1_0").is_dir())
         self.assertTrue((ROOT / "docs" / "history" / "release_reports" / "v0_9_8").is_dir())

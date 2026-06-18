@@ -13,7 +13,7 @@ have to learn the project by reading its development timeline.
 | --- | --- |
 | Complete project-history map | [Repository History Map](../../history/COMPLETE_HISTORY.md) |
 | Structured revision archive | [Revision Archive README](../../history/README.md) |
-| Current release package | [RTDL v3.0 Release Package](../release_reports/v3_0/README.md) |
+| Current release package | [RTDL v3.0.1 Release Package](../release_reports/v3_0_1/README.md) |
 | Historical release boundaries and audit packages | [Historical Release Reports](release_reports/README.md) |
 | Benchmark evidence and consensus reports | [Benchmark And Audit Reports](../reports/) |
 | Historical audits and runbooks | [Historical Audits](audits/README.md) |

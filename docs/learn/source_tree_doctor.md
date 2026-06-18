@@ -1,6 +1,6 @@
 # Source-Tree Doctor
 
-Status: current v3.0 source-tree setup check for V3 development and release use.
+Status: current v3.0.1 source-tree setup check for V3 development and release use.
 
 Use the doctor before native backend or partner experiments. It checks the
 repository layout, current version marker, V3 app-author guidance, core

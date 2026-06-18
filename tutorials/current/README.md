@@ -1,6 +1,6 @@
 # Current RTDL Tutorial Track
 
-Status: current v3.0 source-tree learner path.
+Status: current v3.0.1 source-tree learner path.
 
 This track teaches RTDL from zero to a benchmark-style Python+RTDL+partner
 program. It is intentionally short and ordered. Start here when you want to

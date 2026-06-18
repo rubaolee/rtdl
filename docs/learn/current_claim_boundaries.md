@@ -7,10 +7,10 @@ performance claims in the current public docs.
 
 ## Product Surface
 
-The current learner-facing milestone is the v3.0 source-tree
-Python+partner+RTDL surface. It closes the current ten-app benchmark route
-matrix, preserves explicit route and partner choice, publishes the V3
-app-author strategy, and keeps embedding/SDK work out of V3.0 scope.
+The current learner-facing milestone is the v3.0.1 source-tree
+Python+partner+RTDL surface. It preserves the V3.0 ten-app benchmark route
+closure, explicit route and partner choice, the V3 app-author strategy, and
+the cleanup that keeps embedding/SDK work out of V3.0 release-line scope.
 
 Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution,
 external stream ordering, zero-copy framework interop, and device-callable
@@ -63,7 +63,7 @@ The current public docs do not authorize these claims; in short, RTDL does not a
 Selecting `--backend optix` means the OptiX backend was selected. It is not by
 itself a public RT-core speedup claim.
 
-The v3.0 evidence supports path-specific wording only. In particular, the
+The V3.0 evidence supports path-specific wording only. In particular, the
 release closes current routes without turning every route into a public speedup
 claim. Mixed rows remain explicit: Spatial RayJoin, RT-DBSCAN, Barnes-Hut,
 RTNN, and Triangle Counting all require route, partner, output-contract, and
@@ -91,4 +91,4 @@ measures, and reviews that exact continuation contract.
 - [Benchmark Evidence Index](benchmark_evidence_index.md)
 - [RT-Core Evidence Matrix](rt_core_evidence_matrix.md)
 - [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
-- [RTDL v3.0 Release Package](../release_reports/v3_0/README.md)
+- [RTDL v3.0.1 Release Package](../release_reports/v3_0_1/README.md)

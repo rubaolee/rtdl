@@ -15,7 +15,7 @@ acceleration structures and traversal for application kernels.
 
 The product name is RTDL; the Python import package is `rtdsl`.
 
-This documentation is written for the current v3.0 source-tree RTDL surface:
+This documentation is written for the current v3.0.1 source-tree RTDL surface:
 Python+partner+RTDL over a generic, app-agnostic native engine, with prepared
 execution and a closed ten-app benchmark route matrix. Use RTDL from the repository source tree either with
 `PYTHONPATH=src:.` or with the optional local editable checkout path below. Do
@@ -156,25 +156,25 @@ Backend support varies by feature and platform. Start with the portable
 native dependencies configured. For the maturity of every backend, read
 [RTDL Backend Maturity](docs/backend_maturity.md).
 
-## v3.0 Source-Tree Surface
+## v3.0.1 Source-Tree Surface
 
-RTDL v3.0 is the current source-tree release for this branch and the most
-important RTDL release so far. It closes the current ten-app benchmark route
-project and turns the previous-release evidence sequence into one coherent
-app-author surface.
+RTDL v3.0.1 is the current source-tree patch release for the V3.0 surface, the
+most important RTDL release line so far. It keeps the V3.0 ten-app benchmark
+route closure and adds the post-release boundary cleanup that fences V4
+preparatory embedding/C ABI/SDK/zero-copy work out of the user front door.
 
 The current matrix separates promoted benchmark apps from learner/example apps.
 Promoted benchmarks are reconstruction instruments for RTDL language/runtime
 design, not broad paper-reproduction or whole-application speedup claims.
 
-Do not read v3.0 as a package-install promise, broad RT-core claim, arbitrary
+Do not read v3.0.1 as a package-install promise, broad RT-core claim, arbitrary
 CuPy/Numba acceleration claim, arbitrary polygon overlay claim, stable SDK
 claim, generated binding claim, public true-zero-copy claim, or proof that
 every user program is faster. For the exact positive and negative rule, read
 [Current Claim Boundaries](docs/learn/current_claim_boundaries.md) and
 [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md).
 
-The v3.0 release is deliberately proud and deliberately bounded: all ten
+The V3.0 release line is deliberately proud and deliberately bounded: all ten
 current benchmark routes are closed, while paper-reproduction, author-code
 superiority, automatic partner selection, and whole-app speedup wording remain
 evidence-gated.
@@ -182,7 +182,7 @@ Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution,
 external stream ordering, zero-copy framework interop, and device-callable
 fusion are V4.0 scope, not V3.0 release claims.
 
-The v3.0 partner rule is user-chosen and evidence-gated:
+The V3.0 partner rule is user-chosen and evidence-gated:
 
 - use fused RTDL primitives first when they exactly express the work;
 - choose a partner explicitly when custom continuation logic is needed;
@@ -194,8 +194,8 @@ The v3.0 partner rule is user-chosen and evidence-gated:
 For the current partner-choice guide, read
 [Choosing A Partner For Custom Logic](docs/learn/partner_choice_for_custom_logic.md)
 and the [Benchmark Partner Reference Matrix](docs/learn/benchmark_partner_reference_matrix.md).
-For the current v3.0 release boundary and evidence set, see
-[RTDL v3.0 Release Package](docs/release_reports/v3_0/README.md).
+For the current v3.0.1 release boundary and evidence set, see
+[RTDL v3.0.1 Release Package](docs/release_reports/v3_0_1/README.md).
 
 ## Performance Boundary
 
@@ -216,7 +216,7 @@ Use exact benchmark artifacts before publishing performance wording.
 - [Tutorials](tutorials/README.md)
 - [Current Tutorial Track](tutorials/current/README.md)
 - [Current Claim Boundaries](docs/learn/current_claim_boundaries.md)
-- [RTDL v3.0 Release Package](docs/release_reports/v3_0/README.md)
+- [RTDL v3.0.1 Release Package](docs/release_reports/v3_0_1/README.md)
 - [Source-Tree Doctor](docs/learn/source_tree_doctor.md)
 - [RTDL Programming Surfaces](docs/learn/programming_surfaces.md)
 - [Versioning Glossary](docs/versioning.md)
@@ -242,7 +242,7 @@ release evidence, review records, and goal archives live separately:
 
 - [History Index](docs/history/README.md)
 - [Version Archive Notes](docs/history/version_archive_notes.md)
-- [Current Release Package](docs/release_reports/v3_0/README.md)
+- [Current Release Package](docs/release_reports/v3_0_1/README.md)
 - [Historical Release Reports](docs/history/release_reports/README.md)
 - [Benchmark And Audit Reports](docs/reports/)
 

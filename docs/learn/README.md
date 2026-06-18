@@ -14,7 +14,7 @@ Use this door if you want to understand RTDL quickly and write programs.
 8. [Run From The Source Tree](../../tutorials/current/01_source_tree_first_run.md)
 9. [App And Example Quickstart](../app_example_quickstart.md)
 10. [V3.0 App-Author Implementation Strategy](v3_0_app_author_implementation_strategy.md)
-11. [RTDL v3.0 Release Package](../release_reports/v3_0/README.md)
+11. [RTDL v3.0.1 Release Package](../release_reports/v3_0_1/README.md)
 12. [Primitive Discovery Workflow](primitive_discovery_workflow.md)
 13. [Prepared Execution Pattern](prepared_execution_pattern.md)
 14. [Prepared Session Reuse](prepared_session_reuse.md)

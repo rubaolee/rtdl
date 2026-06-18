@@ -29,7 +29,7 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
 
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn("RTDL Source Tree Doctor", result.stdout)
-        self.assertIn("version: v3.0", result.stdout)
+        self.assertIn("version: v3.0.1", result.stdout)
         self.assertIn("[PASS] version marker", result.stdout)
         self.assertIn("[PASS] V3 current test matrix", result.stdout)
         self.assertIn("optional module cupy", result.stdout)
@@ -42,7 +42,7 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stderr)
         payload = json.loads(result.stdout)
         self.assertEqual("rtdl_source_tree_doctor", payload["tool"])
-        self.assertEqual("v3.0", payload["version"])
+        self.assertEqual("v3.0.1", payload["version"])
         self.assertTrue(payload["ok"])
         self.assertEqual([], payload["required_failures"])
 
@@ -53,7 +53,7 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
             "front page",
             "top-level tutorials",
             "current examples",
-            "v3.0 release package",
+            "v3.0.1 release package",
             "V3 app-author strategy",
             "V3 current test matrix",
             "module rtdsl",

@@ -16,7 +16,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
-EXPECTED_VERSION = "v3.0"
+EXPECTED_VERSION = "v3.0.1"
 
 
 def _status_line(status: str, name: str, detail: str) -> str:
@@ -196,7 +196,7 @@ def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
         "front page": ROOT / "README.md",
         "top-level tutorials": ROOT / "tutorials" / "current" / "README.md",
         "current examples": ROOT / "examples" / "current" / "README.md",
-        "v3.0 release package": ROOT / "docs" / "release_reports" / "v3_0" / "README.md",
+        "v3.0.1 release package": ROOT / "docs" / "release_reports" / "v3_0_1" / "README.md",
         "V3 app-author strategy": ROOT / "docs" / "learn" / "v3_0_app_author_implementation_strategy.md",
     }
     for name, path in required_paths.items():

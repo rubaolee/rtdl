@@ -58,11 +58,11 @@ The RayJoin public-CDB fixture is materialized only when the explicit
 
 ## Current Release Evidence
 
-- [v3.0 release package](../release_reports/v3_0/README.md)
-- [v3.0 release statement](../release_reports/v3_0/release_statement.md)
-- [v3.0 support matrix](../release_reports/v3_0/support_matrix.md)
-- [v3.0 public wording boundaries](../release_reports/v3_0/public_wording_boundaries.md)
-- [v3.0 final closeout](../release_reports/v3_0/final_closeout.md)
+- [v3.0.1 release package](../release_reports/v3_0_1/README.md)
+- [v3.0.1 release statement](../release_reports/v3_0_1/release_statement.md)
+- [v3.0.1 support matrix](../release_reports/v3_0_1/support_matrix.md)
+- [v3.0.1 public wording boundaries](../release_reports/v3_0_1/public_wording_boundaries.md)
+- [v3.0.1 final closeout](../release_reports/v3_0_1/final_closeout.md)
 - [V3.0 app-author implementation strategy](v3_0_app_author_implementation_strategy.md)
 - [Goal4536 V3 internal completion packet](../reports/goal4536_v3_0_m138_v3_internal_completion_packet_2026-06-17.md)
 - [Goal4538 V3 completion review consensus](../reports/goal4538_v3_0_m139_v3_completion_review_consensus_2026-06-17.md)

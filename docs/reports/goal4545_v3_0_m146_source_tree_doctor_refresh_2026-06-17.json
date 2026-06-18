@@ -4,11 +4,11 @@
     "doctor_doc_mentions_v3": true,
     "doctor_ok": true,
     "required_failures_empty": true,
-    "v3_0_release_package_required": true,
+    "v3_0_1_release_package_required": true,
     "v3_current_test_matrix_required": true,
     "v3_strategy_doc_required": true,
     "v4_preparatory_c_abi_surface_optional": true,
-    "version_marker_is_v3_0": true
+    "version_marker_is_v3_0_1": true
   },
   "claim_boundary": {
     "automatic_partner_selection_authorized": false,
@@ -19,12 +19,12 @@
     "release_authorized": false,
     "runtime_executed": false
   },
-  "conclusion": "Goal4545 refreshes the source-tree doctor to the current V3.0 development surface. The required layout checks now expect VERSION `v3.0`, the v3.0 release package, the V3 app-author strategy doc, the current V3 test-matrix entrypoint, and the optional V4 preparatory C ABI surface. This is an environment sanity gate only, not a benchmark or claim authorization.",
+  "conclusion": "Goal4545 refreshes the source-tree doctor to the current V3.0 development surface. The required layout checks now expect VERSION `v3.0.1`, the v3.0.1 release package, the V3 app-author strategy doc, the current V3 test-matrix entrypoint, and the optional V4 preparatory C ABI surface. This is an environment sanity gate only, not a benchmark or claim authorization.",
   "date": "2026-06-17",
   "doctor_payload": {
     "checks": [
       {
-        "detail": "v3.0",
+        "detail": "v3.0.1",
         "name": "version marker",
         "required": true,
         "status": "pass"
@@ -54,8 +54,8 @@
         "status": "pass"
       },
       {
-        "detail": "docs/release_reports/v3_0/README.md",
-        "name": "v3.0 release package",
+        "detail": "docs/release_reports/v3_0_1/README.md",
+        "name": "v3.0.1 release package",
         "required": true,
         "status": "pass"
       },
@@ -148,7 +148,7 @@
     "repo": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
     "required_failures": [],
     "tool": "rtdl_source_tree_doctor",
-    "version": "v3.0",
+    "version": "v3.0.1",
     "warnings": [
       {
         "detail": "cupy",

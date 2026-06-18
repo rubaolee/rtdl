@@ -4,7 +4,7 @@ This directory has three doors:
 
 | Door | Audience | Purpose |
 | --- | --- | --- |
-| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v3.0 boundaries. |
+| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v3.0.1 boundaries. |
 | [Research](research/README.md) | Internal researchers and advanced developers | Architecture notes, backend research, RayJoin/Embree context, future ideas, and design constraints. |
 | [Audit](audit/README.md) | Release reviewers and auditors | Current process docs, current release package, evidence reports, reviews, and history pointers. |
 
@@ -16,13 +16,13 @@ If you are new, start in **Learn**. If you are evaluating design or extending
 the system, start in **Research**. If you are checking evidence, consensus, or
 project history, start in **Audit**.
 
-Current status: RTDL v3.0 is the active source-tree Python+partner+RTDL
-surface on this branch. It closes the current ten-app benchmark route matrix,
+Current status: RTDL v3.0.1 is the active source-tree Python+partner+RTDL
+surface on this branch. It keeps the V3.0 ten-app benchmark route closure,
 publishes primitive-first and partner-explicit app-author guidance, and keeps
 source-tree usage. Public performance wording remains row-scoped and
 evidence-bound; mixed rows stay explicit rather than being folded into a broad
 RT-core claim. Embedding, C ABI, SDK packaging, generated bindings, zero-copy,
-and external-runtime integration are V4.0 scope, not V3.0 release claims.
+and external-runtime integration are V4.0 scope, not V3.0 release-line claims.
 For the short canonical wording, read
 [Current Claim Boundaries](learn/current_claim_boundaries.md).
 
@@ -78,7 +78,7 @@ Read these in order:
 | RT-core evidence interpretation | [RT-Core Evidence Matrix](learn/rt_core_evidence_matrix.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
 | Current release reports | [Current Release Reports](release_reports/) |
-| Current release package | [RTDL v3.0 Release Package](release_reports/v3_0/README.md) |
+| Current release package | [RTDL v3.0.1 Release Package](release_reports/v3_0_1/README.md) |
 | Current benchmark evidence | [Benchmark Evidence Index](learn/benchmark_evidence_index.md) |
 | History Index | [History Index](history/README.md) |
 
@@ -99,6 +99,6 @@ Read these in order:
 
 ## Rule
 
-Current learner docs should explain one coherent v3.0 surface. Previous release
+Current learner docs should explain one coherent v3.0.1 surface. Previous release
 evidence is preserved for review in history, but it should not interrupt the
 normal learning path.

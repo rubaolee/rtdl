@@ -153,8 +153,8 @@ Current guidance lives in:
 - [Choosing A Partner For Custom Logic](learn/partner_choice_for_custom_logic.md)
 - [Benchmark Partner Reference Matrix](learn/benchmark_partner_reference_matrix.md)
 - `docs/learn/v3_0_app_author_implementation_strategy.md`
-- `docs/release_reports/v3_0/README.md`
-- `docs/release_reports/v3_0/public_wording_boundaries.md`
+- `docs/release_reports/v3_0_1/README.md`
+- `docs/release_reports/v3_0_1/public_wording_boundaries.md`
 - `docs/reports/goal4298_v2_11_embree_cpu_partner_reference_packet_2026-06-11.md`
 - `docs/reports/goal4359_optimized_embree_optix_comparison_packet_v2_12_2026-06-13.md`
 - `docs/reports/goal4266_large_scale_cupy_numba_partner_comparison_2026-06-09.md`

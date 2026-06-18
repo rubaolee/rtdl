@@ -1,6 +1,6 @@
 # RTDL Current Examples
 
-This is the current learner-facing example tree for the RTDL v3.0
+This is the current learner-facing example tree for the RTDL v3.0.1
 released Python+partner+RTDL source-tree surface. This tree is intentionally
 named `current/` so learner-facing examples are not frozen under an old release
 number.
