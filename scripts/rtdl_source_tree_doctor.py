@@ -92,6 +92,9 @@ def _v3_c_abi_surface_check() -> dict[str, Any]:
         ROOT / "include" / "rtdl" / "rtdl.h",
         ROOT / "src" / "native" / "rtdl_c_api.cpp",
         ROOT / "examples" / "current" / "embedding" / "c_api_aabb2_overlap_client.c",
+        ROOT / "examples" / "current" / "embedding" / "c_api_direct_link_client.c",
+        ROOT / "examples" / "current" / "embedding" / "python_ctypes_client.py",
+        ROOT / "examples" / "current" / "embedding" / "python_ctypes_aabb2_query_client.py",
         ROOT / "examples" / "current" / "embedding" / "README.md",
     )
     missing = [path.relative_to(ROOT).as_posix() for path in required_files if not path.exists()]
@@ -99,12 +102,14 @@ def _v3_c_abi_surface_check() -> dict[str, Any]:
     makefile_text = makefile.read_text(encoding="utf-8") if makefile.exists() else ""
     if "build-c-api:" not in makefile_text:
         missing.append("Makefile build-c-api target")
+    if "stage-c-api:" not in makefile_text:
+        missing.append("Makefile stage-c-api target")
     if missing:
         return _check("V3 C ABI embedding surface", "fail", "missing: " + ", ".join(missing))
     return _check(
         "V3 C ABI embedding surface",
         "pass",
-        "include/rtdl/rtdl.h, make build-c-api, examples/current/embedding",
+        "include/rtdl/rtdl.h, make build-c-api/stage-c-api, C examples, Python ctypes examples",
     )
 
 

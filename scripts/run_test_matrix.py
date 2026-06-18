@@ -135,6 +135,7 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal4581_v3_0_m182_c_abi_python_ctypes_example_test",
         "tests.goal4582_v3_0_m183_c_abi_python_ctypes_aabb2_query_test",
         "tests.goal4583_v3_0_m184_embeddability_readiness_refresh_test",
+        "tests.goal4584_v3_0_m185_source_tree_doctor_ctypes_surface_test",
     ),
     "v0_2_local": (
         "tests.goal110_baseline_runner_backend_test",
