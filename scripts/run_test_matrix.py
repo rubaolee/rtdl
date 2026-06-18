@@ -105,6 +105,7 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal4551_v3_0_m152_c_abi_header_compile_smoke_test",
         "tests.goal4552_v3_0_m153_c_abi_stub_library_test",
         "tests.goal4553_v3_0_m154_c_abi_c_client_smoke_test",
+        "tests.goal4554_v3_0_m155_c_abi_makefile_build_target_test",
     ),
     "v0_2_local": (
         "tests.goal110_baseline_runner_backend_test",

@@ -1,0 +1,49 @@
+{
+  "checks": {
+    "build_c_api_is_phony": true,
+    "build_c_api_target_declared": true,
+    "c_api_lib_name_declared": true,
+    "c_api_source_exists": true,
+    "help_mentions_build_c_api": true,
+    "make_artifact_exists": true,
+    "make_available": true,
+    "make_build_c_api_ok": true,
+    "makefile_exists": true,
+    "source_uses_public_header": true,
+    "target_builds_c_api_source": true,
+    "target_exports_shared_symbols": true,
+    "target_uses_public_header_include": true
+  },
+  "claim_boundary": {
+    "backend_query_implemented": false,
+    "binary_compatibility_frozen": false,
+    "dlpack_support_implemented": false,
+    "install_package_target_implemented": false,
+    "release_authorized": false
+  },
+  "conclusion": "Goal4554 wires the V3 C ABI lifecycle stub into the normal Makefile front door via `make build-c-api`. The target builds a shared library from the app-agnostic `src/native/rtdl_c_api.cpp` source and public `include/rtdl/rtdl.h` header. This is a source-tree build target only; it does not implement backend query execution, package installation, DLPack, frozen compatibility, or release wording.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4554 / V3 M155",
+  "make_result": {
+    "artifact": "build/librtdl_c_api.so",
+    "artifact_exists": true,
+    "artifact_size_bytes": 16288,
+    "command": [
+      "/usr/bin/make",
+      "build-c-api"
+    ],
+    "make": "/usr/bin/make",
+    "ok": true,
+    "returncode": 0,
+    "stderr_tail": [],
+    "stdout_tail": [
+      "mkdir -p build",
+      "c++ -std=c++17 -O2 -shared -fPIC -DRTDL_BUILD_SHARED -Iinclude \\",
+      "\tsrc/native/rtdl_c_api.cpp \\",
+      "\t-o build/librtdl_c_api.so"
+    ]
+  },
+  "status": "c_abi_makefile_build_target_checked",
+  "version": "rtdl.v3_0.c_abi_makefile_build_target.goal4554.v1"
+}

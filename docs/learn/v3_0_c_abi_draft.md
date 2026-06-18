@@ -37,3 +37,7 @@ Goal4553 adds a non-Python C11 dynamic-load client smoke against the same stub
 library. It validates version, status, context lifecycle, and neutral buffer
 lifecycle calls from C, but still does not validate backend query execution,
 external stream semantics, DLPack, or frozen binary compatibility.
+
+Goal4554 wires the lifecycle stub into the source-tree build front door as
+`make build-c-api`. That target builds the shared library artifact, but it is
+still a source-tree developer target rather than an install/package contract.

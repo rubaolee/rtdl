@@ -9,6 +9,7 @@ BUILD_DIR := build
 #   make build-hiprt
 #   make build-vulkan
 #   make build-apple-rt
+#   make build-c-api
 #
 # Historical and goal-numbered targets below are preserved for auditability and
 # internal reproduction work. They are not the primary front-door interface for
@@ -21,12 +22,14 @@ ifeq ($(UNAME_S),Darwin)
 	VULKAN_LIB_NAME  := librtdl_vulkan.dylib
 	APPLE_RT_LIB_NAME := librtdl_apple_rt.dylib
 	ADAPTIVE_LIB_NAME := librtdl_adaptive.dylib
+	C_API_LIB_NAME := librtdl_c_api.dylib
 else
 	OPTIX_LIB_NAME   := librtdl_optix.so
 	HIPRT_LIB_NAME   := librtdl_hiprt.so
 	VULKAN_LIB_NAME  := librtdl_vulkan.so
 	APPLE_RT_LIB_NAME := librtdl_apple_rt.so
 	ADAPTIVE_LIB_NAME := librtdl_adaptive.so
+	C_API_LIB_NAME := librtdl_c_api.so
 endif
 
 OPTIX_CANDIDATES := \
@@ -150,8 +153,10 @@ APPLE_RT_CXXFLAGS := -std=c++17 -O3 -shared -fPIC -ObjC++ -Wno-deprecated-declar
 APPLE_RT_LDFLAGS := -framework Foundation -framework Metal -framework MetalPerformanceShaders
 CXX_ADAPTIVE ?= c++
 ADAPTIVE_CXXFLAGS := -std=c++17 -O3 -shared -fPIC
+CXX_C_API ?= c++
+C_API_CXXFLAGS := -std=c++17 -O2 -shared -fPIC -DRTDL_BUILD_SHARED -Iinclude
 
-.PHONY: help build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+.PHONY: help build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
 
 help:
 	@echo "Public targets:"
@@ -164,6 +169,7 @@ help:
 	@echo "  build-vulkan  - build the Vulkan backend library"
 	@echo "  build-apple-rt - build the Apple Metal/MPS RT backend library"
 	@echo "  build-adaptive - build the adaptive CPU-native backend library"
+	@echo "  build-c-api   - build the V3 C ABI lifecycle stub library"
 	@echo ""
 	@echo "Other targets are preserved for internal reproduction and audit work."
 
@@ -190,6 +196,12 @@ build-adaptive:
 	$(CXX_ADAPTIVE) $(ADAPTIVE_CXXFLAGS) \
 		src/native/rtdl_adaptive.cpp \
 		-o $(BUILD_DIR)/$(ADAPTIVE_LIB_NAME)
+
+build-c-api:
+	mkdir -p $(BUILD_DIR)
+	$(CXX_C_API) $(C_API_CXXFLAGS) \
+		src/native/rtdl_c_api.cpp \
+		-o $(BUILD_DIR)/$(C_API_LIB_NAME)
 
 build-optix:
 	mkdir -p $(BUILD_DIR)
