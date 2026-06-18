@@ -54,3 +54,7 @@ Goal4558 turns the first narrow query route on: host F32 AABB2 index build plus
 host F32 AABB overlap query returning host U64 `(query_id, primitive_id)` pairs.
 All other query/backend wording remains bounded by the documented unsupported
 routes and evidence gates.
+
+Goal4559 adds a readable source-tree C example client at
+`examples/current/embedding/c_api_aabb2_overlap_client.c` and validates it on
+the pod against the Makefile-built C ABI library.

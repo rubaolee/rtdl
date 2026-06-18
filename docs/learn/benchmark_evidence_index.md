@@ -154,6 +154,7 @@ V3.0 current app-author guidance:
 - [Goal4556 C ABI exported symbol audit](../reports/goal4556_v3_0_m157_c_abi_exported_symbol_audit_2026-06-17.md)
 - [Goal4557 C ABI fail-closed query entrypoints](../reports/goal4557_v3_0_m158_c_abi_fail_closed_query_entrypoints_2026-06-17.md)
 - [Goal4558 C ABI host AABB2 query proof](../reports/goal4558_v3_0_m159_c_abi_host_aabb2_query_proof_2026-06-17.md)
+- [Goal4559 C ABI example client](../reports/goal4559_v3_0_m160_c_abi_example_client_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)
