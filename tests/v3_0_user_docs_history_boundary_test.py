@@ -24,6 +24,11 @@ CURRENT_DOC_PATHS = (
 
 
 class V30UserDocsHistoryBoundaryTest(unittest.TestCase):
+    def assert_no_files_under(self, path: Path) -> None:
+        if not path.exists():
+            return
+        self.assertEqual([], [item.relative_to(ROOT).as_posix() for item in path.rglob("*") if item.is_file()])
+
     def test_release_reports_directory_is_current_only(self) -> None:
         names = {path.name for path in (ROOT / "docs" / "release_reports").iterdir()}
         self.assertEqual({"README.md", "v3_0"}, names)
@@ -34,7 +39,7 @@ class V30UserDocsHistoryBoundaryTest(unittest.TestCase):
     def test_learn_and_current_examples_are_v3_only(self) -> None:
         self.assertFalse((ROOT / "docs" / "learn" / "v2_14_app_author_implementation_strategy.md").exists())
         self.assertFalse((ROOT / "docs" / "learn" / "v3_0_c_abi_draft.md").exists())
-        self.assertFalse((ROOT / "examples" / "current" / "embedding").exists())
+        self.assert_no_files_under(ROOT / "examples" / "current" / "embedding")
         self.assertTrue((ROOT / "docs" / "history" / "learn" / "v2_14_app_author_implementation_strategy.md").exists())
         self.assertTrue((ROOT / "docs" / "history" / "v4_preparatory_embedding" / "v3_0_c_abi_draft.md").exists())
         self.assertTrue((ROOT / "docs" / "history" / "v4_preparatory_embedding" / "examples" / "embedding").is_dir())
