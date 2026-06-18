@@ -165,6 +165,7 @@ V3.0 current app-author guidance:
 - [Goal4567 C ABI AABB2 layout validation](../reports/goal4567_v3_0_m168_c_abi_aabb2_layout_validation_2026-06-17.md)
 - [Goal4568 zero-copy interop contract](../reports/goal4568_v3_0_m169_zero_copy_interop_contract_2026-06-17.md)
 - [Goal4569 embeddability progress gate](../reports/goal4569_v3_0_m170_embeddability_progress_gate_2026-06-17.md)
+- [Goal4570 C ABI ownership/threading contract](../reports/goal4570_v3_0_m171_c_abi_ownership_threading_contract_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)

@@ -8,6 +8,9 @@ It is the first concrete artifact from the V3 embeddability strategy: define a
 narrow C boundary before adding language bindings or device-callable fusion.
 Read [V3.0 C ABI Stability Policy](v3_0_c_abi_stability_policy.md) before
 using this draft as an external contract.
+Use [V3.0 C ABI Ownership And Threading Contract](v3_0_c_abi_ownership_threading_contract.md)
+for the current buffer lifetime, release-callback, last-error, and threading
+rules.
 The current draft symbol list is tracked in
 [v3_0_c_abi_symbol_manifest_v0_1_0.json](v3_0_c_abi_symbol_manifest_v0_1_0.json).
 
@@ -78,8 +81,9 @@ The only implemented query route is deliberately small:
 - Query: `rtdl_query_execute` with `RTDL_QUERY_AABB_OVERLAP`.
 - Result buffer: host `RTDL_DTYPE_U64`, shaped `[hit_count, 2]`; each row is
   `(query_id, primitive_id)`.
-- Ownership: imported buffers remain caller-owned; RTDL-owned result buffers
-  must be released with `rtdl_buffer_destroy`.
+- Ownership: imported buffers are caller-retained when `release == NULL`; when
+  `release != NULL`, `rtdl_buffer_destroy` invokes that callback for the buffer
+  handle. RTDL-owned result buffers must be released with `rtdl_buffer_destroy`.
 
 Unsupported primitive kinds, query kinds, device buffers, OptiX execution,
 Embree execution, and frozen binary compatibility remain outside the current

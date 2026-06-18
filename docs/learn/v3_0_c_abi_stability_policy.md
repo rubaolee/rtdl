@@ -13,6 +13,8 @@ moves from a proof boundary toward a stable embedding contract.
 - Current library source: `src/native/rtdl_c_api.cpp`.
 - Draft symbol manifest:
   [`v3_0_c_abi_symbol_manifest_v0_1_0.json`](v3_0_c_abi_symbol_manifest_v0_1_0.json).
+- Ownership/threading contract:
+  [`v3_0_c_abi_ownership_threading_contract.md`](v3_0_c_abi_ownership_threading_contract.md).
 - Current validated route: host `F32` AABB2 overlap returning host `U64`
   `(query_id, primitive_id)` pairs.
 - Current evidence gates: header compile, shared-library build, exported-symbol
@@ -33,7 +35,8 @@ the boundary. Every breaking change must:
   and `v3_current` matrix.
 - Keep unsupported routes fail-closed rather than silently accepting inputs with
   undefined behavior.
-- Preserve explicit ownership rules for borrowed and RTDL-owned buffers.
+- Preserve explicit ownership rules for caller-retained, release-callback, and
+  RTDL-owned buffers.
 
 No 0.x artifact authorizes packaged SDK wording, binary compatibility promises,
 or downstream language binding stability.

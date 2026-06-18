@@ -26,7 +26,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "c_abi_doc_defines_u64_pair_result_layout": "RTDL_DTYPE_U64" in c_abi_doc
         and "[hit_count, 2]" in c_abi_doc
         and "(query_id, primitive_id)" in c_abi_doc,
-        "c_abi_doc_defines_ownership": "imported buffers remain caller-owned" in c_abi_doc
+        "c_abi_doc_defines_ownership": "caller-retained when `release == NULL`" in c_abi_doc
+        and "release != NULL" in c_abi_doc
         and "rtdl_buffer_destroy" in c_abi_doc,
         "c_abi_doc_blocks_unsupported_routes": "Unsupported primitive kinds" in c_abi_doc
         and "OptiX execution" in c_abi_doc

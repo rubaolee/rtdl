@@ -1,0 +1,104 @@
+{
+  "checks": {
+    "c_abi_doc_links_contract": true,
+    "c_abi_doc_updates_imported_buffer_wording": true,
+    "c_client_compile_ok": true,
+    "c_client_run_ok": true,
+    "c_compiler_available": true,
+    "contract_defines_index_copy_lifetime": true,
+    "contract_defines_last_error_lifetime": true,
+    "contract_defines_release_callback_transfer": true,
+    "contract_defines_release_null_caller_retained": true,
+    "contract_defines_result_view_lifetime": true,
+    "contract_defines_threading_boundary": true,
+    "contract_doc_exists": true,
+    "cxx_compiler_available": true,
+    "example_readme_updates_imported_buffer_wording": true,
+    "header_documents_release_switch": true,
+    "learn_readme_links_contract": true,
+    "runtime_validated_all_cases": true,
+    "shared_library_build_ok": true,
+    "source_calls_release_on_buffer_destroy": true,
+    "source_copies_aabb2_into_index": true,
+    "stability_policy_links_contract": true
+  },
+  "claim_boundary": {
+    "cross_version_compatibility_validated": false,
+    "device_buffer_ownership_validated": false,
+    "external_stream_semantics_validated": false,
+    "packaged_sdk_released": false,
+    "public_performance_wording_authorized": false,
+    "stable_thread_safety_guarantee": false
+  },
+  "client_result": {
+    "c_compiler": "C:\\Program Files\\LLVM\\bin\\clang.exe",
+    "client_compile": {
+      "command": [
+        "C:\\Program Files\\LLVM\\bin\\clang.exe",
+        "-std=c11",
+        "-I",
+        "include",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmphgxnj1wr\\rtdl_c_api_ownership_client.c",
+        "-o",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmphgxnj1wr\\rtdl_c_api_ownership_client.exe"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    },
+    "client_run": {
+      "command": [
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmphgxnj1wr\\rtdl_c_api_ownership_client.exe",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmphgxnj1wr\\rtdl_c_api_ownership.dll"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "case release_callback_called_once: ok\ncase index_survives_primitive_buffer_destroy: ok\ncase result_view_borrowed_until_destroy: ok\nvalidated_ownership_cases=3\n"
+    },
+    "cxx_compiler": "C:\\Program Files\\LLVM\\bin\\clang++.exe",
+    "ok": true,
+    "shared_library": {
+      "command": [
+        "C:\\Program Files\\LLVM\\bin\\clang++.exe",
+        "-std=c++17",
+        "-DRTDL_BUILD_SHARED",
+        "-I",
+        "include",
+        "src\\native\\rtdl_c_api.cpp",
+        "-shared",
+        "-o",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmphgxnj1wr\\rtdl_c_api_ownership.dll"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [
+        "  334 | __DEFINE_CPP_OVERLOAD_STANDARD_NFUNC_0_2_EX(",
+        "      | ^",
+        "C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt\\corecrt.h:1974:17: note: expanded from macro '__DEFINE_CPP_OVERLOAD_STANDARD_NFUNC_0_2_EX'",
+        " 1974 |                 _CRT_INSECURE_DEPRECATE(_SecureFuncName) _DeclSpec _ReturnType __cdecl _FuncName(_SalAttributeDst _DstType *_Dst, _TType1 _TArg1, _TType2 _TArg2);",
+        "      |                 ^",
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\include\\vcruntime.h:368:55: note: expanded from macro '_CRT_INSECURE_DEPRECATE'",
+        "  368 |         #define _CRT_INSECURE_DEPRECATE(_Replacement) _CRT_DEPRECATE_TEXT(    \\",
+        "      |                                                       ^",
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\include\\vcruntime.h:358:47: note: expanded from macro '_CRT_DEPRECATE_TEXT'",
+        "  358 | #define _CRT_DEPRECATE_TEXT(_Text) __declspec(deprecated(_Text))",
+        "      |                                               ^",
+        "1 warning generated."
+      ],
+      "stdout": ""
+    }
+  },
+  "conclusion": "Goal4570 makes the V3 C ABI ownership and threading boundary explicit: imported buffers are caller-retained when `release` is NULL, release-callback-owned when `release` is provided, AABB2 index build copies primitive rows, result exports are borrowed until result destroy, and same-handle concurrency remains externally synchronized rather than a stable SDK promise.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4570 / V3 M171",
+  "status": "c_abi_ownership_threading_contract_checked",
+  "validated_cases": {
+    "index_survives_primitive_buffer_destroy": true,
+    "release_callback_called_once": true,
+    "result_view_borrowed_until_destroy": true
+  },
+  "version": "rtdl.v3_0.c_abi_ownership_threading_contract.goal4570.v1"
+}

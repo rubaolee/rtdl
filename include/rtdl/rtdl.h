@@ -8,6 +8,9 @@
  * C-only opaque handles, status codes, external runtime handles, and neutral
  * buffer views. It has a minimal lifecycle stub implementation, but it is not
  * a frozen or backend-capable shared-library contract.
+ *
+ * Current ownership and threading rules are documented in
+ * docs/learn/v3_0_c_abi_ownership_threading_contract.md.
  */
 
 #include <stddef.h>
@@ -101,6 +104,11 @@ typedef struct rtdl_external_runtime {
 
 typedef void (*rtdl_buffer_release_fn)(void* data, void* user_data);
 
+/*
+ * If release is NULL, RTDL does not release data when the buffer handle is
+ * destroyed. If release is non-NULL, rtdl_buffer_destroy calls it exactly once
+ * for that buffer handle. Release callbacks must not throw across the C ABI.
+ */
 typedef struct rtdl_buffer_view {
   void* data;
   uint64_t byte_count;

@@ -18,8 +18,9 @@ Current data contract:
 - The result buffer is host `RTDL_DTYPE_U64`, shaped `[hit_count, 2]`, with
   rows `(query_id, primitive_id)`.
 - `rtdl_index_build` copies primitive coordinates into the index; imported
-  buffers are caller-owned, while query result buffers are RTDL-owned and must
-  be released with `rtdl_buffer_destroy`.
+  buffers are caller-retained when `release == NULL` and release-callback-owned
+  by the buffer handle when `release != NULL`. Query result buffers are
+  RTDL-owned and must be released with `rtdl_buffer_destroy`.
 
 Linux/pod commands from the repository root:
 
