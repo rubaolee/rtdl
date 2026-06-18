@@ -21,7 +21,7 @@ from scripts.goal4553_m154_v3_c_abi_c_client_smoke import (
 PACKET_VERSION = "rtdl.v3_0.c_abi_aabb2_negative_runtime.goal4563.v1"
 OUT_JSON = Path("docs/reports/goal4563_v3_0_m164_c_abi_aabb2_negative_runtime_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4563_v3_0_m164_c_abi_aabb2_negative_runtime_2026-06-17.md")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 CASE_MARKERS = (
     "unsupported_primitive_rejected",
     "bad_index_dtype_rejected",

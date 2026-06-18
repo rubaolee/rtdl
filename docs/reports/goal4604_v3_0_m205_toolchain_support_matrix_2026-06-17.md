@@ -4,7 +4,7 @@ Status: `toolchain_support_matrix_checked`
 
 ## Conclusion
 
-Goal4604 adds a V3 toolchain support matrix and, when run on the pod, records the live Python/C compiler/make/CMake/pkg-config/NVIDIA/CuPy/Numba/native-library observations needed to interpret current V3 embeddability evidence. This is pod-specific source-tree evidence, not a stable platform support promise, packaged SDK, system install, stable ABI, performance claim, or release authorization.
+Goal4604 preserves a V4 preparatory toolchain support matrix and, when run on the pod, records the live Python/C compiler/make/CMake/pkg-config/NVIDIA/CuPy/Numba/native-library observations needed to interpret archived embedding evidence. This is pod-specific source-tree evidence, not a V3.0 release criterion, stable platform support promise, packaged SDK, system install, stable ABI, performance claim, or release authorization.
 
 ## Live Probe
 
@@ -31,7 +31,8 @@ Goal4604 adds a V3 toolchain support matrix and, when run on the pod, records th
 | `learn_readme_links_toolchain_matrix` | `True` |
 | `doctor_requires_toolchain_doc` | `True` |
 | `doctor_doc_names_toolchain_support` | `True` |
-| `v3_current_report_is_present_and_matrix_sized` | `True` |
+| `v3_current_report_is_v3_only_matrix` | `True` |
+| `v4_prep_group_registered_separately` | `True` |
 | `embeddability_delivery_goal4603_accepts` | `True` |
 | `python_probe_available` | `True` |
 | `cc_available` | `True` |

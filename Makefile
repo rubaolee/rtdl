@@ -9,13 +9,17 @@ BUILD_DIR := build
 #   make build-hiprt
 #   make build-vulkan
 #   make build-apple-rt
-#   make build-c-api
-#   make stage-c-api
-#   make package-c-api-stage
 #
 # Historical and goal-numbered targets below are preserved for auditability and
 # internal reproduction work. They are not the primary front-door interface for
 # new users.
+#
+# V4 preparatory targets are available for reviewers of archived embedding/C ABI
+# work, but they are not part of the V3.0 public release surface:
+#   make build-c-api
+#   make stage-c-api
+#   make stage-c-api-prefix
+#   make package-c-api-stage
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
@@ -156,17 +160,19 @@ APPLE_RT_LDFLAGS := -framework Foundation -framework Metal -framework MetalPerfo
 CXX_ADAPTIVE ?= c++
 ADAPTIVE_CXXFLAGS := -std=c++17 -O3 -shared -fPIC
 CXX_C_API ?= c++
-C_API_CXXFLAGS := -std=c++17 -O2 -shared -fPIC -DRTDL_BUILD_SHARED -Iinclude
+C_API_PREP_STAGING_ROOT := docs/history/v4_preparatory_embedding/staging
+C_API_HEADER := $(C_API_PREP_STAGING_ROOT)/include/rtdl/rtdl.h
+C_API_CXXFLAGS := -std=c++17 -O2 -shared -fPIC -DRTDL_BUILD_SHARED -I$(C_API_PREP_STAGING_ROOT)/include
 C_API_STAGE_DIR ?= $(BUILD_DIR)/c_api_stage
 C_API_PREFIX_STAGE_ROOT ?= $(BUILD_DIR)/c_api_prefix_stage
 C_API_PREFIX ?= /usr/local
 C_API_STAGE_ARCHIVE_ROOT := rtdl-c-api-stage-0.1.3
 C_API_STAGE_ARCHIVE ?= $(BUILD_DIR)/$(C_API_STAGE_ARCHIVE_ROOT).tar.gz
 C_API_STAGE_MANIFEST := docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json
-C_API_PKG_CONFIG := packaging/rtdl-c-api.pc
-C_API_CMAKE_CONFIG := packaging/rtdl-c-api-config.cmake
+C_API_PKG_CONFIG := $(C_API_PREP_STAGING_ROOT)/packaging/rtdl-c-api.pc
+C_API_CMAKE_CONFIG := $(C_API_PREP_STAGING_ROOT)/packaging/rtdl-c-api-config.cmake
 
-.PHONY: help build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api stage-c-api stage-c-api-prefix package-c-api-stage run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+.PHONY: help build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api stage-c-api stage-c-api-prefix package-c-api-stage run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test test-all verify clean
 
 help:
 	@echo "Public targets:"
@@ -179,10 +185,12 @@ help:
 	@echo "  build-vulkan  - build the Vulkan backend library"
 	@echo "  build-apple-rt - build the Apple Metal/MPS RT backend library"
 	@echo "  build-adaptive - build the adaptive CPU-native backend library"
-	@echo "  build-c-api   - build the V3 C ABI lifecycle stub library"
-	@echo "  stage-c-api   - stage the V3 C ABI header, library, manifest, and examples"
-	@echo "  stage-c-api-prefix - stage the C ABI bundle into a DESTDIR/prefix-style layout"
-	@echo "  package-c-api-stage - archive the source-tree C ABI staging bundle"
+	@echo ""
+	@echo "V4 preparatory targets (not a V3.0 public surface):"
+	@echo "  build-c-api   - build the archived draft C ABI lifecycle stub library"
+	@echo "  stage-c-api   - stage the archived draft C ABI bundle for review"
+	@echo "  stage-c-api-prefix - stage the archived draft C ABI bundle into a DESTDIR/prefix-style layout"
+	@echo "  package-c-api-stage - archive the draft C ABI staging bundle"
 	@echo ""
 	@echo "Other targets are preserved for internal reproduction and audit work."
 
@@ -219,7 +227,7 @@ build-c-api:
 stage-c-api: build-c-api
 	rm -rf $(C_API_STAGE_DIR)
 	mkdir -p $(C_API_STAGE_DIR)/include/rtdl $(C_API_STAGE_DIR)/lib/pkgconfig $(C_API_STAGE_DIR)/lib/cmake/rtdl-c-api $(C_API_STAGE_DIR)/share/rtdl $(C_API_STAGE_DIR)/examples
-	cp include/rtdl/rtdl.h $(C_API_STAGE_DIR)/include/rtdl/rtdl.h
+	cp $(C_API_HEADER) $(C_API_STAGE_DIR)/include/rtdl/rtdl.h
 	cp $(BUILD_DIR)/$(C_API_LIB_NAME) $(C_API_STAGE_DIR)/lib/$(C_API_LIB_NAME)
 	cp $(C_API_PKG_CONFIG) $(C_API_STAGE_DIR)/lib/pkgconfig/rtdl-c-api.pc
 	cp $(C_API_CMAKE_CONFIG) $(C_API_STAGE_DIR)/lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake
@@ -238,7 +246,7 @@ stage-c-api: build-c-api
 stage-c-api-prefix: build-c-api
 	rm -rf $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)
 	mkdir -p $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/include/rtdl $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/lib/pkgconfig $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/lib/cmake/rtdl-c-api $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples
-	cp include/rtdl/rtdl.h $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/include/rtdl/rtdl.h
+	cp $(C_API_HEADER) $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/include/rtdl/rtdl.h
 	cp $(BUILD_DIR)/$(C_API_LIB_NAME) $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/lib/$(C_API_LIB_NAME)
 	cp $(C_API_PKG_CONFIG) $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/lib/pkgconfig/rtdl-c-api.pc
 	cp $(C_API_CMAKE_CONFIG) $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake
@@ -348,6 +356,10 @@ run-goal23-reproduction:
 	PYTHONPATH=src:. python3 scripts/goal23_generate_bounded_reproduction.py
 
 test:
+	mkdir -p $(BUILD_DIR)
+	PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v3_current
+
+test-all:
 	mkdir -p $(BUILD_DIR)
 	PYTHONPATH=src:. python3 -m unittest discover -s tests -p '*_test.py'
 

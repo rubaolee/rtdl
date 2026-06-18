@@ -17,6 +17,8 @@ V3.0 excludes embedding/SDK/zero-copy work. Those items are V4.0 scope.
 - [V3.0 Toolchain Support Matrix](v3_0_toolchain_support_matrix.md).
 - [V3.0 Binding And Device Interop Matrix](v3_0_binding_and_device_interop_matrix.md).
 - Symbol manifests from the preparatory C ABI work.
+- Archived draft C ABI staging inputs under [staging](staging/README.md),
+  including the draft header, pkg-config metadata, and CMake metadata.
 - Source-tree C/Python embedding examples under [examples/embedding](examples/embedding/README.md).
 
 ## Reading Rule

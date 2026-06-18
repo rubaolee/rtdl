@@ -36,7 +36,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "doctor_ok": payload["ok"],
         "c_abi_surface_check_present": "V4 preparatory C ABI surface" in checks_by_name,
         "c_abi_surface_check_passes": surface.get("status") == "pass",
-        "c_abi_surface_detail_names_header": "include/rtdl/rtdl.h" in str(surface.get("detail", "")),
+        "c_abi_surface_detail_names_archived_staging": "fenced under docs/history/v4_preparatory_embedding/staging" in str(surface.get("detail", ""))
+        and "archived draft header" in str(surface.get("detail", "")),
         "c_abi_surface_detail_names_make_target": "make build-c-api" in str(surface.get("detail", "")),
         "doctor_checks_header_source_make_and_example": "c_api_aabb2_overlap_client.c" in doctor_text
         and "rtdl_c_api.cpp" in doctor_text
@@ -68,9 +69,10 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "conclusion": (
             "Goal4564 records the C ABI source-tree surface as V4 preparatory "
             "doctor context, not as a V3 release criterion. The doctor now verifies "
-            "that the public header, source implementation, Makefile target, and "
-            "embedding example are discoverable, while still leaving actual library "
-            "builds and runtime validation to the dedicated C ABI evidence packets."
+            "that the archived draft header, source implementation, Makefile "
+            "target, and embedding example are discoverable, while still leaving "
+            "actual library builds and runtime validation to the dedicated V4 "
+            "preparatory evidence packets."
         ),
     }
 

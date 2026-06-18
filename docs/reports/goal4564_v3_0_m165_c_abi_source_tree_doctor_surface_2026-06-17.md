@@ -4,7 +4,7 @@ Status: `c_abi_source_tree_doctor_surface_checked`
 
 ## Conclusion
 
-Goal4564 records the C ABI source-tree surface as V4 preparatory doctor context, not as a V3 release criterion. The doctor now verifies that the public header, source implementation, Makefile target, and embedding example are discoverable, while still leaving actual library builds and runtime validation to the dedicated C ABI evidence packets.
+Goal4564 records the C ABI source-tree surface as V4 preparatory doctor context, not as a V3 release criterion. The doctor now verifies that the archived draft header, source implementation, Makefile target, and embedding example are discoverable, while still leaving actual library builds and runtime validation to the dedicated V4 preparatory evidence packets.
 
 ## Checks
 
@@ -13,7 +13,7 @@ Goal4564 records the C ABI source-tree surface as V4 preparatory doctor context,
 | `doctor_ok` | `True` |
 | `c_abi_surface_check_present` | `True` |
 | `c_abi_surface_check_passes` | `True` |
-| `c_abi_surface_detail_names_header` | `True` |
+| `c_abi_surface_detail_names_archived_staging` | `True` |
 | `c_abi_surface_detail_names_make_target` | `True` |
 | `doctor_checks_header_source_make_and_example` | `True` |
 | `doctor_doc_explains_c_abi_surface_boundary` | `True` |

@@ -4,7 +4,7 @@
     "cc_available": true,
     "current_manifest_is_0_1_3": true,
     "embedding_readme_mentions_stage_command": true,
-    "learn_readme_links_staging_contract": true,
+    "history_archive_links_staging_contract": true,
     "make_available": true,
     "makefile_declares_stage_target": true,
     "stage_all_files_exist": true,
@@ -25,7 +25,7 @@
     "release_authorized": false,
     "stable_abi_authorized": false
   },
-  "conclusion": "Goal4576 adds and validates `make stage-c-api`, a source-tree staging bundle for non-Python C ABI embedding. The staged bundle contains the public header, shared library, current draft symbol manifest, README, and example C client; the pod evidence compiles and runs the staged example against the staged library. This is not a packaged SDK or stable ABI promise.",
+  "conclusion": "Goal4576 adds and validates `make stage-c-api`, a source-tree staging bundle for non-Python C ABI embedding. The staged bundle contains the archived draft header, shared library, current draft symbol manifest, README, and example C client; the pod evidence compiles and runs the staged example against the staged library. This is not a packaged SDK or stable ABI promise.",
   "date": "2026-06-17",
   "failed_checks": [],
   "goal": "Goal4576 / V3 M177",
@@ -57,14 +57,14 @@
       "returncode": 0,
       "stderr_tail": [],
       "stdout_tail": [
-        "cp packaging/rtdl-c-api.pc build/c_api_stage/lib/pkgconfig/rtdl-c-api.pc",
-        "cp packaging/rtdl-c-api-config.cmake build/c_api_stage/lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake",
+        "cp docs/history/v4_preparatory_embedding/staging/packaging/rtdl-c-api-config.cmake build/c_api_stage/lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake",
         "cp docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json build/c_api_stage/share/rtdl/v3_0_c_abi_symbol_manifest.json",
         "cp docs/history/v4_preparatory_embedding/examples/embedding/README.md build/c_api_stage/share/rtdl/README.md",
         "cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_aabb2_overlap_client.c build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
         "cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_direct_link_client.c build/c_api_stage/examples/c_api_direct_link_client.c",
         "cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_host_runtime_client.c build/c_api_stage/examples/c_api_host_runtime_client.c",
         "cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_cuda_buffer_metadata_client.c build/c_api_stage/examples/c_api_cuda_buffer_metadata_client.c",
+        "cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_last_error_client.c build/c_api_stage/examples/c_api_last_error_client.c",
         "cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_client.py build/c_api_stage/examples/python_ctypes_client.py",
         "cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_aabb2_query_client.py build/c_api_stage/examples/python_ctypes_aabb2_query_client.py",
         "cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_cuda_buffer_metadata_client.py build/c_api_stage/examples/python_ctypes_cuda_buffer_metadata_client.py",
@@ -92,7 +92,7 @@
       "header": {
         "exists": true,
         "path": "build/c_api_stage/include/rtdl/rtdl.h",
-        "size_bytes": 5480
+        "size_bytes": 5507
       },
       "library": {
         "exists": true,
@@ -102,18 +102,18 @@
       "manifest": {
         "exists": true,
         "path": "build/c_api_stage/share/rtdl/v3_0_c_abi_symbol_manifest.json",
-        "size_bytes": 700
+        "size_bytes": 746
       },
       "readme": {
         "exists": true,
         "path": "build/c_api_stage/share/rtdl/README.md",
-        "size_bytes": 9308
+        "size_bytes": 12496
       }
     },
     "staged_manifest": {
       "abi_version": "0.1.3",
       "build_target": "make build-c-api",
-      "header": "include/rtdl/rtdl.h",
+      "header": "docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h",
       "stable": false,
       "status": "draft_source_tree_manifest",
       "symbols": [

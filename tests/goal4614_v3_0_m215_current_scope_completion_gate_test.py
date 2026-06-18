@@ -46,7 +46,7 @@ class Goal4614V30M215CurrentScopeCompletionGateTest(unittest.TestCase):
         self.assertEqual(10, len(rows))
         self.assertTrue(all(row["queue_class"] == "closed_current_target" for row in rows.values()))
         self.assertTrue(all(not row["pod_needed_next"] for row in rows.values()))
-        self.assertEqual(104, self.packet["test_matrix"]["module_count"])
+        self.assertEqual(39, self.packet["test_matrix"]["module_count"])
         self.assertEqual(
             "tests.goal4614_v3_0_m215_current_scope_completion_gate_test",
             self.packet["test_matrix"]["last_module"],

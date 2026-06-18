@@ -75,10 +75,12 @@ def build_packet(root: Path = Path("."), *, run_make: bool = False) -> dict[str,
         "c_api_lib_name_declared": "C_API_LIB_NAME" in makefile,
         "build_c_api_target_declared": "\nbuild-c-api:" in makefile,
         "build_c_api_is_phony": "build-c-api" in makefile.split(".PHONY:", 1)[-1],
-        "target_uses_public_header_include": "-Iinclude" in makefile,
+        "target_uses_archived_header_include": "-I$(C_API_PREP_STAGING_ROOT)/include" in makefile
+        and "C_API_HEADER := $(C_API_PREP_STAGING_ROOT)/include/rtdl/rtdl.h" in makefile,
         "target_exports_shared_symbols": "-DRTDL_BUILD_SHARED" in makefile,
         "target_builds_c_api_source": "src/native/rtdl_c_api.cpp" in makefile,
-        "help_mentions_build_c_api": "build-c-api" in makefile and "V3 C ABI" in makefile,
+        "help_mentions_build_c_api_as_v4_prep": "build-c-api" in makefile
+        and "V4 preparatory targets (not a V3.0 public surface)" in makefile,
         "source_uses_public_header": '#include "rtdl/rtdl.h"' in source_text,
     }
     if make_result is not None:
@@ -106,10 +108,12 @@ def build_packet(root: Path = Path("."), *, run_make: bool = False) -> dict[str,
             "release_authorized": False,
         },
         "conclusion": (
-            "Goal4554 wires the V3 C ABI lifecycle stub into the normal Makefile "
-            "front door via `make build-c-api`. The target builds a shared library "
-            "from the app-agnostic `src/native/rtdl_c_api.cpp` source and public "
-            "`include/rtdl/rtdl.h` header. This is a source-tree build target only; "
+            "Goal4554 keeps the draft C ABI lifecycle stub available as a V4 "
+            "preparatory Makefile target via `make build-c-api`. The target builds "
+            "a shared library from the app-agnostic `src/native/rtdl_c_api.cpp` "
+            "source and archived draft "
+            "`docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h` "
+            "header. This is a source-tree review target only; "
             "it does not implement backend query execution, package installation, "
             "DLPack, frozen compatibility, or release wording."
         ),

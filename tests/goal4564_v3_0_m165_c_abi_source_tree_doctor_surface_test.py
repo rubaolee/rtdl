@@ -30,7 +30,8 @@ class Goal4564V30M165CAbiSourceTreeDoctorSurfaceTest(unittest.TestCase):
         checks = {row["name"]: row for row in self.packet["doctor_payload"]["checks"]}
         self.assertEqual("pass", checks["V4 preparatory C ABI surface"]["status"])
         self.assertFalse(checks["V4 preparatory C ABI surface"]["required"])
-        self.assertIn("include/rtdl/rtdl.h", checks["V4 preparatory C ABI surface"]["detail"])
+        self.assertIn("fenced under docs/history/v4_preparatory_embedding/staging", checks["V4 preparatory C ABI surface"]["detail"])
+        self.assertIn("archived draft header", checks["V4 preparatory C ABI surface"]["detail"])
         self.assertIn("make build-c-api", checks["V4 preparatory C ABI surface"]["detail"])
         self.assertEqual([], self.packet["doctor_payload"]["required_failures"])
 

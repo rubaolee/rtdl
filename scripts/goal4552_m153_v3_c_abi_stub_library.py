@@ -15,7 +15,7 @@ PACKET_VERSION = "rtdl.v3_0.c_abi_stub_library.goal4552.v1"
 OUT_JSON = Path("docs/reports/goal4552_v3_0_m153_c_abi_stub_library_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4552_v3_0_m153_c_abi_stub_library_2026-06-17.md")
 SOURCE = Path("src/native/rtdl_c_api.cpp")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 
 
 def _existing_command(candidates: tuple[str, ...]) -> str | None:

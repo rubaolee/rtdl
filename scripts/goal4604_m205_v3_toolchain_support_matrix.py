@@ -18,6 +18,7 @@ TOOLCHAIN_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_toolchain_suppo
 LEARN_README = Path("docs/history/v4_preparatory_embedding/README.md")
 DOCTOR = Path("scripts/rtdl_source_tree_doctor.py")
 DOCTOR_DOC = Path("docs/learn/source_tree_doctor.md")
+RUNNER = Path("scripts/run_test_matrix.py")
 GOAL4546_REPORT = Path("docs/reports/goal4546_v3_0_m147_current_test_matrix_gate_2026-06-17.json")
 GOAL4603_REPORT = Path("docs/reports/goal4603_v3_0_m204_embeddability_delivery_archive_cmake_refresh_2026-06-17.json")
 
@@ -115,6 +116,7 @@ def build_packet(root: Path = Path("."), *, run_live_probe: bool = False) -> dic
     learn = (root / LEARN_README).read_text(encoding="utf-8")
     doctor = (root / DOCTOR).read_text(encoding="utf-8")
     doctor_doc = (root / DOCTOR_DOC).read_text(encoding="utf-8")
+    runner = (root / RUNNER).read_text(encoding="utf-8")
     goal4546 = _load_json(root, GOAL4546_REPORT)
     goal4603 = _load_json(root, GOAL4603_REPORT)
     probe = run_probe(root) if run_live_probe else None
@@ -125,8 +127,9 @@ def build_packet(root: Path = Path("."), *, run_live_probe: bool = False) -> dic
         "history_archive_links_toolchain_matrix": "V3.0 Toolchain Support Matrix" in learn,
         "doctor_requires_toolchain_doc": "v3_0_toolchain_support_matrix.md" in doctor,
         "doctor_doc_names_toolchain_support": "toolchain support" in doctor_doc,
-        "v3_current_report_is_present_and_matrix_sized": goal4546["suite_run"]["module_count"] >= 93
+        "v3_current_report_is_v3_only_matrix": goal4546["suite_run"]["module_count"] == 39
         and goal4546["group"] == "v3_current",
+        "v4_prep_group_registered_separately": '"v4_prep"' in runner,
         "embeddability_delivery_goal4603_accepts": tuple(goal4603["failed_checks"]) == (),
     }
     if probe is not None:
@@ -167,12 +170,14 @@ def build_packet(root: Path = Path("."), *, run_live_probe: bool = False) -> dic
             "release_authorized": False,
         },
         "conclusion": (
-            "Goal4604 adds a V3 toolchain support matrix and, when run on the pod, "
+            "Goal4604 preserves a V4 preparatory toolchain support matrix and, "
+            "when run on the pod, "
             "records the live Python/C compiler/make/CMake/pkg-config/NVIDIA/CuPy/"
-            "Numba/native-library observations needed to interpret current V3 "
-            "embeddability evidence. This is pod-specific source-tree evidence, not "
-            "a stable platform support promise, packaged SDK, system install, stable "
-            "ABI, performance claim, or release authorization."
+            "Numba/native-library observations needed to interpret archived "
+            "embedding evidence. This is pod-specific source-tree evidence, not a "
+            "V3.0 release criterion, stable platform support promise, packaged "
+            "SDK, system install, stable ABI, performance claim, or release "
+            "authorization."
         ),
     }
 

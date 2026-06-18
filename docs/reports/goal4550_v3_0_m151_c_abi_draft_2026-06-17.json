@@ -26,7 +26,7 @@
   "doc": "docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md",
   "failed_checks": [],
   "goal": "Goal4550 / V3 M151",
-  "header": "include/rtdl/rtdl.h",
+  "header": "docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h",
   "status": "c_abi_draft_checked",
   "version": "rtdl.v3_0.c_abi_draft.goal4550.v1"
 }

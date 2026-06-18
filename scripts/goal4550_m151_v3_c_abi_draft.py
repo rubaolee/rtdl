@@ -7,7 +7,7 @@ from pathlib import Path
 PACKET_VERSION = "rtdl.v3_0.c_abi_draft.goal4550.v1"
 OUT_JSON = Path("docs/reports/goal4550_v3_0_m151_c_abi_draft_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4550_v3_0_m151_c_abi_draft_2026-06-17.md")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 DOC = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
 EMBED_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md")
 

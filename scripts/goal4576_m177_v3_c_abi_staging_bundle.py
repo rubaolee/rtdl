@@ -180,7 +180,8 @@ def build_packet(root: Path = Path("."), *, run_make: bool = False) -> dict[str,
         "stage_target_copies_header_library_manifest_readme_example": all(
             token in makefile
             for token in (
-                "include/rtdl/rtdl.h",
+                "$(C_API_HEADER)",
+                "$(C_API_STAGE_DIR)/include/rtdl/rtdl.h",
                 "$(BUILD_DIR)/$(C_API_LIB_NAME)",
                 "$(C_API_STAGE_MANIFEST)",
                 "docs/history/v4_preparatory_embedding/examples/embedding/README.md",
@@ -238,10 +239,10 @@ def build_packet(root: Path = Path("."), *, run_make: bool = False) -> dict[str,
         "conclusion": (
             "Goal4576 adds and validates `make stage-c-api`, a source-tree staging "
             "bundle for non-Python C ABI embedding. The staged bundle contains the "
-            "public header, shared library, current draft symbol manifest, README, "
-            "and example C client; the pod evidence compiles and runs the staged "
-            "example against the staged library. This is not a packaged SDK or "
-            "stable ABI promise."
+            "archived draft header, shared library, current draft symbol "
+            "manifest, README, and example C client; the pod evidence compiles "
+            "and runs the staged example against the staged library. This is not "
+            "a packaged SDK or stable ABI promise."
         ),
     }
 

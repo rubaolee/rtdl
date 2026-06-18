@@ -6,7 +6,7 @@
     "doctor_code_requires_c_abi_docs": true,
     "doctor_doc_explains_docs_surface": true,
     "doctor_ok": true,
-    "learn_readme_links_ownership_and_zero_copy": true,
+    "history_archive_links_ownership_and_zero_copy": true,
     "required_docs_exist": true,
     "required_failures_empty": true
   },
@@ -17,7 +17,7 @@
     "release_authorized": false,
     "stable_abi_authorized": false
   },
-  "conclusion": "Goal4572 records the C ABI documentation surface as optional V4 preparatory doctor context. The doctor now verifies that draft, stability, ownership/threading, symbol manifest, zero-copy, and Learn README links are present, while runtime validation remains in dedicated evidence packets.",
+  "conclusion": "Goal4572 records the C ABI documentation surface as optional V4 preparatory doctor context. The doctor now verifies that draft, stability, ownership/threading, symbol manifest, zero-copy, and history archive links are present, while runtime validation remains in dedicated evidence packets.",
   "date": "2026-06-17",
   "doctor_payload": {
     "checks": [
@@ -64,13 +64,13 @@
         "status": "pass"
       },
       {
-        "detail": "scripts/run_test_matrix.py --group v3_current (104 modules)",
+        "detail": "scripts/run_test_matrix.py --group v3_current (39 modules)",
         "name": "V3 current test matrix",
         "required": true,
         "status": "pass"
       },
       {
-        "detail": "optional V4 preparatory files: include/rtdl/rtdl.h, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, pkg-config and CMake metadata, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA and DLPack-like metadata",
+        "detail": "optional V4 preparatory files fenced under docs/history/v4_preparatory_embedding/staging: archived draft header, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, pkg-config and CMake metadata, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA and DLPack-like metadata",
         "name": "V4 preparatory C ABI surface",
         "required": false,
         "status": "pass"

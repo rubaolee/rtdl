@@ -4,7 +4,7 @@ Status: `c_abi_staging_bundle_checked`
 
 ## Conclusion
 
-Goal4576 adds and validates `make stage-c-api`, a source-tree staging bundle for non-Python C ABI embedding. The staged bundle contains the public header, shared library, current draft symbol manifest, README, and example C client; the pod evidence compiles and runs the staged example against the staged library. This is not a packaged SDK or stable ABI promise.
+Goal4576 adds and validates `make stage-c-api`, a source-tree staging bundle for non-Python C ABI embedding. The staged bundle contains the archived draft header, shared library, current draft symbol manifest, README, and example C client; the pod evidence compiles and runs the staged example against the staged library. This is not a packaged SDK or stable ABI promise.
 
 ## Stage Result
 
@@ -22,7 +22,7 @@ Goal4576 adds and validates `make stage-c-api`, a source-tree staging bundle for
 | `stage_target_copies_header_library_manifest_readme_example` | `True` |
 | `staging_contract_documents_bundle` | `True` |
 | `c_abi_draft_links_staging_contract` | `True` |
-| `learn_readme_links_staging_contract` | `True` |
+| `history_archive_links_staging_contract` | `True` |
 | `embedding_readme_mentions_stage_command` | `True` |
 | `current_manifest_is_0_1_3` | `True` |
 | `make_available` | `True` |

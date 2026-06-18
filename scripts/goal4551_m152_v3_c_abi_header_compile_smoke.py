@@ -13,7 +13,7 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.c_abi_header_compile_smoke.goal4551.v1"
 OUT_JSON = Path("docs/reports/goal4551_v3_0_m152_c_abi_header_compile_smoke_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4551_v3_0_m152_c_abi_header_compile_smoke_2026-06-17.md")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 
 
 def _existing_command(candidates: tuple[str, ...]) -> str | None:

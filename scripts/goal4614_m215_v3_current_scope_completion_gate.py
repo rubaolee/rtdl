@@ -17,6 +17,17 @@ APP_AUTHOR_DOC = Path("docs/learn/v3_0_app_author_implementation_strategy.md")
 EMBEDDABILITY_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md")
 BINDING_MATRIX_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_binding_and_device_interop_matrix.md")
 EVIDENCE_INDEX = Path("docs/learn/benchmark_evidence_index.md")
+EXPECTED_CURRENT_MODULE_COUNT = 39
+V4_PREP_TOKENS: tuple[str, ...] = (
+    "c_abi",
+    "embedd",
+    "zero_copy",
+    "ctypes",
+    "dlpack",
+    "binding_interop",
+    "toolchain_support",
+    "neutral_buffer",
+)
 
 V4_DEFERRALS: tuple[dict[str, str], ...] = (
     {
@@ -161,8 +172,11 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             tuple(packet.get("failed_checks", ())) == () for packet in prior_packets.values()
         ),
         "matrix_registered_and_ends_at_goal4614": (
-            len(modules) == 104
+            len(modules) == EXPECTED_CURRENT_MODULE_COUNT
             and modules[-1] == "tests.goal4614_v3_0_m215_current_scope_completion_gate_test"
+        ),
+        "matrix_excludes_v4_preparatory_modules": not any(
+            token in module for module in modules for token in V4_PREP_TOKENS
         ),
         "app_author_doc_names_goal4614": "Goal4614" in app_author_doc,
         "app_author_doc_names_v4_deferrals": "V4 deferrals" in app_author_doc,

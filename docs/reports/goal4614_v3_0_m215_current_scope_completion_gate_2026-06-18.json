@@ -144,6 +144,7 @@
     "embeddability_doc_marks_v4_deferral": true,
     "evidence_index_links_goal4614": true,
     "future_design_queue_empty": true,
+    "matrix_excludes_v4_preparatory_modules": true,
     "matrix_registered_and_ends_at_goal4614": true,
     "no_app_needs_immediate_pod": true,
     "prior_completion_packets_accept": true,
@@ -214,7 +215,7 @@
     "first_module": "tests.goal4508_v3_0_m112_rtnn_clean_target_closeout_test",
     "group": "v3_current",
     "last_module": "tests.goal4614_v3_0_m215_current_scope_completion_gate_test",
-    "module_count": 104
+    "module_count": 39
   },
   "v4_deferrals": [
     {

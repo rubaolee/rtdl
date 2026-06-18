@@ -11,7 +11,7 @@ PACKET_VERSION = "rtdl.v3_0.c_abi_symbol_manifest.goal4566.v1"
 OUT_JSON = Path("docs/reports/goal4566_v3_0_m167_c_abi_symbol_manifest_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4566_v3_0_m167_c_abi_symbol_manifest_2026-06-17.md")
 MANIFEST = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 GOAL4556 = Path("docs/reports/goal4556_v3_0_m157_c_abi_exported_symbol_audit_2026-06-17.json")
 POLICY = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_stability_policy.md")
 C_ABI_DRAFT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
@@ -45,7 +45,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "manifest_has_18_symbols": len(manifest_symbols) == 18,
         "manifest_symbols_match_header_order": manifest_symbols == header_symbols,
         "manifest_symbols_match_goal4556_export_set": set(manifest_symbols) == set(exported_symbols),
-        "manifest_names_header_and_build_target": manifest["header"] == "include/rtdl/rtdl.h"
+        "manifest_names_header_and_build_target": manifest["header"] == "docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h"
         and manifest["build_target"] == "make build-c-api",
         "policy_links_symbol_manifest": "v3_0_c_abi_symbol_manifest_v0_1_3.json" in policy,
         "c_abi_draft_links_symbol_manifest": "v3_0_c_abi_symbol_manifest_v0_1_3.json" in c_abi,
@@ -70,9 +70,10 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         },
         "conclusion": (
             "Goal4566 checks the current draft machine-readable C ABI symbol manifest "
-            "against the public header plus the Goal4556 "
-            "export audit. This gives the V3 ABI a concrete change-tracking "
-            "surface without freezing binary compatibility."
+            "against the archived draft header plus the Goal4556 export audit. "
+            "This gives the V4 preparatory ABI a concrete change-tracking "
+            "surface without freezing binary compatibility or making it part "
+            "of V3.0 release scope."
         ),
     }
 

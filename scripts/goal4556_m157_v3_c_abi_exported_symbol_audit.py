@@ -13,7 +13,7 @@ PACKET_VERSION = "rtdl.v3_0.c_abi_exported_symbol_audit.goal4556.v1"
 OUT_JSON = Path("docs/reports/goal4556_v3_0_m157_c_abi_exported_symbol_audit_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4556_v3_0_m157_c_abi_exported_symbol_audit_2026-06-17.md")
 MAKEFILE = Path("Makefile")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 
 EXPECTED_SYMBOLS = (
     "rtdl_abi_version_major",

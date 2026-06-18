@@ -60,11 +60,18 @@ result: ok=true, version=v3.0, required_failures=[]
 notes: optional local warnings for cupy, numba, and OptiX library availability
 
 PYTHONPATH=src;. py -3 scripts\run_test_matrix.py --group v3_current
-result: ok=true, module_count=104, Ran 353 tests in 1.785s, OK
+result: ok=true, module_count=39, Ran 147 tests, OK
 
 PYTHONPATH=src;. py -3 scripts\run_test_matrix.py --group v3_release
-result: ok=true, module_count=1, Ran 5 tests in 0.049s, OK
+result: ok=true, module_count=2, Ran 12 tests, OK
+
+PYTHONPATH=src;. py -3 scripts\run_test_matrix.py --group v4_prep
+result: ok=true, module_count=65, Ran 206 tests, OK
 ```
+
+The `v4_prep` matrix is preserved as an archived preparatory regression guard.
+It does not certify embedding, C ABI, SDK, generated binding, zero-copy, or
+external-runtime work as part of V3.0.
 
 Documentation polish scans, 2026-06-18:
 

@@ -1,7 +1,7 @@
 {
   "abi_version": "0.1.0",
   "build_target": "make build-c-api",
-  "header": "include/rtdl/rtdl.h",
+  "header": "docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h",
   "stable": false,
   "status": "draft_source_tree_manifest",
   "symbols": [

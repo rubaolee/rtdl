@@ -14,7 +14,7 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.python_ctypes_layout_audit.goal4599.v1"
 OUT_JSON = Path("docs/reports/goal4599_v3_0_m200_python_ctypes_layout_audit_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4599_v3_0_m200_python_ctypes_layout_audit_2026-06-17.md")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 STABILITY_POLICY = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_stability_policy.md")
 PYTHON_AABB2_EXAMPLE = Path("docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_aabb2_query_client.py")
 PYTHON_CUDA_EXAMPLE = Path("docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_cuda_buffer_metadata_client.py")
@@ -225,7 +225,7 @@ def build_packet(root: Path = Path("."), *, run_probe: bool = False) -> dict[str
             "Goal4599 adds a C/Python layout audit for the current draft C ABI "
             "descriptor structs used by the Python `ctypes` examples. The pod "
             "evidence compiles a tiny C `sizeof`/`offsetof` probe against "
-            "`include/rtdl/rtdl.h` and compares it with Python `ctypes` layout "
+            "`docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h` and compares it with Python `ctypes` layout "
             "for external runtime, buffer view, context, index, and query "
             "descriptors. This catches binding-offset drift without authorizing "
             "stable ABI, generated binding, cross-platform layout, SDK, or "

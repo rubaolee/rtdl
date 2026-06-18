@@ -34,7 +34,7 @@ concurrency smoke for the current host AABB2 route. That historical anchor is
 kept here because several evidence gates verify that later diagnostic work did
 not erase the previously validated threading boundary.
 
-- Draft public header: `include/rtdl/rtdl.h`.
+- Archived draft header: `staging/include/rtdl/rtdl.h`.
 - Source-tree shared-library target: `make build-c-api`.
 - Source-tree staging bundle target: `make stage-c-api`.
 - DESTDIR/prefix-style staging target: `make stage-c-api-prefix`.

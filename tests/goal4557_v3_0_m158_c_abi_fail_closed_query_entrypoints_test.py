@@ -7,7 +7,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-HEADER = ROOT / "include/rtdl/rtdl.h"
+HEADER = ROOT / "docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h"
 SOURCE = ROOT / "src/native/rtdl_c_api.cpp"
 PACKET = ROOT / "docs/reports/goal4557_v3_0_m158_c_abi_fail_closed_query_entrypoints_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4557_v3_0_m158_c_abi_fail_closed_query_entrypoints_2026-06-17.md"

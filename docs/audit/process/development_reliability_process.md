@@ -83,18 +83,26 @@ The canonical runner is:
 - `python scripts/run_test_matrix.py --group system`
 - `python scripts/run_test_matrix.py --group full`
 - `python scripts/run_test_matrix.py --group v3_current`
+- `python scripts/run_test_matrix.py --group v4_prep`
 
 Use `python3` instead if that is what your shell exposes.
 
-`v3_current` is the current V3 closure suite. It intentionally runs the
-explicit V3 current modules starting at Goal4508 because the default unittest discovery
-pattern does not include every `goal*_test.py` file.
+`v3_current` is the current V3 closure suite. It intentionally runs only the
+explicit V3 current modules starting at Goal4508 because the default unittest
+discovery pattern does not include every `goal*_test.py` file and because V4
+preparatory embedding/C ABI/zero-copy work must not define V3 completion.
+
+`v4_prep` is the separate audit group for archived V4 preparatory material. It
+keeps C ABI, embedding, SDK-staging, binding, and zero-copy prep evidence
+checkable without turning it into the V3 current validation surface.
 
 The full discovery command remains useful:
 
 - `python -m unittest discover -s tests -p '*test.py'`
 
 But the test-matrix runner is the clearer release-style verification surface.
+`make test` follows `v3_current`; use `make test-all` for the full discovery
+sweep.
 
 ## What Consensus Means
 

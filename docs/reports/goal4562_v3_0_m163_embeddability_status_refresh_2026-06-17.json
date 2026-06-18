@@ -4,9 +4,9 @@
     "strategy_blocks_still_unauthorized_claims": true,
     "strategy_has_current_progress_section": true,
     "strategy_links_c_abi_contract_doc": true,
+    "strategy_names_archived_header_and_make_target": true,
     "strategy_names_host_aabb2_query_proof": true,
-    "strategy_names_non_python_c_client": true,
-    "strategy_names_public_header_and_make_target": true
+    "strategy_names_non_python_c_client": true
   },
   "claim_boundary": {
     "dlpack_support_implemented": false,

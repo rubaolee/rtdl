@@ -89,9 +89,10 @@ def _v3_current_test_matrix_check() -> dict[str, Any]:
 
 def _v3_c_abi_surface_check() -> dict[str, Any]:
     prep = ROOT / "docs" / "history" / "v4_preparatory_embedding"
+    staging = prep / "staging"
     examples = prep / "examples" / "embedding"
     required_files = (
-        ROOT / "include" / "rtdl" / "rtdl.h",
+        staging / "include" / "rtdl" / "rtdl.h",
         ROOT / "src" / "native" / "rtdl_c_api.cpp",
         examples / "c_api_aabb2_overlap_client.c",
         examples / "c_api_direct_link_client.c",
@@ -102,7 +103,8 @@ def _v3_c_abi_surface_check() -> dict[str, Any]:
         examples / "python_ctypes_cuda_buffer_metadata_client.py",
         examples / "python_ctypes_dlpack_like_metadata_client.py",
         examples / "README.md",
-        ROOT / "packaging" / "rtdl-c-api-config.cmake",
+        staging / "packaging" / "rtdl-c-api.pc",
+        staging / "packaging" / "rtdl-c-api-config.cmake",
     )
     missing = [path.relative_to(ROOT).as_posix() for path in required_files if not path.exists()]
     makefile = ROOT / "Makefile"
@@ -125,7 +127,7 @@ def _v3_c_abi_surface_check() -> dict[str, Any]:
     return _check(
         "V4 preparatory C ABI surface",
         "pass",
-        "optional V4 preparatory files: include/rtdl/rtdl.h, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, pkg-config and CMake metadata, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA and DLPack-like metadata",
+        "optional V4 preparatory files fenced under docs/history/v4_preparatory_embedding/staging: archived draft header, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, pkg-config and CMake metadata, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA and DLPack-like metadata",
         required=False,
     )
 

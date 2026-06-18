@@ -40,7 +40,8 @@ C ABI neutral buffer view:
 
 ## Boundary
 
-This contract does not add DLPack fields to `include/rtdl/rtdl.h`, does not make
+This contract does not add DLPack fields to the archived draft header
+`staging/include/rtdl/rtdl.h`, does not make
 any C ABI query route consume device buffers, does not validate CUDA pointer
 ownership or stream ordering, does not build a PyTorch/JAX/CuPy adapter, and
 does not authorize performance wording. It is the checklist that the later

@@ -9,7 +9,7 @@ moves from a proof boundary toward a stable embedding contract.
 
 ## Current State
 
-- Public header: `include/rtdl/rtdl.h`.
+- Archived draft header: `staging/include/rtdl/rtdl.h`.
 - Build target: `make build-c-api`.
 - Current library source: `src/native/rtdl_c_api.cpp`.
 - Draft symbol manifest:
@@ -50,7 +50,7 @@ the boundary. Every breaking change must:
 - Update `RTDL_ABI_VERSION_*` in the public header when the C shape or semantics
   change.
 - Refresh the C ABI draft, embedding example docs, source-tree doctor evidence,
-  staging docs, and `v3_current` matrix.
+  staging docs, and `v4_prep` matrix.
 - Keep unsupported routes fail-closed rather than silently accepting inputs with
   undefined behavior.
 - Preserve explicit ownership rules for caller-retained, release-callback, and

@@ -27,7 +27,7 @@ C_ABI_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
 STABILITY = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_stability_policy.md")
 EXAMPLE_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
 LEARN_README = Path("docs/history/v4_preparatory_embedding/README.md")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 
 CASE_MARKERS = (
     "release_callback_called_once",

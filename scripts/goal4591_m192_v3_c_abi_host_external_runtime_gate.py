@@ -22,7 +22,7 @@ from scripts.goal4553_m154_v3_c_abi_c_client_smoke import (
 PACKET_VERSION = "rtdl.v3_0.c_abi_host_external_runtime.goal4591.v1"
 OUT_JSON = Path("docs/reports/goal4591_v3_0_m192_c_abi_host_external_runtime_gate_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4591_v3_0_m192_c_abi_host_external_runtime_gate_2026-06-17.md")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 SOURCE_FILE = Path("src/native/rtdl_c_api.cpp")
 C_ABI_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
 OWNERSHIP_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_ownership_threading_contract.md")

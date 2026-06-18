@@ -9,7 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4577_v3_0_m178_c_abi_pkg_config_stage_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4577_v3_0_m178_c_abi_pkg_config_stage_2026-06-17.md"
-PC_TEMPLATE = ROOT / "packaging/rtdl-c-api.pc"
+PC_TEMPLATE = ROOT / "docs/history/v4_preparatory_embedding/staging/packaging/rtdl-c-api.pc"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

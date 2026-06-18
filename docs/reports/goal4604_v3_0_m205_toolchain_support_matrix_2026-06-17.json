@@ -19,7 +19,8 @@
     "pkg_config_available": true,
     "python_probe_available": true,
     "toolchain_doc_exists_and_sets_boundary": true,
-    "v3_current_report_is_present_and_matrix_sized": true
+    "v3_current_report_is_v3_only_matrix": true,
+    "v4_prep_group_registered_separately": true
   },
   "claim_boundary": {
     "packaged_sdk_authorized": false,
@@ -30,7 +31,7 @@
     "stable_platform_support_authorized": false,
     "system_install_authorized": false
   },
-  "conclusion": "Goal4604 adds a V3 toolchain support matrix and, when run on the pod, records the live Python/C compiler/make/CMake/pkg-config/NVIDIA/CuPy/Numba/native-library observations needed to interpret current V3 embeddability evidence. This is pod-specific source-tree evidence, not a stable platform support promise, packaged SDK, system install, stable ABI, performance claim, or release authorization.",
+  "conclusion": "Goal4604 preserves a V4 preparatory toolchain support matrix and, when run on the pod, records the live Python/C compiler/make/CMake/pkg-config/NVIDIA/CuPy/Numba/native-library observations needed to interpret archived embedding evidence. This is pod-specific source-tree evidence, not a V3.0 release criterion, stable platform support promise, packaged SDK, system install, stable ABI, performance claim, or release authorization.",
   "date": "2026-06-17",
   "failed_checks": [],
   "goal": "Goal4604 / V3 M205",

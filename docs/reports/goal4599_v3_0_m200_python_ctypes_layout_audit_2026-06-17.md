@@ -4,7 +4,7 @@ Status: `python_ctypes_layout_audit_checked`
 
 ## Conclusion
 
-Goal4599 adds a C/Python layout audit for the current draft C ABI descriptor structs used by the Python `ctypes` examples. The pod evidence compiles a tiny C `sizeof`/`offsetof` probe against `include/rtdl/rtdl.h` and compares it with Python `ctypes` layout for external runtime, buffer view, context, index, and query descriptors. This catches binding-offset drift without authorizing stable ABI, generated binding, cross-platform layout, SDK, or release wording.
+Goal4599 adds a C/Python layout audit for the current draft C ABI descriptor structs used by the Python `ctypes` examples. The pod evidence compiles a tiny C `sizeof`/`offsetof` probe against `docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h` and compares it with Python `ctypes` layout for external runtime, buffer view, context, index, and query descriptors. This catches binding-offset drift without authorizing stable ABI, generated binding, cross-platform layout, SDK, or release wording.
 
 ## Probe
 

@@ -9,7 +9,7 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.c_abi_host_aabb2_query_proof.goal4558.v1"
 OUT_JSON = Path("docs/reports/goal4558_v3_0_m159_c_abi_host_aabb2_query_proof_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4558_v3_0_m159_c_abi_host_aabb2_query_proof_2026-06-17.md")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 SOURCE = Path("src/native/rtdl_c_api.cpp")
 CLIENT_SMOKE_REPORT = Path("docs/reports/goal4553_v3_0_m154_c_abi_c_client_smoke_2026-06-17.json")
 

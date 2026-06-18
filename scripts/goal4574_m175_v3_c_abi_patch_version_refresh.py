@@ -10,7 +10,7 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.c_abi_patch_version_refresh.goal4574.v1"
 OUT_JSON = Path("docs/reports/goal4574_v3_0_m175_c_abi_patch_version_refresh_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4574_v3_0_m175_c_abi_patch_version_refresh_2026-06-17.md")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 CURRENT_MANIFEST = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json")
 M175_MANIFEST = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_1.json")
 PREVIOUS_MANIFEST = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_0.json")

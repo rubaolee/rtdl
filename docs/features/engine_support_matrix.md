@@ -2,6 +2,11 @@
 
 Status: public API contract for the v3.0 source tree.
 
+Read this with [RTDL Backend Maturity](../backend_maturity.md). In this matrix,
+`native` describes defined feature behavior in the source tree; it is not a
+validated-hardware performance claim. Vulkan, HIPRT, and Apple RT are preserved
+proof/portability surfaces unless a separate benchmark packet says otherwise.
+
 Every public RTDL feature that a developer can intentionally choose should have
 a defined behavior on every RTDL engine. The behavior must be one of four
 states:

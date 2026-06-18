@@ -18,7 +18,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     c_abi_doc = (root / C_ABI_DOC).read_text(encoding="utf-8")
     checks = {
         "strategy_has_current_progress_section": "## Current Implementation Progress" in strategy,
-        "strategy_names_public_header_and_make_target": "include/rtdl/rtdl.h" in strategy
+        "strategy_names_archived_header_and_make_target": "Archived draft header" in strategy
+        and "staging/include/rtdl/rtdl.h" in strategy
         and "make build-c-api" in strategy,
         "strategy_names_non_python_c_client": "Non-Python C client validation" in strategy,
         "strategy_names_host_aabb2_query_proof": "host `F32` AABB2 overlap query proof" in strategy,

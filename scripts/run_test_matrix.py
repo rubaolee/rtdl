@@ -100,6 +100,9 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal4545_v3_0_m146_source_tree_doctor_refresh_test",
         "tests.goal4547_v3_0_m148_source_tree_doctor_v3_matrix_hint_test",
         "tests.goal4548_v3_0_m149_legacy_full_runner_repair_test",
+        "tests.goal4614_v3_0_m215_current_scope_completion_gate_test",
+    ),
+    "v4_prep": (
         "tests.goal4549_v3_0_m150_embeddability_strategy_intake_test",
         "tests.goal4550_v3_0_m151_c_abi_draft_test",
         "tests.goal4551_v3_0_m152_c_abi_header_compile_smoke_test",
@@ -165,7 +168,6 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal4611_v3_0_m212_c_abi_last_error_diagnostics_smoke_test",
         "tests.goal4612_v3_0_m213_c_abi_last_error_staged_example_test",
         "tests.goal4613_v3_0_m214_prefix_stage_c_examples_smoke_test",
-        "tests.goal4614_v3_0_m215_current_scope_completion_gate_test",
     ),
     "v3_release": (
         "tests.v3_0_release_publication_test",
@@ -241,6 +243,7 @@ def parse_args() -> argparse.Namespace:
             "full",
             "v3_current",
             "v3_release",
+            "v4_prep",
             "v0_2_local",
             "v0_2_linux",
             "v0_2_full",

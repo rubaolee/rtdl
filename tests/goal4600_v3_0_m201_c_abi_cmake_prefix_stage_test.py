@@ -9,7 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4600_v3_0_m201_c_abi_cmake_prefix_stage_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4600_v3_0_m201_c_abi_cmake_prefix_stage_2026-06-17.md"
-CMAKE_CONFIG = ROOT / "packaging/rtdl-c-api-config.cmake"
+CMAKE_CONFIG = ROOT / "docs/history/v4_preparatory_embedding/staging/packaging/rtdl-c-api-config.cmake"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

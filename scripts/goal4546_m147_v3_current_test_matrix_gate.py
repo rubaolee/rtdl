@@ -13,6 +13,17 @@ GROUP = "v3_current"
 OUT_JSON = Path("docs/reports/goal4546_v3_0_m147_current_test_matrix_gate_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4546_v3_0_m147_current_test_matrix_gate_2026-06-17.md")
 PROCESS_DOC = Path("docs/audit/process/development_reliability_process.md")
+EXPECTED_CURRENT_MODULE_COUNT = 39
+V4_PREP_TOKENS = (
+    "c_abi",
+    "embedd",
+    "zero_copy",
+    "ctypes",
+    "dlpack",
+    "binding_interop",
+    "toolchain_support",
+    "neutral_buffer",
+)
 
 
 def _summarize_output(output: str) -> dict[str, Any]:
@@ -30,15 +41,24 @@ def _summarize_output(output: str) -> dict[str, Any]:
 
 def build_packet(root: Path = Path("."), *, run_suite: bool = False) -> dict[str, Any]:
     modules = run_test_matrix.group_modules(GROUP)
+    v4_prep_modules = run_test_matrix.group_modules("v4_prep")
     process_doc = (root / PROCESS_DOC).read_text(encoding="utf-8")
     suite = run_test_matrix.run_group(GROUP) if run_suite else None
     suite_summary = _summarize_output(str(suite["output"])) if suite else None
     checks = {
         "group_registered": GROUP in run_test_matrix.TEST_GROUPS,
-        "module_count_is_104": len(modules) == 104,
+        "module_count_is_v3_only_39": len(modules) == EXPECTED_CURRENT_MODULE_COUNT,
         "starts_at_goal4508": modules[0] == "tests.goal4508_v3_0_m112_rtnn_clean_target_closeout_test",
         "ends_at_goal4614": (
             modules[-1] == "tests.goal4614_v3_0_m215_current_scope_completion_gate_test"
+        ),
+        "v3_current_excludes_v4_prep_tokens": not any(
+            token in module for module in modules for token in V4_PREP_TOKENS
+        ),
+        "v4_prep_group_holds_deferred_scope": (
+            any("c_abi" in module for module in v4_prep_modules)
+            and any("embedd" in module for module in v4_prep_modules)
+            and any("zero_copy" in module for module in v4_prep_modules)
         ),
         "excludes_self_referential_goal4546": (
             "tests.goal4546_v3_0_m147_current_test_matrix_gate_test" not in modules
@@ -48,16 +68,16 @@ def build_packet(root: Path = Path("."), *, run_suite: bool = False) -> dict[str
             and "tests.goal4526_v3_0_m130_barnes_hut_rt_native_fail_closed_abi_test" in modules
         ),
         "process_doc_names_group": "--group v3_current" in process_doc,
-        "process_doc_notes_default_discovery_gap": "default unittest discovery" in process_doc,
+        "process_doc_notes_default_discovery_gap": (
+            "default unittest" in process_doc and "discovery pattern" in process_doc
+        ),
     }
     if suite is not None:
         checks.update(
             {
                 "suite_ok": bool(suite["ok"]),
                 "suite_module_count_matches": suite["module_count"] == len(modules),
-                "suite_reports_at_least_original_134_tests": bool(
-                    suite_summary and suite_summary["ran_at_least_original_134"]
-                ),
+                "suite_reports_tests": bool(suite_summary and suite_summary["ran_tests"]),
             }
         )
     failed = tuple(name for name, passed in checks.items() if not passed)

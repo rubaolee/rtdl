@@ -3,6 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 import unittest
 
+from scripts import run_test_matrix
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -36,6 +38,44 @@ class V30UserDocsHistoryBoundaryTest(unittest.TestCase):
         self.assertTrue((ROOT / "docs" / "history" / "learn" / "v2_14_app_author_implementation_strategy.md").exists())
         self.assertTrue((ROOT / "docs" / "history" / "v4_preparatory_embedding" / "v3_0_c_abi_draft.md").exists())
         self.assertTrue((ROOT / "docs" / "history" / "v4_preparatory_embedding" / "examples" / "embedding").is_dir())
+
+    def test_v4_preparatory_artifacts_are_not_repo_front_door(self) -> None:
+        self.assertFalse((ROOT / "include" / "rtdl" / "rtdl.h").exists())
+        self.assertFalse((ROOT / "packaging" / "rtdl-c-api.pc").exists())
+        self.assertFalse((ROOT / "packaging" / "rtdl-c-api-config.cmake").exists())
+        staging = ROOT / "docs" / "history" / "v4_preparatory_embedding" / "staging"
+        self.assertTrue((staging / "README.md").exists())
+        self.assertTrue((staging / "include" / "rtdl" / "rtdl.h").exists())
+        self.assertTrue((staging / "packaging" / "rtdl-c-api.pc").exists())
+        self.assertTrue((staging / "packaging" / "rtdl-c-api-config.cmake").exists())
+
+    def test_makefile_public_targets_do_not_advertise_c_api(self) -> None:
+        makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+        help_public_block = makefile.split('@echo "Public targets:"', 1)[1].split('@echo ""', 1)[0]
+        self.assertNotIn("c-api", help_public_block)
+        self.assertIn("V4 preparatory targets (not a V3.0 public surface)", makefile)
+        self.assertIn("scripts/run_test_matrix.py --group v3_current", makefile)
+        self.assertIn("test-all:", makefile)
+
+    def test_v3_current_matrix_excludes_v4_preparatory_modules(self) -> None:
+        v3_modules = run_test_matrix.group_modules("v3_current")
+        v4_modules = run_test_matrix.group_modules("v4_prep")
+        forbidden_tokens = (
+            "c_abi",
+            "embedd",
+            "zero_copy",
+            "ctypes",
+            "dlpack",
+            "binding_interop",
+            "toolchain_support",
+            "neutral_buffer",
+        )
+        for module in v3_modules:
+            for token in forbidden_tokens:
+                self.assertNotIn(token, module)
+        self.assertTrue(any("c_abi" in module for module in v4_modules))
+        self.assertTrue(any("embedd" in module for module in v4_modules))
+        self.assertTrue(any("zero_copy" in module for module in v4_modules))
 
     def test_current_entry_points_do_not_link_old_release_packets(self) -> None:
         combined = "\n".join(path.read_text(encoding="utf-8") for path in CURRENT_DOC_PATHS)

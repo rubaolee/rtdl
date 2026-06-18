@@ -9,7 +9,7 @@ Goal4588 refreshes the source-tree doctor so its V4 preparatory C ABI surface ch
 ## Doctor Surface
 
 - Status: `pass`
-- Detail: `optional V4 preparatory files: include/rtdl/rtdl.h, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, pkg-config and CMake metadata, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA and DLPack-like metadata`
+- Detail: `optional V4 preparatory files: docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, pkg-config and CMake metadata, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA and DLPack-like metadata`
 
 ## Checks
 

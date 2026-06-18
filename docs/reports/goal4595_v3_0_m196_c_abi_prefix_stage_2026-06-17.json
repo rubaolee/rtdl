@@ -81,8 +81,8 @@
       "returncode": 0,
       "stderr_tail": [],
       "stdout_tail": [
-        "cp packaging/rtdl-c-api.pc /tmp/rtdl_c_api_prefix_stage_so63eem3/opt/rtdl/lib/pkgconfig/rtdl-c-api.pc",
-        "cp packaging/rtdl-c-api-config.cmake /tmp/rtdl_c_api_prefix_stage_so63eem3/opt/rtdl/lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake",
+        "cp docs/history/v4_preparatory_embedding/staging/packaging/rtdl-c-api.pc /tmp/rtdl_c_api_prefix_stage_so63eem3/opt/rtdl/lib/pkgconfig/rtdl-c-api.pc",
+        "cp docs/history/v4_preparatory_embedding/staging/packaging/rtdl-c-api-config.cmake /tmp/rtdl_c_api_prefix_stage_so63eem3/opt/rtdl/lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake",
         "cp docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json /tmp/rtdl_c_api_prefix_stage_so63eem3/opt/rtdl/share/rtdl/v3_0_c_abi_symbol_manifest.json",
         "cp docs/history/v4_preparatory_embedding/examples/embedding/README.md /tmp/rtdl_c_api_prefix_stage_so63eem3/opt/rtdl/share/rtdl/README.md",
         "cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_aabb2_overlap_client.c /tmp/rtdl_c_api_prefix_stage_so63eem3/opt/rtdl/share/rtdl/examples/c_api_aabb2_overlap_client.c",

@@ -25,7 +25,7 @@ OUT_JSON = Path(
 OUT_REPORT = Path(
     "docs/reports/goal4610_v3_0_m211_c_abi_independent_context_concurrency_smoke_2026-06-17.md"
 )
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 SOURCE_FILE = Path("src/native/rtdl_c_api.cpp")
 OWNERSHIP_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_ownership_threading_contract.md")
 ARCHITECTURE_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md")

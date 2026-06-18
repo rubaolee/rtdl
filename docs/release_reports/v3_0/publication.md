@@ -51,11 +51,18 @@ PYTHONPATH=src;. py -3 scripts\rtdl_source_tree_doctor.py --json
 result: ok=true, version=v3.0, required_failures=[]
 
 PYTHONPATH=src;. py -3 scripts\run_test_matrix.py --group v3_current
-result: ok=true, module_count=104, Ran 353 tests, OK
+result: ok=true, module_count=39, Ran 147 tests, OK
 
 PYTHONPATH=src;. py -3 scripts\run_test_matrix.py --group v3_release
-result: ok=true, module_count=1, Ran 5 tests, OK
+result: ok=true, module_count=2, Ran 12 tests, OK
+
+PYTHONPATH=src;. py -3 scripts\run_test_matrix.py --group v4_prep
+result: ok=true, module_count=65, Ran 206 tests, OK
 ```
+
+The `v4_prep` result is a regression guard for archived preparatory embedding,
+C ABI, SDK, and zero-copy material. It is not part of the V3.0 public release
+surface or completion claim.
 
 Current-doc polish scans after publication edits:
 

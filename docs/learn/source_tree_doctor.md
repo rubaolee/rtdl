@@ -61,13 +61,14 @@ PYTHONPATH=src:. python scripts/run_test_matrix.py --group v3_current
 - `PASS` on `V3 current test matrix` means the current V3 closure-suite runner
   is registered. The doctor does not run that suite unless you run the command
   above.
-- `PASS` on `V4 preparatory C ABI surface` means the public C header, source-tree
-  shared-library/staging/prefix-stage/archive targets, pkg-config and CMake
-  metadata, C examples including the host-runtime metadata and CUDA
+- `PASS` on `V4 preparatory C ABI surface` means the archived draft C header,
+  source-tree shared-library/staging/prefix-stage/archive targets, pkg-config
+  and CMake metadata, C examples including the host-runtime metadata and CUDA
   buffer-metadata examples, Python `ctypes` lifecycle examples, Python `ctypes`
   host AABB2 query examples, Python `ctypes` CUDA metadata examples, and
-  Python `ctypes` DLPack-like metadata examples are present. These are V4.0
-  preparatory artifacts, not V3.0 release criteria. It does not build
+  Python `ctypes` DLPack-like metadata examples are present under
+  `docs/history/v4_preparatory_embedding/`. These are V4.0 preparatory
+  artifacts, not V3.0 release criteria. It does not build
   `make build-c-api`, `make stage-c-api`,
   `make stage-c-api-prefix`, or `make package-c-api-stage`, and it does not run
   CMake.

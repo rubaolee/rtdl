@@ -79,7 +79,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "goal4568_v3_0_m169_zero_copy_interop_contract_2026-06-17.json"
         ]["claim_boundary"]["public_true_zero_copy_claim_authorized"]
         is False,
-        "v3_current_includes_progress_gate": "tests.goal4569_v3_0_m170_embeddability_progress_gate_test"
+        "v4_prep_includes_progress_gate": "tests.goal4569_v3_0_m170_embeddability_progress_gate_test"
         in matrix,
     }
     failed = tuple(name for name, passed in checks.items() if not passed)
@@ -113,10 +113,11 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "release_authorized": False,
         },
         "conclusion": (
-            "Goal4569 consolidates the V3 embeddability track: RTDL now has a "
-            "source-tree draft C ABI with a real host AABB2 query, non-Python C "
-            "client validation, symbol manifest, runtime negative/layout gates, "
-            "doctor visibility, and a zero-copy interop readiness contract. "
+            "Goal4569 consolidates the V4 preparatory embeddability track: RTDL "
+            "keeps an archived source-tree draft C ABI with a real host AABB2 "
+            "query, non-Python C client validation, symbol manifest, runtime "
+            "negative/layout gates, doctor visibility, and a zero-copy interop "
+            "readiness contract. "
             "Stable ABI, packaged SDK, device-buffer C ABI, OptiX/Embree C ABI "
             "queries, and public zero-copy wording remain blocked."
         ),

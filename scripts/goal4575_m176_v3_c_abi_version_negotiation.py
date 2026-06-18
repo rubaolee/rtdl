@@ -12,7 +12,7 @@ from scripts import goal4552_m153_v3_c_abi_stub_library as stub_library
 PACKET_VERSION = "rtdl.v3_0.c_abi_version_negotiation.goal4575.v1"
 OUT_JSON = Path("docs/reports/goal4575_v3_0_m176_c_abi_version_negotiation_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4575_v3_0_m176_c_abi_version_negotiation_2026-06-17.md")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 SOURCE = Path("src/native/rtdl_c_api.cpp")
 POLICY = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_stability_policy.md")
 C_ABI_DRAFT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")

@@ -4,7 +4,7 @@ Status: `c_abi_symbol_manifest_checked`
 
 ## Conclusion
 
-Goal4566 checks the current draft machine-readable C ABI symbol manifest against the public header plus the Goal4556 export audit. This gives the V3 ABI a concrete change-tracking surface without freezing binary compatibility.
+Goal4566 checks the current draft machine-readable C ABI symbol manifest against the archived draft header plus the Goal4556 export audit. This gives the V4 preparatory ABI a concrete change-tracking surface without freezing binary compatibility or making it part of V3.0 release scope.
 
 ## Symbols
 

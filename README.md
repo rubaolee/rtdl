@@ -13,6 +13,8 @@ start from primitive discovery or prepared front doors.
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
 
+The product name is RTDL; the Python import package is `rtdsl`.
+
 This documentation is written for the current v3.0 source-tree RTDL surface:
 Python+partner+RTDL over a generic, app-agnostic native engine, with prepared
 execution and a closed ten-app benchmark route matrix. Use RTDL from the repository source tree either with
@@ -141,7 +143,7 @@ Current public building blocks include:
 | Spatial rows | nearest-neighbor rows, fixed-radius rows, closest-hit rows, any-hit rows, visibility rows |
 | Reductions | Python `reduce_rows` plus documented backend reduction contracts where supported |
 | IR and lowering | `CompiledKernel` lowering into `RTExecutionPlan` |
-| Backend selection | CPU reference, native CPU, Embree, OptiX, HIPRT, Vulkan, Apple RT/MPS RT where documented |
+| Backend selection | CPU reference, native CPU, Embree, and OptiX as the main current performance paths; Vulkan, HIPRT, and Apple RT are proof/portability surfaces documented in backend maturity notes |
 
 The examples show what users have built with those blocks: Hausdorff distance,
 ANN candidate search, outlier detection, DBSCAN, robot screening, Barnes-Hut,
@@ -151,7 +153,8 @@ the language.
 
 Backend support varies by feature and platform. Start with the portable
 `cpu_python_reference` backend, then use Embree or OptiX when your host has the
-native dependencies configured.
+native dependencies configured. For the maturity of every backend, read
+[RTDL Backend Maturity](docs/backend_maturity.md).
 
 ## v3.0 Source-Tree Surface
 

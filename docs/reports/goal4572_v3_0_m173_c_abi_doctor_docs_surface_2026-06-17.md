@@ -4,7 +4,7 @@ Status: `c_abi_doctor_docs_surface_checked`
 
 ## Conclusion
 
-Goal4572 records the C ABI documentation surface as optional V4 preparatory doctor context. The doctor now verifies that draft, stability, ownership/threading, symbol manifest, zero-copy, and Learn README links are present, while runtime validation remains in dedicated evidence packets.
+Goal4572 records the C ABI documentation surface as optional V4 preparatory doctor context. The doctor now verifies that draft, stability, ownership/threading, symbol manifest, zero-copy, and history archive links are present, while runtime validation remains in dedicated evidence packets.
 
 ## Checks
 
@@ -16,7 +16,7 @@ Goal4572 records the C ABI documentation surface as optional V4 preparatory doct
 | `docs_surface_detail_names_expected_docs` | `True` |
 | `doctor_code_requires_c_abi_docs` | `True` |
 | `doctor_doc_explains_docs_surface` | `True` |
-| `learn_readme_links_ownership_and_zero_copy` | `True` |
+| `history_archive_links_ownership_and_zero_copy` | `True` |
 | `required_docs_exist` | `True` |
 | `required_failures_empty` | `True` |
 

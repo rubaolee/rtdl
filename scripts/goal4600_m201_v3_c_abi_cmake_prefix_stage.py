@@ -14,7 +14,7 @@ PACKET_VERSION = "rtdl.v3_0.c_abi_cmake_prefix_stage.goal4600.v1"
 OUT_JSON = Path("docs/reports/goal4600_v3_0_m201_c_abi_cmake_prefix_stage_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4600_v3_0_m201_c_abi_cmake_prefix_stage_2026-06-17.md")
 MAKEFILE = Path("Makefile")
-CMAKE_CONFIG = Path("packaging/rtdl-c-api-config.cmake")
+CMAKE_CONFIG = Path("docs/history/v4_preparatory_embedding/staging/packaging/rtdl-c-api-config.cmake")
 STAGING_CONTRACT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md")
 EMBEDDING_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
 DOCTOR = Path("scripts/rtdl_source_tree_doctor.py")
@@ -231,8 +231,10 @@ def build_packet(root: Path = Path("."), *, run_smoke: bool = False) -> dict[str
         and "target_link_libraries(consumer PRIVATE rtdl::c_api)" in embedding,
         "doctor_checks_cmake_metadata_presence": "rtdl-c-api-config.cmake" in doctor
         and "pkg-config and CMake metadata" in doctor,
-        "doctor_doc_names_cmake_metadata_boundary": "pkg-config and CMake\n  metadata" in doctor_doc
-        and "it does not run\n  CMake" in doctor_doc,
+        "doctor_doc_names_cmake_metadata_boundary": "pkg-config" in doctor_doc
+        and "CMake metadata" in doctor_doc
+        and "it does not run" in doctor_doc
+        and "CMake" in doctor_doc,
     }
     if smoke is not None:
         checks.update(

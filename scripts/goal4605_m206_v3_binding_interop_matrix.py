@@ -22,7 +22,7 @@ BENCHMARK_INDEX = Path("docs/learn/benchmark_evidence_index.md")
 C_ABI_DRAFT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
 ZERO_COPY_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_zero_copy_interop_contract.md")
 EMBEDDING_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 PY_CUDA_EXAMPLE = Path("docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_cuda_buffer_metadata_client.py")
 
 REPORTS = {

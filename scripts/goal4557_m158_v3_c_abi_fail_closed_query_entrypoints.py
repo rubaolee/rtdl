@@ -9,7 +9,7 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.c_abi_fail_closed_query_entrypoints.goal4557.v1"
 OUT_JSON = Path("docs/reports/goal4557_v3_0_m158_c_abi_fail_closed_query_entrypoints_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4557_v3_0_m158_c_abi_fail_closed_query_entrypoints_2026-06-17.md")
-HEADER = Path("include/rtdl/rtdl.h")
+HEADER = Path("docs/history/v4_preparatory_embedding/staging/include/rtdl/rtdl.h")
 SOURCE = Path("src/native/rtdl_c_api.cpp")
 CLIENT_SMOKE = Path("scripts/goal4553_m154_v3_c_abi_c_client_smoke.py")
 SYMBOL_AUDIT = Path("scripts/goal4556_m157_v3_c_abi_exported_symbol_audit.py")

@@ -45,7 +45,7 @@ Goal4614 closes the V3 current scope: the ten benchmark-app current routes are c
 ## Test Matrix
 
 - Group: `v3_current`
-- Module count: `104`
+- Module count: `39`
 - First module: `tests.goal4508_v3_0_m112_rtnn_clean_target_closeout_test`
 - Last module: `tests.goal4614_v3_0_m215_current_scope_completion_gate_test`
 
@@ -65,6 +65,7 @@ Goal4614 closes the V3 current scope: the ten benchmark-app current routes are c
 | `target_map_has_no_immediate_pod_targets` | `True` |
 | `prior_completion_packets_accept` | `True` |
 | `matrix_registered_and_ends_at_goal4614` | `True` |
+| `matrix_excludes_v4_preparatory_modules` | `True` |
 | `app_author_doc_names_goal4614` | `True` |
 | `app_author_doc_names_v4_deferrals` | `True` |
 | `embeddability_doc_marks_v4_deferral` | `True` |
