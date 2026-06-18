@@ -10,7 +10,7 @@ Goal4609 validates that the movable source-tree C ABI archive can compile and ru
 
 - OK: `True`
 - Archive: `build/rtdl-c-api-stage-0.1.3.tar.gz`
-- Extract dir: `/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3`
+- Extract dir: `/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3`
 
 | Example | Mode | OK | Stdout |
 | --- | --- | --- | --- |
@@ -33,7 +33,7 @@ validated_cuda_buffer_metadata_cases=4` |
 | `makefile_archive_carries_c_examples` | `True` |
 | `staging_contract_documents_archive_c_examples` | `True` |
 | `embedding_readme_documents_archive_c_examples` | `True` |
-| `architecture_doc_current_to_goal4609` | `True` |
+| `architecture_doc_names_archive_c_examples_smoke` | `True` |
 | `binding_matrix_names_archive_c_surface` | `True` |
 | `benchmark_index_links_goal4609` | `True` |
 | `prior_stage_archive_smoke_ok` | `True` |

@@ -30,7 +30,7 @@ class Goal4598V30M199EmbeddabilityArchitecturePrefixStatusTest(unittest.TestCase
 
     def test_architecture_doc_is_current_at_or_beyond_goal4597(self) -> None:
         text = ARCHITECTURE_DOC.read_text(encoding="utf-8")
-        self.assertIn("As of Goal4609", text)
+        self.assertIn("As of Goal4610", text)
         self.assertIn("make stage-c-api-prefix", text)
         self.assertIn("Prefix-stage Python `ctypes` smoke", text)
         self.assertIn("not a generated package", text)

@@ -31,16 +31,17 @@
     "stable_thread_safety_guarantee": false
   },
   "client_result": {
-    "c_compiler": "C:\\Program Files\\LLVM\\bin\\clang.exe",
+    "c_compiler": "/usr/bin/cc",
     "client_compile": {
       "command": [
-        "C:\\Program Files\\LLVM\\bin\\clang.exe",
+        "/usr/bin/cc",
         "-std=c11",
         "-I",
         "include",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmphgxnj1wr\\rtdl_c_api_ownership_client.c",
+        "/tmp/tmp4ycaviu9/rtdl_c_api_ownership_client.c",
         "-o",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmphgxnj1wr\\rtdl_c_api_ownership_client.exe"
+        "/tmp/tmp4ycaviu9/rtdl_c_api_ownership_client",
+        "-ldl"
       ],
       "ok": true,
       "returncode": 0,
@@ -49,44 +50,32 @@
     },
     "client_run": {
       "command": [
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmphgxnj1wr\\rtdl_c_api_ownership_client.exe",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmphgxnj1wr\\rtdl_c_api_ownership.dll"
+        "/tmp/tmp4ycaviu9/rtdl_c_api_ownership_client",
+        "/tmp/tmp4ycaviu9/rtdl_c_api_ownership.so"
       ],
       "ok": true,
       "returncode": 0,
       "stderr_tail": [],
       "stdout": "case release_callback_called_once: ok\ncase index_survives_primitive_buffer_destroy: ok\ncase result_view_borrowed_until_destroy: ok\nvalidated_ownership_cases=3\n"
     },
-    "cxx_compiler": "C:\\Program Files\\LLVM\\bin\\clang++.exe",
+    "cxx_compiler": "/usr/bin/c++",
     "ok": true,
     "shared_library": {
       "command": [
-        "C:\\Program Files\\LLVM\\bin\\clang++.exe",
+        "/usr/bin/c++",
         "-std=c++17",
         "-DRTDL_BUILD_SHARED",
         "-I",
         "include",
-        "src\\native\\rtdl_c_api.cpp",
+        "src/native/rtdl_c_api.cpp",
         "-shared",
+        "-fPIC",
         "-o",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmphgxnj1wr\\rtdl_c_api_ownership.dll"
+        "/tmp/tmp4ycaviu9/rtdl_c_api_ownership.so"
       ],
       "ok": true,
       "returncode": 0,
-      "stderr_tail": [
-        "  334 | __DEFINE_CPP_OVERLOAD_STANDARD_NFUNC_0_2_EX(",
-        "      | ^",
-        "C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt\\corecrt.h:1974:17: note: expanded from macro '__DEFINE_CPP_OVERLOAD_STANDARD_NFUNC_0_2_EX'",
-        " 1974 |                 _CRT_INSECURE_DEPRECATE(_SecureFuncName) _DeclSpec _ReturnType __cdecl _FuncName(_SalAttributeDst _DstType *_Dst, _TType1 _TArg1, _TType2 _TArg2);",
-        "      |                 ^",
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\include\\vcruntime.h:368:55: note: expanded from macro '_CRT_INSECURE_DEPRECATE'",
-        "  368 |         #define _CRT_INSECURE_DEPRECATE(_Replacement) _CRT_DEPRECATE_TEXT(    \\",
-        "      |                                                       ^",
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\include\\vcruntime.h:358:47: note: expanded from macro '_CRT_DEPRECATE_TEXT'",
-        "  358 | #define _CRT_DEPRECATE_TEXT(_Text) __declspec(deprecated(_Text))",
-        "      |                                               ^",
-        "1 warning generated."
-      ],
+      "stderr_tail": [],
       "stdout": ""
     }
   },

@@ -38,7 +38,7 @@ class Goal4601V30M202EmbeddabilityDeliveryStatusRefreshTest(unittest.TestCase):
 
     def test_architecture_doc_is_current_at_or_beyond_goal4600(self) -> None:
         text = ARCHITECTURE_DOC.read_text(encoding="utf-8")
-        self.assertIn("As of Goal4609", text)
+        self.assertIn("As of Goal4610", text)
         self.assertIn("find_package(rtdl-c-api CONFIG REQUIRED)", text)
         self.assertIn("`rtdl::c_api`", text)
         self.assertIn("C/Python `ctypes` layout audit", text)

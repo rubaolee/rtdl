@@ -56,7 +56,7 @@ class Goal4608V30M209ArchiveStagePythonCtypesSmokeTest(unittest.TestCase):
         self.assertIn("Goal4608 archive-stage Python ctypes smoke", INDEX.read_text(encoding="utf-8"))
         self.assertIn("extracted source-tree archive also carries", STAGING_CONTRACT.read_text(encoding="utf-8"))
         self.assertIn("extracted archive also carries", EMBEDDING_README.read_text(encoding="utf-8"))
-        self.assertIn("As of Goal4609", ARCHITECTURE_DOC.read_text(encoding="utf-8"))
+        self.assertIn("As of Goal4610", ARCHITECTURE_DOC.read_text(encoding="utf-8"))
         self.assertIn("Python `ctypes` examples from archive stage", BINDING_MATRIX.read_text(encoding="utf-8"))
         self.assertTrue(self.checked_in["claim_boundary"]["archive_python_ctypes_stage_authorized"])
         for key, value in self.checked_in["claim_boundary"].items():

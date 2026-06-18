@@ -38,9 +38,9 @@ class Goal4603V30M204EmbeddabilityDeliveryArchiveCmakeRefreshTest(unittest.TestC
         self.assertEqual("blocked_until_1_0_gates", matrix["stable_abi"])
         self.assertEqual("blocked", matrix["release"])
 
-    def test_architecture_doc_is_current_to_goal4609(self) -> None:
+    def test_architecture_doc_is_current_to_goal4610(self) -> None:
         text = ARCHITECTURE_DOC.read_text(encoding="utf-8")
-        self.assertIn("As of Goal4609", text)
+        self.assertIn("As of Goal4610", text)
         self.assertIn("Extracted source-tree stage archive CMake consumer proof", text)
         self.assertIn("Archive-stage Python `ctypes` smoke", text)
         self.assertIn("staged-prefix/archive consumption", text)

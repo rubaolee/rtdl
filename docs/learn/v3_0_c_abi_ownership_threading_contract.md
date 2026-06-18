@@ -66,16 +66,20 @@ The current `0.1.3` ABI is reentrant only at the narrow utility level:
 
 - ABI version functions, `rtdl_abi_is_compatible`, capability query functions,
   and `rtdl_status_string` are safe to call concurrently.
-- Independent contexts with no shared imported buffers are intended to be usable
-  independently, but this is not yet a release-grade thread-safety guarantee.
+- Independent contexts with no shared imported buffers have a Goal4610
+  source-tree smoke for the current host AABB2 route. This validates the
+  intended independent-context usage shape, but it is not yet a release-grade
+  thread-safety guarantee.
 - Calls that mutate or destroy the same context, buffer, index, or query handle
   require external synchronization.
 - A handle must not be destroyed while any other thread may still use it.
 - `rtdl_context_last_error` is per-context mutable state and is not safe to read
   concurrently with calls that can update that same context.
 
-Stable thread-safety wording remains blocked until a dedicated concurrency test
-matrix exists for every supported backend route.
+Stable thread-safety wording remains blocked until the independent-context
+smoke expands into a dedicated concurrency test matrix for every supported
+backend route and shared-handle misuse remains explicitly rejected or externally
+synchronized.
 
 ## Boundary
 

@@ -42,6 +42,7 @@ class Goal4605V30M206BindingInteropMatrixTest(unittest.TestCase):
         self.assertIn("CUDA descriptor metadata", doc)
         self.assertIn("C examples from archive stage", doc)
         self.assertIn("Python `ctypes` examples from archive stage", doc)
+        self.assertIn("Independent-context host-route concurrency", doc)
         self.assertIn("DLPack-like object to C ABI descriptor", doc)
         self.assertIn("Do not say DLPack support", doc)
         self.assertIn("V3.0 Binding And Device Interop Matrix", LEARN_README.read_text(encoding="utf-8"))
@@ -52,6 +53,7 @@ class Goal4605V30M206BindingInteropMatrixTest(unittest.TestCase):
         self.assertEqual(self.packet["version"], self.checked_in["version"])
         matrix = self.checked_in["status_matrix"]
         self.assertEqual("validated_direct_link_dlopen_host_runtime_cuda_metadata", matrix["c_archive_examples"])
+        self.assertEqual("validated_source_tree_smoke", matrix["independent_context_host_route_concurrency"])
         self.assertEqual("validated_metadata_only", matrix["cuda_buffer_descriptor_import_export"])
         self.assertEqual("validated_metadata_only", matrix["cuda_array_interface_to_c_abi_descriptor"])
         self.assertEqual("rejected_invalid_argument", matrix["cuda_descriptor_host_aabb2_query_route"])
@@ -75,6 +77,7 @@ class Goal4605V30M206BindingInteropMatrixTest(unittest.TestCase):
                 "python_ctypes_examples_authorized",
                 "archive_python_ctypes_stage_authorized",
                 "host_aabb2_c_abi_query_authorized",
+                "independent_context_host_route_concurrency_authorized",
                 "cuda_metadata_descriptor_authorized",
                 "cuda_array_interface_metadata_bridge_authorized",
                 "dlpack_like_metadata_bridge_authorized",

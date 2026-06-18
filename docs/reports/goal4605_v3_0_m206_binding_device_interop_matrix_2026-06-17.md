@@ -4,7 +4,7 @@ Status: `binding_device_interop_matrix_checked`
 
 ## Conclusion
 
-Goal4605 consolidates the current V3 binding and device interop state. The source tree has executable C and Python ctypes examples, pkg-config and CMake staged handoffs, a host AABB2 C ABI query route, host-runtime metadata, and CUDA descriptor metadata including a `__cuda_array_interface__`-style Python bridge, DLPack-like metadata bridging, extracted archive Python ctypes smoke, and extracted archive C examples smoke. The device side is still deliberately fail-closed: no DLPack adapter, device-buffer query route, external CUDA stream ordering, generated binding, stable ABI, SDK, release, performance claim, or true-zero-copy claim is authorized by this matrix.
+Goal4605 consolidates the current V3 binding and device interop state. The source tree has executable C and Python ctypes examples, pkg-config and CMake staged handoffs, a host AABB2 C ABI query route, host-runtime metadata, and CUDA descriptor metadata including a `__cuda_array_interface__`-style Python bridge, DLPack-like metadata bridging, extracted archive Python ctypes smoke, and extracted archive C examples smoke, and independent-context host-route concurrency smoke. The device side is still deliberately fail-closed: no DLPack adapter, device-buffer query route, external CUDA stream ordering, generated binding, stable ABI, SDK, release, performance claim, or true-zero-copy claim is authorized by this matrix.
 
 ## Current Matrix
 
@@ -18,6 +18,7 @@ Goal4605 consolidates the current V3 binding and device interop state. The sourc
 | `python_ctypes_lifecycle_and_host_aabb2` | `validated_lifecycle_host_aabb2_cuda_metadata` |
 | `python_ctypes_archive_examples` | `validated_lifecycle_host_aabb2_cuda_metadata_dlpack_like` |
 | `host_aabb2_c_abi_query` | `validated_host_f32_to_host_u64_pairs` |
+| `independent_context_host_route_concurrency` | `validated_source_tree_smoke` |
 | `host_external_runtime_metadata` | `validated` |
 | `cuda_buffer_descriptor_import_export` | `validated_metadata_only` |
 | `cuda_array_interface_to_c_abi_descriptor` | `validated_metadata_only` |
@@ -63,6 +64,7 @@ Goal4605 consolidates the current V3 binding and device interop state. The sourc
 | `python_dlpack_like_metadata_bridge_validated` | `True` |
 | `archive_python_ctypes_examples_validated` | `True` |
 | `archive_c_examples_validated` | `True` |
+| `independent_context_concurrency_validated` | `True` |
 | `delivery_cmake_pkg_config_handoff_validated` | `True` |
 | `device_and_stream_routes_blocked` | `True` |
 | `generated_bindings_blocked` | `True` |

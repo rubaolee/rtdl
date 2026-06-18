@@ -1,0 +1,89 @@
+{
+  "checks": {
+    "architecture_doc_current_to_goal4610": true,
+    "benchmark_index_links_goal4610": true,
+    "binding_matrix_names_independent_context_concurrency": true,
+    "client_compile_ok": true,
+    "client_run_ok": true,
+    "cxx_compiler_available": true,
+    "header_points_to_ownership_threading_contract": true,
+    "independent_context_concurrency_stdout_matches": true,
+    "ownership_doc_keeps_stable_thread_safety_blocked": true,
+    "ownership_doc_names_goal4610_independent_context_smoke": true,
+    "shared_library_build_ok": true,
+    "source_context_and_buffer_handles_are_instance_owned": true
+  },
+  "claim_boundary": {
+    "backend_concurrency_matrix_authorized": false,
+    "independent_context_host_route_concurrency_authorized": true,
+    "performance_wording_authorized": false,
+    "release_authorized": false,
+    "same_context_concurrent_mutation_authorized": false,
+    "shared_handle_concurrency_authorized": false,
+    "stable_thread_safety_authorized": false
+  },
+  "conclusion": "Goal4610 validates a narrow independent-context concurrency smoke for the current host AABB2 C ABI route. The generated C++ client starts multiple host threads, each with its own context, buffers, index, query, and teardown loop, and checks deterministic result rows. This authorizes independent-context host-route smoke only; same-handle concurrent mutation, destroy-while-in-use, backend-wide thread-safety, stable thread-safety wording, release, and performance claims remain blocked.",
+  "concurrency_smoke": {
+    "client_compile": {
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-I",
+        "include",
+        "/tmp/tmpu4kcy_k5/rtdl_c_api_independent_context_concurrency_smoke.cpp",
+        "-L",
+        "/tmp/tmpu4kcy_k5",
+        "-lrtdl_c_api",
+        "-Wl,-rpath,/tmp/tmpu4kcy_k5",
+        "-o",
+        "/tmp/tmpu4kcy_k5/rtdl_c_api_independent_context_concurrency_smoke",
+        "-pthread"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    },
+    "client_run": {
+      "command": [
+        "/tmp/tmpu4kcy_k5/rtdl_c_api_independent_context_concurrency_smoke"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "validated_independent_context_threads=8 iterations=64"
+    },
+    "cxx_compiler": "/usr/bin/c++",
+    "ok": true,
+    "shared_library": {
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-DRTDL_BUILD_SHARED",
+        "-I",
+        "include",
+        "src/native/rtdl_c_api.cpp",
+        "-shared",
+        "-fPIC",
+        "-o",
+        "/tmp/tmpu4kcy_k5/librtdl_c_api.so"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    }
+  },
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4610 / V3 M211",
+  "status": "c_abi_independent_context_concurrency_checked",
+  "support_matrix": {
+    "backend_concurrency_matrix": "blocked_until_each_backend_route_is_tested",
+    "independent_context_host_aabb2_concurrency": "validated_source_tree_smoke",
+    "same_context_concurrent_mutation": "requires_external_synchronization",
+    "shared_handle_destroy_while_in_use": "blocked_requires_external_synchronization",
+    "stable_thread_safety_wording": "blocked"
+  },
+  "version": "rtdl.v3_0.c_abi_independent_context_concurrency.goal4610.v1"
+}

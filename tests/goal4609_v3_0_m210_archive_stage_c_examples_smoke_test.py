@@ -60,7 +60,7 @@ class Goal4609V30M210ArchiveStageCExamplesSmokeTest(unittest.TestCase):
         self.assertIn("Goal4609 archive-stage C examples smoke", INDEX.read_text(encoding="utf-8"))
         self.assertIn("extracted source-tree archive carries runnable C examples", STAGING_CONTRACT.read_text(encoding="utf-8"))
         self.assertIn("extracted archive also carries runnable C examples", EMBEDDING_README.read_text(encoding="utf-8"))
-        self.assertIn("As of Goal4609", ARCHITECTURE_DOC.read_text(encoding="utf-8"))
+        self.assertIn("As of Goal4610", ARCHITECTURE_DOC.read_text(encoding="utf-8"))
         self.assertIn("C examples from archive stage", BINDING_MATRIX.read_text(encoding="utf-8"))
         self.assertTrue(self.checked_in["claim_boundary"]["archive_c_examples_stage_authorized"])
         for key, value in self.checked_in["claim_boundary"].items():

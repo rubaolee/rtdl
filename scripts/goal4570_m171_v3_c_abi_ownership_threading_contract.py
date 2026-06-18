@@ -343,7 +343,7 @@ def build_packet(root: Path = Path("."), *, run_compile: bool = False) -> dict[s
         ),
         "contract_defines_last_error_lifetime": "valid only until the next C ABI call" in contract,
         "contract_defines_threading_boundary": "external synchronization" in contract
-        and "not yet a release-grade thread-safety guarantee" in contract,
+        and "not yet a release-grade thread-safety guarantee" in compact_contract,
         "c_abi_doc_links_contract": "C ABI Ownership And Threading Contract" in c_abi_doc,
         "c_abi_doc_updates_imported_buffer_wording": "caller-retained when `release == NULL`" in c_abi_doc
         and "release != NULL" in c_abi_doc,

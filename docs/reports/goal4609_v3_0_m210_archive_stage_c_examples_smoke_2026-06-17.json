@@ -2,7 +2,7 @@
   "archive_stage_c_examples_smoke": {
     "archive": "build/rtdl-c-api-stage-0.1.3.tar.gz",
     "archive_exists": true,
-    "archive_size_bytes": 19634,
+    "archive_size_bytes": 19629,
     "cc": "/usr/bin/cc",
     "cflags_result": {
       "command": [
@@ -13,7 +13,7 @@
       "ok": true,
       "returncode": 0,
       "stderr_tail": [],
-      "stdout": "-I/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../include"
+      "stdout": "-I/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../include"
     },
     "example_runs": [
       {
@@ -21,11 +21,11 @@
           "command": [
             "/usr/bin/cc",
             "-std=c11",
-            "-I/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../include",
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/examples/c_api_direct_link_client.c",
+            "-I/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../include",
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/examples/c_api_direct_link_client.c",
             "-o",
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_direct_link_client_from_archive_all",
-            "-L/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../lib",
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_direct_link_client_from_archive_all",
+            "-L/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../lib",
             "-lrtdl_c_api"
           ],
           "ok": true,
@@ -37,7 +37,7 @@
         "ok": true,
         "run_result": {
           "command": [
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_direct_link_client_from_archive_all"
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_direct_link_client_from_archive_all"
           ],
           "expected_contains": null,
           "expected_stdout": "direct_link_ok 0.1.3 ok",
@@ -53,11 +53,11 @@
           "command": [
             "/usr/bin/cc",
             "-std=c11",
-            "-I/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../include",
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/examples/c_api_host_runtime_client.c",
+            "-I/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../include",
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/examples/c_api_host_runtime_client.c",
             "-o",
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_host_runtime_client_from_archive",
-            "-L/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../lib",
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_host_runtime_client_from_archive",
+            "-L/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../lib",
             "-lrtdl_c_api"
           ],
           "ok": true,
@@ -69,7 +69,7 @@
         "ok": true,
         "run_result": {
           "command": [
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_host_runtime_client_from_archive"
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_host_runtime_client_from_archive"
           ],
           "expected_contains": "validated_host_external_runtime_cases=3",
           "expected_stdout": null,
@@ -85,11 +85,11 @@
           "command": [
             "/usr/bin/cc",
             "-std=c11",
-            "-I/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../include",
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/examples/c_api_cuda_buffer_metadata_client.c",
+            "-I/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../include",
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/examples/c_api_cuda_buffer_metadata_client.c",
             "-o",
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_cuda_buffer_metadata_client_from_archive",
-            "-L/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../lib",
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_cuda_buffer_metadata_client_from_archive",
+            "-L/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../lib",
             "-lrtdl_c_api"
           ],
           "ok": true,
@@ -101,7 +101,7 @@
         "ok": true,
         "run_result": {
           "command": [
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_cuda_buffer_metadata_client_from_archive"
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_cuda_buffer_metadata_client_from_archive"
           ],
           "expected_contains": "validated_cuda_buffer_metadata_cases=4",
           "expected_stdout": null,
@@ -118,10 +118,10 @@
             "/usr/bin/cc",
             "-std=c11",
             "-I",
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/include",
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/examples/c_api_aabb2_overlap_client.c",
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/include",
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/examples/c_api_aabb2_overlap_client.c",
             "-o",
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_aabb2_overlap_client_from_archive",
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_aabb2_overlap_client_from_archive",
             "-ldl"
           ],
           "ok": true,
@@ -133,8 +133,8 @@
         "ok": true,
         "run_result": {
           "command": [
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_aabb2_overlap_client_from_archive",
-            "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so"
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/examples/rtdl_c_api_aabb2_overlap_client_from_archive",
+            "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so"
           ],
           "expected_contains": null,
           "expected_stdout": "hit_count=1 first_pair=(0,0)",
@@ -146,7 +146,7 @@
         "script": "c_api_aabb2_overlap_client.c"
       }
     ],
-    "extract_dir": "/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3",
+    "extract_dir": "/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3",
     "libs_result": {
       "command": [
         "/usr/bin/pkg-config",
@@ -156,7 +156,7 @@
       "ok": true,
       "returncode": 0,
       "stderr_tail": [],
-      "stdout": "-L/tmp/rtdl_c_api_archive_c_examples_6ugkur2a/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../lib -lrtdl_c_api"
+      "stdout": "-L/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3/lib/pkgconfig/../../lib -lrtdl_c_api"
     },
     "make": "/usr/bin/make",
     "make_result": {
@@ -187,7 +187,7 @@
   },
   "checks": {
     "all_archive_c_examples_compile_and_run": true,
-    "architecture_doc_current_to_goal4609": true,
+    "architecture_doc_names_archive_c_examples_smoke": true,
     "archive_cuda_metadata_stdout_matches": true,
     "archive_direct_link_stdout_matches": true,
     "archive_dlopen_aabb2_stdout_matches": true,

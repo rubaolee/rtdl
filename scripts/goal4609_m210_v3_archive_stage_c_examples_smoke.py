@@ -285,7 +285,7 @@ def build_packet(root: Path = Path("."), *, run_smoke: bool = False) -> dict[str
             "The extracted archive also carries runnable C examples" in embedding
             and "validated_host_external_runtime_cases=3" in embedding
         ),
-        "architecture_doc_current_to_goal4609": "As of Goal4609" in architecture
+        "architecture_doc_names_archive_c_examples_smoke": "Current Implementation Progress" in architecture
         and "Archive-stage C examples smoke" in architecture,
         "binding_matrix_names_archive_c_surface": "C examples from archive stage" in binding,
         "benchmark_index_links_goal4609": "Goal4609 archive-stage C examples smoke" in index,

@@ -39,6 +39,9 @@ REPORTS = {
         "docs/reports/goal4608_v3_0_m209_archive_stage_python_ctypes_smoke_2026-06-17.json"
     ),
     "archive_c_examples": Path("docs/reports/goal4609_v3_0_m210_archive_stage_c_examples_smoke_2026-06-17.json"),
+    "independent_context_concurrency": Path(
+        "docs/reports/goal4610_v3_0_m211_c_abi_independent_context_concurrency_smoke_2026-06-17.json"
+    ),
 }
 
 
@@ -110,6 +113,7 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
                 "C examples from archive stage",
                 "Python `ctypes` host AABB2 query",
                 "Python `ctypes` examples from archive stage",
+                "Independent-context host-route concurrency",
                 "CUDA buffer descriptor import/export",
                 "`__cuda_array_interface__` to C ABI descriptor",
                 "DLPack-like object to C ABI descriptor",
@@ -164,6 +168,13 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
         is True,
         "archive_c_examples_validated": reports["archive_c_examples"]["archive_stage_c_examples_smoke"]["ok"]
         and reports["archive_c_examples"]["claim_boundary"]["archive_c_examples_stage_authorized"] is True,
+        "independent_context_concurrency_validated": reports["independent_context_concurrency"][
+            "concurrency_smoke"
+        ]["ok"]
+        and reports["independent_context_concurrency"]["claim_boundary"][
+            "independent_context_host_route_concurrency_authorized"
+        ]
+        is True,
         "delivery_cmake_pkg_config_handoff_validated": (
             delivery_status["prefix_pkg_config"] == "validated"
             and delivery_status["prefix_cmake_find_package"] == "validated_imported_target"
@@ -204,6 +215,7 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
             "python_ctypes_lifecycle_and_host_aabb2": delivery_status["python_ctypes_prefix_examples"],
             "python_ctypes_archive_examples": "validated_lifecycle_host_aabb2_cuda_metadata_dlpack_like",
             "host_aabb2_c_abi_query": delivery_status["host_aabb2_c_abi_query"],
+            "independent_context_host_route_concurrency": "validated_source_tree_smoke",
             "host_external_runtime_metadata": metadata_status["host_external_runtime_metadata"],
             "cuda_buffer_descriptor_import_export": metadata_status["cuda_buffer_descriptor_import_export"],
             "cuda_array_interface_to_c_abi_descriptor": py_cuda_status[
@@ -232,6 +244,7 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
             "python_ctypes_examples_authorized": True,
             "archive_python_ctypes_stage_authorized": True,
             "host_aabb2_c_abi_query_authorized": True,
+            "independent_context_host_route_concurrency_authorized": True,
             "cuda_metadata_descriptor_authorized": True,
             "cuda_array_interface_metadata_bridge_authorized": True,
             "dlpack_like_metadata_bridge_authorized": True,
@@ -252,7 +265,8 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
             "host-runtime metadata, and CUDA descriptor metadata including a "
             "`__cuda_array_interface__`-style Python bridge, DLPack-like metadata "
             "bridging, extracted archive Python ctypes smoke, and extracted archive "
-            "C examples smoke. The device side is "
+            "C examples smoke, and independent-context host-route concurrency "
+            "smoke. The device side is "
             "still deliberately fail-closed: no DLPack adapter, device-buffer "
             "query route, external CUDA stream ordering, generated binding, "
             "stable ABI, SDK, release, performance claim, or true-zero-copy claim "
