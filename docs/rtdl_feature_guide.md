@@ -1,6 +1,6 @@
 # RTDL Feature Guide
 
-This is the high-level feature guide for the v2.x-facing RTDL surface. It is
+This is the high-level feature guide for the V3.0 RTDL surface. It is
 for learners, users, and reviewers who want the current shape without release
 archaeology. Older version notes live in
 [Learner Doc Version Notes](history/learner_doc_version_notes.md).
@@ -31,9 +31,9 @@ evidence.
 | Backend dispatch | CPU reference, native CPU/oracle, Embree, OptiX, and bounded proof surfaces where documented |
 | IR/lowering | `CompiledKernel` to `RTExecutionPlan` for the supported language shape |
 
-## v2.x Partner Features
+## V3.0 Partner Features
 
-The v2.x-facing partner lane is about moving supported RTDL primitive inputs and
+The V3.0 partner lane is about moving supported RTDL primitive inputs and
 outputs through partner-owned columns:
 
 - NumPy for CPU/host partner paths;
@@ -57,7 +57,7 @@ Use the smallest output contract that answers the app question:
 | exact witnesses | streaming witness columns |
 | human inspection | Python row dictionaries, accepting materialization cost |
 
-The streaming witness-column contract is the current v2.x answer to large
+The streaming witness-column contract is the current V3.0 answer to large
 segment/polygon witness output. It preserves exact witness IDs without forcing a
 huge Python dictionary table.
 

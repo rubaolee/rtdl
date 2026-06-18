@@ -1,6 +1,6 @@
 # RTDL Performance Model
 
-This page explains how to read performance results for the current v2.x-facing
+This page explains how to read performance results for the current V3.0-facing
 RTDL surface. It is intentionally stricter than marketing language: selecting a
 backend, running native code, and publishing a speedup claim are different
 things.

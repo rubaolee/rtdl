@@ -4,7 +4,7 @@ Status: `c_abi_doctor_docs_surface_checked`
 
 ## Conclusion
 
-Goal4572 adds a required source-tree doctor check for the V3 C ABI documentation surface. The doctor now verifies that draft, stability, ownership/threading, symbol manifest, zero-copy, and Learn README links are present, while runtime validation remains in dedicated evidence packets.
+Goal4572 records the C ABI documentation surface as optional V4 preparatory doctor context. The doctor now verifies that draft, stability, ownership/threading, symbol manifest, zero-copy, and Learn README links are present, while runtime validation remains in dedicated evidence packets.
 
 ## Checks
 

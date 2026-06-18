@@ -8,7 +8,7 @@ ITRE is the current RTDL programming model:
 3. **Refine**: apply the rule that turns broad candidates into valid rows.
 4. **Emit**: return rows, summaries, or partner-owned columns.
 
-This page is v2.x-facing and avoids archived release chronology. For archived
+This page is V3.0-facing and avoids archived release chronology. For archived
 version history, use
 [Version Archive Notes](../history/version_archive_notes.md).
 
@@ -59,7 +59,7 @@ Python owns the app:
 
 ## What Partners Own
 
-In the v2.x-facing path, partner frameworks can own input and output columns:
+In the V3.0-facing path, partner frameworks can own input and output columns:
 
 - NumPy for host/CPU arrays;
 - CuPy for the current measured CUDA continuation performance lane;
@@ -94,5 +94,5 @@ moving app logic into the native engine:
 - streaming exact witness columns;
 - partner-owned arrays for downstream CuPy/Numba work.
 
-That is the v2.x lesson: keep the engine generic, but give Python and partner
+That is the V3.0 lesson: keep the engine generic, but give Python and partner
 frameworks efficient output shapes.

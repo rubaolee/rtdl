@@ -29,13 +29,13 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     doc_text = (root / DOCTOR_DOC).read_text(encoding="utf-8")
     checks = {
         "doctor_ok": payload["ok"],
-        "version_marker_is_v2_14": checks_by_name["version marker"]["detail"] == "v2.14",
-        "v2_14_release_package_required": "v2.14 release package" in checks_by_name,
+        "version_marker_is_v3_0": checks_by_name["version marker"]["detail"] == "v3.0",
+        "v3_0_release_package_required": "v3.0 release package" in checks_by_name,
         "v3_strategy_doc_required": "V3 app-author strategy" in checks_by_name,
         "v3_current_test_matrix_required": "V3 current test matrix" in checks_by_name,
-        "v3_c_abi_embedding_surface_required": "V3 C ABI embedding surface" in checks_by_name,
+        "v4_preparatory_c_abi_surface_optional": "V4 preparatory C ABI surface" in checks_by_name,
         "doctor_doc_mentions_v3": "V3 development" in doc_text,
-        "doctor_doc_mentions_c_abi_surface": "V3 C ABI embedding surface" in doc_text,
+        "doctor_doc_mentions_c_abi_surface": "V4 preparatory C ABI surface" in doc_text,
         "required_failures_empty": tuple(payload["required_failures"]) == (),
     }
     failed = tuple(name for name, passed in checks.items() if not passed)
@@ -57,11 +57,11 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "automatic_partner_selection_authorized": False,
         },
         "conclusion": (
-            "Goal4545 refreshes the source-tree doctor to the current v2.14/V3 "
+            "Goal4545 refreshes the source-tree doctor to the current V3.0 "
             "development surface. The required layout checks now expect VERSION "
-            "`v2.14`, the v2.14 release package, the V3 app-author strategy "
-            "doc, the current V3 test-matrix entrypoint, and the V3 C ABI "
-            "embedding surface. This is an "
+            "`v3.0`, the v3.0 release package, the V3 app-author strategy "
+            "doc, the current V3 test-matrix entrypoint, and the optional V4 "
+            "preparatory C ABI surface. This is an "
             "environment sanity gate only, not a benchmark or claim "
             "authorization."
         ),

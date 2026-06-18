@@ -1,11 +1,12 @@
 # V3.0 C ABI Draft
 
-Status: design-stage boundary draft with a minimal stub shared-library
-implementation; not a frozen or backend-capable ABI.
+Status: historical V3-track file retained as V4.0 preparatory material. It is a
+design-stage boundary draft with a minimal stub shared-library implementation,
+not V3.0 release scope, not a V3.0 completion criterion, and not a frozen or backend-capable ABI.
 
 The draft public header is [include/rtdl/rtdl.h](../../include/rtdl/rtdl.h).
-It is the first concrete artifact from the V3 embeddability strategy: define a
-narrow C boundary before adding language bindings or device-callable fusion.
+It is an early concrete artifact for future embeddability work: define a narrow
+C boundary before adding language bindings or device-callable fusion.
 Read [V3.0 C ABI Stability Policy](v3_0_c_abi_stability_policy.md) before
 using this draft as an external contract.
 Use [V3.0 C ABI Ownership And Threading Contract](v3_0_c_abi_ownership_threading_contract.md)

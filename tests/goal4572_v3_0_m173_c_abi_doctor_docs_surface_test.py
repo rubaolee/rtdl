@@ -28,7 +28,8 @@ class Goal4572V30M173CAbiDoctorDocsSurfaceTest(unittest.TestCase):
 
     def test_doctor_payload_contains_required_docs_surface_check(self) -> None:
         checks = {row["name"]: row for row in self.packet["doctor_payload"]["checks"]}
-        self.assertEqual("pass", checks["V3 C ABI docs surface"]["status"])
+        self.assertEqual("pass", checks["V4 preparatory C ABI docs"]["status"])
+        self.assertFalse(checks["V4 preparatory C ABI docs"]["required"])
         self.assertEqual([], self.packet["doctor_payload"]["required_failures"])
         self.assertTrue(all(self.packet["required_docs"].values()))
 
@@ -36,7 +37,7 @@ class Goal4572V30M173CAbiDoctorDocsSurfaceTest(unittest.TestCase):
         self.assertEqual(self.packet["version"], self.checked_in["version"])
         self.assertIn("Goal4572 / V3 M173", REPORT.read_text(encoding="utf-8"))
         self.assertIn("Goal4572 C ABI doctor docs surface", INDEX.read_text(encoding="utf-8"))
-        self.assertIn("V3 C ABI docs surface", DOCTOR_DOC.read_text(encoding="utf-8"))
+        self.assertIn("V4 preparatory C ABI docs", DOCTOR_DOC.read_text(encoding="utf-8"))
         for key, value in self.checked_in["claim_boundary"].items():
             self.assertFalse(value, key)
 

@@ -4,12 +4,12 @@ Status: `source_tree_doctor_prefix_stage_checked`
 
 ## Conclusion
 
-Goal4596 refreshes the source-tree doctor so its V3 C ABI embedding surface check includes the new `stage-c-api-prefix` target. The doctor remains a presence/sanity check only: it verifies the target and docs exist, but it does not build the prefix stage, install RTDL, package an SDK, freeze the ABI, or authorize release wording.
+Goal4596 refreshes the source-tree doctor so its V4 preparatory C ABI surface check includes the new `stage-c-api-prefix` target. The doctor remains a presence/sanity check only: it verifies the target and docs exist, but it does not build the prefix stage, install RTDL, package an SDK, freeze the ABI, or authorize release wording.
 
 ## Doctor Surface
 
 - Status: `pass`
-- Detail: `include/rtdl/rtdl.h, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA metadata`
+- Detail: `optional V4 preparatory files: include/rtdl/rtdl.h, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, pkg-config and CMake metadata, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA and DLPack-like metadata`
 
 ## Checks
 

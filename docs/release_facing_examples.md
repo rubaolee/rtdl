@@ -1,6 +1,6 @@
 # Release-Facing Example Command Archive
 
-Status: current v2.10 source-tree command archive.
+Status: current v3.0 source-tree command archive.
 
 This page is for reviewers who need a compact command list for the public
 example surface. If you are learning RTDL for the first time, start with:

@@ -10,6 +10,6 @@ The RTDL native engine (C++/CUDA) must become 100% app-agnostic. All
 domain-specific, app-shaped, and workload-tailored native backdoors must be
 eradicated or quarantined outside the release surface.
 
-For learner-facing docs, use the current v2.0 pages instead of this historical
+For learner-facing docs, use the current V3.0 pages instead of this historical
 directive. This file exists so the audit trail remains traceable after the docs
 directory reorganization.

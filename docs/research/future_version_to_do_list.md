@@ -1,6 +1,6 @@
 # Future Version To-Do List
 
-This file catches design ideas that should not interrupt the current release or internal-preview lane.
+This file catches design ideas that should not interrupt the active release or internal-preview lane.
 
 ## Prepared-Session Residency And Amortization
 
@@ -42,7 +42,7 @@ This file catches design ideas that should not interrupt the current release or 
 - Rationale: RayJoin's fast PIP path traces one upward ray per point and keeps the best crossing boundary event/edge on device. RTDL's current generic point/closed-shape membership count can now use device-filtered scalar count and `z_point` traversal, but it still trails RayJoin on the same slice because it is a membership-count contract over polygon AABBs rather than an edge-range best-crossing contract.
 - Engine boundary: this must stay generic. The native engine should expose prepared edge/range traversal and return typed boundary-event columns such as query id, shape id, boundary id, crossing parameter, and tie-break status. RayJoin-specific map ids, simulation-of-simplicity policy, polygon assignment interpretation, and output-chain logic stay in the benchmark app or partner layer.
 - Likely prerequisites: prepared edge AABB/range acceleration, deterministic tie-break policy, typed boundary-event columns, optional per-query best-event reduction, and same-contract validation against the existing exact inclusive membership path.
-- Boundary: do not merge RayJoin-specific `closest_eid` semantics into the public engine ABI. This belongs in a future v2.8-or-later / v3.0 primitive design, not in the current v2.8 route-tuning evidence.
+- Boundary: do not merge RayJoin-specific `closest_eid` semantics into the public engine ABI. This belongs in a future primitive design, not in the historical v2.8 route-tuning evidence.
 - v2.8 closed-shape exact stream: Goal3422 initially framed the public CDB miss as a topology-aware closed-boundary refinement contract gap. Goal3424 refined that diagnosis: the immediate mismatch came from duplicate public point/shape ids and a partner helper that collapsed public ids into one geometry instance. Future exact-refinement streams must carry both public ids and input/prepared instance ordinals. Topology-aware closed-boundary contracts remain future work for datasets where instance-aware simple-ring semantics still fail the chosen oracle.
 
 ## RayJoin PIP Scalar-Count Lessons

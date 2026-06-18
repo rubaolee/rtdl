@@ -1,6 +1,6 @@
 # RTDL Research Door
 
-Use this door if you are studying current v2.10 architecture, backend design,
+Use this door if you are studying current v3.0 architecture, backend design,
 benchmark-app insights, or future directions.
 
 ## Current Architecture
@@ -20,6 +20,6 @@ benchmark-app insights, or future directions.
 ## Rule
 
 Research notes can be deeper and more speculative than learner docs, but the
-live research door should still present the current v2.10 surface first. Older
+live research door should still present the current v3.0 surface first. Older
 version-specific plans, proposals, and transition notes belong under
 `archive/` and must not override the current public claim boundaries.

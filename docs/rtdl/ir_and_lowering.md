@@ -110,7 +110,7 @@ Stable current facts:
 
 ## What The Current Engine Boundary Tightens
 
-The current v2.10 release chain tightens app-specific engine customization by
+The current V3.0 release chain tightens app-specific engine customization by
 turning common backend work into reviewed generic primitives and generic native
 ABI terminology. The accepted direction separates primitives by result
 semantics, not by app names:
@@ -124,9 +124,9 @@ semantics, not by app names:
 That distinction matters for ABI shape, determinism, grouping, numeric
 tolerance, output capacity, and cross-backend parity.
 
-## What v2.x Adds
+## What V3.0 Adds
 
-The v2.x-facing path makes RTDL a Python+partner runtime, not only a Python row
+The V3.0-facing path makes RTDL a Python+partner runtime, not only a Python row
 DSL. The expected direction is:
 
 - compile once into a stable execution plan

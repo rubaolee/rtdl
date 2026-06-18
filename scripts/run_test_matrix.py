@@ -167,6 +167,9 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal4613_v3_0_m214_prefix_stage_c_examples_smoke_test",
         "tests.goal4614_v3_0_m215_current_scope_completion_gate_test",
     ),
+    "v3_release": (
+        "tests.v3_0_release_publication_test",
+    ),
     "v0_2_local": (
         "tests.goal110_baseline_runner_backend_test",
         "tests.goal110_segment_polygon_hitcount_semantics_test",
@@ -236,6 +239,7 @@ def parse_args() -> argparse.Namespace:
             "system",
             "full",
             "v3_current",
+            "v3_release",
             "v0_2_local",
             "v0_2_linux",
             "v0_2_full",

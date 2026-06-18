@@ -384,7 +384,7 @@ Future work:
 
 Boundary:
 
-- Do not block the current v2.x learner/release lane on full X-HD reproduction.
+- Do not block the historical v2.x learner/release lane on full X-HD reproduction.
 - Promotion needs a separate design report, pod evidence, and external review.
 
 ### RTNN-Informed 3D Bounded Neighbor Search

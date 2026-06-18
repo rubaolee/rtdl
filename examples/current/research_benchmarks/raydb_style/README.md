@@ -150,7 +150,7 @@ without adding RayDB semantics to the engine.
 Goal2652 adds 10s-level prepared-query timing for Embree host rays, OptiX host
 rays, and OptiX partner-owned query-ray columns.
 Goal2684 added the generic RT hit-stream handoff. It is preserved as a boundary
-and implementation milestone, but the current v2.10 recommendation is
+and implementation milestone, but the current v3.0 recommendation is
 primitive-first native RTDL unless a partner continuation wins same-contract
 timing and review.
 

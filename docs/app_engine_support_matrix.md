@@ -1,6 +1,6 @@
 # RTDL App Engine Support Matrix
 
-Status: public app-level support map for the v2.14 released source
+Status: public app-level support map for the v3.0 released source
 tree.
 
 This matrix answers which engines each public app entry point exposes today.
@@ -45,7 +45,7 @@ For OptiX performance classification, use
 | `examples/current/apps/robotics/rtdl_robot_collision_screening_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `direct_cli_native` | `not_exposed_by_app_cli` |
 | `examples/current/apps/simulation/rtdl_barnes_hut_force_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 
-## v2.14 Reading Guide
+## v3.0 Reading Guide
 
 - Embree rows are the CPU RT implementation path.
 - OptiX rows are the NVIDIA RT implementation path, but only reviewed
@@ -57,6 +57,8 @@ For OptiX performance classification, use
   becoming RTDL engine customization.
 - Full witness rows, compact summaries, and streaming witness pages are
   different contracts. Compare performance only when the contracts match.
+- V3.0 closes current benchmark routes; it does not convert every route into a
+  whole-application or broad RT-core speedup claim.
 - Backend proof demos live under `examples/legacy_or_backend_proofs/` and are
   intentionally excluded from this learner-facing app matrix.
 

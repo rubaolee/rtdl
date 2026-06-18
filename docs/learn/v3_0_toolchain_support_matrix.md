@@ -1,7 +1,7 @@
 # V3.0 Toolchain Support Matrix
 
-Status: current V3 source-tree evidence matrix, not a release support guarantee,
-packaged SDK promise, or stable ABI contract.
+Status: historical V3-track file retained as V4.0 preparatory material. This is
+not V3.0 release scope, not a V3.0 completion criterion, not a release support guarantee, not a packaged SDK promise, and not a stable ABI contract.
 
 This page defines how to read the toolchain evidence used by the V3
 embeddability track. Exact live observations are captured by the corresponding

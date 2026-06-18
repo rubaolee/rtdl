@@ -27,7 +27,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     doctor_module = _load_doctor(root)
     payload = doctor_module.gather_checks(run_smoke=False)
     checks_by_name = {row["name"]: row for row in payload["checks"]}
-    surface = checks_by_name.get("V3 C ABI embedding surface", {})
+    surface = checks_by_name.get("V4 preparatory C ABI surface", {})
     doctor_text = (root / DOCTOR).read_text(encoding="utf-8")
     doc_text = (root / DOCTOR_DOC).read_text(encoding="utf-8")
     checks = {
@@ -54,7 +54,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "release_authorized": False,
         },
         "conclusion": (
-            "Goal4588 refreshes the source-tree doctor so its V3 C ABI embedding "
+            "Goal4588 refreshes the source-tree doctor so its V4 preparatory C ABI "
             "surface check includes the new `package-c-api-stage` target. The "
             "doctor still checks target/file presence only; it does not build the "
             "archive or authorize SDK, install, stable ABI, or release wording."

@@ -7,12 +7,14 @@ performance claims in the current public docs.
 
 ## Product Surface
 
-The current learner-facing milestone is the v2.14 source-tree
-Python+partner+RTDL surface. It keeps the v2.11/v2.12 Python+partner+RTDL
-programming model, preserves the Embree CPU plus partner reference lane, and
-publishes the refreshed row-scoped RT-core versus Embree CPU comparison
-evidence plus the app-author strategy for primitive-first, explicit-partner
-implementation.
+The current learner-facing milestone is the v3.0 source-tree
+Python+partner+RTDL surface. It closes the current ten-app benchmark route
+matrix, preserves explicit route and partner choice, publishes the V3
+app-author strategy, and keeps embedding/SDK work out of V3.0 scope.
+
+Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution,
+external stream ordering, zero-copy framework interop, and device-callable
+fusion are V4.0 scope.
 
 Use RTDL from the repository source tree:
 
@@ -46,6 +48,7 @@ wording instead of performance wording.
 The current public docs do not authorize these claims; in short, RTDL does not authorize:
 
 - package-install or PyPI support wording;
+- stable SDK or generated binding package wording;
 - automatic partner selection;
 - arbitrary CuPy or Numba acceleration;
 - broad RT-core acceleration;
@@ -53,20 +56,18 @@ The current public docs do not authorize these claims; in short, RTDL does not a
 - RTDL-beats-RayJoin wording;
 - paper reproduction;
 - general zero-copy or device-residency;
+- device-buffer C ABI query execution;
+- external CUDA stream ordering;
 - AMD/HIPRT or Intel-GPU performance claims.
 
 Selecting `--backend optix` means the OptiX backend was selected. It is not by
 itself a public RT-core speedup claim.
 
-The v2.14 evidence supports path-specific wording only. In particular, the
-refreshed packet keeps every speedup tied to a row, contract, direction, and
-caveat. Mixed rows remain explicit: Spatial RayJoin PIP is near parity and
-slightly Embree-faster in the refreshed human-scale public CDB slice, Goal4368
-separately records an OptiX-over-Embree exact PIP engineering win that still does
-not beat RayJoin RT, RayJoin overlay reports the available 2/8 exact CDB subset,
-and RTNN remains limited to RTDL-internal same-contract aggregate plus resident
-graph-bridge evidence, not full RTNN paper reproduction or arbitrary ANN-index
-speedup.
+The v3.0 evidence supports path-specific wording only. In particular, the
+release closes current routes without turning every route into a public speedup
+claim. Mixed rows remain explicit: Spatial RayJoin, RT-DBSCAN, Barnes-Hut,
+RTNN, and Triangle Counting all require route, partner, output-contract, and
+timing-basis wording before any performance sentence is public-safe.
 
 ## Partner Rule
 
@@ -90,3 +91,4 @@ measures, and reviews that exact continuation contract.
 - [Benchmark Evidence Index](benchmark_evidence_index.md)
 - [RT-Core Evidence Matrix](rt_core_evidence_matrix.md)
 - [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
+- [RTDL v3.0 Release Package](../release_reports/v3_0/README.md)

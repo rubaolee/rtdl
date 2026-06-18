@@ -230,8 +230,8 @@ path for debugging or validation.
 
 ## Recommended Explicit Route Choice
 
-Current v2.10 evidence says a RayJoin-style user should not blindly run every
-contract through one backend.
+V3.0 guidance, carried forward from the explicit route-choice evidence, says a
+RayJoin-style user should not blindly run every contract through one backend.
 
 For the simple authored tiled fixtures in the benchmark packet:
 

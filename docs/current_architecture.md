@@ -1,6 +1,6 @@
 # RTDL Current Architecture
 
-This page describes the v2.x-facing architecture for learners and users. It
+This page describes the V3.0-facing architecture for learners and users. It
 does not retell archived release history. For that, use
 [Version Archive Notes](history/version_archive_notes.md)
 and the release-report archive.
@@ -71,7 +71,7 @@ Python-source reference lane for selected custom CUDA-style continuations where
 same-contract evidence supports it. RTDL owns only the supported RTDL primitive
 call and its documented result contract.
 
-Examples of valid v2.x-facing output contracts:
+Examples of valid V3.0-facing output contracts:
 
 - compact count columns;
 - boolean flag columns;

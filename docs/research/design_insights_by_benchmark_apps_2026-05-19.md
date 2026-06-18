@@ -2,7 +2,8 @@
 
 Date: 2026-05-19
 
-Status: research/design synthesis for the current v2.x benchmark-app campaign.
+Status: historical research/design synthesis carried forward into the V3.0
+benchmark-app context.
 
 ## Purpose
 
@@ -136,7 +137,7 @@ what generic contracts it needs.
 
 ## Current Generic Primitive Direction
 
-The strongest v2.x direction is:
+The strongest direction carried into V3.0 is:
 
 - prepared scenes and prepared point sets;
 - packed column input;

@@ -4,7 +4,7 @@ This directory has three doors:
 
 | Door | Audience | Purpose |
 | --- | --- | --- |
-| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v2.14 boundaries. |
+| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v3.0 boundaries. |
 | [Research](research/README.md) | Internal researchers and advanced developers | Architecture notes, backend research, RayJoin/Embree context, future ideas, and design constraints. |
 | [Audit](audit/README.md) | Release reviewers and auditors | Process docs, runbooks, release reports, evidence reports, reviews, and archived goal logs. |
 
@@ -16,15 +16,13 @@ If you are new, start in **Learn**. If you are evaluating design or extending
 the system, start in **Research**. If you are checking evidence, consensus, or
 project history, start in **Audit**.
 
-Current status: RTDL v2.14 is the active source-tree Python+partner+RTDL
-app-portfolio surface on this branch. It keeps source-tree usage, preserves the
-no-broad-speedup/no-package-install boundary, refreshes the Embree CPU plus
-partner reference lane, and provides the row-scoped RT-core versus Embree CPU
-comparison packet alongside current partner-choice guidance, primitive
-discovery, prepared execution, human-scale timing, and the 10-app benchmark
-evidence matrix. Mixed rows such as Spatial RayJoin PIP and the RayJoin overlay
-2/8 exact subset stay explicit rather than being folded into a broad RT-core
-claim.
+Current status: RTDL v3.0 is the active source-tree Python+partner+RTDL
+surface on this branch. It closes the current ten-app benchmark route matrix,
+publishes primitive-first and partner-explicit app-author guidance, and keeps
+source-tree usage. Public performance wording remains row-scoped and
+evidence-bound; mixed rows stay explicit rather than being folded into a broad
+RT-core claim. Embedding, C ABI, SDK packaging, generated bindings, zero-copy,
+and external-runtime integration are V4.0 scope, not V3.0 release claims.
 For the short canonical wording, read
 [Current Claim Boundaries](learn/current_claim_boundaries.md).
 
@@ -80,7 +78,7 @@ Read these in order:
 | RT-core evidence interpretation | [RT-Core Evidence Matrix](learn/rt_core_evidence_matrix.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
 | Release Reports | [Release Reports](release_reports/) |
-| Current release package | [RTDL v2.14 Release Package](release_reports/v2_14/README.md) |
+| Current release package | [RTDL v3.0 Release Package](release_reports/v3_0/README.md) |
 | Current benchmark evidence | [Benchmark Evidence Index](learn/benchmark_evidence_index.md) |
 | History Index | [History Index](history/README.md) |
 
@@ -101,6 +99,6 @@ Read these in order:
 
 ## Rule
 
-Current learner docs should explain one coherent v2.14 surface. Previous release
+Current learner docs should explain one coherent v3.0 surface. Previous release
 evidence is preserved for review in history and release-report paths, but it
 should not interrupt the normal learning path.

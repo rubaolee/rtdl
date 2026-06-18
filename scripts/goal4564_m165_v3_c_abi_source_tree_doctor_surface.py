@@ -28,13 +28,13 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     doctor = _load_doctor(root)
     payload = doctor.gather_checks(run_smoke=False)
     checks_by_name = {row["name"]: row for row in payload["checks"]}
-    surface = checks_by_name.get("V3 C ABI embedding surface", {})
+    surface = checks_by_name.get("V4 preparatory C ABI surface", {})
     doctor_text = (root / DOCTOR).read_text(encoding="utf-8")
     doc_text = (root / DOCTOR_DOC).read_text(encoding="utf-8")
     process_text = (root / PROCESS_DOC).read_text(encoding="utf-8")
     checks = {
         "doctor_ok": payload["ok"],
-        "c_abi_surface_check_present": "V3 C ABI embedding surface" in checks_by_name,
+        "c_abi_surface_check_present": "V4 preparatory C ABI surface" in checks_by_name,
         "c_abi_surface_check_passes": surface.get("status") == "pass",
         "c_abi_surface_detail_names_header": "include/rtdl/rtdl.h" in str(surface.get("detail", "")),
         "c_abi_surface_detail_names_make_target": "make build-c-api" in str(surface.get("detail", "")),
@@ -42,7 +42,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         and "rtdl_c_api.cpp" in doctor_text
         and "rtdl.h" in doctor_text
         and "build-c-api:" in doctor_text,
-        "doctor_doc_explains_c_abi_surface_boundary": "V3 C ABI embedding surface" in doc_text
+        "doctor_doc_explains_c_abi_surface_boundary": "V4 preparatory C ABI surface" in doc_text
         and "It does not" in doc_text
         and "make build-c-api" in doc_text,
         "process_doc_avoids_stale_goal_span": "starting at Goal4508" in process_text
@@ -66,8 +66,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "stable_abi_authorized": False,
         },
         "conclusion": (
-            "Goal4564 wires the V3 C ABI embedding surface into the source-tree "
-            "doctor as a required layout/entrypoint check. The doctor now verifies "
+            "Goal4564 records the C ABI source-tree surface as V4 preparatory "
+            "doctor context, not as a V3 release criterion. The doctor now verifies "
             "that the public header, source implementation, Makefile target, and "
             "embedding example are discoverable, while still leaving actual library "
             "builds and runtime validation to the dedicated C ABI evidence packets."

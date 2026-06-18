@@ -1,6 +1,6 @@
 # Spatial RayJoin Code Walkthrough
 
-Status: current v2.10 source-tree benchmark-app explanation.
+Status: current v3.0 source-tree benchmark-app explanation.
 
 This document explains
 `rtdl_rayjoin_v2_spatial_join_app.py` for two audiences:

@@ -29,7 +29,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     checks_by_name = {row["name"]: row for row in payload["checks"]}
     doctor_text = (root / DOCTOR).read_text(encoding="utf-8")
     doc_text = (root / DOCTOR_DOC).read_text(encoding="utf-8")
-    surface = checks_by_name.get("V3 C ABI embedding surface", {})
+    surface = checks_by_name.get("V4 preparatory C ABI surface", {})
     checks = {
         "doctor_surface_check_passes": surface.get("status") == "pass",
         "surface_detail_names_python_ctypes_examples": "Python ctypes examples" in surface.get("detail", ""),
@@ -57,8 +57,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "release_authorized": False,
         },
         "conclusion": (
-            "Goal4584 refreshes the source-tree doctor so the V3 C ABI embedding "
-            "surface check now covers the staged direct-link C example and the "
+            "Goal4584 refreshes the source-tree doctor so the V4 preparatory C ABI "
+            "surface check covers the staged direct-link C example and the "
             "Python ctypes lifecycle/query examples added after the original C "
             "ABI doctor surface. The doctor remains a lightweight source-tree "
             "presence check; it does not build the C ABI, run the ctypes query, "

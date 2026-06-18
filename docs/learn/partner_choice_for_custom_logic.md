@@ -1,6 +1,6 @@
 # Choosing A Partner For Custom Logic
 
-Status: current v2.14 source-tree guidance.
+Status: current v3.0 source-tree guidance.
 This is not a release tag, package-install promise, or broad speedup claim.
 
 Use this page when the RTDL primitive is only part of your program and you need
@@ -58,12 +58,11 @@ as a reusable partner contract:
 - segmented min, max, count, or sum style continuations;
 - small custom kernels that should stay in Python source rather than CUDA C++.
 
-The current v2.14 lane carries forward that Numba coverage for selected generic
-continuation contracts, preserves the Embree CPU plus partner reference boundary
-for promoted benchmark apps, and adds the refreshed row-scoped RT-core versus
-Embree CPU comparison packet plus the explicit app-author implementation
-strategy. Numba is not automatically faster than CuPy. It wins only when the
-contract, launch shape, and data residency are good for that workload.
+The current V3.0 lane carries forward that Numba coverage for selected generic
+continuation contracts, closes the ten-app current route matrix, and adds the
+explicit app-author implementation strategy. Numba is not automatically faster
+than CuPy. It wins only when the contract, launch shape, and data residency are
+good for that workload.
 
 ## Benchmark Lessons
 

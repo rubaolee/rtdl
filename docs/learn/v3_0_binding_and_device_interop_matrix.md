@@ -1,8 +1,9 @@
 # V3.0 Binding And Device Interop Matrix
 
-Status: current V3 source-tree evidence matrix and V4 deferral map, not a
-stable SDK, generated binding package, device-buffer query route, or public
-true-zero-copy claim.
+Status: historical V3-track file retained as V4.0 preparatory material and
+deferral map. This is not V3.0 release scope, not a V3.0 completion criterion,
+not a stable SDK, not a generated binding package, not a device-buffer query
+route, and not a public true-zero-copy claim.
 
 This page is the short map for what an external program can do with the current
 V3 draft C ABI and where the boundary still stops. It consolidates the C,

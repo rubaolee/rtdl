@@ -2,7 +2,7 @@
 
 ## Status
 
-Active public workload line for the v2.10 source-tree milestone.
+Active public workload line for the v3.0 source-tree milestone.
 
 Current implemented boundary:
 

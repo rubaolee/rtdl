@@ -14,27 +14,18 @@ Use this door if you want to understand RTDL quickly and write programs.
 8. [Run From The Source Tree](../../tutorials/current/01_source_tree_first_run.md)
 9. [App And Example Quickstart](../app_example_quickstart.md)
 10. [V3.0 App-Author Implementation Strategy](v3_0_app_author_implementation_strategy.md)
-11. [V3.0 Embeddability Architecture Strategy](v3_0_embeddability_architecture_strategy.md)
-12. [V3.0 C ABI Draft](v3_0_c_abi_draft.md)
-13. [V3.0 C ABI Stability Policy](v3_0_c_abi_stability_policy.md)
-14. [V3.0 C ABI Ownership And Threading Contract](v3_0_c_abi_ownership_threading_contract.md)
-15. [V3.0 Zero-Copy Interop Contract](v3_0_zero_copy_interop_contract.md)
-16. [V3.0 C ABI Staging Contract](v3_0_c_abi_staging_contract.md)
-17. [V3.0 Toolchain Support Matrix](v3_0_toolchain_support_matrix.md)
-18. [V3.0 Binding And Device Interop Matrix](v3_0_binding_and_device_interop_matrix.md)
-19. [V3.0 C ABI Embedding Examples](../../examples/current/embedding/README.md)
-20. [v2.14 App-Author Implementation Strategy](v2_14_app_author_implementation_strategy.md)
-21. [Primitive Discovery Workflow](primitive_discovery_workflow.md)
-22. [Prepared Execution Pattern](prepared_execution_pattern.md)
-23. [Prepared Session Reuse](prepared_session_reuse.md)
-24. [Application Catalog](../application_catalog.md)
-25. [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
-26. [Benchmark Partner Reference Matrix](benchmark_partner_reference_matrix.md)
-27. [Benchmark Evidence Index](benchmark_evidence_index.md)
-28. [RT-Core Evidence Matrix](rt_core_evidence_matrix.md)
-29. [Feature Guide](../rtdl_feature_guide.md)
-30. [Programming Guide](../rtdl/programming_guide.md)
-31. [DSL Reference](../rtdl/dsl_reference.md)
+11. [RTDL v3.0 Release Package](../release_reports/v3_0/README.md)
+12. [Primitive Discovery Workflow](primitive_discovery_workflow.md)
+13. [Prepared Execution Pattern](prepared_execution_pattern.md)
+14. [Prepared Session Reuse](prepared_session_reuse.md)
+15. [Application Catalog](../application_catalog.md)
+16. [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
+17. [Benchmark Partner Reference Matrix](benchmark_partner_reference_matrix.md)
+18. [Benchmark Evidence Index](benchmark_evidence_index.md)
+19. [RT-Core Evidence Matrix](rt_core_evidence_matrix.md)
+20. [Feature Guide](../rtdl_feature_guide.md)
+21. [Programming Guide](../rtdl/programming_guide.md)
+22. [DSL Reference](../rtdl/dsl_reference.md)
 
 ## Keep In Mind
 
@@ -58,3 +49,26 @@ For backend and performance boundaries, read:
 - [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md)
 - [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
 - [RT-Core Evidence Matrix](rt_core_evidence_matrix.md)
+
+## V4 Preparatory Embedding Docs
+
+These files remain in the repository as historical or preparatory material.
+They are not part of the V3.0 release scope, V3.0 completion criteria, or V3.0
+success claims:
+
+- [V3.0 Embeddability Architecture Strategy](v3_0_embeddability_architecture_strategy.md)
+- [V3.0 C ABI Draft](v3_0_c_abi_draft.md)
+- [V3.0 C ABI Stability Policy](v3_0_c_abi_stability_policy.md)
+- [V3.0 C ABI Ownership And Threading Contract](v3_0_c_abi_ownership_threading_contract.md)
+- [V3.0 Zero-Copy Interop Contract](v3_0_zero_copy_interop_contract.md)
+- [V3.0 C ABI Staging Contract](v3_0_c_abi_staging_contract.md)
+- [V3.0 Toolchain Support Matrix](v3_0_toolchain_support_matrix.md)
+- [V3.0 Binding And Device Interop Matrix](v3_0_binding_and_device_interop_matrix.md)
+- [C ABI Embedding Examples](../../examples/current/embedding/README.md)
+
+## Historical V2 Snapshot
+
+The V2.14 app-author strategy is preserved as release-history evidence only.
+For current guidance, use the V3.0 path above:
+
+- [v2.14 App-Author Implementation Strategy](v2_14_app_author_implementation_strategy.md)

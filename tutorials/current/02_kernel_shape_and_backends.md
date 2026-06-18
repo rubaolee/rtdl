@@ -1,6 +1,6 @@
 # Kernel Shape And Backends
 
-Status: current v2.10 source-tree tutorial.
+Status: current v3.0 source-tree tutorial.
 
 Goal: understand what an RTDL primitive does before choosing partners or
 benchmark apps.

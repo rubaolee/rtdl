@@ -491,7 +491,7 @@ authorize a paper-level speedup or release claim.
 
 - This study can show whether RTDL exposes the right generic primitives for
   RT-DBSCAN-style applications.
-- For the current v2.10 benchmark-app scope, RT-DBSCAN is implemented with
+- For the current v3.0 benchmark-app scope, RT-DBSCAN is implemented with
   app-agnostic fixed-radius rows, summaries, adjacency streams, and grouped
   union/continuation primitives. No DBSCAN-specific native ABI is required.
 - It still cannot claim paper reproduction, paper-level speedups, or broad

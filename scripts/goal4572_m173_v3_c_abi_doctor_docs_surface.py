@@ -36,20 +36,20 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     doctor = _load_doctor(root)
     payload = doctor.gather_checks(run_smoke=False)
     checks_by_name = {row["name"]: row for row in payload["checks"]}
-    docs_surface = checks_by_name.get("V3 C ABI docs surface", {})
+    docs_surface = checks_by_name.get("V4 preparatory C ABI docs", {})
     doctor_text = (root / DOCTOR).read_text(encoding="utf-8")
     doctor_doc = (root / DOCTOR_DOC).read_text(encoding="utf-8")
     learn_readme = (root / LEARN_README).read_text(encoding="utf-8")
     docs_exist = {path.as_posix(): (root / path).exists() for path in REQUIRED_DOCS}
     checks = {
         "doctor_ok": payload["ok"],
-        "docs_surface_check_present": "V3 C ABI docs surface" in checks_by_name,
+        "docs_surface_check_present": "V4 preparatory C ABI docs" in checks_by_name,
         "docs_surface_check_passes": docs_surface.get("status") == "pass",
         "docs_surface_detail_names_expected_docs": "ownership/threading" in str(docs_surface.get("detail", ""))
         and "symbol manifest" in str(docs_surface.get("detail", "")),
         "doctor_code_requires_c_abi_docs": "v3_0_c_abi_ownership_threading_contract.md" in doctor_text
         and "v3_0_c_abi_symbol_manifest_v0_1_3.json" in doctor_text,
-        "doctor_doc_explains_docs_surface": "V3 C ABI docs surface" in doctor_doc
+        "doctor_doc_explains_docs_surface": "V4 preparatory C ABI docs" in doctor_doc
         and "does not freeze the ABI" in doctor_doc,
         "learn_readme_links_ownership_and_zero_copy": "V3.0 C ABI Ownership And Threading Contract" in learn_readme
         and "V3.0 Zero-Copy Interop Contract" in learn_readme,
@@ -74,8 +74,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "performance_wording_authorized": False,
         },
         "conclusion": (
-            "Goal4572 adds a required source-tree doctor check for the V3 C ABI "
-            "documentation surface. The doctor now verifies that draft, stability, "
+            "Goal4572 records the C ABI documentation surface as optional V4 "
+            "preparatory doctor context. The doctor now verifies that draft, stability, "
             "ownership/threading, symbol manifest, zero-copy, and Learn README links "
             "are present, while runtime validation remains in dedicated evidence packets."
         ),

@@ -1,7 +1,9 @@
 # V3.0 C ABI Staging Contract
 
-Status: draft source-tree staging contract for V3 embeddability. This is not a
-packaged SDK, installer, stable ABI, or release artifact.
+Status: historical V3-track file retained as V4.0 preparatory material. This
+draft source-tree staging contract is not V3.0 release scope, not a V3.0
+completion criterion, and not a packaged SDK, installer, stable ABI, or release
+artifact.
 
 Run this from the repository root:
 

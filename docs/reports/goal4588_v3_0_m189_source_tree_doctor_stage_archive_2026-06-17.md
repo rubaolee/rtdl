@@ -4,12 +4,12 @@ Status: `source_tree_doctor_stage_archive_checked`
 
 ## Conclusion
 
-Goal4588 refreshes the source-tree doctor so its V3 C ABI embedding surface check includes the new `package-c-api-stage` target. The doctor still checks target/file presence only; it does not build the archive or authorize SDK, install, stable ABI, or release wording.
+Goal4588 refreshes the source-tree doctor so its V4 preparatory C ABI surface check includes the new `package-c-api-stage` target. The doctor still checks target/file presence only; it does not build the archive or authorize SDK, install, stable ABI, or release wording.
 
 ## Doctor Surface
 
 - Status: `pass`
-- Detail: `include/rtdl/rtdl.h, make build-c-api/stage-c-api/package-c-api-stage, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA metadata`
+- Detail: `optional V4 preparatory files: include/rtdl/rtdl.h, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, pkg-config and CMake metadata, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA and DLPack-like metadata`
 
 ## Checks
 

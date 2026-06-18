@@ -1,7 +1,6 @@
 # Benchmark Evidence Index
 
-Status: current source-tree evidence map for v2.14 release evidence plus V3
-internal benchmark work.
+Status: current source-tree evidence map for the v3.0 benchmark-app/current-route release.
 
 Use this page when you want to reproduce or audit the ten benchmark-app front
 doors. It is intentionally narrower than the full report history: it tells you
@@ -87,8 +86,13 @@ v2.14 evidence:
 - [v2.14 final closeout](../release_reports/v2_14/final_closeout.md)
 - [v2.14 app-author implementation strategy](v2_14_app_author_implementation_strategy.md)
 
-V3.0 current app-author guidance:
+V3.0 release evidence:
 
+- [v3.0 release package](../release_reports/v3_0/README.md)
+- [v3.0 release statement](../release_reports/v3_0/release_statement.md)
+- [v3.0 support matrix](../release_reports/v3_0/support_matrix.md)
+- [v3.0 public wording boundaries](../release_reports/v3_0/public_wording_boundaries.md)
+- [v3.0 final closeout](../release_reports/v3_0/final_closeout.md)
 - [V3.0 app-author implementation strategy](v3_0_app_author_implementation_strategy.md)
 
 ## Current Ten-App Rows

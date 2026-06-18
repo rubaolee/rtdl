@@ -1,7 +1,7 @@
 # V3.0 Zero-Copy Interop Contract
 
-Status: V3 design/readiness contract, not an implemented C ABI device-buffer
-query route and not public true-zero-copy wording.
+Status: historical V3-track file retained as V4.0 preparatory material. This is
+not V3.0 release scope, not a V3.0 completion criterion, not an implemented C ABI device-buffer query route and not public true-zero-copy wording.
 
 RTDL's embeddability plan uses DLPack and `__cuda_array_interface__` as the
 framework interop layer above the C ABI. The source tree already has a neutral

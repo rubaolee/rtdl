@@ -2,7 +2,7 @@
 
 This directory preserves older research notes, transition documents, and
 proposal sketches that are useful for audit or historical study but are not the
-current v2.6 learner or research front door.
+current V3.0 learner or research front door.
 
 Current users should start with:
 
@@ -12,7 +12,7 @@ Current users should start with:
 
 Archived material here may mention older version numbers, old backend plans, or
 obsolete implementation paths. Treat it as project history unless a current
-v2.6 document explicitly promotes a contract back into the live surface.
+V3.0 document explicitly promotes a contract back into the live surface.
 
 | Archive | Contents |
 | --- | --- |

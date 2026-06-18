@@ -4,7 +4,7 @@ Status: `c_abi_source_tree_doctor_surface_checked`
 
 ## Conclusion
 
-Goal4564 wires the V3 C ABI embedding surface into the source-tree doctor as a required layout/entrypoint check. The doctor now verifies that the public header, source implementation, Makefile target, and embedding example are discoverable, while still leaving actual library builds and runtime validation to the dedicated C ABI evidence packets.
+Goal4564 records the C ABI source-tree surface as V4 preparatory doctor context, not as a V3 release criterion. The doctor now verifies that the public header, source implementation, Makefile target, and embedding example are discoverable, while still leaving actual library builds and runtime validation to the dedicated C ABI evidence packets.
 
 ## Checks
 

@@ -1,6 +1,6 @@
 # RTDL Feature Homes
 
-Status: current v2.10 source-tree feature index.
+Status: current v3.0 source-tree feature index.
 
 Use these pages when you want to answer practical questions:
 

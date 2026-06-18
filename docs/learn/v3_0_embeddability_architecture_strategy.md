@@ -2,11 +2,13 @@
 
 **Status:** V3 architecture review input and V4 deferral map, not a frozen ABI contract · **Author:** independent technical review (Claude) · **Date:** 2026-06-17
 
-RTDL project boundary: this document is retained as design guidance for the
-post-v2.14/V3 embeddability track. It does not by itself authorize a stable C
-ABI, DLPack support, external stream/context support, device-callable fusion,
-release wording, or performance claims. Those require separate implementation
-and validation gates.
+RTDL project boundary: this document is retained as historical/preparatory
+guidance for V4.0 embeddability work. Despite the historical file name, it does
+not define V3.0 release scope, V3.0 completion criteria, or V3.0 success
+claims. It does not by itself authorize a stable C ABI, DLPack support,
+external stream/context support, device-callable fusion, release wording, or
+performance claims. Those require separate V4.0 implementation and validation
+gates.
 
 After Goal4614, the unfinished stable SDK, generated binding, device-buffer
 query, external stream, public true-zero-copy, OptiX/Embree C ABI execution, and

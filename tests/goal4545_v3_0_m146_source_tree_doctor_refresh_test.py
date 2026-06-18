@@ -31,12 +31,12 @@ class Goal4545V30M146SourceTreeDoctorRefreshTest(unittest.TestCase):
     def test_doctor_payload_uses_current_version_and_v3_doc(self) -> None:
         payload = self.packet["doctor_payload"]
         checks = {row["name"]: row for row in payload["checks"]}
-        self.assertEqual("v2.14", payload["version"])
+        self.assertEqual("v3.0", payload["version"])
         self.assertEqual("pass", checks["version marker"]["status"])
-        self.assertIn("v2.14 release package", checks)
+        self.assertIn("v3.0 release package", checks)
         self.assertIn("V3 app-author strategy", checks)
         self.assertIn("V3 current test matrix", checks)
-        self.assertIn("V3 C ABI embedding surface", checks)
+        self.assertIn("V4 preparatory C ABI surface", checks)
         self.assertEqual([], payload["required_failures"])
 
     def test_report_and_doc_are_wired(self) -> None:
@@ -45,7 +45,7 @@ class Goal4545V30M146SourceTreeDoctorRefreshTest(unittest.TestCase):
         self.assertEqual(self.packet["version"], self.checked_in["version"])
         self.assertIn("Goal4545 / V3 M146", report)
         self.assertIn("V3 development", doc)
-        self.assertIn("V3 C ABI embedding surface", doc)
+        self.assertIn("V4 preparatory C ABI surface", doc)
         self.assertIn("not a benchmark", doc)
 
     def test_claim_boundary_remains_blocked(self) -> None:

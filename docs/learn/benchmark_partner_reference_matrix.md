@@ -1,6 +1,6 @@
 # Benchmark Partner Reference Matrix
 
-Status: current v2.14 closeout guidance.
+Status: current v3.0 route-choice guidance.
 This page is a guide for app authors choosing a custom continuation partner. It
 does not broaden release wording or authorize broad speedup claims.
 

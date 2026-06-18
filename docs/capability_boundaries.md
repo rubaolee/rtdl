@@ -1,19 +1,18 @@
 # RTDL Capability Boundaries
 
-This page states the current v2.x-facing capability boundary for learners and
-users. Older release history is kept separately in
+This page states the current v3.0 capability boundary for learners and users.
+Older release history is kept separately in
 [Learner Doc Version Notes](history/learner_doc_version_notes.md).
 For the short learner-facing summary, read
 [Current Claim Boundaries](learn/current_claim_boundaries.md).
 
 ## Current Status
 
-RTDL v2.14 is the current source-tree
-Python+partner+RTDL surface. It preserves the v2.x language boundary, provides
-the cleaned benchmark-vs-learner app portfolio, preserves the Embree CPU plus
-partner reference lane for promoted benchmark apps, and publishes the row-scoped
-RT-core versus Embree CPU comparison packet with direction-specific public
-wording.
+RTDL v3.0 is the current source-tree Python+partner+RTDL surface. It closes the
+ten-app benchmark route matrix, provides the cleaned benchmark-vs-learner app
+portfolio, preserves Embree and OptiX as evidence-bearing native routes where
+configured, and publishes primitive-first plus partner-explicit app-author
+guidance with conservative public wording.
 
 ## Short Version
 
@@ -38,7 +37,7 @@ candidate discovery plus refinement:
 - bounded columnar scan or grouped summary rows;
 - compact summaries, flags, counts, and bounded witness columns.
 
-The v2.x-facing partner path lets Python programs pass partner-owned columns to
+The V3 partner path lets Python programs pass partner-owned columns to
 supported RTDL primitives and keep results in partner-owned columns when that
 contract is documented.
 
@@ -76,15 +75,17 @@ Allowed performance wording names the exact:
 
 When any of those are missing, use candidate or preview wording.
 
-## v2.14 Release Boundaries
+## v3.0 Release Boundaries
 
 Allowed:
 
-- Python+partner+RTDL source-tree release;
+- Python+partner+RTDL source-tree major release;
 - documented partner-owned input/output columns;
-- current row-scoped OptiX/RT evidence under documented contracts;
+- current ten-app route closure under documented contracts;
 - documented app-author strategy for primitive-first paths, prepared execution,
   explicit partner choice, and app-agnostic primitive requests;
+- source-tree C ABI handoff for header/build/stage/prefix/archive/pkg-config/
+  CMake/examples;
 - streaming exact witness-column output where reviewed.
 
 Not allowed:
@@ -94,5 +95,6 @@ Not allowed:
 - arbitrary polygon overlay;
 - package-install support;
 - every user program is faster.
+- stable SDK or generated binding packages;
 - general zero-copy unless the exact measured path proves device-resident
   handoff.

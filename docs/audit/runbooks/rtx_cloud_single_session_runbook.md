@@ -161,7 +161,7 @@ PYTHONPATH=src:. python3 scripts/goal763_rtx_cloud_bootstrap_check.py \
   --output-json docs/reports/goal763_rtx_cloud_bootstrap_check.json
 ```
 
-## Current v2.x Partner Toolchain On Driver 550 Pods
+## Historical V2.x Partner Toolchain On Driver 550 Pods
 
 Goal3971 found that the current ten-app scale-profile packet needs two partner
 dependencies in addition to the RTDL OptiX build:

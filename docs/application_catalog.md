@@ -1,6 +1,6 @@
 # RTDL Application Catalog
 
-This is the v2.x-facing catalog of runnable RTDL application examples. It keeps
+This is the V3.0-facing catalog of runnable RTDL application examples. It keeps
 normal users focused on the current architecture: Python application code around
 RTDL kernels, with optional partner-owned columns for supported paths.
 
@@ -22,7 +22,7 @@ Each app below has two boundaries:
 Do not turn an app row into a broad speedup claim unless the exact backend,
 partner, hardware, command shape, output contract, and artifact are cited.
 
-## Current v2.x Portfolio Snapshot
+## Current V3.0 Portfolio Snapshot
 
 ### Promoted Benchmark Apps
 
@@ -116,7 +116,7 @@ benchmark claims.
 | App | File | RTDL role | Boundary |
 | --- | --- | --- | --- |
 | Segment/polygon hit count | `examples/current/features/spatial/rtdl_segment_polygon_hitcount.py` | candidate traversal and compact counts | not a full GIS engine |
-| Segment/polygon any-hit rows | `examples/current/features/spatial/rtdl_segment_polygon_anyhit_rows.py` | exact witness pairs or streaming witness columns where supported | full Python row tables are convenience output, not the fast v2 shape |
+| Segment/polygon any-hit rows | `examples/current/features/spatial/rtdl_segment_polygon_anyhit_rows.py` | exact witness pairs or streaming witness columns where supported | full Python row tables are convenience output, not the fast compact-output shape |
 | Polygon pair overlap rows | `examples/current/features/spatial/rtdl_polygon_pair_overlap_area_rows.py` | bounded candidate discovery and summary contracts | not arbitrary polygon overlay |
 | Polygon set Jaccard | `examples/current/features/spatial/rtdl_polygon_set_jaccard.py` | bounded candidate discovery and summary contracts | not a general GIS/Jaccard engine |
 | Road hazard screening | `examples/current/apps/geospatial/rtdl_road_hazard_screening.py` | segment/polygon candidate and priority summaries | no routing or road-network system claim |
@@ -151,9 +151,9 @@ benchmark claims.
 | Hidden star visual demo | `examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py` | ray/triangle query core | RTDL is not a renderer |
 | Lit ball demo | `examples/visual_demo/rtdl_lit_ball_demo.py` | query core inside Python presentation | Python owns rendering/presentation |
 
-## v2.x Output Guidance
+## Current Output Guidance
 
-For performance-oriented v2.x apps, prefer compact or partner-owned outputs:
+For performance-oriented current apps, prefer compact or partner-owned outputs:
 
 - flags instead of full witness rows when only yes/no is needed;
 - counts instead of pair tables when only totals are needed;

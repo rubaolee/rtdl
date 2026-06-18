@@ -1,11 +1,11 @@
 # Source-Tree Doctor
 
-Status: current v2.14 source-tree setup check for V3 development.
+Status: current v3.0 source-tree setup check for V3 development and release use.
 
 Use the doctor before native backend or partner experiments. It checks the
 repository layout, current version marker, V3 app-author guidance, core
-imports, the current V3 test-matrix entrypoint, the V3 C ABI embedding and docs
-surfaces, optional partner modules, and optional native library hints.
+imports, the current V3 test-matrix entrypoint, optional V4 preparatory C ABI
+file/doc surfaces, optional partner modules, and optional native library hints.
 
 ## Run It
 
@@ -61,23 +61,26 @@ PYTHONPATH=src:. python scripts/run_test_matrix.py --group v3_current
 - `PASS` on `V3 current test matrix` means the current V3 closure-suite runner
   is registered. The doctor does not run that suite unless you run the command
   above.
-- `PASS` on `V3 C ABI embedding surface` means the public C header, source-tree
+- `PASS` on `V4 preparatory C ABI surface` means the public C header, source-tree
   shared-library/staging/prefix-stage/archive targets, pkg-config and CMake
   metadata, C examples including the host-runtime metadata and CUDA
   buffer-metadata examples, Python `ctypes` lifecycle examples, Python `ctypes`
   host AABB2 query examples, Python `ctypes` CUDA metadata examples, and
-  Python `ctypes` DLPack-like metadata examples are present. It does not build
+  Python `ctypes` DLPack-like metadata examples are present. These are V4.0
+  preparatory artifacts, not V3.0 release criteria. It does not build
   `make build-c-api`, `make stage-c-api`,
   `make stage-c-api-prefix`, or `make package-c-api-stage`, and it does not run
   CMake.
-- `PASS` on `V3 C ABI docs surface` means the draft, stability,
+- `PASS` on `V4 preparatory C ABI docs` means the draft, stability,
   ownership/threading, symbol-manifest, zero-copy, toolchain support,
-  binding/device interop matrix, and Learn README C ABI links are present. It
-  does not freeze the ABI or validate runtime behavior.
+  binding/device interop matrix, and Learn README C ABI links are present as
+  V4.0 preparatory documentation. It does not freeze the ABI, validate runtime
+  behavior, or make embedding part of V3.0.
 - Missing CuPy affects CUDA-array partner examples.
 - Missing Numba affects Python-source custom CUDA-style continuation examples.
 - Missing `RTDL_OPTIX_LIBRARY` affects OptiX examples, not portable CPU
   examples.
 
 The doctor is not a benchmark and does not authorize performance claims. It is
-only an environment sanity check.
+only an environment sanity check. V3.0 excludes embedding/SDK/zero-copy work;
+those items are V4.0 scope.

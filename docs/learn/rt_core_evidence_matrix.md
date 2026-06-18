@@ -1,6 +1,6 @@
 # RT-Core Evidence Matrix
 
-Status: current v2.14 source-tree evidence guide.
+Status: current v3.0 source-tree evidence guide.
 
 Use this page when you want to know which benchmark apps currently demonstrate
 RT-core value, which ones mostly test partner continuation, and which ones are

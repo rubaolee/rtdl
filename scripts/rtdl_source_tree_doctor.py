@@ -16,7 +16,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
-EXPECTED_VERSION = "v2.14"
+EXPECTED_VERSION = "v3.0"
 
 
 def _status_line(status: str, name: str, detail: str) -> str:
@@ -114,11 +114,17 @@ def _v3_c_abi_surface_check() -> dict[str, Any]:
     if "stage-c-api-prefix:" not in makefile_text:
         missing.append("Makefile stage-c-api-prefix target")
     if missing:
-        return _check("V3 C ABI embedding surface", "fail", "missing: " + ", ".join(missing))
+        return _check(
+            "V4 preparatory C ABI surface",
+            "warn",
+            "missing optional V4 preparatory files: " + ", ".join(missing),
+            required=False,
+        )
     return _check(
-        "V3 C ABI embedding surface",
+        "V4 preparatory C ABI surface",
         "pass",
-        "include/rtdl/rtdl.h, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, pkg-config and CMake metadata, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA and DLPack-like metadata",
+        "optional V4 preparatory files: include/rtdl/rtdl.h, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, pkg-config and CMake metadata, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA and DLPack-like metadata",
+        required=False,
     )
 
 
@@ -151,11 +157,17 @@ def _v3_c_abi_docs_check() -> dict[str, Any]:
             detail_parts.append("missing files: " + ", ".join(missing))
         if missing_links:
             detail_parts.append("missing Learn links: " + ", ".join(missing_links))
-        return _check("V3 C ABI docs surface", "fail", "; ".join(detail_parts))
+        return _check(
+            "V4 preparatory C ABI docs",
+            "warn",
+            "; ".join(detail_parts),
+            required=False,
+        )
     return _check(
-        "V3 C ABI docs surface",
+        "V4 preparatory C ABI docs",
         "pass",
-        "draft, stability, ownership/threading, symbol manifest, zero-copy, toolchain support, binding/device interop docs",
+        "optional V4 preparatory docs: draft, stability, ownership/threading, symbol manifest, zero-copy, toolchain support, binding/device interop docs",
+        required=False,
     )
 
 
@@ -182,7 +194,7 @@ def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
         "front page": ROOT / "README.md",
         "top-level tutorials": ROOT / "tutorials" / "current" / "README.md",
         "current examples": ROOT / "examples" / "current" / "README.md",
-        "v2.14 release package": ROOT / "docs" / "release_reports" / "v2_14" / "README.md",
+        "v3.0 release package": ROOT / "docs" / "release_reports" / "v3_0" / "README.md",
         "V3 app-author strategy": ROOT / "docs" / "learn" / "v3_0_app_author_implementation_strategy.md",
     }
     for name, path in required_paths.items():

@@ -1,9 +1,9 @@
 # v2.10 Pod Validation Bundle
 
-Status: current source-tree pod-validation runbook.
+Status: historical v2.10 source-tree pod-validation runbook.
 
 Use this runbook when a CUDA/OptiX pod is available and you want one bounded
-entry point for the current v2.10 validation flow.
+entry point for the historical v2.10 validation flow.
 
 ## Local Preflight
 

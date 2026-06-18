@@ -4,12 +4,12 @@ Status: `source_tree_doctor_ctypes_surface_checked`
 
 ## Conclusion
 
-Goal4584 refreshes the source-tree doctor so the V3 C ABI embedding surface check now covers the staged direct-link C example and the Python ctypes lifecycle/query examples added after the original C ABI doctor surface. The doctor remains a lightweight source-tree presence check; it does not build the C ABI, run the ctypes query, freeze the ABI, or authorize SDK/release wording.
+Goal4584 refreshes the source-tree doctor so the V4 preparatory C ABI surface check covers the staged direct-link C example and the Python ctypes lifecycle/query examples added after the original C ABI doctor surface. The doctor remains a lightweight source-tree presence check; it does not build the C ABI, run the ctypes query, freeze the ABI, or authorize SDK/release wording.
 
 ## Doctor Surface
 
 - Status: `pass`
-- Detail: `include/rtdl/rtdl.h, make build-c-api/stage-c-api/package-c-api-stage, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA metadata`
+- Detail: `optional V4 preparatory files: include/rtdl/rtdl.h, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, pkg-config and CMake metadata, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA and DLPack-like metadata`
 
 ## Checks
 

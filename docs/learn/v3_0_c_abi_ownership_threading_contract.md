@@ -1,7 +1,8 @@
 # V3.0 C ABI Ownership And Threading Contract
 
-Status: draft source-tree contract for the V3 embeddability track. This page
-documents the current `0.1.3` C ABI behavior; it is not a frozen SDK promise.
+Status: historical V3-track file retained as V4.0 preparatory material. This
+page documents the current `0.1.3` C ABI draft behavior; it is not V3.0 release
+scope, not a V3.0 completion criterion, and not a frozen SDK promise.
 
 Read this with [V3.0 C ABI Draft](v3_0_c_abi_draft.md) and
 [V3.0 C ABI Stability Policy](v3_0_c_abi_stability_policy.md).

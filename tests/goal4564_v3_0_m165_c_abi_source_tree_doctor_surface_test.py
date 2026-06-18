@@ -28,16 +28,17 @@ class Goal4564V30M165CAbiSourceTreeDoctorSurfaceTest(unittest.TestCase):
 
     def test_doctor_payload_contains_required_surface_check(self) -> None:
         checks = {row["name"]: row for row in self.packet["doctor_payload"]["checks"]}
-        self.assertEqual("pass", checks["V3 C ABI embedding surface"]["status"])
-        self.assertIn("include/rtdl/rtdl.h", checks["V3 C ABI embedding surface"]["detail"])
-        self.assertIn("make build-c-api", checks["V3 C ABI embedding surface"]["detail"])
+        self.assertEqual("pass", checks["V4 preparatory C ABI surface"]["status"])
+        self.assertFalse(checks["V4 preparatory C ABI surface"]["required"])
+        self.assertIn("include/rtdl/rtdl.h", checks["V4 preparatory C ABI surface"]["detail"])
+        self.assertIn("make build-c-api", checks["V4 preparatory C ABI surface"]["detail"])
         self.assertEqual([], self.packet["doctor_payload"]["required_failures"])
 
     def test_report_docs_and_index_are_wired(self) -> None:
         self.assertEqual(self.packet["version"], self.checked_in["version"])
         self.assertIn("Goal4564 / V3 M165", REPORT.read_text(encoding="utf-8"))
         self.assertIn("Goal4564 C ABI source-tree doctor surface", INDEX.read_text(encoding="utf-8"))
-        self.assertIn("V3 C ABI embedding surface", DOCTOR_DOC.read_text(encoding="utf-8"))
+        self.assertIn("V4 preparatory C ABI surface", DOCTOR_DOC.read_text(encoding="utf-8"))
 
     def test_claim_boundary_remains_blocked(self) -> None:
         for key, value in self.checked_in["claim_boundary"].items():

@@ -1,6 +1,6 @@
 # Prepared Execution And Measurement
 
-Status: current v2.10 source-tree tutorial.
+Status: current v3.0 source-tree tutorial.
 
 Goal: measure an RTDL program without mixing setup, warmup, and steady-state
 work.

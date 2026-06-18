@@ -1,6 +1,6 @@
 # RTDL Versioning
 
-Status: current v2.14 source-tree guidance.
+Status: current v3.0 source-tree guidance.
 
 RTDL uses source-tree version markers and Git tags to identify reviewed
 research snapshots. A version tag names the state of the repository and the
@@ -9,11 +9,10 @@ wheel promise, PyPI promise, or automatic partner-selection promise.
 
 ## Current Version
 
-`v2.14` is the current source-tree release marker. It covers the Python+RTDL
-plus explicit partner programming surface, the Embree CPU reference lane, the
-refreshed bounded row-scoped NVIDIA OptiX/RT-core versus Embree CPU evidence,
-and the app-author primitive-first/explicit-partner implementation guidance
-recorded in the v2.14 release packet.
+`v3.0` is the current source-tree release marker. It covers the Python+RTDL
+plus explicit partner programming surface, the closed ten-app benchmark route
+matrix, and the V3 app-author primitive-first/explicit-partner guidance
+recorded in the v3.0 release packet.
 
 Use the source tree directly:
 
@@ -39,10 +38,11 @@ turn RTDL into a distribution package.
 ## Claim Boundary
 
 Version wording does not authorize broad RT-core speedup claims,
-whole-application speedup claims, RTDL-beats-RayJoin wording, paper
-reproduction wording, package-install wording, automatic partner selection,
-general zero-copy/device-residency wording, or Intel/AMD GPU performance
-claims.
+whole-application speedup claims, RTDL-beats-specialized-code wording, paper
+reproduction wording, package-install wording, stable SDK wording, generated
+binding wording, automatic partner selection, device-buffer C ABI query
+execution, external CUDA stream ordering, general zero-copy/device-residency
+wording, or Intel/AMD GPU performance claims.
 
 Read the exact current boundaries in
 [Current Claim Boundaries](learn/current_claim_boundaries.md).

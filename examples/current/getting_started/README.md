@@ -1,6 +1,6 @@
 # Getting Started
 
-Start here if you are learning RTDL v2.10 from the source tree.
+Start here if you are learning RTDL v3.0 from the source tree.
 
 | File | Purpose |
 | --- | --- |

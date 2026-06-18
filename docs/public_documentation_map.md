@@ -46,9 +46,10 @@ supported kernel through the appropriate backend. Python remains the app and
 control layer. RTDL owns the kernel contract, traversal/refinement shape, and
 backend bridge for supported primitive paths.
 
-The current learner surface is the v2.10 released source-tree surface.
+The current learner surface is the v3.0 released source-tree surface.
 
 - Python+partner+RTDL is the current source-tree programming model;
+- all ten current benchmark routes are closed under the V3.0 route matrix;
 - CuPy is the mature CUDA-array continuation partner and Numba is the measured
   custom CUDA-style continuation lane;
 - native engines remain app-agnostic;

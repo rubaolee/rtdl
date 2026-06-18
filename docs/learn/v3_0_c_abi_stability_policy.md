@@ -1,7 +1,8 @@
 # V3.0 C ABI Stability Policy
 
-Status: draft policy for the V3 embeddability track. The current C ABI is
-versioned as `0.1.3`, source-tree only, and not frozen.
+Status: historical V3-track file retained as V4.0 preparatory material. The
+current C ABI draft is versioned as `0.1.3`, source-tree only, not frozen, and
+not part of V3.0 release scope or completion criteria.
 
 This page defines what the current C ABI does and does not promise while RTDL
 moves from a proof boundary toward a stable embedding contract.

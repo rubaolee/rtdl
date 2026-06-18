@@ -1,6 +1,6 @@
 # Spatial Join Benchmark Reference
 
-Status: current v2.10 source-tree tutorial reference.
+Status: current v3.0 source-tree tutorial reference.
 
 Goal: learn how RTDL expresses RayJoin-style spatial join workloads without
 putting RayJoin-specific code inside the native engine.

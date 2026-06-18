@@ -5,7 +5,7 @@ This directory is organized for current RTDL users first. Start in
 continuation, or research benchmark.
 
 The `current/` tree is the learner-facing source of truth for the current
-v2.10 Python+partner+RTDL surface. Historical version evidence belongs in
+v3.0 Python+partner+RTDL surface. Historical version evidence belongs in
 `docs/reports/`, `docs/reviews/`, `docs/history/`, and release notes rather
 than in the first-run examples path.
 
@@ -58,7 +58,7 @@ the same `pip` command inside it.
 | `generated/` | Auditor | Preserved generated bundles |
 | `internal/` | Maintainer | Historical/internal development artifacts |
 
-## v2.x Feature Families
+## V3.0 Feature Families
 
 | Feature family | Directory |
 | --- | --- |

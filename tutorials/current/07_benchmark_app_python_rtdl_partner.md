@@ -1,6 +1,6 @@
 # Benchmark App Walkthrough
 
-Status: current v2.10 source-tree tutorial.
+Status: current v3.0 source-tree tutorial.
 
 Goal: see a complete Python+RTDL+CuPy/Numba benchmark-app shape.
 
