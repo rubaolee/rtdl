@@ -1,0 +1,51 @@
+{
+  "checks": {
+    "all_required_reports_accept": true,
+    "architecture_status_reaches_goal4593": true,
+    "cuda_metadata_descriptor_validated": true,
+    "cuda_query_route_still_rejected": true,
+    "host_external_runtime_validated": true,
+    "python_cuda_metadata_bridge_validated": true,
+    "stage_archive_remains_not_sdk": true,
+    "staging_inventory_includes_python_cuda_metadata_example": true,
+    "true_zero_copy_claim_still_blocked": true
+  },
+  "claim_boundary": {
+    "cuda_pointer_ownership_validated": false,
+    "device_buffer_query_route_authorized": false,
+    "external_cuda_stream_authorized": false,
+    "generated_language_binding_authorized": false,
+    "packaged_sdk_authorized": false,
+    "public_true_zero_copy_claim_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false
+  },
+  "conclusion": "Goal4594 refreshes the embeddability ledger after the host-runtime and CUDA-metadata slices. The source tree now validates a movable C ABI stage archive, host runtime metadata, C-level CUDA buffer descriptor import/export, and a Python ctypes bridge from a `__cuda_array_interface__`-style object into that descriptor path. The CUDA descriptor still cannot enter a query route, and no CUDA pointer ownership, external stream ordering, public true-zero-copy, generated binding, SDK, stable ABI, release, or performance claim is authorized.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4594 / V3 M195",
+  "reports": {
+    "architecture_status": "docs/reports/goal4590_v3_0_m191_embeddability_architecture_status_refresh_2026-06-17.json",
+    "cuda_buffer_metadata": "docs/reports/goal4592_v3_0_m193_c_abi_cuda_buffer_metadata_gate_2026-06-17.json",
+    "host_external_runtime": "docs/reports/goal4591_v3_0_m192_c_abi_host_external_runtime_gate_2026-06-17.json",
+    "python_cuda_metadata_bridge": "docs/reports/goal4593_v3_0_m194_python_ctypes_cuda_metadata_bridge_2026-06-17.json",
+    "shipping_readiness": "docs/reports/goal4589_v3_0_m190_embeddability_shipping_readiness_refresh_2026-06-17.json",
+    "staging_inventory": "docs/reports/goal4585_v3_0_m186_c_abi_staging_inventory_refresh_2026-06-17.json"
+  },
+  "status": "embeddability_metadata_readiness_checked",
+  "status_matrix": {
+    "cuda_buffer_descriptor_import_export": "validated_metadata_only",
+    "cuda_descriptor_host_aabb2_query_route": "rejected_invalid_argument",
+    "device_buffer_query_route": "blocked",
+    "external_cuda_stream_ordering": "blocked",
+    "generated_language_bindings": "blocked",
+    "host_external_runtime_metadata": "validated",
+    "packaged_sdk": "blocked",
+    "public_true_zero_copy_claim": "blocked",
+    "python_ctypes_cuda_metadata_bridge": "validated",
+    "release": "blocked",
+    "source_tree_stage_archive": "validated_extract_compile_run",
+    "stable_abi": "blocked_until_1_0_gates"
+  },
+  "version": "rtdl.v3_0.embeddability_metadata_readiness.goal4594.v1"
+}
