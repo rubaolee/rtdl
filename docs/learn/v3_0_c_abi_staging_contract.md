@@ -25,6 +25,16 @@ The target first builds `build/librtdl_c_api.*`, then creates
 The staged manifest is copied from the current draft source-tree manifest,
 currently `docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json`.
 
+To create a movable archive of the same source-tree stage:
+
+```bash
+make package-c-api-stage
+```
+
+This writes `build/rtdl-c-api-stage-0.1.3.tar.gz`. The archive is a convenient
+source-tree staging package, not a system install, package-manager artifact, or
+stable SDK.
+
 ## Example
 
 On Linux/pod, after `make stage-c-api`:
@@ -86,6 +96,8 @@ python_ctypes_hit_count=1 first_pair=(0,0)
 ## Boundary
 
 - This is a source-tree staging bundle only.
+- `package-c-api-stage` archives that staging bundle for movement between
+  directories; it is still not an installed SDK.
 - The only validated route remains host `F32` AABB2 overlap through the draft C
   ABI.
 - The Python `ctypes` example validates only thin shared-library loading,

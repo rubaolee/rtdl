@@ -11,6 +11,7 @@ BUILD_DIR := build
 #   make build-apple-rt
 #   make build-c-api
 #   make stage-c-api
+#   make package-c-api-stage
 #
 # Historical and goal-numbered targets below are preserved for auditability and
 # internal reproduction work. They are not the primary front-door interface for
@@ -157,10 +158,12 @@ ADAPTIVE_CXXFLAGS := -std=c++17 -O3 -shared -fPIC
 CXX_C_API ?= c++
 C_API_CXXFLAGS := -std=c++17 -O2 -shared -fPIC -DRTDL_BUILD_SHARED -Iinclude
 C_API_STAGE_DIR ?= $(BUILD_DIR)/c_api_stage
+C_API_STAGE_ARCHIVE_ROOT := rtdl-c-api-stage-0.1.3
+C_API_STAGE_ARCHIVE ?= $(BUILD_DIR)/$(C_API_STAGE_ARCHIVE_ROOT).tar.gz
 C_API_STAGE_MANIFEST := docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json
 C_API_PKG_CONFIG := packaging/rtdl-c-api.pc
 
-.PHONY: help build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api stage-c-api run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+.PHONY: help build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api stage-c-api package-c-api-stage run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
 
 help:
 	@echo "Public targets:"
@@ -175,6 +178,7 @@ help:
 	@echo "  build-adaptive - build the adaptive CPU-native backend library"
 	@echo "  build-c-api   - build the V3 C ABI lifecycle stub library"
 	@echo "  stage-c-api   - stage the V3 C ABI header, library, manifest, and examples"
+	@echo "  package-c-api-stage - archive the source-tree C ABI staging bundle"
 	@echo ""
 	@echo "Other targets are preserved for internal reproduction and audit work."
 
@@ -220,6 +224,12 @@ stage-c-api: build-c-api
 	cp examples/current/embedding/c_api_direct_link_client.c $(C_API_STAGE_DIR)/examples/c_api_direct_link_client.c
 	cp examples/current/embedding/python_ctypes_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_client.py
 	cp examples/current/embedding/python_ctypes_aabb2_query_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_aabb2_query_client.py
+
+package-c-api-stage: stage-c-api
+	rm -rf $(BUILD_DIR)/$(C_API_STAGE_ARCHIVE_ROOT)
+	mkdir -p $(BUILD_DIR)/$(C_API_STAGE_ARCHIVE_ROOT)
+	cp -R $(C_API_STAGE_DIR)/. $(BUILD_DIR)/$(C_API_STAGE_ARCHIVE_ROOT)/
+	tar -C $(BUILD_DIR) -czf $(C_API_STAGE_ARCHIVE) $(C_API_STAGE_ARCHIVE_ROOT)
 
 build-optix:
 	mkdir -p $(BUILD_DIR)

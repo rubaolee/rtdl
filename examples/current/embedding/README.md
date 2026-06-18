@@ -55,6 +55,14 @@ dlopen and direct-link C examples, a thin Python `ctypes` lifecycle example,
 and a Python `ctypes` host AABB2 query example. It is still a source-tree
 staging bundle, not an installed SDK.
 
+To archive that same movable source-tree stage:
+
+```bash
+make package-c-api-stage
+```
+
+This writes `build/rtdl-c-api-stage-0.1.3.tar.gz`.
+
 For direct-link clients:
 
 ```bash
@@ -97,6 +105,8 @@ python_ctypes_hit_count=1 first_pair=(0,0)
 ## Boundary
 
 - This is a source-tree C client example for the V3 draft C ABI.
+- `package-c-api-stage` produces a source-tree staging archive, not an installed
+  SDK or stable release artifact.
 - It validates only host `F32` AABB2 overlap through `librtdl_c_api`.
 - The Python `ctypes` example validates version/capability/context lifecycle
   calls only; it is not a generated Python package or complete binding.
