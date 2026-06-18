@@ -1,0 +1,27 @@
+{
+  "checks": {
+    "doctor_doc_explains_archive_target_boundary": true,
+    "doctor_requires_package_stage_target": true,
+    "doctor_surface_check_passes": true,
+    "surface_detail_names_package_stage_target": true
+  },
+  "claim_boundary": {
+    "doctor_builds_archive": false,
+    "packaged_sdk_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false,
+    "system_install_authorized": false
+  },
+  "conclusion": "Goal4588 refreshes the source-tree doctor so its V3 C ABI embedding surface check includes the new `package-c-api-stage` target. The doctor still checks target/file presence only; it does not build the archive or authorize SDK, install, stable ABI, or release wording.",
+  "date": "2026-06-17",
+  "doctor_surface": {
+    "detail": "include/rtdl/rtdl.h, make build-c-api/stage-c-api/package-c-api-stage, C examples, Python ctypes examples",
+    "name": "V3 C ABI embedding surface",
+    "required": true,
+    "status": "pass"
+  },
+  "failed_checks": [],
+  "goal": "Goal4588 / V3 M189",
+  "status": "source_tree_doctor_stage_archive_checked",
+  "version": "rtdl.v3_0.source_tree_doctor_stage_archive.goal4588.v1"
+}

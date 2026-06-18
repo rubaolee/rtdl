@@ -104,12 +104,14 @@ def _v3_c_abi_surface_check() -> dict[str, Any]:
         missing.append("Makefile build-c-api target")
     if "stage-c-api:" not in makefile_text:
         missing.append("Makefile stage-c-api target")
+    if "package-c-api-stage:" not in makefile_text:
+        missing.append("Makefile package-c-api-stage target")
     if missing:
         return _check("V3 C ABI embedding surface", "fail", "missing: " + ", ".join(missing))
     return _check(
         "V3 C ABI embedding surface",
         "pass",
-        "include/rtdl/rtdl.h, make build-c-api/stage-c-api, C examples, Python ctypes examples",
+        "include/rtdl/rtdl.h, make build-c-api/stage-c-api/package-c-api-stage, C examples, Python ctypes examples",
     )
 
 

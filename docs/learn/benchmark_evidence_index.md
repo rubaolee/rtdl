@@ -183,6 +183,7 @@ V3.0 current app-author guidance:
 - [Goal4585 C ABI staging inventory refresh](../reports/goal4585_v3_0_m186_c_abi_staging_inventory_refresh_2026-06-17.md)
 - [Goal4586 C ABI pkg-config relocatable stage](../reports/goal4586_v3_0_m187_c_abi_pkg_config_relocatable_stage_2026-06-17.md)
 - [Goal4587 C ABI stage archive](../reports/goal4587_v3_0_m188_c_abi_stage_archive_2026-06-17.md)
+- [Goal4588 source-tree doctor stage archive](../reports/goal4588_v3_0_m189_source_tree_doctor_stage_archive_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)
