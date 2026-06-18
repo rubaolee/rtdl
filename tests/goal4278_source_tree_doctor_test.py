@@ -29,9 +29,10 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
 
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn("RTDL Source Tree Doctor", result.stdout)
-        self.assertIn("version: v3.0.1", result.stdout)
+        self.assertIn("version: v3.0.2", result.stdout)
         self.assertIn("[PASS] version marker", result.stdout)
         self.assertIn("[PASS] V3 current test matrix", result.stdout)
+        self.assertNotIn("V4 preparatory C ABI", result.stdout)
         self.assertIn("optional module cupy", result.stdout)
         self.assertIn("optional OptiX library", result.stdout)
         self.assertIn("Optional warnings only affect native/partner paths", result.stdout)
@@ -42,7 +43,7 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stderr)
         payload = json.loads(result.stdout)
         self.assertEqual("rtdl_source_tree_doctor", payload["tool"])
-        self.assertEqual("v3.0.1", payload["version"])
+        self.assertEqual("v3.0.2", payload["version"])
         self.assertTrue(payload["ok"])
         self.assertEqual([], payload["required_failures"])
 
@@ -53,13 +54,27 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
             "front page",
             "top-level tutorials",
             "current examples",
-            "v3.0.1 release package",
+            "v3.0.2 release package",
             "V3 app-author strategy",
             "V3 current test matrix",
             "module rtdsl",
             "module numpy",
         ):
             self.assertIn(required, names)
+        self.assertNotIn("V4 preparatory C ABI surface", names)
+        self.assertNotIn("V4 preparatory C ABI docs", names)
+
+    def test_reviewer_option_reports_v4_prep_without_required_failures(self) -> None:
+        result = self._run("--json", "--include-v4-prep")
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        payload = json.loads(result.stdout)
+        checks = {item["name"]: item for item in payload["checks"]}
+        self.assertIn("V4 preparatory C ABI surface", checks)
+        self.assertIn("V4 preparatory C ABI docs", checks)
+        self.assertFalse(checks["V4 preparatory C ABI surface"]["required"])
+        self.assertFalse(checks["V4 preparatory C ABI docs"]["required"])
+        self.assertEqual([], payload["required_failures"])
 
     def test_smoke_option_runs_portable_hello_world(self) -> None:
         result = self._run("--json", "--run-smoke")

@@ -16,7 +16,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
-EXPECTED_VERSION = "v3.0.1"
+EXPECTED_VERSION = "v3.0.2"
 
 
 def _status_line(status: str, name: str, detail: str) -> str:
@@ -173,7 +173,7 @@ def _v3_c_abi_docs_check() -> dict[str, Any]:
     )
 
 
-def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
+def gather_checks(*, run_smoke: bool = False, include_v4_prep: bool = False) -> dict[str, Any]:
     if str(SRC) not in sys.path:
         sys.path.insert(0, str(SRC))
     if str(ROOT) not in sys.path:
@@ -196,15 +196,16 @@ def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
         "front page": ROOT / "README.md",
         "top-level tutorials": ROOT / "tutorials" / "current" / "README.md",
         "current examples": ROOT / "examples" / "current" / "README.md",
-        "v3.0.1 release package": ROOT / "docs" / "release_reports" / "v3_0_1" / "README.md",
+        "v3.0.2 release package": ROOT / "docs" / "release_reports" / "v3_0_2" / "README.md",
         "V3 app-author strategy": ROOT / "docs" / "learn" / "v3_0_app_author_implementation_strategy.md",
     }
     for name, path in required_paths.items():
         checks.append(_check(name, "pass" if path.exists() else "fail", path.relative_to(ROOT).as_posix()))
 
     checks.append(_v3_current_test_matrix_check())
-    checks.append(_v3_c_abi_surface_check())
-    checks.append(_v3_c_abi_docs_check())
+    if include_v4_prep:
+        checks.append(_v3_c_abi_surface_check())
+        checks.append(_v3_c_abi_docs_check())
 
     editable_metadata = ROOT / "pyproject.toml"
     checks.append(
@@ -291,9 +292,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     parser.add_argument("--strict", action="store_true", help="treat optional warnings as failures")
     parser.add_argument("--run-smoke", action="store_true", help="run the portable hello-world example")
+    parser.add_argument(
+        "--include-v4-prep",
+        action="store_true",
+        help="also check archived V4 preparatory embedding/C ABI surfaces",
+    )
     args = parser.parse_args(argv)
 
-    payload = gather_checks(run_smoke=args.run_smoke)
+    payload = gather_checks(run_smoke=args.run_smoke, include_v4_prep=args.include_v4_prep)
     if args.json:
         print(json.dumps(payload, indent=2, sort_keys=True))
     else:

@@ -25,7 +25,7 @@ def _load_doctor(root: Path) -> Any:
 
 def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     doctor_module = _load_doctor(root)
-    payload = doctor_module.gather_checks(run_smoke=False)
+    payload = doctor_module.gather_checks(run_smoke=False, include_v4_prep=True)
     checks_by_name = {row["name"]: row for row in payload["checks"]}
     doctor_text = (root / DOCTOR).read_text(encoding="utf-8")
     doc_text = (root / DOCTOR_DOC).read_text(encoding="utf-8")

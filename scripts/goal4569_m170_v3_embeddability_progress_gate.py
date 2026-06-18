@@ -54,7 +54,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "c_abi_draft_documents_host_aabb2_contract": "Current Host AABB2 Query Contract" in c_abi
         and "contiguous AABB2 rows" in c_abi,
         "c_abi_staging_surface_is_documented": "v3_0_c_abi_staging_contract.md" in c_abi
-        and "make stage-c-api" in makefile
+        and "stage-c-api:" in makefile
+        and "help-v4-prep:" in makefile
         and "make stage-c-api" in embedding,
         "stability_policy_blocks_stable_sdk": "never stable SDK" in stability
         and "not frozen" in stability,

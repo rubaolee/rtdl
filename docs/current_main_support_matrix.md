@@ -1,6 +1,6 @@
 # RTDL Current Support Matrix
 
-Status: live support matrix for the v3.0.1 source tree.
+Status: live support matrix for the v3.0.2 source tree.
 
 This page is the current learner-facing matrix. Older release matrices remain
 under `docs/release_reports/` for audit work, but normal users should read this
@@ -14,7 +14,7 @@ cells and silent CPU fallback are not allowed.
 
 ## Boundary
 
-- Current docs target: v3.0.1 source-tree partner-choice guidance.
+- Current docs target: v3.0.2 source-tree partner-choice guidance.
 - Active release engines: Embree for CPU RT, OptiX for NVIDIA RT.
 - Active V3.0 direction: primitive-first native RTDL when a fused generic
   primitive exactly expresses the work; explicit partner continuation only for
@@ -22,7 +22,7 @@ cells and silent CPU fallback are not allowed.
   benchmark recommendations must be backed by same-contract evidence, stated
   directionally, and never by hidden defaults.
 - C ABI direction: archived V4 preparatory source-tree handoff material is
-  preserved under history, but it is not a V3.0.1 public surface; stable SDK,
+  preserved under history, but it is not a V3.0.2 public surface; stable SDK,
   generated bindings, device-buffer query execution, and external stream
   ordering remain future work.
 - Engine ABI rule: native backends stay app-agnostic.

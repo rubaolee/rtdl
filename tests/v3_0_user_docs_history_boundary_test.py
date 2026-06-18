@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import unittest
 
 from scripts import run_test_matrix
@@ -36,7 +37,8 @@ class V30UserDocsHistoryBoundaryTest(unittest.TestCase):
 
     def test_release_reports_directory_is_current_only(self) -> None:
         names = {path.name for path in (ROOT / "docs" / "release_reports").iterdir()}
-        self.assertEqual({"README.md", "v3_0_1"}, names)
+        self.assertEqual({"README.md", "v3_0_2"}, names)
+        self.assertTrue((ROOT / "docs" / "history" / "release_reports" / "v3_0_1").is_dir())
         self.assertTrue((ROOT / "docs" / "history" / "release_reports" / "v3_0").is_dir())
         self.assertTrue((ROOT / "docs" / "history" / "release_reports" / "v2_14").is_dir())
         self.assertTrue((ROOT / "docs" / "history" / "release_reports" / "v1_0").is_dir())
@@ -62,9 +64,12 @@ class V30UserDocsHistoryBoundaryTest(unittest.TestCase):
 
     def test_makefile_public_targets_do_not_advertise_c_api(self) -> None:
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
-        help_public_block = makefile.split('@echo "Public targets:"', 1)[1].split('@echo ""', 1)[0]
-        self.assertNotIn("c-api", help_public_block)
-        self.assertIn("V4 preparatory targets (not a V3.0 public surface)", makefile)
+        default_help = makefile.split("help:", 1)[1].split("help-v4-prep:", 1)[0]
+        for phrase in ("c-api", "C ABI", "V4 preparatory", "stage-c-api", "package-c-api-stage"):
+            self.assertNotIn(phrase, default_help)
+        reviewer_help = makefile.split("help-v4-prep:", 1)[1].split("build-apple-rt:", 1)[0]
+        self.assertIn("Reviewer-only V4 preparatory targets", reviewer_help)
+        self.assertIn("stage-c-api", reviewer_help)
         self.assertIn("scripts/run_test_matrix.py --group v3_current", makefile)
         self.assertIn("test-all:", makefile)
 
@@ -105,6 +110,15 @@ class V30UserDocsHistoryBoundaryTest(unittest.TestCase):
         )
         for phrase in forbidden:
             self.assertNotIn(phrase, combined)
+
+    def test_benchmark_index_keeps_v4_prep_as_hidden_audit_anchors(self) -> None:
+        index = (ROOT / "docs" / "learn" / "benchmark_evidence_index.md").read_text(encoding="utf-8")
+        visible = re.sub(r"<!--.*?-->", "", index, flags=re.DOTALL)
+        self.assertIn("V4 preparatory embedding/C ABI anchors are archived", visible)
+        self.assertNotIn("Goal4550 C ABI draft", visible)
+        self.assertNotIn("Goal4613 prefix-stage C examples smoke", visible)
+        self.assertIn("Goal4550 C ABI draft", index)
+        self.assertIn("Goal4613 prefix-stage C examples smoke", index)
 
     def test_history_indexes_explain_old_material_boundary(self) -> None:
         history = (ROOT / "docs" / "history" / "README.md").read_text(encoding="utf-8")

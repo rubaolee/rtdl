@@ -79,8 +79,9 @@ def build_packet(root: Path = Path("."), *, run_make: bool = False) -> dict[str,
         and "C_API_HEADER := $(C_API_PREP_STAGING_ROOT)/include/rtdl/rtdl.h" in makefile,
         "target_exports_shared_symbols": "-DRTDL_BUILD_SHARED" in makefile,
         "target_builds_c_api_source": "src/native/rtdl_c_api.cpp" in makefile,
-        "help_mentions_build_c_api_as_v4_prep": "build-c-api" in makefile
-        and "V4 preparatory targets (not a V3.0 public surface)" in makefile,
+        "reviewer_help_mentions_build_c_api_as_v4_prep": "help-v4-prep:" in makefile
+        and "Reviewer-only V4 preparatory targets" in makefile
+        and "build-c-api" in makefile.split("help-v4-prep:", 1)[1].split("build-apple-rt:", 1)[0],
         "source_uses_public_header": '#include "rtdl/rtdl.h"' in source_text,
     }
     if make_result is not None:

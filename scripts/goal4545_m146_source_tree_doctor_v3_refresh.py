@@ -25,18 +25,24 @@ def _load_doctor(root: Path) -> Any:
 def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     doctor = _load_doctor(root)
     payload = doctor.gather_checks(run_smoke=False)
+    v4_payload = doctor.gather_checks(run_smoke=False, include_v4_prep=True)
     checks_by_name = {row["name"]: row for row in payload["checks"]}
+    v4_checks_by_name = {row["name"]: row for row in v4_payload["checks"]}
     doc_text = (root / DOCTOR_DOC).read_text(encoding="utf-8")
     checks = {
         "doctor_ok": payload["ok"],
-        "version_marker_is_v3_0_1": checks_by_name["version marker"]["detail"] == "v3.0.1",
-        "v3_0_1_release_package_required": "v3.0.1 release package" in checks_by_name,
+        "version_marker_is_v3_0_2": checks_by_name["version marker"]["detail"] == "v3.0.2",
+        "v3_0_2_release_package_required": "v3.0.2 release package" in checks_by_name,
         "v3_strategy_doc_required": "V3 app-author strategy" in checks_by_name,
         "v3_current_test_matrix_required": "V3 current test matrix" in checks_by_name,
-        "v4_preparatory_c_abi_surface_optional": "V4 preparatory C ABI surface" in checks_by_name,
+        "default_doctor_excludes_v4_prep": "V4 preparatory C ABI surface" not in checks_by_name
+        and "V4 preparatory C ABI docs" not in checks_by_name,
+        "reviewer_mode_includes_v4_prep": "V4 preparatory C ABI surface" in v4_checks_by_name
+        and "V4 preparatory C ABI docs" in v4_checks_by_name,
         "doctor_doc_mentions_v3": "V3 development" in doc_text,
-        "doctor_doc_mentions_c_abi_surface": "V4 preparatory C ABI surface" in doc_text,
+        "doctor_doc_mentions_reviewer_flag": "--include-v4-prep" in doc_text,
         "required_failures_empty": tuple(payload["required_failures"]) == (),
+        "v4_required_failures_empty": tuple(v4_payload["required_failures"]) == (),
     }
     failed = tuple(name for name, passed in checks.items() if not passed)
     return {
@@ -47,6 +53,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "checks": checks,
         "failed_checks": failed,
         "doctor_payload": payload,
+        "doctor_payload_with_v4_prep": v4_payload,
         "claim_boundary": {
             "runtime_executed": False,
             "benchmark_executed": False,
@@ -59,9 +66,9 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "conclusion": (
             "Goal4545 refreshes the source-tree doctor to the current V3.0 "
             "development surface. The required layout checks now expect VERSION "
-            "`v3.0.1`, the v3.0.1 release package, the V3 app-author strategy "
-            "doc, the current V3 test-matrix entrypoint, and the optional V4 "
-            "preparatory C ABI surface. This is an "
+            "`v3.0.2`, the v3.0.2 release package, the V3 app-author strategy "
+            "doc, and the current V3 test-matrix entrypoint. V4 preparatory C "
+            "ABI checks are available only through explicit reviewer mode. This is an "
             "environment sanity gate only, not a benchmark or claim "
             "authorization."
         ),

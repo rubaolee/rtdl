@@ -34,7 +34,7 @@ def _load_doctor(root: Path) -> Any:
 
 def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     doctor = _load_doctor(root)
-    payload = doctor.gather_checks(run_smoke=False)
+    payload = doctor.gather_checks(run_smoke=False, include_v4_prep=True)
     checks_by_name = {row["name"]: row for row in payload["checks"]}
     docs_surface = checks_by_name.get("V4 preparatory C ABI docs", {})
     doctor_text = (root / DOCTOR).read_text(encoding="utf-8")

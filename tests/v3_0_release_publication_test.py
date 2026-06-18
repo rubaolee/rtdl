@@ -8,7 +8,7 @@ import tomllib
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE = ROOT / "docs" / "release_reports" / "v3_0_1"
+RELEASE = ROOT / "docs" / "release_reports" / "v3_0_2"
 DOCTOR = ROOT / "scripts" / "rtdl_source_tree_doctor.py"
 
 
@@ -22,10 +22,10 @@ def _load_doctor():
 
 
 class V30ReleasePublicationTest(unittest.TestCase):
-    def test_version_markers_are_v3_0_1(self) -> None:
-        self.assertEqual("v3.0.1", (ROOT / "VERSION").read_text(encoding="utf-8").strip())
+    def test_version_markers_are_v3_0_2(self) -> None:
+        self.assertEqual("v3.0.2", (ROOT / "VERSION").read_text(encoding="utf-8").strip())
         pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-        self.assertEqual("3.0.1", pyproject["project"]["version"])
+        self.assertEqual("3.0.2", pyproject["project"]["version"])
 
     def test_release_packet_is_complete(self) -> None:
         for name in (
@@ -41,8 +41,8 @@ class V30ReleasePublicationTest(unittest.TestCase):
             self.assertTrue((RELEASE / name).exists(), name)
 
         readme = (RELEASE / "README.md").read_text(encoding="utf-8")
-        self.assertIn("RTDL v3.0.1 Release Package", readme)
-        self.assertIn("Version marker: `v3.0.1`", readme)
+        self.assertIn("RTDL v3.0.2 Release Package", readme)
+        self.assertIn("Version marker: `v3.0.2`", readme)
         self.assertIn("Embedding, SDK packaging, generated bindings", readme)
         self.assertIn("not part of V3.0", readme)
 
@@ -60,7 +60,7 @@ class V30ReleasePublicationTest(unittest.TestCase):
             )
         )
         self.assertIn("v3.0", docs)
-        self.assertIn("docs/release_reports/v3_0_1/README.md", docs)
+        self.assertIn("docs/release_reports/v3_0_2/README.md", docs)
         self.assertNotIn("current v2.14", docs.lower())
         self.assertNotIn("current v2.10", docs.lower())
 
@@ -81,15 +81,21 @@ class V30ReleasePublicationTest(unittest.TestCase):
         self.assertNotIn("ships the current C ABI handoff surface", combined)
         self.assertNotIn("C ABI handoff surface", combined)
 
-    def test_source_tree_doctor_keeps_c_abi_optional(self) -> None:
+    def test_source_tree_doctor_keeps_c_abi_reviewer_only(self) -> None:
         doctor = _load_doctor()
         payload = doctor.gather_checks(run_smoke=False)
         checks = {row["name"]: row for row in payload["checks"]}
-        self.assertEqual("v3.0.1", payload["version"])
-        self.assertEqual("pass", checks["v3.0.1 release package"]["status"])
-        self.assertFalse(checks["V4 preparatory C ABI surface"]["required"])
-        self.assertFalse(checks["V4 preparatory C ABI docs"]["required"])
+        self.assertEqual("v3.0.2", payload["version"])
+        self.assertEqual("pass", checks["v3.0.2 release package"]["status"])
+        self.assertNotIn("V4 preparatory C ABI surface", checks)
+        self.assertNotIn("V4 preparatory C ABI docs", checks)
         self.assertEqual([], payload["required_failures"])
+
+        reviewer_payload = doctor.gather_checks(run_smoke=False, include_v4_prep=True)
+        reviewer_checks = {row["name"]: row for row in reviewer_payload["checks"]}
+        self.assertFalse(reviewer_checks["V4 preparatory C ABI surface"]["required"])
+        self.assertFalse(reviewer_checks["V4 preparatory C ABI docs"]["required"])
+        self.assertEqual([], reviewer_payload["required_failures"])
 
 
 if __name__ == "__main__":

@@ -1,14 +1,16 @@
 {
   "checks": {
-    "doctor_doc_mentions_c_abi_surface": true,
+    "default_doctor_excludes_v4_prep": true,
+    "doctor_doc_mentions_reviewer_flag": true,
     "doctor_doc_mentions_v3": true,
     "doctor_ok": true,
     "required_failures_empty": true,
-    "v3_0_1_release_package_required": true,
+    "reviewer_mode_includes_v4_prep": true,
+    "v3_0_2_release_package_required": true,
     "v3_current_test_matrix_required": true,
     "v3_strategy_doc_required": true,
-    "v4_preparatory_c_abi_surface_optional": true,
-    "version_marker_is_v3_0_1": true
+    "v4_required_failures_empty": true,
+    "version_marker_is_v3_0_2": true
   },
   "claim_boundary": {
     "automatic_partner_selection_authorized": false,
@@ -19,12 +21,12 @@
     "release_authorized": false,
     "runtime_executed": false
   },
-  "conclusion": "Goal4545 refreshes the source-tree doctor to the current V3.0 development surface. The required layout checks now expect VERSION `v3.0.1`, the v3.0.1 release package, the V3 app-author strategy doc, the current V3 test-matrix entrypoint, and the optional V4 preparatory C ABI surface. This is an environment sanity gate only, not a benchmark or claim authorization.",
+  "conclusion": "Goal4545 refreshes the source-tree doctor to the current V3.0 development surface. The required layout checks now expect VERSION `v3.0.2`, the v3.0.2 release package, the V3 app-author strategy doc, and the current V3 test-matrix entrypoint. V4 preparatory C ABI checks are available only through explicit reviewer mode. This is an environment sanity gate only, not a benchmark or claim authorization.",
   "date": "2026-06-17",
   "doctor_payload": {
     "checks": [
       {
-        "detail": "v3.0.1",
+        "detail": "v3.0.2",
         "name": "version marker",
         "required": true,
         "status": "pass"
@@ -54,8 +56,145 @@
         "status": "pass"
       },
       {
-        "detail": "docs/release_reports/v3_0_1/README.md",
-        "name": "v3.0.1 release package",
+        "detail": "docs/release_reports/v3_0_2/README.md",
+        "name": "v3.0.2 release package",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "docs/learn/v3_0_app_author_implementation_strategy.md",
+        "name": "V3 app-author strategy",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "scripts/run_test_matrix.py --group v3_current (39 modules)",
+        "name": "V3 current test matrix",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "pyproject.toml",
+        "name": "optional editable source-tree metadata",
+        "required": false,
+        "status": "pass"
+      },
+      {
+        "detail": "3.11.9",
+        "name": "python version",
+        "required": false,
+        "status": "pass"
+      },
+      {
+        "detail": "rtdsl",
+        "name": "module rtdsl",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "numpy",
+        "name": "module numpy",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "imageio",
+        "name": "optional module imageio",
+        "required": false,
+        "status": "pass"
+      },
+      {
+        "detail": "imageio_ffmpeg",
+        "name": "optional module imageio-ffmpeg",
+        "required": false,
+        "status": "pass"
+      },
+      {
+        "detail": "cupy",
+        "name": "optional module cupy",
+        "required": false,
+        "status": "warn"
+      },
+      {
+        "detail": "numba",
+        "name": "optional module numba",
+        "required": false,
+        "status": "warn"
+      },
+      {
+        "detail": "set RTDL_OPTIX_LIBRARY or build/librtdl_optix.so for OptiX examples",
+        "name": "optional OptiX library",
+        "required": false,
+        "status": "warn"
+      },
+      {
+        "detail": "build/librtdl_embree.dll",
+        "name": "optional Embree library",
+        "required": false,
+        "status": "pass"
+      }
+    ],
+    "ok": true,
+    "repo": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
+    "required_failures": [],
+    "tool": "rtdl_source_tree_doctor",
+    "version": "v3.0.2",
+    "warnings": [
+      {
+        "detail": "cupy",
+        "name": "optional module cupy",
+        "required": false,
+        "status": "warn"
+      },
+      {
+        "detail": "numba",
+        "name": "optional module numba",
+        "required": false,
+        "status": "warn"
+      },
+      {
+        "detail": "set RTDL_OPTIX_LIBRARY or build/librtdl_optix.so for OptiX examples",
+        "name": "optional OptiX library",
+        "required": false,
+        "status": "warn"
+      }
+    ]
+  },
+  "doctor_payload_with_v4_prep": {
+    "checks": [
+      {
+        "detail": "v3.0.2",
+        "name": "version marker",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "src/rtdsl/__init__.py",
+        "name": "src/rtdsl",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "README.md",
+        "name": "front page",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "tutorials/current/README.md",
+        "name": "top-level tutorials",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "examples/current/README.md",
+        "name": "current examples",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "docs/release_reports/v3_0_2/README.md",
+        "name": "v3.0.2 release package",
         "required": true,
         "status": "pass"
       },
@@ -148,7 +287,7 @@
     "repo": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
     "required_failures": [],
     "tool": "rtdl_source_tree_doctor",
-    "version": "v3.0.1",
+    "version": "v3.0.2",
     "warnings": [
       {
         "detail": "cupy",

@@ -4,21 +4,23 @@ Status: `source_tree_doctor_v3_refresh_checked`
 
 ## Conclusion
 
-Goal4545 refreshes the source-tree doctor to the current V3.0 development surface. The required layout checks now expect VERSION `v3.0.1`, the v3.0.1 release package, the V3 app-author strategy doc, the current V3 test-matrix entrypoint, and the optional V4 preparatory C ABI surface. This is an environment sanity gate only, not a benchmark or claim authorization.
+Goal4545 refreshes the source-tree doctor to the current V3.0 development surface. The required layout checks now expect VERSION `v3.0.2`, the v3.0.2 release package, the V3 app-author strategy doc, and the current V3 test-matrix entrypoint. V4 preparatory C ABI checks are available only through explicit reviewer mode. This is an environment sanity gate only, not a benchmark or claim authorization.
 
 ## Checks
 
 | Check | Passed |
 | --- | --- |
 | `doctor_ok` | `True` |
-| `version_marker_is_v3_0_1` | `True` |
-| `v3_0_1_release_package_required` | `True` |
+| `version_marker_is_v3_0_2` | `True` |
+| `v3_0_2_release_package_required` | `True` |
 | `v3_strategy_doc_required` | `True` |
 | `v3_current_test_matrix_required` | `True` |
-| `v4_preparatory_c_abi_surface_optional` | `True` |
+| `default_doctor_excludes_v4_prep` | `True` |
+| `reviewer_mode_includes_v4_prep` | `True` |
 | `doctor_doc_mentions_v3` | `True` |
-| `doctor_doc_mentions_c_abi_surface` | `True` |
+| `doctor_doc_mentions_reviewer_flag` | `True` |
 | `required_failures_empty` | `True` |
+| `v4_required_failures_empty` | `True` |
 
 ## Boundary
 

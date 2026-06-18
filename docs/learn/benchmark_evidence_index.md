@@ -58,11 +58,11 @@ The RayJoin public-CDB fixture is materialized only when the explicit
 
 ## Current Release Evidence
 
-- [v3.0.1 release package](../release_reports/v3_0_1/README.md)
-- [v3.0.1 release statement](../release_reports/v3_0_1/release_statement.md)
-- [v3.0.1 support matrix](../release_reports/v3_0_1/support_matrix.md)
-- [v3.0.1 public wording boundaries](../release_reports/v3_0_1/public_wording_boundaries.md)
-- [v3.0.1 final closeout](../release_reports/v3_0_1/final_closeout.md)
+- [v3.0.2 release package](../release_reports/v3_0_2/README.md)
+- [v3.0.2 release statement](../release_reports/v3_0_2/release_statement.md)
+- [v3.0.2 support matrix](../release_reports/v3_0_2/support_matrix.md)
+- [v3.0.2 public wording boundaries](../release_reports/v3_0_2/public_wording_boundaries.md)
+- [v3.0.2 final closeout](../release_reports/v3_0_2/final_closeout.md)
 - [V3.0 app-author implementation strategy](v3_0_app_author_implementation_strategy.md)
 - [Goal4536 V3 internal completion packet](../reports/goal4536_v3_0_m138_v3_internal_completion_packet_2026-06-17.md)
 - [Goal4538 V3 completion review consensus](../reports/goal4538_v3_0_m139_v3_completion_review_consensus_2026-06-17.md)
@@ -139,42 +139,10 @@ completion readiness audit; Goal4542 post-closure surface audit; Goal4543
 major performance target refresh; Goal4547 source-tree doctor V3 matrix hint;
 Goal4548 legacy full runner repair.
 
-V4 preparatory embedding anchors are historical/preparatory only and are not
-V3.0 release scope: Goal4549 embeddability strategy intake; Goal4550 C ABI
-draft; Goal4551 C ABI header compile smoke; Goal4552 C ABI stub library;
-Goal4553 C ABI C client smoke; Goal4554 C ABI Makefile build target; Goal4555
-C ABI header boundary refresh; Goal4556 C ABI exported symbol audit; Goal4557
-C ABI fail-closed query entrypoints; Goal4558 C ABI host AABB2 query proof;
-Goal4559 C ABI example client; Goal4560 C ABI embedding README; Goal4561 C ABI
-AABB2 contract doc; Goal4562 embeddability status refresh; Goal4563 C ABI
-AABB2 negative runtime; Goal4564 C ABI source-tree doctor surface; Goal4565 C
-ABI stability policy; Goal4566 C ABI symbol manifest; Goal4567 C ABI AABB2
-layout validation; Goal4568 zero-copy interop contract; Goal4569 embeddability
-progress gate; Goal4570 C ABI ownership/threading contract; Goal4571 C ABI
-AABB2 result ordering; Goal4572 C ABI doctor docs surface; Goal4573 C ABI
-backend/runtime fail-closed; Goal4574 C ABI patch version refresh; Goal4575 C
-ABI version negotiation; Goal4576 C ABI staging bundle; Goal4577 C ABI
-pkg-config stage; Goal4578 C ABI capability queries; Goal4579 C ABI
-direct-link example; Goal4580 embeddability readiness packet; Goal4581 C ABI
-Python ctypes example; Goal4582 C ABI Python ctypes AABB2 query; Goal4583
-embeddability readiness refresh; Goal4584 source-tree doctor ctypes surface;
-Goal4585 C ABI staging inventory refresh; Goal4586 C ABI pkg-config
-relocatable stage; Goal4587 C ABI stage archive; Goal4588 source-tree doctor
-stage archive; Goal4589 embeddability shipping readiness refresh; Goal4590
-embeddability architecture status refresh; Goal4591 C ABI host external runtime
-gate; Goal4592 C ABI CUDA buffer metadata gate; Goal4593 Python ctypes CUDA
-metadata bridge; Goal4594 embeddability metadata readiness refresh; Goal4595 C
-ABI prefix stage; Goal4596 source-tree doctor prefix stage; Goal4597
-prefix-stage Python ctypes smoke; Goal4598 embeddability architecture prefix
-status; Goal4599 Python ctypes layout audit; Goal4600 C ABI CMake prefix
-stage; Goal4601 embeddability delivery status refresh; Goal4602 C ABI archive
-CMake smoke; Goal4603 embeddability delivery archive CMake refresh; Goal4604
-toolchain support matrix; Goal4605 binding/device interop matrix; Goal4606
-neutral buffer protocol gate; Goal4607 Python ctypes DLPack-like metadata
-bridge; Goal4608 archive-stage Python ctypes smoke; Goal4609 archive-stage C
-examples smoke; Goal4610 C ABI independent-context concurrency smoke; Goal4611
-C ABI last-error diagnostics smoke; Goal4612 C ABI last-error staged example;
-Goal4613 prefix-stage C examples smoke.
+V4 preparatory embedding/C ABI anchors are archived preparatory material, not
+V3.0 release scope. Read the preserved chronology through
+[History](../history/README.md) and the full archived ledger when reviewing V4
+prep; do not use those anchors as current user guidance.
 
 ## Exact Audit Anchors
 
@@ -242,6 +210,11 @@ human-readable ledger was shortened.
 - Goal4546 current V3 test matrix gate
 - Goal4547 source-tree doctor V3 matrix hint
 - Goal4548 legacy full runner repair
+
+<!--
+Hidden audit anchors retained for historical V4-prep regression tests. These
+are not rendered in the learner-facing index and are not current user guidance.
+
 - Goal4549 embeddability strategy intake
 - Goal4550 C ABI draft
 - Goal4551 C ABI header compile smoke
@@ -307,6 +280,7 @@ human-readable ledger was shortened.
 - Goal4611 C ABI last-error diagnostics smoke
 - Goal4612 C ABI last-error staged example
 - Goal4613 prefix-stage C examples smoke
+-->
 
 ## Reading Rules
 

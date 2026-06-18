@@ -1,6 +1,6 @@
 # RTDL Versioning
 
-Status: current v3.0.1 source-tree guidance.
+Status: current v3.0.2 source-tree guidance.
 
 RTDL uses source-tree version markers and Git tags to identify reviewed
 research snapshots. A version tag names the state of the repository and the
@@ -9,7 +9,7 @@ wheel promise, PyPI promise, or automatic partner-selection promise.
 
 ## Current Version
 
-`v3.0.1` is the current source-tree release marker. It is a patch release for
+`v3.0.2` is the current source-tree release marker. It is a patch release for
 the V3.0 line: the Python+RTDL plus explicit partner programming surface, the
 closed ten-app benchmark route matrix, and the V3 app-author
 primitive-first/explicit-partner guidance remain the product surface, while the

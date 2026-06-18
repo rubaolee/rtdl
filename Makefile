@@ -14,12 +14,10 @@ BUILD_DIR := build
 # internal reproduction work. They are not the primary front-door interface for
 # new users.
 #
-# V4 preparatory targets are available for reviewers of archived embedding/C ABI
-# work, but they are not part of the V3.0 public release surface:
-#   make build-c-api
-#   make stage-c-api
-#   make stage-c-api-prefix
-#   make package-c-api-stage
+# Reviewer-only V4 preparatory targets remain available for archived
+# embedding/C ABI regression work. They are intentionally hidden from the
+# default help output; use `make help-v4-prep` only when reviewing
+# `docs/history/v4_preparatory_embedding/`.
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
@@ -172,7 +170,7 @@ C_API_STAGE_MANIFEST := docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_
 C_API_PKG_CONFIG := $(C_API_PREP_STAGING_ROOT)/packaging/rtdl-c-api.pc
 C_API_CMAKE_CONFIG := $(C_API_PREP_STAGING_ROOT)/packaging/rtdl-c-api-config.cmake
 
-.PHONY: help build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api stage-c-api stage-c-api-prefix package-c-api-stage run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test test-all verify clean
+.PHONY: help help-v4-prep build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api stage-c-api stage-c-api-prefix package-c-api-stage run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test test-all verify clean
 
 help:
 	@echo "Public targets:"
@@ -186,13 +184,16 @@ help:
 	@echo "  build-apple-rt - build the Apple Metal/MPS RT backend library"
 	@echo "  build-adaptive - build the adaptive CPU-native backend library"
 	@echo ""
-	@echo "V4 preparatory targets (not a V3.0 public surface):"
+	@echo "Other targets are preserved for internal reproduction and audit work."
+
+help-v4-prep:
+	@echo "Reviewer-only V4 preparatory targets:"
 	@echo "  build-c-api   - build the archived draft C ABI lifecycle stub library"
 	@echo "  stage-c-api   - stage the archived draft C ABI bundle for review"
 	@echo "  stage-c-api-prefix - stage the archived draft C ABI bundle into a DESTDIR/prefix-style layout"
 	@echo "  package-c-api-stage - archive the draft C ABI staging bundle"
 	@echo ""
-	@echo "Other targets are preserved for internal reproduction and audit work."
+	@echo "These targets are archived V4 prep under docs/history/v4_preparatory_embedding/."
 
 build-apple-rt:
 	mkdir -p $(BUILD_DIR)

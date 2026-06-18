@@ -7,7 +7,7 @@ performance claims in the current public docs.
 
 ## Product Surface
 
-The current learner-facing milestone is the v3.0.1 source-tree
+The current learner-facing milestone is the v3.0.2 source-tree
 Python+partner+RTDL surface. It preserves the V3.0 ten-app benchmark route
 closure, explicit route and partner choice, the V3 app-author strategy, and
 the cleanup that keeps embedding/SDK work out of V3.0 release-line scope.
@@ -91,4 +91,4 @@ measures, and reviews that exact continuation contract.
 - [Benchmark Evidence Index](benchmark_evidence_index.md)
 - [RT-Core Evidence Matrix](rt_core_evidence_matrix.md)
 - [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
-- [RTDL v3.0.1 Release Package](../release_reports/v3_0_1/README.md)
+- [RTDL v3.0.2 Release Package](../release_reports/v3_0_2/README.md)
