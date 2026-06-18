@@ -11,6 +11,7 @@ Goal4569 consolidates the V3 embeddability track: RTDL now has a source-tree dra
 | Surface | Status |
 | --- | --- |
 | `control_plane_host_aabb2_c_abi` | `ready_source_tree_draft` |
+| `source_tree_c_api_stage_bundle` | `validated_draft` |
 | `non_python_c_client` | `validated` |
 | `exported_symbol_manifest` | `draft_manifest_checked` |
 | `negative_and_layout_runtime` | `validated` |
@@ -25,8 +26,9 @@ Goal4569 consolidates the V3 embeddability track: RTDL now has a source-tree dra
 
 | Check | Passed |
 | --- | --- |
-| `strategy_status_refreshed_to_goal4568` | `True` |
+| `strategy_status_refreshed_to_goal4576` | `True` |
 | `c_abi_draft_documents_host_aabb2_contract` | `True` |
+| `c_abi_staging_surface_is_documented` | `True` |
 | `stability_policy_blocks_stable_sdk` | `True` |
 | `symbol_manifest_is_draft_0_1_2` | `True` |
 | `embedding_readme_has_c_client_commands` | `True` |

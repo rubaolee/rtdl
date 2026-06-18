@@ -113,6 +113,7 @@ def _v3_c_abi_docs_check() -> dict[str, Any]:
         ROOT / "docs" / "learn" / "v3_0_c_abi_draft.md",
         ROOT / "docs" / "learn" / "v3_0_c_abi_stability_policy.md",
         ROOT / "docs" / "learn" / "v3_0_c_abi_ownership_threading_contract.md",
+        ROOT / "docs" / "learn" / "v3_0_c_abi_staging_contract.md",
         ROOT / "docs" / "learn" / "v3_0_c_abi_symbol_manifest_v0_1_2.json",
         ROOT / "docs" / "learn" / "v3_0_zero_copy_interop_contract.md",
     )

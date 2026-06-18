@@ -10,11 +10,12 @@ and validation gates.
 
 ## Current Implementation Progress
 
-As of Goal4568, the first control-plane embedding slice exists in the source
+As of Goal4576, the first control-plane embedding slice exists in the source
 tree:
 
 - Draft public header: `include/rtdl/rtdl.h`.
 - Source-tree shared-library target: `make build-c-api`.
+- Source-tree staging bundle target: `make stage-c-api`.
 - Export audit for the current lifecycle/query symbols.
 - Non-Python C client validation.
 - A narrow host `F32` AABB2 overlap query proof returning host `U64`
@@ -25,6 +26,8 @@ tree:
   [V3.0 C ABI Draft](v3_0_c_abi_draft.md).
 - A draft stability rulebook in
   [V3.0 C ABI Stability Policy](v3_0_c_abi_stability_policy.md).
+- A source-tree staging bundle contract in
+  [V3.0 C ABI Staging Contract](v3_0_c_abi_staging_contract.md).
 - A zero-copy interop readiness contract in
   [V3.0 Zero-Copy Interop Contract](v3_0_zero_copy_interop_contract.md).
 

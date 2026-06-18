@@ -1,0 +1,140 @@
+{
+  "checks": {
+    "c_abi_draft_links_staging_contract": true,
+    "cc_available": true,
+    "current_manifest_is_0_1_2": true,
+    "embedding_readme_mentions_stage_command": true,
+    "learn_readme_links_staging_contract": true,
+    "make_available": true,
+    "makefile_declares_stage_target": true,
+    "stage_all_files_exist": true,
+    "stage_make_ok": true,
+    "stage_manifest_matches_current_version": true,
+    "stage_target_builds_c_api_first": true,
+    "stage_target_copies_header_library_manifest_readme_example": true,
+    "stage_target_is_phony": true,
+    "staged_example_compiles": true,
+    "staged_example_runs_expected_query": true,
+    "staging_contract_documents_bundle": true
+  },
+  "claim_boundary": {
+    "install_prefix_authorized": false,
+    "optix_embree_c_abi_query_authorized": false,
+    "packaged_sdk_authorized": false,
+    "performance_wording_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false
+  },
+  "conclusion": "Goal4576 adds and validates `make stage-c-api`, a source-tree staging bundle for non-Python C ABI embedding. The staged bundle contains the public header, shared library, current draft symbol manifest, README, and example C client; the pod evidence compiles and runs the staged example against the staged library. This is not a packaged SDK or stable ABI promise.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4576 / V3 M177",
+  "stage_result": {
+    "cc": "/usr/bin/cc",
+    "compile_result": {
+      "command": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-I",
+        "build/c_api_stage/include",
+        "build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
+        "-o",
+        "build/c_api_stage/examples/rtdl_c_api_aabb2_overlap_client",
+        "-ldl"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": []
+    },
+    "make": "/usr/bin/make",
+    "make_result": {
+      "command": [
+        "/usr/bin/make",
+        "stage-c-api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": [
+        "mkdir -p build",
+        "c++ -std=c++17 -O2 -shared -fPIC -DRTDL_BUILD_SHARED -Iinclude \\",
+        "\tsrc/native/rtdl_c_api.cpp \\",
+        "\t-o build/librtdl_c_api.so",
+        "rm -rf build/c_api_stage",
+        "mkdir -p build/c_api_stage/include/rtdl build/c_api_stage/lib build/c_api_stage/share/rtdl build/c_api_stage/examples",
+        "cp include/rtdl/rtdl.h build/c_api_stage/include/rtdl/rtdl.h",
+        "cp build/librtdl_c_api.so build/c_api_stage/lib/librtdl_c_api.so",
+        "cp docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json build/c_api_stage/share/rtdl/v3_0_c_abi_symbol_manifest.json",
+        "cp examples/current/embedding/README.md build/c_api_stage/share/rtdl/README.md",
+        "cp examples/current/embedding/c_api_aabb2_overlap_client.c build/c_api_stage/examples/c_api_aabb2_overlap_client.c"
+      ]
+    },
+    "ok": true,
+    "run_result": {
+      "command": [
+        "build/c_api_stage/examples/rtdl_c_api_aabb2_overlap_client",
+        "build/c_api_stage/lib/librtdl_c_api.so"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "hit_count=1 first_pair=(0,0)"
+    },
+    "stage_dir": "build/c_api_stage",
+    "staged_files": {
+      "example": {
+        "exists": true,
+        "path": "build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
+        "size_bytes": 6127
+      },
+      "header": {
+        "exists": true,
+        "path": "build/c_api_stage/include/rtdl/rtdl.h",
+        "size_bytes": 5129
+      },
+      "library": {
+        "exists": true,
+        "path": "build/c_api_stage/lib/librtdl_c_api.so",
+        "size_bytes": 21880
+      },
+      "manifest": {
+        "exists": true,
+        "path": "build/c_api_stage/share/rtdl/v3_0_c_abi_symbol_manifest.json",
+        "size_bytes": 636
+      },
+      "readme": {
+        "exists": true,
+        "path": "build/c_api_stage/share/rtdl/README.md",
+        "size_bytes": 1971
+      }
+    },
+    "staged_manifest": {
+      "abi_version": "0.1.2",
+      "build_target": "make build-c-api",
+      "header": "include/rtdl/rtdl.h",
+      "stable": false,
+      "status": "draft_source_tree_manifest",
+      "symbols": [
+        "rtdl_abi_version_major",
+        "rtdl_abi_version_minor",
+        "rtdl_abi_version_patch",
+        "rtdl_abi_is_compatible",
+        "rtdl_status_string",
+        "rtdl_context_last_error",
+        "rtdl_context_create",
+        "rtdl_context_destroy",
+        "rtdl_context_set_external_runtime",
+        "rtdl_buffer_import",
+        "rtdl_buffer_export",
+        "rtdl_index_build",
+        "rtdl_query_execute",
+        "rtdl_buffer_destroy",
+        "rtdl_index_destroy",
+        "rtdl_query_destroy"
+      ]
+    }
+  },
+  "status": "c_abi_staging_bundle_checked",
+  "version": "rtdl.v3_0.c_abi_staging_bundle.goal4576.v1"
+}

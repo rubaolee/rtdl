@@ -11,6 +11,8 @@ using this draft as an external contract.
 Use [V3.0 C ABI Ownership And Threading Contract](v3_0_c_abi_ownership_threading_contract.md)
 for the current buffer lifetime, release-callback, last-error, and threading
 rules.
+Use [V3.0 C ABI Staging Contract](v3_0_c_abi_staging_contract.md) for the
+source-tree `make stage-c-api` bundle boundary.
 The current draft symbol list is tracked in
 [v3_0_c_abi_symbol_manifest_v0_1_2.json](v3_0_c_abi_symbol_manifest_v0_1_2.json).
 
@@ -67,6 +69,11 @@ routes and evidence gates.
 Goal4559 adds a readable source-tree C example client at
 `examples/current/embedding/c_api_aabb2_overlap_client.c` and validates it on
 the pod against the Makefile-built C ABI library.
+
+Goal4576 adds `make stage-c-api`, which stages the draft C ABI header, shared
+library, current symbol manifest, README, and example client under
+`build/c_api_stage`. This is still a source-tree staging bundle, not an install
+or package contract.
 
 ## Current Host AABB2 Query Contract
 

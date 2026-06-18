@@ -15,6 +15,8 @@ moves from a proof boundary toward a stable embedding contract.
   [`v3_0_c_abi_symbol_manifest_v0_1_2.json`](v3_0_c_abi_symbol_manifest_v0_1_2.json).
 - Ownership/threading contract:
   [`v3_0_c_abi_ownership_threading_contract.md`](v3_0_c_abi_ownership_threading_contract.md).
+- Source-tree staging contract:
+  [`v3_0_c_abi_staging_contract.md`](v3_0_c_abi_staging_contract.md).
 - Current validated route: host `F32` AABB2 overlap returning host `U64`
   `(query_id, primitive_id)` pairs.
 - Current evidence gates: header compile, shared-library build, exported-symbol
@@ -47,7 +49,7 @@ the boundary. Every breaking change must:
 - Update `RTDL_ABI_VERSION_*` in the public header when the C shape or semantics
   change.
 - Refresh the C ABI draft, embedding example docs, source-tree doctor evidence,
-  and `v3_current` matrix.
+  staging docs, and `v3_current` matrix.
 - Keep unsupported routes fail-closed rather than silently accepting inputs with
   undefined behavior.
 - Preserve explicit ownership rules for caller-retained, release-callback, and
@@ -68,7 +70,9 @@ RTDL may call the C ABI stable only after all of these are true:
 - At least one non-Python client validates a real query route.
 - Negative runtime tests cover invalid dtype, device, ABI version, unsupported
   primitive/query kinds, and empty-result behavior.
-- Package/install instructions exist for at least one supported platform.
+- Package/install instructions exist for at least one supported platform. The
+  current `make stage-c-api` target is only a source-tree staging bundle; it is
+  not enough by itself to satisfy this 1.0 requirement.
 - OptiX/Embree/device-buffer routes are either implemented and tested or
   explicitly excluded from the stable surface.
 

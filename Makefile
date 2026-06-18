@@ -10,6 +10,7 @@ BUILD_DIR := build
 #   make build-vulkan
 #   make build-apple-rt
 #   make build-c-api
+#   make stage-c-api
 #
 # Historical and goal-numbered targets below are preserved for auditability and
 # internal reproduction work. They are not the primary front-door interface for
@@ -155,8 +156,10 @@ CXX_ADAPTIVE ?= c++
 ADAPTIVE_CXXFLAGS := -std=c++17 -O3 -shared -fPIC
 CXX_C_API ?= c++
 C_API_CXXFLAGS := -std=c++17 -O2 -shared -fPIC -DRTDL_BUILD_SHARED -Iinclude
+C_API_STAGE_DIR ?= $(BUILD_DIR)/c_api_stage
+C_API_STAGE_MANIFEST := docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json
 
-.PHONY: help build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+.PHONY: help build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api stage-c-api run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
 
 help:
 	@echo "Public targets:"
@@ -170,6 +173,7 @@ help:
 	@echo "  build-apple-rt - build the Apple Metal/MPS RT backend library"
 	@echo "  build-adaptive - build the adaptive CPU-native backend library"
 	@echo "  build-c-api   - build the V3 C ABI lifecycle stub library"
+	@echo "  stage-c-api   - stage the V3 C ABI header, library, manifest, and example"
 	@echo ""
 	@echo "Other targets are preserved for internal reproduction and audit work."
 
@@ -202,6 +206,15 @@ build-c-api:
 	$(CXX_C_API) $(C_API_CXXFLAGS) \
 		src/native/rtdl_c_api.cpp \
 		-o $(BUILD_DIR)/$(C_API_LIB_NAME)
+
+stage-c-api: build-c-api
+	rm -rf $(C_API_STAGE_DIR)
+	mkdir -p $(C_API_STAGE_DIR)/include/rtdl $(C_API_STAGE_DIR)/lib $(C_API_STAGE_DIR)/share/rtdl $(C_API_STAGE_DIR)/examples
+	cp include/rtdl/rtdl.h $(C_API_STAGE_DIR)/include/rtdl/rtdl.h
+	cp $(BUILD_DIR)/$(C_API_LIB_NAME) $(C_API_STAGE_DIR)/lib/$(C_API_LIB_NAME)
+	cp $(C_API_STAGE_MANIFEST) $(C_API_STAGE_DIR)/share/rtdl/v3_0_c_abi_symbol_manifest.json
+	cp examples/current/embedding/README.md $(C_API_STAGE_DIR)/share/rtdl/README.md
+	cp examples/current/embedding/c_api_aabb2_overlap_client.c $(C_API_STAGE_DIR)/examples/c_api_aabb2_overlap_client.c
 
 build-optix:
 	mkdir -p $(BUILD_DIR)

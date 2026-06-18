@@ -41,6 +41,18 @@ Expected output:
 hit_count=1 first_pair=(0,0)
 ```
 
+## Source-Tree Staging Bundle
+
+For a cleaner non-Python handoff, use:
+
+```bash
+make stage-c-api
+```
+
+This creates `build/c_api_stage` with the public header, shared library, current
+draft symbol manifest, this README, and the AABB2 C example. It is still a
+source-tree staging bundle, not an installed SDK.
+
 ## Boundary
 
 - This is a source-tree C client example for the V3 draft C ABI.

@@ -2,11 +2,12 @@
   "checks": {
     "all_required_reports_accept": true,
     "c_abi_draft_documents_host_aabb2_contract": true,
+    "c_abi_staging_surface_is_documented": true,
     "c_client_validates_real_query": true,
     "embedding_readme_has_c_client_commands": true,
     "layout_validation_runtime_passed": true,
     "stability_policy_blocks_stable_sdk": true,
-    "strategy_status_refreshed_to_goal4568": true,
+    "strategy_status_refreshed_to_goal4576": true,
     "symbol_manifest_is_draft_0_1_2": true,
     "v3_current_includes_progress_gate": true,
     "zero_copy_contract_blocks_c_abi_device_route": true,
@@ -34,6 +35,7 @@
     "non_python_c_client": "validated",
     "optix_embree_c_abi_query": "blocked",
     "packaged_sdk": "blocked",
+    "source_tree_c_api_stage_bundle": "validated_draft",
     "source_tree_doctor_surface": "wired",
     "stable_abi": "blocked_until_1_0_gates"
   },

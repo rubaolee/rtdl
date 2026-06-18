@@ -15,6 +15,7 @@ STABILITY = Path("docs/learn/v3_0_c_abi_stability_policy.md")
 SYMBOL_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json")
 ZERO_COPY = Path("docs/learn/v3_0_zero_copy_interop_contract.md")
 EMBEDDING_README = Path("examples/current/embedding/README.md")
+MAKEFILE = Path("Makefile")
 MATRIX = Path("scripts/run_test_matrix.py")
 REPORTS = (
     Path("docs/reports/goal4553_v3_0_m154_c_abi_c_client_smoke_2026-06-17.json"),
@@ -36,13 +37,17 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     stability = (root / STABILITY).read_text(encoding="utf-8")
     zero_copy = (root / ZERO_COPY).read_text(encoding="utf-8")
     embedding = (root / EMBEDDING_README).read_text(encoding="utf-8")
+    makefile = (root / MAKEFILE).read_text(encoding="utf-8")
     matrix = (root / MATRIX).read_text(encoding="utf-8")
     manifest = _load_json(root, SYMBOL_MANIFEST)
     reports = {path.name: _load_json(root, path) for path in REPORTS}
     checks = {
-        "strategy_status_refreshed_to_goal4568": "As of Goal4568" in strategy,
+        "strategy_status_refreshed_to_goal4576": "As of Goal4576" in strategy,
         "c_abi_draft_documents_host_aabb2_contract": "Current Host AABB2 Query Contract" in c_abi
         and "contiguous AABB2 rows" in c_abi,
+        "c_abi_staging_surface_is_documented": "v3_0_c_abi_staging_contract.md" in c_abi
+        and "make stage-c-api" in makefile
+        and "make stage-c-api" in embedding,
         "stability_policy_blocks_stable_sdk": "never stable SDK" in stability
         and "not frozen" in stability,
         "symbol_manifest_is_draft_0_1_2": manifest["abi_version"] == "0.1.2"
@@ -69,6 +74,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     failed = tuple(name for name, passed in checks.items() if not passed)
     status_matrix = {
         "control_plane_host_aabb2_c_abi": "ready_source_tree_draft",
+        "source_tree_c_api_stage_bundle": "validated_draft",
         "non_python_c_client": "validated",
         "exported_symbol_manifest": "draft_manifest_checked",
         "negative_and_layout_runtime": "validated",
