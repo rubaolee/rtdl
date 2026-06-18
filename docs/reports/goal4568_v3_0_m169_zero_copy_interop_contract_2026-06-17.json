@@ -45,7 +45,7 @@
     "contract_blocks_public_claims": true,
     "contract_has_borrowed_and_measured_statuses": true,
     "contract_prioritizes_dlpack_and_cuda_array_interface": true,
-    "doc_blocks_c_abi_device_route_claim": true,
+    "doc_blocks_c_abi_device_query_route_claim": true,
     "doc_defines_observed_borrowed_measured_public_layers": true,
     "embeddability_links_zero_copy_contract": true,
     "fake_cuda_array_defaults_to_borrowed_unmeasured": true,
@@ -61,7 +61,7 @@
     "public_speedup_claim_authorized": false,
     "public_true_zero_copy_claim_authorized": false
   },
-  "conclusion": "Goal4568 connects the existing neutral-buffer seam to the V3 embeddability plan: DLPack and CUDA-array-interface objects can be described as borrowed device pointers, measured zero-copy remains evidence-gated, and public/C-ABI device-buffer claims stay blocked.",
+  "conclusion": "Goal4568 connects the existing neutral-buffer seam to the V3 embeddability plan: DLPack and CUDA-array-interface objects can be described as borrowed device pointers, measured zero-copy remains evidence-gated, and public/C-ABI device-buffer query claims stay blocked.",
   "date": "2026-06-17",
   "failed_checks": [],
   "goal": "Goal4568 / V3 M169",

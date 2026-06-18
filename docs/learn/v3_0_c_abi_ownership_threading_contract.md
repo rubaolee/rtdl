@@ -46,6 +46,11 @@ only. The context stores the metadata value, including `user_data`, but RTDL
 does not take ownership of any caller object reachable from that pointer. CUDA,
 external stream, OptiX, and Embree runtime handles remain unsupported.
 
+CUDA buffer descriptors imported through `rtdl_buffer_import` are metadata-only
+unless a later device-buffer query route says otherwise. A release callback on
+such a descriptor is still just the caller's requested handle-destroy callback;
+it is not proof that RTDL owns or validated the CUDA allocation.
+
 ## Last-Error Rules
 
 `rtdl_context_last_error(context)` returns a pointer owned by the context. The

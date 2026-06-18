@@ -63,9 +63,9 @@ PYTHONPATH=src:. python scripts/run_test_matrix.py --group v3_current
   above.
 - `PASS` on `V3 C ABI embedding surface` means the public C header, source-tree
   shared-library/staging/archive targets, C examples including the host-runtime
-  metadata example, Python `ctypes` lifecycle examples, and Python `ctypes`
-  host AABB2 query examples are present. It does not build `make build-c-api`,
-  `make stage-c-api`, or
+  metadata and CUDA buffer-metadata examples, Python `ctypes` lifecycle
+  examples, and Python `ctypes` host AABB2 query examples are present. It does
+  not build `make build-c-api`, `make stage-c-api`, or
   `make package-c-api-stage`.
 - `PASS` on `V3 C ABI docs surface` means the draft, stability,
   ownership/threading, symbol-manifest, zero-copy, and Learn README C ABI links

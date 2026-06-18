@@ -10,7 +10,7 @@ and validation gates.
 
 ## Current Implementation Progress
 
-As of Goal4591, the first control-plane embedding slice has moved from a C-only
+As of Goal4592, the first control-plane embedding slice has moved from a C-only
 proof into a movable source-tree handoff artifact:
 
 - Draft public header: `include/rtdl/rtdl.h`.
@@ -22,6 +22,8 @@ proof into a movable source-tree handoff artifact:
 - C direct-link/pkg-config validation.
 - Host external-runtime metadata validation with CUDA/runtime handles still
   fail-closed.
+- CUDA buffer metadata import/export validation, descriptor-only, with
+  device-buffer query execution still fail-closed.
 - A narrow host `F32` AABB2 overlap query proof returning host `U64`
   `(query_id, primitive_id)` pairs.
 - Readable source-tree examples for C dlopen and C direct-link.

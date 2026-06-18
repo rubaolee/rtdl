@@ -63,8 +63,11 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         and len(manifest["symbols"]) == 18,
         "embedding_readme_has_c_client_commands": "make build-c-api" in embedding
         and "c_api_aabb2_overlap_client.c" in embedding,
-        "zero_copy_contract_blocks_c_abi_device_route": "does not make" in zero_copy
-        and "C ABI accept device buffers" in zero_copy,
+        "zero_copy_contract_blocks_c_abi_device_query_route": "does not make" in zero_copy
+        and "C ABI" in zero_copy
+        and "query route" in zero_copy
+        and "consume device" in zero_copy
+        and "buffers" in zero_copy,
         "all_required_reports_accept": all(not tuple(report.get("failed_checks", ())) for report in reports.values()),
         "c_client_validates_real_query": reports[
             "goal4553_v3_0_m154_c_abi_c_client_smoke_2026-06-17.json"

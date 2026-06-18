@@ -1,7 +1,7 @@
 # V3.0 Zero-Copy Interop Contract
 
 Status: V3 design/readiness contract, not an implemented C ABI device-buffer
-route and not public true-zero-copy wording.
+query route and not public true-zero-copy wording.
 
 RTDL's embeddability plan uses DLPack and `__cuda_array_interface__` as the
 framework interop layer above the C ABI. The source tree already has a neutral
@@ -22,18 +22,23 @@ thing as an end-to-end zero-copy proof.
 
 ## Current Implementation Hook
 
-The current readiness hook is `src/rtdsl/neutral_buffer_seam.py`:
+The current readiness hooks are `src/rtdsl/neutral_buffer_seam.py` and the V3
+C ABI neutral buffer view:
 
 - protocol priority includes registered partner adapters, DLPack,
   `__cuda_array_interface__`, and `__array_interface__`;
 - transfer statuses distinguish host references, declared copies, host stages,
   borrowed device pointers, and measured zero-copy;
 - lifetime states make borrowed/retained/released ownership explicit;
+- `rtdl_buffer_import` / `rtdl_buffer_export` can carry CUDA buffer descriptors
+  as metadata, preserving pointer, dtype, shape, strides, device id, and
+  release-callback ownership without dereferencing the pointer;
 - public speedup and public true-zero-copy claims remain blocked.
 
 ## Boundary
 
 This contract does not add DLPack fields to `include/rtdl/rtdl.h`, does not make
-the C ABI accept device buffers, does not build a PyTorch/JAX/CuPy adapter, and
+any C ABI query route consume device buffers, does not validate CUDA pointer
+ownership or stream ordering, does not build a PyTorch/JAX/CuPy adapter, and
 does not authorize performance wording. It is the checklist that the later
-device-buffer C ABI and framework adapters must satisfy.
+device-buffer query route and framework adapters must satisfy.

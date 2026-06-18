@@ -10,7 +10,7 @@
     "strategy_status_at_or_beyond_goal4576": true,
     "symbol_manifest_is_draft_0_1_3": true,
     "v3_current_includes_progress_gate": true,
-    "zero_copy_contract_blocks_c_abi_device_route": true,
+    "zero_copy_contract_blocks_c_abi_device_query_route": true,
     "zero_copy_runtime_claims_blocked": true
   },
   "claim_boundary": {

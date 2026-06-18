@@ -28,8 +28,9 @@ The current draft symbol list is tracked in
   stream, and user data. The current proof accepts host runtime metadata only;
   CUDA/HIP/Metal/Vulkan runtime handles and external stream adoption remain
   fail-closed.
-- Neutral buffer views with device type, dtype, shape, strides, ownership
-  callback, and user data.
+- Neutral buffer views with validated device type, dtype, shape, strides,
+  ownership callback, and user data. CUDA buffer descriptors can be imported
+  and exported as metadata, but no current query route consumes device buffers.
 
 ## Boundary
 
@@ -109,6 +110,13 @@ path. The current proof accepts `RTDL_DEVICE_HOST` with null context/stream
 handles and rejects malformed host metadata or CUDA runtime handles. This is
 not external CUDA stream, OptiX, Embree, or device-buffer support.
 
+Goal4592 adds `examples/current/embedding/c_api_cuda_buffer_metadata_client.c`
+and validates neutral CUDA buffer descriptor import/export through
+`rtdl_buffer_import` and `rtdl_buffer_export`. The descriptor path preserves
+pointer, dtype, shape, strides, device id, and release-callback ownership
+metadata, while host AABB2 query routes still reject CUDA buffers instead of
+dereferencing them.
+
 ## Current Host AABB2 Query Contract
 
 The only implemented query route is deliberately small:
@@ -137,6 +145,12 @@ The only implemented query route is deliberately small:
   `release != NULL`, `rtdl_buffer_destroy` invokes that callback for the buffer
   handle. RTDL-owned result buffers must be released with `rtdl_buffer_destroy`.
 
+The C ABI can also import/export neutral CUDA buffer descriptors as metadata.
+That path is descriptor-only: it does not validate pointer ownership with the
+CUDA driver, does not synchronize streams, and does not execute a CUDA query
+route.
+
 Unsupported primitive kinds, query kinds, backend selections, non-host runtime
-handles, external stream adoption, device buffers, OptiX execution, Embree
-execution, and frozen binary compatibility remain outside the current contract.
+handles, external stream adoption, device-buffer query execution, OptiX
+execution, Embree execution, and frozen binary compatibility remain outside the
+current contract.

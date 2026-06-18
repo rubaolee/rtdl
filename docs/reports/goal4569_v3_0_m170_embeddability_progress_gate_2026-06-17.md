@@ -32,7 +32,7 @@ Goal4569 consolidates the V3 embeddability track: RTDL now has a source-tree dra
 | `stability_policy_blocks_stable_sdk` | `True` |
 | `symbol_manifest_is_draft_0_1_3` | `True` |
 | `embedding_readme_has_c_client_commands` | `True` |
-| `zero_copy_contract_blocks_c_abi_device_route` | `True` |
+| `zero_copy_contract_blocks_c_abi_device_query_route` | `True` |
 | `all_required_reports_accept` | `True` |
 | `c_client_validates_real_query` | `True` |
 | `layout_validation_runtime_passed` | `True` |

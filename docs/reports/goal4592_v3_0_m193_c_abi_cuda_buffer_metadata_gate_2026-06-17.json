@@ -1,0 +1,99 @@
+{
+  "checks": {
+    "c_abi_doc_names_goal4592_and_descriptor_only_boundary": true,
+    "c_client_compile_ok": true,
+    "c_client_run_ok": true,
+    "c_compiler_available": true,
+    "cxx_compiler_available": true,
+    "embedding_readme_documents_cuda_metadata_example": true,
+    "example_validates_roundtrip_release_and_query_rejection": true,
+    "ownership_doc_blocks_cuda_allocation_ownership_claim": true,
+    "runtime_validated_all_cases": true,
+    "shared_library_build_ok": true,
+    "source_preserves_cuda_descriptor_without_query_support": true,
+    "source_validates_neutral_buffer_metadata": true,
+    "stage_target_copies_cuda_metadata_example": true,
+    "staging_contract_lists_cuda_metadata_example": true,
+    "zero_copy_doc_separates_descriptor_from_true_zero_copy": true
+  },
+  "claim_boundary": {
+    "cuda_pointer_ownership_validated": false,
+    "device_buffer_query_route_authorized": false,
+    "external_cuda_stream_authorized": false,
+    "performance_wording_authorized": false,
+    "public_true_zero_copy_claim_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false
+  },
+  "client_result": {
+    "c_compiler": "/usr/bin/cc",
+    "client_compile": {
+      "command": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-I",
+        "include",
+        "examples/current/embedding/c_api_cuda_buffer_metadata_client.c",
+        "-L",
+        "/tmp/tmp3jf8y_tb",
+        "-lrtdl_c_api",
+        "-Wl,-rpath,/tmp/tmp3jf8y_tb",
+        "-o",
+        "/tmp/tmp3jf8y_tb/rtdl_c_api_cuda_buffer_metadata_client"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    },
+    "client_run": {
+      "command": [
+        "/tmp/tmp3jf8y_tb/rtdl_c_api_cuda_buffer_metadata_client"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "case cuda_buffer_metadata_roundtrip_ok: ok\ncase cuda_query_route_rejected: ok\ncase cuda_buffer_release_callback_ok: ok\ncase invalid_cuda_buffer_metadata_rejected: ok\nvalidated_cuda_buffer_metadata_cases=4\n"
+    },
+    "cxx_compiler": "/usr/bin/c++",
+    "ok": true,
+    "shared_library": {
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-DRTDL_BUILD_SHARED",
+        "-I",
+        "include",
+        "src/native/rtdl_c_api.cpp",
+        "-shared",
+        "-fPIC",
+        "-o",
+        "/tmp/tmp3jf8y_tb/librtdl_c_api.so"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    }
+  },
+  "conclusion": "Goal4592 validates the C ABI neutral buffer metadata path for CUDA descriptors. RTDL can import/export a CUDA buffer descriptor, preserve pointer/shape/stride/device metadata, and invoke the caller-provided release callback without dereferencing the pointer. The same proof rejects CUDA buffers for the current host AABB2 query route, so device-buffer execution, stream ordering, true zero-copy, performance, stable ABI, and release claims remain blocked.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4592 / V3 M193",
+  "status": "c_abi_cuda_buffer_metadata_checked",
+  "support_matrix": {
+    "cuda_buffer_aabb2_query_route": "rejected_invalid_argument",
+    "cuda_buffer_descriptor_import_export": "validated_metadata_only",
+    "cuda_buffer_release_callback": "validated",
+    "external_cuda_stream_ordering": "blocked",
+    "invalid_buffer_metadata": "rejected_invalid_argument",
+    "true_zero_copy_claim": "blocked"
+  },
+  "validated_cases": {
+    "cuda_buffer_metadata_roundtrip_ok": true,
+    "cuda_buffer_release_callback_ok": true,
+    "cuda_query_route_rejected": true,
+    "invalid_cuda_buffer_metadata_rejected": true
+  },
+  "version": "rtdl.v3_0.c_abi_cuda_buffer_metadata.goal4592.v1"
+}

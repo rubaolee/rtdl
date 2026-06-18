@@ -51,9 +51,10 @@ make stage-c-api
 
 This creates `build/c_api_stage` with the public header, shared library, current
 draft symbol manifest, `lib/pkgconfig/rtdl-c-api.pc`, this README, the AABB2
-dlopen and direct-link C examples, a C host-runtime metadata example, a thin
-Python `ctypes` lifecycle example, and a Python `ctypes` host AABB2 query
-example. It is still a source-tree staging bundle, not an installed SDK.
+dlopen and direct-link C examples, C host-runtime metadata and CUDA
+buffer-metadata examples, a thin Python `ctypes` lifecycle example, and a
+Python `ctypes` host AABB2 query example. It is still a source-tree staging
+bundle, not an installed SDK.
 
 To archive that same movable source-tree stage:
 
@@ -91,6 +92,23 @@ Expected output includes:
 
 ```text
 validated_host_external_runtime_cases=3
+```
+
+For the CUDA buffer metadata descriptor-only example:
+
+```bash
+cc -std=c11 $(pkg-config --cflags rtdl-c-api) \
+  build/c_api_stage/examples/c_api_cuda_buffer_metadata_client.c \
+  -o build/c_api_stage/examples/rtdl_c_api_cuda_buffer_metadata_client \
+  $(pkg-config --libs rtdl-c-api)
+LD_LIBRARY_PATH="$PWD/build/c_api_stage/lib:${LD_LIBRARY_PATH:-}" \
+  ./build/c_api_stage/examples/rtdl_c_api_cuda_buffer_metadata_client
+```
+
+Expected output includes:
+
+```text
+validated_cuda_buffer_metadata_cases=4
 ```
 
 For a minimal language-binding style client without writing C/C++:
@@ -132,4 +150,7 @@ python_ctypes_hit_count=1 first_pair=(0,0)
   AABB2 route only.
 - The C host-runtime example validates host runtime metadata only; CUDA,
   external stream, OptiX, and Embree runtime adoption remain fail-closed.
-- It is not an OptiX, Embree, device-buffer, packaged-SDK, or frozen-ABI claim.
+- The CUDA buffer metadata example validates neutral descriptor import/export
+  and release-callback behavior only; CUDA query execution, external stream
+  ordering, and public true-zero-copy wording remain fail-closed.
+- It is not an OptiX, Embree, device-buffer query, packaged-SDK, or frozen-ABI claim.

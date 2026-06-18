@@ -16,12 +16,13 @@
     "release_authorized": false,
     "stable_abi_authorized": false
   },
-  "conclusion": "Goal4585 refreshes the staging inventory after adding direct-link and Python ctypes embedding examples. Goal4591 later extends this same inventory to include the C host-runtime metadata example. The pod evidence runs `make stage-c-api` and verifies the staged bundle contains every current example. This remains a source-tree staging bundle, not an installed SDK or stable ABI.",
+  "conclusion": "Goal4585 refreshes the staging inventory after adding direct-link and Python ctypes embedding examples. Goal4591 later extends this same inventory to include the C host-runtime metadata example, and Goal4592 extends it again for the CUDA buffer-metadata descriptor example. The pod evidence runs `make stage-c-api` and verifies the staged bundle contains every current example. This remains a source-tree staging bundle, not an installed SDK or stable ABI.",
   "date": "2026-06-17",
   "examples": [
     "c_api_aabb2_overlap_client.c",
     "c_api_direct_link_client.c",
     "c_api_host_runtime_client.c",
+    "c_api_cuda_buffer_metadata_client.c",
     "python_ctypes_client.py",
     "python_ctypes_aabb2_query_client.py"
   ],
@@ -58,7 +59,6 @@
         "returncode": 0,
         "stderr_tail": [],
         "stdout_tail": [
-          "rm -rf build/c_api_stage",
           "mkdir -p build/c_api_stage/include/rtdl build/c_api_stage/lib/pkgconfig build/c_api_stage/share/rtdl build/c_api_stage/examples",
           "cp include/rtdl/rtdl.h build/c_api_stage/include/rtdl/rtdl.h",
           "cp build/librtdl_c_api.so build/c_api_stage/lib/librtdl_c_api.so",
@@ -68,6 +68,7 @@
           "cp examples/current/embedding/c_api_aabb2_overlap_client.c build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
           "cp examples/current/embedding/c_api_direct_link_client.c build/c_api_stage/examples/c_api_direct_link_client.c",
           "cp examples/current/embedding/c_api_host_runtime_client.c build/c_api_stage/examples/c_api_host_runtime_client.c",
+          "cp examples/current/embedding/c_api_cuda_buffer_metadata_client.c build/c_api_stage/examples/c_api_cuda_buffer_metadata_client.c",
           "cp examples/current/embedding/python_ctypes_client.py build/c_api_stage/examples/python_ctypes_client.py",
           "cp examples/current/embedding/python_ctypes_aabb2_query_client.py build/c_api_stage/examples/python_ctypes_aabb2_query_client.py"
         ]
@@ -108,7 +109,7 @@
         "readme": {
           "exists": true,
           "path": "build/c_api_stage/share/rtdl/README.md",
-          "size_bytes": 4340
+          "size_bytes": 5097
         }
       },
       "staged_manifest": {
@@ -144,6 +145,11 @@
         "exists": true,
         "path": "build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
         "size_bytes": 6127
+      },
+      "c_api_cuda_buffer_metadata_client.c": {
+        "exists": true,
+        "path": "build/c_api_stage/examples/c_api_cuda_buffer_metadata_client.c",
+        "size_bytes": 4158
       },
       "c_api_direct_link_client.c": {
         "exists": true,

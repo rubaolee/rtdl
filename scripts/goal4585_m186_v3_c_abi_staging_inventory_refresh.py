@@ -18,6 +18,7 @@ EXAMPLES = (
     "c_api_aabb2_overlap_client.c",
     "c_api_direct_link_client.c",
     "c_api_host_runtime_client.c",
+    "c_api_cuda_buffer_metadata_client.c",
     "python_ctypes_client.py",
     "python_ctypes_aabb2_query_client.py",
 )
@@ -83,10 +84,11 @@ def build_packet(root: Path = Path("."), *, run_stage: bool = False) -> dict[str
         "conclusion": (
             "Goal4585 refreshes the staging inventory after adding direct-link "
             "and Python ctypes embedding examples. Goal4591 later extends this "
-            "same inventory to include the C host-runtime metadata example. The "
-            "pod evidence runs `make stage-c-api` and verifies the staged bundle "
-            "contains every current example. This remains a source-tree staging "
-            "bundle, not an installed SDK or stable ABI."
+            "same inventory to include the C host-runtime metadata example, and "
+            "Goal4592 extends it again for the CUDA buffer-metadata descriptor "
+            "example. The pod evidence runs `make stage-c-api` and verifies the "
+            "staged bundle contains every current example. This remains a "
+            "source-tree staging bundle, not an installed SDK or stable ABI."
         ),
     }
 

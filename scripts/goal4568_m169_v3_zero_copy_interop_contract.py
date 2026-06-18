@@ -91,8 +91,13 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         and "Borrowed device pointer, unmeasured" in doc
         and "Measured zero-copy candidate" in doc
         and "Public true-zero-copy claim" in doc,
-        "doc_blocks_c_abi_device_route_claim": "does not make" in doc
-        and "C ABI accept device buffers" in doc,
+        "doc_blocks_c_abi_device_query_route_claim": "does not make" in doc
+        and "C ABI" in doc
+        and "query route" in doc
+        and "consume device" in doc
+        and "buffers" in doc
+        and "does not validate CUDA pointer" in doc
+        and "ownership" in doc,
         "embeddability_links_zero_copy_contract": "V3.0 Zero-Copy Interop Contract" in embeddability,
         "learn_readme_links_zero_copy_contract": "V3.0 Zero-Copy Interop Contract" in learn,
         "seam_keeps_native_device_output_unpromoted": "native_device_output_promotion_ready" in seam
@@ -119,7 +124,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "Goal4568 connects the existing neutral-buffer seam to the V3 "
             "embeddability plan: DLPack and CUDA-array-interface objects can be "
             "described as borrowed device pointers, measured zero-copy remains "
-            "evidence-gated, and public/C-ABI device-buffer claims stay blocked."
+            "evidence-gated, and public/C-ABI device-buffer query claims stay "
+            "blocked."
         ),
     }
 

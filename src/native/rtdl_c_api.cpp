@@ -62,6 +62,47 @@ bool host_external_runtime_metadata_is_supported(const rtdl_external_runtime& ru
       runtime.context == nullptr && runtime.stream == nullptr;
 }
 
+bool device_type_is_known(rtdl_device_type device_type) {
+  switch (device_type) {
+    case RTDL_DEVICE_HOST:
+    case RTDL_DEVICE_CUDA:
+    case RTDL_DEVICE_HIP:
+    case RTDL_DEVICE_METAL:
+    case RTDL_DEVICE_VULKAN:
+      return true;
+  }
+  return false;
+}
+
+bool dtype_is_known(rtdl_dtype dtype) {
+  switch (dtype) {
+    case RTDL_DTYPE_U8:
+    case RTDL_DTYPE_U32:
+    case RTDL_DTYPE_U64:
+    case RTDL_DTYPE_I32:
+    case RTDL_DTYPE_I64:
+    case RTDL_DTYPE_F32:
+    case RTDL_DTYPE_F64:
+      return true;
+  }
+  return false;
+}
+
+bool buffer_view_metadata_is_valid(const rtdl_buffer_view& view) {
+  if (!device_type_is_known(view.device_type) || !dtype_is_known(view.dtype) || view.ndim > 8u) {
+    return false;
+  }
+  if (view.data == nullptr && view.byte_count != 0u) {
+    return false;
+  }
+  for (uint32_t dim = 0; dim < view.ndim; ++dim) {
+    if (view.shape[dim] < 0) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool route_is_supported_by_host_proof(
     rtdl_primitive_kind primitive_kind,
     rtdl_query_kind query_kind,
@@ -208,8 +249,8 @@ RTDL_API rtdl_status rtdl_buffer_import(
     return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
   }
   *buffer_out = nullptr;
-  if (view->data == nullptr && view->byte_count != 0) {
-    set_error(context, "non-empty buffer view requires data pointer");
+  if (!buffer_view_metadata_is_valid(*view)) {
+    set_error(context, "buffer import requires known device/dtype metadata, ndim <= 8, non-negative shape, and data for non-empty views");
     return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
   }
   rtdl_buffer* buffer = new (std::nothrow) rtdl_buffer {};

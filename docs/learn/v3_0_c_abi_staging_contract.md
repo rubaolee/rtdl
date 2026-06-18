@@ -20,6 +20,7 @@ The target first builds `build/librtdl_c_api.*`, then creates
 - `examples/c_api_aabb2_overlap_client.c`
 - `examples/c_api_direct_link_client.c`
 - `examples/c_api_host_runtime_client.c`
+- `examples/c_api_cuda_buffer_metadata_client.c`
 - `examples/python_ctypes_client.py`
 - `examples/python_ctypes_aabb2_query_client.py`
 
@@ -85,6 +86,24 @@ Expected output includes:
 validated_host_external_runtime_cases=3
 ```
 
+For a C client that validates CUDA buffer metadata import/export without
+executing a CUDA query route:
+
+```bash
+cc -std=c11 $(pkg-config --cflags rtdl-c-api) \
+  build/c_api_stage/examples/c_api_cuda_buffer_metadata_client.c \
+  -o build/c_api_stage/examples/rtdl_c_api_cuda_buffer_metadata_client \
+  $(pkg-config --libs rtdl-c-api)
+LD_LIBRARY_PATH="$PWD/build/c_api_stage/lib:${LD_LIBRARY_PATH:-}" \
+  ./build/c_api_stage/examples/rtdl_c_api_cuda_buffer_metadata_client
+```
+
+Expected output includes:
+
+```text
+validated_cuda_buffer_metadata_cases=4
+```
+
 For a minimal Python `ctypes` client over the same staged shared library:
 
 ```bash
@@ -124,6 +143,9 @@ python_ctypes_hit_count=1 first_pair=(0,0)
   import, index build, query execute, result export, and cleanup path only.
 - The C host-runtime example validates host runtime metadata only; CUDA,
   external stream, OptiX, and Embree runtime adoption remain fail-closed.
+- The CUDA buffer metadata example validates neutral descriptor import/export
+  and release-callback behavior only; CUDA query execution, external stream
+  ordering, and public true-zero-copy wording remain fail-closed.
 - No install prefix, package manager artifact, Python wheel, stable binary
-  compatibility, OptiX/Embree C ABI query, device-buffer route, or performance
-  wording is authorized.
+  compatibility, OptiX/Embree C ABI query, device-buffer query route, or
+  performance wording is authorized.

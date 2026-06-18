@@ -187,6 +187,7 @@ V3.0 current app-author guidance:
 - [Goal4589 embeddability shipping readiness refresh](../reports/goal4589_v3_0_m190_embeddability_shipping_readiness_refresh_2026-06-17.md)
 - [Goal4590 embeddability architecture status refresh](../reports/goal4590_v3_0_m191_embeddability_architecture_status_refresh_2026-06-17.md)
 - [Goal4591 C ABI host external runtime gate](../reports/goal4591_v3_0_m192_c_abi_host_external_runtime_gate_2026-06-17.md)
+- [Goal4592 C ABI CUDA buffer metadata gate](../reports/goal4592_v3_0_m193_c_abi_cuda_buffer_metadata_gate_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)

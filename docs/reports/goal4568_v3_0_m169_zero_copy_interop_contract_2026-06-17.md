@@ -4,7 +4,7 @@ Status: `zero_copy_interop_contract_checked`
 
 ## Conclusion
 
-Goal4568 connects the existing neutral-buffer seam to the V3 embeddability plan: DLPack and CUDA-array-interface objects can be described as borrowed device pointers, measured zero-copy remains evidence-gated, and public/C-ABI device-buffer claims stay blocked.
+Goal4568 connects the existing neutral-buffer seam to the V3 embeddability plan: DLPack and CUDA-array-interface objects can be described as borrowed device pointers, measured zero-copy remains evidence-gated, and public/C-ABI device-buffer query claims stay blocked.
 
 ## Checks
 
@@ -17,7 +17,7 @@ Goal4568 connects the existing neutral-buffer seam to the V3 embeddability plan:
 | `zero_copy_measured_requires_evidence` | `True` |
 | `measured_zero_copy_requires_same_pointer_and_no_host_stage` | `True` |
 | `doc_defines_observed_borrowed_measured_public_layers` | `True` |
-| `doc_blocks_c_abi_device_route_claim` | `True` |
+| `doc_blocks_c_abi_device_query_route_claim` | `True` |
 | `embeddability_links_zero_copy_contract` | `True` |
 | `learn_readme_links_zero_copy_contract` | `True` |
 | `seam_keeps_native_device_output_unpromoted` | `True` |
