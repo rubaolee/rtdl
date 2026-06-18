@@ -11,6 +11,8 @@ moves from a proof boundary toward a stable embedding contract.
 - Public header: `include/rtdl/rtdl.h`.
 - Build target: `make build-c-api`.
 - Current library source: `src/native/rtdl_c_api.cpp`.
+- Draft symbol manifest:
+  [`v3_0_c_abi_symbol_manifest_v0_1_0.json`](v3_0_c_abi_symbol_manifest_v0_1_0.json).
 - Current validated route: host `F32` AABB2 overlap returning host `U64`
   `(query_id, primitive_id)` pairs.
 - Current evidence gates: header compile, shared-library build, exported-symbol

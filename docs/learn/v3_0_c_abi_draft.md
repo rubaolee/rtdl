@@ -8,6 +8,8 @@ It is the first concrete artifact from the V3 embeddability strategy: define a
 narrow C boundary before adding language bindings or device-callable fusion.
 Read [V3.0 C ABI Stability Policy](v3_0_c_abi_stability_policy.md) before
 using this draft as an external contract.
+The current draft symbol list is tracked in
+[v3_0_c_abi_symbol_manifest_v0_1_0.json](v3_0_c_abi_symbol_manifest_v0_1_0.json).
 
 ## Scope
 
