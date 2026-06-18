@@ -9,7 +9,7 @@
       "src\\native\\rtdl_c_api.cpp",
       "-shared",
       "-o",
-      "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpzut3aaki\\rtdl_c_api_stub.dll"
+      "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpibt_v9vc\\rtdl_c_api_stub.dll"
     ],
     "compiler": "C:\\Program Files\\LLVM\\bin\\clang++.exe",
     "ctypes_smoke": {

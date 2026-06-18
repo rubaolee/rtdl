@@ -53,6 +53,10 @@ bool host_f32_aabb2_view_is_valid(const rtdl_buffer_view& view, uint64_t count) 
       (view.data != nullptr || count == 0u) && view.byte_count >= count * row_bytes;
 }
 
+bool backend_is_supported_by_host_proof(rtdl_backend backend) {
+  return backend == RTDL_BACKEND_AUTO || backend == RTDL_BACKEND_CPU;
+}
+
 bool aabb2_overlaps(const float* lhs, const float* rhs) {
   return lhs[0] <= rhs[2] && lhs[2] >= rhs[0] && lhs[1] <= rhs[3] && lhs[3] >= rhs[1];
 }
@@ -110,6 +114,9 @@ RTDL_API rtdl_status rtdl_context_create(const rtdl_context_desc* desc, rtdl_con
   if (desc != nullptr && desc->abi_version_major != RTDL_ABI_VERSION_MAJOR) {
     return RTDL_STATUS_ERROR_UNSUPPORTED;
   }
+  if (desc != nullptr && !backend_is_supported_by_host_proof(desc->backend)) {
+    return RTDL_STATUS_ERROR_UNSUPPORTED;
+  }
 
   rtdl_context* context = new (std::nothrow) rtdl_context {};
   if (context == nullptr) {
@@ -137,9 +144,8 @@ RTDL_API rtdl_status rtdl_context_set_external_runtime(
   if (context == nullptr || runtime == nullptr) {
     return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
   }
-  context->desc.external_runtime = *runtime;
-  clear_error(context);
-  return RTDL_STATUS_OK;
+  set_error(context, "external runtime handles are not implemented by the C ABI proof");
+  return RTDL_STATUS_ERROR_UNSUPPORTED;
 }
 
 RTDL_API rtdl_status rtdl_buffer_import(

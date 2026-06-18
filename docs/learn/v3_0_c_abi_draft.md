@@ -19,8 +19,9 @@ The current draft symbol list is tracked in
 - Opaque handles: `rtdl_context`, `rtdl_index`, `rtdl_query`, `rtdl_buffer`.
 - C status codes and explicit last-error retrieval.
 - Versioned ABI macros and version functions.
-- Caller-provided external runtime handles: device type, device id, context,
-  stream, and user data.
+- Declared external runtime handle shape: device type, device id, context,
+  stream, and user data. Runtime adoption is not implemented in the current
+  proof; external runtime handles remain fail-closed.
 - Neutral buffer views with device type, dtype, shape, strides, ownership
   callback, and user data.
 
@@ -71,6 +72,8 @@ the pod against the Makefile-built C ABI library.
 The only implemented query route is deliberately small:
 
 - Context: `rtdl_context_create` with `RTDL_BACKEND_CPU` or `RTDL_BACKEND_AUTO`.
+  Other backend requests, including OptiX and Embree, are rejected by the
+  current C ABI proof until those routes have dedicated runtime validation.
 - Primitive buffer: host `RTDL_DTYPE_F32`, contiguous AABB2 rows shaped
   `[primitive_count, 4]` as `(min_x, min_y, max_x, max_y)`.
 - Index: `rtdl_index_build` with `RTDL_PRIMITIVE_AABB2`; the implementation
@@ -88,6 +91,6 @@ The only implemented query route is deliberately small:
   `release != NULL`, `rtdl_buffer_destroy` invokes that callback for the buffer
   handle. RTDL-owned result buffers must be released with `rtdl_buffer_destroy`.
 
-Unsupported primitive kinds, query kinds, device buffers, OptiX execution,
-Embree execution, and frozen binary compatibility remain outside the current
-contract.
+Unsupported primitive kinds, query kinds, backend selections, external runtime
+handles, device buffers, OptiX execution, Embree execution, and frozen binary
+compatibility remain outside the current contract.

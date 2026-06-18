@@ -3,21 +3,23 @@
     "c_client_compile_ok": true,
     "c_client_run_ok": true,
     "c_compiler_available": true,
-    "client_source_uses_c_header": true,
-    "client_source_uses_dynamic_library_api": true,
+    "client_source_checks_backend_and_runtime": true,
     "cxx_compiler_available": true,
-    "header_exists": true,
-    "header_has_context_and_buffer_api": true,
+    "doc_blocks_external_runtime_handles": true,
+    "doc_limits_context_to_auto_cpu": true,
+    "header_marks_external_runtime_unsupported": true,
+    "runtime_validated_all_cases": true,
     "shared_library_build_ok": true,
-    "stub_exports_context_and_buffer_api": true,
-    "stub_source_exists": true
+    "source_rejects_external_runtime": true,
+    "source_rejects_unsupported_backend": true
   },
   "claim_boundary": {
-    "backend_query_implemented": false,
-    "binary_compatibility_frozen": false,
-    "dlpack_support_implemented": false,
-    "external_stream_semantics_validated": false,
-    "release_authorized": false
+    "device_buffer_route_supported": false,
+    "embree_c_abi_backend_supported": false,
+    "external_runtime_supported": false,
+    "optix_c_abi_backend_supported": false,
+    "performance_wording_authorized": false,
+    "stable_abi_authorized": false
   },
   "client_result": {
     "c_compiler": "C:\\Program Files\\LLVM\\bin\\clang.exe",
@@ -27,9 +29,9 @@
         "-std=c11",
         "-I",
         "include",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpbmie8ht9\\rtdl_c_client_smoke.c",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpl571__p8\\rtdl_c_api_backend_runtime_client.c",
         "-o",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpbmie8ht9\\rtdl_c_client_smoke.exe"
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpl571__p8\\rtdl_c_api_backend_runtime_client.exe"
       ],
       "ok": true,
       "returncode": 0,
@@ -38,13 +40,13 @@
     },
     "client_run": {
       "command": [
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpbmie8ht9\\rtdl_c_client_smoke.exe",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpbmie8ht9\\rtdl_c_api_stub.dll"
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpl571__p8\\rtdl_c_api_backend_runtime_client.exe",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpl571__p8\\rtdl_c_api_backend_runtime.dll"
       ],
       "ok": true,
       "returncode": 0,
       "stderr_tail": [],
-      "stdout": ""
+      "stdout": "case auto_backend_context_ok: ok\ncase cpu_backend_context_ok: ok\ncase optix_backend_rejected: ok\ncase embree_backend_rejected: ok\ncase external_runtime_rejected: ok\nvalidated_backend_runtime_cases=5\n"
     },
     "cxx_compiler": "C:\\Program Files\\LLVM\\bin\\clang++.exe",
     "ok": true,
@@ -58,7 +60,7 @@
         "src\\native\\rtdl_c_api.cpp",
         "-shared",
         "-o",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpbmie8ht9\\rtdl_c_api_stub.dll"
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpl571__p8\\rtdl_c_api_backend_runtime.dll"
       ],
       "ok": true,
       "returncode": 0,
@@ -79,15 +81,17 @@
       "stdout": ""
     }
   },
-  "conclusion": "Goal4553 validates the V3 C ABI stub from a real C11 client: the test builds the stub shared library, compiles a C client, dynamically loads the library, resolves the public symbols, and exercises version, status, context, neutral-buffer lifecycle, and a minimal host F32 AABB2 overlap query. It still makes no backend query, DLPack, external-stream, frozen-ABI, or release claim.",
+  "conclusion": "Goal4573 hardens the draft C ABI context layer so unsupported backend and external-runtime hints fail closed. The current C ABI proof accepts only AUTO/CPU contexts; OptiX, Embree, and external runtime handles remain explicit future work rather than silently accepted no-ops.",
   "date": "2026-06-17",
   "failed_checks": [],
-  "goal": "Goal4553 / V3 M154",
-  "status": "c_abi_c_client_smoke_checked",
-  "validated_capabilities": {
-    "host_f32_aabb2_overlap_query_validated": true,
-    "non_python_c11_dynamic_client_validated": true,
-    "version_status_context_buffer_lifecycle_symbols_validated": true
+  "goal": "Goal4573 / V3 M174",
+  "status": "c_abi_backend_runtime_fail_closed_checked",
+  "validated_cases": {
+    "auto_backend_context_ok": true,
+    "cpu_backend_context_ok": true,
+    "embree_backend_rejected": true,
+    "external_runtime_rejected": true,
+    "optix_backend_rejected": true
   },
-  "version": "rtdl.v3_0.c_abi_c_client_smoke.goal4553.v1"
+  "version": "rtdl.v3_0.c_abi_backend_runtime_fail_closed.goal4573.v1"
 }

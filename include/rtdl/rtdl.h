@@ -155,6 +155,7 @@ RTDL_API const char* rtdl_context_last_error(const rtdl_context* context);
 RTDL_API rtdl_status rtdl_context_create(const rtdl_context_desc* desc, rtdl_context** context_out);
 RTDL_API void rtdl_context_destroy(rtdl_context* context);
 
+/* Declared for the future embedding boundary; currently returns unsupported. */
 RTDL_API rtdl_status rtdl_context_set_external_runtime(
     rtdl_context* context,
     const rtdl_external_runtime* runtime);
