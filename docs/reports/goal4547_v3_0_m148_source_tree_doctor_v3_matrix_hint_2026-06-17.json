@@ -64,7 +64,7 @@
         "status": "pass"
       },
       {
-        "detail": "scripts/run_test_matrix.py --group v3_current (95 modules)",
+        "detail": "scripts/run_test_matrix.py --group v3_current (96 modules)",
         "name": "V3 current test matrix",
         "required": true,
         "status": "pass"

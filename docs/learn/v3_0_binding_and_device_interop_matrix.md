@@ -21,7 +21,7 @@ does not confuse descriptor metadata with executable device memory support.
 | Host external runtime metadata | Validated fail-closed metadata route. | Accepts host runtime metadata and rejects malformed/CUDA runtime handles. | No external CUDA stream adoption. |
 | CUDA buffer descriptor import/export | Validated metadata-only C route. | Preserves pointer, dtype, shape, strides, device id, and release callback without dereferencing the pointer. | No CUDA pointer ownership proof, no stream ordering proof, no device-buffer query execution. |
 | `__cuda_array_interface__` to C ABI descriptor | Validated metadata-only Python bridge. | Python `ctypes` can translate a CUDA-array-interface style object into the neutral C ABI buffer descriptor. | The resulting CUDA descriptor is rejected by the current host query route. |
-| DLPack | Design contract only. | Named by the zero-copy interop contract as a future descriptor/ownership protocol. | No implemented C ABI DLPack adapter, route, or proof. |
+| DLPack | Validated protocol classification/descriptor gate; runtime still blocked. | The neutral-buffer seam can classify DLPack-like objects and produce descriptor metadata in synthetic tests. | No implemented C ABI DLPack adapter, device-buffer route, external stream ordering, or true-zero-copy proof. |
 | Device-buffer query route | Blocked. | Future runtime target. | No current C ABI query route consumes CUDA/HIP/Metal/Vulkan buffers. |
 | External CUDA stream ordering | Blocked. | Future runtime target. | No same-stream/event/transfer-counter proof at the C ABI boundary. |
 | Generated language bindings | Blocked. | Future packaging target. | Current Python examples are hand-written `ctypes` examples only. |

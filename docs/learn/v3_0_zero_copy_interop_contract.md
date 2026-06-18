@@ -27,6 +27,9 @@ C ABI neutral buffer view:
 
 - protocol priority includes registered partner adapters, DLPack,
   `__cuda_array_interface__`, and `__array_interface__`;
+- the neutral-buffer protocol gate validates synthetic DLPack,
+  `__cuda_array_interface__`, and `__array_interface__` descriptor metadata
+  while keeping runtime/device-query wording blocked;
 - transfer statuses distinguish host references, declared copies, host stages,
   borrowed device pointers, and measured zero-copy;
 - lifetime states make borrowed/retained/released ownership explicit;
