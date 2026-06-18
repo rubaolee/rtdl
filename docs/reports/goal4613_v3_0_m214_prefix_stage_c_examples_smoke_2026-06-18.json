@@ -1,0 +1,255 @@
+{
+  "checks": {
+    "all_prefix_c_examples_compile_and_run": true,
+    "architecture_doc_names_prefix_c_examples_smoke": true,
+    "benchmark_index_links_goal4613": true,
+    "binding_matrix_names_prefix_c_surface": true,
+    "cc_available": true,
+    "embedding_readme_documents_prefix_c_examples": true,
+    "make_prefix_stage_ok": true,
+    "makefile_prefix_stage_carries_all_c_examples": true,
+    "pkg_config_available": true,
+    "prefix_cuda_metadata_stdout_matches": true,
+    "prefix_direct_link_stdout_matches": true,
+    "prefix_dlopen_aabb2_stdout_matches": true,
+    "prefix_host_runtime_stdout_matches": true,
+    "prefix_last_error_stdout_matches": true,
+    "prefix_pkg_config_cflags_ok": true,
+    "prefix_pkg_config_libs_ok": true,
+    "staging_contract_documents_prefix_c_examples": true
+  },
+  "claim_boundary": {
+    "package_manager_artifact_authorized": false,
+    "packaged_sdk_authorized": false,
+    "performance_wording_authorized": false,
+    "prefix_c_examples_stage_authorized": true,
+    "release_authorized": false,
+    "stable_abi_authorized": false,
+    "system_install_authorized": false
+  },
+  "conclusion": "Goal4613 validates that the DESTDIR/prefix-style C ABI stage can compile and run every staged C example. The pod smoke stages RTDL under a temporary `/opt/rtdl` prefix, compiles direct-link, `dlopen` host AABB2, host-runtime metadata, CUDA descriptor metadata, and status/last-error diagnostics clients, then runs them against the staged shared library. This authorizes prefix-stage C example smoke only; it is not a system install, package-manager artifact, packaged SDK, stable ABI, release, or performance claim.",
+  "date": "2026-06-18",
+  "failed_checks": [],
+  "goal": "Goal4613 / V3 M214",
+  "prefix_stage_c_examples_smoke": {
+    "cc": "/usr/bin/cc",
+    "cflags_result": {
+      "command": [
+        "/usr/bin/pkg-config",
+        "--cflags",
+        "rtdl-c-api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "-I/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/lib/pkgconfig/../../include"
+    },
+    "example_runs": [
+      {
+        "compile_result": {
+          "command": [
+            "/usr/bin/cc",
+            "-std=c11",
+            "-I/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/lib/pkgconfig/../../include",
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/c_api_direct_link_client.c",
+            "-o",
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/rtdl_c_api_direct_link_client_from_prefix_all",
+            "-L/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/lib/pkgconfig/../../lib",
+            "-lrtdl_c_api"
+          ],
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": [],
+          "stdout_tail": []
+        },
+        "mode": "pkg_config",
+        "ok": true,
+        "run_result": {
+          "command": [
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/rtdl_c_api_direct_link_client_from_prefix_all"
+          ],
+          "expected_contains": null,
+          "expected_stdout": "direct_link_ok 0.1.3 ok",
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": [],
+          "stdout": "direct_link_ok 0.1.3 ok"
+        },
+        "script": "c_api_direct_link_client.c"
+      },
+      {
+        "compile_result": {
+          "command": [
+            "/usr/bin/cc",
+            "-std=c11",
+            "-I/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/lib/pkgconfig/../../include",
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/c_api_host_runtime_client.c",
+            "-o",
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/rtdl_c_api_host_runtime_client_from_prefix",
+            "-L/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/lib/pkgconfig/../../lib",
+            "-lrtdl_c_api"
+          ],
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": [],
+          "stdout_tail": []
+        },
+        "mode": "pkg_config",
+        "ok": true,
+        "run_result": {
+          "command": [
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/rtdl_c_api_host_runtime_client_from_prefix"
+          ],
+          "expected_contains": "validated_host_external_runtime_cases=3",
+          "expected_stdout": null,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": [],
+          "stdout": "case host_external_runtime_metadata_ok: ok\ncase malformed_host_runtime_rejected: ok\ncase cuda_runtime_rejected: ok\nvalidated_host_external_runtime_cases=3"
+        },
+        "script": "c_api_host_runtime_client.c"
+      },
+      {
+        "compile_result": {
+          "command": [
+            "/usr/bin/cc",
+            "-std=c11",
+            "-I/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/lib/pkgconfig/../../include",
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/c_api_cuda_buffer_metadata_client.c",
+            "-o",
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/rtdl_c_api_cuda_buffer_metadata_client_from_prefix",
+            "-L/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/lib/pkgconfig/../../lib",
+            "-lrtdl_c_api"
+          ],
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": [],
+          "stdout_tail": []
+        },
+        "mode": "pkg_config",
+        "ok": true,
+        "run_result": {
+          "command": [
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/rtdl_c_api_cuda_buffer_metadata_client_from_prefix"
+          ],
+          "expected_contains": "validated_cuda_buffer_metadata_cases=4",
+          "expected_stdout": null,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": [],
+          "stdout": "case cuda_buffer_metadata_roundtrip_ok: ok\ncase cuda_query_route_rejected: ok\ncase cuda_buffer_release_callback_ok: ok\ncase invalid_cuda_buffer_metadata_rejected: ok\nvalidated_cuda_buffer_metadata_cases=4"
+        },
+        "script": "c_api_cuda_buffer_metadata_client.c"
+      },
+      {
+        "compile_result": {
+          "command": [
+            "/usr/bin/cc",
+            "-std=c11",
+            "-I/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/lib/pkgconfig/../../include",
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/c_api_last_error_client.c",
+            "-o",
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/rtdl_c_api_last_error_client_from_prefix",
+            "-L/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/lib/pkgconfig/../../lib",
+            "-lrtdl_c_api"
+          ],
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": [],
+          "stdout_tail": []
+        },
+        "mode": "pkg_config",
+        "ok": true,
+        "run_result": {
+          "command": [
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/rtdl_c_api_last_error_client_from_prefix"
+          ],
+          "expected_contains": "validated_last_error_diagnostics_cases=7",
+          "expected_stdout": null,
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": [],
+          "stdout": "case status_string_diagnostics_ok: ok\ncase null_context_last_error_ok: ok\ncase initial_last_error_empty: ok\ncase invalid_buffer_sets_last_error: ok\ncase successful_buffer_import_clears_last_error: ok\ncase unsupported_runtime_sets_last_error: ok\ncase successful_runtime_clears_last_error: ok\nvalidated_last_error_diagnostics_cases=7"
+        },
+        "script": "c_api_last_error_client.c"
+      },
+      {
+        "compile_result": {
+          "command": [
+            "/usr/bin/cc",
+            "-std=c11",
+            "-I",
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/include",
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/c_api_aabb2_overlap_client.c",
+            "-o",
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/rtdl_c_api_aabb2_overlap_client_from_prefix",
+            "-ldl"
+          ],
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": [],
+          "stdout_tail": []
+        },
+        "mode": "dlopen",
+        "ok": true,
+        "run_result": {
+          "command": [
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/rtdl_c_api_aabb2_overlap_client_from_prefix",
+            "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/lib/librtdl_c_api.so"
+          ],
+          "expected_contains": null,
+          "expected_stdout": "hit_count=1 first_pair=(0,0)",
+          "ok": true,
+          "returncode": 0,
+          "stderr_tail": [],
+          "stdout": "hit_count=1 first_pair=(0,0)"
+        },
+        "script": "c_api_aabb2_overlap_client.c"
+      }
+    ],
+    "libs_result": {
+      "command": [
+        "/usr/bin/pkg-config",
+        "--libs",
+        "rtdl-c-api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "-L/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/lib/pkgconfig/../../lib -lrtdl_c_api"
+    },
+    "make": "/usr/bin/make",
+    "make_result": {
+      "command": [
+        "/usr/bin/make",
+        "stage-c-api-prefix",
+        "C_API_PREFIX_STAGE_ROOT=/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs",
+        "C_API_PREFIX=/opt/rtdl"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": [
+        "cp packaging/rtdl-c-api-config.cmake /tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake",
+        "cp docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json /tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/v3_0_c_abi_symbol_manifest.json",
+        "cp examples/current/embedding/README.md /tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/README.md",
+        "cp examples/current/embedding/c_api_aabb2_overlap_client.c /tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/c_api_aabb2_overlap_client.c",
+        "cp examples/current/embedding/c_api_direct_link_client.c /tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/c_api_direct_link_client.c",
+        "cp examples/current/embedding/c_api_host_runtime_client.c /tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/c_api_host_runtime_client.c",
+        "cp examples/current/embedding/c_api_cuda_buffer_metadata_client.c /tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/c_api_cuda_buffer_metadata_client.c",
+        "cp examples/current/embedding/c_api_last_error_client.c /tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/c_api_last_error_client.c",
+        "cp examples/current/embedding/python_ctypes_client.py /tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/python_ctypes_client.py",
+        "cp examples/current/embedding/python_ctypes_aabb2_query_client.py /tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/python_ctypes_aabb2_query_client.py",
+        "cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py /tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/python_ctypes_cuda_buffer_metadata_client.py",
+        "cp examples/current/embedding/python_ctypes_dlpack_like_metadata_client.py /tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl/share/rtdl/examples/python_ctypes_dlpack_like_metadata_client.py"
+      ]
+    },
+    "ok": true,
+    "pkg_config": "/usr/bin/pkg-config",
+    "prefix": "/opt/rtdl",
+    "prefix_dir": "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs/opt/rtdl",
+    "stage_root": "/tmp/rtdl_c_api_prefix_c_examples_ukeopjfs"
+  },
+  "status": "prefix_stage_c_examples_smoke_checked",
+  "version": "rtdl.v3_0.prefix_stage_c_examples.goal4613.v1"
+}

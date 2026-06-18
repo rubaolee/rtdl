@@ -10,8 +10,13 @@ and validation gates.
 
 ## Current Implementation Progress
 
-As of Goal4612, the first control-plane embedding slice has moved from a C-only
+As of Goal4613, the first control-plane embedding slice has moved from a C-only
 proof into a movable source-tree and prefix-stage handoff artifact:
+
+As of Goal4612, the same slice already included the staged and archived
+`c_api_last_error_client.c` example. That historical anchor is kept here
+because later prefix-stage work must preserve the user-facing diagnostic
+example.
 
 As of Goal4611, the same slice already included the Last-error/status
 diagnostic lifecycle smoke. That historical anchor is kept here because later
@@ -71,6 +76,9 @@ not erase the previously validated threading boundary.
   last-error after successful context-mutating calls.
 - Staged and archived `c_api_last_error_client.c` example showing the same
   diagnostic pattern through the user-facing C example bundle.
+- Prefix-stage C examples smoke covering direct-link, `dlopen` host AABB2,
+  host-runtime metadata, CUDA descriptor metadata, and status/last-error
+  diagnostics clients from a staged prefix layout.
 - C/Python `ctypes` layout audit for the current descriptor structs, backed by
   compiler-observed `sizeof`/`offsetof` evidence.
 - A documented current AABB2 buffer/result contract in

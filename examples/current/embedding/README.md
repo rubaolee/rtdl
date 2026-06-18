@@ -99,6 +99,19 @@ Expected output:
 direct_link_ok 0.1.3 ok
 ```
 
+The same prefix-style stage also carries C examples for the direct-link
+lifecycle path, `dlopen` host AABB2 query, host external-runtime metadata,
+CUDA descriptor metadata, and status/last-error diagnostics. Expected outputs
+include:
+
+```text
+direct_link_ok 0.1.3 ok
+hit_count=1 first_pair=(0,0)
+validated_host_external_runtime_cases=3
+validated_cuda_buffer_metadata_cases=4
+validated_last_error_diagnostics_cases=7
+```
+
 The same prefix-style stage can run the Python `ctypes` examples without using
 source-tree relative paths:
 
