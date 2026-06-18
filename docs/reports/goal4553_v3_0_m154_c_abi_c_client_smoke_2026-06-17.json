@@ -1,0 +1,92 @@
+{
+  "checks": {
+    "c_client_compile_ok": true,
+    "c_client_run_ok": true,
+    "c_compiler_available": true,
+    "client_source_uses_c_header": true,
+    "client_source_uses_dynamic_library_api": true,
+    "cxx_compiler_available": true,
+    "header_exists": true,
+    "header_has_context_and_buffer_api": true,
+    "shared_library_build_ok": true,
+    "stub_exports_context_and_buffer_api": true,
+    "stub_source_exists": true
+  },
+  "claim_boundary": {
+    "backend_query_implemented": false,
+    "binary_compatibility_frozen": false,
+    "dlpack_support_implemented": false,
+    "external_stream_semantics_validated": false,
+    "release_authorized": false
+  },
+  "client_result": {
+    "c_compiler": "C:\\Program Files\\LLVM\\bin\\clang.exe",
+    "client_compile": {
+      "command": [
+        "C:\\Program Files\\LLVM\\bin\\clang.exe",
+        "-std=c11",
+        "-I",
+        "include",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpfqmtvga8\\rtdl_c_client_smoke.c",
+        "-o",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpfqmtvga8\\rtdl_c_client_smoke.exe"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    },
+    "client_run": {
+      "command": [
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpfqmtvga8\\rtdl_c_client_smoke.exe",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpfqmtvga8\\rtdl_c_api_stub.dll"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    },
+    "cxx_compiler": "C:\\Program Files\\LLVM\\bin\\clang++.exe",
+    "ok": true,
+    "shared_library": {
+      "command": [
+        "C:\\Program Files\\LLVM\\bin\\clang++.exe",
+        "-std=c++17",
+        "-DRTDL_BUILD_SHARED",
+        "-I",
+        "include",
+        "src\\native\\rtdl_c_api.cpp",
+        "-shared",
+        "-o",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpfqmtvga8\\rtdl_c_api_stub.dll"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [
+        "  334 | __DEFINE_CPP_OVERLOAD_STANDARD_NFUNC_0_2_EX(",
+        "      | ^",
+        "C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt\\corecrt.h:1974:17: note: expanded from macro '__DEFINE_CPP_OVERLOAD_STANDARD_NFUNC_0_2_EX'",
+        " 1974 |                 _CRT_INSECURE_DEPRECATE(_SecureFuncName) _DeclSpec _ReturnType __cdecl _FuncName(_SalAttributeDst _DstType *_Dst, _TType1 _TArg1, _TType2 _TArg2);",
+        "      |                 ^",
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\include\\vcruntime.h:368:55: note: expanded from macro '_CRT_INSECURE_DEPRECATE'",
+        "  368 |         #define _CRT_INSECURE_DEPRECATE(_Replacement) _CRT_DEPRECATE_TEXT(    \\",
+        "      |                                                       ^",
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\include\\vcruntime.h:358:47: note: expanded from macro '_CRT_DEPRECATE_TEXT'",
+        "  358 | #define _CRT_DEPRECATE_TEXT(_Text) __declspec(deprecated(_Text))",
+        "      |                                               ^",
+        "1 warning generated."
+      ],
+      "stdout": ""
+    }
+  },
+  "conclusion": "Goal4553 validates the V3 C ABI stub from a real C11 client: the test builds the stub shared library, compiles a C client, dynamically loads the library, resolves the public symbols, and exercises version, status, context, and neutral-buffer lifecycle calls. It still makes no backend query, DLPack, external-stream, frozen-ABI, or release claim.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4553 / V3 M154",
+  "status": "c_abi_c_client_smoke_checked",
+  "validated_capabilities": {
+    "non_python_c11_dynamic_client_validated": true,
+    "version_status_context_buffer_lifecycle_symbols_validated": true
+  },
+  "version": "rtdl.v3_0.c_abi_c_client_smoke.goal4553.v1"
+}

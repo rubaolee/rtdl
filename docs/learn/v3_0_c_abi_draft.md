@@ -32,3 +32,8 @@ still does not implement or freeze the ABI.
 Goal4552 adds a temporary shared-library build plus `ctypes` symbol smoke for
 the stub implementation; that smoke proves loadability, not real backend
 embeddability.
+
+Goal4553 adds a non-Python C11 dynamic-load client smoke against the same stub
+library. It validates version, status, context lifecycle, and neutral buffer
+lifecycle calls from C, but still does not validate backend query execution,
+external stream semantics, DLPack, or frozen binary compatibility.
