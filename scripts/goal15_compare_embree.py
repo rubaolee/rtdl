@@ -104,6 +104,154 @@ def _embree_library_dir(embree_prefix: Path) -> Path:
     return embree_prefix / "lib"
 
 
+def native_source_path(source_name: str) -> Path:
+    candidates = (
+        ROOT / "apps" / source_name,
+        ROOT / "docs" / "history" / "source_archive" / "apps" / source_name,
+    )
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    searched = ", ".join(path.relative_to(ROOT).as_posix() for path in candidates)
+    raise FileNotFoundError(f"native comparison source {source_name!r} not found; searched {searched}")
+
+
+def write_legacy_goal15_shim(build_dir: Path) -> Path:
+    shim_path = build_dir / "goal15_legacy_embree_symbols.cpp"
+    shim_path.write_text(
+        r'''
+#include <cstddef>
+#include <cstdint>
+
+extern "C" {
+
+struct RtdlSegment {
+  uint32_t id;
+  double x0;
+  double y0;
+  double x1;
+  double y1;
+};
+
+struct RtdlPoint {
+  uint32_t id;
+  double x;
+  double y;
+};
+
+struct RtdlPolygonRef {
+  uint32_t id;
+  uint32_t vertex_offset;
+  uint32_t vertex_count;
+};
+
+struct RtdlSegmentPairIntersectionRow {
+  uint32_t left_id;
+  uint32_t right_id;
+  double intersection_point_x;
+  double intersection_point_y;
+};
+
+struct RtdlLsiRow {
+  uint32_t left_id;
+  uint32_t right_id;
+  double intersection_point_x;
+  double intersection_point_y;
+};
+
+struct RtdlPipRow {
+  uint32_t point_id;
+  uint32_t polygon_id;
+  uint32_t contains;
+};
+
+int rtdl_embree_run_segment_pair_intersection(
+    const RtdlSegment* left,
+    size_t left_count,
+    const RtdlSegment* right,
+    size_t right_count,
+    RtdlSegmentPairIntersectionRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+
+int rtdl_embree_run_point_primitive_anyhit_packet(
+    const RtdlPoint* points,
+    size_t point_count,
+    const RtdlPolygonRef* polygons,
+    size_t polygon_count,
+    const double* vertices_xy,
+    size_t vertex_xy_count,
+    uint32_t positive_only,
+    RtdlPipRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+
+int rtdl_embree_run_lsi(
+    const RtdlSegment* left,
+    size_t left_count,
+    const RtdlSegment* right,
+    size_t right_count,
+    RtdlLsiRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl_embree_run_segment_pair_intersection(
+      left,
+      left_count,
+      right,
+      right_count,
+      reinterpret_cast<RtdlSegmentPairIntersectionRow**>(rows_out),
+      row_count_out,
+      error_out,
+      error_size);
+}
+
+int rtdl_embree_run_pip(
+    const RtdlPoint* points,
+    size_t point_count,
+    const RtdlPolygonRef* polygons,
+    size_t polygon_count,
+    const double* vertices_xy,
+    size_t vertex_xy_count,
+    uint32_t positive_only,
+    RtdlPipRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl_embree_run_point_primitive_anyhit_packet(
+      points,
+      point_count,
+      polygons,
+      polygon_count,
+      vertices_xy,
+      vertex_xy_count,
+      positive_only,
+      rows_out,
+      row_count_out,
+      error_out,
+      error_size);
+}
+
+}  // extern "C"
+'''.lstrip(),
+        encoding="utf-8",
+    )
+    return shim_path
+
+
+def local_embree_link_args(system: str) -> list[str]:
+    build_dir = ROOT / "build"
+    if system == "Windows":
+        import_lib = build_dir / "librtdl_embree.lib"
+        return [str(import_lib)] if import_lib.exists() else []
+    shared = build_dir / ("librtdl_embree.dylib" if system == "Darwin" else "librtdl_embree.so")
+    if shared.exists():
+        return ["-L", str(build_dir), "-Wl,-rpath," + str(build_dir), "-lrtdl_embree"]
+    return []
+
+
 def write_segments_csv(path: Path, segments: tuple[rt.Segment, ...]) -> None:
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
@@ -129,9 +277,10 @@ def write_polygons_csv(path: Path, polygons: tuple[rt.Polygon, ...]) -> None:
 
 
 def compile_native(exe_name: str, source_name: str) -> Path:
-    build_dir = ROOT / "build" / "goal15_native"
+    build_dir = ROOT / "build" / "goal15_native" / str(os.getpid())
     build_dir.mkdir(parents=True, exist_ok=True)
-    source_path = ROOT / "apps" / source_name
+    source_path = native_source_path(source_name)
+    shim_path = write_legacy_goal15_shim(build_dir)
     native_path = ROOT / "src" / "native" / "rtdl_embree.cpp"
     system = platform.system()
     embree_prefix = _default_embree_prefix(system)
@@ -141,22 +290,21 @@ def compile_native(exe_name: str, source_name: str) -> Path:
     output_path = build_dir / output_name
     geos_cflags = [] if system == "Windows" else geos_pkg_config_flags("--cflags")
     geos_libs = [] if system == "Windows" else geos_pkg_config_flags("--libs")
+    local_link_args = local_embree_link_args(system)
     if system == "Windows":
         compiler = os.environ.get("CXX", r"C:\Program Files\LLVM\bin\clang++.exe")
-        cmd = [
-            compiler,
-            "-std=c++17",
-            "-O2",
-            *geos_cflags,
-            "-I",
-            str(embree_prefix / "include"),
-            str(source_path),
-            str(native_path),
-            str(embree_lib_dir / f"{embree_link_name}.lib"),
-            str(embree_prefix / "lib" / "tbb12.lib"),
-            "-o",
-            str(output_path),
-        ]
+        cmd = [compiler, "-std=c++17", "-O2", "-I", str(embree_prefix / "include"), str(source_path), str(shim_path)]
+        if local_link_args:
+            cmd.extend(local_link_args)
+        else:
+            cmd.extend(
+                [
+                    str(native_path),
+                    str(embree_lib_dir / f"{embree_link_name}.lib"),
+                    str(embree_prefix / "lib" / "tbb12.lib"),
+                ]
+            )
+        cmd.extend(["-o", str(output_path)])
         vcvars = Path(
             os.environ.get(
                 "RTDL_VCVARS64",
@@ -169,23 +317,21 @@ def compile_native(exe_name: str, source_name: str) -> Path:
             )
         _run_windows_compile(cmd, vcvars=vcvars, cwd=ROOT)
     else:
-        cmd = [
-            "c++",
-            "-std=c++17",
-            "-O2",
-            *geos_cflags,
-            "-I",
-            str(embree_prefix / "include"),
-            str(source_path),
-            str(native_path),
-            "-L",
-            str(embree_lib_dir),
-            "-Wl,-rpath," + str(embree_lib_dir),
-            f"-l{embree_link_name}",
-            *geos_libs,
-            "-o",
-            str(output_path),
-        ]
+        cmd = ["c++", "-std=c++17", "-O2", *geos_cflags, "-I", str(embree_prefix / "include"), str(source_path), str(shim_path)]
+        if local_link_args:
+            cmd.extend(local_link_args)
+        else:
+            cmd.extend(
+                [
+                    str(native_path),
+                    "-L",
+                    str(embree_lib_dir),
+                    "-Wl,-rpath," + str(embree_lib_dir),
+                    f"-l{embree_link_name}",
+                    *geos_libs,
+                ]
+            )
+        cmd.extend(["-o", str(output_path)])
         subprocess.run(cmd, check=True)
         output_path.chmod(
             output_path.stat().st_mode
@@ -209,17 +355,25 @@ def time_call(fn, *args, **kwargs):
 
 
 def _native_runtime_env(system: str, embree_prefix: Path) -> dict[str, str] | None:
-    if system != "Windows":
-        return None
     env = os.environ.copy()
-    path_key = next((key for key in env if key.upper() == "PATH"), "PATH")
-    path_entries = [
-        str(embree_prefix / "bin"),
-        str(embree_prefix / "lib"),
-        str(embree_prefix),
-        env.get(path_key, ""),
-    ]
-    env[path_key] = os.pathsep.join(entry for entry in path_entries if entry)
+    if system == "Windows":
+        path_key = next((key for key in env if key.upper() == "PATH"), "PATH")
+        path_entries = [
+            str(ROOT / "build"),
+            str(embree_prefix / "bin"),
+            str(embree_prefix / "lib"),
+            str(embree_prefix),
+            env.get(path_key, ""),
+        ]
+        env[path_key] = os.pathsep.join(entry for entry in path_entries if entry)
+    else:
+        lib_key = "DYLD_LIBRARY_PATH" if system == "Darwin" else "LD_LIBRARY_PATH"
+        lib_entries = [
+            str(ROOT / "build"),
+            str(_embree_library_dir(embree_prefix)),
+            env.get(lib_key, ""),
+        ]
+        env[lib_key] = os.pathsep.join(entry for entry in lib_entries if entry)
     return env
 
 
