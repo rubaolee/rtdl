@@ -27,7 +27,12 @@ class V30UserDocsHistoryBoundaryTest(unittest.TestCase):
     def assert_no_files_under(self, path: Path) -> None:
         if not path.exists():
             return
-        self.assertEqual([], [item.relative_to(ROOT).as_posix() for item in path.rglob("*") if item.is_file()])
+        user_files = [
+            item.relative_to(ROOT).as_posix()
+            for item in path.rglob("*")
+            if item.is_file() and "__pycache__" not in item.parts and item.suffix != ".pyc"
+        ]
+        self.assertEqual([], user_files)
 
     def test_release_reports_directory_is_current_only(self) -> None:
         names = {path.name for path in (ROOT / "docs" / "release_reports").iterdir()}
