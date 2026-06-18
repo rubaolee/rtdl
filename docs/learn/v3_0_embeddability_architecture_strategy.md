@@ -25,6 +25,8 @@ tree:
   [V3.0 C ABI Draft](v3_0_c_abi_draft.md).
 - A draft stability rulebook in
   [V3.0 C ABI Stability Policy](v3_0_c_abi_stability_policy.md).
+- A zero-copy interop readiness contract in
+  [V3.0 Zero-Copy Interop Contract](v3_0_zero_copy_interop_contract.md).
 
 Still not authorized: frozen ABI compatibility, packaged SDK wording, DLPack,
 `__cuda_array_interface__`, external CUDA stream semantics, OptiX/Embree query

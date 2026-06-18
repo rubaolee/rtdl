@@ -163,6 +163,7 @@ V3.0 current app-author guidance:
 - [Goal4565 C ABI stability policy](../reports/goal4565_v3_0_m166_c_abi_stability_policy_2026-06-17.md)
 - [Goal4566 C ABI symbol manifest](../reports/goal4566_v3_0_m167_c_abi_symbol_manifest_2026-06-17.md)
 - [Goal4567 C ABI AABB2 layout validation](../reports/goal4567_v3_0_m168_c_abi_aabb2_layout_validation_2026-06-17.md)
+- [Goal4568 zero-copy interop contract](../reports/goal4568_v3_0_m169_zero_copy_interop_contract_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)
