@@ -1,7 +1,7 @@
 # V3.0 C ABI Ownership And Threading Contract
 
 Status: draft source-tree contract for the V3 embeddability track. This page
-documents the current `0.1.0` C ABI behavior; it is not a frozen SDK promise.
+documents the current `0.1.1` C ABI behavior; it is not a frozen SDK promise.
 
 Read this with [V3.0 C ABI Draft](v3_0_c_abi_draft.md) and
 [V3.0 C ABI Stability Policy](v3_0_c_abi_stability_policy.md).
@@ -52,7 +52,7 @@ machine contract; use `rtdl_status` for branching.
 
 ## Threading Rules
 
-The current `0.1.0` ABI is reentrant only at the narrow utility level:
+The current `0.1.1` ABI is reentrant only at the narrow utility level:
 
 - ABI version functions and `rtdl_status_string` are safe to call concurrently.
 - Independent contexts with no shared imported buffers are intended to be usable

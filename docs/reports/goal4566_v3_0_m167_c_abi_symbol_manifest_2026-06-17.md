@@ -4,7 +4,7 @@ Status: `c_abi_symbol_manifest_checked`
 
 ## Conclusion
 
-Goal4566 adds a draft machine-readable C ABI symbol manifest for `0.1.0` and checks it against the public header plus the Goal4556 export audit. This gives the V3 ABI a concrete change-tracking surface without freezing binary compatibility.
+Goal4566 checks the current draft machine-readable C ABI symbol manifest against the public header plus the Goal4556 export audit. This gives the V3 ABI a concrete change-tracking surface without freezing binary compatibility.
 
 ## Symbols
 
@@ -40,5 +40,5 @@ Goal4566 adds a draft machine-readable C ABI symbol manifest for `0.1.0` and che
 
 ## Boundary
 
-- This is a draft `0.1.0` manifest, not a frozen ABI promise.
+- This is a draft source-tree manifest, not a frozen ABI promise.
 - No cross-version compatibility, package/release, or stable-SDK claim is authorized.

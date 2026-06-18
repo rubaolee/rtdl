@@ -113,7 +113,7 @@ def _v3_c_abi_docs_check() -> dict[str, Any]:
         ROOT / "docs" / "learn" / "v3_0_c_abi_draft.md",
         ROOT / "docs" / "learn" / "v3_0_c_abi_stability_policy.md",
         ROOT / "docs" / "learn" / "v3_0_c_abi_ownership_threading_contract.md",
-        ROOT / "docs" / "learn" / "v3_0_c_abi_symbol_manifest_v0_1_0.json",
+        ROOT / "docs" / "learn" / "v3_0_c_abi_symbol_manifest_v0_1_1.json",
         ROOT / "docs" / "learn" / "v3_0_zero_copy_interop_contract.md",
     )
     missing = [path.relative_to(ROOT).as_posix() for path in required_files if not path.exists()]

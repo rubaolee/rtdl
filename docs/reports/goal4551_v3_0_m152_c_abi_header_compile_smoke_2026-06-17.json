@@ -22,9 +22,9 @@
         "-I",
         "include",
         "-c",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp911xo83w\\rtdl_header_smoke.c",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp665kxrv_\\rtdl_header_smoke.c",
         "-o",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp911xo83w\\rtdl_header_smoke_c.o"
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp665kxrv_\\rtdl_header_smoke_c.o"
       ],
       "ok": true,
       "returncode": 0,
@@ -39,9 +39,9 @@
         "-I",
         "include",
         "-c",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp911xo83w\\rtdl_header_smoke.cpp",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp665kxrv_\\rtdl_header_smoke.cpp",
         "-o",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp911xo83w\\rtdl_header_smoke_cxx.o"
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp665kxrv_\\rtdl_header_smoke_cxx.o"
       ],
       "ok": true,
       "returncode": 0,

@@ -169,6 +169,7 @@ V3.0 current app-author guidance:
 - [Goal4571 C ABI AABB2 result ordering](../reports/goal4571_v3_0_m172_c_abi_aabb2_result_ordering_2026-06-17.md)
 - [Goal4572 C ABI doctor docs surface](../reports/goal4572_v3_0_m173_c_abi_doctor_docs_surface_2026-06-17.md)
 - [Goal4573 C ABI backend/runtime fail-closed](../reports/goal4573_v3_0_m174_c_abi_backend_runtime_fail_closed_2026-06-17.md)
+- [Goal4574 C ABI patch version refresh](../reports/goal4574_v3_0_m175_c_abi_patch_version_refresh_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)

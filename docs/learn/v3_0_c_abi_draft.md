@@ -12,7 +12,7 @@ Use [V3.0 C ABI Ownership And Threading Contract](v3_0_c_abi_ownership_threading
 for the current buffer lifetime, release-callback, last-error, and threading
 rules.
 The current draft symbol list is tracked in
-[v3_0_c_abi_symbol_manifest_v0_1_0.json](v3_0_c_abi_symbol_manifest_v0_1_0.json).
+[v3_0_c_abi_symbol_manifest_v0_1_1.json](v3_0_c_abi_symbol_manifest_v0_1_1.json).
 
 ## Scope
 

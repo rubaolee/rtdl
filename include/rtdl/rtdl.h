@@ -38,7 +38,7 @@ extern "C" {
 
 #define RTDL_ABI_VERSION_MAJOR 0
 #define RTDL_ABI_VERSION_MINOR 1
-#define RTDL_ABI_VERSION_PATCH 0
+#define RTDL_ABI_VERSION_PATCH 1
 
 typedef struct rtdl_context rtdl_context;
 typedef struct rtdl_index rtdl_index;

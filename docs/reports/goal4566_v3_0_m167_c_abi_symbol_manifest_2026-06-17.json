@@ -16,7 +16,7 @@
     "stable_abi_authorized": false,
     "symbol_manifest_frozen": false
   },
-  "conclusion": "Goal4566 adds a draft machine-readable C ABI symbol manifest for `0.1.0` and checks it against the public header plus the Goal4556 export audit. This gives the V3 ABI a concrete change-tracking surface without freezing binary compatibility.",
+  "conclusion": "Goal4566 checks the current draft machine-readable C ABI symbol manifest against the public header plus the Goal4556 export audit. This gives the V3 ABI a concrete change-tracking surface without freezing binary compatibility.",
   "date": "2026-06-17",
   "failed_checks": [],
   "goal": "Goal4566 / V3 M167",

@@ -143,6 +143,7 @@ def ctypes_smoke(shared_library: Path) -> dict[str, Any]:
     lib = ctypes.CDLL(str(shared_library))
     lib.rtdl_abi_version_major.restype = ctypes.c_uint32
     lib.rtdl_abi_version_minor.restype = ctypes.c_uint32
+    lib.rtdl_abi_version_patch.restype = ctypes.c_uint32
     lib.rtdl_status_string.argtypes = [ctypes.c_int]
     lib.rtdl_status_string.restype = ctypes.c_char_p
     lib.rtdl_context_create.argtypes = [ctypes.POINTER(ContextDesc), ctypes.POINTER(ctypes.c_void_p)]
@@ -183,6 +184,7 @@ def ctypes_smoke(shared_library: Path) -> dict[str, Any]:
     checks = {
         "major_is_zero": lib.rtdl_abi_version_major() == 0,
         "minor_is_one": lib.rtdl_abi_version_minor() == 1,
+        "patch_is_one": lib.rtdl_abi_version_patch() == 1,
         "status_string_ok": lib.rtdl_status_string(0) == b"ok",
         "context_created": status == 0 and bool(context.value),
         "buffer_imported": buffer_status == 0 and bool(buffer.value),
