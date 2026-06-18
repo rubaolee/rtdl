@@ -19,6 +19,7 @@ The target first builds `build/librtdl_c_api.*`, then creates
 - `share/rtdl/README.md`
 - `examples/c_api_aabb2_overlap_client.c`
 - `examples/c_api_direct_link_client.c`
+- `examples/python_ctypes_client.py`
 
 The staged manifest is copied from the current draft source-tree manifest,
 currently `docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json`.
@@ -55,11 +56,26 @@ LD_LIBRARY_PATH="$PWD/build/c_api_stage/lib:${LD_LIBRARY_PATH:-}" \
   ./build/c_api_stage/examples/rtdl_c_api_direct_link_client
 ```
 
+For a minimal Python `ctypes` client over the same staged shared library:
+
+```bash
+python3 build/c_api_stage/examples/python_ctypes_client.py \
+  build/c_api_stage/lib/librtdl_c_api.so
+```
+
+Expected output:
+
+```text
+python_ctypes_ok 0.1.3 ok
+```
+
 ## Boundary
 
 - This is a source-tree staging bundle only.
 - The only validated route remains host `F32` AABB2 overlap through the draft C
   ABI.
+- The Python `ctypes` example validates only thin shared-library loading,
+  version/capability queries, and context lifecycle calls.
 - No install prefix, package manager artifact, Python wheel, stable binary
   compatibility, OptiX/Embree C ABI query, device-buffer route, or performance
   wording is authorized.

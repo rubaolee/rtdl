@@ -176,6 +176,7 @@ V3.0 current app-author guidance:
 - [Goal4578 C ABI capability queries](../reports/goal4578_v3_0_m179_c_abi_capability_queries_2026-06-17.md)
 - [Goal4579 C ABI direct-link example](../reports/goal4579_v3_0_m180_c_abi_direct_link_example_2026-06-17.md)
 - [Goal4580 embeddability readiness packet](../reports/goal4580_v3_0_m181_embeddability_readiness_packet_2026-06-17.md)
+- [Goal4581 C ABI Python ctypes example](../reports/goal4581_v3_0_m182_c_abi_python_ctypes_example_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)

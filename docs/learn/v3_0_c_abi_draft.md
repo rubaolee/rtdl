@@ -88,6 +88,13 @@ Goal4579 adds `examples/current/embedding/c_api_direct_link_client.c`, a
 pkg-config/direct-link companion to the dlopen AABB2 example. It validates
 version and capability queries before creating a CPU context.
 
+Goal4581 adds `examples/current/embedding/python_ctypes_client.py`, a staged
+Python `ctypes` client over the same draft C ABI. It validates shared-library
+loading, version compatibility, capability queries, and CPU context
+create/destroy from a non-C client. This is a minimal language-binding proof,
+not a generated Python package, stable ABI, device-buffer binding, or
+OptiX/Embree C ABI query surface.
+
 ## Current Host AABB2 Query Contract
 
 The only implemented query route is deliberately small:

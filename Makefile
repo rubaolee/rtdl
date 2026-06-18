@@ -174,7 +174,7 @@ help:
 	@echo "  build-apple-rt - build the Apple Metal/MPS RT backend library"
 	@echo "  build-adaptive - build the adaptive CPU-native backend library"
 	@echo "  build-c-api   - build the V3 C ABI lifecycle stub library"
-	@echo "  stage-c-api   - stage the V3 C ABI header, library, manifest, and example"
+	@echo "  stage-c-api   - stage the V3 C ABI header, library, manifest, and examples"
 	@echo ""
 	@echo "Other targets are preserved for internal reproduction and audit work."
 
@@ -218,6 +218,7 @@ stage-c-api: build-c-api
 	cp examples/current/embedding/README.md $(C_API_STAGE_DIR)/share/rtdl/README.md
 	cp examples/current/embedding/c_api_aabb2_overlap_client.c $(C_API_STAGE_DIR)/examples/c_api_aabb2_overlap_client.c
 	cp examples/current/embedding/c_api_direct_link_client.c $(C_API_STAGE_DIR)/examples/c_api_direct_link_client.c
+	cp examples/current/embedding/python_ctypes_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_client.py
 
 build-optix:
 	mkdir -p $(BUILD_DIR)
