@@ -41,3 +41,7 @@ external stream semantics, DLPack, or frozen binary compatibility.
 Goal4554 wires the lifecycle stub into the source-tree build front door as
 `make build-c-api`. That target builds the shared library artifact, but it is
 still a source-tree developer target rather than an install/package contract.
+
+Goal4556 audits the `make build-c-api` shared library with the platform symbol
+tool and verifies the current lifecycle symbols are exported. That is an
+artifact-surface check, not a frozen binary compatibility promise.

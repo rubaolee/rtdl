@@ -26,13 +26,13 @@ class Goal4546V30M147CurrentTestMatrixGateTest(unittest.TestCase):
         self.assertEqual("rtdl.v3_0.current_test_matrix.goal4546.v1", self.packet["version"])
         self.assertEqual((), self.packet["failed_checks"])
         self.assertEqual("v3_current", self.packet["group"])
-        self.assertEqual(45, len(self.packet["modules"]))
+        self.assertEqual(46, len(self.packet["modules"]))
         self.assertEqual(
             "tests.goal4508_v3_0_m112_rtnn_clean_target_closeout_test",
             self.packet["modules"][0],
         )
         self.assertEqual(
-            "tests.goal4555_v3_0_m156_c_abi_header_boundary_refresh_test",
+            "tests.goal4556_v3_0_m157_c_abi_exported_symbol_audit_test",
             self.packet["modules"][-1],
         )
         self.assertNotIn(
@@ -43,7 +43,7 @@ class Goal4546V30M147CurrentTestMatrixGateTest(unittest.TestCase):
     def test_checked_in_run_passed_current_v3_suite(self) -> None:
         suite = self.checked_in["suite_run"]
         self.assertTrue(suite["ok"])
-        self.assertEqual(45, suite["module_count"])
+        self.assertEqual(46, suite["module_count"])
         self.assertIn("--group v3_current", PROCESS_DOC.read_text(encoding="utf-8"))
         self.assertGreaterEqual(self.checked_in["suite_summary"]["ran_tests"], 134)
         self.assertIn("OK", suite["output"])

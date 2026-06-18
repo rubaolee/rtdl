@@ -1,0 +1,102 @@
+{
+  "audit": {
+    "artifact": "build/librtdl_c_api.so",
+    "exported_symbols": [
+      "rtdl_abi_version_major",
+      "rtdl_abi_version_minor",
+      "rtdl_abi_version_patch",
+      "rtdl_buffer_destroy",
+      "rtdl_buffer_export",
+      "rtdl_buffer_import",
+      "rtdl_context_create",
+      "rtdl_context_destroy",
+      "rtdl_context_last_error",
+      "rtdl_context_set_external_runtime",
+      "rtdl_index_destroy",
+      "rtdl_query_destroy",
+      "rtdl_status_string"
+    ],
+    "make": "/usr/bin/make",
+    "make_result": {
+      "command": [
+        "/usr/bin/make",
+        "build-c-api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": [
+        "mkdir -p build",
+        "c++ -std=c++17 -O2 -shared -fPIC -DRTDL_BUILD_SHARED -Iinclude \\",
+        "\tsrc/native/rtdl_c_api.cpp \\",
+        "\t-o build/librtdl_c_api.so"
+      ]
+    },
+    "missing_symbols": [],
+    "nm": "/usr/bin/nm",
+    "nm_result": {
+      "command": [
+        "/usr/bin/nm",
+        "-D",
+        "--defined-only",
+        "build/librtdl_c_api.so"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": [
+        "0000000000001170 T rtdl_abi_version_minor",
+        "0000000000001180 T rtdl_abi_version_patch",
+        "00000000000015f0 T rtdl_buffer_destroy",
+        "0000000000001560 T rtdl_buffer_export",
+        "0000000000001360 T rtdl_buffer_import",
+        "0000000000001230 T rtdl_context_create",
+        "0000000000001300 T rtdl_context_destroy",
+        "0000000000001210 T rtdl_context_last_error",
+        "0000000000001320 T rtdl_context_set_external_runtime",
+        "0000000000001630 T rtdl_index_destroy",
+        "0000000000001650 T rtdl_query_destroy",
+        "0000000000001190 T rtdl_status_string"
+      ]
+    },
+    "ok": true
+  },
+  "checks": {
+    "all_expected_symbols_exported": true,
+    "expected_symbol_count_is_13": true,
+    "header_declares_expected_symbols": true,
+    "make_available": true,
+    "make_build_ok": true,
+    "makefile_has_build_c_api_target": true,
+    "nm_audit_ok": true,
+    "nm_available": true
+  },
+  "claim_boundary": {
+    "backend_query_implemented": false,
+    "binary_compatibility_frozen": false,
+    "dlpack_support_implemented": false,
+    "release_authorized": false,
+    "semantic_compatibility_validated": false
+  },
+  "conclusion": "Goal4556 audits the `make build-c-api` artifact and verifies that the current lifecycle C ABI symbols are actually exported from the shared library. This checks the build product's symbol surface only; it does not freeze binary compatibility or validate backend query semantics.",
+  "date": "2026-06-17",
+  "expected_symbols": [
+    "rtdl_abi_version_major",
+    "rtdl_abi_version_minor",
+    "rtdl_abi_version_patch",
+    "rtdl_status_string",
+    "rtdl_context_last_error",
+    "rtdl_context_create",
+    "rtdl_context_destroy",
+    "rtdl_context_set_external_runtime",
+    "rtdl_buffer_import",
+    "rtdl_buffer_export",
+    "rtdl_buffer_destroy",
+    "rtdl_index_destroy",
+    "rtdl_query_destroy"
+  ],
+  "failed_checks": [],
+  "goal": "Goal4556 / V3 M157",
+  "status": "c_abi_exported_symbol_audit_checked",
+  "version": "rtdl.v3_0.c_abi_exported_symbol_audit.goal4556.v1"
+}

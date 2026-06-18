@@ -151,6 +151,7 @@ V3.0 current app-author guidance:
 - [Goal4553 C ABI C client smoke](../reports/goal4553_v3_0_m154_c_abi_c_client_smoke_2026-06-17.md)
 - [Goal4554 C ABI Makefile build target](../reports/goal4554_v3_0_m155_c_abi_makefile_build_target_2026-06-17.md)
 - [Goal4555 C ABI header boundary refresh](../reports/goal4555_v3_0_m156_c_abi_header_boundary_refresh_2026-06-17.md)
+- [Goal4556 C ABI exported symbol audit](../reports/goal4556_v3_0_m157_c_abi_exported_symbol_audit_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)
