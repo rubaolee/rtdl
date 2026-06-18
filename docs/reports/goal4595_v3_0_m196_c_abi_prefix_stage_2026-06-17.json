@@ -1,0 +1,115 @@
+{
+  "checks": {
+    "cc_available": true,
+    "docs_preserve_not_installed_sdk_boundary": true,
+    "embedding_readme_documents_prefix_stage": true,
+    "makefile_declares_prefix_stage_controls": true,
+    "makefile_declares_prefix_stage_target": true,
+    "makefile_prefix_stage_uses_install_like_layout": true,
+    "pkg_config_available": true,
+    "pkg_config_template_remains_pcfiledir_relocatable": true,
+    "prefix_direct_link_client_compiles": true,
+    "prefix_direct_link_client_runs": true,
+    "prefix_flags_point_at_staged_prefix": true,
+    "prefix_pkg_config_cflags_ok": true,
+    "prefix_pkg_config_libs_ok": true,
+    "prefix_stage_make_ok": true,
+    "staging_contract_documents_prefix_stage": true
+  },
+  "claim_boundary": {
+    "generated_binding_authorized": false,
+    "package_manager_artifact_authorized": false,
+    "packaged_sdk_authorized": false,
+    "prefix_layout_stage_authorized": true,
+    "release_authorized": false,
+    "stable_abi_authorized": false,
+    "system_install_authorized": false
+  },
+  "conclusion": "Goal4595 adds and validates `make stage-c-api-prefix`, a DESTDIR/prefix-style C ABI staging layout. The pod evidence stages the bundle under a temporary root with prefix `/opt/rtdl`, uses only that staged prefix's `lib/pkgconfig/rtdl-c-api.pc` metadata to compile the staged direct-link C client, and runs it against the staged library. This authorizes a prefix-layout staging proof only; it is not a privileged system install, package-manager artifact, packaged SDK, stable ABI, generated binding, or release claim.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4595 / V3 M196",
+  "prefix_stage_smoke": {
+    "cc": "/usr/bin/cc",
+    "cflags_result": {
+      "command": [
+        "/usr/bin/pkg-config",
+        "--cflags",
+        "rtdl-c-api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "-I/tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/lib/pkgconfig/../../include"
+    },
+    "compile_result": {
+      "command": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-I/tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/lib/pkgconfig/../../include",
+        "/tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/share/rtdl/examples/c_api_direct_link_client.c",
+        "-o",
+        "/tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/share/rtdl/examples/rtdl_c_api_direct_link_client",
+        "-L/tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/lib/pkgconfig/../../lib",
+        "-lrtdl_c_api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": []
+    },
+    "libs_result": {
+      "command": [
+        "/usr/bin/pkg-config",
+        "--libs",
+        "rtdl-c-api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "-L/tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/lib/pkgconfig/../../lib -lrtdl_c_api"
+    },
+    "make": "/usr/bin/make",
+    "make_result": {
+      "command": [
+        "/usr/bin/make",
+        "stage-c-api-prefix",
+        "C_API_PREFIX_STAGE_ROOT=/tmp/rtdl_c_api_prefix_stage_ykfj9ez8",
+        "C_API_PREFIX=/opt/rtdl"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": [
+        "cp include/rtdl/rtdl.h /tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/include/rtdl/rtdl.h",
+        "cp build/librtdl_c_api.so /tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/lib/librtdl_c_api.so",
+        "cp packaging/rtdl-c-api.pc /tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/lib/pkgconfig/rtdl-c-api.pc",
+        "cp docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json /tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/share/rtdl/v3_0_c_abi_symbol_manifest.json",
+        "cp examples/current/embedding/README.md /tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/share/rtdl/README.md",
+        "cp examples/current/embedding/c_api_aabb2_overlap_client.c /tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/share/rtdl/examples/c_api_aabb2_overlap_client.c",
+        "cp examples/current/embedding/c_api_direct_link_client.c /tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/share/rtdl/examples/c_api_direct_link_client.c",
+        "cp examples/current/embedding/c_api_host_runtime_client.c /tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/share/rtdl/examples/c_api_host_runtime_client.c",
+        "cp examples/current/embedding/c_api_cuda_buffer_metadata_client.c /tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/share/rtdl/examples/c_api_cuda_buffer_metadata_client.c",
+        "cp examples/current/embedding/python_ctypes_client.py /tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/share/rtdl/examples/python_ctypes_client.py",
+        "cp examples/current/embedding/python_ctypes_aabb2_query_client.py /tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/share/rtdl/examples/python_ctypes_aabb2_query_client.py",
+        "cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py /tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/share/rtdl/examples/python_ctypes_cuda_buffer_metadata_client.py"
+      ]
+    },
+    "ok": true,
+    "pkg_config": "/usr/bin/pkg-config",
+    "prefix": "/opt/rtdl",
+    "prefix_dir": "/tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl",
+    "run_result": {
+      "command": [
+        "/tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl/share/rtdl/examples/rtdl_c_api_direct_link_client"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "direct_link_ok 0.1.3 ok"
+    },
+    "stage_root": "/tmp/rtdl_c_api_prefix_stage_ykfj9ez8"
+  },
+  "status": "c_abi_prefix_stage_checked",
+  "version": "rtdl.v3_0.c_abi_prefix_stage.goal4595.v1"
+}

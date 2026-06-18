@@ -38,6 +38,33 @@ This writes `build/rtdl-c-api-stage-0.1.3.tar.gz`. The archive is a convenient
 source-tree staging package, not a system install, package-manager artifact, or
 stable SDK.
 
+To create a DESTDIR/prefix-style layout that external projects can consume with
+ordinary `pkg-config` paths:
+
+```bash
+make stage-c-api-prefix
+```
+
+By default this writes:
+
+- `build/c_api_prefix_stage/usr/local/include/rtdl/rtdl.h`
+- `build/c_api_prefix_stage/usr/local/lib/librtdl_c_api.*`
+- `build/c_api_prefix_stage/usr/local/lib/pkgconfig/rtdl-c-api.pc`
+- `build/c_api_prefix_stage/usr/local/share/rtdl/v3_0_c_abi_symbol_manifest.json`
+- `build/c_api_prefix_stage/usr/local/share/rtdl/README.md`
+- `build/c_api_prefix_stage/usr/local/share/rtdl/examples/*`
+
+The stage root and prefix are configurable:
+
+```bash
+make stage-c-api-prefix C_API_PREFIX_STAGE_ROOT=/tmp/rtdl-stage C_API_PREFIX=/opt/rtdl
+```
+
+This is a prefix-layout staging proof only. It verifies that the staged header,
+library, examples, and relocatable `pkg-config` metadata work after being placed
+under a conventional prefix. It is not a privileged system install, package
+manager artifact, stable SDK, or release claim.
+
 ## Example
 
 On Linux/pod, after `make stage-c-api`:
@@ -68,6 +95,25 @@ cc -std=c11 $(pkg-config --cflags rtdl-c-api) \
   $(pkg-config --libs rtdl-c-api)
 LD_LIBRARY_PATH="$PWD/build/c_api_stage/lib:${LD_LIBRARY_PATH:-}" \
   ./build/c_api_stage/examples/rtdl_c_api_direct_link_client
+```
+
+For the prefix-style stage:
+
+```bash
+make stage-c-api-prefix
+export PKG_CONFIG_PATH="$PWD/build/c_api_prefix_stage/usr/local/lib/pkgconfig"
+cc -std=c11 $(pkg-config --cflags rtdl-c-api) \
+  build/c_api_prefix_stage/usr/local/share/rtdl/examples/c_api_direct_link_client.c \
+  -o build/c_api_prefix_stage/usr/local/share/rtdl/examples/rtdl_c_api_direct_link_client \
+  $(pkg-config --libs rtdl-c-api)
+LD_LIBRARY_PATH="$PWD/build/c_api_prefix_stage/usr/local/lib:${LD_LIBRARY_PATH:-}" \
+  ./build/c_api_prefix_stage/usr/local/share/rtdl/examples/rtdl_c_api_direct_link_client
+```
+
+Expected output:
+
+```text
+direct_link_ok 0.1.3 ok
 ```
 
 For a C client that validates the current host external-runtime metadata path:
@@ -150,6 +196,9 @@ python_ctypes_hit_count=1 first_pair=(0,0)
 - This is a source-tree staging bundle only.
 - `package-c-api-stage` archives that staging bundle for movement between
   directories; it is still not an installed SDK.
+- `stage-c-api-prefix` creates a DESTDIR/prefix-style staging layout; it is
+  still not a privileged system install, package manager artifact, stable SDK,
+  or release claim.
 - The only validated route remains host `F32` AABB2 overlap through the draft C
   ABI.
 - The Python `ctypes` example validates only thin shared-library loading,

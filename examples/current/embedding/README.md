@@ -64,6 +64,39 @@ make package-c-api-stage
 
 This writes `build/rtdl-c-api-stage-0.1.3.tar.gz`.
 
+For a prefix-style stage that external projects can consume without relying on
+the repository layout:
+
+```bash
+make stage-c-api-prefix
+```
+
+By default this writes the C ABI header, shared library, pkg-config metadata,
+manifest, README, and examples under
+`build/c_api_prefix_stage/usr/local`. The root and prefix can be overridden:
+
+```bash
+make stage-c-api-prefix C_API_PREFIX_STAGE_ROOT=/tmp/rtdl-stage C_API_PREFIX=/opt/rtdl
+```
+
+For direct-link clients from that prefix-style stage:
+
+```bash
+export PKG_CONFIG_PATH="$PWD/build/c_api_prefix_stage/usr/local/lib/pkgconfig"
+cc -std=c11 $(pkg-config --cflags rtdl-c-api) \
+  build/c_api_prefix_stage/usr/local/share/rtdl/examples/c_api_direct_link_client.c \
+  -o build/c_api_prefix_stage/usr/local/share/rtdl/examples/rtdl_c_api_direct_link_client \
+  $(pkg-config --libs rtdl-c-api)
+LD_LIBRARY_PATH="$PWD/build/c_api_prefix_stage/usr/local/lib:${LD_LIBRARY_PATH:-}" \
+  ./build/c_api_prefix_stage/usr/local/share/rtdl/examples/rtdl_c_api_direct_link_client
+```
+
+Expected output:
+
+```text
+direct_link_ok 0.1.3 ok
+```
+
 For direct-link clients:
 
 ```bash
@@ -155,6 +188,9 @@ python_ctypes_hit_count=1 first_pair=(0,0)
 - This is a source-tree C client example for the V3 draft C ABI.
 - `package-c-api-stage` produces a source-tree staging archive, not an installed
   SDK or stable release artifact.
+- `stage-c-api-prefix` produces a DESTDIR/prefix-style staging layout, not a
+  privileged system install, package-manager artifact, stable SDK, or release
+  claim.
 - It validates only host `F32` AABB2 overlap through `librtdl_c_api`.
 - The Python `ctypes` example validates version/capability/context lifecycle
   calls only; it is not a generated Python package or complete binding.

@@ -158,12 +158,14 @@ ADAPTIVE_CXXFLAGS := -std=c++17 -O3 -shared -fPIC
 CXX_C_API ?= c++
 C_API_CXXFLAGS := -std=c++17 -O2 -shared -fPIC -DRTDL_BUILD_SHARED -Iinclude
 C_API_STAGE_DIR ?= $(BUILD_DIR)/c_api_stage
+C_API_PREFIX_STAGE_ROOT ?= $(BUILD_DIR)/c_api_prefix_stage
+C_API_PREFIX ?= /usr/local
 C_API_STAGE_ARCHIVE_ROOT := rtdl-c-api-stage-0.1.3
 C_API_STAGE_ARCHIVE ?= $(BUILD_DIR)/$(C_API_STAGE_ARCHIVE_ROOT).tar.gz
 C_API_STAGE_MANIFEST := docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json
 C_API_PKG_CONFIG := packaging/rtdl-c-api.pc
 
-.PHONY: help build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api stage-c-api package-c-api-stage run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+.PHONY: help build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api stage-c-api stage-c-api-prefix package-c-api-stage run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
 
 help:
 	@echo "Public targets:"
@@ -178,6 +180,7 @@ help:
 	@echo "  build-adaptive - build the adaptive CPU-native backend library"
 	@echo "  build-c-api   - build the V3 C ABI lifecycle stub library"
 	@echo "  stage-c-api   - stage the V3 C ABI header, library, manifest, and examples"
+	@echo "  stage-c-api-prefix - stage the C ABI bundle into a DESTDIR/prefix-style layout"
 	@echo "  package-c-api-stage - archive the source-tree C ABI staging bundle"
 	@echo ""
 	@echo "Other targets are preserved for internal reproduction and audit work."
@@ -227,6 +230,22 @@ stage-c-api: build-c-api
 	cp examples/current/embedding/python_ctypes_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_client.py
 	cp examples/current/embedding/python_ctypes_aabb2_query_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_aabb2_query_client.py
 	cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_cuda_buffer_metadata_client.py
+
+stage-c-api-prefix: build-c-api
+	rm -rf $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)
+	mkdir -p $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/include/rtdl $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/lib/pkgconfig $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples
+	cp include/rtdl/rtdl.h $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/include/rtdl/rtdl.h
+	cp $(BUILD_DIR)/$(C_API_LIB_NAME) $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/lib/$(C_API_LIB_NAME)
+	cp $(C_API_PKG_CONFIG) $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/lib/pkgconfig/rtdl-c-api.pc
+	cp $(C_API_STAGE_MANIFEST) $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/v3_0_c_abi_symbol_manifest.json
+	cp examples/current/embedding/README.md $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/README.md
+	cp examples/current/embedding/c_api_aabb2_overlap_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_aabb2_overlap_client.c
+	cp examples/current/embedding/c_api_direct_link_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_direct_link_client.c
+	cp examples/current/embedding/c_api_host_runtime_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_host_runtime_client.c
+	cp examples/current/embedding/c_api_cuda_buffer_metadata_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_cuda_buffer_metadata_client.c
+	cp examples/current/embedding/python_ctypes_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_client.py
+	cp examples/current/embedding/python_ctypes_aabb2_query_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_aabb2_query_client.py
+	cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_cuda_buffer_metadata_client.py
 
 package-c-api-stage: stage-c-api
 	rm -rf $(BUILD_DIR)/$(C_API_STAGE_ARCHIVE_ROOT)
