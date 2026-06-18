@@ -9,7 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4578_v3_0_m179_c_abi_capability_queries_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4578_v3_0_m179_c_abi_capability_queries_2026-06-17.md"
-MANIFEST = ROOT / "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json"
+MANIFEST = ROOT / "docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

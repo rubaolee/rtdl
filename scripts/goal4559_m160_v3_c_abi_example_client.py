@@ -12,7 +12,7 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.c_abi_example_client.goal4559.v1"
 OUT_JSON = Path("docs/reports/goal4559_v3_0_m160_c_abi_example_client_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4559_v3_0_m160_c_abi_example_client_2026-06-17.md")
-EXAMPLE = Path("examples/current/embedding/c_api_aabb2_overlap_client.c")
+EXAMPLE = Path("docs/history/v4_preparatory_embedding/examples/embedding/c_api_aabb2_overlap_client.c")
 
 
 def _shared_suffix() -> str:
@@ -141,7 +141,7 @@ def build_packet(root: Path = Path("."), *, run_build: bool = False) -> dict[str
         },
         "conclusion": (
             "Goal4559 promotes the C ABI host AABB2 overlap proof into a readable "
-            "example client under `examples/current/embedding/`. Pod evidence builds "
+            "example client under `docs/history/v4_preparatory_embedding/examples/embedding/`. Pod evidence builds "
             "`librtdl_c_api`, compiles the C example, runs it, and observes the "
             "expected single overlap pair. This is still a source-tree example, not "
             "a packaged SDK or OptiX/Embree/device-buffer claim."

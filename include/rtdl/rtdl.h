@@ -10,7 +10,7 @@
  * a frozen or backend-capable shared-library contract.
  *
  * Current ownership and threading rules are documented in
- * docs/learn/v3_0_c_abi_ownership_threading_contract.md.
+ * docs/history/v4_preparatory_embedding/v3_0_c_abi_ownership_threading_contract.md.
  */
 
 #include <stddef.h>

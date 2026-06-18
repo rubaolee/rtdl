@@ -12,8 +12,8 @@ PACKET_VERSION = "rtdl.v3_0.c_abi_staging_inventory_refresh.goal4585.v1"
 OUT_JSON = Path("docs/reports/goal4585_v3_0_m186_c_abi_staging_inventory_refresh_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4585_v3_0_m186_c_abi_staging_inventory_refresh_2026-06-17.md")
 MAKEFILE = Path("Makefile")
-STAGING_CONTRACT = Path("docs/learn/v3_0_c_abi_staging_contract.md")
-EMBEDDING_README = Path("examples/current/embedding/README.md")
+STAGING_CONTRACT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md")
+EMBEDDING_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
 EXAMPLES = (
     "c_api_aabb2_overlap_client.c",
     "c_api_direct_link_client.c",
@@ -53,7 +53,7 @@ def build_packet(root: Path = Path("."), *, run_stage: bool = False) -> dict[str
     embedding = (root / EMBEDDING_README).read_text(encoding="utf-8")
     inventory = run_stage_inventory(root) if run_stage else None
     checks = {
-        "makefile_stages_all_current_examples": all(f"examples/current/embedding/{name}" in makefile for name in EXAMPLES),
+        "makefile_stages_all_current_examples": all(f"docs/history/v4_preparatory_embedding/examples/embedding/{name}" in makefile for name in EXAMPLES),
         "staging_contract_lists_all_current_examples": all(name in staging_contract for name in EXAMPLES),
         "embedding_readme_names_all_current_examples": all(name in embedding for name in EXAMPLES),
         "stage_target_still_builds_c_api_first": "stage-c-api: build-c-api" in makefile,

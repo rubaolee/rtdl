@@ -15,11 +15,11 @@ PACKET_VERSION = "rtdl.v3_0.python_ctypes_cuda_metadata_bridge.goal4593.v1"
 OUT_JSON = Path("docs/reports/goal4593_v3_0_m194_python_ctypes_cuda_metadata_bridge_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4593_v3_0_m194_python_ctypes_cuda_metadata_bridge_2026-06-17.md")
 MAKEFILE = Path("Makefile")
-EXAMPLE = Path("examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py")
-STAGING_CONTRACT = Path("docs/learn/v3_0_c_abi_staging_contract.md")
-EMBEDDING_README = Path("examples/current/embedding/README.md")
-C_ABI_DRAFT = Path("docs/learn/v3_0_c_abi_draft.md")
-ZERO_COPY_DOC = Path("docs/learn/v3_0_zero_copy_interop_contract.md")
+EXAMPLE = Path("docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_cuda_buffer_metadata_client.py")
+STAGING_CONTRACT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md")
+EMBEDDING_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
+C_ABI_DRAFT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
+ZERO_COPY_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_zero_copy_interop_contract.md")
 EXPECTED_OUTPUT = "python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument"
 
 

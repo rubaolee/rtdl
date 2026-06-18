@@ -11,8 +11,8 @@ PACKET = ROOT / "docs/reports/goal4595_v3_0_m196_c_abi_prefix_stage_2026-06-17.j
 REPORT = ROOT / "docs/reports/goal4595_v3_0_m196_c_abi_prefix_stage_2026-06-17.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 MAKEFILE = ROOT / "Makefile"
-STAGING_CONTRACT = ROOT / "docs/learn/v3_0_c_abi_staging_contract.md"
-EMBEDDING_README = ROOT / "examples/current/embedding/README.md"
+STAGING_CONTRACT = ROOT / "docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md"
+EMBEDDING_README = ROOT / "docs/history/v4_preparatory_embedding/examples/embedding/README.md"
 
 
 class Goal4595V30M196CAbiPrefixStageTest(unittest.TestCase):

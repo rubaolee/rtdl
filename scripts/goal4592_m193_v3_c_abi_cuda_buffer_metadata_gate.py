@@ -23,13 +23,13 @@ PACKET_VERSION = "rtdl.v3_0.c_abi_cuda_buffer_metadata.goal4592.v1"
 OUT_JSON = Path("docs/reports/goal4592_v3_0_m193_c_abi_cuda_buffer_metadata_gate_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4592_v3_0_m193_c_abi_cuda_buffer_metadata_gate_2026-06-17.md")
 SOURCE_FILE = Path("src/native/rtdl_c_api.cpp")
-C_ABI_DOC = Path("docs/learn/v3_0_c_abi_draft.md")
-ZERO_COPY_DOC = Path("docs/learn/v3_0_zero_copy_interop_contract.md")
-OWNERSHIP_DOC = Path("docs/learn/v3_0_c_abi_ownership_threading_contract.md")
-STAGING_CONTRACT = Path("docs/learn/v3_0_c_abi_staging_contract.md")
-EMBEDDING_README = Path("examples/current/embedding/README.md")
+C_ABI_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
+ZERO_COPY_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_zero_copy_interop_contract.md")
+OWNERSHIP_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_ownership_threading_contract.md")
+STAGING_CONTRACT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md")
+EMBEDDING_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
 MAKEFILE = Path("Makefile")
-EXAMPLE = Path("examples/current/embedding/c_api_cuda_buffer_metadata_client.c")
+EXAMPLE = Path("docs/history/v4_preparatory_embedding/examples/embedding/c_api_cuda_buffer_metadata_client.c")
 CASE_MARKERS = (
     "cuda_buffer_metadata_roundtrip_ok",
     "cuda_query_route_rejected",

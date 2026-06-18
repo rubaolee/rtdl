@@ -9,7 +9,7 @@ import re
 PACKET_VERSION = "rtdl.v3_0.embeddability_architecture_status_refresh.goal4590.v1"
 OUT_JSON = Path("docs/reports/goal4590_v3_0_m191_embeddability_architecture_status_refresh_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4590_v3_0_m191_embeddability_architecture_status_refresh_2026-06-17.md")
-ARCHITECTURE_DOC = Path("docs/learn/v3_0_embeddability_architecture_strategy.md")
+ARCHITECTURE_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md")
 SHIPPING_REFRESH = Path("docs/reports/goal4589_v3_0_m190_embeddability_shipping_readiness_refresh_2026-06-17.json")
 
 

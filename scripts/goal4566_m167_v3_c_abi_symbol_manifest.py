@@ -10,11 +10,11 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.c_abi_symbol_manifest.goal4566.v1"
 OUT_JSON = Path("docs/reports/goal4566_v3_0_m167_c_abi_symbol_manifest_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4566_v3_0_m167_c_abi_symbol_manifest_2026-06-17.md")
-MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json")
+MANIFEST = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json")
 HEADER = Path("include/rtdl/rtdl.h")
 GOAL4556 = Path("docs/reports/goal4556_v3_0_m157_c_abi_exported_symbol_audit_2026-06-17.json")
-POLICY = Path("docs/learn/v3_0_c_abi_stability_policy.md")
-C_ABI_DRAFT = Path("docs/learn/v3_0_c_abi_draft.md")
+POLICY = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_stability_policy.md")
+C_ABI_DRAFT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
 
 
 def _header_symbols(header: str) -> tuple[str, ...]:

@@ -33,7 +33,7 @@ future RTDL paths have a strict equality oracle.
 ## Why This Was Studied
 
 The earlier RTXRMQ paper maps RMQ to ray-triangle closest-hit. GPU-RMQ is more
-interesting for RTDL v2.x because it is not only a closest-hit trick: it is a
+interesting for current RTDL design pressure because it is not only a closest-hit trick: it is a
 hierarchical/hybrid approach that uses compact summaries and selects between
 CUDA-core-style scans and RT-core-style traversal at different levels.
 

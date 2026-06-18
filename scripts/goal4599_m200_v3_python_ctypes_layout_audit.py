@@ -15,9 +15,9 @@ PACKET_VERSION = "rtdl.v3_0.python_ctypes_layout_audit.goal4599.v1"
 OUT_JSON = Path("docs/reports/goal4599_v3_0_m200_python_ctypes_layout_audit_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4599_v3_0_m200_python_ctypes_layout_audit_2026-06-17.md")
 HEADER = Path("include/rtdl/rtdl.h")
-STABILITY_POLICY = Path("docs/learn/v3_0_c_abi_stability_policy.md")
-PYTHON_AABB2_EXAMPLE = Path("examples/current/embedding/python_ctypes_aabb2_query_client.py")
-PYTHON_CUDA_EXAMPLE = Path("examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py")
+STABILITY_POLICY = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_stability_policy.md")
+PYTHON_AABB2_EXAMPLE = Path("docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_aabb2_query_client.py")
+PYTHON_CUDA_EXAMPLE = Path("docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_cuda_buffer_metadata_client.py")
 LAYOUT_TYPES = {
     "rtdl_external_runtime": ("RtdlExternalRuntime", ("device_type", "device_id", "context", "stream", "user_data")),
     "rtdl_buffer_view": (

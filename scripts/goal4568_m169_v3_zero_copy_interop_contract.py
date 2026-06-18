@@ -14,9 +14,9 @@ from rtdsl.neutral_buffer_seam import (
 PACKET_VERSION = "rtdl.v3_0.zero_copy_interop_contract.goal4568.v1"
 OUT_JSON = Path("docs/reports/goal4568_v3_0_m169_zero_copy_interop_contract_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4568_v3_0_m169_zero_copy_interop_contract_2026-06-17.md")
-DOC = Path("docs/learn/v3_0_zero_copy_interop_contract.md")
-EMBEDDABILITY = Path("docs/learn/v3_0_embeddability_architecture_strategy.md")
-LEARN_README = Path("docs/learn/README.md")
+DOC = Path("docs/history/v4_preparatory_embedding/v3_0_zero_copy_interop_contract.md")
+EMBEDDABILITY = Path("docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md")
+LEARN_README = Path("docs/history/v4_preparatory_embedding/README.md")
 SEAM = Path("src/rtdsl/neutral_buffer_seam.py")
 
 
@@ -99,7 +99,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         and "does not validate CUDA pointer" in doc
         and "ownership" in doc,
         "embeddability_links_zero_copy_contract": "V3.0 Zero-Copy Interop Contract" in embeddability,
-        "learn_readme_links_zero_copy_contract": "V3.0 Zero-Copy Interop Contract" in learn,
+        "history_archive_links_zero_copy_contract": "V3.0 Zero-Copy Interop Contract" in learn,
         "seam_keeps_native_device_output_unpromoted": "native_device_output_promotion_ready" in seam
         and "return False" in seam,
     }

@@ -9,7 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4593_v3_0_m194_python_ctypes_cuda_metadata_bridge_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4593_v3_0_m194_python_ctypes_cuda_metadata_bridge_2026-06-17.md"
-EXAMPLE = ROOT / "examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py"
+EXAMPLE = ROOT / "docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_cuda_buffer_metadata_client.py"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

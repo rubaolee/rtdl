@@ -7,9 +7,10 @@ and the release-report archive.
 
 ## Current Status
 
-RTDL v2.10 is the current source-tree
-Python+partner+RTDL surface. It preserves the v2.x language boundary and adds
-clear user-chosen partner guidance for CuPy and Numba continuations.
+RTDL v3.0 is the current source-tree Python+partner+RTDL surface. It closes
+the ten-app benchmark-route matrix, keeps native engines app-agnostic, and
+uses explicit user-chosen partner guidance for NumPy, CuPy, and Numba
+continuations.
 
 ## The User Contract
 
@@ -54,7 +55,7 @@ the workload, backend, partner, hardware, command shape, and artifact.
 
 ## Partner Architecture
 
-The v2.10 partner design is protocol first and primitive first:
+The V3.0 partner design is protocol first and primitive first:
 
 ```text
 Use a fused generic native RTDL primitive when it exactly expresses the work.
@@ -82,7 +83,8 @@ Examples of valid V3.0-facing output contracts:
 
 The streaming witness-column contract is important because it avoids turning
 large witness tables into Python dictionaries. The convenience Python row-table
-contract remains available where documented, but it is not the fast v2.x shape.
+contract remains available where documented, but it is not the compact V3.0
+performance-oriented shape.
 
 ## What Stays Outside RTDL
 
@@ -91,9 +93,9 @@ general CuPy/Numba optimizer. Users may call those systems from
 Python, but user-written kernels remain application code unless RTDL ships and
 reviews that exact generic contract.
 
-Full residency-first, partner-neutral device-memory composition remains future
-roadmap work. v2.10 has selective reduced-transfer/device-resident evidence for
-specific paths, not a general zero-copy product guarantee.
+Full residency-first, partner-neutral device-memory composition remains V4.0
+scope. V3.0 has selective reduced-transfer/device-resident evidence for
+specific benchmark paths, not a general zero-copy product guarantee.
 
 ## Read Next
 

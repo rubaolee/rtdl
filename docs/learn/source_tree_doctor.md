@@ -72,10 +72,11 @@ PYTHONPATH=src:. python scripts/run_test_matrix.py --group v3_current
   `make stage-c-api-prefix`, or `make package-c-api-stage`, and it does not run
   CMake.
 - `PASS` on `V4 preparatory C ABI docs` means the draft, stability,
-  ownership/threading, symbol-manifest, zero-copy, toolchain support,
-  binding/device interop matrix, and Learn README C ABI links are present as
-  V4.0 preparatory documentation. It does not freeze the ABI, validate runtime
-  behavior, or make embedding part of V3.0.
+  ownership/threading, symbol-manifest, zero-copy, toolchain support, and
+  binding/device interop matrix are preserved under
+  `docs/history/v4_preparatory_embedding/` with explicit V4.0 scope wording. It
+  does not freeze the ABI, validate runtime behavior, or make embedding part of
+  V3.0.
 - Missing CuPy affects CUDA-array partner examples.
 - Missing Numba affects Python-source custom CUDA-style continuation examples.
 - Missing `RTDL_OPTIX_LIBRARY` affects OptiX examples, not portable CPU

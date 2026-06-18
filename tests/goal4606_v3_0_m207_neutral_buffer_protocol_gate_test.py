@@ -9,7 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4606_v3_0_m207_neutral_buffer_protocol_gate_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4606_v3_0_m207_neutral_buffer_protocol_gate_2026-06-17.md"
-MATRIX_DOC = ROOT / "docs/learn/v3_0_binding_and_device_interop_matrix.md"
+MATRIX_DOC = ROOT / "docs/history/v4_preparatory_embedding/v3_0_binding_and_device_interop_matrix.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

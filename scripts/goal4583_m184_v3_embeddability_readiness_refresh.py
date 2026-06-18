@@ -9,11 +9,11 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.embeddability_readiness_refresh.goal4583.v1"
 OUT_JSON = Path("docs/reports/goal4583_v3_0_m184_embeddability_readiness_refresh_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4583_v3_0_m184_embeddability_readiness_refresh_2026-06-17.md")
-MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json")
-STABILITY = Path("docs/learn/v3_0_c_abi_stability_policy.md")
-C_ABI_DRAFT = Path("docs/learn/v3_0_c_abi_draft.md")
-STAGING = Path("docs/learn/v3_0_c_abi_staging_contract.md")
-EMBEDDING_README = Path("examples/current/embedding/README.md")
+MANIFEST = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json")
+STABILITY = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_stability_policy.md")
+C_ABI_DRAFT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
+STAGING = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md")
+EMBEDDING_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
 REPORTS = {
     "m181_readiness": Path("docs/reports/goal4580_v3_0_m181_embeddability_readiness_packet_2026-06-17.json"),
     "python_ctypes_lifecycle": Path("docs/reports/goal4581_v3_0_m182_c_abi_python_ctypes_example_2026-06-17.json"),

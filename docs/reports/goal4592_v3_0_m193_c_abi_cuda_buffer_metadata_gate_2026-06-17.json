@@ -33,7 +33,7 @@
         "-std=c11",
         "-I",
         "include",
-        "examples/current/embedding/c_api_cuda_buffer_metadata_client.c",
+        "docs/history/v4_preparatory_embedding/examples/embedding/c_api_cuda_buffer_metadata_client.c",
         "-L",
         "/tmp/tmp3jf8y_tb",
         "-lrtdl_c_api",

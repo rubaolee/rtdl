@@ -23,9 +23,9 @@ OUT_JSON = Path("docs/reports/goal4611_v3_0_m212_c_abi_last_error_diagnostics_sm
 OUT_REPORT = Path("docs/reports/goal4611_v3_0_m212_c_abi_last_error_diagnostics_smoke_2026-06-17.md")
 HEADER = Path("include/rtdl/rtdl.h")
 SOURCE_FILE = Path("src/native/rtdl_c_api.cpp")
-OWNERSHIP_DOC = Path("docs/learn/v3_0_c_abi_ownership_threading_contract.md")
-ARCHITECTURE_DOC = Path("docs/learn/v3_0_embeddability_architecture_strategy.md")
-BINDING_MATRIX = Path("docs/learn/v3_0_binding_and_device_interop_matrix.md")
+OWNERSHIP_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_ownership_threading_contract.md")
+ARCHITECTURE_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md")
+BINDING_MATRIX = Path("docs/history/v4_preparatory_embedding/v3_0_binding_and_device_interop_matrix.md")
 BENCHMARK_INDEX = Path("docs/learn/benchmark_evidence_index.md")
 CASE_MARKERS = (
     "status_strings_stable",

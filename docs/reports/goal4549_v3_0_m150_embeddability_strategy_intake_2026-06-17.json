@@ -19,7 +19,7 @@
   },
   "conclusion": "Goal4549 intakes the independent V3 embeddability strategy as a tracked learn-tree design input. The doc is useful because it prioritizes a stable C ABI and zero-copy framework interop before optional device-callable fusion, but it remains guidance rather than an implemented or released V3 contract.",
   "date": "2026-06-17",
-  "document": "docs/learn/v3_0_embeddability_architecture_strategy.md",
+  "document": "docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md",
   "failed_checks": [],
   "goal": "Goal4549 / V3 M150",
   "status": "embeddability_strategy_intake_checked",

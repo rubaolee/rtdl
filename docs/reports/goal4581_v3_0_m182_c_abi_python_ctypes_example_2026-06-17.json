@@ -76,11 +76,11 @@
           "cp include/rtdl/rtdl.h build/c_api_stage/include/rtdl/rtdl.h",
           "cp build/librtdl_c_api.so build/c_api_stage/lib/librtdl_c_api.so",
           "cp packaging/rtdl-c-api.pc build/c_api_stage/lib/pkgconfig/rtdl-c-api.pc",
-          "cp docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json build/c_api_stage/share/rtdl/v3_0_c_abi_symbol_manifest.json",
-          "cp examples/current/embedding/README.md build/c_api_stage/share/rtdl/README.md",
-          "cp examples/current/embedding/c_api_aabb2_overlap_client.c build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
-          "cp examples/current/embedding/c_api_direct_link_client.c build/c_api_stage/examples/c_api_direct_link_client.c",
-          "cp examples/current/embedding/python_ctypes_client.py build/c_api_stage/examples/python_ctypes_client.py"
+          "cp docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json build/c_api_stage/share/rtdl/v3_0_c_abi_symbol_manifest.json",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/README.md build/c_api_stage/share/rtdl/README.md",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_aabb2_overlap_client.c build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_direct_link_client.c build/c_api_stage/examples/c_api_direct_link_client.c",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_client.py build/c_api_stage/examples/python_ctypes_client.py"
         ]
       },
       "ok": true,

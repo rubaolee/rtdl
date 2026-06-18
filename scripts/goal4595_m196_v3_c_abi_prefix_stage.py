@@ -16,8 +16,8 @@ OUT_JSON = Path("docs/reports/goal4595_v3_0_m196_c_abi_prefix_stage_2026-06-17.j
 OUT_REPORT = Path("docs/reports/goal4595_v3_0_m196_c_abi_prefix_stage_2026-06-17.md")
 MAKEFILE = Path("Makefile")
 PKG_CONFIG_TEMPLATE = Path("packaging/rtdl-c-api.pc")
-STAGING_CONTRACT = Path("docs/learn/v3_0_c_abi_staging_contract.md")
-EMBEDDING_README = Path("examples/current/embedding/README.md")
+STAGING_CONTRACT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md")
+EMBEDDING_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
 DEFAULT_TEST_PREFIX = "/opt/rtdl"
 
 

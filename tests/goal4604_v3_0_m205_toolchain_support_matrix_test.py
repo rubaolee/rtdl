@@ -9,8 +9,8 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4604_v3_0_m205_toolchain_support_matrix_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4604_v3_0_m205_toolchain_support_matrix_2026-06-17.md"
-TOOLCHAIN_DOC = ROOT / "docs/learn/v3_0_toolchain_support_matrix.md"
-LEARN_README = ROOT / "docs/learn/README.md"
+TOOLCHAIN_DOC = ROOT / "docs/history/v4_preparatory_embedding/v3_0_toolchain_support_matrix.md"
+LEARN_README = ROOT / "docs/history/v4_preparatory_embedding/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

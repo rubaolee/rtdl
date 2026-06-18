@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4599_v3_0_m200_python_ctypes_layout_audit_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4599_v3_0_m200_python_ctypes_layout_audit_2026-06-17.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
-POLICY = ROOT / "docs/learn/v3_0_c_abi_stability_policy.md"
+POLICY = ROOT / "docs/history/v4_preparatory_embedding/v3_0_c_abi_stability_policy.md"
 
 
 class Goal4599V30M200PythonCtypesLayoutAuditTest(unittest.TestCase):

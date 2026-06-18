@@ -9,8 +9,8 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4602_v3_0_m203_c_abi_archive_cmake_smoke_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4602_v3_0_m203_c_abi_archive_cmake_smoke_2026-06-17.md"
-STAGING_CONTRACT = ROOT / "docs/learn/v3_0_c_abi_staging_contract.md"
-EMBEDDING_README = ROOT / "examples/current/embedding/README.md"
+STAGING_CONTRACT = ROOT / "docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md"
+EMBEDDING_README = ROOT / "docs/history/v4_preparatory_embedding/examples/embedding/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

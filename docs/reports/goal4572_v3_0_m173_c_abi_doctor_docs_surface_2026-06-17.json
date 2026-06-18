@@ -171,12 +171,12 @@
   "failed_checks": [],
   "goal": "Goal4572 / V3 M173",
   "required_docs": {
-    "docs/learn/v3_0_c_abi_draft.md": true,
-    "docs/learn/v3_0_c_abi_ownership_threading_contract.md": true,
-    "docs/learn/v3_0_c_abi_stability_policy.md": true,
-    "docs/learn/v3_0_c_abi_staging_contract.md": true,
-    "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json": true,
-    "docs/learn/v3_0_zero_copy_interop_contract.md": true
+    "docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md": true,
+    "docs/history/v4_preparatory_embedding/v3_0_c_abi_ownership_threading_contract.md": true,
+    "docs/history/v4_preparatory_embedding/v3_0_c_abi_stability_policy.md": true,
+    "docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md": true,
+    "docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json": true,
+    "docs/history/v4_preparatory_embedding/v3_0_zero_copy_interop_contract.md": true
   },
   "status": "c_abi_doctor_docs_surface_checked",
   "version": "rtdl.v3_0.c_abi_doctor_docs_surface.goal4572.v1"

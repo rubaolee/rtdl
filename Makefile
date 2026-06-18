@@ -162,7 +162,7 @@ C_API_PREFIX_STAGE_ROOT ?= $(BUILD_DIR)/c_api_prefix_stage
 C_API_PREFIX ?= /usr/local
 C_API_STAGE_ARCHIVE_ROOT := rtdl-c-api-stage-0.1.3
 C_API_STAGE_ARCHIVE ?= $(BUILD_DIR)/$(C_API_STAGE_ARCHIVE_ROOT).tar.gz
-C_API_STAGE_MANIFEST := docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json
+C_API_STAGE_MANIFEST := docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json
 C_API_PKG_CONFIG := packaging/rtdl-c-api.pc
 C_API_CMAKE_CONFIG := packaging/rtdl-c-api-config.cmake
 
@@ -224,16 +224,16 @@ stage-c-api: build-c-api
 	cp $(C_API_PKG_CONFIG) $(C_API_STAGE_DIR)/lib/pkgconfig/rtdl-c-api.pc
 	cp $(C_API_CMAKE_CONFIG) $(C_API_STAGE_DIR)/lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake
 	cp $(C_API_STAGE_MANIFEST) $(C_API_STAGE_DIR)/share/rtdl/v3_0_c_abi_symbol_manifest.json
-	cp examples/current/embedding/README.md $(C_API_STAGE_DIR)/share/rtdl/README.md
-	cp examples/current/embedding/c_api_aabb2_overlap_client.c $(C_API_STAGE_DIR)/examples/c_api_aabb2_overlap_client.c
-	cp examples/current/embedding/c_api_direct_link_client.c $(C_API_STAGE_DIR)/examples/c_api_direct_link_client.c
-	cp examples/current/embedding/c_api_host_runtime_client.c $(C_API_STAGE_DIR)/examples/c_api_host_runtime_client.c
-	cp examples/current/embedding/c_api_cuda_buffer_metadata_client.c $(C_API_STAGE_DIR)/examples/c_api_cuda_buffer_metadata_client.c
-	cp examples/current/embedding/c_api_last_error_client.c $(C_API_STAGE_DIR)/examples/c_api_last_error_client.c
-	cp examples/current/embedding/python_ctypes_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_client.py
-	cp examples/current/embedding/python_ctypes_aabb2_query_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_aabb2_query_client.py
-	cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_cuda_buffer_metadata_client.py
-	cp examples/current/embedding/python_ctypes_dlpack_like_metadata_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_dlpack_like_metadata_client.py
+	cp docs/history/v4_preparatory_embedding/examples/embedding/README.md $(C_API_STAGE_DIR)/share/rtdl/README.md
+	cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_aabb2_overlap_client.c $(C_API_STAGE_DIR)/examples/c_api_aabb2_overlap_client.c
+	cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_direct_link_client.c $(C_API_STAGE_DIR)/examples/c_api_direct_link_client.c
+	cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_host_runtime_client.c $(C_API_STAGE_DIR)/examples/c_api_host_runtime_client.c
+	cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_cuda_buffer_metadata_client.c $(C_API_STAGE_DIR)/examples/c_api_cuda_buffer_metadata_client.c
+	cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_last_error_client.c $(C_API_STAGE_DIR)/examples/c_api_last_error_client.c
+	cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_client.py
+	cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_aabb2_query_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_aabb2_query_client.py
+	cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_cuda_buffer_metadata_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_cuda_buffer_metadata_client.py
+	cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_dlpack_like_metadata_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_dlpack_like_metadata_client.py
 
 stage-c-api-prefix: build-c-api
 	rm -rf $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)
@@ -243,16 +243,16 @@ stage-c-api-prefix: build-c-api
 	cp $(C_API_PKG_CONFIG) $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/lib/pkgconfig/rtdl-c-api.pc
 	cp $(C_API_CMAKE_CONFIG) $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake
 	cp $(C_API_STAGE_MANIFEST) $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/v3_0_c_abi_symbol_manifest.json
-	cp examples/current/embedding/README.md $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/README.md
-	cp examples/current/embedding/c_api_aabb2_overlap_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_aabb2_overlap_client.c
-	cp examples/current/embedding/c_api_direct_link_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_direct_link_client.c
-	cp examples/current/embedding/c_api_host_runtime_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_host_runtime_client.c
-	cp examples/current/embedding/c_api_cuda_buffer_metadata_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_cuda_buffer_metadata_client.c
-	cp examples/current/embedding/c_api_last_error_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_last_error_client.c
-	cp examples/current/embedding/python_ctypes_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_client.py
-	cp examples/current/embedding/python_ctypes_aabb2_query_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_aabb2_query_client.py
-	cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_cuda_buffer_metadata_client.py
-	cp examples/current/embedding/python_ctypes_dlpack_like_metadata_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_dlpack_like_metadata_client.py
+	cp docs/history/v4_preparatory_embedding/examples/embedding/README.md $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/README.md
+	cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_aabb2_overlap_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_aabb2_overlap_client.c
+	cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_direct_link_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_direct_link_client.c
+	cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_host_runtime_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_host_runtime_client.c
+	cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_cuda_buffer_metadata_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_cuda_buffer_metadata_client.c
+	cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_last_error_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_last_error_client.c
+	cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_client.py
+	cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_aabb2_query_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_aabb2_query_client.py
+	cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_cuda_buffer_metadata_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_cuda_buffer_metadata_client.py
+	cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_dlpack_like_metadata_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_dlpack_like_metadata_client.py
 
 package-c-api-stage: stage-c-api
 	rm -rf $(BUILD_DIR)/$(C_API_STAGE_ARCHIVE_ROOT)

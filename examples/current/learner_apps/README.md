@@ -1,4 +1,4 @@
-# RTDL v2.x Learner Apps
+# RTDL v3.0 Learner Apps
 
 This directory is for runnable app-scale examples that are useful for learning,
 design pressure, or negative benchmark decisions, but are not promoted benchmark

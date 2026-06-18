@@ -14,8 +14,8 @@ OUT_JSON = Path("docs/reports/goal4614_v3_0_m215_current_scope_completion_gate_2
 OUT_REPORT = Path("docs/reports/goal4614_v3_0_m215_current_scope_completion_gate_2026-06-18.md")
 
 APP_AUTHOR_DOC = Path("docs/learn/v3_0_app_author_implementation_strategy.md")
-EMBEDDABILITY_DOC = Path("docs/learn/v3_0_embeddability_architecture_strategy.md")
-BINDING_MATRIX_DOC = Path("docs/learn/v3_0_binding_and_device_interop_matrix.md")
+EMBEDDABILITY_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md")
+BINDING_MATRIX_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_binding_and_device_interop_matrix.md")
 EVIDENCE_INDEX = Path("docs/learn/benchmark_evidence_index.md")
 
 V4_DEFERRALS: tuple[dict[str, str], ...] = (

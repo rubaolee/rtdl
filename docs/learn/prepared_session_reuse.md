@@ -1,6 +1,6 @@
 # Prepared Session Reuse
 
-RTDL v2.10 supports an explicit prepared-session reuse pattern for workloads
+RTDL v3.0 supports an explicit prepared-session reuse pattern for workloads
 where setup is expensive and repeated hot queries are small.
 
 The short version:

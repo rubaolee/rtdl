@@ -8,7 +8,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 HEADER = ROOT / "include/rtdl/rtdl.h"
-DOC = ROOT / "docs/learn/v3_0_c_abi_draft.md"
+DOC = ROOT / "docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md"
 PACKET = ROOT / "docs/reports/goal4550_v3_0_m151_c_abi_draft_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4550_v3_0_m151_c_abi_draft_2026-06-17.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"

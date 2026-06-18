@@ -38,7 +38,7 @@ reductions.
 Python remains the control plane. The hot data plane should be RTDL engine work
 or partner-side array work.
 
-That rule is why v2.x allows CuPy/Numba continuation and CuPy RawKernel app
+That rule is why V3.0 allows CuPy/Numba continuation and CuPy RawKernel app
 code, while still keeping the native RTDL engine app-agnostic. User-authored
 partner kernels are allowed app code; app-customized native engine entry points
 are not.

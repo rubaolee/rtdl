@@ -169,6 +169,7 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
     ),
     "v3_release": (
         "tests.v3_0_release_publication_test",
+        "tests.v3_0_user_docs_history_boundary_test",
     ),
     "v0_2_local": (
         "tests.goal110_baseline_runner_backend_test",

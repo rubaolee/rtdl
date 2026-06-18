@@ -77,7 +77,7 @@ class V30ReleasePublicationTest(unittest.TestCase):
             )
         )
         self.assertIn("V4.0 scope", combined)
-        self.assertIn("not V3.0 release scope", (ROOT / "docs/learn/v3_0_c_abi_draft.md").read_text(encoding="utf-8"))
+        self.assertIn("not V3.0 release scope", (ROOT / "docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md").read_text(encoding="utf-8"))
         self.assertNotIn("ships the current C ABI handoff surface", combined)
         self.assertNotIn("C ABI handoff surface", combined)
 

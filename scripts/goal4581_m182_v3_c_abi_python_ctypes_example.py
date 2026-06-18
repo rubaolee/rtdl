@@ -15,10 +15,10 @@ PACKET_VERSION = "rtdl.v3_0.c_abi_python_ctypes_example.goal4581.v1"
 OUT_JSON = Path("docs/reports/goal4581_v3_0_m182_c_abi_python_ctypes_example_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4581_v3_0_m182_c_abi_python_ctypes_example_2026-06-17.md")
 MAKEFILE = Path("Makefile")
-EXAMPLE = Path("examples/current/embedding/python_ctypes_client.py")
-STAGING_CONTRACT = Path("docs/learn/v3_0_c_abi_staging_contract.md")
-EMBEDDING_README = Path("examples/current/embedding/README.md")
-C_ABI_DRAFT = Path("docs/learn/v3_0_c_abi_draft.md")
+EXAMPLE = Path("docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_client.py")
+STAGING_CONTRACT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md")
+EMBEDDING_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
+C_ABI_DRAFT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
 
 
 def _shared_suffix() -> str:

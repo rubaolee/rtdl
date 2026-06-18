@@ -96,7 +96,7 @@ Use slower-than-Embree results to decide the next architecture step:
 
 ## Partner Continuation Rule
 
-v2.x treats partner compute as part of the user-visible programming model:
+V3.0 treats partner compute as part of the user-visible programming model:
 
 ```text
 Python owns the app.
@@ -104,7 +104,7 @@ RTDL owns app-agnostic RT-shaped traversal.
 The partner owns tensor/vector/GPU continuation when the app asks for it.
 ```
 
-That means a v2.x app may use NumPy, CuPy, Numba, or user-controlled extension
+That means a V3.0 app may use NumPy, CuPy, Numba, or user-controlled extension
 code around RTDL. Those choices can be valid app implementations, but public
 claims must say exactly which layer produced the speedup.
 

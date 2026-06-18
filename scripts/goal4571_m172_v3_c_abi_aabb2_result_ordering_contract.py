@@ -22,8 +22,8 @@ from scripts.goal4553_m154_v3_c_abi_c_client_smoke import (
 PACKET_VERSION = "rtdl.v3_0.c_abi_aabb2_result_ordering.goal4571.v1"
 OUT_JSON = Path("docs/reports/goal4571_v3_0_m172_c_abi_aabb2_result_ordering_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4571_v3_0_m172_c_abi_aabb2_result_ordering_2026-06-17.md")
-C_ABI_DOC = Path("docs/learn/v3_0_c_abi_draft.md")
-EXAMPLE_README = Path("examples/current/embedding/README.md")
+C_ABI_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
+EXAMPLE_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
 INDEX = Path("docs/learn/benchmark_evidence_index.md")
 CASE_MARKERS = (
     "multi_hit_rows_query_then_primitive_order",

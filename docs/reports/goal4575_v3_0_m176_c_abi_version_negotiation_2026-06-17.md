@@ -9,8 +9,8 @@ Goal4575 adds a draft C ABI version-negotiation guard. Clients can call `rtdl_ab
 ## Version Surface
 
 - Current ABI: `0.1.3`
-- Current manifest: `docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json`
-- Previous manifest: `docs/learn/v3_0_c_abi_symbol_manifest_v0_1_1.json`
+- Current manifest: `docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json`
+- Previous manifest: `docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_1.json`
 
 ## Checks
 

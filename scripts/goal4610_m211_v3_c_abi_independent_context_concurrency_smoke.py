@@ -27,9 +27,9 @@ OUT_REPORT = Path(
 )
 HEADER = Path("include/rtdl/rtdl.h")
 SOURCE_FILE = Path("src/native/rtdl_c_api.cpp")
-OWNERSHIP_DOC = Path("docs/learn/v3_0_c_abi_ownership_threading_contract.md")
-ARCHITECTURE_DOC = Path("docs/learn/v3_0_embeddability_architecture_strategy.md")
-BINDING_MATRIX = Path("docs/learn/v3_0_binding_and_device_interop_matrix.md")
+OWNERSHIP_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_ownership_threading_contract.md")
+ARCHITECTURE_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md")
+BINDING_MATRIX = Path("docs/history/v4_preparatory_embedding/v3_0_binding_and_device_interop_matrix.md")
 BENCHMARK_INDEX = Path("docs/learn/benchmark_evidence_index.md")
 THREAD_COUNT = 8
 ITERATIONS_PER_THREAD = 64

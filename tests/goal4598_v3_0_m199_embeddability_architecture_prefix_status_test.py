@@ -9,7 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4598_v3_0_m199_embeddability_architecture_prefix_status_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4598_v3_0_m199_embeddability_architecture_prefix_status_2026-06-17.md"
-ARCHITECTURE_DOC = ROOT / "docs/learn/v3_0_embeddability_architecture_strategy.md"
+ARCHITECTURE_DOC = ROOT / "docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

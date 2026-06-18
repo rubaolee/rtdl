@@ -9,9 +9,9 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.c_abi_aabb2_contract_doc.goal4561.v1"
 OUT_JSON = Path("docs/reports/goal4561_v3_0_m162_c_abi_aabb2_contract_doc_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4561_v3_0_m162_c_abi_aabb2_contract_doc_2026-06-17.md")
-C_ABI_DOC = Path("docs/learn/v3_0_c_abi_draft.md")
-EXAMPLE_README = Path("examples/current/embedding/README.md")
-EXAMPLE = Path("examples/current/embedding/c_api_aabb2_overlap_client.c")
+C_ABI_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
+EXAMPLE_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
+EXAMPLE = Path("docs/history/v4_preparatory_embedding/examples/embedding/c_api_aabb2_overlap_client.c")
 
 
 def build_packet(root: Path = Path(".")) -> dict[str, Any]:

@@ -9,8 +9,8 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4582_v3_0_m183_c_abi_python_ctypes_aabb2_query_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4582_v3_0_m183_c_abi_python_ctypes_aabb2_query_2026-06-17.md"
-EXAMPLE = ROOT / "examples/current/embedding/python_ctypes_aabb2_query_client.py"
-STAGING_DOC = ROOT / "docs/learn/v3_0_c_abi_staging_contract.md"
+EXAMPLE = ROOT / "docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_aabb2_query_client.py"
+STAGING_DOC = ROOT / "docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

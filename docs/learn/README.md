@@ -50,25 +50,9 @@ For backend and performance boundaries, read:
 - [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
 - [RT-Core Evidence Matrix](rt_core_evidence_matrix.md)
 
-## V4 Preparatory Embedding Docs
+## History Boundary
 
-These files remain in the repository as historical or preparatory material.
-They are not part of the V3.0 release scope, V3.0 completion criteria, or V3.0
-success claims:
-
-- [V3.0 Embeddability Architecture Strategy](v3_0_embeddability_architecture_strategy.md)
-- [V3.0 C ABI Draft](v3_0_c_abi_draft.md)
-- [V3.0 C ABI Stability Policy](v3_0_c_abi_stability_policy.md)
-- [V3.0 C ABI Ownership And Threading Contract](v3_0_c_abi_ownership_threading_contract.md)
-- [V3.0 Zero-Copy Interop Contract](v3_0_zero_copy_interop_contract.md)
-- [V3.0 C ABI Staging Contract](v3_0_c_abi_staging_contract.md)
-- [V3.0 Toolchain Support Matrix](v3_0_toolchain_support_matrix.md)
-- [V3.0 Binding And Device Interop Matrix](v3_0_binding_and_device_interop_matrix.md)
-- [C ABI Embedding Examples](../../examples/current/embedding/README.md)
-
-## Historical V2 Snapshot
-
-The V2.14 app-author strategy is preserved as release-history evidence only.
-For current guidance, use the V3.0 path above:
-
-- [v2.14 App-Author Implementation Strategy](v2_14_app_author_implementation_strategy.md)
+This learning path is V3.0-only. Historical release packets, V2 snapshots, and
+V4 preparatory embedding/C ABI material live behind the
+[History Index](../history/README.md) so they cannot override the current user
+surface.

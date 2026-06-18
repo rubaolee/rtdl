@@ -7,7 +7,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-README = ROOT / "examples/current/embedding/README.md"
+README = ROOT / "docs/history/v4_preparatory_embedding/examples/embedding/README.md"
 PACKET = ROOT / "docs/reports/goal4560_v3_0_m161_c_abi_embedding_readme_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4560_v3_0_m161_c_abi_embedding_readme_2026-06-17.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"

@@ -9,10 +9,10 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.embeddability_readiness_packet.goal4580.v1"
 OUT_JSON = Path("docs/reports/goal4580_v3_0_m181_embeddability_readiness_packet_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4580_v3_0_m181_embeddability_readiness_packet_2026-06-17.md")
-MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json")
-STABILITY = Path("docs/learn/v3_0_c_abi_stability_policy.md")
-C_ABI_DRAFT = Path("docs/learn/v3_0_c_abi_draft.md")
-STAGING = Path("docs/learn/v3_0_c_abi_staging_contract.md")
+MANIFEST = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json")
+STABILITY = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_stability_policy.md")
+C_ABI_DRAFT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
+STAGING = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md")
 REPORTS = {
     "header_compile": Path("docs/reports/goal4551_v3_0_m152_c_abi_header_compile_smoke_2026-06-17.json"),
     "stub_library": Path("docs/reports/goal4552_v3_0_m153_c_abi_stub_library_2026-06-17.json"),

@@ -22,7 +22,7 @@ from scripts.goal4553_m154_v3_c_abi_c_client_smoke import (
 PACKET_VERSION = "rtdl.v3_0.c_abi_backend_runtime_fail_closed.goal4573.v1"
 OUT_JSON = Path("docs/reports/goal4573_v3_0_m174_c_abi_backend_runtime_fail_closed_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4573_v3_0_m174_c_abi_backend_runtime_fail_closed_2026-06-17.md")
-C_ABI_DOC = Path("docs/learn/v3_0_c_abi_draft.md")
+C_ABI_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
 HEADER = Path("include/rtdl/rtdl.h")
 CASE_MARKERS = (
     "auto_backend_context_ok",

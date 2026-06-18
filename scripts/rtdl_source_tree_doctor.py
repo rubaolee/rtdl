@@ -88,18 +88,20 @@ def _v3_current_test_matrix_check() -> dict[str, Any]:
 
 
 def _v3_c_abi_surface_check() -> dict[str, Any]:
+    prep = ROOT / "docs" / "history" / "v4_preparatory_embedding"
+    examples = prep / "examples" / "embedding"
     required_files = (
         ROOT / "include" / "rtdl" / "rtdl.h",
         ROOT / "src" / "native" / "rtdl_c_api.cpp",
-        ROOT / "examples" / "current" / "embedding" / "c_api_aabb2_overlap_client.c",
-        ROOT / "examples" / "current" / "embedding" / "c_api_direct_link_client.c",
-        ROOT / "examples" / "current" / "embedding" / "c_api_host_runtime_client.c",
-        ROOT / "examples" / "current" / "embedding" / "c_api_cuda_buffer_metadata_client.c",
-        ROOT / "examples" / "current" / "embedding" / "python_ctypes_client.py",
-        ROOT / "examples" / "current" / "embedding" / "python_ctypes_aabb2_query_client.py",
-        ROOT / "examples" / "current" / "embedding" / "python_ctypes_cuda_buffer_metadata_client.py",
-        ROOT / "examples" / "current" / "embedding" / "python_ctypes_dlpack_like_metadata_client.py",
-        ROOT / "examples" / "current" / "embedding" / "README.md",
+        examples / "c_api_aabb2_overlap_client.c",
+        examples / "c_api_direct_link_client.c",
+        examples / "c_api_host_runtime_client.c",
+        examples / "c_api_cuda_buffer_metadata_client.c",
+        examples / "python_ctypes_client.py",
+        examples / "python_ctypes_aabb2_query_client.py",
+        examples / "python_ctypes_cuda_buffer_metadata_client.py",
+        examples / "python_ctypes_dlpack_like_metadata_client.py",
+        examples / "README.md",
         ROOT / "packaging" / "rtdl-c-api-config.cmake",
     )
     missing = [path.relative_to(ROOT).as_posix() for path in required_files if not path.exists()]
@@ -129,34 +131,32 @@ def _v3_c_abi_surface_check() -> dict[str, Any]:
 
 
 def _v3_c_abi_docs_check() -> dict[str, Any]:
+    prep = ROOT / "docs" / "history" / "v4_preparatory_embedding"
     required_files = (
-        ROOT / "docs" / "learn" / "v3_0_c_abi_draft.md",
-        ROOT / "docs" / "learn" / "v3_0_c_abi_stability_policy.md",
-        ROOT / "docs" / "learn" / "v3_0_c_abi_ownership_threading_contract.md",
-        ROOT / "docs" / "learn" / "v3_0_c_abi_staging_contract.md",
-        ROOT / "docs" / "learn" / "v3_0_c_abi_symbol_manifest_v0_1_3.json",
-        ROOT / "docs" / "learn" / "v3_0_zero_copy_interop_contract.md",
-        ROOT / "docs" / "learn" / "v3_0_toolchain_support_matrix.md",
-        ROOT / "docs" / "learn" / "v3_0_binding_and_device_interop_matrix.md",
+        prep / "v3_0_c_abi_draft.md",
+        prep / "v3_0_c_abi_stability_policy.md",
+        prep / "v3_0_c_abi_ownership_threading_contract.md",
+        prep / "v3_0_c_abi_staging_contract.md",
+        prep / "v3_0_c_abi_symbol_manifest_v0_1_3.json",
+        prep / "v3_0_zero_copy_interop_contract.md",
+        prep / "v3_0_toolchain_support_matrix.md",
+        prep / "v3_0_binding_and_device_interop_matrix.md",
     )
     missing = [path.relative_to(ROOT).as_posix() for path in required_files if not path.exists()]
-    learn_readme = ROOT / "docs" / "learn" / "README.md"
-    learn_text = learn_readme.read_text(encoding="utf-8") if learn_readme.exists() else ""
+    history_readme = prep / "README.md"
+    history_text = history_readme.read_text(encoding="utf-8") if history_readme.exists() else ""
     required_links = (
-        "V3.0 C ABI Draft",
-        "V3.0 C ABI Stability Policy",
-        "V3.0 C ABI Ownership And Threading Contract",
-        "V3.0 Zero-Copy Interop Contract",
-        "V3.0 Toolchain Support Matrix",
-        "V3.0 Binding And Device Interop Matrix",
+        "V4 Preparatory Embedding Archive",
+        "V3.0 excludes embedding/SDK/zero-copy work",
+        "do not make V3.0 an SDK or embeddability release",
     )
-    missing_links = [link for link in required_links if link not in learn_text]
+    missing_links = [link for link in required_links if link not in history_text]
     if missing or missing_links:
         detail_parts = []
         if missing:
             detail_parts.append("missing files: " + ", ".join(missing))
         if missing_links:
-            detail_parts.append("missing Learn links: " + ", ".join(missing_links))
+            detail_parts.append("missing history archive wording: " + ", ".join(missing_links))
         return _check(
             "V4 preparatory C ABI docs",
             "warn",

@@ -13,11 +13,11 @@ PACKET_VERSION = "rtdl.v3_0.c_abi_staging_bundle.goal4576.v1"
 OUT_JSON = Path("docs/reports/goal4576_v3_0_m177_c_abi_staging_bundle_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4576_v3_0_m177_c_abi_staging_bundle_2026-06-17.md")
 MAKEFILE = Path("Makefile")
-STAGING_CONTRACT = Path("docs/learn/v3_0_c_abi_staging_contract.md")
-C_ABI_DRAFT = Path("docs/learn/v3_0_c_abi_draft.md")
-LEARN_README = Path("docs/learn/README.md")
-EMBEDDING_README = Path("examples/current/embedding/README.md")
-CURRENT_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json")
+STAGING_CONTRACT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md")
+C_ABI_DRAFT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
+LEARN_README = Path("docs/history/v4_preparatory_embedding/README.md")
+EMBEDDING_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
+CURRENT_MANIFEST = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json")
 
 
 def _shared_suffix() -> str:
@@ -183,15 +183,15 @@ def build_packet(root: Path = Path("."), *, run_make: bool = False) -> dict[str,
                 "include/rtdl/rtdl.h",
                 "$(BUILD_DIR)/$(C_API_LIB_NAME)",
                 "$(C_API_STAGE_MANIFEST)",
-                "examples/current/embedding/README.md",
-                "examples/current/embedding/c_api_aabb2_overlap_client.c",
+                "docs/history/v4_preparatory_embedding/examples/embedding/README.md",
+                "docs/history/v4_preparatory_embedding/examples/embedding/c_api_aabb2_overlap_client.c",
             )
         ),
         "staging_contract_documents_bundle": "build/c_api_stage" in staging_contract
         and "v3_0_c_abi_symbol_manifest_v0_1_3.json" in staging_contract,
         "c_abi_draft_links_staging_contract": "v3_0_c_abi_staging_contract.md" in c_abi
         and "Goal4576" in c_abi,
-        "learn_readme_links_staging_contract": "V3.0 C ABI Staging Contract" in learn,
+        "history_archive_links_staging_contract": "V3.0 C ABI Staging Contract" in learn,
         "embedding_readme_mentions_stage_command": "make stage-c-api" in embedding
         and "build/c_api_stage" in embedding,
         "current_manifest_is_0_1_3": manifest["abi_version"] == "0.1.3",

@@ -7,7 +7,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "examples/current/embedding/c_api_aabb2_overlap_client.c"
+EXAMPLE = ROOT / "docs/history/v4_preparatory_embedding/examples/embedding/c_api_aabb2_overlap_client.c"
 PACKET = ROOT / "docs/reports/goal4559_v3_0_m160_c_abi_example_client_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4559_v3_0_m160_c_abi_example_client_2026-06-17.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"

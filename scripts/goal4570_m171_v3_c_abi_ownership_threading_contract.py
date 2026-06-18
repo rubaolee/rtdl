@@ -22,11 +22,11 @@ from scripts.goal4553_m154_v3_c_abi_c_client_smoke import (
 PACKET_VERSION = "rtdl.v3_0.c_abi_ownership_threading_contract.goal4570.v1"
 OUT_JSON = Path("docs/reports/goal4570_v3_0_m171_c_abi_ownership_threading_contract_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4570_v3_0_m171_c_abi_ownership_threading_contract_2026-06-17.md")
-CONTRACT = Path("docs/learn/v3_0_c_abi_ownership_threading_contract.md")
-C_ABI_DOC = Path("docs/learn/v3_0_c_abi_draft.md")
-STABILITY = Path("docs/learn/v3_0_c_abi_stability_policy.md")
-EXAMPLE_README = Path("examples/current/embedding/README.md")
-LEARN_README = Path("docs/learn/README.md")
+CONTRACT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_ownership_threading_contract.md")
+C_ABI_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
+STABILITY = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_stability_policy.md")
+EXAMPLE_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
+LEARN_README = Path("docs/history/v4_preparatory_embedding/README.md")
 HEADER = Path("include/rtdl/rtdl.h")
 
 CASE_MARKERS = (
@@ -350,7 +350,7 @@ def build_packet(root: Path = Path("."), *, run_compile: bool = False) -> dict[s
         "stability_policy_links_contract": "v3_0_c_abi_ownership_threading_contract.md" in stability,
         "example_readme_updates_imported_buffer_wording": "caller-retained when `release == NULL`" in example_readme
         and "release-callback-owned" in example_readme,
-        "learn_readme_links_contract": "V3.0 C ABI Ownership And Threading Contract" in learn_readme,
+        "history_archive_links_contract": "V3.0 C ABI Ownership And Threading Contract" in learn_readme,
         "header_documents_release_switch": "If release is NULL" in header
         and "calls it exactly once" in header,
         "source_calls_release_on_buffer_destroy": "buffer->view.release(buffer->view.data" in source,

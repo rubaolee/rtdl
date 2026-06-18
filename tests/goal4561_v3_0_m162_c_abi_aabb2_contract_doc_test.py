@@ -7,8 +7,8 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-C_ABI_DOC = ROOT / "docs/learn/v3_0_c_abi_draft.md"
-EXAMPLE_README = ROOT / "examples/current/embedding/README.md"
+C_ABI_DOC = ROOT / "docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md"
+EXAMPLE_README = ROOT / "docs/history/v4_preparatory_embedding/examples/embedding/README.md"
 PACKET = ROOT / "docs/reports/goal4561_v3_0_m162_c_abi_aabb2_contract_doc_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4561_v3_0_m162_c_abi_aabb2_contract_doc_2026-06-17.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"

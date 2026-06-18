@@ -4,7 +4,7 @@ Status: `c_abi_example_client_checked`
 
 ## Conclusion
 
-Goal4559 promotes the C ABI host AABB2 overlap proof into a readable example client under `examples/current/embedding/`. Pod evidence builds `librtdl_c_api`, compiles the C example, runs it, and observes the expected single overlap pair. This is still a source-tree example, not a packaged SDK or OptiX/Embree/device-buffer claim.
+Goal4559 promotes the C ABI host AABB2 overlap proof into a readable example client under `docs/history/v4_preparatory_embedding/examples/embedding/`. Pod evidence builds `librtdl_c_api`, compiles the C example, runs it, and observes the expected single overlap pair. This is still a source-tree example, not a packaged SDK or OptiX/Embree/device-buffer claim.
 
 ## Run Result
 

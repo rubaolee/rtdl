@@ -18,7 +18,7 @@ machine-readable feature source is `rtdsl.engine_feature_support_matrix()`.
 
 ## Current Summary
 
-| Backend | v2.x release position | Public claim boundary |
+| Backend | V3.0 release position | Public claim boundary |
 | --- | --- | --- |
 | CPU reference | Correctness oracle | Useful for parity and debugging, not a speed backend. |
 | Embree | Mature CPU RT backend | The default CPU acceleration baseline for all-thread local testing. |
@@ -49,7 +49,7 @@ after RTDL returns candidates or witnesses.
 - RT-core wording requires a measured OptiX traversal path on RTX hardware.
 - Whole-app speedup wording requires whole-app same-contract evidence.
 - Zero-copy wording requires measured device-resident handoff evidence.
-- CuPy RawKernel usage is allowed in v2.x app code, but it is partner-side user
+- CuPy RawKernel usage is allowed in user app code, but it is partner-side
   code, not a new app-customized RTDL engine primitive.
 - Stale local backend libraries may reject current symbols until rebuilt from
   the current source tree.

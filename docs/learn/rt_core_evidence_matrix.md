@@ -73,15 +73,15 @@ RTDL accelerates all ten benchmark apps on RT cores.
 - [Goal4353 human-scale RT-core vs Embree CPU comparison](../reports/goal4353_human_scale_rt_vs_embree_run_20260612_pod_v3/summary.md)
 - [Goal4354 RayJoin original-code same-stream comparison](../reports/goal4354_rayjoin_original_vs_rtdl_pod/goal4354_rayjoin_original_vs_rtdl_same_stream_summary.md)
 - [Goal4358 v2.12 RTX A4000 RayJoin same-stream packet](../reports/goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13.md)
-- [v2.12 release scoped RT-core vs Embree CPU comparison](../release_reports/v2_12/public_rt_vs_embree_comparison.md)
 - [Goal4363 Robot Collision same-contract evidence](../reports/goal4363_rtx_a4000_v2_12_robot_collision_same_contract_2026-06-13.md)
 - [Goal4446 Robot Collision NumPy lowering](../reports/goal4446_v3_0_m50_robot_numpy_lowering_2026-06-16.md)
 - [Goal4364 RayDB-style same-contract evidence](../reports/goal4364_rtx_a4000_v2_12_raydb_same_contract_2026-06-13.md)
-- [v2.13 release scoped RT-core vs Embree CPU comparison](../release_reports/v2_13/public_rt_vs_embree_comparison.md)
-- [v2.14 release scoped RT-core vs Embree CPU comparison](../release_reports/v2_14/public_rt_vs_embree_comparison.md)
 - [Goal4445 DBSCAN compact component signature](../reports/goal4445_v3_0_m49_dbscan_component_signature_2026-06-16.md)
 - [Goal4450 Barnes-Hut fused Numba CUDA app front-door mode](../reports/goal4450_v3_0_m54_barnes_hut_numba_cuda_app_mode_2026-06-16.md)
 - [Goal4458 Barnes-Hut current route rerank](../reports/goal4458_v3_0_m62_barnes_hut_current_route_rerank_2026-06-16.md)
 - [Goal4541 Barnes-Hut current route closure gate](../reports/goal4541_v3_0_m142_barnes_hut_current_route_closure_gate_2026-06-17.md)
 - [Goal4459 RTNN clustered app-bridge evidence](../reports/goal4459_v3_0_m63_rtnn_clustered_app_bridge_2026-06-16.md)
 - [Goal4460 RTNN shell app-bridge evidence](../reports/goal4460_v3_0_m64_rtnn_shell_app_bridge_2026-06-16.md)
+
+Previous release-scoped RT-core comparison packets live in
+[Historical Release Reports](../history/release_reports/README.md).

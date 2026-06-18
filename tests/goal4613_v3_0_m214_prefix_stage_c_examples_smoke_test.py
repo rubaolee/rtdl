@@ -9,10 +9,10 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4613_v3_0_m214_prefix_stage_c_examples_smoke_2026-06-18.json"
 REPORT = ROOT / "docs/reports/goal4613_v3_0_m214_prefix_stage_c_examples_smoke_2026-06-18.md"
-STAGING_CONTRACT = ROOT / "docs/learn/v3_0_c_abi_staging_contract.md"
-EMBEDDING_README = ROOT / "examples/current/embedding/README.md"
-ARCHITECTURE_DOC = ROOT / "docs/learn/v3_0_embeddability_architecture_strategy.md"
-BINDING_MATRIX = ROOT / "docs/learn/v3_0_binding_and_device_interop_matrix.md"
+STAGING_CONTRACT = ROOT / "docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md"
+EMBEDDING_README = ROOT / "docs/history/v4_preparatory_embedding/examples/embedding/README.md"
+ARCHITECTURE_DOC = ROOT / "docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md"
+BINDING_MATRIX = ROOT / "docs/history/v4_preparatory_embedding/v3_0_binding_and_device_interop_matrix.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

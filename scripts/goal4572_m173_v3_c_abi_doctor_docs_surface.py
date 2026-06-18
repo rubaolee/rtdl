@@ -12,14 +12,14 @@ OUT_JSON = Path("docs/reports/goal4572_v3_0_m173_c_abi_doctor_docs_surface_2026-
 OUT_REPORT = Path("docs/reports/goal4572_v3_0_m173_c_abi_doctor_docs_surface_2026-06-17.md")
 DOCTOR = Path("scripts/rtdl_source_tree_doctor.py")
 DOCTOR_DOC = Path("docs/learn/source_tree_doctor.md")
-LEARN_README = Path("docs/learn/README.md")
+LEARN_README = Path("docs/history/v4_preparatory_embedding/README.md")
 REQUIRED_DOCS = (
-    Path("docs/learn/v3_0_c_abi_draft.md"),
-    Path("docs/learn/v3_0_c_abi_stability_policy.md"),
-    Path("docs/learn/v3_0_c_abi_ownership_threading_contract.md"),
-    Path("docs/learn/v3_0_c_abi_staging_contract.md"),
-    Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json"),
-    Path("docs/learn/v3_0_zero_copy_interop_contract.md"),
+    Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md"),
+    Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_stability_policy.md"),
+    Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_ownership_threading_contract.md"),
+    Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md"),
+    Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json"),
+    Path("docs/history/v4_preparatory_embedding/v3_0_zero_copy_interop_contract.md"),
 )
 
 
@@ -51,7 +51,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         and "v3_0_c_abi_symbol_manifest_v0_1_3.json" in doctor_text,
         "doctor_doc_explains_docs_surface": "V4 preparatory C ABI docs" in doctor_doc
         and "does not freeze the ABI" in doctor_doc,
-        "learn_readme_links_ownership_and_zero_copy": "V3.0 C ABI Ownership And Threading Contract" in learn_readme
+        "history_archive_links_ownership_and_zero_copy": "V3.0 C ABI Ownership And Threading Contract" in learn_readme
         and "V3.0 Zero-Copy Interop Contract" in learn_readme,
         "required_docs_exist": all(docs_exist.values()),
         "required_failures_empty": tuple(payload["required_failures"]) == (),
@@ -76,7 +76,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "conclusion": (
             "Goal4572 records the C ABI documentation surface as optional V4 "
             "preparatory doctor context. The doctor now verifies that draft, stability, "
-            "ownership/threading, symbol manifest, zero-copy, and Learn README links "
+            "ownership/threading, symbol manifest, zero-copy, and history archive links "
             "are present, while runtime validation remains in dedicated evidence packets."
         ),
     }

@@ -144,7 +144,7 @@ Keep the route visible and measured.
 
 ## How The Prepared Handles Work
 
-The prepared-handle classes are the best place to see the v2.10 programming
+The prepared-handle classes are the best place to see the v3.0 programming
 style.
 
 For repeated LSI count queries:

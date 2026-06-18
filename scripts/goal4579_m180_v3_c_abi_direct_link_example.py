@@ -16,9 +16,9 @@ PACKET_VERSION = "rtdl.v3_0.c_abi_direct_link_example.goal4579.v1"
 OUT_JSON = Path("docs/reports/goal4579_v3_0_m180_c_abi_direct_link_example_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4579_v3_0_m180_c_abi_direct_link_example_2026-06-17.md")
 MAKEFILE = Path("Makefile")
-EXAMPLE = Path("examples/current/embedding/c_api_direct_link_client.c")
-STAGING_CONTRACT = Path("docs/learn/v3_0_c_abi_staging_contract.md")
-EMBEDDING_README = Path("examples/current/embedding/README.md")
+EXAMPLE = Path("docs/history/v4_preparatory_embedding/examples/embedding/c_api_direct_link_client.c")
+STAGING_CONTRACT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md")
+EMBEDDING_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
 
 
 def _tail(text: str) -> tuple[str, ...]:

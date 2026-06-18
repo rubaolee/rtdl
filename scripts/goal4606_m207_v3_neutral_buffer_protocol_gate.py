@@ -19,8 +19,8 @@ import rtdsl as rt
 PACKET_VERSION = "rtdl.v3_0.neutral_buffer_protocol_gate.goal4606.v1"
 OUT_JSON = Path("docs/reports/goal4606_v3_0_m207_neutral_buffer_protocol_gate_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4606_v3_0_m207_neutral_buffer_protocol_gate_2026-06-17.md")
-MATRIX_DOC = Path("docs/learn/v3_0_binding_and_device_interop_matrix.md")
-ZERO_COPY_DOC = Path("docs/learn/v3_0_zero_copy_interop_contract.md")
+MATRIX_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_binding_and_device_interop_matrix.md")
+ZERO_COPY_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_zero_copy_interop_contract.md")
 BENCHMARK_INDEX = Path("docs/learn/benchmark_evidence_index.md")
 SEAM = Path("src/rtdsl/neutral_buffer_seam.py")
 

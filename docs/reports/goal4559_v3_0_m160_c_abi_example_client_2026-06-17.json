@@ -19,7 +19,7 @@
     "packaged_sdk_released": false,
     "release_authorized": false
   },
-  "conclusion": "Goal4559 promotes the C ABI host AABB2 overlap proof into a readable example client under `examples/current/embedding/`. Pod evidence builds `librtdl_c_api`, compiles the C example, runs it, and observes the expected single overlap pair. This is still a source-tree example, not a packaged SDK or OptiX/Embree/device-buffer claim.",
+  "conclusion": "Goal4559 promotes the C ABI host AABB2 overlap proof into a readable example client under `docs/history/v4_preparatory_embedding/examples/embedding/`. Pod evidence builds `librtdl_c_api`, compiles the C example, runs it, and observes the expected single overlap pair. This is still a source-tree example, not a packaged SDK or OptiX/Embree/device-buffer claim.",
   "date": "2026-06-17",
   "failed_checks": [],
   "goal": "Goal4559 / V3 M160",
@@ -32,7 +32,7 @@
         "-std=c11",
         "-I",
         "include",
-        "examples/current/embedding/c_api_aabb2_overlap_client.c",
+        "docs/history/v4_preparatory_embedding/examples/embedding/c_api_aabb2_overlap_client.c",
         "-o",
         "build/rtdl_c_api_aabb2_overlap_client",
         "-ldl"

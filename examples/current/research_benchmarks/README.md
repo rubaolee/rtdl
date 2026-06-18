@@ -1,7 +1,7 @@
-# RTDL v2.10 Research Benchmarks
+# RTDL v3.0 Research Benchmarks
 
 This directory is for serious application studies, not first-run examples. Each
-subdirectory shows how a user can write a real RTDL v2.10 program, compare it
+subdirectory shows how a user can write a real RTDL v3.0 program, compare it
 with external baselines, and keep the performance claim boundary precise.
 
 The benchmark apps are reconstruction instruments. A study can intentionally

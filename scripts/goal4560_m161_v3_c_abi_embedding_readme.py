@@ -9,8 +9,8 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.c_abi_embedding_readme.goal4560.v1"
 OUT_JSON = Path("docs/reports/goal4560_v3_0_m161_c_abi_embedding_readme_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4560_v3_0_m161_c_abi_embedding_readme_2026-06-17.md")
-README = Path("examples/current/embedding/README.md")
-EXAMPLE = Path("examples/current/embedding/c_api_aabb2_overlap_client.c")
+README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
+EXAMPLE = Path("docs/history/v4_preparatory_embedding/examples/embedding/c_api_aabb2_overlap_client.c")
 
 
 def build_packet(root: Path = Path(".")) -> dict[str, Any]:
@@ -19,7 +19,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     checks = {
         "readme_exists": (root / README).exists(),
         "example_exists": (root / EXAMPLE).exists(),
-        "readme_names_v3_draft_boundary": "V3 draft source-tree examples" in readme,
+        "readme_names_v4_preparatory_archive_boundary": "V4 preparatory archive" in readme
+        and "not V3.0 release examples" in readme,
         "readme_includes_make_build_command": "make build-c-api" in readme,
         "readme_includes_c_compile_command": "cc -std=c11 -I include" in readme
         and "c_api_aabb2_overlap_client.c" in readme,

@@ -10,8 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4597_v3_0_m198_prefix_stage_python_ctypes_smoke_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4597_v3_0_m198_prefix_stage_python_ctypes_smoke_2026-06-17.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
-STAGING_CONTRACT = ROOT / "docs/learn/v3_0_c_abi_staging_contract.md"
-EMBEDDING_README = ROOT / "examples/current/embedding/README.md"
+STAGING_CONTRACT = ROOT / "docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md"
+EMBEDDING_README = ROOT / "docs/history/v4_preparatory_embedding/examples/embedding/README.md"
 
 
 class Goal4597V30M198PrefixStagePythonCtypesSmokeTest(unittest.TestCase):

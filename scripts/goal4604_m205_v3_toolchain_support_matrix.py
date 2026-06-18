@@ -14,8 +14,8 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.toolchain_support_matrix.goal4604.v1"
 OUT_JSON = Path("docs/reports/goal4604_v3_0_m205_toolchain_support_matrix_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4604_v3_0_m205_toolchain_support_matrix_2026-06-17.md")
-TOOLCHAIN_DOC = Path("docs/learn/v3_0_toolchain_support_matrix.md")
-LEARN_README = Path("docs/learn/README.md")
+TOOLCHAIN_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_toolchain_support_matrix.md")
+LEARN_README = Path("docs/history/v4_preparatory_embedding/README.md")
 DOCTOR = Path("scripts/rtdl_source_tree_doctor.py")
 DOCTOR_DOC = Path("docs/learn/source_tree_doctor.md")
 GOAL4546_REPORT = Path("docs/reports/goal4546_v3_0_m147_current_test_matrix_gate_2026-06-17.json")
@@ -122,7 +122,7 @@ def build_packet(root: Path = Path("."), *, run_live_probe: bool = False) -> dic
         "toolchain_doc_exists_and_sets_boundary": "observed on this pod" in doc
         and "not a release support guarantee" in doc
         and "`nvcc` in `PATH` is not required" in doc,
-        "learn_readme_links_toolchain_matrix": "V3.0 Toolchain Support Matrix" in learn,
+        "history_archive_links_toolchain_matrix": "V3.0 Toolchain Support Matrix" in learn,
         "doctor_requires_toolchain_doc": "v3_0_toolchain_support_matrix.md" in doctor,
         "doctor_doc_names_toolchain_support": "toolchain support" in doctor_doc,
         "v3_current_report_is_present_and_matrix_sized": goal4546["suite_run"]["module_count"] >= 93

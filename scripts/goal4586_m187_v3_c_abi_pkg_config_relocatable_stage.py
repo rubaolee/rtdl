@@ -17,8 +17,8 @@ PACKET_VERSION = "rtdl.v3_0.c_abi_pkg_config_relocatable_stage.goal4586.v1"
 OUT_JSON = Path("docs/reports/goal4586_v3_0_m187_c_abi_pkg_config_relocatable_stage_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4586_v3_0_m187_c_abi_pkg_config_relocatable_stage_2026-06-17.md")
 PKG_CONFIG_TEMPLATE = Path("packaging/rtdl-c-api.pc")
-STAGING_CONTRACT = Path("docs/learn/v3_0_c_abi_staging_contract.md")
-EMBEDDING_README = Path("examples/current/embedding/README.md")
+STAGING_CONTRACT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md")
+EMBEDDING_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
 
 
 def _tail(text: str) -> tuple[str, ...]:

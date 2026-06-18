@@ -155,19 +155,13 @@ Current guidance lives in:
 - `docs/learn/v3_0_app_author_implementation_strategy.md`
 - `docs/release_reports/v3_0/README.md`
 - `docs/release_reports/v3_0/public_wording_boundaries.md`
-- `docs/learn/v2_14_app_author_implementation_strategy.md`
-- `docs/release_reports/v2_14/README.md`
-- `docs/release_reports/v2_14/public_rt_vs_embree_comparison.md`
-- `docs/release_reports/v2_13/README.md`
-- `docs/release_reports/v2_13/public_rt_vs_embree_comparison.md`
-- `docs/release_reports/v2_12/README.md`
-- `docs/release_reports/v2_12/public_rt_vs_embree_comparison.md`
 - `docs/reports/goal4298_v2_11_embree_cpu_partner_reference_packet_2026-06-11.md`
 - `docs/reports/goal4359_optimized_embree_optix_comparison_packet_v2_12_2026-06-13.md`
 - `docs/reports/goal4266_large_scale_cupy_numba_partner_comparison_2026-06-09.md`
 - `docs/reports/goal4267_v2_10_milestone_release_packet_2026-06-10.md`
 - `docs/reports/goal4270_v2_10_milestone_release_3ai_consensus_2026-06-10.md`
 
-Historical partner-continuation reports remain in `docs/reports/` for
-reviewers. They explain how the project reached the current v3.0 rule; they do
-not override this learner-facing boundary.
+Historical partner-continuation reports remain in `docs/reports/`, and previous
+release packets live under `docs/history/release_reports/`, for reviewers.
+They explain how the project reached the current v3.0 rule; they do not
+override this learner-facing boundary.

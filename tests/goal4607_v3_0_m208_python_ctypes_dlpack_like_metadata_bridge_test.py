@@ -9,9 +9,9 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4607_v3_0_m208_python_ctypes_dlpack_like_metadata_bridge_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4607_v3_0_m208_python_ctypes_dlpack_like_metadata_bridge_2026-06-17.md"
-EXAMPLE = ROOT / "examples/current/embedding/python_ctypes_dlpack_like_metadata_client.py"
+EXAMPLE = ROOT / "docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_dlpack_like_metadata_client.py"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
-MATRIX_DOC = ROOT / "docs/learn/v3_0_binding_and_device_interop_matrix.md"
+MATRIX_DOC = ROOT / "docs/history/v4_preparatory_embedding/v3_0_binding_and_device_interop_matrix.md"
 
 
 class Goal4607V30M208PythonCtypesDLPackLikeMetadataBridgeTest(unittest.TestCase):

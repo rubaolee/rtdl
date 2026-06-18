@@ -34,7 +34,7 @@
         "-std=c11",
         "-I",
         "include",
-        "examples/current/embedding/c_api_host_runtime_client.c",
+        "docs/history/v4_preparatory_embedding/examples/embedding/c_api_host_runtime_client.c",
         "-L",
         "/tmp/tmpaep9btww",
         "-lrtdl_c_api",

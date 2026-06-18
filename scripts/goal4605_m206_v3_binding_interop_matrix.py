@@ -14,16 +14,16 @@ PACKET_VERSION = "rtdl.v3_0.binding_device_interop_matrix.goal4605.v1"
 OUT_JSON = Path("docs/reports/goal4605_v3_0_m206_binding_device_interop_matrix_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4605_v3_0_m206_binding_device_interop_matrix_2026-06-17.md")
 
-MATRIX_DOC = Path("docs/learn/v3_0_binding_and_device_interop_matrix.md")
-LEARN_README = Path("docs/learn/README.md")
+MATRIX_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_binding_and_device_interop_matrix.md")
+LEARN_README = Path("docs/history/v4_preparatory_embedding/README.md")
 SOURCE_TREE_DOCTOR_DOC = Path("docs/learn/source_tree_doctor.md")
 SOURCE_TREE_DOCTOR = Path("scripts/rtdl_source_tree_doctor.py")
 BENCHMARK_INDEX = Path("docs/learn/benchmark_evidence_index.md")
-C_ABI_DRAFT = Path("docs/learn/v3_0_c_abi_draft.md")
-ZERO_COPY_DOC = Path("docs/learn/v3_0_zero_copy_interop_contract.md")
-EMBEDDING_README = Path("examples/current/embedding/README.md")
+C_ABI_DRAFT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
+ZERO_COPY_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_zero_copy_interop_contract.md")
+EMBEDDING_README = Path("docs/history/v4_preparatory_embedding/examples/embedding/README.md")
 HEADER = Path("include/rtdl/rtdl.h")
-PY_CUDA_EXAMPLE = Path("examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py")
+PY_CUDA_EXAMPLE = Path("docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_cuda_buffer_metadata_client.py")
 
 REPORTS = {
     "host_external_runtime": Path("docs/reports/goal4591_v3_0_m192_c_abi_host_external_runtime_gate_2026-06-17.json"),
@@ -130,10 +130,10 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
                 "true zero-copy support",
             )
         ),
-        "learn_readme_links_matrix": "V3.0 Binding And Device Interop Matrix" in learn,
+        "history_archive_links_matrix": "V3.0 Binding And Device Interop Matrix" in learn,
         "doctor_doc_mentions_binding_matrix": "binding/device interop matrix" in doctor_doc,
         "doctor_script_requires_binding_matrix": "v3_0_binding_and_device_interop_matrix.md" in doctor
-        and "V3.0 Binding And Device Interop Matrix" in doctor,
+        and "v4_preparatory_embedding" in doctor,
         "benchmark_index_links_goal4605": "Goal4605 binding/device interop matrix" in index,
         "c_abi_draft_keeps_cuda_descriptor_metadata_only": "CUDA buffer descriptors can be imported" in c_abi
         and "no current query route consumes device buffers" in c_abi,

@@ -23,7 +23,7 @@
   },
   "conclusion": "Goal4550 creates the first V3 embeddability implementation-facing artifact: a draft C-only `rtdl.h` boundary with opaque handles, status codes, external runtime handles, and neutral buffer views. Goal4552 now adds a minimal stub library for lifecycle symbols, but the V3 C ABI remains intentionally unfrozen and not backend-capable.",
   "date": "2026-06-17",
-  "doc": "docs/learn/v3_0_c_abi_draft.md",
+  "doc": "docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md",
   "failed_checks": [],
   "goal": "Goal4550 / V3 M151",
   "header": "include/rtdl/rtdl.h",

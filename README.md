@@ -157,8 +157,8 @@ native dependencies configured.
 
 RTDL v3.0 is the current source-tree release for this branch and the most
 important RTDL release so far. It closes the current ten-app benchmark route
-project and turns the V2.x evidence sequence into one coherent app-author
-surface.
+project and turns the previous-release evidence sequence into one coherent
+app-author surface.
 
 The current matrix separates promoted benchmark apps from learner/example apps.
 Promoted benchmarks are reconstruction instruments for RTDL language/runtime
@@ -239,7 +239,8 @@ release evidence, review records, and goal archives live separately:
 
 - [History Index](docs/history/README.md)
 - [Version Archive Notes](docs/history/version_archive_notes.md)
-- [Release Reports](docs/release_reports/)
+- [Current Release Package](docs/release_reports/v3_0/README.md)
+- [Historical Release Reports](docs/history/release_reports/README.md)
 - [Benchmark And Audit Reports](docs/reports/)
 
 ## Demo

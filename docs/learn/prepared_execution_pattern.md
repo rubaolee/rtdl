@@ -1,6 +1,6 @@
 # Prepared Execution Pattern
 
-RTDL v2.10 uses a prepared-execution pattern for workloads where setup is large
+RTDL v3.0 uses a prepared-execution pattern for workloads where setup is large
 but repeated queries are small and fast.
 
 The shape is:

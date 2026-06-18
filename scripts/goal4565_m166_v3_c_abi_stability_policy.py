@@ -9,10 +9,10 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.c_abi_stability_policy.goal4565.v1"
 OUT_JSON = Path("docs/reports/goal4565_v3_0_m166_c_abi_stability_policy_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4565_v3_0_m166_c_abi_stability_policy_2026-06-17.md")
-POLICY = Path("docs/learn/v3_0_c_abi_stability_policy.md")
-C_ABI_DRAFT = Path("docs/learn/v3_0_c_abi_draft.md")
-EMBEDDABILITY = Path("docs/learn/v3_0_embeddability_architecture_strategy.md")
-LEARN_README = Path("docs/learn/README.md")
+POLICY = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_stability_policy.md")
+C_ABI_DRAFT = Path("docs/history/v4_preparatory_embedding/v3_0_c_abi_draft.md")
+EMBEDDABILITY = Path("docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md")
+LEARN_README = Path("docs/history/v4_preparatory_embedding/README.md")
 
 
 def build_packet(root: Path = Path(".")) -> dict[str, Any]:
@@ -44,7 +44,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "c_abi_draft_links_policy": "v3_0_c_abi_stability_policy.md" in c_abi,
         "embeddability_strategy_links_policy": "V3.0 C ABI Stability Policy" in embeddability
         and "v3_0_c_abi_stability_policy.md" in embeddability,
-        "learn_readme_links_policy": "V3.0 C ABI Stability Policy" in learn,
+        "history_archive_links_policy": "V3.0 C ABI Stability Policy" in learn,
     }
     failed = tuple(name for name, passed in checks.items() if not passed)
     return {

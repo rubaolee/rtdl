@@ -9,11 +9,11 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4612_v3_0_m213_c_abi_last_error_staged_example_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4612_v3_0_m213_c_abi_last_error_staged_example_2026-06-17.md"
-EXAMPLE = ROOT / "examples/current/embedding/c_api_last_error_client.c"
-STAGING_CONTRACT = ROOT / "docs/learn/v3_0_c_abi_staging_contract.md"
-EMBEDDING_README = ROOT / "examples/current/embedding/README.md"
-BINDING_MATRIX = ROOT / "docs/learn/v3_0_binding_and_device_interop_matrix.md"
-ARCHITECTURE_DOC = ROOT / "docs/learn/v3_0_embeddability_architecture_strategy.md"
+EXAMPLE = ROOT / "docs/history/v4_preparatory_embedding/examples/embedding/c_api_last_error_client.c"
+STAGING_CONTRACT = ROOT / "docs/history/v4_preparatory_embedding/v3_0_c_abi_staging_contract.md"
+EMBEDDING_README = ROOT / "docs/history/v4_preparatory_embedding/examples/embedding/README.md"
+BINDING_MATRIX = ROOT / "docs/history/v4_preparatory_embedding/v3_0_binding_and_device_interop_matrix.md"
+ARCHITECTURE_DOC = ROOT / "docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

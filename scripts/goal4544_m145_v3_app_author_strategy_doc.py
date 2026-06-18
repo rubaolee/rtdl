@@ -12,6 +12,7 @@ DOC = Path("docs/learn/v3_0_app_author_implementation_strategy.md")
 LEARN_INDEX = Path("docs/learn/README.md")
 EVIDENCE_INDEX = Path("docs/learn/benchmark_evidence_index.md")
 PARTNER_BOUNDARIES = Path("docs/partner_acceleration_boundaries.md")
+V2_14_HISTORY = Path("docs/history/learn/v2_14_app_author_implementation_strategy.md")
 
 REQUIRED_APP_LABELS = (
     "Hausdorff / X-HD",
@@ -69,8 +70,9 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "required_boundary_phrases_present": not missing_phrases,
         "forbidden_phrases_absent": not forbidden_hits,
         "mentions_goal4614_and_goal4543": "Goal4614" in doc and "Goal4543" in doc,
-        "keeps_v2_14_snapshot_link": "v2_14_app_author_implementation_strategy.md"
-        in learn_index,
+        "v2_14_snapshot_archived_not_in_learn": "v2_14_app_author_implementation_strategy.md"
+        not in learn_index
+        and (root / V2_14_HISTORY).is_file(),
     }
     failed = tuple(name for name, passed in checks.items() if not passed)
     return {

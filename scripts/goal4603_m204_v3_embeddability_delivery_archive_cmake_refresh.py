@@ -10,7 +10,7 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.embeddability_delivery_archive_cmake.goal4603.v1"
 OUT_JSON = Path("docs/reports/goal4603_v3_0_m204_embeddability_delivery_archive_cmake_refresh_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4603_v3_0_m204_embeddability_delivery_archive_cmake_refresh_2026-06-17.md")
-ARCHITECTURE_DOC = Path("docs/learn/v3_0_embeddability_architecture_strategy.md")
+ARCHITECTURE_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md")
 REPORTS = {
     "delivery_status": Path("docs/reports/goal4601_v3_0_m202_embeddability_delivery_status_refresh_2026-06-17.json"),
     "archive_cmake": Path("docs/reports/goal4602_v3_0_m203_c_abi_archive_cmake_smoke_2026-06-17.json"),

@@ -10,7 +10,7 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.embeddability_architecture_prefix_status.goal4598.v1"
 OUT_JSON = Path("docs/reports/goal4598_v3_0_m199_embeddability_architecture_prefix_status_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4598_v3_0_m199_embeddability_architecture_prefix_status_2026-06-17.md")
-ARCHITECTURE_DOC = Path("docs/learn/v3_0_embeddability_architecture_strategy.md")
+ARCHITECTURE_DOC = Path("docs/history/v4_preparatory_embedding/v3_0_embeddability_architecture_strategy.md")
 REPORTS = {
     "metadata_readiness": Path("docs/reports/goal4594_v3_0_m195_embeddability_metadata_readiness_refresh_2026-06-17.json"),
     "prefix_stage": Path("docs/reports/goal4595_v3_0_m196_c_abi_prefix_stage_2026-06-17.json"),

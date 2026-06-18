@@ -1,25 +1,20 @@
-# RTDL Release Reports
+# RTDL Current Release Reports
 
-Release reports record the reviewed source-tree boundary for each RTDL version.
-Use the newest release package for current learner-facing claims. Older
-directories are preserved for audit history and must not override the current
-front page, docs index, or claim-boundary pages.
+This directory is the current release doorway. It intentionally exposes only
+the active V3.0 release package so users do not have to swim through previous
+version packets before learning the system.
 
 ## Current Release
 
 - [RTDL v3.0 Release Package](v3_0/README.md)
 
-## Recent History
+## Historical Release Packets
 
-- [RTDL v2.14 Release Package](v2_14/README.md)
-- [RTDL v2.13 Release Package](v2_13/README.md)
-- [RTDL v2.12 Release Package](v2_12/README.md)
-- [RTDL v2.11 Release Package](v2_11/README.md)
-- [RTDL v2.0 Release Package](v2_0/README.md)
-- [RTDL v1.0 Release Package](v1_0/README.md)
+Previous release packets are preserved under
+[Historical Release Reports](../history/release_reports/README.md).
 
 ## Reading Rule
 
 A release packet is authoritative only for its own tag. Current docs should
-link to v3.0 first, while older packets remain useful for reconstructing why a
-claim was allowed, blocked, or superseded.
+link to V3.0 first. Older packets remain useful for reconstructing why a claim
+was allowed, blocked, or superseded, but they live behind the history boundary.

@@ -71,7 +71,7 @@ PYTHONPATH=src:. python examples/current/partners/rtdl_partner_anyhit.py --partn
 PYTHONPATH=src:. python examples/current/partners/rtdl_partner_anyhit.py --partner cupy-cuda --backend optix
 ```
 
-Partner commands are part of the v2.10 release surface. They do not imply
+Partner commands are part of the v3.0 source-tree release surface. They do not imply
 arbitrary CuPy/Numba acceleration, package-install support, or whole-program
 speedup.
 

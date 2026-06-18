@@ -63,17 +63,17 @@
         "stderr_tail": [],
         "stdout_tail": [
           "cp packaging/rtdl-c-api-config.cmake build/c_api_stage/lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake",
-          "cp docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json build/c_api_stage/share/rtdl/v3_0_c_abi_symbol_manifest.json",
-          "cp examples/current/embedding/README.md build/c_api_stage/share/rtdl/README.md",
-          "cp examples/current/embedding/c_api_aabb2_overlap_client.c build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
-          "cp examples/current/embedding/c_api_direct_link_client.c build/c_api_stage/examples/c_api_direct_link_client.c",
-          "cp examples/current/embedding/c_api_host_runtime_client.c build/c_api_stage/examples/c_api_host_runtime_client.c",
-          "cp examples/current/embedding/c_api_cuda_buffer_metadata_client.c build/c_api_stage/examples/c_api_cuda_buffer_metadata_client.c",
-          "cp examples/current/embedding/c_api_last_error_client.c build/c_api_stage/examples/c_api_last_error_client.c",
-          "cp examples/current/embedding/python_ctypes_client.py build/c_api_stage/examples/python_ctypes_client.py",
-          "cp examples/current/embedding/python_ctypes_aabb2_query_client.py build/c_api_stage/examples/python_ctypes_aabb2_query_client.py",
-          "cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py build/c_api_stage/examples/python_ctypes_cuda_buffer_metadata_client.py",
-          "cp examples/current/embedding/python_ctypes_dlpack_like_metadata_client.py build/c_api_stage/examples/python_ctypes_dlpack_like_metadata_client.py"
+          "cp docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json build/c_api_stage/share/rtdl/v3_0_c_abi_symbol_manifest.json",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/README.md build/c_api_stage/share/rtdl/README.md",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_aabb2_overlap_client.c build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_direct_link_client.c build/c_api_stage/examples/c_api_direct_link_client.c",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_host_runtime_client.c build/c_api_stage/examples/c_api_host_runtime_client.c",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_cuda_buffer_metadata_client.c build/c_api_stage/examples/c_api_cuda_buffer_metadata_client.c",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/c_api_last_error_client.c build/c_api_stage/examples/c_api_last_error_client.c",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_client.py build/c_api_stage/examples/python_ctypes_client.py",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_aabb2_query_client.py build/c_api_stage/examples/python_ctypes_aabb2_query_client.py",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_cuda_buffer_metadata_client.py build/c_api_stage/examples/python_ctypes_cuda_buffer_metadata_client.py",
+          "cp docs/history/v4_preparatory_embedding/examples/embedding/python_ctypes_dlpack_like_metadata_client.py build/c_api_stage/examples/python_ctypes_dlpack_like_metadata_client.py"
         ]
       },
       "ok": true,
