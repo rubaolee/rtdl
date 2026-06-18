@@ -30,10 +30,11 @@ class Goal4598V30M199EmbeddabilityArchitecturePrefixStatusTest(unittest.TestCase
 
     def test_architecture_doc_is_current_at_or_beyond_goal4597(self) -> None:
         text = ARCHITECTURE_DOC.read_text(encoding="utf-8")
-        self.assertIn("As of Goal4602", text)
+        self.assertIn("As of Goal4608", text)
         self.assertIn("make stage-c-api-prefix", text)
         self.assertIn("Prefix-stage Python `ctypes` smoke", text)
-        self.assertIn("not a generated package or stable public binding", text)
+        self.assertIn("not a generated package", text)
+        self.assertIn("stable public\nbinding", text)
 
     def test_status_matrix_keeps_prefix_progress_and_release_blocks_separate(self) -> None:
         matrix = self.packet["status_matrix"]

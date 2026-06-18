@@ -18,6 +18,7 @@ does not confuse descriptor metadata with executable device memory support.
 | CMake prefix/archive package | Validated prefix and extracted archive handoff. | External CMake consumers can `find_package(rtdl-c-api CONFIG REQUIRED)` against staged artifacts. | Staged CMake metadata only, not a released SDK. |
 | Python `ctypes` lifecycle client | Validated thin language-binding style example. | Loads the shared library and checks version/capability/context lifecycle without writing C. | Not a generated Python package or complete binding. |
 | Python `ctypes` host AABB2 query | Validated current query-route example. | Imports host buffers, builds a host AABB2 index, executes overlap query, exports host result rows, and cleans up handles. | Host F32 AABB2 to host U64 pairs only. |
+| Python `ctypes` examples from archive stage | Validated extracted-archive smoke. | Runs lifecycle, host AABB2, CUDA metadata, and DLPack-like metadata examples from the unpacked `rtdl-c-api-stage-0.1.3` archive. | Source-tree archive evidence only, not a Python wheel or installed SDK. |
 | Host external runtime metadata | Validated fail-closed metadata route. | Accepts host runtime metadata and rejects malformed/CUDA runtime handles. | No external CUDA stream adoption. |
 | CUDA buffer descriptor import/export | Validated metadata-only C route. | Preserves pointer, dtype, shape, strides, device id, and release callback without dereferencing the pointer. | No CUDA pointer ownership proof, no stream ordering proof, no device-buffer query execution. |
 | `__cuda_array_interface__` to C ABI descriptor | Validated metadata-only Python bridge. | Python `ctypes` can translate a CUDA-array-interface style object into the neutral C ABI buffer descriptor. | The resulting CUDA descriptor is rejected by the current host query route. |
@@ -30,7 +31,7 @@ does not confuse descriptor metadata with executable device memory support.
 ## Required Wording
 
 - Say "source-tree/staged C ABI examples" for the current C and Python
-  `ctypes` evidence.
+  `ctypes` evidence, including extracted source-tree archive examples.
 - Say "CUDA descriptor metadata" or "metadata-only CUDA buffer descriptor" for
   the current CUDA pointer handoff.
 - Say "DLPack-like descriptor metadata" for the current Python `ctypes`

@@ -32,6 +32,12 @@ REPORTS = {
     "metadata_readiness": Path("docs/reports/goal4594_v3_0_m195_embeddability_metadata_readiness_refresh_2026-06-17.json"),
     "delivery_archive_cmake": Path("docs/reports/goal4603_v3_0_m204_embeddability_delivery_archive_cmake_refresh_2026-06-17.json"),
     "toolchain_support": Path("docs/reports/goal4604_v3_0_m205_toolchain_support_matrix_2026-06-17.json"),
+    "dlpack_like_metadata": Path(
+        "docs/reports/goal4607_v3_0_m208_python_ctypes_dlpack_like_metadata_bridge_2026-06-17.json"
+    ),
+    "archive_python_ctypes": Path(
+        "docs/reports/goal4608_v3_0_m209_archive_stage_python_ctypes_smoke_2026-06-17.json"
+    ),
 }
 
 
@@ -91,6 +97,7 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
     delivery_status = reports["delivery_archive_cmake"]["status_matrix"]
     py_cuda_status = reports["python_cuda_metadata_bridge"]["support_matrix"]
     cuda_status = reports["cuda_buffer_metadata"]["support_matrix"]
+    dlpack_like_status = reports["dlpack_like_metadata"]["support_matrix"]
 
     checks = {
         "matrix_doc_exists": (root / MATRIX_DOC).exists(),
@@ -100,8 +107,10 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
                 "C dynamic-load client",
                 "C direct-link client",
                 "Python `ctypes` host AABB2 query",
+                "Python `ctypes` examples from archive stage",
                 "CUDA buffer descriptor import/export",
                 "`__cuda_array_interface__` to C ABI descriptor",
+                "DLPack-like object to C ABI descriptor",
                 "DLPack",
             )
         ),
@@ -141,6 +150,16 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
             metadata_status["python_ctypes_cuda_metadata_bridge"] == "validated"
             and py_cuda_status["cuda_array_interface_to_c_abi_descriptor"] == "validated_metadata_only"
         ),
+        "python_dlpack_like_metadata_bridge_validated": (
+            dlpack_like_status["dlpack_like_to_c_abi_descriptor"] == "validated_metadata_only"
+            and dlpack_like_status["dlpack_like_descriptor_host_aabb2_query_route"]
+            == "rejected_invalid_argument"
+        ),
+        "archive_python_ctypes_examples_validated": reports["archive_python_ctypes"][
+            "archive_stage_python_smoke"
+        ]["ok"]
+        and reports["archive_python_ctypes"]["claim_boundary"]["archive_python_ctypes_stage_authorized"]
+        is True,
         "delivery_cmake_pkg_config_handoff_validated": (
             delivery_status["prefix_pkg_config"] == "validated"
             and delivery_status["prefix_cmake_find_package"] == "validated_imported_target"
@@ -178,6 +197,7 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
             "cmake_prefix_find_package": delivery_status["prefix_cmake_find_package"],
             "cmake_archive_find_package": delivery_status["archive_cmake_find_package"],
             "python_ctypes_lifecycle_and_host_aabb2": delivery_status["python_ctypes_prefix_examples"],
+            "python_ctypes_archive_examples": "validated_lifecycle_host_aabb2_cuda_metadata_dlpack_like",
             "host_aabb2_c_abi_query": delivery_status["host_aabb2_c_abi_query"],
             "host_external_runtime_metadata": metadata_status["host_external_runtime_metadata"],
             "cuda_buffer_descriptor_import_export": metadata_status["cuda_buffer_descriptor_import_export"],
@@ -186,6 +206,10 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
             ],
             "cuda_descriptor_host_aabb2_query_route": py_cuda_status[
                 "cuda_descriptor_host_aabb2_query_route"
+            ],
+            "dlpack_like_to_c_abi_descriptor": dlpack_like_status["dlpack_like_to_c_abi_descriptor"],
+            "dlpack_like_descriptor_host_aabb2_query_route": dlpack_like_status[
+                "dlpack_like_descriptor_host_aabb2_query_route"
             ],
             "dlpack": "design_contract_only",
             "device_buffer_query_route": metadata_status["device_buffer_query_route"],
@@ -200,9 +224,11 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
             "pkg_config_stage_handoff_authorized": True,
             "cmake_stage_handoff_authorized": True,
             "python_ctypes_examples_authorized": True,
+            "archive_python_ctypes_stage_authorized": True,
             "host_aabb2_c_abi_query_authorized": True,
             "cuda_metadata_descriptor_authorized": True,
             "cuda_array_interface_metadata_bridge_authorized": True,
+            "dlpack_like_metadata_bridge_authorized": True,
             "device_buffer_query_route_authorized": False,
             "dlpack_zero_copy_authorized": False,
             "external_cuda_stream_authorized": False,
@@ -218,7 +244,8 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
             "state. The source tree has executable C and Python ctypes examples, "
             "pkg-config and CMake staged handoffs, a host AABB2 C ABI query route, "
             "host-runtime metadata, and CUDA descriptor metadata including a "
-            "`__cuda_array_interface__`-style Python bridge. The device side is "
+            "`__cuda_array_interface__`-style Python bridge, DLPack-like metadata "
+            "bridging, and extracted archive Python ctypes smoke. The device side is "
             "still deliberately fail-closed: no DLPack adapter, device-buffer "
             "query route, external CUDA stream ordering, generated binding, "
             "stable ABI, SDK, release, performance claim, or true-zero-copy claim "

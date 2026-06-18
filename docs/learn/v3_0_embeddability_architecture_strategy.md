@@ -10,7 +10,7 @@ and validation gates.
 
 ## Current Implementation Progress
 
-As of Goal4602, the first control-plane embedding slice has moved from a C-only
+As of Goal4608, the first control-plane embedding slice has moved from a C-only
 proof into a movable source-tree and prefix-stage handoff artifact:
 
 - Draft public header: `include/rtdl/rtdl.h`.
@@ -27,6 +27,9 @@ proof into a movable source-tree and prefix-stage handoff artifact:
   device-buffer query execution still fail-closed.
 - Python `ctypes` bridge from `__cuda_array_interface__`-style metadata into
   the C ABI descriptor path.
+- Python `ctypes` bridge from DLPack-like producer metadata into the C ABI
+  descriptor path, with arbitrary capsule parsing and device execution still
+  blocked.
 - A narrow host `F32` AABB2 overlap query proof returning host `U64`
   `(query_id, primitive_id)` pairs.
 - Readable source-tree examples for C dlopen and C direct-link.
@@ -43,8 +46,11 @@ proof into a movable source-tree and prefix-stage handoff artifact:
 - Extracted source-tree stage archive CMake consumer proof for
   `build/rtdl-c-api-stage-0.1.3.tar.gz`.
 - Source-tree doctor coverage for the prefix-stage target.
-- Prefix-stage Python `ctypes` smoke for lifecycle, host AABB2 query, and CUDA
-  metadata examples against the staged shared library.
+- Prefix-stage Python `ctypes` smoke for lifecycle, host AABB2 query, CUDA
+  metadata, and DLPack-like metadata examples against the staged shared
+  library.
+- Archive-stage Python `ctypes` smoke for the same examples after extracting
+  `build/rtdl-c-api-stage-0.1.3.tar.gz`.
 - C/Python `ctypes` layout audit for the current descriptor structs, backed by
   compiler-observed `sizeof`/`offsetof` evidence.
 - A documented current AABB2 buffer/result contract in
@@ -60,10 +66,10 @@ Still not authorized: frozen ABI compatibility, packaged SDK wording, privileged
 system install or package-manager wording, DLPack, public true-zero-copy wording,
 external CUDA stream semantics, OptiX/Embree query execution through the C ABI,
 generated language bindings, device-callable fusion, or V3 release wording. The
-current Python `ctypes` examples are a minimal binding base and prefix-stage
-smoke, not a generated package or stable public binding; the current CMake
-metadata is a staged-prefix/archive consumption proof, not an installed SDK
-promise.
+current Python `ctypes` examples are a minimal binding base and source-tree,
+prefix-stage, and archive-stage smoke, not a generated package or stable public
+binding; the current CMake metadata is a staged-prefix/archive consumption
+proof, not an installed SDK promise.
 
 **Purpose:** Define how RTDL prepares *now* to be embedded later inside other languages and runtimes — called from Python, C/C++, Rust, Julia, C#, and fused into GPU frameworks like PyTorch, JAX, CuPy, and Numba — without rewriting the core each time a new host shows up.
 

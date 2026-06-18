@@ -53,8 +53,9 @@ This creates `build/c_api_stage` with the public header, shared library, current
 draft symbol manifest, `lib/pkgconfig/rtdl-c-api.pc`, this README, the AABB2
 dlopen and direct-link C examples, C host-runtime metadata and CUDA
 buffer-metadata examples, a thin Python `ctypes` lifecycle example, Python
-`ctypes` host AABB2 query example, and Python `ctypes` CUDA buffer-metadata
-example. It is still a source-tree staging bundle, not an installed SDK.
+`ctypes` host AABB2 query example, Python `ctypes` CUDA buffer-metadata
+example, and Python `ctypes` DLPack-like metadata example. It is still a
+source-tree staging bundle, not an installed SDK.
 
 To archive that same movable source-tree stage:
 
@@ -145,6 +146,28 @@ mkdir -p /tmp/rtdl-c-api-consume
 tar -C /tmp/rtdl-c-api-consume -xzf build/rtdl-c-api-stage-0.1.3.tar.gz
 cmake -S . -B build -DCMAKE_PREFIX_PATH="/tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3"
 cmake --build build
+```
+
+The extracted archive also carries the same Python `ctypes` examples:
+
+```bash
+python3 /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/examples/python_ctypes_client.py \
+  /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so
+python3 /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/examples/python_ctypes_aabb2_query_client.py \
+  /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so
+python3 /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/examples/python_ctypes_cuda_buffer_metadata_client.py \
+  /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so
+python3 /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/examples/python_ctypes_dlpack_like_metadata_client.py \
+  /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so
+```
+
+Expected outputs include:
+
+```text
+python_ctypes_ok 0.1.3 ok
+python_ctypes_hit_count=1 first_pair=(0,0)
+python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument
+python_ctypes_dlpack_like_metadata_shape=(2,3) query_route_rejected=invalid argument
 ```
 
 For direct-link clients:
@@ -251,7 +274,7 @@ python_ctypes_hit_count=1 first_pair=(0,0)
 - This is a source-tree C client example for the V3 draft C ABI.
 - `package-c-api-stage` produces a source-tree staging archive, not an installed
   SDK or stable release artifact, even though the archive carries staged
-  `pkg-config` and CMake metadata.
+  `pkg-config`, CMake metadata, and the thin Python `ctypes` examples.
 - `stage-c-api-prefix` produces a DESTDIR/prefix-style staging layout, not a
   privileged system install, package-manager artifact, stable SDK, or release
   claim.

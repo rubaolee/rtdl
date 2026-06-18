@@ -159,6 +159,7 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal4605_v3_0_m206_binding_interop_matrix_test",
         "tests.goal4606_v3_0_m207_neutral_buffer_protocol_gate_test",
         "tests.goal4607_v3_0_m208_python_ctypes_dlpack_like_metadata_bridge_test",
+        "tests.goal4608_v3_0_m209_archive_stage_python_ctypes_smoke_test",
     ),
     "v0_2_local": (
         "tests.goal110_baseline_runner_backend_test",

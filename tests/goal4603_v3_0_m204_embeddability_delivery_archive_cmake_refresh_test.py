@@ -38,11 +38,13 @@ class Goal4603V30M204EmbeddabilityDeliveryArchiveCmakeRefreshTest(unittest.TestC
         self.assertEqual("blocked_until_1_0_gates", matrix["stable_abi"])
         self.assertEqual("blocked", matrix["release"])
 
-    def test_architecture_doc_is_current_to_goal4602(self) -> None:
+    def test_architecture_doc_is_current_to_goal4608(self) -> None:
         text = ARCHITECTURE_DOC.read_text(encoding="utf-8")
-        self.assertIn("As of Goal4602", text)
+        self.assertIn("As of Goal4608", text)
         self.assertIn("Extracted source-tree stage archive CMake consumer proof", text)
-        self.assertIn("staged-prefix/archive consumption proof", text)
+        self.assertIn("Archive-stage Python `ctypes` smoke", text)
+        self.assertIn("staged-prefix/archive consumption", text)
+        self.assertIn("proof, not an installed SDK promise", text)
         self.assertIn("not an installed SDK", text)
 
     def test_report_index_and_boundaries_are_wired(self) -> None:

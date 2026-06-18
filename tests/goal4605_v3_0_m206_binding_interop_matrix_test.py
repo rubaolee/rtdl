@@ -40,6 +40,8 @@ class Goal4605V30M206BindingInteropMatrixTest(unittest.TestCase):
     def test_docs_index_and_report_are_wired(self) -> None:
         doc = MATRIX_DOC.read_text(encoding="utf-8")
         self.assertIn("CUDA descriptor metadata", doc)
+        self.assertIn("Python `ctypes` examples from archive stage", doc)
+        self.assertIn("DLPack-like object to C ABI descriptor", doc)
         self.assertIn("Do not say DLPack support", doc)
         self.assertIn("V3.0 Binding And Device Interop Matrix", LEARN_README.read_text(encoding="utf-8"))
         self.assertIn("Goal4605 / V3 M206", REPORT.read_text(encoding="utf-8"))
@@ -51,6 +53,15 @@ class Goal4605V30M206BindingInteropMatrixTest(unittest.TestCase):
         self.assertEqual("validated_metadata_only", matrix["cuda_buffer_descriptor_import_export"])
         self.assertEqual("validated_metadata_only", matrix["cuda_array_interface_to_c_abi_descriptor"])
         self.assertEqual("rejected_invalid_argument", matrix["cuda_descriptor_host_aabb2_query_route"])
+        self.assertEqual(
+            "validated_lifecycle_host_aabb2_cuda_metadata_dlpack_like",
+            matrix["python_ctypes_archive_examples"],
+        )
+        self.assertEqual("validated_metadata_only", matrix["dlpack_like_to_c_abi_descriptor"])
+        self.assertEqual(
+            "rejected_invalid_argument",
+            matrix["dlpack_like_descriptor_host_aabb2_query_route"],
+        )
         self.assertEqual("design_contract_only", matrix["dlpack"])
         self.assertEqual("blocked", matrix["device_buffer_query_route"])
         for key, value in self.checked_in["claim_boundary"].items():
@@ -59,9 +70,11 @@ class Goal4605V30M206BindingInteropMatrixTest(unittest.TestCase):
                 "pkg_config_stage_handoff_authorized",
                 "cmake_stage_handoff_authorized",
                 "python_ctypes_examples_authorized",
+                "archive_python_ctypes_stage_authorized",
                 "host_aabb2_c_abi_query_authorized",
                 "cuda_metadata_descriptor_authorized",
                 "cuda_array_interface_metadata_bridge_authorized",
+                "dlpack_like_metadata_bridge_authorized",
             }:
                 self.assertFalse(value, key)
 

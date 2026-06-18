@@ -54,8 +54,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             and "rtdl-c-api-stage-0.1.3.tar.gz" in architecture
         ),
         "architecture_keeps_cmake_as_stage_not_sdk": (
-            "staged-prefix/archive consumption proof" in architecture
-            and "not an installed SDK\npromise" in architecture
+            "staged-prefix/archive consumption" in architecture
+            and "proof, not an installed SDK promise" in architecture
         ),
         "archive_cmake_smoke_ok": archive_smoke["ok"]
         and archive_smoke["run_result"]["stdout"] == "cmake_archive_direct_link_ok 0.1.3 ok",

@@ -168,6 +168,28 @@ cmake -S . -B build -DCMAKE_PREFIX_PATH="/tmp/rtdl-c-api-consume/rtdl-c-api-stag
 cmake --build build
 ```
 
+The extracted source-tree archive also carries the Python `ctypes` examples:
+
+```bash
+python3 /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/examples/python_ctypes_client.py \
+  /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so
+python3 /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/examples/python_ctypes_aabb2_query_client.py \
+  /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so
+python3 /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/examples/python_ctypes_cuda_buffer_metadata_client.py \
+  /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so
+python3 /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/examples/python_ctypes_dlpack_like_metadata_client.py \
+  /tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so
+```
+
+Expected outputs include:
+
+```text
+python_ctypes_ok 0.1.3 ok
+python_ctypes_hit_count=1 first_pair=(0,0)
+python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument
+python_ctypes_dlpack_like_metadata_shape=(2,3) query_route_rejected=invalid argument
+```
+
 For a C client that validates the current host external-runtime metadata path:
 
 ```bash
@@ -263,7 +285,9 @@ python_ctypes_hit_count=1 first_pair=(0,0)
 - This is a source-tree staging bundle only.
 - `package-c-api-stage` archives that staging bundle for movement between
   directories and carries the staged `pkg-config` and CMake metadata; it is
-  still not an installed SDK.
+  still not an installed SDK. The archive-stage Python smoke validates that the
+  same thin Python `ctypes` examples can run from an extracted archive without
+  source-tree relative paths.
 - `stage-c-api-prefix` creates a DESTDIR/prefix-style staging layout; it is
   still not a privileged system install, package manager artifact, stable SDK,
   or release claim.
