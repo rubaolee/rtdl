@@ -2,7 +2,7 @@
   "checks": {
     "abi_version_declared": true,
     "c_only_surface": true,
-    "doc_boundary_blocks_implementation_claims": true,
+    "doc_boundary_blocks_backend_and_freeze_claims": true,
     "doc_exists": true,
     "embeddability_strategy_supports_this_step": true,
     "extern_c_boundary": true,
@@ -13,14 +13,15 @@
     "status_codes_declared": true
   },
   "claim_boundary": {
+    "backend_query_implemented": false,
     "binary_compatibility_frozen": false,
     "dlpack_support_implemented": false,
     "external_stream_context_validated": false,
     "non_python_client_validated": false,
     "release_authorized": false,
-    "shared_library_symbols_implemented": false
+    "stub_library_is_frozen_abi": false
   },
-  "conclusion": "Goal4550 creates the first V3 embeddability implementation-facing artifact: a draft C-only `rtdl.h` boundary with opaque handles, status codes, external runtime handles, and neutral buffer views. It is intentionally a reviewed design surface, not an implemented or frozen ABI.",
+  "conclusion": "Goal4550 creates the first V3 embeddability implementation-facing artifact: a draft C-only `rtdl.h` boundary with opaque handles, status codes, external runtime handles, and neutral buffer views. Goal4552 now adds a minimal stub library for lifecycle symbols, but the V3 C ABI remains intentionally unfrozen and not backend-capable.",
   "date": "2026-06-17",
   "doc": "docs/learn/v3_0_c_abi_draft.md",
   "failed_checks": [],

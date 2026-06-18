@@ -39,7 +39,9 @@ class Goal4550V30M151CAbiDraftTest(unittest.TestCase):
 
     def test_docs_report_index_and_boundaries_are_wired(self) -> None:
         self.assertEqual(self.packet["version"], self.checked_in["version"])
-        self.assertIn("not an implemented shared-library ABI", DOC.read_text(encoding="utf-8"))
+        doc = DOC.read_text(encoding="utf-8")
+        self.assertIn("not a frozen or backend-capable ABI", doc)
+        self.assertIn("Goal4552 implements a minimal stub library", doc)
         self.assertIn("Goal4550 / V3 M151", REPORT.read_text(encoding="utf-8"))
         self.assertIn("Goal4550 C ABI draft", INDEX.read_text(encoding="utf-8"))
         for key, value in self.checked_in["claim_boundary"].items():

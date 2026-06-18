@@ -42,8 +42,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, object]:
         and "strides[8]" in header
         and "rtdl_buffer_release_fn" in header,
         "c_only_surface": not any(token in header for token in forbidden_tokens),
-        "doc_boundary_blocks_implementation_claims": "not an implemented shared-library ABI" in doc
-        and "does not implement any exported symbols" in doc,
+        "doc_boundary_blocks_backend_and_freeze_claims": "not a frozen or backend-capable ABI" in doc
+        and "does not implement backend" in doc,
         "embeddability_strategy_supports_this_step": "Freeze a draft C ABI" in embed_doc,
     }
     failed = tuple(name for name, passed in checks.items() if not passed)
@@ -57,7 +57,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, object]:
         "header": HEADER.as_posix(),
         "doc": DOC.as_posix(),
         "claim_boundary": {
-            "shared_library_symbols_implemented": False,
+            "backend_query_implemented": False,
+            "stub_library_is_frozen_abi": False,
             "binary_compatibility_frozen": False,
             "non_python_client_validated": False,
             "dlpack_support_implemented": False,
@@ -68,8 +69,9 @@ def build_packet(root: Path = Path(".")) -> dict[str, object]:
             "Goal4550 creates the first V3 embeddability implementation-facing "
             "artifact: a draft C-only `rtdl.h` boundary with opaque handles, "
             "status codes, external runtime handles, and neutral buffer views. "
-            "It is intentionally a reviewed design surface, not an implemented "
-            "or frozen ABI."
+            "Goal4552 now adds a minimal stub library for lifecycle symbols, "
+            "but the V3 C ABI remains intentionally unfrozen and not "
+            "backend-capable."
         ),
     }
 
@@ -96,7 +98,7 @@ def write_report(packet: dict[str, object], path: Path) -> None:
             "",
             "## Boundary",
             "",
-            "- No shared-library symbols are implemented by this goal.",
+            "- Goal4550 introduced the draft boundary; Goal4552 adds a minimal lifecycle stub.",
             "- No binary compatibility, non-Python client, DLPack, or external stream/context claim is authorized.",
             "",
         ]

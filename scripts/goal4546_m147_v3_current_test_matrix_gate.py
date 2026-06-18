@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import re
 from typing import Any
 
 from scripts import run_test_matrix
@@ -16,10 +17,13 @@ PROCESS_DOC = Path("docs/audit/process/development_reliability_process.md")
 
 def _summarize_output(output: str) -> dict[str, Any]:
     lines = [line for line in output.splitlines() if line.strip()]
+    match = re.search(r"Ran (\d+) tests?", output)
+    ran_tests = int(match.group(1)) if match else None
     return {
         "line_count": len(lines),
         "contains_ok": "OK" in output,
-        "contains_ran_134": "Ran 134 tests" in output,
+        "ran_tests": ran_tests,
+        "ran_at_least_original_134": ran_tests is not None and ran_tests >= 134,
         "tail": tuple(lines[-8:]),
     }
 
@@ -31,9 +35,12 @@ def build_packet(root: Path = Path("."), *, run_suite: bool = False) -> dict[str
     suite_summary = _summarize_output(str(suite["output"])) if suite else None
     checks = {
         "group_registered": GROUP in run_test_matrix.TEST_GROUPS,
-        "module_count_is_36": len(modules) == 36,
+        "module_count_is_42": len(modules) == 42,
         "starts_at_goal4508": modules[0] == "tests.goal4508_v3_0_m112_rtnn_clean_target_closeout_test",
-        "ends_at_goal4545": modules[-1] == "tests.goal4545_v3_0_m146_source_tree_doctor_refresh_test",
+        "ends_at_goal4552": modules[-1] == "tests.goal4552_v3_0_m153_c_abi_stub_library_test",
+        "excludes_self_referential_goal4546": (
+            "tests.goal4546_v3_0_m147_current_test_matrix_gate_test" not in modules
+        ),
         "includes_stale_barnes_hut_tests": (
             "tests.goal4525_v3_0_m129_barnes_hut_rt_native_python_wrapper_gate_test" in modules
             and "tests.goal4526_v3_0_m130_barnes_hut_rt_native_fail_closed_abi_test" in modules
@@ -46,7 +53,9 @@ def build_packet(root: Path = Path("."), *, run_suite: bool = False) -> dict[str
             {
                 "suite_ok": bool(suite["ok"]),
                 "suite_module_count_matches": suite["module_count"] == len(modules),
-                "suite_reports_134_tests": bool(suite_summary and suite_summary["contains_ran_134"]),
+                "suite_reports_at_least_original_134_tests": bool(
+                    suite_summary and suite_summary["ran_at_least_original_134"]
+                ),
             }
         )
     failed = tuple(name for name, passed in checks.items() if not passed)
@@ -70,10 +79,10 @@ def build_packet(root: Path = Path("."), *, run_suite: bool = False) -> dict[str
         },
         "conclusion": (
             "Goal4546 adds a canonical `v3_current` test-matrix group for the "
-            "current V3 closure surface. It covers the explicit Goal4508-Goal4545 "
-            "modules because default unittest discovery does not include every "
-            "`goal*_test.py` file. The gate is a source-tree reliability check, "
-            "not benchmark evidence."
+            "current V3 closure surface. It covers the explicit Goal4508-Goal4552 "
+            "modules except for the self-referential Goal4546 generator test, because "
+            "default unittest discovery does not include every `goal*_test.py` file. "
+            "The gate is a source-tree reliability check, not benchmark evidence."
         ),
     }
 

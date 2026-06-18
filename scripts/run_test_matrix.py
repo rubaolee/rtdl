@@ -98,6 +98,12 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal4543_v3_0_m144_major_performance_target_refresh_test",
         "tests.goal4544_v3_0_m145_app_author_strategy_doc_test",
         "tests.goal4545_v3_0_m146_source_tree_doctor_refresh_test",
+        "tests.goal4547_v3_0_m148_source_tree_doctor_v3_matrix_hint_test",
+        "tests.goal4548_v3_0_m149_legacy_full_runner_repair_test",
+        "tests.goal4549_v3_0_m150_embeddability_strategy_intake_test",
+        "tests.goal4550_v3_0_m151_c_abi_draft_test",
+        "tests.goal4551_v3_0_m152_c_abi_header_compile_smoke_test",
+        "tests.goal4552_v3_0_m153_c_abi_stub_library_test",
     ),
     "v0_2_local": (
         "tests.goal110_baseline_runner_backend_test",
