@@ -18,6 +18,7 @@ The target first builds `build/librtdl_c_api.*`, then creates
 - `share/rtdl/v3_0_c_abi_symbol_manifest.json`
 - `share/rtdl/README.md`
 - `examples/c_api_aabb2_overlap_client.c`
+- `examples/c_api_direct_link_client.c`
 
 The staged manifest is copied from the current draft source-tree manifest,
 currently `docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json`.
@@ -46,6 +47,12 @@ For direct-link C clients that want compile/link flags from the staged bundle:
 ```bash
 export PKG_CONFIG_PATH="$PWD/build/c_api_stage/lib/pkgconfig"
 pkg-config --cflags --libs rtdl-c-api
+cc -std=c11 $(pkg-config --cflags rtdl-c-api) \
+  build/c_api_stage/examples/c_api_direct_link_client.c \
+  -o build/c_api_stage/examples/rtdl_c_api_direct_link_client \
+  $(pkg-config --libs rtdl-c-api)
+LD_LIBRARY_PATH="$PWD/build/c_api_stage/lib:${LD_LIBRARY_PATH:-}" \
+  ./build/c_api_stage/examples/rtdl_c_api_direct_link_client
 ```
 
 ## Boundary

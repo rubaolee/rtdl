@@ -51,13 +51,20 @@ make stage-c-api
 
 This creates `build/c_api_stage` with the public header, shared library, current
 draft symbol manifest, `lib/pkgconfig/rtdl-c-api.pc`, this README, and the
-AABB2 C example. It is still a source-tree staging bundle, not an installed SDK.
+AABB2 dlopen and direct-link C examples. It is still a source-tree staging
+bundle, not an installed SDK.
 
 For direct-link clients:
 
 ```bash
 export PKG_CONFIG_PATH="$PWD/build/c_api_stage/lib/pkgconfig"
 pkg-config --cflags --libs rtdl-c-api
+cc -std=c11 $(pkg-config --cflags rtdl-c-api) \
+  build/c_api_stage/examples/c_api_direct_link_client.c \
+  -o build/c_api_stage/examples/rtdl_c_api_direct_link_client \
+  $(pkg-config --libs rtdl-c-api)
+LD_LIBRARY_PATH="$PWD/build/c_api_stage/lib:${LD_LIBRARY_PATH:-}" \
+  ./build/c_api_stage/examples/rtdl_c_api_direct_link_client
 ```
 
 ## Boundary

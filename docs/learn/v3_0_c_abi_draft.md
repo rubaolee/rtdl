@@ -84,6 +84,10 @@ the current source-tree support surface only: AUTO/CPU backend selection and the
 host AABB2 overlap route. They do not enable OptiX/Embree C ABI execution,
 device-buffer routes, or dynamic backend loading.
 
+Goal4579 adds `examples/current/embedding/c_api_direct_link_client.c`, a
+pkg-config/direct-link companion to the dlopen AABB2 example. It validates
+version and capability queries before creating a CPU context.
+
 ## Current Host AABB2 Query Contract
 
 The only implemented query route is deliberately small:

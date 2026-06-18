@@ -217,6 +217,7 @@ stage-c-api: build-c-api
 	cp $(C_API_STAGE_MANIFEST) $(C_API_STAGE_DIR)/share/rtdl/v3_0_c_abi_symbol_manifest.json
 	cp examples/current/embedding/README.md $(C_API_STAGE_DIR)/share/rtdl/README.md
 	cp examples/current/embedding/c_api_aabb2_overlap_client.c $(C_API_STAGE_DIR)/examples/c_api_aabb2_overlap_client.c
+	cp examples/current/embedding/c_api_direct_link_client.c $(C_API_STAGE_DIR)/examples/c_api_direct_link_client.c
 
 build-optix:
 	mkdir -p $(BUILD_DIR)
