@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -31,6 +32,11 @@ def _load_json(root: Path, path: Path) -> dict[str, Any]:
     return json.loads((root / path).read_text(encoding="utf-8"))
 
 
+def _current_progress_goal_number(strategy: str) -> int | None:
+    match = re.search(r"As of Goal(\d+)", strategy)
+    return int(match.group(1)) if match else None
+
+
 def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     strategy = (root / STRATEGY).read_text(encoding="utf-8")
     c_abi = (root / C_ABI_DRAFT).read_text(encoding="utf-8")
@@ -41,8 +47,10 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     matrix = (root / MATRIX).read_text(encoding="utf-8")
     manifest = _load_json(root, SYMBOL_MANIFEST)
     reports = {path.name: _load_json(root, path) for path in REPORTS}
+    progress_goal = _current_progress_goal_number(strategy)
     checks = {
-        "strategy_status_refreshed_to_goal4576": "As of Goal4576" in strategy,
+        "strategy_status_at_or_beyond_goal4576": progress_goal is not None
+        and progress_goal >= 4576,
         "c_abi_draft_documents_host_aabb2_contract": "Current Host AABB2 Query Contract" in c_abi
         and "contiguous AABB2 rows" in c_abi,
         "c_abi_staging_surface_is_documented": "v3_0_c_abi_staging_contract.md" in c_abi

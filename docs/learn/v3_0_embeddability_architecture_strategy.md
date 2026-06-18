@@ -10,18 +10,23 @@ and validation gates.
 
 ## Current Implementation Progress
 
-As of Goal4576, the first control-plane embedding slice exists in the source
-tree:
+As of Goal4589, the first control-plane embedding slice has moved from a C-only
+proof into a movable source-tree handoff artifact:
 
 - Draft public header: `include/rtdl/rtdl.h`.
 - Source-tree shared-library target: `make build-c-api`.
 - Source-tree staging bundle target: `make stage-c-api`.
+- Movable source-tree stage archive target: `make package-c-api-stage`.
 - Export audit for the current lifecycle/query symbols.
 - Non-Python C client validation.
+- C direct-link/pkg-config validation.
 - A narrow host `F32` AABB2 overlap query proof returning host `U64`
   `(query_id, primitive_id)` pairs.
-- A readable source-tree example:
-  `examples/current/embedding/c_api_aabb2_overlap_client.c`.
+- Readable source-tree examples for C dlopen and C direct-link.
+- Readable source-tree examples for Python `ctypes` lifecycle and
+  Python `ctypes` host AABB2 query.
+- Relocatable staged `pkg-config` proof after moving `build/c_api_stage`.
+- Extract/compile/run proof for `build/rtdl-c-api-stage-0.1.3.tar.gz`.
 - A documented current AABB2 buffer/result contract in
   [V3.0 C ABI Draft](v3_0_c_abi_draft.md).
 - A draft stability rulebook in
@@ -33,8 +38,9 @@ tree:
 
 Still not authorized: frozen ABI compatibility, packaged SDK wording, DLPack,
 `__cuda_array_interface__`, external CUDA stream semantics, OptiX/Embree query
-execution through the C ABI, language bindings, device-callable fusion, or V3
-release wording.
+execution through the C ABI, generated language bindings, device-callable
+fusion, or V3 release wording. The current Python `ctypes` examples are a
+minimal binding base, not a generated package or stable public binding.
 
 **Purpose:** Define how RTDL prepares *now* to be embedded later inside other languages and runtimes — called from Python, C/C++, Rust, Julia, C#, and fused into GPU frameworks like PyTorch, JAX, CuPy, and Numba — without rewriting the core each time a new host shows up.
 

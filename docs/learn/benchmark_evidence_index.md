@@ -185,6 +185,7 @@ V3.0 current app-author guidance:
 - [Goal4587 C ABI stage archive](../reports/goal4587_v3_0_m188_c_abi_stage_archive_2026-06-17.md)
 - [Goal4588 source-tree doctor stage archive](../reports/goal4588_v3_0_m189_source_tree_doctor_stage_archive_2026-06-17.md)
 - [Goal4589 embeddability shipping readiness refresh](../reports/goal4589_v3_0_m190_embeddability_shipping_readiness_refresh_2026-06-17.md)
+- [Goal4590 embeddability architecture status refresh](../reports/goal4590_v3_0_m191_embeddability_architecture_status_refresh_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)

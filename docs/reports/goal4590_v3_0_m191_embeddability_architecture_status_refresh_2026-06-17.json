@@ -1,0 +1,24 @@
+{
+  "checks": {
+    "architecture_doc_names_current_goal4589_status": true,
+    "architecture_doc_names_python_ctypes_examples": true,
+    "architecture_doc_names_stage_archive_target": true,
+    "architecture_doc_preserves_blocked_generated_binding_boundary": true,
+    "architecture_doc_preserves_sdk_and_stable_abi_boundary": true,
+    "shipping_refresh_stage_archive_validated": true
+  },
+  "claim_boundary": {
+    "device_buffer_c_abi_authorized": false,
+    "generated_language_binding_authorized": false,
+    "optix_embree_c_abi_query_authorized": false,
+    "packaged_sdk_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false
+  },
+  "conclusion": "Goal4590 refreshes the main V3 embeddability architecture strategy so its current-progress section reflects the Goal4589 state: C dlopen/direct-link, staged pkg-config, Python ctypes lifecycle/query examples, relocatable stage, and source-tree stage archive are validated, while stable ABI, packaged SDK, generated bindings, device-buffer C ABI, OptiX/Embree C ABI execution, and release claims remain blocked.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4590 / V3 M191",
+  "status": "embeddability_architecture_status_refresh_checked",
+  "version": "rtdl.v3_0.embeddability_architecture_status_refresh.goal4590.v1"
+}
