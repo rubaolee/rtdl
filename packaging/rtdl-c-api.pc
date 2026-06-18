@@ -1,0 +1,10 @@
+prefix=${pcfiledir}/../..
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: RTDL C ABI
+Description: RTDL V3 draft C ABI source-tree staging bundle
+Version: 0.1.2
+Libs: -L${libdir} -lrtdl_c_api
+Cflags: -I${includedir}

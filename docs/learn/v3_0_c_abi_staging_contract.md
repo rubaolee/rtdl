@@ -14,6 +14,7 @@ The target first builds `build/librtdl_c_api.*`, then creates
 
 - `include/rtdl/rtdl.h`
 - `lib/librtdl_c_api.*`
+- `lib/pkgconfig/rtdl-c-api.pc`
 - `share/rtdl/v3_0_c_abi_symbol_manifest.json`
 - `share/rtdl/README.md`
 - `examples/c_api_aabb2_overlap_client.c`
@@ -38,6 +39,13 @@ Expected output:
 
 ```text
 hit_count=1 first_pair=(0,0)
+```
+
+For direct-link C clients that want compile/link flags from the staged bundle:
+
+```bash
+export PKG_CONFIG_PATH="$PWD/build/c_api_stage/lib/pkgconfig"
+pkg-config --cflags --libs rtdl-c-api
 ```
 
 ## Boundary

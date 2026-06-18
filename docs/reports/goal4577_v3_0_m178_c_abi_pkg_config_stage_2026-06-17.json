@@ -1,0 +1,192 @@
+{
+  "checks": {
+    "cc_available": true,
+    "direct_link_client_compiles": true,
+    "direct_link_client_runs": true,
+    "embedding_readme_documents_pkg_config": true,
+    "makefile_stages_pkg_config_file": true,
+    "pkg_config_available": true,
+    "pkg_config_cflags_ok": true,
+    "pkg_config_libs_ok": true,
+    "pkg_config_template_exists": true,
+    "pkg_config_template_exports_cflags_and_libs": true,
+    "pkg_config_template_is_relocatable_to_pcfiledir": true,
+    "pkg_config_template_names_0_1_2": true,
+    "stage_bundle_smoke_ok": true,
+    "staging_contract_documents_pkg_config": true
+  },
+  "claim_boundary": {
+    "language_binding_generated": false,
+    "packaged_sdk_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false,
+    "system_install_authorized": false
+  },
+  "conclusion": "Goal4577 adds staged `pkg-config` metadata for the draft C ABI and validates a direct-link C client built from `pkg-config --cflags` and `--libs` against the staged library. This improves source-tree embeddability but is still not a system install, packaged SDK, stable ABI, language binding, or release claim.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4577 / V3 M178",
+  "pkg_config_smoke": {
+    "cc": "/usr/bin/cc",
+    "cflags_result": {
+      "command": [
+        "/usr/bin/pkg-config",
+        "--cflags",
+        "rtdl-c-api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "-Ibuild/c_api_stage/lib/pkgconfig/../../include"
+    },
+    "compile_result": {
+      "command": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-Ibuild/c_api_stage/lib/pkgconfig/../../include",
+        "/tmp/tmp00xjbau_/direct_link_client.c",
+        "-o",
+        "/tmp/tmp00xjbau_/direct_link_client",
+        "-Lbuild/c_api_stage/lib/pkgconfig/../../lib",
+        "-lrtdl_c_api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": []
+    },
+    "libs_result": {
+      "command": [
+        "/usr/bin/pkg-config",
+        "--libs",
+        "rtdl-c-api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "-Lbuild/c_api_stage/lib/pkgconfig/../../lib -lrtdl_c_api"
+    },
+    "ok": true,
+    "pc_dir": "build/c_api_stage/lib/pkgconfig",
+    "pc_file": "build/c_api_stage/lib/pkgconfig/rtdl-c-api.pc",
+    "pkg_config": "/usr/bin/pkg-config",
+    "run_result": {
+      "command": [
+        "/tmp/tmp00xjbau_/direct_link_client"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "direct_link_ok 0.1.2 ok"
+    },
+    "stage_result": {
+      "cc": "/usr/bin/cc",
+      "compile_result": {
+        "command": [
+          "/usr/bin/cc",
+          "-std=c11",
+          "-I",
+          "build/c_api_stage/include",
+          "build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
+          "-o",
+          "build/c_api_stage/examples/rtdl_c_api_aabb2_overlap_client",
+          "-ldl"
+        ],
+        "ok": true,
+        "returncode": 0,
+        "stderr_tail": [],
+        "stdout_tail": []
+      },
+      "make": "/usr/bin/make",
+      "make_result": {
+        "command": [
+          "/usr/bin/make",
+          "stage-c-api"
+        ],
+        "ok": true,
+        "returncode": 0,
+        "stderr_tail": [],
+        "stdout_tail": [
+          "mkdir -p build",
+          "c++ -std=c++17 -O2 -shared -fPIC -DRTDL_BUILD_SHARED -Iinclude \\",
+          "\tsrc/native/rtdl_c_api.cpp \\",
+          "\t-o build/librtdl_c_api.so",
+          "rm -rf build/c_api_stage",
+          "mkdir -p build/c_api_stage/include/rtdl build/c_api_stage/lib/pkgconfig build/c_api_stage/share/rtdl build/c_api_stage/examples",
+          "cp include/rtdl/rtdl.h build/c_api_stage/include/rtdl/rtdl.h",
+          "cp build/librtdl_c_api.so build/c_api_stage/lib/librtdl_c_api.so",
+          "cp packaging/rtdl-c-api.pc build/c_api_stage/lib/pkgconfig/rtdl-c-api.pc",
+          "cp docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json build/c_api_stage/share/rtdl/v3_0_c_abi_symbol_manifest.json",
+          "cp examples/current/embedding/README.md build/c_api_stage/share/rtdl/README.md",
+          "cp examples/current/embedding/c_api_aabb2_overlap_client.c build/c_api_stage/examples/c_api_aabb2_overlap_client.c"
+        ]
+      },
+      "ok": true,
+      "run_result": {
+        "command": [
+          "build/c_api_stage/examples/rtdl_c_api_aabb2_overlap_client",
+          "build/c_api_stage/lib/librtdl_c_api.so"
+        ],
+        "ok": true,
+        "returncode": 0,
+        "stderr_tail": [],
+        "stdout": "hit_count=1 first_pair=(0,0)"
+      },
+      "stage_dir": "build/c_api_stage",
+      "staged_files": {
+        "example": {
+          "exists": true,
+          "path": "build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
+          "size_bytes": 6127
+        },
+        "header": {
+          "exists": true,
+          "path": "build/c_api_stage/include/rtdl/rtdl.h",
+          "size_bytes": 5129
+        },
+        "library": {
+          "exists": true,
+          "path": "build/c_api_stage/lib/librtdl_c_api.so",
+          "size_bytes": 21880
+        },
+        "manifest": {
+          "exists": true,
+          "path": "build/c_api_stage/share/rtdl/v3_0_c_abi_symbol_manifest.json",
+          "size_bytes": 636
+        },
+        "readme": {
+          "exists": true,
+          "path": "build/c_api_stage/share/rtdl/README.md",
+          "size_bytes": 2141
+        }
+      },
+      "staged_manifest": {
+        "abi_version": "0.1.2",
+        "build_target": "make build-c-api",
+        "header": "include/rtdl/rtdl.h",
+        "stable": false,
+        "status": "draft_source_tree_manifest",
+        "symbols": [
+          "rtdl_abi_version_major",
+          "rtdl_abi_version_minor",
+          "rtdl_abi_version_patch",
+          "rtdl_abi_is_compatible",
+          "rtdl_status_string",
+          "rtdl_context_last_error",
+          "rtdl_context_create",
+          "rtdl_context_destroy",
+          "rtdl_context_set_external_runtime",
+          "rtdl_buffer_import",
+          "rtdl_buffer_export",
+          "rtdl_index_build",
+          "rtdl_query_execute",
+          "rtdl_buffer_destroy",
+          "rtdl_index_destroy",
+          "rtdl_query_destroy"
+        ]
+      }
+    }
+  },
+  "status": "c_abi_pkg_config_stage_checked",
+  "version": "rtdl.v3_0.c_abi_pkg_config_stage.goal4577.v1"
+}
