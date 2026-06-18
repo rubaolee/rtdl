@@ -27,9 +27,9 @@
         "-std=c11",
         "-I",
         "include",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpvdlj9l37\\rtdl_c_client_smoke.c",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp6_4ypkb_\\rtdl_c_client_smoke.c",
         "-o",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpvdlj9l37\\rtdl_c_client_smoke.exe"
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp6_4ypkb_\\rtdl_c_client_smoke.exe"
       ],
       "ok": true,
       "returncode": 0,
@@ -38,8 +38,8 @@
     },
     "client_run": {
       "command": [
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpvdlj9l37\\rtdl_c_client_smoke.exe",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpvdlj9l37\\rtdl_c_api_stub.dll"
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp6_4ypkb_\\rtdl_c_client_smoke.exe",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp6_4ypkb_\\rtdl_c_api_stub.dll"
       ],
       "ok": true,
       "returncode": 0,
@@ -58,7 +58,7 @@
         "src\\native\\rtdl_c_api.cpp",
         "-shared",
         "-o",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpvdlj9l37\\rtdl_c_api_stub.dll"
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp6_4ypkb_\\rtdl_c_api_stub.dll"
       ],
       "ok": true,
       "returncode": 0,
@@ -79,13 +79,13 @@
       "stdout": ""
     }
   },
-  "conclusion": "Goal4553 validates the V3 C ABI stub from a real C11 client: the test builds the stub shared library, compiles a C client, dynamically loads the library, resolves the public symbols, and exercises version, status, context, neutral-buffer lifecycle, and fail-closed index-build calls. It still makes no backend query, DLPack, external-stream, frozen-ABI, or release claim.",
+  "conclusion": "Goal4553 validates the V3 C ABI stub from a real C11 client: the test builds the stub shared library, compiles a C client, dynamically loads the library, resolves the public symbols, and exercises version, status, context, neutral-buffer lifecycle, and a minimal host F32 AABB2 overlap query. It still makes no backend query, DLPack, external-stream, frozen-ABI, or release claim.",
   "date": "2026-06-17",
   "failed_checks": [],
   "goal": "Goal4553 / V3 M154",
   "status": "c_abi_c_client_smoke_checked",
   "validated_capabilities": {
-    "fail_closed_index_build_symbol_validated": true,
+    "host_f32_aabb2_overlap_query_validated": true,
     "non_python_c11_dynamic_client_validated": true,
     "version_status_context_buffer_lifecycle_symbols_validated": true
   },

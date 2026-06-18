@@ -29,10 +29,12 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         and "rtdl_query_execute" in header,
         "source_implements_query_entrypoints": "rtdl_index_build" in source
         and "rtdl_query_execute" in source,
-        "source_fails_closed_as_unsupported": "RTDL_STATUS_ERROR_UNSUPPORTED" in source
-        and "not implemented in the lifecycle stub" in source,
-        "c_client_checks_index_build_unsupported": "rtdl_index_build" in client_smoke
-        and "RTDL_STATUS_ERROR_UNSUPPORTED" in client_smoke,
+        "source_fails_closed_for_unsupported_routes": "RTDL_STATUS_ERROR_UNSUPPORTED" in source
+        and "only host F32 AABB2" in source,
+        "source_contains_minimal_aabb2_query_proof": "RTDL_QUERY_AABB_OVERLAP" in source
+        and "aabb2_overlaps" in source,
+        "c_client_checks_aabb2_query_success": "rtdl_query_execute" in client_smoke
+        and "host_f32_aabb2_overlap_query_validated" in client_smoke,
         "symbol_audit_expects_query_entrypoints": "rtdl_index_build" in symbol_audit
         and "rtdl_query_execute" in symbol_audit
         and "expected_symbol_count_is_15" in symbol_audit,
@@ -46,25 +48,26 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "checks": checks,
         "failed_checks": failed,
         "claim_boundary": {
-            "backend_query_implemented": False,
-            "query_semantics_validated": False,
+            "general_backend_query_implemented": False,
+            "non_aabb2_query_semantics_validated": False,
             "binary_compatibility_frozen": False,
             "dlpack_support_implemented": False,
             "release_authorized": False,
         },
         "conclusion": (
-            "Goal4557 adds draft generic C ABI query entrypoints and verifies that "
-            "the lifecycle stub fails closed with `RTDL_STATUS_ERROR_UNSUPPORTED`. "
-            "This gives non-Python clients a visible future query surface without "
-            "claiming backend query execution, query semantics, DLPack, frozen ABI, "
-            "or release readiness."
+            "Goal4557 adds draft generic C ABI query entrypoints and verifies the "
+            "guardrail around them: the lifecycle stub now contains a minimal host "
+            "F32 AABB2 overlap proof route, while unsupported primitive/query routes "
+            "still fail closed with `RTDL_STATUS_ERROR_UNSUPPORTED`. This does not "
+            "claim broad backend query execution, non-AABB2 semantics, DLPack, frozen "
+            "ABI, or release readiness."
         ),
     }
 
 
 def write_report(packet: dict[str, Any], path: Path) -> None:
     lines = [
-        "# Goal4557 / V3 M158 C ABI Fail-Closed Query Entry Points",
+        "# Goal4557 / V3 M158 C ABI Query Entry Point Guardrail",
         "",
         f"Status: `{packet['status']}`",
         "",
@@ -84,8 +87,9 @@ def write_report(packet: dict[str, Any], path: Path) -> None:
             "",
             "## Boundary",
             "",
-            "- Query entrypoints are present and fail closed in the lifecycle stub.",
-            "- No backend query execution, semantic compatibility, DLPack bridge, frozen ABI, or release claim is authorized.",
+            "- Query entrypoints are present; AABB2 overlap has a minimal host proof route.",
+            "- Unsupported primitive/query routes must fail closed.",
+            "- No broad backend query execution, non-AABB2 semantic compatibility, DLPack bridge, frozen ABI, or release claim is authorized.",
             "",
         ]
     )

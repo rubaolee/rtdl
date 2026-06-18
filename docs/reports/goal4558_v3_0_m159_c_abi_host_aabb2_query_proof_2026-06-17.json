@@ -1,0 +1,24 @@
+{
+  "checks": {
+    "c_client_validated_host_aabb2_query": true,
+    "header_declares_aabb2_and_overlap_query": true,
+    "header_declares_index_and_query_entrypoints": true,
+    "source_copies_host_aabb2_primitives": true,
+    "source_executes_aabb2_overlap_pairs": true,
+    "source_keeps_unsupported_routes_fail_closed": true,
+    "source_returns_u64_pair_buffer": true
+  },
+  "claim_boundary": {
+    "device_buffer_query_validated": false,
+    "embree_backend_query_implemented": false,
+    "general_query_semantics_validated": false,
+    "optix_backend_query_implemented": false,
+    "release_authorized": false
+  },
+  "conclusion": "Goal4558 records the first real V3 C ABI query proof: a non-Python C client can build a host F32 AABB2 index, execute an AABB overlap query, and read a host U64 pair buffer. This is deliberately narrow: it is not OptiX, Embree, device-buffer execution, broad query semantics, or release readiness.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4558 / V3 M159",
+  "status": "c_abi_host_aabb2_query_proof_checked",
+  "version": "rtdl.v3_0.c_abi_host_aabb2_query_proof.goal4558.v1"
+}

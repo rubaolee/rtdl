@@ -109,6 +109,7 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal4555_v3_0_m156_c_abi_header_boundary_refresh_test",
         "tests.goal4556_v3_0_m157_c_abi_exported_symbol_audit_test",
         "tests.goal4557_v3_0_m158_c_abi_fail_closed_query_entrypoints_test",
+        "tests.goal4558_v3_0_m159_c_abi_host_aabb2_query_proof_test",
     ),
     "v0_2_local": (
         "tests.goal110_baseline_runner_backend_test",

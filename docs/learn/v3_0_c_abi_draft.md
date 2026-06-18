@@ -47,6 +47,10 @@ tool and verifies the current lifecycle symbols are exported. That is an
 artifact-surface check, not a frozen binary compatibility promise.
 
 Goal4557 adds draft `rtdl_index_build` and `rtdl_query_execute` entrypoints plus
-generic descriptor shapes. The lifecycle stub exports those symbols but returns
-`RTDL_STATUS_ERROR_UNSUPPORTED`; this is a visible fail-closed query surface,
-not backend query execution.
+generic descriptor shapes, while preserving fail-closed behavior for unsupported
+primitive/query combinations.
+
+Goal4558 turns the first narrow query route on: host F32 AABB2 index build plus
+host F32 AABB overlap query returning host U64 `(query_id, primitive_id)` pairs.
+All other query/backend wording remains bounded by the documented unsupported
+routes and evidence gates.

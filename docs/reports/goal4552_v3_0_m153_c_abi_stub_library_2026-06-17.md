@@ -4,7 +4,7 @@ Status: `c_abi_stub_library_checked`
 
 ## Conclusion
 
-Goal4552 adds a minimal V3 C ABI stub implementation for version, status, context lifecycle, and neutral buffer lifecycle symbols. A temporary shared-library build and ctypes smoke prove the symbols load, but no backend query, DLPack bridge, or frozen compatibility claim is made.
+Goal4552 adds a minimal V3 C ABI stub implementation for version, status, context lifecycle, and neutral buffer lifecycle symbols. A temporary shared-library build and ctypes smoke prove the symbols load. Later goals add a narrow host AABB2 query proof, but this goal still makes no OptiX, Embree, broad backend query, DLPack bridge, or frozen compatibility claim.
 
 ## Checks
 
@@ -24,4 +24,4 @@ Goal4552 adds a minimal V3 C ABI stub implementation for version, status, contex
 ## Boundary
 
 - The stub covers lifecycle and neutral buffer mechanics only.
-- No backend query, non-Python client, DLPack, release, or performance claim is authorized.
+- No OptiX, Embree, broad backend query, DLPack, release, or performance claim is authorized.

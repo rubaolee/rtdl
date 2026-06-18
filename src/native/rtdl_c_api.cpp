@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <new>
+#include <vector>
 
 struct rtdl_context {
   rtdl_context_desc desc;
@@ -9,7 +10,9 @@ struct rtdl_context {
 };
 
 struct rtdl_index {
-  uint32_t reserved;
+  rtdl_primitive_kind primitive_kind;
+  uint64_t primitive_count;
+  std::vector<float> aabb2;
 };
 
 struct rtdl_query {
@@ -35,6 +38,19 @@ void set_error(rtdl_context* context, const char* message) {
   }
   std::strncpy(context->last_error, message, sizeof(context->last_error) - 1);
   context->last_error[sizeof(context->last_error) - 1] = '\0';
+}
+
+bool host_f32_aabb2_view_is_valid(const rtdl_buffer_view& view, uint64_t count) {
+  return view.device_type == RTDL_DEVICE_HOST && view.dtype == RTDL_DTYPE_F32 &&
+      view.data != nullptr && view.byte_count >= count * 4u * sizeof(float);
+}
+
+bool aabb2_overlaps(const float* lhs, const float* rhs) {
+  return lhs[0] <= rhs[2] && lhs[2] >= rhs[0] && lhs[1] <= rhs[3] && lhs[3] >= rhs[1];
+}
+
+void release_owned_u64(void* data, void*) {
+  delete[] static_cast<uint64_t*>(data);
 }
 
 }  // namespace
@@ -172,8 +188,37 @@ RTDL_API rtdl_status rtdl_index_build(
     return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
   }
   *index_out = nullptr;
-  set_error(context, "C ABI backend index build is not implemented in the lifecycle stub");
-  return RTDL_STATUS_ERROR_UNSUPPORTED;
+  if (desc->abi_version_major != RTDL_ABI_VERSION_MAJOR) {
+    set_error(context, "index descriptor ABI major version is unsupported");
+    return RTDL_STATUS_ERROR_UNSUPPORTED;
+  }
+  if (desc->primitive_kind != RTDL_PRIMITIVE_AABB2) {
+    set_error(context, "only host F32 AABB2 index build is implemented by the C ABI proof");
+    return RTDL_STATUS_ERROR_UNSUPPORTED;
+  }
+  if (desc->primitives == nullptr ||
+      !host_f32_aabb2_view_is_valid(desc->primitives->view, desc->primitive_count)) {
+    set_error(context, "AABB2 index build requires a host F32 buffer with four floats per primitive");
+    return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
+  }
+  rtdl_index* index = new (std::nothrow) rtdl_index {};
+  if (index == nullptr) {
+    set_error(context, "could not allocate rtdl_index");
+    return RTDL_STATUS_ERROR_OUT_OF_MEMORY;
+  }
+  const float* data = static_cast<const float*>(desc->primitives->view.data);
+  try {
+    index->primitive_kind = desc->primitive_kind;
+    index->primitive_count = desc->primitive_count;
+    index->aabb2.assign(data, data + desc->primitive_count * 4u);
+  } catch (...) {
+    delete index;
+    set_error(context, "could not copy AABB2 primitive buffer");
+    return RTDL_STATUS_ERROR_OUT_OF_MEMORY;
+  }
+  clear_error(context);
+  *index_out = index;
+  return RTDL_STATUS_OK;
 }
 
 RTDL_API rtdl_status rtdl_query_execute(
@@ -186,8 +231,67 @@ RTDL_API rtdl_status rtdl_query_execute(
     return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
   }
   *result_out = nullptr;
-  set_error(context, "C ABI backend query execution is not implemented in the lifecycle stub");
-  return RTDL_STATUS_ERROR_UNSUPPORTED;
+  if (desc->abi_version_major != RTDL_ABI_VERSION_MAJOR) {
+    set_error(context, "query descriptor ABI major version is unsupported");
+    return RTDL_STATUS_ERROR_UNSUPPORTED;
+  }
+  if (index->primitive_kind != RTDL_PRIMITIVE_AABB2 || desc->query_kind != RTDL_QUERY_AABB_OVERLAP) {
+    set_error(context, "only host F32 AABB2 overlap query is implemented by the C ABI proof");
+    return RTDL_STATUS_ERROR_UNSUPPORTED;
+  }
+  if (desc->inputs == nullptr || !host_f32_aabb2_view_is_valid(desc->inputs->view, desc->input_count)) {
+    set_error(context, "AABB2 overlap query requires a host F32 buffer with four floats per query");
+    return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
+  }
+  const float* queries = static_cast<const float*>(desc->inputs->view.data);
+  std::vector<uint64_t> pairs;
+  try {
+    for (uint64_t query_id = 0; query_id < desc->input_count; ++query_id) {
+      const float* query = queries + query_id * 4u;
+      for (uint64_t primitive_id = 0; primitive_id < index->primitive_count; ++primitive_id) {
+        const float* primitive = index->aabb2.data() + primitive_id * 4u;
+        if (aabb2_overlaps(query, primitive)) {
+          pairs.push_back(query_id);
+          pairs.push_back(primitive_id);
+        }
+      }
+    }
+  } catch (...) {
+    set_error(context, "could not collect AABB2 overlap pairs");
+    return RTDL_STATUS_ERROR_OUT_OF_MEMORY;
+  }
+
+  rtdl_buffer* result = new (std::nothrow) rtdl_buffer {};
+  if (result == nullptr) {
+    set_error(context, "could not allocate query result buffer");
+    return RTDL_STATUS_ERROR_OUT_OF_MEMORY;
+  }
+  uint64_t* rows = nullptr;
+  if (!pairs.empty()) {
+    rows = new (std::nothrow) uint64_t[pairs.size()];
+    if (rows == nullptr) {
+      delete result;
+      set_error(context, "could not allocate query result rows");
+      return RTDL_STATUS_ERROR_OUT_OF_MEMORY;
+    }
+    std::memcpy(rows, pairs.data(), pairs.size() * sizeof(uint64_t));
+  }
+  result->context = context;
+  result->view.data = rows;
+  result->view.byte_count = pairs.size() * sizeof(uint64_t);
+  result->view.device_type = RTDL_DEVICE_HOST;
+  result->view.device_id = 0;
+  result->view.dtype = RTDL_DTYPE_U64;
+  result->view.ndim = 2;
+  result->view.shape[0] = static_cast<int64_t>(pairs.size() / 2u);
+  result->view.shape[1] = 2;
+  result->view.strides[0] = static_cast<int64_t>(2u * sizeof(uint64_t));
+  result->view.strides[1] = static_cast<int64_t>(sizeof(uint64_t));
+  result->view.release = rows == nullptr ? nullptr : release_owned_u64;
+  result->view.user_data = nullptr;
+  clear_error(context);
+  *result_out = result;
+  return RTDL_STATUS_OK;
 }
 
 RTDL_API void rtdl_index_destroy(rtdl_index* index) {

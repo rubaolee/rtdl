@@ -47,18 +47,18 @@
       "returncode": 0,
       "stderr_tail": [],
       "stdout_tail": [
-        "00000000000015f0 T rtdl_buffer_destroy",
-        "0000000000001560 T rtdl_buffer_export",
-        "0000000000001360 T rtdl_buffer_import",
-        "0000000000001230 T rtdl_context_create",
-        "0000000000001300 T rtdl_context_destroy",
-        "0000000000001210 T rtdl_context_last_error",
-        "0000000000001320 T rtdl_context_set_external_runtime",
-        "0000000000001630 T rtdl_index_build",
-        "0000000000001930 T rtdl_index_destroy",
-        "0000000000001950 T rtdl_query_destroy",
-        "00000000000017a0 T rtdl_query_execute",
-        "0000000000001190 T rtdl_status_string"
+        "0000000000001880 T rtdl_buffer_destroy",
+        "00000000000017f0 T rtdl_buffer_export",
+        "0000000000001600 T rtdl_buffer_import",
+        "00000000000014d0 T rtdl_context_create",
+        "00000000000015a0 T rtdl_context_destroy",
+        "00000000000014b0 T rtdl_context_last_error",
+        "00000000000015c0 T rtdl_context_set_external_runtime",
+        "00000000000018c0 T rtdl_index_build",
+        "0000000000001c20 T rtdl_index_destroy",
+        "0000000000001c60 T rtdl_query_destroy",
+        "0000000000001c80 T rtdl_query_execute",
+        "0000000000001430 T rtdl_status_string"
       ]
     },
     "ok": true

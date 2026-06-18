@@ -33,7 +33,8 @@ class Goal4557V30M158CAbiFailClosedQueryEntryPointsTest(unittest.TestCase):
         self.assertIn("rtdl_index_build", header)
         self.assertIn("rtdl_query_execute", header)
         self.assertIn("RTDL_STATUS_ERROR_UNSUPPORTED", source)
-        self.assertIn("not implemented in the lifecycle stub", source)
+        self.assertIn("only host F32 AABB2", source)
+        self.assertIn("aabb2_overlaps", source)
 
     def test_report_index_and_boundaries_are_wired(self) -> None:
         self.assertEqual(self.packet["version"], self.checked_in["version"])

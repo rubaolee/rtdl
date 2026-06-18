@@ -227,7 +227,9 @@ def build_packet(root: Path = Path("."), *, run_compile: bool = False) -> dict[s
         "failed_checks": failed,
         "build_result": build_result,
         "claim_boundary": {
-            "backend_query_implemented": False,
+            "optix_backend_query_implemented": False,
+            "embree_backend_query_implemented": False,
+            "broad_backend_query_implemented": False,
             "binary_compatibility_frozen": False,
             "non_python_client_validated": False,
             "dlpack_support_implemented": False,
@@ -237,8 +239,9 @@ def build_packet(root: Path = Path("."), *, run_compile: bool = False) -> dict[s
             "Goal4552 adds a minimal V3 C ABI stub implementation for version, "
             "status, context lifecycle, and neutral buffer lifecycle symbols. "
             "A temporary shared-library build and ctypes smoke prove the symbols "
-            "load, but no backend query, DLPack bridge, or frozen compatibility "
-            "claim is made."
+            "load. Later goals add a narrow host AABB2 query proof, but this goal "
+            "still makes no OptiX, Embree, broad backend query, DLPack bridge, or "
+            "frozen compatibility claim."
         ),
     }
 
@@ -266,7 +269,7 @@ def write_report(packet: dict[str, Any], path: Path) -> None:
             "## Boundary",
             "",
             "- The stub covers lifecycle and neutral buffer mechanics only.",
-            "- No backend query, non-Python client, DLPack, release, or performance claim is authorized.",
+            "- No OptiX, Embree, broad backend query, DLPack, release, or performance claim is authorized.",
             "",
         ]
     )
