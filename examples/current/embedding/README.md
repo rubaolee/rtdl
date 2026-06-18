@@ -11,6 +11,16 @@ release contract.
 The first example builds a host `F32` AABB2 index, runs one host AABB overlap
 query, and reads a host `U64` `(query_id, primitive_id)` pair buffer.
 
+Current data contract:
+
+- Primitive and query buffers are host `RTDL_DTYPE_F32` AABB2 rows shaped
+  `[count, 4]` as `(min_x, min_y, max_x, max_y)`.
+- The result buffer is host `RTDL_DTYPE_U64`, shaped `[hit_count, 2]`, with
+  rows `(query_id, primitive_id)`.
+- `rtdl_index_build` copies primitive coordinates into the index; imported
+  buffers are caller-owned, while query result buffers are RTDL-owned and must
+  be released with `rtdl_buffer_destroy`.
+
 Linux/pod commands from the repository root:
 
 ```bash

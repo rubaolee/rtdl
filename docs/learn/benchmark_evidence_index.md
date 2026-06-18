@@ -156,6 +156,7 @@ V3.0 current app-author guidance:
 - [Goal4558 C ABI host AABB2 query proof](../reports/goal4558_v3_0_m159_c_abi_host_aabb2_query_proof_2026-06-17.md)
 - [Goal4559 C ABI example client](../reports/goal4559_v3_0_m160_c_abi_example_client_2026-06-17.md)
 - [Goal4560 C ABI embedding README](../reports/goal4560_v3_0_m161_c_abi_embedding_readme_2026-06-17.md)
+- [Goal4561 C ABI AABB2 contract doc](../reports/goal4561_v3_0_m162_c_abi_aabb2_contract_doc_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)

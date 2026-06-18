@@ -58,3 +58,25 @@ routes and evidence gates.
 Goal4559 adds a readable source-tree C example client at
 `examples/current/embedding/c_api_aabb2_overlap_client.c` and validates it on
 the pod against the Makefile-built C ABI library.
+
+## Current Host AABB2 Query Contract
+
+The only implemented query route is deliberately small:
+
+- Context: `rtdl_context_create` with `RTDL_BACKEND_CPU` or `RTDL_BACKEND_AUTO`.
+- Primitive buffer: host `RTDL_DTYPE_F32`, contiguous AABB2 rows shaped
+  `[primitive_count, 4]` as `(min_x, min_y, max_x, max_y)`.
+- Index: `rtdl_index_build` with `RTDL_PRIMITIVE_AABB2`; the implementation
+  copies the primitive coordinates into the index, so the source buffer may be
+  destroyed after a successful build.
+- Query buffer: host `RTDL_DTYPE_F32`, contiguous AABB2 rows shaped
+  `[query_count, 4]` using the same coordinate order.
+- Query: `rtdl_query_execute` with `RTDL_QUERY_AABB_OVERLAP`.
+- Result buffer: host `RTDL_DTYPE_U64`, shaped `[hit_count, 2]`; each row is
+  `(query_id, primitive_id)`.
+- Ownership: imported buffers remain caller-owned; RTDL-owned result buffers
+  must be released with `rtdl_buffer_destroy`.
+
+Unsupported primitive kinds, query kinds, device buffers, OptiX execution,
+Embree execution, and frozen binary compatibility remain outside the current
+contract.

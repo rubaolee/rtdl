@@ -1,0 +1,24 @@
+{
+  "checks": {
+    "c_abi_doc_blocks_unsupported_routes": true,
+    "c_abi_doc_defines_f32_aabb2_input_layout": true,
+    "c_abi_doc_defines_ownership": true,
+    "c_abi_doc_defines_u64_pair_result_layout": true,
+    "c_abi_doc_names_current_contract_section": true,
+    "example_readme_repeats_layout": true,
+    "example_source_matches_documented_layout": true
+  },
+  "claim_boundary": {
+    "device_buffer_query_validated": false,
+    "embree_backend_query_implemented": false,
+    "general_query_contract_frozen": false,
+    "optix_backend_query_implemented": false,
+    "release_authorized": false
+  },
+  "conclusion": "Goal4561 documents the exact current C ABI host AABB2 overlap contract: F32 `[count,4]` input rows, U64 `[hit_count,2]` result rows, ownership, and unsupported-route boundaries. It remains a narrow source-tree V3 draft contract, not a frozen or GPU-backend claim.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4561 / V3 M162",
+  "status": "c_abi_aabb2_contract_doc_checked",
+  "version": "rtdl.v3_0.c_abi_aabb2_contract_doc.goal4561.v1"
+}
