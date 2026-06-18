@@ -60,6 +60,13 @@ until `rtdl_context_destroy`.
 The last-error string is diagnostic text. Callers must not parse it as a stable
 machine contract; use `rtdl_status` for branching.
 
+Successful C ABI calls that mutate a context clear that context's last-error
+string. Failed calls that receive a non-NULL context should set a diagnostic
+last-error string when the failure is attributable to that context. Calls that
+cannot receive a valid context, such as `rtdl_context_last_error(NULL)` or
+context-creation failures before a context exists, can only report status or a
+fixed utility diagnostic.
+
 ## Threading Rules
 
 The current `0.1.3` ABI is reentrant only at the narrow utility level:

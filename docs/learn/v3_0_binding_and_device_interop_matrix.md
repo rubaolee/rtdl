@@ -13,6 +13,7 @@ does not confuse descriptor metadata with executable device memory support.
 | Surface | Current Status | Evidence Role | Boundary |
 | --- | --- | --- | --- |
 | C dynamic-load client | Validated source-tree example. | Loads `librtdl_c_api`, checks version/status/context lifecycle, and runs the host AABB2 route in the current examples. | Not a frozen ABI or installed SDK. |
+| C ABI status/last-error diagnostics | Validated source-tree smoke. | Checks status strings, null-context last-error behavior, selected failure diagnostics, and successful-call last-error clearing through a dynamic-load C client. | Error text remains diagnostic; callers branch on `rtdl_status`, not string contents. |
 | C direct-link client | Validated source-tree and staged handoff example. | Uses staged header/library metadata through direct linking. | Still source-tree staging, not package-manager install. |
 | C examples from archive stage | Validated extracted-archive smoke. | Compiles and runs direct-link, `dlopen` host AABB2, host-runtime metadata, and CUDA descriptor metadata examples from the unpacked archive. | Source-tree archive evidence only, not a packaged SDK. |
 | `pkg-config` stage | Validated source-tree and prefix-stage handoff. | External C clients can obtain include and library flags from the staged `.pc` file. | Does not imply system install or binary compatibility. |

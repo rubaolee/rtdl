@@ -31,7 +31,7 @@ Goal4604 adds a V3 toolchain support matrix and, when run on the pod, records th
 | `learn_readme_links_toolchain_matrix` | `True` |
 | `doctor_requires_toolchain_doc` | `True` |
 | `doctor_doc_names_toolchain_support` | `True` |
-| `v3_current_report_is_goal4603_ready` | `True` |
+| `v3_current_report_is_present_and_matrix_sized` | `True` |
 | `embeddability_delivery_goal4603_accepts` | `True` |
 | `python_probe_available` | `True` |
 | `cc_available` | `True` |

@@ -19,7 +19,7 @@
     "pkg_config_available": true,
     "python_probe_available": true,
     "toolchain_doc_exists_and_sets_boundary": true,
-    "v3_current_report_is_goal4603_ready": true
+    "v3_current_report_is_present_and_matrix_sized": true
   },
   "claim_boundary": {
     "packaged_sdk_authorized": false,

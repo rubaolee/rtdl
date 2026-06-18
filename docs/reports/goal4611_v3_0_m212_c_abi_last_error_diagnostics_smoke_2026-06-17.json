@@ -1,0 +1,115 @@
+{
+  "case_markers": [
+    "status_strings_stable",
+    "null_context_last_error_stable",
+    "initial_last_error_empty",
+    "invalid_buffer_import_sets_message",
+    "successful_buffer_import_clears_error",
+    "cuda_runtime_sets_message",
+    "host_runtime_clears_error",
+    "index_abi_mismatch_sets_message",
+    "successful_index_build_clears_error",
+    "unsupported_query_sets_message",
+    "successful_query_clears_error"
+  ],
+  "checks": {
+    "architecture_doc_current_to_goal4611": true,
+    "benchmark_index_links_goal4611": true,
+    "binding_matrix_names_last_error_diagnostics": true,
+    "c_client_compile_ok": true,
+    "c_client_run_ok": true,
+    "c_compiler_available": true,
+    "client_source_covers_all_lifecycle_markers": true,
+    "cxx_compiler_available": true,
+    "header_declares_status_string_and_last_error": true,
+    "ownership_doc_defines_last_error_clear_rule": true,
+    "ownership_doc_keeps_error_text_non_machine_contract": true,
+    "runtime_validated_all_lifecycle_cases": true,
+    "shared_library_build_ok": true,
+    "source_clears_context_errors_after_successful_mutations": true,
+    "source_has_status_string_and_null_context_diagnostic": true
+  },
+  "claim_boundary": {
+    "all_failure_paths_exhaustively_validated": false,
+    "diagnostic_lifecycle_authorized": true,
+    "performance_wording_authorized": false,
+    "release_authorized": false,
+    "stable_error_text_authorized": false,
+    "thread_safe_last_error_reads_authorized": false
+  },
+  "client_result": {
+    "c_compiler": "/usr/bin/cc",
+    "client_compile": {
+      "command": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-I",
+        "include",
+        "/tmp/tmp5aru32vw/rtdl_c_abi_last_error_diagnostics.c",
+        "-o",
+        "/tmp/tmp5aru32vw/rtdl_c_abi_last_error_diagnostics",
+        "-ldl"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    },
+    "client_run": {
+      "command": [
+        "/tmp/tmp5aru32vw/rtdl_c_abi_last_error_diagnostics",
+        "/tmp/tmp5aru32vw/rtdl_c_api_last_error.so"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "case status_strings_stable: ok\ncase null_context_last_error_stable: ok\ncase initial_last_error_empty: ok\ncase invalid_buffer_import_sets_message: ok\ncase successful_buffer_import_clears_error: ok\ncase cuda_runtime_sets_message: ok\ncase host_runtime_clears_error: ok\ncase index_abi_mismatch_sets_message: ok\ncase successful_index_build_clears_error: ok\ncase unsupported_query_sets_message: ok\ncase successful_query_clears_error: ok\nvalidated_last_error_lifecycle_cases=11\n"
+    },
+    "cxx_compiler": "/usr/bin/c++",
+    "ok": true,
+    "shared_library": {
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-DRTDL_BUILD_SHARED",
+        "-I",
+        "include",
+        "src/native/rtdl_c_api.cpp",
+        "-shared",
+        "-fPIC",
+        "-o",
+        "/tmp/tmp5aru32vw/rtdl_c_api_last_error.so"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    }
+  },
+  "conclusion": "Goal4611 adds a C dynamic-load smoke for the C ABI diagnostic surface: status strings, null-context last-error behavior, selected failure messages, and clearing of last_error after successful context-mutating calls. This makes the embedding boundary easier to debug from Python/Rust/Julia-style bindings while keeping status codes as the only branching contract. It does not freeze exact error text, exhaustively validate every failure path, authorize concurrent last-error reads, or authorize release/performance wording.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4611 / V3 M212",
+  "status": "c_abi_last_error_diagnostics_checked",
+  "support_matrix": {
+    "last_error_cleared_after_successful_context_mutations": "validated_source_tree_smoke",
+    "last_error_set_on_selected_failures": "validated_source_tree_smoke",
+    "last_error_text_as_machine_contract": "blocked_use_status_codes",
+    "null_context_last_error": "validated_source_tree_smoke",
+    "status_string_diagnostics": "validated_source_tree_smoke"
+  },
+  "validated_cases": {
+    "cuda_runtime_sets_message": true,
+    "host_runtime_clears_error": true,
+    "index_abi_mismatch_sets_message": true,
+    "initial_last_error_empty": true,
+    "invalid_buffer_import_sets_message": true,
+    "null_context_last_error_stable": true,
+    "status_strings_stable": true,
+    "successful_buffer_import_clears_error": true,
+    "successful_index_build_clears_error": true,
+    "successful_query_clears_error": true,
+    "unsupported_query_sets_message": true
+  },
+  "version": "rtdl.v3_0.c_abi_last_error_diagnostics.goal4611.v1"
+}

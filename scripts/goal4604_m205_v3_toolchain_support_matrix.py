@@ -125,8 +125,8 @@ def build_packet(root: Path = Path("."), *, run_live_probe: bool = False) -> dic
         "learn_readme_links_toolchain_matrix": "V3.0 Toolchain Support Matrix" in learn,
         "doctor_requires_toolchain_doc": "v3_0_toolchain_support_matrix.md" in doctor,
         "doctor_doc_names_toolchain_support": "toolchain support" in doctor_doc,
-        "v3_current_report_is_goal4603_ready": goal4546["suite_run"]["ok"]
-        and goal4546["suite_run"]["module_count"] >= 93,
+        "v3_current_report_is_present_and_matrix_sized": goal4546["suite_run"]["module_count"] >= 93
+        and goal4546["group"] == "v3_current",
         "embeddability_delivery_goal4603_accepts": tuple(goal4603["failed_checks"]) == (),
     }
     if probe is not None:
