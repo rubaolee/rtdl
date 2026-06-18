@@ -25,6 +25,7 @@ The target first builds `build/librtdl_c_api.*`, then creates
 - `examples/python_ctypes_client.py`
 - `examples/python_ctypes_aabb2_query_client.py`
 - `examples/python_ctypes_cuda_buffer_metadata_client.py`
+- `examples/python_ctypes_dlpack_like_metadata_client.py`
 
 The staged manifest is copied from the current draft source-tree manifest,
 currently `docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json`.
@@ -127,6 +128,8 @@ python3 build/c_api_prefix_stage/usr/local/share/rtdl/examples/python_ctypes_aab
   build/c_api_prefix_stage/usr/local/lib/librtdl_c_api.so
 python3 build/c_api_prefix_stage/usr/local/share/rtdl/examples/python_ctypes_cuda_buffer_metadata_client.py \
   build/c_api_prefix_stage/usr/local/lib/librtdl_c_api.so
+python3 build/c_api_prefix_stage/usr/local/share/rtdl/examples/python_ctypes_dlpack_like_metadata_client.py \
+  build/c_api_prefix_stage/usr/local/lib/librtdl_c_api.so
 ```
 
 Expected outputs include:
@@ -135,6 +138,7 @@ Expected outputs include:
 python_ctypes_ok 0.1.3 ok
 python_ctypes_hit_count=1 first_pair=(0,0)
 python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument
+python_ctypes_dlpack_like_metadata_shape=(2,3) query_route_rejected=invalid argument
 ```
 
 For an external CMake project:
@@ -213,6 +217,21 @@ Expected output:
 python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument
 ```
 
+For a Python `ctypes` client that maps a DLPack-like producer object with
+explicit dtype, shape, device, and pointer metadata into the C ABI neutral
+buffer view:
+
+```bash
+python3 build/c_api_stage/examples/python_ctypes_dlpack_like_metadata_client.py \
+  build/c_api_stage/lib/librtdl_c_api.so
+```
+
+Expected output:
+
+```text
+python_ctypes_dlpack_like_metadata_shape=(2,3) query_route_rejected=invalid argument
+```
+
 For a minimal Python `ctypes` client over the same staged shared library:
 
 ```bash
@@ -263,6 +282,10 @@ python_ctypes_hit_count=1 first_pair=(0,0)
   `__cuda_array_interface__`-style descriptor bridge into the C ABI only; it
   does not validate CUDA pointer ownership, stream ordering, or device
   execution.
+- The Python `ctypes` DLPack-like metadata example validates a DLPack-like
+  producer object with explicit dtype/shape/pointer metadata into the C ABI
+  only; it does not parse arbitrary DLPack capsules, validate CUDA pointer
+  ownership, stream ordering, or device execution.
 - No install prefix, package manager artifact, Python wheel, stable binary
   compatibility, OptiX/Embree C ABI query, device-buffer query route, or
   performance wording is authorized.

@@ -4,7 +4,7 @@ Status: `c_abi_staging_inventory_refresh_checked`
 
 ## Conclusion
 
-Goal4585 refreshes the staging inventory after adding direct-link and Python ctypes embedding examples. Goal4591 later extends this same inventory to include the C host-runtime metadata example, and Goal4592 extends it again for the CUDA buffer-metadata descriptor example. Goal4593 then adds the Python ctypes CUDA metadata bridge. The pod evidence runs `make stage-c-api` and verifies the staged bundle contains every current example. This remains a source-tree staging bundle, not an installed SDK or stable ABI.
+Goal4585 refreshes the staging inventory after adding direct-link and Python ctypes embedding examples. Goal4591 later extends this same inventory to include the C host-runtime metadata example, and Goal4592 extends it again for the CUDA buffer-metadata descriptor example. Goal4593 then adds the Python ctypes CUDA metadata bridge, and Goal4607 adds the Python ctypes DLPack-like metadata bridge. The pod evidence runs `make stage-c-api` and verifies the staged bundle contains every current example. This remains a source-tree staging bundle, not an installed SDK or stable ABI.
 
 ## Examples
 
@@ -17,6 +17,7 @@ Goal4585 refreshes the staging inventory after adding direct-link and Python cty
 | `python_ctypes_client.py` | `True` | `4930` |
 | `python_ctypes_aabb2_query_client.py` | `True` | `8934` |
 | `python_ctypes_cuda_buffer_metadata_client.py` | `True` | `8431` |
+| `python_ctypes_dlpack_like_metadata_client.py` | `True` | `8886` |
 
 ## Checks
 

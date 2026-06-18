@@ -65,8 +65,9 @@ PYTHONPATH=src:. python scripts/run_test_matrix.py --group v3_current
   shared-library/staging/prefix-stage/archive targets, pkg-config and CMake
   metadata, C examples including the host-runtime metadata and CUDA
   buffer-metadata examples, Python `ctypes` lifecycle examples, Python `ctypes`
-  host AABB2 query examples, and Python `ctypes` CUDA metadata examples are
-  present. It does not build `make build-c-api`, `make stage-c-api`,
+  host AABB2 query examples, Python `ctypes` CUDA metadata examples, and
+  Python `ctypes` DLPack-like metadata examples are present. It does not build
+  `make build-c-api`, `make stage-c-api`,
   `make stage-c-api-prefix`, or `make package-c-api-stage`, and it does not run
   CMake.
 - `PASS` on `V3 C ABI docs surface` means the draft, stability,

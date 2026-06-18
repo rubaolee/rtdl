@@ -1,38 +1,49 @@
 {
   "checks": {
-    "all_current_examples_are_staged": true,
-    "embedding_readme_names_all_current_examples": true,
-    "makefile_stages_all_current_examples": true,
+    "benchmark_index_links_goal4607": true,
+    "c_abi_draft_names_goal4607": true,
+    "embedding_readme_documents_dlpack_like_example": true,
+    "example_imports_exports_and_rejects_query_route": true,
+    "example_maps_dlpack_like_object_to_buffer_view": true,
+    "makefile_stages_dlpack_like_example": true,
+    "matrix_doc_separates_dlpack_like_from_full_dlpack": true,
+    "python_ctypes_dlpack_like_metadata_example_exists": true,
+    "source_tree_doctor_requires_example": true,
     "stage_bundle_smoke_ok": true,
-    "stage_target_still_builds_c_api_first": true,
-    "staging_contract_lists_all_current_examples": true
+    "staged_library_exists": true,
+    "staged_python_dlpack_like_metadata_example_exists": true,
+    "staged_python_dlpack_like_metadata_example_runs": true,
+    "staging_contract_documents_dlpack_like_example": true
   },
   "claim_boundary": {
-    "device_buffer_c_abi_authorized": false,
-    "generated_language_binding_authorized": false,
-    "install_prefix_authorized": false,
-    "optix_embree_c_abi_query_authorized": false,
-    "packaged_sdk_authorized": false,
-    "release_authorized": false,
-    "stable_abi_authorized": false
+    "arbitrary_dlpack_capsule_support_authorized": false,
+    "cuda_pointer_ownership_validated": false,
+    "device_buffer_query_route_authorized": false,
+    "dlpack_like_metadata_bridge_authorized": true,
+    "external_cuda_stream_authorized": false,
+    "performance_wording_authorized": false,
+    "public_true_zero_copy_claim_authorized": false,
+    "release_authorized": false
   },
-  "conclusion": "Goal4585 refreshes the staging inventory after adding direct-link and Python ctypes embedding examples. Goal4591 later extends this same inventory to include the C host-runtime metadata example, and Goal4592 extends it again for the CUDA buffer-metadata descriptor example. Goal4593 then adds the Python ctypes CUDA metadata bridge, and Goal4607 adds the Python ctypes DLPack-like metadata bridge. The pod evidence runs `make stage-c-api` and verifies the staged bundle contains every current example. This remains a source-tree staging bundle, not an installed SDK or stable ABI.",
+  "conclusion": "Goal4607 validates a Python ctypes DLPack-like metadata bridge into the V3 C ABI neutral buffer descriptor path. The staged example imports and exports a DLPack-like CUDA descriptor and proves the current host AABB2 query route still rejects it. This is metadata only: it does not parse arbitrary DLPack capsules, validate CUDA pointer ownership, synchronize streams, execute device-buffer queries, authorize true-zero-copy wording, or authorize performance wording.",
   "date": "2026-06-17",
-  "examples": [
-    "c_api_aabb2_overlap_client.c",
-    "c_api_direct_link_client.c",
-    "c_api_host_runtime_client.c",
-    "c_api_cuda_buffer_metadata_client.c",
-    "python_ctypes_client.py",
-    "python_ctypes_aabb2_query_client.py",
-    "python_ctypes_cuda_buffer_metadata_client.py",
-    "python_ctypes_dlpack_like_metadata_client.py"
-  ],
   "failed_checks": [],
-  "goal": "Goal4585 / V3 M186",
-  "stage_inventory": {
-    "all_examples_staged": true,
+  "goal": "Goal4607 / V3 M208",
+  "python_ctypes_dlpack_like_metadata_smoke": {
+    "library": "build/c_api_stage/lib/librtdl_c_api.so",
     "ok": true,
+    "python": "/usr/bin/python3",
+    "run_result": {
+      "command": [
+        "/usr/bin/python3",
+        "build/c_api_stage/examples/python_ctypes_dlpack_like_metadata_client.py",
+        "build/c_api_stage/lib/librtdl_c_api.so"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "python_ctypes_dlpack_like_metadata_shape=(2,3) query_route_rejected=invalid argument"
+    },
     "stage_result": {
       "cc": "/usr/bin/cc",
       "compile_result": {
@@ -142,49 +153,17 @@
         ]
       }
     },
-    "staged_examples": {
-      "c_api_aabb2_overlap_client.c": {
-        "exists": true,
-        "path": "build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
-        "size_bytes": 6127
-      },
-      "c_api_cuda_buffer_metadata_client.c": {
-        "exists": true,
-        "path": "build/c_api_stage/examples/c_api_cuda_buffer_metadata_client.c",
-        "size_bytes": 4158
-      },
-      "c_api_direct_link_client.c": {
-        "exists": true,
-        "path": "build/c_api_stage/examples/c_api_direct_link_client.c",
-        "size_bytes": 990
-      },
-      "c_api_host_runtime_client.c": {
-        "exists": true,
-        "path": "build/c_api_stage/examples/c_api_host_runtime_client.c",
-        "size_bytes": 2763
-      },
-      "python_ctypes_aabb2_query_client.py": {
-        "exists": true,
-        "path": "build/c_api_stage/examples/python_ctypes_aabb2_query_client.py",
-        "size_bytes": 8934
-      },
-      "python_ctypes_client.py": {
-        "exists": true,
-        "path": "build/c_api_stage/examples/python_ctypes_client.py",
-        "size_bytes": 4930
-      },
-      "python_ctypes_cuda_buffer_metadata_client.py": {
-        "exists": true,
-        "path": "build/c_api_stage/examples/python_ctypes_cuda_buffer_metadata_client.py",
-        "size_bytes": 8431
-      },
-      "python_ctypes_dlpack_like_metadata_client.py": {
-        "exists": true,
-        "path": "build/c_api_stage/examples/python_ctypes_dlpack_like_metadata_client.py",
-        "size_bytes": 8886
-      }
-    }
+    "staged_example": "build/c_api_stage/examples/python_ctypes_dlpack_like_metadata_client.py"
   },
-  "status": "c_abi_staging_inventory_refresh_checked",
-  "version": "rtdl.v3_0.c_abi_staging_inventory_refresh.goal4585.v1"
+  "status": "python_ctypes_dlpack_like_metadata_bridge_checked",
+  "support_matrix": {
+    "arbitrary_dlpack_capsule_parser": "blocked",
+    "cuda_pointer_ownership_validation": "blocked",
+    "dlpack_like_descriptor_host_aabb2_query_route": "rejected_invalid_argument",
+    "dlpack_like_to_c_abi_descriptor": "validated_metadata_only",
+    "external_cuda_stream_ordering": "blocked",
+    "public_true_zero_copy_claim": "blocked",
+    "python_ctypes_dlpack_like_descriptor_import_export": "validated"
+  },
+  "version": "rtdl.v3_0.python_ctypes_dlpack_like_metadata_bridge.goal4607.v1"
 }

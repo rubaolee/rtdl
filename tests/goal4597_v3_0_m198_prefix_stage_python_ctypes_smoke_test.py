@@ -41,6 +41,10 @@ class Goal4597V30M198PrefixStagePythonCtypesSmokeTest(unittest.TestCase):
             "python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument",
             by_script["python_ctypes_cuda_buffer_metadata_client.py"]["stdout"],
         )
+        self.assertEqual(
+            "python_ctypes_dlpack_like_metadata_shape=(2,3) query_route_rejected=invalid argument",
+            by_script["python_ctypes_dlpack_like_metadata_client.py"]["stdout"],
+        )
         for row in by_script.values():
             self.assertTrue(row["ok"], row["script"])
 

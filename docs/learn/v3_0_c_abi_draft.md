@@ -124,6 +124,14 @@ C ABI neutral buffer view. It validates descriptor import/export and current
 host-route rejection from Python, without validating CUDA pointer ownership,
 stream ordering, or device-buffer query execution.
 
+Goal4607 adds
+`examples/current/embedding/python_ctypes_dlpack_like_metadata_client.py`, a
+Python `ctypes` bridge from a DLPack-like producer object with explicit
+dtype/shape/pointer metadata into the C ABI neutral buffer view. It validates
+descriptor import/export and current host-route rejection from Python, without
+parsing arbitrary DLPack capsules, validating CUDA pointer ownership, stream
+ordering, or device-buffer query execution.
+
 Goal4605 adds the
 [V3.0 Binding And Device Interop Matrix](v3_0_binding_and_device_interop_matrix.md),
 which consolidates the current C, Python `ctypes`, pkg-config, CMake, CUDA

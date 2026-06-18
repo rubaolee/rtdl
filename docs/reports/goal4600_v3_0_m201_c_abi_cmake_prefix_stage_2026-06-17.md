@@ -10,7 +10,7 @@ Goal4600 adds relocatable CMake package metadata to the C ABI stage and prefix-s
 
 - OK: `True`
 - CMake: `/usr/bin/cmake`
-- Prefix dir: `/tmp/rtdl_c_api_cmake_prefix_j1p4gt73/stage/opt/rtdl`
+- Prefix dir: `/tmp/rtdl_c_api_cmake_prefix_osq1ador/stage/opt/rtdl`
 - Output: `cmake_direct_link_ok 0.1.3 ok`
 
 ## Checks

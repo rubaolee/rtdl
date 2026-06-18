@@ -21,6 +21,7 @@ does not confuse descriptor metadata with executable device memory support.
 | Host external runtime metadata | Validated fail-closed metadata route. | Accepts host runtime metadata and rejects malformed/CUDA runtime handles. | No external CUDA stream adoption. |
 | CUDA buffer descriptor import/export | Validated metadata-only C route. | Preserves pointer, dtype, shape, strides, device id, and release callback without dereferencing the pointer. | No CUDA pointer ownership proof, no stream ordering proof, no device-buffer query execution. |
 | `__cuda_array_interface__` to C ABI descriptor | Validated metadata-only Python bridge. | Python `ctypes` can translate a CUDA-array-interface style object into the neutral C ABI buffer descriptor. | The resulting CUDA descriptor is rejected by the current host query route. |
+| DLPack-like object to C ABI descriptor | Validated metadata-only Python bridge. | Python `ctypes` can translate a DLPack-like producer object with explicit dtype, shape, device, and pointer metadata into the neutral C ABI buffer descriptor. | It does not parse arbitrary DLPack capsules, validate ownership, synchronize streams, or execute device-buffer query routes. |
 | DLPack | Validated protocol classification/descriptor gate; runtime still blocked. | The neutral-buffer seam can classify DLPack-like objects and produce descriptor metadata in synthetic tests. | No implemented C ABI DLPack adapter, device-buffer route, external stream ordering, or true-zero-copy proof. |
 | Device-buffer query route | Blocked. | Future runtime target. | No current C ABI query route consumes CUDA/HIP/Metal/Vulkan buffers. |
 | External CUDA stream ordering | Blocked. | Future runtime target. | No same-stream/event/transfer-counter proof at the C ABI boundary. |
@@ -32,6 +33,8 @@ does not confuse descriptor metadata with executable device memory support.
   `ctypes` evidence.
 - Say "CUDA descriptor metadata" or "metadata-only CUDA buffer descriptor" for
   the current CUDA pointer handoff.
+- Say "DLPack-like descriptor metadata" for the current Python `ctypes`
+  DLPack-like bridge.
 - Do not say DLPack support, true zero-copy support, device-resident query
   route, external CUDA stream adoption, generated bindings, packaged SDK,
   stable ABI, release, or performance claim based only on this matrix.

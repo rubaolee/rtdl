@@ -10,7 +10,7 @@ Goal4595 adds and validates `make stage-c-api-prefix`, a DESTDIR/prefix-style C 
 
 - OK: `True`
 - Prefix: `/opt/rtdl`
-- Prefix dir: `/tmp/rtdl_c_api_prefix_stage_ykfj9ez8/opt/rtdl`
+- Prefix dir: `/tmp/rtdl_c_api_prefix_stage_so63eem3/opt/rtdl`
 - Output: `direct_link_ok 0.1.3 ok`
 
 ## Checks

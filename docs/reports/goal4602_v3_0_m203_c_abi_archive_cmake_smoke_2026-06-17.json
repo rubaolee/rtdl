@@ -2,12 +2,12 @@
   "archive_cmake_smoke": {
     "archive": "build/rtdl-c-api-stage-0.1.3.tar.gz",
     "archive_exists": true,
-    "archive_size_bytes": 18846,
+    "archive_size_bytes": 19477,
     "build_result": {
       "command": [
         "/usr/bin/cmake",
         "--build",
-        "/tmp/rtdl_c_api_archive_cmake_yvxjb7l0/build"
+        "/tmp/rtdl_c_api_archive_cmake_zj6er5o3/build"
       ],
       "ok": true,
       "returncode": 0,
@@ -24,10 +24,10 @@
       "command": [
         "/usr/bin/cmake",
         "-S",
-        "/tmp/rtdl_c_api_archive_cmake_yvxjb7l0/consumer",
+        "/tmp/rtdl_c_api_archive_cmake_zj6er5o3/consumer",
         "-B",
-        "/tmp/rtdl_c_api_archive_cmake_yvxjb7l0/build",
-        "-DCMAKE_PREFIX_PATH=/tmp/rtdl_c_api_archive_cmake_yvxjb7l0/extracted/rtdl-c-api-stage-0.1.3"
+        "/tmp/rtdl_c_api_archive_cmake_zj6er5o3/build",
+        "-DCMAKE_PREFIX_PATH=/tmp/rtdl_c_api_archive_cmake_zj6er5o3/extracted/rtdl-c-api-stage-0.1.3"
       ],
       "ok": true,
       "returncode": 0,
@@ -39,12 +39,12 @@
         "-- Check for working C compiler: /usr/bin/cc - skipped",
         "-- Detecting C compile features",
         "-- Detecting C compile features - done",
-        "-- Configuring done (0.4s)",
+        "-- Configuring done (0.3s)",
         "-- Generating done (0.0s)",
-        "-- Build files have been written to: /tmp/rtdl_c_api_archive_cmake_yvxjb7l0/build"
+        "-- Build files have been written to: /tmp/rtdl_c_api_archive_cmake_zj6er5o3/build"
       ]
     },
-    "extract_dir": "/tmp/rtdl_c_api_archive_cmake_yvxjb7l0/extracted/rtdl-c-api-stage-0.1.3",
+    "extract_dir": "/tmp/rtdl_c_api_archive_cmake_zj6er5o3/extracted/rtdl-c-api-stage-0.1.3",
     "make": "/usr/bin/make",
     "make_result": {
       "command": [
@@ -55,7 +55,6 @@
       "returncode": 0,
       "stderr_tail": [],
       "stdout_tail": [
-        "cp examples/current/embedding/README.md build/c_api_stage/share/rtdl/README.md",
         "cp examples/current/embedding/c_api_aabb2_overlap_client.c build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
         "cp examples/current/embedding/c_api_direct_link_client.c build/c_api_stage/examples/c_api_direct_link_client.c",
         "cp examples/current/embedding/c_api_host_runtime_client.c build/c_api_stage/examples/c_api_host_runtime_client.c",
@@ -63,6 +62,7 @@
         "cp examples/current/embedding/python_ctypes_client.py build/c_api_stage/examples/python_ctypes_client.py",
         "cp examples/current/embedding/python_ctypes_aabb2_query_client.py build/c_api_stage/examples/python_ctypes_aabb2_query_client.py",
         "cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py build/c_api_stage/examples/python_ctypes_cuda_buffer_metadata_client.py",
+        "cp examples/current/embedding/python_ctypes_dlpack_like_metadata_client.py build/c_api_stage/examples/python_ctypes_dlpack_like_metadata_client.py",
         "rm -rf build/rtdl-c-api-stage-0.1.3",
         "mkdir -p build/rtdl-c-api-stage-0.1.3",
         "cp -R build/c_api_stage/. build/rtdl-c-api-stage-0.1.3/",
@@ -72,7 +72,7 @@
     "ok": true,
     "run_result": {
       "command": [
-        "/tmp/rtdl_c_api_archive_cmake_yvxjb7l0/build/rtdl_archive_cmake_consumer"
+        "/tmp/rtdl_c_api_archive_cmake_zj6er5o3/build/rtdl_archive_cmake_consumer"
       ],
       "ok": true,
       "returncode": 0,

@@ -202,6 +202,7 @@ V3.0 current app-author guidance:
 - [Goal4604 toolchain support matrix](../reports/goal4604_v3_0_m205_toolchain_support_matrix_2026-06-17.md)
 - [Goal4605 binding/device interop matrix](../reports/goal4605_v3_0_m206_binding_device_interop_matrix_2026-06-17.md)
 - [Goal4606 neutral buffer protocol gate](../reports/goal4606_v3_0_m207_neutral_buffer_protocol_gate_2026-06-17.md)
+- [Goal4607 Python ctypes DLPack-like metadata bridge](../reports/goal4607_v3_0_m208_python_ctypes_dlpack_like_metadata_bridge_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)

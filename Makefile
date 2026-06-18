@@ -232,6 +232,7 @@ stage-c-api: build-c-api
 	cp examples/current/embedding/python_ctypes_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_client.py
 	cp examples/current/embedding/python_ctypes_aabb2_query_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_aabb2_query_client.py
 	cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_cuda_buffer_metadata_client.py
+	cp examples/current/embedding/python_ctypes_dlpack_like_metadata_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_dlpack_like_metadata_client.py
 
 stage-c-api-prefix: build-c-api
 	rm -rf $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)
@@ -249,6 +250,7 @@ stage-c-api-prefix: build-c-api
 	cp examples/current/embedding/python_ctypes_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_client.py
 	cp examples/current/embedding/python_ctypes_aabb2_query_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_aabb2_query_client.py
 	cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_cuda_buffer_metadata_client.py
+	cp examples/current/embedding/python_ctypes_dlpack_like_metadata_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_dlpack_like_metadata_client.py
 
 package-c-api-stage: stage-c-api
 	rm -rf $(BUILD_DIR)/$(C_API_STAGE_ARCHIVE_ROOT)

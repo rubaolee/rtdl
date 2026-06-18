@@ -10,7 +10,7 @@ Goal4602 validates that the movable source-tree C ABI archive is consumable by a
 
 - OK: `True`
 - CMake: `/usr/bin/cmake`
-- Extract dir: `/tmp/rtdl_c_api_archive_cmake_yvxjb7l0/extracted/rtdl-c-api-stage-0.1.3`
+- Extract dir: `/tmp/rtdl_c_api_archive_cmake_zj6er5o3/extracted/rtdl-c-api-stage-0.1.3`
 - Output: `cmake_archive_direct_link_ok 0.1.3 ok`
 
 ## Checks

@@ -32,6 +32,10 @@ PYTHON_EXAMPLES = (
         "python_ctypes_cuda_buffer_metadata_client.py",
         "python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument",
     ),
+    (
+        "python_ctypes_dlpack_like_metadata_client.py",
+        "python_ctypes_dlpack_like_metadata_shape=(2,3) query_route_rejected=invalid argument",
+    ),
 )
 
 
@@ -139,6 +143,7 @@ def build_packet(root: Path = Path("."), *, run_smoke: bool = False) -> dict[str
         "prefix_stage_copies_python_ctypes_examples": "python_ctypes_client.py" in makefile
         and "python_ctypes_aabb2_query_client.py" in makefile
         and "python_ctypes_cuda_buffer_metadata_client.py" in makefile
+        and "python_ctypes_dlpack_like_metadata_client.py" in makefile
         and "/share/rtdl/examples" in makefile,
         "staging_contract_documents_prefix_python_examples": "python3 build/c_api_prefix_stage/usr/local/share/rtdl/examples/python_ctypes_client.py"
         in staging
@@ -168,6 +173,10 @@ def build_packet(root: Path = Path("."), *, run_smoke: bool = False) -> dict[str
                     row["script"] == "python_ctypes_cuda_buffer_metadata_client.py" and row["ok"]
                     for row in smoke["example_runs"]
                 ),
+                "python_ctypes_dlpack_like_metadata_stdout_matches": any(
+                    row["script"] == "python_ctypes_dlpack_like_metadata_client.py" and row["ok"]
+                    for row in smoke["example_runs"]
+                ),
             }
         )
     failed = tuple(name for name, passed in checks.items() if not passed)
@@ -192,7 +201,8 @@ def build_packet(root: Path = Path("."), *, run_smoke: bool = False) -> dict[str
             "Goal4597 validates that the prefix-style C ABI stage is usable from "
             "the staged Python `ctypes` examples, not only from a direct-link C "
             "client. The pod evidence builds a temporary `/opt/rtdl` prefix "
-            "stage and runs the lifecycle, host AABB2 query, and CUDA metadata "
+            "stage and runs the lifecycle, host AABB2 query, CUDA metadata, "
+            "and DLPack-like metadata "
             "bridge examples against the staged shared library. This authorizes "
             "a prefix-stage Python `ctypes` smoke only; it is not a generated "
             "Python package, system install, packaged SDK, stable ABI, or "
