@@ -22,9 +22,9 @@
         "-I",
         "include",
         "-c",
-        "/tmp/tmp4zazdjbh/rtdl_header_smoke.c",
+        "/tmp/tmpd4hu1772/rtdl_header_smoke.c",
         "-o",
-        "/tmp/tmp4zazdjbh/rtdl_header_smoke_c.o"
+        "/tmp/tmpd4hu1772/rtdl_header_smoke_c.o"
       ],
       "ok": true,
       "returncode": 0,
@@ -39,9 +39,9 @@
         "-I",
         "include",
         "-c",
-        "/tmp/tmp4zazdjbh/rtdl_header_smoke.cpp",
+        "/tmp/tmpd4hu1772/rtdl_header_smoke.cpp",
         "-o",
-        "/tmp/tmp4zazdjbh/rtdl_header_smoke_cxx.o"
+        "/tmp/tmpd4hu1772/rtdl_header_smoke_cxx.o"
       ],
       "ok": true,
       "returncode": 0,

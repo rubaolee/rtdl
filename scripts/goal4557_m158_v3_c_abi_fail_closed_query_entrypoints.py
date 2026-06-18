@@ -37,7 +37,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         and "host_f32_aabb2_overlap_query_validated" in client_smoke,
         "symbol_audit_expects_query_entrypoints": "rtdl_index_build" in symbol_audit
         and "rtdl_query_execute" in symbol_audit
-        and "expected_symbol_count_is_16" in symbol_audit,
+        and "expected_symbol_count_is_18" in symbol_audit,
     }
     failed = tuple(name for name, passed in checks.items() if not passed)
     return {

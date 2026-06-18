@@ -14,7 +14,7 @@ rules.
 Use [V3.0 C ABI Staging Contract](v3_0_c_abi_staging_contract.md) for the
 source-tree `make stage-c-api` bundle boundary.
 The current draft symbol list is tracked in
-[v3_0_c_abi_symbol_manifest_v0_1_2.json](v3_0_c_abi_symbol_manifest_v0_1_2.json).
+[v3_0_c_abi_symbol_manifest_v0_1_3.json](v3_0_c_abi_symbol_manifest_v0_1_3.json).
 
 ## Scope
 
@@ -22,6 +22,8 @@ The current draft symbol list is tracked in
 - C status codes and explicit last-error retrieval.
 - Versioned ABI macros, version functions, and the draft
   `rtdl_abi_is_compatible(major, minor, patch)` guard.
+- Capability queries for the currently supported backend and primitive/query
+  route surface.
 - Declared external runtime handle shape: device type, device id, context,
   stream, and user data. Runtime adoption is not implemented in the current
   proof; external runtime handles remain fail-closed.
@@ -74,6 +76,13 @@ Goal4576 adds `make stage-c-api`, which stages the draft C ABI header, shared
 library, current symbol manifest, README, and example client under
 `build/c_api_stage`. This is still a source-tree staging bundle, not an install
 or package contract.
+
+Goal4578 adds draft capability queries:
+`rtdl_backend_is_supported(backend)` and
+`rtdl_route_is_supported(primitive_kind, query_kind, device_type)`. They report
+the current source-tree support surface only: AUTO/CPU backend selection and the
+host AABB2 overlap route. They do not enable OptiX/Embree C ABI execution,
+device-buffer routes, or dynamic backend loading.
 
 ## Current Host AABB2 Query Contract
 

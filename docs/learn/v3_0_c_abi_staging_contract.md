@@ -20,7 +20,7 @@ The target first builds `build/librtdl_c_api.*`, then creates
 - `examples/c_api_aabb2_overlap_client.c`
 
 The staged manifest is copied from the current draft source-tree manifest,
-currently `docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json`.
+currently `docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json`.
 
 ## Example
 

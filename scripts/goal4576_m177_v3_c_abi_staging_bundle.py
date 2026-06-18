@@ -17,7 +17,7 @@ STAGING_CONTRACT = Path("docs/learn/v3_0_c_abi_staging_contract.md")
 C_ABI_DRAFT = Path("docs/learn/v3_0_c_abi_draft.md")
 LEARN_README = Path("docs/learn/README.md")
 EMBEDDING_README = Path("examples/current/embedding/README.md")
-CURRENT_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json")
+CURRENT_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json")
 
 
 def _shared_suffix() -> str:
@@ -157,7 +157,7 @@ def run_stage(root: Path) -> dict[str, Any]:
         result["make_result"]["ok"]
         and all(item["exists"] and item["size_bytes"] > 0 for item in staged_files.values())
         and staged_manifest is not None
-        and staged_manifest.get("abi_version") == "0.1.2"
+        and staged_manifest.get("abi_version") == "0.1.3"
         and result["compile_result"]["ok"]
         and result["run_result"]["ok"]
         and result["run_result"]["stdout"] == "hit_count=1 first_pair=(0,0)"
@@ -188,13 +188,13 @@ def build_packet(root: Path = Path("."), *, run_make: bool = False) -> dict[str,
             )
         ),
         "staging_contract_documents_bundle": "build/c_api_stage" in staging_contract
-        and "v3_0_c_abi_symbol_manifest_v0_1_2.json" in staging_contract,
+        and "v3_0_c_abi_symbol_manifest_v0_1_3.json" in staging_contract,
         "c_abi_draft_links_staging_contract": "v3_0_c_abi_staging_contract.md" in c_abi
         and "Goal4576" in c_abi,
         "learn_readme_links_staging_contract": "V3.0 C ABI Staging Contract" in learn,
         "embedding_readme_mentions_stage_command": "make stage-c-api" in embedding
         and "build/c_api_stage" in embedding,
-        "current_manifest_is_0_1_2": manifest["abi_version"] == "0.1.2",
+        "current_manifest_is_0_1_3": manifest["abi_version"] == "0.1.3",
     }
     if stage_result is not None:
         checks.update(
@@ -208,7 +208,7 @@ def build_packet(root: Path = Path("."), *, run_make: bool = False) -> dict[str,
                 ),
                 "stage_manifest_matches_current_version": bool(
                     stage_result["staged_manifest"]
-                    and stage_result["staged_manifest"].get("abi_version") == "0.1.2"
+                    and stage_result["staged_manifest"].get("abi_version") == "0.1.3"
                 ),
                 "staged_example_compiles": bool(stage_result["compile_result"] and stage_result["compile_result"]["ok"]),
                 "staged_example_runs_expected_query": bool(

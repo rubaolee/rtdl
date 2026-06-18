@@ -1,7 +1,7 @@
 # V3.0 C ABI Stability Policy
 
 Status: draft policy for the V3 embeddability track. The current C ABI is
-versioned as `0.1.2`, source-tree only, and not frozen.
+versioned as `0.1.3`, source-tree only, and not frozen.
 
 This page defines what the current C ABI does and does not promise while RTDL
 moves from a proof boundary toward a stable embedding contract.
@@ -12,7 +12,7 @@ moves from a proof boundary toward a stable embedding contract.
 - Build target: `make build-c-api`.
 - Current library source: `src/native/rtdl_c_api.cpp`.
 - Draft symbol manifest:
-  [`v3_0_c_abi_symbol_manifest_v0_1_2.json`](v3_0_c_abi_symbol_manifest_v0_1_2.json).
+  [`v3_0_c_abi_symbol_manifest_v0_1_3.json`](v3_0_c_abi_symbol_manifest_v0_1_3.json).
 - Ownership/threading contract:
   [`v3_0_c_abi_ownership_threading_contract.md`](v3_0_c_abi_ownership_threading_contract.md).
 - Source-tree staging contract:
@@ -30,7 +30,7 @@ source-tree boundary.
 
 The current library exposes `rtdl_abi_is_compatible(major, minor, patch)` so
 embedding clients can fail closed before using a mismatched header/library pair.
-For the `0.1.2` draft, compatibility means:
+For the `0.1.3` draft, compatibility means:
 
 - `major == RTDL_ABI_VERSION_MAJOR`.
 - `minor == RTDL_ABI_VERSION_MINOR`.

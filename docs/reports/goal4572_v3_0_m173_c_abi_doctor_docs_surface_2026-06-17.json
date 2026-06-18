@@ -64,7 +64,7 @@
         "status": "pass"
       },
       {
-        "detail": "scripts/run_test_matrix.py --group v3_current (66 modules)",
+        "detail": "scripts/run_test_matrix.py --group v3_current (68 modules)",
         "name": "V3 current test matrix",
         "required": true,
         "status": "pass"
@@ -169,7 +169,7 @@
     "docs/learn/v3_0_c_abi_ownership_threading_contract.md": true,
     "docs/learn/v3_0_c_abi_stability_policy.md": true,
     "docs/learn/v3_0_c_abi_staging_contract.md": true,
-    "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json": true,
+    "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json": true,
     "docs/learn/v3_0_zero_copy_interop_contract.md": true
   },
   "status": "c_abi_doctor_docs_surface_checked",

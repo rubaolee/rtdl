@@ -38,7 +38,7 @@ extern "C" {
 
 #define RTDL_ABI_VERSION_MAJOR 0
 #define RTDL_ABI_VERSION_MINOR 1
-#define RTDL_ABI_VERSION_PATCH 2
+#define RTDL_ABI_VERSION_PATCH 3
 
 typedef struct rtdl_context rtdl_context;
 typedef struct rtdl_index rtdl_index;
@@ -152,6 +152,11 @@ RTDL_API uint32_t rtdl_abi_is_compatible(
     uint32_t major,
     uint32_t minor,
     uint32_t patch);
+RTDL_API uint32_t rtdl_backend_is_supported(rtdl_backend backend);
+RTDL_API uint32_t rtdl_route_is_supported(
+    rtdl_primitive_kind primitive_kind,
+    rtdl_query_kind query_kind,
+    rtdl_device_type device_type);
 
 RTDL_API const char* rtdl_status_string(rtdl_status status);
 RTDL_API const char* rtdl_context_last_error(const rtdl_context* context);

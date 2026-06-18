@@ -18,8 +18,8 @@
     "stable_abi_authorized": false
   },
   "conclusion": "Goal4574 refreshes the draft C ABI patch version to `0.1.1` after the Goal4573 backend/runtime fail-closed semantic change. The symbol set remains unchanged from `0.1.0`, and the `0.1.1` manifest remains as historical evidence even after later current ABI refreshes.",
-  "current_abi_version": "0.1.2",
-  "current_manifest": "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json",
+  "current_abi_version": "0.1.3",
+  "current_manifest": "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json",
   "date": "2026-06-17",
   "failed_checks": [],
   "goal": "Goal4574 / V3 M175",

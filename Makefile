@@ -157,7 +157,7 @@ ADAPTIVE_CXXFLAGS := -std=c++17 -O3 -shared -fPIC
 CXX_C_API ?= c++
 C_API_CXXFLAGS := -std=c++17 -O2 -shared -fPIC -DRTDL_BUILD_SHARED -Iinclude
 C_API_STAGE_DIR ?= $(BUILD_DIR)/c_api_stage
-C_API_STAGE_MANIFEST := docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json
+C_API_STAGE_MANIFEST := docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json
 C_API_PKG_CONFIG := packaging/rtdl-c-api.pc
 
 .PHONY: help build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api stage-c-api run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean

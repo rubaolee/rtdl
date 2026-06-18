@@ -16,7 +16,8 @@ HEADER = Path("include/rtdl/rtdl.h")
 SOURCE = Path("src/native/rtdl_c_api.cpp")
 POLICY = Path("docs/learn/v3_0_c_abi_stability_policy.md")
 C_ABI_DRAFT = Path("docs/learn/v3_0_c_abi_draft.md")
-CURRENT_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json")
+CURRENT_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json")
+M176_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json")
 PREVIOUS_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_1.json")
 GOAL4552 = Path("docs/reports/goal4552_v3_0_m153_c_abi_stub_library_2026-06-17.json")
 GOAL4556 = Path("docs/reports/goal4556_v3_0_m157_c_abi_exported_symbol_audit_2026-06-17.json")
@@ -36,6 +37,11 @@ def _load_json(root: Path, path: Path) -> dict[str, Any]:
     return json.loads((root / path).read_text(encoding="utf-8"))
 
 
+def _version_tuple(version: str) -> tuple[int, int, int]:
+    major, minor, patch = version.split(".")
+    return int(major), int(minor), int(patch)
+
+
 def _compat_smoke_checks(goal4552: dict[str, Any]) -> dict[str, bool]:
     return goal4552["build_result"]["ctypes_smoke"]["checks"]
 
@@ -46,6 +52,7 @@ def build_packet(root: Path = Path("."), *, run_runtime: bool = False) -> dict[s
     policy = (root / POLICY).read_text(encoding="utf-8")
     c_abi = (root / C_ABI_DRAFT).read_text(encoding="utf-8")
     manifest = _load_json(root, CURRENT_MANIFEST)
+    m176_manifest = _load_json(root, M176_MANIFEST)
     previous_manifest = _load_json(root, PREVIOUS_MANIFEST)
     goal4552 = _load_json(root, GOAL4552)
     goal4556 = _load_json(root, GOAL4556)
@@ -55,7 +62,7 @@ def build_packet(root: Path = Path("."), *, run_runtime: bool = False) -> dict[s
     runtime_build = stub_library.build_shared_library(root) if run_runtime else None
     runtime_smoke = runtime_build["ctypes_smoke"]["checks"] if runtime_build and runtime_build["ctypes_smoke"] else {}
     checks = {
-        "header_version_is_0_1_2": _header_version(header) == "0.1.2",
+        "header_version_is_at_least_0_1_2": _version_tuple(_header_version(header)) >= (0, 1, 2),
         "header_declares_compatibility_function": "rtdl_abi_is_compatible" in header,
         "source_implements_patch_compatible_guard": "patch <= RTDL_ABI_VERSION_PATCH" in source
         and "abi_version_is_compatible" in source,
@@ -67,17 +74,20 @@ def build_packet(root: Path = Path("."), *, run_runtime: bool = False) -> dict[s
         and "rtdl_abi_is_compatible" in policy
         and "patch <= RTDL_ABI_VERSION_PATCH" in policy,
         "draft_mentions_compatibility_guard": "rtdl_abi_is_compatible(major, minor, patch)" in c_abi,
-        "manifest_is_0_1_2_with_16_symbols": manifest["abi_version"] == "0.1.2"
-        and len(manifest["symbols"]) == 16
-        and "rtdl_abi_is_compatible" in manifest["symbols"],
+        "m176_manifest_is_0_1_2_with_16_symbols": m176_manifest["abi_version"] == "0.1.2"
+        and len(m176_manifest["symbols"]) == 16
+        and "rtdl_abi_is_compatible" in m176_manifest["symbols"],
+        "current_manifest_matches_current_header": manifest["abi_version"] == _header_version(header)
+        and len(manifest["symbols"]) >= len(m176_manifest["symbols"]),
         "previous_manifest_retained_as_history": previous_manifest["abi_version"] == "0.1.1"
         and "rtdl_abi_is_compatible" not in previous_manifest["symbols"],
         "goal4552_report_has_runtime_compatibility_checks": all(
             smoke.get(name) is True
             for name in (
-                "patch_is_two",
+                "patch_is_three",
                 "current_abi_is_compatible",
                 "previous_patch_is_compatible",
+                "m176_patch_is_compatible",
                 "future_patch_is_not_compatible",
                 "future_minor_is_not_compatible",
                 "future_major_is_not_compatible",
@@ -117,6 +127,7 @@ def build_packet(root: Path = Path("."), *, run_runtime: bool = False) -> dict[s
         "failed_checks": failed,
         "current_abi_version": _header_version(header),
         "current_manifest": CURRENT_MANIFEST.as_posix(),
+        "m176_manifest": M176_MANIFEST.as_posix(),
         "previous_manifest": PREVIOUS_MANIFEST.as_posix(),
         "runtime_build": runtime_build,
         "claim_boundary": {

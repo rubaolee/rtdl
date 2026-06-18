@@ -96,7 +96,7 @@ def compile_smoke(root: Path) -> dict[str, Any]:
             "\n".join(
                 [
                     '#include "rtdl/rtdl.h"',
-                    "static_assert(RTDL_ABI_VERSION_PATCH == 2, \"patch\");",
+                    "static_assert(RTDL_ABI_VERSION_PATCH == 3, \"patch\");",
                     "int main() { return RTDL_STATUS_OK; }",
                     "",
                 ]

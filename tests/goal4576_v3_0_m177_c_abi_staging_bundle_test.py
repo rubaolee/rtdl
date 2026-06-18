@@ -34,7 +34,7 @@ class Goal4576V30M177CAbiStagingBundleTest(unittest.TestCase):
         self.assertTrue(stage["compile_result"]["ok"])
         self.assertTrue(stage["run_result"]["ok"])
         self.assertEqual("hit_count=1 first_pair=(0,0)", stage["run_result"]["stdout"])
-        self.assertEqual("0.1.2", stage["staged_manifest"]["abi_version"])
+        self.assertEqual("0.1.3", stage["staged_manifest"]["abi_version"])
 
     def test_makefile_docs_report_index_and_boundaries_are_wired(self) -> None:
         self.assertIn("stage-c-api:", MAKEFILE.read_text(encoding="utf-8"))

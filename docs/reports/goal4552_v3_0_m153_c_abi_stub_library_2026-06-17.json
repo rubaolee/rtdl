@@ -10,23 +10,30 @@
       "-shared",
       "-fPIC",
       "-o",
-      "/tmp/tmp27y7vjes/rtdl_c_api_stub.so"
+      "/tmp/tmpfe2wgeq4/rtdl_c_api_stub.so"
     ],
     "compiler": "/usr/bin/c++",
     "ctypes_smoke": {
       "checks": {
+        "auto_backend_is_supported": true,
         "buffer_exported": true,
         "buffer_imported": true,
         "context_created": true,
+        "cpu_backend_is_supported": true,
+        "cuda_aabb2_overlap_route_is_not_supported": true,
         "current_abi_is_compatible": true,
         "current_minor_context_still_created": true,
         "future_major_is_not_compatible": true,
         "future_minor_context_rejected": true,
         "future_minor_is_not_compatible": true,
         "future_patch_is_not_compatible": true,
+        "host_aabb2_overlap_route_is_supported": true,
+        "host_segment_ray_route_is_not_supported": true,
+        "m176_patch_is_compatible": true,
         "major_is_zero": true,
         "minor_is_one": true,
-        "patch_is_two": true,
+        "optix_backend_is_not_supported": true,
+        "patch_is_three": true,
         "previous_patch_is_compatible": true,
         "status_string_ok": true
       },

@@ -11,7 +11,7 @@ Goal4577 adds staged `pkg-config` metadata for the draft C ABI and validates a d
 - OK: `True`
 - Cflags: `-Ibuild/c_api_stage/lib/pkgconfig/../../include`
 - Libs: `-Lbuild/c_api_stage/lib/pkgconfig/../../lib -lrtdl_c_api`
-- Output: `direct_link_ok 0.1.2 ok`
+- Output: `direct_link_ok 0.1.3 ok`
 
 ## Checks
 
@@ -19,7 +19,7 @@ Goal4577 adds staged `pkg-config` metadata for the draft C ABI and validates a d
 | --- | --- |
 | `pkg_config_template_exists` | `True` |
 | `pkg_config_template_is_relocatable_to_pcfiledir` | `True` |
-| `pkg_config_template_names_0_1_2` | `True` |
+| `pkg_config_template_names_0_1_3` | `True` |
 | `pkg_config_template_exports_cflags_and_libs` | `True` |
 | `makefile_stages_pkg_config_file` | `True` |
 | `staging_contract_documents_pkg_config` | `True` |

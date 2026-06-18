@@ -57,6 +57,14 @@ bool backend_is_supported_by_host_proof(rtdl_backend backend) {
   return backend == RTDL_BACKEND_AUTO || backend == RTDL_BACKEND_CPU;
 }
 
+bool route_is_supported_by_host_proof(
+    rtdl_primitive_kind primitive_kind,
+    rtdl_query_kind query_kind,
+    rtdl_device_type device_type) {
+  return primitive_kind == RTDL_PRIMITIVE_AABB2 && query_kind == RTDL_QUERY_AABB_OVERLAP &&
+      device_type == RTDL_DEVICE_HOST;
+}
+
 bool abi_version_is_compatible(uint32_t major, uint32_t minor, uint32_t patch) {
   return major == RTDL_ABI_VERSION_MAJOR && minor == RTDL_ABI_VERSION_MINOR &&
       patch <= RTDL_ABI_VERSION_PATCH;
@@ -92,6 +100,17 @@ RTDL_API uint32_t rtdl_abi_version_patch(void) {
 
 RTDL_API uint32_t rtdl_abi_is_compatible(uint32_t major, uint32_t minor, uint32_t patch) {
   return abi_version_is_compatible(major, minor, patch) ? 1u : 0u;
+}
+
+RTDL_API uint32_t rtdl_backend_is_supported(rtdl_backend backend) {
+  return backend_is_supported_by_host_proof(backend) ? 1u : 0u;
+}
+
+RTDL_API uint32_t rtdl_route_is_supported(
+    rtdl_primitive_kind primitive_kind,
+    rtdl_query_kind query_kind,
+    rtdl_device_type device_type) {
+  return route_is_supported_by_host_proof(primitive_kind, query_kind, device_type) ? 1u : 0u;
 }
 
 RTDL_API const char* rtdl_status_string(rtdl_status status) {

@@ -9,7 +9,8 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4575_v3_0_m176_c_abi_version_negotiation_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4575_v3_0_m176_c_abi_version_negotiation_2026-06-17.md"
-MANIFEST = ROOT / "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json"
+MANIFEST = ROOT / "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json"
+M176_MANIFEST = ROOT / "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 
@@ -37,7 +38,9 @@ class Goal4575V30M176CAbiVersionNegotiationTest(unittest.TestCase):
 
     def test_manifest_report_index_and_boundaries_are_wired(self) -> None:
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
-        self.assertEqual("0.1.2", manifest["abi_version"])
+        m176_manifest = json.loads(M176_MANIFEST.read_text(encoding="utf-8"))
+        self.assertEqual("0.1.3", manifest["abi_version"])
+        self.assertEqual("0.1.2", m176_manifest["abi_version"])
         self.assertIn("rtdl_abi_is_compatible", manifest["symbols"])
         self.assertEqual(self.packet["version"], self.checked_in["version"])
         self.assertIn("Goal4575 / V3 M176", REPORT.read_text(encoding="utf-8"))

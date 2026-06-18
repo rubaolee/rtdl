@@ -24,7 +24,7 @@ Goal4576 adds and validates `make stage-c-api`, a source-tree staging bundle for
 | `c_abi_draft_links_staging_contract` | `True` |
 | `learn_readme_links_staging_contract` | `True` |
 | `embedding_readme_mentions_stage_command` | `True` |
-| `current_manifest_is_0_1_2` | `True` |
+| `current_manifest_is_0_1_3` | `True` |
 | `make_available` | `True` |
 | `cc_available` | `True` |
 | `stage_make_ok` | `True` |

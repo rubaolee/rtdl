@@ -21,7 +21,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     embeddability = (root / EMBEDDABILITY).read_text(encoding="utf-8")
     learn = (root / LEARN_README).read_text(encoding="utf-8")
     checks = {
-        "policy_declares_0_1_2_not_frozen": "`0.1.2`" in policy and "not frozen" in policy,
+        "policy_declares_0_1_3_not_frozen": "`0.1.3`" in policy and "not frozen" in policy,
         "policy_documents_runtime_compatibility_guard": "rtdl_abi_is_compatible" in policy
         and "patch <= RTDL_ABI_VERSION_PATCH" in policy,
         "policy_names_current_surface": "include/rtdl/rtdl.h" in policy
@@ -63,7 +63,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         },
         "conclusion": (
             "Goal4565 adds an explicit V3 C ABI stability policy: the current "
-            "`0.1.2` source-tree ABI remains experimental, breaking changes are "
+            "`0.1.3` source-tree ABI remains experimental, breaking changes are "
             "allowed only with evidence refresh and versioning, and stable-SDK "
             "wording is blocked until symbol-manifest, cross-version, packaging, "
             "and runtime gates pass."

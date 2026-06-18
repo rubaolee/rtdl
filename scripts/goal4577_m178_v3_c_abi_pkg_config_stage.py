@@ -173,7 +173,7 @@ def run_pkg_config_smoke(root: Path) -> dict[str, Any]:
         and result["libs_result"]["ok"]
         and result["compile_result"]["ok"]
         and result["run_result"]["ok"]
-        and result["run_result"]["stdout"] == "direct_link_ok 0.1.2 ok"
+        and result["run_result"]["stdout"] == "direct_link_ok 0.1.3 ok"
     )
     return result
 
@@ -187,7 +187,7 @@ def build_packet(root: Path = Path("."), *, run_smoke: bool = False) -> dict[str
     checks = {
         "pkg_config_template_exists": (root / PKG_CONFIG_TEMPLATE).exists(),
         "pkg_config_template_is_relocatable_to_pcfiledir": "prefix=${pcfiledir}/../.." in pc_template,
-        "pkg_config_template_names_0_1_2": "Version: 0.1.2" in pc_template,
+        "pkg_config_template_names_0_1_3": "Version: 0.1.3" in pc_template,
         "pkg_config_template_exports_cflags_and_libs": "Cflags: -I${includedir}" in pc_template
         and "Libs: -L${libdir} -lrtdl_c_api" in pc_template,
         "makefile_stages_pkg_config_file": "lib/pkgconfig/rtdl-c-api.pc" in makefile
@@ -209,7 +209,7 @@ def build_packet(root: Path = Path("."), *, run_smoke: bool = False) -> dict[str
                 "direct_link_client_runs": bool(
                     smoke["run_result"]
                     and smoke["run_result"]["ok"]
-                    and smoke["run_result"]["stdout"] == "direct_link_ok 0.1.2 ok"
+                    and smoke["run_result"]["stdout"] == "direct_link_ok 0.1.3 ok"
                 ),
             }
         )

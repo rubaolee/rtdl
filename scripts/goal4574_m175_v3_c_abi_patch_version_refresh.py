@@ -11,7 +11,7 @@ PACKET_VERSION = "rtdl.v3_0.c_abi_patch_version_refresh.goal4574.v1"
 OUT_JSON = Path("docs/reports/goal4574_v3_0_m175_c_abi_patch_version_refresh_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4574_v3_0_m175_c_abi_patch_version_refresh_2026-06-17.md")
 HEADER = Path("include/rtdl/rtdl.h")
-CURRENT_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json")
+CURRENT_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json")
 M175_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_1.json")
 PREVIOUS_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_0.json")
 POLICY = Path("docs/learn/v3_0_c_abi_stability_policy.md")
@@ -57,7 +57,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "policy_and_draft_link_current_manifest": CURRENT_MANIFEST.name in policy
         and CURRENT_MANIFEST.name in c_abi,
         "ownership_contract_names_current_version": f"`{current_manifest['abi_version']}`" in ownership,
-        "goal4552_runtime_checked_current_patch": goal4552["build_result"]["ctypes_smoke"]["checks"].get("patch_is_two")
+        "goal4552_runtime_checked_current_patch": goal4552["build_result"]["ctypes_smoke"]["checks"].get("patch_is_three")
         is True,
         "goal4566_manifest_gate_accepts_current_manifest": not goal4566["failed_checks"]
         and goal4566["checks"]["manifest_abi_version_matches_header"],

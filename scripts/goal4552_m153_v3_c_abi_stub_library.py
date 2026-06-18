@@ -146,6 +146,10 @@ def ctypes_smoke(shared_library: Path) -> dict[str, Any]:
     lib.rtdl_abi_version_patch.restype = ctypes.c_uint32
     lib.rtdl_abi_is_compatible.argtypes = [ctypes.c_uint32, ctypes.c_uint32, ctypes.c_uint32]
     lib.rtdl_abi_is_compatible.restype = ctypes.c_uint32
+    lib.rtdl_backend_is_supported.argtypes = [ctypes.c_int]
+    lib.rtdl_backend_is_supported.restype = ctypes.c_uint32
+    lib.rtdl_route_is_supported.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int]
+    lib.rtdl_route_is_supported.restype = ctypes.c_uint32
     lib.rtdl_status_string.argtypes = [ctypes.c_int]
     lib.rtdl_status_string.restype = ctypes.c_char_p
     lib.rtdl_context_create.argtypes = [ctypes.POINTER(ContextDesc), ctypes.POINTER(ctypes.c_void_p)]
@@ -200,12 +204,19 @@ def ctypes_smoke(shared_library: Path) -> dict[str, Any]:
     checks = {
         "major_is_zero": lib.rtdl_abi_version_major() == 0,
         "minor_is_one": lib.rtdl_abi_version_minor() == 1,
-        "patch_is_two": lib.rtdl_abi_version_patch() == 2,
-        "current_abi_is_compatible": lib.rtdl_abi_is_compatible(0, 1, 2) == 1,
+        "patch_is_three": lib.rtdl_abi_version_patch() == 3,
+        "current_abi_is_compatible": lib.rtdl_abi_is_compatible(0, 1, 3) == 1,
         "previous_patch_is_compatible": lib.rtdl_abi_is_compatible(0, 1, 1) == 1,
-        "future_patch_is_not_compatible": lib.rtdl_abi_is_compatible(0, 1, 3) == 0,
+        "m176_patch_is_compatible": lib.rtdl_abi_is_compatible(0, 1, 2) == 1,
+        "future_patch_is_not_compatible": lib.rtdl_abi_is_compatible(0, 1, 4) == 0,
         "future_minor_is_not_compatible": lib.rtdl_abi_is_compatible(0, 2, 0) == 0,
         "future_major_is_not_compatible": lib.rtdl_abi_is_compatible(1, 0, 0) == 0,
+        "auto_backend_is_supported": lib.rtdl_backend_is_supported(0) == 1,
+        "cpu_backend_is_supported": lib.rtdl_backend_is_supported(1) == 1,
+        "optix_backend_is_not_supported": lib.rtdl_backend_is_supported(3) == 0,
+        "host_aabb2_overlap_route_is_supported": lib.rtdl_route_is_supported(1, 1, 0) == 1,
+        "cuda_aabb2_overlap_route_is_not_supported": lib.rtdl_route_is_supported(1, 1, 1) == 0,
+        "host_segment_ray_route_is_not_supported": lib.rtdl_route_is_supported(2, 2, 0) == 0,
         "future_minor_context_rejected": future_minor_status == 2 and not future_minor_context.value,
         "current_minor_context_still_created": future_patch_status == 0 and bool(future_patch_context.value),
         "status_string_ok": lib.rtdl_status_string(0) == b"ok",

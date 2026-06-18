@@ -33,12 +33,12 @@ class Goal4577V30M178CAbiPkgConfigStageTest(unittest.TestCase):
         self.assertTrue(smoke["libs_result"]["ok"])
         self.assertTrue(smoke["compile_result"]["ok"])
         self.assertTrue(smoke["run_result"]["ok"])
-        self.assertEqual("direct_link_ok 0.1.2 ok", smoke["run_result"]["stdout"])
+        self.assertEqual("direct_link_ok 0.1.3 ok", smoke["run_result"]["stdout"])
 
     def test_template_report_index_and_boundaries_are_wired(self) -> None:
         template = PC_TEMPLATE.read_text(encoding="utf-8")
         self.assertIn("prefix=${pcfiledir}/../..", template)
-        self.assertIn("Version: 0.1.2", template)
+        self.assertIn("Version: 0.1.3", template)
         self.assertEqual(self.packet["version"], self.checked_in["version"])
         self.assertIn("Goal4577 / V3 M178", REPORT.read_text(encoding="utf-8"))
         self.assertIn("Goal4577 C ABI pkg-config stage", INDEX.read_text(encoding="utf-8"))

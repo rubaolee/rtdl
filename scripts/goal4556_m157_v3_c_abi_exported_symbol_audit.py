@@ -20,6 +20,8 @@ EXPECTED_SYMBOLS = (
     "rtdl_abi_version_minor",
     "rtdl_abi_version_patch",
     "rtdl_abi_is_compatible",
+    "rtdl_backend_is_supported",
+    "rtdl_route_is_supported",
     "rtdl_status_string",
     "rtdl_context_last_error",
     "rtdl_context_create",
@@ -134,7 +136,7 @@ def build_packet(root: Path = Path("."), *, run_audit: bool = False) -> dict[str
     checks = {
         "makefile_has_build_c_api_target": "build-c-api:" in makefile,
         "header_declares_expected_symbols": all(symbol in header for symbol in EXPECTED_SYMBOLS),
-        "expected_symbol_count_is_16": len(EXPECTED_SYMBOLS) == 16,
+        "expected_symbol_count_is_18": len(EXPECTED_SYMBOLS) == 18,
     }
     if audit is not None:
         checks.update(

@@ -18,7 +18,7 @@ REQUIRED_DOCS = (
     Path("docs/learn/v3_0_c_abi_stability_policy.md"),
     Path("docs/learn/v3_0_c_abi_ownership_threading_contract.md"),
     Path("docs/learn/v3_0_c_abi_staging_contract.md"),
-    Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json"),
+    Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json"),
     Path("docs/learn/v3_0_zero_copy_interop_contract.md"),
 )
 
@@ -48,7 +48,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "docs_surface_detail_names_expected_docs": "ownership/threading" in str(docs_surface.get("detail", ""))
         and "symbol manifest" in str(docs_surface.get("detail", "")),
         "doctor_code_requires_c_abi_docs": "v3_0_c_abi_ownership_threading_contract.md" in doctor_text
-        and "v3_0_c_abi_symbol_manifest_v0_1_2.json" in doctor_text,
+        and "v3_0_c_abi_symbol_manifest_v0_1_3.json" in doctor_text,
         "doctor_doc_explains_docs_surface": "V3 C ABI docs surface" in doctor_doc
         and "does not freeze the ABI" in doctor_doc,
         "learn_readme_links_ownership_and_zero_copy": "V3.0 C ABI Ownership And Threading Contract" in learn_readme

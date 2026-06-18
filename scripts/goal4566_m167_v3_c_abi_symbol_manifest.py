@@ -10,7 +10,7 @@ from typing import Any
 PACKET_VERSION = "rtdl.v3_0.c_abi_symbol_manifest.goal4566.v1"
 OUT_JSON = Path("docs/reports/goal4566_v3_0_m167_c_abi_symbol_manifest_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4566_v3_0_m167_c_abi_symbol_manifest_2026-06-17.md")
-MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json")
+MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json")
 HEADER = Path("include/rtdl/rtdl.h")
 GOAL4556 = Path("docs/reports/goal4556_v3_0_m157_c_abi_exported_symbol_audit_2026-06-17.json")
 POLICY = Path("docs/learn/v3_0_c_abi_stability_policy.md")
@@ -42,13 +42,13 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "manifest_declares_draft_not_stable": manifest["status"] == "draft_source_tree_manifest"
         and manifest["stable"] is False,
         "manifest_abi_version_matches_header": manifest["abi_version"] == _header_abi_version(header),
-        "manifest_has_16_symbols": len(manifest_symbols) == 16,
+        "manifest_has_18_symbols": len(manifest_symbols) == 18,
         "manifest_symbols_match_header_order": manifest_symbols == header_symbols,
         "manifest_symbols_match_goal4556_export_set": set(manifest_symbols) == set(exported_symbols),
         "manifest_names_header_and_build_target": manifest["header"] == "include/rtdl/rtdl.h"
         and manifest["build_target"] == "make build-c-api",
-        "policy_links_symbol_manifest": "v3_0_c_abi_symbol_manifest_v0_1_2.json" in policy,
-        "c_abi_draft_links_symbol_manifest": "v3_0_c_abi_symbol_manifest_v0_1_2.json" in c_abi,
+        "policy_links_symbol_manifest": "v3_0_c_abi_symbol_manifest_v0_1_3.json" in policy,
+        "c_abi_draft_links_symbol_manifest": "v3_0_c_abi_symbol_manifest_v0_1_3.json" in c_abi,
         "goal4556_export_audit_passed": goal4556["audit"]["ok"] and not goal4556["failed_checks"],
     }
     failed = tuple(name for name, passed in checks.items() if not passed)
