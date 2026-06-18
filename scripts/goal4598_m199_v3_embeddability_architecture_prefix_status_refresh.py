@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 from typing import Any
 
 
@@ -22,9 +23,15 @@ def _load_json(root: Path, path: Path) -> dict[str, Any]:
     return json.loads((root / path).read_text(encoding="utf-8"))
 
 
+def _current_progress_goal_number(doc: str) -> int | None:
+    match = re.search(r"As of Goal(\d+)", doc)
+    return int(match.group(1)) if match else None
+
+
 def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     architecture = (root / ARCHITECTURE_DOC).read_text(encoding="utf-8")
     reports = {name: _load_json(root, path) for name, path in REPORTS.items()}
+    progress_goal = _current_progress_goal_number(architecture)
     status_matrix = {
         "source_tree_stage_archive": reports["metadata_readiness"]["status_matrix"]["source_tree_stage_archive"],
         "prefix_layout_stage": "validated"
@@ -49,14 +56,15 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     }
     checks = {
         "all_required_reports_accept": all(not tuple(report.get("failed_checks", ())) for report in reports.values()),
-        "architecture_status_reaches_goal4597": "As of Goal4597" in architecture,
+        "architecture_status_at_or_beyond_goal4597": progress_goal is not None
+        and progress_goal >= 4597,
         "architecture_names_prefix_stage_target": "make stage-c-api-prefix" in architecture,
         "architecture_names_prefix_pkg_config_proof": "Prefix-layout `pkg-config` proof" in architecture,
         "architecture_names_doctor_prefix_stage": "Source-tree doctor coverage for the prefix-stage target"
         in architecture,
         "architecture_names_prefix_python_ctypes_smoke": "Prefix-stage Python `ctypes` smoke" in architecture,
         "architecture_preserves_no_sdk_install_release_boundary": "packaged SDK wording" in architecture
-        and "system\ninstall or package-manager wording" in architecture
+        and "system install or package-manager wording" in architecture
         and "or V3 release wording" in architecture,
         "prefix_stage_authorized_but_not_system_install": reports["prefix_stage"]["claim_boundary"][
             "prefix_layout_stage_authorized"

@@ -196,6 +196,7 @@ V3.0 current app-author guidance:
 - [Goal4598 embeddability architecture prefix status](../reports/goal4598_v3_0_m199_embeddability_architecture_prefix_status_2026-06-17.md)
 - [Goal4599 Python ctypes layout audit](../reports/goal4599_v3_0_m200_python_ctypes_layout_audit_2026-06-17.md)
 - [Goal4600 C ABI CMake prefix stage](../reports/goal4600_v3_0_m201_c_abi_cmake_prefix_stage_2026-06-17.md)
+- [Goal4601 embeddability delivery status refresh](../reports/goal4601_v3_0_m202_embeddability_delivery_status_refresh_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)

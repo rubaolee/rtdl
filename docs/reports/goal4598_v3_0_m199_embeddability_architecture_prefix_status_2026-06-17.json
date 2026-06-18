@@ -6,7 +6,7 @@
     "architecture_names_prefix_python_ctypes_smoke": true,
     "architecture_names_prefix_stage_target": true,
     "architecture_preserves_no_sdk_install_release_boundary": true,
-    "architecture_status_reaches_goal4597": true,
+    "architecture_status_at_or_beyond_goal4597": true,
     "prefix_python_ctypes_authorized_but_not_generated_package": true,
     "prefix_stage_authorized_but_not_system_install": true
   },

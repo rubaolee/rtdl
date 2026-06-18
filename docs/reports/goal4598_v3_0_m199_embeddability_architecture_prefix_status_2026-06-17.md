@@ -28,7 +28,7 @@ Goal4598 refreshes the embeddability architecture status after the prefix-stage 
 | Check | Passed |
 | --- | --- |
 | `all_required_reports_accept` | `True` |
-| `architecture_status_reaches_goal4597` | `True` |
+| `architecture_status_at_or_beyond_goal4597` | `True` |
 | `architecture_names_prefix_stage_target` | `True` |
 | `architecture_names_prefix_pkg_config_proof` | `True` |
 | `architecture_names_doctor_prefix_stage` | `True` |

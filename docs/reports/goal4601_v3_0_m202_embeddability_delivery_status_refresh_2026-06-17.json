@@ -1,0 +1,61 @@
+{
+  "checks": {
+    "all_required_reports_accept": true,
+    "architecture_names_cmake_prefix_consumer": true,
+    "architecture_names_python_ctypes_layout_audit": true,
+    "architecture_preserves_no_sdk_or_release_boundary": true,
+    "architecture_status_reaches_goal4600": true,
+    "cmake_authorizes_prefix_stage_only": true,
+    "cmake_prefix_stage_smoke_ok": true,
+    "layout_audit_matches_python_ctypes": true,
+    "metadata_keeps_device_query_blocked": true,
+    "prefix_python_ctypes_examples_run": true
+  },
+  "claim_boundary": {
+    "cmake_prefix_stage_consumption_authorized": true,
+    "device_buffer_query_route_authorized": false,
+    "dlpack_zero_copy_authorized": false,
+    "external_cuda_stream_authorized": false,
+    "generated_language_binding_authorized": false,
+    "optix_embree_c_abi_query_authorized": false,
+    "package_manager_artifact_authorized": false,
+    "packaged_sdk_authorized": false,
+    "python_ctypes_layout_drift_check_authorized": true,
+    "python_ctypes_smoke_authorized": true,
+    "release_authorized": false,
+    "source_tree_and_prefix_stage_handoff_authorized": true,
+    "stable_abi_authorized": false,
+    "system_install_authorized": false
+  },
+  "conclusion": "Goal4601 refreshes the V3 embeddability delivery ledger after the prefix-stage Python `ctypes`, layout-audit, and CMake-consumer work. The current source tree can hand off a movable C ABI stage, a prefix-style stage consumable by pkg-config and CMake, and thin Python `ctypes` examples whose descriptor layouts are checked against compiler-observed C layout. This is now a validated experimental source-tree/prefix-stage embedding slice. It is still not a stable ABI, packaged SDK, system install, DLPack/true-zero-copy path, external CUDA stream contract, OptiX/Embree C ABI query surface, generated binding, release, or performance claim.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4601 / V3 M202",
+  "reports": {
+    "cmake_prefix": "docs/reports/goal4600_v3_0_m201_c_abi_cmake_prefix_stage_2026-06-17.json",
+    "layout_audit": "docs/reports/goal4599_v3_0_m200_python_ctypes_layout_audit_2026-06-17.json",
+    "metadata_readiness": "docs/reports/goal4594_v3_0_m195_embeddability_metadata_readiness_refresh_2026-06-17.json",
+    "prefix_python_ctypes": "docs/reports/goal4597_v3_0_m198_prefix_stage_python_ctypes_smoke_2026-06-17.json"
+  },
+  "status": "embeddability_delivery_status_refreshed",
+  "status_matrix": {
+    "cuda_buffer_descriptor_import_export": "validated_metadata_only",
+    "device_buffer_query_route": "blocked",
+    "dlpack_zero_copy": "blocked",
+    "external_cuda_stream_ordering": "blocked",
+    "generated_language_bindings": "blocked",
+    "host_aabb2_c_abi_query": "validated_host_f32_to_host_u64_pairs",
+    "host_external_runtime_metadata": "validated",
+    "packaged_sdk": "blocked",
+    "prefix_cmake_find_package": "validated_imported_target",
+    "prefix_layout_stage": "validated",
+    "prefix_pkg_config": "validated",
+    "python_ctypes_c_layout_audit": "validated_sizeof_offsetof_matches",
+    "python_ctypes_prefix_examples": "validated_lifecycle_host_aabb2_cuda_metadata",
+    "release": "blocked",
+    "source_tree_stage_archive": "validated_extract_compile_run",
+    "stable_abi": "blocked_until_1_0_gates",
+    "system_install": "blocked"
+  },
+  "version": "rtdl.v3_0.embeddability_delivery_status.goal4601.v1"
+}

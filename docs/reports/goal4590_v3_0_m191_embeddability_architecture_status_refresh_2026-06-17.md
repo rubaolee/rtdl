@@ -4,7 +4,7 @@ Status: `embeddability_architecture_status_refresh_checked`
 
 ## Conclusion
 
-Goal4590 refreshes the main V3 embeddability architecture strategy so its current-progress section reflects the current Goal4597 state: C dlopen/direct-link, staged pkg-config, Python ctypes lifecycle/query examples, relocatable stage, source-tree stage archive, prefix-stage pkg-config, source-tree doctor prefix coverage, and prefix-stage Python ctypes smoke are validated, while stable ABI, packaged SDK, system install, generated bindings, device-buffer C ABI, OptiX/Embree C ABI execution, external CUDA stream, and release claims remain blocked.
+Goal4590 refreshes the main V3 embeddability architecture strategy and now treats that current-progress section as allowed to move forward past the original Goal4597 floor. The document preserves the C dlopen/direct-link, staged pkg-config, Python ctypes lifecycle/query examples, relocatable stage, source-tree stage archive, prefix-stage pkg-config, source-tree doctor prefix coverage, and prefix-stage Python ctypes smoke evidence while newer goals may add later delivery proofs. Stable ABI, packaged SDK, system install, generated bindings, device-buffer C ABI, OptiX/Embree C ABI execution, external CUDA stream, and release claims remain blocked.
 
 ## Checks
 
