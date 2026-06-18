@@ -1,0 +1,167 @@
+{
+  "checks": {
+    "c_api_library_present": true,
+    "c_api_stage_archive_present": true,
+    "cc_available": true,
+    "cmake_available": true,
+    "cupy_cuda_runtime_observed": true,
+    "cupy_importable": true,
+    "doctor_doc_names_toolchain_support": true,
+    "doctor_requires_toolchain_doc": true,
+    "embeddability_delivery_goal4603_accepts": true,
+    "embree_library_present": true,
+    "learn_readme_links_toolchain_matrix": true,
+    "make_available": true,
+    "numba_importable": true,
+    "numpy_importable": true,
+    "nvidia_smi_available": true,
+    "optix_library_present": true,
+    "pkg_config_available": true,
+    "python_probe_available": true,
+    "toolchain_doc_exists_and_sets_boundary": true,
+    "v3_current_report_is_goal4603_ready": true
+  },
+  "claim_boundary": {
+    "packaged_sdk_authorized": false,
+    "pod_toolchain_observation_authorized": true,
+    "public_performance_claim_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false,
+    "stable_platform_support_authorized": false,
+    "system_install_authorized": false
+  },
+  "conclusion": "Goal4604 adds a V3 toolchain support matrix and, when run on the pod, records the live Python/C compiler/make/CMake/pkg-config/NVIDIA/CuPy/Numba/native-library observations needed to interpret current V3 embeddability evidence. This is pod-specific source-tree evidence, not a stable platform support promise, packaged SDK, system install, stable ABI, performance claim, or release authorization.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4604 / V3 M205",
+  "live_probe": {
+    "commands": {
+      "cc": {
+        "command": [
+          "/usr/bin/cc",
+          "--version"
+        ],
+        "executable": "/usr/bin/cc",
+        "ok": true,
+        "returncode": 0,
+        "stderr_tail": [],
+        "stdout_tail": [
+          "cc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0",
+          "Copyright (C) 2023 Free Software Foundation, Inc.",
+          "This is free software; see the source for copying conditions.  There is NO",
+          "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+          ""
+        ]
+      },
+      "cmake": {
+        "command": [
+          "/usr/bin/cmake",
+          "--version"
+        ],
+        "executable": "/usr/bin/cmake",
+        "ok": true,
+        "returncode": 0,
+        "stderr_tail": [],
+        "stdout_tail": [
+          "cmake version 3.28.3",
+          "",
+          "CMake suite maintained and supported by Kitware (kitware.com/cmake)."
+        ]
+      },
+      "make": {
+        "command": [
+          "/usr/bin/make",
+          "--version"
+        ],
+        "executable": "/usr/bin/make",
+        "ok": true,
+        "returncode": 0,
+        "stderr_tail": [],
+        "stdout_tail": [
+          "GNU Make 4.3",
+          "Built for x86_64-pc-linux-gnu",
+          "Copyright (C) 1988-2020 Free Software Foundation, Inc.",
+          "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>",
+          "This is free software: you are free to change and redistribute it.",
+          "There is NO WARRANTY, to the extent permitted by law."
+        ]
+      },
+      "nvcc": {
+        "command": [
+          "nvcc",
+          "--version"
+        ],
+        "executable": null,
+        "ok": false,
+        "returncode": null,
+        "stderr_tail": [],
+        "stdout_tail": []
+      },
+      "nvidia_smi": {
+        "command": [
+          "/usr/bin/nvidia-smi",
+          "--query-gpu=driver_version,name",
+          "--format=csv,noheader"
+        ],
+        "executable": "/usr/bin/nvidia-smi",
+        "ok": true,
+        "returncode": 0,
+        "stderr_tail": [],
+        "stdout_tail": [
+          "550.127.08, NVIDIA RTX 4000 Ada Generation"
+        ]
+      },
+      "pkg_config": {
+        "command": [
+          "/usr/bin/pkg-config",
+          "--version"
+        ],
+        "executable": "/usr/bin/pkg-config",
+        "ok": true,
+        "returncode": 0,
+        "stderr_tail": [],
+        "stdout_tail": [
+          "1.8.1"
+        ]
+      }
+    },
+    "cupy_runtime": {
+      "error": null,
+      "ok": true,
+      "runtime_version": 12090
+    },
+    "libraries": {
+      "c_api_stage_archive": true,
+      "rtdl_c_api": true,
+      "rtdl_embree": true,
+      "rtdl_optix": true
+    },
+    "packages": {
+      "cupy": {
+        "error": null,
+        "ok": true,
+        "version": "14.1.1"
+      },
+      "numba": {
+        "error": null,
+        "ok": true,
+        "version": "0.60.0"
+      },
+      "numpy": {
+        "error": null,
+        "ok": true,
+        "version": "2.0.2"
+      }
+    },
+    "platform": {
+      "machine": "x86_64",
+      "system": "Linux"
+    },
+    "python": {
+      "executable": "/usr/bin/python3",
+      "version": "3.12.3"
+    }
+  },
+  "status": "toolchain_support_matrix_checked",
+  "version": "rtdl.v3_0.toolchain_support_matrix.goal4604.v1"
+}

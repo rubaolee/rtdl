@@ -66,14 +66,20 @@
         "status": "pass"
       },
       {
-        "detail": "scripts/run_test_matrix.py --group v3_current (54 modules)",
+        "detail": "scripts/run_test_matrix.py --group v3_current (94 modules)",
         "name": "V3 current test matrix",
         "required": true,
         "status": "pass"
       },
       {
-        "detail": "include/rtdl/rtdl.h, make build-c-api, examples/current/embedding",
+        "detail": "include/rtdl/rtdl.h, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, pkg-config and CMake metadata, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA metadata",
         "name": "V3 C ABI embedding surface",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "draft, stability, ownership/threading, symbol manifest, zero-copy, toolchain support docs",
+        "name": "V3 C ABI docs surface",
         "required": true,
         "status": "pass"
       },

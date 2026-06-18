@@ -35,10 +35,10 @@ def build_packet(root: Path = Path("."), *, run_suite: bool = False) -> dict[str
     suite_summary = _summarize_output(str(suite["output"])) if suite else None
     checks = {
         "group_registered": GROUP in run_test_matrix.TEST_GROUPS,
-        "module_count_is_93": len(modules) == 93,
+        "module_count_is_94": len(modules) == 94,
         "starts_at_goal4508": modules[0] == "tests.goal4508_v3_0_m112_rtnn_clean_target_closeout_test",
-        "ends_at_goal4603": (
-            modules[-1] == "tests.goal4603_v3_0_m204_embeddability_delivery_archive_cmake_refresh_test"
+        "ends_at_goal4604": (
+            modules[-1] == "tests.goal4604_v3_0_m205_toolchain_support_matrix_test"
         ),
         "excludes_self_referential_goal4546": (
             "tests.goal4546_v3_0_m147_current_test_matrix_gate_test" not in modules
@@ -81,7 +81,7 @@ def build_packet(root: Path = Path("."), *, run_suite: bool = False) -> dict[str
         },
         "conclusion": (
             "Goal4546 adds a canonical `v3_current` test-matrix group for the "
-            "current V3 closure surface. It covers the explicit Goal4508-Goal4603 "
+            "current V3 closure surface. It covers the explicit Goal4508-Goal4604 "
             "modules except for the self-referential Goal4546 generator test, because "
             "default unittest discovery does not include every `goal*_test.py` file. "
             "The gate is a source-tree reliability check, not benchmark evidence."

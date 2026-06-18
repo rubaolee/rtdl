@@ -129,6 +129,7 @@ def _v3_c_abi_docs_check() -> dict[str, Any]:
         ROOT / "docs" / "learn" / "v3_0_c_abi_staging_contract.md",
         ROOT / "docs" / "learn" / "v3_0_c_abi_symbol_manifest_v0_1_3.json",
         ROOT / "docs" / "learn" / "v3_0_zero_copy_interop_contract.md",
+        ROOT / "docs" / "learn" / "v3_0_toolchain_support_matrix.md",
     )
     missing = [path.relative_to(ROOT).as_posix() for path in required_files if not path.exists()]
     learn_readme = ROOT / "docs" / "learn" / "README.md"
@@ -138,6 +139,7 @@ def _v3_c_abi_docs_check() -> dict[str, Any]:
         "V3.0 C ABI Stability Policy",
         "V3.0 C ABI Ownership And Threading Contract",
         "V3.0 Zero-Copy Interop Contract",
+        "V3.0 Toolchain Support Matrix",
     )
     missing_links = [link for link in required_links if link not in learn_text]
     if missing or missing_links:
@@ -150,7 +152,7 @@ def _v3_c_abi_docs_check() -> dict[str, Any]:
     return _check(
         "V3 C ABI docs surface",
         "pass",
-        "draft, stability, ownership/threading, symbol manifest, zero-copy docs",
+        "draft, stability, ownership/threading, symbol manifest, zero-copy, toolchain support docs",
     )
 
 
