@@ -81,6 +81,9 @@ The only implemented query route is deliberately small:
 - Query: `rtdl_query_execute` with `RTDL_QUERY_AABB_OVERLAP`.
 - Result buffer: host `RTDL_DTYPE_U64`, shaped `[hit_count, 2]`; each row is
   `(query_id, primitive_id)`.
+- Result ordering: rows are deterministic for the current host AABB2 route.
+  RTDL emits rows by ascending `query_id`; within each query, rows are emitted
+  by ascending `primitive_id`.
 - Ownership: imported buffers are caller-retained when `release == NULL`; when
   `release != NULL`, `rtdl_buffer_destroy` invokes that callback for the buffer
   handle. RTDL-owned result buffers must be released with `rtdl_buffer_destroy`.

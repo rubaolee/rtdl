@@ -3,6 +3,7 @@
     "c_abi_doc_blocks_unsupported_routes": true,
     "c_abi_doc_defines_f32_aabb2_input_layout": true,
     "c_abi_doc_defines_ownership": true,
+    "c_abi_doc_defines_result_ordering": true,
     "c_abi_doc_defines_u64_pair_result_layout": true,
     "c_abi_doc_names_current_contract_section": true,
     "example_readme_repeats_layout": true,

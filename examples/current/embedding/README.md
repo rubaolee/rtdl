@@ -17,6 +17,8 @@ Current data contract:
   `[count, 4]` as `(min_x, min_y, max_x, max_y)`.
 - The result buffer is host `RTDL_DTYPE_U64`, shaped `[hit_count, 2]`, with
   rows `(query_id, primitive_id)`.
+- For the current host AABB2 route, rows are deterministic: ascending
+  `query_id`, then ascending `primitive_id` within each query.
 - `rtdl_index_build` copies primitive coordinates into the index; imported
   buffers are caller-retained when `release == NULL` and release-callback-owned
   by the buffer handle when `release != NULL`. Query result buffers are

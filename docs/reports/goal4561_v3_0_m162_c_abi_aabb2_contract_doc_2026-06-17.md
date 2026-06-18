@@ -13,6 +13,7 @@ Goal4561 documents the exact current C ABI host AABB2 overlap contract: F32 `[co
 | `c_abi_doc_names_current_contract_section` | `True` |
 | `c_abi_doc_defines_f32_aabb2_input_layout` | `True` |
 | `c_abi_doc_defines_u64_pair_result_layout` | `True` |
+| `c_abi_doc_defines_result_ordering` | `True` |
 | `c_abi_doc_defines_ownership` | `True` |
 | `c_abi_doc_blocks_unsupported_routes` | `True` |
 | `example_readme_repeats_layout` | `True` |
