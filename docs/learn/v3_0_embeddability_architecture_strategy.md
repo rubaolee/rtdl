@@ -10,7 +10,7 @@ and validation gates.
 
 ## Current Implementation Progress
 
-As of Goal4565, the first control-plane embedding slice exists in the source
+As of Goal4568, the first control-plane embedding slice exists in the source
 tree:
 
 - Draft public header: `include/rtdl/rtdl.h`.
