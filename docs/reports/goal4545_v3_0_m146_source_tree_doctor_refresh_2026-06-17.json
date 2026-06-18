@@ -66,7 +66,7 @@
         "status": "pass"
       },
       {
-        "detail": "scripts/run_test_matrix.py --group v3_current (94 modules)",
+        "detail": "scripts/run_test_matrix.py --group v3_current (95 modules)",
         "name": "V3 current test matrix",
         "required": true,
         "status": "pass"
@@ -78,7 +78,7 @@
         "status": "pass"
       },
       {
-        "detail": "draft, stability, ownership/threading, symbol manifest, zero-copy, toolchain support docs",
+        "detail": "draft, stability, ownership/threading, symbol manifest, zero-copy, toolchain support, binding/device interop docs",
         "name": "V3 C ABI docs surface",
         "required": true,
         "status": "pass"

@@ -124,6 +124,15 @@ C ABI neutral buffer view. It validates descriptor import/export and current
 host-route rejection from Python, without validating CUDA pointer ownership,
 stream ordering, or device-buffer query execution.
 
+Goal4605 adds the
+[V3.0 Binding And Device Interop Matrix](v3_0_binding_and_device_interop_matrix.md),
+which consolidates the current C, Python `ctypes`, pkg-config, CMake, CUDA
+metadata, and future DLPack/device-buffer boundaries. It authorizes the current
+source-tree/staged examples and metadata descriptors only; it still does not
+authorize DLPack support, external CUDA stream adoption, device-buffer query
+execution, generated bindings, a stable SDK, release, performance wording, or
+public true-zero-copy wording.
+
 ## Current Host AABB2 Query Contract
 
 The only implemented query route is deliberately small:

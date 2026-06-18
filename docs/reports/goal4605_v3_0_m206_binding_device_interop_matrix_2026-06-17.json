@@ -1,0 +1,95 @@
+{
+  "checks": {
+    "all_source_reports_accept": true,
+    "benchmark_index_links_goal4605": true,
+    "c_abi_draft_keeps_cuda_descriptor_metadata_only": true,
+    "cuda_descriptor_validated_metadata_only": true,
+    "delivery_cmake_pkg_config_handoff_validated": true,
+    "device_and_stream_routes_blocked": true,
+    "doctor_doc_mentions_binding_matrix": true,
+    "doctor_script_requires_binding_matrix": true,
+    "embedding_readme_blocks_device_execution": true,
+    "generated_bindings_blocked": true,
+    "header_keeps_external_cuda_runtime_unsupported": true,
+    "host_runtime_metadata_validated": true,
+    "learn_readme_links_matrix": true,
+    "live_cuda_buffer_metadata_smoke_ok": true,
+    "live_host_external_runtime_smoke_ok": true,
+    "live_python_cuda_metadata_bridge_smoke_ok": true,
+    "matrix_doc_blocks_device_claims": true,
+    "matrix_doc_exists": true,
+    "matrix_doc_lists_current_binding_surfaces": true,
+    "python_cuda_example_rejects_host_query_route": true,
+    "python_cuda_metadata_bridge_validated": true,
+    "zero_copy_doc_blocks_true_zero_copy": true
+  },
+  "claim_boundary": {
+    "cmake_stage_handoff_authorized": true,
+    "cuda_array_interface_metadata_bridge_authorized": true,
+    "cuda_metadata_descriptor_authorized": true,
+    "device_buffer_query_route_authorized": false,
+    "dlpack_zero_copy_authorized": false,
+    "external_cuda_stream_authorized": false,
+    "generated_language_binding_authorized": false,
+    "host_aabb2_c_abi_query_authorized": true,
+    "packaged_sdk_authorized": false,
+    "performance_wording_authorized": false,
+    "pkg_config_stage_handoff_authorized": true,
+    "public_true_zero_copy_claim_authorized": false,
+    "python_ctypes_examples_authorized": true,
+    "release_authorized": false,
+    "source_tree_c_handoff_authorized": true,
+    "stable_abi_authorized": false
+  },
+  "conclusion": "Goal4605 consolidates the current V3 binding and device interop state. The source tree has executable C and Python ctypes examples, pkg-config and CMake staged handoffs, a host AABB2 C ABI query route, host-runtime metadata, and CUDA descriptor metadata including a `__cuda_array_interface__`-style Python bridge. The device side is still deliberately fail-closed: no DLPack adapter, device-buffer query route, external CUDA stream ordering, generated binding, stable ABI, SDK, release, performance claim, or true-zero-copy claim is authorized by this matrix.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4605 / V3 M206",
+  "live_smokes": {
+    "cuda_buffer_metadata": {
+      "failed_checks": [],
+      "ok": true,
+      "status": "c_abi_cuda_buffer_metadata_checked"
+    },
+    "host_external_runtime": {
+      "failed_checks": [],
+      "ok": true,
+      "status": "c_abi_host_external_runtime_checked"
+    },
+    "python_cuda_metadata_bridge": {
+      "failed_checks": [],
+      "ok": true,
+      "status": "python_ctypes_cuda_metadata_bridge_checked",
+      "stdout": "python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument"
+    }
+  },
+  "reports": {
+    "cuda_buffer_metadata": "docs/reports/goal4592_v3_0_m193_c_abi_cuda_buffer_metadata_gate_2026-06-17.json",
+    "delivery_archive_cmake": "docs/reports/goal4603_v3_0_m204_embeddability_delivery_archive_cmake_refresh_2026-06-17.json",
+    "host_external_runtime": "docs/reports/goal4591_v3_0_m192_c_abi_host_external_runtime_gate_2026-06-17.json",
+    "metadata_readiness": "docs/reports/goal4594_v3_0_m195_embeddability_metadata_readiness_refresh_2026-06-17.json",
+    "python_cuda_metadata_bridge": "docs/reports/goal4593_v3_0_m194_python_ctypes_cuda_metadata_bridge_2026-06-17.json",
+    "toolchain_support": "docs/reports/goal4604_v3_0_m205_toolchain_support_matrix_2026-06-17.json"
+  },
+  "status": "binding_device_interop_matrix_checked",
+  "status_matrix": {
+    "c_source_tree_examples": "validated_dynamic_and_direct_link",
+    "cmake_archive_find_package": "validated_extracted_archive_imported_target",
+    "cmake_prefix_find_package": "validated_imported_target",
+    "cuda_array_interface_to_c_abi_descriptor": "validated_metadata_only",
+    "cuda_buffer_descriptor_import_export": "validated_metadata_only",
+    "cuda_descriptor_host_aabb2_query_route": "rejected_invalid_argument",
+    "device_buffer_query_route": "blocked",
+    "dlpack": "design_contract_only",
+    "external_cuda_stream_ordering": "blocked",
+    "generated_language_bindings": "blocked",
+    "host_aabb2_c_abi_query": "validated_host_f32_to_host_u64_pairs",
+    "host_external_runtime_metadata": "validated",
+    "pkg_config_stage": "validated",
+    "public_true_zero_copy_claim": "blocked",
+    "python_ctypes_lifecycle_and_host_aabb2": "validated_lifecycle_host_aabb2_cuda_metadata",
+    "release": "blocked",
+    "stable_abi": "blocked_until_1_0_gates"
+  },
+  "version": "rtdl.v3_0.binding_device_interop_matrix.goal4605.v1"
+}
