@@ -20,8 +20,8 @@ moves from a proof boundary toward a stable embedding contract.
 - Current validated route: host `F32` AABB2 overlap returning host `U64`
   `(query_id, primitive_id)` pairs.
 - Current evidence gates: header compile, shared-library build, exported-symbol
-  audit, non-Python C client, negative runtime cases, source-tree doctor, and
-  `v3_current`.
+  audit, C/Python `ctypes` layout audit, non-Python C client, negative runtime
+  cases, source-tree doctor, and `v3_current`.
 
 The ABI version remains `0.x`; external users should treat it as an experimental
 source-tree boundary.
@@ -63,6 +63,8 @@ or downstream language binding stability.
 RTDL may call the C ABI stable only after all of these are true:
 
 - A symbol manifest is checked and versioned as part of release evidence.
+- C struct layouts used by generated or handwritten bindings are checked with
+  compiler-observed `sizeof`/`offsetof` evidence for every supported platform.
 - Cross-version compatibility tests prove that an older C client still loads and
   runs against the newer shared library for the supported symbol set.
 - The public header documents every stable struct, enum, status code, ownership

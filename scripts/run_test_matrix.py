@@ -150,6 +150,7 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal4596_v3_0_m197_source_tree_doctor_prefix_stage_test",
         "tests.goal4597_v3_0_m198_prefix_stage_python_ctypes_smoke_test",
         "tests.goal4598_v3_0_m199_embeddability_architecture_prefix_status_test",
+        "tests.goal4599_v3_0_m200_python_ctypes_layout_audit_test",
     ),
     "v0_2_local": (
         "tests.goal110_baseline_runner_backend_test",

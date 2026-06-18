@@ -1,0 +1,194 @@
+{
+  "c_layout_probe": {
+    "c_layout": {
+      "rtdl_buffer_view": {
+        "offsets": {
+          "byte_count": 8,
+          "data": 0,
+          "device_id": 20,
+          "device_type": 16,
+          "dtype": 24,
+          "ndim": 28,
+          "release": 160,
+          "shape": 32,
+          "strides": 96,
+          "user_data": 168
+        },
+        "size": 176
+      },
+      "rtdl_context_desc": {
+        "offsets": {
+          "abi_version_major": 0,
+          "abi_version_minor": 4,
+          "backend": 8,
+          "external_runtime": 16
+        },
+        "size": 48
+      },
+      "rtdl_external_runtime": {
+        "offsets": {
+          "context": 8,
+          "device_id": 4,
+          "device_type": 0,
+          "stream": 16,
+          "user_data": 24
+        },
+        "size": 32
+      },
+      "rtdl_index_desc": {
+        "offsets": {
+          "abi_version_major": 0,
+          "abi_version_minor": 4,
+          "primitive_count": 24,
+          "primitive_kind": 8,
+          "primitives": 16
+        },
+        "size": 32
+      },
+      "rtdl_query_desc": {
+        "offsets": {
+          "abi_version_major": 0,
+          "abi_version_minor": 4,
+          "input_count": 24,
+          "inputs": 16,
+          "query_kind": 8
+        },
+        "size": 32
+      }
+    },
+    "cc": "/usr/bin/cc",
+    "compile_result": {
+      "command": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-I",
+        "include",
+        "/tmp/rtdl_c_abi_layout_nrst3o97/layout_probe.c",
+        "-o",
+        "/tmp/rtdl_c_abi_layout_nrst3o97/layout_probe"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": []
+    },
+    "ok": true,
+    "run_result": {
+      "command": [
+        "/tmp/rtdl_c_abi_layout_nrst3o97/layout_probe"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": [
+        "rtdl_index_desc.size=32",
+        "rtdl_index_desc.abi_version_major=0",
+        "rtdl_index_desc.abi_version_minor=4",
+        "rtdl_index_desc.primitive_kind=8",
+        "rtdl_index_desc.primitives=16",
+        "rtdl_index_desc.primitive_count=24",
+        "rtdl_query_desc.size=32",
+        "rtdl_query_desc.abi_version_major=0",
+        "rtdl_query_desc.abi_version_minor=4",
+        "rtdl_query_desc.query_kind=8",
+        "rtdl_query_desc.inputs=16",
+        "rtdl_query_desc.input_count=24"
+      ]
+    }
+  },
+  "checks": {
+    "c_compiler_available": true,
+    "c_layout_matches_python_ctypes_layout": true,
+    "c_layout_probe_compiles": true,
+    "c_layout_probe_runs": true,
+    "header_declares_layout_types": true,
+    "python_aabb2_example_declares_all_layout_types": true,
+    "python_cuda_example_declares_buffer_view": true,
+    "python_examples_share_buffer_view_layout": true,
+    "stability_policy_names_layout_audit": true
+  },
+  "claim_boundary": {
+    "cross_platform_layout_claim_authorized": false,
+    "generated_binding_authorized": false,
+    "packaged_sdk_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false
+  },
+  "conclusion": "Goal4599 adds a C/Python layout audit for the current draft C ABI descriptor structs used by the Python `ctypes` examples. The pod evidence compiles a tiny C `sizeof`/`offsetof` probe against `include/rtdl/rtdl.h` and compares it with Python `ctypes` layout for external runtime, buffer view, context, index, and query descriptors. This catches binding-offset drift without authorizing stable ABI, generated binding, cross-platform layout, SDK, or release wording.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4599 / V3 M200",
+  "python_ctypes_layout": {
+    "python_cuda_example_rtdl_buffer_view": {
+      "offsets": {
+        "byte_count": 8,
+        "data": 0,
+        "device_id": 20,
+        "device_type": 16,
+        "dtype": 24,
+        "ndim": 28,
+        "release": 160,
+        "shape": 32,
+        "strides": 96,
+        "user_data": 168
+      },
+      "size": 176
+    },
+    "rtdl_buffer_view": {
+      "offsets": {
+        "byte_count": 8,
+        "data": 0,
+        "device_id": 20,
+        "device_type": 16,
+        "dtype": 24,
+        "ndim": 28,
+        "release": 160,
+        "shape": 32,
+        "strides": 96,
+        "user_data": 168
+      },
+      "size": 176
+    },
+    "rtdl_context_desc": {
+      "offsets": {
+        "abi_version_major": 0,
+        "abi_version_minor": 4,
+        "backend": 8,
+        "external_runtime": 16
+      },
+      "size": 48
+    },
+    "rtdl_external_runtime": {
+      "offsets": {
+        "context": 8,
+        "device_id": 4,
+        "device_type": 0,
+        "stream": 16,
+        "user_data": 24
+      },
+      "size": 32
+    },
+    "rtdl_index_desc": {
+      "offsets": {
+        "abi_version_major": 0,
+        "abi_version_minor": 4,
+        "primitive_count": 24,
+        "primitive_kind": 8,
+        "primitives": 16
+      },
+      "size": 32
+    },
+    "rtdl_query_desc": {
+      "offsets": {
+        "abi_version_major": 0,
+        "abi_version_minor": 4,
+        "input_count": 24,
+        "inputs": 16,
+        "query_kind": 8
+      },
+      "size": 32
+    }
+  },
+  "status": "python_ctypes_layout_audit_checked",
+  "version": "rtdl.v3_0.python_ctypes_layout_audit.goal4599.v1"
+}
