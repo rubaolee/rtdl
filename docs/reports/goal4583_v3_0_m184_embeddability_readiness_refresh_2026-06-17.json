@@ -1,0 +1,56 @@
+{
+  "checks": {
+    "all_required_reports_accept": true,
+    "direct_link_and_capability_queries_remain_ok": true,
+    "docs_name_current_python_ctypes_surface": true,
+    "m181_recorded_language_binding_gap_before_refresh": true,
+    "manifest_is_current_0_1_3_with_18_symbols": true,
+    "python_ctypes_aabb2_query_smoke_ok": true,
+    "python_ctypes_lifecycle_smoke_ok": true,
+    "stability_policy_still_blocks_stable_sdk": true,
+    "staged_bundle_and_pkg_config_remain_ok": true
+  },
+  "claim_boundary": {
+    "device_buffer_c_abi_authorized": false,
+    "generated_language_binding_ready": false,
+    "optix_embree_c_abi_query_authorized": false,
+    "packaged_sdk_authorized": false,
+    "performance_wording_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false
+  },
+  "conclusion": "Goal4583 refreshes the embeddability readiness ledger after the Python ctypes lifecycle and host AABB2 query examples. The current source-tree draft now has C dlopen, C direct-link, pkg-config, capability-query, staged bundle, and Python ctypes host-query proofs. That upgrades the language-binding status from `not generated` to a validated minimal ctypes base, while generated bindings, stable ABI, packaged SDK, device-buffer C ABI, OptiX/Embree C ABI execution, and performance wording remain blocked.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4583 / V3 M184",
+  "reports": {
+    "capabilities": "docs/reports/goal4578_v3_0_m179_c_abi_capability_queries_2026-06-17.json",
+    "direct_link": "docs/reports/goal4579_v3_0_m180_c_abi_direct_link_example_2026-06-17.json",
+    "m181_readiness": "docs/reports/goal4580_v3_0_m181_embeddability_readiness_packet_2026-06-17.json",
+    "pkg_config": "docs/reports/goal4577_v3_0_m178_c_abi_pkg_config_stage_2026-06-17.json",
+    "python_ctypes_aabb2_query": "docs/reports/goal4582_v3_0_m183_c_abi_python_ctypes_aabb2_query_2026-06-17.json",
+    "python_ctypes_lifecycle": "docs/reports/goal4581_v3_0_m182_c_abi_python_ctypes_example_2026-06-17.json",
+    "staging_bundle": "docs/reports/goal4576_v3_0_m177_c_abi_staging_bundle_2026-06-17.json"
+  },
+  "status": "embeddability_readiness_refresh_checked",
+  "status_matrix": {
+    "c_dlopen_example": "validated",
+    "capability_queries": "validated_current_surface",
+    "device_buffer_c_abi": "blocked",
+    "direct_link_example": "validated",
+    "draft_c_header": "ready_source_tree_draft",
+    "exported_symbol_manifest": "ready_draft_0_1_3",
+    "generated_language_bindings": "blocked",
+    "host_aabb2_query": "validated_host_only",
+    "language_binding_base": "minimal_ctypes_examples_validated_no_generated_binding",
+    "optix_embree_c_abi_queries": "blocked",
+    "python_ctypes_host_aabb2_query_example": "validated_source_tree_stage",
+    "python_ctypes_lifecycle_example": "validated_source_tree_stage",
+    "shared_library_build": "ready_source_tree_draft",
+    "stable_abi": "blocked_until_1_0_gates",
+    "staged_bundle": "validated_source_tree_stage",
+    "staged_pkg_config": "validated_source_tree_stage",
+    "system_install_or_packaged_sdk": "blocked"
+  },
+  "version": "rtdl.v3_0.embeddability_readiness_refresh.goal4583.v1"
+}
