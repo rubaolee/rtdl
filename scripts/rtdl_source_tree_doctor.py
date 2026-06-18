@@ -108,6 +108,38 @@ def _v3_c_abi_surface_check() -> dict[str, Any]:
     )
 
 
+def _v3_c_abi_docs_check() -> dict[str, Any]:
+    required_files = (
+        ROOT / "docs" / "learn" / "v3_0_c_abi_draft.md",
+        ROOT / "docs" / "learn" / "v3_0_c_abi_stability_policy.md",
+        ROOT / "docs" / "learn" / "v3_0_c_abi_ownership_threading_contract.md",
+        ROOT / "docs" / "learn" / "v3_0_c_abi_symbol_manifest_v0_1_0.json",
+        ROOT / "docs" / "learn" / "v3_0_zero_copy_interop_contract.md",
+    )
+    missing = [path.relative_to(ROOT).as_posix() for path in required_files if not path.exists()]
+    learn_readme = ROOT / "docs" / "learn" / "README.md"
+    learn_text = learn_readme.read_text(encoding="utf-8") if learn_readme.exists() else ""
+    required_links = (
+        "V3.0 C ABI Draft",
+        "V3.0 C ABI Stability Policy",
+        "V3.0 C ABI Ownership And Threading Contract",
+        "V3.0 Zero-Copy Interop Contract",
+    )
+    missing_links = [link for link in required_links if link not in learn_text]
+    if missing or missing_links:
+        detail_parts = []
+        if missing:
+            detail_parts.append("missing files: " + ", ".join(missing))
+        if missing_links:
+            detail_parts.append("missing Learn links: " + ", ".join(missing_links))
+        return _check("V3 C ABI docs surface", "fail", "; ".join(detail_parts))
+    return _check(
+        "V3 C ABI docs surface",
+        "pass",
+        "draft, stability, ownership/threading, symbol manifest, zero-copy docs",
+    )
+
+
 def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
     if str(SRC) not in sys.path:
         sys.path.insert(0, str(SRC))
@@ -139,6 +171,7 @@ def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
 
     checks.append(_v3_current_test_matrix_check())
     checks.append(_v3_c_abi_surface_check())
+    checks.append(_v3_c_abi_docs_check())
 
     editable_metadata = ROOT / "pyproject.toml"
     checks.append(

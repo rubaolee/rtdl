@@ -4,8 +4,8 @@ Status: current v2.14 source-tree setup check for V3 development.
 
 Use the doctor before native backend or partner experiments. It checks the
 repository layout, current version marker, V3 app-author guidance, core
-imports, the current V3 test-matrix entrypoint, the V3 C ABI embedding surface,
-optional partner modules, and optional native library hints.
+imports, the current V3 test-matrix entrypoint, the V3 C ABI embedding and docs
+surfaces, optional partner modules, and optional native library hints.
 
 ## Run It
 
@@ -64,6 +64,9 @@ PYTHONPATH=src:. python scripts/run_test_matrix.py --group v3_current
 - `PASS` on `V3 C ABI embedding surface` means the public C header, source-tree
   shared-library target, and embedding example files are present. It does not
   build `make build-c-api`.
+- `PASS` on `V3 C ABI docs surface` means the draft, stability,
+  ownership/threading, symbol-manifest, zero-copy, and Learn README C ABI links
+  are present. It does not freeze the ABI or validate runtime behavior.
 - Missing CuPy affects CUDA-array partner examples.
 - Missing Numba affects Python-source custom CUDA-style continuation examples.
 - Missing `RTDL_OPTIX_LIBRARY` affects OptiX examples, not portable CPU
