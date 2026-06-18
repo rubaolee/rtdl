@@ -95,6 +95,13 @@ create/destroy from a non-C client. This is a minimal language-binding proof,
 not a generated Python package, stable ABI, device-buffer binding, or
 OptiX/Embree C ABI query surface.
 
+Goal4582 adds `examples/current/embedding/python_ctypes_aabb2_query_client.py`,
+a staged Python `ctypes` client that runs the current host F32 AABB2 overlap
+route through the C ABI: buffer import, index build, query execute, result
+export, and cleanup. This proves a non-C client can exercise the current real
+query route, while still remaining outside generated package, stable ABI,
+device-buffer, OptiX, Embree, and performance claims.
+
 ## Current Host AABB2 Query Contract
 
 The only implemented query route is deliberately small:

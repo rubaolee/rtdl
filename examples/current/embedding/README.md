@@ -51,8 +51,9 @@ make stage-c-api
 
 This creates `build/c_api_stage` with the public header, shared library, current
 draft symbol manifest, `lib/pkgconfig/rtdl-c-api.pc`, this README, the AABB2
-dlopen and direct-link C examples, and a thin Python `ctypes` example. It is
-still a source-tree staging bundle, not an installed SDK.
+dlopen and direct-link C examples, a thin Python `ctypes` lifecycle example,
+and a Python `ctypes` host AABB2 query example. It is still a source-tree
+staging bundle, not an installed SDK.
 
 For direct-link clients:
 
@@ -80,10 +81,26 @@ Expected output:
 python_ctypes_ok 0.1.3 ok
 ```
 
+For the same Python `ctypes` path running the current host AABB2 query route:
+
+```bash
+python3 build/c_api_stage/examples/python_ctypes_aabb2_query_client.py \
+  build/c_api_stage/lib/librtdl_c_api.so
+```
+
+Expected output:
+
+```text
+python_ctypes_hit_count=1 first_pair=(0,0)
+```
+
 ## Boundary
 
 - This is a source-tree C client example for the V3 draft C ABI.
 - It validates only host `F32` AABB2 overlap through `librtdl_c_api`.
 - The Python `ctypes` example validates version/capability/context lifecycle
   calls only; it is not a generated Python package or complete binding.
+- The Python `ctypes` AABB2 query example validates host buffer import, index
+  build, query execute, result export, and handle cleanup for the current host
+  AABB2 route only.
 - It is not an OptiX, Embree, device-buffer, packaged-SDK, or frozen-ABI claim.

@@ -20,6 +20,7 @@ The target first builds `build/librtdl_c_api.*`, then creates
 - `examples/c_api_aabb2_overlap_client.c`
 - `examples/c_api_direct_link_client.c`
 - `examples/python_ctypes_client.py`
+- `examples/python_ctypes_aabb2_query_client.py`
 
 The staged manifest is copied from the current draft source-tree manifest,
 currently `docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json`.
@@ -69,6 +70,19 @@ Expected output:
 python_ctypes_ok 0.1.3 ok
 ```
 
+For the same Python `ctypes` path running a host AABB2 overlap query:
+
+```bash
+python3 build/c_api_stage/examples/python_ctypes_aabb2_query_client.py \
+  build/c_api_stage/lib/librtdl_c_api.so
+```
+
+Expected output:
+
+```text
+python_ctypes_hit_count=1 first_pair=(0,0)
+```
+
 ## Boundary
 
 - This is a source-tree staging bundle only.
@@ -76,6 +90,8 @@ python_ctypes_ok 0.1.3 ok
   ABI.
 - The Python `ctypes` example validates only thin shared-library loading,
   version/capability queries, and context lifecycle calls.
+- The Python `ctypes` AABB2 query example validates the current host buffer
+  import, index build, query execute, result export, and cleanup path only.
 - No install prefix, package manager artifact, Python wheel, stable binary
   compatibility, OptiX/Embree C ABI query, device-buffer route, or performance
   wording is authorized.
