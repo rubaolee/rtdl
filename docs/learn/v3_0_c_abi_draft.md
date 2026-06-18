@@ -23,3 +23,6 @@ binary compatibility, authorize release wording, or claim DLPack,
 `__cuda_array_interface__`, external CUDA stream, or device-callable fusion
 support. Those require separate implementation gates and non-Python client
 validation.
+
+Goal4551 adds a C11/C++17 header compile smoke for the draft only; that smoke
+still does not implement or freeze the ABI.

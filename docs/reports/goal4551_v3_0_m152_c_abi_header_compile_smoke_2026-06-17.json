@@ -1,0 +1,59 @@
+{
+  "checks": {
+    "c_compiler_available": true,
+    "c_header_compile_ok": true,
+    "cxx_compiler_available": true,
+    "cxx_header_compile_ok": true,
+    "header_exists": true,
+    "header_has_extern_c": true,
+    "header_uses_stdint_and_size_t": true
+  },
+  "claim_boundary": {
+    "header_binary_compatibility_frozen": false,
+    "non_python_client_validated": false,
+    "release_authorized": false,
+    "shared_library_symbols_implemented": false
+  },
+  "compile_results": {
+    "c": {
+      "command": [
+        "C:\\Program Files\\LLVM\\bin\\clang.exe",
+        "-std=c11",
+        "-I",
+        "include",
+        "-c",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpjop7ne2f\\rtdl_header_smoke.c",
+        "-o",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpjop7ne2f\\rtdl_header_smoke_c.o"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    },
+    "c_compiler": "C:\\Program Files\\LLVM\\bin\\clang.exe",
+    "cxx": {
+      "command": [
+        "C:\\Program Files\\LLVM\\bin\\clang++.exe",
+        "-std=c++17",
+        "-I",
+        "include",
+        "-c",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpjop7ne2f\\rtdl_header_smoke.cpp",
+        "-o",
+        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpjop7ne2f\\rtdl_header_smoke_cxx.o"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    },
+    "cxx_compiler": "C:\\Program Files\\LLVM\\bin\\clang++.exe"
+  },
+  "conclusion": "Goal4551 validates that the draft V3 `rtdl.h` header is usable from both C11 and C++17 translation units. This is a header hygiene gate only; it does not implement the ABI or freeze binary compatibility.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4551 / V3 M152",
+  "status": "c_abi_header_compile_smoke_checked",
+  "version": "rtdl.v3_0.c_abi_header_compile_smoke.goal4551.v1"
+}
