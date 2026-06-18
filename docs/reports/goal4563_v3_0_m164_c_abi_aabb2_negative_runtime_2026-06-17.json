@@ -1,0 +1,95 @@
+{
+  "case_markers": [
+    "unsupported_primitive_rejected",
+    "bad_index_dtype_rejected",
+    "cuda_index_device_rejected",
+    "query_abi_mismatch_rejected",
+    "unsupported_query_kind_rejected",
+    "bad_query_dtype_rejected",
+    "no_overlap_returns_empty_u64_pairs"
+  ],
+  "checks": {
+    "c_client_compile_ok": true,
+    "c_client_run_ok": true,
+    "c_compiler_available": true,
+    "client_source_covers_all_negative_cases": true,
+    "client_source_validates_empty_result_shape": true,
+    "cxx_compiler_available": true,
+    "header_declares_aabb2_and_overlap": true,
+    "runtime_validated_all_cases": true,
+    "shared_library_build_ok": true,
+    "source_has_invalid_argument_paths": true,
+    "source_has_unsupported_status_paths": true
+  },
+  "claim_boundary": {
+    "device_buffer_query_supported": false,
+    "embree_backend_query_implemented": false,
+    "general_query_semantics_validated": false,
+    "optix_backend_query_implemented": false,
+    "release_authorized": false
+  },
+  "client_result": {
+    "c_compiler": "/usr/bin/cc",
+    "client_compile": {
+      "command": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-I",
+        "include",
+        "/tmp/tmp_hjca_35/rtdl_c_abi_aabb2_negative_runtime.c",
+        "-o",
+        "/tmp/tmp_hjca_35/rtdl_c_abi_aabb2_negative_runtime",
+        "-ldl"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    },
+    "client_run": {
+      "command": [
+        "/tmp/tmp_hjca_35/rtdl_c_abi_aabb2_negative_runtime",
+        "/tmp/tmp_hjca_35/rtdl_c_api_negative.so"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "case unsupported_primitive_rejected: ok\ncase bad_index_dtype_rejected: ok\ncase cuda_index_device_rejected: ok\ncase query_abi_mismatch_rejected: ok\ncase unsupported_query_kind_rejected: ok\ncase bad_query_dtype_rejected: ok\ncase no_overlap_returns_empty_u64_pairs: ok\nvalidated_cases=7\n"
+    },
+    "cxx_compiler": "/usr/bin/c++",
+    "ok": true,
+    "shared_library": {
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-DRTDL_BUILD_SHARED",
+        "-I",
+        "include",
+        "src/native/rtdl_c_api.cpp",
+        "-shared",
+        "-fPIC",
+        "-o",
+        "/tmp/tmp_hjca_35/rtdl_c_api_negative.so"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    }
+  },
+  "conclusion": "Goal4563 hardens the first V3 C ABI query proof with a real C client that validates fail-closed behavior for unsupported primitive/query kinds, bad dtype/device inputs, ABI mismatch, and a successful no-overlap result that returns an empty host U64 pair buffer. This remains a narrow host AABB2 proof, not backend or release evidence.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4563 / V3 M164",
+  "status": "c_abi_aabb2_negative_runtime_checked",
+  "validated_cases": {
+    "bad_index_dtype_rejected": true,
+    "bad_query_dtype_rejected": true,
+    "cuda_index_device_rejected": true,
+    "no_overlap_returns_empty_u64_pairs": true,
+    "query_abi_mismatch_rejected": true,
+    "unsupported_primitive_rejected": true,
+    "unsupported_query_kind_rejected": true
+  },
+  "version": "rtdl.v3_0.c_abi_aabb2_negative_runtime.goal4563.v1"
+}
