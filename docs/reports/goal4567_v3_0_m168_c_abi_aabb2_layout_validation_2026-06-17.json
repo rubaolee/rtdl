@@ -1,0 +1,86 @@
+{
+  "case_markers": [
+    "bad_index_shape_rejected",
+    "bad_query_stride_rejected",
+    "zero_count_empty_result_ok"
+  ],
+  "checks": {
+    "c_client_compile_ok": true,
+    "c_client_run_ok": true,
+    "c_compiler_available": true,
+    "client_source_covers_layout_cases": true,
+    "cxx_compiler_available": true,
+    "header_declares_buffer_shape_and_strides": true,
+    "runtime_validated_layout_cases": true,
+    "shared_library_build_ok": true,
+    "source_allows_zero_count_without_pointer_arithmetic": true,
+    "source_requires_contiguous_f32_strides": true,
+    "source_requires_two_dimensional_aabb2": true
+  },
+  "claim_boundary": {
+    "device_buffer_query_supported": false,
+    "general_strided_buffer_support": false,
+    "optix_embree_c_abi_query_supported": false,
+    "release_authorized": false
+  },
+  "client_result": {
+    "c_compiler": "/usr/bin/cc",
+    "client_compile": {
+      "command": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-I",
+        "include",
+        "/tmp/tmpep2o2xeq/rtdl_c_abi_aabb2_layout_validation.c",
+        "-o",
+        "/tmp/tmpep2o2xeq/rtdl_c_abi_aabb2_layout_validation",
+        "-ldl"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    },
+    "client_run": {
+      "command": [
+        "/tmp/tmpep2o2xeq/rtdl_c_abi_aabb2_layout_validation",
+        "/tmp/tmpep2o2xeq/rtdl_c_api_layout.so"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "case bad_index_shape_rejected: ok\ncase bad_query_stride_rejected: ok\ncase zero_count_empty_result_ok: ok\nvalidated_layout_cases=3\n"
+    },
+    "cxx_compiler": "/usr/bin/c++",
+    "ok": true,
+    "shared_library": {
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-DRTDL_BUILD_SHARED",
+        "-I",
+        "include",
+        "src/native/rtdl_c_api.cpp",
+        "-shared",
+        "-fPIC",
+        "-o",
+        "/tmp/tmpep2o2xeq/rtdl_c_api_layout.so"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    }
+  },
+  "conclusion": "Goal4567 aligns the C ABI host AABB2 implementation with its documented contiguous `[count, 4]` contract: bad shape and stride metadata now fail closed, while zero-count inputs produce an empty host U64 pair buffer without pointer arithmetic on null data.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4567 / V3 M168",
+  "status": "c_abi_aabb2_layout_validation_checked",
+  "validated_cases": {
+    "bad_index_shape_rejected": true,
+    "bad_query_stride_rejected": true,
+    "zero_count_empty_result_ok": true
+  },
+  "version": "rtdl.v3_0.c_abi_aabb2_layout_validation.goal4567.v1"
+}

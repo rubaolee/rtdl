@@ -1,5 +1,6 @@
 #include "rtdl/rtdl.h"
 
+#include <limits>
 #include <cstring>
 #include <new>
 #include <vector>
@@ -41,8 +42,15 @@ void set_error(rtdl_context* context, const char* message) {
 }
 
 bool host_f32_aabb2_view_is_valid(const rtdl_buffer_view& view, uint64_t count) {
+  const uint64_t row_bytes = 4u * static_cast<uint64_t>(sizeof(float));
+  if (count > std::numeric_limits<uint64_t>::max() / row_bytes) {
+    return false;
+  }
   return view.device_type == RTDL_DEVICE_HOST && view.dtype == RTDL_DTYPE_F32 &&
-      view.data != nullptr && view.byte_count >= count * 4u * sizeof(float);
+      view.ndim == 2u && view.shape[0] >= 0 && static_cast<uint64_t>(view.shape[0]) == count &&
+      view.shape[1] == 4 && view.strides[0] == static_cast<int64_t>(row_bytes) &&
+      view.strides[1] == static_cast<int64_t>(sizeof(float)) &&
+      (view.data != nullptr || count == 0u) && view.byte_count >= count * row_bytes;
 }
 
 bool aabb2_overlaps(const float* lhs, const float* rhs) {
@@ -210,7 +218,9 @@ RTDL_API rtdl_status rtdl_index_build(
   try {
     index->primitive_kind = desc->primitive_kind;
     index->primitive_count = desc->primitive_count;
-    index->aabb2.assign(data, data + desc->primitive_count * 4u);
+    if (desc->primitive_count != 0u) {
+      index->aabb2.assign(data, data + desc->primitive_count * 4u);
+    }
   } catch (...) {
     delete index;
     set_error(context, "could not copy AABB2 primitive buffer");
