@@ -116,6 +116,25 @@ Expected output:
 direct_link_ok 0.1.3 ok
 ```
 
+The same prefix-style stage also carries Python `ctypes` examples:
+
+```bash
+python3 build/c_api_prefix_stage/usr/local/share/rtdl/examples/python_ctypes_client.py \
+  build/c_api_prefix_stage/usr/local/lib/librtdl_c_api.so
+python3 build/c_api_prefix_stage/usr/local/share/rtdl/examples/python_ctypes_aabb2_query_client.py \
+  build/c_api_prefix_stage/usr/local/lib/librtdl_c_api.so
+python3 build/c_api_prefix_stage/usr/local/share/rtdl/examples/python_ctypes_cuda_buffer_metadata_client.py \
+  build/c_api_prefix_stage/usr/local/lib/librtdl_c_api.so
+```
+
+Expected outputs include:
+
+```text
+python_ctypes_ok 0.1.3 ok
+python_ctypes_hit_count=1 first_pair=(0,0)
+python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument
+```
+
 For a C client that validates the current host external-runtime metadata path:
 
 ```bash

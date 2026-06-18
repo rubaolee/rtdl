@@ -192,6 +192,7 @@ V3.0 current app-author guidance:
 - [Goal4594 embeddability metadata readiness refresh](../reports/goal4594_v3_0_m195_embeddability_metadata_readiness_refresh_2026-06-17.md)
 - [Goal4595 C ABI prefix stage](../reports/goal4595_v3_0_m196_c_abi_prefix_stage_2026-06-17.md)
 - [Goal4596 source-tree doctor prefix stage](../reports/goal4596_v3_0_m197_source_tree_doctor_prefix_stage_2026-06-17.md)
+- [Goal4597 prefix-stage Python ctypes smoke](../reports/goal4597_v3_0_m198_prefix_stage_python_ctypes_smoke_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)
