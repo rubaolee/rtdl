@@ -209,6 +209,7 @@ V3.0 current app-author guidance:
 - [Goal4611 C ABI last-error diagnostics smoke](../reports/goal4611_v3_0_m212_c_abi_last_error_diagnostics_smoke_2026-06-17.md)
 - [Goal4612 C ABI last-error staged example](../reports/goal4612_v3_0_m213_c_abi_last_error_staged_example_2026-06-17.md)
 - [Goal4613 prefix-stage C examples smoke](../reports/goal4613_v3_0_m214_prefix_stage_c_examples_smoke_2026-06-18.md)
+- [Goal4614 V3 current-scope completion gate](../reports/goal4614_v3_0_m215_current_scope_completion_gate_2026-06-18.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)

@@ -1,7 +1,7 @@
 # RTDL V3.0 App-Author Implementation Strategy
 
-Status: V3.0 post-closure guidance for app authors after Goal4542 and
-Goal4543. This is not a release tag, public performance claim, automatic
+Status: V3.0 current-scope completion guidance for app authors after Goal4614.
+This is not a release tag, public performance claim, automatic
 optimizer promise, raw OptiX callback API proposal, or proof that every app is
 a broad RT-core speedup.
 
@@ -15,16 +15,22 @@ Use this document when you want to implement a program with RTDL and decide:
 
 ## Current V3 State
 
-Goal4542 records the current implementation surface:
+Goal4614 records the current V3 completion surface:
 
 - all ten benchmark apps are closed current targets;
 - the runtime, claim/evidence, design-blocker, and future-design queues are
   empty;
 - no current target requires immediate pod execution after Goal4543;
 - release, public speedup, broad RT-core, paper-reproduction, automatic
-  partner-selection, true-zero-copy, RTDL-beats-specialized-code, and
-  app-specific native-engine claims remain blocked unless a later reviewed
-  packet authorizes them.
+  partner-selection, true-zero-copy, RTDL-beats-specialized-code, stable SDK,
+  generated binding, device-buffer query, external-stream, and app-specific
+  native-engine claims remain blocked unless a later reviewed packet authorizes
+  them.
+
+V4 deferrals are explicit: stable packaged SDK, generated language bindings,
+device-buffer query execution, external CUDA stream ordering, public true
+zero-copy wording, OptiX/Embree execution through the C ABI, and optional
+device-callable fusion are future work, not V3 blockers.
 
 ## One-Sentence Rule
 

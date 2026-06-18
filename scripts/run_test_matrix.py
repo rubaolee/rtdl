@@ -165,6 +165,7 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal4611_v3_0_m212_c_abi_last_error_diagnostics_smoke_test",
         "tests.goal4612_v3_0_m213_c_abi_last_error_staged_example_test",
         "tests.goal4613_v3_0_m214_prefix_stage_c_examples_smoke_test",
+        "tests.goal4614_v3_0_m215_current_scope_completion_gate_test",
     ),
     "v0_2_local": (
         "tests.goal110_baseline_runner_backend_test",

@@ -1,12 +1,17 @@
 # RTDL Embeddability Architecture Strategy
 
-**Status:** V3 architecture review input, not a frozen ABI contract · **Author:** independent technical review (Claude) · **Date:** 2026-06-17
+**Status:** V3 architecture review input and V4 deferral map, not a frozen ABI contract · **Author:** independent technical review (Claude) · **Date:** 2026-06-17
 
 RTDL project boundary: this document is retained as design guidance for the
 post-v2.14/V3 embeddability track. It does not by itself authorize a stable C
 ABI, DLPack support, external stream/context support, device-callable fusion,
 release wording, or performance claims. Those require separate implementation
 and validation gates.
+
+After Goal4614, the unfinished stable SDK, generated binding, device-buffer
+query, external stream, public true-zero-copy, OptiX/Embree C ABI execution, and
+device-callable fusion items are V4 deferral work. They are not blockers for V3
+current-scope completion.
 
 ## Current Implementation Progress
 

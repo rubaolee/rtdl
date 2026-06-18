@@ -33,8 +33,9 @@ class Goal4544V30M145AppAuthorStrategyDocTest(unittest.TestCase):
         text = DOC.read_text(encoding="utf-8")
         for label in self.module.REQUIRED_APP_LABELS:
             self.assertIn(label, text)
-        self.assertIn("Goal4542", text)
+        self.assertIn("Goal4614", text)
         self.assertIn("Goal4543", text)
+        self.assertIn("V4 deferrals", text)
         self.assertIn("RTDL does not promise miracles", text)
         self.assertIn("Do not expose arbitrary raw callbacks", text)
         self.assertIn("RT-native hierarchical traversal is not implemented", text)

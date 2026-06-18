@@ -68,7 +68,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "all_ten_app_labels_present": not missing_apps,
         "required_boundary_phrases_present": not missing_phrases,
         "forbidden_phrases_absent": not forbidden_hits,
-        "mentions_goal4542_and_goal4543": "Goal4542" in doc and "Goal4543" in doc,
+        "mentions_goal4614_and_goal4543": "Goal4614" in doc and "Goal4543" in doc,
         "keeps_v2_14_snapshot_link": "v2_14_app_author_implementation_strategy.md"
         in learn_index,
     }
@@ -95,12 +95,13 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
             "app_specific_native_engine_logic_allowed": False,
         },
         "conclusion": (
-            "Goal4544 adds a V3 post-closure app-author implementation strategy. "
+            "Goal4544 maintains a V3 current-scope app-author implementation strategy. "
             "It tells users how to choose primitives, partners, backends, and new "
-            "primitive candidates after Goal4542/Goal4543, while preserving the "
+            "primitive candidates after Goal4614/Goal4543, while preserving the "
             "blocked boundaries for release, public speedup, broad RT-core, paper "
             "reproduction, automatic partner selection, raw OptiX callback APIs, "
-            "and app-specific native-engine logic."
+            "stable SDK/device-buffer/true-zero-copy wording, and app-specific "
+            "native-engine logic."
         ),
     }
 

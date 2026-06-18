@@ -1,12 +1,16 @@
 # V3.0 Binding And Device Interop Matrix
 
-Status: current V3 source-tree evidence matrix, not a stable SDK, generated
-binding package, device-buffer query route, or public true-zero-copy claim.
+Status: current V3 source-tree evidence matrix and V4 deferral map, not a
+stable SDK, generated binding package, device-buffer query route, or public
+true-zero-copy claim.
 
 This page is the short map for what an external program can do with the current
 V3 draft C ABI and where the boundary still stops. It consolidates the C,
 Python `ctypes`, staging, CUDA metadata, and future interop contracts so a user
 does not confuse descriptor metadata with executable device memory support.
+After Goal4614, the blocked device-buffer, external-stream, generated-binding,
+stable-SDK, and public true-zero-copy rows are V4 deferral work rather than V3
+current-scope blockers.
 
 ## Current Matrix
 

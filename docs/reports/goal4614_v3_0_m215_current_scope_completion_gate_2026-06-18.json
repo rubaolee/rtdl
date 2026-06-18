@@ -1,0 +1,175 @@
+{
+  "app_rows": [
+    {
+      "adequacy": "adequate",
+      "app": "barnes_hut",
+      "partner_policy": "explicit_route_choice_cpu_numba_or_optix_numba_cupy_comparison",
+      "pod_needed_next": false,
+      "queue_class": "closed_current_target",
+      "route_kind": "mixed_explicit"
+    },
+    {
+      "adequacy": "adequate",
+      "app": "contact_manifold",
+      "partner_policy": "none",
+      "pod_needed_next": false,
+      "queue_class": "closed_current_target",
+      "route_kind": "no_partner_needed"
+    },
+    {
+      "adequacy": "adequate",
+      "app": "hausdorff_xhd",
+      "partner_policy": "primitive_only",
+      "pod_needed_next": false,
+      "queue_class": "closed_current_target",
+      "route_kind": "primitive_first"
+    },
+    {
+      "adequacy": "adequate",
+      "app": "librts_spatial_index",
+      "partner_policy": "none",
+      "pod_needed_next": false,
+      "queue_class": "closed_current_target",
+      "route_kind": "no_partner_needed"
+    },
+    {
+      "adequacy": "adequate",
+      "app": "raydb_style",
+      "partner_policy": "primitive_only",
+      "pod_needed_next": false,
+      "queue_class": "closed_current_target",
+      "route_kind": "primitive_first"
+    },
+    {
+      "adequacy": "strong",
+      "app": "robot_collision",
+      "partner_policy": "none",
+      "pod_needed_next": false,
+      "queue_class": "closed_current_target",
+      "route_kind": "no_partner_needed"
+    },
+    {
+      "adequacy": "strong",
+      "app": "rt_dbscan",
+      "partner_policy": "mixed_explicit_user_choice",
+      "pod_needed_next": false,
+      "queue_class": "closed_current_target",
+      "route_kind": "mixed_explicit"
+    },
+    {
+      "adequacy": "strong",
+      "app": "rtnn",
+      "partner_policy": "mixed_explicit_user_choice",
+      "pod_needed_next": false,
+      "queue_class": "closed_current_target",
+      "route_kind": "mixed_explicit"
+    },
+    {
+      "adequacy": "strong",
+      "app": "spatial_rayjoin",
+      "partner_policy": "mixed_explicit_user_choice",
+      "pod_needed_next": false,
+      "queue_class": "closed_current_target",
+      "route_kind": "mixed_explicit"
+    },
+    {
+      "adequacy": "adequate",
+      "app": "triangle_counting",
+      "partner_policy": "primitive_only",
+      "pod_needed_next": false,
+      "queue_class": "closed_current_target",
+      "route_kind": "primitive_first"
+    }
+  ],
+  "checks": {
+    "all_app_rows_closed": true,
+    "all_claim_boundary_flags_false": true,
+    "all_ten_apps_closed": true,
+    "app_author_doc_names_goal4614": true,
+    "app_author_doc_names_v4_deferrals": true,
+    "binding_matrix_marks_v4_deferral": true,
+    "claim_queue_empty": true,
+    "completion_scope_is_internal_current_scope": true,
+    "design_blocker_queue_empty": true,
+    "embeddability_doc_marks_v4_deferral": true,
+    "evidence_index_links_goal4614": true,
+    "future_design_queue_empty": true,
+    "matrix_registered_and_ends_at_goal4614": true,
+    "no_app_needs_immediate_pod": true,
+    "prior_completion_packets_accept": true,
+    "queue_validates": true,
+    "runtime_queue_empty": true,
+    "target_map_has_no_immediate_pod_targets": true,
+    "target_map_validates": true
+  },
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_claim_authorized": false,
+    "device_buffer_query_route_authorized": false,
+    "external_stream_ordering_authorized": false,
+    "generated_bindings_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "public_true_zero_copy_authorized": false,
+    "release_authorized": false,
+    "rtdl_beats_specialized_code_claim_authorized": false,
+    "stable_sdk_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "conclusion": "Goal4614 closes the V3 current scope: the ten benchmark-app current routes are closed, the runtime/claim/design/future-design queues are empty, the app-author route policy is documented, and the V3 current test matrix is the canonical validation surface. This is a real V3 completion for the benchmark-app/current-route project scope. It does not turn V4 embeddability work into a V3 blocker, and it does not authorize public release, public performance tables, broad RT-core speedup wording, paper-reproduction wording, automatic partner selection, stable SDK wording, device-buffer query execution, external stream ordering, or public true-zero-copy claims.",
+  "date": "2026-06-18",
+  "failed_checks": [],
+  "goal": "Goal4614 / V3 M215",
+  "scope_completion": {
+    "benchmark_app_queue_closed": true,
+    "public_performance_claim_authorized": false,
+    "release_tag_authorized": false,
+    "stable_sdk_authorized": false,
+    "true_zero_copy_authorized": false,
+    "v3_current_scope_complete": true,
+    "v4_deferrals_do_not_block_v3": true
+  },
+  "status": "current_scope_completion_checked",
+  "test_matrix": {
+    "first_module": "tests.goal4508_v3_0_m112_rtnn_clean_target_closeout_test",
+    "group": "v3_current",
+    "last_module": "tests.goal4614_v3_0_m215_current_scope_completion_gate_test",
+    "module_count": 104
+  },
+  "v4_deferrals": [
+    {
+      "item": "stable_packaged_sdk",
+      "reason": "The current C ABI evidence is source-tree, prefix-stage, and archive-stage handoff proof, not a frozen installed SDK."
+    },
+    {
+      "item": "generated_language_bindings",
+      "reason": "Current Python examples are hand-written ctypes examples; generated Python/Rust/Julia/C# packages remain future work."
+    },
+    {
+      "item": "device_buffer_query_route",
+      "reason": "CUDA/DLPack-like descriptors are metadata-only today; no C ABI query route consumes device buffers."
+    },
+    {
+      "item": "external_cuda_stream_ordering",
+      "reason": "The current C ABI has no same-stream/event ordering proof for borrowed framework streams."
+    },
+    {
+      "item": "public_true_zero_copy",
+      "reason": "Descriptor metadata and no-hidden-copy contracts are not public true-zero-copy support."
+    },
+    {
+      "item": "optix_embree_c_abi_execution",
+      "reason": "The current C ABI executes the host AABB2 proof route only; OptiX/Embree execution through the C ABI is future work."
+    },
+    {
+      "item": "device_callable_fusion",
+      "reason": "PTX/OptiX callable fusion remains an optional falsifiable experiment, not a V3 completion blocker."
+    },
+    {
+      "item": "amd_hiprt_evidence",
+      "reason": "AMD/HIPRT timing and parity remain hardware-gated future evidence, not a blocker for the NVIDIA/CPU current V3 scope."
+    }
+  ],
+  "version": "rtdl.v3_0.current_scope_completion.goal4614.v1"
+}
