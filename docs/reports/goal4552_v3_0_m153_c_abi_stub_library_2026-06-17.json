@@ -9,7 +9,7 @@
       "src\\native\\rtdl_c_api.cpp",
       "-shared",
       "-o",
-      "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpmicty5nh\\rtdl_c_api_stub.dll"
+      "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmpd1udosid\\rtdl_c_api_stub.dll"
     ],
     "compiler": "C:\\Program Files\\LLVM\\bin\\clang++.exe",
     "ctypes_smoke": {
@@ -47,7 +47,7 @@
     "context_lifecycle_implemented": true,
     "ctypes_smoke_ok": true,
     "header_exists": true,
-    "header_still_marks_draft": true,
+    "header_marks_draft_stub_boundary": true,
     "shared_library_build_ok": true,
     "source_exists": true,
     "source_includes_public_header": true,

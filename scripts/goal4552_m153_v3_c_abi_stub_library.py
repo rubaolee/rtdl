@@ -205,7 +205,9 @@ def build_packet(root: Path = Path("."), *, run_compile: bool = False) -> dict[s
         and "rtdl_context_destroy" in source_text,
         "buffer_lifecycle_implemented": "rtdl_buffer_import" in source_text
         and "rtdl_buffer_destroy" in source_text,
-        "header_still_marks_draft": "not yet an implemented shared-library contract" in header_text,
+        "header_marks_draft_stub_boundary": "minimal lifecycle stub implementation" in header_text
+        and "not" in header_text
+        and "frozen or backend-capable shared-library contract" in header_text,
     }
     if build_result is not None:
         checks.update(

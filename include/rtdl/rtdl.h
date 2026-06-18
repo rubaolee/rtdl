@@ -6,7 +6,8 @@
  *
  * This header is a design-stage embedding boundary. It intentionally exposes
  * C-only opaque handles, status codes, external runtime handles, and neutral
- * buffer views. It is not yet an implemented shared-library contract.
+ * buffer views. It has a minimal lifecycle stub implementation, but it is not
+ * a frozen or backend-capable shared-library contract.
  */
 
 #include <stddef.h>

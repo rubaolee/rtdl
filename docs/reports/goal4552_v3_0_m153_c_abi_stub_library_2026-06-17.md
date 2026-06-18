@@ -16,7 +16,7 @@ Goal4552 adds a minimal V3 C ABI stub implementation for version, status, contex
 | `version_functions_implemented` | `True` |
 | `context_lifecycle_implemented` | `True` |
 | `buffer_lifecycle_implemented` | `True` |
-| `header_still_marks_draft` | `True` |
+| `header_marks_draft_stub_boundary` | `True` |
 | `compiler_available` | `True` |
 | `shared_library_build_ok` | `True` |
 | `ctypes_smoke_ok` | `True` |
