@@ -62,11 +62,13 @@ PYTHONPATH=src:. python scripts/run_test_matrix.py --group v3_current
   is registered. The doctor does not run that suite unless you run the command
   above.
 - `PASS` on `V3 C ABI embedding surface` means the public C header, source-tree
-  shared-library/staging/prefix-stage/archive targets, C examples including the
-  host-runtime metadata and CUDA buffer-metadata examples, Python `ctypes` lifecycle
-  examples, Python `ctypes` host AABB2 query examples, and Python `ctypes` CUDA
-  metadata examples are present. It does not build `make build-c-api`,
-  `make stage-c-api`, `make stage-c-api-prefix`, or `make package-c-api-stage`.
+  shared-library/staging/prefix-stage/archive targets, pkg-config and CMake
+  metadata, C examples including the host-runtime metadata and CUDA
+  buffer-metadata examples, Python `ctypes` lifecycle examples, Python `ctypes`
+  host AABB2 query examples, and Python `ctypes` CUDA metadata examples are
+  present. It does not build `make build-c-api`, `make stage-c-api`,
+  `make stage-c-api-prefix`, or `make package-c-api-stage`, and it does not run
+  CMake.
 - `PASS` on `V3 C ABI docs surface` means the draft, stability,
   ownership/threading, symbol-manifest, zero-copy, and Learn README C ABI links
   are present. It does not freeze the ABI or validate runtime behavior.

@@ -15,6 +15,7 @@ The target first builds `build/librtdl_c_api.*`, then creates
 - `include/rtdl/rtdl.h`
 - `lib/librtdl_c_api.*`
 - `lib/pkgconfig/rtdl-c-api.pc`
+- `lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake`
 - `share/rtdl/v3_0_c_abi_symbol_manifest.json`
 - `share/rtdl/README.md`
 - `examples/c_api_aabb2_overlap_client.c`
@@ -50,6 +51,7 @@ By default this writes:
 - `build/c_api_prefix_stage/usr/local/include/rtdl/rtdl.h`
 - `build/c_api_prefix_stage/usr/local/lib/librtdl_c_api.*`
 - `build/c_api_prefix_stage/usr/local/lib/pkgconfig/rtdl-c-api.pc`
+- `build/c_api_prefix_stage/usr/local/lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake`
 - `build/c_api_prefix_stage/usr/local/share/rtdl/v3_0_c_abi_symbol_manifest.json`
 - `build/c_api_prefix_stage/usr/local/share/rtdl/README.md`
 - `build/c_api_prefix_stage/usr/local/share/rtdl/examples/*`
@@ -133,6 +135,23 @@ Expected outputs include:
 python_ctypes_ok 0.1.3 ok
 python_ctypes_hit_count=1 first_pair=(0,0)
 python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument
+```
+
+For an external CMake project:
+
+```cmake
+cmake_minimum_required(VERSION 3.16)
+project(rtdl_c_api_consumer C)
+find_package(rtdl-c-api CONFIG REQUIRED)
+add_executable(consumer main.c)
+target_link_libraries(consumer PRIVATE rtdl::c_api)
+```
+
+Configure with the staged prefix:
+
+```bash
+cmake -S . -B build -DCMAKE_PREFIX_PATH="$PWD/build/c_api_prefix_stage/usr/local"
+cmake --build build
 ```
 
 For a C client that validates the current host external-runtime metadata path:

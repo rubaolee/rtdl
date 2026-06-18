@@ -72,7 +72,7 @@ make stage-c-api-prefix
 ```
 
 By default this writes the C ABI header, shared library, pkg-config metadata,
-manifest, README, and examples under
+CMake package config, manifest, README, and examples under
 `build/c_api_prefix_stage/usr/local`. The root and prefix can be overridden:
 
 ```bash
@@ -115,6 +115,23 @@ Expected outputs include:
 python_ctypes_ok 0.1.3 ok
 python_ctypes_hit_count=1 first_pair=(0,0)
 python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument
+```
+
+For an external CMake project:
+
+```cmake
+cmake_minimum_required(VERSION 3.16)
+project(rtdl_c_api_consumer C)
+find_package(rtdl-c-api CONFIG REQUIRED)
+add_executable(consumer main.c)
+target_link_libraries(consumer PRIVATE rtdl::c_api)
+```
+
+Configure with:
+
+```bash
+cmake -S . -B build -DCMAKE_PREFIX_PATH="$PWD/build/c_api_prefix_stage/usr/local"
+cmake --build build
 ```
 
 For direct-link clients:
