@@ -12,8 +12,10 @@
       "rtdl_context_destroy",
       "rtdl_context_last_error",
       "rtdl_context_set_external_runtime",
+      "rtdl_index_build",
       "rtdl_index_destroy",
       "rtdl_query_destroy",
+      "rtdl_query_execute",
       "rtdl_status_string"
     ],
     "make": "/usr/bin/make",
@@ -45,8 +47,6 @@
       "returncode": 0,
       "stderr_tail": [],
       "stdout_tail": [
-        "0000000000001170 T rtdl_abi_version_minor",
-        "0000000000001180 T rtdl_abi_version_patch",
         "00000000000015f0 T rtdl_buffer_destroy",
         "0000000000001560 T rtdl_buffer_export",
         "0000000000001360 T rtdl_buffer_import",
@@ -54,8 +54,10 @@
         "0000000000001300 T rtdl_context_destroy",
         "0000000000001210 T rtdl_context_last_error",
         "0000000000001320 T rtdl_context_set_external_runtime",
-        "0000000000001630 T rtdl_index_destroy",
-        "0000000000001650 T rtdl_query_destroy",
+        "0000000000001630 T rtdl_index_build",
+        "0000000000001930 T rtdl_index_destroy",
+        "0000000000001950 T rtdl_query_destroy",
+        "00000000000017a0 T rtdl_query_execute",
         "0000000000001190 T rtdl_status_string"
       ]
     },
@@ -63,7 +65,7 @@
   },
   "checks": {
     "all_expected_symbols_exported": true,
-    "expected_symbol_count_is_13": true,
+    "expected_symbol_count_is_15": true,
     "header_declares_expected_symbols": true,
     "make_available": true,
     "make_build_ok": true,
@@ -92,6 +94,8 @@
     "rtdl_buffer_import",
     "rtdl_buffer_export",
     "rtdl_buffer_destroy",
+    "rtdl_index_build",
+    "rtdl_query_execute",
     "rtdl_index_destroy",
     "rtdl_query_destroy"
   ],

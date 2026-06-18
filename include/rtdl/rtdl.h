@@ -79,6 +79,18 @@ typedef enum rtdl_dtype {
   RTDL_DTYPE_F64 = 7
 } rtdl_dtype;
 
+typedef enum rtdl_primitive_kind {
+  RTDL_PRIMITIVE_AABB2 = 1,
+  RTDL_PRIMITIVE_SEGMENT2 = 2,
+  RTDL_PRIMITIVE_TRIANGLE3 = 3
+} rtdl_primitive_kind;
+
+typedef enum rtdl_query_kind {
+  RTDL_QUERY_AABB_OVERLAP = 1,
+  RTDL_QUERY_RAY_HIT = 2,
+  RTDL_QUERY_NEAREST = 3
+} rtdl_query_kind;
+
 typedef struct rtdl_external_runtime {
   rtdl_device_type device_type;
   int32_t device_id;
@@ -109,6 +121,22 @@ typedef struct rtdl_context_desc {
   rtdl_external_runtime external_runtime;
 } rtdl_context_desc;
 
+typedef struct rtdl_index_desc {
+  uint32_t abi_version_major;
+  uint32_t abi_version_minor;
+  rtdl_primitive_kind primitive_kind;
+  rtdl_buffer* primitives;
+  uint64_t primitive_count;
+} rtdl_index_desc;
+
+typedef struct rtdl_query_desc {
+  uint32_t abi_version_major;
+  uint32_t abi_version_minor;
+  rtdl_query_kind query_kind;
+  rtdl_buffer* inputs;
+  uint64_t input_count;
+} rtdl_query_desc;
+
 RTDL_API uint32_t rtdl_abi_version_major(void);
 RTDL_API uint32_t rtdl_abi_version_minor(void);
 RTDL_API uint32_t rtdl_abi_version_patch(void);
@@ -131,6 +159,17 @@ RTDL_API rtdl_status rtdl_buffer_import(
 RTDL_API rtdl_status rtdl_buffer_export(
     const rtdl_buffer* buffer,
     rtdl_buffer_view* view_out);
+
+RTDL_API rtdl_status rtdl_index_build(
+    rtdl_context* context,
+    const rtdl_index_desc* desc,
+    rtdl_index** index_out);
+
+RTDL_API rtdl_status rtdl_query_execute(
+    rtdl_context* context,
+    const rtdl_index* index,
+    const rtdl_query_desc* desc,
+    rtdl_buffer** result_out);
 
 RTDL_API void rtdl_buffer_destroy(rtdl_buffer* buffer);
 RTDL_API void rtdl_index_destroy(rtdl_index* index);

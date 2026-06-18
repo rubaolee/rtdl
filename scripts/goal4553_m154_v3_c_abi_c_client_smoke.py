@@ -139,6 +139,7 @@ def _client_source() -> str:
             "typedef rtdl_status (*rtdl_buffer_import_fn)(rtdl_context*, const rtdl_buffer_view*, rtdl_buffer**);",
             "typedef rtdl_status (*rtdl_buffer_export_fn)(const rtdl_buffer*, rtdl_buffer_view*);",
             "typedef void (*rtdl_buffer_destroy_fn)(rtdl_buffer*);",
+            "typedef rtdl_status (*rtdl_index_build_fn)(rtdl_context*, const rtdl_index_desc*, rtdl_index**);",
             "",
             "#define LOAD_SYMBOL(name, type) \\",
             "  type name = (type)rtdl_test_symbol(library, #name); \\",
@@ -167,6 +168,7 @@ def _client_source() -> str:
             "  LOAD_SYMBOL(rtdl_buffer_import, rtdl_buffer_import_fn);",
             "  LOAD_SYMBOL(rtdl_buffer_export, rtdl_buffer_export_fn);",
             "  LOAD_SYMBOL(rtdl_buffer_destroy, rtdl_buffer_destroy_fn);",
+            "  LOAD_SYMBOL(rtdl_index_build, rtdl_index_build_fn);",
             "",
             "  if (rtdl_abi_version_major() != 0 || rtdl_abi_version_minor() != 1) {",
             "    rtdl_test_close(library);",
@@ -217,6 +219,20 @@ def _client_source() -> str:
             "    rtdl_context_destroy(context);",
             "    rtdl_test_close(library);",
             "    return 15;",
+            "  }",
+            "  rtdl_index_desc index_desc;",
+            "  memset(&index_desc, 0, sizeof(index_desc));",
+            "  index_desc.abi_version_major = RTDL_ABI_VERSION_MAJOR;",
+            "  index_desc.abi_version_minor = RTDL_ABI_VERSION_MINOR;",
+            "  index_desc.primitive_kind = RTDL_PRIMITIVE_AABB2;",
+            "  index_desc.primitives = buffer;",
+            "  index_desc.primitive_count = 1u;",
+            "  rtdl_index* index = NULL;",
+            "  if (rtdl_index_build(context, &index_desc, &index) != RTDL_STATUS_ERROR_UNSUPPORTED || index != NULL) {",
+            "    rtdl_buffer_destroy(buffer);",
+            "    rtdl_context_destroy(context);",
+            "    rtdl_test_close(library);",
+            "    return 16;",
             "  }",
             "",
             "  rtdl_buffer_destroy(buffer);",
@@ -354,6 +370,7 @@ def build_packet(root: Path = Path("."), *, run_compile: bool = False) -> dict[s
         "validated_capabilities": {
             "non_python_c11_dynamic_client_validated": bool(client_result and client_result["ok"]),
             "version_status_context_buffer_lifecycle_symbols_validated": bool(client_result and client_result["ok"]),
+            "fail_closed_index_build_symbol_validated": bool(client_result and client_result["ok"]),
         },
         "claim_boundary": {
             "backend_query_implemented": False,
@@ -366,7 +383,8 @@ def build_packet(root: Path = Path("."), *, run_compile: bool = False) -> dict[s
             "Goal4553 validates the V3 C ABI stub from a real C11 client: the "
             "test builds the stub shared library, compiles a C client, dynamically "
             "loads the library, resolves the public symbols, and exercises version, "
-            "status, context, and neutral-buffer lifecycle calls. It still makes no "
+            "status, context, neutral-buffer lifecycle, and fail-closed index-build "
+            "calls. It still makes no "
             "backend query, DLPack, external-stream, frozen-ABI, or release claim."
         ),
     }

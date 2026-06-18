@@ -8,7 +8,7 @@ Goal4556 audits the `make build-c-api` artifact and verifies that the current li
 
 ## Symbols
 
-- Expected: `13`
+- Expected: `15`
 - Missing: `()`
 
 ## Checks
@@ -17,7 +17,7 @@ Goal4556 audits the `make build-c-api` artifact and verifies that the current li
 | --- | --- |
 | `makefile_has_build_c_api_target` | `True` |
 | `header_declares_expected_symbols` | `True` |
-| `expected_symbol_count_is_13` | `True` |
+| `expected_symbol_count_is_15` | `True` |
 | `make_available` | `True` |
 | `nm_available` | `True` |
 | `make_build_ok` | `True` |

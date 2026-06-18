@@ -163,6 +163,33 @@ RTDL_API void rtdl_buffer_destroy(rtdl_buffer* buffer) {
   delete buffer;
 }
 
+RTDL_API rtdl_status rtdl_index_build(
+    rtdl_context* context,
+    const rtdl_index_desc* desc,
+    rtdl_index** index_out) {
+  if (context == nullptr || desc == nullptr || index_out == nullptr) {
+    set_error(context, "index build requires context, descriptor, and output pointer");
+    return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
+  }
+  *index_out = nullptr;
+  set_error(context, "C ABI backend index build is not implemented in the lifecycle stub");
+  return RTDL_STATUS_ERROR_UNSUPPORTED;
+}
+
+RTDL_API rtdl_status rtdl_query_execute(
+    rtdl_context* context,
+    const rtdl_index* index,
+    const rtdl_query_desc* desc,
+    rtdl_buffer** result_out) {
+  if (context == nullptr || index == nullptr || desc == nullptr || result_out == nullptr) {
+    set_error(context, "query execute requires context, index, descriptor, and output pointer");
+    return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
+  }
+  *result_out = nullptr;
+  set_error(context, "C ABI backend query execution is not implemented in the lifecycle stub");
+  return RTDL_STATUS_ERROR_UNSUPPORTED;
+}
+
 RTDL_API void rtdl_index_destroy(rtdl_index* index) {
   delete index;
 }

@@ -4,7 +4,7 @@ Status: `c_abi_c_client_smoke_checked`
 
 ## Conclusion
 
-Goal4553 validates the V3 C ABI stub from a real C11 client: the test builds the stub shared library, compiles a C client, dynamically loads the library, resolves the public symbols, and exercises version, status, context, and neutral-buffer lifecycle calls. It still makes no backend query, DLPack, external-stream, frozen-ABI, or release claim.
+Goal4553 validates the V3 C ABI stub from a real C11 client: the test builds the stub shared library, compiles a C client, dynamically loads the library, resolves the public symbols, and exercises version, status, context, neutral-buffer lifecycle, and fail-closed index-build calls. It still makes no backend query, DLPack, external-stream, frozen-ABI, or release claim.
 
 ## Checks
 
