@@ -87,7 +87,7 @@ The canonical runner is:
 Use `python3` instead if that is what your shell exposes.
 
 `v3_current` is the current V3 closure suite. It intentionally runs the
-explicit Goal4508-Goal4564 modules because the default unittest discovery
+explicit V3 current modules starting at Goal4508 because the default unittest discovery
 pattern does not include every `goal*_test.py` file.
 
 The full discovery command remains useful:

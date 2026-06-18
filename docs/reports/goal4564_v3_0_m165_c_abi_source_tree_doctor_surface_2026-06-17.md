@@ -17,7 +17,7 @@ Goal4564 wires the V3 C ABI embedding surface into the source-tree doctor as a r
 | `c_abi_surface_detail_names_make_target` | `True` |
 | `doctor_checks_header_source_make_and_example` | `True` |
 | `doctor_doc_explains_c_abi_surface_boundary` | `True` |
-| `process_doc_current_goal_span_refreshed` | `True` |
+| `process_doc_avoids_stale_goal_span` | `True` |
 | `required_failures_empty` | `True` |
 
 ## Boundary

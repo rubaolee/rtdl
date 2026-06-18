@@ -45,7 +45,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "doctor_doc_explains_c_abi_surface_boundary": "V3 C ABI embedding surface" in doc_text
         and "It does not" in doc_text
         and "make build-c-api" in doc_text,
-        "process_doc_current_goal_span_refreshed": "Goal4508-Goal4564" in process_text,
+        "process_doc_avoids_stale_goal_span": "starting at Goal4508" in process_text
+        and "Goal4508-Goal4545" not in process_text,
         "required_failures_empty": tuple(payload["required_failures"]) == (),
     }
     failed = tuple(name for name, passed in checks.items() if not passed)

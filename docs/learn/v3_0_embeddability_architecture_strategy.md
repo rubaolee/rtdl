@@ -10,7 +10,7 @@ and validation gates.
 
 ## Current Implementation Progress
 
-As of Goal4561, the first control-plane embedding slice exists in the source
+As of Goal4565, the first control-plane embedding slice exists in the source
 tree:
 
 - Draft public header: `include/rtdl/rtdl.h`.
@@ -23,6 +23,8 @@ tree:
   `examples/current/embedding/c_api_aabb2_overlap_client.c`.
 - A documented current AABB2 buffer/result contract in
   [V3.0 C ABI Draft](v3_0_c_abi_draft.md).
+- A draft stability rulebook in
+  [V3.0 C ABI Stability Policy](v3_0_c_abi_stability_policy.md).
 
 Still not authorized: frozen ABI compatibility, packaged SDK wording, DLPack,
 `__cuda_array_interface__`, external CUDA stream semantics, OptiX/Embree query

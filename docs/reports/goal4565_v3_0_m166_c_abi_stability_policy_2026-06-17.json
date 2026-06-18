@@ -1,0 +1,27 @@
+{
+  "checks": {
+    "c_abi_draft_links_policy": true,
+    "embeddability_strategy_links_policy": true,
+    "learn_readme_links_policy": true,
+    "policy_declares_0_1_0_not_frozen": true,
+    "policy_defines_1_0_freeze_requirements": true,
+    "policy_defines_future_compatibility_rules": true,
+    "policy_keeps_claim_boundary_blocked": true,
+    "policy_names_current_evidence_gates": true,
+    "policy_names_current_surface": true,
+    "policy_requires_version_bump_for_breaking_changes": true
+  },
+  "claim_boundary": {
+    "cross_version_compatibility_validated": false,
+    "optix_embree_c_abi_query_authorized": false,
+    "packaged_sdk_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false
+  },
+  "conclusion": "Goal4565 adds an explicit V3 C ABI stability policy: the current `0.1.0` source-tree ABI remains experimental, breaking changes are allowed only with evidence refresh and versioning, and stable-SDK wording is blocked until symbol-manifest, cross-version, packaging, and runtime gates pass.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4565 / V3 M166",
+  "status": "c_abi_stability_policy_checked",
+  "version": "rtdl.v3_0.c_abi_stability_policy.goal4565.v1"
+}

@@ -7,7 +7,7 @@
     "doctor_checks_header_source_make_and_example": true,
     "doctor_doc_explains_c_abi_surface_boundary": true,
     "doctor_ok": true,
-    "process_doc_current_goal_span_refreshed": true,
+    "process_doc_avoids_stale_goal_span": true,
     "required_failures_empty": true
   },
   "claim_boundary": {
@@ -64,7 +64,7 @@
         "status": "pass"
       },
       {
-        "detail": "scripts/run_test_matrix.py --group v3_current (54 modules)",
+        "detail": "scripts/run_test_matrix.py --group v3_current (55 modules)",
         "name": "V3 current test matrix",
         "required": true,
         "status": "pass"
