@@ -8,6 +8,27 @@ ABI, DLPack support, external stream/context support, device-callable fusion,
 release wording, or performance claims. Those require separate implementation
 and validation gates.
 
+## Current Implementation Progress
+
+As of Goal4561, the first control-plane embedding slice exists in the source
+tree:
+
+- Draft public header: `include/rtdl/rtdl.h`.
+- Source-tree shared-library target: `make build-c-api`.
+- Export audit for the current lifecycle/query symbols.
+- Non-Python C client validation.
+- A narrow host `F32` AABB2 overlap query proof returning host `U64`
+  `(query_id, primitive_id)` pairs.
+- A readable source-tree example:
+  `examples/current/embedding/c_api_aabb2_overlap_client.c`.
+- A documented current AABB2 buffer/result contract in
+  [V3.0 C ABI Draft](v3_0_c_abi_draft.md).
+
+Still not authorized: frozen ABI compatibility, packaged SDK wording, DLPack,
+`__cuda_array_interface__`, external CUDA stream semantics, OptiX/Embree query
+execution through the C ABI, language bindings, device-callable fusion, or V3
+release wording.
+
 **Purpose:** Define how RTDL prepares *now* to be embedded later inside other languages and runtimes — called from Python, C/C++, Rust, Julia, C#, and fused into GPU frameworks like PyTorch, JAX, CuPy, and Numba — without rewriting the core each time a new host shows up.
 
 **Relationship to the prior doc:** This supersedes the "Reverse PTX Linkage" framing as the *foundation*. That doc made on-device PTX/OptiX callable fusion the load-bearing strategy. I think that's the wrong base layer: it is the hardest, least portable, and least proven path, and most of its stated benefits (zero-overhead inlining, register-only data flow, perfect RT/CUDA pipelining) do not hold on current OptiX hardware. Embeddability is won first by a **stable boundary and zero-copy data interop**, and only later, optionally, by device-code fusion. PTX callables are retained here as an advanced track, not the floor.
