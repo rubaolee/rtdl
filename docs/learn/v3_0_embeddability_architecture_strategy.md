@@ -10,12 +10,13 @@ and validation gates.
 
 ## Current Implementation Progress
 
-As of Goal4593, the first control-plane embedding slice has moved from a C-only
+As of Goal4597, the first control-plane embedding slice has moved from a C-only
 proof into a movable source-tree handoff artifact:
 
 - Draft public header: `include/rtdl/rtdl.h`.
 - Source-tree shared-library target: `make build-c-api`.
 - Source-tree staging bundle target: `make stage-c-api`.
+- DESTDIR/prefix-style staging target: `make stage-c-api-prefix`.
 - Movable source-tree stage archive target: `make package-c-api-stage`.
 - Export audit for the current lifecycle/query symbols.
 - Non-Python C client validation.
@@ -32,7 +33,11 @@ proof into a movable source-tree handoff artifact:
 - Readable source-tree examples for Python `ctypes` lifecycle and
   Python `ctypes` host AABB2 query.
 - Relocatable staged `pkg-config` proof after moving `build/c_api_stage`.
+- Prefix-layout `pkg-config` proof under a conventional staged prefix.
 - Extract/compile/run proof for `build/rtdl-c-api-stage-0.1.3.tar.gz`.
+- Source-tree doctor coverage for the prefix-stage target.
+- Prefix-stage Python `ctypes` smoke for lifecycle, host AABB2 query, and CUDA
+  metadata examples against the staged shared library.
 - A documented current AABB2 buffer/result contract in
   [V3.0 C ABI Draft](v3_0_c_abi_draft.md).
 - A draft stability rulebook in
@@ -42,11 +47,12 @@ proof into a movable source-tree handoff artifact:
 - A zero-copy interop readiness contract in
   [V3.0 Zero-Copy Interop Contract](v3_0_zero_copy_interop_contract.md).
 
-Still not authorized: frozen ABI compatibility, packaged SDK wording, DLPack,
-`__cuda_array_interface__`, external CUDA stream semantics, OptiX/Embree query
-execution through the C ABI, generated language bindings, device-callable
-fusion, or V3 release wording. The current Python `ctypes` examples are a
-minimal binding base, not a generated package or stable public binding.
+Still not authorized: frozen ABI compatibility, packaged SDK wording, system
+install or package-manager wording, DLPack, public true-zero-copy wording,
+external CUDA stream semantics, OptiX/Embree query execution through the C ABI,
+generated language bindings, device-callable fusion, or V3 release wording. The
+current Python `ctypes` examples are a minimal binding base and prefix-stage
+smoke, not a generated package or stable public binding.
 
 **Purpose:** Define how RTDL prepares *now* to be embedded later inside other languages and runtimes — called from Python, C/C++, Rust, Julia, C#, and fused into GPU frameworks like PyTorch, JAX, CuPy, and Numba — without rewriting the core each time a new host shows up.
 

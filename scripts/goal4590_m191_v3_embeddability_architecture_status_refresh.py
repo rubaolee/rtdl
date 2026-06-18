@@ -27,8 +27,11 @@ def build_packet(root: Path = Path(".")) -> dict:
         and progress_goal >= 4589,
         "architecture_doc_names_stage_archive_target": "make package-c-api-stage" in doc
         and "rtdl-c-api-stage-0.1.3.tar.gz" in doc,
+        "architecture_doc_names_prefix_stage_target": "make stage-c-api-prefix" in doc
+        and "Prefix-layout `pkg-config` proof" in doc,
         "architecture_doc_names_python_ctypes_examples": "Python `ctypes` lifecycle" in doc
         and "Python `ctypes` host AABB2 query" in doc,
+        "architecture_doc_names_prefix_python_ctypes_smoke": "Prefix-stage Python `ctypes` smoke" in doc,
         "architecture_doc_preserves_blocked_generated_binding_boundary": "generated language bindings" in doc
         and "minimal binding base" in doc,
         "architecture_doc_preserves_sdk_and_stable_abi_boundary": "packaged SDK wording" in doc
@@ -55,12 +58,14 @@ def build_packet(root: Path = Path(".")) -> dict:
         },
         "conclusion": (
             "Goal4590 refreshes the main V3 embeddability architecture strategy "
-            "so its current-progress section reflects the Goal4589 state: C "
+            "so its current-progress section reflects the current Goal4597 state: C "
             "dlopen/direct-link, staged pkg-config, Python ctypes lifecycle/query "
-            "examples, relocatable stage, and source-tree stage archive are "
-            "validated, while stable ABI, packaged SDK, generated bindings, "
-            "device-buffer C ABI, OptiX/Embree C ABI execution, and release claims "
-            "remain blocked."
+            "examples, relocatable stage, source-tree stage archive, prefix-stage "
+            "pkg-config, source-tree doctor prefix coverage, and prefix-stage "
+            "Python ctypes smoke are validated, while stable ABI, packaged SDK, "
+            "system install, generated bindings, device-buffer C ABI, OptiX/Embree "
+            "C ABI execution, external CUDA stream, and release claims remain "
+            "blocked."
         ),
     }
 
