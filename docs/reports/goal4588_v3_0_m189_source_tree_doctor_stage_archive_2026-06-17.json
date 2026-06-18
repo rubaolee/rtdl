@@ -15,7 +15,7 @@
   "conclusion": "Goal4588 refreshes the source-tree doctor so its V3 C ABI embedding surface check includes the new `package-c-api-stage` target. The doctor still checks target/file presence only; it does not build the archive or authorize SDK, install, stable ABI, or release wording.",
   "date": "2026-06-17",
   "doctor_surface": {
-    "detail": "include/rtdl/rtdl.h, make build-c-api/stage-c-api/package-c-api-stage, C examples, Python ctypes examples",
+    "detail": "include/rtdl/rtdl.h, make build-c-api/stage-c-api/package-c-api-stage, C examples including host runtime, Python ctypes examples",
     "name": "V3 C ABI embedding surface",
     "required": true,
     "status": "pass"

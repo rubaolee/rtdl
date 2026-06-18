@@ -4,7 +4,7 @@ Status: `c_abi_staging_inventory_refresh_checked`
 
 ## Conclusion
 
-Goal4585 refreshes the staging inventory after adding direct-link and Python ctypes embedding examples. The pod evidence runs `make stage-c-api` and verifies the staged bundle contains all four current examples: C dlopen AABB2, C direct-link lifecycle, Python ctypes lifecycle, and Python ctypes host AABB2 query. This remains a source-tree staging bundle, not an installed SDK or stable ABI.
+Goal4585 refreshes the staging inventory after adding direct-link and Python ctypes embedding examples. Goal4591 later extends this same inventory to include the C host-runtime metadata example. The pod evidence runs `make stage-c-api` and verifies the staged bundle contains every current example. This remains a source-tree staging bundle, not an installed SDK or stable ABI.
 
 ## Examples
 
@@ -12,6 +12,7 @@ Goal4585 refreshes the staging inventory after adding direct-link and Python cty
 | --- | --- | --- |
 | `c_api_aabb2_overlap_client.c` | `True` | `6127` |
 | `c_api_direct_link_client.c` | `True` | `990` |
+| `c_api_host_runtime_client.c` | `True` | `2763` |
 | `python_ctypes_client.py` | `True` | `4930` |
 | `python_ctypes_aabb2_query_client.py` | `True` | `8934` |
 

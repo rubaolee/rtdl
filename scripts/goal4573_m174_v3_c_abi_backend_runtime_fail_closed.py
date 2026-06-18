@@ -291,12 +291,13 @@ def build_packet(root: Path = Path("."), *, run_compile: bool = False) -> dict[s
     checks = {
         "doc_limits_context_to_auto_cpu": "RTDL_BACKEND_CPU` or `RTDL_BACKEND_AUTO" in doc
         and "Other backend requests" in doc,
-        "doc_blocks_external_runtime_handles": "external runtime handles" in doc
+        "doc_blocks_non_host_external_runtime_handles": "non-host runtime" in doc
         and "fail-closed" in doc,
-        "header_marks_external_runtime_unsupported": "currently returns unsupported" in header,
+        "header_marks_device_runtime_unsupported": "runtime handles and external stream semantics remain unsupported"
+        in header,
         "source_rejects_unsupported_backend": "backend_is_supported_by_host_proof" in source
         and "RTDL_STATUS_ERROR_UNSUPPORTED" in source,
-        "source_rejects_external_runtime": "external runtime handles are not implemented" in source,
+        "source_rejects_non_host_external_runtime": "only host external runtime metadata is supported" in source,
         "client_source_checks_backend_and_runtime": "optix_backend_rejected" in _client_source()
         and "external_runtime_rejected" in _client_source(),
     }
@@ -335,9 +336,11 @@ def build_packet(root: Path = Path("."), *, run_compile: bool = False) -> dict[s
         },
         "conclusion": (
             "Goal4573 hardens the draft C ABI context layer so unsupported backend "
-            "and external-runtime hints fail closed. The current C ABI proof accepts "
-            "only AUTO/CPU contexts; OptiX, Embree, and external runtime handles "
-            "remain explicit future work rather than silently accepted no-ops."
+            "and non-host external-runtime hints fail closed. Goal4591 later accepts "
+            "host runtime metadata only; the current C ABI proof still accepts only "
+            "AUTO/CPU contexts, and OptiX, Embree, CUDA runtime handles, external "
+            "streams, and device buffers remain explicit future work rather than "
+            "silently accepted no-ops."
         ),
     }
 

@@ -41,6 +41,11 @@ Exported result views borrow the result buffer's storage. Their `data` pointer,
 shape, strides, and release callback are valid only until the owning result
 buffer is destroyed.
 
+`rtdl_context_set_external_runtime` currently accepts host runtime metadata
+only. The context stores the metadata value, including `user_data`, but RTDL
+does not take ownership of any caller object reachable from that pointer. CUDA,
+external stream, OptiX, and Embree runtime handles remain unsupported.
+
 ## Last-Error Rules
 
 `rtdl_context_last_error(context)` returns a pointer owned by the context. The

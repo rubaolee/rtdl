@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 
 
 PACKET_VERSION = "rtdl.v3_0.embeddability_architecture_status_refresh.goal4590.v1"
@@ -12,11 +13,18 @@ ARCHITECTURE_DOC = Path("docs/learn/v3_0_embeddability_architecture_strategy.md"
 SHIPPING_REFRESH = Path("docs/reports/goal4589_v3_0_m190_embeddability_shipping_readiness_refresh_2026-06-17.json")
 
 
+def _current_progress_goal_number(doc: str) -> int | None:
+    match = re.search(r"As of Goal(\d+)", doc)
+    return int(match.group(1)) if match else None
+
+
 def build_packet(root: Path = Path(".")) -> dict:
     doc = (root / ARCHITECTURE_DOC).read_text(encoding="utf-8")
     shipping = json.loads((root / SHIPPING_REFRESH).read_text(encoding="utf-8"))
+    progress_goal = _current_progress_goal_number(doc)
     checks = {
-        "architecture_doc_names_current_goal4589_status": "As of Goal4589" in doc,
+        "architecture_doc_status_at_or_beyond_goal4589": progress_goal is not None
+        and progress_goal >= 4589,
         "architecture_doc_names_stage_archive_target": "make package-c-api-stage" in doc
         and "rtdl-c-api-stage-0.1.3.tar.gz" in doc,
         "architecture_doc_names_python_ctypes_examples": "Python `ctypes` lifecycle" in doc

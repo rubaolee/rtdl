@@ -25,8 +25,9 @@ The current draft symbol list is tracked in
 - Capability queries for the currently supported backend and primitive/query
   route surface.
 - Declared external runtime handle shape: device type, device id, context,
-  stream, and user data. Runtime adoption is not implemented in the current
-  proof; external runtime handles remain fail-closed.
+  stream, and user data. The current proof accepts host runtime metadata only;
+  CUDA/HIP/Metal/Vulkan runtime handles and external stream adoption remain
+  fail-closed.
 - Neutral buffer views with device type, dtype, shape, strides, ownership
   callback, and user data.
 
@@ -102,6 +103,12 @@ export, and cleanup. This proves a non-C client can exercise the current real
 query route, while still remaining outside generated package, stable ABI,
 device-buffer, OptiX, Embree, and performance claims.
 
+Goal4591 adds `examples/current/embedding/c_api_host_runtime_client.c` and
+turns `rtdl_context_set_external_runtime` into a narrow host-runtime metadata
+path. The current proof accepts `RTDL_DEVICE_HOST` with null context/stream
+handles and rejects malformed host metadata or CUDA runtime handles. This is
+not external CUDA stream, OptiX, Embree, or device-buffer support.
+
 ## Current Host AABB2 Query Contract
 
 The only implemented query route is deliberately small:
@@ -109,6 +116,10 @@ The only implemented query route is deliberately small:
 - Context: `rtdl_context_create` with `RTDL_BACKEND_CPU` or `RTDL_BACKEND_AUTO`.
   Other backend requests, including OptiX and Embree, are rejected by the
   current C ABI proof until those routes have dedicated runtime validation.
+- External runtime: `rtdl_context_set_external_runtime` accepts host runtime
+  metadata only: `RTDL_DEVICE_HOST`, device id `0` or `-1`, and null
+  `context`/`stream` handles. Malformed host metadata is rejected as invalid
+  argument; CUDA/HIP/Metal/Vulkan runtime handles remain unsupported.
 - Primitive buffer: host `RTDL_DTYPE_F32`, contiguous AABB2 rows shaped
   `[primitive_count, 4]` as `(min_x, min_y, max_x, max_y)`.
 - Index: `rtdl_index_build` with `RTDL_PRIMITIVE_AABB2`; the implementation
@@ -126,6 +137,6 @@ The only implemented query route is deliberately small:
   `release != NULL`, `rtdl_buffer_destroy` invokes that callback for the buffer
   handle. RTDL-owned result buffers must be released with `rtdl_buffer_destroy`.
 
-Unsupported primitive kinds, query kinds, backend selections, external runtime
-handles, device buffers, OptiX execution, Embree execution, and frozen binary
-compatibility remain outside the current contract.
+Unsupported primitive kinds, query kinds, backend selections, non-host runtime
+handles, external stream adoption, device buffers, OptiX execution, Embree
+execution, and frozen binary compatibility remain outside the current contract.

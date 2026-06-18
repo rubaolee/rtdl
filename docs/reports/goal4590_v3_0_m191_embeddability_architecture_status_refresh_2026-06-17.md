@@ -10,7 +10,7 @@ Goal4590 refreshes the main V3 embeddability architecture strategy so its curren
 
 | Check | Passed |
 | --- | --- |
-| `architecture_doc_names_current_goal4589_status` | `True` |
+| `architecture_doc_status_at_or_beyond_goal4589` | `True` |
 | `architecture_doc_names_stage_archive_target` | `True` |
 | `architecture_doc_names_python_ctypes_examples` | `True` |
 | `architecture_doc_preserves_blocked_generated_binding_boundary` | `True` |

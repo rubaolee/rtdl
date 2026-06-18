@@ -9,7 +9,7 @@ Goal4584 refreshes the source-tree doctor so the V3 C ABI embedding surface chec
 ## Doctor Surface
 
 - Status: `pass`
-- Detail: `include/rtdl/rtdl.h, make build-c-api/stage-c-api, C examples, Python ctypes examples`
+- Detail: `include/rtdl/rtdl.h, make build-c-api/stage-c-api/package-c-api-stage, C examples including host runtime, Python ctypes examples`
 
 ## Checks
 

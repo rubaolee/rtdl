@@ -19,6 +19,7 @@ The target first builds `build/librtdl_c_api.*`, then creates
 - `share/rtdl/README.md`
 - `examples/c_api_aabb2_overlap_client.c`
 - `examples/c_api_direct_link_client.c`
+- `examples/c_api_host_runtime_client.c`
 - `examples/python_ctypes_client.py`
 - `examples/python_ctypes_aabb2_query_client.py`
 
@@ -67,6 +68,23 @@ LD_LIBRARY_PATH="$PWD/build/c_api_stage/lib:${LD_LIBRARY_PATH:-}" \
   ./build/c_api_stage/examples/rtdl_c_api_direct_link_client
 ```
 
+For a C client that validates the current host external-runtime metadata path:
+
+```bash
+cc -std=c11 $(pkg-config --cflags rtdl-c-api) \
+  build/c_api_stage/examples/c_api_host_runtime_client.c \
+  -o build/c_api_stage/examples/rtdl_c_api_host_runtime_client \
+  $(pkg-config --libs rtdl-c-api)
+LD_LIBRARY_PATH="$PWD/build/c_api_stage/lib:${LD_LIBRARY_PATH:-}" \
+  ./build/c_api_stage/examples/rtdl_c_api_host_runtime_client
+```
+
+Expected output includes:
+
+```text
+validated_host_external_runtime_cases=3
+```
+
 For a minimal Python `ctypes` client over the same staged shared library:
 
 ```bash
@@ -104,6 +122,8 @@ python_ctypes_hit_count=1 first_pair=(0,0)
   version/capability queries, and context lifecycle calls.
 - The Python `ctypes` AABB2 query example validates the current host buffer
   import, index build, query execute, result export, and cleanup path only.
+- The C host-runtime example validates host runtime metadata only; CUDA,
+  external stream, OptiX, and Embree runtime adoption remain fail-closed.
 - No install prefix, package manager artifact, Python wheel, stable binary
   compatibility, OptiX/Embree C ABI query, device-buffer route, or performance
   wording is authorized.

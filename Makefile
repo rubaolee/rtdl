@@ -222,6 +222,7 @@ stage-c-api: build-c-api
 	cp examples/current/embedding/README.md $(C_API_STAGE_DIR)/share/rtdl/README.md
 	cp examples/current/embedding/c_api_aabb2_overlap_client.c $(C_API_STAGE_DIR)/examples/c_api_aabb2_overlap_client.c
 	cp examples/current/embedding/c_api_direct_link_client.c $(C_API_STAGE_DIR)/examples/c_api_direct_link_client.c
+	cp examples/current/embedding/c_api_host_runtime_client.c $(C_API_STAGE_DIR)/examples/c_api_host_runtime_client.c
 	cp examples/current/embedding/python_ctypes_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_client.py
 	cp examples/current/embedding/python_ctypes_aabb2_query_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_aabb2_query_client.py
 

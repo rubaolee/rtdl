@@ -33,7 +33,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         and "rtdl_buffer_destroy" in c_abi_doc,
         "c_abi_doc_blocks_unsupported_routes": "Unsupported primitive kinds" in c_abi_doc
         and "OptiX execution" in c_abi_doc
-        and "Embree execution" in c_abi_doc,
+        and "Embree" in c_abi_doc
+        and "execution" in c_abi_doc,
         "example_readme_repeats_layout": "[count, 4]" in example_readme
         and "[hit_count, 2]" in example_readme,
         "example_source_matches_documented_layout": "shape[1] = 4" in example

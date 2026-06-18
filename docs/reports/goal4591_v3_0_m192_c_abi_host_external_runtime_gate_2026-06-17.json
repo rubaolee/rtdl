@@ -1,0 +1,99 @@
+{
+  "checks": {
+    "c_abi_doc_names_goal4591_and_boundary": true,
+    "c_client_compile_ok": true,
+    "c_client_run_ok": true,
+    "c_compiler_available": true,
+    "cxx_compiler_available": true,
+    "embedding_readme_documents_host_runtime_example": true,
+    "example_validates_success_and_rejections": true,
+    "header_documents_host_only_external_runtime": true,
+    "ownership_doc_names_no_runtime_ownership_transfer": true,
+    "runtime_validated_all_cases": true,
+    "shared_library_build_ok": true,
+    "source_accepts_host_runtime_metadata": true,
+    "source_rejects_malformed_host_runtime": true,
+    "source_rejects_non_host_runtime": true,
+    "stage_target_copies_host_runtime_example": true,
+    "staging_contract_lists_host_runtime_example": true
+  },
+  "claim_boundary": {
+    "device_buffer_c_abi_authorized": false,
+    "external_cuda_stream_authorized": false,
+    "optix_embree_c_abi_runtime_authorized": false,
+    "packaged_sdk_authorized": false,
+    "performance_wording_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false
+  },
+  "client_result": {
+    "c_compiler": "/usr/bin/cc",
+    "client_compile": {
+      "command": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-I",
+        "include",
+        "examples/current/embedding/c_api_host_runtime_client.c",
+        "-L",
+        "/tmp/tmpaep9btww",
+        "-lrtdl_c_api",
+        "-Wl,-rpath,/tmp/tmpaep9btww",
+        "-o",
+        "/tmp/tmpaep9btww/rtdl_c_api_host_runtime_client"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    },
+    "client_run": {
+      "command": [
+        "/tmp/tmpaep9btww/rtdl_c_api_host_runtime_client"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "case host_external_runtime_metadata_ok: ok\ncase malformed_host_runtime_rejected: ok\ncase cuda_runtime_rejected: ok\nvalidated_host_external_runtime_cases=3\n"
+    },
+    "cxx_compiler": "/usr/bin/c++",
+    "ok": true,
+    "shared_library": {
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-DRTDL_BUILD_SHARED",
+        "-I",
+        "include",
+        "src/native/rtdl_c_api.cpp",
+        "-shared",
+        "-fPIC",
+        "-o",
+        "/tmp/tmpaep9btww/librtdl_c_api.so"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": ""
+    }
+  },
+  "conclusion": "Goal4591 turns `rtdl_context_set_external_runtime` from an all-unsupported placeholder into a narrow, validated host-runtime metadata path. The C ABI now accepts `RTDL_DEVICE_HOST` metadata with null context/stream handles, rejects malformed host metadata, and continues to reject CUDA runtime handles. This advances the control-plane embedding boundary without authorizing CUDA stream, OptiX/Embree runtime, device-buffer, stable ABI, SDK, release, or performance claims.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4591 / V3 M192",
+  "status": "c_abi_host_external_runtime_checked",
+  "support_matrix": {
+    "cuda_external_runtime": "rejected_unsupported",
+    "device_buffer_c_abi": "blocked",
+    "external_cuda_stream_semantics": "blocked",
+    "host_external_runtime_metadata": "validated",
+    "malformed_host_runtime": "rejected_invalid_argument",
+    "optix_embree_c_abi_runtime": "blocked"
+  },
+  "validated_cases": {
+    "cuda_runtime_rejected": true,
+    "host_external_runtime_metadata_ok": true,
+    "malformed_host_runtime_rejected": true
+  },
+  "version": "rtdl.v3_0.c_abi_host_external_runtime.goal4591.v1"
+}

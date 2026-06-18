@@ -17,6 +17,7 @@ EMBEDDING_README = Path("examples/current/embedding/README.md")
 EXAMPLES = (
     "c_api_aabb2_overlap_client.c",
     "c_api_direct_link_client.c",
+    "c_api_host_runtime_client.c",
     "python_ctypes_client.py",
     "python_ctypes_aabb2_query_client.py",
 )
@@ -81,11 +82,11 @@ def build_packet(root: Path = Path("."), *, run_stage: bool = False) -> dict[str
         },
         "conclusion": (
             "Goal4585 refreshes the staging inventory after adding direct-link "
-            "and Python ctypes embedding examples. The pod evidence runs "
-            "`make stage-c-api` and verifies the staged bundle contains all four "
-            "current examples: C dlopen AABB2, C direct-link lifecycle, Python "
-            "ctypes lifecycle, and Python ctypes host AABB2 query. This remains "
-            "a source-tree staging bundle, not an installed SDK or stable ABI."
+            "and Python ctypes embedding examples. Goal4591 later extends this "
+            "same inventory to include the C host-runtime metadata example. The "
+            "pod evidence runs `make stage-c-api` and verifies the staged bundle "
+            "contains every current example. This remains a source-tree staging "
+            "bundle, not an installed SDK or stable ABI."
         ),
     }
 

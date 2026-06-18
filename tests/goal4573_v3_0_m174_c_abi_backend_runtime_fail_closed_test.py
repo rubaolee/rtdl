@@ -42,7 +42,8 @@ class Goal4573V30M174CAbiBackendRuntimeFailClosedTest(unittest.TestCase):
         self.assertIn("Goal4573 C ABI backend/runtime fail-closed", INDEX.read_text(encoding="utf-8"))
         doc = C_ABI_DOC.read_text(encoding="utf-8")
         self.assertIn("Other backend requests", doc)
-        self.assertIn("external runtime handles", doc)
+        self.assertIn("non-host runtime", doc)
+        self.assertIn("external stream adoption", doc)
         for key, value in self.checked_in["claim_boundary"].items():
             self.assertFalse(value, key)
 

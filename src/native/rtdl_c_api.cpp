@@ -57,6 +57,11 @@ bool backend_is_supported_by_host_proof(rtdl_backend backend) {
   return backend == RTDL_BACKEND_AUTO || backend == RTDL_BACKEND_CPU;
 }
 
+bool host_external_runtime_metadata_is_supported(const rtdl_external_runtime& runtime) {
+  return runtime.device_type == RTDL_DEVICE_HOST && (runtime.device_id == 0 || runtime.device_id == -1) &&
+      runtime.context == nullptr && runtime.stream == nullptr;
+}
+
 bool route_is_supported_by_host_proof(
     rtdl_primitive_kind primitive_kind,
     rtdl_query_kind query_kind,
@@ -149,6 +154,11 @@ RTDL_API rtdl_status rtdl_context_create(const rtdl_context_desc* desc, rtdl_con
   if (desc != nullptr && !backend_is_supported_by_host_proof(desc->backend)) {
     return RTDL_STATUS_ERROR_UNSUPPORTED;
   }
+  if (desc != nullptr && !host_external_runtime_metadata_is_supported(desc->external_runtime)) {
+    return desc->external_runtime.device_type == RTDL_DEVICE_HOST
+        ? RTDL_STATUS_ERROR_INVALID_ARGUMENT
+        : RTDL_STATUS_ERROR_UNSUPPORTED;
+  }
 
   rtdl_context* context = new (std::nothrow) rtdl_context {};
   if (context == nullptr) {
@@ -176,8 +186,17 @@ RTDL_API rtdl_status rtdl_context_set_external_runtime(
   if (context == nullptr || runtime == nullptr) {
     return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
   }
-  set_error(context, "external runtime handles are not implemented by the C ABI proof");
-  return RTDL_STATUS_ERROR_UNSUPPORTED;
+  if (runtime->device_type != RTDL_DEVICE_HOST) {
+    set_error(context, "only host external runtime metadata is supported by the current C ABI proof");
+    return RTDL_STATUS_ERROR_UNSUPPORTED;
+  }
+  if (!host_external_runtime_metadata_is_supported(*runtime)) {
+    set_error(context, "host external runtime metadata requires device_id 0 or -1 and null context/stream handles");
+    return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
+  }
+  context->desc.external_runtime = *runtime;
+  clear_error(context);
+  return RTDL_STATUS_OK;
 }
 
 RTDL_API rtdl_status rtdl_buffer_import(

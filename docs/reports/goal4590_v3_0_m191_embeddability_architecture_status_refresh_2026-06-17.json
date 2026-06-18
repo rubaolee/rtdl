@@ -1,10 +1,10 @@
 {
   "checks": {
-    "architecture_doc_names_current_goal4589_status": true,
     "architecture_doc_names_python_ctypes_examples": true,
     "architecture_doc_names_stage_archive_target": true,
     "architecture_doc_preserves_blocked_generated_binding_boundary": true,
     "architecture_doc_preserves_sdk_and_stable_abi_boundary": true,
+    "architecture_doc_status_at_or_beyond_goal4589": true,
     "shipping_refresh_stage_archive_validated": true
   },
   "claim_boundary": {
