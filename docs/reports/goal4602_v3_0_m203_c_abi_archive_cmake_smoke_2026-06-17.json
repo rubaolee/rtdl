@@ -1,0 +1,110 @@
+{
+  "archive_cmake_smoke": {
+    "archive": "build/rtdl-c-api-stage-0.1.3.tar.gz",
+    "archive_exists": true,
+    "archive_size_bytes": 18846,
+    "build_result": {
+      "command": [
+        "/usr/bin/cmake",
+        "--build",
+        "/tmp/rtdl_c_api_archive_cmake_yvxjb7l0/build"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": [
+        "[ 50%] Building C object CMakeFiles/rtdl_archive_cmake_consumer.dir/main.c.o",
+        "[100%] Linking C executable rtdl_archive_cmake_consumer",
+        "[100%] Built target rtdl_archive_cmake_consumer"
+      ]
+    },
+    "cmake": "/usr/bin/cmake",
+    "cmake_config_exists": true,
+    "configure_result": {
+      "command": [
+        "/usr/bin/cmake",
+        "-S",
+        "/tmp/rtdl_c_api_archive_cmake_yvxjb7l0/consumer",
+        "-B",
+        "/tmp/rtdl_c_api_archive_cmake_yvxjb7l0/build",
+        "-DCMAKE_PREFIX_PATH=/tmp/rtdl_c_api_archive_cmake_yvxjb7l0/extracted/rtdl-c-api-stage-0.1.3"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": [
+        "-- The C compiler identification is GNU 13.3.0",
+        "-- Detecting C compiler ABI info",
+        "-- Detecting C compiler ABI info - done",
+        "-- Check for working C compiler: /usr/bin/cc - skipped",
+        "-- Detecting C compile features",
+        "-- Detecting C compile features - done",
+        "-- Configuring done (0.4s)",
+        "-- Generating done (0.0s)",
+        "-- Build files have been written to: /tmp/rtdl_c_api_archive_cmake_yvxjb7l0/build"
+      ]
+    },
+    "extract_dir": "/tmp/rtdl_c_api_archive_cmake_yvxjb7l0/extracted/rtdl-c-api-stage-0.1.3",
+    "make": "/usr/bin/make",
+    "make_result": {
+      "command": [
+        "/usr/bin/make",
+        "package-c-api-stage"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": [
+        "cp examples/current/embedding/README.md build/c_api_stage/share/rtdl/README.md",
+        "cp examples/current/embedding/c_api_aabb2_overlap_client.c build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
+        "cp examples/current/embedding/c_api_direct_link_client.c build/c_api_stage/examples/c_api_direct_link_client.c",
+        "cp examples/current/embedding/c_api_host_runtime_client.c build/c_api_stage/examples/c_api_host_runtime_client.c",
+        "cp examples/current/embedding/c_api_cuda_buffer_metadata_client.c build/c_api_stage/examples/c_api_cuda_buffer_metadata_client.c",
+        "cp examples/current/embedding/python_ctypes_client.py build/c_api_stage/examples/python_ctypes_client.py",
+        "cp examples/current/embedding/python_ctypes_aabb2_query_client.py build/c_api_stage/examples/python_ctypes_aabb2_query_client.py",
+        "cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py build/c_api_stage/examples/python_ctypes_cuda_buffer_metadata_client.py",
+        "rm -rf build/rtdl-c-api-stage-0.1.3",
+        "mkdir -p build/rtdl-c-api-stage-0.1.3",
+        "cp -R build/c_api_stage/. build/rtdl-c-api-stage-0.1.3/",
+        "tar -C build -czf build/rtdl-c-api-stage-0.1.3.tar.gz rtdl-c-api-stage-0.1.3"
+      ]
+    },
+    "ok": true,
+    "run_result": {
+      "command": [
+        "/tmp/rtdl_c_api_archive_cmake_yvxjb7l0/build/rtdl_archive_cmake_consumer"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "cmake_archive_direct_link_ok 0.1.3 ok"
+    }
+  },
+  "checks": {
+    "archive_cmake_build_ok": true,
+    "archive_cmake_configure_ok": true,
+    "archive_cmake_consumer_runs": true,
+    "archive_contains_cmake_config": true,
+    "archive_exists_and_nonempty": true,
+    "embedding_readme_documents_archive_cmake_consumer": true,
+    "make_package_stage_ok": true,
+    "makefile_archive_stages_cmake_config": true,
+    "prior_archive_pkg_config_smoke_ok": true,
+    "prior_prefix_cmake_smoke_ok": true,
+    "staging_contract_documents_archive_cmake_consumer": true
+  },
+  "claim_boundary": {
+    "archive_cmake_stage_authorized": true,
+    "package_manager_artifact_authorized": false,
+    "packaged_sdk_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false,
+    "system_install_authorized": false
+  },
+  "conclusion": "Goal4602 validates that the movable source-tree C ABI archive is consumable by an external CMake project after extraction. The smoke builds `package-c-api-stage`, unpacks `rtdl-c-api-stage-0.1.3.tar.gz`, configures an external consumer with `find_package(rtdl-c-api CONFIG REQUIRED)` via `CMAKE_PREFIX_PATH`, builds against `rtdl::c_api`, and runs against the extracted shared library. This authorizes archive CMake-stage consumption only; it is still not a system install, package-manager artifact, packaged SDK, stable ABI, or release claim.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4602 / V3 M203",
+  "status": "c_abi_archive_cmake_smoke_checked",
+  "version": "rtdl.v3_0.c_abi_archive_cmake_smoke.goal4602.v1"
+}

@@ -154,6 +154,16 @@ cmake -S . -B build -DCMAKE_PREFIX_PATH="$PWD/build/c_api_prefix_stage/usr/local
 cmake --build build
 ```
 
+For a CMake consumer from the extracted source-tree archive:
+
+```bash
+make package-c-api-stage
+mkdir -p /tmp/rtdl-c-api-consume
+tar -C /tmp/rtdl-c-api-consume -xzf build/rtdl-c-api-stage-0.1.3.tar.gz
+cmake -S . -B build -DCMAKE_PREFIX_PATH="/tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3"
+cmake --build build
+```
+
 For a C client that validates the current host external-runtime metadata path:
 
 ```bash
@@ -233,7 +243,8 @@ python_ctypes_hit_count=1 first_pair=(0,0)
 
 - This is a source-tree staging bundle only.
 - `package-c-api-stage` archives that staging bundle for movement between
-  directories; it is still not an installed SDK.
+  directories and carries the staged `pkg-config` and CMake metadata; it is
+  still not an installed SDK.
 - `stage-c-api-prefix` creates a DESTDIR/prefix-style staging layout; it is
   still not a privileged system install, package manager artifact, stable SDK,
   or release claim.

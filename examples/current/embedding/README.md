@@ -134,6 +134,16 @@ cmake -S . -B build -DCMAKE_PREFIX_PATH="$PWD/build/c_api_prefix_stage/usr/local
 cmake --build build
 ```
 
+The same CMake package config is present in the movable source-tree archive:
+
+```bash
+make package-c-api-stage
+mkdir -p /tmp/rtdl-c-api-consume
+tar -C /tmp/rtdl-c-api-consume -xzf build/rtdl-c-api-stage-0.1.3.tar.gz
+cmake -S . -B build -DCMAKE_PREFIX_PATH="/tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3"
+cmake --build build
+```
+
 For direct-link clients:
 
 ```bash
@@ -224,7 +234,8 @@ python_ctypes_hit_count=1 first_pair=(0,0)
 
 - This is a source-tree C client example for the V3 draft C ABI.
 - `package-c-api-stage` produces a source-tree staging archive, not an installed
-  SDK or stable release artifact.
+  SDK or stable release artifact, even though the archive carries staged
+  `pkg-config` and CMake metadata.
 - `stage-c-api-prefix` produces a DESTDIR/prefix-style staging layout, not a
   privileged system install, package-manager artifact, stable SDK, or release
   claim.
