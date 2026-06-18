@@ -117,6 +117,13 @@ pointer, dtype, shape, strides, device id, and release-callback ownership
 metadata, while host AABB2 query routes still reject CUDA buffers instead of
 dereferencing them.
 
+Goal4593 adds
+`examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py`, a
+Python `ctypes` bridge from a `__cuda_array_interface__`-style object into the
+C ABI neutral buffer view. It validates descriptor import/export and current
+host-route rejection from Python, without validating CUDA pointer ownership,
+stream ordering, or device-buffer query execution.
+
 ## Current Host AABB2 Query Contract
 
 The only implemented query route is deliberately small:

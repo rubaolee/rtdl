@@ -144,6 +144,7 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal4590_v3_0_m191_embeddability_architecture_status_refresh_test",
         "tests.goal4591_v3_0_m192_c_abi_host_external_runtime_gate_test",
         "tests.goal4592_v3_0_m193_c_abi_cuda_buffer_metadata_gate_test",
+        "tests.goal4593_v3_0_m194_python_ctypes_cuda_metadata_bridge_test",
     ),
     "v0_2_local": (
         "tests.goal110_baseline_runner_backend_test",

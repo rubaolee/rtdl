@@ -97,6 +97,7 @@ def _v3_c_abi_surface_check() -> dict[str, Any]:
         ROOT / "examples" / "current" / "embedding" / "c_api_cuda_buffer_metadata_client.c",
         ROOT / "examples" / "current" / "embedding" / "python_ctypes_client.py",
         ROOT / "examples" / "current" / "embedding" / "python_ctypes_aabb2_query_client.py",
+        ROOT / "examples" / "current" / "embedding" / "python_ctypes_cuda_buffer_metadata_client.py",
         ROOT / "examples" / "current" / "embedding" / "README.md",
     )
     missing = [path.relative_to(ROOT).as_posix() for path in required_files if not path.exists()]
@@ -113,7 +114,7 @@ def _v3_c_abi_surface_check() -> dict[str, Any]:
     return _check(
         "V3 C ABI embedding surface",
         "pass",
-        "include/rtdl/rtdl.h, make build-c-api/stage-c-api/package-c-api-stage, C examples including host runtime and CUDA metadata, Python ctypes examples",
+        "include/rtdl/rtdl.h, make build-c-api/stage-c-api/package-c-api-stage, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA metadata",
     )
 
 

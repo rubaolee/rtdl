@@ -28,11 +28,12 @@ class Goal4590V30M191EmbeddabilityArchitectureStatusRefreshTest(unittest.TestCas
 
     def test_architecture_doc_has_current_progress_and_boundaries(self) -> None:
         doc = ARCHITECTURE_DOC.read_text(encoding="utf-8")
-        self.assertIn("As of Goal4592", doc)
+        self.assertIn("As of Goal4593", doc)
         self.assertIn("make package-c-api-stage", doc)
         self.assertIn("Python `ctypes` lifecycle", doc)
         self.assertIn("Host external-runtime metadata validation", doc)
         self.assertIn("CUDA buffer metadata import/export validation", doc)
+        self.assertIn("Python `ctypes` bridge", doc)
         self.assertIn("generated language bindings", doc)
         self.assertIn("minimal binding base", doc)
 

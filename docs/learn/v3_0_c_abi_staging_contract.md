@@ -23,6 +23,7 @@ The target first builds `build/librtdl_c_api.*`, then creates
 - `examples/c_api_cuda_buffer_metadata_client.c`
 - `examples/python_ctypes_client.py`
 - `examples/python_ctypes_aabb2_query_client.py`
+- `examples/python_ctypes_cuda_buffer_metadata_client.py`
 
 The staged manifest is copied from the current draft source-tree manifest,
 currently `docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json`.
@@ -104,6 +105,20 @@ Expected output includes:
 validated_cuda_buffer_metadata_cases=4
 ```
 
+For a Python `ctypes` client that maps a `__cuda_array_interface__`-style
+descriptor into the C ABI neutral buffer view:
+
+```bash
+python3 build/c_api_stage/examples/python_ctypes_cuda_buffer_metadata_client.py \
+  build/c_api_stage/lib/librtdl_c_api.so
+```
+
+Expected output:
+
+```text
+python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument
+```
+
 For a minimal Python `ctypes` client over the same staged shared library:
 
 ```bash
@@ -146,6 +161,10 @@ python_ctypes_hit_count=1 first_pair=(0,0)
 - The CUDA buffer metadata example validates neutral descriptor import/export
   and release-callback behavior only; CUDA query execution, external stream
   ordering, and public true-zero-copy wording remain fail-closed.
+- The Python `ctypes` CUDA metadata example validates a
+  `__cuda_array_interface__`-style descriptor bridge into the C ABI only; it
+  does not validate CUDA pointer ownership, stream ordering, or device
+  execution.
 - No install prefix, package manager artifact, Python wheel, stable binary
   compatibility, OptiX/Embree C ABI query, device-buffer query route, or
   performance wording is authorized.

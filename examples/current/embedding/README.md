@@ -52,9 +52,9 @@ make stage-c-api
 This creates `build/c_api_stage` with the public header, shared library, current
 draft symbol manifest, `lib/pkgconfig/rtdl-c-api.pc`, this README, the AABB2
 dlopen and direct-link C examples, C host-runtime metadata and CUDA
-buffer-metadata examples, a thin Python `ctypes` lifecycle example, and a
-Python `ctypes` host AABB2 query example. It is still a source-tree staging
-bundle, not an installed SDK.
+buffer-metadata examples, a thin Python `ctypes` lifecycle example, Python
+`ctypes` host AABB2 query example, and Python `ctypes` CUDA buffer-metadata
+example. It is still a source-tree staging bundle, not an installed SDK.
 
 To archive that same movable source-tree stage:
 
@@ -111,6 +111,19 @@ Expected output includes:
 validated_cuda_buffer_metadata_cases=4
 ```
 
+For the Python `ctypes` CUDA buffer metadata path:
+
+```bash
+python3 build/c_api_stage/examples/python_ctypes_cuda_buffer_metadata_client.py \
+  build/c_api_stage/lib/librtdl_c_api.so
+```
+
+Expected output:
+
+```text
+python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument
+```
+
 For a minimal language-binding style client without writing C/C++:
 
 ```bash
@@ -153,4 +166,8 @@ python_ctypes_hit_count=1 first_pair=(0,0)
 - The CUDA buffer metadata example validates neutral descriptor import/export
   and release-callback behavior only; CUDA query execution, external stream
   ordering, and public true-zero-copy wording remain fail-closed.
+- The Python `ctypes` CUDA metadata example validates a
+  `__cuda_array_interface__`-style descriptor bridge into the C ABI only; it
+  does not validate CUDA pointer ownership, stream ordering, or device
+  execution.
 - It is not an OptiX, Embree, device-buffer query, packaged-SDK, or frozen-ABI claim.
