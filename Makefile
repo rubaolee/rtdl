@@ -229,6 +229,7 @@ stage-c-api: build-c-api
 	cp examples/current/embedding/c_api_direct_link_client.c $(C_API_STAGE_DIR)/examples/c_api_direct_link_client.c
 	cp examples/current/embedding/c_api_host_runtime_client.c $(C_API_STAGE_DIR)/examples/c_api_host_runtime_client.c
 	cp examples/current/embedding/c_api_cuda_buffer_metadata_client.c $(C_API_STAGE_DIR)/examples/c_api_cuda_buffer_metadata_client.c
+	cp examples/current/embedding/c_api_last_error_client.c $(C_API_STAGE_DIR)/examples/c_api_last_error_client.c
 	cp examples/current/embedding/python_ctypes_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_client.py
 	cp examples/current/embedding/python_ctypes_aabb2_query_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_aabb2_query_client.py
 	cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py $(C_API_STAGE_DIR)/examples/python_ctypes_cuda_buffer_metadata_client.py
@@ -247,6 +248,7 @@ stage-c-api-prefix: build-c-api
 	cp examples/current/embedding/c_api_direct_link_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_direct_link_client.c
 	cp examples/current/embedding/c_api_host_runtime_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_host_runtime_client.c
 	cp examples/current/embedding/c_api_cuda_buffer_metadata_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_cuda_buffer_metadata_client.c
+	cp examples/current/embedding/c_api_last_error_client.c $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/c_api_last_error_client.c
 	cp examples/current/embedding/python_ctypes_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_client.py
 	cp examples/current/embedding/python_ctypes_aabb2_query_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_aabb2_query_client.py
 	cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py $(C_API_PREFIX_STAGE_ROOT)$(C_API_PREFIX)/share/rtdl/examples/python_ctypes_cuda_buffer_metadata_client.py

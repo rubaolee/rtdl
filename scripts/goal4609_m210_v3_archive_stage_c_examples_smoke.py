@@ -47,6 +47,12 @@ C_EXAMPLES = (
         "expected_contains": "validated_cuda_buffer_metadata_cases=4",
     },
     {
+        "script": "c_api_last_error_client.c",
+        "mode": "pkg_config",
+        "executable": "rtdl_c_api_last_error_client_from_archive",
+        "expected_contains": "validated_last_error_diagnostics_cases=7",
+    },
+    {
         "script": "c_api_aabb2_overlap_client.c",
         "mode": "dlopen",
         "executable": "rtdl_c_api_aabb2_overlap_client_from_archive",
@@ -280,6 +286,7 @@ def build_packet(root: Path = Path("."), *, run_smoke: bool = False) -> dict[str
         "staging_contract_documents_archive_c_examples": (
             "The extracted source-tree archive carries runnable C examples too" in staging
             and "validated_cuda_buffer_metadata_cases=4" in staging
+            and "validated_last_error_diagnostics_cases=7" in staging
         ),
         "embedding_readme_documents_archive_c_examples": (
             "The extracted archive also carries runnable C examples" in embedding
@@ -313,6 +320,8 @@ def build_packet(root: Path = Path("."), *, run_smoke: bool = False) -> dict[str
                     "c_api_cuda_buffer_metadata_client.c", {}
                 ).get("ok")
                 is True,
+                "archive_last_error_stdout_matches": by_script.get("c_api_last_error_client.c", {}).get("ok")
+                is True,
                 "archive_dlopen_aabb2_stdout_matches": by_script.get("c_api_aabb2_overlap_client.c", {}).get("ok")
                 is True,
             }
@@ -341,8 +350,9 @@ def build_packet(root: Path = Path("."), *, run_smoke: bool = False) -> dict[str
             "compile and run the staged C examples after extraction. The pod "
             "smoke builds `package-c-api-stage`, unpacks "
             "`rtdl-c-api-stage-0.1.3.tar.gz`, compiles direct-link, `dlopen` "
-            "host AABB2, host-runtime metadata, and CUDA descriptor metadata "
-            "clients, then runs them against the extracted shared library. This "
+            "host AABB2, host-runtime metadata, CUDA descriptor metadata, and "
+            "status/last-error diagnostics clients, then runs them against the "
+            "extracted shared library. This "
             "authorizes extracted-archive C example smoke only; it is not a "
             "system install, package-manager artifact, packaged SDK, stable ABI, "
             "device-buffer query route, release, or performance claim."

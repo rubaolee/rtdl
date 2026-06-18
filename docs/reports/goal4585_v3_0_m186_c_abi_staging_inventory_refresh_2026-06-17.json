@@ -16,13 +16,14 @@
     "release_authorized": false,
     "stable_abi_authorized": false
   },
-  "conclusion": "Goal4585 refreshes the staging inventory after adding direct-link and Python ctypes embedding examples. Goal4591 later extends this same inventory to include the C host-runtime metadata example, and Goal4592 extends it again for the CUDA buffer-metadata descriptor example. Goal4593 then adds the Python ctypes CUDA metadata bridge, and Goal4607 adds the Python ctypes DLPack-like metadata bridge. The pod evidence runs `make stage-c-api` and verifies the staged bundle contains every current example. This remains a source-tree staging bundle, not an installed SDK or stable ABI.",
+  "conclusion": "Goal4585 refreshes the staging inventory after adding direct-link and Python ctypes embedding examples. Goal4591 later extends this same inventory to include the C host-runtime metadata example, and Goal4592 extends it again for the CUDA buffer-metadata descriptor example. Goal4593 then adds the Python ctypes CUDA metadata bridge, Goal4607 adds the Python ctypes DLPack-like metadata bridge, and Goal4612 adds the C status/last-error diagnostics example. The pod evidence runs `make stage-c-api` and verifies the staged bundle contains every current example. This remains a source-tree staging bundle, not an installed SDK or stable ABI.",
   "date": "2026-06-17",
   "examples": [
     "c_api_aabb2_overlap_client.c",
     "c_api_direct_link_client.c",
     "c_api_host_runtime_client.c",
     "c_api_cuda_buffer_metadata_client.c",
+    "c_api_last_error_client.c",
     "python_ctypes_client.py",
     "python_ctypes_aabb2_query_client.py",
     "python_ctypes_cuda_buffer_metadata_client.py",
@@ -61,7 +62,6 @@
         "returncode": 0,
         "stderr_tail": [],
         "stdout_tail": [
-          "cp packaging/rtdl-c-api.pc build/c_api_stage/lib/pkgconfig/rtdl-c-api.pc",
           "cp packaging/rtdl-c-api-config.cmake build/c_api_stage/lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake",
           "cp docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json build/c_api_stage/share/rtdl/v3_0_c_abi_symbol_manifest.json",
           "cp examples/current/embedding/README.md build/c_api_stage/share/rtdl/README.md",
@@ -69,6 +69,7 @@
           "cp examples/current/embedding/c_api_direct_link_client.c build/c_api_stage/examples/c_api_direct_link_client.c",
           "cp examples/current/embedding/c_api_host_runtime_client.c build/c_api_stage/examples/c_api_host_runtime_client.c",
           "cp examples/current/embedding/c_api_cuda_buffer_metadata_client.c build/c_api_stage/examples/c_api_cuda_buffer_metadata_client.c",
+          "cp examples/current/embedding/c_api_last_error_client.c build/c_api_stage/examples/c_api_last_error_client.c",
           "cp examples/current/embedding/python_ctypes_client.py build/c_api_stage/examples/python_ctypes_client.py",
           "cp examples/current/embedding/python_ctypes_aabb2_query_client.py build/c_api_stage/examples/python_ctypes_aabb2_query_client.py",
           "cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py build/c_api_stage/examples/python_ctypes_cuda_buffer_metadata_client.py",
@@ -111,7 +112,7 @@
         "readme": {
           "exists": true,
           "path": "build/c_api_stage/share/rtdl/README.md",
-          "size_bytes": 9308
+          "size_bytes": 11964
         }
       },
       "staged_manifest": {
@@ -162,6 +163,11 @@
         "exists": true,
         "path": "build/c_api_stage/examples/c_api_host_runtime_client.c",
         "size_bytes": 2763
+      },
+      "c_api_last_error_client.c": {
+        "exists": true,
+        "path": "build/c_api_stage/examples/c_api_last_error_client.c",
+        "size_bytes": 5172
       },
       "python_ctypes_aabb2_query_client.py": {
         "exists": true,

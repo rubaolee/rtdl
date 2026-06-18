@@ -19,6 +19,7 @@ EXAMPLES = (
     "c_api_direct_link_client.c",
     "c_api_host_runtime_client.c",
     "c_api_cuda_buffer_metadata_client.c",
+    "c_api_last_error_client.c",
     "python_ctypes_client.py",
     "python_ctypes_aabb2_query_client.py",
     "python_ctypes_cuda_buffer_metadata_client.py",
@@ -89,7 +90,8 @@ def build_packet(root: Path = Path("."), *, run_stage: bool = False) -> dict[str
             "same inventory to include the C host-runtime metadata example, and "
             "Goal4592 extends it again for the CUDA buffer-metadata descriptor "
             "example. Goal4593 then adds the Python ctypes CUDA metadata bridge, "
-            "and Goal4607 adds the Python ctypes DLPack-like metadata bridge. "
+            "Goal4607 adds the Python ctypes DLPack-like metadata bridge, and "
+            "Goal4612 adds the C status/last-error diagnostics example. "
             "The pod evidence runs `make stage-c-api` and verifies the staged "
             "bundle contains every current example. This remains a source-tree "
             "staging bundle, not an installed SDK or stable ABI."

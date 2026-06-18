@@ -1,0 +1,113 @@
+{
+  "checks": {
+    "architecture_doc_current_to_goal4612": true,
+    "archive_c_examples_smoke_requires_example": true,
+    "benchmark_index_links_goal4612": true,
+    "binding_matrix_names_staged_example": true,
+    "cc_available": true,
+    "embedding_readme_documents_example_command_and_boundary": true,
+    "example_source_exists_and_uses_diagnostic_api": true,
+    "make_available": true,
+    "makefile_stages_example_in_source_and_prefix_stages": true,
+    "pkg_config_available": true,
+    "pkg_config_cflags_ok": true,
+    "pkg_config_libs_ok": true,
+    "stage_make_ok": true,
+    "staged_example_compiles": true,
+    "staged_example_runs_expected_marker": true,
+    "staging_contract_lists_and_documents_example": true,
+    "staging_inventory_requires_example": true
+  },
+  "claim_boundary": {
+    "last_error_staged_example_authorized": true,
+    "packaged_sdk_authorized": false,
+    "performance_wording_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false,
+    "stable_error_text_authorized": false,
+    "system_install_authorized": false
+  },
+  "conclusion": "Goal4612 promotes the C ABI status/last-error diagnostic pattern from an internal smoke into the user-facing embedding bundle. The new `c_api_last_error_client.c` example is staged, prefix-staged, archived, compiled through staged `pkg-config` flags, and run against the staged shared library. This authorizes the staged diagnostic example only; error text remains diagnostic and callers must branch on `rtdl_status`.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4612 / V3 M213",
+  "staged_example_smoke": {
+    "cc": "/usr/bin/cc",
+    "cflags_result": {
+      "command": [
+        "/usr/bin/pkg-config",
+        "--cflags",
+        "rtdl-c-api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "-Ibuild/c_api_stage/lib/pkgconfig/../../include"
+    },
+    "compile_result": {
+      "command": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-Ibuild/c_api_stage/lib/pkgconfig/../../include",
+        "build/c_api_stage/examples/c_api_last_error_client.c",
+        "-o",
+        "build/c_api_stage/examples/rtdl_c_api_last_error_client",
+        "-Lbuild/c_api_stage/lib/pkgconfig/../../lib",
+        "-lrtdl_c_api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": []
+    },
+    "libs_result": {
+      "command": [
+        "/usr/bin/pkg-config",
+        "--libs",
+        "rtdl-c-api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "-Lbuild/c_api_stage/lib/pkgconfig/../../lib -lrtdl_c_api"
+    },
+    "make": "/usr/bin/make",
+    "make_result": {
+      "command": [
+        "/usr/bin/make",
+        "stage-c-api"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout_tail": [
+        "cp packaging/rtdl-c-api-config.cmake build/c_api_stage/lib/cmake/rtdl-c-api/rtdl-c-api-config.cmake",
+        "cp docs/learn/v3_0_c_abi_symbol_manifest_v0_1_3.json build/c_api_stage/share/rtdl/v3_0_c_abi_symbol_manifest.json",
+        "cp examples/current/embedding/README.md build/c_api_stage/share/rtdl/README.md",
+        "cp examples/current/embedding/c_api_aabb2_overlap_client.c build/c_api_stage/examples/c_api_aabb2_overlap_client.c",
+        "cp examples/current/embedding/c_api_direct_link_client.c build/c_api_stage/examples/c_api_direct_link_client.c",
+        "cp examples/current/embedding/c_api_host_runtime_client.c build/c_api_stage/examples/c_api_host_runtime_client.c",
+        "cp examples/current/embedding/c_api_cuda_buffer_metadata_client.c build/c_api_stage/examples/c_api_cuda_buffer_metadata_client.c",
+        "cp examples/current/embedding/c_api_last_error_client.c build/c_api_stage/examples/c_api_last_error_client.c",
+        "cp examples/current/embedding/python_ctypes_client.py build/c_api_stage/examples/python_ctypes_client.py",
+        "cp examples/current/embedding/python_ctypes_aabb2_query_client.py build/c_api_stage/examples/python_ctypes_aabb2_query_client.py",
+        "cp examples/current/embedding/python_ctypes_cuda_buffer_metadata_client.py build/c_api_stage/examples/python_ctypes_cuda_buffer_metadata_client.py",
+        "cp examples/current/embedding/python_ctypes_dlpack_like_metadata_client.py build/c_api_stage/examples/python_ctypes_dlpack_like_metadata_client.py"
+      ]
+    },
+    "ok": true,
+    "pkg_config": "/usr/bin/pkg-config",
+    "run_result": {
+      "command": [
+        "build/c_api_stage/examples/rtdl_c_api_last_error_client"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "stderr_tail": [],
+      "stdout": "case status_string_diagnostics_ok: ok\ncase null_context_last_error_ok: ok\ncase initial_last_error_empty: ok\ncase invalid_buffer_sets_last_error: ok\ncase successful_buffer_import_clears_last_error: ok\ncase unsupported_runtime_sets_last_error: ok\ncase successful_runtime_clears_last_error: ok\nvalidated_last_error_diagnostics_cases=7"
+    },
+    "stage_dir": "build/c_api_stage"
+  },
+  "status": "c_abi_last_error_staged_example_checked",
+  "version": "rtdl.v3_0.c_abi_last_error_staged_example.goal4612.v1"
+}

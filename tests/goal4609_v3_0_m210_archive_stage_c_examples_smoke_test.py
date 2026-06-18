@@ -49,6 +49,10 @@ class Goal4609V30M210ArchiveStageCExamplesSmokeTest(unittest.TestCase):
             "validated_cuda_buffer_metadata_cases=4",
             by_script["c_api_cuda_buffer_metadata_client.c"]["run_result"]["stdout"],
         )
+        self.assertIn(
+            "validated_last_error_diagnostics_cases=7",
+            by_script["c_api_last_error_client.c"]["run_result"]["stdout"],
+        )
         for row in by_script.values():
             self.assertTrue(row["compile_result"]["ok"], row["script"])
             self.assertTrue(row["run_result"]["ok"], row["script"])

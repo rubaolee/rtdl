@@ -52,10 +52,11 @@ make stage-c-api
 This creates `build/c_api_stage` with the public header, shared library, current
 draft symbol manifest, `lib/pkgconfig/rtdl-c-api.pc`, this README, the AABB2
 dlopen and direct-link C examples, C host-runtime metadata and CUDA
-buffer-metadata examples, a thin Python `ctypes` lifecycle example, Python
-`ctypes` host AABB2 query example, Python `ctypes` CUDA buffer-metadata
-example, and Python `ctypes` DLPack-like metadata example. It is still a
-source-tree staging bundle, not an installed SDK.
+buffer-metadata examples, a C status/last-error diagnostics example, a thin
+Python `ctypes` lifecycle example, Python `ctypes` host AABB2 query example,
+Python `ctypes` CUDA buffer-metadata example, and Python `ctypes` DLPack-like
+metadata example. It is not an installed SDK; it is still a source-tree
+staging bundle.
 
 To archive that same movable source-tree stage:
 
@@ -168,6 +169,7 @@ direct_link_ok 0.1.3 ok
 hit_count=1 first_pair=(0,0)
 validated_host_external_runtime_cases=3
 validated_cuda_buffer_metadata_cases=4
+validated_last_error_diagnostics_cases=7
 ```
 
 The extracted archive also carries the same Python `ctypes` examples:
@@ -237,6 +239,23 @@ Expected output includes:
 
 ```text
 validated_cuda_buffer_metadata_cases=4
+```
+
+For the C status/last-error diagnostics path:
+
+```bash
+cc -std=c11 $(pkg-config --cflags rtdl-c-api) \
+  build/c_api_stage/examples/c_api_last_error_client.c \
+  -o build/c_api_stage/examples/rtdl_c_api_last_error_client \
+  $(pkg-config --libs rtdl-c-api)
+LD_LIBRARY_PATH="$PWD/build/c_api_stage/lib:${LD_LIBRARY_PATH:-}" \
+  ./build/c_api_stage/examples/rtdl_c_api_last_error_client
+```
+
+Expected output includes:
+
+```text
+validated_last_error_diagnostics_cases=7
 ```
 
 For the Python `ctypes` CUDA buffer metadata path:
@@ -312,6 +331,9 @@ python_ctypes_hit_count=1 first_pair=(0,0)
 - The CUDA buffer metadata example validates neutral descriptor import/export
   and release-callback behavior only; CUDA query execution, external stream
   ordering, and public true-zero-copy wording remain fail-closed.
+- The C status/last-error diagnostics example validates status strings,
+  selected failure diagnostics, and successful-call last-error clearing only;
+  callers must still branch on `rtdl_status`, not error text.
 - The Python `ctypes` CUDA metadata example validates a
   `__cuda_array_interface__`-style descriptor bridge into the C ABI only; it
   does not validate CUDA pointer ownership, stream ordering, or device

@@ -22,6 +22,7 @@ The target first builds `build/librtdl_c_api.*`, then creates
 - `examples/c_api_direct_link_client.c`
 - `examples/c_api_host_runtime_client.c`
 - `examples/c_api_cuda_buffer_metadata_client.c`
+- `examples/c_api_last_error_client.c`
 - `examples/python_ctypes_client.py`
 - `examples/python_ctypes_aabb2_query_client.py`
 - `examples/python_ctypes_cuda_buffer_metadata_client.py`
@@ -182,14 +183,15 @@ LD_LIBRARY_PATH="$RTDL_C_API_ARCHIVE/lib:${LD_LIBRARY_PATH:-}" \
 ```
 
 Additional extracted-archive C examples validate the `dlopen` host AABB2
-route, host external-runtime metadata, and CUDA descriptor metadata. Expected
-outputs include:
+route, host external-runtime metadata, CUDA descriptor metadata, and
+status/last-error diagnostics. Expected outputs include:
 
 ```text
 direct_link_ok 0.1.3 ok
 hit_count=1 first_pair=(0,0)
 validated_host_external_runtime_cases=3
 validated_cuda_buffer_metadata_cases=4
+validated_last_error_diagnostics_cases=7
 ```
 
 The extracted source-tree archive also carries the Python `ctypes` examples:

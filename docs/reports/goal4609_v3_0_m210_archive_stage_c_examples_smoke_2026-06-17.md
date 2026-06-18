@@ -4,13 +4,13 @@ Status: `archive_stage_c_examples_smoke_checked`
 
 ## Conclusion
 
-Goal4609 validates that the movable source-tree C ABI archive can compile and run the staged C examples after extraction. The pod smoke builds `package-c-api-stage`, unpacks `rtdl-c-api-stage-0.1.3.tar.gz`, compiles direct-link, `dlopen` host AABB2, host-runtime metadata, and CUDA descriptor metadata clients, then runs them against the extracted shared library. This authorizes extracted-archive C example smoke only; it is not a system install, package-manager artifact, packaged SDK, stable ABI, device-buffer query route, release, or performance claim.
+Goal4609 validates that the movable source-tree C ABI archive can compile and run the staged C examples after extraction. The pod smoke builds `package-c-api-stage`, unpacks `rtdl-c-api-stage-0.1.3.tar.gz`, compiles direct-link, `dlopen` host AABB2, host-runtime metadata, CUDA descriptor metadata, and status/last-error diagnostics clients, then runs them against the extracted shared library. This authorizes extracted-archive C example smoke only; it is not a system install, package-manager artifact, packaged SDK, stable ABI, device-buffer query route, release, or performance claim.
 
 ## Smoke
 
 - OK: `True`
 - Archive: `build/rtdl-c-api-stage-0.1.3.tar.gz`
-- Extract dir: `/tmp/rtdl_c_api_archive_c_examples_e_z6xfps/extracted/rtdl-c-api-stage-0.1.3`
+- Extract dir: `/tmp/rtdl_c_api_archive_c_examples_td9kix8r/extracted/rtdl-c-api-stage-0.1.3`
 
 | Example | Mode | OK | Stdout |
 | --- | --- | --- | --- |
@@ -24,6 +24,14 @@ case cuda_query_route_rejected: ok
 case cuda_buffer_release_callback_ok: ok
 case invalid_cuda_buffer_metadata_rejected: ok
 validated_cuda_buffer_metadata_cases=4` |
+| `c_api_last_error_client.c` | `pkg_config` | `True` | `case status_string_diagnostics_ok: ok
+case null_context_last_error_ok: ok
+case initial_last_error_empty: ok
+case invalid_buffer_sets_last_error: ok
+case successful_buffer_import_clears_last_error: ok
+case unsupported_runtime_sets_last_error: ok
+case successful_runtime_clears_last_error: ok
+validated_last_error_diagnostics_cases=7` |
 | `c_api_aabb2_overlap_client.c` | `dlopen` | `True` | `hit_count=1 first_pair=(0,0)` |
 
 ## Checks
@@ -49,6 +57,7 @@ validated_cuda_buffer_metadata_cases=4` |
 | `archive_direct_link_stdout_matches` | `True` |
 | `archive_host_runtime_stdout_matches` | `True` |
 | `archive_cuda_metadata_stdout_matches` | `True` |
+| `archive_last_error_stdout_matches` | `True` |
 | `archive_dlopen_aabb2_stdout_matches` | `True` |
 
 ## Boundary
