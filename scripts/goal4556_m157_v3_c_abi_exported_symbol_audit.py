@@ -19,6 +19,7 @@ EXPECTED_SYMBOLS = (
     "rtdl_abi_version_major",
     "rtdl_abi_version_minor",
     "rtdl_abi_version_patch",
+    "rtdl_abi_is_compatible",
     "rtdl_status_string",
     "rtdl_context_last_error",
     "rtdl_context_create",
@@ -133,7 +134,7 @@ def build_packet(root: Path = Path("."), *, run_audit: bool = False) -> dict[str
     checks = {
         "makefile_has_build_c_api_target": "build-c-api:" in makefile,
         "header_declares_expected_symbols": all(symbol in header for symbol in EXPECTED_SYMBOLS),
-        "expected_symbol_count_is_15": len(EXPECTED_SYMBOLS) == 15,
+        "expected_symbol_count_is_16": len(EXPECTED_SYMBOLS) == 16,
     }
     if audit is not None:
         checks.update(
@@ -164,7 +165,7 @@ def build_packet(root: Path = Path("."), *, run_audit: bool = False) -> dict[str
         },
         "conclusion": (
             "Goal4556 audits the `make build-c-api` artifact and verifies that the "
-            "current lifecycle C ABI symbols are actually exported from the shared "
+            "current lifecycle and version-negotiation C ABI symbols are actually exported from the shared "
             "library. This checks the build product's symbol surface only; it does "
             "not freeze binary compatibility or validate backend query semantics."
         ),

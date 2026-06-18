@@ -12,13 +12,14 @@ Use [V3.0 C ABI Ownership And Threading Contract](v3_0_c_abi_ownership_threading
 for the current buffer lifetime, release-callback, last-error, and threading
 rules.
 The current draft symbol list is tracked in
-[v3_0_c_abi_symbol_manifest_v0_1_1.json](v3_0_c_abi_symbol_manifest_v0_1_1.json).
+[v3_0_c_abi_symbol_manifest_v0_1_2.json](v3_0_c_abi_symbol_manifest_v0_1_2.json).
 
 ## Scope
 
 - Opaque handles: `rtdl_context`, `rtdl_index`, `rtdl_query`, `rtdl_buffer`.
 - C status codes and explicit last-error retrieval.
-- Versioned ABI macros and version functions.
+- Versioned ABI macros, version functions, and the draft
+  `rtdl_abi_is_compatible(major, minor, patch)` guard.
 - Declared external runtime handle shape: device type, device id, context,
   stream, and user data. Runtime adoption is not implemented in the current
   proof; external runtime handles remain fail-closed.

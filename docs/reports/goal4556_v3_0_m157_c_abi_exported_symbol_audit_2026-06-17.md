@@ -4,11 +4,11 @@ Status: `c_abi_exported_symbol_audit_checked`
 
 ## Conclusion
 
-Goal4556 audits the `make build-c-api` artifact and verifies that the current lifecycle C ABI symbols are actually exported from the shared library. This checks the build product's symbol surface only; it does not freeze binary compatibility or validate backend query semantics.
+Goal4556 audits the `make build-c-api` artifact and verifies that the current lifecycle and version-negotiation C ABI symbols are actually exported from the shared library. This checks the build product's symbol surface only; it does not freeze binary compatibility or validate backend query semantics.
 
 ## Symbols
 
-- Expected: `15`
+- Expected: `16`
 - Missing: `()`
 
 ## Checks
@@ -17,7 +17,7 @@ Goal4556 audits the `make build-c-api` artifact and verifies that the current li
 | --- | --- |
 | `makefile_has_build_c_api_target` | `True` |
 | `header_declares_expected_symbols` | `True` |
-| `expected_symbol_count_is_15` | `True` |
+| `expected_symbol_count_is_16` | `True` |
 | `make_available` | `True` |
 | `nm_available` | `True` |
 | `make_build_ok` | `True` |

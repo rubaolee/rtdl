@@ -11,7 +11,8 @@ PACKET_VERSION = "rtdl.v3_0.c_abi_patch_version_refresh.goal4574.v1"
 OUT_JSON = Path("docs/reports/goal4574_v3_0_m175_c_abi_patch_version_refresh_2026-06-17.json")
 OUT_REPORT = Path("docs/reports/goal4574_v3_0_m175_c_abi_patch_version_refresh_2026-06-17.md")
 HEADER = Path("include/rtdl/rtdl.h")
-CURRENT_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_1.json")
+CURRENT_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json")
+M175_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_1.json")
 PREVIOUS_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_0.json")
 POLICY = Path("docs/learn/v3_0_c_abi_stability_policy.md")
 C_ABI_DRAFT = Path("docs/learn/v3_0_c_abi_draft.md")
@@ -29,9 +30,15 @@ def _header_version(header: str) -> str:
     return f"{values['major']}.{values['minor']}.{values['patch']}"
 
 
+def _version_tuple(version: str) -> tuple[int, int, int]:
+    major, minor, patch = version.split(".")
+    return int(major), int(minor), int(patch)
+
+
 def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     header = (root / HEADER).read_text(encoding="utf-8")
     current_manifest = json.loads((root / CURRENT_MANIFEST).read_text(encoding="utf-8"))
+    m175_manifest = json.loads((root / M175_MANIFEST).read_text(encoding="utf-8"))
     previous_manifest = json.loads((root / PREVIOUS_MANIFEST).read_text(encoding="utf-8"))
     policy = (root / POLICY).read_text(encoding="utf-8")
     c_abi = (root / C_ABI_DRAFT).read_text(encoding="utf-8")
@@ -40,15 +47,17 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
     goal4566 = json.loads((root / GOAL4566).read_text(encoding="utf-8"))
     goal4573 = json.loads((root / GOAL4573).read_text(encoding="utf-8"))
     checks = {
-        "header_version_is_0_1_1": _header_version(header) == "0.1.1",
-        "current_manifest_is_0_1_1": current_manifest["abi_version"] == "0.1.1"
+        "header_version_is_at_least_0_1_1": _version_tuple(_header_version(header)) >= (0, 1, 1),
+        "m175_manifest_is_0_1_1": m175_manifest["abi_version"] == "0.1.1"
+        and m175_manifest["stable"] is False,
+        "current_manifest_matches_current_header": current_manifest["abi_version"] == _header_version(header)
         and current_manifest["stable"] is False,
         "previous_manifest_retained_as_history": previous_manifest["abi_version"] == "0.1.0"
-        and previous_manifest["symbols"] == current_manifest["symbols"],
-        "policy_and_draft_link_current_manifest": "v3_0_c_abi_symbol_manifest_v0_1_1.json" in policy
-        and "v3_0_c_abi_symbol_manifest_v0_1_1.json" in c_abi,
-        "ownership_contract_names_current_version": "`0.1.1`" in ownership,
-        "goal4552_runtime_checked_patch_one": goal4552["build_result"]["ctypes_smoke"]["checks"].get("patch_is_one")
+        and previous_manifest["symbols"] == m175_manifest["symbols"],
+        "policy_and_draft_link_current_manifest": CURRENT_MANIFEST.name in policy
+        and CURRENT_MANIFEST.name in c_abi,
+        "ownership_contract_names_current_version": f"`{current_manifest['abi_version']}`" in ownership,
+        "goal4552_runtime_checked_current_patch": goal4552["build_result"]["ctypes_smoke"]["checks"].get("patch_is_two")
         is True,
         "goal4566_manifest_gate_accepts_current_manifest": not goal4566["failed_checks"]
         and goal4566["checks"]["manifest_abi_version_matches_header"],
@@ -65,6 +74,7 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "failed_checks": failed,
         "current_abi_version": _header_version(header),
         "current_manifest": CURRENT_MANIFEST.as_posix(),
+        "m175_manifest": M175_MANIFEST.as_posix(),
         "previous_manifest": PREVIOUS_MANIFEST.as_posix(),
         "claim_boundary": {
             "stable_abi_authorized": False,
@@ -76,8 +86,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "conclusion": (
             "Goal4574 refreshes the draft C ABI patch version to `0.1.1` after "
             "the Goal4573 backend/runtime fail-closed semantic change. The symbol "
-            "set remains unchanged from `0.1.0`, but current docs, manifest checks, "
-            "and runtime version smoke now point at `0.1.1`."
+            "set remains unchanged from `0.1.0`, and the `0.1.1` manifest remains "
+            "as historical evidence even after later current ABI refreshes."
         ),
     }
 

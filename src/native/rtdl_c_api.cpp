@@ -57,6 +57,15 @@ bool backend_is_supported_by_host_proof(rtdl_backend backend) {
   return backend == RTDL_BACKEND_AUTO || backend == RTDL_BACKEND_CPU;
 }
 
+bool abi_version_is_compatible(uint32_t major, uint32_t minor, uint32_t patch) {
+  return major == RTDL_ABI_VERSION_MAJOR && minor == RTDL_ABI_VERSION_MINOR &&
+      patch <= RTDL_ABI_VERSION_PATCH;
+}
+
+bool descriptor_abi_is_supported(uint32_t major, uint32_t minor) {
+  return abi_version_is_compatible(major, minor, RTDL_ABI_VERSION_PATCH);
+}
+
 bool aabb2_overlaps(const float* lhs, const float* rhs) {
   return lhs[0] <= rhs[2] && lhs[2] >= rhs[0] && lhs[1] <= rhs[3] && lhs[3] >= rhs[1];
 }
@@ -79,6 +88,10 @@ RTDL_API uint32_t rtdl_abi_version_minor(void) {
 
 RTDL_API uint32_t rtdl_abi_version_patch(void) {
   return RTDL_ABI_VERSION_PATCH;
+}
+
+RTDL_API uint32_t rtdl_abi_is_compatible(uint32_t major, uint32_t minor, uint32_t patch) {
+  return abi_version_is_compatible(major, minor, patch) ? 1u : 0u;
 }
 
 RTDL_API const char* rtdl_status_string(rtdl_status status) {
@@ -111,7 +124,7 @@ RTDL_API rtdl_status rtdl_context_create(const rtdl_context_desc* desc, rtdl_con
     return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
   }
   *context_out = nullptr;
-  if (desc != nullptr && desc->abi_version_major != RTDL_ABI_VERSION_MAJOR) {
+  if (desc != nullptr && !descriptor_abi_is_supported(desc->abi_version_major, desc->abi_version_minor)) {
     return RTDL_STATUS_ERROR_UNSUPPORTED;
   }
   if (desc != nullptr && !backend_is_supported_by_host_proof(desc->backend)) {
@@ -202,8 +215,8 @@ RTDL_API rtdl_status rtdl_index_build(
     return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
   }
   *index_out = nullptr;
-  if (desc->abi_version_major != RTDL_ABI_VERSION_MAJOR) {
-    set_error(context, "index descriptor ABI major version is unsupported");
+  if (!descriptor_abi_is_supported(desc->abi_version_major, desc->abi_version_minor)) {
+    set_error(context, "index descriptor ABI version is unsupported");
     return RTDL_STATUS_ERROR_UNSUPPORTED;
   }
   if (desc->primitive_kind != RTDL_PRIMITIVE_AABB2) {
@@ -247,8 +260,8 @@ RTDL_API rtdl_status rtdl_query_execute(
     return RTDL_STATUS_ERROR_INVALID_ARGUMENT;
   }
   *result_out = nullptr;
-  if (desc->abi_version_major != RTDL_ABI_VERSION_MAJOR) {
-    set_error(context, "query descriptor ABI major version is unsupported");
+  if (!descriptor_abi_is_supported(desc->abi_version_major, desc->abi_version_minor)) {
+    set_error(context, "query descriptor ABI version is unsupported");
     return RTDL_STATUS_ERROR_UNSUPPORTED;
   }
   if (index->primitive_kind != RTDL_PRIMITIVE_AABB2 || desc->query_kind != RTDL_QUERY_AABB_OVERLAP) {

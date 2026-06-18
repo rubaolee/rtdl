@@ -17,38 +17,38 @@
   "compile_results": {
     "c": {
       "command": [
-        "C:\\Program Files\\LLVM\\bin\\clang.exe",
+        "/usr/bin/cc",
         "-std=c11",
         "-I",
         "include",
         "-c",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp665kxrv_\\rtdl_header_smoke.c",
+        "/tmp/tmp4zazdjbh/rtdl_header_smoke.c",
         "-o",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp665kxrv_\\rtdl_header_smoke_c.o"
+        "/tmp/tmp4zazdjbh/rtdl_header_smoke_c.o"
       ],
       "ok": true,
       "returncode": 0,
       "stderr_tail": [],
       "stdout": ""
     },
-    "c_compiler": "C:\\Program Files\\LLVM\\bin\\clang.exe",
+    "c_compiler": "/usr/bin/cc",
     "cxx": {
       "command": [
-        "C:\\Program Files\\LLVM\\bin\\clang++.exe",
+        "/usr/bin/c++",
         "-std=c++17",
         "-I",
         "include",
         "-c",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp665kxrv_\\rtdl_header_smoke.cpp",
+        "/tmp/tmp4zazdjbh/rtdl_header_smoke.cpp",
         "-o",
-        "C:\\Users\\Lestat\\AppData\\Local\\Temp\\tmp665kxrv_\\rtdl_header_smoke_cxx.o"
+        "/tmp/tmp4zazdjbh/rtdl_header_smoke_cxx.o"
       ],
       "ok": true,
       "returncode": 0,
       "stderr_tail": [],
       "stdout": ""
     },
-    "cxx_compiler": "C:\\Program Files\\LLVM\\bin\\clang++.exe"
+    "cxx_compiler": "/usr/bin/c++"
   },
   "conclusion": "Goal4551 validates that the draft V3 `rtdl.h` header is usable from both C11 and C++17 translation units. This is a header hygiene gate only; it does not implement the ABI or freeze binary compatibility.",
   "date": "2026-06-17",

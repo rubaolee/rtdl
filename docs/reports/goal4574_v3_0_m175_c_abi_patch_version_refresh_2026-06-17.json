@@ -1,10 +1,11 @@
 {
   "checks": {
-    "current_manifest_is_0_1_1": true,
-    "goal4552_runtime_checked_patch_one": true,
+    "current_manifest_matches_current_header": true,
+    "goal4552_runtime_checked_current_patch": true,
     "goal4566_manifest_gate_accepts_current_manifest": true,
     "goal4573_semantic_change_has_runtime_evidence": true,
-    "header_version_is_0_1_1": true,
+    "header_version_is_at_least_0_1_1": true,
+    "m175_manifest_is_0_1_1": true,
     "ownership_contract_names_current_version": true,
     "policy_and_draft_link_current_manifest": true,
     "previous_manifest_retained_as_history": true
@@ -16,12 +17,13 @@
     "release_authorized": false,
     "stable_abi_authorized": false
   },
-  "conclusion": "Goal4574 refreshes the draft C ABI patch version to `0.1.1` after the Goal4573 backend/runtime fail-closed semantic change. The symbol set remains unchanged from `0.1.0`, but current docs, manifest checks, and runtime version smoke now point at `0.1.1`.",
-  "current_abi_version": "0.1.1",
-  "current_manifest": "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_1.json",
+  "conclusion": "Goal4574 refreshes the draft C ABI patch version to `0.1.1` after the Goal4573 backend/runtime fail-closed semantic change. The symbol set remains unchanged from `0.1.0`, and the `0.1.1` manifest remains as historical evidence even after later current ABI refreshes.",
+  "current_abi_version": "0.1.2",
+  "current_manifest": "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json",
   "date": "2026-06-17",
   "failed_checks": [],
   "goal": "Goal4574 / V3 M175",
+  "m175_manifest": "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_1.json",
   "previous_manifest": "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_0.json",
   "status": "c_abi_patch_version_refresh_checked",
   "version": "rtdl.v3_0.c_abi_patch_version_refresh.goal4574.v1"

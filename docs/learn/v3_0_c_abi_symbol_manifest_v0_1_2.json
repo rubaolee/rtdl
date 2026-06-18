@@ -1,0 +1,25 @@
+{
+  "abi_version": "0.1.2",
+  "build_target": "make build-c-api",
+  "header": "include/rtdl/rtdl.h",
+  "stable": false,
+  "status": "draft_source_tree_manifest",
+  "symbols": [
+    "rtdl_abi_version_major",
+    "rtdl_abi_version_minor",
+    "rtdl_abi_version_patch",
+    "rtdl_abi_is_compatible",
+    "rtdl_status_string",
+    "rtdl_context_last_error",
+    "rtdl_context_create",
+    "rtdl_context_destroy",
+    "rtdl_context_set_external_runtime",
+    "rtdl_buffer_import",
+    "rtdl_buffer_export",
+    "rtdl_index_build",
+    "rtdl_query_execute",
+    "rtdl_buffer_destroy",
+    "rtdl_index_destroy",
+    "rtdl_query_destroy"
+  ]
+}

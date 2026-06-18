@@ -9,7 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4566_v3_0_m167_c_abi_symbol_manifest_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4566_v3_0_m167_c_abi_symbol_manifest_2026-06-17.md"
-MANIFEST = ROOT / "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_1.json"
+MANIFEST = ROOT / "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 
@@ -29,8 +29,9 @@ class Goal4566V30M167CAbiSymbolManifestTest(unittest.TestCase):
     def test_manifest_is_draft_and_lists_current_symbols(self) -> None:
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         self.assertFalse(manifest["stable"])
-        self.assertEqual("0.1.1", manifest["abi_version"])
-        self.assertEqual(15, len(manifest["symbols"]))
+        self.assertEqual("0.1.2", manifest["abi_version"])
+        self.assertEqual(16, len(manifest["symbols"]))
+        self.assertIn("rtdl_abi_is_compatible", manifest["symbols"])
         self.assertIn("rtdl_index_build", manifest["symbols"])
         self.assertIn("rtdl_query_execute", manifest["symbols"])
 

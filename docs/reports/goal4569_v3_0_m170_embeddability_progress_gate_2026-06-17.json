@@ -7,7 +7,7 @@
     "layout_validation_runtime_passed": true,
     "stability_policy_blocks_stable_sdk": true,
     "strategy_status_refreshed_to_goal4568": true,
-    "symbol_manifest_is_draft_0_1_1": true,
+    "symbol_manifest_is_draft_0_1_2": true,
     "v3_current_includes_progress_gate": true,
     "zero_copy_contract_blocks_c_abi_device_route": true,
     "zero_copy_runtime_claims_blocked": true

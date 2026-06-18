@@ -4,13 +4,14 @@ Status: `c_abi_stability_policy_checked`
 
 ## Conclusion
 
-Goal4565 adds an explicit V3 C ABI stability policy: the current `0.1.1` source-tree ABI remains experimental, breaking changes are allowed only with evidence refresh and versioning, and stable-SDK wording is blocked until symbol-manifest, cross-version, packaging, and runtime gates pass.
+Goal4565 adds an explicit V3 C ABI stability policy: the current `0.1.2` source-tree ABI remains experimental, breaking changes are allowed only with evidence refresh and versioning, and stable-SDK wording is blocked until symbol-manifest, cross-version, packaging, and runtime gates pass.
 
 ## Checks
 
 | Check | Passed |
 | --- | --- |
-| `policy_declares_0_1_1_not_frozen` | `True` |
+| `policy_declares_0_1_2_not_frozen` | `True` |
+| `policy_documents_runtime_compatibility_guard` | `True` |
 | `policy_names_current_surface` | `True` |
 | `policy_names_current_evidence_gates` | `True` |
 | `policy_requires_version_bump_for_breaking_changes` | `True` |

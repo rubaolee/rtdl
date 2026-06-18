@@ -12,7 +12,7 @@ OUT_REPORT = Path("docs/reports/goal4569_v3_0_m170_embeddability_progress_gate_2
 STRATEGY = Path("docs/learn/v3_0_embeddability_architecture_strategy.md")
 C_ABI_DRAFT = Path("docs/learn/v3_0_c_abi_draft.md")
 STABILITY = Path("docs/learn/v3_0_c_abi_stability_policy.md")
-SYMBOL_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_1.json")
+SYMBOL_MANIFEST = Path("docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json")
 ZERO_COPY = Path("docs/learn/v3_0_zero_copy_interop_contract.md")
 EMBEDDING_README = Path("examples/current/embedding/README.md")
 MATRIX = Path("scripts/run_test_matrix.py")
@@ -45,9 +45,9 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         and "contiguous AABB2 rows" in c_abi,
         "stability_policy_blocks_stable_sdk": "never stable SDK" in stability
         and "not frozen" in stability,
-        "symbol_manifest_is_draft_0_1_1": manifest["abi_version"] == "0.1.1"
+        "symbol_manifest_is_draft_0_1_2": manifest["abi_version"] == "0.1.2"
         and manifest["stable"] is False
-        and len(manifest["symbols"]) == 15,
+        and len(manifest["symbols"]) == 16,
         "embedding_readme_has_c_client_commands": "make build-c-api" in embedding
         and "c_api_aabb2_overlap_client.c" in embedding,
         "zero_copy_contract_blocks_c_abi_device_route": "does not make" in zero_copy

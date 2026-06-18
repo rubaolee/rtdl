@@ -144,6 +144,8 @@ def ctypes_smoke(shared_library: Path) -> dict[str, Any]:
     lib.rtdl_abi_version_major.restype = ctypes.c_uint32
     lib.rtdl_abi_version_minor.restype = ctypes.c_uint32
     lib.rtdl_abi_version_patch.restype = ctypes.c_uint32
+    lib.rtdl_abi_is_compatible.argtypes = [ctypes.c_uint32, ctypes.c_uint32, ctypes.c_uint32]
+    lib.rtdl_abi_is_compatible.restype = ctypes.c_uint32
     lib.rtdl_status_string.argtypes = [ctypes.c_int]
     lib.rtdl_status_string.restype = ctypes.c_char_p
     lib.rtdl_context_create.argtypes = [ctypes.POINTER(ContextDesc), ctypes.POINTER(ctypes.c_void_p)]
@@ -160,6 +162,18 @@ def ctypes_smoke(shared_library: Path) -> dict[str, Any]:
     desc = ContextDesc(0, 1, 0, ExternalRuntime(0, 0, None, None, None))
     context = ctypes.c_void_p()
     status = lib.rtdl_context_create(ctypes.byref(desc), ctypes.byref(context))
+    future_minor_desc = ContextDesc(0, 2, 0, ExternalRuntime(0, 0, None, None, None))
+    future_minor_context = ctypes.c_void_p()
+    future_minor_status = lib.rtdl_context_create(
+        ctypes.byref(future_minor_desc),
+        ctypes.byref(future_minor_context),
+    )
+    future_patch_desc = ContextDesc(0, 1, 0, ExternalRuntime(0, 0, None, None, None))
+    future_patch_context = ctypes.c_void_p()
+    future_patch_status = lib.rtdl_context_create(
+        ctypes.byref(future_patch_desc),
+        ctypes.byref(future_patch_context),
+    )
     data = (ctypes.c_uint32 * 4)(1, 2, 3, 4)
     view = BufferView(
         ctypes.cast(data, ctypes.c_void_p),
@@ -181,10 +195,19 @@ def ctypes_smoke(shared_library: Path) -> dict[str, Any]:
         lib.rtdl_buffer_destroy(buffer)
     if context:
         lib.rtdl_context_destroy(context)
+    if future_patch_context:
+        lib.rtdl_context_destroy(future_patch_context)
     checks = {
         "major_is_zero": lib.rtdl_abi_version_major() == 0,
         "minor_is_one": lib.rtdl_abi_version_minor() == 1,
-        "patch_is_one": lib.rtdl_abi_version_patch() == 1,
+        "patch_is_two": lib.rtdl_abi_version_patch() == 2,
+        "current_abi_is_compatible": lib.rtdl_abi_is_compatible(0, 1, 2) == 1,
+        "previous_patch_is_compatible": lib.rtdl_abi_is_compatible(0, 1, 1) == 1,
+        "future_patch_is_not_compatible": lib.rtdl_abi_is_compatible(0, 1, 3) == 0,
+        "future_minor_is_not_compatible": lib.rtdl_abi_is_compatible(0, 2, 0) == 0,
+        "future_major_is_not_compatible": lib.rtdl_abi_is_compatible(1, 0, 0) == 0,
+        "future_minor_context_rejected": future_minor_status == 2 and not future_minor_context.value,
+        "current_minor_context_still_created": future_patch_status == 0 and bool(future_patch_context.value),
         "status_string_ok": lib.rtdl_status_string(0) == b"ok",
         "context_created": status == 0 and bool(context.value),
         "buffer_imported": buffer_status == 0 and bool(buffer.value),

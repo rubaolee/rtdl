@@ -64,7 +64,7 @@
         "status": "pass"
       },
       {
-        "detail": "scripts/run_test_matrix.py --group v3_current (64 modules)",
+        "detail": "scripts/run_test_matrix.py --group v3_current (65 modules)",
         "name": "V3 current test matrix",
         "required": true,
         "status": "pass"
@@ -88,7 +88,7 @@
         "status": "pass"
       },
       {
-        "detail": "3.11.9",
+        "detail": "3.12.3",
         "name": "python version",
         "required": false,
         "status": "pass"
@@ -109,60 +109,54 @@
         "detail": "imageio",
         "name": "optional module imageio",
         "required": false,
-        "status": "pass"
+        "status": "warn"
       },
       {
         "detail": "imageio_ffmpeg",
         "name": "optional module imageio-ffmpeg",
         "required": false,
-        "status": "pass"
+        "status": "warn"
       },
       {
         "detail": "cupy",
         "name": "optional module cupy",
         "required": false,
-        "status": "warn"
+        "status": "pass"
       },
       {
         "detail": "numba",
         "name": "optional module numba",
         "required": false,
-        "status": "warn"
+        "status": "pass"
       },
       {
-        "detail": "set RTDL_OPTIX_LIBRARY or build/librtdl_optix.so for OptiX examples",
+        "detail": "build/librtdl_optix.so",
         "name": "optional OptiX library",
         "required": false,
-        "status": "warn"
+        "status": "pass"
       },
       {
-        "detail": "build/librtdl_embree.dll",
+        "detail": "build/librtdl_embree.so",
         "name": "optional Embree library",
         "required": false,
         "status": "pass"
       }
     ],
     "ok": true,
-    "repo": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
+    "repo": "/workspace/rtdl_v3_main",
     "required_failures": [],
     "tool": "rtdl_source_tree_doctor",
     "version": "v2.14",
     "warnings": [
       {
-        "detail": "cupy",
-        "name": "optional module cupy",
+        "detail": "imageio",
+        "name": "optional module imageio",
         "required": false,
         "status": "warn"
       },
       {
-        "detail": "numba",
-        "name": "optional module numba",
-        "required": false,
-        "status": "warn"
-      },
-      {
-        "detail": "set RTDL_OPTIX_LIBRARY or build/librtdl_optix.so for OptiX examples",
-        "name": "optional OptiX library",
+        "detail": "imageio_ffmpeg",
+        "name": "optional module imageio-ffmpeg",
         "required": false,
         "status": "warn"
       }
@@ -174,7 +168,7 @@
     "docs/learn/v3_0_c_abi_draft.md": true,
     "docs/learn/v3_0_c_abi_ownership_threading_contract.md": true,
     "docs/learn/v3_0_c_abi_stability_policy.md": true,
-    "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_1.json": true,
+    "docs/learn/v3_0_c_abi_symbol_manifest_v0_1_2.json": true,
     "docs/learn/v3_0_zero_copy_interop_contract.md": true
   },
   "status": "c_abi_doctor_docs_surface_checked",

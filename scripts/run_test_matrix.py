@@ -126,6 +126,7 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal4572_v3_0_m173_c_abi_doctor_docs_surface_test",
         "tests.goal4573_v3_0_m174_c_abi_backend_runtime_fail_closed_test",
         "tests.goal4574_v3_0_m175_c_abi_patch_version_refresh_test",
+        "tests.goal4575_v3_0_m176_c_abi_version_negotiation_test",
     ),
     "v0_2_local": (
         "tests.goal110_baseline_runner_backend_test",

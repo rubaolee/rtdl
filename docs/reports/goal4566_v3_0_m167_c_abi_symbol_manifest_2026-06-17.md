@@ -11,6 +11,7 @@ Goal4566 checks the current draft machine-readable C ABI symbol manifest against
 - `rtdl_abi_version_major`
 - `rtdl_abi_version_minor`
 - `rtdl_abi_version_patch`
+- `rtdl_abi_is_compatible`
 - `rtdl_status_string`
 - `rtdl_context_last_error`
 - `rtdl_context_create`
@@ -30,7 +31,7 @@ Goal4566 checks the current draft machine-readable C ABI symbol manifest against
 | --- | --- |
 | `manifest_declares_draft_not_stable` | `True` |
 | `manifest_abi_version_matches_header` | `True` |
-| `manifest_has_15_symbols` | `True` |
+| `manifest_has_16_symbols` | `True` |
 | `manifest_symbols_match_header_order` | `True` |
 | `manifest_symbols_match_goal4556_export_set` | `True` |
 | `manifest_names_header_and_build_target` | `True` |
