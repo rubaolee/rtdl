@@ -1,0 +1,47 @@
+{
+  "checks": {
+    "all_required_reports_accept": true,
+    "doctor_archive_target_wired": true,
+    "readiness_refresh_preserves_minimal_ctypes_base": true,
+    "relocatable_stage_smoke_ok": true,
+    "stage_archive_does_not_authorize_sdk": true,
+    "stage_archive_extract_compile_run_ok": true,
+    "staging_inventory_has_all_examples": true
+  },
+  "claim_boundary": {
+    "device_buffer_c_abi_authorized": false,
+    "generated_language_binding_authorized": false,
+    "optix_embree_c_abi_query_authorized": false,
+    "packaged_sdk_authorized": false,
+    "release_authorized": false,
+    "stable_abi_authorized": false,
+    "system_install_authorized": false
+  },
+  "conclusion": "Goal4589 refreshes the embeddability shipping ledger after the relocatable pkg-config and stage-archive proofs. The current V3 source tree can build a movable C ABI stage archive and that archive can be extracted, used through pkg-config, compiled, and run. This is a verified source-tree handoff artifact; it is still not a packaged SDK, system install, stable ABI, generated language binding, device-buffer C ABI, OptiX/Embree C ABI execution surface, or release claim.",
+  "date": "2026-06-17",
+  "failed_checks": [],
+  "goal": "Goal4589 / V3 M190",
+  "reports": {
+    "doctor_archive": "docs/reports/goal4588_v3_0_m189_source_tree_doctor_stage_archive_2026-06-17.json",
+    "readiness_refresh": "docs/reports/goal4583_v3_0_m184_embeddability_readiness_refresh_2026-06-17.json",
+    "relocatable_stage": "docs/reports/goal4586_v3_0_m187_c_abi_pkg_config_relocatable_stage_2026-06-17.json",
+    "stage_archive": "docs/reports/goal4587_v3_0_m188_c_abi_stage_archive_2026-06-17.json",
+    "staging_inventory": "docs/reports/goal4585_v3_0_m186_c_abi_staging_inventory_refresh_2026-06-17.json"
+  },
+  "status": "embeddability_shipping_readiness_refresh_checked",
+  "status_matrix": {
+    "device_buffer_c_abi": "blocked",
+    "generated_language_bindings": "blocked",
+    "minimal_python_ctypes_binding_base": "validated_lifecycle_and_host_aabb2_query",
+    "optix_embree_c_abi_queries": "blocked",
+    "packaged_sdk": "blocked",
+    "relocatable_pkg_config_stage": "validated_after_directory_move",
+    "source_tree_doctor_archive_target": "wired",
+    "source_tree_stage_archive": "validated_extract_compile_run",
+    "source_tree_staging_bundle": "validated",
+    "stable_abi": "blocked_until_1_0_gates",
+    "staging_inventory_all_examples": "validated_four_examples",
+    "system_install": "blocked"
+  },
+  "version": "rtdl.v3_0.embeddability_shipping_readiness_refresh.goal4589.v1"
+}
