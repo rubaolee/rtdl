@@ -38,6 +38,7 @@ REPORTS = {
     "archive_python_ctypes": Path(
         "docs/reports/goal4608_v3_0_m209_archive_stage_python_ctypes_smoke_2026-06-17.json"
     ),
+    "archive_c_examples": Path("docs/reports/goal4609_v3_0_m210_archive_stage_c_examples_smoke_2026-06-17.json"),
 }
 
 
@@ -106,6 +107,7 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
             for token in (
                 "C dynamic-load client",
                 "C direct-link client",
+                "C examples from archive stage",
                 "Python `ctypes` host AABB2 query",
                 "Python `ctypes` examples from archive stage",
                 "CUDA buffer descriptor import/export",
@@ -160,6 +162,8 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
         ]["ok"]
         and reports["archive_python_ctypes"]["claim_boundary"]["archive_python_ctypes_stage_authorized"]
         is True,
+        "archive_c_examples_validated": reports["archive_c_examples"]["archive_stage_c_examples_smoke"]["ok"]
+        and reports["archive_c_examples"]["claim_boundary"]["archive_c_examples_stage_authorized"] is True,
         "delivery_cmake_pkg_config_handoff_validated": (
             delivery_status["prefix_pkg_config"] == "validated"
             and delivery_status["prefix_cmake_find_package"] == "validated_imported_target"
@@ -193,6 +197,7 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
         "live_smokes": live_smokes,
         "status_matrix": {
             "c_source_tree_examples": "validated_dynamic_and_direct_link",
+            "c_archive_examples": "validated_direct_link_dlopen_host_runtime_cuda_metadata",
             "pkg_config_stage": delivery_status["prefix_pkg_config"],
             "cmake_prefix_find_package": delivery_status["prefix_cmake_find_package"],
             "cmake_archive_find_package": delivery_status["archive_cmake_find_package"],
@@ -221,6 +226,7 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
         },
         "claim_boundary": {
             "source_tree_c_handoff_authorized": True,
+            "archive_c_examples_stage_authorized": True,
             "pkg_config_stage_handoff_authorized": True,
             "cmake_stage_handoff_authorized": True,
             "python_ctypes_examples_authorized": True,
@@ -245,7 +251,8 @@ def build_packet(root: Path = Path("."), *, run_live_smoke: bool = False) -> dic
             "pkg-config and CMake staged handoffs, a host AABB2 C ABI query route, "
             "host-runtime metadata, and CUDA descriptor metadata including a "
             "`__cuda_array_interface__`-style Python bridge, DLPack-like metadata "
-            "bridging, and extracted archive Python ctypes smoke. The device side is "
+            "bridging, extracted archive Python ctypes smoke, and extracted archive "
+            "C examples smoke. The device side is "
             "still deliberately fail-closed: no DLPack adapter, device-buffer "
             "query route, external CUDA stream ordering, generated binding, "
             "stable ABI, SDK, release, performance claim, or true-zero-copy claim "

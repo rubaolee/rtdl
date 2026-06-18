@@ -148,6 +148,28 @@ cmake -S . -B build -DCMAKE_PREFIX_PATH="/tmp/rtdl-c-api-consume/rtdl-c-api-stag
 cmake --build build
 ```
 
+The extracted archive also carries runnable C examples:
+
+```bash
+export RTDL_C_API_ARCHIVE=/tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3
+export PKG_CONFIG_PATH="$RTDL_C_API_ARCHIVE/lib/pkgconfig"
+cc -std=c11 $(pkg-config --cflags rtdl-c-api) \
+  "$RTDL_C_API_ARCHIVE/examples/c_api_direct_link_client.c" \
+  -o "$RTDL_C_API_ARCHIVE/examples/rtdl_c_api_direct_link_client" \
+  $(pkg-config --libs rtdl-c-api)
+LD_LIBRARY_PATH="$RTDL_C_API_ARCHIVE/lib:${LD_LIBRARY_PATH:-}" \
+  "$RTDL_C_API_ARCHIVE/examples/rtdl_c_api_direct_link_client"
+```
+
+Expected extracted-archive C outputs include:
+
+```text
+direct_link_ok 0.1.3 ok
+hit_count=1 first_pair=(0,0)
+validated_host_external_runtime_cases=3
+validated_cuda_buffer_metadata_cases=4
+```
+
 The extracted archive also carries the same Python `ctypes` examples:
 
 ```bash
@@ -274,7 +296,8 @@ python_ctypes_hit_count=1 first_pair=(0,0)
 - This is a source-tree C client example for the V3 draft C ABI.
 - `package-c-api-stage` produces a source-tree staging archive, not an installed
   SDK or stable release artifact, even though the archive carries staged
-  `pkg-config`, CMake metadata, and the thin Python `ctypes` examples.
+  `pkg-config`, CMake metadata, runnable C examples, and the thin Python
+  `ctypes` examples.
 - `stage-c-api-prefix` produces a DESTDIR/prefix-style staging layout, not a
   privileged system install, package-manager artifact, stable SDK, or release
   claim.

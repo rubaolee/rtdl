@@ -1,6 +1,7 @@
 {
   "checks": {
     "all_source_reports_accept": true,
+    "archive_c_examples_validated": true,
     "archive_python_ctypes_examples_validated": true,
     "benchmark_index_links_goal4605": true,
     "c_abi_draft_keeps_cuda_descriptor_metadata_only": true,
@@ -26,6 +27,7 @@
     "zero_copy_doc_blocks_true_zero_copy": true
   },
   "claim_boundary": {
+    "archive_c_examples_stage_authorized": true,
     "archive_python_ctypes_stage_authorized": true,
     "cmake_stage_handoff_authorized": true,
     "cuda_array_interface_metadata_bridge_authorized": true,
@@ -45,7 +47,7 @@
     "source_tree_c_handoff_authorized": true,
     "stable_abi_authorized": false
   },
-  "conclusion": "Goal4605 consolidates the current V3 binding and device interop state. The source tree has executable C and Python ctypes examples, pkg-config and CMake staged handoffs, a host AABB2 C ABI query route, host-runtime metadata, and CUDA descriptor metadata including a `__cuda_array_interface__`-style Python bridge, DLPack-like metadata bridging, and extracted archive Python ctypes smoke. The device side is still deliberately fail-closed: no DLPack adapter, device-buffer query route, external CUDA stream ordering, generated binding, stable ABI, SDK, release, performance claim, or true-zero-copy claim is authorized by this matrix.",
+  "conclusion": "Goal4605 consolidates the current V3 binding and device interop state. The source tree has executable C and Python ctypes examples, pkg-config and CMake staged handoffs, a host AABB2 C ABI query route, host-runtime metadata, and CUDA descriptor metadata including a `__cuda_array_interface__`-style Python bridge, DLPack-like metadata bridging, extracted archive Python ctypes smoke, and extracted archive C examples smoke. The device side is still deliberately fail-closed: no DLPack adapter, device-buffer query route, external CUDA stream ordering, generated binding, stable ABI, SDK, release, performance claim, or true-zero-copy claim is authorized by this matrix.",
   "date": "2026-06-17",
   "failed_checks": [],
   "goal": "Goal4605 / V3 M206",
@@ -68,6 +70,7 @@
     }
   },
   "reports": {
+    "archive_c_examples": "docs/reports/goal4609_v3_0_m210_archive_stage_c_examples_smoke_2026-06-17.json",
     "archive_python_ctypes": "docs/reports/goal4608_v3_0_m209_archive_stage_python_ctypes_smoke_2026-06-17.json",
     "cuda_buffer_metadata": "docs/reports/goal4592_v3_0_m193_c_abi_cuda_buffer_metadata_gate_2026-06-17.json",
     "delivery_archive_cmake": "docs/reports/goal4603_v3_0_m204_embeddability_delivery_archive_cmake_refresh_2026-06-17.json",
@@ -79,6 +82,7 @@
   },
   "status": "binding_device_interop_matrix_checked",
   "status_matrix": {
+    "c_archive_examples": "validated_direct_link_dlopen_host_runtime_cuda_metadata",
     "c_source_tree_examples": "validated_dynamic_and_direct_link",
     "cmake_archive_find_package": "validated_extracted_archive_imported_target",
     "cmake_prefix_find_package": "validated_imported_target",

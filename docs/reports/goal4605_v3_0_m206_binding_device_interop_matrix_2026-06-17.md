@@ -4,13 +4,14 @@ Status: `binding_device_interop_matrix_checked`
 
 ## Conclusion
 
-Goal4605 consolidates the current V3 binding and device interop state. The source tree has executable C and Python ctypes examples, pkg-config and CMake staged handoffs, a host AABB2 C ABI query route, host-runtime metadata, and CUDA descriptor metadata including a `__cuda_array_interface__`-style Python bridge, DLPack-like metadata bridging, and extracted archive Python ctypes smoke. The device side is still deliberately fail-closed: no DLPack adapter, device-buffer query route, external CUDA stream ordering, generated binding, stable ABI, SDK, release, performance claim, or true-zero-copy claim is authorized by this matrix.
+Goal4605 consolidates the current V3 binding and device interop state. The source tree has executable C and Python ctypes examples, pkg-config and CMake staged handoffs, a host AABB2 C ABI query route, host-runtime metadata, and CUDA descriptor metadata including a `__cuda_array_interface__`-style Python bridge, DLPack-like metadata bridging, extracted archive Python ctypes smoke, and extracted archive C examples smoke. The device side is still deliberately fail-closed: no DLPack adapter, device-buffer query route, external CUDA stream ordering, generated binding, stable ABI, SDK, release, performance claim, or true-zero-copy claim is authorized by this matrix.
 
 ## Current Matrix
 
 | Surface | Status |
 | --- | --- |
 | `c_source_tree_examples` | `validated_dynamic_and_direct_link` |
+| `c_archive_examples` | `validated_direct_link_dlopen_host_runtime_cuda_metadata` |
 | `pkg_config_stage` | `validated` |
 | `cmake_prefix_find_package` | `validated_imported_target` |
 | `cmake_archive_find_package` | `validated_extracted_archive_imported_target` |
@@ -61,6 +62,7 @@ Goal4605 consolidates the current V3 binding and device interop state. The sourc
 | `python_cuda_metadata_bridge_validated` | `True` |
 | `python_dlpack_like_metadata_bridge_validated` | `True` |
 | `archive_python_ctypes_examples_validated` | `True` |
+| `archive_c_examples_validated` | `True` |
 | `delivery_cmake_pkg_config_handoff_validated` | `True` |
 | `device_and_stream_routes_blocked` | `True` |
 | `generated_bindings_blocked` | `True` |

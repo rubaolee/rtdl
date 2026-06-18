@@ -166,7 +166,7 @@ def build_packet(root: Path = Path("."), *, run_smoke: bool = False) -> dict[str
             "The extracted archive also carries the same Python `ctypes` examples" in embedding
             and "python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument" in embedding
         ),
-        "architecture_doc_current_to_goal4608": "As of Goal4608" in architecture
+        "architecture_doc_names_archive_python_smoke": "Current Implementation Progress" in architecture
         and "Archive-stage Python `ctypes` smoke" in architecture,
         "binding_matrix_names_archive_python_surface": "Python `ctypes` examples from archive stage" in binding,
         "benchmark_index_links_goal4608": "Goal4608 archive-stage Python ctypes smoke" in index,

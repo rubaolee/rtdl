@@ -40,6 +40,7 @@ class Goal4605V30M206BindingInteropMatrixTest(unittest.TestCase):
     def test_docs_index_and_report_are_wired(self) -> None:
         doc = MATRIX_DOC.read_text(encoding="utf-8")
         self.assertIn("CUDA descriptor metadata", doc)
+        self.assertIn("C examples from archive stage", doc)
         self.assertIn("Python `ctypes` examples from archive stage", doc)
         self.assertIn("DLPack-like object to C ABI descriptor", doc)
         self.assertIn("Do not say DLPack support", doc)
@@ -50,6 +51,7 @@ class Goal4605V30M206BindingInteropMatrixTest(unittest.TestCase):
     def test_status_matrix_and_boundaries_are_explicit(self) -> None:
         self.assertEqual(self.packet["version"], self.checked_in["version"])
         matrix = self.checked_in["status_matrix"]
+        self.assertEqual("validated_direct_link_dlopen_host_runtime_cuda_metadata", matrix["c_archive_examples"])
         self.assertEqual("validated_metadata_only", matrix["cuda_buffer_descriptor_import_export"])
         self.assertEqual("validated_metadata_only", matrix["cuda_array_interface_to_c_abi_descriptor"])
         self.assertEqual("rejected_invalid_argument", matrix["cuda_descriptor_host_aabb2_query_route"])
@@ -67,6 +69,7 @@ class Goal4605V30M206BindingInteropMatrixTest(unittest.TestCase):
         for key, value in self.checked_in["claim_boundary"].items():
             if key.endswith("_authorized") and key not in {
                 "source_tree_c_handoff_authorized",
+                "archive_c_examples_stage_authorized",
                 "pkg_config_stage_handoff_authorized",
                 "cmake_stage_handoff_authorized",
                 "python_ctypes_examples_authorized",

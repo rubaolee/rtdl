@@ -10,7 +10,7 @@ and validation gates.
 
 ## Current Implementation Progress
 
-As of Goal4608, the first control-plane embedding slice has moved from a C-only
+As of Goal4609, the first control-plane embedding slice has moved from a C-only
 proof into a movable source-tree and prefix-stage handoff artifact:
 
 - Draft public header: `include/rtdl/rtdl.h`.
@@ -50,6 +50,9 @@ proof into a movable source-tree and prefix-stage handoff artifact:
   metadata, and DLPack-like metadata examples against the staged shared
   library.
 - Archive-stage Python `ctypes` smoke for the same examples after extracting
+  `build/rtdl-c-api-stage-0.1.3.tar.gz`.
+- Archive-stage C examples smoke for direct-link, `dlopen` host AABB2,
+  host-runtime metadata, and CUDA descriptor metadata clients after extracting
   `build/rtdl-c-api-stage-0.1.3.tar.gz`.
 - C/Python `ctypes` layout audit for the current descriptor structs, backed by
   compiler-observed `sizeof`/`offsetof` evidence.

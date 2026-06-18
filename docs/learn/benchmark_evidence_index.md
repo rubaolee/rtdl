@@ -204,6 +204,7 @@ V3.0 current app-author guidance:
 - [Goal4606 neutral buffer protocol gate](../reports/goal4606_v3_0_m207_neutral_buffer_protocol_gate_2026-06-17.md)
 - [Goal4607 Python ctypes DLPack-like metadata bridge](../reports/goal4607_v3_0_m208_python_ctypes_dlpack_like_metadata_bridge_2026-06-17.md)
 - [Goal4608 archive-stage Python ctypes smoke](../reports/goal4608_v3_0_m209_archive_stage_python_ctypes_smoke_2026-06-17.md)
+- [Goal4609 archive-stage C examples smoke](../reports/goal4609_v3_0_m210_archive_stage_c_examples_smoke_2026-06-17.md)
 - [Goal4513 primitive app clean-target audit](../reports/goal4513_v3_0_m117_primitive_app_clean_target_audit_2026-06-17.md)
 - [Goal4515 all benchmark app clean-target closeout](../reports/goal4515_v3_0_m119_all_benchmark_app_clean_target_closeout_2026-06-17.md)
 - [Goal4443 RTNN large app-front-door graph bridge](../reports/goal4443_v3_0_m47_rtnn_large_app_bridge_2026-06-16.md)

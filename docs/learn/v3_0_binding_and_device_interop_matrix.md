@@ -14,6 +14,7 @@ does not confuse descriptor metadata with executable device memory support.
 | --- | --- | --- | --- |
 | C dynamic-load client | Validated source-tree example. | Loads `librtdl_c_api`, checks version/status/context lifecycle, and runs the host AABB2 route in the current examples. | Not a frozen ABI or installed SDK. |
 | C direct-link client | Validated source-tree and staged handoff example. | Uses staged header/library metadata through direct linking. | Still source-tree staging, not package-manager install. |
+| C examples from archive stage | Validated extracted-archive smoke. | Compiles and runs direct-link, `dlopen` host AABB2, host-runtime metadata, and CUDA descriptor metadata examples from the unpacked archive. | Source-tree archive evidence only, not a packaged SDK. |
 | `pkg-config` stage | Validated source-tree and prefix-stage handoff. | External C clients can obtain include and library flags from the staged `.pc` file. | Does not imply system install or binary compatibility. |
 | CMake prefix/archive package | Validated prefix and extracted archive handoff. | External CMake consumers can `find_package(rtdl-c-api CONFIG REQUIRED)` against staged artifacts. | Staged CMake metadata only, not a released SDK. |
 | Python `ctypes` lifecycle client | Validated thin language-binding style example. | Loads the shared library and checks version/capability/context lifecycle without writing C. | Not a generated Python package or complete binding. |

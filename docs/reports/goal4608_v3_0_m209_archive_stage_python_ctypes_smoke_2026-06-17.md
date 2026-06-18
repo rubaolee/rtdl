@@ -10,7 +10,7 @@ Goal4608 validates that the movable source-tree C ABI archive can run the staged
 
 - OK: `True`
 - Archive: `build/rtdl-c-api-stage-0.1.3.tar.gz`
-- Extract dir: `/tmp/rtdl_c_api_archive_python_k6uptcqh/extracted/rtdl-c-api-stage-0.1.3`
+- Extract dir: `/tmp/rtdl_c_api_archive_python_n7b_zxc6/extracted/rtdl-c-api-stage-0.1.3`
 
 | Script | OK | Stdout |
 | --- | --- | --- |
@@ -26,7 +26,7 @@ Goal4608 validates that the movable source-tree C ABI archive can run the staged
 | `makefile_archive_carries_python_ctypes_examples` | `True` |
 | `staging_contract_documents_archive_python_examples` | `True` |
 | `embedding_readme_documents_archive_python_examples` | `True` |
-| `architecture_doc_current_to_goal4608` | `True` |
+| `architecture_doc_names_archive_python_smoke` | `True` |
 | `binding_matrix_names_archive_python_surface` | `True` |
 | `benchmark_index_links_goal4608` | `True` |
 | `prior_stage_archive_smoke_ok` | `True` |

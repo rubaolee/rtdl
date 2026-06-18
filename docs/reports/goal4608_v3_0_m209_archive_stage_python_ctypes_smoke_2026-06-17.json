@@ -2,13 +2,13 @@
   "archive_stage_python_smoke": {
     "archive": "build/rtdl-c-api-stage-0.1.3.tar.gz",
     "archive_exists": true,
-    "archive_size_bytes": 19556,
+    "archive_size_bytes": 19632,
     "example_runs": [
       {
         "command": [
           "/usr/bin/python3",
-          "/tmp/rtdl_c_api_archive_python_k6uptcqh/extracted/rtdl-c-api-stage-0.1.3/examples/python_ctypes_client.py",
-          "/tmp/rtdl_c_api_archive_python_k6uptcqh/extracted/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so"
+          "/tmp/rtdl_c_api_archive_python_n7b_zxc6/extracted/rtdl-c-api-stage-0.1.3/examples/python_ctypes_client.py",
+          "/tmp/rtdl_c_api_archive_python_n7b_zxc6/extracted/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so"
         ],
         "expected_stdout": "python_ctypes_ok 0.1.3 ok",
         "ok": true,
@@ -20,8 +20,8 @@
       {
         "command": [
           "/usr/bin/python3",
-          "/tmp/rtdl_c_api_archive_python_k6uptcqh/extracted/rtdl-c-api-stage-0.1.3/examples/python_ctypes_aabb2_query_client.py",
-          "/tmp/rtdl_c_api_archive_python_k6uptcqh/extracted/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so"
+          "/tmp/rtdl_c_api_archive_python_n7b_zxc6/extracted/rtdl-c-api-stage-0.1.3/examples/python_ctypes_aabb2_query_client.py",
+          "/tmp/rtdl_c_api_archive_python_n7b_zxc6/extracted/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so"
         ],
         "expected_stdout": "python_ctypes_hit_count=1 first_pair=(0,0)",
         "ok": true,
@@ -33,8 +33,8 @@
       {
         "command": [
           "/usr/bin/python3",
-          "/tmp/rtdl_c_api_archive_python_k6uptcqh/extracted/rtdl-c-api-stage-0.1.3/examples/python_ctypes_cuda_buffer_metadata_client.py",
-          "/tmp/rtdl_c_api_archive_python_k6uptcqh/extracted/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so"
+          "/tmp/rtdl_c_api_archive_python_n7b_zxc6/extracted/rtdl-c-api-stage-0.1.3/examples/python_ctypes_cuda_buffer_metadata_client.py",
+          "/tmp/rtdl_c_api_archive_python_n7b_zxc6/extracted/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so"
         ],
         "expected_stdout": "python_ctypes_cuda_metadata_shape=(3,4) query_route_rejected=invalid argument",
         "ok": true,
@@ -46,8 +46,8 @@
       {
         "command": [
           "/usr/bin/python3",
-          "/tmp/rtdl_c_api_archive_python_k6uptcqh/extracted/rtdl-c-api-stage-0.1.3/examples/python_ctypes_dlpack_like_metadata_client.py",
-          "/tmp/rtdl_c_api_archive_python_k6uptcqh/extracted/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so"
+          "/tmp/rtdl_c_api_archive_python_n7b_zxc6/extracted/rtdl-c-api-stage-0.1.3/examples/python_ctypes_dlpack_like_metadata_client.py",
+          "/tmp/rtdl_c_api_archive_python_n7b_zxc6/extracted/rtdl-c-api-stage-0.1.3/lib/librtdl_c_api.so"
         ],
         "expected_stdout": "python_ctypes_dlpack_like_metadata_shape=(2,3) query_route_rejected=invalid argument",
         "ok": true,
@@ -57,7 +57,7 @@
         "stdout": "python_ctypes_dlpack_like_metadata_shape=(2,3) query_route_rejected=invalid argument"
       }
     ],
-    "extract_dir": "/tmp/rtdl_c_api_archive_python_k6uptcqh/extracted/rtdl-c-api-stage-0.1.3",
+    "extract_dir": "/tmp/rtdl_c_api_archive_python_n7b_zxc6/extracted/rtdl-c-api-stage-0.1.3",
     "make": "/usr/bin/make",
     "make_result": {
       "command": [
@@ -87,7 +87,7 @@
   },
   "checks": {
     "all_archive_python_examples_run": true,
-    "architecture_doc_current_to_goal4608": true,
+    "architecture_doc_names_archive_python_smoke": true,
     "archive_exists_and_nonempty": true,
     "archive_python_aabb2_stdout_matches": true,
     "archive_python_cuda_metadata_stdout_matches": true,

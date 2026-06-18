@@ -168,6 +168,30 @@ cmake -S . -B build -DCMAKE_PREFIX_PATH="/tmp/rtdl-c-api-consume/rtdl-c-api-stag
 cmake --build build
 ```
 
+The extracted source-tree archive carries runnable C examples too:
+
+```bash
+export RTDL_C_API_ARCHIVE=/tmp/rtdl-c-api-consume/rtdl-c-api-stage-0.1.3
+export PKG_CONFIG_PATH="$RTDL_C_API_ARCHIVE/lib/pkgconfig"
+cc -std=c11 $(pkg-config --cflags rtdl-c-api) \
+  "$RTDL_C_API_ARCHIVE/examples/c_api_direct_link_client.c" \
+  -o "$RTDL_C_API_ARCHIVE/examples/rtdl_c_api_direct_link_client" \
+  $(pkg-config --libs rtdl-c-api)
+LD_LIBRARY_PATH="$RTDL_C_API_ARCHIVE/lib:${LD_LIBRARY_PATH:-}" \
+  "$RTDL_C_API_ARCHIVE/examples/rtdl_c_api_direct_link_client"
+```
+
+Additional extracted-archive C examples validate the `dlopen` host AABB2
+route, host external-runtime metadata, and CUDA descriptor metadata. Expected
+outputs include:
+
+```text
+direct_link_ok 0.1.3 ok
+hit_count=1 first_pair=(0,0)
+validated_host_external_runtime_cases=3
+validated_cuda_buffer_metadata_cases=4
+```
+
 The extracted source-tree archive also carries the Python `ctypes` examples:
 
 ```bash
@@ -287,7 +311,8 @@ python_ctypes_hit_count=1 first_pair=(0,0)
   directories and carries the staged `pkg-config` and CMake metadata; it is
   still not an installed SDK. The archive-stage Python smoke validates that the
   same thin Python `ctypes` examples can run from an extracted archive without
-  source-tree relative paths.
+  source-tree relative paths; the archive-stage C examples smoke validates the
+  extracted C examples the same way.
 - `stage-c-api-prefix` creates a DESTDIR/prefix-style staging layout; it is
   still not a privileged system install, package manager artifact, stable SDK,
   or release claim.
