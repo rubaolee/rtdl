@@ -178,6 +178,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         report = json.loads(EVIDENCE_REPORT.read_text(encoding="utf-8"))
 
         self.assertEqual(report["status"], "pass-with-boundary")
+        self.assertEqual(report["code_commit"], "7bca09024")
         self.assertEqual(report["route"]["route_id"], "fixed_radius_count_threshold_2d")
         self.assertEqual(report["validation"]["build_optix"], "pass")
         self.assertEqual(report["validation"]["cupy_stream_smoke"], "pass")

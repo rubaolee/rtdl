@@ -2,8 +2,8 @@
   "report": "v4_0_m1_fixed_radius_cupy_stream_smoke",
   "date": "2026-06-19",
   "status": "pass-with-boundary",
-  "code_commit": "35bd07ba4",
-  "validated_tree": "935ea5bb3b29c26c5891ff896f30e43d8e5b0c0f",
+  "code_commit": "7bca09024",
+  "validated_tree": "05acf698a8eae08158839e7bed31e3ca24d09854",
   "remote_host": "192.168.1.20",
   "remote_path": "/home/lestat/work/rtdl_v4_m1_check_20260619",
   "hardware": {
