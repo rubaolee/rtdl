@@ -202,13 +202,19 @@
       "line": 176,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "PyPI",
-      "snippet": "Windows and Linux; Linux has CuPy, Numba, and the OptiX library after `make build-optix`. This authorizes source-tree runtime wording only. It does not authorize package install, PyPI, wheel, stable SDK, or generated binding wording.  ## Next Gates  1. Keep the M1 route reproducible on current head. 2. Add cross-stream event/wait ownership only after an explici"
+      "snippet": "Windows and Linux; Linux has CuPy, Numba, and the OptiX library after `make build-optix`. This authorizes source-tree runtime wording only. It does not authorize package install, PyPI, wheel, stable SDK, or generated binding wording.  RTX/RT-core speed preflight, 2026-06-19: still blocked by hardware access. The available Linux GPU host is a GTX 1070 and can va"
     },
     {
       "line": 176,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "generated binding",
-      "snippet": "s CuPy, Numba, and the OptiX library after `make build-optix`. This authorizes source-tree runtime wording only. It does not authorize package install, PyPI, wheel, stable SDK, or generated binding wording.  ## Next Gates  1. Keep the M1 route reproducible on current head. 2. Add cross-stream event/wait ownership only after an explicit owner/event contract exists. 3. Add PyT"
+      "snippet": "s CuPy, Numba, and the OptiX library after `make build-optix`. This authorizes source-tree runtime wording only. It does not authorize package install, PyPI, wheel, stable SDK, or generated binding wording.  RTX/RT-core speed preflight, 2026-06-19: still blocked by hardware access. The available Linux GPU host is a GTX 1070 and can validate CUDA/OptiX execution and Python GP"
+    },
+    {
+      "line": 182,
+      "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
+      "phrase": "RTX speedup",
+      "snippet": "it is not RTX-class evidence. The provided RTX pod SSH endpoint `root@157.157.221.29:22234` returned `Permission denied (publickey,password)` with the available key, so RT-core or RTX speedup wording remains unauthorized.  ## Next Gates  1. Keep the M1 route reproducible on current head. 2. Add cross-stream event/wait ownership only after an explicit owner/event contra"
     },
     {
       "line": 15,

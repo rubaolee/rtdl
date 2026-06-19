@@ -7,10 +7,10 @@
   "release_candidate_ready": false,
   "current_gate": "v4_active",
   "v4_release_candidate_gate_policy": "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
-  "latest_validated_implementation_head": "b1077caa4cb17a449d19f24b44c7ce3b4c7d73fe",
-  "latest_validated_route_code_tree": "8cdbee4381088548b245e3c5fa0d0786ebe67e8d",
-  "latest_validated_m1_implementation_v4_active_tests": 50,
-  "current_source_tree_v4_active_tests": 50,
+  "latest_validated_implementation_head": "c624e626af273b09431278d506c57effb2fca871",
+  "latest_validated_route_code_tree": "e6e66788ecca6532248964b5152d53ecdd24722e",
+  "latest_validated_m1_implementation_v4_active_tests": 52,
+  "current_source_tree_v4_active_tests": 52,
   "evidence_ready": [
     {
       "id": "v4_active_gate",
@@ -141,6 +141,23 @@
     {
       "id": "rtx_rt_core_speed_evidence",
       "closed": false,
+      "current_preflight": {
+        "date": "2026-06-19",
+        "status": "blocked_rtx_hardware_access_unavailable",
+        "attempted_hosts": [
+          {
+            "host": "157.157.221.29",
+            "port": 22234,
+            "user": "root",
+            "result": "Permission denied (publickey,password)."
+          },
+          {
+            "host": "192.168.1.20",
+            "result": "available Linux GPU host, but hardware is NVIDIA GeForce GTX 1070 compute capability 6.1 without RTX/RT-core evidence authority."
+          }
+        ],
+        "reason": "Current validated hardware can prove CUDA/OptiX route execution and Python GPU interop, but it cannot authorize RT-core or RTX speedup wording. The provided RTX pod SSH endpoint is not accessible with the available key."
+      },
       "required_evidence": "RTX-class hardware evidence that separates RT-core behavior from generic CUDA-device execution.",
       "blocking_claims": [
         "RT-core speedup",

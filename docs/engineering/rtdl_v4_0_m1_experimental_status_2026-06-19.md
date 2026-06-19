@@ -2,8 +2,8 @@
 
 Status: experimental engineering evidence, not current release.
 Date: 2026-06-19.
-Latest validated implementation head: `5f239ab1079edf264a915be99e0f7295fc1ea887`.
-Latest validated route-code tree: `c0f7054e7ab09068bee4ea02b2202741dcabf96b`.
+Latest validated source-tree head: `c624e626af273b09431278d506c57effb2fca871`.
+Latest validated source-tree tree: `e6e66788ecca6532248964b5152d53ecdd24722e`.
 
 This packet summarizes the current V4.0 M1 state after the fixed-radius CuPy
 device-array route landed. It is an engineering status packet, not a release
@@ -74,22 +74,22 @@ PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 ```
 
 Latest Linux validation on `192.168.1.20` for source-tree head
-`b1077caa4cb17a449d19f24b44c7ce3b4c7d73fe`:
+`c624e626af273b09431278d506c57effb2fca871`:
 
-- `v4_active`: 50 tests, pass;
-- Numba M1 `DeviceNDArray` fixed-radius route probe: pass;
+- source-tree doctor with V4 active checks: pass;
+- `v4_active`: 52 tests, pass;
 - front-door claim-boundary scan: pass;
 - `git diff --check`: pass.
 - worktree clean.
 
-Native build and earlier M1 implementation probes were also validated on
-implementation-bearing head `5f239ab1079edf264a915be99e0f7295fc1ea887`:
-`make build-optix`, same-stream ordering, Numba CUDA Array Interface smoke,
-DLPack bridge wrapper smoke, and `git diff --check` all passed there.
+Native build and route probes were also validated on the preceding M1
+implementation-bearing commits: `make build-optix`, same-stream ordering,
+Numba CUDA Array Interface smoke, Numba M1 `DeviceNDArray` fixed-radius route
+probe, DLPack bridge wrapper smoke, and `git diff --check` all passed there.
 
 Current source-tree `v4_active` gate after the release-candidate blocker,
-front-door claim-scan, and Numba route-evidence guards: 50 tests, pass locally
-and on Linux.
+front-door claim-scan, Numba route-evidence guards, and source-tree runtime
+story guard: 52 tests, pass locally and on Linux.
 
 ## Release-Candidate Boundary
 
@@ -174,6 +174,13 @@ V4 M1 source-tree flow is documented and source-tree-doctor checked on Windows
 and Linux; Linux has CuPy, Numba, and the OptiX library after `make build-optix`.
 This authorizes source-tree runtime wording only. It does not authorize package
 install, PyPI, wheel, stable SDK, or generated binding wording.
+
+RTX/RT-core speed preflight, 2026-06-19: still blocked by hardware access. The
+available Linux GPU host is a GTX 1070 and can validate CUDA/OptiX execution and
+Python GPU interop, but it is not RTX-class evidence. The provided RTX pod SSH
+endpoint `root@157.157.221.29:22234` returned `Permission denied
+(publickey,password)` with the available key, so RT-core or RTX speedup wording
+remains unauthorized.
 
 ## Next Gates
 

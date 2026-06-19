@@ -166,7 +166,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
 
         for token in (
             "experimental engineering evidence, not current release",
-            "Latest validated implementation head: `5f239ab1079edf264a915be99e0f7295fc1ea887`",
+            "Latest validated source-tree head: `c624e626af273b09431278d506c57effb2fca871`",
             "fixed_radius_count_threshold_2d",
             "Zero-copy device-column handoff with no observed host staging of named columns",
             "Same-stream producer -> RTDL prepare/query -> consumer ordering is validated",
@@ -193,8 +193,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertFalse(blockers["release_candidate_ready"])
         self.assertEqual("v3.0.2", blockers["current_release_remains"])
         self.assertEqual("v4_active", blockers["current_gate"])
-        self.assertEqual(50, blockers["latest_validated_m1_implementation_v4_active_tests"])
-        self.assertEqual(50, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(52, blockers["latest_validated_m1_implementation_v4_active_tests"])
+        self.assertEqual(52, blockers["current_source_tree_v4_active_tests"])
         self.assertEqual(
             "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
             blockers["v4_release_candidate_gate_policy"],
@@ -232,6 +232,15 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "blocked_runtime_unavailable",
             blocking_by_id["pytorch_route_evidence"]["current_preflight"]["status"],
         )
+        rtx_preflight = blocking_by_id["rtx_rt_core_speed_evidence"]["current_preflight"]
+        self.assertEqual("blocked_rtx_hardware_access_unavailable", rtx_preflight["status"])
+        self.assertIn("RT-core or RTX speedup wording", rtx_preflight["reason"])
+        attempted_hosts = {entry["host"]: entry for entry in rtx_preflight["attempted_hosts"]}
+        self.assertEqual(
+            "Permission denied (publickey,password).",
+            attempted_hosts["157.157.221.29"]["result"],
+        )
+        self.assertIn("GTX 1070", attempted_hosts["192.168.1.20"]["result"])
         self.assertEqual(
             "m1_devicearray_route_evidence_ready_but_full_surface_wording_blocked",
             blocking_by_id["full_numba_partner_surface"]["current_preflight"]["status"],
