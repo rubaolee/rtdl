@@ -1,0 +1,89 @@
+{
+  "claim_boundaries": {
+    "async_claim_authorized": false,
+    "baseline_limitations": "The CuPy baseline is an intentionally simple blocked all-pairs implementation, not a best-known tuned fixed-radius library baseline.",
+    "public_speedup_claim_authorized": false,
+    "reason": "This is a route-scoped benchmark probe against a simple CuPy brute-force CUDA-core baseline. It records raw timings only and does not authorize public speedup wording.",
+    "rt_core_speedup_claim_authorized": false,
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "hardware": {
+    "compute_capability": "6.1",
+    "driver": "580.126.09",
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "memory": "8192 MiB",
+    "nvidia_smi_available": true
+  },
+  "median_seconds": {
+    "cupy_bruteforce_cuda_core_baseline": 33.82652246102225,
+    "v4_one_shot_prepare_plus_query": 0.013443510048091412,
+    "v4_prepared_query_only": 0.006257725064642727
+  },
+  "parameters": {
+    "count": 262144,
+    "cupy_baseline_block_size": 256,
+    "radius": 0.05,
+    "repeats": 3,
+    "seed": 404,
+    "threshold": 1,
+    "warmups": 1
+  },
+  "raw_ratios": {
+    "baseline_over_v4_one_shot": 2516.197208914545,
+    "baseline_over_v4_prepared_query": 5405.562262897773
+  },
+  "route_id": "fixed_radius_count_threshold_2d",
+  "samples_seconds": {
+    "cupy_bruteforce_cuda_core_baseline": [
+      33.82835019601043,
+      33.82652246102225,
+      33.824720509001054
+    ],
+    "v4_one_shot_prepare_plus_query": [
+      0.013675388996489346,
+      0.013439098955132067,
+      0.013443510048091412
+    ],
+    "v4_prepared_query_only": [
+      0.006270869984291494,
+      0.006257725064642727,
+      0.006247211946174502
+    ]
+  },
+  "status": "pass-with-boundary",
+  "validation": {
+    "observed_subset": {
+      "neighbor_counts": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "query_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "threshold_flags": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "output_match": true
+  }
+}

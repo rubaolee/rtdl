@@ -1,0 +1,209 @@
+{
+  "app": "hausdorff_distance",
+  "backend": "optix",
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "full_paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "copies": 262144,
+  "directed_a_to_b": {
+    "covered_source_count": 367002,
+    "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+    "identity_parity_available": false,
+    "label": "a_to_b",
+    "query_repeat_protocol": {
+      "measured_run_count": 3,
+      "query_sec_median": 1.8278954930137843,
+      "query_sec_total": 5.922590241068974,
+      "repeat": 3,
+      "warmup": 1
+    },
+    "radius": 0.25,
+    "row_count": null,
+    "run_phases": {
+      "query_fixed_radius_threshold_reached_count_sec": 1.8278954930137843,
+      "query_fixed_radius_threshold_reached_count_total_sec": 5.922590241068974,
+      "query_repeat": 3,
+      "query_warmup": 1,
+      "scene_prepare_sec": 2.423159294994548
+    },
+    "source_count": 1048576,
+    "summary_mode": "scalar_threshold_count",
+    "summary_primitive": "REDUCE_INT(COUNT)",
+    "violating_source_ids": null,
+    "within_threshold": false
+  },
+  "directed_b_to_a": {
+    "covered_source_count": 367002,
+    "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+    "identity_parity_available": false,
+    "label": "b_to_a",
+    "query_repeat_protocol": {
+      "measured_run_count": 3,
+      "query_sec_median": 1.8124862050171942,
+      "query_sec_total": 5.832744717947207,
+      "repeat": 3,
+      "warmup": 1
+    },
+    "radius": 0.25,
+    "row_count": null,
+    "run_phases": {
+      "query_fixed_radius_threshold_reached_count_sec": 1.8124862050171942,
+      "query_fixed_radius_threshold_reached_count_total_sec": 5.832744717947207,
+      "query_repeat": 3,
+      "query_warmup": 1,
+      "scene_prepare_sec": 2.246869861963205
+    },
+    "source_count": 1048576,
+    "summary_mode": "scalar_threshold_count",
+    "summary_primitive": "REDUCE_INT(COUNT)",
+    "violating_source_ids": null,
+    "within_threshold": false
+  },
+  "embree_result_mode": null,
+  "hausdorff_distance": null,
+  "hausdorff_threshold": 0.25,
+  "matches_oracle": true,
+  "native_continuation_active": true,
+  "native_continuation_backend": "optix_threshold_count",
+  "optix_performance": {
+    "class": "optix_traversal_prepared_summary",
+    "note": "Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only."
+  },
+  "optix_summary_mode": "directed_threshold_prepared",
+  "oracle": {
+    "directed_a_to_b": {
+      "distance": 0.30000000000000004,
+      "distance_reduction_rows": [
+        {
+          "directed_distance": 0.30000000000000004
+        }
+      ],
+      "row_count": 1048576,
+      "source_id": 3,
+      "target_id": 103
+    },
+    "directed_b_to_a": {
+      "distance": 0.30000000000000004,
+      "distance_reduction_rows": [
+        {
+          "directed_distance": 0.30000000000000004
+        }
+      ],
+      "row_count": 1048576,
+      "source_id": 103,
+      "target_id": 3
+    },
+    "hausdorff_distance": 0.30000000000000004,
+    "witness_direction": "b_to_a"
+  },
+  "oracle_decision_matches": true,
+  "oracle_identity_matches": null,
+  "oracle_within_threshold": false,
+  "point_count_a": 1048576,
+  "point_count_b": 1048576,
+  "prepared_session_residency": {
+    "automatic_partner_selection_authorized": false,
+    "cache_enabled_by_default": false,
+    "cache_key": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "backend": "optix",
+      "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+      "device": "cuda:0",
+      "explicit_key_required": true,
+      "input_fingerprints": [
+        [
+          "source_points",
+          "edcefafe3ba769fa85f3910a"
+        ],
+        [
+          "target_points",
+          "edcefafe3ba769fa85f3910a"
+        ]
+      ],
+      "parameter_fingerprint": [
+        [
+          "threshold",
+          "a30a043314fa89294fa2c1c9"
+        ]
+      ],
+      "partner": "none",
+      "primitive": "fixed_radius_threshold_2d",
+      "stable_id": "a9864842861419964285a4c3"
+    },
+    "cold_hot_phase_split_required": true,
+    "explicit_reuse_helper": "get_or_prepare_explicit_session",
+    "policy": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "cache_enabled": false,
+      "cache_key": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "backend": "optix",
+        "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "device": "cuda:0",
+        "explicit_key_required": true,
+        "input_fingerprints": [
+          [
+            "source_points",
+            "edcefafe3ba769fa85f3910a"
+          ],
+          [
+            "target_points",
+            "edcefafe3ba769fa85f3910a"
+          ]
+        ],
+        "parameter_fingerprint": [
+          [
+            "threshold",
+            "a30a043314fa89294fa2c1c9"
+          ]
+        ],
+        "partner": "none",
+        "primitive": "fixed_radius_threshold_2d",
+        "stable_id": "a9864842861419964285a4c3"
+      },
+      "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+      "cold_prepare_phase": "prepare_scene_or_payload",
+      "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+      "hot_query_phase": "prepared_query",
+      "invalidation_events": [
+        "explicit_invalidate",
+        "backend_context_reset",
+        "close"
+      ],
+      "lifetime_state": "session_retained",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "reuse_scope": "explicit_user_session",
+      "status": "internal_contract_not_release_authorization",
+      "true_zero_copy_claim_authorized": false
+    },
+    "prepare_once_query_many_pattern": true,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "repeat_protocol": {
+    "measured_query_total_sec": 11.755334959016182,
+    "repeat": 3,
+    "reported_query_metric": "sum_of_directed_query_medians",
+    "warmup": 1
+  },
+  "rt_core_accelerated": true,
+  "rtdl_role": "RTDL/optix uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.",
+  "run_phases": {
+    "input_construction_sec": 2.8702136180363595,
+    "python_postprocess_sec": 7.980270311236382e-07,
+    "query_fixed_radius_threshold_reached_count_sec": 3.6403816980309784,
+    "scene_prepare_sec": 4.670029156957753,
+    "validation_sec": 0.00015635194722563028
+  },
+  "within_threshold": false
+}
