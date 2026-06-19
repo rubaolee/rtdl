@@ -20,6 +20,7 @@ NO_HOST_STAGE_REPORT = (
 SMOKE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_smoke.py"
 PARITY_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_parity_matrix.py"
 NO_HOST_STAGE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe.py"
+BENCHMARK_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_benchmark_probe.py"
 CLAIM_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_claim_review_2026-06-19.md"
 WORDING_CONSENSUS = (
     ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md"
@@ -369,6 +370,21 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             "if not all(result[\"source_audit\"].values())",
             "native_async_ready",
             "v4_true_zero_copy_claim_authorized",
+        ):
+            self.assertIn(token, script)
+
+    def test_cupy_benchmark_probe_keeps_speed_claims_blocked(self) -> None:
+        script = BENCHMARK_SCRIPT.read_text(encoding="utf-8")
+
+        for token in (
+            "v4_one_shot_prepare_plus_query",
+            "v4_prepared_query_only",
+            "cupy_bruteforce_cuda_core_baseline",
+            "public_speedup_claim_authorized",
+            "rt_core_speedup_claim_authorized",
+            "False",
+            "baseline_limitations",
+            "not authorize public speedup wording",
         ):
             self.assertIn(token, script)
 
