@@ -26,6 +26,7 @@ PARITY_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_parity_matrix.py"
 NO_HOST_STAGE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe.py"
 BENCHMARK_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_benchmark_probe.py"
 STREAM_ORDERING_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_ordering_probe.py"
+NUMBA_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke.py"
 CLAIM_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_claim_review_2026-06-19.md"
 WORDING_CONSENSUS = (
     ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md"
@@ -457,6 +458,26 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertFalse(report["claim_boundaries"]["rt_core_speedup_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["v4_true_zero_copy_claim_authorized"])
         self.assertIn("cross-stream event wait support", report["claim_boundaries"]["forbidden_wording"])
+
+    def test_numba_cuda_array_interface_smoke_is_claim_bounded(self) -> None:
+        script = NUMBA_SCRIPT.read_text(encoding="utf-8")
+
+        for token in (
+            "from numba import cuda",
+            "__cuda_array_interface__",
+            "source_protocols",
+            "cuda_array_interface",
+            "numba_device_array_route_claim_authorized",
+            "numba_full_partner_surface_claim_authorized",
+            "pytorch_route_claim_authorized",
+            "dlpack_route_claim_authorized",
+            "async_claim_authorized",
+            "public_speedup_claim_authorized",
+            "v4_true_zero_copy_claim_authorized",
+            "False",
+            "does not validate a full Numba partner surface",
+        ):
+            self.assertIn(token, script)
 
     def test_claim_review_keeps_v4_true_zero_copy_claim_blocked(self) -> None:
         review = CLAIM_REVIEW.read_text(encoding="utf-8")
