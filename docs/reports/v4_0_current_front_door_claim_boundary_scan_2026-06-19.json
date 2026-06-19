@@ -55,202 +55,400 @@
       "snippet": "d V4 claims. | | Source-tree runtime story | `docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md` | Documents the V4 M1 source-tree runtime path and keeps package, PyPI, wheel, and stable SDK wording blocked. | | Source-tree runtime preflight | `docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json` | Linux required-runtime preflight va"
     },
     {
-      "line": 146,
+      "line": 135,
+      "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
+      "phrase": "Zero-copy",
+      "snippet": "M1 has an experimental CuPy fixed-radius count/threshold GPU operator route.\" - \"The route borrows caller-owned CUDA input columns and writes caller-owned CUDA output columns.\" - \"Zero-copy device-column handoff with no observed host staging of named columns.\" - \"Nonzero caller CUDA streams are propagated through prepare and query; the route synchronizes before retur"
+    },
+    {
+      "line": 147,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "V4.0 is the current release",
       "snippet": "s, detached tensor acceptance, and fail-closed compatibility cases.\" - \"Raw route-scoped timing probe exists; it does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no sta"
     },
     {
-      "line": 147,
+      "line": 148,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "Stable V4 SDK",
       "snippet": "and fail-closed compatibility cases.\" - \"Raw route-scoped timing probe exists; it does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D c"
     },
     {
-      "line": 148,
+      "line": 149,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "Package install",
       "snippet": "ompatibility cases.\" - \"Raw route-scoped timing probe exists; it does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, non"
     },
     {
-      "line": 148,
+      "line": 149,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "PyPI",
       "snippet": "s.\" - \"Raw route-scoped timing probe exists; it does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocki"
     },
     {
-      "line": 148,
+      "line": 149,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "wheel support",
       "snippet": "w route-scoped timing probe exists; it does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns bef"
     },
     {
-      "line": 149,
+      "line": 150,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "Generated bindings",
       "snippet": "ming probe exists; it does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes"
     },
     {
-      "line": 149,
+      "line": 150,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "public multi-language C ABI release",
       "snippet": "does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - General cross-stream event wait sup"
     },
     {
-      "line": 150,
+      "line": 151,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "True zero-copy",
       "snippet": "ng.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - General cross-stream event wait support beyond the fi"
     },
     {
-      "line": 150,
+      "line": 151,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "end-to-end zero-copy",
       "snippet": "Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - General cross-stream event wait support beyond the fixed-radius M1   prepar"
     },
     {
-      "line": 150,
+      "line": 151,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "no copies",
       "snippet": "e current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - General cross-stream event wait support beyond the fixed-radius M1   prepare/query eve"
     },
     {
-      "line": 150,
+      "line": 151,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "no staging",
       "snippet": "elease. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - General cross-stream event wait support beyond the fixed-radius M1   prepare/query event-wait cont"
     },
     {
-      "line": 150,
+      "line": 151,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "no H2D copies",
       "snippet": "e V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - General cross-stream event wait support beyond the fixed-radius M1   prepare/query event-wait contract. - RT-core sp"
     },
     {
-      "line": 151,
+      "line": 152,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "Async",
       "snippet": "ge install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - General cross-stream event wait support beyond the fixed-radius M1   prepare/query event-wait contract. - RT-core speedup, RT"
     },
     {
-      "line": 151,
+      "line": 152,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "nonblocking",
       "snippet": "all, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - General cross-stream event wait support beyond the fixed-radius M1   prepare/query event-wait contract. - RT-core speedup, RTX speedup, RT"
     },
     {
-      "line": 152,
+      "line": 153,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "cross-stream event wait support",
       "snippet": "ulti-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - General cross-stream event wait support beyond the fixed-radius M1   prepare/query event-wait contract. - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims. - Full Numba or PyTorch partner surfac"
     },
     {
-      "line": 154,
+      "line": 155,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "RT-core speedup",
       "snippet": "H2D copies. - Async, nonblocking, or returns before GPU work completes. - General cross-stream event wait support beyond the fixed-radius M1   prepare/query event-wait contract. - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims. - Full Numba or PyTorch partner surface, arbitrary framework-neutral DLPack, or   full DLPack route support.  ## Current"
     },
     {
-      "line": 154,
+      "line": 155,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "RTX speedup",
       "snippet": "nc, nonblocking, or returns before GPU work completes. - General cross-stream event wait support beyond the fixed-radius M1   prepare/query event-wait contract. - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims. - Full Numba or PyTorch partner surface, arbitrary framework-neutral DLPack, or   full DLPack route support.  ## Current Claim Flags"
     },
     {
-      "line": 154,
+      "line": 155,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "RTDL is faster",
       "snippet": "ng, or returns before GPU work completes. - General cross-stream event wait support beyond the fixed-radius M1   prepare/query event-wait contract. - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims. - Full Numba or PyTorch partner surface, arbitrary framework-neutral DLPack, or   full DLPack route support.  ## Current Claim Flags  | Claim | Statu"
     },
     {
-      "line": 163,
+      "line": 164,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "package install",
       "snippet": "framework-neutral DLPack, or   full DLPack route support.  ## Current Claim Flags  | Claim | Status | | --- | --- | | Current release/front-door promotion | blocked | | Stable SDK/package install | blocked | | Public true-zero-copy | blocked | | Async/nonblocking completion | blocked | | Same-stream ordering | experimental M1 evidence | | Fixed-radius M1 prepare/query even"
     },
     {
-      "line": 164,
+      "line": 165,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "true-zero-copy",
       "snippet": "LPack route support.  ## Current Claim Flags  | Claim | Status | | --- | --- | | Current release/front-door promotion | blocked | | Stable SDK/package install | blocked | | Public true-zero-copy | blocked | | Async/nonblocking completion | blocked | | Same-stream ordering | experimental M1 evidence | | Fixed-radius M1 prepare/query event-wait | experimental M1 evidence |"
     },
     {
-      "line": 165,
+      "line": 166,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "Async",
       "snippet": "ent Claim Flags  | Claim | Status | | --- | --- | | Current release/front-door promotion | blocked | | Stable SDK/package install | blocked | | Public true-zero-copy | blocked | | Async/nonblocking completion | blocked | | Same-stream ordering | experimental M1 evidence | | Fixed-radius M1 prepare/query event-wait | experimental M1 evidence | | General cross-stre"
     },
     {
-      "line": 165,
+      "line": 166,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "nonblocking",
       "snippet": "aim Flags  | Claim | Status | | --- | --- | | Current release/front-door promotion | blocked | | Stable SDK/package install | blocked | | Public true-zero-copy | blocked | | Async/nonblocking completion | blocked | | Same-stream ordering | experimental M1 evidence | | Fixed-radius M1 prepare/query event-wait | experimental M1 evidence | | General cross-stream event wai"
     },
     {
-      "line": 170,
+      "line": 171,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "RT-core speedup",
       "snippet": "xperimental M1 evidence | | Fixed-radius M1 prepare/query event-wait | experimental M1 evidence | | General cross-stream event waits | blocked | | Public speedup | blocked | | RTX/RT-core speedup | blocked | | CuPy route evidence | experimental M1 evidence | | Numba `DeviceNDArray` via CUDA Array Interface | experimental M1 evidence | | Bounded Numba M1 `DeviceNDArray` fix"
     },
     {
-      "line": 191,
+      "line": 192,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "async",
       "snippet": "route wording only; it does not authorize arbitrary PyTorch tensor layouts beyond the matrix, autograd integration, graph/compiler integration, broad PyTorch program acceleration, async completion, public true-zero-copy, or speedup wording.  Cross-stream prepare/query event-wait preflight on `192.168.1.20`, 2026-06-19: passing with boundaries for the fixed-radius"
     },
     {
-      "line": 191,
+      "line": 192,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "true-zero-copy",
       "snippet": "es not authorize arbitrary PyTorch tensor layouts beyond the matrix, autograd integration, graph/compiler integration, broad PyTorch program acceleration, async completion, public true-zero-copy, or speedup wording.  Cross-stream prepare/query event-wait preflight on `192.168.1.20`, 2026-06-19: passing with boundaries for the fixed-radius M1 route. The native prepared han"
     },
     {
-      "line": 200,
+      "line": 201,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "async",
       "snippet": "and query calls still synchronize before returning. This authorizes only narrow fixed-radius M1 prepare/query ordering across distinct nonzero CUDA streams; it does not authorize async execution, public event-handle ownership, full external stream ownership, or general cross-stream behavior outside this route.  Numba M1 `DeviceNDArray` fixed-radius route probe o"
     },
     {
-      "line": 217,
+      "line": 218,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "async",
       "snippet": ", and Python consume-once/deleter-once guards. This authorizes only narrow fixed-radius M1 legacy DLPack capsule wording; it does not authorize arbitrary framework-neutral DLPack, async completion, public true-zero-copy, or speedup wording.  Source-tree runtime story preflight, 2026-06-19: passing with boundaries. The V4 M1 source-tree flow is documented and sour"
     },
     {
-      "line": 218,
+      "line": 219,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "true-zero-copy",
       "snippet": "/deleter-once guards. This authorizes only narrow fixed-radius M1 legacy DLPack capsule wording; it does not authorize arbitrary framework-neutral DLPack, async completion, public true-zero-copy, or speedup wording.  Source-tree runtime story preflight, 2026-06-19: passing with boundaries. The V4 M1 source-tree flow is documented and source-tree-doctor checked on Windows"
     },
     {
-      "line": 228,
+      "line": 229,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "PyPI",
       "snippet": "equired Linux V4 GPU runtime checks passing on `66e6529859a1bac63ce2a72527dc5942e301143d`. This authorizes source-tree runtime wording only. It does not authorize package install, PyPI, wheel, stable SDK, or generated binding wording.  RTX/RT-core speed preflight, 2026-06-19: still blocked by hardware access. The available Linux GPU host is a GTX 1070 and can va"
     },
     {
-      "line": 228,
+      "line": 229,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "generated binding",
       "snippet": "checks passing on `66e6529859a1bac63ce2a72527dc5942e301143d`. This authorizes source-tree runtime wording only. It does not authorize package install, PyPI, wheel, stable SDK, or generated binding wording.  RTX/RT-core speed preflight, 2026-06-19: still blocked by hardware access. The available Linux GPU host is a GTX 1070 and can validate CUDA/OptiX execution and Python GP"
     },
     {
-      "line": 234,
+      "line": 235,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "RTX speedup",
       "snippet": "it is not RTX-class evidence. The provided RTX pod SSH endpoint `root@157.157.221.29:22234` returned `Permission denied (publickey,password)` with the available key, so RT-core or RTX speedup wording remains unauthorized.  ## Next Gates  1. Keep the M1 route reproducible on current head. 2. Keep the fixed-radius M1 cross-stream prepare/query event-wait evidence fresh w"
     },
     {
-      "line": 240,
+      "line": 241,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "async",
       "snippet": "ing remains unauthorized.  ## Next Gates  1. Keep the M1 route reproducible on current head. 2. Keep the fixed-radius M1 cross-stream prepare/query event-wait evidence fresh while async and full external-stream ownership remain blocked. 3. Broaden PyTorch or framework-neutral DLPack evidence before saying those full surfaces are validated. 4. Use RTX-class hardwa"
+    },
+    {
+      "line": 34,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "package-install",
+      "snippet": "the OptiX-backed Python GPU operator direction.  It is not the current user release. The current user release remains `v3.0.2`. This packet does not authorize a front-door switch, package-install wording, stable SDK wording, public true-zero-copy wording, async wording, public speedup wording, or RTX/RT-core speedup wording.  ## V4.0 Candidate Scope  V4.0 is scoped to Pyth"
+    },
+    {
+      "line": 35,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "true-zero-copy",
+      "snippet": "is not the current user release. The current user release remains `v3.0.2`. This packet does not authorize a front-door switch, package-install wording, stable SDK wording, public true-zero-copy wording, async wording, public speedup wording, or RTX/RT-core speedup wording.  ## V4.0 Candidate Scope  V4.0 is scoped to Python actors using RTDL as an OptiX-backed GPU operato"
+    },
+    {
+      "line": 35,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "async",
+      "snippet": "release. The current user release remains `v3.0.2`. This packet does not authorize a front-door switch, package-install wording, stable SDK wording, public true-zero-copy wording, async wording, public speedup wording, or RTX/RT-core speedup wording.  ## V4.0 Candidate Scope  V4.0 is scoped to Python actors using RTDL as an OptiX-backed GPU operator lane.  The cu"
+    },
+    {
+      "line": 36,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "RT-core speedup",
+      "snippet": "0.2`. This packet does not authorize a front-door switch, package-install wording, stable SDK wording, public true-zero-copy wording, async wording, public speedup wording, or RTX/RT-core speedup wording.  ## V4.0 Candidate Scope  V4.0 is scoped to Python actors using RTDL as an OptiX-backed GPU operator lane.  The current experimental scope is one CUDA device per route in"
+    },
+    {
+      "line": 83,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "async",
+      "snippet": "t nonzero prepare/query streams are ordered for the fixed-radius M1   route by a native prepare-ready event; - native prepare and query calls still synchronize before returning; - async/nonblocking completion is not claimed.  Evidence-backed output behavior:  - output columns are caller-owned CUDA arrays/tensors; - output length is one row per query; - unsupporte"
+    },
+    {
+      "line": 83,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "nonblocking",
+      "snippet": "ero prepare/query streams are ordered for the fixed-radius M1   route by a native prepare-ready event; - native prepare and query calls still synchronize before returning; - async/nonblocking completion is not claimed.  Evidence-backed output behavior:  - output columns are caller-owned CUDA arrays/tensors; - output length is one row per query; - unsupported output sha"
+    },
+    {
+      "line": 113,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "async",
+      "snippet": "rch tensor layouts beyond the matrix; - autograd integration; - graph/compiler integration; - arbitrary Numba program acceleration; - arbitrary framework-neutral DLPack support; - async completion; - public true-zero-copy; - public speedup; - RTX/RT-core speedup; - package install, PyPI, wheel, or stable SDK usage; - public multi-language C ABI or non-Python host"
+    },
+    {
+      "line": 114,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "true-zero-copy",
+      "snippet": "he matrix; - autograd integration; - graph/compiler integration; - arbitrary Numba program acceleration; - arbitrary framework-neutral DLPack support; - async completion; - public true-zero-copy; - public speedup; - RTX/RT-core speedup; - package install, PyPI, wheel, or stable SDK usage; - public multi-language C ABI or non-Python host embedding.  ## Evidence Ledger  | E"
+    },
+    {
+      "line": 116,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "RT-core speedup",
+      "snippet": "ph/compiler integration; - arbitrary Numba program acceleration; - arbitrary framework-neutral DLPack support; - async completion; - public true-zero-copy; - public speedup; - RTX/RT-core speedup; - package install, PyPI, wheel, or stable SDK usage; - public multi-language C ABI or non-Python host embedding.  ## Evidence Ledger  | Evidence | Path | Status | | --- | --- | -"
+    },
+    {
+      "line": 117,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "package install",
+      "snippet": "tion; - arbitrary Numba program acceleration; - arbitrary framework-neutral DLPack support; - async completion; - public true-zero-copy; - public speedup; - RTX/RT-core speedup; - package install, PyPI, wheel, or stable SDK usage; - public multi-language C ABI or non-Python host embedding.  ## Evidence Ledger  | Evidence | Path | Status | | --- | --- | --- | | M1 experimen"
+    },
+    {
+      "line": 117,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "PyPI",
+      "snippet": "Numba program acceleration; - arbitrary framework-neutral DLPack support; - async completion; - public true-zero-copy; - public speedup; - RTX/RT-core speedup; - package install, PyPI, wheel, or stable SDK usage; - public multi-language C ABI or non-Python host embedding.  ## Evidence Ledger  | Evidence | Path | Status | | --- | --- | --- | | M1 experimental st"
+    },
+    {
+      "line": 126,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "PyPI",
+      "snippet": "able release blockers and closed evidence. | | Source-tree runtime story | `docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md` | Source-tree runtime only; package/PyPI/wheel/SDK claims blocked. | | Source-tree runtime preflight | `docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json` | Linux required-runtime preflight passed for check"
+    },
+    {
+      "line": 128,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "PyPI",
+      "snippet": "| | Editable install hygiene probe | `docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json` | Linux editable source-tree install hygiene with V4 GPU smoke; not package/PyPI/wheel/stable SDK evidence. | | Front-door claim scan | `docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json` | Pass; current front door remains v3.0.2 and blo"
+    },
+    {
+      "line": 132,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "true-zero-copy",
+      "snippet": "-closed parity cases. | | CuPy no-host-stage probe | `docs/reports/v4_0_m1_fixed_radius_cupy_no_host_stage_probe_2026-06-19.json` | Named-column no-host-stage evidence; not public true-zero-copy. | | CuPy stream ordering | `docs/reports/v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19.json` | Same-stream and fixed-radius prepare/query event-wait evidence. | | Cu"
+    },
+    {
+      "line": 144,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "PyPI",
+      "snippet": "diness today. | | Package/runtime tie-breaker | `docs/reviews/codex_v4_package_runtime_tiebreaker_2026-06-19.md` | Requires editable-install hygiene evidence while keeping package/PyPI/wheel claims blocked. | | Claude external M8 review | `docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md` | Accepts the M8 packet as the V4.0 experimental review baseline"
+    },
+    {
+      "line": 202,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "package install",
+      "snippet": "urface; it does not broaden those route claims.  ## Non-Authorizations  This M8 packet does not authorize:  - V4.0 as the current release; - V4.0 as the default user front door; - package install, PyPI, wheel, or stable SDK wording; - generated binding package wording; - public multi-language C ABI release wording; - public true-zero-copy, end-to-end zero-copy, no-copy, or"
+    },
+    {
+      "line": 202,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "PyPI",
+      "snippet": "ot broaden those route claims.  ## Non-Authorizations  This M8 packet does not authorize:  - V4.0 as the current release; - V4.0 as the default user front door; - package install, PyPI, wheel, or stable SDK wording; - generated binding package wording; - public multi-language C ABI release wording; - public true-zero-copy, end-to-end zero-copy, no-copy, or no-H2"
+    },
+    {
+      "line": 203,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "generated binding",
+      "snippet": "-Authorizations  This M8 packet does not authorize:  - V4.0 as the current release; - V4.0 as the default user front door; - package install, PyPI, wheel, or stable SDK wording; - generated binding package wording; - public multi-language C ABI release wording; - public true-zero-copy, end-to-end zero-copy, no-copy, or no-H2D-copy wording; - async or nonblocking completion w"
+    },
+    {
+      "line": 204,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "public multi-language C ABI release",
+      "snippet": "not authorize:  - V4.0 as the current release; - V4.0 as the default user front door; - package install, PyPI, wheel, or stable SDK wording; - generated binding package wording; - public multi-language C ABI release wording; - public true-zero-copy, end-to-end zero-copy, no-copy, or no-H2D-copy wording; - async or nonblocking completion wording; - public speedup, RTX speedup, RT-core speedup,"
+    },
+    {
+      "line": 205,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "true-zero-copy",
+      "snippet": "as the default user front door; - package install, PyPI, wheel, or stable SDK wording; - generated binding package wording; - public multi-language C ABI release wording; - public true-zero-copy, end-to-end zero-copy, no-copy, or no-H2D-copy wording; - async or nonblocking completion wording; - public speedup, RTX speedup, RT-core speedup, or \"RTDL is faster\" wording; - f"
+    },
+    {
+      "line": 205,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "end-to-end zero-copy",
+      "snippet": "ser front door; - package install, PyPI, wheel, or stable SDK wording; - generated binding package wording; - public multi-language C ABI release wording; - public true-zero-copy, end-to-end zero-copy, no-copy, or no-H2D-copy wording; - async or nonblocking completion wording; - public speedup, RTX speedup, RT-core speedup, or \"RTDL is faster\" wording; - full PyTorch, full Numb"
+    },
+    {
+      "line": 206,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "async",
+      "snippet": "SDK wording; - generated binding package wording; - public multi-language C ABI release wording; - public true-zero-copy, end-to-end zero-copy, no-copy, or no-H2D-copy wording; - async or nonblocking completion wording; - public speedup, RTX speedup, RT-core speedup, or \"RTDL is faster\" wording; - full PyTorch, full Numba, or full framework-neutral DLPack suppor"
+    },
+    {
+      "line": 206,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "nonblocking",
+      "snippet": "ing; - generated binding package wording; - public multi-language C ABI release wording; - public true-zero-copy, end-to-end zero-copy, no-copy, or no-H2D-copy wording; - async or nonblocking completion wording; - public speedup, RTX speedup, RT-core speedup, or \"RTDL is faster\" wording; - full PyTorch, full Numba, or full framework-neutral DLPack support; - non-Python"
+    },
+    {
+      "line": 207,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "RTX speedup",
+      "snippet": "multi-language C ABI release wording; - public true-zero-copy, end-to-end zero-copy, no-copy, or no-H2D-copy wording; - async or nonblocking completion wording; - public speedup, RTX speedup, RT-core speedup, or \"RTDL is faster\" wording; - full PyTorch, full Numba, or full framework-neutral DLPack support; - non-Python host embedding as a V4.0 deliverable.  ## Open Re"
+    },
+    {
+      "line": 207,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "RT-core speedup",
+      "snippet": "ge C ABI release wording; - public true-zero-copy, end-to-end zero-copy, no-copy, or no-H2D-copy wording; - async or nonblocking completion wording; - public speedup, RTX speedup, RT-core speedup, or \"RTDL is faster\" wording; - full PyTorch, full Numba, or full framework-neutral DLPack support; - non-Python host embedding as a V4.0 deliverable.  ## Open Release Gates  | Ga"
+    },
+    {
+      "line": 207,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "RTDL is faster",
+      "snippet": "ing; - public true-zero-copy, end-to-end zero-copy, no-copy, or no-H2D-copy wording; - async or nonblocking completion wording; - public speedup, RTX speedup, RT-core speedup, or \"RTDL is faster\" wording; - full PyTorch, full Numba, or full framework-neutral DLPack support; - non-Python host embedding as a V4.0 deliverable.  ## Open Release Gates  | Gate | Current state |"
+    },
+    {
+      "line": 216,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "PyPI",
+      "snippet": "by Claude external review; final release-candidate validation remains open. | | Package/runtime decision | Source-tree runtime and editable-install hygiene are validated; package/PyPI/wheel/stable SDK claims remain blocked. | | Front-door docs switch | Blocked until release approval and explicit user action. | | Public true-zero-copy | Blocked until end-to-end"
+    },
+    {
+      "line": 218,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "true-zero-copy",
+      "snippet": "nstall hygiene are validated; package/PyPI/wheel/stable SDK claims remain blocked. | | Front-door docs switch | Blocked until release approval and explicit user action. | | Public true-zero-copy | Blocked until end-to-end copy evidence exists. | | Async completion | Blocked until lifetime and event contracts are implemented and tested. | | Public speedup/RTX speedup | Blo"
+    },
+    {
+      "line": 219,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "Async",
+      "snippet": "emain blocked. | | Front-door docs switch | Blocked until release approval and explicit user action. | | Public true-zero-copy | Blocked until end-to-end copy evidence exists. | | Async completion | Blocked until lifetime and event contracts are implemented and tested. | | Public speedup/RTX speedup | Blocked until RTX-class evidence and accepted benchmark matrix"
+    },
+    {
+      "line": 220,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "RTX speedup",
+      "snippet": "ic true-zero-copy | Blocked until end-to-end copy evidence exists. | | Async completion | Blocked until lifetime and event contracts are implemented and tested. | | Public speedup/RTX speedup | Blocked until RTX-class evidence and accepted benchmark matrix exist. | | Full PyTorch/Numba/DLPack surfaces | Blocked beyond exact M1 route evidence. | | Stable SDK/C ABI | Blo"
+    },
+    {
+      "line": 234,
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "phrase": "zero-copy",
+      "snippet": ". Is the evidence sufficient to call this an experimental V4.0 candidate for    review, without switching the user front door? 3. Are any claims still too broad, especially around zero-copy, streams,    DLPack, PyTorch, package/runtime, or RT-core performance? 4. Are the accepted and rejected device-array cases clear enough for users? 5. Should V4.0 remain source-tre"
     },
     {
       "line": 15,
       "path": "docs/learn/current_claim_boundaries.md",
       "phrase": "generated bindings",
       "snippet": "ure, explicit route and partner choice, the V3 app-author strategy, and the cleanup that keeps embedding/SDK work out of V3.0 release-line scope.  Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are V4.0 scope.  Use RTDL from the repository source tree:  ```bash PYT"
+    },
+    {
+      "line": 16,
+      "path": "docs/learn/current_claim_boundaries.md",
+      "phrase": "zero-copy",
+      "snippet": "the cleanup that keeps embedding/SDK work out of V3.0 release-line scope.  Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are V4.0 scope.  Use RTDL from the repository source tree:  ```bash PYTHONPATH=src:. python examples/current/getting_started/rtdl_hel"
     },
     {
       "line": 50,
@@ -271,6 +469,12 @@
       "snippet": "## What RTDL Does Not Claim  The current public docs do not authorize these claims; in short, RTDL does not authorize:  - package-install or PyPI support wording; - stable SDK or generated binding package wording; - automatic partner selection; - arbitrary CuPy or Numba acceleration; - broad RT-core acceleration; - whole-application speedup; - RTDL-beats-RayJoin wording; -"
     },
     {
+      "line": 58,
+      "path": "docs/learn/current_claim_boundaries.md",
+      "phrase": "zero-copy",
+      "snippet": "partner selection; - arbitrary CuPy or Numba acceleration; - broad RT-core acceleration; - whole-application speedup; - RTDL-beats-RayJoin wording; - paper reproduction; - general zero-copy or device-residency; - device-buffer C ABI query execution; - external CUDA stream ordering; - AMD/HIPRT or Intel-GPU performance claims.  Selecting `--backend optix` means the Op"
+    },
+    {
       "line": 64,
       "path": "docs/learn/current_claim_boundaries.md",
       "phrase": "RT-core speedup",
@@ -283,16 +487,34 @@
       "snippet": "e. Public performance wording remains row-scoped and evidence-bound; mixed rows stay explicit rather than being folded into a broad RT-core claim. Embedding, C ABI, SDK packaging, generated bindings, zero-copy, and external-runtime integration are V4.0 scope, not V3.0 release-line claims. For the short canonical wording, read [Current Claim Boundaries](learn/current_claim_bou"
     },
     {
+      "line": 24,
+      "path": "docs/README.md",
+      "phrase": "zero-copy",
+      "snippet": "e wording remains row-scoped and evidence-bound; mixed rows stay explicit rather than being folded into a broad RT-core claim. Embedding, C ABI, SDK packaging, generated bindings, zero-copy, and external-runtime integration are V4.0 scope, not V3.0 release-line claims. For the short canonical wording, read [Current Claim Boundaries](learn/current_claim_boundaries.md)"
+    },
+    {
       "line": 15,
       "path": "docs/release_reports/v3_0_2/final_closeout.md",
       "phrase": "generated bindings",
       "snippet": "al and V4-preparatory material by default.  The release is intentionally conservative: V3.0.2 is complete for the current benchmark-app/current-route matrix, while embedding, SDK, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion remain V4.0 work.  ## Completed Release Work  | Step | Status | Output"
     },
     {
+      "line": 16,
+      "path": "docs/release_reports/v3_0_2/final_closeout.md",
+      "phrase": "zero-copy",
+      "snippet": "y conservative: V3.0.2 is complete for the current benchmark-app/current-route matrix, while embedding, SDK, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion remain V4.0 work.  ## Completed Release Work  | Step | Status | Output | | ---: | --- | --- | | 1 | done | `VERSION` is `v3.0.2`; `py"
+    },
+    {
       "line": 37,
       "path": "docs/release_reports/v3_0_2/final_closeout.md",
       "phrase": "generated-binding",
       "snippet": "arget remains. | | App-author guidance | Primitive-first, prepared where useful, partner-explicit when custom continuation is required. | | V4 scope boundary | Embedding/C ABI/SDK/generated-binding/zero-copy/external-runtime work is excluded from V3.0 release claims. | | Validation | `scripts/rtdl_source_tree_doctor.py --json` and `scripts/run_test_matrix.py --group v3_curre"
+    },
+    {
+      "line": 37,
+      "path": "docs/release_reports/v3_0_2/final_closeout.md",
+      "phrase": "zero-copy",
+      "snippet": "App-author guidance | Primitive-first, prepared where useful, partner-explicit when custom continuation is required. | | V4 scope boundary | Embedding/C ABI/SDK/generated-binding/zero-copy/external-runtime work is excluded from V3.0 release claims. | | Validation | `scripts/rtdl_source_tree_doctor.py --json` and `scripts/run_test_matrix.py --group v3_current`; revie"
     },
     {
       "line": 46,
@@ -319,6 +541,12 @@
       "snippet": "result: ok=true, module_count=65, Ran 206 tests, OK ```  The `v4_prep` matrix is preserved as an archived preparatory regression guard. It does not certify embedding, C ABI, SDK, generated binding, zero-copy, or external-runtime work as part of V3.0.  Documentation polish scans, 2026-06-18:  ```text current-v2 wording scan over current docs: no hits V3 doctor packet stale C"
     },
     {
+      "line": 73,
+      "path": "docs/release_reports/v3_0_2/final_closeout.md",
+      "phrase": "zero-copy",
+      "snippet": "odule_count=65, Ran 206 tests, OK ```  The `v4_prep` matrix is preserved as an archived preparatory regression guard. It does not certify embedding, C ABI, SDK, generated binding, zero-copy, or external-runtime work as part of V3.0.  Documentation polish scans, 2026-06-18:  ```text current-v2 wording scan over current docs: no hits V3 doctor packet stale C ABI wordin"
+    },
+    {
       "line": 97,
       "path": "docs/release_reports/v3_0_2/final_closeout.md",
       "phrase": "generated binding",
@@ -331,6 +559,18 @@
       "snippet": "idation above and the referenced benchmark evidence packets.  ## Transition Rule  After v3.0.2, new embedding, SDK, generated binding, device-buffer query, external-stream, public true-zero-copy, OptiX/Embree C ABI execution, and device-callable fusion work belongs to V4 unless a later release packet explicitly reopens V3.0 scope."
     },
     {
+      "line": 34,
+      "path": "docs/release_reports/v3_0_2/major_release_requirements_trace.md",
+      "phrase": "zero-copy",
+      "snippet": "oint to V3.0.2. - [x] Current claim-boundary pages are polished for V3.0.2. - [x] Source-tree doctor validates the V3.0.2 release package. - [x] V4 preparatory embedding/C ABI/SDK/zero-copy artifacts are excluded from   V3.0.2 release criteria and validated separately by `v4_prep`.  ## Release Principle  Patch releases can be useful without widening scope. V3.0.2 kee"
+    },
+    {
+      "line": 41,
+      "path": "docs/release_reports/v3_0_2/major_release_requirements_trace.md",
+      "phrase": "zero-copy",
+      "snippet": "ng scope. V3.0.2 keeps V3.0 proud and bounded: it preserves the current route matrix and user-facing source-tree story while preventing scope drift into embedding, packaging, SDK, zero-copy, generated-binding, external-runtime, or paper-reproduction claims."
+    },
+    {
       "line": 42,
       "path": "docs/release_reports/v3_0_2/major_release_requirements_trace.md",
       "phrase": "generated-binding",
@@ -341,6 +581,12 @@
       "path": "docs/release_reports/v3_0_2/public_wording_boundaries.md",
       "phrase": "generated bindings",
       "snippet": "nce.  Performance wording remains row-scoped, contract-scoped, backend-scoped, partner-scoped, hardware-scoped, timing-scoped, and caveat-scoped.  Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are V4.0 scope, not V3.0 release claims.  ## Required Sentence Shape  E"
+    },
+    {
+      "line": 17,
+      "path": "docs/release_reports/v3_0_2/public_wording_boundaries.md",
+      "phrase": "zero-copy",
+      "snippet": "scoped, partner-scoped, hardware-scoped, timing-scoped, and caveat-scoped.  Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are V4.0 scope, not V3.0 release claims.  ## Required Sentence Shape  Every public performance sentence must name:  - app or primitiv"
     },
     {
       "line": 56,
@@ -379,6 +625,18 @@
       "snippet": "wording boundaries, publication   note, tag preparation, final closeout, and major-release requirements trace   are present. - [x] Scope correction applied: embedding, C ABI, SDK, generated bindings,   device-buffer execution, external stream ordering, zero-copy framework   interop, and device-callable fusion are V4.0 scope. - [x] Default `make help`, default source-tree doct"
     },
     {
+      "line": 41,
+      "path": "docs/release_reports/v3_0_2/publication.md",
+      "phrase": "zero-copy",
+      "snippet": "and major-release requirements trace   are present. - [x] Scope correction applied: embedding, C ABI, SDK, generated bindings,   device-buffer execution, external stream ordering, zero-copy framework   interop, and device-callable fusion are V4.0 scope. - [x] Default `make help`, default source-tree doctor output, and rendered   learner evidence pages keep V4 prep ou"
+    },
+    {
+      "line": 66,
+      "path": "docs/release_reports/v3_0_2/publication.md",
+      "phrase": "zero-copy",
+      "snippet": "t_matrix.py --group v4_prep result: ok=true, module_count=65, Ran 206 tests, OK ```  The `v4_prep` result is a regression guard for archived preparatory embedding, C ABI, SDK, and zero-copy material. It is not part of the V3.0 public release surface or completion claim.  Current-doc polish scans after publication edits:  ```text current-v2 wording scan over current d"
+    },
+    {
       "line": 87,
       "path": "docs/release_reports/v3_0_2/publication.md",
       "phrase": "Package-install",
@@ -403,10 +661,22 @@
       "snippet": "ation. - Package-install, PyPI, wheel, or stable SDK wording. - Generated binding package wording. - Device-buffer C ABI query execution. - External CUDA stream ordering. - Public true-zero-copy or complete device residency. - Arbitrary raw OptiX callback exposure as the stable API. - App-specific native-engine extension claims."
     },
     {
+      "line": 24,
+      "path": "docs/release_reports/v3_0_2/README.md",
+      "phrase": "zero-copy",
+      "snippet": "ten-app benchmark route matrix; - a canonical validation command: `scripts/run_test_matrix.py --group v3_current`.  The patch release also keeps V4 preparatory embedding/C ABI/SDK/zero-copy work out of default user paths: it is fenced under `docs/history/v4_preparatory_embedding/`, validated by `v4_prep`, excluded from `v3_current`, hidden from default `make help`, a"
+    },
+    {
       "line": 30,
       "path": "docs/release_reports/v3_0_2/README.md",
       "phrase": "generated bindings",
       "snippet": "3_current`, hidden from default `make help`, and absent from default source-tree doctor output unless a reviewer explicitly asks for `--include-v4-prep`. Embedding, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are not part of V3.0 release-line scope.  This is a source-tree release"
+    },
+    {
+      "line": 31,
+      "path": "docs/release_reports/v3_0_2/README.md",
+      "phrase": "zero-copy",
+      "snippet": "urce-tree doctor output unless a reviewer explicitly asks for `--include-v4-prep`. Embedding, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are not part of V3.0 release-line scope.  This is a source-tree release. Use it from a checkout with `PYTHONPATH=src:.` or the option"
     },
     {
       "line": 35,
@@ -431,6 +701,12 @@
       "path": "docs/release_reports/v3_0_2/README.md",
       "phrase": "generated bindings",
       "snippet": "-design queues are empty. | | Route policy | V3 app-author strategy is learner-facing and linked from the main docs path. | | V4 scope exclusion | Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are excluded from V3.0 release criteria, default `make help`, default d"
+    },
+    {
+      "line": 79,
+      "path": "docs/release_reports/v3_0_2/README.md",
+      "phrase": "zero-copy",
+      "snippet": "learner-facing and linked from the main docs path. | | V4 scope exclusion | Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are excluded from V3.0 release criteria, default `make help`, default doctor output, and rendered learner evidence lists. | | Validat"
     },
     {
       "line": 81,
@@ -461,6 +737,12 @@
       "path": "docs/release_reports/v3_0_2/release_statement.md",
       "phrase": "generated bindings",
       "snippet": "_matrix.py --group v3_current`. - The V3 public docs are source-tree docs: run with `PYTHONPATH=src:.` or an   optional local editable checkout. - Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution,   external stream ordering, zero-copy framework interop, and device-callable   fusion are explicitly V4.0 scope. - Default `make help` and default source"
+    },
+    {
+      "line": 26,
+      "path": "docs/release_reports/v3_0_2/release_statement.md",
+      "phrase": "zero-copy",
+      "snippet": ": run with `PYTHONPATH=src:.` or an   optional local editable checkout. - Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution,   external stream ordering, zero-copy framework interop, and device-callable   fusion are explicitly V4.0 scope. - Default `make help` and default source-tree doctor output stay V3-facing;   archived V4 prep requires"
     },
     {
       "line": 33,
@@ -517,6 +799,252 @@
       "snippet": "ify V3.0.2 as the active release; - all ten benchmark-app current routes are closed by Goal4614; - the V3 app-author strategy is learner-facing; - embedding, C ABI, SDK packaging, generated bindings, zero-copy, and external   runtime integration are excluded as V4.0 scope; - source-tree doctor, `v3_release`, `v3_current`, and separate `v4_prep`   validation pass; - public wor"
     },
     {
+      "line": 14,
+      "path": "docs/release_reports/v3_0_2/tag_preparation.md",
+      "phrase": "zero-copy",
+      "snippet": "tive release; - all ten benchmark-app current routes are closed by Goal4614; - the V3 app-author strategy is learner-facing; - embedding, C ABI, SDK packaging, generated bindings, zero-copy, and external   runtime integration are excluded as V4.0 scope; - source-tree doctor, `v3_release`, `v3_current`, and separate `v4_prep`   validation pass; - public wording remain"
+    },
+    {
+      "line": 12,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "zero-copy",
+      "snippet": "e recorded in the blocker manifest at a named commit, and (b) a `final_release_candidate_commit` must be assigned with a fresh end-to-end validation bundle. No other open blocker (zero-copy, async, speedup, full framework surfaces, SDK/ABI, multi-GPU, package install) needs to close for the experimental designation, because V4.0 does not claim any of those things.  T"
+    },
+    {
+      "line": 12,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "async",
+      "snippet": "in the blocker manifest at a named commit, and (b) a `final_release_candidate_commit` must be assigned with a fresh end-to-end validation bundle. No other open blocker (zero-copy, async, speedup, full framework surfaces, SDK/ABI, multi-GPU, package install) needs to close for the experimental designation, because V4.0 does not claim any of those things.  The find"
+    },
+    {
+      "line": 12,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "package install",
+      "snippet": "elease_candidate_commit` must be assigned with a fresh end-to-end validation bundle. No other open blocker (zero-copy, async, speedup, full framework surfaces, SDK/ABI, multi-GPU, package install) needs to close for the experimental designation, because V4.0 does not claim any of those things.  The findings below target real gaps in the guardrail machinery, not stylistic p"
+    },
+    {
+      "line": 51,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "zero-copy",
+      "snippet": ". I reviewed these files manually in this pass and found no active violations, but the structural gap means future edits to these docs have no automated guardrail.  **P1-3 - Bare \"zero-copy\" absent from `CLAIM_PATTERNS`**  File: `scripts/v4_0_current_front_door_claim_boundary_scan.py`, lines 32-44 (`CLAIM_PATTERNS`)  The scan blocks `true-zero-copy` and `end-to-end z"
+    },
+    {
+      "line": 55,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "true-zero-copy",
+      "snippet": "rdrail.  **P1-3 - Bare \"zero-copy\" absent from `CLAIM_PATTERNS`**  File: `scripts/v4_0_current_front_door_claim_boundary_scan.py`, lines 32-44 (`CLAIM_PATTERNS`)  The scan blocks `true-zero-copy` and `end-to-end zero-copy` but not bare `zero-copy`. The M1 status doc (`docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md`, line 136) lists \"Zero-copy device-colum"
+    },
+    {
+      "line": 55,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "end-to-end zero-copy",
+      "snippet": "e \"zero-copy\" absent from `CLAIM_PATTERNS`**  File: `scripts/v4_0_current_front_door_claim_boundary_scan.py`, lines 32-44 (`CLAIM_PATTERNS`)  The scan blocks `true-zero-copy` and `end-to-end zero-copy` but not bare `zero-copy`. The M1 status doc (`docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md`, line 136) lists \"Zero-copy device-column handoff with no observed"
+    },
+    {
+      "line": 55,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "zero-copy",
+      "snippet": "TERNS`**  File: `scripts/v4_0_current_front_door_claim_boundary_scan.py`, lines 32-44 (`CLAIM_PATTERNS`)  The scan blocks `true-zero-copy` and `end-to-end zero-copy` but not bare `zero-copy`. The M1 status doc (`docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md`, line 136) lists \"Zero-copy device-column handoff with no observed host staging of named col"
+    },
+    {
+      "line": 55,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "Zero-copy",
+      "snippet": "blocks `true-zero-copy` and `end-to-end zero-copy` but not bare `zero-copy`. The M1 status doc (`docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md`, line 136) lists \"Zero-copy device-column handoff with no observed host staging of named columns\" as allowed safe wording. That wording is defensible given its qualifier. However, bare `zero-copy` can appear"
+    },
+    {
+      "line": 55,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "zero-copy",
+      "snippet": "136) lists \"Zero-copy device-column handoff with no observed host staging of named columns\" as allowed safe wording. That wording is defensible given its qualifier. However, bare `zero-copy` can appear in public-facing text outside a sufficiently guarded context and pass the scan without triggering a finding.  **P1-4 - RTX pod SSH access is blocked; RT-core evidence"
+    },
+    {
+      "line": 61,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "RT-core speedup",
+      "snippet": "blocker is open and correctly documented. The risk is that the project name and \"OptiX\" branding naturally associate with RT cores in readers' minds. The packet explicitly blocks RT-core speedup wording but contains no mechanism to prevent readers from inferring that association.  ## 4. P2 Polish Issues  **P2-1 - `native_async_ready` metadata field name in smoke payload**"
+    },
+    {
+      "line": 69,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "async",
+      "snippet": "lse` field. The field name `native_async_ready` can be read as a capability signal. If this metadata key ever returns `True`, it creates an implicit contradiction with the blocked async claim.  **P2-2 - Editable install smoke requires pre-built native library but does not guard for it**  File: `scripts/v4_0_editable_install_runtime_probe.py`, entire `_inspection_"
+    },
+    {
+      "line": 93,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "true zero-copy",
+      "snippet": "source-tree runtime story, review documents, and scripts are all clean against the forbidden claim list.  One structural gap to address: add `r\"\\bzero[- ]copy\\b\"` (bare, not only \"true zero-copy\") to `CLAIM_PATTERNS` in `scripts/v4_0_current_front_door_claim_boundary_scan.py`, and add a sufficiently broad `NEGATIVE_CONTEXT` qualifier such as \"no observed host staging\" to"
+    },
+    {
+      "line": 105,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "zero-copy",
+      "snippet": "the M8 packet going forward. 4. Add `r\"\\bzero[- ]copy\\b\"` to `CLAIM_PATTERNS` with a corresponding `NEGATIVE_CONTEXT` entry such as `\"no observed host staging\"` to close the bare-\"zero-copy\" scan gap. 5. Add an explicit V4.0 single-GPU scope declaration in the product design doc or M1 status doc, to formally close the `multi_gpu_runtime_evidence` blocker by scope exc"
+    },
+    {
+      "line": 114,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "zero-copy",
+      "snippet": "list is comprehensive. The blocker manifest correctly reflects the open gates. The packet is usable as the review baseline without modification.  **Q2. Does any wording overclaim zero-copy, stream ownership, async behavior, package/runtime readiness, PyTorch/DLPack breadth, or RT-core performance?**  No active overclaims found in any reviewed file. The one structura"
+    },
+    {
+      "line": 114,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "async",
+      "snippet": "locker manifest correctly reflects the open gates. The packet is usable as the review baseline without modification.  **Q2. Does any wording overclaim zero-copy, stream ownership, async behavior, package/runtime readiness, PyTorch/DLPack breadth, or RT-core performance?**  No active overclaims found in any reviewed file. The one structural risk is that bare \"zero"
+    },
+    {
+      "line": 116,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "zero-copy",
+      "snippet": "sync behavior, package/runtime readiness, PyTorch/DLPack breadth, or RT-core performance?**  No active overclaims found in any reviewed file. The one structural risk is that bare \"zero-copy\" is not in `CLAIM_PATTERNS`, so the allowed wording \"Zero-copy device-column handoff with no observed host staging of named columns\" passes the scan but future authors could drop"
+    },
+    {
+      "line": 116,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "Zero-copy",
+      "snippet": "h, or RT-core performance?**  No active overclaims found in any reviewed file. The one structural risk is that bare \"zero-copy\" is not in `CLAIM_PATTERNS`, so the allowed wording \"Zero-copy device-column handoff with no observed host staging of named columns\" passes the scan but future authors could drop the qualifier and still pass. Stream wording is properly scoped"
+    },
+    {
+      "line": 116,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "Async",
+      "snippet": "observed host staging of named columns\" passes the scan but future authors could drop the qualifier and still pass. Stream wording is properly scoped to the fixed-radius M1 route. Async is explicitly blocked and not mentioned positively. Package/runtime is source-tree only with all claims correctly blocked. PyTorch and DLPack are scoped to the exact M1 operator w"
+    },
+    {
+      "line": 116,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "RT-core speedup",
+      "snippet": "tioned positively. Package/runtime is source-tree only with all claims correctly blocked. PyTorch and DLPack are scoped to the exact M1 operator with full-surface wording blocked. RT-core speedup wording is absent from all reviewed documents.  **Q3. Is the first route useful enough as the V4.0 experimental headline, or is it still too narrow to be a candidate?**  The route"
+    },
+    {
+      "line": 124,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "package install",
+      "snippet": "not a packaged distribution but it proves that import hygiene works beyond PYTHONPATH injection. Any user-facing announcement must include explicit language: \"source-tree only, no package install, not a PyPI or wheel artifact.\"  **Q5. What exact P0 blockers must close before `release_candidate_ready` can become true?**  Exactly two:  1. `external_release_candidate_review`"
+    },
+    {
+      "line": 124,
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "phrase": "PyPI",
+      "snippet": "tion but it proves that import hygiene works beyond PYTHONPATH injection. Any user-facing announcement must include explicit language: \"source-tree only, no package install, not a PyPI or wheel artifact.\"  **Q5. What exact P0 blockers must close before `release_candidate_ready` can become true?**  Exactly two:  1. `external_release_candidate_review` must be mark"
+    },
+    {
+      "line": 86,
+      "path": "docs/reviews/codex_v4_m8_external_ai_access_attempt_2026-06-19.md",
+      "phrase": "true-zero-copy",
+      "snippet": "en. `release_candidate_ready` must remain `false`; the final release-candidate commit remains unassigned.  No V4.0 front-door switch, release approval, package/stable-SDK wording, true-zero-copy wording, async wording, public speedup wording, RT-core speedup wording, or broad PyTorch/Numba/DLPack wording is authorized by this report.  ## Next Required Action  Run the exis"
+    },
+    {
+      "line": 86,
+      "path": "docs/reviews/codex_v4_m8_external_ai_access_attempt_2026-06-19.md",
+      "phrase": "async",
+      "snippet": "eady` must remain `false`; the final release-candidate commit remains unassigned.  No V4.0 front-door switch, release approval, package/stable-SDK wording, true-zero-copy wording, async wording, public speedup wording, RT-core speedup wording, or broad PyTorch/Numba/DLPack wording is authorized by this report.  ## Next Required Action  Run the existing external r"
+    },
+    {
+      "line": 86,
+      "path": "docs/reviews/codex_v4_m8_external_ai_access_attempt_2026-06-19.md",
+      "phrase": "RT-core speedup",
+      "snippet": "lease-candidate commit remains unassigned.  No V4.0 front-door switch, release approval, package/stable-SDK wording, true-zero-copy wording, async wording, public speedup wording, RT-core speedup wording, or broad PyTorch/Numba/DLPack wording is authorized by this report.  ## Next Required Action  Run the existing external review request through an authenticated Claude or"
+    },
+    {
+      "line": 18,
+      "path": "docs/reviews/codex_v4_m8_external_review_request_2026-06-19.md",
+      "phrase": "true-zero-copy",
+      "snippet": "_2d`; - source-tree runtime is validated on Linux with CuPy, Numba, PyTorch, and   OptiX available; - `v4_release_candidate` exists only as a non-authorizing review gate; - public true-zero-copy, async, package/PyPI/wheel, stable SDK, public speedup,   RTX/RT-core speedup, full PyTorch, full Numba, full DLPack, and non-Python   host claims remain blocked.  Candidate coord"
+    },
+    {
+      "line": 18,
+      "path": "docs/reviews/codex_v4_m8_external_review_request_2026-06-19.md",
+      "phrase": "async",
+      "snippet": "ree runtime is validated on Linux with CuPy, Numba, PyTorch, and   OptiX available; - `v4_release_candidate` exists only as a non-authorizing review gate; - public true-zero-copy, async, package/PyPI/wheel, stable SDK, public speedup,   RTX/RT-core speedup, full PyTorch, full Numba, full DLPack, and non-Python   host claims remain blocked.  Candidate coordinates:"
+    },
+    {
+      "line": 18,
+      "path": "docs/reviews/codex_v4_m8_external_review_request_2026-06-19.md",
+      "phrase": "PyPI",
+      "snippet": "validated on Linux with CuPy, Numba, PyTorch, and   OptiX available; - `v4_release_candidate` exists only as a non-authorizing review gate; - public true-zero-copy, async, package/PyPI/wheel, stable SDK, public speedup,   RTX/RT-core speedup, full PyTorch, full Numba, full DLPack, and non-Python   host claims remain blocked.  Candidate coordinates:  - implementa"
+    },
+    {
+      "line": 19,
+      "path": "docs/reviews/codex_v4_m8_external_review_request_2026-06-19.md",
+      "phrase": "RT-core speedup",
+      "snippet": "and   OptiX available; - `v4_release_candidate` exists only as a non-authorizing review gate; - public true-zero-copy, async, package/PyPI/wheel, stable SDK, public speedup,   RTX/RT-core speedup, full PyTorch, full Numba, full DLPack, and non-Python   host claims remain blocked.  Candidate coordinates:  - implementation evidence baseline:   `bbc43984b74dee7d52c059b295c5ea"
+    },
+    {
+      "line": 55,
+      "path": "docs/reviews/codex_v4_m8_external_review_request_2026-06-19.md",
+      "phrase": "PyPI",
+      "snippet": "ce_tree_runtime_preflight.py --require-v4-gpu-runtime`:     pass;   - `scripts/v4_0_editable_install_runtime_probe.py --system-site-packages     --run-v4-smoke`: pass;   - package/PyPI/wheel/stable SDK claims remain unauthorized. - Linux no-expansion review-head validation on `192.168.1.20` at   `3e22e03bd4fe70454a7b5a11b30c7990c4dfff9d`:   - `scripts/run_test_m"
+    },
+    {
+      "line": 67,
+      "path": "docs/reviews/codex_v4_m8_external_review_request_2026-06-19.md",
+      "phrase": "zero-copy",
+      "snippet": "heck`: pass;   - worktree clean.  Please answer:  1. Is the M8 packet honest enough to be the V4.0 experimental release-candidate    review baseline? 2. Does any wording overclaim zero-copy, stream ownership, async behavior,    package/runtime readiness, PyTorch/DLPack breadth, or RT-core performance? 3. Is the first route useful enough as the V4.0 experimental headl"
+    },
+    {
+      "line": 67,
+      "path": "docs/reviews/codex_v4_m8_external_review_request_2026-06-19.md",
+      "phrase": "async",
+      "snippet": "an.  Please answer:  1. Is the M8 packet honest enough to be the V4.0 experimental release-candidate    review baseline? 2. Does any wording overclaim zero-copy, stream ownership, async behavior,    package/runtime readiness, PyTorch/DLPack breadth, or RT-core performance? 3. Is the first route useful enough as the V4.0 experimental headline, or is it    still to"
+    },
+    {
+      "line": 28,
+      "path": "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
+      "phrase": "true-zero-copy",
+      "snippet": "Shared P0/P1 Findings  1. Release-candidate readiness remains false. The blocker manifest still has    open gates for external review, package/runtime, front-door docs, public    true-zero-copy, async, speed, full framework surfaces, and SDK/C ABI. 2. The M8 evidence coordinates must not be mistaken for final release-candidate    coordinates. A final RC decision needs on"
+    },
+    {
+      "line": 28,
+      "path": "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
+      "phrase": "async",
+      "snippet": "ndings  1. Release-candidate readiness remains false. The blocker manifest still has    open gates for external review, package/runtime, front-door docs, public    true-zero-copy, async, speed, full framework surfaces, and SDK/C ABI. 2. The M8 evidence coordinates must not be mistaken for final release-candidate    coordinates. A final RC decision needs one expli"
+    },
+    {
+      "line": 60,
+      "path": "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
+      "phrase": "package install",
+      "snippet": "cribing current validated scope. - Run the final validation bundle after the fixes.  ## Non-Actions  The review does not authorize:  - V4.0 current-release/front-door promotion; - package install, PyPI, wheel, or stable SDK claims; - public true-zero-copy claims; - async/nonblocking completion claims; - public speedup, RTX speedup, or RT-core speedup claims; - full PyTorch"
+    },
+    {
+      "line": 60,
+      "path": "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
+      "phrase": "PyPI",
+      "snippet": "alidated scope. - Run the final validation bundle after the fixes.  ## Non-Actions  The review does not authorize:  - V4.0 current-release/front-door promotion; - package install, PyPI, wheel, or stable SDK claims; - public true-zero-copy claims; - async/nonblocking completion claims; - public speedup, RTX speedup, or RT-core speedup claims; - full PyTorch, full"
+    },
+    {
+      "line": 61,
+      "path": "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
+      "phrase": "true-zero-copy",
+      "snippet": "undle after the fixes.  ## Non-Actions  The review does not authorize:  - V4.0 current-release/front-door promotion; - package install, PyPI, wheel, or stable SDK claims; - public true-zero-copy claims; - async/nonblocking completion claims; - public speedup, RTX speedup, or RT-core speedup claims; - full PyTorch, full Numba, or full DLPack surface claims; - public multi-"
+    },
+    {
+      "line": 62,
+      "path": "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
+      "phrase": "async",
+      "snippet": "# Non-Actions  The review does not authorize:  - V4.0 current-release/front-door promotion; - package install, PyPI, wheel, or stable SDK claims; - public true-zero-copy claims; - async/nonblocking completion claims; - public speedup, RTX speedup, or RT-core speedup claims; - full PyTorch, full Numba, or full DLPack surface claims; - public multi-language C ABI o"
+    },
+    {
+      "line": 62,
+      "path": "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
+      "phrase": "nonblocking",
+      "snippet": "Actions  The review does not authorize:  - V4.0 current-release/front-door promotion; - package install, PyPI, wheel, or stable SDK claims; - public true-zero-copy claims; - async/nonblocking completion claims; - public speedup, RTX speedup, or RT-core speedup claims; - full PyTorch, full Numba, or full DLPack surface claims; - public multi-language C ABI or non-Python"
+    },
+    {
+      "line": 63,
+      "path": "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
+      "phrase": "RTX speedup",
+      "snippet": "urrent-release/front-door promotion; - package install, PyPI, wheel, or stable SDK claims; - public true-zero-copy claims; - async/nonblocking completion claims; - public speedup, RTX speedup, or RT-core speedup claims; - full PyTorch, full Numba, or full DLPack surface claims; - public multi-language C ABI or non-Python host support."
+    },
+    {
+      "line": 63,
+      "path": "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
+      "phrase": "RT-core speedup",
+      "snippet": "ront-door promotion; - package install, PyPI, wheel, or stable SDK claims; - public true-zero-copy claims; - async/nonblocking completion claims; - public speedup, RTX speedup, or RT-core speedup claims; - full PyTorch, full Numba, or full DLPack surface claims; - public multi-language C ABI or non-Python host support."
+    },
+    {
       "line": 23,
       "path": "README.md",
       "phrase": "true-zero-copy",
@@ -541,6 +1069,12 @@
       "snippet": "ython examples/current/getting_started/rtdl_hello_world.py ```  That command only makes this checkout importable as `rtdsl` in your active environment. It is not a PyPI, wheel, or package-install support claim.  Windows `cmd.exe`:  ```bat set PYTHONPATH=src;. python scripts\\rtdl_source_tree_doctor.py python examples\\current\\getting_started\\rtdl_hello_world.py python exampl"
     },
     {
+      "line": 166,
+      "path": "README.md",
+      "phrase": "zero-copy",
+      "snippet": "ost important RTDL release line so far. It keeps the V3.0 ten-app benchmark route closure and adds the post-release boundary cleanup that fences V4 preparatory embedding/C ABI/SDK/zero-copy work out of the user front door.  The current matrix separates promoted benchmark apps from learner/example apps. Promoted benchmarks are reconstruction instruments for RTDL langu"
+    },
+    {
       "line": 172,
       "path": "README.md",
       "phrase": "package-install",
@@ -563,6 +1097,12 @@
       "path": "README.md",
       "phrase": "generated bindings",
       "snippet": "s are closed, while paper-reproduction, author-code superiority, automatic partner selection, and whole-app speedup wording remain evidence-gated. Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are V4.0 scope, not V3.0 release claims.  The V3.0 partner rule is user"
+    },
+    {
+      "line": 184,
+      "path": "README.md",
+      "phrase": "zero-copy",
+      "snippet": "tic partner selection, and whole-app speedup wording remain evidence-gated. Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are V4.0 scope, not V3.0 release claims.  The V3.0 partner rule is user-chosen and evidence-gated:  - use fused RTDL primitives first"
     },
     {
       "line": 50,
@@ -615,6 +1155,7 @@
   "public_files_scanned": [
     "docs/engineering/README.md",
     "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
+    "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
     "docs/learn/current_claim_boundaries.md",
     "docs/README.md",
     "docs/release_reports/README.md",
@@ -626,6 +1167,10 @@
     "docs/release_reports/v3_0_2/release_statement.md",
     "docs/release_reports/v3_0_2/support_matrix.md",
     "docs/release_reports/v3_0_2/tag_preparation.md",
+    "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+    "docs/reviews/codex_v4_m8_external_ai_access_attempt_2026-06-19.md",
+    "docs/reviews/codex_v4_m8_external_review_request_2026-06-19.md",
+    "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
     "README.md",
     "src/v4/README.md"
   ],

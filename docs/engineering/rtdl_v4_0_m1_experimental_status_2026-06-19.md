@@ -136,6 +136,7 @@ Current machine-readable blocker manifest:
 - "Nonzero caller CUDA streams are propagated through prepare and query; the route synchronizes before return."
 - "Same-stream producer -> RTDL prepare/query -> consumer ordering is validated on one nondefault CuPy CUDA stream."
 - "Different nonzero prepare/query CUDA streams are ordered by a native prepare-ready event for the fixed-radius M1 route."
+- "The current experimental scope is one CUDA device per route invocation; multi-GPU runtime behavior is not claimed."
 - "A CuPy-backed DLPack-only wrapper smoke exercises the generic DLPack adapter."
 - "The fixed-radius M1 route has experimental legacy DLPack capsule evidence with stream argument propagation and pointer echo."
 - "The fixed-radius M1 route has experimental PyTorch CUDA tensor evidence with pointer echo, same-stream checksum, direct torch stream objects, distinct prepare/query stream ordering, caller-owned outputs, detached tensor acceptance, and fail-closed compatibility cases."

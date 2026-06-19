@@ -334,6 +334,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "V4.0 is ready for critical review as an experimental source-tree candidate",
             "OptiX-backed Python GPU operator direction",
             "current user release remains `v3.0.2`",
+            "one CUDA device per route invocation",
+            "multi-GPU runtime behavior is not a V4.0 claim",
             "fixed_radius_count_threshold_2d",
             "rtdsl.prepare_v4_fixed_radius_count_threshold_2d",
             "rtdsl.run_v4_fixed_radius_count_threshold_2d",
@@ -380,7 +382,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         evidence_by_id = {entry["id"]: entry for entry in blockers["evidence_ready"]}
 
         self.assertEqual(
-            "m8_review_baseline_written_external_ai_access_blocked_release_candidate_still_blocked",
+            "m8_external_claude_review_accepted_final_validation_pending_release_candidate_still_blocked",
             blockers["status"],
         )
         self.assertFalse(blockers["release_candidate_ready"])
@@ -431,7 +433,6 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertIn("v4_release_candidate", run_test_matrix.TEST_GROUPS)
 
         for blocker_id in (
-            "external_release_candidate_review",
             "public_true_zero_copy",
             "async_completion",
             "public_speedup",
@@ -591,9 +592,10 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["reason"],
         )
         self.assertEqual(
-            "external_ai_access_attempted_but_not_completed",
+            "closed_by_claude_external_review_final_validation_pending",
             blocking_by_id["external_release_candidate_review"]["current_preflight"]["status"],
         )
+        self.assertTrue(blocking_by_id["external_release_candidate_review"]["closed"])
         self.assertEqual(
             "docs/reviews/codex_v4_after_editable_install_m8_external_review_consensus_2026-06-19.md",
             blocking_by_id["external_release_candidate_review"]["current_preflight"]["consensus"],
@@ -602,6 +604,12 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "docs/reviews/codex_v4_m8_external_ai_access_attempt_2026-06-19.md",
             blocking_by_id["external_release_candidate_review"]["current_preflight"][
                 "access_attempt"
+            ],
+        )
+        self.assertEqual(
+            "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+            blocking_by_id["external_release_candidate_review"]["current_preflight"][
+                "external_review"
             ],
         )
         self.assertIn(
@@ -733,6 +741,13 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             self.assertFalse(report["run_v4_smoke"])
             self.assertEqual("not_run", report["inspection"]["v4_smoke"]["status"])
 
+        probe_source = (ROOT / "scripts" / "v4_0_editable_install_runtime_probe.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("blocked_missing_native_library", probe_source)
+        self.assertIn('"native_async_claim_authorized": False', probe_source)
+        self.assertIn('"async_claim_authorized": False', probe_source)
+
     def test_after_editable_install_consensus_requires_external_review_next(self) -> None:
         consensus = AFTER_EDITABLE_INSTALL_CONSENSUS.read_text(encoding="utf-8")
         compact = _compact(consensus)
@@ -764,6 +779,20 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertFalse(report["front_door"]["v4_release_reports_dir_exists"])
         self.assertIn("README.md", report["public_files_scanned"])
         self.assertIn("src/v4/README.md", report["public_files_scanned"])
+        self.assertIn(
+            "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+            report["public_files_scanned"],
+        )
+        self.assertIn(
+            "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+            report["public_files_scanned"],
+        )
+        self.assertTrue(
+            any(
+                occurrence["phrase"].lower() == "zero-copy"
+                for occurrence in report["accepted_negative_occurrences"]
+            )
+        )
         self.assertFalse(report["claim_boundaries"]["v4_current_release_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["stable_v4_sdk_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["public_true_zero_copy_claim_authorized"])

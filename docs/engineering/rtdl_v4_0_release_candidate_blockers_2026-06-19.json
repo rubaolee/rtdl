@@ -1,6 +1,6 @@
 {
   "version": "rtdl.v4_0.release_candidate_blockers.2026-06-19",
-  "status": "m8_review_baseline_written_external_ai_access_blocked_release_candidate_still_blocked",
+  "status": "m8_external_claude_review_accepted_final_validation_pending_release_candidate_still_blocked",
   "date": "2026-06-19",
   "current_release_remains": "v3.0.2",
   "v4_position": "experimental_m1_review_baseline_not_current_release",
@@ -145,6 +145,12 @@
       "status": "external_review_not_completed_access_blocked",
       "path": "docs/reviews/codex_v4_m8_external_ai_access_attempt_2026-06-19.md",
       "note": "Claude/Gemini external review was attempted through connector discovery, Gemini CLI, Claude Code CLI, browser sessions, Claude desktop app control, Antigravity agentapi, WSL, and reachable Linux host checks. No external model verdict was obtained, so this does not satisfy the external-AI release review requirement."
+    },
+    {
+      "id": "claude_v4_m8_external_review",
+      "status": "accepted_with_blockers_external_review",
+      "path": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+      "note": "Claude Code independent read-only review accepts the M8 packet as the V4.0 experimental review baseline, closes the external-review side once recorded, and keeps release_candidate_ready false until final_release_candidate_commit is assigned with a fresh full validation bundle."
     }
   ],
   "blockers": [
@@ -166,14 +172,17 @@
     },
     {
       "id": "external_release_candidate_review",
-      "closed": false,
+      "closed": true,
       "current_preflight": {
         "date": "2026-06-19",
-        "status": "external_ai_access_attempted_but_not_completed",
+        "status": "closed_by_claude_external_review_final_validation_pending",
         "consensus": "docs/reviews/codex_v4_after_editable_install_m8_external_review_consensus_2026-06-19.md",
         "request": "docs/reviews/codex_v4_m8_external_review_request_2026-06-19.md",
         "access_attempt": "docs/reviews/codex_v4_m8_external_ai_access_attempt_2026-06-19.md",
-        "reason": "After source-tree runtime and editable-install hygiene passed, 2-AI consensus says external M8 critical review is the next gate. Claude/Gemini access was attempted from the current environment but no external model verdict was obtained. No feature expansion or front-door switch is authorized before that verdict."
+        "external_review": "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+        "verdict": "accept_with_blockers",
+        "release_candidate_ready_recommendation": false,
+        "reason": "Claude Code independent read-only review accepted the M8 packet as the V4.0 experimental review baseline and found no active forbidden-claim violations. This closes the external-review side only. No feature expansion or front-door switch is authorized; release_candidate_ready remains false until final_release_candidate_commit is assigned with a fresh full validation bundle."
       },
       "required_evidence": "2+ AI and external/maintainer review of the final V4 release-candidate packet.",
       "blocking_claims": [

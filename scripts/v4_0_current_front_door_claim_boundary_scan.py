@@ -17,6 +17,11 @@ PUBLIC_PATTERNS = (
     "src/v4/README.md",
     "docs/engineering/README.md",
     "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
+    "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+    "docs/reviews/codex_v4_m8_external_review_request_2026-06-19.md",
+    "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
+    "docs/reviews/codex_v4_m8_external_ai_access_attempt_2026-06-19.md",
+    "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
 )
 
 CLAIM_PATTERNS = (
@@ -31,6 +36,7 @@ CLAIM_PATTERNS = (
     r"\bpublic multi-language C ABI release\b",
     r"\btrue[- ]zero[- ]copy\b",
     r"\bend-to-end zero[- ]copy\b",
+    r"\bzero[- ]copy\b",
     r"\bno copies\b",
     r"\bno staging\b",
     r"\bno H2D copies\b",
@@ -88,6 +94,11 @@ NEGATIVE_CONTEXT = (
     "not part of",
     "non-claims",
     "public wording boundaries",
+    "no observed host staging",
+    "overclaim",
+    "too broad",
+    "review request",
+    "external review",
 )
 
 NEGATIVE_SECTION_HEADINGS = (
@@ -98,6 +109,11 @@ NEGATIVE_SECTION_HEADINGS = (
     "release boundary",
     "public wording boundaries",
     "current claim flags",
+    "review request",
+    "forbidden wording",
+    "p0 blockers",
+    "p1 risks",
+    "p2 polish issues",
 )
 
 

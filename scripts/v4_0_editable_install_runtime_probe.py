@@ -175,7 +175,14 @@ except Exception as exc:
     }}
 
 payload["v4_smoke"] = {{"requested": {smoke}, "status": "not_run"}}
-if {smoke}:
+if {smoke} and payload["native_library"]["status"] != "found":
+    payload["v4_smoke"] = {{
+        "requested": True,
+        "status": "blocked_missing_native_library",
+        "native_library_status": payload["native_library"]["status"],
+        "native_library_error": payload["native_library"].get("error"),
+    }}
+elif {smoke}:
     import cupy as cp
 
     search = {{
@@ -223,6 +230,8 @@ if {smoke}:
         "caller_stream_handle_nonzero": int(stream.ptr) != 0,
         "native_synchronized_before_return": bool(meta["native_synchronized_before_return"]),
         "native_async_ready": bool(meta["native_async_ready"]),
+        "native_async_ready_is_metadata_only": True,
+        "native_async_claim_authorized": False,
         "public_true_zero_copy_authorized": bool(meta["v4_true_zero_copy_claim_authorized"]),
     }}
 
@@ -373,6 +382,9 @@ def _payload(
             "stable_sdk_claim_authorized": False,
             "generated_binding_package_claim_authorized": False,
             "v4_current_front_door_authorized": False,
+            "async_claim_authorized": False,
+            "native_async_claim_authorized": False,
+            "public_true_zero_copy_claim_authorized": False,
         },
         "notes": [
             "This validates local editable source-tree import hygiene only.",

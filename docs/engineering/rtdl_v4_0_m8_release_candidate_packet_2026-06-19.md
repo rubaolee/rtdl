@@ -40,6 +40,10 @@ speedup wording, or RTX/RT-core speedup wording.
 V4.0 is scoped to Python actors using RTDL as an OptiX-backed GPU operator
 lane.
 
+The current experimental scope is one CUDA device per route invocation.
+Mixed-device fixed-radius M1 inputs fail closed; multi-GPU runtime behavior is
+not a V4.0 claim.
+
 The first candidate product route is:
 
 `fixed_radius_count_threshold_2d`
@@ -138,6 +142,7 @@ The current evidence does not validate:
 | M8 next-step consensus | `docs/reviews/codex_v4_after_runtime_preflight_m8_next_step_2ai_consensus_2026-06-19.md` | 2-AI decision to assemble this M8 packet before broad feature expansion. |
 | M8 internal critical review | `docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md` | 2-AI review accepts this as a baseline and rejects release-candidate readiness today. |
 | Package/runtime tie-breaker | `docs/reviews/codex_v4_package_runtime_tiebreaker_2026-06-19.md` | Requires editable-install hygiene evidence while keeping package/PyPI/wheel claims blocked. |
+| Claude external M8 review | `docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md` | Accepts the M8 packet as the V4.0 experimental review baseline with blockers; release-candidate readiness remains false until a final validation commit is assigned. |
 
 ## Validation Summary
 
@@ -207,7 +212,7 @@ This M8 packet does not authorize:
 
 | Gate | Current state |
 | --- | --- |
-| External M8 critical review | Open; this packet is the review input. |
+| External M8 critical review | Closed by Claude external review; final release-candidate validation remains open. |
 | Package/runtime decision | Source-tree runtime and editable-install hygiene are validated; package/PyPI/wheel/stable SDK claims remain blocked. |
 | Front-door docs switch | Blocked until release approval and explicit user action. |
 | Public true-zero-copy | Blocked until end-to-end copy evidence exists. |
