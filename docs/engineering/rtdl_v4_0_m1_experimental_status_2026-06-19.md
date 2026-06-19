@@ -136,6 +136,12 @@ Current machine-readable blocker manifest:
 | PyTorch route evidence | not yet present |
 | Full DLPack capsule/framework route evidence | blocked |
 
+PyTorch preflight on `192.168.1.20`, 2026-06-19: blocked by runtime
+availability. The host has CuPy/Numba but no `torch` module; there is no
+passwordless sudo, `python3.12-venv` is unavailable, and the attempted user-site
+Torch dry-run was unbounded and stopped. No PyTorch route support wording is
+authorized until an actual CUDA tensor smoke passes.
+
 ## Next Gates
 
 1. Keep the M1 route reproducible on current head.

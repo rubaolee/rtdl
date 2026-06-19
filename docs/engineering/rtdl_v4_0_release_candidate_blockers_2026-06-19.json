@@ -128,6 +128,12 @@
     {
       "id": "pytorch_route_evidence",
       "closed": false,
+      "current_preflight": {
+        "host": "192.168.1.20",
+        "date": "2026-06-19",
+        "status": "blocked_runtime_unavailable",
+        "reason": "Python 3.12 host has CuPy/Numba but no torch module; no passwordless sudo; python3.12-venv unavailable; user-site torch dry-run was unbounded and was stopped."
+      },
       "required_evidence": "PyTorch CUDA tensor route smoke/parity/lifetime/stream evidence.",
       "blocking_claims": [
         "PyTorch support",

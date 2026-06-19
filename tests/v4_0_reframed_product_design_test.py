@@ -215,6 +215,10 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             self.assertIs(blocking_by_id[blocker_id]["closed"], False)
         self.assertTrue(blocking_by_id["claim_boundary_scan"]["closed"])
         self.assertEqual(
+            "blocked_runtime_unavailable",
+            blocking_by_id["pytorch_route_evidence"]["current_preflight"]["status"],
+        )
+        self.assertEqual(
             "docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json",
             blocking_by_id["claim_boundary_scan"]["evidence"],
         )
