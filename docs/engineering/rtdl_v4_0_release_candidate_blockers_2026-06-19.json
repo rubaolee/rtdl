@@ -1,6 +1,6 @@
 {
   "version": "rtdl.v4_0.release_candidate_blockers.2026-06-19",
-  "status": "m8_review_baseline_written_release_candidate_still_blocked",
+  "status": "m8_review_baseline_written_external_ai_access_blocked_release_candidate_still_blocked",
   "date": "2026-06-19",
   "current_release_remains": "v3.0.2",
   "v4_position": "experimental_m1_review_baseline_not_current_release",
@@ -139,6 +139,12 @@
       "status": "experimental_m1_evidence",
       "path": "tests/v4_0_m1_fixed_radius_route_test.py",
       "note": "CUDA Array Interface route planning preserves explicit device identity where available and fails closed on mixed-device fixed-radius M1 columns. Multi-GPU runtime claims remain blocked."
+    },
+    {
+      "id": "external_ai_access_attempt",
+      "status": "external_review_not_completed_access_blocked",
+      "path": "docs/reviews/codex_v4_m8_external_ai_access_attempt_2026-06-19.md",
+      "note": "Claude/Gemini external review was attempted through connector discovery, Gemini CLI, Claude Code CLI, browser sessions, Claude desktop app control, Antigravity agentapi, WSL, and reachable Linux host checks. No external model verdict was obtained, so this does not satisfy the external-AI release review requirement."
     }
   ],
   "blockers": [
@@ -163,10 +169,11 @@
       "closed": false,
       "current_preflight": {
         "date": "2026-06-19",
-        "status": "next_gate_after_editable_install_hygiene",
+        "status": "external_ai_access_attempted_but_not_completed",
         "consensus": "docs/reviews/codex_v4_after_editable_install_m8_external_review_consensus_2026-06-19.md",
         "request": "docs/reviews/codex_v4_m8_external_review_request_2026-06-19.md",
-        "reason": "After source-tree runtime and editable-install hygiene passed, 2-AI consensus says external M8 critical review is the next gate. No feature expansion or front-door switch is authorized before that verdict."
+        "access_attempt": "docs/reviews/codex_v4_m8_external_ai_access_attempt_2026-06-19.md",
+        "reason": "After source-tree runtime and editable-install hygiene passed, 2-AI consensus says external M8 critical review is the next gate. Claude/Gemini access was attempted from the current environment but no external model verdict was obtained. No feature expansion or front-door switch is authorized before that verdict."
       },
       "required_evidence": "2+ AI and external/maintainer review of the final V4 release-candidate packet.",
       "blocking_claims": [

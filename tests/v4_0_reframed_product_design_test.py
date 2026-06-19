@@ -379,7 +379,10 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         blocking_by_id = {entry["id"]: entry for entry in blockers["blockers"]}
         evidence_by_id = {entry["id"]: entry for entry in blockers["evidence_ready"]}
 
-        self.assertEqual("m8_review_baseline_written_release_candidate_still_blocked", blockers["status"])
+        self.assertEqual(
+            "m8_review_baseline_written_external_ai_access_blocked_release_candidate_still_blocked",
+            blockers["status"],
+        )
         self.assertFalse(blockers["release_candidate_ready"])
         self.assertEqual("v3.0.2", blockers["current_release_remains"])
         self.assertEqual("experimental_m1_review_baseline_not_current_release", blockers["v4_position"])
@@ -588,12 +591,18 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["reason"],
         )
         self.assertEqual(
-            "next_gate_after_editable_install_hygiene",
+            "external_ai_access_attempted_but_not_completed",
             blocking_by_id["external_release_candidate_review"]["current_preflight"]["status"],
         )
         self.assertEqual(
             "docs/reviews/codex_v4_after_editable_install_m8_external_review_consensus_2026-06-19.md",
             blocking_by_id["external_release_candidate_review"]["current_preflight"]["consensus"],
+        )
+        self.assertEqual(
+            "docs/reviews/codex_v4_m8_external_ai_access_attempt_2026-06-19.md",
+            blocking_by_id["external_release_candidate_review"]["current_preflight"][
+                "access_attempt"
+            ],
         )
         self.assertIn(
             "No feature expansion or front-door switch is authorized",
