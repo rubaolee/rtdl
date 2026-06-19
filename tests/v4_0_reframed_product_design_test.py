@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import unittest
 
@@ -21,8 +22,19 @@ ROUTE_CONSENSUS = (
 )
 DESIGN = ROOT / "docs" / "engineering" / "rtdl_v4_0_design_review_packet_2026-06-19.md"
 ACTIVE_ABI_NOTE = ROOT / "docs" / "engineering" / "rtdl_v4_0_active_abi_slice_2026-06-19.md"
+M1_STATUS = ROOT / "docs" / "engineering" / "rtdl_v4_0_m1_experimental_status_2026-06-19.md"
 ACTIVE_README = ROOT / "src" / "v4" / "README.md"
 V4_OPERATOR = ROOT / "src" / "rtdsl" / "v4_0_device_array_operator.py"
+RELEASE_POSITIONING = (
+    ROOT / "docs" / "reviews" / "codex_v4_m1_release_positioning_2ai_consensus_2026-06-19.md"
+)
+BENCHMARK_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_benchmark_probe_2026-06-19.json"
+NO_HOST_STAGE_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe_2026-06-19.json"
+FRONT_PAGE = ROOT / "README.md"
+DOCS_INDEX = ROOT / "docs" / "README.md"
+RELEASE_REPORTS_INDEX = ROOT / "docs" / "release_reports" / "README.md"
+VERSION = ROOT / "VERSION"
+PYPROJECT = ROOT / "pyproject.toml"
 
 
 def _compact(text: str) -> str:
@@ -136,6 +148,55 @@ class V40ReframedProductDesignTest(unittest.TestCase):
 
         self.assertIn("not the V4.0 product headline", active_note)
         self.assertIn("not the V4.0 headline", _compact(readme))
+
+    def test_m1_status_packet_records_experimental_not_current_release_position(self) -> None:
+        status = M1_STATUS.read_text(encoding="utf-8")
+        consensus = RELEASE_POSITIONING.read_text(encoding="utf-8")
+        engineering_index = (ROOT / "docs" / "engineering" / "README.md").read_text(encoding="utf-8")
+
+        for token in (
+            "experimental engineering evidence, not current release",
+            "Latest validated head: `95b724159e9e6e0e1ab734850ceede2c3a7ca692`",
+            "fixed_radius_count_threshold_2d",
+            "Zero-copy device-column handoff with no observed host staging of named columns",
+            "V4.0 is the current release",
+            "blocked",
+            "v4_release_candidate",
+        ):
+            self.assertIn(token, status)
+
+        self.assertIn("Do not promote V4.0", consensus)
+        self.assertIn("Keep `v3.0.2` as the current source-tree release", consensus)
+        self.assertIn("RTDL V4.0 M1 Experimental Status", engineering_index)
+
+    def test_release_front_door_stays_v3_while_m1_claim_flags_are_blocked(self) -> None:
+        benchmark = json.loads(BENCHMARK_REPORT.read_text(encoding="utf-8"))
+        no_host_stage = json.loads(NO_HOST_STAGE_REPORT.read_text(encoding="utf-8"))
+
+        blocked_flags = (
+            benchmark["claim_boundaries"]["public_speedup_claim_authorized"],
+            benchmark["claim_boundaries"]["rt_core_speedup_claim_authorized"],
+            benchmark["claim_boundaries"]["v4_true_zero_copy_claim_authorized"],
+            benchmark["claim_boundaries"]["async_claim_authorized"],
+            no_host_stage["claim_boundaries"]["public_speedup_claim_authorized"],
+            no_host_stage["claim_boundaries"]["rt_core_speedup_claim_authorized"],
+            no_host_stage["claim_boundaries"]["v4_true_zero_copy_claim_authorized"],
+            no_host_stage["claim_boundaries"]["async_claim_authorized"],
+        )
+        self.assertEqual((False,) * len(blocked_flags), blocked_flags)
+
+        front_page = FRONT_PAGE.read_text(encoding="utf-8")
+        docs_index = DOCS_INDEX.read_text(encoding="utf-8")
+        release_reports = RELEASE_REPORTS_INDEX.read_text(encoding="utf-8")
+        pyproject = PYPROJECT.read_text(encoding="utf-8")
+
+        self.assertEqual("v3.0.2", VERSION.read_text(encoding="utf-8").strip())
+        self.assertIn('version = "3.0.2"', pyproject)
+        self.assertIn("current v3.0.2 source-tree RTDL surface", front_page)
+        self.assertIn("RTDL v3.0.2 is the active source-tree", docs_index)
+        self.assertIn("RTDL v3.0.2 Release Package", release_reports)
+        self.assertNotIn("RTDL V4.0 Release Package", release_reports)
+        self.assertFalse((ROOT / "docs" / "release_reports" / "v4_0").exists())
 
     def test_v4_active_matrix_includes_design_reframing_gate(self) -> None:
         modules = run_test_matrix.group_modules("v4_active")

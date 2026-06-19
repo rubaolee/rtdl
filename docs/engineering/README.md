@@ -7,5 +7,6 @@ learner-facing release documentation.
 
 ## Active Packets
 
+- [RTDL V4.0 M1 Experimental Status](rtdl_v4_0_m1_experimental_status_2026-06-19.md)
 - [RTDL V4.0 Design Review Packet](rtdl_v4_0_design_review_packet_2026-06-19.md)
 - [RTDL V4.0 Active ABI Slice](rtdl_v4_0_active_abi_slice_2026-06-19.md)
