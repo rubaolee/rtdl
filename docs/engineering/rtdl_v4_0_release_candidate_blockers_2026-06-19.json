@@ -13,7 +13,7 @@
   "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
   "latest_validated_m1_cross_stream_evidence_scope": "clean source-tree commit after push",
   "latest_validated_m1_cross_stream_v4_active_tests": 53,
-  "current_source_tree_v4_active_tests": 61,
+  "current_source_tree_v4_active_tests": 64,
   "evidence_ready": [
     {
       "id": "v4_active_gate",
@@ -49,7 +49,13 @@
       "id": "dlpack_capsule_fixed_radius_m1_probe",
       "status": "experimental_m1_evidence",
       "path": "docs/reports/v4_0_m1_fixed_radius_dlpack_capsule_probe_2026-06-19.json",
-      "note": "Real legacy DLPack capsule intake is validated for the fixed-radius M1 route, including stream argument propagation, pointer identity, native pointer echo, output correctness, consume-once, and deleter-once guards. Full framework-neutral DLPack and PyTorch remain blocked."
+      "note": "Real legacy DLPack capsule intake is validated for the fixed-radius M1 route, including stream argument propagation, pointer identity, native pointer echo, output correctness, consume-once, and deleter-once guards. Full framework-neutral DLPack remains blocked."
+    },
+    {
+      "id": "pytorch_fixed_radius_m1_cuda_tensor_route_probe",
+      "status": "experimental_m1_evidence",
+      "path": "docs/reports/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19.json",
+      "note": "PyTorch CUDA tensor route is validated for the exact fixed-radius M1 operator with pointer identity, native pointer echo, same-stream checksum, caller-owned outputs, and grad-enabled tensor rejection. Full PyTorch partner-surface wording remains blocked."
     },
     {
       "id": "same_stream_ordering",
@@ -177,17 +183,34 @@
     },
     {
       "id": "pytorch_route_evidence",
+      "closed": true,
+      "current_preflight": {
+        "host": "192.168.1.20",
+        "date": "2026-06-19",
+        "status": "closed_fixed_radius_m1_pytorch_cuda_tensor_route",
+        "evidence": "docs/reports/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19.json",
+        "reason": "The fixed-radius V4 M1 route now has PyTorch CUDA tensor evidence for pointer identity, native pointer echo, same-stream checksum, caller-owned outputs, and grad-enabled tensor rejection. This authorizes only exact fixed-radius M1 PyTorch CUDA tensor route wording, not a full PyTorch partner surface."
+      },
+      "required_evidence": "PyTorch CUDA tensor route smoke/parity/lifetime/stream evidence.",
+      "blocking_claims": [
+        "PyTorch route validated"
+      ]
+    },
+    {
+      "id": "full_pytorch_partner_surface",
       "closed": false,
       "current_preflight": {
         "host": "192.168.1.20",
         "date": "2026-06-19",
-        "status": "blocked_runtime_unavailable",
-        "reason": "Python 3.12 host has CuPy/Numba but no torch module; no passwordless sudo; python3.12-venv unavailable; user-site torch dry-run was unbounded and was stopped."
+        "status": "m1_pytorch_cuda_tensor_route_evidence_ready_but_full_surface_wording_blocked",
+        "evidence": "docs/reports/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19.json",
+        "reason": "The fixed-radius V4 M1 route now has PyTorch CUDA tensor route evidence. This does not validate arbitrary PyTorch tensor layouts, autograd integration, view semantics, multiple operators, graph/compiler integration, or broad PyTorch program acceleration."
       },
-      "required_evidence": "PyTorch CUDA tensor route smoke/parity/lifetime/stream evidence.",
+      "required_evidence": "A defined public PyTorch surface contract beyond the single V4 M1 fixed-radius CUDA tensor route: dtype/rank/stride/device compatibility matrix, detached/autograd policy, view/non-contiguous behavior, stream and lifetime ownership semantics, broader route/API coverage, docs, and claim-scan guards for the exact public wording.",
       "blocking_claims": [
-        "PyTorch support",
-        "PyTorch route validated"
+        "full PyTorch support",
+        "PyTorch partner surface validated",
+        "arbitrary PyTorch program acceleration"
       ]
     },
     {
@@ -198,7 +221,7 @@
         "date": "2026-06-19",
         "status": "fixed_radius_m1_legacy_dlpack_capsule_route_ready_but_full_framework_neutral_blocked",
         "evidence": "docs/reports/v4_0_m1_fixed_radius_dlpack_capsule_probe_2026-06-19.json",
-        "reason": "The fixed-radius V4 M1 route now has real legacy DLPack capsule intake with stream argument propagation, pointer identity, native pointer echo, output correctness, and Python consume-once/deleter-once guards. This authorizes only narrow fixed-radius M1 DLPack capsule wording, not arbitrary framework-neutral DLPack or PyTorch support."
+        "reason": "The fixed-radius V4 M1 route now has real legacy DLPack capsule intake with stream argument propagation, pointer identity, native pointer echo, output correctness, and Python consume-once/deleter-once guards. This authorizes only narrow fixed-radius M1 DLPack capsule wording, not arbitrary framework-neutral DLPack support."
       },
       "required_evidence": "DLPack capsule ownership, deleter, lifetime, stream, and framework interop evidence.",
       "blocking_claims": [
@@ -231,7 +254,7 @@
         "date": "2026-06-19",
         "status": "source_tree_runtime_story_documented_but_package_flow_blocked",
         "evidence": "docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md",
-        "reason": "The V4 M1 source-tree runtime path is documented and doctor-validated, including Linux CuPy/Numba/OptiX availability, but there is no V4 wheel, PyPI artifact, clean package install flow, or stable SDK package."
+        "reason": "The V4 M1 source-tree runtime path is documented and doctor-validated, including Linux CuPy/Numba/PyTorch/OptiX availability, but there is no V4 wheel, PyPI artifact, clean package install flow, or stable SDK package."
       },
       "required_evidence": "Documented install/runtime path with tested wheel or equivalent package flow.",
       "blocking_claims": [

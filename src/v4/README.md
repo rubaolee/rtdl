@@ -36,12 +36,14 @@ Frozen Phase 1 product route:
   `rtdsl.run_v4_fixed_radius_count_threshold_2d`;
 - route: `fixed_radius_count_threshold_2d`;
 - input: caller-owned CUDA `ids`, `x`, `y` point columns;
-- evidence-backed inputs: CuPy device columns and Numba `DeviceNDArray`
-  columns through `__cuda_array_interface__`;
+- evidence-backed inputs: CuPy device columns, Numba `DeviceNDArray`
+  columns through `__cuda_array_interface__`, and PyTorch CUDA tensors through
+  `data_ptr()` metadata;
 - experimental bridge: CuPy-backed DLPack-only wrapper through the generic
   DLPack adapter;
-- target inputs without full route evidence yet: PyTorch and arbitrary DLPack
-  capsules/framework tensors;
+- target inputs without full route evidence yet: arbitrary DLPack
+  capsules/framework tensors and full PyTorch partner-surface behavior beyond
+  the exact fixed-radius M1 route;
 - output: fixed-size CUDA `query_ids`, `neighbor_counts`, and
   `threshold_flags` columns;
 - stream: nonzero caller CUDA streams are propagated through prepare and query
@@ -57,6 +59,8 @@ Linux evidence command after `make build-optix`:
 
 ```bash
 PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_stream_smoke.py
+PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_numba_partner_surface_probe.py
+PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe.py
 ```
 
 This is not a stable SDK, not a public package-install promise, and not the

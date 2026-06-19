@@ -25,12 +25,12 @@ V4_0_M1_OPERATOR_STATUS = "m1_route_frozen_m2_device_array_intake"
 V4_0_M1_CALLER_STREAM_STATUS = "caller_stream_supported_synchronous"
 V4_0_M1_CROSS_STREAM_STATUS = "fixed_radius_m1_prepare_ready_event_wait_supported_synchronous"
 V4_0_M1_SUPPORTED_INPUT_PROTOCOLS = ("cuda_array_interface", "cupy")
-V4_0_M1_EVIDENCE_BACKED_FRAMEWORKS = ("cupy", "numba")
+V4_0_M1_EVIDENCE_BACKED_FRAMEWORKS = ("cupy", "numba", "pytorch")
 V4_0_M1_EXPERIMENTAL_INPUT_PROTOCOLS = ("dlpack_bridge_wrapper", "legacy_dlpack_capsule")
 V4_0_M1_TARGET_INPUT_PROTOCOLS = ("cuda_array_interface", "dlpack")
 V4_0_M1_TARGET_FRAMEWORKS = ("cupy", "numba", "pytorch", "jax")
 V4_0_M1_BLOCKED_INPUT_PROTOCOLS_WITHOUT_FULL_ROUTE_EVIDENCE = ("full_dlpack_capsule",)
-V4_0_M1_BLOCKED_FRAMEWORKS_WITHOUT_ROUTE_EVIDENCE = ("pytorch", "jax")
+V4_0_M1_BLOCKED_FRAMEWORKS_WITHOUT_ROUTE_EVIDENCE = ("jax",)
 
 _POINT_COLUMNS = ("ids", "x", "y")
 _OUTPUT_COLUMNS = ("query_ids", "neighbor_counts", "threshold_flags")
@@ -181,7 +181,7 @@ def describe_v4_fixed_radius_count_threshold_2d_route() -> dict[str, object]:
             "ray_triangle_any_hit",
             "non_python_hosts",
             "stable_sdk",
-            "pytorch_route_support",
+            "full_pytorch_partner_surface",
             "dlpack_route_support",
             "general_cross_stream_event_wait",
             "full_external_stream_ownership",

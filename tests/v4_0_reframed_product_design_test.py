@@ -234,7 +234,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             53,
             blockers["latest_validated_m1_cross_stream_v4_active_tests"],
         )
-        self.assertEqual(61, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(64, blockers["current_source_tree_v4_active_tests"])
         self.assertEqual(
             "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
             blockers["v4_release_candidate_gate_policy"],
@@ -248,7 +248,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "async_completion",
             "public_speedup",
             "rtx_rt_core_speed_evidence",
-            "pytorch_route_evidence",
+            "full_pytorch_partner_surface",
             "full_dlpack_capsule_route_evidence",
             "full_numba_partner_surface",
             "package_install_runtime_story",
@@ -258,6 +258,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             self.assertIn(blocker_id, blocking_by_id)
             self.assertIs(blocking_by_id[blocker_id]["closed"], False)
         self.assertTrue(blocking_by_id["cross_stream_event_wait"]["closed"])
+        self.assertTrue(blocking_by_id["pytorch_route_evidence"]["closed"])
         self.assertTrue(blocking_by_id["claim_boundary_scan"]["closed"])
         self.assertEqual(
             "closed_fixed_radius_m1_prepare_ready_event_wait",
@@ -278,8 +279,28 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["cross_stream_event_wait"]["current_preflight"]["reason"],
         )
         self.assertEqual(
-            "blocked_runtime_unavailable",
+            "closed_fixed_radius_m1_pytorch_cuda_tensor_route",
             blocking_by_id["pytorch_route_evidence"]["current_preflight"]["status"],
+        )
+        self.assertEqual(
+            "docs/reports/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19.json",
+            blocking_by_id["pytorch_route_evidence"]["current_preflight"]["evidence"],
+        )
+        self.assertIn(
+            "not a full PyTorch partner surface",
+            blocking_by_id["pytorch_route_evidence"]["current_preflight"]["reason"],
+        )
+        self.assertEqual(
+            "m1_pytorch_cuda_tensor_route_evidence_ready_but_full_surface_wording_blocked",
+            blocking_by_id["full_pytorch_partner_surface"]["current_preflight"]["status"],
+        )
+        self.assertEqual(
+            "docs/reports/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19.json",
+            blocking_by_id["full_pytorch_partner_surface"]["current_preflight"]["evidence"],
+        )
+        self.assertIn(
+            "arbitrary PyTorch tensor layouts",
+            blocking_by_id["full_pytorch_partner_surface"]["current_preflight"]["reason"],
         )
         self.assertEqual(
             "fixed_radius_m1_legacy_dlpack_capsule_route_ready_but_full_framework_neutral_blocked",
@@ -290,7 +311,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["full_dlpack_capsule_route_evidence"]["current_preflight"]["evidence"],
         )
         self.assertIn(
-            "not arbitrary framework-neutral DLPack or PyTorch support",
+            "not arbitrary framework-neutral DLPack support",
             blocking_by_id["full_dlpack_capsule_route_evidence"]["current_preflight"]["reason"],
         )
         rtx_preflight = blocking_by_id["rtx_rt_core_speed_evidence"]["current_preflight"]

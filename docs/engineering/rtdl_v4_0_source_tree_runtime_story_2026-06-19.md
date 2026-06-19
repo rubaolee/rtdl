@@ -23,14 +23,15 @@ make build-optix
 PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_numba_partner_surface_probe.py
 PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_dlpack_capsule_probe.py
+PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe.py
 ```
 
 For the current V4 M1 route, Linux GPU runtime evidence requires:
 
 - Python able to import `rtdsl` from the checkout;
 - NumPy;
-- CuPy and Numba for the evidence-backed Python GPU partner paths;
-- CUDA driver/runtime tooling sufficient for CuPy and Numba;
+- CuPy, Numba, and PyTorch for the evidence-backed Python GPU partner paths;
+- CUDA driver/runtime tooling sufficient for CuPy, Numba, and PyTorch;
 - OptiX SDK headers and CUDA compiler/runtime libraries for `make build-optix`;
 - `build/librtdl_optix.so` reachable from the checkout.
 
@@ -55,6 +56,7 @@ Linux `192.168.1.20` source-tree doctor:
 - optional editable source-tree metadata: pass;
 - CuPy: pass;
 - Numba: pass;
+- PyTorch: pass after user-site `torch==2.12.1+cu126` install on the source-tree validation host;
 - OptiX library: pass after `make build-optix`;
 - optional Embree library: warn, not required for V4 M1.
 
@@ -65,6 +67,7 @@ Latest Linux V4 gate on `192.168.1.20` for head
 - `v4_active`: 61 tests, pass;
 - Numba M1 `DeviceNDArray` fixed-radius route probe: pass;
 - DLPack capsule fixed-radius route probe: pass;
+- PyTorch CUDA tensor fixed-radius route probe: pass;
 - front-door claim-boundary scan: pass;
 - `git diff --check`: pass;
 - worktree clean.

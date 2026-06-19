@@ -31,6 +31,9 @@ DLPACK_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_dlpack_bridge_
 DLPACK_CAPSULE_REPORT = (
     ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_dlpack_capsule_probe_2026-06-19.json"
 )
+PYTORCH_REPORT = (
+    ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19.json"
+)
 SMOKE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_smoke.py"
 PARITY_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_parity_matrix.py"
 NO_HOST_STAGE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe.py"
@@ -40,6 +43,7 @@ NUMBA_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_numba_cuda_array_interfa
 NUMBA_PARTNER_SURFACE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_numba_partner_surface_probe.py"
 DLPACK_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_dlpack_bridge_smoke.py"
 DLPACK_CAPSULE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_dlpack_capsule_probe.py"
+PYTORCH_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe.py"
 CLAIM_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_claim_review_2026-06-19.md"
 WORDING_CONSENSUS = (
     ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md"
@@ -370,12 +374,13 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(route["backend"], "optix")
         self.assertEqual(route["output_shape"], "fixed one row per query, no variable neighbor rows")
         self.assertEqual(route["supported_input_protocols"], ("cuda_array_interface", "cupy"))
-        self.assertEqual(route["evidence_backed_frameworks"], ("cupy", "numba"))
+        self.assertEqual(route["evidence_backed_frameworks"], ("cupy", "numba", "pytorch"))
         self.assertEqual(route["experimental_input_protocols"], ("dlpack_bridge_wrapper", "legacy_dlpack_capsule"))
         self.assertIn("dlpack", route["target_input_protocols"])
         self.assertIn("pytorch", route["target_frameworks"])
         self.assertIn("full_dlpack_capsule", route["blocked_input_protocols_without_full_route_evidence"])
-        self.assertIn("pytorch", route["blocked_frameworks_without_route_evidence"])
+        self.assertNotIn("pytorch", route["blocked_frameworks_without_route_evidence"])
+        self.assertIn("jax", route["blocked_frameworks_without_route_evidence"])
         self.assertTrue(route["native_stream_propagation_ready"])
         self.assertTrue(route["native_prepare_stream_propagation_ready"])
         self.assertTrue(route["cross_stream_event_wait_ready"])
@@ -389,7 +394,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertFalse(route["v4_true_zero_copy_claim_authorized"])
         self.assertIn("variable_length_neighbor_rows", route["blocked_generalizations"])
         self.assertIn("ray_triangle_any_hit", route["blocked_generalizations"])
-        self.assertIn("pytorch_route_support", route["blocked_generalizations"])
+        self.assertIn("full_pytorch_partner_surface", route["blocked_generalizations"])
         self.assertIn("dlpack_route_support", route["blocked_generalizations"])
         self.assertIn("general_cross_stream_event_wait", route["blocked_generalizations"])
         self.assertIn("full_external_stream_ownership", route["blocked_generalizations"])
@@ -1167,6 +1172,74 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertFalse(boundaries["rt_core_speedup_claim_authorized"])
         self.assertFalse(boundaries["v4_true_zero_copy_claim_authorized"])
         self.assertIn("does not validate arbitrary framework-neutral DLPack", boundaries["reason"])
+
+    def test_pytorch_cuda_tensor_probe_script_covers_exact_m1_route(self) -> None:
+        script = PYTORCH_SCRIPT.read_text(encoding="utf-8")
+
+        for token in (
+            "import torch",
+            "torch.cuda.Stream",
+            "requires_grad=True",
+            "partner=\"torch\"",
+            "output_columns=outputs",
+            "source_protocols",
+            "torch_cuda_tensor_data_ptr",
+            "pytorch_fixed_radius_m1_cuda_tensor_route_claim_authorized",
+            "pytorch_full_partner_surface_claim_authorized",
+            "framework_neutral_dlpack_route_claim_authorized",
+            "async_claim_authorized",
+            "public_speedup_claim_authorized",
+            "v4_true_zero_copy_claim_authorized",
+            "False",
+            "does not validate a full PyTorch",
+            "partner surface, framework-neutral DLPack",
+        ):
+            self.assertIn(token, script)
+
+    def test_pytorch_cuda_tensor_report_authorizes_only_exact_m1_route(self) -> None:
+        report = json.loads(PYTORCH_REPORT.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["status"], "pass-with-boundary")
+        self.assertEqual(report["route_id"], "fixed_radius_count_threshold_2d")
+        self.assertEqual(report["framework"], "pytorch")
+        self.assertEqual(report["protocol"], "torch_cuda_tensor_data_ptr")
+        self.assertTrue(report["torch"]["cuda_available"])
+        self.assertIn("+cu", report["torch"]["version"])
+        self.assertEqual(report["hardware"]["gpu"], "NVIDIA GeForce GTX 1070")
+        self.assertFalse(report["hardware"]["rt_core_hardware"])
+        self.assertTrue(report["validation"]["output_match"])
+        self.assertTrue(report["validation"]["same_stream_consumer_checksum_match"])
+        self.assertTrue(report["validation"]["grad_enabled_tensor_rejected"])
+        self.assertEqual(report["validation"]["observed"], report["validation"]["expected"])
+        self.assertEqual(report["validation"]["observed_checksum"], report["validation"]["expected_checksum"])
+        self.assertEqual(report["metadata_subset"]["source_protocols"], ["torch"])
+        self.assertTrue(report["metadata_subset"]["caller_stream_handle_nonzero"])
+        self.assertTrue(report["metadata_subset"]["prepare_stream_handle_nonzero"])
+        self.assertTrue(report["metadata_subset"]["caller_stream_native_propagation_ready"])
+        self.assertTrue(report["metadata_subset"]["native_prepare_stream_propagation_ready"])
+        self.assertTrue(report["metadata_subset"]["native_synchronized_before_return"])
+        self.assertTrue(report["metadata_subset"]["native_call_device_pointer_echo_complete"])
+        self.assertFalse(report["metadata_subset"]["native_async_ready"])
+        self.assertFalse(report["metadata_subset"]["v4_true_zero_copy_claim_authorized"])
+        self.assertTrue(all(report["pointer_identity"].values()))
+        self.assertTrue(all(report["pointer_echo_identity"].values()))
+        self.assertTrue(report["stream_contract"]["same_stream_consumer_checksum_validated"])
+        self.assertFalse(report["stream_contract"]["cross_stream_event_wait_validated"])
+        self.assertFalse(report["stream_contract"]["async_completion_authorized"])
+        lifetime = report["lifetime_contract"]
+        self.assertTrue(lifetime["caller_owned_tensors_retained_until_stream_synchronized"])
+        self.assertTrue(lifetime["grad_enabled_tensors_must_be_detached"])
+        self.assertFalse(lifetime["full_pytorch_partner_surface_complete"])
+        boundaries = report["claim_boundaries"]
+        self.assertTrue(boundaries["pytorch_fixed_radius_m1_cuda_tensor_route_claim_authorized"])
+        self.assertTrue(boundaries["pytorch_route_claim_authorized"])
+        self.assertFalse(boundaries["pytorch_full_partner_surface_claim_authorized"])
+        self.assertFalse(boundaries["framework_neutral_dlpack_route_claim_authorized"])
+        self.assertFalse(boundaries["async_claim_authorized"])
+        self.assertFalse(boundaries["public_speedup_claim_authorized"])
+        self.assertFalse(boundaries["rt_core_speedup_claim_authorized"])
+        self.assertFalse(boundaries["v4_true_zero_copy_claim_authorized"])
+        self.assertIn("does not validate a full PyTorch partner surface", boundaries["reason"])
 
     def test_claim_review_keeps_v4_true_zero_copy_claim_blocked(self) -> None:
         review = CLAIM_REVIEW.read_text(encoding="utf-8")
