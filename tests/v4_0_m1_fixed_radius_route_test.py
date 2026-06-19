@@ -17,6 +17,7 @@ PARITY_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_parity_ma
 NO_HOST_STAGE_REPORT = (
     ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe_2026-06-19.json"
 )
+BENCHMARK_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_benchmark_probe_2026-06-19.json"
 SMOKE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_smoke.py"
 PARITY_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_parity_matrix.py"
 NO_HOST_STAGE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe.py"
@@ -387,6 +388,27 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             "not authorize public speedup wording",
         ):
             self.assertIn(token, script)
+
+    def test_cupy_benchmark_report_records_raw_timings_without_speed_claims(self) -> None:
+        report = json.loads(BENCHMARK_REPORT.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["status"], "pass-with-boundary")
+        self.assertEqual(report["route_id"], "fixed_radius_count_threshold_2d")
+        self.assertEqual(report["remote_validation"]["v4_active"]["test_count"], 31)
+        self.assertTrue(report["validation"]["output_match"])
+        self.assertIn("v4_one_shot_prepare_plus_query", report["median_seconds"])
+        self.assertIn("v4_prepared_query_only", report["median_seconds"])
+        self.assertIn("cupy_bruteforce_cuda_core_baseline", report["median_seconds"])
+        self.assertIn("baseline_over_v4_prepared_query", report["raw_ratios"])
+        self.assertFalse(report["hardware"]["rt_core_hardware"])
+        self.assertEqual(report["rtx_pod_access"]["result"], "blocked")
+        self.assertFalse(report["claim_boundaries"]["public_speedup_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["rt_core_speedup_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["v4_true_zero_copy_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["async_claim_authorized"])
+        self.assertIn("not a best-known tuned", report["claim_boundaries"]["baseline_limitations"])
+        self.assertIn("raw timing", report["claim_boundaries"]["allowed_wording"])
+        self.assertIn("RT-core speedup", report["claim_boundaries"]["forbidden_wording"])
 
     def test_claim_review_keeps_v4_true_zero_copy_claim_blocked(self) -> None:
         review = CLAIM_REVIEW.read_text(encoding="utf-8")

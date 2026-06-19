@@ -1,0 +1,108 @@
+{
+  "status": "pass-with-boundary",
+  "report_id": "v4_0_m1_fixed_radius_cupy_benchmark_probe_2026-06-19",
+  "route_id": "fixed_radius_count_threshold_2d",
+  "purpose": "Route-scoped timing smoke for the V4 M1 CuPy fixed-radius operator; records raw timings only and does not authorize public speedup wording.",
+  "evidence_code_commit": "4a08e99bde2d0162ff79e05dca2b14ecc9e6255c",
+  "evidence_code_tree": "0db159258444353ec097bdf4e88a733d27f5accf",
+  "remote_validation": {
+    "host": "192.168.1.20",
+    "path": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
+    "commands": [
+      "git pull --ff-only",
+      "git rev-parse HEAD",
+      "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
+      "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_benchmark_probe.py --count 1024 --repeats 3 --warmups 1 --output /tmp/v4_benchmark_4a08e99bd.json",
+      "git diff --check"
+    ],
+    "validated_commit": "4a08e99bde2d0162ff79e05dca2b14ecc9e6255c",
+    "v4_active": {
+      "ok": true,
+      "module_count": 3,
+      "test_count": 31,
+      "output": "Ran 31 tests in 0.417s; OK"
+    },
+    "diff_check": {
+      "ok": true
+    }
+  },
+  "hardware": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "driver": "580.126.09",
+    "memory": "8192 MiB",
+    "compute_capability": "6.1",
+    "nvidia_smi_available": true,
+    "rt_core_hardware": false,
+    "hardware_note": "This host is useful for route correctness and raw timing smoke, but it is not RTX/RT-core speed evidence."
+  },
+  "rtx_pod_access": {
+    "attempted": true,
+    "host": "157.157.221.29",
+    "port": 22234,
+    "command_shape": "ssh -o BatchMode=yes -o ConnectTimeout=10 root@157.157.221.29 -p 22234 -i ~/.ssh/id_ed25519",
+    "result": "blocked",
+    "stderr_subset": "Permission denied (publickey,password)",
+    "impact": "RT-core hardware speed evidence remains unavailable from this run."
+  },
+  "benchmark_parameters": {
+    "count": 1024,
+    "radius": 0.05,
+    "threshold": 1,
+    "repeats": 3,
+    "warmups": 1,
+    "cupy_baseline_block_size": 256,
+    "seed": 404
+  },
+  "validation": {
+    "output_match": true,
+    "observed_subset": {
+      "query_ids": [1, 2, 3, 4, 5, 6, 7, 8],
+      "neighbor_counts": [1, 1, 1, 1, 1, 1, 1, 1],
+      "threshold_flags": [1, 1, 1, 1, 1, 1, 1, 1]
+    }
+  },
+  "samples_seconds": {
+    "v4_one_shot_prepare_plus_query": [
+      0.0016480570193380117,
+      0.001505934982560575,
+      0.0014958890387788415
+    ],
+    "v4_prepared_query_only": [
+      0.000680272001773119,
+      0.0006427059415727854,
+      0.0006891969824209809
+    ],
+    "cupy_bruteforce_cuda_core_baseline": [
+      0.001173269934952259,
+      0.001104746013879776,
+      0.0010934170568361878
+    ]
+  },
+  "median_seconds": {
+    "v4_one_shot_prepare_plus_query": 0.001505934982560575,
+    "v4_prepared_query_only": 0.000680272001773119,
+    "cupy_bruteforce_cuda_core_baseline": 0.001104746013879776
+  },
+  "raw_ratios": {
+    "baseline_over_v4_one_shot": 0.7335947611771071,
+    "baseline_over_v4_prepared_query": 1.623976896006703
+  },
+  "claim_boundaries": {
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "v4_true_zero_copy_claim_authorized": false,
+    "async_claim_authorized": false,
+    "reason": "This benchmark records one route on one non-RTX host against a simple CuPy brute-force CUDA-core baseline. It is evidence for route execution and raw timing only.",
+    "baseline_limitations": "The CuPy baseline is an intentionally simple blocked all-pairs implementation, not a best-known tuned fixed-radius library baseline.",
+    "allowed_wording": "V4 M1 has a reproducible route-scoped benchmark probe with output parity and raw timing capture.",
+    "forbidden_wording": [
+      "RTDL is faster",
+      "RT-core speedup",
+      "RTX speedup",
+      "public speedup claim",
+      "end-to-end zero-copy",
+      "true zero-copy",
+      "async execution"
+    ]
+  }
+}
