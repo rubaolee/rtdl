@@ -74,14 +74,22 @@ def _cases() -> list[dict[str, object]]:
             radius=0.5,
             threshold=2,
         ),
-        _case(
-            "empty_query",
-            search_xy=[(0.0, 0.0), (1.0, 1.0)],
-            query_xy=[],
-            radius=1.0,
-            threshold=1,
-        ),
         _random_case(),
+    ]
+
+
+def _negative_cases() -> list[dict[str, object]]:
+    return [
+        {
+            **_case(
+                "empty_query_zero_length_cupy_columns_fail_closed",
+                search_xy=[(0.0, 0.0), (1.0, 1.0)],
+                query_xy=[],
+                radius=1.0,
+                threshold=1,
+            ),
+            "expected_error": "observable non-zero data_ptr",
+        }
     ]
 
 
@@ -182,12 +190,50 @@ def run_parity_matrix() -> dict[str, object]:
             }
         )
 
+    fail_closed_results = []
+    for case in _negative_cases():
+        search_xy = list(case["search_xy"])
+        query_xy = list(case["query_xy"])
+        search = _cupy_columns(cp, _ids(len(search_xy), offset=10), search_xy)
+        query = _cupy_columns(cp, _ids(len(query_xy), offset=1), query_xy)
+        outputs = _empty_outputs(cp, len(query_xy))
+        stream = cp.cuda.Stream(non_blocking=True)
+        try:
+            with stream:
+                rtdsl.run_v4_fixed_radius_count_threshold_2d(
+                    query,
+                    search,
+                    radius=float(case["radius"]),
+                    threshold=int(case["threshold"]),
+                    partner="cupy",
+                    output_columns=outputs,
+                    stream=stream.ptr,
+                    return_metadata=True,
+                )
+        except ValueError as exc:
+            error = str(exc)
+            if str(case["expected_error"]) not in error:
+                raise
+            fail_closed_results.append(
+                {
+                    "name": case["name"],
+                    "expected_error": case["expected_error"],
+                    "observed_error": error,
+                    "passed": True,
+                }
+            )
+        else:
+            raise AssertionError(f"negative V4 M1 parity case unexpectedly passed: {case['name']}")
+
     return {
         "status": "pass-with-boundary",
         "route_id": "fixed_radius_count_threshold_2d",
         "case_count": len(case_results),
         "pass_count": sum(1 for row in case_results if row["passed"]),
         "cases": case_results,
+        "fail_closed_case_count": len(fail_closed_results),
+        "fail_closed_pass_count": sum(1 for row in fail_closed_results if row["passed"]),
+        "fail_closed_cases": fail_closed_results,
         "claim_boundaries": {
             "public_speedup_claim_authorized": False,
             "rt_core_speedup_claim_authorized": False,
