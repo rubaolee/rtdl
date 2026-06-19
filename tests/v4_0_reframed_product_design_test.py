@@ -264,7 +264,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertEqual("pass", report["status"])
         self.assertTrue(report["ok"])
         self.assertEqual(
-            "1ad0a1437b38a3a043948ee96afc216dffe844a1",
+            "e7c3f83b81eba8b78e530850cf92e0321ef49a30",
             report["git"]["head"],
         )
         self.assertTrue(report["pyproject"]["source_tree_identity_ok"])
@@ -394,11 +394,11 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blockers["latest_validated_implementation_head"],
         )
         self.assertEqual(
-            "1ad0a1437b38a3a043948ee96afc216dffe844a1",
+            "e7c3f83b81eba8b78e530850cf92e0321ef49a30",
             blockers["latest_validated_package_runtime_hygiene_head"],
         )
         self.assertEqual(
-            "3e22e03bd4fe70454a7b5a11b30c7990c4dfff9d",
+            "e7c3f83b81eba8b78e530850cf92e0321ef49a30",
             blockers["latest_validated_external_review_guard_head"],
         )
         self.assertEqual(
@@ -407,6 +407,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
                 "first_packet_gate_commit": "0273d4cba5e38afee099573b0ac47f2f883c1067",
                 "external_review_request_commit": "eba6f4b6e49152d8da4e545477a1cb125f6bab43",
                 "post_review_action_validation_commit": "66e6529859a1bac63ce2a72527dc5942e301143d",
+                "claude_external_review_record_commit": "e7c3f83b81eba8b78e530850cf92e0321ef49a30",
                 "final_release_candidate_commit": None,
                 "policy": (
                     "final_release_candidate_commit remains null while release_candidate_ready is false; "
@@ -568,7 +569,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["evidence"],
         )
         self.assertEqual(
-            "1ad0a1437b38a3a043948ee96afc216dffe844a1",
+            "e7c3f83b81eba8b78e530850cf92e0321ef49a30",
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["validation_commit"],
         )
         self.assertEqual(
@@ -693,7 +694,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertTrue(report["ok"])
         self.assertEqual("pass", report["status"])
         self.assertEqual(
-            "1ad0a1437b38a3a043948ee96afc216dffe844a1",
+            "e7c3f83b81eba8b78e530850cf92e0321ef49a30",
             report["git"]["head"],
         )
         self.assertTrue(report["system_site_packages"])

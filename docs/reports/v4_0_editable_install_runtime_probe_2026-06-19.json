@@ -1,8 +1,11 @@
 {
   "claim_boundaries": {
+    "async_claim_authorized": false,
     "editable_source_tree_install_hygiene_evidence": true,
     "generated_binding_package_claim_authorized": false,
+    "native_async_claim_authorized": false,
     "package_install_claim_authorized": false,
+    "public_true_zero_copy_claim_authorized": false,
     "pypi_claim_authorized": false,
     "stable_sdk_claim_authorized": false,
     "v4_current_front_door_authorized": false,
@@ -16,13 +19,13 @@
         "-m",
         "venv",
         "--system-site-packages",
-        "/tmp/rtdl_v4_editable_install_6i60o0wo/venv"
+        "/tmp/rtdl_v4_editable_install_kazckn0b/venv"
       ],
-      "cwd": "/tmp/rtdl_v4_editable_install_6i60o0wo/outside_cwd",
+      "cwd": "/tmp/rtdl_v4_editable_install_kazckn0b/outside_cwd",
       "ok": false,
       "returncode": 1,
       "stderr": "",
-      "stdout": "The virtual environment was not created successfully because ensurepip is not\navailable.  On Debian/Ubuntu systems, you need to install the python3-venv\npackage using the following command.\n\n    apt install python3.12-venv\n\nYou may need to use sudo with that command.  After installing the python3-venv\npackage, recreate your virtual environment.\n\nFailing command: /tmp/rtdl_v4_editable_install_6i60o0wo/venv/bin/python3\n\n"
+      "stdout": "The virtual environment was not created successfully because ensurepip is not\navailable.  On Debian/Ubuntu systems, you need to install the python3-venv\npackage using the following command.\n\n    apt install python3.12-venv\n\nYou may need to use sudo with that command.  After installing the python3-venv\npackage, recreate your virtual environment.\n\nFailing command: /tmp/rtdl_v4_editable_install_kazckn0b/venv/bin/python3\n\n"
     },
     {
       "command": [
@@ -31,9 +34,9 @@
         "venv",
         "--system-site-packages",
         "--without-pip",
-        "/tmp/rtdl_v4_editable_install_6i60o0wo/venv"
+        "/tmp/rtdl_v4_editable_install_kazckn0b/venv"
       ],
-      "cwd": "/tmp/rtdl_v4_editable_install_6i60o0wo/outside_cwd",
+      "cwd": "/tmp/rtdl_v4_editable_install_kazckn0b/outside_cwd",
       "ok": true,
       "returncode": 0,
       "stderr": "",
@@ -45,38 +48,38 @@
         "-m",
         "pip",
         "--python",
-        "/tmp/rtdl_v4_editable_install_6i60o0wo/venv/bin/python",
+        "/tmp/rtdl_v4_editable_install_kazckn0b/venv/bin/python",
         "install",
         "-e",
         "/home/lestat/work/rtdl_v4_m1_final_check_20260619"
       ],
-      "cwd": "/tmp/rtdl_v4_editable_install_6i60o0wo/outside_cwd",
+      "cwd": "/tmp/rtdl_v4_editable_install_kazckn0b/outside_cwd",
       "ok": true,
       "returncode": 0,
       "stderr": "",
-      "stdout": "Obtaining file:///home/lestat/work/rtdl_v4_m1_final_check_20260619\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nRequirement already satisfied: numpy>=1.26 in /home/lestat/.local/lib/python3.12/site-packages (from rtdl-source-tree==3.0.2) (2.4.4)\nBuilding wheels for collected packages: rtdl-source-tree\n  Building editable for rtdl-source-tree (pyproject.toml): started\n  Building editable for rtdl-source-tree (pyproject.toml): finished with status 'done'\n  Created wheel for rtdl-source-tree: filename=rtdl_source_tree-3.0.2-0.editable-py3-none-any.whl size=6625 sha256=059059aa0d7f5f53a7fa7c6c8fb0a37e59ae2c5a7880adeec976c914eed6e1f1\n  Stored in directory: /tmp/pip-ephem-wheel-cache-90rllysw/wheels/ae/e2/4b/315013061671b9aeb99d9f9ed7c100aff4c1c6192ada30b836\nSuccessfully built rtdl-source-tree\nInstalling collected packages: rtdl-source-tree\nSuccessfully installed rtdl-source-tree-3.0.2\n"
+      "stdout": "Obtaining file:///home/lestat/work/rtdl_v4_m1_final_check_20260619\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nRequirement already satisfied: numpy>=1.26 in /home/lestat/.local/lib/python3.12/site-packages (from rtdl-source-tree==3.0.2) (2.4.4)\nBuilding wheels for collected packages: rtdl-source-tree\n  Building editable for rtdl-source-tree (pyproject.toml): started\n  Building editable for rtdl-source-tree (pyproject.toml): finished with status 'done'\n  Created wheel for rtdl-source-tree: filename=rtdl_source_tree-3.0.2-0.editable-py3-none-any.whl size=6625 sha256=7a2eec7c26ee53133ec6c66da74031804f76e391393112da7f6863a6ffff5dca\n  Stored in directory: /tmp/pip-ephem-wheel-cache-ml_n6m_k/wheels/ae/e2/4b/315013061671b9aeb99d9f9ed7c100aff4c1c6192ada30b836\nSuccessfully built rtdl-source-tree\nInstalling collected packages: rtdl-source-tree\nSuccessfully installed rtdl-source-tree-3.0.2\n"
     },
     {
       "command": [
-        "/tmp/rtdl_v4_editable_install_6i60o0wo/venv/bin/python",
+        "/tmp/rtdl_v4_editable_install_kazckn0b/venv/bin/python",
         "-c",
-        "\nfrom __future__ import annotations\nimport importlib.metadata as metadata\nimport json\nimport os\nfrom pathlib import Path\nimport sys\n\nrepo = Path('/home/lestat/work/rtdl_v4_m1_final_check_20260619').resolve()\npayload = {\n    \"python\": sys.version,\n    \"executable\": sys.executable,\n    \"cwd\": os.getcwd(),\n    \"pythonpath_present\": \"PYTHONPATH\" in os.environ,\n    \"repo\": str(repo),\n}\n\nimport rtdsl\npayload[\"package\"] = {\n    \"distribution_name\": \"rtdl-source-tree\",\n    \"version\": metadata.version(\"rtdl-source-tree\"),\n    \"module_file\": str(Path(rtdsl.__file__).resolve()),\n}\npayload[\"package\"][\"module_under_repo_src\"] = (\n    Path(rtdsl.__file__).resolve().is_relative_to(repo / \"src\" / \"rtdsl\")\n)\npayload[\"package\"][\"module_loaded_from_checkout_editable\"] = payload[\"package\"][\"module_under_repo_src\"]\n\nfrom rtdsl import optix_runtime\ntry:\n    native_path = optix_runtime._find_optix_library()\n    payload[\"native_library\"] = {\n        \"status\": \"found\",\n        \"path\": str(Path(native_path).resolve()) if not str(native_path).startswith(\"lib\") else str(native_path),\n        \"under_repo_build\": (\n            Path(native_path).resolve().is_relative_to(repo / \"build\")\n            if Path(native_path).is_absolute() or Path(native_path).exists()\n            else False\n        ),\n        \"env_rtdl_optix_lib_present\": \"RTDL_OPTIX_LIB\" in os.environ,\n    }\nexcept Exception as exc:\n    payload[\"native_library\"] = {\n        \"status\": \"missing\",\n        \"error\": type(exc).__name__ + \": \" + str(exc),\n        \"env_rtdl_optix_lib_present\": \"RTDL_OPTIX_LIB\" in os.environ,\n    }\n\npayload[\"v4_smoke\"] = {\"requested\": True, \"status\": \"not_run\"}\nif True:\n    import cupy as cp\n\n    search = {\n        \"ids\": cp.asarray([10, 11, 12], dtype=cp.uint32),\n        \"x\": cp.asarray([0.0, 3.0, 0.0], dtype=cp.float64),\n        \"y\": cp.asarray([0.0, 0.0, 4.0], dtype=cp.float64),\n    }\n    query = {\n        \"ids\": cp.asarray([1, 2, 3], dtype=cp.uint32),\n        \"x\": cp.asarray([0.0, 3.0, 9.0], dtype=cp.float64),\n        \"y\": cp.asarray([0.0, 0.0, 9.0], dtype=cp.float64),\n    }\n    outputs = {\n        \"query_ids\": cp.zeros((3,), dtype=cp.uint32),\n        \"neighbor_counts\": cp.zeros((3,), dtype=cp.uint32),\n        \"threshold_flags\": cp.zeros((3,), dtype=cp.uint32),\n    }\n    stream = cp.cuda.Stream(non_blocking=True)\n    with stream:\n        result = rtdsl.run_v4_fixed_radius_count_threshold_2d(\n            query,\n            search,\n            radius=1.1,\n            threshold=1,\n            partner=\"cupy\",\n            output_columns=outputs,\n            stream=stream.ptr,\n            return_metadata=True,\n        )\n    stream.synchronize()\n    observed = {name: outputs[name].get().tolist() for name in outputs}\n    expected = {\n        \"query_ids\": [1, 2, 3],\n        \"neighbor_counts\": [1, 1, 0],\n        \"threshold_flags\": [1, 1, 0],\n    }\n    if observed != expected:\n        raise AssertionError(f\"unexpected V4 fixed-radius output: {observed!r}\")\n    meta = result[\"metadata\"]\n    payload[\"v4_smoke\"] = {\n        \"requested\": True,\n        \"status\": \"pass\",\n        \"observed\": observed,\n        \"expected\": expected,\n        \"caller_stream_handle_nonzero\": int(stream.ptr) != 0,\n        \"native_synchronized_before_return\": bool(meta[\"native_synchronized_before_return\"]),\n        \"native_async_ready\": bool(meta[\"native_async_ready\"]),\n        \"public_true_zero_copy_authorized\": bool(meta[\"v4_true_zero_copy_claim_authorized\"]),\n    }\n\nprint(json.dumps(payload, sort_keys=True))\n"
+        "\nfrom __future__ import annotations\nimport importlib.metadata as metadata\nimport json\nimport os\nfrom pathlib import Path\nimport sys\n\nrepo = Path('/home/lestat/work/rtdl_v4_m1_final_check_20260619').resolve()\npayload = {\n    \"python\": sys.version,\n    \"executable\": sys.executable,\n    \"cwd\": os.getcwd(),\n    \"pythonpath_present\": \"PYTHONPATH\" in os.environ,\n    \"repo\": str(repo),\n}\n\nimport rtdsl\npayload[\"package\"] = {\n    \"distribution_name\": \"rtdl-source-tree\",\n    \"version\": metadata.version(\"rtdl-source-tree\"),\n    \"module_file\": str(Path(rtdsl.__file__).resolve()),\n}\npayload[\"package\"][\"module_under_repo_src\"] = (\n    Path(rtdsl.__file__).resolve().is_relative_to(repo / \"src\" / \"rtdsl\")\n)\npayload[\"package\"][\"module_loaded_from_checkout_editable\"] = payload[\"package\"][\"module_under_repo_src\"]\n\nfrom rtdsl import optix_runtime\ntry:\n    native_path = optix_runtime._find_optix_library()\n    payload[\"native_library\"] = {\n        \"status\": \"found\",\n        \"path\": str(Path(native_path).resolve()) if not str(native_path).startswith(\"lib\") else str(native_path),\n        \"under_repo_build\": (\n            Path(native_path).resolve().is_relative_to(repo / \"build\")\n            if Path(native_path).is_absolute() or Path(native_path).exists()\n            else False\n        ),\n        \"env_rtdl_optix_lib_present\": \"RTDL_OPTIX_LIB\" in os.environ,\n    }\nexcept Exception as exc:\n    payload[\"native_library\"] = {\n        \"status\": \"missing\",\n        \"error\": type(exc).__name__ + \": \" + str(exc),\n        \"env_rtdl_optix_lib_present\": \"RTDL_OPTIX_LIB\" in os.environ,\n    }\n\npayload[\"v4_smoke\"] = {\"requested\": True, \"status\": \"not_run\"}\nif True and payload[\"native_library\"][\"status\"] != \"found\":\n    payload[\"v4_smoke\"] = {\n        \"requested\": True,\n        \"status\": \"blocked_missing_native_library\",\n        \"native_library_status\": payload[\"native_library\"][\"status\"],\n        \"native_library_error\": payload[\"native_library\"].get(\"error\"),\n    }\nelif True:\n    import cupy as cp\n\n    search = {\n        \"ids\": cp.asarray([10, 11, 12], dtype=cp.uint32),\n        \"x\": cp.asarray([0.0, 3.0, 0.0], dtype=cp.float64),\n        \"y\": cp.asarray([0.0, 0.0, 4.0], dtype=cp.float64),\n    }\n    query = {\n        \"ids\": cp.asarray([1, 2, 3], dtype=cp.uint32),\n        \"x\": cp.asarray([0.0, 3.0, 9.0], dtype=cp.float64),\n        \"y\": cp.asarray([0.0, 0.0, 9.0], dtype=cp.float64),\n    }\n    outputs = {\n        \"query_ids\": cp.zeros((3,), dtype=cp.uint32),\n        \"neighbor_counts\": cp.zeros((3,), dtype=cp.uint32),\n        \"threshold_flags\": cp.zeros((3,), dtype=cp.uint32),\n    }\n    stream = cp.cuda.Stream(non_blocking=True)\n    with stream:\n        result = rtdsl.run_v4_fixed_radius_count_threshold_2d(\n            query,\n            search,\n            radius=1.1,\n            threshold=1,\n            partner=\"cupy\",\n            output_columns=outputs,\n            stream=stream.ptr,\n            return_metadata=True,\n        )\n    stream.synchronize()\n    observed = {name: outputs[name].get().tolist() for name in outputs}\n    expected = {\n        \"query_ids\": [1, 2, 3],\n        \"neighbor_counts\": [1, 1, 0],\n        \"threshold_flags\": [1, 1, 0],\n    }\n    if observed != expected:\n        raise AssertionError(f\"unexpected V4 fixed-radius output: {observed!r}\")\n    meta = result[\"metadata\"]\n    payload[\"v4_smoke\"] = {\n        \"requested\": True,\n        \"status\": \"pass\",\n        \"observed\": observed,\n        \"expected\": expected,\n        \"caller_stream_handle_nonzero\": int(stream.ptr) != 0,\n        \"native_synchronized_before_return\": bool(meta[\"native_synchronized_before_return\"]),\n        \"native_async_ready\": bool(meta[\"native_async_ready\"]),\n        \"native_async_ready_is_metadata_only\": True,\n        \"native_async_claim_authorized\": False,\n        \"public_true_zero_copy_authorized\": bool(meta[\"v4_true_zero_copy_claim_authorized\"]),\n    }\n\nprint(json.dumps(payload, sort_keys=True))\n"
       ],
-      "cwd": "/tmp/rtdl_v4_editable_install_6i60o0wo/outside_cwd",
+      "cwd": "/tmp/rtdl_v4_editable_install_kazckn0b/outside_cwd",
       "ok": true,
       "returncode": 0,
       "stderr": "",
-      "stdout": "{\"cwd\": \"/tmp/rtdl_v4_editable_install_6i60o0wo/outside_cwd\", \"executable\": \"/tmp/rtdl_v4_editable_install_6i60o0wo/venv/bin/python\", \"native_library\": {\"env_rtdl_optix_lib_present\": false, \"path\": \"/home/lestat/work/rtdl_v4_m1_final_check_20260619/build/librtdl_optix.so\", \"status\": \"found\", \"under_repo_build\": true}, \"package\": {\"distribution_name\": \"rtdl-source-tree\", \"module_file\": \"/home/lestat/work/rtdl_v4_m1_final_check_20260619/src/rtdsl/__init__.py\", \"module_loaded_from_checkout_editable\": true, \"module_under_repo_src\": true, \"version\": \"3.0.2\"}, \"python\": \"3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]\", \"pythonpath_present\": false, \"repo\": \"/home/lestat/work/rtdl_v4_m1_final_check_20260619\", \"v4_smoke\": {\"caller_stream_handle_nonzero\": true, \"expected\": {\"neighbor_counts\": [1, 1, 0], \"query_ids\": [1, 2, 3], \"threshold_flags\": [1, 1, 0]}, \"native_async_ready\": false, \"native_synchronized_before_return\": true, \"observed\": {\"neighbor_counts\": [1, 1, 0], \"query_ids\": [1, 2, 3], \"threshold_flags\": [1, 1, 0]}, \"public_true_zero_copy_authorized\": false, \"requested\": true, \"status\": \"pass\"}}\n"
+      "stdout": "{\"cwd\": \"/tmp/rtdl_v4_editable_install_kazckn0b/outside_cwd\", \"executable\": \"/tmp/rtdl_v4_editable_install_kazckn0b/venv/bin/python\", \"native_library\": {\"env_rtdl_optix_lib_present\": false, \"path\": \"/home/lestat/work/rtdl_v4_m1_final_check_20260619/build/librtdl_optix.so\", \"status\": \"found\", \"under_repo_build\": true}, \"package\": {\"distribution_name\": \"rtdl-source-tree\", \"module_file\": \"/home/lestat/work/rtdl_v4_m1_final_check_20260619/src/rtdsl/__init__.py\", \"module_loaded_from_checkout_editable\": true, \"module_under_repo_src\": true, \"version\": \"3.0.2\"}, \"python\": \"3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]\", \"pythonpath_present\": false, \"repo\": \"/home/lestat/work/rtdl_v4_m1_final_check_20260619\", \"v4_smoke\": {\"caller_stream_handle_nonzero\": true, \"expected\": {\"neighbor_counts\": [1, 1, 0], \"query_ids\": [1, 2, 3], \"threshold_flags\": [1, 1, 0]}, \"native_async_claim_authorized\": false, \"native_async_ready\": false, \"native_async_ready_is_metadata_only\": true, \"native_synchronized_before_return\": true, \"observed\": {\"neighbor_counts\": [1, 1, 0], \"query_ids\": [1, 2, 3], \"threshold_flags\": [1, 1, 0]}, \"public_true_zero_copy_authorized\": false, \"requested\": true, \"status\": \"pass\"}}\n"
     }
   ],
   "failures": [],
   "git": {
-    "head": "1ad0a1437b38a3a043948ee96afc216dffe844a1",
-    "tree": "c46b7cb7252496504f2f48348b4c65c3b6143aa0"
+    "head": "e7c3f83b81eba8b78e530850cf92e0321ef49a30",
+    "tree": "2f356b54cdd2768926b6fee5306c6fff5feb7b86"
   },
   "inspection": {
-    "cwd": "/tmp/rtdl_v4_editable_install_6i60o0wo/outside_cwd",
-    "executable": "/tmp/rtdl_v4_editable_install_6i60o0wo/venv/bin/python",
+    "cwd": "/tmp/rtdl_v4_editable_install_kazckn0b/outside_cwd",
+    "executable": "/tmp/rtdl_v4_editable_install_kazckn0b/venv/bin/python",
     "native_library": {
       "env_rtdl_optix_lib_present": false,
       "path": "/home/lestat/work/rtdl_v4_m1_final_check_20260619/build/librtdl_optix.so",
@@ -112,7 +115,9 @@
           0
         ]
       },
+      "native_async_claim_authorized": false,
       "native_async_ready": false,
+      "native_async_ready_is_metadata_only": true,
       "native_synchronized_before_return": true,
       "observed": {
         "neighbor_counts": [
@@ -142,7 +147,7 @@
     "The probe intentionally runs from outside the repository with PYTHONPATH unset."
   ],
   "ok": true,
-  "outside_cwd": "/tmp/rtdl_v4_editable_install_6i60o0wo/outside_cwd",
+  "outside_cwd": "/tmp/rtdl_v4_editable_install_kazckn0b/outside_cwd",
   "platform": {
     "machine": "x86_64",
     "python": "3.12.3",
@@ -154,7 +159,7 @@
   "run_v4_smoke": true,
   "status": "pass",
   "system_site_packages": true,
-  "temp_root": "/tmp/rtdl_v4_editable_install_6i60o0wo",
+  "temp_root": "/tmp/rtdl_v4_editable_install_kazckn0b",
   "venv_creation_method": "stdlib_venv_without_pip_targeted_by_system_pip",
-  "venv_dir": "/tmp/rtdl_v4_editable_install_6i60o0wo/venv"
+  "venv_dir": "/tmp/rtdl_v4_editable_install_kazckn0b/venv"
 }

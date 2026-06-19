@@ -17,10 +17,13 @@ Post-review action validation commit:
 `66e6529859a1bac63ce2a72527dc5942e301143d`
 
 Package/runtime hygiene validation commit:
-`1ad0a1437b38a3a043948ee96afc216dffe844a1`
+`e7c3f83b81eba8b78e530850cf92e0321ef49a30`
 
 Next-step external-review consensus guard commit:
 `3e22e03bd4fe70454a7b5a11b30c7990c4dfff9d`
+
+Claude external review record and post-review guard refresh commit:
+`e7c3f83b81eba8b78e530850cf92e0321ef49a30`
 
 Final release-candidate commit: not assigned. Release-candidate readiness is
 still false.
@@ -164,7 +167,7 @@ at `66e6529859a1bac63ce2a72527dc5942e301143d`:
 - worktree clean.
 
 Package/runtime hygiene validation on `192.168.1.20` for source-tree head
-`1ad0a1437b38a3a043948ee96afc216dffe844a1`:
+`e7c3f83b81eba8b78e530850cf92e0321ef49a30`:
 
 - `make build-optix`: pass;
 - `scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime`:
