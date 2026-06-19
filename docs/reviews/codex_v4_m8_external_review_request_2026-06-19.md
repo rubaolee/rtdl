@@ -10,7 +10,7 @@ Please review the V4.0 M8 packet as aggressively as possible:
 Context:
 
 - current user release remains `v3.0.2`;
-- V4.0 is an experimental Python GPU RT-core operator track;
+- V4.0 is an experimental OptiX-backed Python GPU operator track;
 - first candidate route is exactly `fixed_radius_count_threshold_2d`;
 - source-tree runtime is validated on Linux with CuPy, Numba, PyTorch, and
   OptiX available;
@@ -25,9 +25,13 @@ Candidate coordinates:
   `bbc43984b74dee7d52c059b295c5eaade0813096`;
 - first M8 packet/gate commit:
   `0273d4cba5e38afee099573b0ac47f2f883c1067`;
+- external review request commit:
+  `eba6f4b6e49152d8da4e545477a1cb125f6bab43`;
+- final release-candidate commit:
+  not assigned; release-candidate readiness is still false;
 - Linux final smoke on `192.168.1.20`:
   - `make build-optix`: pass;
-  - `scripts/run_test_matrix.py --group v4_release_candidate`: 69 tests, pass;
+  - `scripts/run_test_matrix.py --group v4_release_candidate`: 71 tests, pass;
   - `scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime`:
     pass;
   - `scripts/v4_0_current_front_door_claim_boundary_scan.py`: pass;

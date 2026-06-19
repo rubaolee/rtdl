@@ -207,6 +207,7 @@ def build_payload(*, require_v4_gpu_runtime: bool = False, run_smoke: bool = Fal
             "PYTHONPATH=src:. python3 scripts/rtdl_source_tree_doctor.py --include-v4-active --json",
             "make build-optix",
             "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
+            "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_release_candidate",
             "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_numba_partner_surface_probe.py",
             "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_dlpack_capsule_probe.py",
             "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe.py",

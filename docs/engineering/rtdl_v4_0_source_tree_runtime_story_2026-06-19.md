@@ -66,7 +66,7 @@ Latest Linux V4 gate on `192.168.1.20` for head
 
 - `make build-optix`: pass;
 - source-tree runtime preflight with `--require-v4-gpu-runtime`: pass;
-- `v4_active`: 69 tests, pass;
+- `v4_active`: 71 tests, pass;
 - Numba M1 `DeviceNDArray` fixed-radius route probe: pass;
 - DLPack capsule fixed-radius route probe: pass;
 - PyTorch CUDA tensor fixed-radius route compatibility probe: pass;

@@ -14,7 +14,7 @@ evidence covers the fixed-radius M1 route with:
 - PyTorch CUDA tensors with a compatibility matrix;
 - same-stream ordering and fixed-radius prepare/query event-wait evidence;
 - Linux source-tree runtime preflight with CuPy, Numba, PyTorch, and OptiX;
-- `v4_active`: 69 tests, passing.
+- `v4_active`: 71 tests, passing.
 
 The current user release remains `v3.0.2`.
 

@@ -1,20 +1,27 @@
 {
   "version": "rtdl.v4_0.release_candidate_blockers.2026-06-19",
-  "status": "blocked_before_m8_release_candidate_packet",
+  "status": "m8_review_baseline_written_release_candidate_still_blocked",
   "date": "2026-06-19",
   "current_release_remains": "v3.0.2",
-  "v4_position": "experimental_m1_engineering_evidence_not_current_release",
+  "v4_position": "experimental_m1_review_baseline_not_current_release",
   "release_candidate_ready": false,
   "current_gate": "v4_release_candidate",
   "v4_release_candidate_gate_policy": "exposed_as_non_authorizing_m8_review_gate_release_requires_external_review_and_explicit_user_action",
-  "latest_validated_implementation_head": "d1b84b170756bb48df4b4e0766cfa5dd9341aaa0",
+  "m8_review_baseline_commits": {
+    "implementation_evidence_baseline": "bbc43984b74dee7d52c059b295c5eaade0813096",
+    "first_packet_gate_commit": "0273d4cba5e38afee099573b0ac47f2f883c1067",
+    "external_review_request_commit": "eba6f4b6e49152d8da4e545477a1cb125f6bab43",
+    "final_release_candidate_commit": null,
+    "policy": "final_release_candidate_commit remains null while release_candidate_ready is false; before release approval it must be set to one fresh validation commit."
+  },
+  "latest_validated_implementation_head": "0273d4cba5e38afee099573b0ac47f2f883c1067",
   "latest_validated_route_code_tree": "e2188f2fd983b2c1afb5f0e34f84773d573b2bb4",
-  "latest_validated_m1_implementation_v4_active_tests": 69,
+  "latest_validated_m1_implementation_v4_active_tests": 71,
   "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
   "latest_validated_m1_cross_stream_evidence_scope": "clean source-tree commit after push",
   "latest_validated_m1_cross_stream_v4_active_tests": 53,
-  "current_source_tree_v4_active_tests": 69,
-  "current_source_tree_v4_release_candidate_tests": 69,
+  "current_source_tree_v4_active_tests": 71,
+  "current_source_tree_v4_release_candidate_tests": 71,
   "evidence_ready": [
     {
       "id": "v4_active_gate",
@@ -99,6 +106,18 @@
       "status": "accepted_next_step_decision",
       "path": "docs/reviews/codex_v4_after_runtime_preflight_m8_next_step_2ai_consensus_2026-06-19.md",
       "note": "2-AI consensus ranks M8 packet and external review ahead of broad feature expansion."
+    },
+    {
+      "id": "m8_internal_2ai_critical_review",
+      "status": "accepted_review_input",
+      "path": "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
+      "note": "2-AI critical review accepts the M8 packet as a baseline, rejects release-candidate readiness today, and requires tighter coordinates, package/runtime, claim, and device-identity handling."
+    },
+    {
+      "id": "cuda_array_interface_device_identity_contract",
+      "status": "experimental_m1_evidence",
+      "path": "tests/v4_0_m1_fixed_radius_route_test.py",
+      "note": "CUDA Array Interface route planning preserves explicit device identity where available and fails closed on mixed-device fixed-radius M1 columns. Multi-GPU runtime claims remain blocked."
     }
   ],
   "blockers": [
@@ -287,6 +306,22 @@
         "package install",
         "PyPI",
         "wheel support"
+      ]
+    },
+    {
+      "id": "multi_gpu_runtime_evidence",
+      "closed": false,
+      "current_preflight": {
+        "date": "2026-06-19",
+        "status": "single_gpu_device_identity_contract_guarded_multi_gpu_runtime_not_claimed",
+        "evidence": "tests/v4_0_m1_fixed_radius_route_test.py",
+        "reason": "The fixed-radius M1 planner preserves explicit CUDA Array Interface device identity where available and fails closed when fixed-radius columns disagree on CUDA device. Current Linux runtime evidence is single-GPU, so multi-GPU runtime behavior is not claimed."
+      },
+      "required_evidence": "Runtime evidence on a multi-GPU host or an explicit product decision that V4.0 only supports a single CUDA device per route invocation.",
+      "blocking_claims": [
+        "multi-GPU support",
+        "cross-device route execution",
+        "arbitrary CUDA device routing"
       ]
     },
     {

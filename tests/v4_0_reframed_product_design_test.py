@@ -36,6 +36,7 @@ NEXT_STEP_CONSENSUS = (
 M8_NEXT_STEP_CONSENSUS = (
     ROOT / "docs" / "reviews" / "codex_v4_after_runtime_preflight_m8_next_step_2ai_consensus_2026-06-19.md"
 )
+M8_INTERNAL_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m8_internal_2ai_critical_review_2026-06-19.md"
 RC_BLOCKERS = (
     ROOT / "docs" / "engineering" / "rtdl_v4_0_release_candidate_blockers_2026-06-19.json"
 )
@@ -202,6 +203,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertIn("RTDL V4.0 Release-Candidate Blockers", engineering_index)
         self.assertIn("RTDL V4.0 Pre-M8 Boundary", engineering_index)
         self.assertIn("RTDL V4.0 Source-Tree Runtime Story", engineering_index)
+        self.assertIn("RTDL V4.0 M8 Internal 2-AI Critical Review", engineering_index)
         self.assertIn("RTDL V4.0 After Runtime Preflight M8 Consensus", engineering_index)
 
     def test_source_tree_runtime_preflight_authorizes_only_checkout_runtime(self) -> None:
@@ -223,6 +225,10 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertTrue(payload["test_matrix_policy"]["v4_active_group_present"])
         self.assertTrue(payload["test_matrix_policy"]["v4_release_candidate_group_present"])
         self.assertTrue(payload["test_matrix_policy"]["v4_release_candidate_gate_non_authorizing"])
+        self.assertIn(
+            "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_release_candidate",
+            payload["supported_source_tree_commands"],
+        )
 
         for item in payload["required_paths"]:
             self.assertTrue(item["exists"], item["path"])
@@ -249,6 +255,10 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertTrue(report["test_matrix_policy"]["v4_active_group_present"])
         self.assertTrue(report["test_matrix_policy"]["v4_release_candidate_group_present"])
         self.assertTrue(report["test_matrix_policy"]["v4_release_candidate_gate_non_authorizing"])
+        self.assertIn(
+            "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_release_candidate",
+            report["supported_source_tree_commands"],
+        )
         self.assertTrue(report["v4_m1_gpu_runtime"]["all_required_for_v4_m1_gpu_runtime_present"])
         self.assertTrue(report["claim_boundaries"]["source_tree_runtime_wording_authorized"])
         self.assertFalse(report["claim_boundaries"]["v4_package_install_authorized"])
@@ -300,8 +310,12 @@ class V40ReframedProductDesignTest(unittest.TestCase):
 
         for token in (
             "review-ready M8 evidence packet, not release approval",
-            "Candidate evidence baseline: `bbc43984b74dee7d52c059b295c5eaade0813096`",
+            "Implementation evidence baseline: `bbc43984b74dee7d52c059b295c5eaade0813096`",
+            "First M8 packet/gate commit: `0273d4cba5e38afee099573b0ac47f2f883c1067`",
+            "External review request commit: `eba6f4b6e49152d8da4e545477a1cb125f6bab43`",
+            "Final release-candidate commit: not assigned",
             "V4.0 is ready for critical review as an experimental source-tree candidate",
+            "OptiX-backed Python GPU operator direction",
             "current user release remains `v3.0.2`",
             "fixed_radius_count_threshold_2d",
             "rtdsl.prepare_v4_fixed_radius_count_threshold_2d",
@@ -318,9 +332,10 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "DLPack capsule probe",
             "PyTorch CUDA tensor probe",
             "M8 next-step consensus",
+            "M8 internal critical review",
             "Linux validation on `192.168.1.20`",
-            "`scripts/run_test_matrix.py --group v4_active`: 69 tests, pass",
-            "`scripts/run_test_matrix.py --group v4_release_candidate`: 69 tests, pass as a non-authorizing review gate",
+            "`scripts/run_test_matrix.py --group v4_active`: 71 tests, pass",
+            "`scripts/run_test_matrix.py --group v4_release_candidate`: 71 tests, pass as a non-authorizing review gate",
             "This M8 packet does not authorize",
             "V4.0 as the current release",
             "package install, PyPI, wheel, or stable SDK wording",
@@ -341,11 +356,31 @@ class V40ReframedProductDesignTest(unittest.TestCase):
     def test_release_candidate_gate_remains_blocked_until_m8_packet(self) -> None:
         blockers = json.loads(RC_BLOCKERS.read_text(encoding="utf-8"))
         blocking_by_id = {entry["id"]: entry for entry in blockers["blockers"]}
+        evidence_by_id = {entry["id"]: entry for entry in blockers["evidence_ready"]}
 
+        self.assertEqual("m8_review_baseline_written_release_candidate_still_blocked", blockers["status"])
         self.assertFalse(blockers["release_candidate_ready"])
         self.assertEqual("v3.0.2", blockers["current_release_remains"])
+        self.assertEqual("experimental_m1_review_baseline_not_current_release", blockers["v4_position"])
         self.assertEqual("v4_release_candidate", blockers["current_gate"])
-        self.assertEqual(69, blockers["latest_validated_m1_implementation_v4_active_tests"])
+        self.assertEqual(
+            "0273d4cba5e38afee099573b0ac47f2f883c1067",
+            blockers["latest_validated_implementation_head"],
+        )
+        self.assertEqual(
+            {
+                "implementation_evidence_baseline": "bbc43984b74dee7d52c059b295c5eaade0813096",
+                "first_packet_gate_commit": "0273d4cba5e38afee099573b0ac47f2f883c1067",
+                "external_review_request_commit": "eba6f4b6e49152d8da4e545477a1cb125f6bab43",
+                "final_release_candidate_commit": None,
+                "policy": (
+                    "final_release_candidate_commit remains null while release_candidate_ready is false; "
+                    "before release approval it must be set to one fresh validation commit."
+                ),
+            },
+            blockers["m8_review_baseline_commits"],
+        )
+        self.assertEqual(71, blockers["latest_validated_m1_implementation_v4_active_tests"])
         self.assertEqual(
             "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
             blockers["latest_validated_m1_cross_stream_evidence_commit"],
@@ -354,8 +389,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             53,
             blockers["latest_validated_m1_cross_stream_v4_active_tests"],
         )
-        self.assertEqual(69, blockers["current_source_tree_v4_active_tests"])
-        self.assertEqual(69, blockers["current_source_tree_v4_release_candidate_tests"])
+        self.assertEqual(71, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(71, blockers["current_source_tree_v4_release_candidate_tests"])
         self.assertEqual(
             "exposed_as_non_authorizing_m8_review_gate_release_requires_external_review_and_explicit_user_action",
             blockers["v4_release_candidate_gate_policy"],
@@ -372,11 +407,22 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "full_dlpack_capsule_route_evidence",
             "full_numba_partner_surface",
             "package_install_runtime_story",
+            "multi_gpu_runtime_evidence",
             "stable_sdk_public_c_abi",
             "front_door_docs_switch",
         ):
             self.assertIn(blocker_id, blocking_by_id)
             self.assertIs(blocking_by_id[blocker_id]["closed"], False)
+        self.assertIn("m8_internal_2ai_critical_review", evidence_by_id)
+        self.assertEqual(
+            "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
+            evidence_by_id["m8_internal_2ai_critical_review"]["path"],
+        )
+        self.assertIn("cuda_array_interface_device_identity_contract", evidence_by_id)
+        self.assertIn(
+            "Multi-GPU runtime claims remain blocked",
+            evidence_by_id["cuda_array_interface_device_identity_contract"]["note"],
+        )
         self.assertTrue(blocking_by_id["m8_release_candidate_packet"]["closed"])
         self.assertTrue(blocking_by_id["cross_stream_event_wait"]["closed"])
         self.assertTrue(blocking_by_id["pytorch_route_evidence"]["closed"])
@@ -473,9 +519,36 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["evidence"],
         )
         self.assertEqual(
+            "single_gpu_device_identity_contract_guarded_multi_gpu_runtime_not_claimed",
+            blocking_by_id["multi_gpu_runtime_evidence"]["current_preflight"]["status"],
+        )
+        self.assertIn(
+            "fails closed when fixed-radius columns disagree on CUDA device",
+            blocking_by_id["multi_gpu_runtime_evidence"]["current_preflight"]["reason"],
+        )
+        self.assertEqual(
             "docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json",
             blocking_by_id["claim_boundary_scan"]["evidence"],
         )
+
+    def test_m8_internal_review_records_required_actions_without_release_approval(self) -> None:
+        review = M8_INTERNAL_REVIEW.read_text(encoding="utf-8")
+        compact = _compact(review)
+
+        for token in (
+            "accepted review input; actions required before release-candidate readiness",
+            "accept the M8 packet as a critical-review baseline",
+            "reject calling V4.0 release-candidate ready today",
+            "`v4_release_candidate` must remain a non-authorizing review gate",
+            "final RC decision needs one explicit candidate commit",
+            "source-tree-only",
+            "CUDA device identity",
+            "avoid implying RTX/RT-core speed authority",
+            "Refresh the blocker manifest status from pre-M8 to M8-review-baseline",
+            "Add device-id preservation/fail-closed tests",
+            "V4.0 current-release/front-door promotion",
+        ):
+            self.assertIn(token, compact)
 
     def test_v4_source_tree_runtime_story_blocks_package_wording(self) -> None:
         story = SOURCE_TREE_RUNTIME_STORY.read_text(encoding="utf-8")

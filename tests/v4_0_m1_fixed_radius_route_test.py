@@ -63,11 +63,13 @@ class _FakeCudaColumn:
         shape: tuple[int, ...],
         strides: tuple[int, ...] | None = None,
         stream: int = 0,
+        device_id: int = 0,
     ) -> None:
         self._ptr = int(ptr)
         self.dtype = dtype
         self.shape = shape
         self.strides = strides
+        self.device = SimpleNamespace(id=int(device_id))
         self.__cuda_array_interface__ = {
             "version": 3,
             "shape": shape,
@@ -75,6 +77,7 @@ class _FakeCudaColumn:
             "data": (self._ptr, False),
             "strides": strides,
             "stream": stream,
+            "device": ("cuda", int(device_id)),
         }
 
 
@@ -327,11 +330,11 @@ class _FakePrepared:
         }
 
 
-def _point_columns(base: int, *, count: int = 3, x_dtype: str = "float64"):
+def _point_columns(base: int, *, count: int = 3, x_dtype: str = "float64", device_id: int = 0):
     return {
-        "ids": _FakeCudaColumn(base + 0x10, dtype="uint32", shape=(count,), strides=(4,)),
-        "x": _FakeCudaColumn(base + 0x20, dtype=x_dtype, shape=(count,), strides=(8,)),
-        "y": _FakeCudaColumn(base + 0x30, dtype="float64", shape=(count,), strides=(8,)),
+        "ids": _FakeCudaColumn(base + 0x10, dtype="uint32", shape=(count,), strides=(4,), device_id=device_id),
+        "x": _FakeCudaColumn(base + 0x20, dtype=x_dtype, shape=(count,), strides=(8,), device_id=device_id),
+        "y": _FakeCudaColumn(base + 0x30, dtype="float64", shape=(count,), strides=(8,), device_id=device_id),
     }
 
 
@@ -362,11 +365,23 @@ def _dlpack_point_columns(
     }
 
 
-def _output_columns(base: int, *, count: int = 3):
+def _output_columns(base: int, *, count: int = 3, device_id: int = 0):
     return {
-        "query_ids": _FakeCudaColumn(base + 0x10, dtype="uint32", shape=(count,), strides=(4,)),
-        "neighbor_counts": _FakeCudaColumn(base + 0x20, dtype="uint32", shape=(count,), strides=(4,)),
-        "threshold_flags": _FakeCudaColumn(base + 0x30, dtype="uint32", shape=(count,), strides=(4,)),
+        "query_ids": _FakeCudaColumn(base + 0x10, dtype="uint32", shape=(count,), strides=(4,), device_id=device_id),
+        "neighbor_counts": _FakeCudaColumn(
+            base + 0x20,
+            dtype="uint32",
+            shape=(count,),
+            strides=(4,),
+            device_id=device_id,
+        ),
+        "threshold_flags": _FakeCudaColumn(
+            base + 0x30,
+            dtype="uint32",
+            shape=(count,),
+            strides=(4,),
+            device_id=device_id,
+        ),
     }
 
 
@@ -684,6 +699,30 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         wrong_dtype["neighbor_counts"] = _FakeCudaColumn(0x3020, dtype="int32", shape=(3,), strides=(4,))
         with self.assertRaisesRegex(ValueError, "V4 output column 'neighbor_counts' must use dtype"):
             rtdsl.plan_v4_fixed_radius_count_threshold_2d(query, search, output_columns=wrong_dtype)
+
+    def test_cuda_array_interface_preserves_explicit_device_id_and_fails_closed_for_mixed_devices(self) -> None:
+        search = _point_columns(0x1000, device_id=1)
+        query = _point_columns(0x2000, device_id=1)
+        outputs = _output_columns(0x3000, device_id=1)
+
+        plan = rtdsl.plan_v4_fixed_radius_count_threshold_2d(query, search, output_columns=outputs)
+        metadata = plan.to_metadata()
+
+        self.assertEqual(metadata["device"], "cuda:1")
+        self.assertEqual(metadata["borrowed_device_pointers"]["search.x"], 0x1020)
+        self.assertEqual(metadata["borrowed_device_pointers"]["query.x"], 0x2020)
+        self.assertEqual(metadata["borrowed_device_pointers"]["output.neighbor_counts"], 0x3020)
+
+        mixed_query = _point_columns(0x4000, device_id=1)
+        mixed_query["y"] = _FakeCudaColumn(
+            0x4030,
+            dtype="float64",
+            shape=(3,),
+            strides=(8,),
+            device_id=2,
+        )
+        with self.assertRaisesRegex(ValueError, "V4 query columns must live on the same CUDA device"):
+            rtdsl.plan_v4_fixed_radius_count_threshold_2d(mixed_query, search, output_columns=outputs)
 
     def test_plan_records_cross_stream_prepare_query_event_wait_requirement(self) -> None:
         search = _point_columns(0x1000)

@@ -16,7 +16,7 @@ true-zero-copy claim.
 V4.0 is not the current user release/front door.
 
 The current source-tree release remains `v3.0.2`. The V4.0 M1 work is an
-active engineering preview for the Python GPU RT-core operator direction.
+active engineering preview for the OptiX-backed Python GPU operator direction.
 
 This status follows the 2-AI release-positioning consensus:
 
@@ -88,7 +88,7 @@ Latest Linux validation on `192.168.1.20` for source-tree head
 
 - source-tree doctor with V4 active checks: pass;
 - source-tree runtime preflight with required V4 GPU runtime: pass;
-- `v4_active`: 69 tests, pass;
+- `v4_active`: 71 tests, pass;
 - front-door claim-boundary scan: pass;
 - `make build-optix`: pass;
 - DLPack capsule probe: pass;
@@ -112,7 +112,7 @@ front-door claim-scan, Numba route-evidence guards, source-tree runtime story
 guard, source-tree runtime preflight guard, fixed-radius cross-stream
 prepare/query event-wait guard, and DLPack capsule report guards, PyTorch route
 report guards, PyTorch compatibility guards, and PyTorch boundary guards:
-69 tests, pass locally and on Linux.
+71 tests, pass locally and on Linux.
 
 ## Release-Candidate Boundary
 
@@ -146,7 +146,8 @@ Current machine-readable blocker manifest:
 - Generated bindings or public multi-language C ABI release.
 - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies.
 - Async, nonblocking, or returns before GPU work completes.
-- Cross-stream event wait support.
+- General cross-stream event wait support beyond the fixed-radius M1
+  prepare/query event-wait contract.
 - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims.
 - Full Numba or PyTorch partner surface, arbitrary framework-neutral DLPack, or
   full DLPack route support.

@@ -395,7 +395,7 @@ class CudaArrayInterfaceAdapter:
         return RtdlTensorDescriptor(
             data_ptr=_data_ptr(obj),
             device_type="cuda",
-            device_id=0,
+            device_id=_cuda_array_interface_device_id(obj),
             dtype=_dtype_name(obj),
             shape=_shape_tuple(obj),
             strides=_strides_tuple(obj),
@@ -801,6 +801,58 @@ def _strides_tuple(obj: Any) -> tuple[int, ...] | None:
     if strides is None:
         return None
     return tuple(int(stride) for stride in strides)
+
+
+def _cuda_array_interface_device_id(obj: Any) -> int:
+    cuda_array = getattr(obj, "__cuda_array_interface__", None)
+    if isinstance(cuda_array, dict):
+        raw_device = cuda_array.get("device")
+        device_id = _maybe_cuda_device_id(raw_device)
+        if device_id is not None:
+            return device_id
+
+    dlpack_device = getattr(obj, "__dlpack_device__", None)
+    if callable(dlpack_device):
+        device_type, device_id = _normalize_dlpack_device(dlpack_device())
+        if device_type != "cuda":
+            raise ValueError("CUDA Array Interface descriptors require a CUDA device")
+        return device_id
+
+    for raw_device in (
+        getattr(obj, "device", None),
+        getattr(obj, "_device", None),
+        getattr(getattr(obj, "gpu_data", None), "device", None),
+    ):
+        device_id = _maybe_cuda_device_id(raw_device)
+        if device_id is not None:
+            return device_id
+
+    return 0
+
+
+def _maybe_cuda_device_id(raw_device: Any) -> int | None:
+    if raw_device is None:
+        return None
+    if isinstance(raw_device, bool):
+        return None
+    if isinstance(raw_device, int):
+        return raw_device
+    if isinstance(raw_device, tuple) and len(raw_device) == 2:
+        raw_type, raw_id = raw_device
+        if raw_type in ("cuda", "gpu", 2):
+            return int(raw_id)
+        return None
+    for attr in ("id", "index", "ordinal"):
+        value = getattr(raw_device, attr, None)
+        if isinstance(value, bool):
+            continue
+        if isinstance(value, int):
+            return value
+    text = str(raw_device).strip().lower()
+    for prefix in ("cuda:", "gpu:"):
+        if text.startswith(prefix):
+            return int(text[len(prefix) :])
+    return None
 
 
 def _data_ptr(obj: Any) -> int | None:

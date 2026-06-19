@@ -4,15 +4,22 @@ Status: review-ready M8 evidence packet, not release approval.
 
 Date: 2026-06-19
 
-Candidate evidence baseline: `bbc43984b74dee7d52c059b295c5eaade0813096`
+Implementation evidence baseline:
+`bbc43984b74dee7d52c059b295c5eaade0813096`
 
 First M8 packet/gate commit:
 `0273d4cba5e38afee099573b0ac47f2f883c1067`
 
+External review request commit:
+`eba6f4b6e49152d8da4e545477a1cb125f6bab43`
+
+Final release-candidate commit: not assigned. Release-candidate readiness is
+still false.
+
 ## Verdict
 
 V4.0 is ready for critical review as an experimental source-tree candidate for
-the Python GPU RT-core operator direction.
+the OptiX-backed Python GPU operator direction.
 
 It is not the current user release. The current user release remains `v3.0.2`.
 This packet does not authorize a front-door switch, package-install wording,
@@ -21,7 +28,8 @@ speedup wording, or RTX/RT-core speedup wording.
 
 ## V4.0 Candidate Scope
 
-V4.0 is scoped to Python actors using RTDL as a GPU operator lane.
+V4.0 is scoped to Python actors using RTDL as an OptiX-backed GPU operator
+lane.
 
 The first candidate product route is:
 
@@ -118,6 +126,7 @@ The current evidence does not validate:
 | Active ABI slice | `docs/engineering/rtdl_v4_0_active_abi_slice_2026-06-19.md` | Phase 2 substrate evidence, not product headline. |
 | Active ABI layout audit | `docs/reports/v4_0_active_abi_layout_audit_2026-06-19.json` | Experimental C ABI layout audit. |
 | M8 next-step consensus | `docs/reviews/codex_v4_after_runtime_preflight_m8_next_step_2ai_consensus_2026-06-19.md` | 2-AI decision to assemble this M8 packet before broad feature expansion. |
+| M8 internal critical review | `docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md` | 2-AI review accepts this as a baseline and rejects release-candidate readiness today. |
 
 ## Validation Summary
 
@@ -126,8 +135,8 @@ Linux validation on `192.168.1.20` for the implementation evidence baseline
 `0273d4cba5e38afee099573b0ac47f2f883c1067`:
 
 - `make build-optix`: pass;
-- `scripts/run_test_matrix.py --group v4_active`: 69 tests, pass;
-- `scripts/run_test_matrix.py --group v4_release_candidate`: 69 tests, pass
+- `scripts/run_test_matrix.py --group v4_active`: 71 tests, pass;
+- `scripts/run_test_matrix.py --group v4_release_candidate`: 71 tests, pass
   as a non-authorizing review gate;
 - `scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime`:
   pass;
@@ -175,7 +184,7 @@ Please critically review this packet and the linked evidence.
 
 Questions for reviewers:
 
-1. Is V4.0's candidate scope honest: Python GPU RT-core operator, exact
+1. Is V4.0's candidate scope honest: OptiX-backed Python GPU operator, exact
    fixed-radius M1 route, source-tree runtime only?
 2. Is the evidence sufficient to call this an experimental V4.0 candidate for
    review, without switching the user front door?
