@@ -24,7 +24,8 @@ def _source_audit() -> dict[str, bool]:
     workloads = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
     source = workloads.read_text(encoding="utf-8")
     symbol = "write_prepared_fixed_radius_count_threshold_2d_device_query_columns_on_stream_optix"
-    start = source.index(symbol)
+    impl_symbol = "write_prepared_fixed_radius_count_threshold_2d_device_query_columns_optix_impl"
+    start = source.index(f"static void {impl_symbol}")
     end = source.index("static void count_prepared_fixed_radius_threshold_reached_2d_optix", start)
     body = source[start:end]
     return {
@@ -130,6 +131,9 @@ def run_smoke() -> dict[str, object]:
             "async_claim_authorized": False,
         },
     }
+    if not all(result["source_audit"].values()):
+        raise AssertionError(f"source audit failed: {result['source_audit']!r}")
+    return result
 
 
 def main() -> int:
