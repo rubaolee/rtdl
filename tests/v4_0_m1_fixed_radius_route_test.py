@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
+import numpy as np
 import rtdsl
 from rtdsl import v4_0_device_array_operator as v4
 
@@ -12,6 +14,7 @@ from rtdsl import v4_0_device_array_operator as v4
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_stream_smoke_2026-06-19.json"
 SMOKE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_smoke.py"
+CLAIM_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_claim_review_2026-06-19.md"
 
 
 class _FakeCudaColumn:
@@ -76,6 +79,29 @@ def _output_columns(base: int, *, count: int = 3):
     }
 
 
+def _host_point_columns(count: int = 3):
+    return {
+        "ids": np.arange(count, dtype=np.uint32),
+        "x": np.arange(count, dtype=np.float64),
+        "y": np.arange(count, dtype=np.float64),
+    }
+
+
+def _clone_handoff(handoff, **overrides):
+    values = {
+        "data_ptr": handoff.data_ptr,
+        "dtype": handoff.dtype,
+        "shape": handoff.shape,
+        "strides": handoff.strides,
+        "device_type": handoff.device_type,
+        "device_id": handoff.device_id,
+        "access_mode": handoff.access_mode,
+        "source_protocol": handoff.source_protocol,
+    }
+    values.update(overrides)
+    return SimpleNamespace(**values)
+
+
 class V40M1FixedRadiusRouteTest(unittest.TestCase):
     def test_route_descriptor_freezes_fixed_radius_count_threshold_2d(self) -> None:
         route = rtdsl.describe_v4_fixed_radius_count_threshold_2d_route()
@@ -128,6 +154,56 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(plan.to_metadata()["caller_stream_handle"], 123)
         self.assertTrue(plan.to_metadata()["caller_stream_native_propagation_ready"])
 
+    def test_plan_fails_closed_for_host_arrays_bad_rank_and_noncontiguous_stride(self) -> None:
+        search = _point_columns(0x1000)
+        outputs = _output_columns(0x3000)
+
+        with self.assertRaisesRegex(ValueError, "requires a CUDA partner tensor"):
+            rtdsl.plan_v4_fixed_radius_count_threshold_2d(
+                _host_point_columns(),
+                search,
+                output_columns=outputs,
+            )
+
+        bad_rank = _point_columns(0x2000)
+        bad_rank["x"] = _FakeCudaColumn(0x2020, dtype="float64", shape=(3, 1), strides=(8, 8))
+        with self.assertRaisesRegex(ValueError, "V4 query column 'x' must be one-dimensional"):
+            rtdsl.plan_v4_fixed_radius_count_threshold_2d(bad_rank, search, output_columns=outputs)
+
+        noncontiguous = _point_columns(0x2000)
+        noncontiguous["x"] = _FakeCudaColumn(0x2020, dtype="float64", shape=(3,), strides=(16,))
+        with self.assertRaisesRegex(ValueError, "V4 query column 'x' must be contiguous"):
+            rtdsl.plan_v4_fixed_radius_count_threshold_2d(noncontiguous, search, output_columns=outputs)
+
+    def test_plan_fails_closed_for_bad_output_contracts(self) -> None:
+        search = _point_columns(0x1000)
+        query = _point_columns(0x2000)
+
+        wrong_count = _output_columns(0x3000, count=2)
+        with self.assertRaisesRegex(ValueError, "V4 output columns must have matching lengths"):
+            rtdsl.plan_v4_fixed_radius_count_threshold_2d(query, search, output_columns=wrong_count)
+
+        wrong_dtype = _output_columns(0x3000)
+        wrong_dtype["neighbor_counts"] = _FakeCudaColumn(0x3020, dtype="int32", shape=(3,), strides=(4,))
+        with self.assertRaisesRegex(ValueError, "V4 output column 'neighbor_counts' must use dtype"):
+            rtdsl.plan_v4_fixed_radius_count_threshold_2d(query, search, output_columns=wrong_dtype)
+
+    def test_plan_fails_closed_for_mixed_devices(self) -> None:
+        search = _point_columns(0x1000)
+        query = _point_columns(0x2000)
+        outputs = _output_columns(0x3000)
+        original = v4._partner.prepare_direct_device_pointer_handoff
+
+        def fake_handoff(obj, *, access="read"):
+            handoff = original(obj, access=access)
+            if obj is query["y"]:
+                return _clone_handoff(handoff, device_id=1)
+            return handoff
+
+        with mock.patch.object(v4._partner, "prepare_direct_device_pointer_handoff", side_effect=fake_handoff):
+            with self.assertRaisesRegex(ValueError, "V4 query columns must live on the same CUDA device"):
+                rtdsl.plan_v4_fixed_radius_count_threshold_2d(query, search, output_columns=outputs)
+
     def test_operator_wraps_existing_prepared_optix_device_column_route(self) -> None:
         search = _point_columns(0x1000)
         query = _point_columns(0x2000)
@@ -178,7 +254,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         report = json.loads(EVIDENCE_REPORT.read_text(encoding="utf-8"))
 
         self.assertEqual(report["status"], "pass-with-boundary")
-        self.assertEqual(report["code_commit"], "7bca09024")
+        self.assertRegex(report["code_commit"], r"^[0-9a-f]{9}$")
         self.assertEqual(report["route"]["route_id"], "fixed_radius_count_threshold_2d")
         self.assertEqual(report["validation"]["build_optix"], "pass")
         self.assertEqual(report["validation"]["cupy_stream_smoke"], "pass")
@@ -189,6 +265,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(report["cupy_stream_smoke_observed"]["neighbor_counts"], [1, 1, 0])
         self.assertTrue(all(report["pointer_identity"].values()))
         self.assertTrue(all(report["source_audit"].values()))
+        self.assertTrue(all(report["promotion_blockers"].values()))
         self.assertFalse(report["route"]["async_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["public_speedup_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["rt_core_speedup_claim_authorized"])
@@ -202,10 +279,24 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             "cp.cuda.Stream(non_blocking=True)",
             "pointer_identity",
             "source_audit",
+            "promotion_blockers",
+            "if not all(result[\"source_audit\"].values())",
             "native_async_ready",
             "v4_true_zero_copy_claim_authorized",
         ):
             self.assertIn(token, script)
+
+    def test_claim_review_keeps_v4_true_zero_copy_claim_blocked(self) -> None:
+        review = CLAIM_REVIEW.read_text(encoding="utf-8")
+
+        for token in (
+            "Verdict: keep `v4_true_zero_copy_claim_authorized` false",
+            "Prepare is not caller-stream ordered",
+            "transfer-counter or equivalent no-host-stage evidence",
+            "fail-closed matrix",
+            "Do not promote",
+        ):
+            self.assertIn(token, review)
 
     def test_operator_uses_on_stream_route_for_nonzero_caller_stream(self) -> None:
         search = _point_columns(0x1000)

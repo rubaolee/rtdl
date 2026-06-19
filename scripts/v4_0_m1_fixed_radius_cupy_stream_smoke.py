@@ -38,6 +38,28 @@ def _source_audit() -> dict[str, bool]:
     }
 
 
+def _promotion_blockers() -> dict[str, bool]:
+    workloads = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
+    core = ROOT / "src" / "native" / "optix" / "rtdl_optix_core.cpp"
+    workload_source = workloads.read_text(encoding="utf-8")
+    core_source = core.read_text(encoding="utf-8")
+    start = workload_source.index(
+        "PreparedFixedRadiusCountThreshold2D(\n"
+        "            const uint32_t* ids,"
+    )
+    end = workload_source.index("};\n\nstruct PreparedPointGroupNearestWitness2D", start)
+    prepare_body = workload_source[start:end]
+    accel_start = core_source.index("static AccelHolder build_custom_accel_from_device_aabbs")
+    accel_end = core_source.index("static AccelHolder build_custom_accel_from_borrowed_device_aabbs", accel_start)
+    accel_body = core_source[accel_start:accel_end]
+    return {
+        "prepare_aabb_pack_uses_default_stream": "0, nullptr, args, nullptr" in prepare_body,
+        "prepare_aabb_pack_synchronizes_default_stream": "cuStreamSynchronize(nullptr)" in prepare_body,
+        "gas_build_uses_default_stream": "CUstream stream = 0" in accel_body,
+        "gas_build_synchronizes_default_stream": "cuStreamSynchronize(stream)" in accel_body,
+    }
+
+
 def run_smoke() -> dict[str, object]:
     import cupy as cp
     import rtdsl
@@ -108,7 +130,7 @@ def run_smoke() -> dict[str, object]:
     if metadata["native_async_ready"]:
         raise AssertionError("M1 caller-stream route must not claim async readiness")
 
-    return {
+    result = {
         "status": "pass-with-boundary",
         "route_id": metadata["v4_route_id"],
         "observed": observed,
@@ -124,6 +146,7 @@ def run_smoke() -> dict[str, object]:
         },
         "pointer_identity": pointer_identity,
         "source_audit": _source_audit(),
+        "promotion_blockers": _promotion_blockers(),
         "claim_boundaries": {
             "public_speedup_claim_authorized": False,
             "rt_core_speedup_claim_authorized": False,
@@ -133,6 +156,8 @@ def run_smoke() -> dict[str, object]:
     }
     if not all(result["source_audit"].values()):
         raise AssertionError(f"source audit failed: {result['source_audit']!r}")
+    if not all(result["promotion_blockers"].values()):
+        raise AssertionError(f"promotion blocker audit failed: {result['promotion_blockers']!r}")
     return result
 
 
