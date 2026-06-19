@@ -33,8 +33,13 @@ one-shot `run_v4_fixed_radius_count_threshold_2d`, the fixed-radius search-scene
 AABB pack and OptiX GAS build are ordered on that caller stream.
 
 This closes the specific prepare-stream blocker from the original review. It
-does not promote the claim. Do not promote `v4_true_zero_copy_claim_authorized`
-until the remaining evidence gates below are satisfied.
+The route metadata also now echoes the exact device pointers handed to the
+native call, and the CuPy parity matrix covers supported positive cases plus
+the zero-length CuPy query fail-closed boundary.
+
+These updates do not promote the claim. Do not promote
+`v4_true_zero_copy_claim_authorized` until the remaining evidence gates below
+are satisfied.
 
 ## Reviewer Consensus
 
@@ -64,11 +69,13 @@ Two independent reviewers reached the same decision:
    upload is acceptable, but search/query/output column staging must be proven
    absent.
 
-3. Correctness parity is too small.
+3. Correctness parity was too small at review time. This is now improved for
+   the frozen M1 route.
 
-   The CuPy smoke has a deterministic three-query case. Promotion needs a parity
-   matrix against CPU/reference behavior across radius, threshold, empty, miss,
-   boundary, and randomized cases.
+   The route now has a reproducible CuPy parity matrix against CPU/reference
+   behavior for smoke, miss, boundary, threshold cap, and deterministic random
+   cases. Zero-length CuPy query columns are recorded as a deterministic
+   fail-closed boundary because CuPy exposes a zero data pointer for that case.
 
 4. The fail-closed matrix needs to stay broad.
 
@@ -114,12 +121,13 @@ Not allowed:
 - Evidence packet covers both prepare and hot query.
 - Transfer-counter or equivalent no-host-stage evidence proves no host staging
   of search, query, or output columns.
-- Native metadata or an equivalent audit echoes/records the exact consumed
-  pointer identities.
+- Native-call metadata echoes/records the exact consumed pointer identities for
+  the frozen M1 route.
 - Stream-order proof covers producer stream, prepare stream, query stream, and
   consumer stream behavior.
-- Correctness parity matrix covers deterministic, randomized, empty, miss,
-  boundary, radius, and threshold cases.
+- Correctness parity matrix covers supported deterministic, randomized, miss,
+  boundary, radius, and threshold cases, with zero-length CuPy query columns
+  documented as fail-closed.
 - Fail-closed matrix remains active for host arrays, mixed devices,
   non-contiguous/sliced columns, bad ranks, bad output dtype/shape/device, and
   unsupported layout/stream cases.

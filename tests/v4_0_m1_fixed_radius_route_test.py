@@ -13,7 +13,9 @@ from rtdsl import v4_0_device_array_operator as v4
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_stream_smoke_2026-06-19.json"
+PARITY_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_parity_matrix_2026-06-19.json"
 SMOKE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_smoke.py"
+PARITY_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_parity_matrix.py"
 CLAIM_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_claim_review_2026-06-19.md"
 
 
@@ -281,6 +283,28 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertTrue(all(report["source_audit"].values()))
         self.assertTrue(all(report["promotion_blockers"].values()))
         self.assertFalse(report["route"]["async_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["public_speedup_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["rt_core_speedup_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["v4_true_zero_copy_claim_authorized"])
+
+    def test_cupy_parity_matrix_report_preserves_claim_boundaries(self) -> None:
+        report = json.loads(PARITY_REPORT.read_text(encoding="utf-8"))
+        script = PARITY_SCRIPT.read_text(encoding="utf-8")
+
+        self.assertEqual(report["status"], "pass-with-boundary")
+        self.assertRegex(report["code_commit"], r"^[0-9a-f]{9}$")
+        self.assertEqual(report["route"]["route_id"], "fixed_radius_count_threshold_2d")
+        self.assertEqual(report["validation"]["cupy_parity_matrix"], "pass")
+        self.assertEqual(report["parity_matrix"]["case_count"], 5)
+        self.assertEqual(report["parity_matrix"]["pass_count"], 5)
+        self.assertEqual(report["fail_closed_matrix"]["case_count"], 1)
+        self.assertEqual(report["fail_closed_matrix"]["pass_count"], 1)
+        self.assertTrue(all(row["passed"] for row in report["parity_matrix"]["cases"]))
+        self.assertTrue(all(row["passed"] for row in report["fail_closed_matrix"]["cases"]))
+        self.assertIn("boundary_inclusive", {row["name"] for row in report["parity_matrix"]["cases"]})
+        self.assertIn("random_seed_7", {row["name"] for row in report["parity_matrix"]["cases"]})
+        self.assertIn("empty_query_zero_length_cupy_columns_fail_closed", script)
+        self.assertFalse(report["claim_boundaries"]["async_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["public_speedup_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["rt_core_speedup_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["v4_true_zero_copy_claim_authorized"])

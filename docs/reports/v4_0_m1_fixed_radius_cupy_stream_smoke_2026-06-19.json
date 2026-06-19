@@ -2,8 +2,8 @@
   "report": "v4_0_m1_fixed_radius_cupy_stream_smoke",
   "date": "2026-06-19",
   "status": "pass-with-boundary",
-  "code_commit": "52ea2807c",
-  "validated_tree": "b805af022f3d7652e4680c752554de9cf8bd3fa2",
+  "code_commit": "34f5e6cdf",
+  "validated_tree": "469adc24f8215aff7f6806047719e070dbabf66e",
   "report_scope_note": "This JSON is a checked-in passing snapshot. The current-head gate is the reproducible smoke script listed in commands.",
   "remote_host": "192.168.1.20",
   "remote_path": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
@@ -27,14 +27,15 @@
     "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
     "git diff --check",
     "make build-optix",
-    "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_stream_smoke.py"
+    "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_stream_smoke.py",
+    "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_parity_matrix.py"
   ],
   "validation": {
     "build_v4_c_api": "pass",
     "v4_active": {
       "status": "pass",
       "module_count": 3,
-      "test_count": 27
+      "test_count": 28
     },
     "git_diff_check": "pass",
     "build_optix": "pass",
@@ -93,7 +94,6 @@
   },
   "promotion_blockers": {
     "transfer_counter_or_equivalent_prepare_query_missing": true,
-    "full_correctness_parity_matrix_missing": true,
     "async_completion_contract_missing": true,
     "rtx_rt_core_speed_hardware_evidence_missing": true
   },
@@ -101,7 +101,7 @@
     "public_speedup_claim_authorized": false,
     "rt_core_speedup_claim_authorized": false,
     "v4_true_zero_copy_claim_authorized": false,
-    "reason": "M4 still needs a full evidence packet with transfer-counter/equivalent no-host-stage evidence across prepare plus query, correctness parity, async contract review, and route-scoped wording.",
+    "reason": "M4 still needs transfer-counter/equivalent no-host-stage evidence across prepare plus query, async contract review, and RTX RT-core hardware evidence before any public true-zero-copy or speed wording.",
     "hardware_note": "The validation GPU is GTX 1070, so this smoke cannot authorize an RTX RT-core hardware speed claim."
   }
 }

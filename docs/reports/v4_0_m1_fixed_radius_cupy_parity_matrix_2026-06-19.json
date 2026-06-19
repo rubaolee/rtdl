@@ -1,0 +1,152 @@
+{
+  "report": "v4_0_m1_fixed_radius_cupy_parity_matrix",
+  "date": "2026-06-19",
+  "status": "pass-with-boundary",
+  "code_commit": "34f5e6cdf",
+  "validated_tree": "469adc24f8215aff7f6806047719e070dbabf66e",
+  "remote_host": "192.168.1.20",
+  "remote_path": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
+  "hardware": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "driver": "580.126.09",
+    "memory_mib": 8192
+  },
+  "route": {
+    "scope": "python_gpu_rt_core_operator",
+    "route_id": "fixed_radius_count_threshold_2d",
+    "backend": "optix",
+    "python_api": "rtdsl.run_v4_fixed_radius_count_threshold_2d",
+    "parity_basis": "CuPy V4 M1 device-column route compared against CPU reference counts"
+  },
+  "commands": [
+    "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
+    "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_stream_smoke.py --output /tmp/v4_stream_smoke_34f5e6cdf.json",
+    "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_parity_matrix.py --output /tmp/v4_parity_34f5e6cdf.json",
+    "git diff --check"
+  ],
+  "validation": {
+    "v4_active": {
+      "status": "pass",
+      "module_count": 3,
+      "test_count": 28
+    },
+    "cupy_stream_smoke": "pass",
+    "cupy_parity_matrix": "pass",
+    "git_diff_check": "pass"
+  },
+  "parity_matrix": {
+    "case_count": 5,
+    "pass_count": 5,
+    "cases": [
+      {
+        "name": "smoke",
+        "radius": 1.1,
+        "threshold": 1,
+        "query_count": 3,
+        "search_count": 3,
+        "observed": {
+          "query_ids": [1, 2, 3],
+          "neighbor_counts": [1, 1, 0],
+          "threshold_flags": [1, 1, 0]
+        },
+        "expected": {
+          "query_ids": [1, 2, 3],
+          "neighbor_counts": [1, 1, 0],
+          "threshold_flags": [1, 1, 0]
+        },
+        "passed": true
+      },
+      {
+        "name": "all_miss",
+        "radius": 0.5,
+        "threshold": 1,
+        "query_count": 2,
+        "search_count": 2,
+        "observed": {
+          "query_ids": [1, 2],
+          "neighbor_counts": [0, 0],
+          "threshold_flags": [0, 0]
+        },
+        "expected": {
+          "query_ids": [1, 2],
+          "neighbor_counts": [0, 0],
+          "threshold_flags": [0, 0]
+        },
+        "passed": true
+      },
+      {
+        "name": "boundary_inclusive",
+        "radius": 1.0,
+        "threshold": 1,
+        "query_count": 1,
+        "search_count": 2,
+        "observed": {
+          "query_ids": [1],
+          "neighbor_counts": [1],
+          "threshold_flags": [1]
+        },
+        "expected": {
+          "query_ids": [1],
+          "neighbor_counts": [1],
+          "threshold_flags": [1]
+        },
+        "passed": true
+      },
+      {
+        "name": "threshold_caps_count",
+        "radius": 0.5,
+        "threshold": 2,
+        "query_count": 1,
+        "search_count": 3,
+        "observed": {
+          "query_ids": [1],
+          "neighbor_counts": [2],
+          "threshold_flags": [1]
+        },
+        "expected": {
+          "query_ids": [1],
+          "neighbor_counts": [2],
+          "threshold_flags": [1]
+        },
+        "passed": true
+      },
+      {
+        "name": "random_seed_7",
+        "radius": 0.65,
+        "threshold": 2,
+        "query_count": 5,
+        "search_count": 8,
+        "observed": {
+          "query_ids": [1, 2, 3, 4, 5],
+          "neighbor_counts": [0, 1, 2, 1, 2],
+          "threshold_flags": [0, 0, 1, 0, 1]
+        },
+        "expected": {
+          "query_ids": [1, 2, 3, 4, 5],
+          "neighbor_counts": [0, 1, 2, 1, 2],
+          "threshold_flags": [0, 0, 1, 0, 1]
+        },
+        "passed": true
+      }
+    ]
+  },
+  "fail_closed_matrix": {
+    "case_count": 1,
+    "pass_count": 1,
+    "cases": [
+      {
+        "name": "empty_query_zero_length_cupy_columns_fail_closed",
+        "expected_error": "observable non-zero data_ptr",
+        "observed_error": "direct device-pointer handoff requires an observable non-zero data_ptr",
+        "passed": true
+      }
+    ]
+  },
+  "claim_boundaries": {
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "v4_true_zero_copy_claim_authorized": false,
+    "async_claim_authorized": false,
+    "reason": "Parity evidence covers supported non-empty CuPy device-column cases and records zero-length CuPy query columns as fail-closed. It does not authorize public speed, async, or true-zero-copy wording."
+  }
+}
