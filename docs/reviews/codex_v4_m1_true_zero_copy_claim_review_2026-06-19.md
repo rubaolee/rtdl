@@ -36,6 +36,10 @@ This closes the specific prepare-stream blocker from the original review. It
 The route metadata also now echoes the exact device pointers handed to the
 native call, and the CuPy parity matrix covers supported positive cases plus
 the zero-length CuPy query fail-closed boundary.
+The LD_PRELOAD CUDA transfer-counter probe now covers the warmed
+prepare-plus-query window and observes no device-to-host copy, no unknown copy,
+and only 136 host-to-device bytes, below the small launch/setup allowance and
+far below the smallest named-column size in the probe.
 
 These updates do not promote the claim. Do not promote
 `v4_true_zero_copy_claim_authorized` until the remaining evidence gates below
@@ -60,14 +64,16 @@ Two independent reviewers reached the same decision:
    fixed-radius search preparation. The device-search AABB pack and GAS build
    are ordered on that stream for the M1 fixed-radius count/threshold route.
 
-2. No transfer-counter or equivalent no-host-stage evidence covers both prepare
-   and query.
+2. No transfer-counter or equivalent no-host-stage evidence covered both
+   prepare and query at review time. This is now improved for the frozen M1
+   route.
 
    The reproducible smoke proves pointer identity and audits the hot query
-   source path. It does not yet provide CUPTI/transfer-counter/equivalent
-   evidence across the entire prepare-plus-query route. Scalar launch parameter
-   upload is acceptable, but search/query/output column staging must be proven
-   absent.
+   source path. The new transfer-counter probe also covers the warmed
+   prepare-plus-query route. It observes no host-stage copy of named
+   search/query/output columns. It does observe internal device-to-device
+   staging for device-resident AABB/BVH work, so public true-zero-copy wording
+   remains gated pending wording review.
 
 3. Correctness parity was too small at review time. This is now improved for
    the frozen M1 route.
@@ -119,12 +125,14 @@ Not allowed:
 - Prepare path uses the caller stream for the frozen M1 route and keeps that
   source-audited in the CuPy smoke gate.
 - Evidence packet covers both prepare and hot query.
-- Transfer-counter or equivalent no-host-stage evidence proves no host staging
-  of search, query, or output columns.
+- Transfer-counter evidence proves no host staging of named search, query, or
+  output columns for the warmed M1 route.
 - Native-call metadata echoes/records the exact consumed pointer identities for
   the frozen M1 route.
 - Stream-order proof covers producer stream, prepare stream, query stream, and
   consumer stream behavior.
+- Public true-zero-copy wording is reviewed against the internal
+  device-to-device AABB/BVH staging that the no-host-stage probe records.
 - Correctness parity matrix covers supported deterministic, randomized, miss,
   boundary, radius, and threshold cases, with zero-length CuPy query columns
   documented as fail-closed.

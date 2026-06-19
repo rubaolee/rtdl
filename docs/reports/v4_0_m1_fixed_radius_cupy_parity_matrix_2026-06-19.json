@@ -28,7 +28,7 @@
     "v4_active": {
       "status": "pass",
       "module_count": 3,
-      "test_count": 28
+      "test_count": 29
     },
     "cupy_stream_smoke": "pass",
     "cupy_parity_matrix": "pass",

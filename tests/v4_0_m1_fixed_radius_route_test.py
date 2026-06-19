@@ -14,8 +14,12 @@ from rtdsl import v4_0_device_array_operator as v4
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_stream_smoke_2026-06-19.json"
 PARITY_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_parity_matrix_2026-06-19.json"
+NO_HOST_STAGE_REPORT = (
+    ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe_2026-06-19.json"
+)
 SMOKE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_smoke.py"
 PARITY_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_parity_matrix.py"
+NO_HOST_STAGE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe.py"
 CLAIM_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_claim_review_2026-06-19.md"
 
 
@@ -304,6 +308,33 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertIn("boundary_inclusive", {row["name"] for row in report["parity_matrix"]["cases"]})
         self.assertIn("random_seed_7", {row["name"] for row in report["parity_matrix"]["cases"]})
         self.assertIn("empty_query_zero_length_cupy_columns_fail_closed", script)
+        self.assertFalse(report["claim_boundaries"]["async_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["public_speedup_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["rt_core_speedup_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["v4_true_zero_copy_claim_authorized"])
+
+    def test_cupy_no_host_stage_report_preserves_claim_boundaries(self) -> None:
+        report = json.loads(NO_HOST_STAGE_REPORT.read_text(encoding="utf-8"))
+        script = NO_HOST_STAGE_SCRIPT.read_text(encoding="utf-8")
+        classification = report["transfer_counter_classification"]
+
+        self.assertEqual(report["status"], "pass-with-boundary")
+        self.assertRegex(report["code_commit"], r"^[0-9a-f]{9}$")
+        self.assertEqual(report["route"]["route_id"], "fixed_radius_count_threshold_2d")
+        self.assertEqual(report["validation"]["cupy_no_host_stage_probe"], "pass")
+        self.assertTrue(classification["transfer_counter_observed"])
+        self.assertTrue(classification["no_host_stage_ready"])
+        self.assertFalse(classification["host_stage_observed"])
+        self.assertEqual(classification["observed_device_to_host_calls"], 0)
+        self.assertEqual(classification["observed_unknown_calls"], 0)
+        self.assertLess(
+            classification["observed_host_to_device_bytes"],
+            classification["min_named_column_bytes"],
+        )
+        self.assertTrue(classification["internal_device_to_device_copy_allowed"])
+        self.assertFalse(classification["v4_true_zero_copy_claim_authorized"])
+        self.assertIn("LD_PRELOAD", script)
+        self.assertIn("v4_m1_fixed_radius_prepare_plus_query_after_warmup", script)
         self.assertFalse(report["claim_boundaries"]["async_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["public_speedup_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["rt_core_speedup_claim_authorized"])

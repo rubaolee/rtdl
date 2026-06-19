@@ -59,7 +59,7 @@ def _source_audit() -> dict[str, bool]:
 
 def _promotion_blockers() -> dict[str, bool]:
     return {
-        "transfer_counter_or_equivalent_prepare_query_missing": True,
+        "public_true_zero_copy_wording_review_with_internal_device_staging_missing": True,
         "async_completion_contract_missing": True,
         "rtx_rt_core_speed_hardware_evidence_missing": True,
     }

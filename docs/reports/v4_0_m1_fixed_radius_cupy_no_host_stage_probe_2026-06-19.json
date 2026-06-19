@@ -1,0 +1,100 @@
+{
+  "report": "v4_0_m1_fixed_radius_cupy_no_host_stage_probe",
+  "date": "2026-06-19",
+  "status": "pass-with-boundary",
+  "code_commit": "678a0917c",
+  "validated_tree": "1eb9968a2be6cb410d05a05f5c452838ca5858de",
+  "remote_host": "192.168.1.20",
+  "remote_path": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
+  "hardware": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "driver": "580.126.09",
+    "memory_mib": 8192
+  },
+  "route": {
+    "scope": "python_gpu_rt_core_operator",
+    "route_id": "fixed_radius_count_threshold_2d",
+    "backend": "optix",
+    "python_api": "rtdsl.run_v4_fixed_radius_count_threshold_2d",
+    "measured_window": "warmed V4 M1 prepare plus query on caller stream"
+  },
+  "commands": [
+    "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
+    "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_no_host_stage_probe.py --output /tmp/v4_no_host_stage_678a0917c.json",
+    "git diff --check"
+  ],
+  "validation": {
+    "v4_active": {
+      "status": "pass",
+      "module_count": 3,
+      "test_count": 29
+    },
+    "cupy_no_host_stage_probe": "pass",
+    "git_diff_check": "pass"
+  },
+  "probe_parameters": {
+    "point_count": 4096,
+    "radius": 0.05,
+    "threshold": 1,
+    "allowed_non_column_host_to_device_bytes": 4096,
+    "min_named_column_bytes": 16384
+  },
+  "metadata_subset": {
+    "caller_stream_handle_nonzero": true,
+    "prepare_stream_handle_nonzero": true,
+    "native_prepare_stream_propagation_ready": true,
+    "native_call_device_pointer_echo_complete": true,
+    "native_async_ready": false,
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "transfer_counter_snapshot": {
+    "counter_version": "rtdl.cuda_transfer_counter.v3_m11",
+    "library_path": "/home/lestat/work/rtdl_v4_m1_final_check_20260619/build/librtdl_cuda_transfer_counter.so",
+    "enabled": 0,
+    "total_calls": 2,
+    "total_bytes": 98440,
+    "host_to_device_calls": 1,
+    "host_to_device_bytes": 136,
+    "device_to_host_calls": 0,
+    "device_to_host_bytes": 0,
+    "device_to_device_calls": 1,
+    "device_to_device_bytes": 98304,
+    "unknown_calls": 0,
+    "unknown_bytes": 0
+  },
+  "transfer_counter_classification": {
+    "transfer_counter_observed": true,
+    "measured_window": "v4_m1_fixed_radius_prepare_plus_query_after_warmup",
+    "allowed_non_column_host_to_device_bytes": 4096,
+    "min_named_column_bytes": 16384,
+    "observed_total_calls": 2,
+    "observed_total_bytes": 98440,
+    "observed_host_to_device_calls": 1,
+    "observed_host_to_device_bytes": 136,
+    "observed_device_to_host_calls": 0,
+    "observed_device_to_host_bytes": 0,
+    "observed_device_to_device_calls": 1,
+    "observed_device_to_device_bytes": 98304,
+    "observed_unknown_calls": 0,
+    "observed_unknown_bytes": 0,
+    "internal_device_to_device_copy_allowed": true,
+    "internal_device_to_device_scope": "device-resident AABB/BVH staging, not host staging",
+    "host_stage_observed": false,
+    "disallowed_reasons": [],
+    "no_host_stage_ready": true,
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "runner_transfer_counter_bootstrap": {
+    "already_preloaded": true,
+    "ld_preload": "/home/lestat/work/rtdl_v4_m1_final_check_20260619/build/librtdl_cuda_transfer_counter.so",
+    "library": "/home/lestat/work/rtdl_v4_m1_final_check_20260619/build/librtdl_cuda_transfer_counter.so",
+    "source": "/home/lestat/work/rtdl_v4_m1_final_check_20260619/src/native/tools/rtdl_cuda_transfer_counter.c"
+  },
+  "claim_boundaries": {
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "v4_true_zero_copy_claim_authorized": false,
+    "async_claim_authorized": false,
+    "reason": "The measured window shows no observed host-stage copy of named search/query/output columns. Internal device-to-device AABB/BVH staging remains present, so public true-zero-copy wording stays gated."
+  }
+}
