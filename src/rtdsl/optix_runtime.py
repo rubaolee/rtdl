@@ -5914,6 +5914,135 @@ class PreparedOptixFixedRadiusCountThreshold2D:
         }
         return {"metadata": metadata}
 
+    def write_device_count_threshold_columns_on_stream(
+        self,
+        query_point_columns: dict,
+        *,
+        radius: float,
+        threshold: int,
+        query_ids_out,
+        neighbor_counts_out,
+        threshold_flags_out,
+        cuda_stream_ptr: int,
+    ) -> dict[str, object]:
+        """Write fixed-radius count-threshold columns on a caller CUDA stream.
+
+        The current native route uses the caller stream and synchronizes that
+        stream before return so launch parameters can be released safely. This
+        is external-stream support, not async completion support.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius count handle is closed")
+        if not getattr(self, "_search_scene_true_zero_copy", False):
+            raise RuntimeError(
+                "write_device_count_threshold_columns_on_stream requires a device-search-column prepared scene"
+            )
+        cuda_stream_ptr = int(cuda_stream_ptr)
+        if cuda_stream_ptr == 0:
+            raise ValueError("cuda_stream_ptr must be a nonzero CUDA stream handle")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+        query_packet = pack_optix_fixed_radius_count_threshold_2d_device_point_inputs(
+            query_point_columns,
+            label="query",
+            native_symbol=_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_ON_STREAM_SYMBOL,
+        )
+        query_handoffs = query_packet["points"]
+        query_count = int(query_packet["metadata"]["point_count"])
+        expected_device = (query_handoffs["ids"].device_type, query_handoffs["ids"].device_id)
+        outputs = {}
+        for name, value in {
+            "query_ids": query_ids_out,
+            "neighbor_counts": neighbor_counts_out,
+            "threshold_flags": threshold_flags_out,
+        }.items():
+            handoff = _partner.prepare_direct_device_pointer_handoff(value, access="write")
+            _require_partner_device_any_hit_output_layout(
+                handoff,
+                ray_count=query_count,
+                expected_device=expected_device,
+            )
+            outputs[name] = handoff
+        if query_count == 0:
+            return {
+                "metadata": {
+                    "backend": "optix",
+                    "transfer_mode": "device_fixed_radius_point_columns_output_columns_zero_copy_on_stream_empty_shortcut",
+                    "native_symbol": _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_ON_STREAM_SYMBOL,
+                    "query_count": 0,
+                    "cuda_stream_ptr": cuda_stream_ptr,
+                    "stream_ordering_requested": "caller_supplied_cuda_stream",
+                    "native_synchronized_before_return": True,
+                    "native_async_ready": False,
+                    "direct_device_handoff_authorized": True,
+                    "true_zero_copy_authorized": bool(getattr(self, "_search_scene_true_zero_copy", False)),
+                    "rt_core_speedup_claim_authorized": False,
+                    "v2_0_release_authorized": False,
+                }
+            }
+
+        lib = _load_optix_library()
+        write_symbol = _find_optional_backend_symbol(
+            lib,
+            _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_ON_STREAM_SYMBOL,
+        )
+        if write_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_ON_STREAM_SYMBOL}. "
+                "Fixed-radius caller-stream output remains blocked; rebuild the OptiX backend."
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = write_symbol(
+            self._handle,
+            ctypes.c_void_p(query_handoffs["ids"].data_ptr),
+            ctypes.c_void_p(query_handoffs["x"].data_ptr),
+            ctypes.c_void_p(query_handoffs["y"].data_ptr),
+            query_count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(threshold)),
+            ctypes.c_void_p(outputs["query_ids"].data_ptr),
+            ctypes.c_void_p(outputs["neighbor_counts"].data_ptr),
+            ctypes.c_void_p(outputs["threshold_flags"].data_ptr),
+            ctypes.c_uint64(cuda_stream_ptr),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        metadata = {
+            "backend": "optix",
+            "transfer_mode": "device_fixed_radius_point_columns_output_columns_zero_copy_on_stream",
+            "native_symbol": _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_ON_STREAM_SYMBOL,
+            "source_protocols": tuple(
+                sorted({handoff.source_protocol for handoff in (*query_handoffs.values(), *outputs.values())})
+            ),
+            "source_devices": tuple(
+                sorted({f"{handoff.device_type}:{handoff.device_id}" for handoff in (*query_handoffs.values(), *outputs.values())})
+            ),
+            "query_count": query_count,
+            "radius": float(radius),
+            "threshold": int(threshold),
+            "cuda_stream_ptr": cuda_stream_ptr,
+            "stream_ordering_requested": "caller_supplied_cuda_stream",
+            "native_synchronized_before_return": True,
+            "native_async_ready": False,
+            "direct_device_pointer_observed": True,
+            "direct_device_handoff_authorized": True,
+            "query_point_columns_true_zero_copy_authorized": True,
+            "search_point_columns_true_zero_copy_authorized": bool(getattr(self, "_search_scene_true_zero_copy", False)),
+            "output_columns_true_zero_copy_authorized": True,
+            "native_acceleration_structure_required": True,
+            "rt_core_accelerated": True,
+            "true_zero_copy_authorized": bool(getattr(self, "_search_scene_true_zero_copy", False)),
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+        }
+        return {"metadata": metadata}
+
     def close(self) -> None:
         if self._closed:
             return
@@ -12384,6 +12513,9 @@ _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_SYMBOL = (
 )
 _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_SYMBOL = (
     "rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns"
+)
+_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_ON_STREAM_SYMBOL = (
+    "rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns_on_stream"
 )
 _OPTIX_PREPARED_POINT_GROUP_NEAREST_WITNESS_2D_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_write_prepared_point_group_nearest_witness_2d_device_columns"
@@ -27292,6 +27424,28 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_write_prepared_frn_count_device_query.restype = ctypes.c_int
+
+    optional_write_prepared_frn_count_device_query_on_stream = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_ON_STREAM_SYMBOL,
+    )
+    if optional_write_prepared_frn_count_device_query_on_stream is not None:
+        optional_write_prepared_frn_count_device_query_on_stream.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint64,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_write_prepared_frn_count_device_query_on_stream.restype = ctypes.c_int
 
     optional_count_prepared_frn_threshold = _find_optional_backend_symbol(
         lib, "rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d"

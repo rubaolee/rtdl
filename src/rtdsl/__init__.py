@@ -1518,6 +1518,13 @@ from .partner_adapters import fixed_radius_count_threshold_2d_optix_partner_devi
 from .partner_adapters import allocate_fixed_radius_count_threshold_2d_partner_device_output_columns
 from .partner_adapters import prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene
 from .partner_adapters import fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns
+from .v4_0_device_array_operator import V4DeviceColumnDescriptor
+from .v4_0_device_array_operator import V4FixedRadiusCountThreshold2D
+from .v4_0_device_array_operator import V4FixedRadiusCountThreshold2DPlan
+from .v4_0_device_array_operator import describe_v4_fixed_radius_count_threshold_2d_route
+from .v4_0_device_array_operator import plan_v4_fixed_radius_count_threshold_2d
+from .v4_0_device_array_operator import prepare_v4_fixed_radius_count_threshold_2d
+from .v4_0_device_array_operator import run_v4_fixed_radius_count_threshold_2d
 from .adapters.reductions import partner_group_any_by_key
 from .adapters.reductions import partner_group_count_by_key
 from .adapters.reductions import partner_group_count_unique_pairs_by_key
@@ -3342,6 +3349,13 @@ __all__ = [
     "allocate_fixed_radius_count_threshold_2d_partner_device_output_columns",
     "prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene",
     "fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns",
+    "V4DeviceColumnDescriptor",
+    "V4FixedRadiusCountThreshold2D",
+    "V4FixedRadiusCountThreshold2DPlan",
+    "describe_v4_fixed_radius_count_threshold_2d_route",
+    "plan_v4_fixed_radius_count_threshold_2d",
+    "prepare_v4_fixed_radius_count_threshold_2d",
+    "run_v4_fixed_radius_count_threshold_2d",
     "partner_group_any_by_key",
     "partner_group_count_by_key",
     "partner_group_count_unique_pairs_by_key",

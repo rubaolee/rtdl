@@ -718,8 +718,9 @@ Goal: prove "CuPy/Numba/PyTorch array in -> RT cores -> device array out."
 - Python entry point accepts CuPy/Numba/PyTorch device arrays through
   `__cuda_array_interface__` and DLPack-style handoff.
 - RTDL uses the caller's CUDA context and stream where supported.
-- One benchmark-valuable route runs end to end, preferably fixed-radius
-  neighbors or ray/triangle any-hit rather than host-only AABB2.
+- One benchmark-valuable route runs end to end:
+  `fixed_radius_count_threshold_2d`, with caller-owned CUDA point columns in
+  and fixed-size CUDA output columns out.
 - Result returns as a device buffer the host can wrap back into its own array
   type.
 - Evidence includes pointer identity, no host-stage transfer counters or
@@ -1034,7 +1035,8 @@ At V4 release:
 - This document reviewed.
 - Product headline accepted: RTDL as Python GPU RT-core operator.
 - Python-only V4.0 scope recorded; non-Python hosts are V4.x.
-- First benchmark-valuable device-array route selected.
+- First benchmark-valuable device-array route selected:
+  `fixed_radius_count_threshold_2d`, not variable-length neighbor rows.
 - D1-D5 review decisions accepted and reflected in ABI, tests, and wording.
 - Remaining open decisions explicitly assigned to later milestones.
 - C ABI substrate inventory approved.
@@ -1050,7 +1052,12 @@ At V4 release:
 
 ### M3: First Python RT-Core Operator Route
 
-- fixed-radius neighbors or ray/triangle any-hit preferred.
+- `fixed_radius_count_threshold_2d` is the first route.
+- fixed-size `query_ids`, `neighbor_counts`, and `threshold_flags` device
+  columns are the first output contract.
+- variable-length neighbor rows and ray/triangle any-hit are later routes.
+- nonzero caller CUDA streams use the native on-stream symbol and synchronize
+  that stream before return; async completion is not claimed yet.
 - device-buffer query execution.
 - result returned as a device buffer.
 - Python example uses existing host-owned device arrays.
@@ -1187,9 +1194,10 @@ device pointers.
 Decision:
 V4.0 ships as a pre-1.0 experimental SDK. Do not use "stable SDK" or "1.0 ABI"
 wording until install, compatibility, and product-route gates pass. AABB2 stays
-as a plumbing/control-plane route, but the first V4.0 product route must be a
-benchmark-valuable device-array route, such as fixed-radius neighbors or
-ray/triangle any-hit.
+as a plumbing/control-plane route, but the first V4.0 product route is the
+benchmark-valuable `fixed_radius_count_threshold_2d` device-array route:
+caller-owned CUDA point columns in, prepared OptiX fixed-radius count/threshold
+execution, and fixed-size CUDA output columns out.
 
 Rationale:
 AABB2 is excellent for lifecycle, layout, output, and binding proofs. It is
@@ -1210,23 +1218,25 @@ V4.0 is Python actors only. Non-Python hosts, full public multi-language C ABI
 packaging, and generated SDK bindings are V4.x unless a later product decision
 reopens them.
 
-1. First product route:
-   Fixed-radius neighbors, ray/triangle any-hit, or another benchmark-valuable
-   device-array route?
+Closed M1 route decision:
+The first product route is `fixed_radius_count_threshold_2d`. It is fixed-radius
+count/threshold over 2-D point columns, not variable-length neighbor-row
+enumeration. The first output shape is fixed-size `query_ids`,
+`neighbor_counts`, and `threshold_flags` CUDA columns.
 
-2. First native backend:
-   OptiX first for the RT-core operator value, or Embree/CPU only as a
-   control-plane fallback?
+Closed M1 backend decision:
+The first native backend is OptiX. CPU/Embree routes can remain correctness and
+control-plane references, but they are not the V4.0 product route.
 
-3. Buffer rank limit:
+1. Buffer rank limit:
    Is fixed rank 8 acceptable for the C ABI, or should shape/stride arrays be
    dynamically sized?
 
-4. Allocator hooks:
+2. Allocator hooks:
    Do allocator hooks belong in V4.0, or should V4.0 only support borrowed,
    caller-provided-output, and RTDL-owned buffers?
 
-5. Rust binding:
+3. Rust binding:
    When V4.x opens non-Python hosts, should Rust be in-tree as an example or a
    separate generated artifact?
 

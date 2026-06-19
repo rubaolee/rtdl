@@ -30,5 +30,18 @@ python3 src/v4/examples/python_ctypes_aabb2_smoke.py
 The smoke validates RTDL-owned result output, caller-provided output truncation,
 and caller-provided exact-fit output for the host F32 AABB2 route.
 
+Frozen Phase 1 product route:
+
+- Python API: `rtdsl.prepare_v4_fixed_radius_count_threshold_2d` and
+  `rtdsl.run_v4_fixed_radius_count_threshold_2d`;
+- route: `fixed_radius_count_threshold_2d`;
+- input: caller-owned CUDA `ids`, `x`, `y` point columns;
+- output: fixed-size CUDA `query_ids`, `neighbor_counts`, and
+  `threshold_flags` columns;
+- stream: nonzero caller CUDA streams use the native on-stream symbol
+  synchronously; async completion is not claimed yet;
+- blocked in this ABI directory until later substrate work: public non-Python
+  SDK packaging, variable-length neighbor rows, and broad true-zero-copy claims.
+
 This is not a stable SDK, not a public package-install promise, and not the
 V4.0 headline.

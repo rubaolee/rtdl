@@ -16,9 +16,13 @@ REFRAMING_NOTE = (
 CODEX_RESPONSE = (
     ROOT / "docs" / "reviews" / "codex_v4_reframing_ingestion_response_2026-06-19.md"
 )
+ROUTE_CONSENSUS = (
+    ROOT / "docs" / "reviews" / "codex_v4_m1_route_consensus_2026-06-19.md"
+)
 DESIGN = ROOT / "docs" / "engineering" / "rtdl_v4_0_design_review_packet_2026-06-19.md"
 ACTIVE_ABI_NOTE = ROOT / "docs" / "engineering" / "rtdl_v4_0_active_abi_slice_2026-06-19.md"
 ACTIVE_README = ROOT / "src" / "v4" / "README.md"
+V4_OPERATOR = ROOT / "src" / "rtdsl" / "v4_0_device_array_operator.py"
 
 
 def _compact(text: str) -> str:
@@ -59,6 +63,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "Under the current Python-only V4.0 scope decision, this phase is V4.x",
             "M2: Python Device-Array Intake",
             "M3: First Python RT-Core Operator Route",
+            "fixed_radius_count_threshold_2d",
+            "fixed-size `query_ids`, `neighbor_counts`, and `threshold_flags`",
             "M4: Zero-Copy Evidence Packet",
             "M5: C ABI Substrate Hardening",
             "Non-Python Host V4.x Path",
@@ -95,6 +101,30 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             CODEX_RESPONSE.read_text(encoding="utf-8"),
         )
 
+    def test_m1_route_consensus_freezes_fixed_radius_count_threshold(self) -> None:
+        combined = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in (DESIGN, ROUTE_CONSENSUS, ACTIVE_ABI_NOTE, ACTIVE_README, V4_OPERATOR)
+        )
+        compact = _compact(combined)
+
+        for token in (
+            "fixed_radius_count_threshold_2d",
+            "not variable-length neighbor rows",
+            "caller-owned CUDA point columns",
+            "query_ids",
+            "neighbor_counts",
+            "threshold_flags",
+            "synchronize that stream before return",
+            "caller_stream_supported_synchronous",
+            "Ray/triangle any-hit is not rejected",
+            "V4_0_M1_ROUTE_ID",
+            "run_v4_fixed_radius_count_threshold_2d",
+        ):
+            self.assertIn(token, compact)
+
+        self.assertNotIn("First product route: Fixed-radius neighbors, ray/triangle any-hit", compact)
+
     def test_active_v4_abi_slice_is_substrate_not_product_headline(self) -> None:
         active_note = ACTIVE_ABI_NOTE.read_text(encoding="utf-8")
         readme = ACTIVE_README.read_text(encoding="utf-8")
@@ -111,6 +141,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         modules = run_test_matrix.group_modules("v4_active")
         self.assertIn("tests.v4_0_active_abi_control_plane_test", modules)
         self.assertIn("tests.v4_0_reframed_product_design_test", modules)
+        self.assertIn("tests.v4_0_m1_fixed_radius_route_test", modules)
 
 
 if __name__ == "__main__":

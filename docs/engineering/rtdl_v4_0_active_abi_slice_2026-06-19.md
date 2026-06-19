@@ -58,9 +58,12 @@ arrays.
 
 1. Keep the M1 scope decision visible: V4.0 is Python actors only; non-Python
    hosts and public SDK packaging are V4.x.
-2. Select the first benchmark-valuable Python device-array route, likely
-   fixed-radius neighbors or ray/triangle any-hit.
-3. Prototype CuPy/Numba/PyTorch device-array intake and caller-stream metadata.
+2. Keep the first benchmark-valuable Python device-array route frozen as
+   `fixed_radius_count_threshold_2d`: fixed-size count/threshold output columns,
+   not variable-length neighbor rows.
+3. Keep the Python operator front door aligned with caller-stream behavior:
+   nonzero streams use the OptiX on-stream symbol synchronously; async remains
+   blocked until an owner/event contract exists.
 4. Add layout and old-size descriptor compatibility tests for the substrate.
-5. Connect the substrate to the first device-buffer route once the product
-   route is selected.
+5. Connect the substrate to the first device-buffer route after the Python
+   operator evidence packet passes.

@@ -7009,6 +7009,29 @@ extern "C" int rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns_on_stream(
+        void* prepared,
+        const uint32_t* query_ids,
+        const double* query_x,
+        const double* query_y,
+        size_t query_count,
+        double radius,
+        size_t threshold,
+        uint32_t* query_ids_out,
+        uint32_t* neighbor_counts_out,
+        uint32_t* threshold_flags_out,
+        uint64_t cuda_stream_ptr,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        write_prepared_fixed_radius_count_threshold_2d_device_query_columns_on_stream_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold2D*>(prepared),
+            query_ids, query_x, query_y, query_count, radius, threshold,
+            query_ids_out, neighbor_counts_out, threshold_flags_out,
+            cuda_stream_ptr);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d(
         void* prepared,
         const RtdlPoint* query_points, size_t query_count,

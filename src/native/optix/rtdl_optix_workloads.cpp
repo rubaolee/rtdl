@@ -22184,7 +22184,7 @@ static void run_prepared_fixed_radius_count_threshold_2d_optix(
     *row_count_out = query_count;
 }
 
-static void write_prepared_fixed_radius_count_threshold_2d_device_query_columns_optix(
+static void write_prepared_fixed_radius_count_threshold_2d_device_query_columns_optix_impl(
         PreparedFixedRadiusCountThreshold2D* prepared,
         const uint32_t* query_ids,
         const double* query_x,
@@ -22194,7 +22194,9 @@ static void write_prepared_fixed_radius_count_threshold_2d_device_query_columns_
         size_t threshold,
         uint32_t* query_ids_out,
         uint32_t* neighbor_counts_out,
-        uint32_t* threshold_flags_out)
+        uint32_t* threshold_flags_out,
+        CUstream stream,
+        bool synchronize_before_return)
 {
     if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius handle must not be null");
     if (!prepared->search_columns_zero_copy)
@@ -22212,14 +22214,16 @@ static void write_prepared_fixed_radius_count_threshold_2d_device_query_columns_
     if (!query_ids_out || !neighbor_counts_out || !threshold_flags_out)
         throw std::runtime_error("partner device fixed-radius output column pointers must not be null when query_count is nonzero");
     if (!prepared->accel.handle) {
-        CUstream stream = 0;
-        CU_CHECK(cuMemcpyDtoD(
+        CU_CHECK(cuMemcpyDtoDAsync(
             reinterpret_cast<CUdeviceptr>(query_ids_out),
             reinterpret_cast<CUdeviceptr>(query_ids),
-            sizeof(uint32_t) * query_count));
-        CU_CHECK(cuMemsetD32(reinterpret_cast<CUdeviceptr>(neighbor_counts_out), 0u, query_count));
-        CU_CHECK(cuMemsetD32(reinterpret_cast<CUdeviceptr>(threshold_flags_out), threshold == 0 ? 1u : 0u, query_count));
-        CU_CHECK(cuStreamSynchronize(stream));
+            sizeof(uint32_t) * query_count,
+            stream));
+        CU_CHECK(cuMemsetD32Async(reinterpret_cast<CUdeviceptr>(neighbor_counts_out), 0u, query_count, stream));
+        CU_CHECK(cuMemsetD32Async(reinterpret_cast<CUdeviceptr>(threshold_flags_out), threshold == 0 ? 1u : 0u, query_count, stream));
+        if (synchronize_before_return) {
+            CU_CHECK(cuStreamSynchronize(stream));
+        }
         return;
     }
 
@@ -22245,19 +22249,78 @@ static void write_prepared_fixed_radius_count_threshold_2d_device_query_columns_
     lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
 
     DevPtr d_params(sizeof(FixedRadiusCountRtLaunchParams));
-    upload(d_params.ptr, &lp, 1);
+    upload_async(d_params.ptr, &lp, 1, stream);
 
-    CUstream stream = 0;
     g_optix_last_bvh_build_s = 0.0;
     auto t_start_trav = std::chrono::steady_clock::now();
     OPTIX_CHECK(optixLaunch(g_frn_count_rt.pipe->pipeline, stream,
                              d_params.ptr, sizeof(FixedRadiusCountRtLaunchParams),
                              &g_frn_count_rt.pipe->sbt,
                              static_cast<unsigned>(query_count), 1, 1));
-    CU_CHECK(cuStreamSynchronize(stream));
+    if (synchronize_before_return) {
+        CU_CHECK(cuStreamSynchronize(stream));
+    }
     auto t_end_trav = std::chrono::steady_clock::now();
     g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
     g_optix_last_copy_s = 0.0;
+}
+
+static void write_prepared_fixed_radius_count_threshold_2d_device_query_columns_optix(
+        PreparedFixedRadiusCountThreshold2D* prepared,
+        const uint32_t* query_ids,
+        const double* query_x,
+        const double* query_y,
+        size_t query_count,
+        double radius,
+        size_t threshold,
+        uint32_t* query_ids_out,
+        uint32_t* neighbor_counts_out,
+        uint32_t* threshold_flags_out)
+{
+    write_prepared_fixed_radius_count_threshold_2d_device_query_columns_optix_impl(
+        prepared,
+        query_ids,
+        query_x,
+        query_y,
+        query_count,
+        radius,
+        threshold,
+        query_ids_out,
+        neighbor_counts_out,
+        threshold_flags_out,
+        nullptr,
+        true);
+}
+
+static void write_prepared_fixed_radius_count_threshold_2d_device_query_columns_on_stream_optix(
+        PreparedFixedRadiusCountThreshold2D* prepared,
+        const uint32_t* query_ids,
+        const double* query_x,
+        const double* query_y,
+        size_t query_count,
+        double radius,
+        size_t threshold,
+        uint32_t* query_ids_out,
+        uint32_t* neighbor_counts_out,
+        uint32_t* threshold_flags_out,
+        uint64_t cuda_stream_ptr)
+{
+    if (cuda_stream_ptr == 0)
+        throw std::runtime_error("fixed-radius device-column on-stream route requires a nonzero CUDA stream pointer");
+    CUstream stream = reinterpret_cast<CUstream>(static_cast<uintptr_t>(cuda_stream_ptr));
+    write_prepared_fixed_radius_count_threshold_2d_device_query_columns_optix_impl(
+        prepared,
+        query_ids,
+        query_x,
+        query_y,
+        query_count,
+        radius,
+        threshold,
+        query_ids_out,
+        neighbor_counts_out,
+        threshold_flags_out,
+        stream,
+        true);
 }
 
 static void count_prepared_fixed_radius_threshold_reached_2d_optix(
