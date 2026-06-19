@@ -45,6 +45,29 @@ Optional device-callable fusion remains an advanced V4 track. It should not
 gate V4.0. It must be treated as a falsifiable experiment with register,
 occupancy, correctness, and maintenance evidence before it is promoted.
 
+## Design Review Status
+
+Claude's 2026-06-19 review approves this packet as the V4.0 baseline and
+requires five gaps to be closed before M1 design freeze. This revision accepts
+those five decisions into the packet:
+
+- D1: every query route supports RTDL-owned result handles and caller-provided
+  output buffers with capacity, required-count reporting, and truncation
+  status.
+- D2: every public descriptor begins with `struct_size`; descriptors are
+  append-only, and old-size callers get default values for absent trailing
+  fields.
+- D3: capability discovery uses one enum-keyed query function instead of an
+  unbounded set of typed symbols.
+- D4: every descriptor is validated before use; borrowed device pointers are
+  caller-asserted and cannot be verified for liveness or residency by RTDL.
+- D5: V4.0 ships as a pre-1.0 experimental SDK until a real external host
+  drives a device-buffer route end to end; AABB2 proves plumbing, and a second
+  benchmark-valuable route shapes the ABI before stable wording.
+
+The acceptance criteria and milestones below are now read with those decisions
+as mandatory gates, not optional review notes.
+
 ## Why V4 Exists
 
 V3.0 closed the current benchmark-route system. It teaches users to write
@@ -89,6 +112,11 @@ Those files proved useful slices:
 
 That material remains preparatory evidence. V4.0 should use it as input, not
 pretend it is already a stable SDK.
+
+The archived draft header is also not the final V4 target. It predates the
+`rtdl_query_plan` / `rtdl_result` / future `rtdl_event` split and the M1
+decisions for result allocation, descriptor extensibility, and capability
+queries.
 
 ## Core Design Principles
 
@@ -238,6 +266,27 @@ symbol manifests, docs, examples, and tests. After ABI 1.0:
 - new optional symbols and capabilities may appear in minor versions;
 - breaking behavior requires a major version or explicit opt-in capability.
 
+V4.0 should therefore use `0.x` experimental SDK wording. ABI `1.0` is blocked
+until a real external host, not only an in-tree toy client, drives at least one
+device-buffer route end to end and the packaging/install gates pass.
+
+### Descriptor Extensibility
+
+Every public descriptor begins with:
+
+```c
+size_t struct_size;
+```
+
+RTDL reads only the fields present within the caller-provided `struct_size`.
+Fields added after a caller's compiled header default to documented values.
+Descriptor evolution is append-only until ABI `1.0`; fields are not reordered,
+repurposed, or removed. Layout tests must pin `sizeof` and `offsetof` values,
+and compatibility tests must pass descriptors with older sizes.
+
+Use `sType` / `pNext` only if V4 later needs heterogeneous extension chains.
+The base V4.0 contract is `struct_size`, not Vulkan-style extension plumbing.
+
 ### Opaque Handles
 
 Stable handles should include:
@@ -268,6 +317,7 @@ Required status classes:
 - OK
 - invalid argument
 - unsupported capability
+- result truncated
 - ABI/version mismatch
 - out of memory
 - backend failure
@@ -295,7 +345,33 @@ not supported.
 
 ### Capability Queries
 
-The C ABI must answer questions before users attempt execution:
+The C ABI must answer questions before users attempt execution, and it should
+do that through one enum-keyed function:
+
+```c
+typedef enum rtdl_capability {
+    RTDL_CAP_BACKEND_AVAILABLE = 1,
+    RTDL_CAP_ROUTE_ACCEPTS_HOST_BUFFERS = 2,
+    RTDL_CAP_ROUTE_ACCEPTS_DEVICE_BUFFERS = 3,
+    RTDL_CAP_ROUTE_SUPPORTS_BORROWED_DEVICE_POINTERS = 4,
+    RTDL_CAP_ROUTE_SUPPORTS_EXTERNAL_STREAM = 5,
+    RTDL_CAP_ROUTE_DETERMINISTIC_ROW_ORDER = 6,
+    RTDL_CAP_ROUTE_SUPPORTS_ASYNC = 7,
+    RTDL_CAP_ROUTE_REQUIRES_RTDL_ALLOCATION = 8
+} rtdl_capability;
+
+rtdl_status rtdl_query_capability(
+    const rtdl_context* context,
+    const rtdl_route_desc* route, /* nullable for context-level queries */
+    rtdl_capability cap,
+    uint64_t* value_out);
+```
+
+Typed helper wrappers may exist during development, but the stable surface
+should not grow a new exported symbol for every new capability. Unknown
+capability enum values return `RTDL_STATUS_UNSUPPORTED`.
+
+The initial capability inventory must answer:
 
 - Is backend `X` available?
 - Is primitive `P` supported for query `Q` on device type `D`?
@@ -315,6 +391,7 @@ Capabilities must be machine-readable, not prose-only.
 The neutral buffer descriptor is the center of V4 interop:
 
 ```text
+struct_size
 data pointer
 byte count
 device type
@@ -342,6 +419,25 @@ Required ownership modes:
 V4 should keep fixed-size shape/stride arrays for C simplicity unless review
 finds a strong reason for a variable-size layout. If fixed-size arrays remain,
 the maximum rank must be documented and tested.
+
+### Descriptor Validation
+
+RTDL validates every descriptor before using any pointer or shape metadata.
+Malformed input fails closed with `RTDL_STATUS_INVALID_ARGUMENT` or a narrower
+status code. Negative tests must cover at least:
+
+- null data pointer with nonzero `byte_count`;
+- `ndim` greater than the documented maximum rank;
+- `byte_count` inconsistent with shape, stride, item size, or layout flags;
+- integer overflow while computing extents or byte ranges;
+- unsupported dtype, layout, alignment, device type, or ownership mode;
+- route descriptors that request unsupported primitive/query/backend/device
+  combinations.
+
+Borrowed device pointers are caller-asserted. RTDL can validate descriptor
+shape and route support, but it cannot generally prove pointer residency,
+liveness, aliasing safety, or that the producer object will outlive execution.
+Misrepresenting those properties is caller undefined behavior.
 
 ### Index And Query Contracts
 
@@ -378,6 +474,42 @@ Then expand one axis at a time:
 5. external CUDA stream ordering proof;
 6. zero-copy proof for that exact device-buffer route.
 
+### Result Size And Output Allocation
+
+Every query route supports two output modes.
+
+Mode 1 is an RTDL-owned result handle:
+
+```text
+submit query -> rtdl_result*
+inspect result shape/count/dtype
+borrow or copy result rows through accessors
+destroy result
+```
+
+This mode is the easiest binding target and the safest first C/Rust/Python
+example because RTDL owns allocation and lifetime.
+
+Mode 2 is a caller-provided output buffer:
+
+```text
+output pointer
+output capacity in rows or bytes
+required_count_out
+written_count_out
+status
+```
+
+RTDL must never write beyond capacity. If the exact result requires more rows
+than capacity, RTDL writes at most capacity rows, writes the required count,
+and returns `RTDL_STATUS_RESULT_TRUNCATED`. The caller can then allocate a
+larger buffer and run a size-then-fill second call. Exact-fit and truncation
+cases are mandatory route tests.
+
+Framework-owned tensor outputs are treated as a caller-provided output buffer
+with framework lifetime and stream rules. A route may reject this mode unless
+capability queries say it is supported.
+
 ## Runtime, Context, And Stream Semantics
 
 V4 must be explicit about who owns the runtime.
@@ -409,7 +541,10 @@ V4 should define three stream modes:
 
 The release target should support synchronous host calls first. CUDA stream
 support should be added only with explicit tests for ordering and no hidden
-device-wide syncs.
+device-wide syncs. CPU and Embree routes should be treated as synchronous
+initially; async/event handles become part of V4 only when a shipped route has
+real ordering tests. CUDA async is a CUDA-route feature, not a blanket promise
+for every backend.
 
 ### Allocator Policy
 
@@ -459,10 +594,14 @@ V4 should support these protocol families in order:
 DLPack is not just a pointer. It carries ownership and deleter rules. A V4
 DLPack adapter must specify:
 
+- whether the route accepts legacy `dltensor` capsules, versioned
+  `dltensor_versioned` capsules, or both;
 - when RTDL consumes a capsule;
 - whether RTDL borrows or takes ownership;
 - when the producer deleter is called;
 - whether the capsule can be consumed once only;
+- the consumed-capsule rename convention, such as `used_dltensor`;
+- whether read-only or immutable producer flags are respected;
 - dtype and layout mapping;
 - stream synchronization expectations;
 - device compatibility;
@@ -657,6 +796,11 @@ V4 release should include:
 - independent OptiX contexts/streams test only if OptiX C ABI route ships;
 - shared-handle misuse negative tests or explicit external-lock rule.
 
+OptiX concurrency should be treated as a separate proof, not inferred from CUDA
+stream support. Pipeline, module, program group, and shader binding table state
+can behave like process-level shared state unless the implementation proves
+otherwise.
+
 ## Error Handling And Diagnostics
 
 Every public call must be diagnosable without undefined behavior.
@@ -674,6 +818,12 @@ Required diagnostics:
 
 Diagnostics are for humans. Machine behavior uses status codes and capability
 queries.
+
+Context creation failures need a diagnostic path even when no context exists.
+V4 should provide either a context-less last-create-error accessor, a structured
+create-status object, or an output diagnostic buffer on context creation. The
+chosen form must be thread-safe enough for concurrent failed creates and must
+not require a valid `rtdl_context*`.
 
 ## Performance Model
 
@@ -749,9 +899,11 @@ At V4 release:
 - Symbol manifest generated and checked.
 - C client validates version/status/context lifecycle.
 - C client validates one host query route.
+- C client validates RTDL-owned and caller-provided result output modes.
 - Python `ctypes` validates lifecycle and one host query route.
 - Negative tests cover invalid ABI version, null handles, invalid dtype, invalid
   shape, unsupported backend, unsupported device, unsupported route.
+- Capability tests cover enum-keyed queries and unknown capability values.
 - Source-tree doctor has a V4 mode distinct from V3 current validation.
 
 ### Required For V4.0 Beta
@@ -761,6 +913,7 @@ At V4 release:
 - Rust binding proof validates one real query route.
 - Ownership/threading contract reviewed.
 - Layout audit checks `sizeof` and `offsetof`.
+- Old-size descriptor compatibility test passes against new code.
 - Independent-context concurrency tested for shipped routes.
 - Embree or OptiX route implemented through C ABI, or explicitly excluded from
   V4.0 stable surface.
@@ -793,7 +946,8 @@ At V4 release:
 ### M1: V4 Design Freeze
 
 - This document reviewed.
-- Open decisions resolved.
+- D1-D5 review decisions accepted and reflected in ABI, tests, and wording.
+- Remaining open decisions explicitly assigned to later milestones.
 - C ABI route inventory approved.
 - Reviewer checklist accepted.
 
@@ -808,6 +962,8 @@ At V4 release:
 - host AABB2 overlap through CPU.
 - C and Python examples.
 - deterministic rows.
+- RTDL-owned and caller-provided result modes.
+- exact-fit and truncation output tests.
 - negative tests.
 
 ### M4: SDK Stage
@@ -829,6 +985,8 @@ At V4 release:
 - Embree or OptiX through C ABI.
 - capability and failure behavior.
 - same-contract comparison.
+- second benchmark-valuable ABI-shaping route selected or implemented, such as
+  fixed-radius neighbors or ray/triangle any-hit.
 
 ### M7: First Device-Buffer Route
 
@@ -843,37 +1001,132 @@ At V4 release:
 - external review complete.
 - release packet written.
 
-## Open Design Decisions
+## M1 Resolved Design Decisions
 
-1. ABI version target:
-   Should V4.0 ship `0.x` experimental SDK wording or attempt ABI `1.0`?
+These decisions close the highest-priority gaps from the 2026-06-19 external
+review and are part of M1 design freeze.
 
-2. First stable primitive/query:
-   Keep host AABB2 overlap as the first stable route, or choose a route closer
-   to V3 benchmark value such as fixed-radius threshold or ray/triangle any-hit?
+### D1: Result Size And Output Allocation
 
-3. First native backend:
+Decision:
+Every query route supports two output modes:
+
+1. RTDL-owned result handle, inspected through accessors and released through a
+   destroy function.
+2. Caller-provided output buffer with capacity, `required_count_out`, and
+   `written_count_out`.
+
+If the caller-provided buffer is too small, RTDL must not exceed capacity. It
+writes the required count, writes at most capacity rows, and returns
+`RTDL_STATUS_RESULT_TRUNCATED`. The caller can then allocate enough storage and
+rerun a size-then-fill call. Framework-owned tensor output uses the same
+caller-provided-buffer contract when capability queries allow it.
+
+Rationale:
+RTDL-owned results make early bindings simple and safe. Caller-provided output
+is required for serious host embedding, preallocated arenas, and framework
+tensor ownership.
+
+Gate:
+Each shipped query route has tests for RTDL-owned output, caller-provided
+output, exact-fit output, and truncation with correct required-count reporting.
+
+### D2: ABI Struct Extensibility
+
+Decision:
+Every public input descriptor starts with `size_t struct_size`. RTDL reads only
+fields present within the caller-provided size. Missing trailing fields receive
+documented defaults. Descriptor evolution is append-only until ABI `1.0`.
+
+Rationale:
+The V4 ABI will change during the `0.x` line. `struct_size` gives older callers
+a forward-compatible path without adding `sType` / `pNext` complexity before it
+is needed.
+
+Gate:
+Layout tests pin `sizeof` and `offsetof`, and compatibility tests pass
+old-size descriptors into new code.
+
+### D3: Capability Query Shape
+
+Decision:
+The stable ABI uses one enum-keyed capability query:
+
+```c
+rtdl_status rtdl_query_capability(
+    const rtdl_context* context,
+    const rtdl_route_desc* route,
+    rtdl_capability cap,
+    uint64_t* value_out);
+```
+
+New capabilities are enum values, not new exported symbols. Unknown enum values
+return `RTDL_STATUS_UNSUPPORTED`.
+
+Rationale:
+V4 needs capability growth across backends, devices, routes, ownership modes,
+and stream modes. One query function keeps the symbol surface stable while the
+capability inventory evolves.
+
+Gate:
+The enum policy is documented, unknown values are tested, and public examples
+use capability discovery before executing optional routes.
+
+### D4: Robustness And Input Validation
+
+Decision:
+RTDL validates every descriptor before use. Invalid shape, dtype, layout,
+alignment, byte count, null pointer, unsupported route, and overflow cases fail
+closed with status codes. Borrowed device pointers are caller-asserted: RTDL
+cannot generally verify device pointer liveness, residency, aliasing, or
+producer-object lifetime.
+
+Rationale:
+Embedding moves RTDL into host processes. Bad descriptors must produce
+diagnostic failures, not unchecked reads or ambiguous behavior. At the same
+time, the ABI must be honest about what a library can and cannot prove about
+foreign device memory.
+
+Gate:
+Negative tests cover malformed descriptors and unsupported combinations. The
+ownership/threading section explicitly states caller obligations for borrowed
+device pointers.
+
+### D5: Versioning, Wording, And First Routes
+
+Decision:
+V4.0 ships as a pre-1.0 experimental SDK. Do not use "stable SDK" or "1.0 ABI"
+wording until install, compatibility, and external-host gates pass. AABB2 stays
+as the first plumbing route, but the same milestone window must include a
+second benchmark-valuable ABI-shaping route, such as fixed-radius neighbors or
+ray/triangle any-hit.
+
+Rationale:
+AABB2 is excellent for lifecycle, layout, output, packaging, and binding
+proofs. It is not enough to freeze a durable ABI by itself. A second route
+forces the ABI to confront result cardinality, route-specific capabilities,
+and performance-relevant memory behavior.
+
+Gate:
+Wording tests reject premature stable-ABI claims. The M3-M6 matrix includes
+the second route before design claims graduate beyond experimental SDK.
+
+## Remaining Open Decisions
+
+1. First native backend:
    Embree first for lower platform risk, or OptiX first for V4 device-context
    motivation?
 
-4. Async execution:
-   Should V4.0 stable include async/event handles, or defer async to V4.x after
-   synchronous embedding is stable?
-
-5. Buffer rank limit:
+2. Buffer rank limit:
    Is fixed rank 8 acceptable for the C ABI, or should shape/stride arrays be
    dynamically sized?
 
-6. Allocator hooks:
-   Do allocator hooks belong in V4.0, or should V4.0 only support borrowed and
-   RTDL-owned buffers?
+3. Allocator hooks:
+   Do allocator hooks belong in V4.0, or should V4.0 only support borrowed,
+   caller-provided-output, and RTDL-owned buffers?
 
-7. Rust binding:
+4. Rust binding:
    Should Rust be in-tree as an example, or a separate generated artifact?
-
-8. Stable SDK wording:
-   What exact package/install evidence is required before "SDK" appears in
-   public docs?
 
 ## Risk Register
 
@@ -904,6 +1157,11 @@ V4.0 is ready only when a reviewer can say yes to these:
 8. Are package/stage/install claims exactly matched to evidence?
 9. Are true-zero-copy claims either absent or backed by exact evidence?
 10. Does the native engine remain app-agnostic?
+11. Do result routes support both RTDL-owned and caller-provided output modes?
+12. Do all public descriptors use and test `struct_size` compatibility?
+13. Are capability queries enum-keyed and fail-closed for unknown values?
+14. Are malformed descriptors rejected before pointer use?
+15. Is V4.0 wording still pre-1.0 experimental until external-host gates pass?
 
 ## Suggested External Review Request
 
