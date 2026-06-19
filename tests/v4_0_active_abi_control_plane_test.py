@@ -22,6 +22,7 @@ DESIGN = ROOT / "docs" / "engineering" / "rtdl_v4_0_design_review_packet_2026-06
 MAKEFILE = ROOT / "Makefile"
 CTYPES_SMOKE = ROOT / "src" / "v4" / "examples" / "python_ctypes_aabb2_smoke.py"
 LAYOUT_AUDIT = ROOT / "scripts" / "v4_0_active_abi_layout_audit.py"
+LAYOUT_AUDIT_REPORT = ROOT / "docs" / "reports" / "v4_0_active_abi_layout_audit_2026-06-19.json"
 
 
 def _load_ctypes_smoke():
@@ -63,6 +64,7 @@ class V40ActiveAbiControlPlaneTest(unittest.TestCase):
         self.assertTrue(SYMBOL_MANIFEST.exists())
         self.assertTrue(CTYPES_SMOKE.exists())
         self.assertTrue(LAYOUT_AUDIT.exists())
+        self.assertTrue(LAYOUT_AUDIT_REPORT.exists())
         self.assertFalse((ROOT / "include" / "rtdl" / "rtdl.h").exists())
         self.assertFalse((ROOT / "packaging" / "rtdl-c-api.pc").exists())
         self.assertIn("Active ABI Slice", NOTE.read_text(encoding="utf-8"))
@@ -150,6 +152,22 @@ class V40ActiveAbiControlPlaneTest(unittest.TestCase):
         self.assertEqual(payload["c_header_layout"], payload["ctypes_layout"])
         for authorized in payload["claim_boundaries"].values():
             self.assertFalse(authorized)
+
+    def test_layout_audit_report_records_matching_experimental_layout(self) -> None:
+        report = json.loads(LAYOUT_AUDIT_REPORT.read_text(encoding="utf-8"))
+        self.assertEqual("rtdl_v4_active_abi_layout_audit_v1", report["manifest_kind"])
+        self.assertEqual("active_experimental_substrate_layout_audit", report["status"])
+        self.assertEqual("0.2.0", report["abi_version"])
+        self.assertFalse(report["stable"])
+        self.assertTrue(report["matches"])
+        self.assertEqual(report["c_header_layout"], report["ctypes_layout"])
+        self.assertEqual(8, report["c_header_layout"]["pointer_size"])
+        self.assertEqual(8, report["c_header_layout"]["max_rank"])
+        for struct_name, layout in report["c_header_layout"]["descriptors"].items():
+            self.assertEqual(set(_header_struct_fields(self.header, struct_name)), set(layout["fields"].keys()))
+            self.assertEqual(0, layout["fields"]["struct_size"]["offset"], struct_name)
+        for claim_name, authorized in report["claim_boundaries"].items():
+            self.assertFalse(authorized, claim_name)
 
     def test_public_descriptors_start_with_struct_size(self) -> None:
         for name in (

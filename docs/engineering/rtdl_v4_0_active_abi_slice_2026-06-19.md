@@ -24,6 +24,8 @@ kept, but it is not the Phase 1 V4.0 product proof.
 - Layout audit: `scripts/v4_0_active_abi_layout_audit.py` compares the
   Python `ctypes` mirror with C++ `sizeof` / `offsetof` values from
   `src/v4/include/rtdl/rtdl.h`.
+- Layout audit report:
+  `docs/reports/v4_0_active_abi_layout_audit_2026-06-19.json`.
 
 ## Contract Shape
 

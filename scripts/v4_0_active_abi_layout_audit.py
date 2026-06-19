@@ -123,7 +123,15 @@ def _run_cpp_probe(cxx: str, layout: dict[str, Any]) -> tuple[dict[str, Any], di
         metadata = {
             "compiler": cxx,
             "compiler_path": compiler_path,
-            "compile_command": compile_cmd,
+            "compile_command_template": [
+                cxx,
+                "-std=c++17",
+                "-I",
+                "src/v4/include",
+                "<layout_probe.cpp>",
+                "-o",
+                "<layout_probe>",
+            ],
         }
         return _parse_cpp_probe(run_result.stdout), metadata
 

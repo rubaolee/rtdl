@@ -1,0 +1,508 @@
+{
+  "abi_version": "0.2.0",
+  "c_header_layout": {
+    "descriptors": {
+      "rtdl_buffer_desc": {
+        "fields": {
+          "byte_count": {
+            "offset": 16,
+            "size": 8
+          },
+          "data": {
+            "offset": 8,
+            "size": 8
+          },
+          "device_id": {
+            "offset": 28,
+            "size": 4
+          },
+          "device_type": {
+            "offset": 24,
+            "size": 4
+          },
+          "dtype": {
+            "offset": 32,
+            "size": 4
+          },
+          "flags": {
+            "offset": 192,
+            "size": 8
+          },
+          "ndim": {
+            "offset": 36,
+            "size": 4
+          },
+          "ownership": {
+            "offset": 168,
+            "size": 4
+          },
+          "producer_object": {
+            "offset": 200,
+            "size": 8
+          },
+          "release": {
+            "offset": 176,
+            "size": 8
+          },
+          "shape": {
+            "offset": 40,
+            "size": 64
+          },
+          "strides": {
+            "offset": 104,
+            "size": 64
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          },
+          "user_data": {
+            "offset": 184,
+            "size": 8
+          }
+        },
+        "sizeof": 208
+      },
+      "rtdl_context_desc": {
+        "fields": {
+          "backend": {
+            "offset": 20,
+            "size": 4
+          },
+          "external_runtime": {
+            "offset": 24,
+            "size": 48
+          },
+          "requested_abi_major": {
+            "offset": 8,
+            "size": 4
+          },
+          "requested_abi_minor": {
+            "offset": 12,
+            "size": 4
+          },
+          "requested_abi_patch": {
+            "offset": 16,
+            "size": 4
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          },
+          "user_data": {
+            "offset": 72,
+            "size": 8
+          }
+        },
+        "sizeof": 80
+      },
+      "rtdl_external_runtime_desc": {
+        "fields": {
+          "context": {
+            "offset": 16,
+            "size": 8
+          },
+          "device_id": {
+            "offset": 12,
+            "size": 4
+          },
+          "device_type": {
+            "offset": 8,
+            "size": 4
+          },
+          "stream": {
+            "offset": 24,
+            "size": 8
+          },
+          "stream_mode": {
+            "offset": 32,
+            "size": 4
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          },
+          "user_data": {
+            "offset": 40,
+            "size": 8
+          }
+        },
+        "sizeof": 48
+      },
+      "rtdl_index_desc": {
+        "fields": {
+          "primitive_count": {
+            "offset": 24,
+            "size": 8
+          },
+          "primitive_kind": {
+            "offset": 8,
+            "size": 4
+          },
+          "primitives": {
+            "offset": 16,
+            "size": 8
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          }
+        },
+        "sizeof": 32
+      },
+      "rtdl_output_desc": {
+        "fields": {
+          "caller_buffer": {
+            "offset": 16,
+            "size": 208
+          },
+          "capacity_count": {
+            "offset": 224,
+            "size": 8
+          },
+          "mode": {
+            "offset": 8,
+            "size": 4
+          },
+          "required_count_out": {
+            "offset": 232,
+            "size": 8
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          },
+          "written_count_out": {
+            "offset": 240,
+            "size": 8
+          }
+        },
+        "sizeof": 248
+      },
+      "rtdl_query_desc": {
+        "fields": {
+          "input_count": {
+            "offset": 24,
+            "size": 8
+          },
+          "inputs": {
+            "offset": 16,
+            "size": 8
+          },
+          "output": {
+            "offset": 32,
+            "size": 248
+          },
+          "query_kind": {
+            "offset": 8,
+            "size": 4
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          }
+        },
+        "sizeof": 280
+      },
+      "rtdl_route_desc": {
+        "fields": {
+          "backend": {
+            "offset": 16,
+            "size": 4
+          },
+          "device_type": {
+            "offset": 20,
+            "size": 4
+          },
+          "dtype": {
+            "offset": 24,
+            "size": 4
+          },
+          "primitive_kind": {
+            "offset": 8,
+            "size": 4
+          },
+          "query_kind": {
+            "offset": 12,
+            "size": 4
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          }
+        },
+        "sizeof": 32
+      }
+    },
+    "max_rank": 8,
+    "pointer_size": 8
+  },
+  "claim_boundaries": {
+    "non_python_host_release": false,
+    "package_install": false,
+    "public_c_abi_release": false,
+    "stable_sdk": false
+  },
+  "compiler": {
+    "compile_command_template": [
+      "c++",
+      "-std=c++17",
+      "-I",
+      "src/v4/include",
+      "<layout_probe.cpp>",
+      "-o",
+      "<layout_probe>"
+    ],
+    "compiler": "c++",
+    "compiler_path": "/usr/bin/c++"
+  },
+  "ctypes_layout": {
+    "descriptors": {
+      "rtdl_buffer_desc": {
+        "fields": {
+          "byte_count": {
+            "offset": 16,
+            "size": 8
+          },
+          "data": {
+            "offset": 8,
+            "size": 8
+          },
+          "device_id": {
+            "offset": 28,
+            "size": 4
+          },
+          "device_type": {
+            "offset": 24,
+            "size": 4
+          },
+          "dtype": {
+            "offset": 32,
+            "size": 4
+          },
+          "flags": {
+            "offset": 192,
+            "size": 8
+          },
+          "ndim": {
+            "offset": 36,
+            "size": 4
+          },
+          "ownership": {
+            "offset": 168,
+            "size": 4
+          },
+          "producer_object": {
+            "offset": 200,
+            "size": 8
+          },
+          "release": {
+            "offset": 176,
+            "size": 8
+          },
+          "shape": {
+            "offset": 40,
+            "size": 64
+          },
+          "strides": {
+            "offset": 104,
+            "size": 64
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          },
+          "user_data": {
+            "offset": 184,
+            "size": 8
+          }
+        },
+        "sizeof": 208
+      },
+      "rtdl_context_desc": {
+        "fields": {
+          "backend": {
+            "offset": 20,
+            "size": 4
+          },
+          "external_runtime": {
+            "offset": 24,
+            "size": 48
+          },
+          "requested_abi_major": {
+            "offset": 8,
+            "size": 4
+          },
+          "requested_abi_minor": {
+            "offset": 12,
+            "size": 4
+          },
+          "requested_abi_patch": {
+            "offset": 16,
+            "size": 4
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          },
+          "user_data": {
+            "offset": 72,
+            "size": 8
+          }
+        },
+        "sizeof": 80
+      },
+      "rtdl_external_runtime_desc": {
+        "fields": {
+          "context": {
+            "offset": 16,
+            "size": 8
+          },
+          "device_id": {
+            "offset": 12,
+            "size": 4
+          },
+          "device_type": {
+            "offset": 8,
+            "size": 4
+          },
+          "stream": {
+            "offset": 24,
+            "size": 8
+          },
+          "stream_mode": {
+            "offset": 32,
+            "size": 4
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          },
+          "user_data": {
+            "offset": 40,
+            "size": 8
+          }
+        },
+        "sizeof": 48
+      },
+      "rtdl_index_desc": {
+        "fields": {
+          "primitive_count": {
+            "offset": 24,
+            "size": 8
+          },
+          "primitive_kind": {
+            "offset": 8,
+            "size": 4
+          },
+          "primitives": {
+            "offset": 16,
+            "size": 8
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          }
+        },
+        "sizeof": 32
+      },
+      "rtdl_output_desc": {
+        "fields": {
+          "caller_buffer": {
+            "offset": 16,
+            "size": 208
+          },
+          "capacity_count": {
+            "offset": 224,
+            "size": 8
+          },
+          "mode": {
+            "offset": 8,
+            "size": 4
+          },
+          "required_count_out": {
+            "offset": 232,
+            "size": 8
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          },
+          "written_count_out": {
+            "offset": 240,
+            "size": 8
+          }
+        },
+        "sizeof": 248
+      },
+      "rtdl_query_desc": {
+        "fields": {
+          "input_count": {
+            "offset": 24,
+            "size": 8
+          },
+          "inputs": {
+            "offset": 16,
+            "size": 8
+          },
+          "output": {
+            "offset": 32,
+            "size": 248
+          },
+          "query_kind": {
+            "offset": 8,
+            "size": 4
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          }
+        },
+        "sizeof": 280
+      },
+      "rtdl_route_desc": {
+        "fields": {
+          "backend": {
+            "offset": 16,
+            "size": 4
+          },
+          "device_type": {
+            "offset": 20,
+            "size": 4
+          },
+          "dtype": {
+            "offset": 24,
+            "size": 4
+          },
+          "primitive_kind": {
+            "offset": 8,
+            "size": 4
+          },
+          "query_kind": {
+            "offset": 12,
+            "size": 4
+          },
+          "struct_size": {
+            "offset": 0,
+            "size": 8
+          }
+        },
+        "sizeof": 32
+      }
+    },
+    "max_rank": 8,
+    "pointer_size": 8
+  },
+  "ctypes_mirror": "src/v4/examples/python_ctypes_aabb2_smoke.py",
+  "date": "2026-06-19",
+  "header": "src/v4/include/rtdl/rtdl.h",
+  "manifest_kind": "rtdl_v4_active_abi_layout_audit_v1",
+  "matches": true,
+  "platform": {
+    "machine": "x86_64",
+    "python": "3.12.3",
+    "system": "Linux"
+  },
+  "stable": false,
+  "status": "active_experimental_substrate_layout_audit"
+}
