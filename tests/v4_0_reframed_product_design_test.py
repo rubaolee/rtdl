@@ -228,6 +228,14 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["pytorch_route_evidence"]["current_preflight"]["status"],
         )
         self.assertEqual(
+            "m1_devicearray_surface_evidence_ready_but_full_surface_wording_blocked",
+            blocking_by_id["full_numba_partner_surface"]["current_preflight"]["status"],
+        )
+        self.assertEqual(
+            "docs/reports/v4_0_m1_fixed_radius_numba_partner_surface_probe_2026-06-19.json",
+            blocking_by_id["full_numba_partner_surface"]["current_preflight"]["evidence"],
+        )
+        self.assertEqual(
             "docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json",
             blocking_by_id["claim_boundary_scan"]["evidence"],
         )

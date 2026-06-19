@@ -57,7 +57,8 @@ Implemented contract:
 | No-host-stage probe | `docs/reports/v4_0_m1_fixed_radius_cupy_no_host_stage_probe_2026-06-19.json` | Authorizes named-column no-host-stage wording; does not authorize true-zero-copy wording. |
 | Benchmark probe | `docs/reports/v4_0_m1_fixed_radius_cupy_benchmark_probe_2026-06-19.json` | Raw route timing smoke only; does not authorize public speedup or RT-core speedup wording. |
 | Same-stream ordering probe | `docs/reports/v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19.json` | Authorizes same-stream producer -> RTDL -> consumer ordering; does not authorize cross-stream event waits or async wording. |
-| Numba CUDA Array Interface smoke | `docs/reports/v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke_2026-06-19.json` | Authorizes Numba `DeviceNDArray` columns through `__cuda_array_interface__`; does not authorize a full Numba partner surface, PyTorch, or DLPack. |
+| Numba CUDA Array Interface smoke | `docs/reports/v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke_2026-06-19.json` | Authorizes Numba `DeviceNDArray` columns through `__cuda_array_interface__`; superseded by the fuller M1 partner-surface probe below. |
+| Numba M1 partner-surface probe | `docs/reports/v4_0_m1_fixed_radius_numba_partner_surface_probe_2026-06-19.json` | Authorizes bounded M1 Numba `DeviceNDArray` wording for parity, same-stream propagation, pointer echo, caller-owned output columns, and prepared-handle reuse while search columns remain alive; does not authorize arbitrary Numba program acceleration. |
 | DLPack bridge wrapper smoke | `docs/reports/v4_0_m1_fixed_radius_dlpack_bridge_smoke_2026-06-19.json` | Authorizes a CuPy-backed DLPack-only wrapper through the generic DLPack adapter; does not authorize arbitrary DLPack capsule semantics or PyTorch. |
 | True-zero-copy wording consensus | `docs/reviews/codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md` | Keeps public true-zero-copy wording blocked. |
 | Release-positioning consensus | `docs/reviews/codex_v4_m1_release_positioning_2ai_consensus_2026-06-19.md` | Keeps v3.0.2 as current release and V4 as experimental M1 evidence. |
@@ -131,8 +132,9 @@ Current machine-readable blocker manifest:
 | RTX/RT-core speedup | blocked |
 | CuPy route evidence | experimental M1 evidence |
 | Numba `DeviceNDArray` via CUDA Array Interface | experimental M1 evidence |
+| Bounded Numba M1 `DeviceNDArray` partner surface | experimental M1 evidence |
 | DLPack bridge wrapper over CuPy-owned arrays | experimental M1 evidence |
-| Full Numba partner surface | blocked |
+| Full arbitrary Numba partner surface | blocked |
 | PyTorch route evidence | not yet present |
 | Full DLPack capsule/framework route evidence | blocked |
 
@@ -150,6 +152,14 @@ evidence supports the current same-stream/synchronized-return wording only. It
 does not define a public owner/event/wait lifetime contract for different
 nonzero prepare/query streams, so different-stream prepare/query remains
 fail-closed until an explicit event/wait API and smoke test exist.
+
+Numba M1 partner-surface probe on `192.168.1.20`, 2026-06-19: passing with
+boundaries. The route has Numba `DeviceNDArray` parity cases, pointer identity
+checks through the V4 plan and native pointer echo, caller-owned output columns,
+a same-stream Numba consumer checksum, and prepared-handle reuse evidence while
+the caller keeps search columns alive. This authorizes bounded M1
+`DeviceNDArray` wording only; it does not authorize arbitrary Numba program
+acceleration or a broad full-partner-surface claim.
 
 ## Next Gates
 

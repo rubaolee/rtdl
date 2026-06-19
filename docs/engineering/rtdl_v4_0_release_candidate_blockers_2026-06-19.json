@@ -31,6 +31,12 @@
       "note": "Numba DeviceNDArray route through CUDA Array Interface is smoke-tested only."
     },
     {
+      "id": "numba_m1_devicearray_partner_surface_probe",
+      "status": "experimental_m1_evidence",
+      "path": "docs/reports/v4_0_m1_fixed_radius_numba_partner_surface_probe_2026-06-19.json",
+      "note": "Numba DeviceNDArray route has parity, same-stream propagation, pointer echo, caller-owned output, and prepared-handle lifetime evidence; arbitrary/full Numba surface wording remains blocked."
+    },
+    {
       "id": "dlpack_bridge_wrapper_smoke",
       "status": "experimental_m1_evidence",
       "path": "docs/reports/v4_0_m1_fixed_radius_dlpack_bridge_smoke_2026-06-19.json",
@@ -164,6 +170,13 @@
     {
       "id": "full_numba_partner_surface",
       "closed": false,
+      "current_preflight": {
+        "host": "192.168.1.20",
+        "date": "2026-06-19",
+        "status": "m1_devicearray_surface_evidence_ready_but_full_surface_wording_blocked",
+        "evidence": "docs/reports/v4_0_m1_fixed_radius_numba_partner_surface_probe_2026-06-19.json",
+        "reason": "The fixed-radius V4 M1 route now has Numba DeviceNDArray parity, same-stream propagation, pointer echo, caller-owned output, and prepared-handle lifetime evidence. This authorizes bounded M1 Numba DeviceNDArray wording, not arbitrary Numba program acceleration or a broad full-partner-surface claim."
+      },
       "required_evidence": "More than the current Numba DeviceNDArray CUDA Array Interface smoke: parity, lifetime, stream, and docs evidence.",
       "blocking_claims": [
         "full Numba support",

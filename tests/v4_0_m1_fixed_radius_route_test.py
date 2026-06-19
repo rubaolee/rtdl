@@ -22,6 +22,9 @@ STREAM_ORDERING_REPORT = (
     ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19.json"
 )
 NUMBA_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke_2026-06-19.json"
+NUMBA_PARTNER_SURFACE_REPORT = (
+    ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_numba_partner_surface_probe_2026-06-19.json"
+)
 DLPACK_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_dlpack_bridge_smoke_2026-06-19.json"
 SMOKE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_smoke.py"
 PARITY_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_parity_matrix.py"
@@ -29,6 +32,7 @@ NO_HOST_STAGE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_no_host_sta
 BENCHMARK_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_benchmark_probe.py"
 STREAM_ORDERING_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_ordering_probe.py"
 NUMBA_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke.py"
+NUMBA_PARTNER_SURFACE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_numba_partner_surface_probe.py"
 DLPACK_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_dlpack_bridge_smoke.py"
 CLAIM_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_claim_review_2026-06-19.md"
 WORDING_CONSENSUS = (
@@ -537,6 +541,69 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertFalse(boundaries["v4_true_zero_copy_claim_authorized"])
         self.assertIn("PyTorch route support", boundaries["forbidden_wording"])
         self.assertIn("DLPack route support", boundaries["forbidden_wording"])
+
+    def test_numba_partner_surface_probe_script_covers_m1_contract(self) -> None:
+        script = NUMBA_PARTNER_SURFACE_SCRIPT.read_text(encoding="utf-8")
+
+        for token in (
+            "same_nondefault_numba_stream_producer_rtdl_consumer",
+            "checksum_kernel[1, 1, stream]",
+            "_plan_pointer_matches",
+            "_native_pointer_matches",
+            "prepare_v4_fixed_radius_count_threshold_2d",
+            "caller_kept_search_columns_alive_until_operator_close",
+            "Numba search columns are caller-owned borrowed device arrays",
+            "numba_m1_devicearray_partner_surface_claim_authorized",
+            "numba_full_partner_surface_claim_authorized",
+            "all Numba programs are accelerated",
+            "cross-stream event wait support",
+            "False",
+        ):
+            self.assertIn(token, script)
+
+    def test_numba_partner_surface_report_is_bounded_and_validated(self) -> None:
+        report = json.loads(NUMBA_PARTNER_SURFACE_REPORT.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["status"], "pass-with-boundary")
+        self.assertEqual(report["route_id"], "fixed_radius_count_threshold_2d")
+        self.assertEqual(report["framework"], "numba")
+        self.assertEqual(report["protocol"], "cuda_array_interface")
+        self.assertEqual(report["remote_validation"]["validated_commit"], report["evidence_code_commit"])
+        self.assertTrue(report["remote_validation"]["v4_active"]["ok"])
+        self.assertEqual(report["remote_validation"]["v4_active"]["test_count"], 48)
+        self.assertTrue(report["remote_validation"]["claim_boundary_scan"]["ok"])
+        self.assertTrue(report["remote_validation"]["diff_check"]["ok"])
+        self.assertTrue(report["remote_validation"]["worktree_clean"])
+        self.assertEqual(report["case_count"], 4)
+        self.assertEqual(report["pass_count"], 4)
+        self.assertTrue(all(case["passed"] for case in report["cases"]))
+        self.assertTrue(all(case["plan_pointer_match_complete"] for case in report["cases"]))
+        self.assertTrue(all(case["native_pointer_echo_match_complete"] for case in report["cases"]))
+        self.assertTrue(all(case["same_stream_consumer_kernel_checksum_passed"] for case in report["cases"]))
+        self.assertTrue(report["pointer_identity"]["plan_pointer_match_complete"])
+        self.assertTrue(report["pointer_identity"]["native_pointer_echo_match_complete"])
+        self.assertEqual(
+            report["same_stream_contract"]["ordering_scope"],
+            "same_nondefault_numba_stream_producer_rtdl_consumer",
+        )
+        self.assertTrue(report["same_stream_contract"]["consumer_checksum_validated"])
+        self.assertFalse(report["same_stream_contract"]["cross_stream_event_wait_validated"])
+        lifetime = report["prepared_handle_lifetime_contract"]
+        self.assertEqual(lifetime["prepared_reuse_run_count"], 2)
+        self.assertTrue(lifetime["caller_kept_search_columns_alive_until_operator_close"])
+        self.assertTrue(lifetime["search_column_borrowed_pointers_stable_across_runs"])
+        self.assertIn("must outlive", lifetime["required_user_rule"])
+        boundaries = report["claim_boundaries"]
+        self.assertTrue(boundaries["numba_m1_devicearray_partner_surface_claim_authorized"])
+        self.assertTrue(boundaries["numba_prepared_reuse_claim_authorized"])
+        self.assertFalse(boundaries["numba_full_partner_surface_claim_authorized"])
+        self.assertFalse(boundaries["cross_stream_event_wait_claim_authorized"])
+        self.assertFalse(boundaries["pytorch_route_claim_authorized"])
+        self.assertFalse(boundaries["dlpack_route_claim_authorized"])
+        self.assertFalse(boundaries["async_claim_authorized"])
+        self.assertFalse(boundaries["v4_true_zero_copy_claim_authorized"])
+        self.assertIn("all Numba programs are accelerated", boundaries["forbidden_wording"])
+        self.assertIn("full arbitrary Numba partner surface", boundaries["forbidden_wording"])
 
     def test_dlpack_bridge_smoke_is_claim_bounded(self) -> None:
         script = DLPACK_SCRIPT.read_text(encoding="utf-8")
