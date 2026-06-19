@@ -43,5 +43,11 @@ Frozen Phase 1 product route:
 - blocked in this ABI directory until later substrate work: public non-Python
   SDK packaging, variable-length neighbor rows, and broad true-zero-copy claims.
 
+Linux evidence command after `make build-optix`:
+
+```bash
+PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_stream_smoke.py
+```
+
 This is not a stable SDK, not a public package-install promise, and not the
 V4.0 headline.

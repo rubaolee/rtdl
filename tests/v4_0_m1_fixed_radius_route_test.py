@@ -11,6 +11,7 @@ from rtdsl import v4_0_device_array_operator as v4
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_stream_smoke_2026-06-19.json"
+SMOKE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_smoke.py"
 
 
 class _FakeCudaColumn:
@@ -180,11 +181,30 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(report["route"]["route_id"], "fixed_radius_count_threshold_2d")
         self.assertEqual(report["validation"]["build_optix"], "pass")
         self.assertEqual(report["validation"]["cupy_stream_smoke"], "pass")
+        self.assertIn(
+            "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_stream_smoke.py",
+            report["commands"],
+        )
         self.assertEqual(report["cupy_stream_smoke_observed"]["neighbor_counts"], [1, 1, 0])
+        self.assertTrue(all(report["pointer_identity"].values()))
+        self.assertTrue(all(report["source_audit"].values()))
         self.assertFalse(report["route"]["async_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["public_speedup_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["rt_core_speedup_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["v4_true_zero_copy_claim_authorized"])
+
+    def test_cupy_stream_smoke_script_is_reproducible_route_gate(self) -> None:
+        script = SMOKE_SCRIPT.read_text(encoding="utf-8")
+
+        for token in (
+            "run_v4_fixed_radius_count_threshold_2d",
+            "cp.cuda.Stream(non_blocking=True)",
+            "pointer_identity",
+            "source_audit",
+            "native_async_ready",
+            "v4_true_zero_copy_claim_authorized",
+        ):
+            self.assertIn(token, script)
 
     def test_operator_uses_on_stream_route_for_nonzero_caller_stream(self) -> None:
         search = _point_columns(0x1000)

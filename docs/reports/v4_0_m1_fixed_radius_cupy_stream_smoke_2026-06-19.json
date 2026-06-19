@@ -26,7 +26,7 @@
     "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
     "git diff --check",
     "make build-optix",
-    "PYTHONPATH=src:. python3 - <<'PY' ... CuPy caller-stream smoke ... PY"
+    "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_stream_smoke.py"
   ],
   "validation": {
     "build_v4_c_api": "pass",
@@ -51,6 +51,25 @@
       "native_true_zero_copy_authorized": true,
       "v4_true_zero_copy_claim_authorized": false
     }
+  },
+  "pointer_identity": {
+    "search.ids": true,
+    "search.x": true,
+    "search.y": true,
+    "query.ids": true,
+    "query.x": true,
+    "query.y": true,
+    "output.query_ids": true,
+    "output.neighbor_counts": true,
+    "output.threshold_flags": true
+  },
+  "source_audit": {
+    "on_stream_symbol_present": true,
+    "uses_caller_stream_launch": true,
+    "uses_async_param_upload": true,
+    "uses_device_to_device_empty_copy": true,
+    "does_not_download_outputs": true,
+    "synchronizes_caller_stream_before_return": true
   },
   "claim_boundaries": {
     "public_speedup_claim_authorized": false,
