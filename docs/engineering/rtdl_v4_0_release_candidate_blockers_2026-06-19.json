@@ -5,15 +5,16 @@
   "current_release_remains": "v3.0.2",
   "v4_position": "experimental_m1_engineering_evidence_not_current_release",
   "release_candidate_ready": false,
-  "current_gate": "v4_active",
-  "v4_release_candidate_gate_policy": "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
+  "current_gate": "v4_release_candidate",
+  "v4_release_candidate_gate_policy": "exposed_as_non_authorizing_m8_review_gate_release_requires_external_review_and_explicit_user_action",
   "latest_validated_implementation_head": "d1b84b170756bb48df4b4e0766cfa5dd9341aaa0",
   "latest_validated_route_code_tree": "e2188f2fd983b2c1afb5f0e34f84773d573b2bb4",
-  "latest_validated_m1_implementation_v4_active_tests": 68,
+  "latest_validated_m1_implementation_v4_active_tests": 69,
   "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
   "latest_validated_m1_cross_stream_evidence_scope": "clean source-tree commit after push",
   "latest_validated_m1_cross_stream_v4_active_tests": 53,
-  "current_source_tree_v4_active_tests": 68,
+  "current_source_tree_v4_active_tests": 69,
+  "current_source_tree_v4_release_candidate_tests": 69,
   "evidence_ready": [
     {
       "id": "v4_active_gate",
@@ -86,12 +87,31 @@
       "status": "experimental_m1_evidence",
       "path": "docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json",
       "note": "Required Linux V4 M1 source-tree runtime preflight validates checkout import, rtdl-source-tree identity, CuPy, Numba, PyTorch, OptiX library, v4_active/v4_release_candidate gate policy, and non-package claim boundaries."
+    },
+    {
+      "id": "m8_release_candidate_packet",
+      "status": "review_ready_m8_evidence_packet",
+      "path": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+      "note": "M8 evidence packet assembles the experimental V4.0 fixed-radius M1 route evidence for external review; it does not authorize current-release, front-door, package, stable SDK, true-zero-copy, async, or speedup claims."
+    },
+    {
+      "id": "m8_next_step_2ai_consensus",
+      "status": "accepted_next_step_decision",
+      "path": "docs/reviews/codex_v4_after_runtime_preflight_m8_next_step_2ai_consensus_2026-06-19.md",
+      "note": "2-AI consensus ranks M8 packet and external review ahead of broad feature expansion."
     }
   ],
   "blockers": [
     {
       "id": "m8_release_candidate_packet",
-      "closed": false,
+      "closed": true,
+      "current_preflight": {
+        "date": "2026-06-19",
+        "status": "review_ready_m8_packet_written_not_release_approval",
+        "evidence": "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+        "consensus": "docs/reviews/codex_v4_after_runtime_preflight_m8_next_step_2ai_consensus_2026-06-19.md",
+        "reason": "The M8 packet now assembles exact V4.0 experimental fixed-radius M1 evidence and forbidden claims for external review. Release-candidate readiness remains false until external review and explicit release/front-door decisions close."
+      },
       "required_evidence": "A cohesive V4 release-candidate packet bound to the final candidate commit.",
       "blocking_claims": [
         "V4.0 is release-candidate ready",

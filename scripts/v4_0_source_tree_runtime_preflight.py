@@ -167,13 +167,6 @@ def build_payload(*, require_v4_gpu_runtime: bool = False, run_smoke: bool = Fal
                 "failures": doctor["required_failures"],
             }
         )
-    if "v4_release_candidate" in run_test_matrix.TEST_GROUPS:
-        required_failures.append(
-            {
-                "check": "v4_release_candidate gate exposure",
-                "message": "v4_release_candidate must remain absent until the M8 release-candidate packet exists",
-            }
-        )
     if require_v4_gpu_runtime and not gpu_runtime["all_required_for_v4_m1_gpu_runtime_present"]:
         required_failures.append(
             {
@@ -206,8 +199,9 @@ def build_payload(*, require_v4_gpu_runtime: bool = False, run_smoke: bool = Fal
         "required_paths": paths,
         "test_matrix_policy": {
             "v4_active_group_present": "v4_active" in run_test_matrix.TEST_GROUPS,
-            "v4_release_candidate_group_absent": "v4_release_candidate" not in run_test_matrix.TEST_GROUPS,
-            "current_v4_gate": "v4_active",
+            "v4_release_candidate_group_present": "v4_release_candidate" in run_test_matrix.TEST_GROUPS,
+            "v4_release_candidate_gate_non_authorizing": True,
+            "current_v4_gate": "v4_release_candidate",
         },
         "supported_source_tree_commands": [
             "PYTHONPATH=src:. python3 scripts/rtdl_source_tree_doctor.py --include-v4-active --json",

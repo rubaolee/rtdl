@@ -25,12 +25,16 @@ ROUTE_CONSENSUS = (
 DESIGN = ROOT / "docs" / "engineering" / "rtdl_v4_0_design_review_packet_2026-06-19.md"
 ACTIVE_ABI_NOTE = ROOT / "docs" / "engineering" / "rtdl_v4_0_active_abi_slice_2026-06-19.md"
 M1_STATUS = ROOT / "docs" / "engineering" / "rtdl_v4_0_m1_experimental_status_2026-06-19.md"
+M8_PACKET = ROOT / "docs" / "engineering" / "rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md"
 PRE_M8_BOUNDARY = ROOT / "docs" / "engineering" / "rtdl_v4_0_pre_m8_boundary_2026-06-19.md"
 SOURCE_TREE_RUNTIME_STORY = (
     ROOT / "docs" / "engineering" / "rtdl_v4_0_source_tree_runtime_story_2026-06-19.md"
 )
 NEXT_STEP_CONSENSUS = (
     ROOT / "docs" / "reviews" / "codex_v4_next_step_pre_m8_dlpack_3ai_consensus_2026-06-19.md"
+)
+M8_NEXT_STEP_CONSENSUS = (
+    ROOT / "docs" / "reviews" / "codex_v4_after_runtime_preflight_m8_next_step_2ai_consensus_2026-06-19.md"
 )
 RC_BLOCKERS = (
     ROOT / "docs" / "engineering" / "rtdl_v4_0_release_candidate_blockers_2026-06-19.json"
@@ -194,9 +198,11 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertIn("Do not promote V4.0", consensus)
         self.assertIn("Keep `v3.0.2` as the current source-tree release", consensus)
         self.assertIn("RTDL V4.0 M1 Experimental Status", engineering_index)
+        self.assertIn("RTDL V4.0 M8 Release-Candidate Evidence Packet", engineering_index)
         self.assertIn("RTDL V4.0 Release-Candidate Blockers", engineering_index)
         self.assertIn("RTDL V4.0 Pre-M8 Boundary", engineering_index)
         self.assertIn("RTDL V4.0 Source-Tree Runtime Story", engineering_index)
+        self.assertIn("RTDL V4.0 After Runtime Preflight M8 Consensus", engineering_index)
 
     def test_source_tree_runtime_preflight_authorizes_only_checkout_runtime(self) -> None:
         payload = build_source_tree_runtime_preflight()
@@ -215,7 +221,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         check_names = {item["name"] for item in payload["source_tree_doctor"]["checks"]}
         self.assertIn("optional module torch", check_names)
         self.assertTrue(payload["test_matrix_policy"]["v4_active_group_present"])
-        self.assertTrue(payload["test_matrix_policy"]["v4_release_candidate_group_absent"])
+        self.assertTrue(payload["test_matrix_policy"]["v4_release_candidate_group_present"])
+        self.assertTrue(payload["test_matrix_policy"]["v4_release_candidate_gate_non_authorizing"])
 
         for item in payload["required_paths"]:
             self.assertTrue(item["exists"], item["path"])
@@ -240,7 +247,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertTrue(report["ok"])
         self.assertTrue(report["pyproject"]["source_tree_identity_ok"])
         self.assertTrue(report["test_matrix_policy"]["v4_active_group_present"])
-        self.assertTrue(report["test_matrix_policy"]["v4_release_candidate_group_absent"])
+        self.assertTrue(report["test_matrix_policy"]["v4_release_candidate_group_present"])
+        self.assertTrue(report["test_matrix_policy"]["v4_release_candidate_gate_non_authorizing"])
         self.assertTrue(report["v4_m1_gpu_runtime"]["all_required_for_v4_m1_gpu_runtime_present"])
         self.assertTrue(report["claim_boundaries"]["source_tree_runtime_wording_authorized"])
         self.assertFalse(report["claim_boundaries"]["v4_package_install_authorized"])
@@ -250,18 +258,19 @@ class V40ReframedProductDesignTest(unittest.TestCase):
 
     def test_pre_m8_boundary_keeps_release_candidate_aura_blocked(self) -> None:
         boundary = PRE_M8_BOUNDARY.read_text(encoding="utf-8")
+        compact_boundary = _compact(boundary)
         consensus = NEXT_STEP_CONSENSUS.read_text(encoding="utf-8")
 
         for token in (
-            "pre-M8 boundary stub, not a release-candidate packet",
+            "superseded pre-M8 boundary stub, not a release approval",
             "current user release remains `v3.0.2`",
-            "not complete without real DLPack/PyTorch/lifetime evidence",
-            "Implement the fixed-radius M1 DLPack capsule/lifetime contract",
-            "Draft M8 only after DLPack/PyTorch/lifetime gates",
-            "`v4_release_candidate` test-matrix gate",
+            "narrow legacy DLPack capsule intake",
+            "PyTorch CUDA tensors with a compatibility matrix",
+            "Use the M8 packet as the critical-review input",
+            "release approval",
             "Not Yet Authorized",
         ):
-            self.assertIn(token, boundary)
+            self.assertIn(token, compact_boundary)
 
         for token in (
             "Adopt the narrow hybrid",
@@ -272,14 +281,71 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         ):
             self.assertIn(token, consensus)
 
+        m8_consensus = M8_NEXT_STEP_CONSENSUS.read_text(encoding="utf-8")
+        for token in (
+            "M8 release-candidate packet",
+            "External critical review",
+            "Package/runtime story closure",
+            "Public contract freeze",
+            "does not authorize",
+            "full PyTorch",
+            "public true-zero-copy",
+            "public speedup",
+        ):
+            self.assertIn(token, m8_consensus)
+
+    def test_m8_release_candidate_packet_is_review_ready_but_non_authorizing(self) -> None:
+        packet = M8_PACKET.read_text(encoding="utf-8")
+        compact = _compact(packet)
+
+        for token in (
+            "review-ready M8 evidence packet, not release approval",
+            "Candidate evidence baseline: `bbc43984b74dee7d52c059b295c5eaade0813096`",
+            "V4.0 is ready for critical review as an experimental source-tree candidate",
+            "current user release remains `v3.0.2`",
+            "fixed_radius_count_threshold_2d",
+            "rtdsl.prepare_v4_fixed_radius_count_threshold_2d",
+            "rtdsl.run_v4_fixed_radius_count_threshold_2d",
+            "CuPy CUDA arrays",
+            "Numba `DeviceNDArray`",
+            "legacy DLPack capsules",
+            "PyTorch detached contiguous CUDA tensors",
+            "same-stream producer -> RTDL -> consumer ordering is validated",
+            "native prepare and query calls still synchronize before returning",
+            "async/nonblocking completion is not claimed",
+            "Source-tree runtime preflight",
+            "Front-door claim scan",
+            "DLPack capsule probe",
+            "PyTorch CUDA tensor probe",
+            "M8 next-step consensus",
+            "Linux validation on `192.168.1.20`",
+            "`scripts/run_test_matrix.py --group v4_active`: 69 tests, pass",
+            "`scripts/run_test_matrix.py --group v4_release_candidate`: 69 tests, pass as a non-authorizing review gate",
+            "This M8 packet does not authorize",
+            "V4.0 as the current release",
+            "package install, PyPI, wheel, or stable SDK wording",
+            "public true-zero-copy",
+            "public speedup",
+            "Full PyTorch/Numba/DLPack surfaces",
+            "Review Request",
+        ):
+            self.assertIn(token, compact)
+
+        for stale in (
+            "V4.0 is the current user release",
+            "stable SDK is authorized",
+            "public true-zero-copy is authorized",
+        ):
+            self.assertNotIn(stale, compact)
+
     def test_release_candidate_gate_remains_blocked_until_m8_packet(self) -> None:
         blockers = json.loads(RC_BLOCKERS.read_text(encoding="utf-8"))
         blocking_by_id = {entry["id"]: entry for entry in blockers["blockers"]}
 
         self.assertFalse(blockers["release_candidate_ready"])
         self.assertEqual("v3.0.2", blockers["current_release_remains"])
-        self.assertEqual("v4_active", blockers["current_gate"])
-        self.assertEqual(68, blockers["latest_validated_m1_implementation_v4_active_tests"])
+        self.assertEqual("v4_release_candidate", blockers["current_gate"])
+        self.assertEqual(69, blockers["latest_validated_m1_implementation_v4_active_tests"])
         self.assertEqual(
             "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
             blockers["latest_validated_m1_cross_stream_evidence_commit"],
@@ -288,15 +354,15 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             53,
             blockers["latest_validated_m1_cross_stream_v4_active_tests"],
         )
-        self.assertEqual(68, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(69, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(69, blockers["current_source_tree_v4_release_candidate_tests"])
         self.assertEqual(
-            "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
+            "exposed_as_non_authorizing_m8_review_gate_release_requires_external_review_and_explicit_user_action",
             blockers["v4_release_candidate_gate_policy"],
         )
-        self.assertNotIn("v4_release_candidate", run_test_matrix.TEST_GROUPS)
+        self.assertIn("v4_release_candidate", run_test_matrix.TEST_GROUPS)
 
         for blocker_id in (
-            "m8_release_candidate_packet",
             "external_release_candidate_review",
             "public_true_zero_copy",
             "async_completion",
@@ -311,9 +377,22 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         ):
             self.assertIn(blocker_id, blocking_by_id)
             self.assertIs(blocking_by_id[blocker_id]["closed"], False)
+        self.assertTrue(blocking_by_id["m8_release_candidate_packet"]["closed"])
         self.assertTrue(blocking_by_id["cross_stream_event_wait"]["closed"])
         self.assertTrue(blocking_by_id["pytorch_route_evidence"]["closed"])
         self.assertTrue(blocking_by_id["claim_boundary_scan"]["closed"])
+        self.assertEqual(
+            "review_ready_m8_packet_written_not_release_approval",
+            blocking_by_id["m8_release_candidate_packet"]["current_preflight"]["status"],
+        )
+        self.assertEqual(
+            "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
+            blocking_by_id["m8_release_candidate_packet"]["current_preflight"]["evidence"],
+        )
+        self.assertIn(
+            "Release-candidate readiness remains false",
+            blocking_by_id["m8_release_candidate_packet"]["current_preflight"]["reason"],
+        )
         self.assertEqual(
             "closed_fixed_radius_m1_prepare_ready_event_wait",
             blocking_by_id["cross_stream_event_wait"]["current_preflight"]["status"],
@@ -468,6 +547,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         modules = run_test_matrix.group_modules("v4_active")
         self.assertIn("tests.v4_0_active_abi_control_plane_test", modules)
         self.assertIn("tests.v4_0_reframed_product_design_test", modules)
+        release_modules = run_test_matrix.group_modules("v4_release_candidate")
+        self.assertEqual(modules, release_modules)
         self.assertIn("tests.v4_0_m1_fixed_radius_route_test", modules)
 
 

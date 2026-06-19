@@ -72,7 +72,7 @@ Implemented contract:
 | PyTorch CUDA tensor probe | `docs/reports/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19.json` | Authorizes exact fixed-radius M1 PyTorch CUDA tensor route wording for pointer identity, native pointer echo, same-stream checksum, direct `torch.cuda.Stream` objects, distinct prepare/query stream ordering, caller-owned outputs, detached tensor acceptance, and fail-closed compatibility cases; does not authorize a full PyTorch partner surface. |
 | True-zero-copy wording consensus | `docs/reviews/codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md` | Keeps public true-zero-copy wording blocked. |
 | Release-positioning consensus | `docs/reviews/codex_v4_m1_release_positioning_2ai_consensus_2026-06-19.md` | Keeps v3.0.2 as current release and V4 as experimental M1 evidence. |
-| Release-candidate blocker manifest | `docs/engineering/rtdl_v4_0_release_candidate_blockers_2026-06-19.json` | Keeps `v4_release_candidate` absent until the M8 release-candidate packet and blockers close. |
+| Release-candidate blocker manifest | `docs/engineering/rtdl_v4_0_release_candidate_blockers_2026-06-19.json` | Exposes `v4_release_candidate` only as a non-authorizing M8 review gate; release remains blocked. |
 | Front-door claim scan | `docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json` | Confirms current front-door docs resolve to v3.0.2 and do not positively publish blocked V4 claims. |
 | Source-tree runtime story | `docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md` | Documents the V4 M1 source-tree runtime path and keeps package, PyPI, wheel, and stable SDK wording blocked. |
 | Source-tree runtime preflight | `docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json` | Linux required-runtime preflight validates checkout import, source-tree package identity, CuPy, Numba, PyTorch, OptiX library, and non-package claim boundaries. |
@@ -88,7 +88,7 @@ Latest Linux validation on `192.168.1.20` for source-tree head
 
 - source-tree doctor with V4 active checks: pass;
 - source-tree runtime preflight with required V4 GPU runtime: pass;
-- `v4_active`: 68 tests, pass;
+- `v4_active`: 69 tests, pass;
 - front-door claim-boundary scan: pass;
 - `make build-optix`: pass;
 - DLPack capsule probe: pass;
@@ -112,13 +112,14 @@ front-door claim-scan, Numba route-evidence guards, source-tree runtime story
 guard, source-tree runtime preflight guard, fixed-radius cross-stream
 prepare/query event-wait guard, and DLPack capsule report guards, PyTorch route
 report guards, PyTorch compatibility guards, and PyTorch boundary guards:
-68 tests, pass locally and on Linux.
+69 tests, pass locally and on Linux.
 
 ## Release-Candidate Boundary
 
-The source tree intentionally does not expose a passing `v4_release_candidate`
-test-matrix group yet. That name is reserved for the future M8 release-candidate
-packet, after the explicit blocker list closes.
+The source tree exposes `v4_release_candidate` as a non-authorizing M8 review
+gate. Passing it means the current M8 evidence packet, V4 active tests, and
+claim boundaries are internally coherent. It does not mean V4.0 is the current
+release or user front door.
 
 Current machine-readable blocker manifest:
 
@@ -235,5 +236,5 @@ remains unauthorized.
 2. Keep the fixed-radius M1 cross-stream prepare/query event-wait evidence fresh while async and full external-stream ownership remain blocked.
 3. Broaden PyTorch or framework-neutral DLPack evidence before saying those full surfaces are validated.
 4. Use RTX-class hardware before any RT-core speed discussion.
-5. Keep the release-candidate blocker manifest current while `v4_release_candidate` remains absent from the passing test matrix.
-6. Only after an M8 release-candidate packet exists and the blocker manifest is closed, expose a `v4_release_candidate` gate and reconsider whether V4 can become the current front door.
+5. Keep the release-candidate blocker manifest current while `v4_release_candidate` remains a non-authorizing review gate.
+6. Only after external review and explicit release approval, reconsider whether V4 can become the current front door.

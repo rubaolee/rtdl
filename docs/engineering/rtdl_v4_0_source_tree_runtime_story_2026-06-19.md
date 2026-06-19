@@ -66,7 +66,7 @@ Latest Linux V4 gate on `192.168.1.20` for head
 
 - `make build-optix`: pass;
 - source-tree runtime preflight with `--require-v4-gpu-runtime`: pass;
-- `v4_active`: 68 tests, pass;
+- `v4_active`: 69 tests, pass;
 - Numba M1 `DeviceNDArray` fixed-radius route probe: pass;
 - DLPack capsule fixed-radius route probe: pass;
 - PyTorch CUDA tensor fixed-radius route compatibility probe: pass;
@@ -85,7 +85,8 @@ That report is bound to Linux head
 - `pyproject.toml` identity as `rtdl-source-tree` version `3.0.2`;
 - V4 active doctor checks with CuPy, Numba, PyTorch, and OptiX library all
   passing;
-- `v4_active` exposed and `v4_release_candidate` absent;
+- `v4_active` and the non-authorizing `v4_release_candidate` review gate
+  exposed;
 - package install, PyPI, wheel, stable SDK, generated binding, and V4 front-door
   claims all unauthorized.
 

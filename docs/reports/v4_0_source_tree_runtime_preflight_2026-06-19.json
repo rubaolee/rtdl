@@ -215,9 +215,10 @@
     "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe.py"
   ],
   "test_matrix_policy": {
-    "current_v4_gate": "v4_active",
+    "current_v4_gate": "v4_release_candidate",
     "v4_active_group_present": true,
-    "v4_release_candidate_group_absent": true
+    "v4_release_candidate_gate_non_authorizing": true,
+    "v4_release_candidate_group_present": true
   },
   "v4_m1_gpu_runtime": {
     "all_required_for_v4_m1_gpu_runtime_present": true,
