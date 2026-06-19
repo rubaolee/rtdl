@@ -2113,6 +2113,15 @@ int  rtdl_optix_prepare_fixed_radius_count_threshold_2d_device_search_columns(
          double max_radius,
          void** prepared_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_fixed_radius_count_threshold_2d_device_search_columns_on_stream(
+         const uint32_t* search_ids,
+         const double* search_x,
+         const double* search_y,
+         size_t search_count,
+         double max_radius,
+         uint64_t cuda_stream_ptr,
+         void** prepared_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_run_prepared_fixed_radius_count_threshold_2d(
          void* prepared,
          const RtdlPoint* query_points, size_t query_count,

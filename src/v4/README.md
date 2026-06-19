@@ -38,7 +38,7 @@ Frozen Phase 1 product route:
 - input: caller-owned CUDA `ids`, `x`, `y` point columns;
 - output: fixed-size CUDA `query_ids`, `neighbor_counts`, and
   `threshold_flags` columns;
-- stream: nonzero caller CUDA streams use the native on-stream symbol
+- stream: nonzero caller CUDA streams are propagated through prepare and query
   synchronously; async completion is not claimed yet;
 - blocked in this ABI directory until later substrate work: public non-Python
   SDK packaging, variable-length neighbor rows, and broad true-zero-copy claims.

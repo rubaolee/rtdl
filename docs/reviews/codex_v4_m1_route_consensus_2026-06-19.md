@@ -39,7 +39,8 @@ Primary rationale:
 
 Risks called out before implementation:
 
-- caller-stream propagation was not complete for the active 2-D path;
+- caller-stream propagation was not complete for the active 2-D path, and has
+  since been closed for the frozen M1 prepare/query route;
 - zero-copy wording must remain exact;
 - V4 front door and legacy partner adapters are still split;
 - full neighbor rows are a later route.
@@ -81,8 +82,8 @@ M1/M2 gate:
 - accept borrowed CUDA columns through `__cuda_array_interface__`/partner
   descriptors;
 - validate dtype, rank, stride, shape, and device;
-- route nonzero caller streams through the native on-stream symbol, synchronizing
-  that stream before return and making no async claim;
+- route nonzero caller streams through fixed-radius prepare and query,
+  synchronizing before return and making no async claim;
 - keep true-zero-copy and speed claims blocked at V4 level until the M4 evidence
   packet is complete.
 

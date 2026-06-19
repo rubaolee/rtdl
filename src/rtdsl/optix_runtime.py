@@ -9043,6 +9043,61 @@ def prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
     return prepared
 
 
+def prepare_optix_fixed_radius_count_threshold_2d_device_search_columns_on_stream(
+    search_point_columns: dict,
+    *,
+    max_radius: float,
+    cuda_stream_ptr: int,
+) -> PreparedOptixFixedRadiusCountThreshold2D:
+    """Prepare an OptiX fixed-radius scene from CUDA columns on a caller stream."""
+    if max_radius < 0:
+        raise ValueError("max_radius must be non-negative")
+    cuda_stream_ptr = int(cuda_stream_ptr)
+    if cuda_stream_ptr == 0:
+        raise ValueError("cuda_stream_ptr must be a nonzero CUDA stream handle")
+    packet = pack_optix_fixed_radius_count_threshold_2d_device_point_inputs(
+        search_point_columns,
+        label="search",
+        native_symbol=_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_ON_STREAM_SYMBOL,
+    )
+    prepared = PreparedOptixFixedRadiusCountThreshold2D.__new__(PreparedOptixFixedRadiusCountThreshold2D)
+    prepared._packed_search = _DevicePointScene2D(packet["metadata"]["point_count"])
+    prepared._max_radius = float(max_radius)
+    prepared._handle = ctypes.c_void_p()
+    prepared._closed = False
+    prepared._search_scene_true_zero_copy = True
+    prepared._search_scene_cuda_stream_ptr = cuda_stream_ptr
+    if packet["metadata"]["point_count"] == 0:
+        return prepared
+
+    lib = _load_optix_library()
+    prepare_symbol = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_ON_STREAM_SYMBOL,
+    )
+    if prepare_symbol is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export "
+            f"{_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_ON_STREAM_SYMBOL}. "
+            "Direct device-search fixed-radius caller-stream preparation remains blocked; rebuild the OptiX backend."
+        )
+    points = packet["points"]
+    error = ctypes.create_string_buffer(4096)
+    status = prepare_symbol(
+        ctypes.c_void_p(points["ids"].data_ptr),
+        ctypes.c_void_p(points["x"].data_ptr),
+        ctypes.c_void_p(points["y"].data_ptr),
+        packet["metadata"]["point_count"],
+        ctypes.c_double(float(max_radius)),
+        ctypes.c_uint64(cuda_stream_ptr),
+        ctypes.byref(prepared._handle),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return prepared
+
+
 def _point_group_value(group, key: str):
     if isinstance(group, dict):
         return group[key]
@@ -12510,6 +12565,9 @@ _OPTIX_PARTNER_PREPARED_DEVICE_TRIANGLE_COLUMNS_AABBS_SYMBOL = (
 )
 _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_SYMBOL = (
     "rtdl_optix_prepare_fixed_radius_count_threshold_2d_device_search_columns"
+)
+_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_ON_STREAM_SYMBOL = (
+    "rtdl_optix_prepare_fixed_radius_count_threshold_2d_device_search_columns_on_stream"
 )
 _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_SYMBOL = (
     "rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns"
@@ -27390,6 +27448,24 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_prepare_frn_count_device_search.restype = ctypes.c_int
+
+    optional_prepare_frn_count_device_search_on_stream = _find_optional_backend_symbol(
+        lib,
+        _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_ON_STREAM_SYMBOL,
+    )
+    if optional_prepare_frn_count_device_search_on_stream is not None:
+        optional_prepare_frn_count_device_search_on_stream.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_frn_count_device_search_on_stream.restype = ctypes.c_int
 
     optional_run_prepared_frn_count = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_fixed_radius_count_threshold_2d")
     if optional_run_prepared_frn_count is not None:

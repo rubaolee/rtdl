@@ -1056,8 +1056,8 @@ At V4 release:
 - fixed-size `query_ids`, `neighbor_counts`, and `threshold_flags` device
   columns are the first output contract.
 - variable-length neighbor rows and ray/triangle any-hit are later routes.
-- nonzero caller CUDA streams use the native on-stream symbol and synchronize
-  that stream before return; async completion is not claimed yet.
+- nonzero caller CUDA streams propagate through fixed-radius prepare and query
+  synchronously; async completion is not claimed yet.
 - device-buffer query execution.
 - result returned as a device buffer.
 - Python example uses existing host-owned device arrays.

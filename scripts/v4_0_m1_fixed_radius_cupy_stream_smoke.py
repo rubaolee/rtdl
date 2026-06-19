@@ -22,41 +22,48 @@ def _cuda_ptr(array) -> int:
 
 def _source_audit() -> dict[str, bool]:
     workloads = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
-    source = workloads.read_text(encoding="utf-8")
-    symbol = "write_prepared_fixed_radius_count_threshold_2d_device_query_columns_on_stream_optix"
-    impl_symbol = "write_prepared_fixed_radius_count_threshold_2d_device_query_columns_optix_impl"
-    start = source.index(f"static void {impl_symbol}")
-    end = source.index("static void count_prepared_fixed_radius_threshold_reached_2d_optix", start)
-    body = source[start:end]
-    return {
-        "on_stream_symbol_present": symbol in source,
-        "uses_caller_stream_launch": "optixLaunch(g_frn_count_rt.pipe->pipeline, stream" in body,
-        "uses_async_param_upload": "upload_async(d_params.ptr, &lp, 1, stream)" in body,
-        "uses_device_to_device_empty_copy": "cuMemcpyDtoDAsync" in body,
-        "does_not_download_outputs": "download(" not in body and "cuMemcpyDtoH" not in body,
-        "synchronizes_caller_stream_before_return": "cuStreamSynchronize(stream)" in body,
-    }
-
-
-def _promotion_blockers() -> dict[str, bool]:
-    workloads = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
     core = ROOT / "src" / "native" / "optix" / "rtdl_optix_core.cpp"
     workload_source = workloads.read_text(encoding="utf-8")
     core_source = core.read_text(encoding="utf-8")
-    start = workload_source.index(
+    query_symbol = "write_prepared_fixed_radius_count_threshold_2d_device_query_columns_on_stream_optix"
+    prepare_symbol = "prepare_fixed_radius_count_threshold_2d_device_search_columns_on_stream_optix"
+    impl_symbol = "write_prepared_fixed_radius_count_threshold_2d_device_query_columns_optix_impl"
+    query_start = workload_source.index(f"static void {impl_symbol}")
+    query_end = workload_source.index("static void count_prepared_fixed_radius_threshold_reached_2d_optix", query_start)
+    query_body = workload_source[query_start:query_end]
+    prepare_start = workload_source.index(
         "PreparedFixedRadiusCountThreshold2D(\n"
         "            const uint32_t* ids,"
     )
-    end = workload_source.index("};\n\nstruct PreparedPointGroupNearestWitness2D", start)
-    prepare_body = workload_source[start:end]
+    prepare_end = workload_source.index("};\n\nstruct PreparedPointGroupNearestWitness2D", prepare_start)
+    prepare_body = workload_source[prepare_start:prepare_end]
     accel_start = core_source.index("static AccelHolder build_custom_accel_from_device_aabbs")
     accel_end = core_source.index("static AccelHolder build_custom_accel_from_borrowed_device_aabbs", accel_start)
     accel_body = core_source[accel_start:accel_end]
     return {
-        "prepare_aabb_pack_uses_default_stream": "0, nullptr, args, nullptr" in prepare_body,
-        "prepare_aabb_pack_synchronizes_default_stream": "cuStreamSynchronize(nullptr)" in prepare_body,
-        "gas_build_uses_default_stream": "CUstream stream = 0" in accel_body,
-        "gas_build_synchronizes_default_stream": "cuStreamSynchronize(stream)" in accel_body,
+        "query_on_stream_symbol_present": query_symbol in workload_source,
+        "query_uses_caller_stream_launch": "optixLaunch(g_frn_count_rt.pipe->pipeline, stream" in query_body,
+        "query_uses_async_param_upload": "upload_async(d_params.ptr, &lp, 1, stream)" in query_body,
+        "query_uses_device_to_device_empty_copy": "cuMemcpyDtoDAsync" in query_body,
+        "query_does_not_download_outputs": "download(" not in query_body and "cuMemcpyDtoH" not in query_body,
+        "query_synchronizes_caller_stream_before_return": "cuStreamSynchronize(stream)" in query_body,
+        "prepare_on_stream_symbol_present": prepare_symbol in workload_source,
+        "prepare_aabb_pack_uses_caller_stream": "0, stream, args, nullptr" in prepare_body,
+        "prepare_aabb_pack_avoids_default_stream_sync": "cuStreamSynchronize(nullptr)" not in prepare_body,
+        "prepare_device_aabb_copy_uses_caller_stream": (
+            "cuMemcpyDtoDAsync(result.aabb_buf, source_aabbs, aabb_bytes, stream)" in accel_body
+        ),
+        "prepare_gas_build_uses_caller_stream": "optixAccelBuild(ctx, stream" in accel_body,
+    }
+
+
+def _promotion_blockers() -> dict[str, bool]:
+    return {
+        "transfer_counter_or_equivalent_prepare_query_missing": True,
+        "native_pointer_echo_metadata_missing": True,
+        "full_correctness_parity_matrix_missing": True,
+        "async_completion_contract_missing": True,
+        "rtx_rt_core_speed_hardware_evidence_missing": True,
     }
 
 
@@ -125,6 +132,10 @@ def run_smoke() -> dict[str, object]:
         raise AssertionError(f"pointer identity failed: {pointer_identity!r}")
     if metadata["caller_stream_handle"] != int(stream.ptr):
         raise AssertionError("metadata did not preserve the caller stream handle")
+    if metadata["prepare_stream_handle"] != int(stream.ptr):
+        raise AssertionError("metadata did not preserve the prepare stream handle")
+    if not metadata["native_prepare_stream_propagation_ready"]:
+        raise AssertionError("metadata did not report prepare stream propagation")
     if not metadata["native_synchronized_before_return"]:
         raise AssertionError("native route must document stream synchronization before return")
     if metadata["native_async_ready"]:
@@ -138,7 +149,9 @@ def run_smoke() -> dict[str, object]:
         "caller_stream_handle_nonzero": int(stream.ptr) != 0,
         "metadata_subset": {
             "caller_stream_handle": int(metadata["caller_stream_handle"]),
+            "prepare_stream_handle": int(metadata["prepare_stream_handle"]),
             "caller_stream_native_propagation_ready": bool(metadata["caller_stream_native_propagation_ready"]),
+            "native_prepare_stream_propagation_ready": bool(metadata["native_prepare_stream_propagation_ready"]),
             "native_synchronized_before_return": bool(metadata["native_synchronized_before_return"]),
             "native_async_ready": bool(metadata["native_async_ready"]),
             "native_true_zero_copy_authorized": bool(metadata["native_true_zero_copy_authorized"]),

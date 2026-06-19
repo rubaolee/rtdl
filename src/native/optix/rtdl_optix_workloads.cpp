@@ -21925,7 +21925,8 @@ struct PreparedFixedRadiusCountThreshold2D {
             const double* x,
             const double* y,
             size_t count,
-            double radius_bound)
+            double radius_bound,
+            CUstream stream = 0)
         : search_points(),
           d_search(0),
           max_radius(static_cast<float>(radius_bound)),
@@ -21961,11 +21962,10 @@ struct PreparedFixedRadiusCountThreshold2D {
             g_partner_point2d_aabb_pack.fn,
             grid, 1, 1,
             block, 1, 1,
-            0, nullptr, args, nullptr));
-        CU_CHECK(cuStreamSynchronize(nullptr));
+            0, stream, args, nullptr));
 
         auto t_start_bvh = std::chrono::steady_clock::now();
-        accel = build_custom_accel_from_device_aabbs(get_optix_context(), d_aabbs.ptr, count);
+        accel = build_custom_accel_from_device_aabbs(get_optix_context(), d_aabbs.ptr, count, stream);
         auto t_end_bvh = std::chrono::steady_clock::now();
         g_optix_last_bvh_build_s = std::chrono::duration<double>(t_end_bvh - t_start_bvh).count();
         g_optix_last_traversal_s = 0.0;
@@ -22089,7 +22089,8 @@ static PreparedFixedRadiusCountThreshold2D* prepare_fixed_radius_count_threshold
         const double* search_x,
         const double* search_y,
         size_t search_count,
-        double max_radius)
+        double max_radius,
+        CUstream stream = 0)
 {
     std::call_once(g_frn_count_rt.init, [&]() {
         std::string ptx = compile_to_ptx(kFixedRadiusCountRtKernelSrc, "frn_count_rt_kernel.cu");
@@ -22101,7 +22102,27 @@ static PreparedFixedRadiusCountThreshold2D* prepare_fixed_radius_count_threshold
             "__anyhit__frn_count_anyhit",
             nullptr, 3).release();
     });
-    return new PreparedFixedRadiusCountThreshold2D(search_ids, search_x, search_y, search_count, max_radius);
+    return new PreparedFixedRadiusCountThreshold2D(search_ids, search_x, search_y, search_count, max_radius, stream);
+}
+
+static PreparedFixedRadiusCountThreshold2D* prepare_fixed_radius_count_threshold_2d_device_search_columns_on_stream_optix(
+        const uint32_t* search_ids,
+        const double* search_x,
+        const double* search_y,
+        size_t search_count,
+        double max_radius,
+        uint64_t cuda_stream_ptr)
+{
+    if (cuda_stream_ptr == 0)
+        throw std::runtime_error("fixed-radius device-search prepare on-stream route requires a nonzero CUDA stream pointer");
+    CUstream stream = reinterpret_cast<CUstream>(static_cast<uintptr_t>(cuda_stream_ptr));
+    return prepare_fixed_radius_count_threshold_2d_device_search_columns_optix(
+        search_ids,
+        search_x,
+        search_y,
+        search_count,
+        max_radius,
+        stream);
 }
 
 static void run_prepared_fixed_radius_count_threshold_2d_optix(

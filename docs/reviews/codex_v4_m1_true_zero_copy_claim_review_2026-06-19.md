@@ -25,6 +25,17 @@ reproducible CuPy smoke command.
 
 That is not enough for the public V4 true-zero-copy claim.
 
+## After-Review Engineering Update
+
+Prepare caller-stream support has now landed for the frozen M1 route. When a
+nonzero stream is passed to `prepare_v4_fixed_radius_count_threshold_2d` or the
+one-shot `run_v4_fixed_radius_count_threshold_2d`, the fixed-radius search-scene
+AABB pack and OptiX GAS build are ordered on that caller stream.
+
+This closes the specific prepare-stream blocker from the original review. It
+does not promote the claim. Do not promote `v4_true_zero_copy_claim_authorized`
+until the remaining evidence gates below are satisfied.
+
 ## Reviewer Consensus
 
 Two independent reviewers reached the same decision:
@@ -37,12 +48,12 @@ Two independent reviewers reached the same decision:
 
 ## Blocking Reasons
 
-1. Prepare is not caller-stream ordered.
+1. Prepare was not caller-stream ordered at review time. This is now closed for
+   the frozen M1 route.
 
-   The V4 Python prepare surface accepts/captures stream metadata, but the
-   current prepared scene path does not pass the caller stream into native
+   The V4 Python prepare surface now passes the caller stream into native
    fixed-radius search preparation. The device-search AABB pack and GAS build
-   still use default stream behavior and synchronize before returning.
+   are ordered on that stream for the M1 fixed-radius count/threshold route.
 
 2. No transfer-counter or equivalent no-host-stage evidence covers both prepare
    and query.
@@ -98,8 +109,8 @@ Not allowed:
 
 ## Required Before Promotion
 
-- Prepare path either uses the caller stream or rejects nonzero prepare streams
-  until an explicit prepared-scene stream contract exists.
+- Prepare path uses the caller stream for the frozen M1 route and keeps that
+  source-audited in the CuPy smoke gate.
 - Evidence packet covers both prepare and hot query.
 - Transfer-counter or equivalent no-host-stage evidence proves no host staging
   of search, query, or output columns.

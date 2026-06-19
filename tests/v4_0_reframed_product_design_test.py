@@ -115,7 +115,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "query_ids",
             "neighbor_counts",
             "threshold_flags",
-            "synchronize that stream before return",
+            "propagate through fixed-radius prepare and query",
             "caller_stream_supported_synchronous",
             "Ray/triangle any-hit is not rejected",
             "V4_0_M1_ROUTE_ID",

@@ -6973,6 +6973,31 @@ extern "C" int rtdl_optix_prepare_fixed_radius_count_threshold_2d_device_search_
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_fixed_radius_count_threshold_2d_device_search_columns_on_stream(
+        const uint32_t* search_ids,
+        const double* search_x,
+        const double* search_y,
+        size_t search_count,
+        double max_radius,
+        uint64_t cuda_stream_ptr,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if ((!search_ids || !search_x || !search_y) && search_count != 0)
+            throw std::runtime_error("search device column pointers must not be null when search_count is nonzero");
+        if (max_radius < 0.0)
+            throw std::runtime_error("fixed_radius_count_threshold max_radius must be non-negative");
+        if (search_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("fixed_radius_count_threshold search_count exceeds uint32 limit");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_fixed_radius_count_threshold_2d_device_search_columns_on_stream_optix(
+            search_ids, search_x, search_y, search_count, max_radius, cuda_stream_ptr);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_run_prepared_fixed_radius_count_threshold_2d(
         void* prepared,
         const RtdlPoint* query_points, size_t query_count,

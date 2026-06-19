@@ -10,6 +10,9 @@ from .partner_adapters import (
 from .partner_adapters import (
     fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns as _run_prepared,
 )
+from .optix_runtime import (
+    prepare_optix_fixed_radius_count_threshold_2d_device_search_columns_on_stream as _prepare_scene_on_stream,
+)
 from .partner_adapters import (
     prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene as _prepare_scene,
 )
@@ -78,6 +81,7 @@ class V4FixedRadiusCountThreshold2DPlan:
     search_count: int
     device: str
     caller_stream_handle: int
+    prepare_stream_handle: int
     search_columns: dict[str, V4DeviceColumnDescriptor]
     query_columns: dict[str, V4DeviceColumnDescriptor]
     output_columns: dict[str, V4DeviceColumnDescriptor] | None = None
@@ -98,7 +102,9 @@ class V4FixedRadiusCountThreshold2DPlan:
             "search_count": int(self.search_count),
             "device": self.device,
             "caller_stream_handle": int(self.caller_stream_handle),
+            "prepare_stream_handle": int(self.prepare_stream_handle),
             "caller_stream_native_propagation_ready": True,
+            "native_prepare_stream_propagation_ready": True,
             "caller_stream_status": V4_0_M1_CALLER_STREAM_STATUS,
             "input_contract": "caller_owned_cuda_point_columns",
             "output_contract": (
@@ -130,6 +136,7 @@ def describe_v4_fixed_radius_count_threshold_2d_route() -> dict[str, object]:
         "requires_borrowed_device_pointers": True,
         "requires_caller_owned_outputs_for_exact_zero_copy_claim": True,
         "native_stream_propagation_ready": True,
+        "native_prepare_stream_propagation_ready": True,
         "caller_stream_status": V4_0_M1_CALLER_STREAM_STATUS,
         "native_async_ready": False,
         "public_speedup_claim_authorized": False,
@@ -269,9 +276,15 @@ def plan_v4_fixed_radius_count_threshold_2d(
     *,
     output_columns: Mapping[str, Any] | None = None,
     stream: Any = None,
+    prepare_stream: Any = None,
 ) -> V4FixedRadiusCountThreshold2DPlan:
     """Validate the frozen V4.0 M1 device-column route without executing it."""
     caller_stream = _require_supported_caller_stream(stream)
+    prepare_stream_handle = (
+        _require_supported_caller_stream(prepare_stream)
+        if prepare_stream is not None
+        else caller_stream
+    )
     search_descriptors = _validate_column_group(
         search_point_columns,
         _POINT_COLUMNS,
@@ -308,6 +321,7 @@ def plan_v4_fixed_radius_count_threshold_2d(
         search_count=search_count,
         device=device,
         caller_stream_handle=caller_stream,
+        prepare_stream_handle=prepare_stream_handle,
         search_columns=search_descriptors,
         query_columns=query_descriptors,
         output_columns=output_descriptors,
@@ -328,7 +342,7 @@ class V4FixedRadiusCountThreshold2D:
         max_radius = float(max_radius)
         if max_radius < 0:
             raise ValueError("max_radius must be non-negative")
-        _require_supported_caller_stream(stream)
+        self.prepare_stream_handle = _require_supported_caller_stream(stream)
         self.search_point_columns = dict(search_point_columns)
         self.partner = str(partner)
         self.max_radius = max_radius
@@ -343,11 +357,18 @@ class V4FixedRadiusCountThreshold2D:
         self.search_count = int(search_descriptors["ids"].shape[0])
         self.device = search_descriptors["ids"].device
         self.search_descriptors = search_descriptors
-        self._prepared = _prepare_scene(
-            self.search_point_columns,
-            max_radius=max_radius,
-            partner=self.partner,
-        )
+        if self.prepare_stream_handle:
+            self._prepared = _prepare_scene_on_stream(
+                self.search_point_columns,
+                max_radius=max_radius,
+                cuda_stream_ptr=self.prepare_stream_handle,
+            )
+        else:
+            self._prepared = _prepare_scene(
+                self.search_point_columns,
+                max_radius=max_radius,
+                partner=self.partner,
+            )
         self._closed = False
 
     def run(
@@ -390,6 +411,7 @@ class V4FixedRadiusCountThreshold2D:
             self.search_point_columns,
             output_columns=output_columns,
             stream=stream,
+            prepare_stream=self.prepare_stream_handle,
         )
         if plan.caller_stream_handle:
             on_stream = getattr(self._prepared, "write_device_count_threshold_columns_on_stream", None)
@@ -438,7 +460,9 @@ class V4FixedRadiusCountThreshold2D:
                 "v4_backend": V4_0_M1_NATIVE_BACKEND,
                 "v4_plan": plan.to_metadata(),
                 "caller_stream_handle": int(plan.caller_stream_handle),
+                "prepare_stream_handle": int(self.prepare_stream_handle),
                 "caller_stream_native_propagation_ready": True,
+                "native_prepare_stream_propagation_ready": True,
                 "caller_stream_status": V4_0_M1_CALLER_STREAM_STATUS,
                 "native_synchronized_before_return": bool(
                     native_metadata.get("native_synchronized_before_return", plan.caller_stream_handle == 0)

@@ -111,6 +111,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(route["backend"], "optix")
         self.assertEqual(route["output_shape"], "fixed one row per query, no variable neighbor rows")
         self.assertTrue(route["native_stream_propagation_ready"])
+        self.assertTrue(route["native_prepare_stream_propagation_ready"])
         self.assertFalse(route["native_async_ready"])
         self.assertFalse(route["v4_true_zero_copy_claim_authorized"])
         self.assertIn("variable_length_neighbor_rows", route["blocked_generalizations"])
@@ -152,7 +153,9 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             stream=123,
         )
         self.assertEqual(plan.to_metadata()["caller_stream_handle"], 123)
+        self.assertEqual(plan.to_metadata()["prepare_stream_handle"], 123)
         self.assertTrue(plan.to_metadata()["caller_stream_native_propagation_ready"])
+        self.assertTrue(plan.to_metadata()["native_prepare_stream_propagation_ready"])
 
     def test_plan_fails_closed_for_host_arrays_bad_rank_and_noncontiguous_stride(self) -> None:
         search = _point_columns(0x1000)
@@ -280,6 +283,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             "pointer_identity",
             "source_audit",
             "promotion_blockers",
+            "prepare_on_stream_symbol_present",
             "if not all(result[\"source_audit\"].values())",
             "native_async_ready",
             "v4_true_zero_copy_claim_authorized",
@@ -291,7 +295,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
 
         for token in (
             "Verdict: keep `v4_true_zero_copy_claim_authorized` false",
-            "Prepare is not caller-stream ordered",
+            "Prepare caller-stream support has now landed",
             "transfer-counter or equivalent no-host-stage evidence",
             "fail-closed matrix",
             "Do not promote",
@@ -304,7 +308,11 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         outputs = _output_columns(0x3000)
         prepared = _FakePrepared()
 
-        with mock.patch.object(v4, "_prepare_scene", return_value=prepared), mock.patch.object(
+        with mock.patch.object(v4, "_prepare_scene") as prepare_scene, mock.patch.object(
+            v4,
+            "_prepare_scene_on_stream",
+            return_value=prepared,
+        ) as prepare_on_stream, mock.patch.object(
             v4,
             "_run_prepared",
         ) as run_prepared:
@@ -319,12 +327,17 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
                 return_metadata=True,
             )
 
+        prepare_scene.assert_not_called()
+        prepare_on_stream.assert_called_once()
+        self.assertEqual(prepare_on_stream.call_args.kwargs["cuda_stream_ptr"], 456)
         run_prepared.assert_not_called()
         self.assertEqual(prepared.on_stream_call["cuda_stream_ptr"], 456)
         self.assertIs(prepared.on_stream_call["query_ids_out"], outputs["query_ids"])
         metadata = result["metadata"]
         self.assertEqual(metadata["caller_stream_handle"], 456)
+        self.assertEqual(metadata["prepare_stream_handle"], 456)
         self.assertTrue(metadata["caller_stream_native_propagation_ready"])
+        self.assertTrue(metadata["native_prepare_stream_propagation_ready"])
         self.assertTrue(metadata["native_synchronized_before_return"])
         self.assertFalse(metadata["native_async_ready"])
         self.assertTrue(metadata["native_true_zero_copy_authorized"])

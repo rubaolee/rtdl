@@ -670,14 +670,15 @@ static AccelHolder build_custom_accel(OptixDeviceContext ctx,
 static AccelHolder build_custom_accel_from_device_aabbs(
         OptixDeviceContext ctx,
         CUdeviceptr source_aabbs,
-        size_t aabb_count) {
+        size_t aabb_count,
+        CUstream stream = 0) {
     AccelHolder result;
     if (aabb_count == 0) return result;
     if (!source_aabbs)
         throw std::runtime_error("device AABB buffer must not be null when aabb_count is nonzero");
     size_t aabb_bytes = sizeof(OptixAabb) * aabb_count;
     CU_CHECK(cuMemAlloc(&result.aabb_buf, aabb_bytes));
-    CU_CHECK(cuMemcpyDtoD(result.aabb_buf, source_aabbs, aabb_bytes));
+    CU_CHECK(cuMemcpyDtoDAsync(result.aabb_buf, source_aabbs, aabb_bytes, stream));
 
     OptixBuildInput build_input = {};
     build_input.type = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
@@ -699,7 +700,6 @@ static AccelHolder build_custom_accel_from_device_aabbs(
     DevPtr temp_buf(sizes.tempSizeInBytes);
     CU_CHECK(cuMemAlloc(&result.output_buf, sizes.outputSizeInBytes));
 
-    CUstream stream = 0;
     OPTIX_CHECK(optixAccelBuild(ctx, stream, &accel_opts, &build_input, 1,
                                  temp_buf.ptr, sizes.tempSizeInBytes,
                                  result.output_buf, sizes.outputSizeInBytes,
