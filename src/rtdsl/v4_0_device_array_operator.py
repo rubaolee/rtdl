@@ -25,9 +25,10 @@ V4_0_M1_OPERATOR_STATUS = "m1_route_frozen_m2_device_array_intake"
 V4_0_M1_CALLER_STREAM_STATUS = "caller_stream_supported_synchronous"
 V4_0_M1_SUPPORTED_INPUT_PROTOCOLS = ("cuda_array_interface", "cupy")
 V4_0_M1_EVIDENCE_BACKED_FRAMEWORKS = ("cupy", "numba")
+V4_0_M1_EXPERIMENTAL_INPUT_PROTOCOLS = ("dlpack_bridge_wrapper",)
 V4_0_M1_TARGET_INPUT_PROTOCOLS = ("cuda_array_interface", "dlpack")
 V4_0_M1_TARGET_FRAMEWORKS = ("cupy", "numba", "pytorch", "jax")
-V4_0_M1_BLOCKED_INPUT_PROTOCOLS_WITHOUT_ROUTE_EVIDENCE = ("dlpack",)
+V4_0_M1_BLOCKED_INPUT_PROTOCOLS_WITHOUT_FULL_ROUTE_EVIDENCE = ("full_dlpack_capsule",)
 V4_0_M1_BLOCKED_FRAMEWORKS_WITHOUT_ROUTE_EVIDENCE = ("pytorch", "jax")
 
 _POINT_COLUMNS = ("ids", "x", "y")
@@ -138,10 +139,11 @@ def describe_v4_fixed_radius_count_threshold_2d_route() -> dict[str, object]:
         "output_shape": "fixed one row per query, no variable neighbor rows",
         "supported_input_protocols": V4_0_M1_SUPPORTED_INPUT_PROTOCOLS,
         "evidence_backed_frameworks": V4_0_M1_EVIDENCE_BACKED_FRAMEWORKS,
+        "experimental_input_protocols": V4_0_M1_EXPERIMENTAL_INPUT_PROTOCOLS,
         "target_input_protocols": V4_0_M1_TARGET_INPUT_PROTOCOLS,
         "target_frameworks": V4_0_M1_TARGET_FRAMEWORKS,
-        "blocked_input_protocols_without_route_evidence": (
-            V4_0_M1_BLOCKED_INPUT_PROTOCOLS_WITHOUT_ROUTE_EVIDENCE
+        "blocked_input_protocols_without_full_route_evidence": (
+            V4_0_M1_BLOCKED_INPUT_PROTOCOLS_WITHOUT_FULL_ROUTE_EVIDENCE
         ),
         "blocked_frameworks_without_route_evidence": V4_0_M1_BLOCKED_FRAMEWORKS_WITHOUT_ROUTE_EVIDENCE,
         "requires_cuda_device_arrays": True,

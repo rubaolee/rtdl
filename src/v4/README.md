@@ -38,7 +38,10 @@ Frozen Phase 1 product route:
 - input: caller-owned CUDA `ids`, `x`, `y` point columns;
 - evidence-backed inputs: CuPy device columns and Numba `DeviceNDArray`
   columns through `__cuda_array_interface__`;
-- target inputs without route evidence yet: PyTorch and DLPack;
+- experimental bridge: CuPy-backed DLPack-only wrapper through the generic
+  DLPack adapter;
+- target inputs without full route evidence yet: PyTorch and arbitrary DLPack
+  capsules/framework tensors;
 - output: fixed-size CUDA `query_ids`, `neighbor_counts`, and
   `threshold_flags` columns;
 - stream: nonzero caller CUDA streams are propagated through prepare and query

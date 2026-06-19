@@ -1,0 +1,95 @@
+{
+  "claim_boundaries": {
+    "async_claim_authorized": false,
+    "dlpack_bridge_wrapper_claim_authorized": true,
+    "dlpack_route_claim_authorized": false,
+    "full_dlpack_capsule_route_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "pytorch_route_claim_authorized": false,
+    "reason": "This smoke validates a CuPy-backed DLPack-only wrapper through the generic DLPack adapter on the V4 M1 route. It does not validate arbitrary DLPack capsule ownership/deleter semantics, PyTorch, async, true-zero-copy, or speedup wording.",
+    "rt_core_speedup_claim_authorized": false,
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "framework": "cupy_backed_dlpack_only_wrapper",
+  "hardware": {
+    "compute_capability": "6.1",
+    "driver": "580.126.09",
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "memory": "8192 MiB",
+    "nvidia_smi_available": true
+  },
+  "metadata_subset": {
+    "caller_stream_handle_nonzero": true,
+    "caller_stream_native_propagation_ready": true,
+    "named_cuda_columns_no_host_stage_authorized": true,
+    "native_async_ready": false,
+    "native_call_device_pointer_echo_complete": true,
+    "native_prepare_stream_propagation_ready": true,
+    "native_synchronized_before_return": true,
+    "prepare_stream_handle_nonzero": true,
+    "source_protocols": [
+      "dlpack"
+    ],
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "pointer_echo_identity": {
+    "output.neighbor_counts": true,
+    "output.query_ids": true,
+    "output.threshold_flags": true,
+    "query.ids": true,
+    "query.x": true,
+    "query.y": true
+  },
+  "pointer_identity": {
+    "output.neighbor_counts": true,
+    "output.query_ids": true,
+    "output.threshold_flags": true,
+    "query.ids": true,
+    "query.x": true,
+    "query.y": true,
+    "search.ids": true,
+    "search.x": true,
+    "search.y": true
+  },
+  "protocol": "dlpack_bridge_wrapper",
+  "route_id": "fixed_radius_count_threshold_2d",
+  "status": "pass-with-boundary",
+  "validation": {
+    "all_wrappers_hide_cuda_array_interface": true,
+    "expected": {
+      "neighbor_counts": [
+        1,
+        1,
+        0
+      ],
+      "query_ids": [
+        1,
+        2,
+        3
+      ],
+      "threshold_flags": [
+        1,
+        1,
+        0
+      ]
+    },
+    "observed": {
+      "neighbor_counts": [
+        1,
+        1,
+        0
+      ],
+      "query_ids": [
+        1,
+        2,
+        3
+      ],
+      "threshold_flags": [
+        1,
+        1,
+        0
+      ]
+    },
+    "output_match": true
+  }
+}

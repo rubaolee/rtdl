@@ -41,8 +41,10 @@ Implemented contract:
 - native route synchronizes before return;
 - async completion is not claimed.
 - evidence-backed input protocols are the CuPy adapter and
-  `__cuda_array_interface__`; DLPack and PyTorch remain target surfaces without
-  route evidence.
+  `__cuda_array_interface__`;
+- a CuPy-backed DLPack-only wrapper smoke exists for the generic DLPack adapter;
+  arbitrary DLPack capsule ownership/deleter semantics and PyTorch remain
+  target surfaces without full route evidence.
 
 ## Evidence
 
@@ -54,6 +56,7 @@ Implemented contract:
 | Benchmark probe | `docs/reports/v4_0_m1_fixed_radius_cupy_benchmark_probe_2026-06-19.json` | Raw route timing smoke only; does not authorize public speedup or RT-core speedup wording. |
 | Same-stream ordering probe | `docs/reports/v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19.json` | Authorizes same-stream producer -> RTDL -> consumer ordering; does not authorize cross-stream event waits or async wording. |
 | Numba CUDA Array Interface smoke | `docs/reports/v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke_2026-06-19.json` | Authorizes Numba `DeviceNDArray` columns through `__cuda_array_interface__`; does not authorize a full Numba partner surface, PyTorch, or DLPack. |
+| DLPack bridge wrapper smoke | `docs/reports/v4_0_m1_fixed_radius_dlpack_bridge_smoke_2026-06-19.json` | Authorizes a CuPy-backed DLPack-only wrapper through the generic DLPack adapter; does not authorize arbitrary DLPack capsule semantics or PyTorch. |
 | True-zero-copy wording consensus | `docs/reviews/codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md` | Keeps public true-zero-copy wording blocked. |
 | Release-positioning consensus | `docs/reviews/codex_v4_m1_release_positioning_2ai_consensus_2026-06-19.md` | Keeps v3.0.2 as current release and V4 as experimental M1 evidence. |
 
@@ -79,6 +82,7 @@ Latest Linux validation on `192.168.1.20` for route-code head
 - "Zero-copy device-column handoff with no observed host staging of named columns."
 - "Nonzero caller CUDA streams are propagated through prepare and query; the route synchronizes before return."
 - "Same-stream producer -> RTDL prepare/query -> consumer ordering is validated on one nondefault CuPy CUDA stream."
+- "A CuPy-backed DLPack-only wrapper smoke exercises the generic DLPack adapter."
 - "Raw route-scoped timing probe exists; it does not authorize public speedup wording."
 
 ## Blocked Wording
@@ -91,7 +95,8 @@ Latest Linux validation on `192.168.1.20` for route-code head
 - Async, nonblocking, or returns before GPU work completes.
 - Cross-stream event wait support.
 - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims.
-- Full Numba partner surface, PyTorch, or DLPack validated unless separate route evidence exists.
+- Full Numba partner surface, PyTorch, arbitrary DLPack capsules, or full
+  DLPack route support.
 
 ## Current Claim Flags
 
@@ -107,9 +112,10 @@ Latest Linux validation on `192.168.1.20` for route-code head
 | RTX/RT-core speedup | blocked |
 | CuPy route evidence | experimental M1 evidence |
 | Numba `DeviceNDArray` via CUDA Array Interface | experimental M1 evidence |
+| DLPack bridge wrapper over CuPy-owned arrays | experimental M1 evidence |
 | Full Numba partner surface | blocked |
 | PyTorch route evidence | not yet present |
-| DLPack route evidence | not yet present |
+| Full DLPack capsule/framework route evidence | blocked |
 
 ## Next Gates
 

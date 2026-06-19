@@ -22,12 +22,14 @@ STREAM_ORDERING_REPORT = (
     ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19.json"
 )
 NUMBA_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke_2026-06-19.json"
+DLPACK_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_dlpack_bridge_smoke_2026-06-19.json"
 SMOKE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_smoke.py"
 PARITY_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_parity_matrix.py"
 NO_HOST_STAGE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe.py"
 BENCHMARK_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_benchmark_probe.py"
 STREAM_ORDERING_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_ordering_probe.py"
 NUMBA_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke.py"
+DLPACK_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_dlpack_bridge_smoke.py"
 CLAIM_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_claim_review_2026-06-19.md"
 WORDING_CONSENSUS = (
     ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md"
@@ -143,9 +145,10 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(route["output_shape"], "fixed one row per query, no variable neighbor rows")
         self.assertEqual(route["supported_input_protocols"], ("cuda_array_interface", "cupy"))
         self.assertEqual(route["evidence_backed_frameworks"], ("cupy", "numba"))
+        self.assertEqual(route["experimental_input_protocols"], ("dlpack_bridge_wrapper",))
         self.assertIn("dlpack", route["target_input_protocols"])
         self.assertIn("pytorch", route["target_frameworks"])
-        self.assertIn("dlpack", route["blocked_input_protocols_without_route_evidence"])
+        self.assertIn("full_dlpack_capsule", route["blocked_input_protocols_without_full_route_evidence"])
         self.assertIn("pytorch", route["blocked_frameworks_without_route_evidence"])
         self.assertTrue(route["native_stream_propagation_ready"])
         self.assertTrue(route["native_prepare_stream_propagation_ready"])
@@ -514,6 +517,54 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertFalse(boundaries["v4_true_zero_copy_claim_authorized"])
         self.assertIn("PyTorch route support", boundaries["forbidden_wording"])
         self.assertIn("DLPack route support", boundaries["forbidden_wording"])
+
+    def test_dlpack_bridge_smoke_is_claim_bounded(self) -> None:
+        script = DLPACK_SCRIPT.read_text(encoding="utf-8")
+
+        for token in (
+            "class DLPackOnlyColumn",
+            "__dlpack__",
+            "__dlpack_device__",
+            "all_wrappers_hide_cuda_array_interface",
+            "source_protocols",
+            "dlpack_bridge_wrapper_claim_authorized",
+            "full_dlpack_capsule_route_claim_authorized",
+            "dlpack_route_claim_authorized",
+            "pytorch_route_claim_authorized",
+            "async_claim_authorized",
+            "public_speedup_claim_authorized",
+            "v4_true_zero_copy_claim_authorized",
+            "False",
+            "does not validate arbitrary DLPack capsule",
+        ):
+            self.assertIn(token, script)
+
+    def test_dlpack_bridge_report_keeps_full_dlpack_and_pytorch_blocked(self) -> None:
+        report = json.loads(DLPACK_REPORT.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["status"], "pass-with-boundary")
+        self.assertEqual(report["route_id"], "fixed_radius_count_threshold_2d")
+        self.assertEqual(report["framework"], "cupy_backed_dlpack_only_wrapper")
+        self.assertEqual(report["protocol"], "dlpack_bridge_wrapper")
+        self.assertTrue(report["validation"]["output_match"])
+        self.assertTrue(report["validation"]["all_wrappers_hide_cuda_array_interface"])
+        self.assertEqual(report["metadata_subset"]["source_protocols"], ["dlpack"])
+        self.assertTrue(report["metadata_subset"]["caller_stream_handle_nonzero"])
+        self.assertTrue(report["metadata_subset"]["prepare_stream_handle_nonzero"])
+        self.assertFalse(report["metadata_subset"]["native_async_ready"])
+        self.assertFalse(report["metadata_subset"]["v4_true_zero_copy_claim_authorized"])
+        self.assertTrue(all(report["pointer_identity"].values()))
+        self.assertTrue(all(report["pointer_echo_identity"].values()))
+        boundaries = report["claim_boundaries"]
+        self.assertTrue(boundaries["dlpack_bridge_wrapper_claim_authorized"])
+        self.assertFalse(boundaries["full_dlpack_capsule_route_claim_authorized"])
+        self.assertFalse(boundaries["dlpack_route_claim_authorized"])
+        self.assertFalse(boundaries["pytorch_route_claim_authorized"])
+        self.assertFalse(boundaries["async_claim_authorized"])
+        self.assertFalse(boundaries["public_speedup_claim_authorized"])
+        self.assertFalse(boundaries["rt_core_speedup_claim_authorized"])
+        self.assertFalse(boundaries["v4_true_zero_copy_claim_authorized"])
+        self.assertIn("does not validate arbitrary DLPack capsule", boundaries["reason"])
 
     def test_claim_review_keeps_v4_true_zero_copy_claim_blocked(self) -> None:
         review = CLAIM_REVIEW.read_text(encoding="utf-8")
