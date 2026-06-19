@@ -8,42 +8,74 @@ reviewers, CUDA/OptiX reviewers, and framework-interop reviewers.
 This document defines the intended V4.0 architecture before implementation.
 It is not a release note, stable ABI promise, package-install promise, public
 speedup claim, or true-zero-copy claim. It is the design target and review
-contract for making RTDL embeddable.
+contract for making RTDL an RT-core operator for host-owned GPU programs.
 
 ## One-Line Goal
 
-V4.0 changes RTDL from a Python-hosted runtime that owns the loop into an
-embeddable library that a host language or framework can call while the host
-owns the loop.
+V4.0 makes RTDL the RT-core operator that the Python GPU ecosystem
+(CuPy / Numba / PyTorch) can call on its own device arrays, zero-copy and on
+the caller's CUDA stream, with a C ABI substrate underneath that can later let
+non-Python hosts in.
 
 ```text
 V3.0: Python + RTDL owns the execution loop; partners are explicit guests.
-V4.0: A host language/framework owns the execution loop; RTDL is the embedded extension.
+V4.0: CuPy/Numba/PyTorch own the GPU loop; RTDL is the RT-core operator.
 ```
 
 ## Executive Summary
 
-V4.0 should be built around a stable boundary, not around spectacular fusion
-first. The foundation is:
+V4.0 should lead with product value: a Python GPU program passes existing
+CuPy, Numba, or PyTorch device arrays to RTDL, RTDL runs an RT-core spatial
+query on the caller's CUDA stream, and the result returns as a device array the
+host can keep using.
 
-- a narrow C ABI with opaque handles, status codes, versioning, capability
-  queries, explicit ownership, last-error diagnostics, and no C++ types across
-  the boundary;
-- external runtime ownership, where the host can provide the device, context,
-  stream, allocator policy, and synchronization expectations;
-- a neutral buffer descriptor that can represent host arrays, CUDA buffers,
+The C ABI remains real, but it is the basement under that Python product, not
+the product headline. The V4 foundation is therefore:
+
+- a Python device-array RT-core route with one benchmark-valuable primitive,
+  not a host-only plumbing route as the first product proof;
+- zero-copy evidence for that exact route: pointer identity, no host-stage
+  transfer evidence, stream-order proof, and correctness parity;
+- a narrow C ABI substrate with opaque handles, status codes, versioning,
+  capability queries, explicit ownership, last-error diagnostics, and no C++
+  types across the boundary;
+- external runtime ownership, where the host can provide the device, CUDA
+  context, stream, allocator policy, and synchronization expectations;
+- neutral buffer descriptors that can represent CUDA arrays,
   `__cuda_array_interface__`, and DLPack-style tensors;
-- real device-buffer query routes, starting with one small route and expanding
-  only after correctness, lifetime, stream, and transfer evidence are present;
-- thin bindings over the C ABI for Python, C, Rust, Julia, C#, Java, and other
-  hosts;
-- staged SDK packaging with CMake and pkg-config, promoted to stable only
-  after cross-version, cross-platform, non-Python client, and packaging gates
-  pass.
+- thin Python bindings over the substrate, with non-Python hosts and SDK
+  packaging moved to V4.x.
 
 Optional device-callable fusion remains an advanced V4 track. It should not
 gate V4.0. It must be treated as a falsifiable experiment with register,
 occupancy, correctness, and maintenance evidence before it is promoted.
+
+## Product Pitch: The Missing RT-Core Lane
+
+NVIDIA GPUs expose three useful compute lanes for modern accelerated programs:
+
+| GPU engine | Who drives it from Python today |
+| --- | --- |
+| CUDA cores | CuPy, Numba, Triton, PyTorch |
+| Tensor cores | PyTorch, Triton, cuBLAS/cuDNN-backed stacks |
+| RT cores | nobody has a first-class Python numeric-stack path |
+
+The Python accelerator ecosystem already has first-class ways to use CUDA
+cores and tensor cores. It does not have a first-class way to use RT cores as
+a normal lane in a tensor/device-array pipeline. RT cores are reachable through
+ray-tracing runtimes such as OptiX, DXR, and Vulkan RT, but those APIs live in
+C/C++ graphics/runtime territory rather than in CuPy, Numba, PyTorch, or
+Triton workflows.
+
+V4.0 therefore positions RTDL as the missing RT-core lane for the Python GPU
+ecosystem: PyTorch/Triton handle tensor-core math, Numba/CuPy handle CUDA-core
+math, and RTDL handles RT-core spatial/traversal work on the same device
+arrays and caller stream.
+
+The defensible claim is that those Python frameworks do not currently provide
+first-class RT-core traversal. Performance remains route-specific: RT cores
+help only when the operation is genuinely spatial/traversal-shaped and the
+route has evidence at relevant scale. V4.0 must preserve that honesty.
 
 ## Design Review Status
 
@@ -61,12 +93,33 @@ those five decisions into the packet:
   unbounded set of typed symbols.
 - D4: every descriptor is validated before use; borrowed device pointers are
   caller-asserted and cannot be verified for liveness or residency by RTDL.
-- D5: V4.0 ships as a pre-1.0 experimental SDK until a real external host
-  drives a device-buffer route end to end; AABB2 proves plumbing, and a second
-  benchmark-valuable route shapes the ABI before stable wording.
+- D5: V4.0 ships with pre-1.0 experimental substrate wording until the Python
+  device-array product route drives a device-buffer route end to end; AABB2
+  proves plumbing, and a benchmark-valuable route shapes the ABI before stable
+  wording.
 
 The acceptance criteria and milestones below are now read with those decisions
 as mandatory gates, not optional review notes.
+
+## Product Reframing Status
+
+The 2026-06-19 reframing note
+`docs/reviews/v4_reframing_note_rt_core_operator_for_python_gpu_ecosystem_2026-06-19.md`
+is accepted as a P0 input to M1 design freeze. It changes the packet's
+sequencing:
+
+- Phase 1 is now a Python device-array RT-core operator route with real
+  zero-copy evidence.
+- Phase 2 hardens the C ABI substrate beneath the Python binding using D1-D5.
+- Phase 3/V4.x covers non-Python hosts and SDK packaging after the Python
+  product route proves the device-buffer contract.
+
+Scope decision accepted for M1 freeze:
+V4.0 is Python actors only: CuPy, Numba, Triton, PyTorch, and JAX-style
+device-array programs. There is no C++ host in current V4.0 scope. The full
+public multi-language C ABI, C/C++/Rust SDK examples, generated bindings, and
+pkg-config/CMake packaging are V4.x unless a future product decision reopens
+them.
 
 ## Why V4 Exists
 
@@ -75,19 +128,26 @@ Python application code around app-agnostic RTDL primitives, prepared execution,
 backend choice, and explicit partner continuations. That is valuable, but it
 still makes Python the normal host.
 
-V4.0 exists because external programs need RTDL as a library:
+V4.0 exists because Python GPU programs need RT-core spatial queries without
+leaving their own device-array pipeline:
 
-- a C++ application wants RTDL traversal without importing Python;
-- a Rust service wants to build an index and run queries through FFI;
-- a Julia notebook wants a thin binding over a stable C surface;
-- a PyTorch, JAX, CuPy, or Numba program wants to pass existing device buffers
-  to RTDL without staging them through host memory;
-- a larger runtime wants RTDL work scheduled on its own CUDA context and
-  stream, with clear synchronization and lifetime rules.
+- a CuPy pipeline wants to pass an existing CUDA array to RTDL and receive a
+  CUDA result array without host staging;
+- a Numba pipeline wants RT-core traversal as an operator alongside its own
+  kernels, ordered on the caller's stream;
+- a PyTorch pipeline wants device-buffer handoff through DLPack/CUDA metadata
+  without forcing the user to write OptiX;
+- a Python GPU application wants RTDL to be a hardware-specific island, like a
+  `cupy.RawKernel` or Triton kernel, but for RT cores.
 
 The V4 design question is therefore not "how do we expose every RTDL internal?"
-It is "what is the smallest stable boundary that lets other hosts use RTDL
-without rewriting the engine or fighting their runtime?"
+It is "what is the smallest honest boundary that lets Python GPU hosts call
+RTDL on their own device arrays without copies, hidden syncs, or private
+runtime fights?"
+
+Non-Python embedding remains strategically valuable, but it is V4.x work under
+the current V4.0 scope decision. It must not reorder V4.0 around SDK packaging
+or public C/Rust host examples.
 
 ## Relationship To Existing Preparatory Work
 
@@ -121,13 +181,15 @@ queries.
 ## Core Design Principles
 
 1. Host owns the loop.
-   RTDL must fit inside C, C++, Rust, Julia, C#, Java, Python, and framework
-   runtimes without assuming Python orchestration.
+   In V4.0, CuPy, Numba, PyTorch, Triton, or JAX-style Python GPU programs own
+   the loop. In V4.x, the same rule can extend to C, C++, Rust, Julia, C#, and
+   Java hosts if that product scope is reopened.
 
-2. C ABI first.
-   Every stable binding sits on a narrow C ABI. No public C++ ABI, exceptions,
-   STL containers, templates, CUDA C++ classes, or OptiX internals cross the
-   stable boundary.
+2. Substrate boundary first, public SDK later.
+   The Python product should stand on a narrow internal C ABI/substrate. Every
+   future stable non-Python binding should sit on that same C ABI. No public
+   C++ ABI, exceptions, STL containers, templates, CUDA C++ classes, or OptiX
+   internals cross the stable boundary.
 
 3. Opaque handles only.
    Contexts, indices, query plans, compiled kernels, buffers, and result sets
@@ -162,14 +224,15 @@ queries.
 
 10. Device-callable fusion is optional.
     Fusion may become valuable, but it is not the foundation. Zero-copy buffer
-    interop and stable embedding solve the common case first.
+    interop and a stable substrate solve the common case first.
 
 ## Non-Goals For V4.0
 
 - No stable C++ public ABI.
 - No promise that every V3 Python example becomes a C ABI route.
 - No automatic partner/backend selection.
-- No broad "RTDL accelerates arbitrary PyTorch/CuPy/Numba code" claim.
+- No broad "RTDL accelerates arbitrary PyTorch/CuPy/Numba code" claim; V4.0
+  claims only reviewed RT-core operator routes.
 - No public true-zero-copy wording unless the exact path is measured.
 - No public RT-core speedup wording unless the exact app/backend/contract is
   reviewed.
@@ -185,9 +248,9 @@ L5  Review and evidence layer
     release gates, symbol manifests, transfer evidence, compatibility tests
 
 L4  Host bindings and framework adapters
-    C, Python, Rust, Julia, C#, Java; DLPack/CUDA-array adapters
+    Python GPU binding first; C/Rust/Julia/C#/Java in V4.x if reopened
 
-L3  Stable C ABI
+L3  C ABI substrate
     opaque handles, status, versioning, capabilities, buffers, indices, queries
 
 L2  Runtime interop layer
@@ -205,40 +268,45 @@ framework logic, or application-specific policy.
 
 ## Primary User Stories
 
-### C Host
+### Python GPU Host
 
-A C program can:
+A CuPy, Numba, or PyTorch program can:
 
-1. load `librtdl`;
-2. check ABI compatibility;
-3. create a context;
-4. import host buffers;
-5. build an AABB2 index;
-6. execute an overlap query;
-7. export a result buffer;
-8. destroy every handle deterministically.
+1. keep ownership of its CUDA device arrays;
+2. expose pointer, shape, dtype, device, and stream metadata through
+   `__cuda_array_interface__` or DLPack;
+3. call a Python RTDL operator for a generic RT-core spatial query;
+4. have RTDL run on the caller's CUDA context and stream;
+5. receive a device result array without host staging;
+6. continue its Python GPU pipeline.
 
-This is the first stable control-plane story.
+This is the V4.0 product story.
 
-### Rust Host
-
-A Rust program can generate bindings from `rtdl.h`, link to `librtdl`, and run
-the same route without Python. It owns safety wrappers around raw handles.
-
-This is the first "not just C" proof for the ABI.
-
-### Python Binding
+### Python Binding Substrate
 
 Python can use a thin `ctypes`, `cffi`, or generated binding layer over the same
-C ABI. This binding must not bypass the C ABI through private C++/Python
-internals.
+C ABI substrate. This binding must not bypass the substrate through private
+C++/Python internals, but the user should experience it as a Python GPU
+operator, not as a C API.
 
 ### Framework Tensor Host
 
 A CuPy/PyTorch/JAX/Numba host can pass a device buffer descriptor into RTDL.
-The first milestone may import/export metadata only, but the V4 release target
-requires at least one real device-buffer query route with stream and ownership
-evidence.
+The first product milestone must execute at least one real device-buffer query
+route with stream, ownership, and no-host-stage evidence.
+
+### C Host
+
+A C program can load `librtdl`, check ABI compatibility, import buffers, run a
+route, and destroy handles deterministically. This is valuable as the substrate
+proof and as a V4.x external-host target after the Python product route proves
+the contract.
+
+### Rust Host
+
+A Rust program can generate bindings from `rtdl.h`, link to `librtdl`, and run
+the same route without Python. This remains the first "not just C" ABI proof,
+but it is V4.x under the current Python-only V4.0 scope decision.
 
 ### Native Backend Host
 
@@ -487,8 +555,9 @@ borrow or copy result rows through accessors
 destroy result
 ```
 
-This mode is the easiest binding target and the safest first C/Rust/Python
-example because RTDL owns allocation and lifetime.
+This mode is the easiest binding target and the safest first Python/C example
+because RTDL owns allocation and lifetime. Rust becomes the stricter ownership
+proof when V4.x non-Python hosts open.
 
 Mode 2 is a caller-provided output buffer:
 
@@ -637,77 +706,88 @@ An exact route can claim true zero-copy only after a review packet includes:
 - negative test showing host-only routes reject device buffers;
 - statement of exact scope and blocked generalizations.
 
-## Backend Roadmap
+## Product-Led Roadmap
 
-V4 should not expose every backend through the C ABI at once.
+V4 should not expose every backend or every host at once. It should first prove
+the product route users will feel.
 
-### Phase 1: CPU Host Route
+### Phase 1: Python Device-Array RT-Core Operator
 
-Goal: prove the stable C ABI and packaging story.
+Goal: prove "CuPy/Numba/PyTorch array in -> RT cores -> device array out."
 
-- CPU backend.
-- Host AABB2 overlap.
-- C and Rust clients.
-- CMake/pkg-config stage.
-- symbol manifest.
-- layout audit.
-- negative tests.
+- Python entry point accepts CuPy/Numba/PyTorch device arrays through
+  `__cuda_array_interface__` and DLPack-style handoff.
+- RTDL uses the caller's CUDA context and stream where supported.
+- One benchmark-valuable route runs end to end, preferably fixed-radius
+  neighbors or ray/triangle any-hit rather than host-only AABB2.
+- Result returns as a device buffer the host can wrap back into its own array
+  type.
+- Evidence includes pointer identity, no host-stage transfer counters or
+  equivalent instrumentation, stream-order proof, and correctness parity.
 
-### Phase 2: Embree Host Route
+### Phase 2: C ABI Substrate Hardening
 
-Goal: prove a native backend can be embedded without Python.
+Goal: make the boundary under the Python product durable.
 
-- Embree-backed AABB2 or segment/triangle route.
-- same result contract as CPU where possible.
-- capability query says exactly when Embree is available.
-- failure when library is absent is deterministic.
+- Keep the active `0.x` C ABI substrate underneath the Python binding.
+- Apply and test D1-D5: result sizing, `struct_size`, enum capability query,
+  descriptor validation, and pre-1.0 wording.
+- Keep host AABB2 as a boring control-plane and result-contract proof, not as
+  the product route.
+- Add layout, old-size descriptor, symbol-manifest, and negative tests.
 
-### Phase 3: OptiX Host Route
+### Phase 3: Non-Python Hosts And SDK Packaging
 
-Goal: prove GPU RT backend execution through the C ABI.
+Goal: expand after V4.0 only if non-Python hosts are reopened as product scope.
 
-- OptiX-backed route with host input staging explicitly reported, or
-  device-buffer input if Phase 4 is ready.
-- no RT-core speedup wording unless separately reviewed.
-- CUDA/OptiX errors converted to `rtdl_status`.
+- C, then Rust, then Julia clients over the proven C ABI substrate.
+- CMake/pkg-config stage, archive extraction, external consumer validation,
+  symbol manifest, and layout audit.
+- Under the current Python-only V4.0 scope decision, this phase is V4.x.
 
-### Phase 4: CUDA Device-Buffer Route
+### Phase 4: Optional Advanced Fusion Track
 
-Goal: prove the host can pass device buffers to RTDL.
+Goal: test device-callable fusion without putting it on the release-critical
+path.
 
-- one primitive/query pair only.
-- caller-provided CUDA stream if supported.
-- explicit sync behavior.
-- correctness parity.
-- transfer evidence.
+- Numba-only spike.
+- One primitive/query pair.
+- Pinned CUDA/Numba/OptiX versions.
+- Correctness parity, occupancy/register report, and comparison against the
+  best buffer-level zero-copy path.
 
-### Phase 5: Other Backends
+### Later Backend Expansion
 
-HIPRT, Vulkan, and Apple RT should remain behind capability gates until each has
-its own C ABI route tests, toolchain matrix, and platform-specific ownership
-rules.
+HIPRT, Vulkan, Apple RT, broader Embree/OptiX routes, and generated bindings
+remain behind capability gates until each has route tests, toolchain matrix,
+platform-specific ownership rules, and claim-boundary evidence.
 
 ## Language Binding Strategy
 
+### Python
+
+Python is the V4.0 product binding. It should expose RT-core operators that
+accept CuPy, Numba, and PyTorch device arrays while preserving caller ownership
+and stream semantics. It should use the C ABI substrate or an equivalent thin
+internal boundary, but it must not bypass route capability, validation,
+ownership, or result contracts.
+
 ### C
 
-C is the ground truth. Every release must include C examples and tests.
+C is the substrate validation target. It remains important because it keeps the
+boundary honest, but public C host examples are V4.x under the current
+Python-only V4.0 scope decision.
 
 ### C++
 
 C++ should use a header-only or tiny wrapper over the C ABI. The C ABI remains
-the compatibility contract.
-
-### Python
-
-Python bindings should use the C ABI. Python may expose convenience classes,
-but they should own only handle lifetime, type conversion, and buffer protocol
-bridges.
+the compatibility contract when C++ hosts are reopened in V4.x.
 
 ### Rust
 
 Rust is the recommended first external-language proof because it is strict
-about ownership and makes C ABI mistakes visible. The Rust binding should:
+about ownership and makes C ABI mistakes visible. It is V4.x under the current
+Python-only V4.0 scope decision. The Rust binding should:
 
 - generate raw FFI bindings from `rtdl.h`;
 - wrap handles in RAII structs;
@@ -718,23 +798,25 @@ about ownership and makes C ABI mistakes visible. The Rust binding should:
 ### Julia
 
 Julia can use `ccall` directly. It should be a thin validation target after C
-and Rust.
+and Rust when V4.x non-Python hosts open.
 
 ### C# / Java
 
 C# P/Invoke and Java JNI/JNA can be later binding proofs. They are not needed
-to prove V4.0, but the ABI must avoid patterns that make them impossible.
+to prove the Python GPU product, but the ABI should avoid patterns that make
+them impossible later.
 
 ### Generated Bindings
 
-Generated bindings are a V4 deliverable only after the C ABI is stable enough
-to generate against. V4.0 can ship handwritten thin examples first; generated
-bindings can be V4.x if needed.
+Generated bindings are a Phase 3/V4.x deliverable only after the C ABI is
+stable enough to generate against.
 
 ## SDK And Packaging Design
 
-V4 should graduate from source-tree staging to a reviewed SDK only when gates
-pass.
+V4.x should graduate from source-tree staging to a reviewed SDK only when gates
+pass and non-Python hosts are back in product scope. For Python-only V4.0, the
+public packaging story is the Python operator package and its binary/runtime
+constraints, not a general C SDK.
 
 ### Stage Layout
 
@@ -894,36 +976,40 @@ At V4 release:
 
 ### Required For V4.0 Alpha
 
-- C header compiles as C11 and C++17.
-- Shared library builds on Linux.
-- Symbol manifest generated and checked.
-- C client validates version/status/context lifecycle.
-- C client validates one host query route.
-- C client validates RTDL-owned and caller-provided result output modes.
-- Python `ctypes` validates lifecycle and one host query route.
+- Python operator accepts at least one real CuPy/Numba/PyTorch device-array
+  input form.
+- One benchmark-valuable RT-core route is selected and mechanically tested.
+- The route executes against device buffers, not only host buffers.
+- Caller-stream behavior is explicit and tested or explicitly rejected.
+- RTDL-owned and caller-provided output modes are both represented in the
+  substrate.
 - Negative tests cover invalid ABI version, null handles, invalid dtype, invalid
   shape, unsupported backend, unsupported device, unsupported route.
 - Capability tests cover enum-keyed queries and unknown capability values.
 - Source-tree doctor has a V4 mode distinct from V3 current validation.
+- No stable SDK or true-zero-copy wording appears without evidence.
 
 ### Required For V4.0 Beta
 
-- CMake and pkg-config prefix stage validated.
-- Archive extraction and external consumer validated.
-- Rust binding proof validates one real query route.
+- Pointer identity, no-host-stage transfer evidence, stream-order proof, and
+  correctness parity exist for the Phase 1 Python device-array route.
 - Ownership/threading contract reviewed.
 - Layout audit checks `sizeof` and `offsetof`.
 - Old-size descriptor compatibility test passes against new code.
-- Independent-context concurrency tested for shipped routes.
-- Embree or OptiX route implemented through C ABI, or explicitly excluded from
-  V4.0 stable surface.
+- Independent-context or caller-stream concurrency rules are tested for shipped
+  routes.
+- Public examples demonstrate the Python GPU operator, not only C lifecycle.
+- Non-Python host and SDK work is explicitly documented as V4.x unless a future
+  product decision reopens it.
 
 ### Required For V4.0 Stable
 
-- ABI version policy published.
+- ABI/substrate version policy published.
 - Cross-version compatibility test exists for supported 1.x behavior, or V4.0
   clearly ships as pre-1.0 experimental SDK.
-- Package/install story exists for at least one supported platform if stable SDK
+- Python package/install/runtime story exists for at least one supported CUDA
+  platform if public Python operator wording is used.
+- C/C++/Rust SDK package/install story exists only if stable non-Python SDK
   wording is used.
 - Every public example is mechanically tested.
 - Every public doc command is mechanically covered.
@@ -946,59 +1032,63 @@ At V4 release:
 ### M1: V4 Design Freeze
 
 - This document reviewed.
+- Product headline accepted: RTDL as Python GPU RT-core operator.
+- Python-only V4.0 scope recorded; non-Python hosts are V4.x.
+- First benchmark-valuable device-array route selected.
 - D1-D5 review decisions accepted and reflected in ABI, tests, and wording.
 - Remaining open decisions explicitly assigned to later milestones.
-- C ABI route inventory approved.
+- C ABI substrate inventory approved.
 - Reviewer checklist accepted.
 
-### M2: C ABI 0.2 Control Plane
+### M2: Python Device-Array Intake
 
-- Clean `rtdl.h` promoted from archive into an active V4 development area.
-- C lifecycle, status, version, last-error, capability, buffer lifecycle.
-- symbol manifest and layout audit.
+- CuPy/Numba/PyTorch array metadata intake through CUDA-array-interface and/or
+  DLPack.
+- Caller CUDA context and stream metadata captured.
+- Unsupported layouts, dtypes, devices, and streams fail closed.
+- No public zero-copy wording yet.
 
-### M3: First Real Query Route
+### M3: First Python RT-Core Operator Route
 
-- host AABB2 overlap through CPU.
-- C and Python examples.
-- deterministic rows.
-- RTDL-owned and caller-provided result modes.
-- exact-fit and truncation output tests.
-- negative tests.
+- fixed-radius neighbors or ray/triangle any-hit preferred.
+- device-buffer query execution.
+- result returned as a device buffer.
+- Python example uses existing host-owned device arrays.
+- correctness parity and deterministic failure behavior.
 
-### M4: SDK Stage
+### M4: Zero-Copy Evidence Packet
 
-- prefix stage.
-- CMake config.
-- pkg-config.
-- archive extraction.
-- direct-link and dynamic-load examples.
+- pointer identity.
+- no-host-stage transfer counters or equivalent instrumentation.
+- stream-order proof.
+- correctness parity.
+- negative host-stage regression test.
 
-### M5: First Non-Python Binding Proof
+### M5: C ABI Substrate Hardening
 
-- Rust binding over C ABI.
-- one query route.
-- ownership-safe wrapper.
+- active `0.x` header/source aligned with Python device-array route.
+- D1-D5 enforced by tests.
+- host AABB2 retained as control-plane/result-contract proof.
+- symbol manifest, layout audit, old-size descriptor compatibility.
 
-### M6: First Native Backend Route
+### M6: Non-Python Host V4.x Path
 
-- Embree or OptiX through C ABI.
-- capability and failure behavior.
-- same-contract comparison.
-- second benchmark-valuable ABI-shaping route selected or implemented, such as
-  fixed-radius neighbors or ray/triangle any-hit.
+- Record the non-Python host path as V4.x.
+- Keep the active C ABI internal/experimental for V4.0 product work.
+- Start C then Rust proof over the proven substrate only when V4.x scope opens.
 
-### M7: First Device-Buffer Route
+### M7: SDK Or Python Package Stage
 
-- CUDA descriptor to actual query execution for one route.
-- stream policy.
-- transfer evidence.
+- Python package/runtime story for the operator.
+- CMake/pkg-config/archive excluded from V4.0 public scope; keep only internal
+  substrate tooling required by the Python operator.
 
 ### M8: V4 Release Candidate
 
 - docs front door prepared.
 - V4 test matrix stable.
 - external review complete.
+- claim-boundary scan complete.
 - release packet written.
 
 ## M1 Resolved Design Decisions
@@ -1096,42 +1186,55 @@ device pointers.
 
 Decision:
 V4.0 ships as a pre-1.0 experimental SDK. Do not use "stable SDK" or "1.0 ABI"
-wording until install, compatibility, and external-host gates pass. AABB2 stays
-as the first plumbing route, but the same milestone window must include a
-second benchmark-valuable ABI-shaping route, such as fixed-radius neighbors or
+wording until install, compatibility, and product-route gates pass. AABB2 stays
+as a plumbing/control-plane route, but the first V4.0 product route must be a
+benchmark-valuable device-array route, such as fixed-radius neighbors or
 ray/triangle any-hit.
 
 Rationale:
-AABB2 is excellent for lifecycle, layout, output, packaging, and binding
-proofs. It is not enough to freeze a durable ABI by itself. A second route
-forces the ABI to confront result cardinality, route-specific capabilities,
-and performance-relevant memory behavior.
+AABB2 is excellent for lifecycle, layout, output, and binding proofs. It is
+not enough to sell or freeze V4.0 by itself. A benchmark-valuable device route
+forces the ABI and Python binding to confront result cardinality,
+route-specific capabilities, stream ownership, and performance-relevant memory
+behavior.
 
 Gate:
-Wording tests reject premature stable-ABI claims. The M3-M6 matrix includes
-the second route before design claims graduate beyond experimental SDK.
+Wording tests reject premature stable-ABI and true-zero-copy claims. The M2-M4
+matrix includes the Python device-array route and evidence before design claims
+graduate beyond experimental SDK.
 
 ## Remaining Open Decisions
 
-1. First native backend:
-   Embree first for lower platform risk, or OptiX first for V4 device-context
-   motivation?
+Closed M1 scope decision:
+V4.0 is Python actors only. Non-Python hosts, full public multi-language C ABI
+packaging, and generated SDK bindings are V4.x unless a later product decision
+reopens them.
 
-2. Buffer rank limit:
+1. First product route:
+   Fixed-radius neighbors, ray/triangle any-hit, or another benchmark-valuable
+   device-array route?
+
+2. First native backend:
+   OptiX first for the RT-core operator value, or Embree/CPU only as a
+   control-plane fallback?
+
+3. Buffer rank limit:
    Is fixed rank 8 acceptable for the C ABI, or should shape/stride arrays be
    dynamically sized?
 
-3. Allocator hooks:
+4. Allocator hooks:
    Do allocator hooks belong in V4.0, or should V4.0 only support borrowed,
    caller-provided-output, and RTDL-owned buffers?
 
-4. Rust binding:
-   Should Rust be in-tree as an example, or a separate generated artifact?
+5. Rust binding:
+   When V4.x opens non-Python hosts, should Rust be in-tree as an example or a
+   separate generated artifact?
 
 ## Risk Register
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
+| C ABI becomes the headline again | V4.0 misses the Python GPU product | freeze Python device-array RT-core route before SDK packaging |
 | ABI grows too broad | impossible to stabilize | start with one route and capability queries |
 | Binding logic diverges | each language becomes a fork | bindings stay thin over C ABI |
 | Device-buffer metadata mistaken for zero-copy | public overclaim | machine-readable claim flags and transfer evidence gates |
@@ -1146,22 +1249,25 @@ the second route before design claims graduate beyond experimental SDK.
 
 V4.0 is ready only when a reviewer can say yes to these:
 
-1. Can a non-Python C client run a real query through the public ABI?
-2. Can at least one non-C host binding run the same query without private
-   internals?
-3. Are unsupported backends/routes/device buffers rejected clearly?
-4. Are ownership and destroy rules unambiguous?
-5. Are context and stream ownership rules explicit?
-6. Is every public command tested?
-7. Is the ABI symbol set versioned and audited?
+1. Can a CuPy/Numba/PyTorch user call an RTDL RT-core operator on existing
+   device arrays?
+2. Does the shipped route run on device buffers rather than staging through a
+   host-only query path?
+3. Are pointer identity, no-host-stage transfer evidence, stream-order proof,
+   and correctness parity documented for every zero-copy claim?
+4. Are unsupported backends/routes/device buffers rejected clearly?
+5. Are ownership, result, destroy, and borrowed-pointer rules unambiguous?
+6. Are context and caller-stream ownership rules explicit?
+7. Is every public command and Python example mechanically tested?
 8. Are package/stage/install claims exactly matched to evidence?
-9. Are true-zero-copy claims either absent or backed by exact evidence?
+9. Are stable SDK and true-zero-copy claims either absent or backed by exact
+   evidence?
 10. Does the native engine remain app-agnostic?
 11. Do result routes support both RTDL-owned and caller-provided output modes?
 12. Do all public descriptors use and test `struct_size` compatibility?
 13. Are capability queries enum-keyed and fail-closed for unknown values?
 14. Are malformed descriptors rejected before pointer use?
-15. Is V4.0 wording still pre-1.0 experimental until external-host gates pass?
+15. Is the Python-only V4.0 and non-Python V4.x boundary explicit?
 
 ## Suggested External Review Request
 
@@ -1173,22 +1279,29 @@ Please critically review docs/engineering/rtdl_v4_0_design_review_packet_2026-06
 Context:
 - RTDL V3.0 is a Python-hosted RT-shaped DSL/runtime with explicit partner
   continuations and app-agnostic native backends.
-- V4.0 is intended to make RTDL embeddable in host languages/frameworks through
-  a C ABI, neutral buffer interop, staged SDK packaging, and eventually real
-  device-buffer routes.
+- V4.0 is reframed as an RT-core operator for the Python GPU ecosystem:
+  CuPy/Numba/PyTorch programs call RTDL on their own device arrays, zero-copy
+  and on the caller's stream.
+- V4.0 is Python actors only. Non-Python hosts, multi-language SDK packaging,
+  and generated C/C++/Rust bindings are V4.x.
+- The C ABI is the substrate under that product, not the product headline.
 - We specifically want to avoid overclaiming stable SDK, true zero-copy,
   automatic partner selection, or broad RT-core performance.
 
 Please focus on:
-1. Is the C ABI boundary narrow enough to stabilize?
-2. Are ownership, lifetime, threading, and error-handling rules complete enough
-   for external hosts?
-3. Is the device-buffer/zero-copy plan honest and testable?
-4. Is the milestone order realistic?
-5. Which parts are too broad for V4.0 and should move to V4.x?
-6. What evidence would you require before accepting stable SDK wording?
-7. What evidence would you require before accepting true-zero-copy wording?
-8. What would make this design fail in Rust, C++, Python, PyTorch/CuPy, or a
+1. Does the Python device-array RT-core operator make the right V4.0 headline?
+2. Is Python-only V4.0, with non-Python hosts deferred to V4.x, the right
+   product boundary?
+3. Is the C ABI substrate narrow enough for the Python product and future V4.x
+   hosts?
+4. Are ownership, lifetime, threading, and error-handling rules complete enough
+   for the Python binding and future external hosts?
+5. Is the device-buffer/zero-copy plan honest and testable?
+6. Is the new milestone order realistic?
+7. Which parts are too broad for V4.0 and should move to V4.x?
+8. What evidence would you require before accepting stable SDK wording?
+9. What evidence would you require before accepting true-zero-copy wording?
+10. What would make this design fail in Rust, C++, Python, PyTorch/CuPy, or a
    CUDA/OptiX host?
 
 Please return:
@@ -1204,11 +1317,13 @@ Please return:
 - C ABI has no C++ leakage.
 - ABI versioning and compatibility policy are believable.
 - Capability queries are complete enough.
-- Status/error handling is usable from non-Python hosts.
+- Status/error handling is usable from the Python binding and future
+  non-Python hosts.
 - Buffer descriptor can represent host and device arrays without ambiguity.
 - Ownership modes cover borrowed, callback-owned, and RTDL-owned buffers.
 - Stream/context semantics are not hand-waved.
 - DLPack and CUDA-array-interface semantics distinguish metadata from execution.
+- Python GPU device-array route is the first product proof.
 - Zero-copy claims require evidence.
 - Threading rules avoid overpromising.
 - Packaging language distinguishes source-tree stage, prefix stage, archive,
@@ -1235,15 +1350,19 @@ Please return:
 
 Do not begin with device fusion or broad language bindings.
 
-Begin with an active V4 C ABI 0.2 branch:
+Begin with the Python GPU operator proof:
 
-1. promote the archived draft header into an active V4 development location;
-2. update the version and symbol manifest;
-3. make the host AABB2 route clean and boring;
-4. add C and Python examples;
-5. add a Rust binding proof;
-6. keep every unsupported route fail-closed;
-7. run this design through external review before expanding to device buffers.
+1. record the Python-only V4.0 scope and V4.x non-Python boundary;
+2. select the first benchmark-valuable RT-core route;
+3. accept CuPy/Numba/PyTorch device arrays through CUDA-array-interface and/or
+   DLPack;
+4. run on the caller's CUDA context and stream where supported;
+5. return a device result buffer the host can wrap;
+6. collect pointer identity, no-host-stage, stream-order, and correctness
+   evidence;
+7. harden the C ABI substrate underneath with D1-D5 and keep host AABB2 as a
+   control-plane/result-contract proof.
 
-The boring boundary is the power move. Once it is stable, every language and
-framework gets a clean doorway into RTDL.
+The product proof is the power move. The C ABI is still important, but it
+serves the Python GPU route first and expands outward in V4.x only when a new
+product decision justifies it.

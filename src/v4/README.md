@@ -3,6 +3,11 @@
 This directory is the active V4 implementation area. It is separate from the
 archived V4 preparatory evidence under `docs/history/v4_preparatory_embedding/`.
 
+After the 2026-06-19 V4 reframing note, this directory is Phase 2 substrate
+work. It is useful and should stay active, but it is not the Phase 1 V4.0
+product proof. The V4.0 product proof is a Python GPU device-array RT-core
+operator route: CuPy/Numba/PyTorch array in, RT cores, device array out.
+
 Current slice:
 
 - pre-1.0 C ABI version `0.2.0`;
@@ -25,4 +30,5 @@ python3 src/v4/examples/python_ctypes_aabb2_smoke.py
 The smoke validates RTDL-owned result output, caller-provided output truncation,
 and caller-provided exact-fit output for the host F32 AABB2 route.
 
-This is not a stable SDK and is not a public package-install promise.
+This is not a stable SDK, not a public package-install promise, and not the
+V4.0 headline.

@@ -114,8 +114,15 @@ class V40ActiveAbiControlPlaneTest(unittest.TestCase):
         self.assertIn("test-v4-active:", self.makefile)
 
     def test_matrix_and_doctor_expose_v4_active_only_on_request(self) -> None:
-        self.assertEqual(("tests.v4_0_active_abi_control_plane_test",), run_test_matrix.group_modules("v4_active"))
+        self.assertEqual(
+            (
+                "tests.v4_0_active_abi_control_plane_test",
+                "tests.v4_0_reframed_product_design_test",
+            ),
+            run_test_matrix.group_modules("v4_active"),
+        )
         self.assertNotIn("tests.v4_0_active_abi_control_plane_test", run_test_matrix.group_modules("v3_current"))
+        self.assertNotIn("tests.v4_0_reframed_product_design_test", run_test_matrix.group_modules("v3_current"))
 
         import scripts.rtdl_source_tree_doctor as doctor
 

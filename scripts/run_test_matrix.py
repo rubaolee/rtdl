@@ -171,6 +171,7 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
     ),
     "v4_active": (
         "tests.v4_0_active_abi_control_plane_test",
+        "tests.v4_0_reframed_product_design_test",
     ),
     "v3_release": (
         "tests.v3_0_release_publication_test",
