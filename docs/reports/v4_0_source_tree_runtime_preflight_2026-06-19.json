@@ -10,15 +10,15 @@
   },
   "date": "2026-06-19",
   "git": {
-    "head": "362c4f3d252905e42ecf437fce9333c7fe98f9d8",
-    "tree": "231989cae30f937cb07ffa3d481431d9a6aa0107"
+    "head": "d1b84b170756bb48df4b4e0766cfa5dd9341aaa0",
+    "tree": "e2188f2fd983b2c1afb5f0e34f84773d573b2bb4"
   },
   "ok": true,
   "platform": {
-    "machine": "AMD64",
-    "python": "3.11.9",
-    "release": "10",
-    "system": "Windows"
+    "machine": "x86_64",
+    "python": "3.12.3",
+    "release": "6.17.0-20-generic",
+    "system": "Linux"
   },
   "pyproject": {
     "description": "RTDL source-tree editable development package",
@@ -29,7 +29,7 @@
     "v4_distribution_artifact": false,
     "version": "3.0.2"
   },
-  "repo": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
+  "repo": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
   "report_id": "v4_0_source_tree_runtime_preflight_2026-06-19",
   "required_failures": [],
   "required_paths": [
@@ -125,7 +125,7 @@
         "status": "pass"
       },
       {
-        "detail": "3.11.9",
+        "detail": "3.12.3",
         "name": "python version",
         "required": false,
         "status": "pass"
@@ -158,60 +158,42 @@
         "detail": "cupy",
         "name": "optional module cupy",
         "required": false,
-        "status": "warn"
+        "status": "pass"
       },
       {
         "detail": "numba",
         "name": "optional module numba",
         "required": false,
-        "status": "warn"
+        "status": "pass"
       },
       {
         "detail": "torch",
         "name": "optional module torch",
         "required": false,
-        "status": "warn"
+        "status": "pass"
       },
       {
-        "detail": "set RTDL_OPTIX_LIBRARY or build/librtdl_optix.so for OptiX examples",
+        "detail": "build/librtdl_optix.so",
         "name": "optional OptiX library",
         "required": false,
-        "status": "warn"
+        "status": "pass"
       },
       {
-        "detail": "build/librtdl_embree.dll",
+        "detail": "build/librtdl_embree.so/dylib/dll not found",
         "name": "optional Embree library",
         "required": false,
-        "status": "pass"
+        "status": "warn"
       }
     ],
     "ok": true,
-    "repo": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
+    "repo": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
     "required_failures": [],
     "tool": "rtdl_source_tree_doctor",
     "version": "v3.0.2",
     "warnings": [
       {
-        "detail": "cupy",
-        "name": "optional module cupy",
-        "required": false,
-        "status": "warn"
-      },
-      {
-        "detail": "numba",
-        "name": "optional module numba",
-        "required": false,
-        "status": "warn"
-      },
-      {
-        "detail": "torch",
-        "name": "optional module torch",
-        "required": false,
-        "status": "warn"
-      },
-      {
-        "detail": "set RTDL_OPTIX_LIBRARY or build/librtdl_optix.so for OptiX examples",
-        "name": "optional OptiX library",
+        "detail": "build/librtdl_embree.so/dylib/dll not found",
+        "name": "optional Embree library",
         "required": false,
         "status": "warn"
       }
@@ -220,7 +202,7 @@
   "source_tree_import_smoke": {
     "from_checkout_src": true,
     "module": "rtdsl",
-    "module_file": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\src\\rtdsl\\__init__.py",
+    "module_file": "/home/lestat/work/rtdl_v4_m1_final_check_20260619/src/rtdsl/__init__.py",
     "ok": true
   },
   "status": "pass",
@@ -238,27 +220,27 @@
     "v4_release_candidate_group_absent": true
   },
   "v4_m1_gpu_runtime": {
-    "all_required_for_v4_m1_gpu_runtime_present": false,
+    "all_required_for_v4_m1_gpu_runtime_present": true,
     "checks": {
       "cupy": {
         "detail": "cupy",
-        "passes": false,
-        "status": "warn"
+        "passes": true,
+        "status": "pass"
       },
       "numba": {
         "detail": "numba",
-        "passes": false,
-        "status": "warn"
+        "passes": true,
+        "status": "pass"
       },
       "optix_library": {
-        "detail": "set RTDL_OPTIX_LIBRARY or build/librtdl_optix.so for OptiX examples",
-        "passes": false,
-        "status": "warn"
+        "detail": "build/librtdl_optix.so",
+        "passes": true,
+        "status": "pass"
       },
       "torch": {
         "detail": "torch",
-        "passes": false,
-        "status": "warn"
+        "passes": true,
+        "status": "pass"
       }
     }
   }

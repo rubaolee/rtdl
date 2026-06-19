@@ -2,8 +2,8 @@
 
 Status: experimental engineering evidence, not current release.
 Date: 2026-06-19.
-Latest validated source-tree head: `4eb67a463b09f5f6819f4975e00d5cd4aecef1d2`.
-Latest validated source-tree tree: `a0dda6c50a6e76b8cb15cd6bbbb8d0a2d00c6c42`.
+Latest validated source-tree head: `d1b84b170756bb48df4b4e0766cfa5dd9341aaa0`.
+Latest validated source-tree tree: `e2188f2fd983b2c1afb5f0e34f84773d573b2bb4`.
 
 This packet summarizes the current V4.0 M1 state after the fixed-radius
 Python CUDA device-array route gained CuPy, Numba, PyTorch, and bounded legacy
@@ -75,6 +75,7 @@ Implemented contract:
 | Release-candidate blocker manifest | `docs/engineering/rtdl_v4_0_release_candidate_blockers_2026-06-19.json` | Keeps `v4_release_candidate` absent until the M8 release-candidate packet and blockers close. |
 | Front-door claim scan | `docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json` | Confirms current front-door docs resolve to v3.0.2 and do not positively publish blocked V4 claims. |
 | Source-tree runtime story | `docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md` | Documents the V4 M1 source-tree runtime path and keeps package, PyPI, wheel, and stable SDK wording blocked. |
+| Source-tree runtime preflight | `docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json` | Linux required-runtime preflight validates checkout import, source-tree package identity, CuPy, Numba, PyTorch, OptiX library, and non-package claim boundaries. |
 
 Current reproducibility gate:
 
@@ -83,10 +84,11 @@ PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 ```
 
 Latest Linux validation on `192.168.1.20` for source-tree head
-`4eb67a463b09f5f6819f4975e00d5cd4aecef1d2`:
+`d1b84b170756bb48df4b4e0766cfa5dd9341aaa0`:
 
 - source-tree doctor with V4 active checks: pass;
-- `v4_active`: 66 tests, pass;
+- source-tree runtime preflight with required V4 GPU runtime: pass;
+- `v4_active`: 68 tests, pass;
 - front-door claim-boundary scan: pass;
 - `make build-optix`: pass;
 - DLPack capsule probe: pass;
@@ -107,9 +109,10 @@ probe, DLPack bridge wrapper smoke, and `git diff --check` all passed there.
 
 Current source-tree `v4_active` gate after the release-candidate blocker,
 front-door claim-scan, Numba route-evidence guards, source-tree runtime story
-guard, fixed-radius cross-stream prepare/query event-wait guard, and DLPack
-capsule report guards, PyTorch route report guards, PyTorch compatibility
-guards, and PyTorch boundary guards: 66 tests, pass locally and on Linux.
+guard, source-tree runtime preflight guard, fixed-radius cross-stream
+prepare/query event-wait guard, and DLPack capsule report guards, PyTorch route
+report guards, PyTorch compatibility guards, and PyTorch boundary guards:
+68 tests, pass locally and on Linux.
 
 ## Release-Candidate Boundary
 
@@ -212,7 +215,10 @@ true-zero-copy, or speedup wording.
 Source-tree runtime story preflight, 2026-06-19: passing with boundaries. The
 V4 M1 source-tree flow is documented and source-tree-doctor checked on Windows
 and Linux; Linux has CuPy, Numba, PyTorch, and the OptiX library after
-`make build-optix`.
+`make build-optix`. The tracked runtime preflight report
+`docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json` records
+required Linux V4 GPU runtime checks passing on
+`d1b84b170756bb48df4b4e0766cfa5dd9341aaa0`.
 This authorizes source-tree runtime wording only. It does not authorize package
 install, PyPI, wheel, stable SDK, or generated binding wording.
 

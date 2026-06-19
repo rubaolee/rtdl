@@ -7,13 +7,13 @@
   "release_candidate_ready": false,
   "current_gate": "v4_active",
   "v4_release_candidate_gate_policy": "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
-  "latest_validated_implementation_head": "4eb67a463b09f5f6819f4975e00d5cd4aecef1d2",
-  "latest_validated_route_code_tree": "a0dda6c50a6e76b8cb15cd6bbbb8d0a2d00c6c42",
-  "latest_validated_m1_implementation_v4_active_tests": 66,
+  "latest_validated_implementation_head": "d1b84b170756bb48df4b4e0766cfa5dd9341aaa0",
+  "latest_validated_route_code_tree": "e2188f2fd983b2c1afb5f0e34f84773d573b2bb4",
+  "latest_validated_m1_implementation_v4_active_tests": 68,
   "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
   "latest_validated_m1_cross_stream_evidence_scope": "clean source-tree commit after push",
   "latest_validated_m1_cross_stream_v4_active_tests": 53,
-  "current_source_tree_v4_active_tests": 66,
+  "current_source_tree_v4_active_tests": 68,
   "evidence_ready": [
     {
       "id": "v4_active_gate",
@@ -80,6 +80,12 @@
       "status": "experimental_m1_evidence",
       "path": "docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md",
       "note": "Source-tree runtime path is documented and doctor-validated; package, PyPI, wheel, and stable SDK wording remain blocked."
+    },
+    {
+      "id": "source_tree_runtime_preflight",
+      "status": "experimental_m1_evidence",
+      "path": "docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json",
+      "note": "Required Linux V4 M1 source-tree runtime preflight validates checkout import, rtdl-source-tree identity, CuPy, Numba, PyTorch, OptiX library, v4_active/v4_release_candidate gate policy, and non-package claim boundaries."
     }
   ],
   "blockers": [
@@ -250,11 +256,11 @@
       "id": "package_install_runtime_story",
       "closed": false,
       "current_preflight": {
-        "host": "local_windows_and_192.168.1.20",
+        "host": "192.168.1.20",
         "date": "2026-06-19",
-        "status": "source_tree_runtime_story_documented_but_package_flow_blocked",
-        "evidence": "docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md",
-        "reason": "The V4 M1 source-tree runtime path is documented and doctor-validated, including Linux CuPy/Numba/PyTorch/OptiX availability, but there is no V4 wheel, PyPI artifact, clean package install flow, or stable SDK package."
+        "status": "source_tree_runtime_preflight_passed_but_package_flow_blocked",
+        "evidence": "docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json",
+        "reason": "The V4 M1 source-tree runtime path is machine-validated on Linux for checkout import, rtdl-source-tree metadata, CuPy, Numba, PyTorch, OptiX library, and non-package claim boundaries. This still is not a V4 wheel, PyPI artifact, clean package install flow, or stable SDK package."
       },
       "required_evidence": "Documented install/runtime path with tested wheel or equivalent package flow.",
       "blocking_claims": [

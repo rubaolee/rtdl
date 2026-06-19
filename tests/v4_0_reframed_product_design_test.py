@@ -241,6 +241,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertTrue(report["pyproject"]["source_tree_identity_ok"])
         self.assertTrue(report["test_matrix_policy"]["v4_active_group_present"])
         self.assertTrue(report["test_matrix_policy"]["v4_release_candidate_group_absent"])
+        self.assertTrue(report["v4_m1_gpu_runtime"]["all_required_for_v4_m1_gpu_runtime_present"])
         self.assertTrue(report["claim_boundaries"]["source_tree_runtime_wording_authorized"])
         self.assertFalse(report["claim_boundaries"]["v4_package_install_authorized"])
         self.assertFalse(report["claim_boundaries"]["pypi_authorized"])
@@ -278,7 +279,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertFalse(blockers["release_candidate_ready"])
         self.assertEqual("v3.0.2", blockers["current_release_remains"])
         self.assertEqual("v4_active", blockers["current_gate"])
-        self.assertEqual(66, blockers["latest_validated_m1_implementation_v4_active_tests"])
+        self.assertEqual(68, blockers["latest_validated_m1_implementation_v4_active_tests"])
         self.assertEqual(
             "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
             blockers["latest_validated_m1_cross_stream_evidence_commit"],
@@ -287,7 +288,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             53,
             blockers["latest_validated_m1_cross_stream_v4_active_tests"],
         )
-        self.assertEqual(66, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(68, blockers["current_source_tree_v4_active_tests"])
         self.assertEqual(
             "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
             blockers["v4_release_candidate_gate_policy"],
@@ -385,11 +386,11 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["full_numba_partner_surface"]["current_preflight"]["evidence"],
         )
         self.assertEqual(
-            "source_tree_runtime_story_documented_but_package_flow_blocked",
+            "source_tree_runtime_preflight_passed_but_package_flow_blocked",
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["status"],
         )
         self.assertEqual(
-            "docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md",
+            "docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json",
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["evidence"],
         )
         self.assertEqual(
@@ -404,6 +405,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "source-tree runtime story only",
             "not a V4 distribution artifact",
             "PYTHONPATH=src:.",
+            "scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime",
+            "docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json",
             "make build-optix",
             "package_install_runtime_story` remains open",
             "Closing it requires a V4 package flow",

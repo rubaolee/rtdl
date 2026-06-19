@@ -20,6 +20,7 @@ From a checkout:
 ```bash
 PYTHONPATH=src:. python3 scripts/rtdl_source_tree_doctor.py --include-v4-active --json
 make build-optix
+PYTHONPATH=src:. python3 scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime
 PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_numba_partner_surface_probe.py
 PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_dlpack_capsule_probe.py
@@ -61,16 +62,32 @@ Linux `192.168.1.20` source-tree doctor:
 - optional Embree library: warn, not required for V4 M1.
 
 Latest Linux V4 gate on `192.168.1.20` for head
-`4eb67a463b09f5f6819f4975e00d5cd4aecef1d2`:
+`d1b84b170756bb48df4b4e0766cfa5dd9341aaa0`:
 
 - `make build-optix`: pass;
-- `v4_active`: 66 tests, pass;
+- source-tree runtime preflight with `--require-v4-gpu-runtime`: pass;
+- `v4_active`: 68 tests, pass;
 - Numba M1 `DeviceNDArray` fixed-radius route probe: pass;
 - DLPack capsule fixed-radius route probe: pass;
 - PyTorch CUDA tensor fixed-radius route compatibility probe: pass;
 - front-door claim-boundary scan: pass;
 - `git diff --check`: pass;
 - worktree clean.
+
+Tracked machine-readable report:
+
+`docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json`
+
+That report is bound to Linux head
+`d1b84b170756bb48df4b4e0766cfa5dd9341aaa0` and records:
+
+- source-tree import from `src/rtdsl`;
+- `pyproject.toml` identity as `rtdl-source-tree` version `3.0.2`;
+- V4 active doctor checks with CuPy, Numba, PyTorch, and OptiX library all
+  passing;
+- `v4_active` exposed and `v4_release_candidate` absent;
+- package install, PyPI, wheel, stable SDK, generated binding, and V4 front-door
+  claims all unauthorized.
 
 ## Package Blocker
 
