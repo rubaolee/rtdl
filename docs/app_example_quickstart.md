@@ -8,11 +8,12 @@ Run source-tree examples from the repository root with `PYTHONPATH=src:.`.
 Start with the portable `cpu_python_reference` backend; try native backends only
 after the basic examples work.
 
-## First Three Commands
+## First Four Commands
 
 ```bash
 PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world.py
 PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world_backends.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/current/getting_started/rtdl_prepared_measurement_demo.py
 PYTHONPATH=src:. python examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
 ```
 
@@ -20,6 +21,7 @@ What this shows:
 
 - the checkout imports and runs
 - one RTDL kernel can execute through a selected runtime backend
+- prepared measurement separates setup, warmup, steady-state, and validation
 - RTDL rows can be used inside a Python app
 
 What this does not show:
@@ -35,6 +37,7 @@ What this does not show:
 | First working command | `examples/current/getting_started/rtdl_hello_world.py` | import and output smoke path | performance |
 | Backend selection | `examples/current/getting_started/rtdl_hello_world_backends.py` | same kernel idea through selected runners | backend speedup |
 | Primitive discovery | `examples/current/getting_started/rtdl_primitive_discovery_workflow.py` | primitive, recipe, and explain-only plan metadata | execution, partner selection, or speedup |
+| Measurement discipline | `examples/current/getting_started/rtdl_prepared_measurement_demo.py` | explicit prepared-session reuse, warmup, steady-state timing, and oracle validation | benchmark evidence or speedup |
 | Python+partner first path | `examples/current/partners/rtdl_partner_anyhit.py --partner numpy --backend embree` | partner-owned columns staged into Embree any-hit | zero-copy or RT-core speedup |
 | Advanced OptiX partner path | [Partner Columns With CuPy Or Numba](../tutorials/current/05_partner_columns_cupy_numba.md) | CuPy/Numba-oriented partner-column teaching path around prepared RTDL primitives | final release status, zero-copy, or broad acceleration |
 | Feature recipes | `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py` | one compact recipe per public feature | production readiness for every backend |
@@ -79,6 +82,7 @@ the needed local dependencies.
 | --- | --- | --- |
 | Tutorial examples | [Current Tutorial Track](../tutorials/current/README.md) | ordered teaching path from first run to benchmark-style apps |
 | Primitive discovery | [Primitive Discovery Workflow](learn/primitive_discovery_workflow.md) | search the primitive catalog and inspect explain-only plans |
+| Measurement discipline | `examples/current/getting_started/rtdl_prepared_measurement_demo.py` | learn the setup/warmup/steady-state/validation split before reading benchmark numbers |
 | Feature recipes | `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py` | one runnable recipe per feature |
 | App catalog | [Application Catalog](application_catalog.md) | current app inventory and boundaries |
 | All examples | [Examples Index](../examples/README.md) | compact directory inventory |
@@ -104,11 +108,12 @@ reports authorize.
 
 1. Run `examples/current/getting_started/rtdl_hello_world.py`.
 2. Run `examples/current/getting_started/rtdl_primitive_discovery_workflow.py`.
-3. Run `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py`.
-4. Run one app from the table above on `cpu_python_reference`.
-5. If Embree is available, rerun the same app with `--backend embree`.
-6. Read [Performance Model](performance_model.md) before interpreting timing.
-7. Read [App Engine Support Matrix](app_engine_support_matrix.md) before using
+3. Run `examples/current/getting_started/rtdl_prepared_measurement_demo.py`.
+4. Run `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py`.
+5. Run one app from the table above on `cpu_python_reference`.
+6. If Embree is available, rerun the same app with `--backend embree`.
+7. Read [Performance Model](performance_model.md) before interpreting timing.
+8. Read [App Engine Support Matrix](app_engine_support_matrix.md) before using
    `--backend optix` or `--require-rt-core`.
 
 This sequence demonstrates the RTDL user model: Python remains the app layer,

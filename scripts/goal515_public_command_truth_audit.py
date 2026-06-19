@@ -23,7 +23,10 @@ PUBLIC_DOCS = [
 ]
 
 GOAL513_COMMANDS = [
+    "python scripts/rtdl_source_tree_doctor.py",
     "python examples/current/getting_started/rtdl_hello_world.py",
+    "python examples/current/getting_started/rtdl_primitive_discovery_workflow.py",
+    "python examples/current/getting_started/rtdl_prepared_measurement_demo.py",
     "python examples/current/features/spatial/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16",
     "python examples/current/getting_started/rtdl_feature_quickstart_cookbook.py",
     "python examples/current/features/ray_queries/rtdl_ray_triangle_any_hit.py",
@@ -71,10 +74,16 @@ GOAL992_COMMANDS = [
 GOAL878_COMMANDS = [
     "python examples/current/features/spatial/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode host_indexed --copies 4",
     "python examples/current/features/spatial/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --copies 4",
+    "python examples/current/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend embree --output-mode segment_counts",
     "python examples/current/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 4",
     "python examples/current/features/spatial/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 4 --output-capacity 1000000",
     "python examples/current/features/spatial/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary",
     "python examples/current/features/spatial/rtdl_polygon_set_jaccard.py --backend optix",
+]
+
+V3_RELEASE_FACING_PARTNER_COMMANDS = [
+    "python examples/current/partners/rtdl_partner_anyhit.py --partner numpy --backend embree",
+    "python examples/current/partners/rtdl_partner_anyhit.py --partner cupy-cuda --backend optix",
 ]
 
 PUBLIC_VALIDATION_COMMAND_KEYS = {
@@ -192,6 +201,9 @@ def build_coverage_maps() -> tuple[dict[str, str], dict[tuple[str, str], str]]:
     for command in GOAL878_COMMANDS:
         exact_keys.setdefault(command, "goal878_optix_doc_gate_exact")
         family_keys.setdefault(command_key(command), "goal878_optix_doc_gate_family")
+    for command in V3_RELEASE_FACING_PARTNER_COMMANDS:
+        exact_keys.setdefault(command, "v3_release_facing_partner_command_exact")
+        family_keys.setdefault(command_key(command), "v3_release_facing_partner_command_family")
     family_keys.update(PUBLIC_VALIDATION_COMMAND_KEYS)
     return exact_keys, family_keys
 

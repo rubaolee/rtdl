@@ -124,8 +124,10 @@ The fastest way to learn the design is:
 2. Run `scripts/rtdl_source_tree_doctor.py` if imports or optional backends are unclear.
 3. Follow the [Current Tutorial Track](tutorials/current/README.md).
 4. Run `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py`.
-5. Pick one app from [App And Example Quickstart](docs/app_example_quickstart.md).
-6. Read [Current Architecture](docs/current_architecture.md) only after you can
+5. Run `examples/current/getting_started/rtdl_prepared_measurement_demo.py`
+   before interpreting benchmark timing.
+6. Pick one app from [App And Example Quickstart](docs/app_example_quickstart.md).
+7. Read [Current Architecture](docs/current_architecture.md) only after you can
    explain `input -> traverse -> refine -> emit`.
 
 ## What RTDL Provides

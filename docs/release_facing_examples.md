@@ -27,6 +27,7 @@ Run examples from the repository root with `PYTHONPATH=src:.`.
 ```bash
 PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world.py
 PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world_backends.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/current/getting_started/rtdl_prepared_measurement_demo.py
 PYTHONPATH=src:. python examples/current/getting_started/rtdl_feature_quickstart_cookbook.py
 ```
 

@@ -85,7 +85,7 @@ benchmark claims.
 
 | Learner/example group | Files or directory | What it teaches | Benchmark status |
 | --- | --- | --- | --- |
-| Getting started | `examples/current/getting_started/rtdl_hello_world.py`, `rtdl_hello_world_backends.py`, `rtdl_primitive_discovery_workflow.py`, `rtdl_feature_quickstart_cookbook.py` | First import, backend choice, primitive discovery, and feature recipes | Learner examples |
+| Getting started | `examples/current/getting_started/rtdl_hello_world.py`, `rtdl_hello_world_backends.py`, `rtdl_primitive_discovery_workflow.py`, `rtdl_prepared_measurement_demo.py`, `rtdl_feature_quickstart_cookbook.py` | First import, backend choice, primitive discovery, measurement discipline, and feature recipes | Learner examples |
 | Ray query features | `examples/current/features/ray_queries/` | Any-hit, visibility rows, and row reduction basics | Feature examples |
 | Neighbor features | `examples/current/features/neighbors/` | Fixed-radius rows and KNN rows | Feature examples |
 | Database feature recipes | `examples/current/features/database/` | Conjunctive scan, grouped count, grouped sum | Feature examples |
@@ -108,6 +108,7 @@ benchmark claims.
 | Hello world | `examples/current/getting_started/rtdl_hello_world.py` | source-tree import and first output |
 | Backend hello world | `examples/current/getting_started/rtdl_hello_world_backends.py` | same app idea through selected runtime backends |
 | Primitive discovery workflow | `examples/current/getting_started/rtdl_primitive_discovery_workflow.py` | metadata-only primitive, recipe, and advisory-plan discovery |
+| Prepared measurement demo | `examples/current/getting_started/rtdl_prepared_measurement_demo.py` | setup, warmup, steady-state, validation, and prepared-session reuse metadata |
 | Feature cookbook | `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py` | compact recipe per public feature |
 | Partner any-hit | `examples/current/partners/rtdl_partner_anyhit.py` | first partner-owned column path |
 

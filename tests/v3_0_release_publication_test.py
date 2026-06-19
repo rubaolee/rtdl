@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
+import subprocess
+import sys
 import unittest
 
 import tomllib
@@ -10,6 +13,7 @@ import tomllib
 ROOT = Path(__file__).resolve().parents[1]
 RELEASE = ROOT / "docs" / "release_reports" / "v3_0_2"
 DOCTOR = ROOT / "scripts" / "rtdl_source_tree_doctor.py"
+MEASUREMENT_DEMO = ROOT / "examples" / "current" / "getting_started" / "rtdl_prepared_measurement_demo.py"
 
 
 def _load_doctor():
@@ -63,6 +67,28 @@ class V30ReleasePublicationTest(unittest.TestCase):
         self.assertIn("docs/release_reports/v3_0_2/README.md", docs)
         self.assertNotIn("current v2.14", docs.lower())
         self.assertNotIn("current v2.10", docs.lower())
+
+    def test_prepared_measurement_demo_is_release_facing_and_non_authorizing(self) -> None:
+        completed = subprocess.run(
+            [sys.executable, str(MEASUREMENT_DEMO), "--repeats", "2", "--warmup", "1"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        payload = json.loads(completed.stdout)
+
+        self.assertEqual("prepared_measurement_demo", payload["app"])
+        self.assertEqual("cpu_python_reference", payload["backend"])
+        self.assertEqual("steady_state_kernel_run", payload["timed_phase"])
+        self.assertEqual(2, payload["steady_state_repeat_count"])
+        self.assertTrue(payload["correctness"]["validated"])
+        self.assertFalse(payload["performance_evidence"])
+        self.assertFalse(payload["claim_boundary"]["public_speedup_claim_authorized"])
+        self.assertEqual(
+            ["miss", "put", "hit"],
+            [row["event"] for row in payload["prepared_session_residency"]["cache_event_log"]],
+        )
 
     def test_embedding_is_v4_scope_not_v3_release_scope(self) -> None:
         combined = "\n".join(

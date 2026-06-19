@@ -99,6 +99,24 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
         self.assertIn("robot_collision_screening_app", recipe_names)
         self.assertIn("barnes_hut_force_app", recipe_names)
 
+    def test_prepared_measurement_demo_runs_without_authorizing_performance_claim(self) -> None:
+        payload = run_json_example(
+            "examples/current/getting_started/rtdl_prepared_measurement_demo.py",
+            "--repeats",
+            "2",
+            "--warmup",
+            "1",
+        )
+
+        self.assertEqual(payload["app"], "prepared_measurement_demo")
+        self.assertEqual(payload["backend"], "cpu_python_reference")
+        self.assertTrue(payload["correctness"]["validated"])
+        self.assertFalse(payload["performance_evidence"])
+        self.assertEqual(
+            ["miss", "put", "hit"],
+            [row["event"] for row in payload["prepared_session_residency"]["cache_event_log"]],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

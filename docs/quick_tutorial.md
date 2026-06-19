@@ -223,6 +223,16 @@ For one compact recipe per feature:
 PYTHONPATH=src:. python examples/current/getting_started/rtdl_feature_quickstart_cookbook.py
 ```
 
+Before interpreting timing, run the tiny prepared-measurement demo:
+
+```bash
+PYTHONPATH=src:. python examples/current/getting_started/rtdl_prepared_measurement_demo.py
+```
+
+That output is a teaching payload, not benchmark evidence. It shows the fields
+to report when timing does matter: command, commit, backend, partner, dataset,
+timed phase, prepared-session metadata, and validation result.
+
 Then continue with the [Current Tutorial Track](../tutorials/current/README.md)
 or run the feature cookbook example directly from
 `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py`.

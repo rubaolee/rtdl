@@ -33,11 +33,29 @@ publish the exact command
 Prepared examples live in the source tree:
 
 ```bash
+PYTHONPATH=src:. python examples/current/getting_started/rtdl_prepared_measurement_demo.py
 PYTHONPATH=src:. python examples/current/getting_started/rtdl_feature_quickstart_cookbook.py
 ```
 
-The cookbook is larger than hello world, but still safe as a source-tree learner
-program.
+`rtdl_prepared_measurement_demo.py` is the small measurement lesson. It uses
+the portable CPU Python reference backend by default, prepares a tiny
+hello-world scene through the explicit prepared-session helper, runs warmup
+iterations, times only the steady-state kernel repeats, validates against the
+CPU Python oracle, and prints JSON fields reviewers should expect:
+
+- `command`
+- `commit`
+- `backend`
+- `partner`
+- `dataset`
+- `timed_phase`
+- `prepared_session_residency`
+- `phases_s`
+- `correctness`
+
+It also prints `performance_evidence: false` because the scene is a teaching
+fixture, not a benchmark claim. The cookbook is larger than hello world, but
+still safe as a source-tree learner program.
 
 ## Performance Rule
 

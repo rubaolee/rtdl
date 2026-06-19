@@ -7,7 +7,7 @@ number.
 
 | Directory | Purpose |
 | --- | --- |
-| `getting_started/` | smallest programs, primitive discovery, and the feature cookbook |
+| `getting_started/` | smallest programs, primitive discovery, feature cookbook, and measurement discipline demo |
 | `features/` | examples grouped by primitive or workload feature |
 | `apps/` | complete application-level examples |
 | `partners/` | examples that continue RTDL outputs with NumPy, CuPy, Numba, or user-owned native code |
@@ -19,4 +19,5 @@ Use source-tree execution from the repository root:
 ```bash
 PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world.py
 PYTHONPATH=src:. python examples/current/getting_started/rtdl_primitive_discovery_workflow.py
+PYTHONPATH=src:. python examples/current/getting_started/rtdl_prepared_measurement_demo.py
 ```
