@@ -24,8 +24,12 @@ ROUTE_CONSENSUS = (
 DESIGN = ROOT / "docs" / "engineering" / "rtdl_v4_0_design_review_packet_2026-06-19.md"
 ACTIVE_ABI_NOTE = ROOT / "docs" / "engineering" / "rtdl_v4_0_active_abi_slice_2026-06-19.md"
 M1_STATUS = ROOT / "docs" / "engineering" / "rtdl_v4_0_m1_experimental_status_2026-06-19.md"
+PRE_M8_BOUNDARY = ROOT / "docs" / "engineering" / "rtdl_v4_0_pre_m8_boundary_2026-06-19.md"
 SOURCE_TREE_RUNTIME_STORY = (
     ROOT / "docs" / "engineering" / "rtdl_v4_0_source_tree_runtime_story_2026-06-19.md"
+)
+NEXT_STEP_CONSENSUS = (
+    ROOT / "docs" / "reviews" / "codex_v4_next_step_pre_m8_dlpack_3ai_consensus_2026-06-19.md"
 )
 RC_BLOCKERS = (
     ROOT / "docs" / "engineering" / "rtdl_v4_0_release_candidate_blockers_2026-06-19.json"
@@ -186,7 +190,32 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertIn("Keep `v3.0.2` as the current source-tree release", consensus)
         self.assertIn("RTDL V4.0 M1 Experimental Status", engineering_index)
         self.assertIn("RTDL V4.0 Release-Candidate Blockers", engineering_index)
+        self.assertIn("RTDL V4.0 Pre-M8 Boundary", engineering_index)
         self.assertIn("RTDL V4.0 Source-Tree Runtime Story", engineering_index)
+
+    def test_pre_m8_boundary_keeps_release_candidate_aura_blocked(self) -> None:
+        boundary = PRE_M8_BOUNDARY.read_text(encoding="utf-8")
+        consensus = NEXT_STEP_CONSENSUS.read_text(encoding="utf-8")
+
+        for token in (
+            "pre-M8 boundary stub, not a release-candidate packet",
+            "current user release remains `v3.0.2`",
+            "not complete without real DLPack/PyTorch/lifetime evidence",
+            "Implement the fixed-radius M1 DLPack capsule/lifetime contract",
+            "Draft M8 only after DLPack/PyTorch/lifetime gates",
+            "`v4_release_candidate` test-matrix gate",
+            "Not Yet Authorized",
+        ):
+            self.assertIn(token, boundary)
+
+        for token in (
+            "Adopt the narrow hybrid",
+            "real `__dlpack__` capsule intake",
+            "consume-once and deleter-once tests",
+            "PyTorch route evidence",
+            "Claims That Stay Blocked",
+        ):
+            self.assertIn(token, consensus)
 
     def test_release_candidate_gate_remains_blocked_until_m8_packet(self) -> None:
         blockers = json.loads(RC_BLOCKERS.read_text(encoding="utf-8"))

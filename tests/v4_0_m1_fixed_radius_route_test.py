@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ctypes
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -8,6 +9,7 @@ from unittest import mock
 
 import numpy as np
 import rtdsl
+from rtdsl import optix_runtime as optix
 from rtdsl import v4_0_device_array_operator as v4
 
 
@@ -68,6 +70,142 @@ class _FakeCudaColumn:
         }
 
 
+class _TestDLDevice(ctypes.Structure):
+    _fields_ = [("device_type", ctypes.c_int), ("device_id", ctypes.c_int)]
+
+
+class _TestDLDataType(ctypes.Structure):
+    _fields_ = [("code", ctypes.c_uint8), ("bits", ctypes.c_uint8), ("lanes", ctypes.c_uint16)]
+
+
+class _TestDLTensor(ctypes.Structure):
+    _fields_ = [
+        ("data", ctypes.c_void_p),
+        ("device", _TestDLDevice),
+        ("ndim", ctypes.c_int32),
+        ("dtype", _TestDLDataType),
+        ("shape", ctypes.POINTER(ctypes.c_int64)),
+        ("strides", ctypes.POINTER(ctypes.c_int64)),
+        ("byte_offset", ctypes.c_uint64),
+    ]
+
+
+class _TestDLManagedTensor(ctypes.Structure):
+    pass
+
+
+_TestDLManagedTensor._fields_ = [
+    ("dl_tensor", _TestDLTensor),
+    ("manager_ctx", ctypes.c_void_p),
+    ("deleter", ctypes.c_void_p),
+]
+
+
+_TEST_DLPACK_DELETER = ctypes.CFUNCTYPE(None, ctypes.POINTER(_TestDLManagedTensor))
+_TEST_PY_CAPSULE_NEW = ctypes.pythonapi.PyCapsule_New
+_TEST_PY_CAPSULE_NEW.restype = ctypes.py_object
+_TEST_PY_CAPSULE_NEW.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_void_p]
+_NO_DLPACK_STREAM_ARGUMENT = object()
+
+
+class _FakeDLPackCapsuleColumn:
+    """A capsule-only CUDA column for V4 DLPack lifetime tests."""
+
+    def __init__(
+        self,
+        ptr: int,
+        *,
+        dtype: str,
+        shape: tuple[int, ...],
+        strides: tuple[int, ...] | None = None,
+        declared_device: tuple[int, int] = (2, 0),
+        capsule_device: tuple[int, int] | None = None,
+        return_same_capsule: bool = False,
+        no_deleter: bool = False,
+        dtype_lanes: int = 1,
+    ) -> None:
+        self._ptr = int(ptr)
+        self.dtype = dtype
+        self.shape = shape
+        self.strides = strides
+        self.declared_device = declared_device
+        self.capsule_device = declared_device if capsule_device is None else capsule_device
+        self.return_same_capsule = return_same_capsule
+        self.no_deleter = no_deleter
+        self.dtype_lanes = int(dtype_lanes)
+        self.requested_streams: list[int | str] = []
+        self.deleter_calls = 0
+        self._records: list[object] = []
+        self._shared_capsule = None
+
+    def __dlpack_device__(self):
+        return self.declared_device
+
+    def __dlpack__(self, stream=_NO_DLPACK_STREAM_ARGUMENT):
+        if stream is _NO_DLPACK_STREAM_ARGUMENT:
+            self.requested_streams.append("no_arg")
+        else:
+            self.requested_streams.append(int(stream) if stream is not None else "none")
+        if self.return_same_capsule and self._shared_capsule is not None:
+            return self._shared_capsule
+        capsule = self._new_capsule()
+        if self.return_same_capsule:
+            self._shared_capsule = capsule
+        return capsule
+
+    def _new_capsule(self):
+        shape_array = (ctypes.c_int64 * len(self.shape))(*[int(dim) for dim in self.shape])
+        strides_array = None
+        if self.strides is not None:
+            strides_array = (ctypes.c_int64 * len(self.strides))(*[int(stride) for stride in self.strides])
+        managed = _TestDLManagedTensor()
+        managed.dl_tensor.data = ctypes.c_void_p(self._ptr)
+        managed.dl_tensor.device = _TestDLDevice(int(self.capsule_device[0]), int(self.capsule_device[1]))
+        managed.dl_tensor.ndim = len(self.shape)
+        managed.dl_tensor.dtype = self._dtype()
+        managed.dl_tensor.shape = ctypes.cast(shape_array, ctypes.POINTER(ctypes.c_int64))
+        managed.dl_tensor.strides = (
+            ctypes.cast(strides_array, ctypes.POINTER(ctypes.c_int64))
+            if strides_array is not None
+            else ctypes.POINTER(ctypes.c_int64)()
+        )
+        managed.dl_tensor.byte_offset = 0
+
+        def _deleter(_managed):
+            self.deleter_calls += 1
+
+        callback = _TEST_DLPACK_DELETER(_deleter)
+        managed.deleter = None if self.no_deleter else ctypes.cast(callback, ctypes.c_void_p).value
+        managed_ptr = ctypes.pointer(managed)
+        capsule = _TEST_PY_CAPSULE_NEW(
+            ctypes.cast(managed_ptr, ctypes.c_void_p),
+            b"dltensor",
+            None,
+        )
+        self._records.append(
+            SimpleNamespace(
+                shape_array=shape_array,
+                strides_array=strides_array,
+                managed=managed,
+                managed_ptr=managed_ptr,
+                callback=callback,
+                capsule=capsule,
+            )
+        )
+        return capsule
+
+    def _dtype(self) -> _TestDLDataType:
+        if self.dtype.startswith("uint"):
+            return _TestDLDataType(1, int(self.dtype.removeprefix("uint")), self.dtype_lanes)
+        if self.dtype.startswith("int"):
+            return _TestDLDataType(0, int(self.dtype.removeprefix("int")), self.dtype_lanes)
+        if self.dtype.startswith("float"):
+            return _TestDLDataType(2, int(self.dtype.removeprefix("float")), self.dtype_lanes)
+        if self.dtype == "double":
+            return _TestDLDataType(2, 64, self.dtype_lanes)
+        raise ValueError(f"unsupported fake DLPack dtype {self.dtype!r}")
+
+
 class _FakePrepared:
     def __init__(self, *, prepare_stream_ptr: int = 0) -> None:
         self.closed = False
@@ -120,11 +258,46 @@ def _point_columns(base: int, *, count: int = 3, x_dtype: str = "float64"):
     }
 
 
+def _dlpack_point_columns(
+    base: int,
+    *,
+    count: int = 3,
+    x_dtype: str = "float64",
+    x_shape: tuple[int, ...] | None = None,
+    x_strides: tuple[int, ...] | None = (1,),
+    y_device: tuple[int, int] = (2, 0),
+):
+    return {
+        "ids": _FakeDLPackCapsuleColumn(base + 0x10, dtype="uint32", shape=(count,), strides=(1,)),
+        "x": _FakeDLPackCapsuleColumn(
+            base + 0x20,
+            dtype=x_dtype,
+            shape=(count,) if x_shape is None else x_shape,
+            strides=x_strides,
+        ),
+        "y": _FakeDLPackCapsuleColumn(
+            base + 0x30,
+            dtype="float64",
+            shape=(count,),
+            strides=(1,),
+            declared_device=y_device,
+        ),
+    }
+
+
 def _output_columns(base: int, *, count: int = 3):
     return {
         "query_ids": _FakeCudaColumn(base + 0x10, dtype="uint32", shape=(count,), strides=(4,)),
         "neighbor_counts": _FakeCudaColumn(base + 0x20, dtype="uint32", shape=(count,), strides=(4,)),
         "threshold_flags": _FakeCudaColumn(base + 0x30, dtype="uint32", shape=(count,), strides=(4,)),
+    }
+
+
+def _dlpack_output_columns(base: int, *, count: int = 3):
+    return {
+        "query_ids": _FakeDLPackCapsuleColumn(base + 0x10, dtype="uint32", shape=(count,), strides=(1,)),
+        "neighbor_counts": _FakeDLPackCapsuleColumn(base + 0x20, dtype="uint32", shape=(count,), strides=(1,)),
+        "threshold_flags": _FakeDLPackCapsuleColumn(base + 0x30, dtype="uint32", shape=(count,), strides=(1,)),
     }
 
 
@@ -205,6 +378,135 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(metadata["descriptors"]["query.x"]["producer_stream_handle"], 77)
         self.assertEqual(metadata["output_contract"], "caller_owned_cuda_output_columns")
 
+    def test_dlpack_capsule_lease_consumes_capsule_and_calls_deleter_once(self) -> None:
+        column = _FakeDLPackCapsuleColumn(
+            0xCAFE,
+            dtype="uint32",
+            shape=(4,),
+            strides=(1,),
+            return_same_capsule=True,
+        )
+
+        lease = rtdsl.acquire_dlpack_capsule_lease(column, stream=99)
+        self.assertIsInstance(lease, rtdsl.RtdlDLPackCapsuleLease)
+        self.assertEqual(lease.data_ptr, 0xCAFE)
+        self.assertEqual(lease.device_type, "cuda")
+        self.assertEqual(lease.device_id, 0)
+        self.assertEqual(lease.dtype, "uint32")
+        self.assertEqual(lease.shape, (4,))
+        self.assertEqual(lease.strides, (1,))
+        self.assertEqual(lease.requested_stream, 99)
+        self.assertEqual(column.requested_streams, [99])
+
+        with self.assertRaisesRegex(ValueError, "already been consumed"):
+            rtdsl.acquire_dlpack_capsule_lease(column, stream=99)
+        lease.release()
+        lease.release()
+        self.assertEqual(column.deleter_calls, 1)
+
+    def test_dlpack_handoff_rejects_non_cuda_mismatched_device_and_bad_deleter(self) -> None:
+        cpu_column = _FakeDLPackCapsuleColumn(0x1000, dtype="uint32", shape=(1,), declared_device=(1, 0))
+        with self.assertRaisesRegex(ValueError, "requires a CUDA capsule"):
+            rtdsl.prepare_dlpack_device_pointer_handoff(cpu_column)
+        self.assertEqual(cpu_column.deleter_calls, 1)
+
+        mismatched = _FakeDLPackCapsuleColumn(
+            0x2000,
+            dtype="uint32",
+            shape=(1,),
+            declared_device=(2, 0),
+            capsule_device=(2, 1),
+        )
+        with self.assertRaisesRegex(ValueError, "must match __dlpack_device__"):
+            rtdsl.acquire_dlpack_capsule_lease(mismatched)
+
+        no_deleter = _FakeDLPackCapsuleColumn(0x3000, dtype="uint32", shape=(1,), no_deleter=True)
+        with self.assertRaisesRegex(ValueError, "deleter must not be null"):
+            rtdsl.acquire_dlpack_capsule_lease(no_deleter)
+
+    def test_plan_uses_real_dlpack_capsule_path_and_retains_lease_owners(self) -> None:
+        search = _dlpack_point_columns(0x1000)
+        query = _dlpack_point_columns(0x2000)
+        outputs = _dlpack_output_columns(0x3000)
+
+        plan = rtdsl.plan_v4_fixed_radius_count_threshold_2d(
+            query,
+            search,
+            output_columns=outputs,
+            stream=456,
+            prepare_stream=123,
+        )
+        metadata = plan.to_metadata()
+
+        self.assertEqual(metadata["source_protocols"], ("dlpack",))
+        self.assertEqual(metadata["borrowed_device_pointers"]["search.x"], 0x1020)
+        self.assertEqual(metadata["borrowed_device_pointers"]["query.x"], 0x2020)
+        self.assertEqual(metadata["borrowed_device_pointers"]["output.neighbor_counts"], 0x3020)
+        self.assertIsInstance(plan.search_columns["ids"].owner, rtdsl.RtdlDLPackCapsuleLease)
+        self.assertIsInstance(plan.query_columns["x"].owner, rtdsl.RtdlDLPackCapsuleLease)
+        self.assertIsInstance(plan.output_columns["threshold_flags"].owner, rtdsl.RtdlDLPackCapsuleLease)
+        self.assertEqual([column.requested_streams for column in search.values()], [[123], [123], [123]])
+        self.assertEqual([column.requested_streams for column in query.values()], [[456], [456], [456]])
+        self.assertEqual([column.requested_streams for column in outputs.values()], [[456], [456], [456]])
+
+        for descriptor in (
+            *plan.search_columns.values(),
+            *plan.query_columns.values(),
+            *plan.output_columns.values(),
+        ):
+            descriptor.owner.release()
+
+    def test_dlpack_capsule_route_fails_closed_for_dtype_rank_stride_and_device(self) -> None:
+        cases = (
+            (
+                "dtype",
+                _dlpack_point_columns(0x2000, x_dtype="float32"),
+                "V4 query column 'x' must use dtype",
+            ),
+            (
+                "rank",
+                _dlpack_point_columns(0x2000, x_shape=(3, 1), x_strides=(1, 1)),
+                "V4 query column 'x' must be one-dimensional",
+            ),
+            (
+                "stride",
+                _dlpack_point_columns(0x2000, x_strides=(2,)),
+                "V4 query column 'x' must be contiguous",
+            ),
+            (
+                "device",
+                _dlpack_point_columns(0x2000, y_device=(2, 1)),
+                "V4 query columns must live on the same CUDA device",
+            ),
+        )
+        for name, query, message in cases:
+            with self.subTest(name=name):
+                with self.assertRaisesRegex(ValueError, message):
+                    rtdsl.plan_v4_fixed_radius_count_threshold_2d(
+                        query,
+                        _dlpack_point_columns(0x1000),
+                        output_columns=_dlpack_output_columns(0x3000),
+                        stream=456,
+                        prepare_stream=123,
+                    )
+
+    def test_optix_fixed_radius_packer_accepts_capsule_only_dlpack_columns_on_stream(self) -> None:
+        columns = _dlpack_point_columns(0x4000)
+
+        packet = optix.pack_optix_fixed_radius_count_threshold_2d_device_point_inputs(
+            columns,
+            label="query",
+            native_symbol="test_symbol",
+            dlpack_stream=777,
+        )
+
+        self.assertEqual(packet["metadata"]["source_protocols"], ("dlpack",))
+        self.assertEqual(packet["metadata"]["point_count"], 3)
+        self.assertEqual(packet["points"]["x"].data_ptr, 0x4020)
+        self.assertEqual([column.requested_streams for column in columns.values()], [[777], [777], [777]])
+        for handoff in packet["points"].values():
+            handoff.descriptor.owner.release()
+
     def test_plan_fails_closed_for_wrong_dtype_and_captures_caller_stream(self) -> None:
         search = _point_columns(0x1000)
         query = _point_columns(0x2000, x_dtype="float32")
@@ -230,7 +532,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         search = _point_columns(0x1000)
         outputs = _output_columns(0x3000)
 
-        with self.assertRaisesRegex(ValueError, "requires a CUDA partner tensor"):
+        with self.assertRaisesRegex(ValueError, "requires a CUDA"):
             rtdsl.plan_v4_fixed_radius_count_threshold_2d(
                 _host_point_columns(),
                 search,

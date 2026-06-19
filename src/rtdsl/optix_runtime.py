@@ -5841,7 +5841,7 @@ class PreparedOptixFixedRadiusCountThreshold2D:
             "neighbor_counts": neighbor_counts_out,
             "threshold_flags": threshold_flags_out,
         }.items():
-            handoff = _partner.prepare_direct_device_pointer_handoff(value, access="write")
+            handoff = _partner.prepare_dlpack_or_direct_device_pointer_handoff(value, access="write")
             _require_partner_device_any_hit_output_layout(
                 handoff,
                 ray_count=query_count,
@@ -5965,6 +5965,7 @@ class PreparedOptixFixedRadiusCountThreshold2D:
             query_point_columns,
             label="query",
             native_symbol=_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_ON_STREAM_SYMBOL,
+            dlpack_stream=cuda_stream_ptr,
         )
         query_handoffs = query_packet["points"]
         query_count = int(query_packet["metadata"]["point_count"])
@@ -5975,7 +5976,11 @@ class PreparedOptixFixedRadiusCountThreshold2D:
             "neighbor_counts": neighbor_counts_out,
             "threshold_flags": threshold_flags_out,
         }.items():
-            handoff = _partner.prepare_direct_device_pointer_handoff(value, access="write")
+            handoff = _partner.prepare_dlpack_or_direct_device_pointer_handoff(
+                value,
+                access="write",
+                dlpack_stream=cuda_stream_ptr,
+            )
             _require_partner_device_any_hit_output_layout(
                 handoff,
                 ray_count=query_count,
@@ -7625,7 +7630,11 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             "neighbor_counts": neighbor_counts_out,
             "threshold_flags": threshold_flags_out,
         }.items():
-            handoff = _partner.prepare_direct_device_pointer_handoff(value, access="write")
+            handoff = _partner.prepare_dlpack_or_direct_device_pointer_handoff(
+                value,
+                access="write",
+                dlpack_stream=cuda_stream_ptr,
+            )
             if expected_device is None:
                 expected_device = (handoff.device_type, handoff.device_id)
             _require_partner_device_any_hit_output_layout(
@@ -9107,6 +9116,7 @@ def prepare_optix_fixed_radius_count_threshold_2d_device_search_columns_on_strea
         search_point_columns,
         label="search",
         native_symbol=_OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_SEARCH_ON_STREAM_SYMBOL,
+        dlpack_stream=cuda_stream_ptr,
     )
     prepared = PreparedOptixFixedRadiusCountThreshold2D.__new__(PreparedOptixFixedRadiusCountThreshold2D)
     prepared._packed_search = _DevicePointScene2D(packet["metadata"]["point_count"])
@@ -13080,7 +13090,13 @@ def _partner_host_stage_columns(columns: dict, required: tuple[str, ...], *, lab
     return arrays, descriptors, timings
 
 
-def _partner_device_descriptor_columns(columns: dict, required: tuple[str, ...], *, label: str):
+def _partner_device_descriptor_columns(
+    columns: dict,
+    required: tuple[str, ...],
+    *,
+    label: str,
+    dlpack_stream: int | None = None,
+):
     missing = [name for name in required if name not in columns]
     unexpected = [name for name in columns if name not in required]
     if missing:
@@ -13090,7 +13106,11 @@ def _partner_device_descriptor_columns(columns: dict, required: tuple[str, ...],
     handoffs = {}
     validation_start = time.perf_counter()
     for name in required:
-        handoff = _partner.prepare_direct_device_pointer_handoff(columns[name], access="read")
+        handoff = _partner.prepare_dlpack_or_direct_device_pointer_handoff(
+            columns[name],
+            access="read",
+            dlpack_stream=dlpack_stream,
+        )
         if len(handoff.shape) != 1:
             raise ValueError(f"partner device column {label}.{name!r} must be one-dimensional")
         handoffs[name] = handoff
@@ -13103,12 +13123,14 @@ def pack_optix_fixed_radius_count_threshold_2d_device_point_inputs(
     *,
     label: str,
     native_symbol: str,
+    dlpack_stream: int | None = None,
 ) -> dict[str, object]:
     """Validate caller-owned CUDA point columns for fixed-radius OptiX handoff."""
     point_handoffs, timings = _partner_device_descriptor_columns(
         point_columns,
         _PARTNER_POINT_2D_COLUMNS,
         label=label,
+        dlpack_stream=dlpack_stream,
     )
     _require_partner_device_point_column_layout(point_handoffs, label=label)
     descriptors = tuple(point_handoffs[name] for name in _PARTNER_POINT_2D_COLUMNS)

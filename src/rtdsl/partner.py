@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ctypes
 from dataclasses import dataclass
 import importlib
 from typing import Any, Protocol
@@ -113,6 +114,86 @@ class RtdlDevicePointerHandoff:
             "direct_device_handoff_authorized": self.direct_device_handoff_authorized,
             "true_zero_copy_authorized": self.true_zero_copy_authorized,
         }
+
+
+class _DLDevice(ctypes.Structure):
+    _fields_ = [("device_type", ctypes.c_int), ("device_id", ctypes.c_int)]
+
+
+class _DLDataType(ctypes.Structure):
+    _fields_ = [("code", ctypes.c_uint8), ("bits", ctypes.c_uint8), ("lanes", ctypes.c_uint16)]
+
+
+class _DLTensor(ctypes.Structure):
+    _fields_ = [
+        ("data", ctypes.c_void_p),
+        ("device", _DLDevice),
+        ("ndim", ctypes.c_int32),
+        ("dtype", _DLDataType),
+        ("shape", ctypes.POINTER(ctypes.c_int64)),
+        ("strides", ctypes.POINTER(ctypes.c_int64)),
+        ("byte_offset", ctypes.c_uint64),
+    ]
+
+
+class _DLManagedTensor(ctypes.Structure):
+    pass
+
+
+_DLManagedTensor._fields_ = [
+    ("dl_tensor", _DLTensor),
+    ("manager_ctx", ctypes.c_void_p),
+    ("deleter", ctypes.c_void_p),
+]
+
+
+_DLPACK_DELETER = ctypes.CFUNCTYPE(None, ctypes.POINTER(_DLManagedTensor))
+_PY_CAPSULE_GET_POINTER = ctypes.pythonapi.PyCapsule_GetPointer
+_PY_CAPSULE_GET_POINTER.restype = ctypes.c_void_p
+_PY_CAPSULE_GET_POINTER.argtypes = [ctypes.py_object, ctypes.c_char_p]
+_PY_CAPSULE_IS_VALID = ctypes.pythonapi.PyCapsule_IsValid
+_PY_CAPSULE_IS_VALID.restype = ctypes.c_int
+_PY_CAPSULE_IS_VALID.argtypes = [ctypes.py_object, ctypes.c_char_p]
+_PY_CAPSULE_SET_NAME = ctypes.pythonapi.PyCapsule_SetName
+_PY_CAPSULE_SET_NAME.restype = ctypes.c_int
+_PY_CAPSULE_SET_NAME.argtypes = [ctypes.py_object, ctypes.c_char_p]
+_DLPACK_CAPSULE_NAME = b"dltensor"
+_DLPACK_USED_CAPSULE_NAME = b"used_dltensor"
+
+
+@dataclass
+class RtdlDLPackCapsuleLease:
+    capsule: Any
+    managed_tensor_ptr: int
+    data_ptr: int
+    device_type: str
+    device_id: int
+    dtype: str
+    shape: tuple[int, ...]
+    strides: tuple[int, ...] | None
+    byte_offset: int
+    producer: Any
+    requested_stream: int | None = None
+    released: bool = False
+
+    source_protocol: str = "dlpack"
+    capsule_policy: str = "legacy_dltensor_only"
+    ownership_policy: str = "consumer_renames_to_used_dltensor_and_calls_deleter_once"
+
+    def release(self) -> None:
+        if self.released:
+            return
+        managed = ctypes.cast(self.managed_tensor_ptr, ctypes.POINTER(_DLManagedTensor))
+        deleter_ptr = int(managed.contents.deleter or 0)
+        if deleter_ptr:
+            ctypes.cast(deleter_ptr, _DLPACK_DELETER)(managed)
+        self.released = True
+
+    def __del__(self) -> None:
+        try:
+            self.release()
+        except Exception:
+            pass
 
 
 @dataclass(frozen=True)
@@ -487,6 +568,118 @@ def prepare_direct_device_pointer_handoff(
     )
 
 
+def prepare_dlpack_device_pointer_handoff(
+    obj: Any,
+    *,
+    access: str = "read",
+    stream: int | None = None,
+) -> RtdlDevicePointerHandoff:
+    """Consume a legacy DLPack capsule and keep its lease as descriptor owner."""
+    _validate_access_mode(access)
+    lease = acquire_dlpack_capsule_lease(obj, stream=stream)
+    try:
+        descriptor = RtdlTensorDescriptor(
+            data_ptr=lease.data_ptr,
+            device_type=lease.device_type,
+            device_id=lease.device_id,
+            dtype=lease.dtype,
+            shape=lease.shape,
+            strides=lease.strides,
+            byte_offset=lease.byte_offset,
+            access_mode=access,
+            stream_handle=0,
+            owner=lease,
+            source_protocol="dlpack",
+        )
+        if descriptor.device_type != "cuda":
+            raise ValueError("DLPack device-pointer handoff requires a CUDA capsule")
+        return RtdlDevicePointerHandoff(
+            descriptor=descriptor,
+            data_ptr=int(descriptor.data_ptr),
+            device_type=descriptor.device_type,
+            device_id=descriptor.device_id,
+            dtype=descriptor.dtype,
+            shape=descriptor.shape,
+            strides=descriptor.strides,
+            byte_offset=descriptor.byte_offset,
+            access_mode=descriptor.access_mode,
+            stream_handle=descriptor.stream_handle,
+            source_protocol=descriptor.source_protocol,
+        )
+    except Exception:
+        lease.release()
+        raise
+
+
+def prepare_dlpack_or_direct_device_pointer_handoff(
+    obj: Any,
+    *,
+    access: str = "read",
+    dlpack_stream: int | None = None,
+) -> RtdlDevicePointerHandoff:
+    """Use the real DLPack capsule path only for capsule-only V4 columns."""
+    if _uses_dlpack_capsule_only_path(obj):
+        return prepare_dlpack_device_pointer_handoff(obj, access=access, stream=dlpack_stream)
+    return prepare_direct_device_pointer_handoff(obj, access=access)
+
+
+def acquire_dlpack_capsule_lease(obj: Any, *, stream: int | None = None) -> RtdlDLPackCapsuleLease:
+    if not callable(getattr(obj, "__dlpack__", None)) or not callable(getattr(obj, "__dlpack_device__", None)):
+        raise TypeError("object does not implement __dlpack__ and __dlpack_device__")
+    if stream not in (None, 0):
+        capsule = obj.__dlpack__(stream=int(stream))
+    else:
+        capsule = obj.__dlpack__()
+    if _PY_CAPSULE_IS_VALID(capsule, _DLPACK_USED_CAPSULE_NAME):
+        raise ValueError("DLPack capsule has already been consumed")
+    if not _PY_CAPSULE_IS_VALID(capsule, _DLPACK_CAPSULE_NAME):
+        raise ValueError("DLPack __dlpack__ must return a legacy PyCapsule named 'dltensor'")
+
+    managed_ptr = int(_PY_CAPSULE_GET_POINTER(capsule, _DLPACK_CAPSULE_NAME))
+    if managed_ptr <= 0:
+        raise ValueError("DLPack capsule must contain a non-zero DLManagedTensor pointer")
+    managed = ctypes.cast(managed_ptr, ctypes.POINTER(_DLManagedTensor))
+    tensor = managed.contents.dl_tensor
+    deleter_ptr = int(managed.contents.deleter or 0)
+    if deleter_ptr <= 0:
+        raise ValueError("DLPack DLManagedTensor deleter must not be null")
+
+    device_type, device_id = _device_from_dlpack_code(int(tensor.device.device_type), int(tensor.device.device_id))
+    declared_device_type, declared_device_id = _normalize_dlpack_device(obj.__dlpack_device__())
+    if (device_type, device_id) != (declared_device_type, declared_device_id):
+        raise ValueError("DLPack capsule device must match __dlpack_device__")
+    dtype = _dtype_from_dlpack(tensor.dtype)
+    ndim = int(tensor.ndim)
+    if ndim < 0:
+        raise ValueError("DLPack tensor rank must be non-negative")
+    if ndim and not tensor.shape:
+        raise ValueError("DLPack tensor shape pointer must not be null when rank is non-zero")
+    shape = tuple(int(tensor.shape[index]) for index in range(ndim))
+    strides = None
+    if tensor.strides:
+        strides = tuple(int(tensor.strides[index]) for index in range(ndim))
+    data_ptr = int(tensor.data or 0) + int(tensor.byte_offset)
+    if data_ptr <= 0:
+        raise ValueError("DLPack tensor data pointer must be non-zero")
+
+    if _PY_CAPSULE_SET_NAME(capsule, _DLPACK_USED_CAPSULE_NAME) != 0:
+        raise RuntimeError("failed to mark DLPack capsule as consumed")
+
+    return RtdlDLPackCapsuleLease(
+        capsule=capsule,
+        managed_tensor_ptr=managed_ptr,
+        data_ptr=data_ptr,
+        device_type=device_type,
+        device_id=device_id,
+        dtype=dtype,
+        shape=shape,
+        strides=strides,
+        byte_offset=int(tensor.byte_offset),
+        producer=obj,
+        requested_stream=None if stream in (None, 0) else int(stream),
+    )
+
+
 def _normalize_name(name: str) -> str:
     return name.strip().lower().replace("-", "_")
 
@@ -551,6 +744,33 @@ def _normalize_dlpack_device(device: Any) -> tuple[str, int]:
         device_type = {1: "cpu", 2: "cuda"}.get(int(raw_type), f"dlpack_{int(raw_type)}")
     _validate_device(device_type, device_id)
     return device_type, device_id
+
+
+def _device_from_dlpack_code(raw_type: int, raw_id: int) -> tuple[str, int]:
+    return _normalize_dlpack_device((raw_type, raw_id))
+
+
+def _uses_dlpack_capsule_only_path(obj: Any) -> bool:
+    return (
+        callable(getattr(obj, "__dlpack__", None))
+        and callable(getattr(obj, "__dlpack_device__", None))
+        and not isinstance(getattr(obj, "__cuda_array_interface__", None), dict)
+        and not callable(getattr(obj, "data_ptr", None))
+    )
+
+
+def _dtype_from_dlpack(dtype: _DLDataType) -> str:
+    if int(dtype.lanes) != 1:
+        raise ValueError("DLPack tensor dtype lanes other than 1 are not supported")
+    code = int(dtype.code)
+    bits = int(dtype.bits)
+    if code == 0:
+        return f"int{bits}"
+    if code == 1:
+        return f"uint{bits}"
+    if code == 2:
+        return f"float{bits}"
+    raise ValueError("unsupported DLPack tensor dtype code")
 
 
 def _dtype_name(obj: Any) -> str:

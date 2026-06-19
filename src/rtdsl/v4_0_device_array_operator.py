@@ -241,8 +241,25 @@ def _prepare_ready_event_wait_required(caller_stream: int, prepare_stream: int) 
     return bool(caller_stream and caller_stream != prepare_stream)
 
 
-def _extract_descriptor(name: str, obj: Any, *, access: str) -> V4DeviceColumnDescriptor:
-    handoff = _partner.prepare_direct_device_pointer_handoff(obj, access=access)
+def _uses_v4_dlpack_capsule_path(obj: Any) -> bool:
+    return _partner._uses_dlpack_capsule_only_path(obj)
+
+
+def _extract_descriptor(
+    name: str,
+    obj: Any,
+    *,
+    access: str,
+    dlpack_stream: int | None = None,
+) -> V4DeviceColumnDescriptor:
+    if _uses_v4_dlpack_capsule_path(obj):
+        handoff = _partner.prepare_dlpack_device_pointer_handoff(
+            obj,
+            access=access,
+            stream=dlpack_stream,
+        )
+    else:
+        handoff = _partner.prepare_direct_device_pointer_handoff(obj, access=access)
     return V4DeviceColumnDescriptor(
         name=name,
         data_ptr=int(handoff.data_ptr),
@@ -254,7 +271,7 @@ def _extract_descriptor(name: str, obj: Any, *, access: str) -> V4DeviceColumnDe
         access_mode=handoff.access_mode,
         source_protocol=handoff.source_protocol,
         producer_stream_handle=_producer_stream_handle(obj),
-        owner=obj,
+        owner=getattr(getattr(handoff, "descriptor", None), "owner", obj),
     )
 
 
@@ -281,13 +298,19 @@ def _validate_column_group(
     access: str,
     expected_count: int | None = None,
     expected_device: str | None = None,
+    dlpack_stream: int | None = None,
 ) -> dict[str, V4DeviceColumnDescriptor]:
     _require_columns(columns, required, label=label)
     descriptors: dict[str, V4DeviceColumnDescriptor] = {}
     group_count = expected_count
     group_device = expected_device
     for name in required:
-        descriptor = _extract_descriptor(f"{label}.{name}", columns[name], access=access)
+        descriptor = _extract_descriptor(
+            f"{label}.{name}",
+            columns[name],
+            access=access,
+            dlpack_stream=dlpack_stream,
+        )
         allowed = dtypes[name]
         if descriptor.dtype not in allowed:
             allowed_text = ", ".join(sorted(allowed))
@@ -333,6 +356,7 @@ def plan_v4_fixed_radius_count_threshold_2d(
         _POINT_DTYPES,
         label="search",
         access="read",
+        dlpack_stream=prepare_stream_handle,
     )
     search_count = int(search_descriptors["ids"].shape[0])
     device = search_descriptors["ids"].device
@@ -343,6 +367,7 @@ def plan_v4_fixed_radius_count_threshold_2d(
         label="query",
         access="read",
         expected_device=device,
+        dlpack_stream=caller_stream,
     )
     query_count = int(query_descriptors["ids"].shape[0])
     output_descriptors = None
@@ -355,6 +380,7 @@ def plan_v4_fixed_radius_count_threshold_2d(
             access="write",
             expected_count=query_count,
             expected_device=device,
+            dlpack_stream=caller_stream,
         )
     return V4FixedRadiusCountThreshold2DPlan(
         route_id=V4_0_M1_ROUTE_ID,
@@ -395,6 +421,7 @@ class V4FixedRadiusCountThreshold2D:
             _POINT_DTYPES,
             label="search",
             access="read",
+            dlpack_stream=self.prepare_stream_handle,
         )
         self.search_count = int(search_descriptors["ids"].shape[0])
         self.device = search_descriptors["ids"].device
@@ -442,6 +469,7 @@ class V4FixedRadiusCountThreshold2D:
                 label="query",
                 access="read",
                 expected_device=self.device,
+                dlpack_stream=_caller_stream_handle(stream),
             )
             output_columns = _allocate_outputs(
                 int(query_descriptors["ids"].shape[0]),

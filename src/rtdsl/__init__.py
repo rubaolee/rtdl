@@ -19,10 +19,13 @@ from .partner import PartnerContext
 from .partner import CuPyAdapter
 from .partner import NumPyAdapter
 from .partner import PyTorchAdapter
+from .partner import RtdlDLPackCapsuleLease
 from .partner import RtdlDevicePointerHandoff
 from .partner import RtdlPartnerProtocolContract
 from .partner import RtdlOutputSpec
 from .partner import RtdlTensorDescriptor
+from .partner import acquire_dlpack_capsule_lease
+from .partner import prepare_dlpack_device_pointer_handoff
 from .partner import prepare_direct_device_pointer_handoff
 from .partner import run_ray_triangle_any_hit_2d as run_partner_ray_triangle_any_hit_2d
 from .partner import validate_v2_0_partner_protocol_contract
@@ -2372,10 +2375,13 @@ __all__ = [
     "PRIMITIVE_SEMANTIC_SEARCH_EXECUTES",
     "PRIMITIVE_SEMANTIC_SEARCH_PREVIEW_VERSION",
     "PRIMITIVE_SEMANTIC_SEARCH_USES_EMBEDDINGS",
+    "RtdlDLPackCapsuleLease",
     "RtdlDevicePointerHandoff",
     "RtdlPartnerProtocolContract",
     "RtdlOutputSpec",
     "RtdlTensorDescriptor",
+    "acquire_dlpack_capsule_lease",
+    "prepare_dlpack_device_pointer_handoff",
     "prepare_direct_device_pointer_handoff",
     "partner_resident_columnar_native_execution_requirements",
     "prepare_partner_resident_columnar_record_set",
