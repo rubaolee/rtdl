@@ -2,8 +2,8 @@
 
 Status: experimental engineering evidence, not current release.
 Date: 2026-06-19.
-Latest validated source-tree head: `d1a98d5ff7defaf38414bd44763b382b9ef577d9`.
-Latest validated source-tree tree: `f22d141f5f5c00ad0475b2d3fd735a8eef7770f3`.
+Latest validated source-tree head: `4eb67a463b09f5f6819f4975e00d5cd4aecef1d2`.
+Latest validated source-tree tree: `a0dda6c50a6e76b8cb15cd6bbbb8d0a2d00c6c42`.
 
 This packet summarizes the current V4.0 M1 state after the fixed-radius
 Python CUDA device-array route gained CuPy, Numba, PyTorch, and bounded legacy
@@ -49,8 +49,9 @@ Implemented contract:
 - a CuPy-backed DLPack-only wrapper smoke exists for the generic DLPack adapter;
 - a fixed-radius M1 legacy DLPack capsule route has stream, pointer, output,
   consume-once, and deleter-once evidence;
-- a fixed-radius M1 PyTorch CUDA tensor route has pointer, stream, output, and
-  grad-enabled tensor rejection evidence;
+- a fixed-radius M1 PyTorch CUDA tensor route has pointer, stream, output,
+  detached tensor acceptance, fail-closed compatibility, and grad-enabled
+  tensor rejection evidence;
 - arbitrary framework-neutral DLPack and full PyTorch partner-surface wording
   remain blocked.
 
@@ -68,7 +69,7 @@ Implemented contract:
 | Numba route-boundary consensus | `docs/reviews/codex_v4_m1_numba_surface_2ai_consensus_2026-06-19.md` | Keeps `full_numba_partner_surface` open while accepting bounded M1 `DeviceNDArray` fixed-radius route evidence. |
 | DLPack bridge wrapper smoke | `docs/reports/v4_0_m1_fixed_radius_dlpack_bridge_smoke_2026-06-19.json` | Authorizes a CuPy-backed DLPack-only wrapper through the generic DLPack adapter; does not authorize arbitrary DLPack capsule semantics or PyTorch. |
 | DLPack capsule probe | `docs/reports/v4_0_m1_fixed_radius_dlpack_capsule_probe_2026-06-19.json` | Authorizes narrow fixed-radius M1 legacy DLPack capsule wording for stream argument propagation, pointer identity, native pointer echo, output correctness, and consume-once/deleter-once guards; does not authorize arbitrary framework-neutral DLPack. |
-| PyTorch CUDA tensor probe | `docs/reports/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19.json` | Authorizes exact fixed-radius M1 PyTorch CUDA tensor route wording for pointer identity, native pointer echo, same-stream checksum, caller-owned outputs, and grad-enabled tensor rejection; does not authorize a full PyTorch partner surface. |
+| PyTorch CUDA tensor probe | `docs/reports/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19.json` | Authorizes exact fixed-radius M1 PyTorch CUDA tensor route wording for pointer identity, native pointer echo, same-stream checksum, direct `torch.cuda.Stream` objects, distinct prepare/query stream ordering, caller-owned outputs, detached tensor acceptance, and fail-closed compatibility cases; does not authorize a full PyTorch partner surface. |
 | True-zero-copy wording consensus | `docs/reviews/codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md` | Keeps public true-zero-copy wording blocked. |
 | Release-positioning consensus | `docs/reviews/codex_v4_m1_release_positioning_2ai_consensus_2026-06-19.md` | Keeps v3.0.2 as current release and V4 as experimental M1 evidence. |
 | Release-candidate blocker manifest | `docs/engineering/rtdl_v4_0_release_candidate_blockers_2026-06-19.json` | Keeps `v4_release_candidate` absent until the M8 release-candidate packet and blockers close. |
@@ -82,10 +83,10 @@ PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 ```
 
 Latest Linux validation on `192.168.1.20` for source-tree head
-`d1a98d5ff7defaf38414bd44763b382b9ef577d9`:
+`4eb67a463b09f5f6819f4975e00d5cd4aecef1d2`:
 
 - source-tree doctor with V4 active checks: pass;
-- `v4_active`: 64 tests, pass;
+- `v4_active`: 66 tests, pass;
 - front-door claim-boundary scan: pass;
 - `make build-optix`: pass;
 - DLPack capsule probe: pass;
@@ -107,8 +108,8 @@ probe, DLPack bridge wrapper smoke, and `git diff --check` all passed there.
 Current source-tree `v4_active` gate after the release-candidate blocker,
 front-door claim-scan, Numba route-evidence guards, source-tree runtime story
 guard, fixed-radius cross-stream prepare/query event-wait guard, and DLPack
-capsule report guards, PyTorch route report guards, and PyTorch boundary
-guards: 64 tests, pass locally and on Linux.
+capsule report guards, PyTorch route report guards, PyTorch compatibility
+guards, and PyTorch boundary guards: 66 tests, pass locally and on Linux.
 
 ## Release-Candidate Boundary
 
@@ -130,7 +131,7 @@ Current machine-readable blocker manifest:
 - "Different nonzero prepare/query CUDA streams are ordered by a native prepare-ready event for the fixed-radius M1 route."
 - "A CuPy-backed DLPack-only wrapper smoke exercises the generic DLPack adapter."
 - "The fixed-radius M1 route has experimental legacy DLPack capsule evidence with stream argument propagation and pointer echo."
-- "The fixed-radius M1 route has experimental PyTorch CUDA tensor evidence with pointer echo, same-stream checksum, caller-owned outputs, and grad-enabled tensor rejection."
+- "The fixed-radius M1 route has experimental PyTorch CUDA tensor evidence with pointer echo, same-stream checksum, direct torch stream objects, distinct prepare/query stream ordering, caller-owned outputs, detached tensor acceptance, and fail-closed compatibility cases."
 - "Raw route-scoped timing probe exists; it does not authorize public speedup wording."
 
 ## Blocked Wording
@@ -165,18 +166,21 @@ Current machine-readable blocker manifest:
 | DLPack bridge wrapper over CuPy-owned arrays | experimental M1 evidence |
 | Fixed-radius M1 legacy DLPack capsule route | experimental M1 evidence |
 | Full arbitrary Numba partner surface | blocked |
-| Fixed-radius M1 PyTorch CUDA tensor route | experimental M1 evidence |
+| Fixed-radius M1 PyTorch CUDA tensor route and compatibility matrix | experimental M1 evidence |
 | Full arbitrary PyTorch partner surface | blocked |
 | Full DLPack capsule/framework route evidence | blocked |
 
 PyTorch fixed-radius M1 CUDA tensor route probe on `192.168.1.20`,
 2026-06-19: passing with boundaries. The route has PyTorch CUDA tensor pointer
-identity, native pointer echo, same-stream checksum, caller-owned output
-columns, and grad-enabled tensor rejection evidence. This authorizes exact
-fixed-radius M1 PyTorch CUDA tensor route wording only; it does not authorize
-arbitrary PyTorch tensor layouts, autograd integration, graph/compiler
-integration, broad PyTorch program acceleration, async completion, public
-true-zero-copy, or speedup wording.
+identity, native pointer echo, same-stream checksum, direct `torch.cuda.Stream`
+object handling, distinct prepare/query stream ordering, caller-owned output
+columns, detached tensor acceptance, and fail-closed cases for CPU tensors,
+wrong dtypes, rank, non-contiguous sliced views, mismatched lengths,
+output-contract errors, missing/extra columns, and grad-enabled input/output
+tensors. This authorizes exact fixed-radius M1 PyTorch CUDA tensor route
+wording only; it does not authorize arbitrary PyTorch tensor layouts beyond the
+matrix, autograd integration, graph/compiler integration, broad PyTorch program
+acceleration, async completion, public true-zero-copy, or speedup wording.
 
 Cross-stream prepare/query event-wait preflight on `192.168.1.20`,
 2026-06-19: passing with boundaries for the fixed-radius M1 route. The native

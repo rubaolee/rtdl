@@ -1247,8 +1247,13 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             "partner=\"torch\"",
             "output_columns=outputs",
             "source_protocols",
+            "compatibility_matrix",
+            "noncontiguous_view_rejected",
+            "distinct_prepare_query_torch_stream_objects",
+            "direct_torch_stream_object_validated",
             "torch_cuda_tensor_data_ptr",
             "pytorch_fixed_radius_m1_cuda_tensor_route_claim_authorized",
+            "pytorch_fixed_radius_m1_cuda_tensor_compatibility_matrix_claim_authorized",
             "pytorch_full_partner_surface_claim_authorized",
             "framework_neutral_dlpack_route_claim_authorized",
             "async_claim_authorized",
@@ -1270,8 +1275,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(report["remote_validation"]["validated_commit"], report["evidence_code_commit"])
         self.assertTrue(report["remote_validation"]["build_optix"]["ok"])
         self.assertTrue(report["remote_validation"]["v4_active"]["ok"])
-        self.assertEqual(report["remote_validation"]["v4_active"]["test_count"], 64)
-        self.assertTrue(report["remote_validation"]["dlpack_capsule_probe"]["ok"])
+        self.assertEqual(report["remote_validation"]["v4_active"]["test_count"], 66)
         self.assertTrue(report["remote_validation"]["source_tree_doctor"]["ok"])
         self.assertTrue(report["remote_validation"]["claim_boundary_scan"]["ok"])
         self.assertTrue(report["remote_validation"]["git_diff_check"]["ok"])
@@ -1283,6 +1287,9 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertTrue(report["validation"]["output_match"])
         self.assertTrue(report["validation"]["same_stream_consumer_checksum_match"])
         self.assertTrue(report["validation"]["grad_enabled_tensor_rejected"])
+        self.assertTrue(report["validation"]["compatibility_matrix_all_expected"])
+        self.assertEqual(report["validation"]["accepted_case_count"], 3)
+        self.assertEqual(report["validation"]["rejected_case_count"], 10)
         self.assertEqual(report["validation"]["observed"], report["validation"]["expected"])
         self.assertEqual(report["validation"]["observed_checksum"], report["validation"]["expected_checksum"])
         self.assertEqual(report["metadata_subset"]["source_protocols"], ["torch"])
@@ -1296,15 +1303,47 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertFalse(report["metadata_subset"]["v4_true_zero_copy_claim_authorized"])
         self.assertTrue(all(report["pointer_identity"].values()))
         self.assertTrue(all(report["pointer_echo_identity"].values()))
+        matrix = report["compatibility_matrix"]
+        self.assertTrue(matrix["all_expected"])
+        self.assertEqual(matrix["accepted_case_count"], 3)
+        self.assertEqual(matrix["rejected_case_count"], 10)
+        self.assertFalse(matrix["full_pytorch_partner_surface_complete"])
+        accepted_ids = {case["case_id"] for case in matrix["accepted"]}
+        rejected_ids = {case["case_id"] for case in matrix["rejected"]}
+        self.assertIn("contiguous_detached_cuda_same_stream_object", accepted_ids)
+        self.assertIn("detached_from_grad_cuda_tensor", accepted_ids)
+        self.assertIn("distinct_prepare_query_torch_stream_objects", accepted_ids)
+        for case_id in (
+            "grad_enabled_input_rejected",
+            "grad_enabled_output_rejected",
+            "cpu_tensor_rejected",
+            "wrong_dtype_rejected",
+            "bad_rank_rejected",
+            "noncontiguous_view_rejected",
+            "mismatched_lengths_rejected",
+            "bad_output_length_rejected",
+            "missing_column_rejected",
+            "extra_column_rejected",
+        ):
+            self.assertIn(case_id, rejected_ids)
+        self.assertTrue(all(case["passed"] for case in matrix["accepted"]))
+        self.assertTrue(all(case["passed"] for case in matrix["rejected"]))
+        cross_case = next(case for case in matrix["accepted"] if case["case_id"] == "distinct_prepare_query_torch_stream_objects")
+        self.assertTrue(cross_case["prepare_query_streams_differ"])
+        self.assertTrue(cross_case["native_prepare_ready_event_wait_used"])
         self.assertTrue(report["stream_contract"]["same_stream_consumer_checksum_validated"])
-        self.assertFalse(report["stream_contract"]["cross_stream_event_wait_validated"])
+        self.assertTrue(report["stream_contract"]["direct_torch_stream_object_validated"])
+        self.assertTrue(report["stream_contract"]["distinct_prepare_query_streams_validated"])
+        self.assertTrue(report["stream_contract"]["cross_stream_event_wait_validated"])
         self.assertFalse(report["stream_contract"]["async_completion_authorized"])
         lifetime = report["lifetime_contract"]
         self.assertTrue(lifetime["caller_owned_tensors_retained_until_stream_synchronized"])
         self.assertTrue(lifetime["grad_enabled_tensors_must_be_detached"])
+        self.assertTrue(lifetime["detached_tensors_accepted"])
         self.assertFalse(lifetime["full_pytorch_partner_surface_complete"])
         boundaries = report["claim_boundaries"]
         self.assertTrue(boundaries["pytorch_fixed_radius_m1_cuda_tensor_route_claim_authorized"])
+        self.assertTrue(boundaries["pytorch_fixed_radius_m1_cuda_tensor_compatibility_matrix_claim_authorized"])
         self.assertTrue(boundaries["pytorch_route_claim_authorized"])
         self.assertFalse(boundaries["pytorch_full_partner_surface_claim_authorized"])
         self.assertFalse(boundaries["framework_neutral_dlpack_route_claim_authorized"])

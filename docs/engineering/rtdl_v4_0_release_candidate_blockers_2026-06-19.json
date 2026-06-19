@@ -7,13 +7,13 @@
   "release_candidate_ready": false,
   "current_gate": "v4_active",
   "v4_release_candidate_gate_policy": "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
-  "latest_validated_implementation_head": "d1a98d5ff7defaf38414bd44763b382b9ef577d9",
-  "latest_validated_route_code_tree": "f22d141f5f5c00ad0475b2d3fd735a8eef7770f3",
-  "latest_validated_m1_implementation_v4_active_tests": 64,
+  "latest_validated_implementation_head": "4eb67a463b09f5f6819f4975e00d5cd4aecef1d2",
+  "latest_validated_route_code_tree": "a0dda6c50a6e76b8cb15cd6bbbb8d0a2d00c6c42",
+  "latest_validated_m1_implementation_v4_active_tests": 66,
   "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
   "latest_validated_m1_cross_stream_evidence_scope": "clean source-tree commit after push",
   "latest_validated_m1_cross_stream_v4_active_tests": 53,
-  "current_source_tree_v4_active_tests": 64,
+  "current_source_tree_v4_active_tests": 66,
   "evidence_ready": [
     {
       "id": "v4_active_gate",
@@ -55,7 +55,7 @@
       "id": "pytorch_fixed_radius_m1_cuda_tensor_route_probe",
       "status": "experimental_m1_evidence",
       "path": "docs/reports/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19.json",
-      "note": "PyTorch CUDA tensor route is validated for the exact fixed-radius M1 operator with pointer identity, native pointer echo, same-stream checksum, caller-owned outputs, and grad-enabled tensor rejection. Full PyTorch partner-surface wording remains blocked."
+      "note": "PyTorch CUDA tensor route is validated for the exact fixed-radius M1 operator with pointer identity, native pointer echo, same-stream checksum, direct torch.cuda.Stream objects, distinct prepare/query stream ordering, caller-owned outputs, detached tensor acceptance, and fail-closed compatibility cases. Full PyTorch partner-surface wording remains blocked."
     },
     {
       "id": "same_stream_ordering",
@@ -187,9 +187,9 @@
       "current_preflight": {
         "host": "192.168.1.20",
         "date": "2026-06-19",
-        "status": "closed_fixed_radius_m1_pytorch_cuda_tensor_route",
+        "status": "closed_fixed_radius_m1_pytorch_cuda_tensor_compatibility_matrix",
         "evidence": "docs/reports/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19.json",
-        "reason": "The fixed-radius V4 M1 route now has PyTorch CUDA tensor evidence for pointer identity, native pointer echo, same-stream checksum, caller-owned outputs, and grad-enabled tensor rejection. This authorizes only exact fixed-radius M1 PyTorch CUDA tensor route wording, not a full PyTorch partner surface."
+        "reason": "The fixed-radius V4 M1 route now has PyTorch CUDA tensor evidence for pointer identity, native pointer echo, same-stream checksum, direct torch.cuda.Stream objects, distinct prepare/query stream ordering, caller-owned outputs, detached tensor acceptance, and fail-closed compatibility cases. This authorizes only exact fixed-radius M1 PyTorch CUDA tensor route wording, not a full PyTorch partner surface."
       },
       "required_evidence": "PyTorch CUDA tensor route smoke/parity/lifetime/stream evidence.",
       "blocking_claims": [
@@ -202,9 +202,9 @@
       "current_preflight": {
         "host": "192.168.1.20",
         "date": "2026-06-19",
-        "status": "m1_pytorch_cuda_tensor_route_evidence_ready_but_full_surface_wording_blocked",
+        "status": "m1_pytorch_cuda_tensor_compatibility_matrix_ready_but_full_surface_wording_blocked",
         "evidence": "docs/reports/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19.json",
-        "reason": "The fixed-radius V4 M1 route now has PyTorch CUDA tensor route evidence. This does not validate arbitrary PyTorch tensor layouts, autograd integration, view semantics, multiple operators, graph/compiler integration, or broad PyTorch program acceleration."
+        "reason": "The fixed-radius V4 M1 route now has a PyTorch CUDA tensor compatibility matrix for the exact M1 operator. This does not validate arbitrary PyTorch tensor layouts beyond the matrix, autograd integration, multiple operators, graph/compiler integration, or broad PyTorch program acceleration."
       },
       "required_evidence": "A defined public PyTorch surface contract beyond the single V4 M1 fixed-radius CUDA tensor route: dtype/rank/stride/device compatibility matrix, detached/autograd policy, view/non-contiguous behavior, stream and lifetime ownership semantics, broader route/API coverage, docs, and claim-scan guards for the exact public wording.",
       "blocking_claims": [
