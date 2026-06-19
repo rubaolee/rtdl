@@ -22,6 +22,10 @@ PUBLIC_PATTERNS = (
     "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
     "docs/reviews/codex_v4_m8_external_ai_access_attempt_2026-06-19.md",
     "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
+    "tutorials/README.md",
+    "tutorials/v4_0/*.md",
+    "examples/README.md",
+    "examples/v4_0/**/*.md",
 )
 
 CLAIM_PATTERNS = (

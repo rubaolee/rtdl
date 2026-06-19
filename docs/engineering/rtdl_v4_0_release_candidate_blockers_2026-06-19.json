@@ -24,8 +24,8 @@
   "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
   "latest_validated_m1_cross_stream_evidence_scope": "clean source-tree commit after push",
   "latest_validated_m1_cross_stream_v4_active_tests": 53,
-  "current_source_tree_v4_active_tests": 74,
-  "current_source_tree_v4_release_candidate_tests": 74,
+  "current_source_tree_v4_active_tests": 78,
+  "current_source_tree_v4_release_candidate_tests": 78,
   "evidence_ready": [
     {
       "id": "v4_active_gate",

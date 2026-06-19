@@ -1045,6 +1045,42 @@
       "snippet": "ront-door promotion; - package install, PyPI, wheel, or stable SDK claims; - public true-zero-copy claims; - async/nonblocking completion claims; - public speedup, RTX speedup, or RT-core speedup claims; - full PyTorch, full Numba, or full DLPack surface claims; - public multi-language C ABI or non-Python host support."
     },
     {
+      "line": 103,
+      "path": "examples/README.md",
+      "phrase": "RT-core speedup",
+      "snippet": "## Claim Boundaries  - Short canonical boundary page:   [Current Claim Boundaries](../docs/learn/current_claim_boundaries.md). - `--backend optix` is not by itself a broad NVIDIA RT-core speedup claim. - `examples/v4_0/` is experimental source-tree material and is not the current   user front door. - Partner examples show user-owned continuation around RTDL outputs; RTDL"
+    },
+    {
+      "line": 12,
+      "path": "examples/v4_0/getting_started/README.md",
+      "phrase": "package-install",
+      "snippet": "ixed_radius_pytorch_hello.py` | same route with detached contiguous PyTorch CUDA tensors |  All three examples print JSON and keep claim-boundary flags in the output. They are not package-install examples and not speedup examples."
+    },
+    {
+      "line": 20,
+      "path": "examples/v4_0/README.md",
+      "phrase": "PyPI",
+      "snippet": "H=src:. python examples/v4_0/getting_started/v4_fixed_radius_pytorch_hello.py` |  ## Boundary  These examples are source-tree examples only. They do not authorize package install, PyPI, wheel, stable SDK, public true-zero-copy, async, public speedup, RT-core speedup, or full framework-surface claims.  Read the paired tutorial track at [RTDL V4.0 Experimental Tut"
+    },
+    {
+      "line": 20,
+      "path": "examples/v4_0/README.md",
+      "phrase": "true-zero-copy",
+      "snippet": "ting_started/v4_fixed_radius_pytorch_hello.py` |  ## Boundary  These examples are source-tree examples only. They do not authorize package install, PyPI, wheel, stable SDK, public true-zero-copy, async, public speedup, RT-core speedup, or full framework-surface claims.  Read the paired tutorial track at [RTDL V4.0 Experimental Tutorial Track](../../tutorials/v4_0/README.m"
+    },
+    {
+      "line": 20,
+      "path": "examples/v4_0/README.md",
+      "phrase": "async",
+      "snippet": "fixed_radius_pytorch_hello.py` |  ## Boundary  These examples are source-tree examples only. They do not authorize package install, PyPI, wheel, stable SDK, public true-zero-copy, async, public speedup, RT-core speedup, or full framework-surface claims.  Read the paired tutorial track at [RTDL V4.0 Experimental Tutorial Track](../../tutorials/v4_0/README.md)."
+    },
+    {
+      "line": 21,
+      "path": "examples/v4_0/README.md",
+      "phrase": "RT-core speedup",
+      "snippet": "llo.py` |  ## Boundary  These examples are source-tree examples only. They do not authorize package install, PyPI, wheel, stable SDK, public true-zero-copy, async, public speedup, RT-core speedup, or full framework-surface claims.  Read the paired tutorial track at [RTDL V4.0 Experimental Tutorial Track](../../tutorials/v4_0/README.md)."
+    },
+    {
       "line": 23,
       "path": "README.md",
       "phrase": "true-zero-copy",
@@ -1127,6 +1163,162 @@
       "path": "src/v4/README.md",
       "phrase": "package-install",
       "snippet": "/v4_0_m1_fixed_radius_numba_partner_surface_probe.py PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe.py ```  This is not a stable SDK, not a public package-install promise, and not the V4.0 headline."
+    },
+    {
+      "line": 57,
+      "path": "tutorials/README.md",
+      "phrase": "package-install",
+      "snippet": "e V4.0 tutorial track is experimental source-tree release-candidate material for one Python GPU device-array route. It is not the current user front door.  These tutorials are not package-install promises, automatic partner-selection promises, universal speedup claims, or paper-reproduction claims.  ## Related Doors  - [Project Front Page](../README.md) - [Docs Index](../d"
+    },
+    {
+      "line": 5,
+      "path": "tutorials/v4_0/01_source_tree_gpu_setup.md",
+      "phrase": "package install",
+      "snippet": "# Source-Tree GPU Setup  Status: experimental V4.0 source-tree tutorial.  V4.0 M1 is not a package install path. It is a source-tree GPU route that requires the checkout, CUDA-capable Python frameworks, and the OptiX native runtime built in this repository.  ## Build And Check  From th"
+    },
+    {
+      "line": 24,
+      "path": "tutorials/v4_0/01_source_tree_gpu_setup.md",
+      "phrase": "PyPI",
+      "snippet": "hecks:  - the checkout imports `rtdsl` from `src/`; - CuPy, Numba, PyTorch, and `build/librtdl_optix.so` are present; - the V4 active and release-candidate gates exist; - package, PyPI, wheel, stable SDK, and front-door claims remain blocked.  ## Editable Checkout  For developer convenience, the source tree can also be made importable from a temporary or local e"
+    },
+    {
+      "line": 37,
+      "path": "tutorials/v4_0/01_source_tree_gpu_setup.md",
+      "phrase": "PyPI",
+      "snippet": "n scripts/v4_0_editable_install_runtime_probe.py --system-site-packages --run-v4-smoke ```  That command is still source-tree hygiene evidence only. It is not a V4 package, wheel, PyPI artifact, or stable SDK claim.  ## First Route  The V4.0 M1 route is `fixed_radius_count_threshold_2d`.  Inputs are caller-owned CUDA columns:  - `ids`: `uint32`; - `x`: `float64`"
+    },
+    {
+      "line": 61,
+      "path": "tutorials/v4_0/01_source_tree_gpu_setup.md",
+      "phrase": "async",
+      "snippet": "does not return variable-length neighbor rows.  ## Stream Rule  Nonzero caller streams are propagated through prepare and query. The native route synchronizes before returning, so async or nonblocking completion is not claimed."
+    },
+    {
+      "line": 61,
+      "path": "tutorials/v4_0/01_source_tree_gpu_setup.md",
+      "phrase": "nonblocking",
+      "snippet": "return variable-length neighbor rows.  ## Stream Rule  Nonzero caller streams are propagated through prepare and query. The native route synchronizes before returning, so async or nonblocking completion is not claimed."
+    },
+    {
+      "line": 52,
+      "path": "tutorials/v4_0/02_fixed_radius_cupy.md",
+      "phrase": "true-zero-copy",
+      "snippet": "tadata as a boundary contract:  - caller stream propagation is evidence-backed for this route; - named CUDA column handoff has no observed host staging for named columns; - public true-zero-copy wording remains blocked; - async completion remains blocked; - public speedup and RT-core speedup wording remain blocked."
+    },
+    {
+      "line": 53,
+      "path": "tutorials/v4_0/02_fixed_radius_cupy.md",
+      "phrase": "async",
+      "snippet": "tream propagation is evidence-backed for this route; - named CUDA column handoff has no observed host staging for named columns; - public true-zero-copy wording remains blocked; - async completion remains blocked; - public speedup and RT-core speedup wording remain blocked."
+    },
+    {
+      "line": 54,
+      "path": "tutorials/v4_0/02_fixed_radius_cupy.md",
+      "phrase": "RT-core speedup",
+      "snippet": "named CUDA column handoff has no observed host staging for named columns; - public true-zero-copy wording remains blocked; - async completion remains blocked; - public speedup and RT-core speedup wording remain blocked."
+    },
+    {
+      "line": 24,
+      "path": "tutorials/v4_0/03_numba_device_array_route.md",
+      "phrase": "async",
+      "snippet": "ghbor counts.  This tutorial authorizes only the bounded V4.0 M1 Numba DeviceArray route. It does not authorize arbitrary Numba program acceleration, a full Numba partner surface, async completion, public true-zero-copy wording, or speedup wording."
+    },
+    {
+      "line": 24,
+      "path": "tutorials/v4_0/03_numba_device_array_route.md",
+      "phrase": "true-zero-copy",
+      "snippet": "ial authorizes only the bounded V4.0 M1 Numba DeviceArray route. It does not authorize arbitrary Numba program acceleration, a full Numba partner surface, async completion, public true-zero-copy wording, or speedup wording."
+    },
+    {
+      "line": 30,
+      "path": "tutorials/v4_0/04_pytorch_cuda_tensor_route.md",
+      "phrase": "async",
+      "snippet": "of the V4 evidence.  This tutorial does not claim a full PyTorch partner surface. It does not claim autograd integration, compiler integration, broad PyTorch program acceleration, async completion, public true-zero-copy wording, or speedup wording."
+    },
+    {
+      "line": 30,
+      "path": "tutorials/v4_0/04_pytorch_cuda_tensor_route.md",
+      "phrase": "true-zero-copy",
+      "snippet": "tutorial does not claim a full PyTorch partner surface. It does not claim autograd integration, compiler integration, broad PyTorch program acceleration, async completion, public true-zero-copy wording, or speedup wording."
+    },
+    {
+      "line": 19,
+      "path": "tutorials/v4_0/05_boundaries_and_troubleshooting.md",
+      "phrase": "package install",
+      "snippet": "ays in, RTDL/OptiX route, caller framework arrays out\" for CuPy, Numba, and PyTorch evidence-backed inputs.  ## What V4.0 M1 Is Not  It is not:  - the current user front door; - a package install, PyPI, wheel, or stable SDK release; - a public true-zero-copy claim; - async or nonblocking completion; - public speedup, RTX speedup, or RT-core speedup evidence; - a full PyTor"
+    },
+    {
+      "line": 19,
+      "path": "tutorials/v4_0/05_boundaries_and_troubleshooting.md",
+      "phrase": "PyPI",
+      "snippet": "X route, caller framework arrays out\" for CuPy, Numba, and PyTorch evidence-backed inputs.  ## What V4.0 M1 Is Not  It is not:  - the current user front door; - a package install, PyPI, wheel, or stable SDK release; - a public true-zero-copy claim; - async or nonblocking completion; - public speedup, RTX speedup, or RT-core speedup evidence; - a full PyTorch, Nu"
+    },
+    {
+      "line": 20,
+      "path": "tutorials/v4_0/05_boundaries_and_troubleshooting.md",
+      "phrase": "true-zero-copy",
+      "snippet": "Numba, and PyTorch evidence-backed inputs.  ## What V4.0 M1 Is Not  It is not:  - the current user front door; - a package install, PyPI, wheel, or stable SDK release; - a public true-zero-copy claim; - async or nonblocking completion; - public speedup, RTX speedup, or RT-core speedup evidence; - a full PyTorch, Numba, DLPack, JAX, C++, or Rust surface.  ## Common Failur"
+    },
+    {
+      "line": 21,
+      "path": "tutorials/v4_0/05_boundaries_and_troubleshooting.md",
+      "phrase": "async",
+      "snippet": "ence-backed inputs.  ## What V4.0 M1 Is Not  It is not:  - the current user front door; - a package install, PyPI, wheel, or stable SDK release; - a public true-zero-copy claim; - async or nonblocking completion; - public speedup, RTX speedup, or RT-core speedup evidence; - a full PyTorch, Numba, DLPack, JAX, C++, or Rust surface.  ## Common Failures  Missing nat"
+    },
+    {
+      "line": 21,
+      "path": "tutorials/v4_0/05_boundaries_and_troubleshooting.md",
+      "phrase": "nonblocking",
+      "snippet": "ed inputs.  ## What V4.0 M1 Is Not  It is not:  - the current user front door; - a package install, PyPI, wheel, or stable SDK release; - a public true-zero-copy claim; - async or nonblocking completion; - public speedup, RTX speedup, or RT-core speedup evidence; - a full PyTorch, Numba, DLPack, JAX, C++, or Rust surface.  ## Common Failures  Missing native library:  `"
+    },
+    {
+      "line": 22,
+      "path": "tutorials/v4_0/05_boundaries_and_troubleshooting.md",
+      "phrase": "RTX speedup",
+      "snippet": "not:  - the current user front door; - a package install, PyPI, wheel, or stable SDK release; - a public true-zero-copy claim; - async or nonblocking completion; - public speedup, RTX speedup, or RT-core speedup evidence; - a full PyTorch, Numba, DLPack, JAX, C++, or Rust surface.  ## Common Failures  Missing native library:  ```text build/librtdl_optix.so not found ``"
+    },
+    {
+      "line": 22,
+      "path": "tutorials/v4_0/05_boundaries_and_troubleshooting.md",
+      "phrase": "RT-core speedup",
+      "snippet": "ent user front door; - a package install, PyPI, wheel, or stable SDK release; - a public true-zero-copy claim; - async or nonblocking completion; - public speedup, RTX speedup, or RT-core speedup evidence; - a full PyTorch, Numba, DLPack, JAX, C++, or Rust surface.  ## Common Failures  Missing native library:  ```text build/librtdl_optix.so not found ```  Run:  ```bash mak"
+    },
+    {
+      "line": 48,
+      "path": "tutorials/v4_0/README.md",
+      "phrase": "package install",
+      "snippet": "scripts print JSON with observed output columns and claim-boundary flags.  ## Required Boundary  This tutorial track does not authorize:  - V4.0 as the current user front door; - package install, PyPI, wheel, or stable SDK wording; - public true-zero-copy, async, public speedup, RTX speedup, or RT-core speedup   wording; - full PyTorch, full Numba, full DLPack, or non-Pyt"
+    },
+    {
+      "line": 48,
+      "path": "tutorials/v4_0/README.md",
+      "phrase": "PyPI",
+      "snippet": "ON with observed output columns and claim-boundary flags.  ## Required Boundary  This tutorial track does not authorize:  - V4.0 as the current user front door; - package install, PyPI, wheel, or stable SDK wording; - public true-zero-copy, async, public speedup, RTX speedup, or RT-core speedup   wording; - full PyTorch, full Numba, full DLPack, or non-Python ho"
+    },
+    {
+      "line": 49,
+      "path": "tutorials/v4_0/README.md",
+      "phrase": "true-zero-copy",
+      "snippet": "ndary flags.  ## Required Boundary  This tutorial track does not authorize:  - V4.0 as the current user front door; - package install, PyPI, wheel, or stable SDK wording; - public true-zero-copy, async, public speedup, RTX speedup, or RT-core speedup   wording; - full PyTorch, full Numba, full DLPack, or non-Python host support.  The current user release remains v3.0.2. V"
+    },
+    {
+      "line": 49,
+      "path": "tutorials/v4_0/README.md",
+      "phrase": "async",
+      "snippet": "Required Boundary  This tutorial track does not authorize:  - V4.0 as the current user front door; - package install, PyPI, wheel, or stable SDK wording; - public true-zero-copy, async, public speedup, RTX speedup, or RT-core speedup   wording; - full PyTorch, full Numba, full DLPack, or non-Python host support.  The current user release remains v3.0.2. V4.0 is"
+    },
+    {
+      "line": 49,
+      "path": "tutorials/v4_0/README.md",
+      "phrase": "RTX speedup",
+      "snippet": "s tutorial track does not authorize:  - V4.0 as the current user front door; - package install, PyPI, wheel, or stable SDK wording; - public true-zero-copy, async, public speedup, RTX speedup, or RT-core speedup   wording; - full PyTorch, full Numba, full DLPack, or non-Python host support.  The current user release remains v3.0.2. V4.0 is an experimental source-tree r"
+    },
+    {
+      "line": 49,
+      "path": "tutorials/v4_0/README.md",
+      "phrase": "RT-core speedup",
+      "snippet": "does not authorize:  - V4.0 as the current user front door; - package install, PyPI, wheel, or stable SDK wording; - public true-zero-copy, async, public speedup, RTX speedup, or RT-core speedup   wording; - full PyTorch, full Numba, full DLPack, or non-Python host support.  The current user release remains v3.0.2. V4.0 is an experimental source-tree release candidate for"
     }
   ],
   "claim_boundaries": {
@@ -1171,8 +1363,18 @@
     "docs/reviews/codex_v4_m8_external_ai_access_attempt_2026-06-19.md",
     "docs/reviews/codex_v4_m8_external_review_request_2026-06-19.md",
     "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
+    "examples/README.md",
+    "examples/v4_0/getting_started/README.md",
+    "examples/v4_0/README.md",
     "README.md",
-    "src/v4/README.md"
+    "src/v4/README.md",
+    "tutorials/README.md",
+    "tutorials/v4_0/01_source_tree_gpu_setup.md",
+    "tutorials/v4_0/02_fixed_radius_cupy.md",
+    "tutorials/v4_0/03_numba_device_array_route.md",
+    "tutorials/v4_0/04_pytorch_cuda_tensor_route.md",
+    "tutorials/v4_0/05_boundaries_and_troubleshooting.md",
+    "tutorials/v4_0/README.md"
   ],
   "report_id": "v4_0_current_front_door_claim_boundary_scan_2026-06-19",
   "status": "pass"

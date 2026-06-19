@@ -34,6 +34,7 @@ the same `pip` command inside it.
 | Purpose | Directory | First command |
 | --- | --- | --- |
 | First runnable RTDL programs | `current/getting_started/` | `PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world.py` |
+| V4.0 experimental GPU route | `v4_0/getting_started/` | `PYTHONPATH=src:. python examples/v4_0/getting_started/v4_fixed_radius_cupy_hello.py` |
 | Primitive discovery workflow | `current/getting_started/` | `PYTHONPATH=src:. python examples/current/getting_started/rtdl_primitive_discovery_workflow.py` |
 | Individual feature examples | `current/features/` | `PYTHONPATH=src:. python examples/current/features/ray_queries/rtdl_ray_triangle_any_hit.py` |
 | Complete current applications | `current/apps/` | `PYTHONPATH=src:. python examples/current/apps/ml/rtdl_outlier_detection_app.py --backend cpu_python_reference` |
@@ -46,6 +47,7 @@ the same `pip` command inside it.
 | Directory | Audience | Contents |
 | --- | --- | --- |
 | `current/getting_started/` | New learner | Hello world, backend selection, primitive discovery, feature cookbook |
+| `v4_0/getting_started/` | V4 learner | Experimental source-tree fixed-radius GPU route with CuPy, Numba, and PyTorch |
 | `current/features/` | User learning one RTDL primitive family | Ray queries, neighbors, database reductions, graph traversal, spatial rows |
 | `current/apps/` | User building an application | Analytics, geospatial, ML, robotics, simulation, trajectory examples |
 | `current/partners/` | Advanced user | NumPy/CuPy/Numba/user-owned continuation examples around RTDL outputs |
@@ -99,6 +101,8 @@ the explicit `examples/current/...` paths.
 - Short canonical boundary page:
   [Current Claim Boundaries](../docs/learn/current_claim_boundaries.md).
 - `--backend optix` is not by itself a broad NVIDIA RT-core speedup claim.
+- `examples/v4_0/` is experimental source-tree material and is not the current
+  user front door.
 - Partner examples show user-owned continuation around RTDL outputs; RTDL does
   not claim to accelerate arbitrary NumPy, CuPy, Numba, or user-owned extension
   programs.

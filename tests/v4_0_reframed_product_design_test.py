@@ -431,8 +431,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             53,
             blockers["latest_validated_m1_cross_stream_v4_active_tests"],
         )
-        self.assertEqual(74, blockers["current_source_tree_v4_active_tests"])
-        self.assertEqual(74, blockers["current_source_tree_v4_release_candidate_tests"])
+        self.assertEqual(78, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(78, blockers["current_source_tree_v4_release_candidate_tests"])
         self.assertEqual(
             "exposed_as_non_authorizing_m8_review_gate_release_requires_external_review_and_explicit_user_action",
             blockers["v4_release_candidate_gate_policy"],
@@ -834,6 +834,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md",
             report["public_files_scanned"],
         )
+        self.assertIn("tutorials/v4_0/README.md", report["public_files_scanned"])
+        self.assertIn("examples/v4_0/getting_started/README.md", report["public_files_scanned"])
         self.assertTrue(
             any(
                 occurrence["phrase"].lower() == "zero-copy"
@@ -881,6 +883,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         release_modules = run_test_matrix.group_modules("v4_release_candidate")
         self.assertEqual(modules, release_modules)
         self.assertIn("tests.v4_0_m1_fixed_radius_route_test", modules)
+        self.assertIn("tests.v4_0_user_tutorials_test", modules)
 
 
 if __name__ == "__main__":

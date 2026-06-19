@@ -11,6 +11,7 @@ source-tree surface.
 | Path | Purpose |
 | --- | --- |
 | [Current RTDL Tutorial Track](current/README.md) | Learn RTDL step by step, from first run to benchmark-style Python+RTDL+partner programs. |
+| [V4.0 Experimental Tutorial Track](v4_0/README.md) | Study the V4.0 M1 source-tree Python GPU device-array operator route. |
 
 ## Current Track
 
@@ -24,6 +25,16 @@ source-tree surface.
 | 6 | [Prepared Execution And Measurement](current/06_prepared_execution_measurement.md) |
 | 7 | [Benchmark App Walkthrough](current/07_benchmark_app_python_rtdl_partner.md) |
 | 8 | [Spatial Join Benchmark Reference](current/08_spatial_join_rayjoin_reference.md) |
+
+## V4.0 Experimental Track
+
+| Step | Tutorial |
+| --- | --- |
+| 1 | [Source-Tree GPU Setup](v4_0/01_source_tree_gpu_setup.md) |
+| 2 | [CuPy Fixed-Radius Route](v4_0/02_fixed_radius_cupy.md) |
+| 3 | [Numba DeviceArray Route](v4_0/03_numba_device_array_route.md) |
+| 4 | [PyTorch CUDA Tensor Route](v4_0/04_pytorch_cuda_tensor_route.md) |
+| 5 | [Boundaries And Troubleshooting](v4_0/05_boundaries_and_troubleshooting.md) |
 
 ## What Belongs Where
 
@@ -39,6 +50,9 @@ source-tree surface.
 The current tutorial track teaches the v3.0 source-tree programming model:
 Python+RTDL, explicit CuPy/Numba partner choices where needed, and generic
 app-agnostic engine primitives.
+
+The V4.0 tutorial track is experimental source-tree release-candidate material
+for one Python GPU device-array route. It is not the current user front door.
 
 These tutorials are not package-install promises, automatic partner-selection
 promises, universal speedup claims, or paper-reproduction claims.

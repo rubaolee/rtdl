@@ -238,12 +238,14 @@ class V40ActiveAbiControlPlaneTest(unittest.TestCase):
                 "tests.v4_0_active_abi_control_plane_test",
                 "tests.v4_0_reframed_product_design_test",
                 "tests.v4_0_m1_fixed_radius_route_test",
+                "tests.v4_0_user_tutorials_test",
             ),
             run_test_matrix.group_modules("v4_active"),
         )
         self.assertNotIn("tests.v4_0_active_abi_control_plane_test", run_test_matrix.group_modules("v3_current"))
         self.assertNotIn("tests.v4_0_reframed_product_design_test", run_test_matrix.group_modules("v3_current"))
         self.assertNotIn("tests.v4_0_m1_fixed_radius_route_test", run_test_matrix.group_modules("v3_current"))
+        self.assertNotIn("tests.v4_0_user_tutorials_test", run_test_matrix.group_modules("v3_current"))
 
         import scripts.rtdl_source_tree_doctor as doctor
 
