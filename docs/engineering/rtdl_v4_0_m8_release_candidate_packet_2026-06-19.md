@@ -6,6 +6,9 @@ Date: 2026-06-19
 
 Candidate evidence baseline: `bbc43984b74dee7d52c059b295c5eaade0813096`
 
+First M8 packet/gate commit:
+`0273d4cba5e38afee099573b0ac47f2f883c1067`
+
 ## Verdict
 
 V4.0 is ready for critical review as an experimental source-tree candidate for
@@ -118,8 +121,9 @@ The current evidence does not validate:
 
 ## Validation Summary
 
-Linux validation on `192.168.1.20` for source-tree head
-`bbc43984b74dee7d52c059b295c5eaade0813096`:
+Linux validation on `192.168.1.20` for the implementation evidence baseline
+`bbc43984b74dee7d52c059b295c5eaade0813096` and final M8 packet/gate smoke at
+`0273d4cba5e38afee099573b0ac47f2f883c1067`:
 
 - `make build-optix`: pass;
 - `scripts/run_test_matrix.py --group v4_active`: 69 tests, pass;
