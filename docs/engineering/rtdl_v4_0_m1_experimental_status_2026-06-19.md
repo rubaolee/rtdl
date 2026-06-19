@@ -2,8 +2,8 @@
 
 Status: experimental engineering evidence, not current release.
 Date: 2026-06-19.
-Latest validated route-code head: `7a7b37b6e724aba5907af903182d6139837a4bfb`.
-Latest validated route-code tree: `7e78ba7042a6f42a882b4fa07f9d4824263cbaa8`.
+Latest validated route-code head: `e706bc8aa3edc95ecca9d38581cd3db0c224b5d1`.
+Latest validated route-code tree: `d7b96d7564b029cac9133592e8a897b716f36647`.
 
 This packet summarizes the current V4.0 M1 state after the fixed-radius CuPy
 device-array route landed. It is an engineering status packet, not a release
@@ -50,6 +50,7 @@ Implemented contract:
 | No-host-stage probe | `docs/reports/v4_0_m1_fixed_radius_cupy_no_host_stage_probe_2026-06-19.json` | Authorizes named-column no-host-stage wording; does not authorize true-zero-copy wording. |
 | Benchmark probe | `docs/reports/v4_0_m1_fixed_radius_cupy_benchmark_probe_2026-06-19.json` | Raw route timing smoke only; does not authorize public speedup or RT-core speedup wording. |
 | Same-stream ordering probe | `docs/reports/v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19.json` | Authorizes same-stream producer -> RTDL -> consumer ordering; does not authorize cross-stream event waits or async wording. |
+| Numba CUDA Array Interface smoke | `docs/reports/v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke_2026-06-19.json` | Authorizes Numba `DeviceNDArray` columns through `__cuda_array_interface__`; does not authorize a full Numba partner surface, PyTorch, or DLPack. |
 | True-zero-copy wording consensus | `docs/reviews/codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md` | Keeps public true-zero-copy wording blocked. |
 | Release-positioning consensus | `docs/reviews/codex_v4_m1_release_positioning_2ai_consensus_2026-06-19.md` | Keeps v3.0.2 as current release and V4 as experimental M1 evidence. |
 
@@ -60,11 +61,12 @@ PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 ```
 
 Latest Linux validation on `192.168.1.20` for route-code head
-`7a7b37b6e724aba5907af903182d6139837a4bfb`:
+`e706bc8aa3edc95ecca9d38581cd3db0c224b5d1`:
 
-- `v4_active`: 35 tests, pass;
+- `v4_active`: 37 tests, pass;
 - `make build-optix`: pass;
 - same-stream ordering probe: pass;
+- Numba CUDA Array Interface smoke: pass;
 - `git diff --check`: pass.
 
 ## Allowed Public-Safe Wording
@@ -86,7 +88,7 @@ Latest Linux validation on `192.168.1.20` for route-code head
 - Async, nonblocking, or returns before GPU work completes.
 - Cross-stream event wait support.
 - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims.
-- CuPy/Numba/PyTorch validated unless separate route evidence exists for each named framework.
+- Full Numba partner surface, PyTorch, or DLPack validated unless separate route evidence exists.
 
 ## Current Claim Flags
 
@@ -101,7 +103,8 @@ Latest Linux validation on `192.168.1.20` for route-code head
 | Public speedup | blocked |
 | RTX/RT-core speedup | blocked |
 | CuPy route evidence | experimental M1 evidence |
-| Numba route evidence | not yet present |
+| Numba `DeviceNDArray` via CUDA Array Interface | experimental M1 evidence |
+| Full Numba partner surface | blocked |
 | PyTorch route evidence | not yet present |
 | DLPack route evidence | not yet present |
 
@@ -109,7 +112,7 @@ Latest Linux validation on `192.168.1.20` for route-code head
 
 1. Keep the M1 route reproducible on current head.
 2. Add cross-stream event/wait ownership only after an explicit owner/event contract exists.
-3. Add Numba, PyTorch, or DLPack evidence before saying those frameworks are validated.
+3. Add PyTorch, DLPack, or broader Numba partner evidence before saying those surfaces are validated.
 4. Use RTX-class hardware before any RT-core speed discussion.
 5. Define a future `v4_release_candidate` gate distinct from `v4_active`.
 6. Only after an M8 release-candidate packet exists, reconsider whether V4 can become the current front door.

@@ -21,6 +21,7 @@ BENCHMARK_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_benchm
 STREAM_ORDERING_REPORT = (
     ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19.json"
 )
+NUMBA_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke_2026-06-19.json"
 SMOKE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_smoke.py"
 PARITY_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_parity_matrix.py"
 NO_HOST_STAGE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe.py"
@@ -478,6 +479,33 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             "does not validate a full Numba partner surface",
         ):
             self.assertIn(token, script)
+
+    def test_numba_cuda_array_interface_report_keeps_scope_narrow(self) -> None:
+        report = json.loads(NUMBA_REPORT.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["status"], "pass-with-boundary")
+        self.assertEqual(report["route_id"], "fixed_radius_count_threshold_2d")
+        self.assertEqual(report["framework"], "numba")
+        self.assertEqual(report["protocol"], "cuda_array_interface")
+        self.assertEqual(report["remote_validation"]["v4_active"]["test_count"], 37)
+        self.assertTrue(report["validation"]["output_match"])
+        self.assertEqual(report["metadata_subset"]["source_protocols"], ["cuda_array_interface"])
+        self.assertTrue(report["metadata_subset"]["caller_stream_handle_nonzero"])
+        self.assertTrue(report["metadata_subset"]["prepare_stream_handle_nonzero"])
+        self.assertFalse(report["metadata_subset"]["native_async_ready"])
+        self.assertFalse(report["metadata_subset"]["v4_true_zero_copy_claim_authorized"])
+        boundaries = report["claim_boundaries"]
+        self.assertTrue(boundaries["numba_device_array_route_claim_authorized"])
+        self.assertTrue(boundaries["numba_cuda_array_interface_claim_authorized"])
+        self.assertFalse(boundaries["numba_full_partner_surface_claim_authorized"])
+        self.assertFalse(boundaries["pytorch_route_claim_authorized"])
+        self.assertFalse(boundaries["dlpack_route_claim_authorized"])
+        self.assertFalse(boundaries["async_claim_authorized"])
+        self.assertFalse(boundaries["public_speedup_claim_authorized"])
+        self.assertFalse(boundaries["rt_core_speedup_claim_authorized"])
+        self.assertFalse(boundaries["v4_true_zero_copy_claim_authorized"])
+        self.assertIn("PyTorch route support", boundaries["forbidden_wording"])
+        self.assertIn("DLPack route support", boundaries["forbidden_wording"])
 
     def test_claim_review_keeps_v4_true_zero_copy_claim_blocked(self) -> None:
         review = CLAIM_REVIEW.read_text(encoding="utf-8")

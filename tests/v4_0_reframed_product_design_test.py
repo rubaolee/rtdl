@@ -156,10 +156,11 @@ class V40ReframedProductDesignTest(unittest.TestCase):
 
         for token in (
             "experimental engineering evidence, not current release",
-            "Latest validated route-code head: `7a7b37b6e724aba5907af903182d6139837a4bfb`",
+            "Latest validated route-code head: `e706bc8aa3edc95ecca9d38581cd3db0c224b5d1`",
             "fixed_radius_count_threshold_2d",
             "Zero-copy device-column handoff with no observed host staging of named columns",
             "Same-stream producer -> RTDL prepare/query -> consumer ordering is validated",
+            "Numba `DeviceNDArray` via CUDA Array Interface",
             "V4.0 is the current release",
             "blocked",
             "v4_release_candidate",

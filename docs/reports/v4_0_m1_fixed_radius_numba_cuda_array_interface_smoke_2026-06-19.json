@@ -1,0 +1,90 @@
+{
+  "status": "pass-with-boundary",
+  "report_id": "v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke_2026-06-19",
+  "route_id": "fixed_radius_count_threshold_2d",
+  "purpose": "Validate the V4 M1 fixed-radius route with Numba DeviceNDArray columns through __cuda_array_interface__.",
+  "evidence_code_commit": "e706bc8aa3edc95ecca9d38581cd3db0c224b5d1",
+  "evidence_code_tree": "d7b96d7564b029cac9133592e8a897b716f36647",
+  "remote_validation": {
+    "host": "192.168.1.20",
+    "path": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
+    "commands": [
+      "git pull --ff-only",
+      "git rev-parse HEAD",
+      "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
+      "make build-optix",
+      "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke.py --output /tmp/v4_numba_cuda_ai_e706bc8aa.json",
+      "git diff --check"
+    ],
+    "validated_commit": "e706bc8aa3edc95ecca9d38581cd3db0c224b5d1",
+    "v4_active": {
+      "ok": true,
+      "module_count": 3,
+      "test_count": 37,
+      "output": "Ran 37 tests in 0.461s; OK"
+    },
+    "build_optix": {
+      "ok": true
+    },
+    "diff_check": {
+      "ok": true
+    }
+  },
+  "framework": "numba",
+  "protocol": "cuda_array_interface",
+  "hardware": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "driver": "580.126.09",
+    "memory": "8192 MiB",
+    "compute_capability": "6.1",
+    "nvidia_smi_available": true,
+    "rt_core_hardware": false,
+    "hardware_note": "This host validates Numba CUDA array interop and OptiX route execution, but it is not RTX/RT-core speed evidence."
+  },
+  "validation": {
+    "output_match": true,
+    "observed": {
+      "query_ids": [1, 2, 3],
+      "neighbor_counts": [1, 1, 0],
+      "threshold_flags": [1, 1, 0]
+    },
+    "expected": {
+      "query_ids": [1, 2, 3],
+      "neighbor_counts": [1, 1, 0],
+      "threshold_flags": [1, 1, 0]
+    }
+  },
+  "metadata_subset": {
+    "source_protocols": ["cuda_array_interface"],
+    "caller_stream_handle_nonzero": true,
+    "prepare_stream_handle_nonzero": true,
+    "caller_stream_native_propagation_ready": true,
+    "native_prepare_stream_propagation_ready": true,
+    "native_synchronized_before_return": true,
+    "native_async_ready": false,
+    "named_cuda_columns_no_host_stage_authorized": true,
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "claim_boundaries": {
+    "numba_device_array_route_claim_authorized": true,
+    "numba_cuda_array_interface_claim_authorized": true,
+    "numba_full_partner_surface_claim_authorized": false,
+    "pytorch_route_claim_authorized": false,
+    "dlpack_route_claim_authorized": false,
+    "async_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "v4_true_zero_copy_claim_authorized": false,
+    "allowed_wording": "V4 M1 validates the fixed-radius route with Numba DeviceNDArray columns through __cuda_array_interface__.",
+    "forbidden_wording": [
+      "full Numba partner surface",
+      "PyTorch route support",
+      "DLPack route support",
+      "async execution",
+      "true zero-copy",
+      "RT-core speedup",
+      "RTX speedup"
+    ],
+    "reason": "This smoke validates the V4 M1 route with Numba DeviceNDArray columns through __cuda_array_interface__. It does not validate a full Numba partner surface, PyTorch, DLPack, async, true-zero-copy, or speedup wording."
+  }
+}
