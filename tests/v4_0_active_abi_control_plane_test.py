@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 from pathlib import Path
 import re
@@ -20,6 +21,31 @@ SYMBOL_MANIFEST = ROOT / "docs" / "engineering" / "rtdl_v4_0_active_abi_symbol_m
 DESIGN = ROOT / "docs" / "engineering" / "rtdl_v4_0_design_review_packet_2026-06-19.md"
 MAKEFILE = ROOT / "Makefile"
 CTYPES_SMOKE = ROOT / "src" / "v4" / "examples" / "python_ctypes_aabb2_smoke.py"
+LAYOUT_AUDIT = ROOT / "scripts" / "v4_0_active_abi_layout_audit.py"
+
+
+def _load_ctypes_smoke():
+    spec = importlib.util.spec_from_file_location("rtdl_v4_ctypes_smoke_test", CTYPES_SMOKE)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"could not load {CTYPES_SMOKE}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _header_struct_fields(header: str, struct_name: str) -> list[str]:
+    match = re.search(rf"typedef struct {struct_name} \{{(?P<body>.*?)\}} {struct_name};", header, re.DOTALL)
+    if match is None:
+        raise AssertionError(f"missing struct {struct_name}")
+    fields: list[str] = []
+    for raw_line in match.group("body").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("/*") or line.startswith("*"):
+            continue
+        field = re.search(r"([A-Za-z_][A-Za-z0-9_]*)\s*(?:\[[^\]]+\])?;$", line)
+        if field is not None:
+            fields.append(field.group(1))
+    return fields
 
 
 class V40ActiveAbiControlPlaneTest(unittest.TestCase):
@@ -36,6 +62,7 @@ class V40ActiveAbiControlPlaneTest(unittest.TestCase):
         self.assertTrue(NOTE.exists())
         self.assertTrue(SYMBOL_MANIFEST.exists())
         self.assertTrue(CTYPES_SMOKE.exists())
+        self.assertTrue(LAYOUT_AUDIT.exists())
         self.assertFalse((ROOT / "include" / "rtdl" / "rtdl.h").exists())
         self.assertFalse((ROOT / "packaging" / "rtdl-c-api.pc").exists())
         self.assertIn("Active ABI Slice", NOTE.read_text(encoding="utf-8"))
@@ -87,6 +114,42 @@ class V40ActiveAbiControlPlaneTest(unittest.TestCase):
 
         for claim_name, authorized in manifest["claim_boundaries"].items():
             self.assertFalse(authorized, claim_name)
+
+    def test_ctypes_descriptor_layout_mirror_matches_header_fields(self) -> None:
+        smoke = _load_ctypes_smoke()
+        snapshot = smoke.layout_snapshot()
+        self.assertEqual(8, snapshot["max_rank"])
+        self.assertEqual(8, snapshot["pointer_size"])
+        for struct_name, layout in snapshot["descriptors"].items():
+            header_fields = _header_struct_fields(self.header, struct_name)
+            self.assertEqual(header_fields, list(layout["fields"].keys()), struct_name)
+            self.assertEqual("struct_size", header_fields[0], struct_name)
+            self.assertEqual(0, layout["fields"]["struct_size"]["offset"], struct_name)
+            self.assertGreater(layout["sizeof"], 0, struct_name)
+
+    def test_layout_audit_compares_ctypes_mirror_with_c_header_when_cxx_is_available(self) -> None:
+        if shutil.which("c++") is None:
+            self.skipTest("no c++ compiler on this host")
+        completed = subprocess.run(
+            [sys.executable, str(LAYOUT_AUDIT)],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=60,
+        )
+        if completed.returncode != 0:
+            sys.stderr.write(completed.stdout)
+            sys.stderr.write(completed.stderr)
+        self.assertEqual(0, completed.returncode)
+        payload = json.loads(completed.stdout)
+        self.assertEqual("rtdl_v4_active_abi_layout_audit_v1", payload["manifest_kind"])
+        self.assertEqual("0.2.0", payload["abi_version"])
+        self.assertFalse(payload["stable"])
+        self.assertTrue(payload["matches"])
+        self.assertEqual(payload["c_header_layout"], payload["ctypes_layout"])
+        for authorized in payload["claim_boundaries"].values():
+            self.assertFalse(authorized)
 
     def test_public_descriptors_start_with_struct_size(self) -> None:
         for name in (

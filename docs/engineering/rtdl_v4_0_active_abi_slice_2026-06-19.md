@@ -21,6 +21,9 @@ kept, but it is not the Phase 1 V4.0 product proof.
 - Runtime smoke: `src/v4/examples/python_ctypes_aabb2_smoke.py`.
 - Symbol drift guard:
   `docs/engineering/rtdl_v4_0_active_abi_symbol_manifest_2026-06-19.json`.
+- Layout audit: `scripts/v4_0_active_abi_layout_audit.py` compares the
+  Python `ctypes` mirror with C++ `sizeof` / `offsetof` values from
+  `src/v4/include/rtdl/rtdl.h`.
 
 ## Contract Shape
 
@@ -66,6 +69,7 @@ arrays.
 3. Keep the Python operator front door aligned with caller-stream behavior:
    nonzero streams propagate through fixed-radius prepare and query
    synchronously; async remains blocked until an owner/event contract exists.
-4. Add layout and old-size descriptor compatibility tests for the substrate.
+4. Keep layout audit and old-size descriptor compatibility tests passing as
+   the substrate evolves.
 5. Connect the substrate to the first device-buffer route after the Python
    operator evidence packet passes.

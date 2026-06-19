@@ -111,6 +111,37 @@ class QueryDesc(ctypes.Structure):
     ]
 
 
+STRUCTURE_TYPES = {
+    "rtdl_external_runtime_desc": ExternalRuntimeDesc,
+    "rtdl_context_desc": ContextDesc,
+    "rtdl_route_desc": RouteDesc,
+    "rtdl_buffer_desc": BufferDesc,
+    "rtdl_index_desc": IndexDesc,
+    "rtdl_output_desc": OutputDesc,
+    "rtdl_query_desc": QueryDesc,
+}
+
+
+def layout_snapshot() -> dict[str, object]:
+    descriptors: dict[str, object] = {}
+    for c_name, struct_cls in STRUCTURE_TYPES.items():
+        fields: dict[str, object] = {}
+        for field_name, field_type in struct_cls._fields_:
+            fields[field_name] = {
+                "offset": int(getattr(struct_cls, field_name).offset),
+                "size": int(ctypes.sizeof(field_type)),
+            }
+        descriptors[c_name] = {
+            "sizeof": int(ctypes.sizeof(struct_cls)),
+            "fields": fields,
+        }
+    return {
+        "pointer_size": int(ctypes.sizeof(ctypes.c_void_p)),
+        "max_rank": 8,
+        "descriptors": descriptors,
+    }
+
+
 def _load(library: Path) -> ctypes.CDLL:
     lib = ctypes.CDLL(str(library))
     lib.rtdl_context_create.argtypes = [ctypes.POINTER(ContextDesc), ctypes.POINTER(ctypes.c_void_p)]
