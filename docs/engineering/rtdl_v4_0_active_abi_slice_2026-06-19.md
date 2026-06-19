@@ -19,6 +19,8 @@ kept, but it is not the Phase 1 V4.0 product proof.
 - Optional doctor check: `scripts/rtdl_source_tree_doctor.py --include-v4-active`.
 - Test matrix group: `scripts/run_test_matrix.py --group v4_active`.
 - Runtime smoke: `src/v4/examples/python_ctypes_aabb2_smoke.py`.
+- Symbol drift guard:
+  `docs/engineering/rtdl_v4_0_active_abi_symbol_manifest_2026-06-19.json`.
 
 ## Contract Shape
 

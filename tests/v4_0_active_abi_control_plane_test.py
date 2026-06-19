@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -15,6 +16,7 @@ HEADER = ROOT / "src" / "v4" / "include" / "rtdl" / "rtdl.h"
 SOURCE = ROOT / "src" / "v4" / "rtdl_v4_c_api.cpp"
 README = ROOT / "src" / "v4" / "README.md"
 NOTE = ROOT / "docs" / "engineering" / "rtdl_v4_0_active_abi_slice_2026-06-19.md"
+SYMBOL_MANIFEST = ROOT / "docs" / "engineering" / "rtdl_v4_0_active_abi_symbol_manifest_2026-06-19.json"
 DESIGN = ROOT / "docs" / "engineering" / "rtdl_v4_0_design_review_packet_2026-06-19.md"
 MAKEFILE = ROOT / "Makefile"
 CTYPES_SMOKE = ROOT / "src" / "v4" / "examples" / "python_ctypes_aabb2_smoke.py"
@@ -32,6 +34,7 @@ class V40ActiveAbiControlPlaneTest(unittest.TestCase):
         self.assertTrue(SOURCE.exists())
         self.assertTrue(README.exists())
         self.assertTrue(NOTE.exists())
+        self.assertTrue(SYMBOL_MANIFEST.exists())
         self.assertTrue(CTYPES_SMOKE.exists())
         self.assertFalse((ROOT / "include" / "rtdl" / "rtdl.h").exists())
         self.assertFalse((ROOT / "packaging" / "rtdl-c-api.pc").exists())
@@ -54,6 +57,36 @@ class V40ActiveAbiControlPlaneTest(unittest.TestCase):
         self.assertIn("Borrowed device pointers are caller-asserted", header)
         self.assertNotIn("rtdl_backend_is_supported", header)
         self.assertNotIn("rtdl_route_is_supported", header)
+
+    def test_active_symbol_manifest_matches_header_and_source(self) -> None:
+        manifest = json.loads(SYMBOL_MANIFEST.read_text(encoding="utf-8"))
+        self.assertEqual("rtdl_v4_active_c_abi_symbol_manifest_v1", manifest["manifest_kind"])
+        self.assertEqual("active_experimental_substrate_manifest", manifest["status"])
+        self.assertEqual("0.2.0", manifest["abi_version"])
+        self.assertFalse(manifest["stable"])
+        self.assertEqual("src/v4/include/rtdl/rtdl.h", manifest["header"])
+        self.assertEqual("src/v4/rtdl_v4_c_api.cpp", manifest["source"])
+        self.assertEqual("make build-v4-c-api", manifest["build_target"])
+
+        header_symbols = re.findall(
+            r"^RTDL_API\s+[\w\s\*]+?\s+(rtdl_[A-Za-z0-9_]+)\s*\(",
+            self.header,
+            flags=re.MULTILINE,
+        )
+        source_symbols = re.findall(
+            r"^RTDL_API\s+[\w\s\*]+?\s+(rtdl_[A-Za-z0-9_]+)\s*\(",
+            self.source,
+            flags=re.MULTILINE,
+        )
+        self.assertEqual(manifest["symbols"], header_symbols)
+        self.assertEqual(manifest["symbols"], source_symbols)
+
+        for removed_symbol in manifest["removed_archived_symbols"]:
+            self.assertNotIn(removed_symbol, self.header)
+            self.assertNotIn(removed_symbol, self.source)
+
+        for claim_name, authorized in manifest["claim_boundaries"].items():
+            self.assertFalse(authorized, claim_name)
 
     def test_public_descriptors_start_with_struct_size(self) -> None:
         for name in (

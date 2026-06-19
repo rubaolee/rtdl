@@ -1,0 +1,57 @@
+{
+  "manifest_kind": "rtdl_v4_active_c_abi_symbol_manifest_v1",
+  "date": "2026-06-19",
+  "status": "active_experimental_substrate_manifest",
+  "scope": "V4 Phase 2 substrate under the Python GPU RT-core operator work; not a current user front door, stable SDK, package-install promise, or public multi-language C ABI release.",
+  "abi_version": "0.2.0",
+  "stable": false,
+  "header": "src/v4/include/rtdl/rtdl.h",
+  "source": "src/v4/rtdl_v4_c_api.cpp",
+  "build_target": "make build-v4-c-api",
+  "test_group": "python scripts/run_test_matrix.py --group v4_active",
+  "related_archived_manifest": "docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json",
+  "symbols": [
+    "rtdl_abi_version_major",
+    "rtdl_abi_version_minor",
+    "rtdl_abi_version_patch",
+    "rtdl_abi_is_compatible",
+    "rtdl_status_string",
+    "rtdl_last_create_error",
+    "rtdl_context_last_error",
+    "rtdl_context_create",
+    "rtdl_context_destroy",
+    "rtdl_query_capability",
+    "rtdl_buffer_import",
+    "rtdl_buffer_export",
+    "rtdl_buffer_destroy",
+    "rtdl_index_build",
+    "rtdl_index_destroy",
+    "rtdl_query_plan_create",
+    "rtdl_query_plan_destroy",
+    "rtdl_query_execute",
+    "rtdl_result_row_count",
+    "rtdl_result_get_buffer",
+    "rtdl_result_destroy"
+  ],
+  "removed_archived_symbols": [
+    "rtdl_backend_is_supported",
+    "rtdl_route_is_supported",
+    "rtdl_context_set_external_runtime",
+    "rtdl_query_destroy"
+  ],
+  "claim_boundaries": {
+    "current_user_release": false,
+    "stable_sdk": false,
+    "public_c_abi_release": false,
+    "package_install": false,
+    "generated_bindings": false,
+    "non_python_host_release": false,
+    "true_zero_copy": false,
+    "public_speedup": false
+  },
+  "notes": [
+    "The symbol surface intentionally uses enum-keyed rtdl_query_capability instead of per-capability exported helpers.",
+    "The old rtdl_query handle is split into rtdl_query_plan and rtdl_result handles; future async completion would use rtdl_event.",
+    "This manifest is an engineering drift guard for the active substrate, not a promise that the C ABI is stable or user-facing in V4.0."
+  ]
+}
