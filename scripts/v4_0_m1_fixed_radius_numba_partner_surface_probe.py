@@ -336,7 +336,7 @@ def run_probe() -> dict[str, object]:
                 "name": f"prepared_reuse_{offset}",
                 "query_xy": query_xy,
             }
-            query = _to_device_columns(cuda, stream, _ids(len(query_xy), offset=1 + 10 * offset), query_xy)
+            query = _to_device_columns(cuda, stream, _ids(len(query_xy), offset=1), query_xy)
             outputs = _outputs(cuda, stream, len(query_xy))
             expected = _cpu_reference(case)
             result = prepared.run(
