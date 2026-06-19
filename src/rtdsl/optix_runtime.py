@@ -5848,6 +5848,9 @@ class PreparedOptixFixedRadiusCountThreshold2D:
                 expected_device=expected_device,
             )
             outputs[name] = handoff
+        pointer_echo = dict(getattr(self, "_search_pointer_echo", {}))
+        pointer_echo.update({f"query.{name}": int(handoff.data_ptr) for name, handoff in query_handoffs.items()})
+        pointer_echo.update({f"output.{name}": int(handoff.data_ptr) for name, handoff in outputs.items()})
         if query_count == 0:
             return {
                 "metadata": {
@@ -5855,6 +5858,8 @@ class PreparedOptixFixedRadiusCountThreshold2D:
                     "transfer_mode": "device_fixed_radius_point_columns_output_columns_zero_copy",
                     "native_symbol": _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_SYMBOL,
                     "query_count": 0,
+                    "native_call_device_pointer_echo": pointer_echo,
+                    "native_call_device_pointer_echo_complete": bool(pointer_echo),
                     "direct_device_handoff_authorized": True,
                     "true_zero_copy_authorized": bool(getattr(self, "_search_scene_true_zero_copy", False)),
                     "rt_core_speedup_claim_authorized": False,
@@ -5902,6 +5907,8 @@ class PreparedOptixFixedRadiusCountThreshold2D:
             "query_count": query_count,
             "radius": float(radius),
             "threshold": int(threshold),
+            "native_call_device_pointer_echo": pointer_echo,
+            "native_call_device_pointer_echo_complete": bool(pointer_echo),
             "direct_device_pointer_observed": True,
             "direct_device_handoff_authorized": True,
             "query_point_columns_true_zero_copy_authorized": True,
@@ -5967,6 +5974,9 @@ class PreparedOptixFixedRadiusCountThreshold2D:
                 expected_device=expected_device,
             )
             outputs[name] = handoff
+        pointer_echo = dict(getattr(self, "_search_pointer_echo", {}))
+        pointer_echo.update({f"query.{name}": int(handoff.data_ptr) for name, handoff in query_handoffs.items()})
+        pointer_echo.update({f"output.{name}": int(handoff.data_ptr) for name, handoff in outputs.items()})
         if query_count == 0:
             return {
                 "metadata": {
@@ -5975,6 +5985,8 @@ class PreparedOptixFixedRadiusCountThreshold2D:
                     "native_symbol": _OPTIX_PARTNER_PREPARED_FIXED_RADIUS_DEVICE_QUERY_OUTPUT_ON_STREAM_SYMBOL,
                     "query_count": 0,
                     "cuda_stream_ptr": cuda_stream_ptr,
+                    "native_call_device_pointer_echo": pointer_echo,
+                    "native_call_device_pointer_echo_complete": bool(pointer_echo),
                     "stream_ordering_requested": "caller_supplied_cuda_stream",
                     "native_synchronized_before_return": True,
                     "native_async_ready": False,
@@ -6027,6 +6039,8 @@ class PreparedOptixFixedRadiusCountThreshold2D:
             "radius": float(radius),
             "threshold": int(threshold),
             "cuda_stream_ptr": cuda_stream_ptr,
+            "native_call_device_pointer_echo": pointer_echo,
+            "native_call_device_pointer_echo_complete": bool(pointer_echo),
             "stream_ordering_requested": "caller_supplied_cuda_stream",
             "native_synchronized_before_return": True,
             "native_async_ready": False,
@@ -9013,6 +9027,10 @@ def prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
     prepared._handle = ctypes.c_void_p()
     prepared._closed = False
     prepared._search_scene_true_zero_copy = True
+    prepared._search_pointer_echo = {
+        f"search.{name}": int(point.data_ptr)
+        for name, point in packet["points"].items()
+    }
     if packet["metadata"]["point_count"] == 0:
         return prepared
 
@@ -9067,6 +9085,10 @@ def prepare_optix_fixed_radius_count_threshold_2d_device_search_columns_on_strea
     prepared._closed = False
     prepared._search_scene_true_zero_copy = True
     prepared._search_scene_cuda_stream_ptr = cuda_stream_ptr
+    prepared._search_pointer_echo = {
+        f"search.{name}": int(point.data_ptr)
+        for name, point in packet["points"].items()
+    }
     if packet["metadata"]["point_count"] == 0:
         return prepared
 

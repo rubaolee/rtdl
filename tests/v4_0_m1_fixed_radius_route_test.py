@@ -51,11 +51,21 @@ class _FakePrepared:
 
     def write_device_count_threshold_columns_on_stream(self, query_point_columns, **kwargs):
         self.on_stream_call = {"query_point_columns": query_point_columns, **kwargs}
+        pointer_echo = {f"query.{name}": int(column._ptr) for name, column in query_point_columns.items()}
+        pointer_echo.update(
+            {
+                "output.query_ids": int(kwargs["query_ids_out"]._ptr),
+                "output.neighbor_counts": int(kwargs["neighbor_counts_out"]._ptr),
+                "output.threshold_flags": int(kwargs["threshold_flags_out"]._ptr),
+            }
+        )
         return {
             "metadata": {
                 "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns_on_stream",
                 "transfer_mode": "device_fixed_radius_point_columns_output_columns_zero_copy_on_stream",
                 "cuda_stream_ptr": int(kwargs["cuda_stream_ptr"]),
+                "native_call_device_pointer_echo": pointer_echo,
+                "native_call_device_pointer_echo_complete": True,
                 "native_synchronized_before_return": True,
                 "native_async_ready": False,
                 "true_zero_copy_authorized": True,
@@ -267,6 +277,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         )
         self.assertEqual(report["cupy_stream_smoke_observed"]["neighbor_counts"], [1, 1, 0])
         self.assertTrue(all(report["pointer_identity"].values()))
+        self.assertTrue(all(report["pointer_echo_identity"].values()))
         self.assertTrue(all(report["source_audit"].values()))
         self.assertTrue(all(report["promotion_blockers"].values()))
         self.assertFalse(report["route"]["async_claim_authorized"])
@@ -281,6 +292,8 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             "run_v4_fixed_radius_count_threshold_2d",
             "cp.cuda.Stream(non_blocking=True)",
             "pointer_identity",
+            "pointer_echo_identity",
+            "native_call_device_pointer_echo",
             "source_audit",
             "promotion_blockers",
             "prepare_on_stream_symbol_present",
@@ -341,6 +354,9 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertTrue(metadata["native_synchronized_before_return"])
         self.assertFalse(metadata["native_async_ready"])
         self.assertTrue(metadata["native_true_zero_copy_authorized"])
+        self.assertTrue(metadata["native_call_device_pointer_echo_complete"])
+        self.assertEqual(metadata["native_call_device_pointer_echo"]["query.x"], 0x2020)
+        self.assertEqual(metadata["native_call_device_pointer_echo"]["output.neighbor_counts"], 0x3020)
         self.assertFalse(metadata["v4_true_zero_copy_claim_authorized"])
 
 

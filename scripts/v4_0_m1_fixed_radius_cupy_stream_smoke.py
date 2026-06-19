@@ -60,7 +60,6 @@ def _source_audit() -> dict[str, bool]:
 def _promotion_blockers() -> dict[str, bool]:
     return {
         "transfer_counter_or_equivalent_prepare_query_missing": True,
-        "native_pointer_echo_metadata_missing": True,
         "full_correctness_parity_matrix_missing": True,
         "async_completion_contract_missing": True,
         "rtx_rt_core_speed_hardware_evidence_missing": True,
@@ -130,6 +129,16 @@ def run_smoke() -> dict[str, object]:
     }
     if not all(pointer_identity.values()):
         raise AssertionError(f"pointer identity failed: {pointer_identity!r}")
+    expected_pointer_echo = {**input_ptrs, **output_ptrs}
+    native_pointer_echo = metadata["native_call_device_pointer_echo"]
+    pointer_echo_identity = {
+        name: int(native_pointer_echo.get(name, 0)) == int(ptr)
+        for name, ptr in expected_pointer_echo.items()
+    }
+    if not metadata["native_call_device_pointer_echo_complete"]:
+        raise AssertionError("native call pointer echo is incomplete")
+    if not all(pointer_echo_identity.values()):
+        raise AssertionError(f"native call pointer echo failed: {pointer_echo_identity!r}")
     if metadata["caller_stream_handle"] != int(stream.ptr):
         raise AssertionError("metadata did not preserve the caller stream handle")
     if metadata["prepare_stream_handle"] != int(stream.ptr):
@@ -155,9 +164,11 @@ def run_smoke() -> dict[str, object]:
             "native_synchronized_before_return": bool(metadata["native_synchronized_before_return"]),
             "native_async_ready": bool(metadata["native_async_ready"]),
             "native_true_zero_copy_authorized": bool(metadata["native_true_zero_copy_authorized"]),
+            "native_call_device_pointer_echo_complete": bool(metadata["native_call_device_pointer_echo_complete"]),
             "v4_true_zero_copy_claim_authorized": bool(metadata["v4_true_zero_copy_claim_authorized"]),
         },
         "pointer_identity": pointer_identity,
+        "pointer_echo_identity": pointer_echo_identity,
         "source_audit": _source_audit(),
         "promotion_blockers": _promotion_blockers(),
         "claim_boundaries": {

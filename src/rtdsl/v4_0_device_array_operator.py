@@ -471,6 +471,10 @@ class V4FixedRadiusCountThreshold2D:
                 "native_true_zero_copy_authorized": bool(
                     native_metadata.get("true_zero_copy_authorized", metadata.get("true_zero_copy_authorized", False))
                 ),
+                "native_call_device_pointer_echo": dict(native_metadata.get("native_call_device_pointer_echo", {})),
+                "native_call_device_pointer_echo_complete": bool(
+                    native_metadata.get("native_call_device_pointer_echo_complete", False)
+                ),
                 "v4_true_zero_copy_claim_authorized": False,
                 "v4_true_zero_copy_claim_blocker": "M4_evidence_packet_pending",
                 "public_speedup_claim_authorized": False,
