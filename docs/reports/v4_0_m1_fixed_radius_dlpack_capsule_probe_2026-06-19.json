@@ -1,0 +1,257 @@
+{
+  "claim_boundaries": {
+    "async_claim_authorized": false,
+    "dlpack_route_claim_authorized": false,
+    "fixed_radius_m1_dlpack_capsule_route_claim_authorized": true,
+    "framework_neutral_dlpack_route_claim_authorized": false,
+    "full_dlpack_capsule_route_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "pytorch_route_claim_authorized": false,
+    "reason": "This probe validates real legacy DLPack capsule intake for the CuPy-backed fixed-radius M1 route, including stream argument propagation, pointer identity, native pointer echo, and output correctness. It does not validate arbitrary framework-neutral DLPack, PyTorch, async, true-zero-copy, or speedup wording.",
+    "rt_core_speedup_claim_authorized": false,
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "dlpack_stream_contract": {
+    "all_requested_streams_match_caller_stream": true,
+    "async_completion_authorized": false,
+    "caller_stream_ptr": 826948944,
+    "producer_accepted_stream_argument": {
+      "output": {
+        "neighbor_counts": [
+          true,
+          true
+        ],
+        "query_ids": [
+          true,
+          true
+        ],
+        "threshold_flags": [
+          true,
+          true
+        ]
+      },
+      "query": {
+        "ids": [
+          true,
+          true
+        ],
+        "x": [
+          true,
+          true
+        ],
+        "y": [
+          true,
+          true
+        ]
+      },
+      "search": {
+        "ids": [
+          true,
+          true,
+          true
+        ],
+        "x": [
+          true,
+          true,
+          true
+        ],
+        "y": [
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    "requested_streams": {
+      "output": {
+        "neighbor_counts": [
+          826948944,
+          826948944
+        ],
+        "query_ids": [
+          826948944,
+          826948944
+        ],
+        "threshold_flags": [
+          826948944,
+          826948944
+        ]
+      },
+      "query": {
+        "ids": [
+          826948944,
+          826948944
+        ],
+        "x": [
+          826948944,
+          826948944
+        ],
+        "y": [
+          826948944,
+          826948944
+        ]
+      },
+      "search": {
+        "ids": [
+          826948944,
+          826948944,
+          826948944
+        ],
+        "x": [
+          826948944,
+          826948944,
+          826948944
+        ],
+        "y": [
+          826948944,
+          826948944,
+          826948944
+        ]
+      }
+    },
+    "synchronous_return": true
+  },
+  "evidence_code_commit": "22bf64678858b8ad7606f32428d918f511f5f179",
+  "evidence_code_tree": "f0051bb11ac742789a8bfd12d19201123daeecdb",
+  "framework": "cupy_backed_dlpack_capsule_only_wrapper",
+  "hardware": {
+    "compute_capability": "6.1",
+    "driver": "580.126.09",
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "hardware_note": "This host validates CUDA/OptiX execution and DLPack capsule routing; it is not RTX/RT-core speed evidence.",
+    "memory": "8192 MiB",
+    "nvidia_smi_available": true,
+    "rt_core_hardware": false
+  },
+  "lifetime_contract": {
+    "capsule_policy": "legacy_dltensor_only",
+    "consume_policy": "RTDL renames each consumed capsule to used_dltensor",
+    "deleter_policy": "RTDL-held leases call the DLManagedTensor deleter exactly once",
+    "full_framework_neutral_lifetime_matrix_complete": false,
+    "producer_retained_by_wrapper": true
+  },
+  "metadata_subset": {
+    "caller_stream_handle_nonzero": true,
+    "caller_stream_native_propagation_ready": true,
+    "named_cuda_columns_no_host_stage_authorized": true,
+    "native_async_ready": false,
+    "native_call_device_pointer_echo_complete": true,
+    "native_prepare_stream_propagation_ready": true,
+    "native_synchronized_before_return": true,
+    "prepare_stream_handle_nonzero": true,
+    "source_protocols": [
+      "dlpack"
+    ],
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "pointer_echo_identity": {
+    "output.neighbor_counts": true,
+    "output.query_ids": true,
+    "output.threshold_flags": true,
+    "query.ids": true,
+    "query.x": true,
+    "query.y": true,
+    "search.ids": true,
+    "search.x": true,
+    "search.y": true
+  },
+  "pointer_identity": {
+    "output.neighbor_counts": true,
+    "output.query_ids": true,
+    "output.threshold_flags": true,
+    "query.ids": true,
+    "query.x": true,
+    "query.y": true,
+    "search.ids": true,
+    "search.x": true,
+    "search.y": true
+  },
+  "protocol": "legacy_dlpack_capsule",
+  "remote_validation": {
+    "build_optix": {
+      "ok": true
+    },
+    "claim_boundary_scan": {
+      "ok": true
+    },
+    "commands": [
+      "git pull --ff-only",
+      "make build-optix",
+      "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
+      "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_dlpack_capsule_probe.py --output /tmp/v4_m1_dlpack_capsule_22bf64678.json",
+      "PYTHONPATH=src:. python3 scripts/v4_0_current_front_door_claim_boundary_scan.py --output /tmp/v4_claim_scan_22bf64678.json",
+      "PYTHONPATH=src:. python3 scripts/rtdl_source_tree_doctor.py --json --include-v4-active > /tmp/v4_doctor_22bf64678.json",
+      "python3 -m json.tool /tmp/v4_m1_dlpack_capsule_22bf64678.json",
+      "python3 -m json.tool /tmp/v4_claim_scan_22bf64678.json",
+      "python3 -m json.tool /tmp/v4_doctor_22bf64678.json",
+      "git diff --check",
+      "git status --short --branch"
+    ],
+    "dlpack_capsule_probe": {
+      "ok": true
+    },
+    "git_diff_check": {
+      "ok": true
+    },
+    "host": "192.168.1.20",
+    "json_validation": {
+      "ok": true
+    },
+    "path": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
+    "source_tree_doctor": {
+      "include_v4_active": true,
+      "ok": true
+    },
+    "v4_active": {
+      "ok": true,
+      "test_count": 59
+    },
+    "worktree_clean": {
+      "ok": true
+    }
+  },
+  "report_id": "v4_0_m1_fixed_radius_dlpack_capsule_probe_2026-06-19",
+  "route_id": "fixed_radius_count_threshold_2d",
+  "status": "pass-with-boundary",
+  "validation": {
+    "all_wrappers_hide_cuda_array_interface": true,
+    "all_wrappers_hide_data_ptr": true,
+    "expected": {
+      "neighbor_counts": [
+        1,
+        1,
+        0
+      ],
+      "query_ids": [
+        1,
+        2,
+        3
+      ],
+      "threshold_flags": [
+        1,
+        1,
+        0
+      ]
+    },
+    "legacy_dltensor_capsule_policy": true,
+    "observed": {
+      "neighbor_counts": [
+        1,
+        1,
+        0
+      ],
+      "query_ids": [
+        1,
+        2,
+        3
+      ],
+      "threshold_flags": [
+        1,
+        1,
+        0
+      ]
+    },
+    "output_match": true,
+    "real_dlpack_capsule_intake": true
+  }
+}

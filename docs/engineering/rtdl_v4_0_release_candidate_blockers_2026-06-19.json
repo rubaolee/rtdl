@@ -7,13 +7,13 @@
   "release_candidate_ready": false,
   "current_gate": "v4_active",
   "v4_release_candidate_gate_policy": "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
-  "latest_validated_implementation_head": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
-  "latest_validated_route_code_tree": "0ca6a89f1ace46082b6dca7ccc71a0549d5765ee",
-  "latest_validated_m1_implementation_v4_active_tests": 53,
+  "latest_validated_implementation_head": "22bf64678858b8ad7606f32428d918f511f5f179",
+  "latest_validated_route_code_tree": "f0051bb11ac742789a8bfd12d19201123daeecdb",
+  "latest_validated_m1_implementation_v4_active_tests": 59,
   "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
   "latest_validated_m1_cross_stream_evidence_scope": "clean source-tree commit after push",
   "latest_validated_m1_cross_stream_v4_active_tests": 53,
-  "current_source_tree_v4_active_tests": 53,
+  "current_source_tree_v4_active_tests": 61,
   "evidence_ready": [
     {
       "id": "v4_active_gate",
@@ -44,6 +44,12 @@
       "status": "experimental_m1_evidence",
       "path": "docs/reports/v4_0_m1_fixed_radius_dlpack_bridge_smoke_2026-06-19.json",
       "note": "CuPy-backed DLPack-only wrapper smoke exists; arbitrary DLPack capsule semantics are not validated."
+    },
+    {
+      "id": "dlpack_capsule_fixed_radius_m1_probe",
+      "status": "experimental_m1_evidence",
+      "path": "docs/reports/v4_0_m1_fixed_radius_dlpack_capsule_probe_2026-06-19.json",
+      "note": "Real legacy DLPack capsule intake is validated for the fixed-radius M1 route, including stream argument propagation, pointer identity, native pointer echo, output correctness, consume-once, and deleter-once guards. Full framework-neutral DLPack and PyTorch remain blocked."
     },
     {
       "id": "same_stream_ordering",
@@ -187,6 +193,13 @@
     {
       "id": "full_dlpack_capsule_route_evidence",
       "closed": false,
+      "current_preflight": {
+        "host": "192.168.1.20",
+        "date": "2026-06-19",
+        "status": "fixed_radius_m1_legacy_dlpack_capsule_route_ready_but_full_framework_neutral_blocked",
+        "evidence": "docs/reports/v4_0_m1_fixed_radius_dlpack_capsule_probe_2026-06-19.json",
+        "reason": "The fixed-radius V4 M1 route now has real legacy DLPack capsule intake with stream argument propagation, pointer identity, native pointer echo, output correctness, and Python consume-once/deleter-once guards. This authorizes only narrow fixed-radius M1 DLPack capsule wording, not arbitrary framework-neutral DLPack or PyTorch support."
+      },
       "required_evidence": "DLPack capsule ownership, deleter, lifetime, stream, and framework interop evidence.",
       "blocking_claims": [
         "full DLPack support",

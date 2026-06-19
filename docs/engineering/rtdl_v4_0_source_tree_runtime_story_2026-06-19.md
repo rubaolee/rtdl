@@ -22,6 +22,7 @@ PYTHONPATH=src:. python3 scripts/rtdl_source_tree_doctor.py --include-v4-active 
 make build-optix
 PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_numba_partner_surface_probe.py
+PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_dlpack_capsule_probe.py
 ```
 
 For the current V4 M1 route, Linux GPU runtime evidence requires:
@@ -58,11 +59,12 @@ Linux `192.168.1.20` source-tree doctor:
 - optional Embree library: warn, not required for V4 M1.
 
 Latest Linux V4 gate on `192.168.1.20` for head
-`c2eb88896172bc2d6e9a920fc7d297fdc1a6d043`:
+`22bf64678858b8ad7606f32428d918f511f5f179`:
 
 - `make build-optix`: pass;
-- `v4_active`: 51 tests, pass;
+- `v4_active`: 59 tests, pass;
 - Numba M1 `DeviceNDArray` fixed-radius route probe: pass;
+- DLPack capsule fixed-radius route probe: pass;
 - front-door claim-boundary scan: pass;
 - `git diff --check`: pass;
 - worktree clean.

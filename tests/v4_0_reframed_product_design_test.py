@@ -170,7 +170,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
 
         for token in (
             "experimental engineering evidence, not current release",
-            "Latest validated source-tree head: `48ce1f9725613f746cea9ba0de438ae0ee830ca3`",
+            "Latest validated source-tree head:",
             "Clean cross-stream prepare/query event-wait evidence commit:",
             "`48ce1f9725613f746cea9ba0de438ae0ee830ca3`",
             "fixed_radius_count_threshold_2d",
@@ -178,6 +178,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "Same-stream producer -> RTDL prepare/query -> consumer ordering is validated",
             "Numba `DeviceNDArray` via CUDA Array Interface",
             "DLPack bridge wrapper smoke",
+            "DLPack capsule probe",
             "V4.0 is the current release",
             "blocked",
             "Release-candidate blocker manifest",
@@ -224,7 +225,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertFalse(blockers["release_candidate_ready"])
         self.assertEqual("v3.0.2", blockers["current_release_remains"])
         self.assertEqual("v4_active", blockers["current_gate"])
-        self.assertEqual(53, blockers["latest_validated_m1_implementation_v4_active_tests"])
+        self.assertEqual(59, blockers["latest_validated_m1_implementation_v4_active_tests"])
         self.assertEqual(
             "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
             blockers["latest_validated_m1_cross_stream_evidence_commit"],
@@ -233,7 +234,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             53,
             blockers["latest_validated_m1_cross_stream_v4_active_tests"],
         )
-        self.assertEqual(53, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(61, blockers["current_source_tree_v4_active_tests"])
         self.assertEqual(
             "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
             blockers["v4_release_candidate_gate_policy"],
@@ -279,6 +280,18 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertEqual(
             "blocked_runtime_unavailable",
             blocking_by_id["pytorch_route_evidence"]["current_preflight"]["status"],
+        )
+        self.assertEqual(
+            "fixed_radius_m1_legacy_dlpack_capsule_route_ready_but_full_framework_neutral_blocked",
+            blocking_by_id["full_dlpack_capsule_route_evidence"]["current_preflight"]["status"],
+        )
+        self.assertEqual(
+            "docs/reports/v4_0_m1_fixed_radius_dlpack_capsule_probe_2026-06-19.json",
+            blocking_by_id["full_dlpack_capsule_route_evidence"]["current_preflight"]["evidence"],
+        )
+        self.assertIn(
+            "not arbitrary framework-neutral DLPack or PyTorch support",
+            blocking_by_id["full_dlpack_capsule_route_evidence"]["current_preflight"]["reason"],
         )
         rtx_preflight = blocking_by_id["rtx_rt_core_speed_evidence"]["current_preflight"]
         self.assertEqual("blocked_rtx_hardware_access_unavailable", rtx_preflight["status"])
