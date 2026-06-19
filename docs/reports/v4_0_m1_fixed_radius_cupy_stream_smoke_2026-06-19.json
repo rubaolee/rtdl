@@ -2,8 +2,8 @@
   "report": "v4_0_m1_fixed_radius_cupy_stream_smoke",
   "date": "2026-06-19",
   "status": "pass-with-boundary",
-  "code_commit": "678a0917c",
-  "validated_tree": "1eb9968a2be6cb410d05a05f5c452838ca5858de",
+  "code_commit": "f43aab302",
+  "validated_tree": "39fb5686368e1db500120f5d533dd8e14c386ce4",
   "report_scope_note": "This JSON is a checked-in passing snapshot. The current-head gate is the reproducible smoke script listed in commands.",
   "remote_host": "192.168.1.20",
   "remote_path": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
@@ -36,7 +36,7 @@
     "v4_active": {
       "status": "pass",
       "module_count": 3,
-      "test_count": 29
+      "test_count": 30
     },
     "git_diff_check": "pass",
     "build_optix": "pass",
