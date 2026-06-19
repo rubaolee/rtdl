@@ -751,11 +751,16 @@ def _device_from_dlpack_code(raw_type: int, raw_id: int) -> tuple[str, int]:
 
 
 def _uses_dlpack_capsule_only_path(obj: Any) -> bool:
+    if callable(getattr(obj, "data_ptr", None)):
+        return False
+    try:
+        cuda_array = getattr(obj, "__cuda_array_interface__", None)
+    except Exception:
+        return False
     return (
         callable(getattr(obj, "__dlpack__", None))
         and callable(getattr(obj, "__dlpack_device__", None))
-        and not isinstance(getattr(obj, "__cuda_array_interface__", None), dict)
-        and not callable(getattr(obj, "data_ptr", None))
+        and not isinstance(cuda_array, dict)
     )
 
 

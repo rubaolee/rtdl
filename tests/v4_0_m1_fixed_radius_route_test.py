@@ -74,6 +74,39 @@ class _FakeCudaColumn:
         }
 
 
+class _FakeGradTorchTensorWithExplodingCudaArrayInterface:
+    __module__ = "torch.fake"
+
+    def __init__(
+        self,
+        ptr: int,
+        *,
+        dtype: str,
+        shape: tuple[int, ...],
+        strides: tuple[int, ...] | None = None,
+    ) -> None:
+        self._ptr = int(ptr)
+        self.dtype = dtype
+        self.shape = shape
+        self.strides = strides
+        self.requires_grad = True
+        self.cuda_array_interface_reads = 0
+
+    def data_ptr(self) -> int:
+        return self._ptr
+
+    def __dlpack_device__(self) -> tuple[int, int]:
+        return (2, 0)
+
+    def __dlpack__(self):
+        raise AssertionError("grad-enabled torch tensors must be rejected before __dlpack__ export")
+
+    @property
+    def __cuda_array_interface__(self):
+        self.cuda_array_interface_reads += 1
+        raise RuntimeError("grad-enabled torch tensors should not be probed through CAI")
+
+
 class _TestDLDevice(ctypes.Structure):
     _fields_ = [("device_type", ctypes.c_int), ("device_id", ctypes.c_int)]
 
@@ -459,6 +492,23 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             *plan.output_columns.values(),
         ):
             descriptor.owner.release()
+
+    def test_pytorch_grad_tensor_rejection_does_not_probe_cuda_array_interface(self) -> None:
+        search = _point_columns(0x1000)
+        query = _point_columns(0x2000)
+        outputs = _output_columns(0x3000)
+        grad_column = _FakeGradTorchTensorWithExplodingCudaArrayInterface(
+            0x2020,
+            dtype="float64",
+            shape=(3,),
+            strides=(8,),
+        )
+        query["x"] = grad_column
+
+        with self.assertRaisesRegex(ValueError, "grad-enabled PyTorch tensors"):
+            rtdsl.plan_v4_fixed_radius_count_threshold_2d(query, search, output_columns=outputs)
+
+        self.assertEqual(grad_column.cuda_array_interface_reads, 0)
 
     def test_dlpack_capsule_route_fails_closed_for_dtype_rank_stride_and_device(self) -> None:
         cases = (
