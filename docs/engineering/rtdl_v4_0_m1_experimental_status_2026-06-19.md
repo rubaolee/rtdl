@@ -2,8 +2,8 @@
 
 Status: experimental engineering evidence, not current release.
 Date: 2026-06-19.
-Latest validated implementation head: `5bc4f383f9b1183a56fefce720ed0f659d5c1bc1`.
-Latest validated route-code tree: `cc0898bc37a07b1beeaca1acfef177f2d6ef7b36`.
+Latest validated implementation head: `5f239ab1079edf264a915be99e0f7295fc1ea887`.
+Latest validated route-code tree: `c0f7054e7ab09068bee4ea02b2202741dcabf96b`.
 
 This packet summarizes the current V4.0 M1 state after the fixed-radius CuPy
 device-array route landed. It is an engineering status packet, not a release
@@ -61,6 +61,7 @@ Implemented contract:
 | DLPack bridge wrapper smoke | `docs/reports/v4_0_m1_fixed_radius_dlpack_bridge_smoke_2026-06-19.json` | Authorizes a CuPy-backed DLPack-only wrapper through the generic DLPack adapter; does not authorize arbitrary DLPack capsule semantics or PyTorch. |
 | True-zero-copy wording consensus | `docs/reviews/codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md` | Keeps public true-zero-copy wording blocked. |
 | Release-positioning consensus | `docs/reviews/codex_v4_m1_release_positioning_2ai_consensus_2026-06-19.md` | Keeps v3.0.2 as current release and V4 as experimental M1 evidence. |
+| Release-candidate blocker manifest | `docs/engineering/rtdl_v4_0_release_candidate_blockers_2026-06-19.json` | Keeps `v4_release_candidate` absent until the M8 release-candidate packet and blockers close. |
 
 Current reproducibility gate:
 
@@ -69,14 +70,27 @@ PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 ```
 
 Latest Linux validation on `192.168.1.20` for implementation head
-`5bc4f383f9b1183a56fefce720ed0f659d5c1bc1`:
+`5f239ab1079edf264a915be99e0f7295fc1ea887`:
 
-- `v4_active`: 44 tests, pass;
+- `v4_active`: 46 tests, pass;
 - `make build-optix`: pass;
 - same-stream ordering probe: pass;
 - Numba CUDA Array Interface smoke: pass;
 - DLPack bridge wrapper smoke: pass;
 - `git diff --check`: pass.
+
+Current source-tree `v4_active` gate after the release-candidate blocker
+manifest guard: 47 tests, pass locally.
+
+## Release-Candidate Boundary
+
+The source tree intentionally does not expose a passing `v4_release_candidate`
+test-matrix group yet. That name is reserved for the future M8 release-candidate
+packet, after the explicit blocker list closes.
+
+Current machine-readable blocker manifest:
+
+`docs/engineering/rtdl_v4_0_release_candidate_blockers_2026-06-19.json`
 
 ## Allowed Public-Safe Wording
 
@@ -127,5 +141,5 @@ Latest Linux validation on `192.168.1.20` for implementation head
 2. Add cross-stream event/wait ownership only after an explicit owner/event contract exists.
 3. Add PyTorch, DLPack, or broader Numba partner evidence before saying those surfaces are validated.
 4. Use RTX-class hardware before any RT-core speed discussion.
-5. Define a future `v4_release_candidate` gate distinct from `v4_active`.
-6. Only after an M8 release-candidate packet exists, reconsider whether V4 can become the current front door.
+5. Keep the release-candidate blocker manifest current while `v4_release_candidate` remains absent from the passing test matrix.
+6. Only after an M8 release-candidate packet exists and the blocker manifest is closed, expose a `v4_release_candidate` gate and reconsider whether V4 can become the current front door.

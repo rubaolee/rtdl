@@ -23,6 +23,9 @@ ROUTE_CONSENSUS = (
 DESIGN = ROOT / "docs" / "engineering" / "rtdl_v4_0_design_review_packet_2026-06-19.md"
 ACTIVE_ABI_NOTE = ROOT / "docs" / "engineering" / "rtdl_v4_0_active_abi_slice_2026-06-19.md"
 M1_STATUS = ROOT / "docs" / "engineering" / "rtdl_v4_0_m1_experimental_status_2026-06-19.md"
+RC_BLOCKERS = (
+    ROOT / "docs" / "engineering" / "rtdl_v4_0_release_candidate_blockers_2026-06-19.json"
+)
 ACTIVE_README = ROOT / "src" / "v4" / "README.md"
 V4_OPERATOR = ROOT / "src" / "rtdsl" / "v4_0_device_array_operator.py"
 RELEASE_POSITIONING = (
@@ -156,7 +159,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
 
         for token in (
             "experimental engineering evidence, not current release",
-            "Latest validated implementation head: `5bc4f383f9b1183a56fefce720ed0f659d5c1bc1`",
+            "Latest validated implementation head: `5f239ab1079edf264a915be99e0f7295fc1ea887`",
             "fixed_radius_count_threshold_2d",
             "Zero-copy device-column handoff with no observed host staging of named columns",
             "Same-stream producer -> RTDL prepare/query -> consumer ordering is validated",
@@ -164,6 +167,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "DLPack bridge wrapper smoke",
             "V4.0 is the current release",
             "blocked",
+            "Release-candidate blocker manifest",
             "v4_release_candidate",
         ):
             self.assertIn(token, status)
@@ -171,6 +175,41 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertIn("Do not promote V4.0", consensus)
         self.assertIn("Keep `v3.0.2` as the current source-tree release", consensus)
         self.assertIn("RTDL V4.0 M1 Experimental Status", engineering_index)
+        self.assertIn("RTDL V4.0 Release-Candidate Blockers", engineering_index)
+
+    def test_release_candidate_gate_remains_blocked_until_m8_packet(self) -> None:
+        blockers = json.loads(RC_BLOCKERS.read_text(encoding="utf-8"))
+        blocking_by_id = {entry["id"]: entry for entry in blockers["blockers"]}
+
+        self.assertFalse(blockers["release_candidate_ready"])
+        self.assertEqual("v3.0.2", blockers["current_release_remains"])
+        self.assertEqual("v4_active", blockers["current_gate"])
+        self.assertEqual(46, blockers["latest_validated_m1_implementation_v4_active_tests"])
+        self.assertEqual(47, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(
+            "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
+            blockers["v4_release_candidate_gate_policy"],
+        )
+        self.assertNotIn("v4_release_candidate", run_test_matrix.TEST_GROUPS)
+
+        for blocker_id in (
+            "m8_release_candidate_packet",
+            "external_release_candidate_review",
+            "public_true_zero_copy",
+            "async_completion",
+            "cross_stream_event_wait",
+            "public_speedup",
+            "rtx_rt_core_speed_evidence",
+            "pytorch_route_evidence",
+            "full_dlpack_capsule_route_evidence",
+            "full_numba_partner_surface",
+            "package_install_runtime_story",
+            "stable_sdk_public_c_abi",
+            "front_door_docs_switch",
+            "claim_boundary_scan",
+        ):
+            self.assertIn(blocker_id, blocking_by_id)
+            self.assertIs(blocking_by_id[blocker_id]["closed"], False)
 
     def test_release_front_door_stays_v3_while_m1_claim_flags_are_blocked(self) -> None:
         benchmark = json.loads(BENCHMARK_REPORT.read_text(encoding="utf-8"))

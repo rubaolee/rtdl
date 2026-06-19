@@ -1,0 +1,189 @@
+{
+  "version": "rtdl.v4_0.release_candidate_blockers.2026-06-19",
+  "status": "blocked_before_m8_release_candidate_packet",
+  "date": "2026-06-19",
+  "current_release_remains": "v3.0.2",
+  "v4_position": "experimental_m1_engineering_evidence_not_current_release",
+  "release_candidate_ready": false,
+  "current_gate": "v4_active",
+  "v4_release_candidate_gate_policy": "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
+  "latest_validated_implementation_head": "5f239ab1079edf264a915be99e0f7295fc1ea887",
+  "latest_validated_route_code_tree": "c0f7054e7ab09068bee4ea02b2202741dcabf96b",
+  "latest_validated_m1_implementation_v4_active_tests": 46,
+  "current_source_tree_v4_active_tests": 47,
+  "evidence_ready": [
+    {
+      "id": "v4_active_gate",
+      "status": "experimental_m1_evidence",
+      "path": "scripts/run_test_matrix.py --group v4_active",
+      "note": "Active design, ABI, and fixed-radius route tests pass; this is not a release-candidate gate."
+    },
+    {
+      "id": "cupy_fixed_radius_route",
+      "status": "experimental_m1_evidence",
+      "path": "docs/reports/v4_0_m1_fixed_radius_cupy_stream_smoke_2026-06-19.json",
+      "note": "CuPy device-array route has pointer, stream, parity, no-host-stage, timing, and same-stream ordering evidence."
+    },
+    {
+      "id": "numba_cuda_array_interface_smoke",
+      "status": "experimental_m1_evidence",
+      "path": "docs/reports/v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke_2026-06-19.json",
+      "note": "Numba DeviceNDArray route through CUDA Array Interface is smoke-tested only."
+    },
+    {
+      "id": "dlpack_bridge_wrapper_smoke",
+      "status": "experimental_m1_evidence",
+      "path": "docs/reports/v4_0_m1_fixed_radius_dlpack_bridge_smoke_2026-06-19.json",
+      "note": "CuPy-backed DLPack-only wrapper smoke exists; arbitrary DLPack capsule semantics are not validated."
+    },
+    {
+      "id": "same_stream_ordering",
+      "status": "experimental_m1_evidence",
+      "path": "docs/reports/v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19.json",
+      "note": "Same nondefault stream producer -> RTDL -> consumer ordering is validated."
+    },
+    {
+      "id": "cross_stream_fail_closed",
+      "status": "experimental_m1_evidence",
+      "path": "tests/v4_0_m1_fixed_radius_route_test.py",
+      "note": "Different nonzero prepare/query streams fail closed until an explicit event/wait contract exists."
+    }
+  ],
+  "blockers": [
+    {
+      "id": "m8_release_candidate_packet",
+      "closed": false,
+      "required_evidence": "A cohesive V4 release-candidate packet bound to the final candidate commit.",
+      "blocking_claims": [
+        "V4.0 is release-candidate ready",
+        "V4.0 can become the current front door"
+      ]
+    },
+    {
+      "id": "external_release_candidate_review",
+      "closed": false,
+      "required_evidence": "2+ AI and external/maintainer review of the final V4 release-candidate packet.",
+      "blocking_claims": [
+        "release approved",
+        "release-quality public claim surface"
+      ]
+    },
+    {
+      "id": "public_true_zero_copy",
+      "closed": false,
+      "required_evidence": "End-to-end evidence proving no host staging and no internal device copies for the public route wording.",
+      "blocking_claims": [
+        "true zero-copy",
+        "end-to-end zero-copy",
+        "no copies",
+        "no staging",
+        "no H2D copies"
+      ]
+    },
+    {
+      "id": "async_completion",
+      "closed": false,
+      "required_evidence": "Explicit asynchronous completion contract, lifetime contract, and tests proving safe nonblocking return.",
+      "blocking_claims": [
+        "async",
+        "nonblocking",
+        "returns before GPU work completes"
+      ]
+    },
+    {
+      "id": "cross_stream_event_wait",
+      "closed": false,
+      "required_evidence": "Explicit owner/event/wait contract plus tests for different nonzero prepare/query streams.",
+      "blocking_claims": [
+        "cross-stream event wait support",
+        "different-stream prepare/query support"
+      ]
+    },
+    {
+      "id": "public_speedup",
+      "closed": false,
+      "required_evidence": "Release-grade benchmark matrix with accepted baseline, hardware, statistics, and reproducibility packet.",
+      "blocking_claims": [
+        "RTDL is faster",
+        "speedup",
+        "performance release"
+      ]
+    },
+    {
+      "id": "rtx_rt_core_speed_evidence",
+      "closed": false,
+      "required_evidence": "RTX-class hardware evidence that separates RT-core behavior from generic CUDA-device execution.",
+      "blocking_claims": [
+        "RT-core speedup",
+        "RTX speedup",
+        "RT cores make this faster"
+      ]
+    },
+    {
+      "id": "pytorch_route_evidence",
+      "closed": false,
+      "required_evidence": "PyTorch CUDA tensor route smoke/parity/lifetime/stream evidence.",
+      "blocking_claims": [
+        "PyTorch support",
+        "PyTorch route validated"
+      ]
+    },
+    {
+      "id": "full_dlpack_capsule_route_evidence",
+      "closed": false,
+      "required_evidence": "DLPack capsule ownership, deleter, lifetime, stream, and framework interop evidence.",
+      "blocking_claims": [
+        "full DLPack support",
+        "arbitrary DLPack capsule support",
+        "framework-neutral DLPack route"
+      ]
+    },
+    {
+      "id": "full_numba_partner_surface",
+      "closed": false,
+      "required_evidence": "More than the current Numba DeviceNDArray CUDA Array Interface smoke: parity, lifetime, stream, and docs evidence.",
+      "blocking_claims": [
+        "full Numba support",
+        "Numba partner surface validated"
+      ]
+    },
+    {
+      "id": "package_install_runtime_story",
+      "closed": false,
+      "required_evidence": "Documented install/runtime path with tested wheel or equivalent package flow.",
+      "blocking_claims": [
+        "package install",
+        "PyPI",
+        "wheel support"
+      ]
+    },
+    {
+      "id": "stable_sdk_public_c_abi",
+      "closed": false,
+      "required_evidence": "Stable SDK/C ABI policy, generated bindings, packaging, and compatibility tests beyond the Phase 2 substrate.",
+      "blocking_claims": [
+        "stable V4 SDK",
+        "public multi-language C ABI release",
+        "generated C/C++/Rust bindings"
+      ]
+    },
+    {
+      "id": "front_door_docs_switch",
+      "closed": false,
+      "required_evidence": "Polished user-facing V4 docs, tutorial path, release reports, and top-level README switch after release approval.",
+      "blocking_claims": [
+        "V4.0 is the current release",
+        "V4.0 is the user front door"
+      ]
+    },
+    {
+      "id": "claim_boundary_scan",
+      "closed": false,
+      "required_evidence": "Fresh repository scan proving blocked wording is absent from current user-facing V4 surfaces.",
+      "blocking_claims": [
+        "unbounded public claims",
+        "stale V4 release wording"
+      ]
+    }
+  ]
+}
