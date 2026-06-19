@@ -49,148 +49,166 @@
       "snippet": "rize arbitrary DLPack capsule semantics or PyTorch. | | True-zero-copy wording consensus | `docs/reviews/codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md` | Keeps public true-zero-copy wording blocked. | | Release-positioning consensus | `docs/reviews/codex_v4_m1_release_positioning_2ai_consensus_2026-06-19.md` | Keeps v3.0.2 as current release and V4 as experim"
     },
     {
-      "line": 116,
+      "line": 68,
+      "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
+      "phrase": "PyPI",
+      "snippet": "d V4 claims. | | Source-tree runtime story | `docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md` | Documents the V4 M1 source-tree runtime path and keeps package, PyPI, wheel, and stable SDK wording blocked. |  Current reproducibility gate:  ```bash PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active ```  Latest Linux validatio"
+    },
+    {
+      "line": 117,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "V4.0 is the current release",
       "snippet": "ked DLPack-only wrapper smoke exercises the generic DLPack adapter.\" - \"Raw route-scoped timing probe exists; it does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no sta"
     },
     {
-      "line": 117,
+      "line": 118,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "Stable V4 SDK",
       "snippet": "xercises the generic DLPack adapter.\" - \"Raw route-scoped timing probe exists; it does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D c"
     },
     {
-      "line": 118,
+      "line": 119,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "Package install",
       "snippet": "ric DLPack adapter.\" - \"Raw route-scoped timing probe exists; it does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, non"
     },
     {
-      "line": 118,
+      "line": 119,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "PyPI",
       "snippet": "r.\" - \"Raw route-scoped timing probe exists; it does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocki"
     },
     {
-      "line": 118,
+      "line": 119,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "wheel support",
       "snippet": "w route-scoped timing probe exists; it does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns bef"
     },
     {
-      "line": 119,
+      "line": 120,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "Generated bindings",
       "snippet": "ming probe exists; it does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes"
     },
     {
-      "line": 119,
+      "line": 120,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "public multi-language C ABI release",
       "snippet": "does not authorize public speedup wording.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - Cross-stream event wait support. -"
     },
     {
-      "line": 120,
+      "line": 121,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "True zero-copy",
       "snippet": "ng.\"  ## Blocked Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - Cross-stream event wait support. - RT-core speedup, R"
     },
     {
-      "line": 120,
+      "line": 121,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "end-to-end zero-copy",
       "snippet": "Wording  - V4.0 is the current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - Cross-stream event wait support. - RT-core speedup, RTX speedup, RTDL is fa"
     },
     {
-      "line": 120,
+      "line": 121,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "no copies",
       "snippet": "e current release. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - Cross-stream event wait support. - RT-core speedup, RTX speedup, RTDL is faster, or br"
     },
     {
-      "line": 120,
+      "line": 121,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "no staging",
       "snippet": "elease. - Stable V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - Cross-stream event wait support. - RT-core speedup, RTX speedup, RTDL is faster, or broad performa"
     },
     {
-      "line": 120,
+      "line": 121,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "no H2D copies",
       "snippet": "e V4 SDK. - Package install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - Cross-stream event wait support. - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims. - Full"
     },
     {
-      "line": 121,
+      "line": 122,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "Async",
       "snippet": "ge install, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - Cross-stream event wait support. - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims. - Full Numba pa"
     },
     {
-      "line": 121,
+      "line": 122,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "nonblocking",
       "snippet": "all, PyPI, or wheel support. - Generated bindings or public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - Cross-stream event wait support. - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims. - Full Numba partner surface"
     },
     {
-      "line": 122,
+      "line": 123,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "Cross-stream event wait support",
       "snippet": "public multi-language C ABI release. - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - Cross-stream event wait support. - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims. - Full Numba partner surface, PyTorch, arbitrary DLPack capsules, or full   DLPack route support.  ##"
     },
     {
-      "line": 123,
+      "line": 124,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "RT-core speedup",
       "snippet": ". - True zero-copy, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - Cross-stream event wait support. - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims. - Full Numba partner surface, PyTorch, arbitrary DLPack capsules, or full   DLPack route support.  ## Current Claim Flag"
     },
     {
-      "line": 123,
+      "line": 124,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "RTX speedup",
       "snippet": "y, end-to-end zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - Cross-stream event wait support. - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims. - Full Numba partner surface, PyTorch, arbitrary DLPack capsules, or full   DLPack route support.  ## Current Claim Flags  | Claim |"
     },
     {
-      "line": 123,
+      "line": 124,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "RTDL is faster",
       "snippet": "zero-copy, no copies, no staging, or no H2D copies. - Async, nonblocking, or returns before GPU work completes. - Cross-stream event wait support. - RT-core speedup, RTX speedup, RTDL is faster, or broad performance claims. - Full Numba partner surface, PyTorch, arbitrary DLPack capsules, or full   DLPack route support.  ## Current Claim Flags  | Claim | Status | | --- |"
     },
     {
-      "line": 132,
+      "line": 133,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "package install",
       "snippet": "rbitrary DLPack capsules, or full   DLPack route support.  ## Current Claim Flags  | Claim | Status | | --- | --- | | Current release/front-door promotion | blocked | | Stable SDK/package install | blocked | | Public true-zero-copy | blocked | | Async/nonblocking completion | blocked | | Same-stream ordering | experimental M1 evidence | | Cross-stream event waits | blocked"
     },
     {
-      "line": 133,
+      "line": 134,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "true-zero-copy",
       "snippet": "LPack route support.  ## Current Claim Flags  | Claim | Status | | --- | --- | | Current release/front-door promotion | blocked | | Stable SDK/package install | blocked | | Public true-zero-copy | blocked | | Async/nonblocking completion | blocked | | Same-stream ordering | experimental M1 evidence | | Cross-stream event waits | blocked | | Public speedup | blocked | | RT"
     },
     {
-      "line": 134,
+      "line": 135,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "Async",
       "snippet": "ent Claim Flags  | Claim | Status | | --- | --- | | Current release/front-door promotion | blocked | | Stable SDK/package install | blocked | | Public true-zero-copy | blocked | | Async/nonblocking completion | blocked | | Same-stream ordering | experimental M1 evidence | | Cross-stream event waits | blocked | | Public speedup | blocked | | RTX/RT-core speedup |"
     },
     {
-      "line": 134,
+      "line": 135,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "nonblocking",
       "snippet": "aim Flags  | Claim | Status | | --- | --- | | Current release/front-door promotion | blocked | | Stable SDK/package install | blocked | | Public true-zero-copy | blocked | | Async/nonblocking completion | blocked | | Same-stream ordering | experimental M1 evidence | | Cross-stream event waits | blocked | | Public speedup | blocked | | RTX/RT-core speedup | blocked | |"
     },
     {
-      "line": 138,
+      "line": 139,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "RT-core speedup",
       "snippet": "blocked | | Async/nonblocking completion | blocked | | Same-stream ordering | experimental M1 evidence | | Cross-stream event waits | blocked | | Public speedup | blocked | | RTX/RT-core speedup | blocked | | CuPy route evidence | experimental M1 evidence | | Numba `DeviceNDArray` via CUDA Array Interface | experimental M1 evidence | | Bounded Numba M1 `DeviceNDArray` fix"
     },
     {
-      "line": 150,
+      "line": 151,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "PyTorch route support",
       "snippet": "host has CuPy/Numba but no `torch` module; there is no passwordless sudo, `python3.12-venv` is unavailable, and the attempted user-site Torch dry-run was unbounded and stopped. No PyTorch route support wording is authorized until an actual CUDA tensor smoke passes.  Cross-stream event/wait preflight on `192.168.1.20`, 2026-06-19: still blocked by contract. Native prepare/query s"
+    },
+    {
+      "line": 176,
+      "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
+      "phrase": "PyPI",
+      "snippet": "Windows and Linux; Linux has CuPy, Numba, and the OptiX library after `make build-optix`. This authorizes source-tree runtime wording only. It does not authorize package install, PyPI, wheel, stable SDK, or generated binding wording.  ## Next Gates  1. Keep the M1 route reproducible on current head. 2. Add cross-stream event/wait ownership only after an explici"
+    },
+    {
+      "line": 176,
+      "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
+      "phrase": "generated binding",
+      "snippet": "s CuPy, Numba, and the OptiX library after `make build-optix`. This authorizes source-tree runtime wording only. It does not authorize package install, PyPI, wheel, stable SDK, or generated binding wording.  ## Next Gates  1. Keep the M1 route reproducible on current head. 2. Add cross-stream event/wait ownership only after an explicit owner/event contract exists. 3. Add PyT"
     },
     {
       "line": 15,

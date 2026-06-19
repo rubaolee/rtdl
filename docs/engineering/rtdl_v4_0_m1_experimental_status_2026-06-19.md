@@ -65,6 +65,7 @@ Implemented contract:
 | Release-positioning consensus | `docs/reviews/codex_v4_m1_release_positioning_2ai_consensus_2026-06-19.md` | Keeps v3.0.2 as current release and V4 as experimental M1 evidence. |
 | Release-candidate blocker manifest | `docs/engineering/rtdl_v4_0_release_candidate_blockers_2026-06-19.json` | Keeps `v4_release_candidate` absent until the M8 release-candidate packet and blockers close. |
 | Front-door claim scan | `docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json` | Confirms current front-door docs resolve to v3.0.2 and do not positively publish blocked V4 claims. |
+| Source-tree runtime story | `docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md` | Documents the V4 M1 source-tree runtime path and keeps package, PyPI, wheel, and stable SDK wording blocked. |
 
 Current reproducibility gate:
 
@@ -167,6 +168,12 @@ prepared-handle reuse evidence while the caller keeps search columns alive.
 This authorizes bounded M1 `DeviceNDArray` fixed-radius route wording only; it
 does not authorize arbitrary Numba program acceleration or a broad
 full-partner-surface claim.
+
+Source-tree runtime story preflight, 2026-06-19: passing with boundaries. The
+V4 M1 source-tree flow is documented and source-tree-doctor checked on Windows
+and Linux; Linux has CuPy, Numba, and the OptiX library after `make build-optix`.
+This authorizes source-tree runtime wording only. It does not authorize package
+install, PyPI, wheel, stable SDK, or generated binding wording.
 
 ## Next Gates
 

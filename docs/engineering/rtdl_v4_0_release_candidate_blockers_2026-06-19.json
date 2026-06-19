@@ -59,6 +59,12 @@
       "status": "closed_guardrail",
       "path": "docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json",
       "note": "Current front-door docs resolve to v3.0.2 and do not positively publish blocked V4 claims."
+    },
+    {
+      "id": "source_tree_runtime_story",
+      "status": "experimental_m1_evidence",
+      "path": "docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md",
+      "note": "Source-tree runtime path is documented and doctor-validated; package, PyPI, wheel, and stable SDK wording remain blocked."
     }
   ],
   "blockers": [
@@ -186,6 +192,13 @@
     {
       "id": "package_install_runtime_story",
       "closed": false,
+      "current_preflight": {
+        "host": "local_windows_and_192.168.1.20",
+        "date": "2026-06-19",
+        "status": "source_tree_runtime_story_documented_but_package_flow_blocked",
+        "evidence": "docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md",
+        "reason": "The V4 M1 source-tree runtime path is documented and doctor-validated, including Linux CuPy/Numba/OptiX availability, but there is no V4 wheel, PyPI artifact, clean package install flow, or stable SDK package."
+      },
       "required_evidence": "Documented install/runtime path with tested wheel or equivalent package flow.",
       "blocking_claims": [
         "package install",

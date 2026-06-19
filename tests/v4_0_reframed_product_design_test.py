@@ -24,6 +24,9 @@ ROUTE_CONSENSUS = (
 DESIGN = ROOT / "docs" / "engineering" / "rtdl_v4_0_design_review_packet_2026-06-19.md"
 ACTIVE_ABI_NOTE = ROOT / "docs" / "engineering" / "rtdl_v4_0_active_abi_slice_2026-06-19.md"
 M1_STATUS = ROOT / "docs" / "engineering" / "rtdl_v4_0_m1_experimental_status_2026-06-19.md"
+SOURCE_TREE_RUNTIME_STORY = (
+    ROOT / "docs" / "engineering" / "rtdl_v4_0_source_tree_runtime_story_2026-06-19.md"
+)
 RC_BLOCKERS = (
     ROOT / "docs" / "engineering" / "rtdl_v4_0_release_candidate_blockers_2026-06-19.json"
 )
@@ -173,6 +176,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "blocked",
             "Release-candidate blocker manifest",
             "v4_release_candidate",
+            "Source-tree runtime story",
         ):
             self.assertIn(token, status)
 
@@ -180,6 +184,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertIn("Keep `v3.0.2` as the current source-tree release", consensus)
         self.assertIn("RTDL V4.0 M1 Experimental Status", engineering_index)
         self.assertIn("RTDL V4.0 Release-Candidate Blockers", engineering_index)
+        self.assertIn("RTDL V4.0 Source-Tree Runtime Story", engineering_index)
 
     def test_release_candidate_gate_remains_blocked_until_m8_packet(self) -> None:
         blockers = json.loads(RC_BLOCKERS.read_text(encoding="utf-8"))
@@ -236,9 +241,34 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["full_numba_partner_surface"]["current_preflight"]["evidence"],
         )
         self.assertEqual(
+            "source_tree_runtime_story_documented_but_package_flow_blocked",
+            blocking_by_id["package_install_runtime_story"]["current_preflight"]["status"],
+        )
+        self.assertEqual(
+            "docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md",
+            blocking_by_id["package_install_runtime_story"]["current_preflight"]["evidence"],
+        )
+        self.assertEqual(
             "docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json",
             blocking_by_id["claim_boundary_scan"]["evidence"],
         )
+
+    def test_v4_source_tree_runtime_story_blocks_package_wording(self) -> None:
+        story = SOURCE_TREE_RUNTIME_STORY.read_text(encoding="utf-8")
+
+        for token in (
+            "source-tree runtime story only",
+            "not a V4 distribution artifact",
+            "PYTHONPATH=src:.",
+            "make build-optix",
+            "package_install_runtime_story` remains open",
+            "Closing it requires a V4 package flow",
+            "package install",
+            "PyPI",
+            "wheel support",
+            "stable SDK",
+        ):
+            self.assertIn(token, story)
 
     def test_current_front_door_claim_scan_closes_only_scan_blocker(self) -> None:
         payload = scan_v4_front_door_claims(ROOT)
