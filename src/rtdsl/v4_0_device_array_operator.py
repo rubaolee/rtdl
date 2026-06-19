@@ -225,6 +225,8 @@ def _caller_stream_handle(stream: Any) -> int:
         return 0
     value = getattr(stream, "ptr", None)
     if value is None:
+        value = getattr(stream, "cuda_stream", None)
+    if value is None:
         value = getattr(stream, "handle", None)
     if value is None:
         value = stream

@@ -111,6 +111,42 @@ class _FakeGradTorchTensorWithExplodingCudaArrayInterface:
         raise RuntimeError("grad-enabled torch tensors should not be probed through CAI")
 
 
+class _FakeTorchCudaColumn:
+    __module__ = "torch.fake"
+
+    def __init__(
+        self,
+        ptr: int,
+        *,
+        dtype: str,
+        shape: tuple[int, ...],
+        stride: tuple[int, ...],
+        requires_grad: bool = False,
+    ) -> None:
+        self._ptr = int(ptr)
+        self.dtype = dtype
+        self.shape = shape
+        self._stride = stride
+        self.requires_grad = requires_grad
+
+    def data_ptr(self) -> int:
+        return self._ptr
+
+    def stride(self) -> tuple[int, ...]:
+        return self._stride
+
+    def __dlpack_device__(self) -> tuple[int, int]:
+        return (2, 0)
+
+    def __dlpack__(self):
+        raise AssertionError("torch data_ptr path should not need __dlpack__")
+
+
+class _FakeTorchStream:
+    def __init__(self, cuda_stream: int) -> None:
+        self.cuda_stream = int(cuda_stream)
+
+
 class _TestDLDevice(ctypes.Structure):
     _fields_ = [("device_type", ctypes.c_int), ("device_id", ctypes.c_int)]
 
@@ -420,6 +456,20 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(metadata["descriptors"]["query.x"]["producer_stream_handle"], 77)
         self.assertEqual(metadata["output_contract"], "caller_owned_cuda_output_columns")
 
+    def test_plan_accepts_torch_cuda_stream_objects(self) -> None:
+        plan = rtdsl.plan_v4_fixed_radius_count_threshold_2d(
+            _point_columns(0x2000),
+            _point_columns(0x1000),
+            output_columns=_output_columns(0x3000),
+            stream=_FakeTorchStream(456),
+            prepare_stream=_FakeTorchStream(123),
+        )
+
+        metadata = plan.to_metadata()
+        self.assertEqual(metadata["caller_stream_handle"], 456)
+        self.assertEqual(metadata["prepare_stream_handle"], 123)
+        self.assertTrue(metadata["native_prepare_ready_event_wait_required"])
+
     def test_dlpack_capsule_lease_consumes_capsule_and_calls_deleter_once(self) -> None:
         column = _FakeDLPackCapsuleColumn(
             0xCAFE,
@@ -514,6 +564,20 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             rtdsl.plan_v4_fixed_radius_count_threshold_2d(query, search, output_columns=outputs)
 
         self.assertEqual(grad_column.cuda_array_interface_reads, 0)
+
+    def test_pytorch_stride_method_rejects_noncontiguous_views(self) -> None:
+        search = _point_columns(0x1000)
+        query = _point_columns(0x2000)
+        outputs = _output_columns(0x3000)
+        query["x"] = _FakeTorchCudaColumn(
+            0x2020,
+            dtype="float64",
+            shape=(3,),
+            stride=(2,),
+        )
+
+        with self.assertRaisesRegex(ValueError, "V4 query column 'x' must be contiguous"):
+            rtdsl.plan_v4_fixed_radius_count_threshold_2d(query, search, output_columns=outputs)
 
     def test_dlpack_capsule_route_fails_closed_for_dtype_rank_stride_and_device(self) -> None:
         cases = (
@@ -1191,7 +1255,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             "public_speedup_claim_authorized",
             "v4_true_zero_copy_claim_authorized",
             "False",
-            "does not validate a full PyTorch",
+            "not validate a full PyTorch",
             "partner surface, framework-neutral DLPack",
         ):
             self.assertIn(token, script)

@@ -795,6 +795,10 @@ def _shape_tuple(obj: Any) -> tuple[int, ...]:
 def _strides_tuple(obj: Any) -> tuple[int, ...] | None:
     strides = getattr(obj, "strides", None)
     if strides is None:
+        stride = getattr(obj, "stride", None)
+        if callable(stride):
+            strides = stride()
+    if strides is None:
         return None
     return tuple(int(stride) for stride in strides)
 
