@@ -22,6 +22,7 @@ SMOKE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_smoke.py"
 PARITY_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_parity_matrix.py"
 NO_HOST_STAGE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe.py"
 BENCHMARK_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_benchmark_probe.py"
+STREAM_ORDERING_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_ordering_probe.py"
 CLAIM_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_claim_review_2026-06-19.md"
 WORDING_CONSENSUS = (
     ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md"
@@ -409,6 +410,24 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertIn("not a best-known tuned", report["claim_boundaries"]["baseline_limitations"])
         self.assertIn("raw timing", report["claim_boundaries"]["allowed_wording"])
         self.assertIn("RT-core speedup", report["claim_boundaries"]["forbidden_wording"])
+
+    def test_cupy_stream_ordering_probe_is_same_stream_only_and_claim_bounded(self) -> None:
+        script = STREAM_ORDERING_SCRIPT.read_text(encoding="utf-8")
+
+        for token in (
+            "same_nondefault_cupy_stream_producer_rtdl_consumer",
+            "producer_event.record(stream)",
+            "consumer_event.record(stream)",
+            "producer_rtdl_consumer_order_validated",
+            "cross_stream_event_wait_validated",
+            "cross_stream_event_wait_claim_authorized",
+            "async_claim_authorized",
+            "public_speedup_claim_authorized",
+            "v4_true_zero_copy_claim_authorized",
+            "False",
+            "does not validate cross-stream event waits",
+        ):
+            self.assertIn(token, script)
 
     def test_claim_review_keeps_v4_true_zero_copy_claim_blocked(self) -> None:
         review = CLAIM_REVIEW.read_text(encoding="utf-8")
