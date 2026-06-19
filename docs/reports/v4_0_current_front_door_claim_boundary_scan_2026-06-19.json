@@ -1,6 +1,60 @@
 {
   "accepted_negative_occurrences": [
     {
+      "line": 23,
+      "path": "README.md",
+      "phrase": "true-zero-copy",
+      "snippet": "THONPATH=src:.` or with the optional local editable checkout path below. Do not read any current doc as a distribution-package promise, automatic partner-selection promise, public true-zero-copy/device-residency claim, stable-SDK claim, generated-binding claim, or broad speedup claim. The short canonical version of those rules is [Current Claim Boundaries](docs/learn/curr"
+    },
+    {
+      "line": 24,
+      "path": "README.md",
+      "phrase": "generated-binding",
+      "snippet": "out path below. Do not read any current doc as a distribution-package promise, automatic partner-selection promise, public true-zero-copy/device-residency claim, stable-SDK claim, generated-binding claim, or broad speedup claim. The short canonical version of those rules is [Current Claim Boundaries](docs/learn/current_claim_boundaries.md).  ## Start Fast  Run commands from"
+    },
+    {
+      "line": 61,
+      "path": "README.md",
+      "phrase": "PyPI",
+      "snippet": "tree_doctor.py python examples/current/getting_started/rtdl_hello_world.py ```  That command only makes this checkout importable as `rtdsl` in your active environment. It is not a PyPI, wheel, or package-install support claim.  Windows `cmd.exe`:  ```bat set PYTHONPATH=src;. python scripts\\rtdl_source_tree_doctor.py python examples\\current\\getting_started\\rtdl_h"
+    },
+    {
+      "line": 61,
+      "path": "README.md",
+      "phrase": "package-install",
+      "snippet": "ython examples/current/getting_started/rtdl_hello_world.py ```  That command only makes this checkout importable as `rtdsl` in your active environment. It is not a PyPI, wheel, or package-install support claim.  Windows `cmd.exe`:  ```bat set PYTHONPATH=src;. python scripts\\rtdl_source_tree_doctor.py python examples\\current\\getting_started\\rtdl_hello_world.py python exampl"
+    },
+    {
+      "line": 172,
+      "path": "README.md",
+      "phrase": "package-install",
+      "snippet": "ps. Promoted benchmarks are reconstruction instruments for RTDL language/runtime design, not broad paper-reproduction or whole-application speedup claims.  Do not read v3.0.2 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, stable SDK claim, generated binding claim, public true-zero-copy claim, or"
+    },
+    {
+      "line": 174,
+      "path": "README.md",
+      "phrase": "generated binding",
+      "snippet": "speedup claims.  Do not read v3.0.2 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, stable SDK claim, generated binding claim, public true-zero-copy claim, or proof that every user program is faster. For the exact positive and negative rule, read [Current Claim Boundaries](docs/learn/current_claim_"
+    },
+    {
+      "line": 174,
+      "path": "README.md",
+      "phrase": "true-zero-copy",
+      "snippet": ".0.2 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, stable SDK claim, generated binding claim, public true-zero-copy claim, or proof that every user program is faster. For the exact positive and negative rule, read [Current Claim Boundaries](docs/learn/current_claim_boundaries.md) and [Partner A"
+    },
+    {
+      "line": 183,
+      "path": "README.md",
+      "phrase": "generated bindings",
+      "snippet": "s are closed, while paper-reproduction, author-code superiority, automatic partner selection, and whole-app speedup wording remain evidence-gated. Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are V4.0 scope, not V3.0 release claims.  The V3.0 partner rule is user"
+    },
+    {
+      "line": 24,
+      "path": "docs/README.md",
+      "phrase": "generated bindings",
+      "snippet": "e. Public performance wording remains row-scoped and evidence-bound; mixed rows stay explicit rather than being folded into a broad RT-core claim. Embedding, C ABI, SDK packaging, generated bindings, zero-copy, and external-runtime integration are V4.0 scope, not V3.0 release-line claims. For the short canonical wording, read [Current Claim Boundaries](learn/current_claim_bou"
+    },
+    {
       "line": 11,
       "path": "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
       "phrase": "package-install",
@@ -277,10 +331,58 @@
       "snippet": "tion; - external CUDA stream ordering; - AMD/HIPRT or Intel-GPU performance claims.  Selecting `--backend optix` means the OptiX backend was selected. It is not by itself a public RT-core speedup claim.  The V3.0 evidence supports path-specific wording only. In particular, the release closes current routes without turning every route into a public speedup claim. Mixed rows"
     },
     {
-      "line": 24,
-      "path": "docs/README.md",
+      "line": 30,
+      "path": "docs/release_reports/v3_0_2/README.md",
       "phrase": "generated bindings",
-      "snippet": "e. Public performance wording remains row-scoped and evidence-bound; mixed rows stay explicit rather than being folded into a broad RT-core claim. Embedding, C ABI, SDK packaging, generated bindings, zero-copy, and external-runtime integration are V4.0 scope, not V3.0 release-line claims. For the short canonical wording, read [Current Claim Boundaries](learn/current_claim_bou"
+      "snippet": "3_current`, hidden from default `make help`, and absent from default source-tree doctor output unless a reviewer explicitly asks for `--include-v4-prep`. Embedding, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are not part of V3.0 release-line scope.  This is a source-tree release"
+    },
+    {
+      "line": 35,
+      "path": "docs/release_reports/v3_0_2/README.md",
+      "phrase": "PyPI",
+      "snippet": "fusion are not part of V3.0 release-line scope.  This is a source-tree release. Use it from a checkout with `PYTHONPATH=src:.` or the optional local editable checkout. It is not a PyPI, wheel, stable SDK, generated binding package, public true-zero-copy, or automatic optimizer release.  ## Why v3.0.2 Matters  v3.0.2 is the release users should start from. The or"
+    },
+    {
+      "line": 36,
+      "path": "docs/release_reports/v3_0_2/README.md",
+      "phrase": "generated binding",
+      "snippet": ".0 release-line scope.  This is a source-tree release. Use it from a checkout with `PYTHONPATH=src:.` or the optional local editable checkout. It is not a PyPI, wheel, stable SDK, generated binding package, public true-zero-copy, or automatic optimizer release.  ## Why v3.0.2 Matters  v3.0.2 is the release users should start from. The original `v3.0` tag remains the major-re"
+    },
+    {
+      "line": 36,
+      "path": "docs/release_reports/v3_0_2/README.md",
+      "phrase": "true-zero-copy",
+      "snippet": "source-tree release. Use it from a checkout with `PYTHONPATH=src:.` or the optional local editable checkout. It is not a PyPI, wheel, stable SDK, generated binding package, public true-zero-copy, or automatic optimizer release.  ## Why v3.0.2 Matters  v3.0.2 is the release users should start from. The original `v3.0` tag remains the major-release point; `v3.0.1` performed"
+    },
+    {
+      "line": 79,
+      "path": "docs/release_reports/v3_0_2/README.md",
+      "phrase": "generated bindings",
+      "snippet": "-design queues are empty. | | Route policy | V3 app-author strategy is learner-facing and linked from the main docs path. | | V4 scope exclusion | Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are excluded from V3.0 release criteria, default `make help`, default d"
+    },
+    {
+      "line": 81,
+      "path": "docs/release_reports/v3_0_2/README.md",
+      "phrase": "true-zero-copy",
+      "snippet": "sses, `v3_current` passes, and archived `v4_prep` passes separately. | | Boundaries | Public docs block broad speedup, paper reproduction, automatic partner selection, stable SDK, true-zero-copy, and generated binding claims. | | Release authorization | Maintainer agreed to publish v3.0.2 on 2026-06-18 after pod validation. |  ## Minimal Smoke Commands  ```bash PYTHONPATH"
+    },
+    {
+      "line": 81,
+      "path": "docs/release_reports/v3_0_2/README.md",
+      "phrase": "generated binding",
+      "snippet": "asses, and archived `v4_prep` passes separately. | | Boundaries | Public docs block broad speedup, paper reproduction, automatic partner selection, stable SDK, true-zero-copy, and generated binding claims. | | Release authorization | Maintainer agreed to publish v3.0.2 on 2026-06-18 after pod validation. |  ## Minimal Smoke Commands  ```bash PYTHONPATH=src:. python scripts/r"
+    },
+    {
+      "line": 100,
+      "path": "docs/release_reports/v3_0_2/README.md",
+      "phrase": "true-zero-copy",
+      "snippet": "en V3.0. It does not claim broad whole-application speedups, paper reproduction, RTDL beating specialized author code, automatic partner selection, embedding/SDK readiness, public true-zero-copy, stable packaged SDK status, generated binding packages, device-buffer query execution, external CUDA stream ordering, or app-specific native-engine extension APIs."
+    },
+    {
+      "line": 101,
+      "path": "docs/release_reports/v3_0_2/README.md",
+      "phrase": "generated binding",
+      "snippet": "cation speedups, paper reproduction, RTDL beating specialized author code, automatic partner selection, embedding/SDK readiness, public true-zero-copy, stable packaged SDK status, generated binding packages, device-buffer query execution, external CUDA stream ordering, or app-specific native-engine extension APIs."
     },
     {
       "line": 15,
@@ -403,60 +505,6 @@
       "snippet": "ation. - Package-install, PyPI, wheel, or stable SDK wording. - Generated binding package wording. - Device-buffer C ABI query execution. - External CUDA stream ordering. - Public true-zero-copy or complete device residency. - Arbitrary raw OptiX callback exposure as the stable API. - App-specific native-engine extension claims."
     },
     {
-      "line": 30,
-      "path": "docs/release_reports/v3_0_2/README.md",
-      "phrase": "generated bindings",
-      "snippet": "3_current`, hidden from default `make help`, and absent from default source-tree doctor output unless a reviewer explicitly asks for `--include-v4-prep`. Embedding, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are not part of V3.0 release-line scope.  This is a source-tree release"
-    },
-    {
-      "line": 35,
-      "path": "docs/release_reports/v3_0_2/README.md",
-      "phrase": "PyPI",
-      "snippet": "fusion are not part of V3.0 release-line scope.  This is a source-tree release. Use it from a checkout with `PYTHONPATH=src:.` or the optional local editable checkout. It is not a PyPI, wheel, stable SDK, generated binding package, public true-zero-copy, or automatic optimizer release.  ## Why v3.0.2 Matters  v3.0.2 is the release users should start from. The or"
-    },
-    {
-      "line": 36,
-      "path": "docs/release_reports/v3_0_2/README.md",
-      "phrase": "generated binding",
-      "snippet": ".0 release-line scope.  This is a source-tree release. Use it from a checkout with `PYTHONPATH=src:.` or the optional local editable checkout. It is not a PyPI, wheel, stable SDK, generated binding package, public true-zero-copy, or automatic optimizer release.  ## Why v3.0.2 Matters  v3.0.2 is the release users should start from. The original `v3.0` tag remains the major-re"
-    },
-    {
-      "line": 36,
-      "path": "docs/release_reports/v3_0_2/README.md",
-      "phrase": "true-zero-copy",
-      "snippet": "source-tree release. Use it from a checkout with `PYTHONPATH=src:.` or the optional local editable checkout. It is not a PyPI, wheel, stable SDK, generated binding package, public true-zero-copy, or automatic optimizer release.  ## Why v3.0.2 Matters  v3.0.2 is the release users should start from. The original `v3.0` tag remains the major-release point; `v3.0.1` performed"
-    },
-    {
-      "line": 79,
-      "path": "docs/release_reports/v3_0_2/README.md",
-      "phrase": "generated bindings",
-      "snippet": "-design queues are empty. | | Route policy | V3 app-author strategy is learner-facing and linked from the main docs path. | | V4 scope exclusion | Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are excluded from V3.0 release criteria, default `make help`, default d"
-    },
-    {
-      "line": 81,
-      "path": "docs/release_reports/v3_0_2/README.md",
-      "phrase": "true-zero-copy",
-      "snippet": "sses, `v3_current` passes, and archived `v4_prep` passes separately. | | Boundaries | Public docs block broad speedup, paper reproduction, automatic partner selection, stable SDK, true-zero-copy, and generated binding claims. | | Release authorization | Maintainer agreed to publish v3.0.2 on 2026-06-18 after pod validation. |  ## Minimal Smoke Commands  ```bash PYTHONPATH"
-    },
-    {
-      "line": 81,
-      "path": "docs/release_reports/v3_0_2/README.md",
-      "phrase": "generated binding",
-      "snippet": "asses, and archived `v4_prep` passes separately. | | Boundaries | Public docs block broad speedup, paper reproduction, automatic partner selection, stable SDK, true-zero-copy, and generated binding claims. | | Release authorization | Maintainer agreed to publish v3.0.2 on 2026-06-18 after pod validation. |  ## Minimal Smoke Commands  ```bash PYTHONPATH=src:. python scripts/r"
-    },
-    {
-      "line": 100,
-      "path": "docs/release_reports/v3_0_2/README.md",
-      "phrase": "true-zero-copy",
-      "snippet": "en V3.0. It does not claim broad whole-application speedups, paper reproduction, RTDL beating specialized author code, automatic partner selection, embedding/SDK readiness, public true-zero-copy, stable packaged SDK status, generated binding packages, device-buffer query execution, external CUDA stream ordering, or app-specific native-engine extension APIs."
-    },
-    {
-      "line": 101,
-      "path": "docs/release_reports/v3_0_2/README.md",
-      "phrase": "generated binding",
-      "snippet": "cation speedups, paper reproduction, RTDL beating specialized author code, automatic partner selection, embedding/SDK readiness, public true-zero-copy, stable packaged SDK status, generated binding packages, device-buffer query execution, external CUDA stream ordering, or app-specific native-engine extension APIs."
-    },
-    {
       "line": 25,
       "path": "docs/release_reports/v3_0_2/release_statement.md",
       "phrase": "generated bindings",
@@ -517,54 +565,6 @@
       "snippet": "ify V3.0.2 as the active release; - all ten benchmark-app current routes are closed by Goal4614; - the V3 app-author strategy is learner-facing; - embedding, C ABI, SDK packaging, generated bindings, zero-copy, and external   runtime integration are excluded as V4.0 scope; - source-tree doctor, `v3_release`, `v3_current`, and separate `v4_prep`   validation pass; - public wor"
     },
     {
-      "line": 23,
-      "path": "README.md",
-      "phrase": "true-zero-copy",
-      "snippet": "THONPATH=src:.` or with the optional local editable checkout path below. Do not read any current doc as a distribution-package promise, automatic partner-selection promise, public true-zero-copy/device-residency claim, stable-SDK claim, generated-binding claim, or broad speedup claim. The short canonical version of those rules is [Current Claim Boundaries](docs/learn/curr"
-    },
-    {
-      "line": 24,
-      "path": "README.md",
-      "phrase": "generated-binding",
-      "snippet": "out path below. Do not read any current doc as a distribution-package promise, automatic partner-selection promise, public true-zero-copy/device-residency claim, stable-SDK claim, generated-binding claim, or broad speedup claim. The short canonical version of those rules is [Current Claim Boundaries](docs/learn/current_claim_boundaries.md).  ## Start Fast  Run commands from"
-    },
-    {
-      "line": 61,
-      "path": "README.md",
-      "phrase": "PyPI",
-      "snippet": "tree_doctor.py python examples/current/getting_started/rtdl_hello_world.py ```  That command only makes this checkout importable as `rtdsl` in your active environment. It is not a PyPI, wheel, or package-install support claim.  Windows `cmd.exe`:  ```bat set PYTHONPATH=src;. python scripts\\rtdl_source_tree_doctor.py python examples\\current\\getting_started\\rtdl_h"
-    },
-    {
-      "line": 61,
-      "path": "README.md",
-      "phrase": "package-install",
-      "snippet": "ython examples/current/getting_started/rtdl_hello_world.py ```  That command only makes this checkout importable as `rtdsl` in your active environment. It is not a PyPI, wheel, or package-install support claim.  Windows `cmd.exe`:  ```bat set PYTHONPATH=src;. python scripts\\rtdl_source_tree_doctor.py python examples\\current\\getting_started\\rtdl_hello_world.py python exampl"
-    },
-    {
-      "line": 172,
-      "path": "README.md",
-      "phrase": "package-install",
-      "snippet": "ps. Promoted benchmarks are reconstruction instruments for RTDL language/runtime design, not broad paper-reproduction or whole-application speedup claims.  Do not read v3.0.2 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, stable SDK claim, generated binding claim, public true-zero-copy claim, or"
-    },
-    {
-      "line": 174,
-      "path": "README.md",
-      "phrase": "generated binding",
-      "snippet": "speedup claims.  Do not read v3.0.2 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, stable SDK claim, generated binding claim, public true-zero-copy claim, or proof that every user program is faster. For the exact positive and negative rule, read [Current Claim Boundaries](docs/learn/current_claim_"
-    },
-    {
-      "line": 174,
-      "path": "README.md",
-      "phrase": "true-zero-copy",
-      "snippet": ".0.2 as a package-install promise, broad RT-core claim, arbitrary CuPy/Numba acceleration claim, arbitrary polygon overlay claim, stable SDK claim, generated binding claim, public true-zero-copy claim, or proof that every user program is faster. For the exact positive and negative rule, read [Current Claim Boundaries](docs/learn/current_claim_boundaries.md) and [Partner A"
-    },
-    {
-      "line": 183,
-      "path": "README.md",
-      "phrase": "generated bindings",
-      "snippet": "s are closed, while paper-reproduction, author-code superiority, automatic partner selection, and whole-app speedup wording remain evidence-gated. Embedding, C ABI, SDK packaging, generated bindings, device-buffer execution, external stream ordering, zero-copy framework interop, and device-callable fusion are V4.0 scope, not V3.0 release claims.  The V3.0 partner rule is user"
-    },
-    {
       "line": 50,
       "path": "src/v4/README.md",
       "phrase": "async",
@@ -613,20 +613,20 @@
     "v4_release_reports_dir_exists": false
   },
   "public_files_scanned": [
+    "README.md",
+    "docs/README.md",
     "docs/engineering/README.md",
     "docs/engineering/rtdl_v4_0_m1_experimental_status_2026-06-19.md",
     "docs/learn/current_claim_boundaries.md",
-    "docs/README.md",
     "docs/release_reports/README.md",
+    "docs/release_reports/v3_0_2/README.md",
     "docs/release_reports/v3_0_2/final_closeout.md",
     "docs/release_reports/v3_0_2/major_release_requirements_trace.md",
     "docs/release_reports/v3_0_2/public_wording_boundaries.md",
     "docs/release_reports/v3_0_2/publication.md",
-    "docs/release_reports/v3_0_2/README.md",
     "docs/release_reports/v3_0_2/release_statement.md",
     "docs/release_reports/v3_0_2/support_matrix.md",
     "docs/release_reports/v3_0_2/tag_preparation.md",
-    "README.md",
     "src/v4/README.md"
   ],
   "report_id": "v4_0_current_front_door_claim_boundary_scan_2026-06-19",

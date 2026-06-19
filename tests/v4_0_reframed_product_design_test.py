@@ -313,6 +313,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "Implementation evidence baseline: `bbc43984b74dee7d52c059b295c5eaade0813096`",
             "First M8 packet/gate commit: `0273d4cba5e38afee099573b0ac47f2f883c1067`",
             "External review request commit: `eba6f4b6e49152d8da4e545477a1cb125f6bab43`",
+            "Post-review action validation commit: `66e6529859a1bac63ce2a72527dc5942e301143d`",
             "Final release-candidate commit: not assigned",
             "V4.0 is ready for critical review as an experimental source-tree candidate",
             "OptiX-backed Python GPU operator direction",
@@ -364,7 +365,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertEqual("experimental_m1_review_baseline_not_current_release", blockers["v4_position"])
         self.assertEqual("v4_release_candidate", blockers["current_gate"])
         self.assertEqual(
-            "0273d4cba5e38afee099573b0ac47f2f883c1067",
+            "66e6529859a1bac63ce2a72527dc5942e301143d",
             blockers["latest_validated_implementation_head"],
         )
         self.assertEqual(
@@ -372,6 +373,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
                 "implementation_evidence_baseline": "bbc43984b74dee7d52c059b295c5eaade0813096",
                 "first_packet_gate_commit": "0273d4cba5e38afee099573b0ac47f2f883c1067",
                 "external_review_request_commit": "eba6f4b6e49152d8da4e545477a1cb125f6bab43",
+                "post_review_action_validation_commit": "66e6529859a1bac63ce2a72527dc5942e301143d",
                 "final_release_candidate_commit": None,
                 "policy": (
                     "final_release_candidate_commit remains null while release_candidate_ready is false; "

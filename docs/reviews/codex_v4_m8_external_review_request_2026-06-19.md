@@ -27,6 +27,8 @@ Candidate coordinates:
   `0273d4cba5e38afee099573b0ac47f2f883c1067`;
 - external review request commit:
   `eba6f4b6e49152d8da4e545477a1cb125f6bab43`;
+- post-review action validation commit:
+  `66e6529859a1bac63ce2a72527dc5942e301143d`;
 - final release-candidate commit:
   not assigned; release-candidate readiness is still false;
 - Linux final smoke on `192.168.1.20`:

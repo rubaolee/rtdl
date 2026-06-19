@@ -62,11 +62,12 @@ Linux `192.168.1.20` source-tree doctor:
 - optional Embree library: warn, not required for V4 M1.
 
 Latest Linux V4 gate on `192.168.1.20` for head
-`d1b84b170756bb48df4b4e0766cfa5dd9341aaa0`:
+`66e6529859a1bac63ce2a72527dc5942e301143d`:
 
 - `make build-optix`: pass;
 - source-tree runtime preflight with `--require-v4-gpu-runtime`: pass;
 - `v4_active`: 71 tests, pass;
+- `v4_release_candidate`: 71 tests, pass as a non-authorizing review gate;
 - Numba M1 `DeviceNDArray` fixed-radius route probe: pass;
 - DLPack capsule fixed-radius route probe: pass;
 - PyTorch CUDA tensor fixed-radius route compatibility probe: pass;
@@ -79,7 +80,7 @@ Tracked machine-readable report:
 `docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json`
 
 That report is bound to Linux head
-`d1b84b170756bb48df4b4e0766cfa5dd9341aaa0` and records:
+`66e6529859a1bac63ce2a72527dc5942e301143d` and records:
 
 - source-tree import from `src/rtdsl`;
 - `pyproject.toml` identity as `rtdl-source-tree` version `3.0.2`;

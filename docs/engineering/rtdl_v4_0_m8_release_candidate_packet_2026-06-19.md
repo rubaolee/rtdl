@@ -13,6 +13,9 @@ First M8 packet/gate commit:
 External review request commit:
 `eba6f4b6e49152d8da4e545477a1cb125f6bab43`
 
+Post-review action validation commit:
+`66e6529859a1bac63ce2a72527dc5942e301143d`
+
 Final release-candidate commit: not assigned. Release-candidate readiness is
 still false.
 
@@ -131,8 +134,9 @@ The current evidence does not validate:
 ## Validation Summary
 
 Linux validation on `192.168.1.20` for the implementation evidence baseline
-`bbc43984b74dee7d52c059b295c5eaade0813096` and final M8 packet/gate smoke at
-`0273d4cba5e38afee099573b0ac47f2f883c1067`:
+`bbc43984b74dee7d52c059b295c5eaade0813096`, first M8 packet/gate smoke at
+`0273d4cba5e38afee099573b0ac47f2f883c1067`, and post-review action validation
+at `66e6529859a1bac63ce2a72527dc5942e301143d`:
 
 - `make build-optix`: pass;
 - `scripts/run_test_matrix.py --group v4_active`: 71 tests, pass;

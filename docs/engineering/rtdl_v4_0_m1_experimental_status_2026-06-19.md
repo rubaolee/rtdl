@@ -2,8 +2,8 @@
 
 Status: experimental engineering evidence, not current release.
 Date: 2026-06-19.
-Latest validated source-tree head: `d1b84b170756bb48df4b4e0766cfa5dd9341aaa0`.
-Latest validated source-tree tree: `e2188f2fd983b2c1afb5f0e34f84773d573b2bb4`.
+Latest validated source-tree head: `66e6529859a1bac63ce2a72527dc5942e301143d`.
+Latest validated source-tree tree: `931b9facd9ca3f83bd561ae57373ec15daadfc93`.
 
 This packet summarizes the current V4.0 M1 state after the fixed-radius
 Python CUDA device-array route gained CuPy, Numba, PyTorch, and bounded legacy
@@ -84,11 +84,12 @@ PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 ```
 
 Latest Linux validation on `192.168.1.20` for source-tree head
-`d1b84b170756bb48df4b4e0766cfa5dd9341aaa0`:
+`66e6529859a1bac63ce2a72527dc5942e301143d`:
 
 - source-tree doctor with V4 active checks: pass;
 - source-tree runtime preflight with required V4 GPU runtime: pass;
 - `v4_active`: 71 tests, pass;
+- `v4_release_candidate`: 71 tests, pass as a non-authorizing review gate;
 - front-door claim-boundary scan: pass;
 - `make build-optix`: pass;
 - DLPack capsule probe: pass;
@@ -220,7 +221,7 @@ and Linux; Linux has CuPy, Numba, PyTorch, and the OptiX library after
 `make build-optix`. The tracked runtime preflight report
 `docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json` records
 required Linux V4 GPU runtime checks passing on
-`d1b84b170756bb48df4b4e0766cfa5dd9341aaa0`.
+`66e6529859a1bac63ce2a72527dc5942e301143d`.
 This authorizes source-tree runtime wording only. It does not authorize package
 install, PyPI, wheel, stable SDK, or generated binding wording.
 
