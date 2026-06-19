@@ -10,7 +10,7 @@
   "latest_validated_implementation_head": "5f239ab1079edf264a915be99e0f7295fc1ea887",
   "latest_validated_route_code_tree": "c0f7054e7ab09068bee4ea02b2202741dcabf96b",
   "latest_validated_m1_implementation_v4_active_tests": 46,
-  "current_source_tree_v4_active_tests": 47,
+  "current_source_tree_v4_active_tests": 48,
   "evidence_ready": [
     {
       "id": "v4_active_gate",
@@ -47,6 +47,12 @@
       "status": "experimental_m1_evidence",
       "path": "tests/v4_0_m1_fixed_radius_route_test.py",
       "note": "Different nonzero prepare/query streams fail closed until an explicit event/wait contract exists."
+    },
+    {
+      "id": "claim_boundary_scan",
+      "status": "closed_guardrail",
+      "path": "docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json",
+      "note": "Current front-door docs resolve to v3.0.2 and do not positively publish blocked V4 claims."
     }
   ],
   "blockers": [
@@ -178,7 +184,8 @@
     },
     {
       "id": "claim_boundary_scan",
-      "closed": false,
+      "closed": true,
+      "evidence": "docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json",
       "required_evidence": "Fresh repository scan proving blocked wording is absent from current user-facing V4 surfaces.",
       "blocking_claims": [
         "unbounded public claims",

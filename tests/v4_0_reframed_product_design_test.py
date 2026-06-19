@@ -5,6 +5,7 @@ from pathlib import Path
 import unittest
 
 from scripts import run_test_matrix
+from scripts.v4_0_current_front_door_claim_boundary_scan import scan as scan_v4_front_door_claims
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +26,9 @@ ACTIVE_ABI_NOTE = ROOT / "docs" / "engineering" / "rtdl_v4_0_active_abi_slice_20
 M1_STATUS = ROOT / "docs" / "engineering" / "rtdl_v4_0_m1_experimental_status_2026-06-19.md"
 RC_BLOCKERS = (
     ROOT / "docs" / "engineering" / "rtdl_v4_0_release_candidate_blockers_2026-06-19.json"
+)
+CLAIM_SCAN_REPORT = (
+    ROOT / "docs" / "reports" / "v4_0_current_front_door_claim_boundary_scan_2026-06-19.json"
 )
 ACTIVE_README = ROOT / "src" / "v4" / "README.md"
 V4_OPERATOR = ROOT / "src" / "rtdsl" / "v4_0_device_array_operator.py"
@@ -185,7 +189,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertEqual("v3.0.2", blockers["current_release_remains"])
         self.assertEqual("v4_active", blockers["current_gate"])
         self.assertEqual(46, blockers["latest_validated_m1_implementation_v4_active_tests"])
-        self.assertEqual(47, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(48, blockers["current_source_tree_v4_active_tests"])
         self.assertEqual(
             "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
             blockers["v4_release_candidate_gate_policy"],
@@ -206,10 +210,32 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "package_install_runtime_story",
             "stable_sdk_public_c_abi",
             "front_door_docs_switch",
-            "claim_boundary_scan",
         ):
             self.assertIn(blocker_id, blocking_by_id)
             self.assertIs(blocking_by_id[blocker_id]["closed"], False)
+        self.assertTrue(blocking_by_id["claim_boundary_scan"]["closed"])
+        self.assertEqual(
+            "docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json",
+            blocking_by_id["claim_boundary_scan"]["evidence"],
+        )
+
+    def test_current_front_door_claim_scan_closes_only_scan_blocker(self) -> None:
+        payload = scan_v4_front_door_claims(ROOT)
+        report = json.loads(CLAIM_SCAN_REPORT.read_text(encoding="utf-8"))
+
+        self.assertEqual("pass", payload["status"])
+        self.assertFalse(payload["findings"])
+        self.assertEqual("pass", report["status"])
+        self.assertFalse(report["findings"])
+        self.assertGreater(len(report["accepted_negative_occurrences"]), 0)
+        self.assertEqual("v3.0.2", report["front_door"]["current_version"])
+        self.assertFalse(report["front_door"]["v4_release_reports_dir_exists"])
+        self.assertIn("README.md", report["public_files_scanned"])
+        self.assertIn("src/v4/README.md", report["public_files_scanned"])
+        self.assertFalse(report["claim_boundaries"]["v4_current_release_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["stable_v4_sdk_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["public_true_zero_copy_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["pytorch_route_claim_authorized"])
 
     def test_release_front_door_stays_v3_while_m1_claim_flags_are_blocked(self) -> None:
         benchmark = json.loads(BENCHMARK_REPORT.read_text(encoding="utf-8"))

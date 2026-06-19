@@ -62,6 +62,7 @@ Implemented contract:
 | True-zero-copy wording consensus | `docs/reviews/codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md` | Keeps public true-zero-copy wording blocked. |
 | Release-positioning consensus | `docs/reviews/codex_v4_m1_release_positioning_2ai_consensus_2026-06-19.md` | Keeps v3.0.2 as current release and V4 as experimental M1 evidence. |
 | Release-candidate blocker manifest | `docs/engineering/rtdl_v4_0_release_candidate_blockers_2026-06-19.json` | Keeps `v4_release_candidate` absent until the M8 release-candidate packet and blockers close. |
+| Front-door claim scan | `docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json` | Confirms current front-door docs resolve to v3.0.2 and do not positively publish blocked V4 claims. |
 
 Current reproducibility gate:
 
@@ -80,7 +81,7 @@ Latest Linux validation on `192.168.1.20` for implementation head
 - `git diff --check`: pass.
 
 Current source-tree `v4_active` gate after the release-candidate blocker
-manifest guard: 47 tests, pass locally.
+manifest and front-door claim-scan guards: 48 tests, pass locally.
 
 ## Release-Candidate Boundary
 
