@@ -149,8 +149,8 @@ def _to_device_columns(cuda, stream, ids: list[int], xy: list[tuple[float, float
     arr = np.asarray(xy, dtype=np.float64).reshape((len(xy), 2))
     return {
         "ids": cuda.to_device(np.asarray(ids, dtype=np.uint32), stream=stream),
-        "x": cuda.to_device(arr[:, 0], stream=stream),
-        "y": cuda.to_device(arr[:, 1], stream=stream),
+        "x": cuda.to_device(np.ascontiguousarray(arr[:, 0]), stream=stream),
+        "y": cuda.to_device(np.ascontiguousarray(arr[:, 1]), stream=stream),
     }
 
 
