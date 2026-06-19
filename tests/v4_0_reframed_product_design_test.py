@@ -58,6 +58,9 @@ SOURCE_TREE_RUNTIME_PREFLIGHT_REPORT = (
 EDITABLE_INSTALL_REPORT = (
     ROOT / "docs" / "reports" / "v4_0_editable_install_runtime_probe_2026-06-19.json"
 )
+FINAL_VALIDATION_REPORT = (
+    ROOT / "docs" / "reports" / "v4_0_m8_final_validation_bundle_2026-06-19.json"
+)
 ACTIVE_README = ROOT / "src" / "v4" / "README.md"
 V4_OPERATOR = ROOT / "src" / "rtdsl" / "v4_0_device_array_operator.py"
 RELEASE_POSITIONING = (
@@ -325,13 +328,14 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         compact = _compact(packet)
 
         for token in (
-            "review-ready M8 evidence packet, not release approval",
+            "V4.0 experimental release-candidate ready",
             "Implementation evidence baseline: `bbc43984b74dee7d52c059b295c5eaade0813096`",
             "First M8 packet/gate commit: `0273d4cba5e38afee099573b0ac47f2f883c1067`",
             "External review request commit: `eba6f4b6e49152d8da4e545477a1cb125f6bab43`",
             "Post-review action validation commit: `66e6529859a1bac63ce2a72527dc5942e301143d`",
-            "Final release-candidate commit: not assigned",
-            "V4.0 is ready for critical review as an experimental source-tree candidate",
+            "Final release-candidate commit: `758111f08b6b2b79f073ec7c3880137df8f08116`",
+            "Release-candidate readiness is true",
+            "V4.0 is accepted as an experimental source-tree release candidate",
             "OptiX-backed Python GPU operator direction",
             "current user release remains `v3.0.2`",
             "one CUDA device per route invocation",
@@ -354,6 +358,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "M8 internal critical review",
             "Editable install hygiene probe",
             "Package/runtime tie-breaker",
+            "Final validation bundle",
             "Linux validation on `192.168.1.20`",
             "`scripts/run_test_matrix.py --group v4_active`: 73 tests, pass",
             "`scripts/run_test_matrix.py --group v4_release_candidate`: 73 tests, pass as a non-authorizing review gate",
@@ -382,23 +387,23 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         evidence_by_id = {entry["id"]: entry for entry in blockers["evidence_ready"]}
 
         self.assertEqual(
-            "m8_external_claude_review_accepted_final_validation_pending_release_candidate_still_blocked",
+            "v4_0_experimental_release_candidate_ready_final_validation_passed_front_door_blocked",
             blockers["status"],
         )
-        self.assertFalse(blockers["release_candidate_ready"])
+        self.assertTrue(blockers["release_candidate_ready"])
         self.assertEqual("v3.0.2", blockers["current_release_remains"])
         self.assertEqual("experimental_m1_review_baseline_not_current_release", blockers["v4_position"])
         self.assertEqual("v4_release_candidate", blockers["current_gate"])
         self.assertEqual(
-            "66e6529859a1bac63ce2a72527dc5942e301143d",
+            "758111f08b6b2b79f073ec7c3880137df8f08116",
             blockers["latest_validated_implementation_head"],
         )
         self.assertEqual(
-            "e7c3f83b81eba8b78e530850cf92e0321ef49a30",
+            "758111f08b6b2b79f073ec7c3880137df8f08116",
             blockers["latest_validated_package_runtime_hygiene_head"],
         )
         self.assertEqual(
-            "e7c3f83b81eba8b78e530850cf92e0321ef49a30",
+            "758111f08b6b2b79f073ec7c3880137df8f08116",
             blockers["latest_validated_external_review_guard_head"],
         )
         self.assertEqual(
@@ -408,10 +413,11 @@ class V40ReframedProductDesignTest(unittest.TestCase):
                 "external_review_request_commit": "eba6f4b6e49152d8da4e545477a1cb125f6bab43",
                 "post_review_action_validation_commit": "66e6529859a1bac63ce2a72527dc5942e301143d",
                 "claude_external_review_record_commit": "e7c3f83b81eba8b78e530850cf92e0321ef49a30",
-                "final_release_candidate_commit": None,
+                "final_release_candidate_commit": "758111f08b6b2b79f073ec7c3880137df8f08116",
                 "policy": (
-                    "final_release_candidate_commit remains null while release_candidate_ready is false; "
-                    "before release approval it must be set to one fresh validation commit."
+                    "final_release_candidate_commit is assigned after a fresh full validation bundle; "
+                    "front-door, package, zero-copy, async, and speedup claims remain separately "
+                    "blocked unless explicitly closed."
                 ),
             },
             blockers["m8_review_baseline_commits"],
@@ -425,8 +431,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             53,
             blockers["latest_validated_m1_cross_stream_v4_active_tests"],
         )
-        self.assertEqual(73, blockers["current_source_tree_v4_active_tests"])
-        self.assertEqual(73, blockers["current_source_tree_v4_release_candidate_tests"])
+        self.assertEqual(74, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(74, blockers["current_source_tree_v4_release_candidate_tests"])
         self.assertEqual(
             "exposed_as_non_authorizing_m8_review_gate_release_requires_external_review_and_explicit_user_action",
             blockers["v4_release_candidate_gate_policy"],
@@ -468,6 +474,11 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json",
             evidence_by_id["editable_install_runtime_probe"]["path"],
         )
+        self.assertIn("final_validation_bundle", evidence_by_id)
+        self.assertEqual(
+            "docs/reports/v4_0_m8_final_validation_bundle_2026-06-19.json",
+            evidence_by_id["final_validation_bundle"]["path"],
+        )
         self.assertIn("after_editable_install_external_review_consensus", evidence_by_id)
         self.assertEqual(
             "docs/reviews/codex_v4_after_editable_install_m8_external_review_consensus_2026-06-19.md",
@@ -478,15 +489,19 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertTrue(blocking_by_id["pytorch_route_evidence"]["closed"])
         self.assertTrue(blocking_by_id["claim_boundary_scan"]["closed"])
         self.assertEqual(
-            "review_ready_m8_packet_written_not_release_approval",
+            "final_validation_passed_release_candidate_ready_not_front_door",
             blocking_by_id["m8_release_candidate_packet"]["current_preflight"]["status"],
         )
         self.assertEqual(
             "docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md",
             blocking_by_id["m8_release_candidate_packet"]["current_preflight"]["evidence"],
         )
+        self.assertEqual(
+            "docs/reports/v4_0_m8_final_validation_bundle_2026-06-19.json",
+            blocking_by_id["m8_release_candidate_packet"]["current_preflight"]["final_validation"],
+        )
         self.assertIn(
-            "Release-candidate readiness remains false",
+            "experimental source-tree release candidate",
             blocking_by_id["m8_release_candidate_packet"]["current_preflight"]["reason"],
         )
         self.assertEqual(
@@ -569,7 +584,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["evidence"],
         )
         self.assertEqual(
-            "e7c3f83b81eba8b78e530850cf92e0321ef49a30",
+            "758111f08b6b2b79f073ec7c3880137df8f08116",
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["validation_commit"],
         )
         self.assertEqual(
@@ -593,7 +608,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["reason"],
         )
         self.assertEqual(
-            "closed_by_claude_external_review_final_validation_pending",
+            "closed_by_claude_external_review_final_validation_passed",
             blocking_by_id["external_release_candidate_review"]["current_preflight"]["status"],
         )
         self.assertTrue(blocking_by_id["external_release_candidate_review"]["closed"])
@@ -748,6 +763,37 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertIn("blocked_missing_native_library", probe_source)
         self.assertIn('"native_async_claim_authorized": False', probe_source)
         self.assertIn('"async_claim_authorized": False', probe_source)
+
+    def test_final_validation_bundle_assigns_experimental_release_candidate(self) -> None:
+        report = json.loads(FINAL_VALIDATION_REPORT.read_text(encoding="utf-8"))
+        commands = {entry["name"]: entry for entry in report["commands"]}
+
+        self.assertEqual("v4_0_m8_final_validation_bundle_2026-06-19", report["report_id"])
+        self.assertEqual("pass", report["status"])
+        self.assertTrue(report["ok"])
+        self.assertEqual("192.168.1.20", report["host"])
+        self.assertEqual(
+            "758111f08b6b2b79f073ec7c3880137df8f08116",
+            report["validated_commit"],
+        )
+        for command_name in (
+            "build_optix",
+            "source_tree_runtime_preflight",
+            "editable_install_runtime_probe",
+            "v4_active",
+            "v4_release_candidate",
+            "claim_boundary_scan",
+            "git_diff_check",
+            "clean_worktree",
+        ):
+            self.assertEqual("pass", commands[command_name]["status"], command_name)
+        self.assertEqual(73, commands["v4_active"]["tests"])
+        self.assertEqual(73, commands["v4_release_candidate"]["tests"])
+        self.assertTrue(report["release_decision"]["release_candidate_ready"])
+        self.assertEqual("v3.0.2", report["release_decision"]["current_user_release_remains"])
+        self.assertFalse(report["release_decision"]["front_door_switch_authorized"])
+        for key, value in report["claim_boundaries"].items():
+            self.assertFalse(value, key)
 
     def test_after_editable_install_consensus_requires_external_review_next(self) -> None:
         consensus = AFTER_EDITABLE_INSTALL_CONSENSUS.read_text(encoding="utf-8")

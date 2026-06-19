@@ -1,6 +1,7 @@
 # RTDL V4.0 M8 Release-Candidate Evidence Packet
 
-Status: review-ready M8 evidence packet, not release approval.
+Status: V4.0 experimental release-candidate ready, not current-release or
+front-door approval.
 
 Date: 2026-06-19
 
@@ -25,13 +26,16 @@ Next-step external-review consensus guard commit:
 Claude external review record and post-review guard refresh commit:
 `e7c3f83b81eba8b78e530850cf92e0321ef49a30`
 
-Final release-candidate commit: not assigned. Release-candidate readiness is
-still false.
+Final release-candidate commit:
+`758111f08b6b2b79f073ec7c3880137df8f08116`
+
+Release-candidate readiness is true for the experimental source-tree V4.0
+candidate only. The current user release remains v3.0.2.
 
 ## Verdict
 
-V4.0 is ready for critical review as an experimental source-tree candidate for
-the OptiX-backed Python GPU operator direction.
+V4.0 is accepted as an experimental source-tree release candidate for the
+OptiX-backed Python GPU operator direction.
 
 It is not the current user release. The current user release remains `v3.0.2`.
 This packet does not authorize a front-door switch, package-install wording,
@@ -143,9 +147,10 @@ The current evidence does not validate:
 | Active ABI slice | `docs/engineering/rtdl_v4_0_active_abi_slice_2026-06-19.md` | Phase 2 substrate evidence, not product headline. |
 | Active ABI layout audit | `docs/reports/v4_0_active_abi_layout_audit_2026-06-19.json` | Experimental C ABI layout audit. |
 | M8 next-step consensus | `docs/reviews/codex_v4_after_runtime_preflight_m8_next_step_2ai_consensus_2026-06-19.md` | 2-AI decision to assemble this M8 packet before broad feature expansion. |
-| M8 internal critical review | `docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md` | 2-AI review accepts this as a baseline and rejects release-candidate readiness today. |
+| M8 internal critical review | `docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md` | 2-AI review accepted this as a baseline before the final validation bundle. |
 | Package/runtime tie-breaker | `docs/reviews/codex_v4_package_runtime_tiebreaker_2026-06-19.md` | Requires editable-install hygiene evidence while keeping package/PyPI/wheel claims blocked. |
-| Claude external M8 review | `docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md` | Accepts the M8 packet as the V4.0 experimental review baseline with blockers; release-candidate readiness remains false until a final validation commit is assigned. |
+| Claude external M8 review | `docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md` | Accepted the M8 packet as the V4.0 experimental review baseline with blockers; the final validation commit is now assigned. |
+| Final validation bundle | `docs/reports/v4_0_m8_final_validation_bundle_2026-06-19.json` | Clean-clone Linux validation passed at the final release-candidate commit. |
 
 ## Validation Summary
 
@@ -192,6 +197,20 @@ head `3e22e03bd4fe70454a7b5a11b30c7990c4dfff9d`:
 - `git diff --check`: pass;
 - worktree clean.
 
+Final release-candidate validation on `192.168.1.20` in a fresh clean clone for
+source-tree head `758111f08b6b2b79f073ec7c3880137df8f08116`:
+
+- `make build-optix`: pass;
+- `scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime`:
+  pass;
+- `scripts/v4_0_editable_install_runtime_probe.py --system-site-packages
+  --run-v4-smoke`: pass;
+- `scripts/run_test_matrix.py --group v4_active`: 73 tests, pass;
+- `scripts/run_test_matrix.py --group v4_release_candidate`: 73 tests, pass;
+- `scripts/v4_0_current_front_door_claim_boundary_scan.py`: pass;
+- `git diff --check`: pass;
+- worktree clean.
+
 The route-specific JSON reports above preserve the earlier CuPy, Numba,
 DLPack, and PyTorch probe evidence. This packet binds that evidence into one
 review surface; it does not broaden those route claims.
@@ -215,7 +234,8 @@ This M8 packet does not authorize:
 
 | Gate | Current state |
 | --- | --- |
-| External M8 critical review | Closed by Claude external review; final release-candidate validation remains open. |
+| External M8 critical review | Closed by Claude external review. |
+| Final release-candidate validation | Closed by clean-clone Linux validation at `758111f08b6b2b79f073ec7c3880137df8f08116`. |
 | Package/runtime decision | Source-tree runtime and editable-install hygiene are validated; package/PyPI/wheel/stable SDK claims remain blocked. |
 | Front-door docs switch | Blocked until release approval and explicit user action. |
 | Public true-zero-copy | Blocked until end-to-end copy evidence exists. |

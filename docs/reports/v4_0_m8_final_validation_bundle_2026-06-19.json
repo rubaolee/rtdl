@@ -1,0 +1,80 @@
+{
+  "report_id": "v4_0_m8_final_validation_bundle_2026-06-19",
+  "date": "2026-06-19",
+  "status": "pass",
+  "ok": true,
+  "host": "192.168.1.20",
+  "validation_directory": "/home/lestat/work/rtdl_v4_m8_final_validation_758111f08_clean",
+  "validated_commit": "758111f08b6b2b79f073ec7c3880137df8f08116",
+  "validated_tree": "40f253ee8124254d169b57ce47536be07129f3b9",
+  "commands": [
+    {
+      "name": "clone",
+      "command": "git clone --depth 1 https://github.com/rubaolee/rtdl /home/lestat/work/rtdl_v4_m8_final_validation_758111f08_clean",
+      "status": "pass"
+    },
+    {
+      "name": "build_optix",
+      "command": "make build-optix",
+      "status": "pass",
+      "output": "/tmp/rtdl_v4_build_optix_758111f08.log"
+    },
+    {
+      "name": "source_tree_runtime_preflight",
+      "command": "python3 scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime --output /tmp/rtdl_v4_source_tree_runtime_preflight_758111f08_clean.json",
+      "status": "pass"
+    },
+    {
+      "name": "editable_install_runtime_probe",
+      "command": "python3 scripts/v4_0_editable_install_runtime_probe.py --system-site-packages --run-v4-smoke --output /tmp/rtdl_v4_editable_install_runtime_probe_758111f08_clean.json",
+      "status": "pass"
+    },
+    {
+      "name": "v4_active",
+      "command": "python3 scripts/run_test_matrix.py --group v4_active",
+      "status": "pass",
+      "tests": 73
+    },
+    {
+      "name": "v4_release_candidate",
+      "command": "python3 scripts/run_test_matrix.py --group v4_release_candidate",
+      "status": "pass",
+      "tests": 73
+    },
+    {
+      "name": "claim_boundary_scan",
+      "command": "python3 scripts/v4_0_current_front_door_claim_boundary_scan.py --output /tmp/rtdl_v4_claim_scan_758111f08_clean.json",
+      "status": "pass"
+    },
+    {
+      "name": "git_diff_check",
+      "command": "git diff --check",
+      "status": "pass"
+    },
+    {
+      "name": "clean_worktree",
+      "command": "test -z \"$(git status --short)\"",
+      "status": "pass"
+    }
+  ],
+  "claim_boundaries": {
+    "v4_current_front_door_authorized": false,
+    "package_install_claim_authorized": false,
+    "pypi_claim_authorized": false,
+    "wheel_claim_authorized": false,
+    "stable_sdk_claim_authorized": false,
+    "public_true_zero_copy_claim_authorized": false,
+    "async_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "full_pytorch_surface_claim_authorized": false,
+    "full_numba_surface_claim_authorized": false,
+    "full_dlpack_surface_claim_authorized": false
+  },
+  "release_decision": {
+    "release_candidate_ready": true,
+    "current_user_release_remains": "v3.0.2",
+    "front_door_switch_authorized": false,
+    "scope": "experimental source-tree V4.0 fixed-radius M1 Python GPU operator candidate"
+  }
+}
