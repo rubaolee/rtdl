@@ -6,6 +6,7 @@ import unittest
 
 from scripts import run_test_matrix
 from scripts.v4_0_current_front_door_claim_boundary_scan import scan as scan_v4_front_door_claims
+from scripts.v4_0_source_tree_runtime_preflight import build_payload as build_source_tree_runtime_preflight
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,6 +37,9 @@ RC_BLOCKERS = (
 )
 CLAIM_SCAN_REPORT = (
     ROOT / "docs" / "reports" / "v4_0_current_front_door_claim_boundary_scan_2026-06-19.json"
+)
+SOURCE_TREE_RUNTIME_PREFLIGHT_REPORT = (
+    ROOT / "docs" / "reports" / "v4_0_source_tree_runtime_preflight_2026-06-19.json"
 )
 ACTIVE_README = ROOT / "src" / "v4" / "README.md"
 V4_OPERATOR = ROOT / "src" / "rtdsl" / "v4_0_device_array_operator.py"
@@ -193,6 +197,55 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertIn("RTDL V4.0 Release-Candidate Blockers", engineering_index)
         self.assertIn("RTDL V4.0 Pre-M8 Boundary", engineering_index)
         self.assertIn("RTDL V4.0 Source-Tree Runtime Story", engineering_index)
+
+    def test_source_tree_runtime_preflight_authorizes_only_checkout_runtime(self) -> None:
+        payload = build_source_tree_runtime_preflight()
+        self.assertTrue(payload["ok"])
+        self.assertEqual("pass", payload["status"])
+
+        self.assertTrue(payload["pyproject"]["source_tree_identity_ok"])
+        self.assertEqual("rtdl-source-tree", payload["pyproject"]["name"])
+        self.assertEqual("3.0.2", payload["pyproject"]["version"])
+        self.assertFalse(payload["pyproject"]["v4_distribution_artifact"])
+
+        self.assertTrue(payload["source_tree_import_smoke"]["ok"])
+        self.assertTrue(payload["source_tree_import_smoke"]["from_checkout_src"])
+        self.assertTrue(payload["source_tree_doctor"]["ok"])
+
+        check_names = {item["name"] for item in payload["source_tree_doctor"]["checks"]}
+        self.assertIn("optional module torch", check_names)
+        self.assertTrue(payload["test_matrix_policy"]["v4_active_group_present"])
+        self.assertTrue(payload["test_matrix_policy"]["v4_release_candidate_group_absent"])
+
+        for item in payload["required_paths"]:
+            self.assertTrue(item["exists"], item["path"])
+
+        self.assertTrue(payload["claim_boundaries"]["source_tree_runtime_wording_authorized"])
+        for key in (
+            "v4_package_install_authorized",
+            "pypi_authorized",
+            "wheel_authorized",
+            "stable_sdk_authorized",
+            "generated_bindings_authorized",
+            "v4_current_front_door_authorized",
+        ):
+            self.assertFalse(payload["claim_boundaries"][key], key)
+
+    def test_source_tree_runtime_preflight_report_is_tracked_as_m1_evidence(self) -> None:
+        self.assertTrue(SOURCE_TREE_RUNTIME_PREFLIGHT_REPORT.exists())
+        report = json.loads(SOURCE_TREE_RUNTIME_PREFLIGHT_REPORT.read_text(encoding="utf-8"))
+
+        self.assertEqual("v4_0_source_tree_runtime_preflight_2026-06-19", report["report_id"])
+        self.assertEqual("pass", report["status"])
+        self.assertTrue(report["ok"])
+        self.assertTrue(report["pyproject"]["source_tree_identity_ok"])
+        self.assertTrue(report["test_matrix_policy"]["v4_active_group_present"])
+        self.assertTrue(report["test_matrix_policy"]["v4_release_candidate_group_absent"])
+        self.assertTrue(report["claim_boundaries"]["source_tree_runtime_wording_authorized"])
+        self.assertFalse(report["claim_boundaries"]["v4_package_install_authorized"])
+        self.assertFalse(report["claim_boundaries"]["pypi_authorized"])
+        self.assertFalse(report["claim_boundaries"]["wheel_authorized"])
+        self.assertFalse(report["claim_boundaries"]["stable_sdk_authorized"])
 
     def test_pre_m8_boundary_keeps_release_candidate_aura_blocked(self) -> None:
         boundary = PRE_M8_BOUNDARY.read_text(encoding="utf-8")

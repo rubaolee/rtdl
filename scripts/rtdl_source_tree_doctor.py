@@ -279,6 +279,8 @@ def gather_checks(
         "cupy": "cupy",
         "numba": "numba",
     }
+    if include_v4_active:
+        optional_modules["torch"] = "torch"
     for name, module in optional_modules.items():
         checks.append(
             _check(
