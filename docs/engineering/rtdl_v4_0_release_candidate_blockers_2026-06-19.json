@@ -10,7 +10,10 @@
   "latest_validated_implementation_head": "c624e626af273b09431278d506c57effb2fca871",
   "latest_validated_route_code_tree": "e6e66788ecca6532248964b5152d53ecdd24722e",
   "latest_validated_m1_implementation_v4_active_tests": 52,
-  "current_source_tree_v4_active_tests": 52,
+  "latest_validated_m1_cross_stream_evidence_base_commit": "0ca6a89f1e8699bb8f4c83c34e0f646dc508336e",
+  "latest_validated_m1_cross_stream_evidence_scope": "precommit working-tree patch for native prepare-ready event ownership and Python V4 metadata",
+  "latest_validated_m1_cross_stream_expected_v4_active_tests_after_report_refresh": 53,
+  "current_source_tree_v4_active_tests": 53,
   "evidence_ready": [
     {
       "id": "v4_active_gate",
@@ -49,10 +52,10 @@
       "note": "Same nondefault stream producer -> RTDL -> consumer ordering is validated."
     },
     {
-      "id": "cross_stream_fail_closed",
+      "id": "cross_stream_prepare_query_event_wait",
       "status": "experimental_m1_evidence",
       "path": "tests/v4_0_m1_fixed_radius_route_test.py",
-      "note": "Different nonzero prepare/query streams fail closed until an explicit event/wait contract exists."
+      "note": "Different nonzero prepare/query streams are ordered by a native prepare-ready event for the fixed-radius M1 route."
     },
     {
       "id": "claim_boundary_scan",
@@ -110,22 +113,23 @@
     },
     {
       "id": "cross_stream_event_wait",
-      "closed": false,
+      "closed": true,
       "current_preflight": {
         "host": "192.168.1.20",
         "date": "2026-06-19",
-        "status": "blocked_event_wait_contract_missing",
+        "status": "closed_fixed_radius_m1_prepare_ready_event_wait",
+        "evidence": "docs/reports/v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19.json",
         "native_source_evidence": [
           "src/native/optix/rtdl_optix_workloads.cpp: PreparedFixedRadiusCountThreshold2D packs search AABBs and builds the OptiX accel on the supplied prepare stream.",
-          "src/native/optix/rtdl_optix_core.cpp: build_custom_accel_from_device_aabbs calls cuStreamSynchronize(stream) before returning the prepared handle.",
-          "src/native/optix/rtdl_optix_workloads.cpp: write_prepared_fixed_radius_count_threshold_2d_device_query_columns_on_stream_optix synchronizes the query stream before returning."
+          "src/native/optix/rtdl_optix_workloads.cpp: PreparedFixedRadiusCountThreshold2D records a prepare-ready CUDA event after native prepare work.",
+          "src/native/optix/rtdl_optix_workloads.cpp: write_prepared_fixed_radius_count_threshold_2d_device_query_columns_on_stream_optix waits on the prepare-ready event when the query stream differs.",
+          "src/native/optix/rtdl_optix_workloads.cpp: the on-stream query path synchronizes the query stream before returning."
         ],
-        "reason": "The route has synchronized prepare/query stream propagation evidence, but no public owner/event/wait lifetime contract for different nonzero prepare/query streams. Different-stream prepare/query remains fail-closed until an explicit event/wait API and smoke tests exist."
+        "reason": "The fixed-radius M1 route now has a narrow native prepare-ready event contract for different nonzero prepare/query CUDA streams. This does not authorize async execution, public event-handle ownership, full external stream ownership, or general cross-stream behavior outside this route."
       },
-      "required_evidence": "Explicit owner/event/wait contract plus tests for different nonzero prepare/query streams.",
+      "required_evidence": "Explicit native prepare-ready event ownership plus tests and GPU evidence for different nonzero prepare/query streams.",
       "blocking_claims": [
-        "cross-stream event wait support",
-        "different-stream prepare/query support"
+        "fixed-radius M1 different-stream prepare/query support"
       ]
     },
     {

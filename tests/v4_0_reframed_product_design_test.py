@@ -167,6 +167,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         for token in (
             "experimental engineering evidence, not current release",
             "Latest validated source-tree head: `c624e626af273b09431278d506c57effb2fca871`",
+            "Cross-stream prepare/query event-wait evidence base:",
+            "`0ca6a89f1e8699bb8f4c83c34e0f646dc508336e` plus precommit",
             "fixed_radius_count_threshold_2d",
             "Zero-copy device-column handoff with no observed host staging of named columns",
             "Same-stream producer -> RTDL prepare/query -> consumer ordering is validated",
@@ -194,7 +196,15 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertEqual("v3.0.2", blockers["current_release_remains"])
         self.assertEqual("v4_active", blockers["current_gate"])
         self.assertEqual(52, blockers["latest_validated_m1_implementation_v4_active_tests"])
-        self.assertEqual(52, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(
+            "0ca6a89f1e8699bb8f4c83c34e0f646dc508336e",
+            blockers["latest_validated_m1_cross_stream_evidence_base_commit"],
+        )
+        self.assertEqual(
+            53,
+            blockers["latest_validated_m1_cross_stream_expected_v4_active_tests_after_report_refresh"],
+        )
+        self.assertEqual(53, blockers["current_source_tree_v4_active_tests"])
         self.assertEqual(
             "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
             blockers["v4_release_candidate_gate_policy"],
@@ -206,7 +216,6 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "external_release_candidate_review",
             "public_true_zero_copy",
             "async_completion",
-            "cross_stream_event_wait",
             "public_speedup",
             "rtx_rt_core_speed_evidence",
             "pytorch_route_evidence",
@@ -218,16 +227,26 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         ):
             self.assertIn(blocker_id, blocking_by_id)
             self.assertIs(blocking_by_id[blocker_id]["closed"], False)
+        self.assertTrue(blocking_by_id["cross_stream_event_wait"]["closed"])
         self.assertTrue(blocking_by_id["claim_boundary_scan"]["closed"])
         self.assertEqual(
-            "blocked_event_wait_contract_missing",
+            "closed_fixed_radius_m1_prepare_ready_event_wait",
             blocking_by_id["cross_stream_event_wait"]["current_preflight"]["status"],
+        )
+        self.assertEqual(
+            "docs/reports/v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19.json",
+            blocking_by_id["cross_stream_event_wait"]["current_preflight"]["evidence"],
         )
         cross_stream_evidence = "\n".join(
             blocking_by_id["cross_stream_event_wait"]["current_preflight"]["native_source_evidence"]
         )
-        self.assertIn("build_custom_accel_from_device_aabbs", cross_stream_evidence)
-        self.assertIn("cuStreamSynchronize(stream)", cross_stream_evidence)
+        self.assertIn("prepare-ready CUDA event", cross_stream_evidence)
+        self.assertIn("waits on the prepare-ready event", cross_stream_evidence)
+        self.assertIn("synchronizes the query stream", cross_stream_evidence)
+        self.assertIn(
+            "does not authorize async execution",
+            blocking_by_id["cross_stream_event_wait"]["current_preflight"]["reason"],
+        )
         self.assertEqual(
             "blocked_runtime_unavailable",
             blocking_by_id["pytorch_route_evidence"]["current_preflight"]["status"],

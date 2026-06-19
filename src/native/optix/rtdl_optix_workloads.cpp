@@ -21872,6 +21872,8 @@ struct PreparedFixedRadiusCountThreshold2D {
     std::vector<GpuPoint> search_points;
     DevPtr d_search;
     AccelHolder accel;
+    CUevent prepare_ready_event = nullptr;
+    CUstream prepare_stream = nullptr;
     float max_radius = 0.0f;
     bool search_columns_zero_copy = false;
     const uint32_t* search_ids = nullptr;
@@ -21920,6 +21922,14 @@ struct PreparedFixedRadiusCountThreshold2D {
         }
     }
 
+    ~PreparedFixedRadiusCountThreshold2D()
+    {
+        if (prepare_ready_event) {
+            cuEventDestroy(prepare_ready_event);
+            prepare_ready_event = nullptr;
+        }
+    }
+
     PreparedFixedRadiusCountThreshold2D(
             const uint32_t* ids,
             const double* x,
@@ -21935,6 +21945,7 @@ struct PreparedFixedRadiusCountThreshold2D {
           search_x(x),
           search_y(y)
     {
+        prepare_stream = stream;
         if (count == 0) return;
         if (!search_ids || !search_x || !search_y)
             throw std::runtime_error("partner device fixed-radius search column pointers must not be null when search_count is nonzero");
@@ -21966,6 +21977,8 @@ struct PreparedFixedRadiusCountThreshold2D {
 
         auto t_start_bvh = std::chrono::steady_clock::now();
         accel = build_custom_accel_from_device_aabbs(get_optix_context(), d_aabbs.ptr, count, stream);
+        CU_CHECK(cuEventCreate(&prepare_ready_event, CU_EVENT_DISABLE_TIMING));
+        CU_CHECK(cuEventRecord(prepare_ready_event, stream));
         auto t_end_bvh = std::chrono::steady_clock::now();
         g_optix_last_bvh_build_s = std::chrono::duration<double>(t_end_bvh - t_start_bvh).count();
         g_optix_last_traversal_s = 0.0;
@@ -22234,6 +22247,9 @@ static void write_prepared_fixed_radius_count_threshold_2d_device_query_columns_
         throw std::runtime_error("partner device fixed-radius query column pointers must not be null when query_count is nonzero");
     if (!query_ids_out || !neighbor_counts_out || !threshold_flags_out)
         throw std::runtime_error("partner device fixed-radius output column pointers must not be null when query_count is nonzero");
+    if (prepared->search_columns_zero_copy && prepared->prepare_ready_event && stream != prepared->prepare_stream) {
+        CU_CHECK(cuStreamWaitEvent(stream, prepared->prepare_ready_event, 0));
+    }
     if (!prepared->accel.handle) {
         CU_CHECK(cuMemcpyDtoDAsync(
             reinterpret_cast<CUdeviceptr>(query_ids_out),

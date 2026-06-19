@@ -41,6 +41,7 @@ WORDING_CONSENSUS = (
 NUMBA_SURFACE_CONSENSUS = (
     ROOT / "docs" / "reviews" / "codex_v4_m1_numba_surface_2ai_consensus_2026-06-19.md"
 )
+OPTIX_WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
 
 
 class _FakeCudaColumn:
@@ -68,15 +69,18 @@ class _FakeCudaColumn:
 
 
 class _FakePrepared:
-    def __init__(self) -> None:
+    def __init__(self, *, prepare_stream_ptr: int = 0) -> None:
         self.closed = False
         self.on_stream_call = None
+        self.prepare_stream_ptr = int(prepare_stream_ptr)
 
     def close(self) -> None:
         self.closed = True
 
     def write_device_count_threshold_columns_on_stream(self, query_point_columns, **kwargs):
         self.on_stream_call = {"query_point_columns": query_point_columns, **kwargs}
+        query_stream_ptr = int(kwargs["cuda_stream_ptr"])
+        prepare_query_streams_differ = self.prepare_stream_ptr != query_stream_ptr
         pointer_echo = {f"query.{name}": int(column._ptr) for name, column in query_point_columns.items()}
         pointer_echo.update(
             {
@@ -92,6 +96,11 @@ class _FakePrepared:
                 "cuda_stream_ptr": int(kwargs["cuda_stream_ptr"]),
                 "native_call_device_pointer_echo": pointer_echo,
                 "native_call_device_pointer_echo_complete": True,
+                "prepare_stream_ptr": self.prepare_stream_ptr,
+                "prepare_query_streams_differ": prepare_query_streams_differ,
+                "native_prepare_ready_event_recorded": True,
+                "native_prepare_ready_event_wait_ready": True,
+                "native_prepare_ready_event_wait_used": prepare_query_streams_differ,
                 "named_cuda_columns_no_host_stage_authorized": True,
                 "named_cuda_columns_no_host_stage_ready": True,
                 "internal_device_staging_disclosed": True,
@@ -159,18 +168,21 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertIn("pytorch", route["blocked_frameworks_without_route_evidence"])
         self.assertTrue(route["native_stream_propagation_ready"])
         self.assertTrue(route["native_prepare_stream_propagation_ready"])
-        self.assertFalse(route["cross_stream_event_wait_ready"])
+        self.assertTrue(route["cross_stream_event_wait_ready"])
+        self.assertEqual(route["cross_stream_status"], "fixed_radius_m1_prepare_ready_event_wait_supported_synchronous")
         self.assertEqual(
             route["cross_stream_prepare_query_policy"],
-            "same_nonzero_stream_only_until_event_wait_contract_exists",
+            "fixed_radius_m1_prepare_ready_event_wait_when_prepare_and_query_streams_differ",
         )
+        self.assertEqual(route["cross_stream_event_wait_scope"], "fixed_radius_m1_prepare_query_only")
         self.assertFalse(route["native_async_ready"])
         self.assertFalse(route["v4_true_zero_copy_claim_authorized"])
         self.assertIn("variable_length_neighbor_rows", route["blocked_generalizations"])
         self.assertIn("ray_triangle_any_hit", route["blocked_generalizations"])
         self.assertIn("pytorch_route_support", route["blocked_generalizations"])
         self.assertIn("dlpack_route_support", route["blocked_generalizations"])
-        self.assertIn("cross_stream_event_wait", route["blocked_generalizations"])
+        self.assertIn("general_cross_stream_event_wait", route["blocked_generalizations"])
+        self.assertIn("full_external_stream_ownership", route["blocked_generalizations"])
 
     def test_plan_captures_borrowed_pointers_and_producer_streams(self) -> None:
         search = _point_columns(0x1000)
@@ -211,6 +223,8 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(plan.to_metadata()["prepare_stream_handle"], 123)
         self.assertTrue(plan.to_metadata()["caller_stream_native_propagation_ready"])
         self.assertTrue(plan.to_metadata()["native_prepare_stream_propagation_ready"])
+        self.assertTrue(plan.to_metadata()["cross_stream_event_wait_ready"])
+        self.assertFalse(plan.to_metadata()["native_prepare_ready_event_wait_required"])
 
     def test_plan_fails_closed_for_host_arrays_bad_rank_and_noncontiguous_stride(self) -> None:
         search = _point_columns(0x1000)
@@ -246,19 +260,42 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "V4 output column 'neighbor_counts' must use dtype"):
             rtdsl.plan_v4_fixed_radius_count_threshold_2d(query, search, output_columns=wrong_dtype)
 
-    def test_plan_fails_closed_for_cross_stream_prepare_query_without_event_contract(self) -> None:
+    def test_plan_records_cross_stream_prepare_query_event_wait_requirement(self) -> None:
         search = _point_columns(0x1000)
         query = _point_columns(0x2000)
         outputs = _output_columns(0x3000)
 
-        with self.assertRaisesRegex(ValueError, "cross-stream prepare/query execution requires"):
-            rtdsl.plan_v4_fixed_radius_count_threshold_2d(
-                query,
-                search,
-                output_columns=outputs,
-                stream=456,
-                prepare_stream=123,
-            )
+        plan = rtdsl.plan_v4_fixed_radius_count_threshold_2d(
+            query,
+            search,
+            output_columns=outputs,
+            stream=456,
+            prepare_stream=123,
+        )
+        metadata = plan.to_metadata()
+
+        self.assertEqual(metadata["caller_stream_handle"], 456)
+        self.assertEqual(metadata["prepare_stream_handle"], 123)
+        self.assertTrue(metadata["prepare_query_streams_differ"])
+        self.assertTrue(metadata["native_prepare_ready_event_wait_required"])
+        self.assertTrue(metadata["cross_stream_event_wait_ready"])
+        self.assertEqual(
+            metadata["cross_stream_prepare_query_policy"],
+            "fixed_radius_m1_prepare_ready_event_wait_when_prepare_and_query_streams_differ",
+        )
+
+    def test_native_fixed_radius_prepare_handle_owns_event_wait_contract(self) -> None:
+        native = OPTIX_WORKLOADS.read_text(encoding="utf-8")
+
+        for token in (
+            "CUevent prepare_ready_event",
+            "CUstream prepare_stream",
+            "cuEventCreate(&prepare_ready_event, CU_EVENT_DISABLE_TIMING)",
+            "cuEventRecord(prepare_ready_event, stream)",
+            "cuStreamWaitEvent(stream, prepared->prepare_ready_event, 0)",
+            "cuEventDestroy(prepare_ready_event)",
+        ):
+            self.assertIn(token, native)
 
     def test_plan_fails_closed_for_mixed_devices(self) -> None:
         search = _point_columns(0x1000)
@@ -459,16 +496,24 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
 
         for token in (
             "same_nondefault_cupy_stream_producer_rtdl_consumer",
+            "cross_stream_prepare_query_contract",
+            "prepare_stream = cp.cuda.Stream",
+            "query_stream = cp.cuda.Stream",
             "producer_event.record(stream)",
             "consumer_event.record(stream)",
+            "prepare_input_event.record(prepare_stream)",
+            "cross_consumer_event.record(query_stream)",
+            "native_prepare_ready_event_wait_used",
             "producer_rtdl_consumer_order_validated",
             "cross_stream_event_wait_validated",
             "cross_stream_event_wait_claim_authorized",
+            "general_cross_stream_event_wait_claim_authorized",
+            "full_external_stream_ownership_claim_authorized",
             "async_claim_authorized",
             "public_speedup_claim_authorized",
             "v4_true_zero_copy_claim_authorized",
             "False",
-            "does not validate cross-stream event waits",
+            "not authorize async, full external stream ownership",
         ):
             self.assertIn(token, script)
 
@@ -477,26 +522,51 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
 
         self.assertEqual(report["status"], "pass-with-boundary")
         self.assertEqual(report["route_id"], "fixed_radius_count_threshold_2d")
-        self.assertEqual(report["remote_validation"]["v4_active"]["test_count"], 35)
-        self.assertEqual(report["ordering_scope"], "same_nondefault_cupy_stream_producer_rtdl_consumer")
+        self.assertTrue(report["remote_validation"]["build_optix"]["ok"])
+        self.assertTrue(report["remote_validation"]["stream_ordering_probe"]["ok"])
+        self.assertEqual(report["remote_validation"]["v4_active"]["expected_after_report_refresh"], 53)
+        self.assertEqual(report["ordering_scope"], "same_stream_and_cross_stream_prepare_query_event_wait")
         contract = report["same_stream_contract"]
         self.assertEqual(contract["producer_stream_ptr"], contract["rtdl_prepare_stream_ptr"])
         self.assertEqual(contract["producer_stream_ptr"], contract["rtdl_query_stream_ptr"])
         self.assertEqual(contract["producer_stream_ptr"], contract["consumer_stream_ptr"])
         self.assertTrue(contract["producer_rtdl_consumer_order_validated"])
         self.assertFalse(contract["cross_stream_event_wait_validated"])
+        self.assertFalse(contract["native_prepare_ready_event_wait_used"])
+        cross_contract = report["cross_stream_prepare_query_contract"]
+        self.assertNotEqual(cross_contract["prepare_stream_ptr"], cross_contract["query_stream_ptr"])
+        self.assertTrue(cross_contract["streams_distinct"])
+        self.assertTrue(cross_contract["prepare_query_streams_differ"])
+        self.assertTrue(cross_contract["native_prepare_ready_event_recorded"])
+        self.assertTrue(cross_contract["native_prepare_ready_event_wait_required"])
+        self.assertTrue(cross_contract["native_prepare_ready_event_wait_used"])
+        self.assertTrue(cross_contract["native_synchronized_before_return"])
+        self.assertTrue(cross_contract["cross_stream_event_wait_validated"])
         self.assertTrue(report["validation"]["output_match"])
         self.assertTrue(report["validation"]["device_consumer_checksum_match"])
+        self.assertTrue(report["validation"]["cross_stream_output_match"])
+        self.assertTrue(report["validation"]["cross_stream_device_consumer_checksum_match"])
         self.assertEqual(report["validation"]["observed_checksum"], report["validation"]["expected_checksum"])
+        self.assertEqual(
+            report["validation"]["cross_stream_observed_checksum"],
+            report["validation"]["cross_stream_expected_checksum"],
+        )
         self.assertFalse(report["metadata_subset"]["native_async_ready"])
+        self.assertTrue(report["metadata_subset"]["cross_stream_event_wait_ready"])
+        self.assertTrue(report["metadata_subset"]["cross_stream_prepare_query_wait_used"])
         self.assertTrue(report["metadata_subset"]["native_synchronized_before_return"])
         self.assertTrue(report["claim_boundaries"]["same_stream_ordering_claim_authorized"])
+        self.assertTrue(
+            report["claim_boundaries"]["fixed_radius_m1_cross_stream_prepare_query_event_wait_claim_authorized"]
+        )
         self.assertFalse(report["claim_boundaries"]["cross_stream_event_wait_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["general_cross_stream_event_wait_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["full_external_stream_ownership_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["async_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["public_speedup_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["rt_core_speedup_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["v4_true_zero_copy_claim_authorized"])
-        self.assertIn("cross-stream event wait support", report["claim_boundaries"]["forbidden_wording"])
+        self.assertIn("full external stream ownership", report["claim_boundaries"]["forbidden_wording"])
 
     def test_numba_cuda_array_interface_smoke_is_claim_bounded(self) -> None:
         script = NUMBA_SCRIPT.read_text(encoding="utf-8")
@@ -694,7 +764,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         search = _point_columns(0x1000)
         query = _point_columns(0x2000)
         outputs = _output_columns(0x3000)
-        prepared = _FakePrepared()
+        prepared = _FakePrepared(prepare_stream_ptr=456)
 
         with mock.patch.object(v4, "_prepare_scene") as prepare_scene, mock.patch.object(
             v4,
@@ -726,6 +796,12 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(metadata["prepare_stream_handle"], 456)
         self.assertTrue(metadata["caller_stream_native_propagation_ready"])
         self.assertTrue(metadata["native_prepare_stream_propagation_ready"])
+        self.assertTrue(metadata["cross_stream_event_wait_ready"])
+        self.assertFalse(metadata["prepare_query_streams_differ"])
+        self.assertFalse(metadata["native_prepare_ready_event_wait_required"])
+        self.assertTrue(metadata["native_prepare_ready_event_recorded"])
+        self.assertTrue(metadata["native_prepare_ready_event_wait_ready"])
+        self.assertFalse(metadata["native_prepare_ready_event_wait_used"])
         self.assertTrue(metadata["native_synchronized_before_return"])
         self.assertFalse(metadata["native_async_ready"])
         self.assertTrue(metadata["native_true_zero_copy_authorized"])
@@ -742,11 +818,11 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         )
         self.assertFalse(metadata["v4_true_zero_copy_claim_authorized"])
 
-    def test_operator_fails_closed_for_different_prepare_and_query_streams(self) -> None:
+    def test_operator_uses_prepare_ready_event_wait_for_different_prepare_and_query_streams(self) -> None:
         search = _point_columns(0x1000)
         query = _point_columns(0x2000)
         outputs = _output_columns(0x3000)
-        prepared = _FakePrepared()
+        prepared = _FakePrepared(prepare_stream_ptr=123)
 
         with mock.patch.object(v4, "_prepare_scene_on_stream", return_value=prepared):
             with rtdsl.prepare_v4_fixed_radius_count_threshold_2d(
@@ -755,14 +831,27 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
                 partner="cupy",
                 stream=123,
             ) as operator:
-                with self.assertRaisesRegex(ValueError, "cross-stream prepare/query execution requires"):
-                    operator.run(
-                        query,
-                        radius=1.0,
-                        threshold=1,
-                        output_columns=outputs,
-                        stream=456,
-                    )
+                result = operator.run(
+                    query,
+                    radius=1.0,
+                    threshold=1,
+                    output_columns=outputs,
+                    stream=456,
+                    return_metadata=True,
+                )
+
+        metadata = result["metadata"]
+        self.assertEqual(prepared.on_stream_call["cuda_stream_ptr"], 456)
+        self.assertEqual(metadata["caller_stream_handle"], 456)
+        self.assertEqual(metadata["prepare_stream_handle"], 123)
+        self.assertTrue(metadata["prepare_query_streams_differ"])
+        self.assertTrue(metadata["native_prepare_ready_event_wait_required"])
+        self.assertTrue(metadata["native_prepare_ready_event_recorded"])
+        self.assertTrue(metadata["native_prepare_ready_event_wait_ready"])
+        self.assertTrue(metadata["native_prepare_ready_event_wait_used"])
+        self.assertTrue(metadata["native_synchronized_before_return"])
+        self.assertFalse(metadata["native_async_ready"])
+        self.assertFalse(metadata["v4_true_zero_copy_claim_authorized"])
 
 
 if __name__ == "__main__":

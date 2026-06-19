@@ -38,8 +38,8 @@ Implemented contract:
   `threshold_flags` columns;
 - output shape is fixed one row per query, not variable-length neighbor rows;
 - nonzero caller CUDA streams propagate through prepare and query;
-- different nonzero prepare/query streams fail closed until an explicit
-  event/wait contract exists;
+- different nonzero prepare/query streams are ordered by a native
+  prepare-ready event owned by the prepared fixed-radius handle;
 - native route synchronizes before return;
 - async completion is not claimed.
 - evidence-backed input protocols are the CuPy adapter and
@@ -56,7 +56,7 @@ Implemented contract:
 | Parity matrix | `docs/reports/v4_0_m1_fixed_radius_cupy_parity_matrix_2026-06-19.json` | Passing positive cases plus fail-closed zero-length CuPy pointer behavior. |
 | No-host-stage probe | `docs/reports/v4_0_m1_fixed_radius_cupy_no_host_stage_probe_2026-06-19.json` | Authorizes named-column no-host-stage wording; does not authorize true-zero-copy wording. |
 | Benchmark probe | `docs/reports/v4_0_m1_fixed_radius_cupy_benchmark_probe_2026-06-19.json` | Raw route timing smoke only; does not authorize public speedup or RT-core speedup wording. |
-| Same-stream ordering probe | `docs/reports/v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19.json` | Authorizes same-stream producer -> RTDL -> consumer ordering; does not authorize cross-stream event waits or async wording. |
+| Stream ordering probe | `docs/reports/v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19.json` | Authorizes same-stream producer -> RTDL -> consumer ordering and fixed-radius M1 distinct prepare/query stream ordering via native prepare-ready event; does not authorize async, public event ownership, full external-stream ownership, or general cross-stream behavior. |
 | Numba CUDA Array Interface smoke | `docs/reports/v4_0_m1_fixed_radius_numba_cuda_array_interface_smoke_2026-06-19.json` | Authorizes Numba `DeviceNDArray` columns through `__cuda_array_interface__`; superseded by the fuller M1 partner-surface probe below. |
 | Numba M1 `DeviceNDArray` fixed-radius route probe | `docs/reports/v4_0_m1_fixed_radius_numba_partner_surface_probe_2026-06-19.json` | Authorizes bounded M1 Numba `DeviceNDArray` wording for parity, same-stream propagation, pointer echo, caller-owned output columns, and prepared-handle reuse while search columns remain alive; does not authorize arbitrary Numba program acceleration. |
 | Numba route-boundary consensus | `docs/reviews/codex_v4_m1_numba_surface_2ai_consensus_2026-06-19.md` | Keeps `full_numba_partner_surface` open while accepting bounded M1 `DeviceNDArray` fixed-radius route evidence. |
@@ -82,14 +82,22 @@ Latest Linux validation on `192.168.1.20` for source-tree head
 - `git diff --check`: pass.
 - worktree clean.
 
+Cross-stream prepare/query event-wait evidence base:
+`0ca6a89f1e8699bb8f4c83c34e0f646dc508336e` plus precommit
+working-tree patch for native prepare-ready event ownership and Python V4
+metadata. On `192.168.1.20`, `make build-optix` and the refreshed
+stream-ordering probe passed; the refreshed current source-tree gate is 53
+tests locally and is expected after report refresh.
+
 Native build and route probes were also validated on the preceding M1
 implementation-bearing commits: `make build-optix`, same-stream ordering,
 Numba CUDA Array Interface smoke, Numba M1 `DeviceNDArray` fixed-radius route
 probe, DLPack bridge wrapper smoke, and `git diff --check` all passed there.
 
 Current source-tree `v4_active` gate after the release-candidate blocker,
-front-door claim-scan, Numba route-evidence guards, and source-tree runtime
-story guard: 52 tests, pass locally and on Linux.
+front-door claim-scan, Numba route-evidence guards, source-tree runtime story
+guard, and fixed-radius cross-stream prepare/query event-wait guard: 53 tests,
+pass locally.
 
 ## Release-Candidate Boundary
 
@@ -108,7 +116,7 @@ Current machine-readable blocker manifest:
 - "Zero-copy device-column handoff with no observed host staging of named columns."
 - "Nonzero caller CUDA streams are propagated through prepare and query; the route synchronizes before return."
 - "Same-stream producer -> RTDL prepare/query -> consumer ordering is validated on one nondefault CuPy CUDA stream."
-- "Different nonzero prepare/query CUDA streams are rejected until an explicit event/wait contract exists."
+- "Different nonzero prepare/query CUDA streams are ordered by a native prepare-ready event for the fixed-radius M1 route."
 - "A CuPy-backed DLPack-only wrapper smoke exercises the generic DLPack adapter."
 - "Raw route-scoped timing probe exists; it does not authorize public speedup wording."
 
@@ -134,7 +142,8 @@ Current machine-readable blocker manifest:
 | Public true-zero-copy | blocked |
 | Async/nonblocking completion | blocked |
 | Same-stream ordering | experimental M1 evidence |
-| Cross-stream event waits | blocked |
+| Fixed-radius M1 prepare/query event-wait | experimental M1 evidence |
+| General cross-stream event waits | blocked |
 | Public speedup | blocked |
 | RTX/RT-core speedup | blocked |
 | CuPy route evidence | experimental M1 evidence |
@@ -151,14 +160,15 @@ passwordless sudo, `python3.12-venv` is unavailable, and the attempted user-site
 Torch dry-run was unbounded and stopped. No PyTorch route support wording is
 authorized until an actual CUDA tensor smoke passes.
 
-Cross-stream event/wait preflight on `192.168.1.20`, 2026-06-19: still
-blocked by contract. Native prepare/query stream propagation is present, and
-the current implementation synchronizes the prepare stream before returning the
-prepared handle and synchronizes the query stream before returning results. That
-evidence supports the current same-stream/synchronized-return wording only. It
-does not define a public owner/event/wait lifetime contract for different
-nonzero prepare/query streams, so different-stream prepare/query remains
-fail-closed until an explicit event/wait API and smoke test exist.
+Cross-stream prepare/query event-wait preflight on `192.168.1.20`,
+2026-06-19: passing with boundaries for the fixed-radius M1 route. The native
+prepared handle owns a CUDA prepare-ready event, records it after
+prepare-dependent CUDA/OptiX work, and waits on it from a different query
+stream before launching query work. Native prepare and query calls still
+synchronize before returning. This authorizes only narrow fixed-radius M1
+prepare/query ordering across distinct nonzero CUDA streams; it does not
+authorize async execution, public event-handle ownership, full external stream
+ownership, or general cross-stream behavior outside this route.
 
 Numba M1 `DeviceNDArray` fixed-radius route probe on `192.168.1.20`,
 2026-06-19: passing with boundaries. The route has Numba `DeviceNDArray`
@@ -185,7 +195,7 @@ remains unauthorized.
 ## Next Gates
 
 1. Keep the M1 route reproducible on current head.
-2. Add cross-stream event/wait ownership only after an explicit owner/event contract exists.
+2. Keep the fixed-radius M1 cross-stream prepare/query event-wait evidence fresh while async and full external-stream ownership remain blocked.
 3. Add PyTorch, DLPack, or broader Numba partner evidence before saying those surfaces are validated.
 4. Use RTX-class hardware before any RT-core speed discussion.
 5. Keep the release-candidate blocker manifest current while `v4_release_candidate` remains absent from the passing test matrix.

@@ -5985,6 +5985,9 @@ class PreparedOptixFixedRadiusCountThreshold2D:
         pointer_echo = dict(getattr(self, "_search_pointer_echo", {}))
         pointer_echo.update({f"query.{name}": int(handoff.data_ptr) for name, handoff in query_handoffs.items()})
         pointer_echo.update({f"output.{name}": int(handoff.data_ptr) for name, handoff in outputs.items()})
+        prepare_stream_ptr = int(getattr(self, "_search_scene_cuda_stream_ptr", 0) or 0)
+        prepare_query_streams_differ = bool(prepare_stream_ptr != cuda_stream_ptr)
+        prepare_ready_event_wait_used = bool(prepare_query_streams_differ)
         if query_count == 0:
             return {
                 "metadata": {
@@ -6000,6 +6003,11 @@ class PreparedOptixFixedRadiusCountThreshold2D:
                     "internal_device_staging_disclosed": True,
                     "internal_device_staging_scope": "device-resident AABB/BVH staging may occur inside the native route",
                     "stream_ordering_requested": "caller_supplied_cuda_stream",
+                    "prepare_stream_ptr": prepare_stream_ptr,
+                    "prepare_query_streams_differ": prepare_query_streams_differ,
+                    "native_prepare_ready_event_recorded": False,
+                    "native_prepare_ready_event_wait_ready": True,
+                    "native_prepare_ready_event_wait_used": False,
                     "native_synchronized_before_return": True,
                     "native_async_ready": False,
                     "direct_device_handoff_authorized": True,
@@ -6058,6 +6066,11 @@ class PreparedOptixFixedRadiusCountThreshold2D:
             "internal_device_staging_disclosed": True,
             "internal_device_staging_scope": "device-resident AABB/BVH staging may occur inside the native route",
             "stream_ordering_requested": "caller_supplied_cuda_stream",
+            "prepare_stream_ptr": prepare_stream_ptr,
+            "prepare_query_streams_differ": prepare_query_streams_differ,
+            "native_prepare_ready_event_recorded": True,
+            "native_prepare_ready_event_wait_ready": True,
+            "native_prepare_ready_event_wait_used": prepare_ready_event_wait_used,
             "native_synchronized_before_return": True,
             "native_async_ready": False,
             "direct_device_pointer_observed": True,
@@ -9043,6 +9056,7 @@ def prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
     prepared._handle = ctypes.c_void_p()
     prepared._closed = False
     prepared._search_scene_true_zero_copy = True
+    prepared._search_scene_cuda_stream_ptr = 0
     prepared._search_pointer_echo = {
         f"search.{name}": int(point.data_ptr)
         for name, point in packet["points"].items()
