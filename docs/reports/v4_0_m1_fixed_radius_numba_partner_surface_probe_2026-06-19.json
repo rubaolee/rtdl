@@ -242,25 +242,25 @@
     "rt_core_speedup_claim_authorized": false,
     "v4_true_zero_copy_claim_authorized": false
   },
-  "evidence_code_commit": "57bc500231a282a93ab6d5a26ff90e8674cf00ac",
-  "evidence_code_tree": "75657a548685e86a83cff1be0c0f7b56ad3111f4",
+  "evidence_code_commit": "b1077caa4cb17a449d19f24b44c7ce3b4c7d73fe",
+  "evidence_code_tree": "8cdbee4381088548b245e3c5fa0d0786ebe67e8d",
   "remote_validation": {
     "host": "192.168.1.20",
     "path": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
     "commands": [
       "git pull --ff-only",
-      "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_numba_partner_surface_probe.py --output /tmp/v4_numba_partner_surface_57bc50023.json",
+      "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_numba_partner_surface_probe.py --output /tmp/v4_numba_partner_surface_b1077caa4.json",
       "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
-      "PYTHONPATH=src:. python3 scripts/v4_0_current_front_door_claim_boundary_scan.py --output /tmp/v4_claim_scan_57bc50023.json",
+      "PYTHONPATH=src:. python3 scripts/v4_0_current_front_door_claim_boundary_scan.py --output /tmp/v4_claim_scan_b1077caa4.json",
       "git diff --check",
       "git status --short --branch"
     ],
-    "validated_commit": "57bc500231a282a93ab6d5a26ff90e8674cf00ac",
+    "validated_commit": "b1077caa4cb17a449d19f24b44c7ce3b4c7d73fe",
     "v4_active": {
       "ok": true,
       "module_count": 3,
-      "test_count": 48,
-      "output": "Ran 48 tests in 0.885s; OK"
+      "test_count": 50,
+      "output": "Ran 50 tests in 0.893s; OK"
     },
     "claim_boundary_scan": {
       "ok": true,

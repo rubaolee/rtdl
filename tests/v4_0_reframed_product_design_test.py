@@ -188,8 +188,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertFalse(blockers["release_candidate_ready"])
         self.assertEqual("v3.0.2", blockers["current_release_remains"])
         self.assertEqual("v4_active", blockers["current_gate"])
-        self.assertEqual(46, blockers["latest_validated_m1_implementation_v4_active_tests"])
-        self.assertEqual(48, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(50, blockers["latest_validated_m1_implementation_v4_active_tests"])
+        self.assertEqual(50, blockers["current_source_tree_v4_active_tests"])
         self.assertEqual(
             "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
             blockers["v4_release_candidate_gate_policy"],
@@ -228,7 +228,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["pytorch_route_evidence"]["current_preflight"]["status"],
         )
         self.assertEqual(
-            "m1_devicearray_surface_evidence_ready_but_full_surface_wording_blocked",
+            "m1_devicearray_route_evidence_ready_but_full_surface_wording_blocked",
             blocking_by_id["full_numba_partner_surface"]["current_preflight"]["status"],
         )
         self.assertEqual(

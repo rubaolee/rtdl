@@ -38,6 +38,9 @@ CLAIM_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_claim_rev
 WORDING_CONSENSUS = (
     ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md"
 )
+NUMBA_SURFACE_CONSENSUS = (
+    ROOT / "docs" / "reviews" / "codex_v4_m1_numba_surface_2ai_consensus_2026-06-19.md"
+)
 
 
 class _FakeCudaColumn:
@@ -570,7 +573,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(report["protocol"], "cuda_array_interface")
         self.assertEqual(report["remote_validation"]["validated_commit"], report["evidence_code_commit"])
         self.assertTrue(report["remote_validation"]["v4_active"]["ok"])
-        self.assertEqual(report["remote_validation"]["v4_active"]["test_count"], 48)
+        self.assertEqual(report["remote_validation"]["v4_active"]["test_count"], 50)
         self.assertTrue(report["remote_validation"]["claim_boundary_scan"]["ok"])
         self.assertTrue(report["remote_validation"]["diff_check"]["ok"])
         self.assertTrue(report["remote_validation"]["worktree_clean"])
@@ -604,6 +607,15 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertFalse(boundaries["v4_true_zero_copy_claim_authorized"])
         self.assertIn("all Numba programs are accelerated", boundaries["forbidden_wording"])
         self.assertIn("full arbitrary Numba partner surface", boundaries["forbidden_wording"])
+
+    def test_numba_surface_consensus_keeps_broad_claim_blocked(self) -> None:
+        consensus = NUMBA_SURFACE_CONSENSUS.read_text(encoding="utf-8")
+
+        self.assertIn("Keep `full_numba_partner_surface.closed = false`", consensus)
+        self.assertIn("Numba `DeviceNDArray` fixed-radius route", consensus)
+        self.assertIn("does not authorize broad", consensus)
+        self.assertIn("arbitrary Numba program acceleration", consensus)
+        self.assertIn("Tighten the blocker manifest", consensus)
 
     def test_dlpack_bridge_smoke_is_claim_bounded(self) -> None:
         script = DLPACK_SCRIPT.read_text(encoding="utf-8")
