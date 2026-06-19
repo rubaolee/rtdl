@@ -1,0 +1,160 @@
+from __future__ import annotations
+
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import unittest
+
+from scripts import run_test_matrix
+
+
+ROOT = Path(__file__).resolve().parents[1]
+HEADER = ROOT / "src" / "v4" / "include" / "rtdl" / "rtdl.h"
+SOURCE = ROOT / "src" / "v4" / "rtdl_v4_c_api.cpp"
+README = ROOT / "src" / "v4" / "README.md"
+NOTE = ROOT / "docs" / "engineering" / "rtdl_v4_0_active_abi_slice_2026-06-19.md"
+DESIGN = ROOT / "docs" / "engineering" / "rtdl_v4_0_design_review_packet_2026-06-19.md"
+MAKEFILE = ROOT / "Makefile"
+CTYPES_SMOKE = ROOT / "src" / "v4" / "examples" / "python_ctypes_aabb2_smoke.py"
+
+
+class V40ActiveAbiControlPlaneTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.header = HEADER.read_text(encoding="utf-8")
+        cls.source = SOURCE.read_text(encoding="utf-8")
+        cls.makefile = MAKEFILE.read_text(encoding="utf-8")
+
+    def test_active_v4_surface_exists_outside_user_front_door(self) -> None:
+        self.assertTrue(HEADER.exists())
+        self.assertTrue(SOURCE.exists())
+        self.assertTrue(README.exists())
+        self.assertTrue(NOTE.exists())
+        self.assertTrue(CTYPES_SMOKE.exists())
+        self.assertFalse((ROOT / "include" / "rtdl" / "rtdl.h").exists())
+        self.assertFalse((ROOT / "packaging" / "rtdl-c-api.pc").exists())
+        self.assertIn("Active ABI Slice", NOTE.read_text(encoding="utf-8"))
+
+    def test_header_uses_v4_review_decision_shape(self) -> None:
+        header = self.header
+        self.assertIn("#define RTDL_ABI_VERSION_MAJOR 0", header)
+        self.assertIn("#define RTDL_ABI_VERSION_MINOR 2", header)
+        self.assertIn("typedef struct rtdl_query_plan rtdl_query_plan;", header)
+        self.assertIn("typedef struct rtdl_result rtdl_result;", header)
+        self.assertIn("typedef struct rtdl_event rtdl_event;", header)
+        self.assertNotIn("typedef struct rtdl_query rtdl_query;", header)
+        self.assertNotIn("rtdl_query_destroy", header)
+        self.assertIn("RTDL_STATUS_RESULT_TRUNCATED", header)
+        self.assertIn("rtdl_query_capability", header)
+        self.assertIn("RTDL_OUTPUT_RTDL_OWNED_RESULT", header)
+        self.assertIn("RTDL_OUTPUT_CALLER_PROVIDED_BUFFER", header)
+        self.assertIn("RTDL_OWNERSHIP_EXPORTED_RTDL_VIEW", header)
+        self.assertIn("Borrowed device pointers are caller-asserted", header)
+        self.assertNotIn("rtdl_backend_is_supported", header)
+        self.assertNotIn("rtdl_route_is_supported", header)
+
+    def test_public_descriptors_start_with_struct_size(self) -> None:
+        for name in (
+            "rtdl_external_runtime_desc",
+            "rtdl_context_desc",
+            "rtdl_route_desc",
+            "rtdl_buffer_desc",
+            "rtdl_index_desc",
+            "rtdl_output_desc",
+            "rtdl_query_desc",
+        ):
+            needle = f"typedef struct {name} {{\n  size_t struct_size;"
+            self.assertIn(needle, self.header, name)
+
+    def test_result_output_contract_is_enforced_in_source(self) -> None:
+        source = self.source
+        for token in (
+            "required_count_out",
+            "written_count_out",
+            "RTDL_STATUS_RESULT_TRUNCATED",
+            "RTDL_OUTPUT_CALLER_PROVIDED_BUFFER",
+            "RTDL_OUTPUT_RTDL_OWNED_RESULT",
+            "rtdl_result_row_count",
+            "rtdl_result_get_buffer",
+        ):
+            self.assertIn(token, source)
+        self.assertIn("written_count < required_count", source)
+        self.assertIn("std::memcpy(desc->output.caller_buffer.data", source)
+
+    def test_ctypes_smoke_covers_owned_truncated_and_exact_outputs(self) -> None:
+        smoke = CTYPES_SMOKE.read_text(encoding="utf-8")
+        self.assertIn("RTDL_OUTPUT_RTDL_OWNED_RESULT", smoke)
+        self.assertIn("RTDL_OUTPUT_CALLER_PROVIDED_BUFFER", smoke)
+        self.assertIn("RTDL_STATUS_RESULT_TRUNCATED", smoke)
+        self.assertIn("owned_result", smoke)
+        self.assertIn("caller_output_truncated", smoke)
+        self.assertIn("caller_output_exact", smoke)
+
+    def test_fail_closed_validation_tokens_are_present(self) -> None:
+        source = self.source
+        for token in (
+            "validate_buffer_desc",
+            "ndim exceeds RTDL_MAX_RANK",
+            "null data with nonzero byte_count",
+            "shape product overflows",
+            "byte_count is smaller than dense shape extent",
+            "release-callback ownership requires a release callback",
+            "RTDL_STATUS_INVALID_ARGUMENT",
+            "RTDL_STATUS_SHAPE_LAYOUT_MISMATCH",
+        ):
+            self.assertIn(token, source)
+
+    def test_makefile_hides_v4_active_from_default_help_but_exposes_dev_help(self) -> None:
+        default_help = self.makefile.split("help:", 1)[1].split("help-v4-prep:", 1)[0]
+        self.assertNotIn("build-v4-c-api", default_help)
+        self.assertNotIn("test-v4-active", default_help)
+        self.assertIn("help-v4-dev:", self.makefile)
+        self.assertIn("build-v4-c-api:", self.makefile)
+        self.assertIn("test-v4-active:", self.makefile)
+
+    def test_matrix_and_doctor_expose_v4_active_only_on_request(self) -> None:
+        self.assertEqual(("tests.v4_0_active_abi_control_plane_test",), run_test_matrix.group_modules("v4_active"))
+        self.assertNotIn("tests.v4_0_active_abi_control_plane_test", run_test_matrix.group_modules("v3_current"))
+
+        import scripts.rtdl_source_tree_doctor as doctor
+
+        default_checks = {row["name"]: row for row in doctor.gather_checks()["checks"]}
+        self.assertNotIn("V4 active experimental ABI surface", default_checks)
+
+        active_checks = {
+            row["name"]: row
+            for row in doctor.gather_checks(include_v4_active=True)["checks"]
+        }
+        self.assertEqual("pass", active_checks["V4 active experimental ABI surface"]["status"])
+        self.assertFalse(active_checks["V4 active experimental ABI surface"]["required"])
+
+    def test_design_note_and_packet_agree_on_pre_1_0_boundary(self) -> None:
+        combined = NOTE.read_text(encoding="utf-8") + "\n" + DESIGN.read_text(encoding="utf-8")
+        design = DESIGN.read_text(encoding="utf-8")
+        self.assertIn("pre-1.0", combined)
+        self.assertIn("experimental SDK", combined)
+        self.assertIn("D1: every query route supports RTDL-owned result handles", design)
+        self.assertIn("caller-provided\n  output buffers", design)
+        self.assertIn("D2: every public descriptor begins with `struct_size`", design)
+        self.assertIn("D3: capability discovery uses one enum-keyed query function", design)
+
+    def test_active_v4_library_builds_when_cxx_is_available(self) -> None:
+        if shutil.which("c++") is None:
+            self.skipTest("no c++ compiler on this host")
+        completed = subprocess.run(
+            ["make", "build-v4-c-api"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=60,
+        )
+        if completed.returncode != 0:
+            sys.stderr.write(completed.stdout)
+            sys.stderr.write(completed.stderr)
+        self.assertEqual(0, completed.returncode)
+
+
+if __name__ == "__main__":
+    unittest.main()

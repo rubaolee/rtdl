@@ -27,6 +27,7 @@ ifeq ($(UNAME_S),Darwin)
 	APPLE_RT_LIB_NAME := librtdl_apple_rt.dylib
 	ADAPTIVE_LIB_NAME := librtdl_adaptive.dylib
 	C_API_LIB_NAME := librtdl_c_api.dylib
+	V4_C_API_LIB_NAME := librtdl_v4_c_api.dylib
 else
 	OPTIX_LIB_NAME   := librtdl_optix.so
 	HIPRT_LIB_NAME   := librtdl_hiprt.so
@@ -34,6 +35,7 @@ else
 	APPLE_RT_LIB_NAME := librtdl_apple_rt.so
 	ADAPTIVE_LIB_NAME := librtdl_adaptive.so
 	C_API_LIB_NAME := librtdl_c_api.so
+	V4_C_API_LIB_NAME := librtdl_v4_c_api.so
 endif
 
 OPTIX_CANDIDATES := \
@@ -169,8 +171,12 @@ C_API_STAGE_ARCHIVE ?= $(BUILD_DIR)/$(C_API_STAGE_ARCHIVE_ROOT).tar.gz
 C_API_STAGE_MANIFEST := docs/history/v4_preparatory_embedding/v3_0_c_abi_symbol_manifest_v0_1_3.json
 C_API_PKG_CONFIG := $(C_API_PREP_STAGING_ROOT)/packaging/rtdl-c-api.pc
 C_API_CMAKE_CONFIG := $(C_API_PREP_STAGING_ROOT)/packaging/rtdl-c-api-config.cmake
+CXX_V4_C_API ?= c++
+V4_C_API_ROOT := src/v4
+V4_C_API_HEADER := $(V4_C_API_ROOT)/include/rtdl/rtdl.h
+V4_C_API_CXXFLAGS := -std=c++17 -O2 -shared -fPIC -DRTDL_BUILD_SHARED -I$(V4_C_API_ROOT)/include
 
-.PHONY: help help-v4-prep build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api stage-c-api stage-c-api-prefix package-c-api-stage run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test test-all verify clean
+.PHONY: help help-v4-prep help-v4-dev build build-embree build-optix build-hiprt build-vulkan build-apple-rt build-adaptive build-c-api build-v4-c-api stage-c-api stage-c-api-prefix package-c-api-stage run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test test-v4-active test-all verify clean
 
 help:
 	@echo "Public targets:"
@@ -194,6 +200,13 @@ help-v4-prep:
 	@echo "  package-c-api-stage - archive the draft C ABI staging bundle"
 	@echo ""
 	@echo "These targets are archived V4 prep under docs/history/v4_preparatory_embedding/."
+
+help-v4-dev:
+	@echo "V4 active experimental development targets:"
+	@echo "  build-v4-c-api - build the active pre-1.0 V4 C ABI proof library"
+	@echo "  test-v4-active - run active V4 contract tests"
+	@echo ""
+	@echo "These targets are for engineering review; they are not stable SDK promises."
 
 build-apple-rt:
 	mkdir -p $(BUILD_DIR)
@@ -224,6 +237,12 @@ build-c-api:
 	$(CXX_C_API) $(C_API_CXXFLAGS) \
 		src/native/rtdl_c_api.cpp \
 		-o $(BUILD_DIR)/$(C_API_LIB_NAME)
+
+build-v4-c-api:
+	mkdir -p $(BUILD_DIR)
+	$(CXX_V4_C_API) $(V4_C_API_CXXFLAGS) \
+		$(V4_C_API_ROOT)/rtdl_v4_c_api.cpp \
+		-o $(BUILD_DIR)/$(V4_C_API_LIB_NAME)
 
 stage-c-api: build-c-api
 	rm -rf $(C_API_STAGE_DIR)
@@ -359,6 +378,10 @@ run-goal23-reproduction:
 test:
 	mkdir -p $(BUILD_DIR)
 	PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v3_current
+
+test-v4-active:
+	mkdir -p $(BUILD_DIR)
+	PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 
 test-all:
 	mkdir -p $(BUILD_DIR)

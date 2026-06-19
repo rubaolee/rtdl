@@ -173,7 +173,48 @@ def _v3_c_abi_docs_check() -> dict[str, Any]:
     )
 
 
-def gather_checks(*, run_smoke: bool = False, include_v4_prep: bool = False) -> dict[str, Any]:
+def _v4_active_surface_check() -> dict[str, Any]:
+    required_files = (
+        ROOT / "src" / "v4" / "README.md",
+        ROOT / "src" / "v4" / "include" / "rtdl" / "rtdl.h",
+        ROOT / "src" / "v4" / "rtdl_v4_c_api.cpp",
+        ROOT / "docs" / "engineering" / "rtdl_v4_0_design_review_packet_2026-06-19.md",
+    )
+    missing = [path.relative_to(ROOT).as_posix() for path in required_files if not path.exists()]
+    makefile_text = (ROOT / "Makefile").read_text(encoding="utf-8") if (ROOT / "Makefile").exists() else ""
+    for target in ("help-v4-dev:", "build-v4-c-api:", "test-v4-active:"):
+        if target not in makefile_text:
+            missing.append(f"Makefile {target.rstrip(':')} target")
+    try:
+        from scripts import run_test_matrix
+
+        modules = run_test_matrix.group_modules("v4_active")
+    except Exception as exc:  # pragma: no cover - defensive import check
+        missing.append(f"v4_active matrix load failed: {exc}")
+        modules = ()
+    if not modules:
+        missing.append("scripts/run_test_matrix.py v4_active group")
+    if missing:
+        return _check(
+            "V4 active experimental ABI surface",
+            "warn",
+            "missing optional V4 active files: " + ", ".join(missing),
+            required=False,
+        )
+    return _check(
+        "V4 active experimental ABI surface",
+        "pass",
+        "src/v4 active pre-1.0 ABI header/source, hidden Makefile targets, and v4_active test matrix are present",
+        required=False,
+    )
+
+
+def gather_checks(
+    *,
+    run_smoke: bool = False,
+    include_v4_prep: bool = False,
+    include_v4_active: bool = False,
+) -> dict[str, Any]:
     if str(SRC) not in sys.path:
         sys.path.insert(0, str(SRC))
     if str(ROOT) not in sys.path:
@@ -206,6 +247,8 @@ def gather_checks(*, run_smoke: bool = False, include_v4_prep: bool = False) -> 
     if include_v4_prep:
         checks.append(_v3_c_abi_surface_check())
         checks.append(_v3_c_abi_docs_check())
+    if include_v4_active:
+        checks.append(_v4_active_surface_check())
 
     editable_metadata = ROOT / "pyproject.toml"
     checks.append(
@@ -297,9 +340,18 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="also check archived V4 preparatory embedding/C ABI surfaces",
     )
+    parser.add_argument(
+        "--include-v4-active",
+        action="store_true",
+        help="also check active experimental V4 ABI development surfaces",
+    )
     args = parser.parse_args(argv)
 
-    payload = gather_checks(run_smoke=args.run_smoke, include_v4_prep=args.include_v4_prep)
+    payload = gather_checks(
+        run_smoke=args.run_smoke,
+        include_v4_prep=args.include_v4_prep,
+        include_v4_active=args.include_v4_active,
+    )
     if args.json:
         print(json.dumps(payload, indent=2, sort_keys=True))
     else:
