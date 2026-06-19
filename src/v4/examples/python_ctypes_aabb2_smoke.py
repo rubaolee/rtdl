@@ -118,6 +118,8 @@ def _load(library: Path) -> ctypes.CDLL:
     lib.rtdl_context_destroy.argtypes = [ctypes.c_void_p]
     lib.rtdl_buffer_import.argtypes = [ctypes.c_void_p, ctypes.POINTER(BufferDesc), ctypes.POINTER(ctypes.c_void_p)]
     lib.rtdl_buffer_import.restype = ctypes.c_int
+    lib.rtdl_buffer_export.argtypes = [ctypes.c_void_p, ctypes.POINTER(BufferDesc)]
+    lib.rtdl_buffer_export.restype = ctypes.c_int
     lib.rtdl_buffer_destroy.argtypes = [ctypes.c_void_p]
     lib.rtdl_index_build.argtypes = [ctypes.c_void_p, ctypes.POINTER(IndexDesc), ctypes.POINTER(ctypes.c_void_p)]
     lib.rtdl_index_build.restype = ctypes.c_int
@@ -171,6 +173,11 @@ def _pairs_from_desc(desc: BufferDesc, row_count: int) -> list[list[int]]:
 def _check(status: int, expected: int, label: str) -> None:
     if status != expected:
         raise RuntimeError(f"{label}: expected status {expected}, got {status}")
+
+
+def _field_end(struct_cls: type[ctypes.Structure], field: str) -> int:
+    field_types = dict(struct_cls._fields_)
+    return int(getattr(struct_cls, field).offset + ctypes.sizeof(field_types[field]))
 
 
 def run(library: Path) -> dict[str, object]:
@@ -259,10 +266,54 @@ def run(library: Path) -> dict[str, object]:
     _check(lib.rtdl_query_execute(context, plan, ctypes.byref(exact_query), None), RTDL_STATUS_OK, "exact query")
     exact_pairs = [[int(exact_array[i]), int(exact_array[i + 1])] for i in range(0, len(exact_array), 2)]
 
-    expected = [[0, 0], [1, 1], [2, 0], [2, 1]]
-    if owned_pairs != expected or exact_pairs != expected:
-        raise RuntimeError(f"unexpected pairs: owned={owned_pairs}, exact={exact_pairs}")
+    old_result = ctypes.c_void_p()
+    old_query = QueryDesc()
+    old_query.struct_size = _field_end(QueryDesc, "input_count")
+    old_query.query_kind = RTDL_QUERY_AABB_OVERLAP
+    old_query.inputs = queries_buffer
+    old_query.input_count = 3
+    _check(
+        lib.rtdl_query_execute(context, plan, ctypes.byref(old_query), ctypes.byref(old_result)),
+        RTDL_STATUS_OK,
+        "old-size query without output",
+    )
+    old_count = int(lib.rtdl_result_row_count(old_result))
+    old_desc = BufferDesc()
+    _check(lib.rtdl_result_get_buffer(old_result, ctypes.byref(old_desc)), RTDL_STATUS_OK, "old-size result export")
+    old_pairs = _pairs_from_desc(old_desc, old_count)
 
+    old_context = ctypes.c_void_p()
+    old_context_desc = ContextDesc()
+    old_context_desc.struct_size = _field_end(ContextDesc, "backend")
+    old_context_desc.requested_abi_major = 0
+    old_context_desc.requested_abi_minor = 2
+    old_context_desc.requested_abi_patch = 0
+    old_context_desc.backend = RTDL_BACKEND_CPU
+    _check(
+        lib.rtdl_context_create(ctypes.byref(old_context_desc), ctypes.byref(old_context)),
+        RTDL_STATUS_OK,
+        "old-size context through backend",
+    )
+    old_buffer = ctypes.c_void_p()
+    old_buffer_desc = _host_buffer(primitives_array, RTDL_DTYPE_F32, 2, 4, ctypes.sizeof(ctypes.c_float))
+    old_buffer_desc.struct_size = _field_end(BufferDesc, "strides")
+    _check(
+        lib.rtdl_buffer_import(old_context, ctypes.byref(old_buffer_desc), ctypes.byref(old_buffer)),
+        RTDL_STATUS_OK,
+        "old-size buffer through strides",
+    )
+    old_export = BufferDesc()
+    _check(lib.rtdl_buffer_export(old_buffer, ctypes.byref(old_export)), RTDL_STATUS_OK, "old-size buffer export")
+    if old_export.ownership != RTDL_OWNERSHIP_BORROWED:
+        raise RuntimeError(f"old-size buffer did not default ownership to borrowed: {old_export.ownership}")
+
+    expected = [[0, 0], [1, 1], [2, 0], [2, 1]]
+    if owned_pairs != expected or exact_pairs != expected or old_pairs != expected:
+        raise RuntimeError(f"unexpected pairs: owned={owned_pairs}, exact={exact_pairs}, old={old_pairs}")
+
+    lib.rtdl_buffer_destroy(old_buffer)
+    lib.rtdl_context_destroy(old_context)
+    lib.rtdl_result_destroy(old_result)
     lib.rtdl_result_destroy(result)
     lib.rtdl_query_plan_destroy(plan)
     lib.rtdl_index_destroy(index)
@@ -284,6 +335,15 @@ def run(library: Path) -> dict[str, object]:
             "required_count": int(exact_required.value),
             "written_count": int(exact_written.value),
             "pairs": exact_pairs,
+        },
+        "old_size_compatibility": {
+            "context_desc_through_backend": True,
+            "buffer_desc_through_strides": True,
+            "buffer_defaulted_ownership": "borrowed",
+            "query_desc_without_output_defaults_to_owned_result": {
+                "row_count": old_count,
+                "pairs": old_pairs,
+            },
         },
     }
 

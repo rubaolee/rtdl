@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import shutil
 import subprocess
@@ -90,6 +91,10 @@ class V40ActiveAbiControlPlaneTest(unittest.TestCase):
         self.assertIn("owned_result", smoke)
         self.assertIn("caller_output_truncated", smoke)
         self.assertIn("caller_output_exact", smoke)
+        self.assertIn("old_size_compatibility", smoke)
+        self.assertIn("context_desc_through_backend", smoke)
+        self.assertIn("buffer_desc_through_strides", smoke)
+        self.assertIn("query_desc_without_output_defaults_to_owned_result", smoke)
 
     def test_fail_closed_validation_tokens_are_present(self) -> None:
         source = self.source
@@ -163,6 +168,26 @@ class V40ActiveAbiControlPlaneTest(unittest.TestCase):
             sys.stderr.write(completed.stdout)
             sys.stderr.write(completed.stderr)
         self.assertEqual(0, completed.returncode)
+        smoke = subprocess.run(
+            [sys.executable, str(CTYPES_SMOKE)],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=60,
+        )
+        if smoke.returncode != 0:
+            sys.stderr.write(smoke.stdout)
+            sys.stderr.write(smoke.stderr)
+        self.assertEqual(0, smoke.returncode)
+        payload = json.loads(smoke.stdout)
+        self.assertTrue(payload["old_size_compatibility"]["context_desc_through_backend"])
+        self.assertTrue(payload["old_size_compatibility"]["buffer_desc_through_strides"])
+        self.assertEqual("borrowed", payload["old_size_compatibility"]["buffer_defaulted_ownership"])
+        self.assertEqual(
+            payload["owned_result"]["pairs"],
+            payload["old_size_compatibility"]["query_desc_without_output_defaults_to_owned_result"]["pairs"],
+        )
 
 
 if __name__ == "__main__":
