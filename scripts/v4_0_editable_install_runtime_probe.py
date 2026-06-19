@@ -66,6 +66,56 @@ def _venv_python(venv_dir: Path) -> Path:
     return venv_dir / "bin" / "python"
 
 
+def _venv_failed_from_missing_ensurepip(command: dict[str, Any]) -> bool:
+    text = f"{command.get('stdout', '')}\n{command.get('stderr', '')}"
+    return "ensurepip is not" in text or "python3-venv" in text
+
+
+def _create_venv(
+    *,
+    venv_dir: Path,
+    outside_cwd: Path,
+    env: dict[str, str],
+    system_site_packages: bool,
+) -> tuple[list[dict[str, Any]], str | None]:
+    commands: list[dict[str, Any]] = []
+    venv_command = [sys.executable, "-m", "venv"]
+    if system_site_packages:
+        venv_command.append("--system-site-packages")
+    venv_command.append(str(venv_dir))
+    commands.append(_run(venv_command, cwd=outside_cwd, env=env))
+    if commands[-1]["ok"]:
+        return commands, "stdlib_venv"
+    if not _venv_failed_from_missing_ensurepip(commands[-1]):
+        return commands, None
+
+    if venv_dir.exists():
+        shutil.rmtree(venv_dir, ignore_errors=True)
+    fallback = [sys.executable, "-m", "venv"]
+    if system_site_packages:
+        fallback.append("--system-site-packages")
+    fallback.extend(["--without-pip", str(venv_dir)])
+    commands.append(_run(fallback, cwd=outside_cwd, env=env))
+    if commands[-1]["ok"]:
+        return commands, "stdlib_venv_without_pip_targeted_by_system_pip"
+    return commands, None
+
+
+def _pip_install_command(*, python: Path, creation_method: str | None) -> list[str]:
+    if creation_method == "stdlib_venv_without_pip_targeted_by_system_pip":
+        return [
+            sys.executable,
+            "-m",
+            "pip",
+            "--python",
+            str(python),
+            "install",
+            "-e",
+            str(ROOT),
+        ]
+    return [str(python), "-m", "pip", "install", "-e", str(ROOT)]
+
+
 def _clean_env() -> dict[str, str]:
     env = os.environ.copy()
     env.pop("PYTHONPATH", None)
@@ -188,20 +238,32 @@ def build_payload(*, run_v4_smoke: bool, system_site_packages: bool, keep_venv: 
     env = _clean_env()
     commands: list[dict[str, Any]] = []
     failures: list[str] = []
+    creation_method: str | None = None
 
     try:
-        venv_command = [sys.executable, "-m", "venv"]
-        if system_site_packages:
-            venv_command.append("--system-site-packages")
-        venv_command.append(str(venv_dir))
-        commands.append(_run(venv_command, cwd=outside_cwd, env=env))
-        if not commands[-1]["ok"]:
+        venv_commands, creation_method = _create_venv(
+            venv_dir=venv_dir,
+            outside_cwd=outside_cwd,
+            env=env,
+            system_site_packages=system_site_packages,
+        )
+        commands.extend(venv_commands)
+        if not creation_method:
             failures.append("venv_create_failed")
-            return _payload(temp_root, venv_dir, outside_cwd, commands, failures, system_site_packages, run_v4_smoke)
+            return _payload(
+                temp_root,
+                venv_dir,
+                outside_cwd,
+                commands,
+                failures,
+                system_site_packages,
+                run_v4_smoke,
+                creation_method=creation_method,
+            )
 
         python = _venv_python(venv_dir)
         install = _run(
-            [str(python), "-m", "pip", "install", "-e", str(ROOT)],
+            _pip_install_command(python=python, creation_method=creation_method),
             cwd=outside_cwd,
             env=env,
             timeout=300,
@@ -209,7 +271,16 @@ def build_payload(*, run_v4_smoke: bool, system_site_packages: bool, keep_venv: 
         commands.append(install)
         if not install["ok"]:
             failures.append("editable_install_failed")
-            return _payload(temp_root, venv_dir, outside_cwd, commands, failures, system_site_packages, run_v4_smoke)
+            return _payload(
+                temp_root,
+                venv_dir,
+                outside_cwd,
+                commands,
+                failures,
+                system_site_packages,
+                run_v4_smoke,
+                creation_method=creation_method,
+            )
 
         inspect = _run(
             [str(python), "-c", _inspection_code(run_v4_smoke=run_v4_smoke)],
@@ -236,6 +307,7 @@ def build_payload(*, run_v4_smoke: bool, system_site_packages: bool, keep_venv: 
             system_site_packages,
             run_v4_smoke,
             inspection=inspection,
+            creation_method=creation_method,
         )
 
         if inspection:
@@ -266,6 +338,7 @@ def _payload(
     run_v4_smoke: bool,
     *,
     inspection: dict[str, Any] | None = None,
+    creation_method: str | None = None,
 ) -> dict[str, Any]:
     return {
         "report_id": "v4_0_editable_install_runtime_probe_2026-06-19",
@@ -286,6 +359,7 @@ def _payload(
         "venv_dir": str(venv_dir),
         "outside_cwd": str(outside_cwd),
         "system_site_packages": system_site_packages,
+        "venv_creation_method": creation_method,
         "run_v4_smoke": run_v4_smoke,
         "commands": commands,
         "inspection": inspection,
