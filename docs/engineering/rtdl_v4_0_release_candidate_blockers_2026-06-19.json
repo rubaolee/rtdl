@@ -7,12 +7,12 @@
   "release_candidate_ready": false,
   "current_gate": "v4_active",
   "v4_release_candidate_gate_policy": "not_exposed_in_run_test_matrix_until_blockers_close_and_m8_packet_exists",
-  "latest_validated_implementation_head": "c624e626af273b09431278d506c57effb2fca871",
-  "latest_validated_route_code_tree": "e6e66788ecca6532248964b5152d53ecdd24722e",
-  "latest_validated_m1_implementation_v4_active_tests": 52,
-  "latest_validated_m1_cross_stream_evidence_base_commit": "0ca6a89f1e8699bb8f4c83c34e0f646dc508336e",
-  "latest_validated_m1_cross_stream_evidence_scope": "precommit working-tree patch for native prepare-ready event ownership and Python V4 metadata",
-  "latest_validated_m1_cross_stream_expected_v4_active_tests_after_report_refresh": 53,
+  "latest_validated_implementation_head": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
+  "latest_validated_route_code_tree": "0ca6a89f1ace46082b6dca7ccc71a0549d5765ee",
+  "latest_validated_m1_implementation_v4_active_tests": 53,
+  "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
+  "latest_validated_m1_cross_stream_evidence_scope": "clean source-tree commit after push",
+  "latest_validated_m1_cross_stream_v4_active_tests": 53,
   "current_source_tree_v4_active_tests": 53,
   "evidence_ready": [
     {

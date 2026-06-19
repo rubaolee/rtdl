@@ -3,24 +3,48 @@
   "report_id": "v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19",
   "route_id": "fixed_radius_count_threshold_2d",
   "purpose": "Same-stream ordering plus narrow cross-stream prepare/query event-wait proof for the V4 M1 CuPy fixed-radius operator.",
-  "evidence_base_commit": "0ca6a89f1e8699bb8f4c83c34e0f646dc508336e",
-  "evidence_scope": "precommit working-tree patch for native prepare-ready event ownership and Python V4 metadata.",
+  "evidence_base_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
+  "evidence_scope": "clean source-tree commit after push.",
   "remote_validation": {
     "host": "192.168.1.20",
     "path": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
     "commands": [
-      "git apply --whitespace=nowarn -",
+      "git pull --ff-only",
       "make build-optix",
-      "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_stream_ordering_probe.py --output /tmp/v4_m1_cross_stream_probe.json"
+      "PYTHONPATH=src:. python3 scripts/rtdl_source_tree_doctor.py --json --include-v4-active",
+      "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
+      "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_stream_ordering_probe.py --output /tmp/v4_m1_cross_stream_48ce1f972.json",
+      "PYTHONPATH=src:. python3 scripts/v4_0_current_front_door_claim_boundary_scan.py --output /tmp/v4_claim_scan_48ce1f972.json",
+      "python3 -m json.tool /tmp/v4_m1_cross_stream_48ce1f972.json",
+      "python3 -m json.tool /tmp/v4_claim_scan_48ce1f972.json",
+      "git diff --check",
+      "git status --short --branch"
     ],
     "build_optix": {
       "ok": true
     },
+    "source_tree_doctor": {
+      "ok": true,
+      "include_v4_active": true
+    },
+    "v4_active": {
+      "ok": true,
+      "test_count": 53
+    },
     "stream_ordering_probe": {
       "ok": true
     },
-    "v4_active": {
-      "expected_after_report_refresh": 53
+    "claim_boundary_scan": {
+      "ok": true
+    },
+    "json_validation": {
+      "ok": true
+    },
+    "git_diff_check": {
+      "ok": true
+    },
+    "worktree_clean": {
+      "ok": true
     }
   },
   "hardware": {
@@ -35,15 +59,15 @@
   "ordering_scope": "same_stream_and_cross_stream_prepare_query_event_wait",
   "same_stream_contract": {
     "consumer_event_recorded": true,
-    "consumer_stream_ptr": 834175472,
+    "consumer_stream_ptr": 814050720,
     "cross_stream_event_wait_validated": false,
     "native_prepare_ready_event_wait_used": false,
     "ordering_scope": "same_nondefault_cupy_stream_producer_rtdl_consumer",
     "producer_event_recorded": true,
     "producer_rtdl_consumer_order_validated": true,
-    "producer_stream_ptr": 834175472,
-    "rtdl_prepare_stream_ptr": 834175472,
-    "rtdl_query_stream_ptr": 834175472
+    "producer_stream_ptr": 814050720,
+    "rtdl_prepare_stream_ptr": 814050720,
+    "rtdl_query_stream_ptr": 814050720
   },
   "cross_stream_prepare_query_contract": {
     "cross_stream_event_wait_validated": true,
@@ -53,9 +77,9 @@
     "native_synchronized_before_return": true,
     "prepare_input_event_recorded": true,
     "prepare_query_streams_differ": true,
-    "prepare_stream_ptr": 877099296,
+    "prepare_stream_ptr": 842032320,
     "query_stream_consumer_event_recorded": true,
-    "query_stream_ptr": 877090256,
+    "query_stream_ptr": 842023280,
     "streams_distinct": true
   },
   "validation": {

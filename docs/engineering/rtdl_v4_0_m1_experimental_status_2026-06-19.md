@@ -2,8 +2,8 @@
 
 Status: experimental engineering evidence, not current release.
 Date: 2026-06-19.
-Latest validated source-tree head: `c624e626af273b09431278d506c57effb2fca871`.
-Latest validated source-tree tree: `e6e66788ecca6532248964b5152d53ecdd24722e`.
+Latest validated source-tree head: `48ce1f9725613f746cea9ba0de438ae0ee830ca3`.
+Latest validated source-tree tree: `0ca6a89f1ace46082b6dca7ccc71a0549d5765ee`.
 
 This packet summarizes the current V4.0 M1 state after the fixed-radius CuPy
 device-array route landed. It is an engineering status packet, not a release
@@ -74,20 +74,21 @@ PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 ```
 
 Latest Linux validation on `192.168.1.20` for source-tree head
-`c624e626af273b09431278d506c57effb2fca871`:
+`48ce1f9725613f746cea9ba0de438ae0ee830ca3`:
 
 - source-tree doctor with V4 active checks: pass;
-- `v4_active`: 52 tests, pass;
+- `v4_active`: 53 tests, pass;
 - front-door claim-boundary scan: pass;
+- `make build-optix`: pass;
+- refreshed stream-ordering probe: pass;
 - `git diff --check`: pass.
 - worktree clean.
 
-Cross-stream prepare/query event-wait evidence base:
-`0ca6a89f1e8699bb8f4c83c34e0f646dc508336e` plus precommit
-working-tree patch for native prepare-ready event ownership and Python V4
-metadata. On `192.168.1.20`, `make build-optix` and the refreshed
-stream-ordering probe passed; the refreshed current source-tree gate is 53
-tests locally and is expected after report refresh.
+Clean cross-stream prepare/query event-wait evidence commit:
+`48ce1f9725613f746cea9ba0de438ae0ee830ca3`. On `192.168.1.20`,
+`make build-optix`, `v4_active`, the refreshed stream-ordering probe,
+front-door claim scan, JSON validation, `git diff --check`, and clean worktree
+status all passed.
 
 Native build and route probes were also validated on the preceding M1
 implementation-bearing commits: `make build-optix`, same-stream ordering,
@@ -97,7 +98,7 @@ probe, DLPack bridge wrapper smoke, and `git diff --check` all passed there.
 Current source-tree `v4_active` gate after the release-candidate blocker,
 front-door claim-scan, Numba route-evidence guards, source-tree runtime story
 guard, and fixed-radius cross-stream prepare/query event-wait guard: 53 tests,
-pass locally.
+pass locally and on Linux.
 
 ## Release-Candidate Boundary
 

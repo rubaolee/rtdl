@@ -166,9 +166,9 @@ class V40ReframedProductDesignTest(unittest.TestCase):
 
         for token in (
             "experimental engineering evidence, not current release",
-            "Latest validated source-tree head: `c624e626af273b09431278d506c57effb2fca871`",
-            "Cross-stream prepare/query event-wait evidence base:",
-            "`0ca6a89f1e8699bb8f4c83c34e0f646dc508336e` plus precommit",
+            "Latest validated source-tree head: `48ce1f9725613f746cea9ba0de438ae0ee830ca3`",
+            "Clean cross-stream prepare/query event-wait evidence commit:",
+            "`48ce1f9725613f746cea9ba0de438ae0ee830ca3`",
             "fixed_radius_count_threshold_2d",
             "Zero-copy device-column handoff with no observed host staging of named columns",
             "Same-stream producer -> RTDL prepare/query -> consumer ordering is validated",
@@ -195,14 +195,14 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertFalse(blockers["release_candidate_ready"])
         self.assertEqual("v3.0.2", blockers["current_release_remains"])
         self.assertEqual("v4_active", blockers["current_gate"])
-        self.assertEqual(52, blockers["latest_validated_m1_implementation_v4_active_tests"])
+        self.assertEqual(53, blockers["latest_validated_m1_implementation_v4_active_tests"])
         self.assertEqual(
-            "0ca6a89f1e8699bb8f4c83c34e0f646dc508336e",
-            blockers["latest_validated_m1_cross_stream_evidence_base_commit"],
+            "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
+            blockers["latest_validated_m1_cross_stream_evidence_commit"],
         )
         self.assertEqual(
             53,
-            blockers["latest_validated_m1_cross_stream_expected_v4_active_tests_after_report_refresh"],
+            blockers["latest_validated_m1_cross_stream_v4_active_tests"],
         )
         self.assertEqual(53, blockers["current_source_tree_v4_active_tests"])
         self.assertEqual(
