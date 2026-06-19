@@ -3,6 +3,9 @@
 Date: 2026-06-19.
 Status: accepted claim-gating decision.
 
+Follow-up wording consensus:
+`docs/reviews/codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md`.
+
 ## Question
 
 Can the exact V4.0 route `fixed_radius_count_threshold_2d` promote
@@ -44,6 +47,13 @@ far below the smallest named-column size in the probe.
 These updates do not promote the claim. Do not promote
 `v4_true_zero_copy_claim_authorized` until the remaining evidence gates below
 are satisfied.
+
+The public-safe positive wording is now:
+
+`named CUDA columns no-host-stage handoff`
+
+The metadata field `native_true_zero_copy_authorized` is a narrow internal
+legacy/native field and must not be used as public V4 wording.
 
 ## Reviewer Consensus
 

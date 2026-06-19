@@ -471,12 +471,22 @@ class V4FixedRadiusCountThreshold2D:
                 "native_true_zero_copy_authorized": bool(
                     native_metadata.get("true_zero_copy_authorized", metadata.get("true_zero_copy_authorized", False))
                 ),
+                "named_cuda_columns_no_host_stage_authorized": bool(
+                    native_metadata.get("named_cuda_columns_no_host_stage_authorized", False)
+                ),
+                "named_cuda_columns_no_host_stage_ready": bool(
+                    native_metadata.get("named_cuda_columns_no_host_stage_ready", False)
+                ),
                 "native_call_device_pointer_echo": dict(native_metadata.get("native_call_device_pointer_echo", {})),
                 "native_call_device_pointer_echo_complete": bool(
                     native_metadata.get("native_call_device_pointer_echo_complete", False)
                 ),
                 "v4_true_zero_copy_claim_authorized": False,
-                "v4_true_zero_copy_claim_blocker": "M4_evidence_packet_pending",
+                "v4_true_zero_copy_claim_blocker": (
+                    "public_true_zero_copy_wording_blocked_by_internal_device_staging_and_sync_contract"
+                ),
+                "internal_device_staging_disclosed": True,
+                "internal_device_staging_scope": "device-resident AABB/BVH staging may occur inside the native route",
                 "public_speedup_claim_authorized": False,
                 "materializes_neighbor_rows": False,
             }

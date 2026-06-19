@@ -21,6 +21,9 @@ SMOKE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_smoke.py"
 PARITY_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_parity_matrix.py"
 NO_HOST_STAGE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe.py"
 CLAIM_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_claim_review_2026-06-19.md"
+WORDING_CONSENSUS = (
+    ROOT / "docs" / "reviews" / "codex_v4_m1_true_zero_copy_wording_consensus_2026-06-19.md"
+)
 
 
 class _FakeCudaColumn:
@@ -72,6 +75,10 @@ class _FakePrepared:
                 "cuda_stream_ptr": int(kwargs["cuda_stream_ptr"]),
                 "native_call_device_pointer_echo": pointer_echo,
                 "native_call_device_pointer_echo_complete": True,
+                "named_cuda_columns_no_host_stage_authorized": True,
+                "named_cuda_columns_no_host_stage_ready": True,
+                "internal_device_staging_disclosed": True,
+                "internal_device_staging_scope": "device-resident AABB/BVH staging may occur inside the native route",
                 "native_synchronized_before_return": True,
                 "native_async_ready": False,
                 "true_zero_copy_authorized": True,
@@ -267,7 +274,10 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(metadata["v4_backend"], "optix")
         self.assertTrue(metadata["native_true_zero_copy_authorized"])
         self.assertFalse(metadata["v4_true_zero_copy_claim_authorized"])
-        self.assertEqual(metadata["v4_true_zero_copy_claim_blocker"], "M4_evidence_packet_pending")
+        self.assertEqual(
+            metadata["v4_true_zero_copy_claim_blocker"],
+            "public_true_zero_copy_wording_blocked_by_internal_device_staging_and_sync_contract",
+        )
 
     def test_cupy_stream_smoke_report_preserves_claim_boundaries(self) -> None:
         report = json.loads(EVIDENCE_REPORT.read_text(encoding="utf-8"))
@@ -333,6 +343,8 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         )
         self.assertTrue(classification["internal_device_to_device_copy_allowed"])
         self.assertFalse(classification["v4_true_zero_copy_claim_authorized"])
+        self.assertTrue(report["metadata_subset"]["named_cuda_columns_no_host_stage_authorized"])
+        self.assertTrue(report["metadata_subset"]["internal_device_staging_disclosed"])
         self.assertIn("LD_PRELOAD", script)
         self.assertIn("v4_m1_fixed_radius_prepare_plus_query_after_warmup", script)
         self.assertFalse(report["claim_boundaries"]["async_claim_authorized"])
@@ -349,6 +361,8 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             "pointer_identity",
             "pointer_echo_identity",
             "native_call_device_pointer_echo",
+            "named_cuda_columns_no_host_stage_authorized",
+            "internal_device_staging_disclosed",
             "source_audit",
             "promotion_blockers",
             "prepare_on_stream_symbol_present",
@@ -369,6 +383,19 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             "Do not promote",
         ):
             self.assertIn(token, review)
+
+    def test_wording_consensus_keeps_public_true_zero_copy_blocked(self) -> None:
+        consensus = WORDING_CONSENSUS.read_text(encoding="utf-8")
+
+        for token in (
+            "Keep `v4_true_zero_copy_claim_authorized` false",
+            "zero-copy device-column handoff with no observed host staging of named columns",
+            "not end-to-end true zero-copy",
+            "named_cuda_columns_no_host_stage_authorized",
+            "internal device-to-device AABB/BVH staging",
+            "Async remains blocked",
+        ):
+            self.assertIn(token, consensus)
 
     def test_operator_uses_on_stream_route_for_nonzero_caller_stream(self) -> None:
         search = _point_columns(0x1000)
@@ -412,6 +439,14 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertTrue(metadata["native_call_device_pointer_echo_complete"])
         self.assertEqual(metadata["native_call_device_pointer_echo"]["query.x"], 0x2020)
         self.assertEqual(metadata["native_call_device_pointer_echo"]["output.neighbor_counts"], 0x3020)
+        self.assertTrue(metadata["named_cuda_columns_no_host_stage_authorized"])
+        self.assertTrue(metadata["named_cuda_columns_no_host_stage_ready"])
+        self.assertTrue(metadata["internal_device_staging_disclosed"])
+        self.assertIn("AABB/BVH", metadata["internal_device_staging_scope"])
+        self.assertEqual(
+            metadata["v4_true_zero_copy_claim_blocker"],
+            "public_true_zero_copy_wording_blocked_by_internal_device_staging_and_sync_contract",
+        )
         self.assertFalse(metadata["v4_true_zero_copy_claim_authorized"])
 
 

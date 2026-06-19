@@ -229,6 +229,10 @@ def run_probe(
             "native_call_device_pointer_echo_complete": bool(
                 metadata["native_call_device_pointer_echo_complete"]
             ),
+            "named_cuda_columns_no_host_stage_authorized": bool(
+                metadata["named_cuda_columns_no_host_stage_authorized"]
+            ),
+            "internal_device_staging_disclosed": bool(metadata["internal_device_staging_disclosed"]),
             "native_async_ready": bool(metadata["native_async_ready"]),
             "v4_true_zero_copy_claim_authorized": bool(
                 metadata["v4_true_zero_copy_claim_authorized"]
@@ -244,7 +248,8 @@ def run_probe(
             "reason": (
                 "This proves no observed host-stage copy of named search/query/output columns in the "
                 "measured V4 M1 prepare-plus-query window after warmup. Internal device-to-device "
-                "staging is allowed and keeps public true-zero-copy wording gated."
+                "AABB/BVH staging is present, so this authorizes named-column no-host-stage wording, "
+                "not public end-to-end true-zero-copy wording."
             ),
         },
         "runner_transfer_counter_bootstrap": dict(_TRANSFER_COUNTER_BOOTSTRAP),

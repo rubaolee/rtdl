@@ -148,6 +148,10 @@ def run_smoke() -> dict[str, object]:
         raise AssertionError("native route must document stream synchronization before return")
     if metadata["native_async_ready"]:
         raise AssertionError("M1 caller-stream route must not claim async readiness")
+    if not metadata["named_cuda_columns_no_host_stage_authorized"]:
+        raise AssertionError("metadata must authorize only named CUDA column no-host-stage wording")
+    if not metadata["internal_device_staging_disclosed"]:
+        raise AssertionError("metadata must disclose internal device staging")
 
     result = {
         "status": "pass-with-boundary",
@@ -164,6 +168,10 @@ def run_smoke() -> dict[str, object]:
             "native_async_ready": bool(metadata["native_async_ready"]),
             "native_true_zero_copy_authorized": bool(metadata["native_true_zero_copy_authorized"]),
             "native_call_device_pointer_echo_complete": bool(metadata["native_call_device_pointer_echo_complete"]),
+            "named_cuda_columns_no_host_stage_authorized": bool(
+                metadata["named_cuda_columns_no_host_stage_authorized"]
+            ),
+            "internal_device_staging_disclosed": bool(metadata["internal_device_staging_disclosed"]),
             "v4_true_zero_copy_claim_authorized": bool(metadata["v4_true_zero_copy_claim_authorized"]),
         },
         "pointer_identity": pointer_identity,

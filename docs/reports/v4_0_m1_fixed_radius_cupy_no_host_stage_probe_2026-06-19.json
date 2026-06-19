@@ -44,6 +44,8 @@
     "prepare_stream_handle_nonzero": true,
     "native_prepare_stream_propagation_ready": true,
     "native_call_device_pointer_echo_complete": true,
+    "named_cuda_columns_no_host_stage_authorized": true,
+    "internal_device_staging_disclosed": true,
     "native_async_ready": false,
     "v4_true_zero_copy_claim_authorized": false
   },
@@ -95,6 +97,6 @@
     "rt_core_speedup_claim_authorized": false,
     "v4_true_zero_copy_claim_authorized": false,
     "async_claim_authorized": false,
-    "reason": "The measured window shows no observed host-stage copy of named search/query/output columns. Internal device-to-device AABB/BVH staging remains present, so public true-zero-copy wording stays gated."
+    "reason": "The measured window shows no observed host-stage copy of named search/query/output columns. Internal device-to-device AABB/BVH staging remains present, so this authorizes named-column no-host-stage wording, not public end-to-end true-zero-copy wording."
   }
 }

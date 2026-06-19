@@ -54,11 +54,13 @@
       "prepare_stream_handle_nonzero": true,
       "native_prepare_stream_propagation_ready": true,
       "native_synchronized_before_return": true,
-      "native_async_ready": false,
-      "native_true_zero_copy_authorized": true,
-      "native_call_device_pointer_echo_complete": true,
-      "v4_true_zero_copy_claim_authorized": false
-    }
+        "native_async_ready": false,
+        "native_true_zero_copy_authorized": true,
+        "native_call_device_pointer_echo_complete": true,
+        "named_cuda_columns_no_host_stage_authorized": true,
+        "internal_device_staging_disclosed": true,
+        "v4_true_zero_copy_claim_authorized": false
+      }
   },
   "pointer_identity": {
     "search.ids": true,
@@ -104,7 +106,7 @@
     "public_speedup_claim_authorized": false,
     "rt_core_speedup_claim_authorized": false,
     "v4_true_zero_copy_claim_authorized": false,
-    "reason": "M4 now has no-host-stage evidence for named columns, pointer echo, and parity. Public true-zero-copy wording still needs review because the route performs internal device-to-device AABB/BVH staging; async and RTX speed claims also remain blocked.",
+    "reason": "M4 now has no-host-stage evidence for named columns, pointer echo, parity, and 2+AI wording consensus. Public true-zero-copy wording remains false because the route performs internal device-to-device AABB/BVH staging and synchronizes before return; async and RTX speed claims also remain blocked.",
     "hardware_note": "The validation GPU is GTX 1070, so this smoke cannot authorize an RTX RT-core hardware speed claim."
   }
 }
