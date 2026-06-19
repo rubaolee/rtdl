@@ -21,8 +21,8 @@
   "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
   "latest_validated_m1_cross_stream_evidence_scope": "clean source-tree commit after push",
   "latest_validated_m1_cross_stream_v4_active_tests": 53,
-  "current_source_tree_v4_active_tests": 71,
-  "current_source_tree_v4_release_candidate_tests": 71,
+  "current_source_tree_v4_active_tests": 72,
+  "current_source_tree_v4_release_candidate_tests": 72,
   "evidence_ready": [
     {
       "id": "v4_active_gate",
@@ -113,6 +113,18 @@
       "status": "accepted_review_input",
       "path": "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
       "note": "2-AI critical review accepts the M8 packet as a baseline, rejects release-candidate readiness today, and requires tighter coordinates, package/runtime, claim, and device-identity handling."
+    },
+    {
+      "id": "package_runtime_tiebreaker",
+      "status": "accepted_tiebreaker_decision",
+      "path": "docs/reviews/codex_v4_package_runtime_tiebreaker_2026-06-19.md",
+      "note": "Tie-breaker requires editable-install hygiene evidence while keeping package/PyPI/wheel/stable SDK claims blocked."
+    },
+    {
+      "id": "editable_install_runtime_probe",
+      "status": "source_tree_editable_install_hygiene_evidence",
+      "path": "docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json",
+      "note": "Temporary venv editable install proves import/runtime hygiene without PYTHONPATH from outside the repo. This is not package/PyPI/wheel/stable SDK evidence."
     },
     {
       "id": "cuda_array_interface_device_identity_contract",
@@ -298,11 +310,13 @@
       "current_preflight": {
         "host": "192.168.1.20",
         "date": "2026-06-19",
-        "status": "source_tree_runtime_preflight_passed_but_package_flow_blocked",
+        "status": "source_tree_runtime_and_editable_install_hygiene_passed_but_package_flow_blocked",
         "evidence": "docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json",
-        "reason": "The V4 M1 source-tree runtime path is machine-validated on Linux for checkout import, rtdl-source-tree metadata, CuPy, Numba, PyTorch, OptiX library, and non-package claim boundaries. This still is not a V4 wheel, PyPI artifact, clean package install flow, or stable SDK package."
+        "editable_install_evidence": "docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json",
+        "consensus": "docs/reviews/codex_v4_package_runtime_tiebreaker_2026-06-19.md",
+        "reason": "The V4 M1 source-tree runtime path is machine-validated on Linux for checkout import, rtdl-source-tree metadata, CuPy, Numba, PyTorch, OptiX library, non-package claim boundaries, and editable-install hygiene with PYTHONPATH unset from outside the repo. This still is not a V4 wheel, PyPI artifact, V4 distribution artifact, clean package install flow, or stable SDK package."
       },
-      "required_evidence": "Documented install/runtime path with tested wheel or equivalent package flow.",
+      "required_evidence": "Documented install/runtime path with tested wheel or equivalent V4 distribution/package flow.",
       "blocking_claims": [
         "package install",
         "PyPI",

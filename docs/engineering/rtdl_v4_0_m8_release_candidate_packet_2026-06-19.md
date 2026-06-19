@@ -115,6 +115,7 @@ The current evidence does not validate:
 | Blocker manifest | `docs/engineering/rtdl_v4_0_release_candidate_blockers_2026-06-19.json` | Machine-readable release blockers and closed evidence. |
 | Source-tree runtime story | `docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md` | Source-tree runtime only; package/PyPI/wheel/SDK claims blocked. |
 | Source-tree runtime preflight | `docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json` | Linux required-runtime preflight passed for checkout import, CuPy, Numba, PyTorch, and OptiX. |
+| Editable install hygiene probe | `docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json` | Local editable source-tree install hygiene; not package/PyPI/wheel/stable SDK evidence. |
 | Front-door claim scan | `docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json` | Pass; current front door remains v3.0.2 and blocked V4 claims are not published positively. |
 | CuPy stream smoke | `docs/reports/v4_0_m1_fixed_radius_cupy_stream_smoke_2026-06-19.json` | Pointer identity, stream propagation, output correctness. |
 | CuPy parity matrix | `docs/reports/v4_0_m1_fixed_radius_cupy_parity_matrix_2026-06-19.json` | Positive and fail-closed parity cases. |
@@ -130,6 +131,7 @@ The current evidence does not validate:
 | Active ABI layout audit | `docs/reports/v4_0_active_abi_layout_audit_2026-06-19.json` | Experimental C ABI layout audit. |
 | M8 next-step consensus | `docs/reviews/codex_v4_after_runtime_preflight_m8_next_step_2ai_consensus_2026-06-19.md` | 2-AI decision to assemble this M8 packet before broad feature expansion. |
 | M8 internal critical review | `docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md` | 2-AI review accepts this as a baseline and rejects release-candidate readiness today. |
+| Package/runtime tie-breaker | `docs/reviews/codex_v4_package_runtime_tiebreaker_2026-06-19.md` | Requires editable-install hygiene evidence while keeping package/PyPI/wheel claims blocked. |
 
 ## Validation Summary
 
@@ -149,6 +151,16 @@ at `66e6529859a1bac63ce2a72527dc5942e301143d`:
 - source-tree runtime preflight JSON parse: pass;
 - `git diff --check`: pass;
 - worktree clean.
+
+Current package/runtime hygiene update before Linux refresh:
+
+- `scripts/run_test_matrix.py --group v4_active`: 72 tests, pass locally;
+- `scripts/run_test_matrix.py --group v4_release_candidate`: 72 tests, pass
+  locally as a non-authorizing review gate;
+- `scripts/v4_0_editable_install_runtime_probe.py --system-site-packages`:
+  pass locally for editable import hygiene without V4 GPU smoke on Windows;
+- Linux editable-install smoke refresh on `192.168.1.20`: pending until the
+  package/runtime hygiene commit is pushed.
 
 The route-specific JSON reports above preserve the earlier CuPy, Numba,
 DLPack, and PyTorch probe evidence. This packet binds that evidence into one
@@ -174,7 +186,7 @@ This M8 packet does not authorize:
 | Gate | Current state |
 | --- | --- |
 | External M8 critical review | Open; this packet is the review input. |
-| Package/runtime decision | Source-tree runtime is validated; package/PyPI/wheel/stable SDK claims remain blocked. |
+| Package/runtime decision | Source-tree runtime and editable-install hygiene are validated; package/PyPI/wheel/stable SDK claims remain blocked. |
 | Front-door docs switch | Blocked until release approval and explicit user action. |
 | Public true-zero-copy | Blocked until end-to-end copy evidence exists. |
 | Async completion | Blocked until lifetime and event contracts are implemented and tested. |

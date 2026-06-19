@@ -31,7 +31,8 @@ Candidate coordinates:
   `66e6529859a1bac63ce2a72527dc5942e301143d`;
 - final release-candidate commit:
   not assigned; release-candidate readiness is still false;
-- Linux final smoke on `192.168.1.20`:
+- Linux final smoke on `192.168.1.20` before the package/runtime hygiene
+  addendum:
   - `make build-optix`: pass;
   - `scripts/run_test_matrix.py --group v4_release_candidate`: 71 tests, pass;
   - `scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime`:

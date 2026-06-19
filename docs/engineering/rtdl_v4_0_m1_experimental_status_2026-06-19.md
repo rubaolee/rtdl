@@ -112,8 +112,10 @@ Current source-tree `v4_active` gate after the release-candidate blocker,
 front-door claim-scan, Numba route-evidence guards, source-tree runtime story
 guard, source-tree runtime preflight guard, fixed-radius cross-stream
 prepare/query event-wait guard, and DLPack capsule report guards, PyTorch route
-report guards, PyTorch compatibility guards, and PyTorch boundary guards:
-71 tests, pass locally and on Linux.
+report guards, PyTorch compatibility guards, PyTorch boundary guards, and the
+editable-install hygiene guard:
+72 tests, pass locally; Linux refresh is pending for the package/runtime hygiene
+commit.
 
 ## Release-Candidate Boundary
 

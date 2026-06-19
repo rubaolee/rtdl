@@ -75,6 +75,16 @@ Latest Linux V4 gate on `192.168.1.20` for head
 - `git diff --check`: pass;
 - worktree clean.
 
+Current package/runtime hygiene update:
+
+- local `v4_active`: 72 tests, pass;
+- local `v4_release_candidate`: 72 tests, pass as a non-authorizing review
+  gate;
+- local editable-install hygiene probe: pass for import/package metadata from a
+  working directory outside the repository with `PYTHONPATH` unset;
+- Linux editable-install V4 smoke refresh: pending until the package/runtime
+  hygiene commit is pushed.
+
 Tracked machine-readable report:
 
 `docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json`
@@ -94,6 +104,21 @@ That report is bound to Linux head
 ## Package Blocker
 
 `package_install_runtime_story` remains open.
+
+The package/runtime tie-breaker is:
+
+`docs/reviews/codex_v4_package_runtime_tiebreaker_2026-06-19.md`
+
+It requires editable-install hygiene evidence as a source-tree gate, while
+keeping package/PyPI/wheel/stable SDK claims blocked.
+
+Editable-install hygiene evidence:
+
+`docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json`
+
+That report must be read narrowly. It validates a temporary local editable
+checkout install with `PYTHONPATH` unset and the working directory outside the
+repository. It is not a V4 distribution artifact.
 
 Closing it requires a V4 package flow, such as a tested wheel or equivalent
 reviewed package/install path, in a clean environment. A future closure packet

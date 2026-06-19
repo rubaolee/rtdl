@@ -37,6 +37,9 @@ M8_NEXT_STEP_CONSENSUS = (
     ROOT / "docs" / "reviews" / "codex_v4_after_runtime_preflight_m8_next_step_2ai_consensus_2026-06-19.md"
 )
 M8_INTERNAL_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m8_internal_2ai_critical_review_2026-06-19.md"
+PACKAGE_RUNTIME_TIEBREAKER = (
+    ROOT / "docs" / "reviews" / "codex_v4_package_runtime_tiebreaker_2026-06-19.md"
+)
 RC_BLOCKERS = (
     ROOT / "docs" / "engineering" / "rtdl_v4_0_release_candidate_blockers_2026-06-19.json"
 )
@@ -45,6 +48,9 @@ CLAIM_SCAN_REPORT = (
 )
 SOURCE_TREE_RUNTIME_PREFLIGHT_REPORT = (
     ROOT / "docs" / "reports" / "v4_0_source_tree_runtime_preflight_2026-06-19.json"
+)
+EDITABLE_INSTALL_REPORT = (
+    ROOT / "docs" / "reports" / "v4_0_editable_install_runtime_probe_2026-06-19.json"
 )
 ACTIVE_README = ROOT / "src" / "v4" / "README.md"
 V4_OPERATOR = ROOT / "src" / "rtdsl" / "v4_0_device_array_operator.py"
@@ -334,9 +340,12 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "PyTorch CUDA tensor probe",
             "M8 next-step consensus",
             "M8 internal critical review",
+            "Editable install hygiene probe",
+            "Package/runtime tie-breaker",
             "Linux validation on `192.168.1.20`",
-            "`scripts/run_test_matrix.py --group v4_active`: 71 tests, pass",
-            "`scripts/run_test_matrix.py --group v4_release_candidate`: 71 tests, pass as a non-authorizing review gate",
+            "`scripts/run_test_matrix.py --group v4_active`: 72 tests, pass",
+            "`scripts/run_test_matrix.py --group v4_release_candidate`: 72 tests, pass locally as a non-authorizing review gate",
+            "Linux editable-install smoke refresh on `192.168.1.20`: pending",
             "This M8 packet does not authorize",
             "V4.0 as the current release",
             "package install, PyPI, wheel, or stable SDK wording",
@@ -391,8 +400,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             53,
             blockers["latest_validated_m1_cross_stream_v4_active_tests"],
         )
-        self.assertEqual(71, blockers["current_source_tree_v4_active_tests"])
-        self.assertEqual(71, blockers["current_source_tree_v4_release_candidate_tests"])
+        self.assertEqual(72, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(72, blockers["current_source_tree_v4_release_candidate_tests"])
         self.assertEqual(
             "exposed_as_non_authorizing_m8_review_gate_release_requires_external_review_and_explicit_user_action",
             blockers["v4_release_candidate_gate_policy"],
@@ -424,6 +433,16 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertIn(
             "Multi-GPU runtime claims remain blocked",
             evidence_by_id["cuda_array_interface_device_identity_contract"]["note"],
+        )
+        self.assertIn("package_runtime_tiebreaker", evidence_by_id)
+        self.assertEqual(
+            "docs/reviews/codex_v4_package_runtime_tiebreaker_2026-06-19.md",
+            evidence_by_id["package_runtime_tiebreaker"]["path"],
+        )
+        self.assertIn("editable_install_runtime_probe", evidence_by_id)
+        self.assertEqual(
+            "docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json",
+            evidence_by_id["editable_install_runtime_probe"]["path"],
         )
         self.assertTrue(blocking_by_id["m8_release_candidate_packet"]["closed"])
         self.assertTrue(blocking_by_id["cross_stream_event_wait"]["closed"])
@@ -513,12 +532,26 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["full_numba_partner_surface"]["current_preflight"]["evidence"],
         )
         self.assertEqual(
-            "source_tree_runtime_preflight_passed_but_package_flow_blocked",
+            "source_tree_runtime_and_editable_install_hygiene_passed_but_package_flow_blocked",
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["status"],
         )
         self.assertEqual(
             "docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json",
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["evidence"],
+        )
+        self.assertEqual(
+            "docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json",
+            blocking_by_id["package_install_runtime_story"]["current_preflight"][
+                "editable_install_evidence"
+            ],
+        )
+        self.assertEqual(
+            "docs/reviews/codex_v4_package_runtime_tiebreaker_2026-06-19.md",
+            blocking_by_id["package_install_runtime_story"]["current_preflight"]["consensus"],
+        )
+        self.assertIn(
+            "not a V4 wheel, PyPI artifact, V4 distribution artifact",
+            blocking_by_id["package_install_runtime_story"]["current_preflight"]["reason"],
         )
         self.assertEqual(
             "single_gpu_device_identity_contract_guarded_multi_gpu_runtime_not_claimed",
@@ -554,6 +587,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
 
     def test_v4_source_tree_runtime_story_blocks_package_wording(self) -> None:
         story = SOURCE_TREE_RUNTIME_STORY.read_text(encoding="utf-8")
+        compact = _compact(story)
 
         for token in (
             "source-tree runtime story only",
@@ -561,6 +595,9 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "PYTHONPATH=src:.",
             "scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime",
             "docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json",
+            "docs/reviews/codex_v4_package_runtime_tiebreaker_2026-06-19.md",
+            "docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json",
+            "working directory outside the repository",
             "make build-optix",
             "package_install_runtime_story` remains open",
             "Closing it requires a V4 package flow",
@@ -569,7 +606,69 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "wheel support",
             "stable SDK",
         ):
-            self.assertIn(token, story)
+            self.assertIn(token, compact)
+
+    def test_package_runtime_tiebreaker_keeps_editable_install_narrow(self) -> None:
+        tiebreaker = PACKAGE_RUNTIME_TIEBREAKER.read_text(encoding="utf-8")
+        compact = _compact(tiebreaker)
+
+        for token in (
+            "accepted tie-breaker decision, not release approval",
+            "Adopt the narrow middle path",
+            "Implement clean editable-install hygiene validation now",
+            "Keep `package_install_runtime_story` open",
+            "Do not authorize package install, PyPI, wheel, stable SDK",
+            "Editable install validation is a source-tree hygiene gate, not package release evidence",
+            "working directory outside the repository",
+            "PYTHONPATH",
+            "rtdl-source-tree",
+            "Claims Still Blocked",
+        ):
+            self.assertIn(token, compact)
+
+        report = json.loads(EDITABLE_INSTALL_REPORT.read_text(encoding="utf-8"))
+        self.assertTrue(report["ok"])
+        self.assertEqual("pass", report["status"])
+        self.assertTrue(report["system_site_packages"])
+        self.assertFalse(report["inspection"]["pythonpath_present"])
+        self.assertEqual("rtdl-source-tree", report["inspection"]["package"]["distribution_name"])
+        self.assertEqual("3.0.2", report["inspection"]["package"]["version"])
+        self.assertTrue(report["inspection"]["package"]["module_loaded_from_checkout_editable"])
+        self.assertTrue(report["inspection"]["package"]["module_under_repo_src"])
+        self.assertIn(report["inspection"]["native_library"]["status"], {"found", "missing"})
+
+        claim_boundaries = report["claim_boundaries"]
+        self.assertTrue(claim_boundaries["editable_source_tree_install_hygiene_evidence"])
+        for blocked_claim in (
+            "generated_binding_package_claim_authorized",
+            "package_install_claim_authorized",
+            "pypi_claim_authorized",
+            "stable_sdk_claim_authorized",
+            "v4_current_front_door_authorized",
+            "v4_distribution_artifact",
+            "wheel_claim_authorized",
+        ):
+            self.assertFalse(claim_boundaries[blocked_claim])
+
+        if report["platform"]["system"] == "Linux":
+            self.assertTrue(report["run_v4_smoke"])
+            self.assertEqual("found", report["inspection"]["native_library"]["status"])
+            self.assertTrue(report["inspection"]["native_library"]["under_repo_build"])
+            self.assertEqual("pass", report["inspection"]["v4_smoke"]["status"])
+            self.assertEqual(
+                {
+                    "query_ids": [1, 2, 3],
+                    "neighbor_counts": [1, 1, 0],
+                    "threshold_flags": [1, 1, 0],
+                },
+                report["inspection"]["v4_smoke"]["observed"],
+            )
+            self.assertTrue(report["inspection"]["v4_smoke"]["caller_stream_handle_nonzero"])
+            self.assertTrue(report["inspection"]["v4_smoke"]["native_synchronized_before_return"])
+            self.assertFalse(report["inspection"]["v4_smoke"]["public_true_zero_copy_authorized"])
+        else:
+            self.assertFalse(report["run_v4_smoke"])
+            self.assertEqual("not_run", report["inspection"]["v4_smoke"]["status"])
 
     def test_current_front_door_claim_scan_closes_only_scan_blocker(self) -> None:
         payload = scan_v4_front_door_claims(ROOT)
