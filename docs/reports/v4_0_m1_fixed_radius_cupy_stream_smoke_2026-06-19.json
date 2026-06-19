@@ -2,11 +2,11 @@
   "report": "v4_0_m1_fixed_radius_cupy_stream_smoke",
   "date": "2026-06-19",
   "status": "pass-with-boundary",
-  "code_commit": "fcdd45e65",
-  "validated_tree": "c2e7d5dc9485b8b634c1b2a0c39251dab69415eb",
+  "code_commit": "52ea2807c",
+  "validated_tree": "b805af022f3d7652e4680c752554de9cf8bd3fa2",
   "report_scope_note": "This JSON is a checked-in passing snapshot. The current-head gate is the reproducible smoke script listed in commands.",
   "remote_host": "192.168.1.20",
-  "remote_path": "/home/lestat/work/rtdl_v4_m1_check_20260619",
+  "remote_path": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
   "hardware": {
     "gpu": "NVIDIA GeForce GTX 1070",
     "driver": "580.126.09",
@@ -19,7 +19,7 @@
     "python_api": "rtdsl.run_v4_fixed_radius_count_threshold_2d",
     "input_contract": "caller-owned CuPy CUDA ids/x/y columns",
     "output_contract": "caller-owned CuPy CUDA query_ids/neighbor_counts/threshold_flags columns",
-    "stream_contract": "nonzero caller CUDA stream accepted; native route synchronizes that stream before return",
+    "stream_contract": "nonzero caller CUDA stream is propagated through prepare and query; native route synchronizes before return",
     "async_claim_authorized": false
   },
   "commands": [
@@ -44,12 +44,14 @@
     "query_ids": [1, 2, 3],
     "neighbor_counts": [1, 1, 0],
     "threshold_flags": [1, 1, 0],
-    "metadata_subset": {
-      "v4_route_id": "fixed_radius_count_threshold_2d",
-      "caller_stream_handle_nonzero": true,
-      "native_synchronized_before_return": true,
-      "native_async_ready": false,
-      "native_true_zero_copy_authorized": true,
+      "metadata_subset": {
+        "v4_route_id": "fixed_radius_count_threshold_2d",
+        "caller_stream_handle_nonzero": true,
+        "prepare_stream_handle_nonzero": true,
+        "native_prepare_stream_propagation_ready": true,
+        "native_synchronized_before_return": true,
+        "native_async_ready": false,
+        "native_true_zero_copy_authorized": true,
       "v4_true_zero_copy_claim_authorized": false
     }
   },
@@ -65,24 +67,30 @@
     "output.threshold_flags": true
   },
   "source_audit": {
-    "on_stream_symbol_present": true,
-    "uses_caller_stream_launch": true,
-    "uses_async_param_upload": true,
-    "uses_device_to_device_empty_copy": true,
-    "does_not_download_outputs": true,
-    "synchronizes_caller_stream_before_return": true
+    "query_on_stream_symbol_present": true,
+    "query_uses_caller_stream_launch": true,
+    "query_uses_async_param_upload": true,
+    "query_uses_device_to_device_empty_copy": true,
+    "query_does_not_download_outputs": true,
+    "query_synchronizes_caller_stream_before_return": true,
+    "prepare_on_stream_symbol_present": true,
+    "prepare_aabb_pack_uses_caller_stream": true,
+    "prepare_aabb_pack_avoids_default_stream_sync": true,
+    "prepare_device_aabb_copy_uses_caller_stream": true,
+    "prepare_gas_build_uses_caller_stream": true
   },
   "promotion_blockers": {
-    "prepare_aabb_pack_uses_default_stream": true,
-    "prepare_aabb_pack_synchronizes_default_stream": true,
-    "gas_build_uses_default_stream": true,
-    "gas_build_synchronizes_default_stream": true
+    "transfer_counter_or_equivalent_prepare_query_missing": true,
+    "native_pointer_echo_metadata_missing": true,
+    "full_correctness_parity_matrix_missing": true,
+    "async_completion_contract_missing": true,
+    "rtx_rt_core_speed_hardware_evidence_missing": true
   },
   "claim_boundaries": {
     "public_speedup_claim_authorized": false,
     "rt_core_speedup_claim_authorized": false,
     "v4_true_zero_copy_claim_authorized": false,
-    "reason": "M4 still needs a full evidence packet with pointer identity, transfer-counter/equivalent no-host-stage evidence, stream-order proof, and route-scoped wording.",
+    "reason": "M4 still needs a full evidence packet with transfer-counter/equivalent no-host-stage evidence across prepare plus query, native pointer echo metadata, correctness parity, async contract review, and route-scoped wording.",
     "hardware_note": "The validation GPU is GTX 1070, so this smoke cannot authorize an RTX RT-core hardware speed claim."
   }
 }
