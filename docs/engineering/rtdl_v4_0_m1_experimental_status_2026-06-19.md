@@ -2,8 +2,8 @@
 
 Status: experimental engineering evidence, not current release.
 Date: 2026-06-19.
-Latest validated route-code head: `e706bc8aa3edc95ecca9d38581cd3db0c224b5d1`.
-Latest validated route-code tree: `d7b96d7564b029cac9133592e8a897b716f36647`.
+Latest validated implementation head: `5bc4f383f9b1183a56fefce720ed0f659d5c1bc1`.
+Latest validated route-code tree: `cc0898bc37a07b1beeaca1acfef177f2d6ef7b36`.
 
 This packet summarizes the current V4.0 M1 state after the fixed-radius CuPy
 device-array route landed. It is an engineering status packet, not a release
@@ -66,13 +66,14 @@ Current reproducibility gate:
 PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 ```
 
-Latest Linux validation on `192.168.1.20` for route-code head
-`e706bc8aa3edc95ecca9d38581cd3db0c224b5d1`:
+Latest Linux validation on `192.168.1.20` for implementation head
+`5bc4f383f9b1183a56fefce720ed0f659d5c1bc1`:
 
-- `v4_active`: 37 tests, pass;
+- `v4_active`: 44 tests, pass;
 - `make build-optix`: pass;
 - same-stream ordering probe: pass;
 - Numba CUDA Array Interface smoke: pass;
+- DLPack bridge wrapper smoke: pass;
 - `git diff --check`: pass.
 
 ## Allowed Public-Safe Wording
