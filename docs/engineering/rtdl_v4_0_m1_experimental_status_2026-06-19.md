@@ -84,12 +84,13 @@ PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 ```
 
 Latest Linux validation on `192.168.1.20` for source-tree head
-`66e6529859a1bac63ce2a72527dc5942e301143d`:
+`1ad0a1437b38a3a043948ee96afc216dffe844a1`:
 
 - source-tree doctor with V4 active checks: pass;
 - source-tree runtime preflight with required V4 GPU runtime: pass;
-- `v4_active`: 71 tests, pass;
-- `v4_release_candidate`: 71 tests, pass as a non-authorizing review gate;
+- editable-install runtime hygiene probe with V4 CuPy smoke: pass;
+- `v4_active`: 72 tests, pass;
+- `v4_release_candidate`: 72 tests, pass as a non-authorizing review gate;
 - front-door claim-boundary scan: pass;
 - `make build-optix`: pass;
 - DLPack capsule probe: pass;
@@ -114,8 +115,7 @@ guard, source-tree runtime preflight guard, fixed-radius cross-stream
 prepare/query event-wait guard, and DLPack capsule report guards, PyTorch route
 report guards, PyTorch compatibility guards, PyTorch boundary guards, and the
 editable-install hygiene guard:
-72 tests, pass locally; Linux refresh is pending for the package/runtime hygiene
-commit.
+72 tests, pass locally and on Linux.
 
 ## Release-Candidate Boundary
 

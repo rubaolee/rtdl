@@ -16,6 +16,7 @@
     "policy": "final_release_candidate_commit remains null while release_candidate_ready is false; before release approval it must be set to one fresh validation commit."
   },
   "latest_validated_implementation_head": "66e6529859a1bac63ce2a72527dc5942e301143d",
+  "latest_validated_package_runtime_hygiene_head": "1ad0a1437b38a3a043948ee96afc216dffe844a1",
   "latest_validated_route_code_tree": "e2188f2fd983b2c1afb5f0e34f84773d573b2bb4",
   "latest_validated_m1_implementation_v4_active_tests": 71,
   "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
@@ -94,7 +95,7 @@
       "id": "source_tree_runtime_preflight",
       "status": "experimental_m1_evidence",
       "path": "docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json",
-      "note": "Required Linux V4 M1 source-tree runtime preflight validates checkout import, rtdl-source-tree identity, CuPy, Numba, PyTorch, OptiX library, v4_active/v4_release_candidate gate policy, and non-package claim boundaries."
+      "note": "Required Linux V4 M1 source-tree runtime preflight validates checkout import, rtdl-source-tree identity, CuPy, Numba, PyTorch, OptiX library, v4_active/v4_release_candidate gate policy, and non-package claim boundaries on the package/runtime hygiene head."
     },
     {
       "id": "m8_release_candidate_packet",
@@ -124,7 +125,7 @@
       "id": "editable_install_runtime_probe",
       "status": "source_tree_editable_install_hygiene_evidence",
       "path": "docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json",
-      "note": "Temporary venv editable install proves import/runtime hygiene without PYTHONPATH from outside the repo. This is not package/PyPI/wheel/stable SDK evidence."
+      "note": "Temporary venv editable install proves import/runtime hygiene without PYTHONPATH from outside the repo and runs a Linux V4 M1 CuPy smoke against checkout build/librtdl_optix.so. This is not package/PyPI/wheel/stable SDK evidence."
     },
     {
       "id": "cuda_array_interface_device_identity_contract",
@@ -311,10 +312,12 @@
         "host": "192.168.1.20",
         "date": "2026-06-19",
         "status": "source_tree_runtime_and_editable_install_hygiene_passed_but_package_flow_blocked",
+        "validation_commit": "1ad0a1437b38a3a043948ee96afc216dffe844a1",
         "evidence": "docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json",
         "editable_install_evidence": "docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json",
         "consensus": "docs/reviews/codex_v4_package_runtime_tiebreaker_2026-06-19.md",
-        "reason": "The V4 M1 source-tree runtime path is machine-validated on Linux for checkout import, rtdl-source-tree metadata, CuPy, Numba, PyTorch, OptiX library, non-package claim boundaries, and editable-install hygiene with PYTHONPATH unset from outside the repo. This still is not a V4 wheel, PyPI artifact, V4 distribution artifact, clean package install flow, or stable SDK package."
+        "venv_creation_method": "stdlib_venv_without_pip_targeted_by_system_pip",
+        "reason": "The V4 M1 source-tree runtime path is machine-validated on Linux for checkout import, rtdl-source-tree metadata, CuPy, Numba, PyTorch, OptiX library, non-package claim boundaries, editable-install hygiene with PYTHONPATH unset from outside the repo, and one V4 M1 CuPy smoke against checkout build/librtdl_optix.so. This still is not a V4 wheel, PyPI artifact, V4 distribution artifact, clean package install flow, or stable SDK package."
       },
       "required_evidence": "Documented install/runtime path with tested wheel or equivalent V4 distribution/package flow.",
       "blocking_claims": [

@@ -115,7 +115,7 @@ The current evidence does not validate:
 | Blocker manifest | `docs/engineering/rtdl_v4_0_release_candidate_blockers_2026-06-19.json` | Machine-readable release blockers and closed evidence. |
 | Source-tree runtime story | `docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md` | Source-tree runtime only; package/PyPI/wheel/SDK claims blocked. |
 | Source-tree runtime preflight | `docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json` | Linux required-runtime preflight passed for checkout import, CuPy, Numba, PyTorch, and OptiX. |
-| Editable install hygiene probe | `docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json` | Local editable source-tree install hygiene; not package/PyPI/wheel/stable SDK evidence. |
+| Editable install hygiene probe | `docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json` | Linux editable source-tree install hygiene with V4 GPU smoke; not package/PyPI/wheel/stable SDK evidence. |
 | Front-door claim scan | `docs/reports/v4_0_current_front_door_claim_boundary_scan_2026-06-19.json` | Pass; current front door remains v3.0.2 and blocked V4 claims are not published positively. |
 | CuPy stream smoke | `docs/reports/v4_0_m1_fixed_radius_cupy_stream_smoke_2026-06-19.json` | Pointer identity, stream propagation, output correctness. |
 | CuPy parity matrix | `docs/reports/v4_0_m1_fixed_radius_cupy_parity_matrix_2026-06-19.json` | Positive and fail-closed parity cases. |
@@ -152,15 +152,25 @@ at `66e6529859a1bac63ce2a72527dc5942e301143d`:
 - `git diff --check`: pass;
 - worktree clean.
 
-Current package/runtime hygiene update before Linux refresh:
+Package/runtime hygiene validation on `192.168.1.20` for source-tree head
+`1ad0a1437b38a3a043948ee96afc216dffe844a1`:
 
-- `scripts/run_test_matrix.py --group v4_active`: 72 tests, pass locally;
+- `make build-optix`: pass;
+- `scripts/run_test_matrix.py --group v4_active`: 72 tests, pass;
 - `scripts/run_test_matrix.py --group v4_release_candidate`: 72 tests, pass
-  locally as a non-authorizing review gate;
-- `scripts/v4_0_editable_install_runtime_probe.py --system-site-packages`:
-  pass locally for editable import hygiene without V4 GPU smoke on Windows;
-- Linux editable-install smoke refresh on `192.168.1.20`: pending until the
-  package/runtime hygiene commit is pushed.
+  as a non-authorizing review gate;
+- `scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime`:
+  pass;
+- `scripts/v4_0_editable_install_runtime_probe.py --system-site-packages
+  --run-v4-smoke`: pass;
+- the editable probe used a fresh venv from a working directory outside the
+  repository with `PYTHONPATH` unset, falling back to
+  `venv --without-pip` plus `pip --python` because the host lacks ensurepip;
+- the V4 smoke loaded `rtdsl` from the editable checkout, found
+  `build/librtdl_optix.so` under the checkout, and produced the expected
+  `query_ids`, `neighbor_counts`, and `threshold_flags`;
+- `git diff --check`: pass;
+- worktree clean.
 
 The route-specific JSON reports above preserve the earlier CuPy, Numba,
 DLPack, and PyTorch probe evidence. This packet binds that evidence into one

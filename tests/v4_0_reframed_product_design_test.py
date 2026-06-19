@@ -257,6 +257,10 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertEqual("v4_0_source_tree_runtime_preflight_2026-06-19", report["report_id"])
         self.assertEqual("pass", report["status"])
         self.assertTrue(report["ok"])
+        self.assertEqual(
+            "1ad0a1437b38a3a043948ee96afc216dffe844a1",
+            report["git"]["head"],
+        )
         self.assertTrue(report["pyproject"]["source_tree_identity_ok"])
         self.assertTrue(report["test_matrix_policy"]["v4_active_group_present"])
         self.assertTrue(report["test_matrix_policy"]["v4_release_candidate_group_present"])
@@ -344,8 +348,9 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "Package/runtime tie-breaker",
             "Linux validation on `192.168.1.20`",
             "`scripts/run_test_matrix.py --group v4_active`: 72 tests, pass",
-            "`scripts/run_test_matrix.py --group v4_release_candidate`: 72 tests, pass locally as a non-authorizing review gate",
-            "Linux editable-install smoke refresh on `192.168.1.20`: pending",
+            "`scripts/run_test_matrix.py --group v4_release_candidate`: 72 tests, pass as a non-authorizing review gate",
+            "`scripts/v4_0_editable_install_runtime_probe.py --system-site-packages --run-v4-smoke`: pass",
+            "`venv --without-pip` plus `pip --python`",
             "This M8 packet does not authorize",
             "V4.0 as the current release",
             "package install, PyPI, wheel, or stable SDK wording",
@@ -376,6 +381,10 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertEqual(
             "66e6529859a1bac63ce2a72527dc5942e301143d",
             blockers["latest_validated_implementation_head"],
+        )
+        self.assertEqual(
+            "1ad0a1437b38a3a043948ee96afc216dffe844a1",
+            blockers["latest_validated_package_runtime_hygiene_head"],
         )
         self.assertEqual(
             {
@@ -540,9 +549,19 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["evidence"],
         )
         self.assertEqual(
+            "1ad0a1437b38a3a043948ee96afc216dffe844a1",
+            blocking_by_id["package_install_runtime_story"]["current_preflight"]["validation_commit"],
+        )
+        self.assertEqual(
             "docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json",
             blocking_by_id["package_install_runtime_story"]["current_preflight"][
                 "editable_install_evidence"
+            ],
+        )
+        self.assertEqual(
+            "stdlib_venv_without_pip_targeted_by_system_pip",
+            blocking_by_id["package_install_runtime_story"]["current_preflight"][
+                "venv_creation_method"
             ],
         )
         self.assertEqual(
@@ -629,7 +648,15 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         report = json.loads(EDITABLE_INSTALL_REPORT.read_text(encoding="utf-8"))
         self.assertTrue(report["ok"])
         self.assertEqual("pass", report["status"])
+        self.assertEqual(
+            "1ad0a1437b38a3a043948ee96afc216dffe844a1",
+            report["git"]["head"],
+        )
         self.assertTrue(report["system_site_packages"])
+        self.assertEqual(
+            "stdlib_venv_without_pip_targeted_by_system_pip",
+            report["venv_creation_method"],
+        )
         self.assertFalse(report["inspection"]["pythonpath_present"])
         self.assertEqual("rtdl-source-tree", report["inspection"]["package"]["distribution_name"])
         self.assertEqual("3.0.2", report["inspection"]["package"]["version"])

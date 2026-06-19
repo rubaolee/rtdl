@@ -75,22 +75,33 @@ Latest Linux V4 gate on `192.168.1.20` for head
 - `git diff --check`: pass;
 - worktree clean.
 
-Current package/runtime hygiene update:
+Package/runtime hygiene validation on `192.168.1.20` for source-tree head
+`1ad0a1437b38a3a043948ee96afc216dffe844a1`:
 
-- local `v4_active`: 72 tests, pass;
-- local `v4_release_candidate`: 72 tests, pass as a non-authorizing review
+- `make build-optix`: pass;
+- source-tree runtime preflight with `--require-v4-gpu-runtime`: pass;
+- `v4_active`: 72 tests, pass;
+- `v4_release_candidate`: 72 tests, pass as a non-authorizing review
   gate;
-- local editable-install hygiene probe: pass for import/package metadata from a
-  working directory outside the repository with `PYTHONPATH` unset;
-- Linux editable-install V4 smoke refresh: pending until the package/runtime
-  hygiene commit is pushed.
+- editable-install hygiene probe with `--system-site-packages --run-v4-smoke`:
+  pass;
+- the host lacks ensurepip, so the probe fell back to
+  `venv --without-pip` plus `pip --python` while still using a fresh temporary
+  venv;
+- the editable probe ran from a working directory outside the repository with
+  `PYTHONPATH` unset;
+- `rtdsl` resolved through the editable checkout;
+- native library discovery found `build/librtdl_optix.so` under the checkout;
+- V4 M1 CuPy smoke produced the expected fixed-radius output columns;
+- `git diff --check`: pass;
+- worktree clean.
 
 Tracked machine-readable report:
 
 `docs/reports/v4_0_source_tree_runtime_preflight_2026-06-19.json`
 
 That report is bound to Linux head
-`66e6529859a1bac63ce2a72527dc5942e301143d` and records:
+`1ad0a1437b38a3a043948ee96afc216dffe844a1` and records:
 
 - source-tree import from `src/rtdsl`;
 - `pyproject.toml` identity as `rtdl-source-tree` version `3.0.2`;
@@ -118,7 +129,8 @@ Editable-install hygiene evidence:
 
 That report must be read narrowly. It validates a temporary local editable
 checkout install with `PYTHONPATH` unset and the working directory outside the
-repository. It is not a V4 distribution artifact.
+repository, then runs one Linux V4 M1 CuPy smoke against the checkout native
+library. It is not a V4 distribution artifact.
 
 Closing it requires a V4 package flow, such as a tested wheel or equivalent
 reviewed package/install path, in a clean environment. A future closure packet
