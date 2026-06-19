@@ -46,6 +46,8 @@ Frozen Phase 1 product route:
   `threshold_flags` columns;
 - stream: nonzero caller CUDA streams are propagated through prepare and query
   synchronously; async completion is not claimed yet;
+- cross-stream policy: different nonzero prepare/query streams fail closed
+  until an explicit event/wait contract exists;
 - blocked in this ABI directory until later substrate work: public non-Python
   SDK packaging, variable-length neighbor rows, and broad true-zero-copy claims.
 

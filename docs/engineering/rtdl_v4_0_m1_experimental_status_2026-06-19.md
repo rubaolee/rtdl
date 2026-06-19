@@ -38,6 +38,8 @@ Implemented contract:
   `threshold_flags` columns;
 - output shape is fixed one row per query, not variable-length neighbor rows;
 - nonzero caller CUDA streams propagate through prepare and query;
+- different nonzero prepare/query streams fail closed until an explicit
+  event/wait contract exists;
 - native route synchronizes before return;
 - async completion is not claimed.
 - evidence-backed input protocols are the CuPy adapter and
@@ -83,6 +85,7 @@ Latest Linux validation on `192.168.1.20` for implementation head
 - "Zero-copy device-column handoff with no observed host staging of named columns."
 - "Nonzero caller CUDA streams are propagated through prepare and query; the route synchronizes before return."
 - "Same-stream producer -> RTDL prepare/query -> consumer ordering is validated on one nondefault CuPy CUDA stream."
+- "Different nonzero prepare/query CUDA streams are rejected until an explicit event/wait contract exists."
 - "A CuPy-backed DLPack-only wrapper smoke exercises the generic DLPack adapter."
 - "Raw route-scoped timing probe exists; it does not authorize public speedup wording."
 

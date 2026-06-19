@@ -152,12 +152,18 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertIn("pytorch", route["blocked_frameworks_without_route_evidence"])
         self.assertTrue(route["native_stream_propagation_ready"])
         self.assertTrue(route["native_prepare_stream_propagation_ready"])
+        self.assertFalse(route["cross_stream_event_wait_ready"])
+        self.assertEqual(
+            route["cross_stream_prepare_query_policy"],
+            "same_nonzero_stream_only_until_event_wait_contract_exists",
+        )
         self.assertFalse(route["native_async_ready"])
         self.assertFalse(route["v4_true_zero_copy_claim_authorized"])
         self.assertIn("variable_length_neighbor_rows", route["blocked_generalizations"])
         self.assertIn("ray_triangle_any_hit", route["blocked_generalizations"])
         self.assertIn("pytorch_route_support", route["blocked_generalizations"])
         self.assertIn("dlpack_route_support", route["blocked_generalizations"])
+        self.assertIn("cross_stream_event_wait", route["blocked_generalizations"])
 
     def test_plan_captures_borrowed_pointers_and_producer_streams(self) -> None:
         search = _point_columns(0x1000)
@@ -232,6 +238,20 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         wrong_dtype["neighbor_counts"] = _FakeCudaColumn(0x3020, dtype="int32", shape=(3,), strides=(4,))
         with self.assertRaisesRegex(ValueError, "V4 output column 'neighbor_counts' must use dtype"):
             rtdsl.plan_v4_fixed_radius_count_threshold_2d(query, search, output_columns=wrong_dtype)
+
+    def test_plan_fails_closed_for_cross_stream_prepare_query_without_event_contract(self) -> None:
+        search = _point_columns(0x1000)
+        query = _point_columns(0x2000)
+        outputs = _output_columns(0x3000)
+
+        with self.assertRaisesRegex(ValueError, "cross-stream prepare/query execution requires"):
+            rtdsl.plan_v4_fixed_radius_count_threshold_2d(
+                query,
+                search,
+                output_columns=outputs,
+                stream=456,
+                prepare_stream=123,
+            )
 
     def test_plan_fails_closed_for_mixed_devices(self) -> None:
         search = _point_columns(0x1000)
@@ -642,6 +662,28 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             "public_true_zero_copy_wording_blocked_by_internal_device_staging_and_sync_contract",
         )
         self.assertFalse(metadata["v4_true_zero_copy_claim_authorized"])
+
+    def test_operator_fails_closed_for_different_prepare_and_query_streams(self) -> None:
+        search = _point_columns(0x1000)
+        query = _point_columns(0x2000)
+        outputs = _output_columns(0x3000)
+        prepared = _FakePrepared()
+
+        with mock.patch.object(v4, "_prepare_scene_on_stream", return_value=prepared):
+            with rtdsl.prepare_v4_fixed_radius_count_threshold_2d(
+                search,
+                max_radius=2.0,
+                partner="cupy",
+                stream=123,
+            ) as operator:
+                with self.assertRaisesRegex(ValueError, "cross-stream prepare/query execution requires"):
+                    operator.run(
+                        query,
+                        radius=1.0,
+                        threshold=1,
+                        output_columns=outputs,
+                        stream=456,
+                    )
 
 
 if __name__ == "__main__":

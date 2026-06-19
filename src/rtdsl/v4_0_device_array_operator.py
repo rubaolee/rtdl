@@ -112,6 +112,8 @@ class V4FixedRadiusCountThreshold2DPlan:
             "caller_stream_native_propagation_ready": True,
             "native_prepare_stream_propagation_ready": True,
             "caller_stream_status": V4_0_M1_CALLER_STREAM_STATUS,
+            "cross_stream_event_wait_ready": False,
+            "cross_stream_prepare_query_policy": "same_nonzero_stream_only_until_event_wait_contract_exists",
             "input_contract": "caller_owned_cuda_point_columns",
             "output_contract": (
                 "caller_owned_cuda_output_columns"
@@ -152,6 +154,8 @@ def describe_v4_fixed_radius_count_threshold_2d_route() -> dict[str, object]:
         "native_stream_propagation_ready": True,
         "native_prepare_stream_propagation_ready": True,
         "caller_stream_status": V4_0_M1_CALLER_STREAM_STATUS,
+        "cross_stream_event_wait_ready": False,
+        "cross_stream_prepare_query_policy": "same_nonzero_stream_only_until_event_wait_contract_exists",
         "native_async_ready": False,
         "public_speedup_claim_authorized": False,
         "v4_true_zero_copy_claim_authorized": False,
@@ -163,6 +167,7 @@ def describe_v4_fixed_radius_count_threshold_2d_route() -> dict[str, object]:
             "stable_sdk",
             "pytorch_route_support",
             "dlpack_route_support",
+            "cross_stream_event_wait",
         ),
     }
 
@@ -213,6 +218,15 @@ def _caller_stream_handle(stream: Any) -> int:
 
 def _require_supported_caller_stream(stream: Any) -> int:
     return _caller_stream_handle(stream)
+
+
+def _require_supported_prepare_query_stream_pair(caller_stream: int, prepare_stream: int) -> None:
+    if caller_stream and prepare_stream and caller_stream != prepare_stream:
+        raise ValueError(
+            "V4 cross-stream prepare/query execution requires an explicit event/wait contract; "
+            "use the same nonzero CUDA stream for prepare and query, or synchronize externally before "
+            "submitting a query on a different stream"
+        )
 
 
 def _extract_descriptor(name: str, obj: Any, *, access: str) -> V4DeviceColumnDescriptor:
@@ -301,6 +315,7 @@ def plan_v4_fixed_radius_count_threshold_2d(
         if prepare_stream is not None
         else caller_stream
     )
+    _require_supported_prepare_query_stream_pair(caller_stream, prepare_stream_handle)
     search_descriptors = _validate_column_group(
         search_point_columns,
         _POINT_COLUMNS,
