@@ -45,8 +45,8 @@ Candidate coordinates:
   - worktree clean.
 - Linux package/runtime hygiene addendum on `192.168.1.20`:
   - `make build-optix`: pass;
-  - `scripts/run_test_matrix.py --group v4_active`: 72 tests, pass;
-  - `scripts/run_test_matrix.py --group v4_release_candidate`: 72 tests, pass;
+  - `scripts/run_test_matrix.py --group v4_active`: 73 tests, pass;
+  - `scripts/run_test_matrix.py --group v4_release_candidate`: 73 tests, pass;
   - `scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime`:
     pass;
   - `scripts/v4_0_editable_install_runtime_probe.py --system-site-packages

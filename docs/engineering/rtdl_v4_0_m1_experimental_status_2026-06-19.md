@@ -89,8 +89,8 @@ Latest Linux validation on `192.168.1.20` for source-tree head
 - source-tree doctor with V4 active checks: pass;
 - source-tree runtime preflight with required V4 GPU runtime: pass;
 - editable-install runtime hygiene probe with V4 CuPy smoke: pass;
-- `v4_active`: 72 tests, pass;
-- `v4_release_candidate`: 72 tests, pass as a non-authorizing review gate;
+- `v4_active`: 73 tests, pass;
+- `v4_release_candidate`: 73 tests, pass as a non-authorizing review gate;
 - front-door claim-boundary scan: pass;
 - `make build-optix`: pass;
 - DLPack capsule probe: pass;
@@ -115,7 +115,7 @@ guard, source-tree runtime preflight guard, fixed-radius cross-stream
 prepare/query event-wait guard, and DLPack capsule report guards, PyTorch route
 report guards, PyTorch compatibility guards, PyTorch boundary guards, and the
 editable-install hygiene guard:
-72 tests, pass locally and on Linux.
+73 tests, pass locally and on Linux.
 
 ## Release-Candidate Boundary
 

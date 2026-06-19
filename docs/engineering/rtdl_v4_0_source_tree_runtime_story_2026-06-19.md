@@ -80,8 +80,8 @@ Package/runtime hygiene validation on `192.168.1.20` for source-tree head
 
 - `make build-optix`: pass;
 - source-tree runtime preflight with `--require-v4-gpu-runtime`: pass;
-- `v4_active`: 72 tests, pass;
-- `v4_release_candidate`: 72 tests, pass as a non-authorizing review
+- `v4_active`: 73 tests, pass;
+- `v4_release_candidate`: 73 tests, pass as a non-authorizing review
   gate;
 - editable-install hygiene probe with `--system-site-packages --run-v4-smoke`:
   pass;

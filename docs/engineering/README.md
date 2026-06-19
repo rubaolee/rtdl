@@ -16,6 +16,7 @@ learner-facing release documentation.
 - [RTDL V4.0 M8 External Review Request](../reviews/codex_v4_m8_external_review_request_2026-06-19.md)
 - [RTDL V4.0 M8 Internal 2-AI Critical Review](../reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md)
 - [RTDL V4.0 Package Runtime Tie-Breaker](../reviews/codex_v4_package_runtime_tiebreaker_2026-06-19.md)
+- [RTDL V4.0 After Editable Install M8 External Review Consensus](../reviews/codex_v4_after_editable_install_m8_external_review_consensus_2026-06-19.md)
 - [RTDL V4.0 After Runtime Preflight M8 Consensus](../reviews/codex_v4_after_runtime_preflight_m8_next_step_2ai_consensus_2026-06-19.md)
 - [RTDL V4.0 M1 Cross-Stream Event-Wait Consensus](../reviews/codex_v4_m1_cross_stream_event_wait_2ai_consensus_2026-06-19.md)
 - [RTDL V4.0 Design Review Packet](rtdl_v4_0_design_review_packet_2026-06-19.md)

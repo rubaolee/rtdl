@@ -22,8 +22,8 @@
   "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
   "latest_validated_m1_cross_stream_evidence_scope": "clean source-tree commit after push",
   "latest_validated_m1_cross_stream_v4_active_tests": 53,
-  "current_source_tree_v4_active_tests": 72,
-  "current_source_tree_v4_release_candidate_tests": 72,
+  "current_source_tree_v4_active_tests": 73,
+  "current_source_tree_v4_release_candidate_tests": 73,
   "evidence_ready": [
     {
       "id": "v4_active_gate",
@@ -122,6 +122,12 @@
       "note": "Tie-breaker requires editable-install hygiene evidence while keeping package/PyPI/wheel/stable SDK claims blocked."
     },
     {
+      "id": "after_editable_install_external_review_consensus",
+      "status": "accepted_next_step_decision",
+      "path": "docs/reviews/codex_v4_after_editable_install_m8_external_review_consensus_2026-06-19.md",
+      "note": "2-AI consensus after editable-install hygiene says the next highest-value V4 action is external M8 critical review, not feature expansion."
+    },
+    {
       "id": "editable_install_runtime_probe",
       "status": "source_tree_editable_install_hygiene_evidence",
       "path": "docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json",
@@ -154,6 +160,13 @@
     {
       "id": "external_release_candidate_review",
       "closed": false,
+      "current_preflight": {
+        "date": "2026-06-19",
+        "status": "next_gate_after_editable_install_hygiene",
+        "consensus": "docs/reviews/codex_v4_after_editable_install_m8_external_review_consensus_2026-06-19.md",
+        "request": "docs/reviews/codex_v4_m8_external_review_request_2026-06-19.md",
+        "reason": "After source-tree runtime and editable-install hygiene passed, 2-AI consensus says external M8 critical review is the next gate. No feature expansion or front-door switch is authorized before that verdict."
+      },
       "required_evidence": "2+ AI and external/maintainer review of the final V4 release-candidate packet.",
       "blocking_claims": [
         "release approved",

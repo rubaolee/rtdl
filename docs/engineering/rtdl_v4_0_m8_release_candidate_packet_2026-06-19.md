@@ -156,8 +156,8 @@ Package/runtime hygiene validation on `192.168.1.20` for source-tree head
 `1ad0a1437b38a3a043948ee96afc216dffe844a1`:
 
 - `make build-optix`: pass;
-- `scripts/run_test_matrix.py --group v4_active`: 72 tests, pass;
-- `scripts/run_test_matrix.py --group v4_release_candidate`: 72 tests, pass
+- `scripts/run_test_matrix.py --group v4_active`: 73 tests, pass;
+- `scripts/run_test_matrix.py --group v4_release_candidate`: 73 tests, pass
   as a non-authorizing review gate;
 - `scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime`:
   pass;

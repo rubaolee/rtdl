@@ -40,6 +40,12 @@ M8_INTERNAL_REVIEW = ROOT / "docs" / "reviews" / "codex_v4_m8_internal_2ai_criti
 PACKAGE_RUNTIME_TIEBREAKER = (
     ROOT / "docs" / "reviews" / "codex_v4_package_runtime_tiebreaker_2026-06-19.md"
 )
+AFTER_EDITABLE_INSTALL_CONSENSUS = (
+    ROOT
+    / "docs"
+    / "reviews"
+    / "codex_v4_after_editable_install_m8_external_review_consensus_2026-06-19.md"
+)
 RC_BLOCKERS = (
     ROOT / "docs" / "engineering" / "rtdl_v4_0_release_candidate_blockers_2026-06-19.json"
 )
@@ -347,8 +353,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "Editable install hygiene probe",
             "Package/runtime tie-breaker",
             "Linux validation on `192.168.1.20`",
-            "`scripts/run_test_matrix.py --group v4_active`: 72 tests, pass",
-            "`scripts/run_test_matrix.py --group v4_release_candidate`: 72 tests, pass as a non-authorizing review gate",
+            "`scripts/run_test_matrix.py --group v4_active`: 73 tests, pass",
+            "`scripts/run_test_matrix.py --group v4_release_candidate`: 73 tests, pass as a non-authorizing review gate",
             "`scripts/v4_0_editable_install_runtime_probe.py --system-site-packages --run-v4-smoke`: pass",
             "`venv --without-pip` plus `pip --python`",
             "This M8 packet does not authorize",
@@ -409,8 +415,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             53,
             blockers["latest_validated_m1_cross_stream_v4_active_tests"],
         )
-        self.assertEqual(72, blockers["current_source_tree_v4_active_tests"])
-        self.assertEqual(72, blockers["current_source_tree_v4_release_candidate_tests"])
+        self.assertEqual(73, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(73, blockers["current_source_tree_v4_release_candidate_tests"])
         self.assertEqual(
             "exposed_as_non_authorizing_m8_review_gate_release_requires_external_review_and_explicit_user_action",
             blockers["v4_release_candidate_gate_policy"],
@@ -452,6 +458,11 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertEqual(
             "docs/reports/v4_0_editable_install_runtime_probe_2026-06-19.json",
             evidence_by_id["editable_install_runtime_probe"]["path"],
+        )
+        self.assertIn("after_editable_install_external_review_consensus", evidence_by_id)
+        self.assertEqual(
+            "docs/reviews/codex_v4_after_editable_install_m8_external_review_consensus_2026-06-19.md",
+            evidence_by_id["after_editable_install_external_review_consensus"]["path"],
         )
         self.assertTrue(blocking_by_id["m8_release_candidate_packet"]["closed"])
         self.assertTrue(blocking_by_id["cross_stream_event_wait"]["closed"])
@@ -571,6 +582,18 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertIn(
             "not a V4 wheel, PyPI artifact, V4 distribution artifact",
             blocking_by_id["package_install_runtime_story"]["current_preflight"]["reason"],
+        )
+        self.assertEqual(
+            "next_gate_after_editable_install_hygiene",
+            blocking_by_id["external_release_candidate_review"]["current_preflight"]["status"],
+        )
+        self.assertEqual(
+            "docs/reviews/codex_v4_after_editable_install_m8_external_review_consensus_2026-06-19.md",
+            blocking_by_id["external_release_candidate_review"]["current_preflight"]["consensus"],
+        )
+        self.assertIn(
+            "No feature expansion or front-door switch is authorized",
+            blocking_by_id["external_release_candidate_review"]["current_preflight"]["reason"],
         )
         self.assertEqual(
             "single_gpu_device_identity_contract_guarded_multi_gpu_runtime_not_claimed",
@@ -696,6 +719,24 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         else:
             self.assertFalse(report["run_v4_smoke"])
             self.assertEqual("not_run", report["inspection"]["v4_smoke"]["status"])
+
+    def test_after_editable_install_consensus_requires_external_review_next(self) -> None:
+        consensus = AFTER_EDITABLE_INSTALL_CONSENSUS.read_text(encoding="utf-8")
+        compact = _compact(consensus)
+
+        for token in (
+            "accepted 2-AI next-step consensus, not release approval",
+            "release_candidate_ready` remains false",
+            "external M8 critical review, not more implementation",
+            "accept baseline, accept with blockers, or reject",
+            "Do not pursue these before the external review verdict",
+            "another route",
+            "public true-zero-copy wording",
+            "PyPI, wheel, stable SDK, or generated bindings",
+            "front-door docs switch",
+            "keep `release_candidate_ready` false",
+        ):
+            self.assertIn(token, compact)
 
     def test_current_front_door_claim_scan_closes_only_scan_blocker(self) -> None:
         payload = scan_v4_front_door_claims(ROOT)
