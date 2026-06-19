@@ -2,8 +2,8 @@
 
 Status: experimental engineering evidence, not current release.
 Date: 2026-06-19.
-Latest validated source-tree head: `22bf64678858b8ad7606f32428d918f511f5f179`.
-Latest validated source-tree tree: `f0051bb11ac742789a8bfd12d19201123daeecdb`.
+Latest validated source-tree head: `ad3f57b680b1a7790b51b0e4bd9f705fbfea9933`.
+Latest validated source-tree tree: `cce791c130f85207f7485853f018ace5920a9a75`.
 
 This packet summarizes the current V4.0 M1 state after the fixed-radius CuPy
 device-array route landed. It is an engineering status packet, not a release
@@ -77,10 +77,10 @@ PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active
 ```
 
 Latest Linux validation on `192.168.1.20` for source-tree head
-`22bf64678858b8ad7606f32428d918f511f5f179`:
+`ad3f57b680b1a7790b51b0e4bd9f705fbfea9933`:
 
 - source-tree doctor with V4 active checks: pass;
-- `v4_active`: 59 tests, pass;
+- `v4_active`: 61 tests, pass;
 - front-door claim-boundary scan: pass;
 - `make build-optix`: pass;
 - DLPack capsule probe: pass;
@@ -101,7 +101,7 @@ probe, DLPack bridge wrapper smoke, and `git diff --check` all passed there.
 Current source-tree `v4_active` gate after the release-candidate blocker,
 front-door claim-scan, Numba route-evidence guards, source-tree runtime story
 guard, fixed-radius cross-stream prepare/query event-wait guard, and DLPack
-capsule report guards: 61 tests, pass locally.
+capsule report guards: 61 tests, pass locally and on Linux.
 
 ## Release-Candidate Boundary
 

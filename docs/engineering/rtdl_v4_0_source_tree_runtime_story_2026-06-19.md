@@ -59,10 +59,10 @@ Linux `192.168.1.20` source-tree doctor:
 - optional Embree library: warn, not required for V4 M1.
 
 Latest Linux V4 gate on `192.168.1.20` for head
-`22bf64678858b8ad7606f32428d918f511f5f179`:
+`ad3f57b680b1a7790b51b0e4bd9f705fbfea9933`:
 
 - `make build-optix`: pass;
-- `v4_active`: 59 tests, pass;
+- `v4_active`: 61 tests, pass;
 - Numba M1 `DeviceNDArray` fixed-radius route probe: pass;
 - DLPack capsule fixed-radius route probe: pass;
 - front-door claim-boundary scan: pass;

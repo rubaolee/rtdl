@@ -1082,7 +1082,7 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertEqual(report["remote_validation"]["host"], "192.168.1.20")
         self.assertTrue(report["remote_validation"]["build_optix"]["ok"])
         self.assertTrue(report["remote_validation"]["v4_active"]["ok"])
-        self.assertEqual(report["remote_validation"]["v4_active"]["test_count"], 59)
+        self.assertEqual(report["remote_validation"]["v4_active"]["test_count"], 61)
         self.assertTrue(report["remote_validation"]["dlpack_capsule_probe"]["ok"])
         self.assertTrue(report["remote_validation"]["claim_boundary_scan"]["ok"])
         self.assertTrue(report["remote_validation"]["git_diff_check"]["ok"])

@@ -111,8 +111,8 @@
     },
     "synchronous_return": true
   },
-  "evidence_code_commit": "22bf64678858b8ad7606f32428d918f511f5f179",
-  "evidence_code_tree": "f0051bb11ac742789a8bfd12d19201123daeecdb",
+  "evidence_code_commit": "ad3f57b680b1a7790b51b0e4bd9f705fbfea9933",
+  "evidence_code_tree": "cce791c130f85207f7485853f018ace5920a9a75",
   "framework": "cupy_backed_dlpack_capsule_only_wrapper",
   "hardware": {
     "compute_capability": "6.1",
@@ -178,12 +178,12 @@
       "git pull --ff-only",
       "make build-optix",
       "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
-      "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_dlpack_capsule_probe.py --output /tmp/v4_m1_dlpack_capsule_22bf64678.json",
-      "PYTHONPATH=src:. python3 scripts/v4_0_current_front_door_claim_boundary_scan.py --output /tmp/v4_claim_scan_22bf64678.json",
-      "PYTHONPATH=src:. python3 scripts/rtdl_source_tree_doctor.py --json --include-v4-active > /tmp/v4_doctor_22bf64678.json",
-      "python3 -m json.tool /tmp/v4_m1_dlpack_capsule_22bf64678.json",
-      "python3 -m json.tool /tmp/v4_claim_scan_22bf64678.json",
-      "python3 -m json.tool /tmp/v4_doctor_22bf64678.json",
+      "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_dlpack_capsule_probe.py --output /tmp/v4_m1_dlpack_capsule_ad3f57b68.json",
+      "PYTHONPATH=src:. python3 scripts/v4_0_current_front_door_claim_boundary_scan.py --output /tmp/v4_claim_scan_ad3f57b68.json",
+      "PYTHONPATH=src:. python3 scripts/rtdl_source_tree_doctor.py --json --include-v4-active > /tmp/v4_doctor_ad3f57b68.json",
+      "python3 -m json.tool /tmp/v4_m1_dlpack_capsule_ad3f57b68.json",
+      "python3 -m json.tool /tmp/v4_claim_scan_ad3f57b68.json",
+      "python3 -m json.tool /tmp/v4_doctor_ad3f57b68.json",
       "git diff --check",
       "git status --short --branch"
     ],
@@ -204,7 +204,7 @@
     },
     "v4_active": {
       "ok": true,
-      "test_count": 59
+      "test_count": 61
     },
     "worktree_clean": {
       "ok": true
