@@ -17,6 +17,7 @@
   },
   "latest_validated_implementation_head": "66e6529859a1bac63ce2a72527dc5942e301143d",
   "latest_validated_package_runtime_hygiene_head": "1ad0a1437b38a3a043948ee96afc216dffe844a1",
+  "latest_validated_external_review_guard_head": "3e22e03bd4fe70454a7b5a11b30c7990c4dfff9d",
   "latest_validated_route_code_tree": "e2188f2fd983b2c1afb5f0e34f84773d573b2bb4",
   "latest_validated_m1_implementation_v4_active_tests": 71,
   "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",

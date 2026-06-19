@@ -16,6 +16,12 @@ External review request commit:
 Post-review action validation commit:
 `66e6529859a1bac63ce2a72527dc5942e301143d`
 
+Package/runtime hygiene validation commit:
+`1ad0a1437b38a3a043948ee96afc216dffe844a1`
+
+Next-step external-review consensus guard commit:
+`3e22e03bd4fe70454a7b5a11b30c7990c4dfff9d`
+
 Final release-candidate commit: not assigned. Release-candidate readiness is
 still false.
 
@@ -156,9 +162,6 @@ Package/runtime hygiene validation on `192.168.1.20` for source-tree head
 `1ad0a1437b38a3a043948ee96afc216dffe844a1`:
 
 - `make build-optix`: pass;
-- `scripts/run_test_matrix.py --group v4_active`: 73 tests, pass;
-- `scripts/run_test_matrix.py --group v4_release_candidate`: 73 tests, pass
-  as a non-authorizing review gate;
 - `scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime`:
   pass;
 - `scripts/v4_0_editable_install_runtime_probe.py --system-site-packages
@@ -169,6 +172,15 @@ Package/runtime hygiene validation on `192.168.1.20` for source-tree head
 - the V4 smoke loaded `rtdsl` from the editable checkout, found
   `build/librtdl_optix.so` under the checkout, and produced the expected
   `query_ids`, `neighbor_counts`, and `threshold_flags`;
+- `git diff --check`: pass;
+- worktree clean.
+
+No-expansion external-review guard validation on `192.168.1.20` for source-tree
+head `3e22e03bd4fe70454a7b5a11b30c7990c4dfff9d`:
+
+- `scripts/run_test_matrix.py --group v4_active`: 73 tests, pass;
+- `scripts/run_test_matrix.py --group v4_release_candidate`: 73 tests, pass
+  as a non-authorizing review gate;
 - `git diff --check`: pass;
 - worktree clean.
 

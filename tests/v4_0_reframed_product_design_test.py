@@ -393,6 +393,10 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             blockers["latest_validated_package_runtime_hygiene_head"],
         )
         self.assertEqual(
+            "3e22e03bd4fe70454a7b5a11b30c7990c4dfff9d",
+            blockers["latest_validated_external_review_guard_head"],
+        )
+        self.assertEqual(
             {
                 "implementation_evidence_baseline": "bbc43984b74dee7d52c059b295c5eaade0813096",
                 "first_packet_gate_commit": "0273d4cba5e38afee099573b0ac47f2f883c1067",

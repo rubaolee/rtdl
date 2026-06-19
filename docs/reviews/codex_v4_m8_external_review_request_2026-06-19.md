@@ -31,6 +31,8 @@ Candidate coordinates:
   `66e6529859a1bac63ce2a72527dc5942e301143d`;
 - package/runtime hygiene validation commit:
   `1ad0a1437b38a3a043948ee96afc216dffe844a1`;
+- next-step external-review consensus guard commit:
+  `3e22e03bd4fe70454a7b5a11b30c7990c4dfff9d`;
 - final release-candidate commit:
   not assigned; release-candidate readiness is still false;
 - Linux final smoke on `192.168.1.20` before the package/runtime hygiene
@@ -43,15 +45,20 @@ Candidate coordinates:
   - blocker/preflight JSON parse: pass;
   - `git diff --check`: pass;
   - worktree clean.
-- Linux package/runtime hygiene addendum on `192.168.1.20`:
+- Linux package/runtime hygiene addendum on `192.168.1.20` at
+  `1ad0a1437b38a3a043948ee96afc216dffe844a1`:
   - `make build-optix`: pass;
-  - `scripts/run_test_matrix.py --group v4_active`: 73 tests, pass;
-  - `scripts/run_test_matrix.py --group v4_release_candidate`: 73 tests, pass;
   - `scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime`:
     pass;
   - `scripts/v4_0_editable_install_runtime_probe.py --system-site-packages
     --run-v4-smoke`: pass;
   - package/PyPI/wheel/stable SDK claims remain unauthorized.
+- Linux no-expansion review-head validation on `192.168.1.20` at
+  `3e22e03bd4fe70454a7b5a11b30c7990c4dfff9d`:
+  - `scripts/run_test_matrix.py --group v4_active`: 73 tests, pass;
+  - `scripts/run_test_matrix.py --group v4_release_candidate`: 73 tests, pass;
+  - `git diff --check`: pass;
+  - worktree clean.
 
 Please answer:
 
