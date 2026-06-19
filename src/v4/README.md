@@ -36,6 +36,9 @@ Frozen Phase 1 product route:
   `rtdsl.run_v4_fixed_radius_count_threshold_2d`;
 - route: `fixed_radius_count_threshold_2d`;
 - input: caller-owned CUDA `ids`, `x`, `y` point columns;
+- evidence-backed inputs: CuPy device columns and Numba `DeviceNDArray`
+  columns through `__cuda_array_interface__`;
+- target inputs without route evidence yet: PyTorch and DLPack;
 - output: fixed-size CUDA `query_ids`, `neighbor_counts`, and
   `threshold_flags` columns;
 - stream: nonzero caller CUDA streams are propagated through prepare and query

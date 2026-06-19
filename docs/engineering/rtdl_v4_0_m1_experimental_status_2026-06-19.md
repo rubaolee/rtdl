@@ -32,7 +32,7 @@ Python API:
 
 Implemented contract:
 
-- host program is Python with CuPy CUDA arrays;
+- host program is Python with evidence-backed CuPy or Numba CUDA device arrays;
 - inputs are caller-owned CUDA `ids`, `x`, and `y` point columns;
 - outputs are caller-owned CUDA `query_ids`, `neighbor_counts`, and
   `threshold_flags` columns;
@@ -40,6 +40,9 @@ Implemented contract:
 - nonzero caller CUDA streams propagate through prepare and query;
 - native route synchronizes before return;
 - async completion is not claimed.
+- evidence-backed input protocols are the CuPy adapter and
+  `__cuda_array_interface__`; DLPack and PyTorch remain target surfaces without
+  route evidence.
 
 ## Evidence
 
