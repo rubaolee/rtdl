@@ -156,9 +156,10 @@ class V40ReframedProductDesignTest(unittest.TestCase):
 
         for token in (
             "experimental engineering evidence, not current release",
-            "Latest validated head: `95b724159e9e6e0e1ab734850ceede2c3a7ca692`",
+            "Latest validated route-code head: `7a7b37b6e724aba5907af903182d6139837a4bfb`",
             "fixed_radius_count_threshold_2d",
             "Zero-copy device-column handoff with no observed host staging of named columns",
+            "Same-stream producer -> RTDL prepare/query -> consumer ordering is validated",
             "V4.0 is the current release",
             "blocked",
             "v4_release_candidate",

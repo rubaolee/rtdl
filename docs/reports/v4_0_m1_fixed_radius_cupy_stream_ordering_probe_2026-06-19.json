@@ -1,0 +1,97 @@
+{
+  "status": "pass-with-boundary",
+  "report_id": "v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19",
+  "route_id": "fixed_radius_count_threshold_2d",
+  "purpose": "Same-stream producer -> RTDL prepare/query -> consumer ordering proof for the V4 M1 CuPy fixed-radius operator.",
+  "evidence_code_commit": "7a7b37b6e724aba5907af903182d6139837a4bfb",
+  "evidence_code_tree": "7e78ba7042a6f42a882b4fa07f9d4824263cbaa8",
+  "remote_validation": {
+    "host": "192.168.1.20",
+    "path": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
+    "commands": [
+      "git pull --ff-only",
+      "git rev-parse HEAD",
+      "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
+      "make build-optix",
+      "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_cupy_stream_ordering_probe.py --output /tmp/v4_stream_ordering_7a7b37b6e.json",
+      "git diff --check"
+    ],
+    "validated_commit": "7a7b37b6e724aba5907af903182d6139837a4bfb",
+    "v4_active": {
+      "ok": true,
+      "module_count": 3,
+      "test_count": 35,
+      "output": "Ran 35 tests in 0.462s; OK"
+    },
+    "build_optix": {
+      "ok": true
+    },
+    "diff_check": {
+      "ok": true
+    }
+  },
+  "hardware": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "driver": "580.126.09",
+    "memory": "8192 MiB",
+    "compute_capability": "6.1",
+    "nvidia_smi_available": true,
+    "rt_core_hardware": false,
+    "hardware_note": "This host validates CUDA stream ordering and OptiX route execution, but it is not RTX/RT-core speed evidence."
+  },
+  "ordering_scope": "same_nondefault_cupy_stream_producer_rtdl_consumer",
+  "same_stream_contract": {
+    "producer_stream_ptr": 517930272,
+    "rtdl_prepare_stream_ptr": 517930272,
+    "rtdl_query_stream_ptr": 517930272,
+    "consumer_stream_ptr": 517930272,
+    "producer_event_recorded": true,
+    "consumer_event_recorded": true,
+    "producer_rtdl_consumer_order_validated": true,
+    "cross_stream_event_wait_validated": false
+  },
+  "validation": {
+    "output_match": true,
+    "device_consumer_checksum_match": true,
+    "observed": {
+      "query_ids": [1, 2, 3, 4],
+      "neighbor_counts": [1, 1, 0, 1],
+      "threshold_flags": [1, 1, 0, 1]
+    },
+    "expected": {
+      "query_ids": [1, 2, 3, 4],
+      "neighbor_counts": [1, 1, 0, 1],
+      "threshold_flags": [1, 1, 0, 1]
+    },
+    "observed_checksum": 1033,
+    "expected_checksum": 1033
+  },
+  "metadata_subset": {
+    "caller_stream_handle_nonzero": true,
+    "prepare_stream_handle_nonzero": true,
+    "caller_stream_native_propagation_ready": true,
+    "native_prepare_stream_propagation_ready": true,
+    "native_synchronized_before_return": true,
+    "native_async_ready": false,
+    "named_cuda_columns_no_host_stage_authorized": true,
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "claim_boundaries": {
+    "same_stream_ordering_claim_authorized": true,
+    "cross_stream_event_wait_claim_authorized": false,
+    "async_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "v4_true_zero_copy_claim_authorized": false,
+    "allowed_wording": "V4 M1 validates same-stream producer -> RTDL prepare/query -> consumer ordering on one nondefault CuPy CUDA stream.",
+    "forbidden_wording": [
+      "cross-stream event wait support",
+      "async execution",
+      "nonblocking execution",
+      "true zero-copy",
+      "RT-core speedup",
+      "RTX speedup"
+    ],
+    "reason": "This probe validates producer -> RTDL prepare/query -> consumer ordering on one nondefault CuPy CUDA stream. It does not validate cross-stream event waits and does not authorize async, true-zero-copy, or speedup wording."
+  }
+}

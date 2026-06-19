@@ -18,6 +18,9 @@ NO_HOST_STAGE_REPORT = (
     ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe_2026-06-19.json"
 )
 BENCHMARK_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_benchmark_probe_2026-06-19.json"
+STREAM_ORDERING_REPORT = (
+    ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_stream_ordering_probe_2026-06-19.json"
+)
 SMOKE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_stream_smoke.py"
 PARITY_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_parity_matrix.py"
 NO_HOST_STAGE_SCRIPT = ROOT / "scripts" / "v4_0_m1_fixed_radius_cupy_no_host_stage_probe.py"
@@ -428,6 +431,32 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
             "does not validate cross-stream event waits",
         ):
             self.assertIn(token, script)
+
+    def test_cupy_stream_ordering_report_allows_same_stream_only(self) -> None:
+        report = json.loads(STREAM_ORDERING_REPORT.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["status"], "pass-with-boundary")
+        self.assertEqual(report["route_id"], "fixed_radius_count_threshold_2d")
+        self.assertEqual(report["remote_validation"]["v4_active"]["test_count"], 35)
+        self.assertEqual(report["ordering_scope"], "same_nondefault_cupy_stream_producer_rtdl_consumer")
+        contract = report["same_stream_contract"]
+        self.assertEqual(contract["producer_stream_ptr"], contract["rtdl_prepare_stream_ptr"])
+        self.assertEqual(contract["producer_stream_ptr"], contract["rtdl_query_stream_ptr"])
+        self.assertEqual(contract["producer_stream_ptr"], contract["consumer_stream_ptr"])
+        self.assertTrue(contract["producer_rtdl_consumer_order_validated"])
+        self.assertFalse(contract["cross_stream_event_wait_validated"])
+        self.assertTrue(report["validation"]["output_match"])
+        self.assertTrue(report["validation"]["device_consumer_checksum_match"])
+        self.assertEqual(report["validation"]["observed_checksum"], report["validation"]["expected_checksum"])
+        self.assertFalse(report["metadata_subset"]["native_async_ready"])
+        self.assertTrue(report["metadata_subset"]["native_synchronized_before_return"])
+        self.assertTrue(report["claim_boundaries"]["same_stream_ordering_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["cross_stream_event_wait_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["async_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["public_speedup_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["rt_core_speedup_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["v4_true_zero_copy_claim_authorized"])
+        self.assertIn("cross-stream event wait support", report["claim_boundaries"]["forbidden_wording"])
 
     def test_claim_review_keeps_v4_true_zero_copy_claim_blocked(self) -> None:
         review = CLAIM_REVIEW.read_text(encoding="utf-8")
