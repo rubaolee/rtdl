@@ -215,6 +215,15 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             self.assertIs(blocking_by_id[blocker_id]["closed"], False)
         self.assertTrue(blocking_by_id["claim_boundary_scan"]["closed"])
         self.assertEqual(
+            "blocked_event_wait_contract_missing",
+            blocking_by_id["cross_stream_event_wait"]["current_preflight"]["status"],
+        )
+        cross_stream_evidence = "\n".join(
+            blocking_by_id["cross_stream_event_wait"]["current_preflight"]["native_source_evidence"]
+        )
+        self.assertIn("build_custom_accel_from_device_aabbs", cross_stream_evidence)
+        self.assertIn("cuStreamSynchronize(stream)", cross_stream_evidence)
+        self.assertEqual(
             "blocked_runtime_unavailable",
             blocking_by_id["pytorch_route_evidence"]["current_preflight"]["status"],
         )

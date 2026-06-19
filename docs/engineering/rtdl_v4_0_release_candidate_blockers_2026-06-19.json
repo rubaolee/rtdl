@@ -99,6 +99,17 @@
     {
       "id": "cross_stream_event_wait",
       "closed": false,
+      "current_preflight": {
+        "host": "192.168.1.20",
+        "date": "2026-06-19",
+        "status": "blocked_event_wait_contract_missing",
+        "native_source_evidence": [
+          "src/native/optix/rtdl_optix_workloads.cpp: PreparedFixedRadiusCountThreshold2D packs search AABBs and builds the OptiX accel on the supplied prepare stream.",
+          "src/native/optix/rtdl_optix_core.cpp: build_custom_accel_from_device_aabbs calls cuStreamSynchronize(stream) before returning the prepared handle.",
+          "src/native/optix/rtdl_optix_workloads.cpp: write_prepared_fixed_radius_count_threshold_2d_device_query_columns_on_stream_optix synchronizes the query stream before returning."
+        ],
+        "reason": "The route has synchronized prepare/query stream propagation evidence, but no public owner/event/wait lifetime contract for different nonzero prepare/query streams. Different-stream prepare/query remains fail-closed until an explicit event/wait API and smoke tests exist."
+      },
       "required_evidence": "Explicit owner/event/wait contract plus tests for different nonzero prepare/query streams.",
       "blocking_claims": [
         "cross-stream event wait support",

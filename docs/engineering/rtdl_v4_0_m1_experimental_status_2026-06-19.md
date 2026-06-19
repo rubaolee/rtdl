@@ -142,6 +142,15 @@ passwordless sudo, `python3.12-venv` is unavailable, and the attempted user-site
 Torch dry-run was unbounded and stopped. No PyTorch route support wording is
 authorized until an actual CUDA tensor smoke passes.
 
+Cross-stream event/wait preflight on `192.168.1.20`, 2026-06-19: still
+blocked by contract. Native prepare/query stream propagation is present, and
+the current implementation synchronizes the prepare stream before returning the
+prepared handle and synchronizes the query stream before returning results. That
+evidence supports the current same-stream/synchronized-return wording only. It
+does not define a public owner/event/wait lifetime contract for different
+nonzero prepare/query streams, so different-stream prepare/query remains
+fail-closed until an explicit event/wait API and smoke test exist.
+
 ## Next Gates
 
 1. Keep the M1 route reproducible on current head.
