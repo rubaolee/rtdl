@@ -1,0 +1,62 @@
+{
+  "report": "v4_0_m1_fixed_radius_cupy_stream_smoke",
+  "date": "2026-06-19",
+  "status": "pass-with-boundary",
+  "code_commit": "35bd07ba4",
+  "validated_tree": "935ea5bb3b29c26c5891ff896f30e43d8e5b0c0f",
+  "remote_host": "192.168.1.20",
+  "remote_path": "/home/lestat/work/rtdl_v4_m1_check_20260619",
+  "hardware": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "driver": "580.126.09",
+    "memory_mib": 8192
+  },
+  "route": {
+    "scope": "python_gpu_rt_core_operator",
+    "route_id": "fixed_radius_count_threshold_2d",
+    "backend": "optix",
+    "python_api": "rtdsl.run_v4_fixed_radius_count_threshold_2d",
+    "input_contract": "caller-owned CuPy CUDA ids/x/y columns",
+    "output_contract": "caller-owned CuPy CUDA query_ids/neighbor_counts/threshold_flags columns",
+    "stream_contract": "nonzero caller CUDA stream accepted; native route synchronizes that stream before return",
+    "async_claim_authorized": false
+  },
+  "commands": [
+    "make build-v4-c-api",
+    "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
+    "git diff --check",
+    "make build-optix",
+    "PYTHONPATH=src:. python3 - <<'PY' ... CuPy caller-stream smoke ... PY"
+  ],
+  "validation": {
+    "build_v4_c_api": "pass",
+    "v4_active": {
+      "status": "pass",
+      "module_count": 3,
+      "test_count": 21
+    },
+    "git_diff_check": "pass",
+    "build_optix": "pass",
+    "cupy_stream_smoke": "pass"
+  },
+  "cupy_stream_smoke_observed": {
+    "query_ids": [1, 2, 3],
+    "neighbor_counts": [1, 1, 0],
+    "threshold_flags": [1, 1, 0],
+    "metadata_subset": {
+      "v4_route_id": "fixed_radius_count_threshold_2d",
+      "caller_stream_handle_nonzero": true,
+      "native_synchronized_before_return": true,
+      "native_async_ready": false,
+      "native_true_zero_copy_authorized": true,
+      "v4_true_zero_copy_claim_authorized": false
+    }
+  },
+  "claim_boundaries": {
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "v4_true_zero_copy_claim_authorized": false,
+    "reason": "M4 still needs a full evidence packet with pointer identity, transfer-counter/equivalent no-host-stage evidence, stream-order proof, and route-scoped wording.",
+    "hardware_note": "The validation GPU is GTX 1070, so this smoke cannot authorize an RTX RT-core hardware speed claim."
+  }
+}

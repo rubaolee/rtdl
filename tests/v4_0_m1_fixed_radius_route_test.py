@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
 import unittest
 from unittest import mock
 
 import rtdsl
 from rtdsl import v4_0_device_array_operator as v4
+
+
+ROOT = Path(__file__).resolve().parents[1]
+EVIDENCE_REPORT = ROOT / "docs" / "reports" / "v4_0_m1_fixed_radius_cupy_stream_smoke_2026-06-19.json"
 
 
 class _FakeCudaColumn:
@@ -166,6 +172,19 @@ class V40M1FixedRadiusRouteTest(unittest.TestCase):
         self.assertTrue(metadata["native_true_zero_copy_authorized"])
         self.assertFalse(metadata["v4_true_zero_copy_claim_authorized"])
         self.assertEqual(metadata["v4_true_zero_copy_claim_blocker"], "M4_evidence_packet_pending")
+
+    def test_cupy_stream_smoke_report_preserves_claim_boundaries(self) -> None:
+        report = json.loads(EVIDENCE_REPORT.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["status"], "pass-with-boundary")
+        self.assertEqual(report["route"]["route_id"], "fixed_radius_count_threshold_2d")
+        self.assertEqual(report["validation"]["build_optix"], "pass")
+        self.assertEqual(report["validation"]["cupy_stream_smoke"], "pass")
+        self.assertEqual(report["cupy_stream_smoke_observed"]["neighbor_counts"], [1, 1, 0])
+        self.assertFalse(report["route"]["async_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["public_speedup_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["rt_core_speedup_claim_authorized"])
+        self.assertFalse(report["claim_boundaries"]["v4_true_zero_copy_claim_authorized"])
 
     def test_operator_uses_on_stream_route_for_nonzero_caller_stream(self) -> None:
         search = _point_columns(0x1000)
