@@ -225,7 +225,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertFalse(blockers["release_candidate_ready"])
         self.assertEqual("v3.0.2", blockers["current_release_remains"])
         self.assertEqual("v4_active", blockers["current_gate"])
-        self.assertEqual(61, blockers["latest_validated_m1_implementation_v4_active_tests"])
+        self.assertEqual(64, blockers["latest_validated_m1_implementation_v4_active_tests"])
         self.assertEqual(
             "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
             blockers["latest_validated_m1_cross_stream_evidence_commit"],

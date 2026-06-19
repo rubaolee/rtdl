@@ -10,8 +10,8 @@
     "rt_core_speedup_claim_authorized": false,
     "v4_true_zero_copy_claim_authorized": false
   },
-  "evidence_code_commit": "1080e2c5341fec01bed34af9eca7d883529e32b9",
-  "evidence_code_tree": "730c7f1f71eb2398ebb1394029d5550a9ae7f36c",
+  "evidence_code_commit": "d1a98d5ff7defaf38414bd44763b382b9ef577d9",
+  "evidence_code_tree": "f22d141f5f5c00ad0475b2d3fd735a8eef7770f3",
   "framework": "pytorch",
   "hardware": {
     "compute_capability": "6.1",
@@ -65,15 +65,42 @@
   },
   "protocol": "torch_cuda_tensor_data_ptr",
   "report_id": "v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19",
+  "remote_validation": {
+    "build_optix": {
+      "ok": true
+    },
+    "claim_boundary_scan": {
+      "ok": true
+    },
+    "dlpack_capsule_probe": {
+      "ok": true
+    },
+    "git_diff_check": {
+      "ok": true
+    },
+    "host": "192.168.1.20",
+    "source_tree_doctor": {
+      "ok": true
+    },
+    "validated_commit": "d1a98d5ff7defaf38414bd44763b382b9ef577d9",
+    "validated_tree": "f22d141f5f5c00ad0475b2d3fd735a8eef7770f3",
+    "v4_active": {
+      "ok": true,
+      "test_count": 64
+    },
+    "worktree_clean": {
+      "ok": true
+    }
+  },
   "route_id": "fixed_radius_count_threshold_2d",
   "status": "pass-with-boundary",
   "stream_contract": {
     "async_completion_authorized": false,
     "cross_stream_event_wait_validated": false,
-    "rtdl_prepare_stream_ptr": 393608384,
-    "rtdl_query_stream_ptr": 393608384,
+    "rtdl_prepare_stream_ptr": 1028110128,
+    "rtdl_query_stream_ptr": 1028110128,
     "same_stream_consumer_checksum_validated": true,
-    "torch_stream_ptr": 393608384
+    "torch_stream_ptr": 1028110128
   },
   "torch": {
     "cuda_available": true,
