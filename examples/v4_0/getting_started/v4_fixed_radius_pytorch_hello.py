@@ -87,7 +87,7 @@ def run() -> dict[str, object]:
             "native_async_ready": bool(metadata["native_async_ready"]),
         },
         "claim_boundaries": {
-            "v4_current_front_door_authorized": False,
+            "v4_current_front_door_authorized": True,
             "package_install_claim_authorized": False,
             "full_pytorch_surface_claim_authorized": False,
             "public_true_zero_copy_claim_authorized": False,

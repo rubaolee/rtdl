@@ -1,10 +1,10 @@
 # Source-Tree Doctor
 
-Status: current v3.0.2 source-tree setup check for V3 development and release use.
+Status: current V4.0.0 source-tree setup check.
 
 Use the doctor before native backend or partner experiments. It checks the
-repository layout, current version marker, V3 app-author guidance, core
-imports, the current V3 test-matrix entrypoint, optional partner modules, and
+repository layout, current version marker, V4 release package, V3 app-author
+guidance, core imports, the current V4 test-matrix entrypoint, optional partner modules, and
 optional native library hints.
 
 ## Run It
@@ -45,10 +45,10 @@ Portable smoke run:
 PYTHONPATH=src:. python scripts/rtdl_source_tree_doctor.py --run-smoke
 ```
 
-Current V3 closure suite:
+Current V4 release suite:
 
 ```bash
-PYTHONPATH=src:. python scripts/run_test_matrix.py --group v3_current
+PYTHONPATH=src:. python scripts/run_test_matrix.py --group v4_current
 ```
 
 ## How To Read It
@@ -58,7 +58,7 @@ PYTHONPATH=src:. python scripts/run_test_matrix.py --group v3_current
   may not run in this environment.
 - `PASS` on optional editable metadata means this checkout has local editable
   install metadata.
-- `PASS` on `V3 current test matrix` means the current V3 closure-suite runner
+- `PASS` on `V4 current test matrix` means the current V4 release-suite runner
   is registered. The doctor does not run that suite unless you run the command
   above.
 - Missing CuPy affects CUDA-array partner examples.
@@ -67,8 +67,9 @@ PYTHONPATH=src:. python scripts/run_test_matrix.py --group v3_current
   examples.
 
 The doctor is not a benchmark and does not authorize performance claims. It is
-only an environment sanity check. V3.0 excludes embedding/SDK/zero-copy work;
-those items are V4.0 scope.
+only an environment sanity check. V4.0.0 remains source-tree only: package,
+PyPI, wheel, stable SDK, public true-zero-copy, async, and public speedup claims
+are still blocked unless a later release package says otherwise.
 
 ## Reviewer-Only Archive Check
 
@@ -93,5 +94,6 @@ under `docs/history/v4_preparatory_embedding/`.
 
 It does not build `make build-c-api`, `make stage-c-api`,
 `make stage-c-api-prefix`, or `make package-c-api-stage`; it does not freeze the ABI,
-validate runtime behavior, run CMake, or make embedding part of V3.0.
+validate runtime behavior, run CMake, or make the archived preparatory C ABI a
+stable V4.0.0 SDK.
 In particular, it does not run CMake.

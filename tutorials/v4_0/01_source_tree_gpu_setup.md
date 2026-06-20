@@ -1,6 +1,6 @@
 # Source-Tree GPU Setup
 
-Status: experimental V4.0 source-tree tutorial.
+Status: current V4.0.0 source-tree tutorial.
 
 V4.0 M1 is not a package install path. It is a source-tree GPU route that
 requires the checkout, CUDA-capable Python frameworks, and the OptiX native
@@ -13,15 +13,16 @@ From the repository root on Linux:
 ```bash
 make build-optix
 PYTHONPATH=src:. python scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime
-PYTHONPATH=src:. python scripts/run_test_matrix.py --group v4_release_candidate
+PYTHONPATH=src:. python scripts/run_test_matrix.py --group v4_current
 ```
 
 The preflight checks:
 
 - the checkout imports `rtdsl` from `src/`;
 - CuPy, Numba, PyTorch, and `build/librtdl_optix.so` are present;
-- the V4 active and release-candidate gates exist;
-- package, PyPI, wheel, stable SDK, and front-door claims remain blocked.
+- the V4 current and release-candidate gates exist;
+- package, PyPI, wheel, stable SDK, public true-zero-copy, async, public
+  speedup, and RT-core speedup claims remain blocked.
 
 ## Editable Checkout
 

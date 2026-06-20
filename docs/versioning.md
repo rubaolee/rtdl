@@ -1,6 +1,6 @@
 # RTDL Versioning
 
-Status: current v3.0.2 source-tree guidance.
+Status: current V4.0.0 source-tree guidance.
 
 RTDL uses source-tree version markers and Git tags to identify reviewed
 research snapshots. A version tag names the state of the repository and the
@@ -9,17 +9,17 @@ wheel promise, PyPI promise, or automatic partner-selection promise.
 
 ## Current Version
 
-`v3.0.2` is the current source-tree release marker. It is a patch release for
-the V3.0 line: the Python+RTDL plus explicit partner programming surface, the
-closed ten-app benchmark route matrix, and the V3 app-author
-primitive-first/explicit-partner guidance remain the product surface, while the
-patch release records the post-release boundary cleanup.
+`v4.0.0` is the current source-tree release marker. It is the first V4 release:
+the Python GPU RT-core operator lane for the fixed-radius CUDA device-array
+route, with CuPy, Numba, and PyTorch evidence for that exact route. The V3.0.2
+ten-app benchmark route matrix remains documented as the previous release line.
 
 Use the source tree directly:
 
 ```bash
 PYTHONPATH=src:. python scripts/rtdl_source_tree_doctor.py
-PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world.py
+make build-optix
+PYTHONPATH=src:. python examples/v4_0/getting_started/v4_fixed_radius_cupy_hello.py
 ```
 
 Optional editable installs are only local developer convenience. They do not

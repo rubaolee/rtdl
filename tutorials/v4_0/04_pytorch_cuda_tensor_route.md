@@ -1,6 +1,6 @@
 # PyTorch CUDA Tensor Route
 
-Status: experimental V4.0 source-tree tutorial.
+Status: current V4.0.0 source-tree tutorial.
 
 This route uses detached contiguous PyTorch CUDA tensors. PyTorch owns the input
 and output tensors. RTDL borrows the tensor device columns and writes fixed-size

@@ -1,6 +1,6 @@
 # Numba DeviceArray Route
 
-Status: experimental V4.0 source-tree tutorial.
+Status: current V4.0.0 source-tree tutorial.
 
 This route uses Numba `DeviceNDArray` columns through
 `__cuda_array_interface__`. Numba owns the arrays and stream. RTDL borrows the

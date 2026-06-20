@@ -54,7 +54,7 @@ def _parse_pyproject() -> dict[str, object]:
         "name": name,
         "version": version,
         "description": description,
-        "source_tree_identity_ok": name == "rtdl-source-tree" and version == "3.0.2",
+        "source_tree_identity_ok": name == "rtdl-source-tree" and version == "4.0.0",
         "v4_distribution_artifact": False,
     }
 
@@ -142,7 +142,7 @@ def build_payload(*, require_v4_gpu_runtime: bool = False, run_smoke: bool = Fal
         required_failures.append(
             {
                 "check": "pyproject source-tree identity",
-                "message": "pyproject.toml must remain rtdl-source-tree 3.0.2 until a real V4 package flow exists",
+                "message": "pyproject.toml must identify the V4.0.0 source-tree release without becoming a PyPI/wheel claim",
             }
         )
     if not import_smoke["ok"] or not import_smoke.get("from_checkout_src"):
@@ -201,14 +201,16 @@ def build_payload(*, require_v4_gpu_runtime: bool = False, run_smoke: bool = Fal
         "test_matrix_policy": {
             "v4_active_group_present": "v4_active" in run_test_matrix.TEST_GROUPS,
             "v4_release_candidate_group_present": "v4_release_candidate" in run_test_matrix.TEST_GROUPS,
+            "v4_current_group_present": "v4_current" in run_test_matrix.TEST_GROUPS,
             "v4_release_candidate_gate_non_authorizing": True,
-            "current_v4_gate": "v4_release_candidate",
+            "current_v4_gate": "v4_current",
         },
         "supported_source_tree_commands": [
             "PYTHONPATH=src:. python3 scripts/rtdl_source_tree_doctor.py --include-v4-active --json",
             "make build-optix",
             "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
             "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_release_candidate",
+            "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_current",
             "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_numba_partner_surface_probe.py",
             "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_dlpack_capsule_probe.py",
             "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe.py",
@@ -221,7 +223,7 @@ def build_payload(*, require_v4_gpu_runtime: bool = False, run_smoke: bool = Fal
             "wheel_authorized": False,
             "stable_sdk_authorized": False,
             "generated_bindings_authorized": False,
-            "v4_current_front_door_authorized": False,
+            "v4_current_front_door_authorized": True,
         },
         "required_failures": required_failures,
     }

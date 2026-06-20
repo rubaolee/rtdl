@@ -12,7 +12,7 @@ PUBLIC_PATTERNS = (
     "README.md",
     "docs/README.md",
     "docs/release_reports/README.md",
-    "docs/release_reports/v3_0_2/*.md",
+    "docs/release_reports/v4_0_0/*.md",
     "docs/learn/current_claim_boundaries.md",
     "src/v4/README.md",
     "docs/engineering/README.md",
@@ -29,9 +29,6 @@ PUBLIC_PATTERNS = (
 )
 
 CLAIM_PATTERNS = (
-    r"\bV4\.0 is the current release\b",
-    r"\bV4\.0 is the user front door\b",
-    r"\bRTDL V4\.0 Release Package\b",
     r"\bstable V4 SDK\b",
     r"\bpackage[- ]install\b",
     r"\bPyPI\b",
@@ -163,22 +160,22 @@ def _front_door_identity(root: Path) -> tuple[dict[str, object], list[dict[str, 
 
     identity = {
         "current_version": version,
-        "pyproject_version_is_3_0_2": 'version = "3.0.2"' in pyproject,
-        "root_readme_claims_current_v3_0_2": "current v3.0.2 source-tree RTDL surface" in readme,
-        "docs_index_claims_current_v3_0_2": "RTDL v3.0.2 is the active source-tree" in docs_index,
-        "release_index_claims_v3_0_2_current": "RTDL v3.0.2 Release Package" in release_index,
+        "pyproject_version_is_4_0_0": 'version = "4.0.0"' in pyproject,
+        "root_readme_claims_current_v4_0_0": "current V4.0.0 source-tree RTDL surface" in readme,
+        "docs_index_claims_current_v4_0_0": "RTDL V4.0.0 is the active source-tree" in docs_index,
+        "release_index_claims_v4_0_0_current": "RTDL V4.0.0 Release Package" in release_index,
         "v3_0_2_release_package_exists": (root / "docs" / "release_reports" / "v3_0_2").is_dir(),
-        "v4_release_reports_dir_exists": (root / "docs" / "release_reports" / "v4_0").exists(),
+        "v4_0_0_release_package_exists": (root / "docs" / "release_reports" / "v4_0_0").is_dir(),
     }
     errors: list[dict[str, object]] = []
     expected_truths = {
-        "current_version": version == "v3.0.2",
-        "pyproject_version_is_3_0_2": bool(identity["pyproject_version_is_3_0_2"]),
-        "root_readme_claims_current_v3_0_2": bool(identity["root_readme_claims_current_v3_0_2"]),
-        "docs_index_claims_current_v3_0_2": bool(identity["docs_index_claims_current_v3_0_2"]),
-        "release_index_claims_v3_0_2_current": bool(identity["release_index_claims_v3_0_2_current"]),
+        "current_version": version == "v4.0.0",
+        "pyproject_version_is_4_0_0": bool(identity["pyproject_version_is_4_0_0"]),
+        "root_readme_claims_current_v4_0_0": bool(identity["root_readme_claims_current_v4_0_0"]),
+        "docs_index_claims_current_v4_0_0": bool(identity["docs_index_claims_current_v4_0_0"]),
+        "release_index_claims_v4_0_0_current": bool(identity["release_index_claims_v4_0_0_current"]),
         "v3_0_2_release_package_exists": bool(identity["v3_0_2_release_package_exists"]),
-        "v4_release_reports_dir_absent": not bool(identity["v4_release_reports_dir_exists"]),
+        "v4_0_0_release_package_exists": bool(identity["v4_0_0_release_package_exists"]),
     }
     for key, ok in expected_truths.items():
         if not ok:
@@ -186,7 +183,7 @@ def _front_door_identity(root: Path) -> tuple[dict[str, object], list[dict[str, 
                 {
                     "kind": "front_door_identity",
                     "check": key,
-                    "message": "current front door no longer cleanly resolves to v3.0.2 with V4 held out",
+                    "message": "current front door must resolve to the bounded V4.0.0 source-tree release",
                 }
             )
     return identity, errors
@@ -222,8 +219,9 @@ def scan(root: Path) -> dict[str, object]:
         "accepted_negative_occurrences": accepted_negative_occurrences,
         "findings": findings,
         "claim_boundaries": {
-            "v4_current_release_claim_authorized": False,
-            "v4_release_package_claim_authorized": False,
+            "v4_current_release_claim_authorized": True,
+            "v4_release_package_claim_authorized": True,
+            "fixed_radius_m1_python_gpu_operator_claim_authorized": True,
             "stable_v4_sdk_claim_authorized": False,
             "package_install_claim_authorized": False,
             "public_true_zero_copy_claim_authorized": False,

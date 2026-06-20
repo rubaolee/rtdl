@@ -1,10 +1,10 @@
-# RTDL V4.0 Experimental Tutorial Track
+# RTDL V4.0 Tutorial Track
 
-Status: experimental V4.0 source-tree release-candidate learner path.
+Status: current V4.0.0 source-tree learner path.
 
-This track teaches the V4.0 M1 route without replacing the current v3.0.2
-front door. Use it when you specifically want to study the experimental Python
-GPU device-array operator path.
+This track teaches the V4.0.0 Python GPU device-array operator path. Use it
+when you want the current V4 front door: one fixed-radius route where the
+caller owns CUDA arrays and RTDL borrows named device columns.
 
 ```text
 CuPy, Numba, or PyTorch owns CUDA arrays.
@@ -42,19 +42,20 @@ These scripts print JSON with observed output columns and claim-boundary flags.
 
 ## Required Boundary
 
-This tutorial track does not authorize:
+This tutorial track authorizes the narrow V4.0.0 source-tree front door for
+`fixed_radius_count_threshold_2d`. It does not authorize:
 
-- V4.0 as the current user front door;
 - package install, PyPI, wheel, or stable SDK wording;
 - public true-zero-copy, async, public speedup, RTX speedup, or RT-core speedup
   wording;
 - full PyTorch, full Numba, full DLPack, or non-Python host support.
 
-The current user release remains v3.0.2. V4.0 is an experimental source-tree
-release candidate for one Python GPU operator route.
+The previous V3.0.2 release remains available for the broader benchmark-app
+and primitive/prepared teaching path.
 
 ## Review Evidence
 
 - [V4.0 M8 Release-Candidate Evidence Packet](../../docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md)
+- [V4.0.0 Release Package](../../docs/release_reports/v4_0_0/README.md)
 - [V4.0 Source-Tree Runtime Story](../../docs/engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md)
 - [V4.0 Final Validation Bundle](../../docs/reports/v4_0_m8_final_validation_bundle_2026-06-19.json)

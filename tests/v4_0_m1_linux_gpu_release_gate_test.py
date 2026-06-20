@@ -199,10 +199,11 @@ class V40M1LinuxGpuReleaseGateTest(unittest.TestCase):
 
         self.assertTrue(report["ok"])
         self.assertTrue(report["release_reading"]["m1_route_release_evidence_ready"])
-        self.assertFalse(report["release_reading"]["front_door_switch_authorized"])
-        self.assertFalse(report["release_reading"]["current_user_release_may_change"])
-        self.assertTrue(report["release_reading"]["release_action_required"])
+        self.assertTrue(report["release_reading"]["front_door_switch_authorized"])
+        self.assertTrue(report["release_reading"]["current_user_release_may_change"])
+        self.assertFalse(report["release_reading"]["release_action_required"])
         self.assertTrue(report["claim_boundaries"]["fixed_radius_m1_python_gpu_operator_claim_authorized"])
+        self.assertTrue(report["claim_boundaries"]["v4_current_front_door_authorized"])
         self.assertFalse(report["claim_boundaries"]["public_true_zero_copy_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["public_speedup_claim_authorized"])
 
@@ -214,7 +215,7 @@ class V40M1LinuxGpuReleaseGateTest(unittest.TestCase):
         self.assertIn("--benchmark-count 262144", commands)
 
     def test_v4_matrices_include_the_live_gate_static_guard(self) -> None:
-        for group in ("v4_active", "v4_release_candidate"):
+        for group in ("v4_active", "v4_release_candidate", "v4_current"):
             modules = run_test_matrix.group_modules(group)
             self.assertIn("tests.v4_0_m1_linux_gpu_release_gate_test", modules)
 

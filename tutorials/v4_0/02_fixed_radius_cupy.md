@@ -1,6 +1,6 @@
 # CuPy Fixed-Radius Route
 
-Status: experimental V4.0 source-tree tutorial.
+Status: current V4.0.0 source-tree tutorial.
 
 This is the smallest V4.0 route with CuPy-owned CUDA arrays. CuPy owns the input
 and output columns; RTDL borrows the device pointers, runs the OptiX-backed

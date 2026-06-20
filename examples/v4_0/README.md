@@ -1,10 +1,10 @@
-# RTDL V4.0 Experimental Examples
+# RTDL V4.0 Examples
 
-Status: experimental V4.0 source-tree release-candidate examples.
+Status: current V4.0.0 source-tree examples.
 
 These examples are for the V4.0 M1 Python GPU device-array operator route. They
-do not replace `examples/current/`, which remains the learner-facing v3.0.2
-example tree for the current user release.
+are the current V4 front door. `examples/current/` remains available for the
+broader V3 Python+RTDL example tree.
 
 ## Start Here
 

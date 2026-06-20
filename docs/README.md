@@ -4,7 +4,7 @@ This directory has three doors:
 
 | Door | Audience | Purpose |
 | --- | --- | --- |
-| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v3.0.2 boundaries. |
+| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current V4.0.0 boundaries. |
 | [Research](research/README.md) | Internal researchers and advanced developers | Architecture notes, backend research, RayJoin/Embree context, future ideas, and design constraints. |
 | [Audit](audit/README.md) | Release reviewers and auditors | Current process docs, current release package, evidence reports, reviews, and history pointers. |
 
@@ -16,13 +16,13 @@ If you are new, start in **Learn**. If you are evaluating design or extending
 the system, start in **Research**. If you are checking evidence, consensus, or
 project history, start in **Audit**.
 
-Current status: RTDL v3.0.2 is the active source-tree Python+partner+RTDL
-surface on this branch. It keeps the V3.0 ten-app benchmark route closure,
-publishes primitive-first and partner-explicit app-author guidance, and keeps
-source-tree usage. Public performance wording remains row-scoped and
-evidence-bound; mixed rows stay explicit rather than being folded into a broad
-RT-core claim. Embedding, C ABI, SDK packaging, generated bindings, zero-copy,
-and external-runtime integration are V4.0 scope, not V3.0 release-line claims.
+Current status: RTDL V4.0.0 is the active source-tree release on this branch.
+It publishes the Python GPU RT-core operator lane for one evidence-backed
+fixed-radius CUDA device-array route, while keeping source-tree usage and
+bounded wording. Public performance wording remains row-scoped and
+evidence-bound; the V4 route is not a broad RT-core speedup claim. Package,
+PyPI, wheel, stable SDK, generated binding, public true-zero-copy, async, and
+full framework-surface wording remain blocked.
 For the short canonical wording, read
 [Current Claim Boundaries](learn/current_claim_boundaries.md).
 
@@ -44,7 +44,7 @@ Read these in order:
 
 1. [Project Front Page](../README.md)
 2. [Tutorials](../tutorials/README.md)
-3. [Current Tutorial Track](../tutorials/current/README.md)
+3. [V4.0 Tutorial Track](../tutorials/v4_0/README.md)
 4. [Current Claim Boundaries](learn/current_claim_boundaries.md)
 5. [RTDL Programming Surfaces](learn/programming_surfaces.md)
 6. [Versioning Glossary](versioning.md)
@@ -78,7 +78,8 @@ Read these in order:
 | RT-core evidence interpretation | [RT-Core Evidence Matrix](learn/rt_core_evidence_matrix.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
 | Current release reports | [Current Release Reports](release_reports/) |
-| Current release package | [RTDL v3.0.2 Release Package](release_reports/v3_0_2/README.md) |
+| Current release package | [RTDL V4.0.0 Release Package](release_reports/v4_0_0/README.md) |
+| Previous V3 release package | [RTDL v3.0.2 Release Package](release_reports/v3_0_2/README.md) |
 | Current benchmark evidence | [Benchmark Evidence Index](learn/benchmark_evidence_index.md) |
 | History Index | [History Index](history/README.md) |
 
@@ -99,6 +100,6 @@ Read these in order:
 
 ## Rule
 
-Current learner docs should explain one coherent v3.0.2 surface. Previous release
+Current learner docs should explain one coherent V4.0.0 surface. Previous release
 evidence is preserved for review in history, but it should not interrupt the
 normal learning path.

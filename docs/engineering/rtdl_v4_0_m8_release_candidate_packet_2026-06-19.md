@@ -1,7 +1,7 @@
 # RTDL V4.0 M8 Release-Candidate Evidence Packet
 
-Status: V4.0 experimental release-candidate ready, not current-release or
-front-door approval.
+Status: superseded release-candidate evidence packet. V4.0.0 is now the
+current source-tree release; see `docs/release_reports/v4_0_0/README.md`.
 
 Date: 2026-06-19
 
@@ -29,16 +29,17 @@ Claude external review record and post-review guard refresh commit:
 Final release-candidate commit:
 `758111f08b6b2b79f073ec7c3880137df8f08116`
 
-Release-candidate readiness is true for the experimental source-tree V4.0
-candidate only. The current user release remains v3.0.2.
+Release-candidate readiness was true for the experimental source-tree V4.0
+candidate. This packet is now pre-promotion evidence for the V4.0.0 release.
 
 ## Verdict
 
 V4.0 is accepted as an experimental source-tree release candidate for the
 OptiX-backed Python GPU operator direction.
 
-It is not the current user release. The current user release remains `v3.0.2`.
-This packet does not authorize a front-door switch, package-install wording,
+This packet by itself did not authorize a front-door switch. The later V4.0.0
+release package authorizes only the bounded fixed-radius M1 source-tree front
+door. This packet still does not authorize package-install wording,
 stable SDK wording, public true-zero-copy wording, async wording, public
 speedup wording, or RTX/RT-core speedup wording.
 

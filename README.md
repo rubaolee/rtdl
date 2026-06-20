@@ -15,9 +15,10 @@ acceleration structures and traversal for application kernels.
 
 The product name is RTDL; the Python import package is `rtdsl`.
 
-This documentation is written for the current v3.0.2 source-tree RTDL surface:
-Python+partner+RTDL over a generic, app-agnostic native engine, with prepared
-execution and a closed ten-app benchmark route matrix. Use RTDL from the repository source tree either with
+This documentation is written for the current V4.0.0 source-tree RTDL surface:
+RTDL as the Python GPU RT-core operator lane for one evidence-backed
+fixed-radius CUDA device-array route, while the mature V3 Python+partner+RTDL
+benchmark-app surface remains documented and usable. Use RTDL from the repository source tree either with
 `PYTHONPATH=src:.` or with the optional local editable checkout path below. Do
 not read any current doc as a distribution-package promise, automatic
 partner-selection promise, public true-zero-copy/device-residency claim,
@@ -122,12 +123,15 @@ The fastest way to learn the design is:
 
 1. Run `examples/current/getting_started/rtdl_hello_world.py`.
 2. Run `scripts/rtdl_source_tree_doctor.py` if imports or optional backends are unclear.
-3. Follow the [Current Tutorial Track](tutorials/current/README.md).
-4. Run `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py`.
-5. Run `examples/current/getting_started/rtdl_prepared_measurement_demo.py`
+3. Follow the [V4.0 Tutorial Track](tutorials/v4_0/README.md) for the current
+   Python GPU device-array operator route.
+4. Follow the [V3 Tutorial Track](tutorials/current/README.md) for the broader
+   benchmark-app and primitive/prepared programming surface.
+5. Run `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py`.
+6. Run `examples/current/getting_started/rtdl_prepared_measurement_demo.py`
    before interpreting benchmark timing.
-6. Pick one app from [App And Example Quickstart](docs/app_example_quickstart.md).
-7. Read [Current Architecture](docs/current_architecture.md) only after you can
+7. Pick one app from [App And Example Quickstart](docs/app_example_quickstart.md).
+8. Read [Current Architecture](docs/current_architecture.md) only after you can
    explain `input -> traverse -> refine -> emit`.
 
 ## What RTDL Provides
@@ -158,12 +162,41 @@ Backend support varies by feature and platform. Start with the portable
 native dependencies configured. For the maturity of every backend, read
 [RTDL Backend Maturity](docs/backend_maturity.md).
 
-## v3.0.2 Source-Tree Surface
+## V4.0.0 Source-Tree Surface
 
-RTDL v3.0.2 is the current source-tree patch release for the V3.0 surface, the
-most important RTDL release line so far. It keeps the V3.0 ten-app benchmark
-route closure and adds the post-release boundary cleanup that fences V4
-preparatory embedding/C ABI/SDK/zero-copy work out of the user front door.
+RTDL V4.0.0 is the current source-tree release. Its headline is deliberately
+narrow: Python frameworks own CUDA arrays, RTDL borrows those device columns,
+the OptiX-backed route executes `fixed_radius_count_threshold_2d`, and the
+caller receives fixed-size CUDA output columns:
+
+- `query_ids`;
+- `neighbor_counts`;
+- `threshold_flags`.
+
+The evidence-backed inputs are CuPy CUDA arrays, Numba `DeviceNDArray` columns,
+and detached contiguous PyTorch CUDA tensors for this exact route. V4.0.0
+validates caller stream propagation and fixed-radius prepare/query ordering,
+but native calls synchronize before returning. It is a source-tree release, not
+a package, PyPI, wheel, stable SDK, async runtime, public true-zero-copy claim,
+public speedup claim, RT-core speedup claim, or full framework surface.
+
+Start here:
+
+```bash
+PYTHONPATH=src:. python scripts/rtdl_source_tree_doctor.py --include-v4-active --json
+make build-optix
+PYTHONPATH=src:. python examples/v4_0/getting_started/v4_fixed_radius_cupy_hello.py
+PYTHONPATH=src:. python scripts/run_test_matrix.py --group v4_current
+```
+
+For the current release boundary and evidence set, see
+[RTDL V4.0.0 Release Package](docs/release_reports/v4_0_0/README.md).
+
+## Previous V3.0.2 Surface
+
+RTDL v3.0.2 remains the previous source-tree patch release for the V3.0
+surface. It keeps the V3.0 ten-app benchmark route closure and the
+primitive-first, partner-explicit app-author programming surface.
 
 The current matrix separates promoted benchmark apps from learner/example apps.
 Promoted benchmarks are reconstruction instruments for RTDL language/runtime
@@ -196,7 +229,7 @@ The V3.0 partner rule is user-chosen and evidence-gated:
 For the current partner-choice guide, read
 [Choosing A Partner For Custom Logic](docs/learn/partner_choice_for_custom_logic.md)
 and the [Benchmark Partner Reference Matrix](docs/learn/benchmark_partner_reference_matrix.md).
-For the current v3.0.2 release boundary and evidence set, see
+For the previous v3.0.2 release boundary and evidence set, see
 [RTDL v3.0.2 Release Package](docs/release_reports/v3_0_2/README.md).
 
 ## Performance Boundary
@@ -216,8 +249,10 @@ Use exact benchmark artifacts before publishing performance wording.
 
 - [Docs Index](docs/README.md)
 - [Tutorials](tutorials/README.md)
+- [V4.0 Tutorial Track](tutorials/v4_0/README.md)
 - [Current Tutorial Track](tutorials/current/README.md)
 - [Current Claim Boundaries](docs/learn/current_claim_boundaries.md)
+- [RTDL V4.0.0 Release Package](docs/release_reports/v4_0_0/README.md)
 - [RTDL v3.0.2 Release Package](docs/release_reports/v3_0_2/README.md)
 - [Source-Tree Doctor](docs/learn/source_tree_doctor.md)
 - [RTDL Programming Surfaces](docs/learn/programming_surfaces.md)
@@ -244,7 +279,8 @@ release evidence, review records, and goal archives live separately:
 
 - [History Index](docs/history/README.md)
 - [Version Archive Notes](docs/history/version_archive_notes.md)
-- [Current Release Package](docs/release_reports/v3_0_2/README.md)
+- [Current Release Package](docs/release_reports/v4_0_0/README.md)
+- [Previous V3.0.2 Release Package](docs/release_reports/v3_0_2/README.md)
 - [Historical Release Reports](docs/history/release_reports/README.md)
 - [Benchmark And Audit Reports](docs/reports/)
 

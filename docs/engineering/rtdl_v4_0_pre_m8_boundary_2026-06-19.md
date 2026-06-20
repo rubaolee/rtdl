@@ -8,6 +8,10 @@ superseded by:
 
 `docs/engineering/rtdl_v4_0_m8_release_candidate_packet_2026-06-19.md`
 
+It is also pre-promotion evidence for the later V4.0.0 release package:
+
+`docs/release_reports/v4_0_0/README.md`
+
 Neither this note nor the M8 packet authorizes release approval, front-door
 switch, package promise, speedup claim, async claim, or true-zero-copy claim.
 

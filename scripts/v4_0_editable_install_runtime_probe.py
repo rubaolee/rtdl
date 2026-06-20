@@ -321,7 +321,7 @@ def build_payload(*, run_v4_smoke: bool, system_site_packages: bool, keep_venv: 
 
         if inspection:
             package = inspection.get("package", {})
-            if package.get("version") != "3.0.2":
+            if package.get("version") != "4.0.0":
                 payload["failures"].append("unexpected_distribution_version")
             if not package.get("module_loaded_from_checkout_editable"):
                 payload["failures"].append("module_not_loaded_from_checkout_editable")

@@ -5,7 +5,7 @@ Use this door if you want to understand RTDL quickly and write programs.
 ## Path
 
 1. [Project Front Page](../../README.md)
-2. [Current RTDL Tutorial Track](../../tutorials/current/README.md)
+2. [V4.0 Tutorial Track](../../tutorials/v4_0/README.md)
 3. [Current Claim Boundaries](current_claim_boundaries.md)
 4. [RTDL Programming Surfaces](programming_surfaces.md)
 5. [Versioning Glossary](../versioning.md)
@@ -13,8 +13,8 @@ Use this door if you want to understand RTDL quickly and write programs.
 7. [Source-Tree Doctor](source_tree_doctor.md)
 8. [Run From The Source Tree](../../tutorials/current/01_source_tree_first_run.md)
 9. [App And Example Quickstart](../app_example_quickstart.md)
-10. [V3.0 App-Author Implementation Strategy](v3_0_app_author_implementation_strategy.md)
-11. [RTDL v3.0.2 Release Package](../release_reports/v3_0_2/README.md)
+10. [RTDL V4.0.0 Release Package](../release_reports/v4_0_0/README.md)
+11. [V3.0 App-Author Implementation Strategy](v3_0_app_author_implementation_strategy.md)
 12. [Primitive Discovery Workflow](primitive_discovery_workflow.md)
 13. [Prepared Execution Pattern](prepared_execution_pattern.md)
 14. [Prepared Session Reuse](prepared_session_reuse.md)
@@ -52,7 +52,8 @@ For backend and performance boundaries, read:
 
 ## History Boundary
 
-This learning path is V3.0-only. Historical release packets, V2 snapshots, and
-V4 preparatory embedding/C ABI material live behind the
+This learning path starts with V4.0.0. Historical release packets, V2
+snapshots, and preparatory embedding/C ABI material live behind the
 [History Index](../history/README.md) so they cannot override the current user
-surface.
+surface. The V3 tutorial path remains linked because it teaches the broader
+Python+RTDL programming model.

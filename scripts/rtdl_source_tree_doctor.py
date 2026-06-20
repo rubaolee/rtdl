@@ -16,7 +16,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
-EXPECTED_VERSION = "v3.0.2"
+EXPECTED_VERSION = "v4.0.0"
 
 
 def _status_line(status: str, name: str, detail: str) -> str:
@@ -84,6 +84,23 @@ def _v3_current_test_matrix_check() -> dict[str, Any]:
         "V3 current test matrix",
         "pass",
         f"scripts/run_test_matrix.py --group v3_current ({len(modules)} modules)",
+    )
+
+
+def _v4_current_test_matrix_check() -> dict[str, Any]:
+    try:
+        from scripts import run_test_matrix
+
+        modules = run_test_matrix.group_modules("v4_current")
+    except Exception as exc:  # pragma: no cover - defensive import check
+        return _check("V4 current test matrix", "fail", f"could not load v4_current group: {exc}")
+
+    if not modules:
+        return _check("V4 current test matrix", "fail", "v4_current group has no modules")
+    return _check(
+        "V4 current test matrix",
+        "pass",
+        f"scripts/run_test_matrix.py --group v4_current ({len(modules)} modules)",
     )
 
 
@@ -235,15 +252,16 @@ def gather_checks(
     required_paths = {
         "src/rtdsl": ROOT / "src" / "rtdsl" / "__init__.py",
         "front page": ROOT / "README.md",
-        "top-level tutorials": ROOT / "tutorials" / "current" / "README.md",
-        "current examples": ROOT / "examples" / "current" / "README.md",
-        "v3.0.2 release package": ROOT / "docs" / "release_reports" / "v3_0_2" / "README.md",
+        "top-level tutorials": ROOT / "tutorials" / "v4_0" / "README.md",
+        "V4 examples": ROOT / "examples" / "v4_0" / "README.md",
+        "V3 examples": ROOT / "examples" / "current" / "README.md",
+        "V4.0.0 release package": ROOT / "docs" / "release_reports" / "v4_0_0" / "README.md",
         "V3 app-author strategy": ROOT / "docs" / "learn" / "v3_0_app_author_implementation_strategy.md",
     }
     for name, path in required_paths.items():
         checks.append(_check(name, "pass" if path.exists() else "fail", path.relative_to(ROOT).as_posix()))
 
-    checks.append(_v3_current_test_matrix_check())
+    checks.append(_v4_current_test_matrix_check())
     if include_v4_prep:
         checks.append(_v3_c_abi_surface_check())
         checks.append(_v3_c_abi_docs_check())

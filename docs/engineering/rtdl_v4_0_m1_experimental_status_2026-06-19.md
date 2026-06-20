@@ -1,11 +1,12 @@
 # RTDL V4.0 M1 Experimental Status
 
-Status: experimental engineering evidence, not current release.
+Status: superseded pre-release engineering evidence. V4.0.0 is now the current
+source-tree release; see `docs/release_reports/v4_0_0/README.md`.
 Date: 2026-06-19.
 Latest validated source-tree head: `66e6529859a1bac63ce2a72527dc5942e301143d`.
 Latest validated source-tree tree: `931b9facd9ca3f83bd561ae57373ec15daadfc93`.
 
-This packet summarizes the current V4.0 M1 state after the fixed-radius
+This packet summarizes the pre-promotion V4.0 M1 state after the fixed-radius
 Python CUDA device-array route gained CuPy, Numba, PyTorch, and bounded legacy
 DLPack evidence. It is an engineering status packet, not a release packet,
 stable SDK promise, package-install promise, public speedup claim, or public
@@ -13,10 +14,11 @@ true-zero-copy claim.
 
 ## Release Position
 
-V4.0 is not the current user release/front door.
+At the time of this packet, V4.0 was not the current user release/front door.
 
-The current source-tree release remains `v3.0.2`. The V4.0 M1 work is an
-active engineering preview for the OptiX-backed Python GPU operator direction.
+That pre-promotion status has been superseded by the V4.0.0 release package.
+V4.0.0 is now the current source-tree release for the bounded
+`fixed_radius_count_threshold_2d` Python GPU operator route.
 
 This status follows the 2-AI release-positioning consensus:
 

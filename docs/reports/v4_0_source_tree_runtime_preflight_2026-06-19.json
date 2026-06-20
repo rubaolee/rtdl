@@ -4,21 +4,21 @@
     "pypi_authorized": false,
     "source_tree_runtime_wording_authorized": true,
     "stable_sdk_authorized": false,
-    "v4_current_front_door_authorized": false,
+    "v4_current_front_door_authorized": true,
     "v4_package_install_authorized": false,
     "wheel_authorized": false
   },
   "date": "2026-06-19",
   "git": {
-    "head": "e7c3f83b81eba8b78e530850cf92e0321ef49a30",
-    "tree": "2f356b54cdd2768926b6fee5306c6fff5feb7b86"
+    "head": "27cc337e6693f574400059e68669e2f9dd0fb41e",
+    "tree": "45ee02d2968e94414204a148ebd764c31a678438"
   },
   "ok": true,
   "platform": {
-    "machine": "x86_64",
-    "python": "3.12.3",
-    "release": "6.17.0-20-generic",
-    "system": "Linux"
+    "machine": "AMD64",
+    "python": "3.11.9",
+    "release": "10",
+    "system": "Windows"
   },
   "pyproject": {
     "description": "RTDL source-tree editable development package",
@@ -27,9 +27,9 @@
     "path": "pyproject.toml",
     "source_tree_identity_ok": true,
     "v4_distribution_artifact": false,
-    "version": "3.0.2"
+    "version": "4.0.0"
   },
-  "repo": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
+  "repo": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
   "report_id": "v4_0_source_tree_runtime_preflight_2026-06-19",
   "required_failures": [],
   "required_paths": [
@@ -60,12 +60,16 @@
     {
       "exists": true,
       "path": "scripts/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe.py"
+    },
+    {
+      "exists": true,
+      "path": "scripts/v4_0_m1_linux_gpu_release_gate.py"
     }
   ],
   "source_tree_doctor": {
     "checks": [
       {
-        "detail": "v3.0.2",
+        "detail": "v4.0.0",
         "name": "version marker",
         "required": true,
         "status": "pass"
@@ -83,20 +87,26 @@
         "status": "pass"
       },
       {
-        "detail": "tutorials/current/README.md",
+        "detail": "tutorials/v4_0/README.md",
         "name": "top-level tutorials",
         "required": true,
         "status": "pass"
       },
       {
-        "detail": "examples/current/README.md",
-        "name": "current examples",
+        "detail": "examples/v4_0/README.md",
+        "name": "V4 examples",
         "required": true,
         "status": "pass"
       },
       {
-        "detail": "docs/release_reports/v3_0_2/README.md",
-        "name": "v3.0.2 release package",
+        "detail": "examples/current/README.md",
+        "name": "V3 examples",
+        "required": true,
+        "status": "pass"
+      },
+      {
+        "detail": "docs/release_reports/v4_0_0/README.md",
+        "name": "V4.0.0 release package",
         "required": true,
         "status": "pass"
       },
@@ -107,8 +117,8 @@
         "status": "pass"
       },
       {
-        "detail": "scripts/run_test_matrix.py --group v3_current (39 modules)",
-        "name": "V3 current test matrix",
+        "detail": "scripts/run_test_matrix.py --group v4_current (6 modules)",
+        "name": "V4 current test matrix",
         "required": true,
         "status": "pass"
       },
@@ -125,7 +135,7 @@
         "status": "pass"
       },
       {
-        "detail": "3.12.3",
+        "detail": "3.11.9",
         "name": "python version",
         "required": false,
         "status": "pass"
@@ -158,42 +168,60 @@
         "detail": "cupy",
         "name": "optional module cupy",
         "required": false,
-        "status": "pass"
+        "status": "warn"
       },
       {
         "detail": "numba",
         "name": "optional module numba",
         "required": false,
-        "status": "pass"
+        "status": "warn"
       },
       {
         "detail": "torch",
         "name": "optional module torch",
         "required": false,
-        "status": "pass"
+        "status": "warn"
       },
       {
-        "detail": "build/librtdl_optix.so",
+        "detail": "set RTDL_OPTIX_LIBRARY or build/librtdl_optix.so for OptiX examples",
         "name": "optional OptiX library",
         "required": false,
-        "status": "pass"
+        "status": "warn"
       },
       {
-        "detail": "build/librtdl_embree.so/dylib/dll not found",
+        "detail": "build/librtdl_embree.dll",
         "name": "optional Embree library",
         "required": false,
-        "status": "warn"
+        "status": "pass"
       }
     ],
     "ok": true,
-    "repo": "/home/lestat/work/rtdl_v4_m1_final_check_20260619",
+    "repo": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
     "required_failures": [],
     "tool": "rtdl_source_tree_doctor",
-    "version": "v3.0.2",
+    "version": "v4.0.0",
     "warnings": [
       {
-        "detail": "build/librtdl_embree.so/dylib/dll not found",
-        "name": "optional Embree library",
+        "detail": "cupy",
+        "name": "optional module cupy",
+        "required": false,
+        "status": "warn"
+      },
+      {
+        "detail": "numba",
+        "name": "optional module numba",
+        "required": false,
+        "status": "warn"
+      },
+      {
+        "detail": "torch",
+        "name": "optional module torch",
+        "required": false,
+        "status": "warn"
+      },
+      {
+        "detail": "set RTDL_OPTIX_LIBRARY or build/librtdl_optix.so for OptiX examples",
+        "name": "optional OptiX library",
         "required": false,
         "status": "warn"
       }
@@ -202,7 +230,7 @@
   "source_tree_import_smoke": {
     "from_checkout_src": true,
     "module": "rtdsl",
-    "module_file": "/home/lestat/work/rtdl_v4_m1_final_check_20260619/src/rtdsl/__init__.py",
+    "module_file": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\src\\rtdsl\\__init__.py",
     "ok": true
   },
   "status": "pass",
@@ -211,38 +239,41 @@
     "make build-optix",
     "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_active",
     "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_release_candidate",
+    "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_current",
     "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_numba_partner_surface_probe.py",
     "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_dlpack_capsule_probe.py",
-    "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe.py"
+    "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe.py",
+    "PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python3 scripts/v4_0_m1_linux_gpu_release_gate.py --benchmark-count 262144"
   ],
   "test_matrix_policy": {
-    "current_v4_gate": "v4_release_candidate",
+    "current_v4_gate": "v4_current",
     "v4_active_group_present": true,
+    "v4_current_group_present": true,
     "v4_release_candidate_gate_non_authorizing": true,
     "v4_release_candidate_group_present": true
   },
   "v4_m1_gpu_runtime": {
-    "all_required_for_v4_m1_gpu_runtime_present": true,
+    "all_required_for_v4_m1_gpu_runtime_present": false,
     "checks": {
       "cupy": {
         "detail": "cupy",
-        "passes": true,
-        "status": "pass"
+        "passes": false,
+        "status": "warn"
       },
       "numba": {
         "detail": "numba",
-        "passes": true,
-        "status": "pass"
+        "passes": false,
+        "status": "warn"
       },
       "optix_library": {
-        "detail": "build/librtdl_optix.so",
-        "passes": true,
-        "status": "pass"
+        "detail": "set RTDL_OPTIX_LIBRARY or build/librtdl_optix.so for OptiX examples",
+        "passes": false,
+        "status": "warn"
       },
       "torch": {
         "detail": "torch",
-        "passes": true,
-        "status": "pass"
+        "passes": false,
+        "status": "warn"
       }
     }
   }

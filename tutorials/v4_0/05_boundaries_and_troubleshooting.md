@@ -1,10 +1,10 @@
 # Boundaries And Troubleshooting
 
-Status: experimental V4.0 source-tree tutorial.
+Status: current V4.0.0 source-tree tutorial.
 
 ## What V4.0 M1 Is
 
-V4.0 M1 is one experimental Python GPU operator route:
+V4.0 M1 is one current Python GPU operator route:
 
 `fixed_radius_count_threshold_2d`
 
@@ -15,7 +15,6 @@ framework arrays out" for CuPy, Numba, and PyTorch evidence-backed inputs.
 
 It is not:
 
-- the current user front door;
 - a package install, PyPI, wheel, or stable SDK release;
 - a public true-zero-copy claim;
 - async or nonblocking completion;

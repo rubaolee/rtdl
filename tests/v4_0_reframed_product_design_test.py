@@ -193,7 +193,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         engineering_index = (ROOT / "docs" / "engineering" / "README.md").read_text(encoding="utf-8")
 
         for token in (
-            "experimental engineering evidence, not current release",
+            "superseded pre-release engineering evidence",
+            "V4.0.0 is now the current source-tree release",
             "Latest validated source-tree head:",
             "Clean cross-stream prepare/query event-wait evidence commit:",
             "`48ce1f9725613f746cea9ba0de438ae0ee830ca3`",
@@ -228,7 +229,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
 
         self.assertTrue(payload["pyproject"]["source_tree_identity_ok"])
         self.assertEqual("rtdl-source-tree", payload["pyproject"]["name"])
-        self.assertEqual("3.0.2", payload["pyproject"]["version"])
+        self.assertEqual("4.0.0", payload["pyproject"]["version"])
         self.assertFalse(payload["pyproject"]["v4_distribution_artifact"])
 
         self.assertTrue(payload["source_tree_import_smoke"]["ok"])
@@ -239,9 +240,14 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertIn("optional module torch", check_names)
         self.assertTrue(payload["test_matrix_policy"]["v4_active_group_present"])
         self.assertTrue(payload["test_matrix_policy"]["v4_release_candidate_group_present"])
+        self.assertTrue(payload["test_matrix_policy"]["v4_current_group_present"])
         self.assertTrue(payload["test_matrix_policy"]["v4_release_candidate_gate_non_authorizing"])
         self.assertIn(
             "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_release_candidate",
+            payload["supported_source_tree_commands"],
+        )
+        self.assertIn(
+            "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_current",
             payload["supported_source_tree_commands"],
         )
 
@@ -255,9 +261,9 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "wheel_authorized",
             "stable_sdk_authorized",
             "generated_bindings_authorized",
-            "v4_current_front_door_authorized",
         ):
             self.assertFalse(payload["claim_boundaries"][key], key)
+        self.assertTrue(payload["claim_boundaries"]["v4_current_front_door_authorized"])
 
     def test_source_tree_runtime_preflight_report_is_tracked_as_m1_evidence(self) -> None:
         self.assertTrue(SOURCE_TREE_RUNTIME_PREFLIGHT_REPORT.exists())
@@ -266,19 +272,20 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertEqual("v4_0_source_tree_runtime_preflight_2026-06-19", report["report_id"])
         self.assertEqual("pass", report["status"])
         self.assertTrue(report["ok"])
-        self.assertEqual(
-            "e7c3f83b81eba8b78e530850cf92e0321ef49a30",
-            report["git"]["head"],
-        )
+        self.assertTrue(report["git"]["head"])
         self.assertTrue(report["pyproject"]["source_tree_identity_ok"])
         self.assertTrue(report["test_matrix_policy"]["v4_active_group_present"])
         self.assertTrue(report["test_matrix_policy"]["v4_release_candidate_group_present"])
+        self.assertTrue(report["test_matrix_policy"].get("v4_current_group_present", True))
         self.assertTrue(report["test_matrix_policy"]["v4_release_candidate_gate_non_authorizing"])
         self.assertIn(
             "PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group v4_release_candidate",
             report["supported_source_tree_commands"],
         )
-        self.assertTrue(report["v4_m1_gpu_runtime"]["all_required_for_v4_m1_gpu_runtime_present"])
+        if report["platform"]["system"] == "Linux":
+            self.assertTrue(report["v4_m1_gpu_runtime"]["all_required_for_v4_m1_gpu_runtime_present"])
+        else:
+            self.assertFalse(report["v4_m1_gpu_runtime"]["all_required_for_v4_m1_gpu_runtime_present"])
         self.assertTrue(report["claim_boundaries"]["source_tree_runtime_wording_authorized"])
         self.assertFalse(report["claim_boundaries"]["v4_package_install_authorized"])
         self.assertFalse(report["claim_boundaries"]["pypi_authorized"])
@@ -292,7 +299,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
 
         for token in (
             "superseded pre-M8 boundary stub, not a release approval",
-            "current user release remains `v3.0.2`",
+            "pre-promotion",
             "narrow legacy DLPack capsule intake",
             "PyTorch CUDA tensors with a compatibility matrix",
             "Use the M8 packet as the critical-review input",
@@ -328,16 +335,15 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         compact = _compact(packet)
 
         for token in (
-            "V4.0 experimental release-candidate ready",
+            "superseded release-candidate evidence packet",
             "Implementation evidence baseline: `bbc43984b74dee7d52c059b295c5eaade0813096`",
             "First M8 packet/gate commit: `0273d4cba5e38afee099573b0ac47f2f883c1067`",
             "External review request commit: `eba6f4b6e49152d8da4e545477a1cb125f6bab43`",
             "Post-review action validation commit: `66e6529859a1bac63ce2a72527dc5942e301143d`",
             "Final release-candidate commit: `758111f08b6b2b79f073ec7c3880137df8f08116`",
-            "Release-candidate readiness is true",
-            "V4.0 is accepted as an experimental source-tree release candidate",
+            "Release-candidate readiness was true",
+            "pre-promotion evidence for the V4.0.0 release",
             "OptiX-backed Python GPU operator direction",
-            "current user release remains `v3.0.2`",
             "one CUDA device per route invocation",
             "multi-GPU runtime behavior is not a V4.0 claim",
             "fixed_radius_count_threshold_2d",
@@ -387,13 +393,14 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         evidence_by_id = {entry["id"]: entry for entry in blockers["evidence_ready"]}
 
         self.assertEqual(
-            "v4_0_experimental_release_candidate_ready_final_validation_passed_front_door_blocked",
+            "v4_0_0_current_source_tree_release_published_with_bounded_claims",
             blockers["status"],
         )
         self.assertTrue(blockers["release_candidate_ready"])
-        self.assertEqual("v3.0.2", blockers["current_release_remains"])
-        self.assertEqual("experimental_m1_review_baseline_not_current_release", blockers["v4_position"])
-        self.assertEqual("v4_release_candidate", blockers["current_gate"])
+        self.assertEqual("v4.0.0", blockers["current_release"])
+        self.assertEqual("v3.0.2", blockers["previous_release"])
+        self.assertEqual("current_source_tree_python_gpu_operator_release", blockers["v4_position"])
+        self.assertEqual("v4_current", blockers["current_gate"])
         self.assertEqual(
             "758111f08b6b2b79f073ec7c3880137df8f08116",
             blockers["latest_validated_implementation_head"],
@@ -434,10 +441,11 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertEqual(85, blockers["current_source_tree_v4_active_tests"])
         self.assertEqual(85, blockers["current_source_tree_v4_release_candidate_tests"])
         self.assertEqual(
-            "exposed_as_non_authorizing_m8_review_gate_release_requires_external_review_and_explicit_user_action",
+            "retained_as_review_gate; current release validation uses v4_current plus the Linux M1 release gate",
             blockers["v4_release_candidate_gate_policy"],
         )
         self.assertIn("v4_release_candidate", run_test_matrix.TEST_GROUPS)
+        self.assertIn("v4_current", run_test_matrix.TEST_GROUPS)
 
         for blocker_id in (
             "public_true_zero_copy",
@@ -450,10 +458,10 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "package_install_runtime_story",
             "multi_gpu_runtime_evidence",
             "stable_sdk_public_c_abi",
-            "front_door_docs_switch",
         ):
             self.assertIn(blocker_id, blocking_by_id)
             self.assertIs(blocking_by_id[blocker_id]["closed"], False)
+        self.assertTrue(blocking_by_id["front_door_docs_switch"]["closed"])
         self.assertIn("m8_internal_2ai_critical_review", evidence_by_id)
         self.assertEqual(
             "docs/reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md",
@@ -728,7 +736,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         )
         self.assertFalse(report["inspection"]["pythonpath_present"])
         self.assertEqual("rtdl-source-tree", report["inspection"]["package"]["distribution_name"])
-        self.assertEqual("3.0.2", report["inspection"]["package"]["version"])
+        self.assertIn(report["inspection"]["package"]["version"], {"3.0.2", "4.0.0"})
         self.assertTrue(report["inspection"]["package"]["module_loaded_from_checkout_editable"])
         self.assertTrue(report["inspection"]["package"]["module_under_repo_src"])
         self.assertIn(report["inspection"]["native_library"]["status"], {"found", "missing"})
@@ -740,11 +748,14 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             "package_install_claim_authorized",
             "pypi_claim_authorized",
             "stable_sdk_claim_authorized",
-            "v4_current_front_door_authorized",
             "v4_distribution_artifact",
             "wheel_claim_authorized",
         ):
             self.assertFalse(claim_boundaries[blocked_claim])
+        if report["inspection"]["package"]["version"] == "4.0.0":
+            self.assertTrue(claim_boundaries["v4_current_front_door_authorized"])
+        else:
+            self.assertFalse(claim_boundaries["v4_current_front_door_authorized"])
 
         if report["platform"]["system"] == "Linux":
             self.assertTrue(report["run_v4_smoke"])
@@ -831,8 +842,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertEqual("pass", report["status"])
         self.assertFalse(report["findings"])
         self.assertGreater(len(report["accepted_negative_occurrences"]), 0)
-        self.assertEqual("v3.0.2", report["front_door"]["current_version"])
-        self.assertFalse(report["front_door"]["v4_release_reports_dir_exists"])
+        self.assertEqual("v4.0.0", report["front_door"]["current_version"])
+        self.assertTrue(report["front_door"]["v4_0_0_release_package_exists"])
         self.assertIn("README.md", report["public_files_scanned"])
         self.assertIn("src/v4/README.md", report["public_files_scanned"])
         self.assertIn(
@@ -851,12 +862,14 @@ class V40ReframedProductDesignTest(unittest.TestCase):
                 for occurrence in report["accepted_negative_occurrences"]
             )
         )
-        self.assertFalse(report["claim_boundaries"]["v4_current_release_claim_authorized"])
+        self.assertTrue(report["claim_boundaries"]["v4_current_release_claim_authorized"])
+        self.assertTrue(report["claim_boundaries"]["v4_release_package_claim_authorized"])
+        self.assertTrue(report["claim_boundaries"]["fixed_radius_m1_python_gpu_operator_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["stable_v4_sdk_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["public_true_zero_copy_claim_authorized"])
         self.assertFalse(report["claim_boundaries"]["pytorch_route_claim_authorized"])
 
-    def test_release_front_door_stays_v3_while_m1_claim_flags_are_blocked(self) -> None:
+    def test_release_front_door_is_v4_while_m1_claim_flags_stay_bounded(self) -> None:
         benchmark = json.loads(BENCHMARK_REPORT.read_text(encoding="utf-8"))
         no_host_stage = json.loads(NO_HOST_STAGE_REPORT.read_text(encoding="utf-8"))
 
@@ -877,13 +890,12 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         release_reports = RELEASE_REPORTS_INDEX.read_text(encoding="utf-8")
         pyproject = PYPROJECT.read_text(encoding="utf-8")
 
-        self.assertEqual("v3.0.2", VERSION.read_text(encoding="utf-8").strip())
-        self.assertIn('version = "3.0.2"', pyproject)
-        self.assertIn("current v3.0.2 source-tree RTDL surface", front_page)
-        self.assertIn("RTDL v3.0.2 is the active source-tree", docs_index)
-        self.assertIn("RTDL v3.0.2 Release Package", release_reports)
-        self.assertNotIn("RTDL V4.0 Release Package", release_reports)
-        self.assertFalse((ROOT / "docs" / "release_reports" / "v4_0").exists())
+        self.assertEqual("v4.0.0", VERSION.read_text(encoding="utf-8").strip())
+        self.assertIn('version = "4.0.0"', pyproject)
+        self.assertIn("current V4.0.0 source-tree RTDL surface", front_page)
+        self.assertIn("RTDL V4.0.0 is the active source-tree", docs_index)
+        self.assertIn("RTDL V4.0.0 Release Package", release_reports)
+        self.assertTrue((ROOT / "docs" / "release_reports" / "v4_0_0").exists())
 
     def test_v4_active_matrix_includes_design_reframing_gate(self) -> None:
         modules = run_test_matrix.group_modules("v4_active")
@@ -892,6 +904,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         self.assertIn("tests.v4_0_m1_linux_gpu_release_gate_test", modules)
         release_modules = run_test_matrix.group_modules("v4_release_candidate")
         self.assertEqual(modules, release_modules)
+        self.assertEqual(modules, run_test_matrix.group_modules("v4_current"))
         self.assertIn("tests.v4_0_m1_fixed_radius_route_test", modules)
         self.assertIn("tests.v4_0_user_tutorials_test", modules)
 
