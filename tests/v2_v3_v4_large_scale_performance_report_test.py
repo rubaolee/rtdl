@@ -8,8 +8,10 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "v2_v3_v4_large_scale_performance_comparison_2026-06-19.md"
 ARTIFACT_DIR = ROOT / "docs" / "reports" / "v2_v3_v4_large_scale_performance_2026-06-19"
-CURRENT_SCALE = ARTIFACT_DIR / "lx1_current_benchmark_scale_profile_2026-06-19.json"
-V4_PROBE = ARTIFACT_DIR / "lx1_v4_m1_fixed_radius_cupy_262k_probe_2026-06-19.json"
+CURRENT_SCALE = ARTIFACT_DIR / "lx1_a27a4c92_current_benchmark_scale_profile_clean_2026-06-19.json"
+V4_GATE = ARTIFACT_DIR / "lx1_a27a4c92_v4_m1_linux_gpu_release_gate_clean_2026-06-19.json"
+V4_PROMOTION_GATE = ARTIFACT_DIR / "lx1_a27a4c92_v4_0_release_promotion_gate_clean_2026-06-19.json"
+V4_PROBE = ARTIFACT_DIR / "v4_m1_linux_gpu_release_gate_lx1_a27a4c92_clean" / "cupy_benchmark.json"
 HAUSDORFF_SUPPLEMENT = ARTIFACT_DIR / "large_supplements" / "hausdorff_xhd_1m_threshold.stdout.json"
 TRIANGLE_SUPPLEMENT = (
     ARTIFACT_DIR / "large_supplements" / "triangle_counting_rt_graph_2a1_65536.stdout.json"
@@ -40,7 +42,9 @@ class V2V3V4LargeScalePerformanceReportTest(unittest.TestCase):
             "V2.14 is the strongest public performance baseline",
             "V3.0.2 is not a new broad speedup release",
             "V4.0 is not an all benchmark-app performance suite",
+            "Current-head all-app scale-profile clean rerun",
             "10/10 rows passed",
+            "a27a4c92f2b8040cb2f655350567059d756b46b1",
             "Connection refused",
             "Pod-ready rerun command",
             "v4_0_m1_linux_gpu_release_gate.py",
@@ -58,7 +62,8 @@ class V2V3V4LargeScalePerformanceReportTest(unittest.TestCase):
         self.assertEqual(10, len(payload["rows"]))
         self.assertEqual(EXPECTED_APPS, {row["app"] for row in payload["rows"]})
         self.assertEqual(10, payload["json_pass_count"])
-        self.assertEqual("6d2193af16f8269f3e901124593dacc43335255b", payload["runtime_environment"]["source_commit"])
+        self.assertEqual("a27a4c92f2b8040cb2f655350567059d756b46b1", payload["runtime_environment"]["source_commit"])
+        self.assertTrue(payload["runtime_environment"]["working_tree_clean"])
         self.assertIn("NVIDIA GeForce GTX 1070", payload["runtime_environment"]["nvidia_smi"])
 
         for key in (
@@ -90,8 +95,18 @@ class V2V3V4LargeScalePerformanceReportTest(unittest.TestCase):
         self.assertGreater(triangle["timing_ms"]["query_median_ms"], 1.0)
 
     def test_v4_large_probe_remains_route_scoped_non_authorizing(self) -> None:
+        gate = json.loads(V4_GATE.read_text(encoding="utf-8"))
+        promotion = json.loads(V4_PROMOTION_GATE.read_text(encoding="utf-8"))
         payload = json.loads(V4_PROBE.read_text(encoding="utf-8"))
 
+        self.assertEqual("pass", gate["status"])
+        self.assertTrue(gate["ok"])
+        self.assertEqual("", gate["git"]["initial_status_short"])
+        self.assertEqual("pass", promotion["status"])
+        self.assertTrue(promotion["ok"])
+        self.assertTrue(
+            promotion["release_reading"]["v4_0_0_current_source_tree_release_authorized"]
+        )
         self.assertEqual("pass-with-boundary", payload["status"])
         self.assertEqual(262_144, payload["parameters"]["count"])
         self.assertEqual("fixed_radius_count_threshold_2d", payload["route_id"])

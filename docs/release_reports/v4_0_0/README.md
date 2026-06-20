@@ -39,6 +39,9 @@ this exact route.
 - [V4.0 source-tree runtime story](../../engineering/rtdl_v4_0_source_tree_runtime_story_2026-06-19.md)
 - [V4.0 M1 Linux GPU release gate](../../reports/v4_0_m1_linux_gpu_release_gate_2026-06-19.json)
 - [V4.0 M1 Linux GPU release gate artifacts](../../reports/v4_0_m1_linux_gpu_release_gate_2026-06-19/README.md)
+- [Current-head clean V4.0 M1 Linux GPU gate](../../reports/v2_v3_v4_large_scale_performance_2026-06-19/lx1_a27a4c92_v4_m1_linux_gpu_release_gate_clean_2026-06-19.json)
+- [Current-head clean V4.0 release-promotion gate](../../reports/v2_v3_v4_large_scale_performance_2026-06-19/lx1_a27a4c92_v4_0_release_promotion_gate_clean_2026-06-19.json)
+- [Post-closeout V4.0 release-promotion gate](../../reports/v4_0_release_promotion_gate_post_closeout_2026-06-19.json)
 - [V2/V3/V4 large-scale performance comparison](../../reports/v2_v3_v4_large_scale_performance_comparison_2026-06-19.md)
 - [Claude V4.0 M8 external review](../../reviews/claude_v4_0_m8_external_review_2026-06-19.md)
 
@@ -54,7 +57,7 @@ this exact route.
 | Stream evidence | Caller stream propagation and fixed-radius prepare/query event ordering are validated; async completion stays blocked. |
 | Benchmark evidence | 262,144-row M1 benchmark gate passes with boundary flags; no public speedup claim is authorized. |
 | Claim scan | Current front-door claim scan passes with V4.0.0 authorized and blocked claims still false. |
-| Validation | `v4_current`, `v4_release_candidate`, source-tree doctor, JSON checks, and diff checks pass locally; Linux GPU gate passed on `192.168.1.20`. |
+| Validation | `v4_current`, `v4_release_candidate`, source-tree doctor, JSON checks, and diff checks pass locally; clean current-head Linux GPU gate and release-promotion gate passed on `192.168.1.20` at `a27a4c92f2b8040cb2f655350567059d756b46b1`. |
 
 ## Minimal Smoke Commands
 

@@ -12,12 +12,12 @@ V2.x, V3, and V4 because the versions answer different product questions.
 - V2.14 is the strongest public performance baseline: it has a row-scoped,
   same-contract RTDL/OptiX-vs-Embree matrix across the promoted benchmark apps.
 - V3.0.2 is not a new broad speedup release. It closes the ten benchmark-app
-  current-route surface and keeps route choice explicit. A fresh all-app
-  scale-profile run on `192.168.1.20` passed 10/10 rows.
+  current-route surface and keeps route choice explicit. A fresh current-head
+  clean all-app scale-profile run on `192.168.1.20` passed 10/10 rows.
 - V4.0 is not an all benchmark-app performance suite. It is one experimental
-  Python GPU device-array operator route. A fresh 262K-row V4 M1 probe passed,
-  but it still does not authorize public speedup, RT-core speedup, or
-  true-zero-copy wording.
+  Python GPU device-array operator route. A fresh clean V4 M1 Linux GPU gate on
+  the same commit passed with a 262K-row benchmark probe, but it still does not
+  authorize public speedup, RT-core speedup, or true-zero-copy wording.
 
 The serious reader should treat this as an evidence map:
 
@@ -31,7 +31,8 @@ Remote RTX pod:
 
 - `root@157.157.221.29 -p 22234` was attempted with the provided key.
 - Earlier result: `Permission denied (publickey,password)`.
-- Latest retry on 2026-06-19: `Connection refused`.
+- Latest retry on 2026-06-19 after the current-head rerun started:
+  `Connection refused`.
 - No RTX pod benchmark artifact exists in this packet. The packet therefore
   refuses RTX/RT-core speedup wording and uses the local Linux host only for
   route-health evidence.
@@ -43,9 +44,15 @@ Available Linux host:
   capability 6.1.
 - Important boundary: this is not RTX hardware and cannot prove RT-core speedup
   claims.
-- Source commit: `6d2193af16f8269f3e901124593dacc43335255b`.
+- Source commit: `a27a4c92f2b8040cb2f655350567059d756b46b1`.
 - `make build-optix`: passed.
-- Source-tree doctor: passed with only optional Embree library warning.
+- Current-head all-app scale-profile clean rerun: 10/10 rows passed,
+  parseable JSON for every row, no claim-flag violations, clean worktree.
+- V4 M1 Linux GPU release gate clean rerun: passed; `v4_release_candidate`
+  passed 92 tests; clean worktree.
+- V4.0 release-promotion gate: passed with V4.0.0 source-tree release
+  authorized and package, SDK, async, true-zero-copy, public speedup, and
+  RT-core speedup claims still blocked.
 
 Main fresh run:
 
@@ -53,16 +60,32 @@ Main fresh run:
 PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
 python3 scripts/goal3828_current_benchmark_scale_profile_runner.py \
   --materialize-rayjoin-public-cdb \
-  --output-json docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/lx1_current_benchmark_scale_profile_2026-06-19.json \
-  --output-dir docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/scale_outputs \
-  --timeout-scale 2.0 \
+  --rayjoin-public-cdb-dir /tmp/v2_v3_v4_serious_lx1_20260619_221102/rayjoin_public_cdb \
+  --output-json docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/lx1_a27a4c92_current_benchmark_scale_profile_clean_2026-06-19.json \
+  --output-dir docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/scale_outputs_lx1_a27a4c92_clean \
+  --timeout-scale 2.5 \
   --heartbeat-sec 60 \
   --stdout-tail 12000 \
   --stderr-tail 8000
 ```
 
-Result: 10/10 rows passed, 10/10 row stdout files were parseable JSON, and no
-claim-boundary flag violations were found.
+Result: 10/10 rows passed, 10/10 row stdout files were parseable JSON, no
+claim-boundary flag violations were found, and the runtime environment reported
+`working_tree_clean: true`.
+
+V4 clean gate on the same commit:
+
+```bash
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
+python3 scripts/v4_0_m1_linux_gpu_release_gate.py \
+  --output docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/lx1_a27a4c92_v4_m1_linux_gpu_release_gate_clean_2026-06-19.json \
+  --artifact-dir docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/v4_m1_linux_gpu_release_gate_lx1_a27a4c92_clean \
+  --benchmark-count 262144 \
+  --benchmark-repeats 3 \
+  --benchmark-warmups 1
+```
+
+Result: `status: pass`, `ok: true`; `v4_release_candidate` passed 92 tests.
 
 Pod-ready rerun command once `root@157.157.221.29 -p 22234` accepts SSH again:
 
@@ -75,9 +98,10 @@ make build-optix
 PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
 python3 scripts/goal3828_current_benchmark_scale_profile_runner.py \
   --materialize-rayjoin-public-cdb \
+  --rayjoin-public-cdb-dir /tmp/rtdl_v2_v3_v4_pod_rayjoin_public_cdb \
   --output-json /tmp/rtdl_v2_v3_v4_pod_current_benchmark_scale_profile.json \
   --output-dir /tmp/rtdl_v2_v3_v4_pod_scale_outputs \
-  --timeout-scale 2.0 \
+  --timeout-scale 2.5 \
   --heartbeat-sec 60 \
   --stdout-tail 12000 \
   --stderr-tail 8000
@@ -88,6 +112,8 @@ python3 scripts/v4_0_m1_linux_gpu_release_gate.py \
   --benchmark-count 262144 \
   --benchmark-repeats 3 \
   --benchmark-warmups 1
+PYTHONPATH=src:. python3 scripts/v4_0_release_promotion_gate.py \
+  --output /tmp/rtdl_v4_0_pod_release_promotion_gate.json
 ```
 
 This is deliberately the serious batch, not the smoke suite: it runs the
@@ -96,8 +122,18 @@ This is deliberately the serious batch, not the smoke suite: it runs the
 ## Artifact Index
 
 - Raw all-app run:
+  `docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/lx1_a27a4c92_current_benchmark_scale_profile_clean_2026-06-19.json`
+- Current-head per-row stdout/stderr:
+  `docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/scale_outputs_lx1_a27a4c92_clean/`
+- Current-head V4 clean Linux gate:
+  `docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/lx1_a27a4c92_v4_m1_linux_gpu_release_gate_clean_2026-06-19.json`
+- Current-head V4 clean Linux gate artifacts:
+  `docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/v4_m1_linux_gpu_release_gate_lx1_a27a4c92_clean/`
+- Current-head V4 promotion gate:
+  `docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/lx1_a27a4c92_v4_0_release_promotion_gate_clean_2026-06-19.json`
+- Earlier local all-app run retained for comparison:
   `docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/lx1_current_benchmark_scale_profile_2026-06-19.json`
-- Per-row stdout/stderr:
+- Earlier per-row stdout/stderr:
   `docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/scale_outputs/`
 - Large supplements:
   `docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/large_supplements/`
@@ -144,21 +180,21 @@ matrix because this host lacks Embree and RTX hardware.
 
 | App | Fresh scale evidence on `lx1` | Hot metric | Result | Reading |
 | --- | --- | --- | ---: | --- |
-| Hausdorff / X-HD | Supplement row: 1,048,576 points per side, threshold decision | `query_fixed_radius_threshold_reached_count_sec` | 3.640 s | Large threshold route passes; oracle decision matches. |
-| Spatial RayJoin | Public CDB representative mixed route; PIP, LSI, overlay seed; PIP batch 100 requests | Mixed route medians | PIP Numba 0.731 ms vs RTDL 2.582 ms; LSI RTDL 0.117 ms vs Numba 49.575 ms; overlay RTDL 0.576 ms vs Numba 71.276 ms | Mixed explicit route remains correct: Numba wins one-shot PIP, RTDL/OptiX wins LSI and overlay seed. |
-| RT-DBSCAN | 65,536 clustered 3D points, OptiX threshold plus Numba component signature | Prepared query median | 436.991 ms | Current mixed route passes; no full-app speedup slogan. |
-| Robot collision | 1,024 poses, 128 obstacles, 4 links, 49,900 measured runs | Traversal total | 4.105 s total; 82.011 us median | High-repeat resident hot path meets internal timing floor. |
-| Contact manifold | Current runner grid64 row passed; large 65K fresh rerun was stopped because the Python reference path dominated runtime | Use V2.14 65K row for serious performance wording | V2.14: 65K hot path 1.16x | Do not treat the grid64 row as serious performance evidence. |
-| RayDB-style | 262,144 generated rows, 1,024 groups, 5,000 repeats | Native call wall total | 7.483 s total; 1.492 ms median native call | Resident grouped-count primitive passes high-repeat floor. |
-| Barnes-Hut | 8,192 bodies, Numba exact-force partner route | Median force kernel | 18.802 ms | Current best route is partner/fused, not Barnes-Hut RT-core speedup. |
-| LibRTS spatial index | 32,768 boxes and 32,768 queries, all operations | Query median | 268.459 ms | Prepared AABB-index route passes; not full mutable LibRTS. |
-| RTNN | 65,536 search points, 65,536 query points, k=50 | Prepared ranked-summary median | 0.572 ms | Prepared ranked-summary aggregate route passes; no paper-row claim. |
+| Hausdorff / X-HD | Supplement row: 1,048,576 points per side, threshold decision | `query_fixed_radius_threshold_reached_count_sec` | 3.640 s | Large threshold route passes; oracle decision matches. Clean current-head route-health row also passes. |
+| Spatial RayJoin | Public CDB representative mixed route; PIP, LSI, overlay seed; PIP batch 100 requests | Mixed route medians | PIP Numba 0.732 ms vs RTDL 2.583 ms; LSI RTDL 0.118 ms vs Numba 49.609 ms; overlay RTDL 0.575 ms vs Numba 71.211 ms | Mixed explicit route remains correct: Numba wins one-shot PIP, RTDL/OptiX wins LSI and overlay seed. |
+| RT-DBSCAN | 65,536 clustered 3D points, OptiX threshold plus Numba component signature | Prepared query median | 442.484 ms | Current mixed route passes; no full-app speedup slogan. |
+| Robot collision | 1,024 poses, 128 obstacles, 4 links, 49,900 measured runs | Traversal total | 4.074 s total; 81.418 us median | High-repeat resident hot path meets internal timing floor. |
+| Contact manifold | Current clean runner grid64 row passed; serious performance wording remains the V2.14 `jittered_grid_65536` row | Use V2.14 65K row for serious performance wording | V2.14: 65K hot path 1.16x | Do not quote the grid64 route-health row as performance evidence. |
+| RayDB-style | 262,144 generated rows, 1,024 groups, 5,000 repeats | Native call wall total | 7.520 s total; 1.495 ms median native call | Resident grouped-count primitive passes high-repeat floor. |
+| Barnes-Hut | 8,192 bodies, Numba exact-force partner route | Median force kernel | 18.885 ms | Current best route is partner/fused, not Barnes-Hut RT-core speedup. |
+| LibRTS spatial index | 32,768 boxes and 32,768 queries, all operations | Query median | 269.793 ms | Prepared AABB-index route passes; not full mutable LibRTS. |
+| RTNN | 65,536 search points, 65,536 query points, k=50 | Prepared ranked-summary median | 0.562 ms | Prepared ranked-summary aggregate route passes; no paper-row claim. |
 | Triangle counting | Supplement row: 131,072 rays, 327,680 primitives, RT-Graph 2A1 | Query median | 3.200 ms | Large synthetic RT-Graph-shaped route passes; oracle count matches. |
 
 Fresh V3 conclusion: all ten current benchmark-app rows are executable on the
-available Linux GPU host, and the two targeted internal timing-floor rows
-passed. The run supports V3 current-route health, not broad public speedup
-wording.
+available Linux GPU host from a clean current-head checkout, and the two
+targeted internal timing-floor rows passed. The run supports V3 current-route
+health, not broad public speedup wording.
 
 ## V4.0 Large Route Probe
 
@@ -166,23 +202,24 @@ V4.0 does not yet have all benchmark-app coverage. It has one M1 product route:
 
 `fixed_radius_count_threshold_2d`
 
-To avoid toy-scale results, the 1,024-row smoke was not used here. A larger
-262,144-row probe was run:
+To avoid toy-scale results, the 1,024-row smoke was not used here. The clean
+V4 Linux gate ran the larger 262,144-row probe:
 
 ```bash
 PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
-python3 scripts/v4_0_m1_fixed_radius_cupy_benchmark_probe.py \
-  --count 262144 \
-  --repeats 3 \
-  --warmups 1 \
-  --output docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/lx1_v4_m1_fixed_radius_cupy_262k_probe_2026-06-19.json
+python3 scripts/v4_0_m1_linux_gpu_release_gate.py \
+  --output docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/lx1_a27a4c92_v4_m1_linux_gpu_release_gate_clean_2026-06-19.json \
+  --artifact-dir docs/reports/v2_v3_v4_large_scale_performance_2026-06-19/v4_m1_linux_gpu_release_gate_lx1_a27a4c92_clean \
+  --benchmark-count 262144 \
+  --benchmark-repeats 3 \
+  --benchmark-warmups 1
 ```
 
 Result:
 
 | Route | Count | Median one-shot prepare+query | Median prepared query | CuPy brute-force CUDA baseline median | Raw ratio |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| V4 M1 fixed-radius CuPy route | 262,144 | 13.444 ms | 6.258 ms | 33.827 s | baseline/V4 prepared query 5405.56x |
+| V4 M1 fixed-radius CuPy route | 262,144 | 13.633 ms | 6.330 ms | 33.818 s | baseline/V4 prepared query 5342.82x |
 
 This is useful engineering evidence, but it still does not authorize public
 speedup wording:
@@ -190,7 +227,7 @@ speedup wording:
 - the baseline is a simple blocked all-pairs CuPy CUDA-core implementation, not
   a best-known tuned fixed-radius library baseline;
 - the host is GTX 1070, not RTX;
-- the report flags `public_speedup_claim_authorized`,
+- the gate flags `public_speedup_claim_authorized`,
   `rt_core_speedup_claim_authorized`, `v4_true_zero_copy_claim_authorized`, and
   `async_claim_authorized` as false.
 
@@ -203,9 +240,9 @@ route failure; it is a limitation of the comparison baseline and host memory.
 | Question | Best evidence today | Answer |
 | --- | --- | --- |
 | Did V2.x establish serious performance rows? | V2.14 public RTDL/OptiX-vs-Embree matrix | Yes, row-scoped and caveated. |
-| Did V3 improve the performance claim surface? | V3.0/V3.0.2 route closure plus fresh 10/10 scale-profile pass | Yes, as route maturity and app-author policy, not as a new broad speedup matrix. |
+| Did V3 improve the performance claim surface? | V3.0/V3.0.2 route closure plus fresh current-head clean 10/10 scale-profile pass | Yes, as route maturity and app-author policy, not as a new broad speedup matrix. |
 | Does V4 beat V3 on all apps? | No comparable evidence exists | No claim. V4 currently proves a new Python GPU device-array operator lane. |
-| Do we have fresh all-app large-scale execution? | `lx1_current_benchmark_scale_profile_2026-06-19.json` | Yes, for current V3/V2.10+ inherited scale-profile rows. |
+| Do we have fresh all-app large-scale execution? | `lx1_a27a4c92_current_benchmark_scale_profile_clean_2026-06-19.json` | Yes, for current V3/V2.10+ inherited scale-profile rows. |
 | Do we have RTX-class RT-core speed evidence from this run? | No, host is GTX 1070 and the RTX pod rejected SSH auth | No. |
 
 ## What This Packet Does Not Claim
