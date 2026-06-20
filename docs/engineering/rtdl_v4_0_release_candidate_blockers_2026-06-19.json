@@ -24,8 +24,8 @@
   "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
   "latest_validated_m1_cross_stream_evidence_scope": "clean source-tree commit after push",
   "latest_validated_m1_cross_stream_v4_active_tests": 53,
-  "current_source_tree_v4_active_tests": 78,
-  "current_source_tree_v4_release_candidate_tests": 78,
+  "current_source_tree_v4_active_tests": 85,
+  "current_source_tree_v4_release_candidate_tests": 85,
   "evidence_ready": [
     {
       "id": "v4_active_gate",
@@ -140,6 +140,12 @@
       "status": "passed_final_release_candidate_validation",
       "path": "docs/reports/v4_0_m8_final_validation_bundle_2026-06-19.json",
       "note": "Fresh clean-clone Linux validation at 758111f08b6b2b79f073ec7c3880137df8f08116 passed build-optix, source-tree runtime preflight, editable-install V4 smoke, v4_active, v4_release_candidate, claim scan, git diff --check, and clean worktree."
+    },
+    {
+      "id": "current_head_linux_gpu_m1_release_gate",
+      "status": "required_for_post_m8_current_head_refresh",
+      "path": "scripts/v4_0_m1_linux_gpu_release_gate.py",
+      "note": "Live Linux GPU gate that reruns build-optix, source-tree runtime preflight, CuPy stream/no-host-stage/ordering probes, Numba partner-surface probe, DLPack capsule probe, PyTorch CUDA tensor probe, serious-scale CuPy benchmark probe, v4_release_candidate, claim scan, git diff --check, and clean worktree for the current checkout head."
     },
     {
       "id": "cuda_array_interface_device_identity_contract",

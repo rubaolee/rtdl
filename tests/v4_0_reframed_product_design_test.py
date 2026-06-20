@@ -431,8 +431,8 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             53,
             blockers["latest_validated_m1_cross_stream_v4_active_tests"],
         )
-        self.assertEqual(78, blockers["current_source_tree_v4_active_tests"])
-        self.assertEqual(78, blockers["current_source_tree_v4_release_candidate_tests"])
+        self.assertEqual(85, blockers["current_source_tree_v4_active_tests"])
+        self.assertEqual(85, blockers["current_source_tree_v4_release_candidate_tests"])
         self.assertEqual(
             "exposed_as_non_authorizing_m8_review_gate_release_requires_external_review_and_explicit_user_action",
             blockers["v4_release_candidate_gate_policy"],
@@ -475,9 +475,14 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             evidence_by_id["editable_install_runtime_probe"]["path"],
         )
         self.assertIn("final_validation_bundle", evidence_by_id)
+        self.assertIn("current_head_linux_gpu_m1_release_gate", evidence_by_id)
         self.assertEqual(
             "docs/reports/v4_0_m8_final_validation_bundle_2026-06-19.json",
             evidence_by_id["final_validation_bundle"]["path"],
+        )
+        self.assertEqual(
+            "scripts/v4_0_m1_linux_gpu_release_gate.py",
+            evidence_by_id["current_head_linux_gpu_m1_release_gate"]["path"],
         )
         self.assertIn("after_editable_install_external_review_consensus", evidence_by_id)
         self.assertEqual(
@@ -880,6 +885,7 @@ class V40ReframedProductDesignTest(unittest.TestCase):
         modules = run_test_matrix.group_modules("v4_active")
         self.assertIn("tests.v4_0_active_abi_control_plane_test", modules)
         self.assertIn("tests.v4_0_reframed_product_design_test", modules)
+        self.assertIn("tests.v4_0_m1_linux_gpu_release_gate_test", modules)
         release_modules = run_test_matrix.group_modules("v4_release_candidate")
         self.assertEqual(modules, release_modules)
         self.assertIn("tests.v4_0_m1_fixed_radius_route_test", modules)

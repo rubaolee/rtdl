@@ -92,6 +92,7 @@ def _required_paths() -> list[dict[str, object]]:
         "scripts/v4_0_m1_fixed_radius_numba_partner_surface_probe.py",
         "scripts/v4_0_m1_fixed_radius_dlpack_capsule_probe.py",
         "scripts/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe.py",
+        "scripts/v4_0_m1_linux_gpu_release_gate.py",
     )
     return [
         {
@@ -211,6 +212,7 @@ def build_payload(*, require_v4_gpu_runtime: bool = False, run_smoke: bool = Fal
             "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_numba_partner_surface_probe.py",
             "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_dlpack_capsule_probe.py",
             "PYTHONPATH=src:. python3 scripts/v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe.py",
+            "PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python3 scripts/v4_0_m1_linux_gpu_release_gate.py --benchmark-count 262144",
         ],
         "claim_boundaries": {
             "source_tree_runtime_wording_authorized": True,

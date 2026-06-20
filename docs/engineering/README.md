@@ -14,6 +14,7 @@ learner-facing release documentation.
 - [RTDL V4.0 Source-Tree Runtime Story](rtdl_v4_0_source_tree_runtime_story_2026-06-19.md)
 - [RTDL V4.0 Source-Tree Runtime Preflight](../reports/v4_0_source_tree_runtime_preflight_2026-06-19.json)
 - [RTDL V4.0 M8 Final Validation Bundle](../reports/v4_0_m8_final_validation_bundle_2026-06-19.json)
+- [RTDL V4.0 M1 Linux GPU Release Gate](../../scripts/v4_0_m1_linux_gpu_release_gate.py)
 - [RTDL V4.0 M8 External Review Request](../reviews/codex_v4_m8_external_review_request_2026-06-19.md)
 - [RTDL V4.0 M8 Claude External Review](../reviews/claude_v4_0_m8_external_review_2026-06-19.md)
 - [RTDL V4.0 M8 Internal 2-AI Critical Review](../reviews/codex_v4_m8_internal_2ai_critical_review_2026-06-19.md)
