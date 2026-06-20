@@ -22,6 +22,14 @@ Status: raw evidence bundle for
 - Memory: 8192 MiB
 - Source commit: `6d2193af16f8269f3e901124593dacc43335255b`
 
+## Pod Status
+
+- RTX pod target: `root@157.157.221.29 -p 22234`
+- Latest retry on 2026-06-19: `Connection refused`
+- Result: no pod benchmark artifact is present in this bundle.
+- Pod-ready rerun instructions live in
+  `../v2_v3_v4_large_scale_performance_comparison_2026-06-19.md`.
+
 ## Boundaries
 
 This bundle does not authorize broad public speedup wording, RT-core speedup

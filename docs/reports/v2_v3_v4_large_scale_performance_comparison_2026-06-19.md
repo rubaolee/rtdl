@@ -30,7 +30,11 @@ The serious reader should treat this as an evidence map:
 Remote RTX pod:
 
 - `root@157.157.221.29 -p 22234` was attempted with the provided key.
-- Result: `Permission denied (publickey,password)`.
+- Earlier result: `Permission denied (publickey,password)`.
+- Latest retry on 2026-06-19: `Connection refused`.
+- No RTX pod benchmark artifact exists in this packet. The packet therefore
+  refuses RTX/RT-core speedup wording and uses the local Linux host only for
+  route-health evidence.
 
 Available Linux host:
 
@@ -59,6 +63,35 @@ python3 scripts/goal3828_current_benchmark_scale_profile_runner.py \
 
 Result: 10/10 rows passed, 10/10 row stdout files were parseable JSON, and no
 claim-boundary flag violations were found.
+
+Pod-ready rerun command once `root@157.157.221.29 -p 22234` accepts SSH again:
+
+```bash
+set -euo pipefail
+RUN_DIR=/root/rtdl_v2_v3_v4_large_scale_perf_$(date +%Y%m%d_%H%M%S)
+git clone --depth 1 https://github.com/rubaolee/rtdl "$RUN_DIR"
+cd "$RUN_DIR"
+make build-optix
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
+python3 scripts/goal3828_current_benchmark_scale_profile_runner.py \
+  --materialize-rayjoin-public-cdb \
+  --output-json /tmp/rtdl_v2_v3_v4_pod_current_benchmark_scale_profile.json \
+  --output-dir /tmp/rtdl_v2_v3_v4_pod_scale_outputs \
+  --timeout-scale 2.0 \
+  --heartbeat-sec 60 \
+  --stdout-tail 12000 \
+  --stderr-tail 8000
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so \
+python3 scripts/v4_0_m1_linux_gpu_release_gate.py \
+  --output /tmp/rtdl_v4_m1_pod_release_gate.json \
+  --artifact-dir /tmp/rtdl_v4_m1_pod_release_gate \
+  --benchmark-count 262144 \
+  --benchmark-repeats 3 \
+  --benchmark-warmups 1
+```
+
+This is deliberately the serious batch, not the smoke suite: it runs the
+10-row benchmark-app scale profile plus the 262,144-row V4 M1 device-array gate.
 
 ## Artifact Index
 
