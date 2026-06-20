@@ -1,0 +1,354 @@
+{
+  "case_count": 4,
+  "cases": [
+    {
+      "expected": {
+        "neighbor_counts": [
+          1,
+          1,
+          0
+        ],
+        "query_ids": [
+          1,
+          2,
+          3
+        ],
+        "threshold_flags": [
+          1,
+          1,
+          0
+        ]
+      },
+      "expected_checksum": 622,
+      "name": "smoke",
+      "native_async_ready": false,
+      "native_pointer_echo_match_complete": true,
+      "observed": {
+        "neighbor_counts": [
+          1,
+          1,
+          0
+        ],
+        "query_ids": [
+          1,
+          2,
+          3
+        ],
+        "threshold_flags": [
+          1,
+          1,
+          0
+        ]
+      },
+      "observed_checksum": 622,
+      "passed": true,
+      "plan_pointer_match_complete": true,
+      "query_count": 3,
+      "radius": 1.1,
+      "same_stream_consumer_kernel_checksum_passed": true,
+      "search_count": 3,
+      "source_protocols": [
+        "cuda_array_interface"
+      ],
+      "threshold": 1,
+      "v4_true_zero_copy_claim_authorized": false
+    },
+    {
+      "expected": {
+        "neighbor_counts": [
+          2,
+          1
+        ],
+        "query_ids": [
+          1,
+          2
+        ],
+        "threshold_flags": [
+          1,
+          0
+        ]
+      },
+      "expected_checksum": 331,
+      "name": "threshold_two",
+      "native_async_ready": false,
+      "native_pointer_echo_match_complete": true,
+      "observed": {
+        "neighbor_counts": [
+          2,
+          1
+        ],
+        "query_ids": [
+          1,
+          2
+        ],
+        "threshold_flags": [
+          1,
+          0
+        ]
+      },
+      "observed_checksum": 331,
+      "passed": true,
+      "plan_pointer_match_complete": true,
+      "query_count": 2,
+      "radius": 0.5,
+      "same_stream_consumer_kernel_checksum_passed": true,
+      "search_count": 4,
+      "source_protocols": [
+        "cuda_array_interface"
+      ],
+      "threshold": 2,
+      "v4_true_zero_copy_claim_authorized": false
+    },
+    {
+      "expected": {
+        "neighbor_counts": [
+          1,
+          1
+        ],
+        "query_ids": [
+          1,
+          2
+        ],
+        "threshold_flags": [
+          1,
+          1
+        ]
+      },
+      "expected_checksum": 322,
+      "name": "boundary_inclusive",
+      "native_async_ready": false,
+      "native_pointer_echo_match_complete": true,
+      "observed": {
+        "neighbor_counts": [
+          1,
+          1
+        ],
+        "query_ids": [
+          1,
+          2
+        ],
+        "threshold_flags": [
+          1,
+          1
+        ]
+      },
+      "observed_checksum": 322,
+      "passed": true,
+      "plan_pointer_match_complete": true,
+      "query_count": 2,
+      "radius": 1.0,
+      "same_stream_consumer_kernel_checksum_passed": true,
+      "search_count": 2,
+      "source_protocols": [
+        "cuda_array_interface"
+      ],
+      "threshold": 1,
+      "v4_true_zero_copy_claim_authorized": false
+    },
+    {
+      "expected": {
+        "neighbor_counts": [
+          2,
+          0,
+          2,
+          1,
+          2,
+          0
+        ],
+        "query_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "threshold_flags": [
+          1,
+          0,
+          1,
+          0,
+          1,
+          0
+        ]
+      },
+      "expected_checksum": 2173,
+      "name": "random_seed_11",
+      "native_async_ready": false,
+      "native_pointer_echo_match_complete": true,
+      "observed": {
+        "neighbor_counts": [
+          2,
+          0,
+          2,
+          1,
+          2,
+          0
+        ],
+        "query_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "threshold_flags": [
+          1,
+          0,
+          1,
+          0,
+          1,
+          0
+        ]
+      },
+      "observed_checksum": 2173,
+      "passed": true,
+      "plan_pointer_match_complete": true,
+      "query_count": 6,
+      "radius": 0.75,
+      "same_stream_consumer_kernel_checksum_passed": true,
+      "search_count": 9,
+      "source_protocols": [
+        "cuda_array_interface"
+      ],
+      "threshold": 2,
+      "v4_true_zero_copy_claim_authorized": false
+    }
+  ],
+  "claim_boundaries": {
+    "allowed_wording": "V4 M1 validates the fixed-radius route with Numba DeviceNDArray columns through __cuda_array_interface__, including parity, same-stream propagation, pointer echo, caller-owned outputs, and prepared-handle reuse while search columns remain alive.",
+    "async_claim_authorized": false,
+    "cross_stream_event_wait_claim_authorized": false,
+    "dlpack_route_claim_authorized": false,
+    "forbidden_wording": [
+      "all Numba programs are accelerated",
+      "full arbitrary Numba partner surface",
+      "PyTorch route support",
+      "DLPack route support",
+      "cross-stream event wait support",
+      "async execution",
+      "true zero-copy",
+      "RT-core speedup",
+      "RTX speedup"
+    ],
+    "numba_cuda_array_interface_claim_authorized": true,
+    "numba_device_array_route_claim_authorized": true,
+    "numba_full_partner_surface_claim_authorized": false,
+    "numba_m1_devicearray_partner_surface_claim_authorized": true,
+    "numba_prepared_reuse_claim_authorized": true,
+    "public_speedup_claim_authorized": false,
+    "pytorch_route_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "evidence_code_commit": "d99945e980b6c76baf9c5a0ec5f0ac5965c873ae",
+  "evidence_code_tree": "1a53cae9c605913ec43532073db857301293e101",
+  "framework": "numba",
+  "hardware": {
+    "compute_capability": "6.1",
+    "driver": "580.126.09",
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "memory": "8192 MiB",
+    "nvidia_smi_available": true
+  },
+  "pass_count": 4,
+  "pointer_identity": {
+    "checked_column_keys": [
+      "output.neighbor_counts",
+      "output.query_ids",
+      "output.threshold_flags",
+      "query.ids",
+      "query.x",
+      "query.y",
+      "search.ids",
+      "search.x",
+      "search.y"
+    ],
+    "native_pointer_echo_match_complete": true,
+    "plan_pointer_match_complete": true
+  },
+  "prepared_handle_lifetime_contract": {
+    "caller_kept_search_columns_alive_until_operator_close": true,
+    "outputs": [
+      {
+        "expected": {
+          "neighbor_counts": [
+            1,
+            1
+          ],
+          "query_ids": [
+            1,
+            2
+          ],
+          "threshold_flags": [
+            1,
+            1
+          ]
+        },
+        "name": "prepared_reuse_0",
+        "observed": {
+          "neighbor_counts": [
+            1,
+            1
+          ],
+          "query_ids": [
+            1,
+            2
+          ],
+          "threshold_flags": [
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "expected": {
+          "neighbor_counts": [
+            1,
+            0
+          ],
+          "query_ids": [
+            1,
+            2
+          ],
+          "threshold_flags": [
+            1,
+            0
+          ]
+        },
+        "name": "prepared_reuse_1",
+        "observed": {
+          "neighbor_counts": [
+            1,
+            0
+          ],
+          "query_ids": [
+            1,
+            2
+          ],
+          "threshold_flags": [
+            1,
+            0
+          ]
+        }
+      }
+    ],
+    "prepared_reuse_run_count": 2,
+    "required_user_rule": "Numba search columns are caller-owned borrowed device arrays and must outlive the prepared V4 operator handle.",
+    "search_column_borrowed_pointers_stable_across_runs": true
+  },
+  "protocol": "cuda_array_interface",
+  "report_id": "v4_0_m1_fixed_radius_numba_partner_surface_probe_2026-06-19",
+  "route_id": "fixed_radius_count_threshold_2d",
+  "same_stream_contract": {
+    "consumer_checksum_validated": true,
+    "consumer_kernel_on_same_stream": true,
+    "cross_stream_event_wait_validated": false,
+    "numba_stream_handle": 47041328,
+    "ordering_scope": "same_nondefault_numba_stream_producer_rtdl_consumer",
+    "rtdl_prepare_stream_ptr": 47041328,
+    "rtdl_query_stream_ptr": 47041328
+  },
+  "status": "pass-with-boundary"
+}

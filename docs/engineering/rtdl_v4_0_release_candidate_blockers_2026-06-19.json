@@ -24,6 +24,7 @@
   "latest_validated_m1_cross_stream_evidence_commit": "48ce1f9725613f746cea9ba0de438ae0ee830ca3",
   "latest_validated_m1_cross_stream_evidence_scope": "clean source-tree commit after push",
   "latest_validated_m1_cross_stream_v4_active_tests": 53,
+  "latest_current_head_linux_gpu_m1_release_gate_head": "d99945e980b6c76baf9c5a0ec5f0ac5965c873ae",
   "current_source_tree_v4_active_tests": 85,
   "current_source_tree_v4_release_candidate_tests": 85,
   "evidence_ready": [
@@ -143,9 +144,10 @@
     },
     {
       "id": "current_head_linux_gpu_m1_release_gate",
-      "status": "required_for_post_m8_current_head_refresh",
-      "path": "scripts/v4_0_m1_linux_gpu_release_gate.py",
-      "note": "Live Linux GPU gate that reruns build-optix, source-tree runtime preflight, CuPy stream/no-host-stage/ordering probes, Numba partner-surface probe, DLPack capsule probe, PyTorch CUDA tensor probe, serious-scale CuPy benchmark probe, v4_release_candidate, claim scan, git diff --check, and clean worktree for the current checkout head."
+      "status": "passed_for_d99945e980b6c76baf9c5a0ec5f0ac5965c873ae",
+      "path": "docs/reports/v4_0_m1_linux_gpu_release_gate_2026-06-19.json",
+      "runner": "scripts/v4_0_m1_linux_gpu_release_gate.py",
+      "note": "Live Linux GPU gate reran build-optix, source-tree runtime preflight, CuPy stream/no-host-stage/ordering probes, Numba partner-surface probe, DLPack capsule probe, PyTorch CUDA tensor probe, 262,144-row CuPy benchmark probe, v4_release_candidate, claim scan, git diff --check, and clean worktree for commit d99945e980b6c76baf9c5a0ec5f0ac5965c873ae."
     },
     {
       "id": "cuda_array_interface_device_identity_contract",

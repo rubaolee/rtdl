@@ -1,0 +1,98 @@
+{
+  "caller_stream_handle_nonzero": true,
+  "claim_boundaries": {
+    "async_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "expected": {
+    "neighbor_counts": [
+      1,
+      1,
+      0
+    ],
+    "query_ids": [
+      1,
+      2,
+      3
+    ],
+    "threshold_flags": [
+      1,
+      1,
+      0
+    ]
+  },
+  "metadata_subset": {
+    "caller_stream_handle": 97116816,
+    "caller_stream_native_propagation_ready": true,
+    "internal_device_staging_disclosed": true,
+    "named_cuda_columns_no_host_stage_authorized": true,
+    "native_async_ready": false,
+    "native_call_device_pointer_echo_complete": true,
+    "native_prepare_stream_propagation_ready": true,
+    "native_synchronized_before_return": true,
+    "native_true_zero_copy_authorized": true,
+    "prepare_stream_handle": 97116816,
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "observed": {
+    "neighbor_counts": [
+      1,
+      1,
+      0
+    ],
+    "query_ids": [
+      1,
+      2,
+      3
+    ],
+    "threshold_flags": [
+      1,
+      1,
+      0
+    ]
+  },
+  "pointer_echo_identity": {
+    "output.neighbor_counts": true,
+    "output.query_ids": true,
+    "output.threshold_flags": true,
+    "query.ids": true,
+    "query.x": true,
+    "query.y": true,
+    "search.ids": true,
+    "search.x": true,
+    "search.y": true
+  },
+  "pointer_identity": {
+    "output.neighbor_counts": true,
+    "output.query_ids": true,
+    "output.threshold_flags": true,
+    "query.ids": true,
+    "query.x": true,
+    "query.y": true,
+    "search.ids": true,
+    "search.x": true,
+    "search.y": true
+  },
+  "promotion_blockers": {
+    "async_completion_contract_missing": true,
+    "public_true_zero_copy_wording_review_with_internal_device_staging_missing": true,
+    "rtx_rt_core_speed_hardware_evidence_missing": true
+  },
+  "route_id": "fixed_radius_count_threshold_2d",
+  "source_audit": {
+    "prepare_aabb_pack_avoids_default_stream_sync": true,
+    "prepare_aabb_pack_uses_caller_stream": true,
+    "prepare_device_aabb_copy_uses_caller_stream": true,
+    "prepare_gas_build_uses_caller_stream": true,
+    "prepare_on_stream_symbol_present": true,
+    "query_does_not_download_outputs": true,
+    "query_on_stream_symbol_present": true,
+    "query_synchronizes_caller_stream_before_return": true,
+    "query_uses_async_param_upload": true,
+    "query_uses_caller_stream_launch": true,
+    "query_uses_device_to_device_empty_copy": true
+  },
+  "status": "pass-with-boundary"
+}

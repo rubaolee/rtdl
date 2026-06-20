@@ -1,0 +1,158 @@
+{
+  "claim_boundaries": {
+    "async_claim_authorized": false,
+    "cross_stream_event_wait_claim_authorized": false,
+    "fixed_radius_m1_cross_stream_prepare_query_event_wait_claim_authorized": true,
+    "forbidden_wording": [
+      "async or nonblocking completion",
+      "full external stream ownership",
+      "general cross-stream event semantics",
+      "public true-zero-copy",
+      "RT-core speedup"
+    ],
+    "full_external_stream_ownership_claim_authorized": false,
+    "general_cross_stream_event_wait_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "reason": "This probe validates same-stream ordering and the narrow fixed-radius M1 prepare-ready event wait from a prepare stream to a different query stream. It does not authorize async, full external stream ownership, true-zero-copy, or speedup wording.",
+    "rt_core_speedup_claim_authorized": false,
+    "same_stream_ordering_claim_authorized": true,
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "cross_stream_prepare_query_contract": {
+    "cross_stream_event_wait_validated": true,
+    "native_prepare_ready_event_recorded": true,
+    "native_prepare_ready_event_wait_required": true,
+    "native_prepare_ready_event_wait_used": true,
+    "native_synchronized_before_return": true,
+    "prepare_input_event_recorded": true,
+    "prepare_query_streams_differ": true,
+    "prepare_stream_ptr": 289713072,
+    "query_stream_consumer_event_recorded": true,
+    "query_stream_ptr": 289748752,
+    "streams_distinct": true
+  },
+  "hardware": {
+    "compute_capability": "6.1",
+    "driver": "580.126.09",
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "memory": "8192 MiB",
+    "nvidia_smi_available": true
+  },
+  "metadata_subset": {
+    "caller_stream_handle_nonzero": true,
+    "caller_stream_native_propagation_ready": true,
+    "cross_stream_event_wait_ready": true,
+    "cross_stream_prepare_query_wait_used": true,
+    "named_cuda_columns_no_host_stage_authorized": true,
+    "native_async_ready": false,
+    "native_prepare_stream_propagation_ready": true,
+    "native_synchronized_before_return": true,
+    "prepare_stream_handle_nonzero": true,
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "ordering_scope": "same_stream_and_cross_stream_prepare_query_event_wait",
+  "route_id": "fixed_radius_count_threshold_2d",
+  "same_stream_contract": {
+    "consumer_event_recorded": true,
+    "consumer_stream_ptr": 267448352,
+    "cross_stream_event_wait_validated": false,
+    "native_prepare_ready_event_wait_used": false,
+    "ordering_scope": "same_nondefault_cupy_stream_producer_rtdl_consumer",
+    "producer_event_recorded": true,
+    "producer_rtdl_consumer_order_validated": true,
+    "producer_stream_ptr": 267448352,
+    "rtdl_prepare_stream_ptr": 267448352,
+    "rtdl_query_stream_ptr": 267448352
+  },
+  "status": "pass-with-boundary",
+  "validation": {
+    "cross_stream_device_consumer_checksum_match": true,
+    "cross_stream_expected": {
+      "neighbor_counts": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "query_ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "threshold_flags": [
+        1,
+        1,
+        0,
+        1
+      ]
+    },
+    "cross_stream_expected_checksum": 1033,
+    "cross_stream_observed": {
+      "neighbor_counts": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "query_ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "threshold_flags": [
+        1,
+        1,
+        0,
+        1
+      ]
+    },
+    "cross_stream_observed_checksum": 1033,
+    "cross_stream_output_match": true,
+    "device_consumer_checksum_match": true,
+    "expected": {
+      "neighbor_counts": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "query_ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "threshold_flags": [
+        1,
+        1,
+        0,
+        1
+      ]
+    },
+    "expected_checksum": 1033,
+    "observed": {
+      "neighbor_counts": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "query_ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "threshold_flags": [
+        1,
+        1,
+        0,
+        1
+      ]
+    },
+    "observed_checksum": 1033,
+    "output_match": true
+  }
+}

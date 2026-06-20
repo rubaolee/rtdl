@@ -481,8 +481,12 @@ class V40ReframedProductDesignTest(unittest.TestCase):
             evidence_by_id["final_validation_bundle"]["path"],
         )
         self.assertEqual(
-            "scripts/v4_0_m1_linux_gpu_release_gate.py",
+            "docs/reports/v4_0_m1_linux_gpu_release_gate_2026-06-19.json",
             evidence_by_id["current_head_linux_gpu_m1_release_gate"]["path"],
+        )
+        self.assertEqual(
+            "scripts/v4_0_m1_linux_gpu_release_gate.py",
+            evidence_by_id["current_head_linux_gpu_m1_release_gate"]["runner"],
         )
         self.assertIn("after_editable_install_external_review_consensus", evidence_by_id)
         self.assertEqual(

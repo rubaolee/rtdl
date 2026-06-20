@@ -151,6 +151,7 @@ The current evidence does not validate:
 | Package/runtime tie-breaker | `docs/reviews/codex_v4_package_runtime_tiebreaker_2026-06-19.md` | Requires editable-install hygiene evidence while keeping package/PyPI/wheel claims blocked. |
 | Claude external M8 review | `docs/reviews/claude_v4_0_m8_external_review_2026-06-19.md` | Accepted the M8 packet as the V4.0 experimental review baseline with blockers; the final validation commit is now assigned. |
 | Final validation bundle | `docs/reports/v4_0_m8_final_validation_bundle_2026-06-19.json` | Clean-clone Linux validation passed at the final release-candidate commit. |
+| Current-head Linux GPU M1 release gate | `docs/reports/v4_0_m1_linux_gpu_release_gate_2026-06-19.json` | Fresh clean-clone Linux validation passed at `d99945e980b6c76baf9c5a0ec5f0ac5965c873ae`, including all core M1 route probes and the 262,144-row benchmark probe. |
 
 ## Validation Summary
 
@@ -208,6 +209,23 @@ source-tree head `758111f08b6b2b79f073ec7c3880137df8f08116`:
 - `scripts/run_test_matrix.py --group v4_active`: 73 tests, pass;
 - `scripts/run_test_matrix.py --group v4_release_candidate`: 73 tests, pass;
 - `scripts/v4_0_current_front_door_claim_boundary_scan.py`: pass;
+- `git diff --check`: pass;
+- worktree clean.
+
+Current-head Linux GPU M1 release gate on `192.168.1.20` in a fresh clean clone
+for source-tree head `d99945e980b6c76baf9c5a0ec5f0ac5965c873ae`:
+
+- `make build-optix`: pass;
+- `scripts/v4_0_source_tree_runtime_preflight.py --require-v4-gpu-runtime`: pass;
+- CuPy stream smoke: pass;
+- CuPy no-host-stage transfer-counter probe: pass;
+- CuPy same-stream and fixed-radius M1 cross-stream ordering probe: pass;
+- Numba `DeviceNDArray` partner-surface probe: pass;
+- DLPack capsule probe: pass;
+- PyTorch CUDA tensor compatibility probe: pass;
+- 262,144-row CuPy benchmark probe: pass-with-boundary;
+- `scripts/run_test_matrix.py --group v4_release_candidate`: 85 tests, pass;
+- front-door claim scan: pass;
 - `git diff --check`: pass;
 - worktree clean.
 

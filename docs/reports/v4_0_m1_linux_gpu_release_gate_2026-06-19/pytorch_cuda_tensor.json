@@ -1,0 +1,465 @@
+{
+  "claim_boundaries": {
+    "async_claim_authorized": false,
+    "framework_neutral_dlpack_route_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "pytorch_fixed_radius_m1_cuda_tensor_compatibility_matrix_claim_authorized": true,
+    "pytorch_fixed_radius_m1_cuda_tensor_route_claim_authorized": true,
+    "pytorch_full_partner_surface_claim_authorized": false,
+    "pytorch_route_claim_authorized": true,
+    "reason": "This probe validates the exact fixed-radius M1 route for PyTorch CUDA tensors with pointer identity, native pointer echo, same-stream checksum, direct torch.cuda.Stream objects, distinct prepare/query stream ordering, caller-owned outputs, detached tensor acceptance, and fail-closed compatibility cases. It does not validate a full PyTorch partner surface, framework-neutral DLPack, async, true-zero-copy, or speedup wording.",
+    "rt_core_speedup_claim_authorized": false,
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "compatibility_matrix": {
+    "accepted": [
+      {
+        "caller_stream_handle": 330339936,
+        "case_id": "contiguous_detached_cuda_same_stream_object",
+        "expected": {
+          "neighbor_counts": [
+            1,
+            1,
+            0
+          ],
+          "query_ids": [
+            1,
+            2,
+            3
+          ],
+          "threshold_flags": [
+            1,
+            1,
+            0
+          ]
+        },
+        "expected_checksum": 622,
+        "metadata_subset": {
+          "caller_stream_handle_nonzero": true,
+          "caller_stream_native_propagation_ready": true,
+          "named_cuda_columns_no_host_stage_authorized": true,
+          "native_async_ready": false,
+          "native_call_device_pointer_echo_complete": true,
+          "native_prepare_stream_propagation_ready": true,
+          "native_synchronized_before_return": true,
+          "prepare_stream_handle_nonzero": true,
+          "v4_true_zero_copy_claim_authorized": false
+        },
+        "native_async_ready": false,
+        "native_pointer_echo_match_complete": true,
+        "native_prepare_ready_event_wait_used": false,
+        "native_synchronized_before_return": true,
+        "observed": {
+          "neighbor_counts": [
+            1,
+            1,
+            0
+          ],
+          "query_ids": [
+            1,
+            2,
+            3
+          ],
+          "threshold_flags": [
+            1,
+            1,
+            0
+          ]
+        },
+        "observed_checksum": 622,
+        "passed": true,
+        "pointer_echo_identity": {
+          "output.neighbor_counts": true,
+          "output.query_ids": true,
+          "output.threshold_flags": true,
+          "query.ids": true,
+          "query.x": true,
+          "query.y": true,
+          "search.ids": true,
+          "search.x": true,
+          "search.y": true
+        },
+        "pointer_identity": {
+          "output.neighbor_counts": true,
+          "output.query_ids": true,
+          "output.threshold_flags": true,
+          "query.ids": true,
+          "query.x": true,
+          "query.y": true,
+          "search.ids": true,
+          "search.x": true,
+          "search.y": true
+        },
+        "pointer_identity_complete": true,
+        "prepare_query_streams_differ": false,
+        "prepare_stream_handle": 330339936,
+        "source_protocols": [
+          "torch"
+        ]
+      },
+      {
+        "caller_stream_handle": 329089360,
+        "case_id": "detached_from_grad_cuda_tensor",
+        "expected": {
+          "neighbor_counts": [
+            1,
+            1,
+            0
+          ],
+          "query_ids": [
+            1,
+            2,
+            3
+          ],
+          "threshold_flags": [
+            1,
+            1,
+            0
+          ]
+        },
+        "expected_checksum": 622,
+        "metadata_subset": {
+          "caller_stream_handle_nonzero": true,
+          "caller_stream_native_propagation_ready": true,
+          "named_cuda_columns_no_host_stage_authorized": true,
+          "native_async_ready": false,
+          "native_call_device_pointer_echo_complete": true,
+          "native_prepare_stream_propagation_ready": true,
+          "native_synchronized_before_return": true,
+          "prepare_stream_handle_nonzero": true,
+          "v4_true_zero_copy_claim_authorized": false
+        },
+        "native_async_ready": false,
+        "native_pointer_echo_match_complete": true,
+        "native_prepare_ready_event_wait_used": false,
+        "native_synchronized_before_return": true,
+        "observed": {
+          "neighbor_counts": [
+            1,
+            1,
+            0
+          ],
+          "query_ids": [
+            1,
+            2,
+            3
+          ],
+          "threshold_flags": [
+            1,
+            1,
+            0
+          ]
+        },
+        "observed_checksum": 622,
+        "passed": true,
+        "pointer_echo_identity": {
+          "output.neighbor_counts": true,
+          "output.query_ids": true,
+          "output.threshold_flags": true,
+          "query.ids": true,
+          "query.x": true,
+          "query.y": true,
+          "search.ids": true,
+          "search.x": true,
+          "search.y": true
+        },
+        "pointer_identity": {
+          "output.neighbor_counts": true,
+          "output.query_ids": true,
+          "output.threshold_flags": true,
+          "query.ids": true,
+          "query.x": true,
+          "query.y": true,
+          "search.ids": true,
+          "search.x": true,
+          "search.y": true
+        },
+        "pointer_identity_complete": true,
+        "prepare_query_streams_differ": false,
+        "prepare_stream_handle": 329089360,
+        "source_protocols": [
+          "torch"
+        ]
+      },
+      {
+        "caller_stream_handle": 335980688,
+        "case_id": "distinct_prepare_query_torch_stream_objects",
+        "expected": {
+          "neighbor_counts": [
+            1,
+            1,
+            0
+          ],
+          "query_ids": [
+            1,
+            2,
+            3
+          ],
+          "threshold_flags": [
+            1,
+            1,
+            0
+          ]
+        },
+        "expected_checksum": 622,
+        "metadata_subset": {
+          "caller_stream_handle_nonzero": true,
+          "caller_stream_native_propagation_ready": true,
+          "named_cuda_columns_no_host_stage_authorized": true,
+          "native_async_ready": false,
+          "native_call_device_pointer_echo_complete": true,
+          "native_prepare_stream_propagation_ready": true,
+          "native_synchronized_before_return": true,
+          "prepare_stream_handle_nonzero": true,
+          "v4_true_zero_copy_claim_authorized": false
+        },
+        "native_async_ready": false,
+        "native_pointer_echo_match_complete": true,
+        "native_prepare_ready_event_wait_used": true,
+        "native_synchronized_before_return": true,
+        "observed": {
+          "neighbor_counts": [
+            1,
+            1,
+            0
+          ],
+          "query_ids": [
+            1,
+            2,
+            3
+          ],
+          "threshold_flags": [
+            1,
+            1,
+            0
+          ]
+        },
+        "observed_checksum": 622,
+        "passed": true,
+        "pointer_echo_identity": {
+          "output.neighbor_counts": true,
+          "output.query_ids": true,
+          "output.threshold_flags": true,
+          "query.ids": true,
+          "query.x": true,
+          "query.y": true,
+          "search.ids": true,
+          "search.x": true,
+          "search.y": true
+        },
+        "pointer_identity": {
+          "output.neighbor_counts": true,
+          "output.query_ids": true,
+          "output.threshold_flags": true,
+          "query.ids": true,
+          "query.x": true,
+          "query.y": true,
+          "search.ids": true,
+          "search.x": true,
+          "search.y": true
+        },
+        "pointer_identity_complete": true,
+        "prepare_query_streams_differ": true,
+        "prepare_stream_handle": 330355648,
+        "source_protocols": [
+          "torch"
+        ]
+      }
+    ],
+    "accepted_case_count": 3,
+    "all_expected": true,
+    "full_pytorch_partner_surface_complete": false,
+    "rejected": [
+      {
+        "case_id": "grad_enabled_input_rejected",
+        "error_type": "ValueError",
+        "message_contains": "detached",
+        "observed_message": "grad-enabled PyTorch tensors must be detached before RTDL export",
+        "passed": true
+      },
+      {
+        "case_id": "grad_enabled_output_rejected",
+        "error_type": "ValueError",
+        "message_contains": "detached",
+        "observed_message": "grad-enabled PyTorch tensors must be detached before RTDL export",
+        "passed": true
+      },
+      {
+        "case_id": "cpu_tensor_rejected",
+        "error_type": "ValueError",
+        "message_contains": "requires a CUDA",
+        "observed_message": "direct device-pointer handoff requires a CUDA partner tensor",
+        "passed": true
+      },
+      {
+        "case_id": "wrong_dtype_rejected",
+        "error_type": "ValueError",
+        "message_contains": "must use dtype",
+        "observed_message": "V4 query column 'x' must use dtype double, float64",
+        "passed": true
+      },
+      {
+        "case_id": "bad_rank_rejected",
+        "error_type": "ValueError",
+        "message_contains": "one-dimensional",
+        "observed_message": "V4 query column 'x' must be one-dimensional",
+        "passed": true
+      },
+      {
+        "case_id": "noncontiguous_view_rejected",
+        "error_type": "ValueError",
+        "message_contains": "must be contiguous",
+        "observed_message": "V4 query column 'x' must be contiguous",
+        "passed": true
+      },
+      {
+        "case_id": "mismatched_lengths_rejected",
+        "error_type": "ValueError",
+        "message_contains": "matching lengths",
+        "observed_message": "V4 query columns must have matching lengths",
+        "passed": true
+      },
+      {
+        "case_id": "bad_output_length_rejected",
+        "error_type": "ValueError",
+        "message_contains": "matching lengths",
+        "observed_message": "V4 output columns must have matching lengths",
+        "passed": true
+      },
+      {
+        "case_id": "missing_column_rejected",
+        "error_type": "ValueError",
+        "message_contains": "missing V4 query columns",
+        "observed_message": "missing V4 query columns: x",
+        "passed": true
+      },
+      {
+        "case_id": "extra_column_rejected",
+        "error_type": "ValueError",
+        "message_contains": "unexpected V4 query columns",
+        "observed_message": "unexpected V4 query columns: z",
+        "passed": true
+      }
+    ],
+    "rejected_case_count": 10,
+    "scope": "fixed_radius_m1_pytorch_cuda_tensor_compatibility"
+  },
+  "evidence_code_commit": "d99945e980b6c76baf9c5a0ec5f0ac5965c873ae",
+  "evidence_code_tree": "1a53cae9c605913ec43532073db857301293e101",
+  "framework": "pytorch",
+  "hardware": {
+    "compute_capability": "6.1",
+    "driver": "580.126.09",
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "hardware_note": "This host validates CUDA/OptiX execution and PyTorch tensor routing; it is not RTX/RT-core speed evidence.",
+    "memory": "8192 MiB",
+    "nvidia_smi_available": true,
+    "rt_core_hardware": false
+  },
+  "lifetime_contract": {
+    "caller_owned_tensors_retained_until_stream_synchronized": true,
+    "detached_tensors_accepted": true,
+    "full_pytorch_partner_surface_complete": false,
+    "grad_enabled_tensors_must_be_detached": true
+  },
+  "metadata_subset": {
+    "caller_stream_handle_nonzero": true,
+    "caller_stream_native_propagation_ready": true,
+    "named_cuda_columns_no_host_stage_authorized": true,
+    "native_async_ready": false,
+    "native_call_device_pointer_echo_complete": true,
+    "native_prepare_stream_propagation_ready": true,
+    "native_synchronized_before_return": true,
+    "prepare_stream_handle_nonzero": true,
+    "source_protocols": [
+      "torch"
+    ],
+    "v4_true_zero_copy_claim_authorized": false
+  },
+  "pointer_echo_identity": {
+    "output.neighbor_counts": true,
+    "output.query_ids": true,
+    "output.threshold_flags": true,
+    "query.ids": true,
+    "query.x": true,
+    "query.y": true,
+    "search.ids": true,
+    "search.x": true,
+    "search.y": true
+  },
+  "pointer_identity": {
+    "output.neighbor_counts": true,
+    "output.query_ids": true,
+    "output.threshold_flags": true,
+    "query.ids": true,
+    "query.x": true,
+    "query.y": true,
+    "search.ids": true,
+    "search.x": true,
+    "search.y": true
+  },
+  "protocol": "torch_cuda_tensor_data_ptr",
+  "report_id": "v4_0_m1_fixed_radius_pytorch_cuda_tensor_probe_2026-06-19",
+  "route_id": "fixed_radius_count_threshold_2d",
+  "status": "pass-with-boundary",
+  "stream_contract": {
+    "async_completion_authorized": false,
+    "cross_stream_event_wait_validated": true,
+    "direct_torch_stream_object_validated": true,
+    "distinct_prepare_query_streams_validated": true,
+    "rtdl_prepare_stream_ptr": 330339936,
+    "rtdl_query_stream_ptr": 330339936,
+    "same_stream_consumer_checksum_validated": true,
+    "torch_stream_ptr": 330339936
+  },
+  "torch": {
+    "cuda_available": true,
+    "cuda_version": "12.6",
+    "device_name": "NVIDIA GeForce GTX 1070",
+    "version": "2.12.1+cu126"
+  },
+  "validation": {
+    "accepted_case_count": 3,
+    "compatibility_matrix_all_expected": true,
+    "expected": {
+      "neighbor_counts": [
+        1,
+        1,
+        0
+      ],
+      "query_ids": [
+        1,
+        2,
+        3
+      ],
+      "threshold_flags": [
+        1,
+        1,
+        0
+      ]
+    },
+    "expected_checksum": 622,
+    "grad_enabled_tensor_rejected": true,
+    "observed": {
+      "neighbor_counts": [
+        1,
+        1,
+        0
+      ],
+      "query_ids": [
+        1,
+        2,
+        3
+      ],
+      "threshold_flags": [
+        1,
+        1,
+        0
+      ]
+    },
+    "observed_checksum": 622,
+    "output_match": true,
+    "rejected_case_count": 10,
+    "same_stream_consumer_checksum_match": true
+  }
+}
