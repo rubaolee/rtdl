@@ -6,14 +6,15 @@ Status: passed
 
 Latest rerun:
 
-- time: 2026-06-24 14:07 -04:00
-- base runtime commit under test: `c9586813b5769d9bff32d7974063b594c04a8997`
+- time: 2026-06-24 14:17 -04:00
+- base runtime commit under test: `50af025033660a40fa0041996ff68d5b80a7325d`
 - working-tree delta under test:
   - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.json`
   - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`
   - `future/v4/v4_0_release_candidate_packet_2026-06-24.md`
-- reason: revalidated after Claude release-candidate amendments; targeted
-  packet/gate tests also passed after the latest POD evidence refresh
+  - `future/v4/reviews/review_debt_v4_0_release_candidate_2026-06-24.md`
+- reason: revalidated after recursive catalog-gate hardening; targeted
+  packet/gate tests also passed after the final POD evidence refresh
 
 Command:
 
@@ -39,7 +40,7 @@ py -3 -m unittest \
 Result:
 
 - modules: 15
-- tests: 55
+- tests: 56
 - status: OK
 
 Note: local Python emitted the known `Could not find platform independent libraries <prefix>` warning, but all tests passed.

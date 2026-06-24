@@ -27,7 +27,7 @@ was not treated as an available external reviewer for this release decision.
 | D6 | Claude M-1 grouped-argmin true-zero-copy explanation | `closed` | Closed by `future/v4/ray_triangle_device_array_frontdoor.md` and `future/v4/README.md`. |
 | D7 | Claude M-2 CuPy planner hardening | `closed` | Closed by `src/rtdsl/v4_operator_catalog.py` returning no V4.0 `api_surface` for `partner="cupy"` and by passing tests. |
 | D8 | Claude L-1 per-example forbidden-claim gate checks | `closed` | Closed by `scripts/v4_catalog_regression_gate.py` checking forbidden claim flags and by passing tests. |
-| D9 | Claude follow-up low-severity recursive claim-flag hardening | `applied_pending_final_gate_refresh` | Closed when recursive forbidden-claim checks and the negative regression test are committed and local/POD gates pass. |
+| D9 | Claude follow-up low-severity recursive claim-flag hardening | `closed` | Closed by recursive forbidden-claim checks, the negative regression test, and local/POD gates passing on `50af025033660a40fa0041996ff68d5b80a7325d`. |
 
 ## Waiver Definition
 

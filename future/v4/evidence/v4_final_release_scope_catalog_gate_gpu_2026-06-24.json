@@ -16,7 +16,7 @@
       "payload": {
         "copies": 8192,
         "correctness_passed": true,
-        "elapsed_s": 0.0007387623190879822,
+        "elapsed_s": 0.0007193312048912048,
         "example": "v4_fixed_radius_torch_device_arrays",
         "input_contract": "caller_supplied_torch_device_point_columns",
         "metadata": {
@@ -43,15 +43,15 @@
             "named_cuda_columns_no_host_stage_ready": true,
             "native_acceleration_structure_required": true,
             "native_call_device_pointer_echo": {
-              "output.neighbor_counts": 130390327952896,
-              "output.query_ids": 130390327690752,
-              "output.threshold_flags": 130390328215040,
-              "query.ids": 130390328804864,
-              "query.x": 130390150873088,
-              "query.y": 130390327166464,
-              "search.ids": 130390328804864,
-              "search.x": 130390150873088,
-              "search.y": 130390327166464
+              "output.neighbor_counts": 124237116212736,
+              "output.query_ids": 124237115950592,
+              "output.threshold_flags": 124237116474880,
+              "query.ids": 124237117064704,
+              "query.x": 124236939132928,
+              "query.y": 124237115426304,
+              "search.ids": 124237117064704,
+              "search.x": 124236939132928,
+              "search.y": 124237115426304
             },
             "native_call_device_pointer_echo_complete": true,
             "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns",
@@ -115,7 +115,7 @@
       "passed": true,
       "payload": {
         "correctness_passed": true,
-        "elapsed_s": 0.0001426413655281067,
+        "elapsed_s": 0.00014396756887435913,
         "example": "v4_closest_hit_grouped_argmin_torch_device_arrays",
         "group_count": 1024,
         "group_width": 8,
@@ -160,14 +160,14 @@
             "cupy"
           ],
           "phase_timing_seconds": {
-            "device_execution_host_observed": 8.041411638259888e-05,
-            "prepare_build": 0.08144796639680862,
+            "device_execution_host_observed": 8.174031972885132e-05,
+            "prepare_build": 0.10102513432502747,
             "query_pack": 0.0,
-            "traversal_grouped_argmin_and_direct_device_output_write": 3.3851e-05
+            "traversal_grouped_argmin_and_direct_device_output_write": 3.3981e-05
           },
-          "prepared_grouped_argmin_inputs_seconds": 1.903623342514038e-05,
+          "prepared_grouped_argmin_inputs_seconds": 2.2105872631072998e-05,
           "prepared_grouped_argmin_inputs_used": true,
-          "prepared_ray_batch_seconds": 0.0007922127842903137,
+          "prepared_ray_batch_seconds": 0.0007583573460578918,
           "prepared_ray_batch_used": true,
           "prepared_reused": true,
           "prepared_run_index": 2,
@@ -230,7 +230,7 @@
       "passed": true,
       "payload": {
         "correctness_passed": true,
-        "elapsed_s": 0.00040540844202041626,
+        "elapsed_s": 0.00042250752449035645,
         "example": "v4_ray_triangle_any_hit_flags_torch_device_arrays",
         "hit_count": 8192,
         "input_contract": "caller_supplied_torch_device_triangle_aabb_and_ray_columns",
@@ -410,9 +410,9 @@
     }
   ],
   "git_branch": "HEAD",
-  "git_commit": "c9586813b5769d9bff32d7974063b594c04a8997",
+  "git_commit": "50af025033660a40fa0041996ff68d5b80a7325d",
   "mode": "gpu",
-  "native_library": "/root/rtdl_v4_section8/worktrees/v4_final_validation_20260624_1408/build/librtdl_optix.so",
+  "native_library": "/root/rtdl_v4_section8/worktrees/v4_final_validation_20260624_1420/build/librtdl_optix.so",
   "non_python_host_binding_claim_authorized": false,
   "release_authorized": false,
   "schema": "rtdl.v4.catalog_regression_gate.v1",
