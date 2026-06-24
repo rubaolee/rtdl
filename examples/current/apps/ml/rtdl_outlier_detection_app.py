@@ -584,11 +584,17 @@ def run_app(
         }
     elif output_mode == "density_summary" and backend == "embree":
         neighbor_rows = ()
-        density_rows = _run_embree_prepared_density_summary(case)
+        if embree_summary_mode == "rt_count_threshold_prepared":
+            density_rows = _run_embree_prepared_density_summary(case)
+        else:
+            density_rows = _run_embree_density_summary(case)
         native_summary_rows = density_rows
     elif output_mode == "density_summary" and backend == "optix":
         neighbor_rows = ()
-        density_rows = _run_optix_density_summary(case)
+        if optix_summary_mode == "rt_count_threshold_prepared":
+            density_rows = _run_optix_prepared_density_summary(case)
+        else:
+            density_rows = _run_optix_density_summary(case)
         native_summary_rows = density_rows
     elif output_mode == "density_summary":
         neighbor_rows = ()
@@ -612,11 +618,8 @@ def run_app(
     else:
         neighbor_rows = _run_rows(backend, case)
         density_rows = density_rows_from_neighbor_rows(case["points"], neighbor_rows)
-    oracle_rows = (
-        expected_tiled_density_rows(copies=copies)
-        if output_mode in {"density_summary", "density_count"} or backend == "optix_device_density"
-        else brute_force_outlier_rows(case["points"])
-    )
+    # The benchmark fixture is a tiled exact case; keep oracle work out of route timings.
+    oracle_rows = expected_tiled_density_rows(copies=copies)
     outlier_ids = [int(row["point_id"]) for row in density_rows if bool(row["is_outlier"])]
     oracle_outlier_ids = [int(row["point_id"]) for row in oracle_rows if bool(row["is_outlier"])]
     oracle_outlier_count = len(oracle_outlier_ids)
@@ -665,6 +668,8 @@ def run_app(
         "generic_primitive": (
             scalar_density_count.get("generic_primitive")
             if scalar_density_count is not None
+            else "FIXED_RADIUS_COUNT_THRESHOLD_2D"
+            if native_summary_rows
             else "fixed_radius_count_threshold_2d"
             if partner_metadata is not None
             else None
@@ -672,6 +677,8 @@ def run_app(
         "summary_primitive": (
             scalar_density_count.get("summary_primitive")
             if scalar_density_count is not None
+            else "REDUCE_INT(COUNT)"
+            if native_summary_rows
             else "prepared_optix_partner_device_count_threshold_columns"
             if partner_metadata is not None
             else None

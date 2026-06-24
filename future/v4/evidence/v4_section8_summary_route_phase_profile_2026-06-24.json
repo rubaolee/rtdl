@@ -1,0 +1,337 @@
+{
+  "copies": [
+    8192,
+    32768,
+    131072
+  ],
+  "protocol": "v4_section8_summary_route_phase_profile",
+  "repeat": 3,
+  "results": [
+    {
+      "copies": 8192,
+      "medians": {
+        "rows_emit_sec_median": 0.335294671356678,
+        "rows_reduce_sec_median": 0.2665194422006607,
+        "rows_total_sec_median": 0.6022435650229454,
+        "scalar_native_run_sec_median": 0.13079848140478134,
+        "summary_native_run_sec_median": 0.242075577378273,
+        "summary_prepare_sec_median": 0.12326990067958832,
+        "summary_python_convert_sec_median": 0.050451211631298065,
+        "summary_total_with_prepare_sec_median": 0.40206847339868546,
+        "summary_total_without_prepare_sec_median": 0.2925267890095711
+      },
+      "neighbor_row_count": 163840,
+      "point_count": 65536,
+      "repeats": [
+        {
+          "case_sec": 0.09568202495574951,
+          "copies": 8192,
+          "neighbor_row_count": 163840,
+          "point_count": 65536,
+          "rows_emit_sec": 0.33131855726242065,
+          "rows_matches_oracle": true,
+          "rows_reduce_sec": 0.26344698667526245,
+          "rows_total_sec": 0.5947655439376831,
+          "scalar_native_run_sec": 0.0736161395907402,
+          "scalar_run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.0735834613442421,
+            "scene_prepare_sec": 0.12323333323001862,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "scalar_threshold_reached_count": 49152,
+          "summary_matches_oracle": true,
+          "summary_native_run_sec": 0.242075577378273,
+          "summary_prepare_sec": 0.12326990067958832,
+          "summary_python_convert_sec": 0.050451211631298065,
+          "summary_row_count": 65536,
+          "summary_run_phases": {
+            "query_fixed_radius_count_threshold_sec": 0.22004956007003784,
+            "scene_prepare_sec": 0.12323333323001862,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "summary_total_with_prepare_sec": 0.4157966896891594,
+          "summary_total_without_prepare_sec": 0.2925267890095711
+        },
+        {
+          "case_sec": 0.10575808584690094,
+          "copies": 8192,
+          "neighbor_row_count": 163840,
+          "point_count": 65536,
+          "rows_emit_sec": 0.335294671356678,
+          "rows_matches_oracle": true,
+          "rows_reduce_sec": 0.2669488936662674,
+          "rows_total_sec": 0.6022435650229454,
+          "scalar_native_run_sec": 0.13079848140478134,
+          "scalar_run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.13076549023389816,
+            "scene_prepare_sec": 0.1490412950515747,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "scalar_threshold_reached_count": 49152,
+          "summary_matches_oracle": true,
+          "summary_native_run_sec": 0.1982146054506302,
+          "summary_prepare_sec": 0.1490653157234192,
+          "summary_python_convert_sec": 0.05077049136161804,
+          "summary_row_count": 65536,
+          "summary_run_phases": {
+            "query_fixed_radius_count_threshold_sec": 0.17628337442874908,
+            "scene_prepare_sec": 0.1490412950515747,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "summary_total_with_prepare_sec": 0.3980504125356674,
+          "summary_total_without_prepare_sec": 0.24898509681224823
+        },
+        {
+          "case_sec": 0.1263507530093193,
+          "copies": 8192,
+          "neighbor_row_count": 163840,
+          "point_count": 65536,
+          "rows_emit_sec": 0.3545757830142975,
+          "rows_matches_oracle": true,
+          "rows_reduce_sec": 0.2665194422006607,
+          "rows_total_sec": 0.6210952252149582,
+          "scalar_native_run_sec": 0.1422189623117447,
+          "scalar_run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.1421857625246048,
+            "scene_prepare_sec": 0.08618618547916412,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "scalar_threshold_reached_count": 49152,
+          "summary_matches_oracle": true,
+          "summary_native_run_sec": 0.26634252071380615,
+          "summary_prepare_sec": 0.08621950447559357,
+          "summary_python_convert_sec": 0.049506448209285736,
+          "summary_row_count": 65536,
+          "summary_run_phases": {
+            "query_fixed_radius_count_threshold_sec": 0.24464664608240128,
+            "scene_prepare_sec": 0.08618618547916412,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "summary_total_with_prepare_sec": 0.40206847339868546,
+          "summary_total_without_prepare_sec": 0.3158489689230919
+        }
+      ],
+      "rows_matches_oracle": true,
+      "summary_matches_oracle": true,
+      "summary_row_count": 65536
+    },
+    {
+      "copies": 32768,
+      "medians": {
+        "rows_emit_sec_median": 1.4341667741537094,
+        "rows_reduce_sec_median": 1.1058484464883804,
+        "rows_total_sec_median": 2.539660081267357,
+        "scalar_native_run_sec_median": 0.5007384568452835,
+        "summary_native_run_sec_median": 1.0216139256954193,
+        "summary_prepare_sec_median": 0.5030430629849434,
+        "summary_python_convert_sec_median": 0.21895507723093033,
+        "summary_total_with_prepare_sec_median": 1.7256430834531784,
+        "summary_total_without_prepare_sec_median": 1.243263378739357
+      },
+      "neighbor_row_count": 655360,
+      "point_count": 262144,
+      "repeats": [
+        {
+          "case_sec": 0.5335556194186211,
+          "copies": 32768,
+          "neighbor_row_count": 655360,
+          "point_count": 262144,
+          "rows_emit_sec": 1.4341667741537094,
+          "rows_matches_oracle": true,
+          "rows_reduce_sec": 1.1054933071136475,
+          "rows_total_sec": 2.539660081267357,
+          "scalar_native_run_sec": 0.47813981026411057,
+          "scalar_run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.47810137271881104,
+            "scene_prepare_sec": 0.5030136182904243,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "scalar_threshold_reached_count": 196608,
+          "summary_matches_oracle": true,
+          "summary_native_run_sec": 1.0055714547634125,
+          "summary_prepare_sec": 0.5030430629849434,
+          "summary_python_convert_sec": 0.21702856570482254,
+          "summary_row_count": 262144,
+          "summary_run_phases": {
+            "query_fixed_radius_count_threshold_sec": 0.9165557324886322,
+            "scene_prepare_sec": 0.5030136182904243,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "summary_total_with_prepare_sec": 1.7256430834531784,
+          "summary_total_without_prepare_sec": 1.222600020468235
+        },
+        {
+          "case_sec": 0.4575519859790802,
+          "copies": 32768,
+          "neighbor_row_count": 655360,
+          "point_count": 262144,
+          "rows_emit_sec": 1.2822035923600197,
+          "rows_matches_oracle": true,
+          "rows_reduce_sec": 1.1145126894116402,
+          "rows_total_sec": 2.39671628177166,
+          "scalar_native_run_sec": 0.5007384568452835,
+          "scalar_run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.5007001981139183,
+            "scene_prepare_sec": 0.51544588804245,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "scalar_threshold_reached_count": 196608,
+          "summary_matches_oracle": true,
+          "summary_native_run_sec": 1.0216139256954193,
+          "summary_prepare_sec": 0.5154745578765869,
+          "summary_python_convert_sec": 0.22164945304393768,
+          "summary_row_count": 262144,
+          "summary_run_phases": {
+            "query_fixed_radius_count_threshold_sec": 0.9320316463708878,
+            "scene_prepare_sec": 0.51544588804245,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "summary_total_with_prepare_sec": 1.758737936615944,
+          "summary_total_without_prepare_sec": 1.243263378739357
+        },
+        {
+          "case_sec": 0.4824225902557373,
+          "copies": 32768,
+          "neighbor_row_count": 655360,
+          "point_count": 262144,
+          "rows_emit_sec": 1.5005617588758469,
+          "rows_matches_oracle": true,
+          "rows_reduce_sec": 1.1058484464883804,
+          "rows_total_sec": 2.6064102053642273,
+          "scalar_native_run_sec": 0.547150619328022,
+          "scalar_run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.547109916806221,
+            "scene_prepare_sec": 0.3413167670369148,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "scalar_threshold_reached_count": 196608,
+          "summary_matches_oracle": true,
+          "summary_native_run_sec": 1.0625830814242363,
+          "summary_prepare_sec": 0.3413459360599518,
+          "summary_python_convert_sec": 0.21895507723093033,
+          "summary_row_count": 262144,
+          "summary_run_phases": {
+            "query_fixed_radius_count_threshold_sec": 0.9745310246944427,
+            "scene_prepare_sec": 0.3413167670369148,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "summary_total_with_prepare_sec": 1.6228840947151184,
+          "summary_total_without_prepare_sec": 1.2815381586551666
+        }
+      ],
+      "rows_matches_oracle": true,
+      "summary_matches_oracle": true,
+      "summary_row_count": 262144
+    },
+    {
+      "copies": 131072,
+      "medians": {
+        "rows_emit_sec_median": 7.564805522561073,
+        "rows_reduce_sec_median": 4.762015275657177,
+        "rows_total_sec_median": 12.316418439149857,
+        "scalar_native_run_sec_median": 2.042837381362915,
+        "summary_native_run_sec_median": 4.0390420332551,
+        "summary_prepare_sec_median": 2.0348482504487038,
+        "summary_python_convert_sec_median": 1.2524525076150894,
+        "summary_total_with_prepare_sec_median": 7.103814981877804,
+        "summary_total_without_prepare_sec_median": 5.261207886040211
+      },
+      "neighbor_row_count": 2621440,
+      "point_count": 1048576,
+      "repeats": [
+        {
+          "case_sec": 2.0210990235209465,
+          "copies": 131072,
+          "neighbor_row_count": 2621440,
+          "point_count": 1048576,
+          "rows_emit_sec": 7.35821845382452,
+          "rows_matches_oracle": true,
+          "rows_reduce_sec": 4.762015275657177,
+          "rows_total_sec": 12.120233729481697,
+          "scalar_native_run_sec": 1.8944929242134094,
+          "scalar_run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 1.8944521769881248,
+            "scene_prepare_sec": 2.034815452992916,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "scalar_threshold_reached_count": 786432,
+          "summary_matches_oracle": true,
+          "summary_native_run_sec": 4.0390420332551,
+          "summary_prepare_sec": 2.0348482504487038,
+          "summary_python_convert_sec": 1.2221658527851105,
+          "summary_row_count": 1048576,
+          "summary_run_phases": {
+            "query_fixed_radius_count_threshold_sec": 3.6801054030656815,
+            "scene_prepare_sec": 2.034815452992916,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "summary_total_with_prepare_sec": 7.2960561364889145,
+          "summary_total_without_prepare_sec": 5.261207886040211
+        },
+        {
+          "case_sec": 2.315149635076523,
+          "copies": 131072,
+          "neighbor_row_count": 2621440,
+          "point_count": 1048576,
+          "rows_emit_sec": 7.564805522561073,
+          "rows_matches_oracle": true,
+          "rows_reduce_sec": 4.751612916588783,
+          "rows_total_sec": 12.316418439149857,
+          "scalar_native_run_sec": 2.042837381362915,
+          "scalar_run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 2.042796351015568,
+            "scene_prepare_sec": 1.4451688677072525,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "scalar_threshold_reached_count": 786432,
+          "summary_matches_oracle": true,
+          "summary_native_run_sec": 4.1724285408854485,
+          "summary_prepare_sec": 1.4452014565467834,
+          "summary_python_convert_sec": 1.277549497783184,
+          "summary_row_count": 1048576,
+          "summary_run_phases": {
+            "query_fixed_radius_count_threshold_sec": 3.818080708384514,
+            "scene_prepare_sec": 1.4451688677072525,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "summary_total_with_prepare_sec": 6.895179495215416,
+          "summary_total_without_prepare_sec": 5.4499780386686325
+        },
+        {
+          "case_sec": 1.8892597183585167,
+          "copies": 131072,
+          "neighbor_row_count": 2621440,
+          "point_count": 1048576,
+          "rows_emit_sec": 7.719105675816536,
+          "rows_matches_oracle": true,
+          "rows_reduce_sec": 4.769678175449371,
+          "rows_total_sec": 12.488783851265907,
+          "scalar_native_run_sec": 2.2039145678281784,
+          "scalar_run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 2.2038694471120834,
+            "scene_prepare_sec": 2.4202970415353775,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "scalar_threshold_reached_count": 786432,
+          "summary_matches_oracle": true,
+          "summary_native_run_sec": 3.4310349598526955,
+          "summary_prepare_sec": 2.420327514410019,
+          "summary_python_convert_sec": 1.2524525076150894,
+          "summary_row_count": 1048576,
+          "summary_run_phases": {
+            "query_fixed_radius_count_threshold_sec": 3.071124240756035,
+            "scene_prepare_sec": 2.4202970415353775,
+            "scene_prepare_sec_this_batch": 0.0
+          },
+          "summary_total_with_prepare_sec": 7.103814981877804,
+          "summary_total_without_prepare_sec": 4.683487467467785
+        }
+      ],
+      "rows_matches_oracle": true,
+      "summary_matches_oracle": true,
+      "summary_row_count": 1048576
+    }
+  ],
+  "status": "measured",
+  "warmup": 1
+}

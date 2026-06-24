@@ -1,0 +1,279 @@
+[size-start] copies=8192
+[start] copies=8192 route=optix_rows
+[warmup] copies=8192 route=optix_rows 1/1
+[repeat-start] copies=8192 route=optix_rows 1/7
+[repeat-done] copies=8192 route=optix_rows 1/7 elapsed_s=0.736112
+[repeat-start] copies=8192 route=optix_rows 2/7
+[repeat-done] copies=8192 route=optix_rows 2/7 elapsed_s=0.781421
+[repeat-start] copies=8192 route=optix_rows 3/7
+[repeat-done] copies=8192 route=optix_rows 3/7 elapsed_s=0.739335
+[repeat-start] copies=8192 route=optix_rows 4/7
+[repeat-done] copies=8192 route=optix_rows 4/7 elapsed_s=0.820319
+[repeat-start] copies=8192 route=optix_rows 5/7
+[repeat-done] copies=8192 route=optix_rows 5/7 elapsed_s=0.765098
+[repeat-start] copies=8192 route=optix_rows 6/7
+[repeat-done] copies=8192 route=optix_rows 6/7 elapsed_s=0.768337
+[repeat-start] copies=8192 route=optix_rows 7/7
+[repeat-done] copies=8192 route=optix_rows 7/7 elapsed_s=0.779906
+[done] copies=8192 route=optix_rows median_s=0.768337
+[start] copies=8192 route=optix_fused_prepared_scalar
+[warmup] copies=8192 route=optix_fused_prepared_scalar 1/1
+[repeat-start] copies=8192 route=optix_fused_prepared_scalar 1/7
+[repeat-done] copies=8192 route=optix_fused_prepared_scalar 1/7 elapsed_s=0.376395
+[repeat-start] copies=8192 route=optix_fused_prepared_scalar 2/7
+[repeat-done] copies=8192 route=optix_fused_prepared_scalar 2/7 elapsed_s=0.362577
+[repeat-start] copies=8192 route=optix_fused_prepared_scalar 3/7
+[repeat-done] copies=8192 route=optix_fused_prepared_scalar 3/7 elapsed_s=0.365637
+[repeat-start] copies=8192 route=optix_fused_prepared_scalar 4/7
+[repeat-done] copies=8192 route=optix_fused_prepared_scalar 4/7 elapsed_s=0.368366
+[repeat-start] copies=8192 route=optix_fused_prepared_scalar 5/7
+[repeat-done] copies=8192 route=optix_fused_prepared_scalar 5/7 elapsed_s=0.357193
+[repeat-start] copies=8192 route=optix_fused_prepared_scalar 6/7
+[repeat-done] copies=8192 route=optix_fused_prepared_scalar 6/7 elapsed_s=0.349726
+[repeat-start] copies=8192 route=optix_fused_prepared_scalar 7/7
+[repeat-done] copies=8192 route=optix_fused_prepared_scalar 7/7 elapsed_s=0.451672
+[done] copies=8192 route=optix_fused_prepared_scalar median_s=0.365637
+[start] copies=8192 route=optix_fused_prepared_summary
+[warmup] copies=8192 route=optix_fused_prepared_summary 1/1
+[repeat-start] copies=8192 route=optix_fused_prepared_summary 1/7
+[repeat-done] copies=8192 route=optix_fused_prepared_summary 1/7 elapsed_s=0.532274
+[repeat-start] copies=8192 route=optix_fused_prepared_summary 2/7
+[repeat-done] copies=8192 route=optix_fused_prepared_summary 2/7 elapsed_s=0.552815
+[repeat-start] copies=8192 route=optix_fused_prepared_summary 3/7
+[repeat-done] copies=8192 route=optix_fused_prepared_summary 3/7 elapsed_s=0.535974
+[repeat-start] copies=8192 route=optix_fused_prepared_summary 4/7
+[repeat-done] copies=8192 route=optix_fused_prepared_summary 4/7 elapsed_s=0.549964
+[repeat-start] copies=8192 route=optix_fused_prepared_summary 5/7
+[repeat-done] copies=8192 route=optix_fused_prepared_summary 5/7 elapsed_s=0.546476
+[repeat-start] copies=8192 route=optix_fused_prepared_summary 6/7
+[repeat-done] copies=8192 route=optix_fused_prepared_summary 6/7 elapsed_s=0.538179
+[repeat-start] copies=8192 route=optix_fused_prepared_summary 7/7
+[repeat-done] copies=8192 route=optix_fused_prepared_summary 7/7 elapsed_s=0.567131
+[done] copies=8192 route=optix_fused_prepared_summary median_s=0.546476
+[size-done] copies=8192 correctness=True
+{
+  "claim_boundary": "This harness can validate fused primitive vs separated RTDL route. It cannot authorize near-handwritten OptiX wording without an independent reference route.",
+  "copies": [
+    8192
+  ],
+  "independent_handwritten_optix_reference_available": false,
+  "near_handwritten_optix_claim_authorized": false,
+  "performance_gate": {
+    "authorized_next_step": "stop_v4_performance_release_and_revisit_architecture",
+    "failures": [
+      "copies=8192: summary route below gate or not fused"
+    ],
+    "min_passing_serious_sizes": 2,
+    "scalar_passing_sizes": [
+      {
+        "copies": 8192,
+        "speedup": 2.1013645904595406
+      }
+    ],
+    "scalar_speedup_gate": 2.0,
+    "status": "fail",
+    "summary_passing_sizes": [],
+    "summary_speedup_gate": 1.5,
+    "v4_tier2_thesis_locally_validated": false
+  },
+  "protocol": "v4_section8_fixed_radius_count_threshold_validation",
+  "release_claim_authorized": false,
+  "repeat": 7,
+  "results": [
+    {
+      "comparisons": {
+        "optix_fused_prepared_scalar": {
+          "baseline_median_s": 0.7683374211192131,
+          "candidate_median_s": 0.365637369453907,
+          "speedup_over_optix_rows_median": 2.1013645904595406
+        },
+        "optix_fused_prepared_summary": {
+          "baseline_median_s": 0.7683374211192131,
+          "candidate_median_s": 0.5464761331677437,
+          "speedup_over_optix_rows_median": 1.405985320283636
+        }
+      },
+      "copies": 8192,
+      "correctness": {
+        "correctness_passed": true,
+        "reference_route": "optix_rows",
+        "reference_signature": {
+          "matches_oracle": true,
+          "outlier_count": 16384,
+          "point_count": 65536,
+          "threshold_reached_count": null
+        },
+        "route_signatures": {
+          "optix_fused_prepared_scalar": {
+            "matches_oracle": true,
+            "outlier_count": 16384,
+            "point_count": 65536,
+            "threshold_reached_count": 49152
+          },
+          "optix_fused_prepared_summary": {
+            "matches_oracle": true,
+            "outlier_count": 16384,
+            "point_count": 65536,
+            "threshold_reached_count": null
+          },
+          "optix_rows": {
+            "matches_oracle": true,
+            "outlier_count": 16384,
+            "point_count": 65536,
+            "threshold_reached_count": null
+          }
+        },
+        "signature_matches": {
+          "optix_fused_prepared_scalar": true,
+          "optix_fused_prepared_summary": true,
+          "optix_rows": true
+        }
+      },
+      "correctness_passed": true,
+      "point_count": 65536,
+      "route_results": [
+        {
+          "boundary": "Bounded density-threshold outlier demo only; Embree/OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim. optix_device_density is a generic fixed-radius count-threshold device-column route, not an outlier-specific native engine ABI, automatic partner choice, public speedup claim, or true-zero-copy claim.",
+          "copies": 8192,
+          "description": "Tier-1 separated route: OptiX neighbor rows plus Python reduction",
+          "generic_primitive": null,
+          "max_s": 0.8203189671039581,
+          "median_s": 0.7683374211192131,
+          "min_s": 0.7361124232411385,
+          "native_continuation_active": false,
+          "native_continuation_backend": "none",
+          "native_summary_row_count": 0,
+          "neighbor_row_count": 163840,
+          "point_count": 65536,
+          "repeat": 7,
+          "route": "optix_rows",
+          "signature": {
+            "matches_oracle": true,
+            "outlier_count": 16384,
+            "point_count": 65536,
+            "threshold_reached_count": null
+          },
+          "summary_mode": null,
+          "summary_primitive": null,
+          "tier": "tier1_separated",
+          "timings_s": [
+            0.7361124232411385,
+            0.7814210951328278,
+            0.7393347844481468,
+            0.8203189671039581,
+            0.7650977447628975,
+            0.7683374211192131,
+            0.7799059748649597
+          ],
+          "warmup": 1
+        },
+        {
+          "boundary": "Bounded density-threshold outlier demo only; Embree/OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim. optix_device_density is a generic fixed-radius count-threshold device-column route, not an outlier-specific native engine ABI, automatic partner choice, public speedup claim, or true-zero-copy claim.",
+          "copies": 8192,
+          "description": "Tier-2 fused route: prepared OptiX count-threshold scalar",
+          "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+          "max_s": 0.4516722336411476,
+          "median_s": 0.365637369453907,
+          "min_s": 0.3497263565659523,
+          "native_continuation_active": true,
+          "native_continuation_backend": "optix_threshold_count",
+          "native_summary_row_count": 0,
+          "neighbor_row_count": 0,
+          "point_count": 65536,
+          "repeat": 7,
+          "route": "optix_fused_prepared_scalar",
+          "signature": {
+            "matches_oracle": true,
+            "outlier_count": 16384,
+            "point_count": 65536,
+            "threshold_reached_count": 49152
+          },
+          "summary_mode": "scalar_threshold_count",
+          "summary_primitive": "REDUCE_INT(COUNT)",
+          "tier": "tier2_fused_native_primitive",
+          "timings_s": [
+            0.37639451026916504,
+            0.36257725954055786,
+            0.365637369453907,
+            0.36836638301610947,
+            0.3571932762861252,
+            0.3497263565659523,
+            0.4516722336411476
+          ],
+          "warmup": 1
+        },
+        {
+          "boundary": "Bounded density-threshold outlier demo only; Embree/OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim. optix_device_density is a generic fixed-radius count-threshold device-column route, not an outlier-specific native engine ABI, automatic partner choice, public speedup claim, or true-zero-copy claim.",
+          "copies": 8192,
+          "description": "Tier-2 fused route: prepared OptiX count-threshold compact rows",
+          "generic_primitive": null,
+          "max_s": 0.5671312734484673,
+          "median_s": 0.5464761331677437,
+          "min_s": 0.5322741121053696,
+          "native_continuation_active": true,
+          "native_continuation_backend": "optix_threshold_count",
+          "native_summary_row_count": 65536,
+          "neighbor_row_count": 0,
+          "point_count": 65536,
+          "repeat": 7,
+          "route": "optix_fused_prepared_summary",
+          "signature": {
+            "matches_oracle": true,
+            "outlier_count": 16384,
+            "point_count": 65536,
+            "threshold_reached_count": null
+          },
+          "summary_mode": null,
+          "summary_primitive": null,
+          "tier": "tier2_fused_native_primitive",
+          "timings_s": [
+            0.5322741121053696,
+            0.5528145208954811,
+            0.535974308848381,
+            0.549963504076004,
+            0.5464761331677437,
+            0.5381792262196541,
+            0.5671312734484673
+          ],
+          "warmup": 1
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "description": "Tier-1 separated route: OptiX neighbor rows plus Python reduction",
+      "kwargs": {
+        "backend": "optix",
+        "optix_summary_mode": "rows",
+        "output_mode": "full"
+      },
+      "requires_gpu": true,
+      "route": "optix_rows",
+      "tier": "tier1_separated"
+    },
+    {
+      "description": "Tier-2 fused route: prepared OptiX count-threshold scalar",
+      "kwargs": {
+        "backend": "optix",
+        "output_mode": "density_count"
+      },
+      "requires_gpu": true,
+      "route": "optix_fused_prepared_scalar",
+      "tier": "tier2_fused_native_primitive"
+    },
+    {
+      "description": "Tier-2 fused route: prepared OptiX count-threshold compact rows",
+      "kwargs": {
+        "backend": "optix",
+        "optix_summary_mode": "rt_count_threshold_prepared",
+        "output_mode": "density_summary"
+      },
+      "requires_gpu": true,
+      "route": "optix_fused_prepared_summary",
+      "tier": "tier2_fused_native_primitive"
+    }
+  ],
+  "status": "measured",
+  "warmup": 1
+}
