@@ -10,7 +10,8 @@ measured Tier-2 fused operator. The intended path is:
 3. a future OptiX traversal shell links that PTX as a callable/module
 4. the linked route is measured for correctness and overhead
 
-Only step 2 is probed here.
+Only step 2 is probed here. The next spike, direct `optixModuleCreate` on the
+generated PTX, is recorded in `future/v4/tier3_optix_module_link_spike.md`.
 
 ## Probe
 
@@ -32,6 +33,10 @@ Passing this probe means only that a scalar Numba device callback can generate
 PTX in the current toolchain. It does not mean that OptiX accepts the PTX, that
 callable overhead is acceptable, or that Tier-3 is a public V4.0 feature.
 
+The 2026-06-24 module-link spike confirmed this boundary: Numba PTX generation
+passed, but direct `optixModuleCreate` on the bare helper PTX failed because the
+module had no OptiX semantic entry functions.
+
 ## Non-Claims
 
 This page does not authorize:
@@ -42,4 +47,3 @@ This page does not authorize:
 - broad speedup wording
 - whole-application speedup wording
 - app-specific native engine kernels
-

@@ -62,7 +62,7 @@ def _maybe_reexec_with_nvvm_ld_path(toolchain: dict[str, object]) -> dict[str, o
     raise RuntimeError("unreachable after exec")
 
 
-def _run_probe(dry_run: bool) -> dict[str, Any]:
+def _run_probe(dry_run: bool, ptx_out: Path | None = None) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "schema": "rtdl.v4.tier3_numba_ptx_probe.v1",
         "status": "dry_run" if dry_run else "unknown",
@@ -134,6 +134,10 @@ def _run_probe(dry_run: bool) -> dict[str, Any]:
                 "next_stage": "build_a_hole_left_optix_shell_and_attempt_module_link",
             }
         )
+        if ptx_out is not None:
+            ptx_out.parent.mkdir(parents=True, exist_ok=True)
+            ptx_out.write_text(ptx, encoding="utf-8")
+            payload["ptx_path"] = str(ptx_out)
     except Exception as exc:
         payload.update(
             {
@@ -184,9 +188,10 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--json-out", type=Path)
     parser.add_argument("--md-out", type=Path)
+    parser.add_argument("--ptx-out", type=Path)
     args = parser.parse_args()
 
-    payload = _run_probe(bool(args.dry_run))
+    payload = _run_probe(bool(args.dry_run), args.ptx_out)
     if args.json_out:
         args.json_out.parent.mkdir(parents=True, exist_ok=True)
         args.json_out.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")

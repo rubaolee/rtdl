@@ -1,0 +1,18 @@
+{
+  "app_specific_native_kernel_authorized": false,
+  "broad_v4_speedup_claim_authorized": false,
+  "optix_module_link_attempted": false,
+  "optix_module_link_succeeded": null,
+  "pipeline_launch_attempted": false,
+  "probe": "numba_ptx_to_optix_module_create",
+  "program_group_create_attempted": false,
+  "ptx_generated": false,
+  "raw_optix_callback_claim_authorized": false,
+  "reason": "dry_run_does_not_compile_numba_ptx_or_touch_optix",
+  "release_claim_authorized": false,
+  "schema": "rtdl.v4.tier3_optix_module_link_probe.v1",
+  "status": "dry_run",
+  "tier": "tier3_spike_only_not_v4_0_release_surface",
+  "tier3_callback_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
