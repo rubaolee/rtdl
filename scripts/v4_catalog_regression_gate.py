@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -24,6 +25,20 @@ def _run_json(command: list[str]) -> dict[str, Any]:
         return json.loads(proc.stdout)
     except json.JSONDecodeError as exc:
         raise RuntimeError(f"command did not return JSON: {' '.join(command)}\n{proc.stdout}") from exc
+
+
+def _git_value(*args: str) -> str | None:
+    proc = subprocess.run(
+        ["git", *args],
+        cwd=ROOT,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    )
+    if proc.returncode != 0:
+        return None
+    return proc.stdout.strip() or None
 
 
 def _example_commands(mode: str, copies: int, ray_count: int) -> list[tuple[str, list[str]]]:
@@ -162,6 +177,9 @@ def main() -> int:
         "schema": "rtdl.v4.catalog_regression_gate.v1",
         "mode": args.mode,
         "status": "passed" if all_passed else "failed",
+        "git_commit": _git_value("rev-parse", "HEAD"),
+        "git_branch": _git_value("rev-parse", "--abbrev-ref", "HEAD"),
+        "native_library": os.environ.get("RTDL_OPTIX_LIBRARY") or os.environ.get("RTDL_OPTIX_LIB"),
         "release_authorized": False,
         "broad_v4_speedup_claim_authorized": False,
         "tier3_callback_claim_authorized": False,
@@ -180,4 +198,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
