@@ -48,13 +48,25 @@ class V4CatalogRegressionGateTest(unittest.TestCase):
         self.assertFalse(payload["tier3_callback_claim_authorized"])
         self.assertEqual(7, len(payload["examples"]))
         self.assertTrue(all(row["passed"] for row in payload["examples"]))
-        names = {row["name"] for row in payload["examples"]}
-        self.assertIn("fixed_radius", names)
-        self.assertIn("v4_frontdoor_quickstart", names)
-        self.assertIn("operator_callback_planning_complex_callback", names)
+        rows_by_name = {row["name"]: row for row in payload["examples"]}
+        self.assertIn("fixed_radius", rows_by_name)
+        self.assertIn("v4_frontdoor_quickstart", rows_by_name)
+        self.assertEqual(
+            "tier2_measured_ready",
+            rows_by_name["operator_callback_planning_tier2"]["payload"]["status"],
+        )
+        self.assertEqual(
+            "tier3_spike_only_not_v4_0_release_surface",
+            rows_by_name["operator_callback_planning_scalar_callback"]["payload"]["status"],
+        )
+        self.assertIsNone(rows_by_name["operator_callback_planning_scalar_callback"]["payload"]["api_surface"])
+        self.assertEqual(
+            "rejected_action_shaped_callback_deferred",
+            rows_by_name["operator_callback_planning_complex_callback"]["payload"]["status"],
+        )
+        self.assertIsNone(rows_by_name["operator_callback_planning_complex_callback"]["payload"]["api_surface"])
         self.assertIn("Status: generated development gate", markdown)
 
 
 if __name__ == "__main__":
     unittest.main()
-

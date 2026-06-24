@@ -99,6 +99,8 @@ def _validate_payload(name: str, payload: dict[str, Any], mode: str) -> tuple[bo
     failures: list[str] = []
     if payload.get("release_claim_authorized") is not False:
         failures.append("release_claim_authorized_not_false")
+    if "broad_v4_speedup_claim_authorized" in payload and payload.get("broad_v4_speedup_claim_authorized") is not False:
+        failures.append("broad_v4_speedup_claim_authorized_not_false")
     if payload.get("tier3_callback_claim_authorized") is not False:
         failures.append("tier3_callback_claim_authorized_not_false")
     if "whole_app_speedup_claim_authorized" in payload and payload.get("whole_app_speedup_claim_authorized") is not False:
@@ -116,9 +118,29 @@ def _validate_payload(name: str, payload: dict[str, Any], mode: str) -> tuple[bo
             failures.append("quickstart_status_not_ok")
         if payload.get("measured_surface_count") != 3:
             failures.append("quickstart_surface_count_not_3")
+    elif name == "operator_callback_planning_tier2":
+        if payload.get("status") != "tier2_measured_ready":
+            failures.append("tier2_planner_not_ready")
+        if payload.get("api_surface") not in {
+            "v4_fixed_radius_count_threshold_2d_device_arrays",
+            "v4_closest_hit_grouped_argmin_3d_device_arrays",
+            "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+        }:
+            failures.append("tier2_planner_surface_not_measured")
+        if payload.get("measured_partner") is not True:
+            failures.append("tier2_planner_partner_not_measured")
+    elif name == "operator_callback_planning_scalar_callback":
+        if payload.get("status") != "tier3_spike_only_not_v4_0_release_surface":
+            failures.append("scalar_callback_not_tier3_spike_only")
+        if payload.get("api_surface") is not None:
+            failures.append("scalar_callback_has_api_surface")
+        if payload.get("tier3_spike_authorized") is not True:
+            failures.append("scalar_callback_spike_not_marked")
     elif name == "operator_callback_planning_complex_callback":
         if payload.get("status") != "rejected_action_shaped_callback_deferred":
             failures.append("complex_callback_not_rejected")
+        if payload.get("api_surface") is not None:
+            failures.append("complex_callback_has_api_surface")
     return (not failures, failures)
 
 
@@ -142,7 +164,7 @@ def _write_markdown(path: Path, result: dict[str, Any]) -> None:
             "",
             "## Non-Authorization",
             "",
-            "This gate does not authorize V4 release, broad speedup wording, Tier-3 callback/PTX support, raw OptiX callbacks, embedding/C-ABI, or app-specific native kernels.",
+            "This gate does not authorize V4 release, broad speedup wording, Tier-3 callback/PTX support, raw OptiX callbacks, CuPy performance claims, embedding/C-ABI, non-Python host binding claims, or app-specific native kernels.",
             "",
         ]
     )
@@ -183,6 +205,8 @@ def main() -> int:
         "release_authorized": False,
         "broad_v4_speedup_claim_authorized": False,
         "tier3_callback_claim_authorized": False,
+        "cupy_performance_claim_authorized": False,
+        "non_python_host_binding_claim_authorized": False,
         "app_specific_native_kernel_authorized": False,
         "examples": rows,
     }

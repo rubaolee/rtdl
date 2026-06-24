@@ -10,11 +10,7 @@ from .partner_adapters import prepare_fixed_radius_count_threshold_2d_optix_part
 
 V4_FIXED_RADIUS_DEVICE_ARRAY_SURFACE = "v4_fixed_radius_count_threshold_2d_device_arrays"
 V4_FIXED_RADIUS_MEASURED_PARTNERS = ("torch",)
-V4_FIXED_RADIUS_DECLARED_UNMEASURED_PARTNERS = ("cupy",)
-V4_FIXED_RADIUS_ALLOWED_PARTNERS = (
-    *V4_FIXED_RADIUS_MEASURED_PARTNERS,
-    *V4_FIXED_RADIUS_DECLARED_UNMEASURED_PARTNERS,
-)
+V4_FIXED_RADIUS_ALLOWED_PARTNERS = V4_FIXED_RADIUS_MEASURED_PARTNERS
 
 
 def _require_partner(partner: str) -> str:
@@ -35,9 +31,7 @@ def fixed_radius_count_threshold_2d_device_array_claim_boundary_v4(partner: str 
         "partner": partner,
         "measured_partner": measured,
         "measured_partners": V4_FIXED_RADIUS_MEASURED_PARTNERS,
-        "partner_support_declared_unmeasured": tuple(
-            item for item in V4_FIXED_RADIUS_ALLOWED_PARTNERS if item not in V4_FIXED_RADIUS_MEASURED_PARTNERS
-        ),
+        "partner_support_declared_unmeasured": (),
         "partner_claim_status": "measured_on_v4_section8_pod" if measured else "declared_unmeasured_not_performance_ready",
         "python_point_object_boundary_in_hot_path": False,
         "host_materialization_in_hot_path": False,

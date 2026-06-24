@@ -37,6 +37,8 @@ def main() -> int:
                 "complex_callback_status": complex_callback_plan.status,
                 "release_claim_authorized": boundary["release_claim_authorized"],
                 "tier3_callback_claim_authorized": boundary["tier3_callback_claim_authorized"],
+                "cupy_performance_claim_authorized": boundary["cupy_performance_claim_authorized"],
+                "non_python_host_binding_claim_authorized": boundary["non_python_host_binding_claim_authorized"],
                 "app_specific_native_kernel_authorized": boundary["app_specific_native_kernel_authorized"],
             },
             indent=2,
@@ -48,4 +50,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

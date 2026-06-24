@@ -45,7 +45,9 @@ def claim_boundary_v4() -> dict[str, object]:
         "whole_app_speedup_claim_authorized": False,
         "tier3_callback_claim_authorized": False,
         "raw_optix_callback_claim_authorized": False,
+        "cupy_performance_claim_authorized": False,
         "embedding_c_abi_claim_authorized": False,
+        "non_python_host_binding_claim_authorized": False,
         "app_specific_native_kernel_authorized": False,
     }
 

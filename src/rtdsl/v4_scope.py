@@ -50,7 +50,9 @@ class V4ScopeGate:
     whole_app_speedup_claim_authorized: bool = False
     tier3_callback_claim_authorized: bool = False
     raw_optix_callback_claim_authorized: bool = False
+    cupy_performance_claim_authorized: bool = False
     embedding_c_abi_claim_authorized: bool = False
+    non_python_host_binding_claim_authorized: bool = False
     app_specific_native_kernel_authorized: bool = False
 
     def as_dict(self) -> dict[str, object]:
@@ -66,7 +68,9 @@ class V4ScopeGate:
             "whole_app_speedup_claim_authorized": self.whole_app_speedup_claim_authorized,
             "tier3_callback_claim_authorized": self.tier3_callback_claim_authorized,
             "raw_optix_callback_claim_authorized": self.raw_optix_callback_claim_authorized,
+            "cupy_performance_claim_authorized": self.cupy_performance_claim_authorized,
             "embedding_c_abi_claim_authorized": self.embedding_c_abi_claim_authorized,
+            "non_python_host_binding_claim_authorized": self.non_python_host_binding_claim_authorized,
             "app_specific_native_kernel_authorized": self.app_specific_native_kernel_authorized,
         }
 
@@ -110,13 +114,9 @@ def validate_v4_0_scope_gate(payload: V4ScopeGate | dict[str, object] | None = N
     if tuple(payload_dict.get("included_surfaces", ())) != V4_0_INCLUDED_SURFACES:
         missing.append("included_surfaces")
     deferred = tuple(payload_dict.get("deferred_capabilities", ()))
-    for required_deferred in (
-        "tier3_numba_ptx_generation_spike_only",
-        "tier3_numba_bare_ptx_direct_optix_module_link_blocked",
-        "tier3_wrapper_direct_callable_abi",
-    ):
+    for required_deferred in V4_X_DEFERRED_CAPABILITIES:
         if required_deferred not in deferred:
-            missing.append("tier3_deferred_boundary")
+            missing.append("deferred_capabilities")
             break
     forbidden_true = [
         key
@@ -126,7 +126,9 @@ def validate_v4_0_scope_gate(payload: V4ScopeGate | dict[str, object] | None = N
             "whole_app_speedup_claim_authorized",
             "tier3_callback_claim_authorized",
             "raw_optix_callback_claim_authorized",
+            "cupy_performance_claim_authorized",
             "embedding_c_abi_claim_authorized",
+            "non_python_host_binding_claim_authorized",
             "app_specific_native_kernel_authorized",
         )
         if payload_dict.get(key) is not False

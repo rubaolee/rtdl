@@ -41,7 +41,7 @@ def _write_markdown(path: Path, payload: dict[str, object], validation: dict[str
             "",
             "## Non-Authorization",
             "",
-            "This gate does not authorize V4 release, broad V4 speedup wording, Tier-3 callback/PTX support, raw OptiX callbacks, embedding/C-ABI, or app-specific native kernels.",
+            "This gate does not authorize V4 release, broad V4 speedup wording, Tier-3 callback/PTX support, raw OptiX callbacks, CuPy performance claims, embedding/C-ABI, non-Python host binding claims, or app-specific native kernels.",
             "",
         ]
     )
@@ -70,4 +70,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

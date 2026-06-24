@@ -7,6 +7,7 @@
       "v4_review_debt_open"
     ],
     "broad_v4_speedup_claim_authorized": false,
+    "cupy_performance_claim_authorized": false,
     "deferred_capabilities": [
       "tier3_numba_ptx_generation_spike_only",
       "tier3_numba_bare_ptx_direct_optix_module_link_blocked",
@@ -30,6 +31,7 @@
       "v4_closest_hit_grouped_argmin_3d_device_arrays",
       "v4_ray_triangle_any_hit_flags_2d_device_arrays"
     ],
+    "non_python_host_binding_claim_authorized": false,
     "raw_optix_callback_claim_authorized": false,
     "release_authorized": false,
     "required_next_actions": [

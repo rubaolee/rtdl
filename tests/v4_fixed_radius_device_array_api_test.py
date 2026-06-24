@@ -29,16 +29,16 @@ class FakePrepared:
 
 
 class V4FixedRadiusDeviceArrayApiTest(unittest.TestCase):
-    def test_claim_boundary_distinguishes_measured_and_unmeasured_partners(self) -> None:
+    def test_claim_boundary_allows_only_measured_v4_0_partner(self) -> None:
         torch_boundary = v4_fixed_radius.fixed_radius_count_threshold_2d_device_array_claim_boundary_v4("torch")
         self.assertTrue(torch_boundary["measured_partner"])
         self.assertEqual("measured_on_v4_section8_pod", torch_boundary["partner_claim_status"])
+        self.assertEqual((), torch_boundary["partner_support_declared_unmeasured"])
         self.assertFalse(torch_boundary["release_claim_authorized"])
         self.assertFalse(torch_boundary["second_primitive_work_authorized"])
 
-        cupy_boundary = v4_fixed_radius.fixed_radius_count_threshold_2d_device_array_claim_boundary_v4("cupy")
-        self.assertFalse(cupy_boundary["measured_partner"])
-        self.assertEqual("declared_unmeasured_not_performance_ready", cupy_boundary["partner_claim_status"])
+        with self.assertRaisesRegex(ValueError, "partner must be one of"):
+            v4_fixed_radius.fixed_radius_count_threshold_2d_device_array_claim_boundary_v4("cupy")
 
         with self.assertRaisesRegex(ValueError, "partner must be one of"):
             v4_fixed_radius.fixed_radius_count_threshold_2d_device_array_claim_boundary_v4("numpy")

@@ -33,11 +33,15 @@ class V4ScopeGateTest(unittest.TestCase):
         self.assertIn("tier3_numba_ptx_generation_spike_only", payload["deferred_capabilities"])
         self.assertIn("tier3_numba_bare_ptx_direct_optix_module_link_blocked", payload["deferred_capabilities"])
         self.assertIn("tier3_wrapper_direct_callable_abi", payload["deferred_capabilities"])
+        self.assertIn("cupy_measured_performance_claims", payload["deferred_capabilities"])
         self.assertIn("embedding_c_abi", payload["deferred_capabilities"])
+        self.assertIn("non_python_host_bindings", payload["deferred_capabilities"])
         self.assertFalse(payload["release_authorized"])
         self.assertFalse(payload["tier3_callback_claim_authorized"])
         self.assertFalse(payload["raw_optix_callback_claim_authorized"])
+        self.assertFalse(payload["cupy_performance_claim_authorized"])
         self.assertFalse(payload["embedding_c_abi_claim_authorized"])
+        self.assertFalse(payload["non_python_host_binding_claim_authorized"])
 
     def test_scope_gate_validation_passes_current_payload(self) -> None:
         result = validate_v4_0_scope_gate()
@@ -79,7 +83,9 @@ class V4ScopeGateTest(unittest.TestCase):
         self.assertIn("Deferred To V4.x", text)
         self.assertIn("tier3_numba_bare_ptx_direct_optix_module_link_blocked", text)
         self.assertIn("Tier-3 callback/PTX support", text)
+        self.assertIn("CuPy performance claims", text)
         self.assertIn("embedding/C-ABI", text)
+        self.assertIn("non-Python host binding claims", text)
         self.assertIn("release authorized: `False`", text)
 
 

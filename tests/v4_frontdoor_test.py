@@ -33,6 +33,8 @@ class V4FrontDoorTest(unittest.TestCase):
         self.assertFalse(boundary["broad_v4_speedup_claim_authorized"])
         self.assertFalse(boundary["tier3_callback_claim_authorized"])
         self.assertFalse(boundary["raw_optix_callback_claim_authorized"])
+        self.assertFalse(boundary["cupy_performance_claim_authorized"])
+        self.assertFalse(boundary["non_python_host_binding_claim_authorized"])
         self.assertFalse(boundary["app_specific_native_kernel_authorized"])
 
     def test_frontdoor_catalog_and_planner_are_reachable(self) -> None:
@@ -48,7 +50,9 @@ class V4FrontDoorTest(unittest.TestCase):
         self.assertIn("import rtdsl.v4 as rtdl_v4", text)
         self.assertIn("V4.0 does not expose raw OptiX callbacks", text)
         self.assertIn("not a release announcement", text)
+        self.assertIn("CuPy performance claims", text)
         self.assertIn("embedding/C-ABI claims", text)
+        self.assertIn("non-Python host binding claims", text)
 
     def test_quickstart_runs_without_cuda(self) -> None:
         proc = subprocess.run(
@@ -67,9 +71,10 @@ class V4FrontDoorTest(unittest.TestCase):
         self.assertEqual("rejected_action_shaped_callback_deferred", payload["complex_callback_status"])
         self.assertFalse(payload["release_claim_authorized"])
         self.assertFalse(payload["tier3_callback_claim_authorized"])
+        self.assertFalse(payload["cupy_performance_claim_authorized"])
+        self.assertFalse(payload["non_python_host_binding_claim_authorized"])
         self.assertFalse(payload["app_specific_native_kernel_authorized"])
 
 
 if __name__ == "__main__":
     unittest.main()
-
