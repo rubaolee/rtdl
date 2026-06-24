@@ -42,8 +42,8 @@ decision record are obtained.
 
 Fresh POD worktree:
 
-- worktree: `/root/rtdl_v4_section8/worktrees/v4_final_validation_20260624_1315`
-- validated commit: `3cb9834b`
+- worktree: `/root/rtdl_v4_section8/worktrees/v4_final_validation_20260624_1340`
+- validated code commit: `ae22afd90dbde1fde0d923e830e3ad0aa532f2ed`
 - native build command: `make build-optix OPTIX_PREFIX=/root/vendor/optix-dev`
 - native library: `build/librtdl_optix.so`
 - required grouped-argmin symbol: present
