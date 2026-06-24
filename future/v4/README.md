@@ -6,6 +6,14 @@ V4 is the Python GPU-array RT-core lane. If your program already owns Torch CUDA
 arrays, RTDL should accept those arrays, run a generic fused RT operator, and
 write results back to GPU arrays without Python row objects in the hot path.
 
+Current candidate packet:
+
+- `future/v4/v4_0_release_candidate_packet_2026-06-24.md`
+
+The candidate has serious-size POD validation for the three measured Torch CUDA
+Tier-2 surfaces, but release authorization is still false until external review
+and a release decision record are obtained.
+
 Use one import:
 
 ```python
@@ -63,6 +71,7 @@ python scripts/v4_catalog_regression_gate.py --mode dry-run
 - `future/v4/v4_0_scope_gate.md`
 - `future/v4/tier3_numba_ptx_spike.md`
 - `future/v4/tier3_optix_module_link_spike.md`
+- `future/v4/v4_0_release_candidate_packet_2026-06-24.md`
 
 The catalog regression gate is `scripts/v4_catalog_regression_gate.py`.
 
