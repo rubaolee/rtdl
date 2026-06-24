@@ -15,6 +15,7 @@ readiness review request, not a release authorization.
 - Scope evidence: `future/v4/evidence/v4_scope_gate_2026-06-24.json`
 - Final GPU catalog gate, serious size: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.json`
 - Final GPU catalog gate, smoke size: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`
+- Local V4 full test sweep: `future/v4/evidence/v4_local_full_test_sweep_2026-06-24.md`
 - Catalog regression script: `scripts/v4_catalog_regression_gate.py`
 - Operator planner: `src/rtdsl/v4_operator_catalog.py`
 - Tier-3 PTX spike: `future/v4/tier3_numba_ptx_spike.md`

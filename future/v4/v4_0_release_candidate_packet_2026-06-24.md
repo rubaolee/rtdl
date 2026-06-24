@@ -53,6 +53,7 @@ Validation evidence:
 - scope gate: `future/v4/evidence/v4_scope_gate_2026-06-24.json`
 - final GPU catalog gate, serious size: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.json`
 - final GPU catalog gate, smoke size: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`
+- local V4 full test sweep: `future/v4/evidence/v4_local_full_test_sweep_2026-06-24.md`
 
 Final GPU catalog gate result:
 
