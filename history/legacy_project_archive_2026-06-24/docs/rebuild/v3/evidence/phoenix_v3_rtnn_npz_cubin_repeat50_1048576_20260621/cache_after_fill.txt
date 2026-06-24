@@ -1,0 +1,2 @@
+total 240K
+-rw-r--r-- 1 root root 237K Jun 21 17:22 frn3d_grid_kernel.cu.sm_89.7dc0d93402fa3efd.cubin

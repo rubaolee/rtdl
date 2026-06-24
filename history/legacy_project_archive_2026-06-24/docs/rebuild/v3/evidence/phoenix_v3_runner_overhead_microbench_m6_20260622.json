@@ -1,0 +1,48 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "full_all_app_rerun_authorized_by_this_packet": false,
+  "iterations": 20000,
+  "last_runner_metadata": {
+    "app_specific_native_engine_logic_allowed": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "prepared_execution_report_validation": {
+      "claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+      "errors": [],
+      "phase_count": 7,
+      "schema": "rtdl.v2_8.prepared_execution_report.v1",
+      "status": "accept",
+      "workflow": [
+        "prepare",
+        "pack_or_cache",
+        "warm",
+        "run_steady_state",
+        "explain_timings"
+      ]
+    },
+    "productized_execution_path": "prepared_execution_session_runner",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "runtime_executed": true,
+    "schema": "rtdl.v3.phoenix.prepared_execution_session_runner.m3_3",
+    "true_zero_copy_claim_authorized": false
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "runner_iterations": 2000,
+  "schema": "rtdl.phoenix_v3.runner_overhead_microbench.v1",
+  "status": "local_microbench_not_release_evidence",
+  "timing_per_call_sec": {
+    "noop_runner_call": 0.0007991966499830596,
+    "phase_to_dict": 7.06289999652654e-07,
+    "report_to_dict": 1.3152295001782477e-05,
+    "stable_id_read": 1.8710999866016208e-07
+  },
+  "timing_sec": {
+    "noop_runner_calls": 1.5983932999661192,
+    "phase_to_dict": 0.014125799993053079,
+    "report_to_dict": 0.26304590003564954,
+    "stable_id_reads": 0.003742199973203242
+  },
+  "true_zero_copy_claim_authorized": false,
+  "v4_embedding_or_external_zero_copy_authorized": false
+}

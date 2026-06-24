@@ -90,9 +90,14 @@ def main() -> int:
     ]
     comparison = _compare_rows(rows)
     payload = _base_payload(args)
+    failure_reasons = []
+    if not comparison["same_output_contract"]:
+        failure_reasons.append("output_contract_mismatch")
+    if not comparison["active_counts_match"]:
+        failure_reasons.append("active_count_mismatch")
     payload.update(
         {
-            "status": "ok",
+            "status": "ok" if not failure_reasons else "fail",
             "planned": planned,
             "case_shape": {
                 "left_shape_count": len(left_shapes),
@@ -102,15 +107,15 @@ def main() -> int:
             },
             "rows": tuple(rows),
             "comparison": comparison,
+            "failure_reasons": tuple(failure_reasons),
         }
     )
-    if not comparison["same_output_contract"]:
-        raise RuntimeError("M33 overlay active-count comparison found output-contract mismatch")
-    if not comparison["active_counts_match"]:
-        raise RuntimeError("M33 overlay active-count comparison found active-count mismatch")
     _write_payload(payload, args.output)
     print(json.dumps({"status": payload["status"], "comparison": comparison, "rows": rows}, indent=2))
     print(f"wrote {args.output}")
+    if failure_reasons:
+        print(f"M33 overlay active-count comparison failed: {', '.join(failure_reasons)}", file=sys.stderr)
+        return 2
     return 0
 
 
@@ -231,6 +236,8 @@ def _run_optix(*, left_shapes: tuple[object, ...], right_shapes: tuple[object, .
             "timed_median_sec": float(phases["prepared_query_sec"]),
             "native_traversal_median_sec": float(phases["active_count_device_continuation_sec"]),
             "prepare_active_count_executor_sec": float(phases["prepare_active_count_executor_sec"]),
+            "topology_stream_m3_phase_table": payload.get("topology_stream_m3_phase_table"),
+            "topology_stream_prepared_handle": payload.get("topology_stream_prepared_handle"),
             "row_materialization_avoided": True,
             "threads": None,
             "claim_boundary": _row_claim_boundary(),

@@ -1,0 +1,45 @@
+You are Antigravity acting as an external critical reviewer for Phoenix V3.
+
+Working directory:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+This is a goal-completion audit for M55. It is not a request to run POD and not
+a release decision.
+
+Active M55 goal:
+Phoenix V3 M55: execute exactly one M54-authorized focused LibRTS stability POD
+run with target-machine dry-run first, real current/V2.14 roots and Linux Python
+paths, full copy-back, and no release/all-app/public-claim/watch-row-closure
+interpretation before later external review.
+
+Required files:
+- docs/reports/phoenix_v3_m55_librts_authorized_pod_run_intake_2026-06-23.md
+- docs/reviews/claude_phoenix_v3_m55_librts_authorized_pod_run_intake_recorded_review_2026-06-23.md
+- docs/reviews/codex_claude_phoenix_v3_m55_librts_authorized_pod_run_intake_2ai_consensus_2026-06-23.md
+- docs/reviews/codex_claude_antigravity_phoenix_v3_m54_goal_completion_3ai_consensus_2026-06-23.md
+- docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_target_dry_run_20260623_2339/summary.json
+- docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/summary.json
+- tests/v3_phoenix_m55_librts_authorized_pod_intake_gate_test.py
+
+Choose exactly one verdict:
+- accept_m55_goal_complete_valid_red_no_rerun_no_release
+- revise_m55_before_goal_completion
+- reject_m55_goal_completion_or_evidence_unsafe
+
+Questions:
+1. Did M55 execute only the one M54-authorized focused run?
+2. Did M55 perform and copy back the target-machine dry-run evidence first?
+3. Is copy-back complete enough for an intake record?
+4. Does Claude's verdict `accept_m55_valid_red_watch_rows_open_no_rerun` correctly preserve the red/open interpretation?
+5. Does the 2-AI consensus correctly forbid rerun, watch-row closure, release, all-app, public speedup wording, broad V3-over-V2 claims, V4, embedding, C ABI, and true-zero-copy claims?
+6. Is it safe to mark M55 complete under the user's 3-AI goal-completion rule?
+
+If accepted, state clearly that both watch rows remain open/red, the M54 token
+is consumed, and the next allowed work is local diagnosis/repair planning for
+`set_b_control_candidate_missing` or a new separately reviewed authorization
+packet, not another run.
+
+Write the recorded review to:
+docs/reviews/antigravity_phoenix_v3_m55_goal_completion_audit_review_2026-06-23.md
+
+Also print the complete review in stdout.

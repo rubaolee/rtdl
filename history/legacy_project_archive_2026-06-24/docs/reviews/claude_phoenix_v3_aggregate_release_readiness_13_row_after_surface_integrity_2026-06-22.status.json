@@ -1,0 +1,11 @@
+{
+  "tool": "claude",
+  "review": "phoenix_v3_aggregate_release_readiness_13_row_after_surface_integrity",
+  "prompt_path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reviews\\call_for_review_phoenix_v3_aggregate_release_readiness_13_row_2026-06-22.md",
+  "stdout_path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reviews\\claude_phoenix_v3_aggregate_release_readiness_13_row_after_surface_integrity_2026-06-22.stdout.md",
+  "stderr_path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\reviews\\claude_phoenix_v3_aggregate_release_readiness_13_row_after_surface_integrity_2026-06-22.stderr.txt",
+  "started_utc": "2026-06-22T05:11:07.9952603Z",
+  "completed_utc": "2026-06-22T05:16:40.3221854Z",
+  "exit_code": 124,
+  "result": "external_review_not_obtained_claude_no_output_timeout_313s"
+}

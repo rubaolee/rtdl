@@ -1,0 +1,253 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "authors_code_comparison": false,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "partner_continuation_required": false,
+    "primitive_first_no_partner_needed": true,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparison": {
+    "all_match_cpu_reference": true,
+    "all_prepared_steady_state": true,
+    "all_primitive_payload_reused": true,
+    "all_ray_batch_reused": true,
+    "no_partner_continuation_required": true,
+    "public_speedup_claim_authorized": false,
+    "same_contract_backend_pairs": [
+      {
+        "both_match_cpu_reference": true,
+        "comparison_scope": "internal_same_contract_prepared_query_refresh_not_public_speedup",
+        "embree_median_sec": 0.009120110422372818,
+        "embree_over_optix_median": 9.863861076975764,
+        "mode": "count",
+        "optix_median_sec": 0.0009245984256267548,
+        "same_contract": true
+      },
+      {
+        "both_match_cpu_reference": true,
+        "comparison_scope": "internal_same_contract_prepared_query_refresh_not_public_speedup",
+        "embree_median_sec": 0.9995158091187477,
+        "embree_over_optix_median": 202.77399588111928,
+        "mode": "sum",
+        "optix_median_sec": 0.004929210990667343,
+        "same_contract": true
+      }
+    ]
+  },
+  "environment": {
+    "git_head": "fatal: not a git repository (or any of the parent directories): .git",
+    "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB, 00000000:C1:00.0",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64"
+  },
+  "goal": "Goal4425 V3.0 M28 RayDB prepared grouped-reduction refresh",
+  "parameters": {
+    "backends": [
+      "embree",
+      "optix"
+    ],
+    "generated_groups": 1024,
+    "generated_revenue_mod": 64,
+    "generated_rows": 262144,
+    "include_iteration_walls": true,
+    "modes": [
+      "count",
+      "sum"
+    ],
+    "warmup": 1
+  },
+  "planned_rows": [
+    {
+      "backend": "embree",
+      "backend_label": "paper_rt_embree",
+      "mode": "count",
+      "repeat": 400,
+      "warmup": 1
+    },
+    {
+      "backend": "embree",
+      "backend_label": "paper_rt_embree",
+      "mode": "sum",
+      "repeat": 10,
+      "warmup": 1
+    },
+    {
+      "backend": "optix",
+      "backend_label": "paper_rt_optix_prepared_grouped_reduction",
+      "mode": "count",
+      "repeat": 5000,
+      "warmup": 1
+    },
+    {
+      "backend": "optix",
+      "backend_label": "paper_rt_optix_prepared_grouped_reduction",
+      "mode": "sum",
+      "repeat": 1000,
+      "warmup": 1
+    }
+  ],
+  "rows": [
+    {
+      "backend": "embree",
+      "backend_label": "paper_rt_embree",
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "cold_prepare_total_sec": 6.716343387961388,
+      "contract": "raydb_paper_triangle_scan_prepared_grouped_reduction_embree",
+      "elapsed_median_sec": 0.009120110422372818,
+      "hit_event_count_before_dedup": 2167,
+      "matches_cpu_reference": true,
+      "mode": "count",
+      "native_call_wall_median_sec": 0.008566953241825104,
+      "native_symbol": "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+      "partner_continuation_available": true,
+      "partner_continuation_required": false,
+      "prepared_iteration_count": 400,
+      "prepared_iteration_total_sec": 6.984429486095905,
+      "prepared_native_total_sec": 0.16310640424489975,
+      "prepared_primitive_payload_reused": true,
+      "prepared_ray_batch_reused": true,
+      "prepared_ray_batch_sec": 9.037554264068604e-06,
+      "prepared_steady_state": true,
+      "ray_count": 884736,
+      "repeat": 400,
+      "row_count": 262144,
+      "row_presentation_median_sec": 0.0005066804587841034,
+      "rt_core_accelerated": false,
+      "traversal_median_sec": 0.0077050455,
+      "triangle_count": 262144,
+      "v2_4_backend": "embree",
+      "v2_4_primitive": "ray_triangle_grouped_i64_reduction_3d",
+      "v2_5_selected_path": "prepared_fused_generic_grouped_reduction",
+      "v2_5_selection_reason": "continuation_matches_existing_fused_app_agnostic_rtdl_primitive",
+      "warmup": 1,
+      "workload_build_sec": 6.553225785493851
+    },
+    {
+      "backend": "embree",
+      "backend_label": "paper_rt_embree",
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "cold_prepare_total_sec": 105.27661307901144,
+      "contract": "raydb_paper_triangle_scan_prepared_grouped_reduction_embree",
+      "elapsed_median_sec": 0.9995158091187477,
+      "hit_event_count_before_dedup": 1853,
+      "matches_cpu_reference": true,
+      "mode": "sum",
+      "native_call_wall_median_sec": 0.998937901109457,
+      "native_symbol": "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+      "partner_continuation_available": true,
+      "partner_continuation_required": false,
+      "prepared_iteration_count": 10,
+      "prepared_iteration_total_sec": 10.08476047962904,
+      "prepared_native_total_sec": 0.11854883283376694,
+      "prepared_primitive_payload_reused": true,
+      "prepared_ray_batch_reused": true,
+      "prepared_ray_batch_sec": 8.463859558105469e-06,
+      "prepared_steady_state": true,
+      "ray_count": 38043648,
+      "repeat": 10,
+      "row_count": 262144,
+      "row_presentation_median_sec": 0.0007391013205051422,
+      "rt_core_accelerated": false,
+      "traversal_median_sec": 0.997962926,
+      "triangle_count": 262144,
+      "v2_4_backend": "embree",
+      "v2_4_primitive": "ray_triangle_grouped_i64_reduction_3d",
+      "v2_5_selected_path": "prepared_fused_generic_grouped_reduction",
+      "v2_5_selection_reason": "continuation_matches_existing_fused_app_agnostic_rtdl_primitive",
+      "warmup": 1,
+      "workload_build_sec": 105.15805099904537
+    },
+    {
+      "backend": "optix",
+      "backend_label": "paper_rt_optix_prepared_grouped_reduction",
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "cold_prepare_total_sec": 0.37104421854019165,
+      "contract": "raydb_paper_triangle_scan_prepared_grouped_reduction_optix",
+      "elapsed_median_sec": 0.0009245984256267548,
+      "hit_event_count_before_dedup": 3693,
+      "matches_cpu_reference": true,
+      "mode": "count",
+      "native_call_wall_median_sec": 0.0005964748561382294,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction",
+      "partner_continuation_available": true,
+      "partner_continuation_required": false,
+      "prepared_iteration_count": 5000,
+      "prepared_iteration_total_sec": 4.6407680362463,
+      "prepared_native_total_sec": 0.24142446368932724,
+      "prepared_primitive_payload_reused": true,
+      "prepared_ray_batch_reused": true,
+      "prepared_ray_batch_sec": 0.029275156557559967,
+      "prepared_steady_state": true,
+      "ray_count": 884736,
+      "repeat": 5000,
+      "row_count": 262144,
+      "row_presentation_median_sec": 0.0003263801336288452,
+      "rt_core_accelerated": true,
+      "traversal_median_sec": 0.000208616,
+      "triangle_count": 262144,
+      "v2_4_backend": "optix",
+      "v2_4_primitive": "ray_triangle_grouped_i64_reduction_3d",
+      "v2_5_selected_path": "prepared_fused_generic_grouped_reduction",
+      "v2_5_selection_reason": "continuation_matches_existing_fused_app_agnostic_rtdl_primitive",
+      "warmup": 1,
+      "workload_build_sec": 0.10034296661615372
+    },
+    {
+      "backend": "optix",
+      "backend_label": "paper_rt_optix_prepared_grouped_reduction",
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "cold_prepare_total_sec": 65.40001656860113,
+      "contract": "raydb_paper_triangle_scan_prepared_grouped_reduction_optix",
+      "elapsed_median_sec": 0.004929210990667343,
+      "hit_event_count_before_dedup": 3693,
+      "matches_cpu_reference": true,
+      "mode": "sum",
+      "native_call_wall_median_sec": 0.004602532833814621,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction",
+      "partner_continuation_available": true,
+      "partner_continuation_required": false,
+      "prepared_iteration_count": 1000,
+      "prepared_iteration_total_sec": 4.951807886362076,
+      "prepared_native_total_sec": 0.024492204189300537,
+      "prepared_primitive_payload_reused": true,
+      "prepared_ray_batch_reused": true,
+      "prepared_ray_batch_sec": 1.2986768409609795,
+      "prepared_steady_state": true,
+      "ray_count": 38043648,
+      "repeat": 1000,
+      "row_count": 262144,
+      "row_presentation_median_sec": 0.0003256946802139282,
+      "rt_core_accelerated": true,
+      "traversal_median_sec": 0.004201338,
+      "triangle_count": 262144,
+      "v2_4_backend": "optix",
+      "v2_4_primitive": "ray_triangle_grouped_i64_reduction_3d",
+      "v2_5_selected_path": "prepared_fused_generic_grouped_reduction",
+      "v2_5_selection_reason": "continuation_matches_existing_fused_app_agnostic_rtdl_primitive",
+      "warmup": 1,
+      "workload_build_sec": 64.07684455811977
+    }
+  ],
+  "status": "ok",
+  "version": "rtdl.v3_0.raydb_prepared_grouped_refresh.m28"
+}

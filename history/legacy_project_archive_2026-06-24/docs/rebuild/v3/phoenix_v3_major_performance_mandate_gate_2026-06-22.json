@@ -1,0 +1,98 @@
+{
+  "blocking_reasons": [
+    "broad_v2x_performance_not_proven",
+    "serious_all_app_paired_evidence_failed_release_bar",
+    "current_scoped_13_row_surface_not_v3_major_release"
+  ],
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "checks": {
+    "all_benchmark_apps_required": true,
+    "broad_claim_currently_not_authorized": true,
+    "current_evidence_says_not_major_broad_speedup": true,
+    "current_same_rt_geomean_is_1_012x": true,
+    "major_release_requires_broad_v2x_speedup": true,
+    "mandate_doc_exists": true,
+    "scoped_rows_not_enough_for_v3_major": true,
+    "serious_all_promoted_apps_covered": true,
+    "serious_all_required_suites_finished": true,
+    "serious_paired_doc_exists": true,
+    "serious_paired_json_exists": true,
+    "serious_primary_metric_sources_match": true,
+    "serious_release_bar_failed": true
+  },
+  "decision_audit": {
+    "decision": "Downgrade the scoped Phoenix V3 surface to redo_required because V3 must justify itself as a major version against V2.x performance.",
+    "different_path_now": "Block release, keep the 13 rows as reusable internal evidence, and rebuild the generic runtime contracts that failed the completed serious all-app V3-vs-V2.x benchmark bar.",
+    "foolish_actions": "I let external scoped release review and row-scoped wins stand in for the user's real requirement: V3 must solve V2.x's performance problem broadly enough to deserve existing.",
+    "other_path": "Keep publishing only row-scoped claims. That is honest but too small for a major V3 and would disappoint users who expect a language release to be clearly better.",
+    "was_i_foolish": "Yes. Treating scoped row evidence as enough for V3 confused an internal capability packet with a major-version user promise."
+  },
+  "evidence": {
+    "claim_grade_doc": "docs\\rebuild\\v3\\v3_claim_grade_all_benchmark_results_2026-06-20.md",
+    "current_same_rt_geomean_summary": "1.012x is treated as insufficient for a V3 major-version claim.",
+    "dossier_doc": "docs\\rebuild\\v3\\phoenix_v3_user_facing_performance_dossier_2026-06-22.md",
+    "mandate_doc": "docs\\rebuild\\v3\\phoenix_v3_redo_mandate_major_version_performance_2026-06-22.md",
+    "paired_benchmark_doc": "docs\\rebuild\\v3\\v2_14_vs_v3_same_rt_hardware_paired_benchmark_2026-06-20.md",
+    "required_next_evidence": "generic runtime redesign and retest against the completed serious same-RT-hardware all-app paired benchmark bar; do not repeat the same suite as a substitute for fixing the failed performance contracts",
+    "serious_paired_benchmark_doc": "docs\\rebuild\\v3\\phoenix_v3_serious_v2x_paired_benchmark_2026-06-22.md",
+    "serious_paired_benchmark_json": "docs\\rebuild\\v3\\evidence\\phoenix_v3_serious_v2x_paired_20260622_074100\\summary.json",
+    "serious_same_rt_app_geomean_speedup_vs_v2": {
+      "barnes_hut": 0.8441965065233041,
+      "contact_manifold": 1.0170584228123953,
+      "hausdorff_xhd": 1.1485359503887191,
+      "librts_spatial_index": 0.9371711684548437,
+      "raydb_style": 1.0456998138688391,
+      "robot_collision": 0.9932179101450812,
+      "rt_dbscan": 0.9880558497344825,
+      "rtnn": 1.0033271925133553,
+      "spatial_rayjoin": 1.0270156968652566,
+      "triangle_counting": 0.9874175127685646
+    },
+    "serious_same_rt_geomean_v3_speedup_vs_v2": 1.0117790403434224,
+    "serious_same_rt_release_bar": {
+      "actual_app_geomean_regressions_lt_0_95x": 2,
+      "actual_app_geomean_wins_gt_1_05x": 1,
+      "actual_overall_geomean_v3_speedup_vs_v2": 1.0117790403434224,
+      "actual_promoted_app_count": 10,
+      "actual_promoted_apps": [
+        "barnes_hut",
+        "contact_manifold",
+        "hausdorff_xhd",
+        "librts_spatial_index",
+        "raydb_style",
+        "robot_collision",
+        "rt_dbscan",
+        "rtnn",
+        "spatial_rayjoin",
+        "triangle_counting"
+      ],
+      "all_required_suites_finished": true,
+      "app_regression_floor": 0.95,
+      "expected_promoted_app_count": 10,
+      "expected_promoted_apps": [
+        "hausdorff_xhd",
+        "spatial_rayjoin",
+        "rt_dbscan",
+        "robot_collision",
+        "raydb_style",
+        "barnes_hut",
+        "librts_spatial_index",
+        "rtnn",
+        "triangle_counting",
+        "contact_manifold"
+      ],
+      "min_app_geomean_wins_gt_1_05x": 8,
+      "min_overall_geomean_v3_speedup_vs_v2": 1.2,
+      "missing_promoted_apps": [],
+      "primary_metric_source_mismatch_count": 0
+    },
+    "serious_same_rt_release_consideration_eligible": false,
+    "serious_same_rt_same_metric_comparison_count": 52
+  },
+  "failed_checks": [],
+  "gate": "phoenix_v3_major_version_performance_mandate",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "status": "redo_required",
+  "tool": "v3_phoenix_major_performance_mandate_gate"
+}

@@ -35,6 +35,16 @@ class Goal4486RtDbscanSelfCountThresholdTest(unittest.TestCase):
         self.assertIn("prepared_rt_core_count_threshold_3d_self_query_then_partner_predicate_direct_status_union_preview", app)
         self.assertIn("prepared_optix_count_threshold_self_query_device", app)
 
+    def test_self_query_columns_api_does_not_reference_undefined_stream(self) -> None:
+        runtime = (ROOT / "src/rtdsl/optix_runtime.py").read_text(encoding="utf-8")
+        start = runtime.index("    def write_device_count_threshold_self_columns(")
+        end = runtime.index("    def write_device_adjacency_columns(", start)
+        self_query_columns = runtime[start:end]
+
+        self.assertNotIn("dlpack_stream=cuda_stream_ptr", self_query_columns)
+        self.assertNotIn("ctypes.c_uint64(cuda_stream_ptr)", self_query_columns)
+        self.assertNotIn('"cuda_stream_ptr"', self_query_columns)
+
     def test_partner_adapter_metadata_marks_self_query_without_gpu(self) -> None:
         from rtdsl import partner_adapters as pa
 

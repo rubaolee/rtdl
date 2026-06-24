@@ -1,0 +1,86 @@
+{
+  "status": "hausdorff_threshold_summary_boundary_not_m7",
+  "generic_capability": "threshold_summary",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "full_hausdorff_witness_claim_authorized": false,
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows": 0,
+  "current_packet_external_review_status": "blocked_current_packet",
+  "current_packet_external_review_blockage": "docs/reviews/external_review_blocked_phoenix_v3_hausdorff_threshold_summary_focused_update_2026-06-21.md",
+  "source_artifact": "docs/rebuild/v3/evidence/v3_claim_grade_all_benchmarks_calibrated_20260620/summary.json",
+  "paired_v2_v3_source": "docs/rebuild/v3/evidence/v2_14_vs_v3_same_rt_hardware_paired_20260620_140120/paired_v2_v3_summary.json",
+  "tutorial": "tutorials/current/13_hausdorff_threshold_summary.md",
+  "rows": [
+    {
+      "copies": 16384,
+      "query_optix_over_embree": 2.0004351689051236,
+      "wall_optix_over_embree": 0.656528063761309,
+      "reading": "query win, wall loss"
+    },
+    {
+      "copies": 65536,
+      "query_optix_over_embree": 1.5953013783748708,
+      "wall_optix_over_embree": 0.9652152672040554,
+      "reading": "query win, near wall parity"
+    },
+    {
+      "copies": 262144,
+      "query_optix_over_embree": 1.8644032673876425,
+      "wall_optix_over_embree": 1.2576431649500308,
+      "reading": "query win, wall win"
+    }
+  ],
+  "best_current_row": {
+    "candidate_row_id": "hausdorff_threshold_summary_copies_262144",
+    "comparison_group": "hausdorff_threshold_copies_262144",
+    "generic_capability": "threshold_summary",
+    "copies": 262144,
+    "point_count_a": 1048576,
+    "point_count_b": 1048576,
+    "threshold": 0.4,
+    "embree_query_median_sec": 10.390607990324497,
+    "optix_query_median_sec": 5.5731547847390175,
+    "query_optix_over_embree": 1.8644032673876425,
+    "embree_wall_sec": 21.594328731298447,
+    "optix_wall_sec": 17.17047357559204,
+    "wall_optix_over_embree": 1.2576431649500308,
+    "warmup": 0,
+    "repeat": 1,
+    "matches_oracle": true,
+    "oracle_decision_matches": true,
+    "oracle_identity_matches": true,
+    "oracle_within_threshold": true,
+    "m7_promotion_authorized": false,
+    "row_scoped_public_speedup_claim_authorized": false,
+    "m7_blocker": "repeat1_no_multi_run_variance_evidence"
+  },
+  "paired_v2_v3_context": {
+    "app_geomean_speedup_vs_v2_14": 1.0619650779290024,
+    "small_threshold_optix_v3_speedup_vs_v2": 1.0337736320986644,
+    "threshold_16384_optix_v3_speedup_vs_v2": 1.2087270591617527,
+    "threshold_65536_optix_v3_speedup_vs_v2": 1.0014733316749567
+  },
+  "m7_blockers": [
+    "threshold_decision_only_not_full_exact_hausdorff_witness",
+    "wall_timing_mixed_across_scales",
+    "repeat1_no_multi_run_variance_evidence",
+    "no_current_rtx_pod_rerun",
+    "no_focused_public_row_external_review",
+    "must_keep_threshold_scope"
+  ],
+  "forbidden_public_wording": [
+    "Hausdorff V3 is 2x faster end to end",
+    "RTDL accelerates full exact Hausdorff witness materialization",
+    "threshold_summary is M7-qualified",
+    "V3 broadly accelerates Hausdorff over V2"
+  ],
+  "goal_level_decision_audit": {
+    "decision": "teach Hausdorff threshold_summary as a scoped boundary, not M7",
+    "was_i_foolish": "No. The query-phase signal is useful, but wall timing is mixed and the contract is threshold-only.",
+    "foolish_actions": "It would be foolish to turn the 2.000x query row into a full Hausdorff or end-to-end claim.",
+    "other_path": "Rerun the pod immediately, but the current artifact already shows the key boundary.",
+    "different_path_now": "Expose query versus wall timing and keep threshold-only scope explicit."
+  }
+}

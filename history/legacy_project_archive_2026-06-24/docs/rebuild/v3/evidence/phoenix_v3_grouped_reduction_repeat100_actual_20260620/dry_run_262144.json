@@ -1,0 +1,57 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "authors_code_comparison": false,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "partner_continuation_required": false,
+    "primitive_first_no_partner_needed": true,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparison": {
+    "all_match_cpu_reference": null,
+    "same_contract_backend_pairs": []
+  },
+  "environment": {
+    "git_head": "fatal: not a git repository (or any of the parent directories): .git",
+    "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB, 00000000:C1:00.0",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64"
+  },
+  "goal": "Goal4425 V3.0 M28 RayDB prepared grouped-reduction refresh",
+  "parameters": {
+    "backends": [
+      "embree",
+      "optix"
+    ],
+    "generated_groups": 1024,
+    "generated_revenue_mod": 64,
+    "generated_rows": 262144,
+    "include_iteration_walls": false,
+    "modes": [
+      "sum"
+    ],
+    "warmup": 3
+  },
+  "planned_rows": [
+    {
+      "backend": "embree",
+      "backend_label": "paper_rt_embree",
+      "mode": "sum",
+      "repeat": 100,
+      "warmup": 3
+    },
+    {
+      "backend": "optix",
+      "backend_label": "paper_rt_optix_prepared_grouped_reduction",
+      "mode": "sum",
+      "repeat": 100,
+      "warmup": 3
+    }
+  ],
+  "rows": [],
+  "status": "dry_run",
+  "version": "rtdl.v3_0.raydb_prepared_grouped_refresh.m28"
+}

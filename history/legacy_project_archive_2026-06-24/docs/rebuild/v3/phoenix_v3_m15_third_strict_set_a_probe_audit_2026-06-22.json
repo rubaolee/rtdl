@@ -1,0 +1,143 @@
+{
+  "tool": "phoenix_v3_m15_third_strict_set_a_probe_audit",
+  "date": "2026-06-22",
+  "status": "m15_triangle_selected_for_m16_by_2ai_not_release",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "true_zero_copy_claim_authorized": false,
+  "external_embedding_or_zero_copy_claim_authorized": false,
+  "focused_pod_spend_authorized_now": false,
+  "all_app_pod_spend_authorized": false,
+  "m15_decision": {
+    "selected_candidate": "triangle_counting",
+    "selected_capability": "prepared_graph_chunk_non_graph_stream",
+    "candidate_row_id": "prepared_graph_chunk_rt_graph_2a1_cliques_80000_non_graph_stream",
+    "selected_for_next_work": true,
+    "counts_as_third_strict_set_a_material_probe_now": false,
+    "reason_not_counted_now": "The old Triangle evidence is strong row-scoped evidence, but it is not yet a current Phoenix prepared_execution_session_runner productized path with runtime_executed=true.",
+    "next_required_work": "M16 local runner wiring and protocol, then 2-AI review before any focused POD A/B."
+  },
+  "m15_2ai_consensus": {
+    "status": "accept_m15_triangle_m16_local_runner_wiring_no_pod",
+    "path": "docs/reviews/codex_bernoulli_phoenix_v3_m15_third_strict_set_a_probe_2ai_consensus_2026-06-22.md",
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "focused_pod_spend_authorized_now": false,
+    "all_app_pod_spend_authorized": false,
+    "triangle_counts_as_third_strict_set_a_material_probe_now": false,
+    "triangle_next_local_implementation_target": true,
+    "blockers_or_p1_fixes": []
+  },
+  "criteria": {
+    "set_a_residency_or_multi_phase": true,
+    "real_physical_runtime_source_required": true,
+    "productized_execution_path_required_for_strict_probe_credit": true,
+    "same_rt_hardware_pod_required_for_new_material_claim": true,
+    "external_review_required_before_pod": true,
+    "all_app_protocol_before_third_probe_forbidden": true
+  },
+  "candidate_assessments": [
+    {
+      "candidate": "triangle_counting",
+      "capability": "prepared_graph_chunk",
+      "set_a_member": true,
+      "old_row_status": "row_scoped_m7_qualified_non_graph_stream",
+      "physical_runtime_source": "generic prepared ray-batch weighted any-hit summary, device-output stream continuation, prepared segment replay, and explicit CuPy/Numba partner construction",
+      "existing_evidence": {
+        "m7_packet": "docs/rebuild/v3/phoenix_v3_triangle_prepared_graph_80000_m7_final_review_packet_2026-06-21.md",
+        "m7_json": "docs/rebuild/v3/phoenix_v3_triangle_prepared_graph_80000_m7_final_review_packet_2026-06-21.json",
+        "m7_consensus": "docs/reviews/codex_phoenix_v3_triangle_prepared_graph_80000_m7_final_review_packet_2ai_consensus_2026-06-21.md",
+        "non_graph_stream_gate": "docs/reports/goal4540_v3_0_m141_triangle_non_graph_stream_closure_gate_2026-06-17.md",
+        "device_output_stream_evidence": "docs/reports/goal4531_v3_0_m134_triangle_weighted_replay_graph_capture_2026-06-17.md",
+        "large_paper_row_audit": "docs/reports/goal4511_v3_0_m115_triangle_clean_target_audit_2026-06-17.md"
+      },
+      "old_row_numbers": {
+        "hot_optix_over_embree": 347.23219125688223,
+        "wall_optix_over_embree": 6.342008514587283,
+        "supporting_20000_wall_optix_over_embree": 1.6768981818785074,
+        "oracle_triangle_count": 320000,
+        "oracle_match": true
+      },
+      "why_promising": [
+        "It is a Set-A architecture-bearing workload: graph lowering, segment planning, prepared ray batches, weighted summary continuation, and partner materialization all interact.",
+        "The existing row has a large same-hardware OptiX-over-Embree wall signal, not only a hot-query number.",
+        "Goal4531 and Goal4540 isolate a V3-legal residency boundary: RTDL internal device-output stream continuation is allowed; external buffer exposure remains out of V3.",
+        "The route is based on generic ray/triangle weighted-summary primitives, not an app-specific native callback."
+      ],
+      "blockers_before_strict_credit": [
+        "not_yet_current_prepared_execution_session_runner_path",
+        "old_evidence_is_row_scoped_optix_vs_embree_not_v2_14_vs_phoenix_v3",
+        "m113_cuda_graph_capture_still_blocked",
+        "not_full_triangle_app_speedup",
+        "not_rt_graph_paper_reproduction",
+        "not_graph_database_acceleration"
+      ],
+      "m15_classification": "best_candidate_for_m16_local_runner_wiring_not_yet_third_probe"
+    },
+    {
+      "candidate": "hausdorff_xhd",
+      "capability": "threshold_summary",
+      "set_a_member": true,
+      "existing_result": "runner vs legacy wrapper wall 1.054105x",
+      "m15_classification": "positive_focused_evidence_but_too_small_for_third_strict_probe",
+      "reason": "M14 2-AI consensus rejected Hausdorff as strict third material Set-A evidence because the runner-vs-legacy gains are small."
+    },
+    {
+      "candidate": "rt_dbscan",
+      "capability": "component_union",
+      "set_a_member": true,
+      "existing_result": "runner vs legacy 0.994858x",
+      "m15_classification": "structural_only_not_candidate_now",
+      "reason": "The incumbent already had the physical advantage, so the runner made residency visible but did not create material speed."
+    },
+    {
+      "candidate": "rayjoin_pip_or_lsi",
+      "capability": "point_location_topology_stream",
+      "set_a_member": true,
+      "existing_result": "PIP runner vs legacy total-repeat 0.973754x; LSI runner/old hot 0.785772x",
+      "m15_classification": "coverage_or_structural_only_not_candidate_now",
+      "reason": "M13 and Step-2 reviews require stopping the current Spatial/RayJoin speed path until a new physical mechanism exists."
+    },
+    {
+      "candidate": "raydb_or_grouped_reduction",
+      "capability": "grouped_reduction",
+      "set_a_member": true,
+      "existing_result": "strong row-scoped reusable grouped-reduction evidence, but not the next unresolved third-probe path",
+      "m15_classification": "retained_evidence_not_primary_m15_candidate",
+      "reason": "The current redo critical path needs another productized runtime-trunk family with clear Set-A materiality; Triangle has the stronger unresolved physical source."
+    }
+  ],
+  "m16_recommended_scope": {
+    "local_only": true,
+    "pod": false,
+    "implementation_target": "Add or reuse a Phoenix prepared_execution_session_runner helper for generic ray-triangle weighted summary device-output stream continuation, then wire Triangle's selected route to emit runner metadata.",
+    "required_metadata": [
+      "runtime_executed=true",
+      "productized_execution_path=prepared_execution_session_runner",
+      "explicit_backend=optix",
+      "explicit_partner=cupy_or_numba_as_chosen_by_user",
+      "prepared_session_residency",
+      "hot_path_host_materialization=false_where_supported",
+      "m113_graph_capture_claim_authorized=false",
+      "release_authorized=false",
+      "public_speedup_claim_authorized=false"
+    ],
+    "focused_pod_protocol_after_m16": [
+      "same RTX 4000 Ada pod",
+      "same generated K4 80000 clique row first",
+      "compare old Triangle route vs runner-backed Triangle route",
+      "report runner-inclusive wall and hot-query metrics separately",
+      "keep Embree as control, not as the only incumbent",
+      "do not prepare all-app until the focused result is reviewed"
+    ]
+  },
+  "decision_audit": {
+    "decision": "Select Triangle as the best local M16 candidate for the third strict Set-A probe, while refusing to count the old Triangle row as the third probe yet.",
+    "was_i_foolish": "No.",
+    "foolish_actions": "It would be foolish to use the old 347.232x hot-query or 6.342x wall row as automatic Phoenix runtime-trunk proof before the current productized runner path executes it.",
+    "other_path": "Count Hausdorff as the third probe, rerun Spatial/RayJoin, or jump to all-app. Those repeat the earlier pattern of over-counting weak or blended evidence.",
+    "different_path_now": "Build the Triangle runner-backed path locally, get 2-AI review, then spend focused POD only if the review authorizes it."
+  }
+}

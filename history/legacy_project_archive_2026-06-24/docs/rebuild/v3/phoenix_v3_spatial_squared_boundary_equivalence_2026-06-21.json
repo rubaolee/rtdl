@@ -1,0 +1,197 @@
+{
+  "case_counts": {
+    "deterministic_cases": 1260,
+    "random_cases": 200000,
+    "total_cases": 201260
+  },
+  "checks": {
+    "deterministic_endpoint_and_interior_cases_present": true,
+    "finite_coordinate_scope_declared": true,
+    "guarded_fallback_declared": true,
+    "guarded_no_mismatches": true,
+    "public_claim_flags_false": true,
+    "pure_squared_mismatch_risk_recorded": true,
+    "random_case_count_at_least_200000": true
+  },
+  "equivalence_scope": {
+    "cuda_floating_point_note": "This packet checks the predicate algebra in Python double precision and records the same branch structure. It is supporting evidence, not a standalone CUDA compiler proof.",
+    "degenerate_segment_branch_shared": "len2 <= eps2 uses identical coordinate-box test in both predicates",
+    "epsilon_non_negative": true,
+    "finite_double_values": true,
+    "guard_tol": 1e-06,
+    "guarded_partition": "The guarded predicate uses squared comparisons only when the value is outside a small threshold band. Cases near the threshold fall back to the old sqrt/along-epsilon predicate.",
+    "pure_squared_risk": "A pure squared predicate is not treated as equivalent: deterministic endpoint-adjacent cases showed floating-point disagreement with the old sqrt/along-epsilon predicate."
+  },
+  "failed_checks": [],
+  "generic_capability": "point_location_topology_stream",
+  "goal_level_decision_audit": {
+    "decision": "Add independent predicate-equivalence evidence before any M7 promotion decision.",
+    "different_path_now": "Use a guarded squared fast path with sqrt fallback near thresholds, provide deterministic endpoint/interior cases plus seeded random model checks, then keep the candidate pending external review.",
+    "foolish_actions": "The foolish action would be to rely only on one benchmark count and skip predicate-level equivalence evidence before asking for external review.",
+    "other_path": "Wait for external review. That is still required, but it would leave an obvious correctness question unanswered.",
+    "was_i_foolish": "No. This strengthens correctness review without changing runtime defaults or claiming release."
+  },
+  "guarded_mismatch_count": 0,
+  "guarded_mismatch_examples": [],
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "mismatch_count": 0,
+  "mismatch_examples": [],
+  "optimization": "exact_f64_guarded_squared_boundary_predicate",
+  "public_speedup_claim_authorized": false,
+  "pure_squared_mismatch_count": 10,
+  "pure_squared_mismatch_examples": [
+    {
+      "case": {
+        "ax": 0.0,
+        "ay": 0.0,
+        "bx": 1.0,
+        "by": 0.0,
+        "eps": 1e-09,
+        "px": 1.000000001,
+        "py": -1e-09
+      },
+      "index": 554,
+      "old": true,
+      "pure_squared": false
+    },
+    {
+      "case": {
+        "ax": 0.0,
+        "ay": 0.0,
+        "bx": 1.0,
+        "by": 0.0,
+        "eps": 1e-09,
+        "px": 1.000000001,
+        "py": -5e-10
+      },
+      "index": 555,
+      "old": true,
+      "pure_squared": false
+    },
+    {
+      "case": {
+        "ax": 0.0,
+        "ay": 0.0,
+        "bx": 1.0,
+        "by": 0.0,
+        "eps": 1e-09,
+        "px": 1.000000001,
+        "py": 0.0
+      },
+      "index": 556,
+      "old": true,
+      "pure_squared": false
+    },
+    {
+      "case": {
+        "ax": 0.0,
+        "ay": 0.0,
+        "bx": 1.0,
+        "by": 0.0,
+        "eps": 1e-09,
+        "px": 1.000000001,
+        "py": 5e-10
+      },
+      "index": 557,
+      "old": true,
+      "pure_squared": false
+    },
+    {
+      "case": {
+        "ax": 0.0,
+        "ay": 0.0,
+        "bx": 1.0,
+        "by": 0.0,
+        "eps": 1e-09,
+        "px": 1.000000001,
+        "py": 1e-09
+      },
+      "index": 558,
+      "old": true,
+      "pure_squared": false
+    },
+    {
+      "case": {
+        "ax": 0.0,
+        "ay": 0.0,
+        "bx": 0.0,
+        "by": 1.0,
+        "eps": 1e-09,
+        "px": 1e-09,
+        "py": 1.000000001
+      },
+      "index": 617,
+      "old": true,
+      "pure_squared": false
+    },
+    {
+      "case": {
+        "ax": 0.0,
+        "ay": 0.0,
+        "bx": 0.0,
+        "by": 1.0,
+        "eps": 1e-09,
+        "px": 5e-10,
+        "py": 1.000000001
+      },
+      "index": 618,
+      "old": true,
+      "pure_squared": false
+    },
+    {
+      "case": {
+        "ax": 0.0,
+        "ay": 0.0,
+        "bx": 0.0,
+        "by": 1.0,
+        "eps": 1e-09,
+        "px": 0.0,
+        "py": 1.000000001
+      },
+      "index": 619,
+      "old": true,
+      "pure_squared": false
+    },
+    {
+      "case": {
+        "ax": 0.0,
+        "ay": 0.0,
+        "bx": 0.0,
+        "by": 1.0,
+        "eps": 1e-09,
+        "px": -5e-10,
+        "py": 1.000000001
+      },
+      "index": 620,
+      "old": true,
+      "pure_squared": false
+    },
+    {
+      "case": {
+        "ax": 0.0,
+        "ay": 0.0,
+        "bx": 0.0,
+        "by": 1.0,
+        "eps": 1e-09,
+        "px": -1e-09,
+        "py": 1.000000001
+      },
+      "index": 621,
+      "old": true,
+      "pure_squared": false
+    }
+  ],
+  "release_authorized": false,
+  "row_scoped_public_speedup_claim_authorized": false,
+  "rtdl_beats_rayjoin_claim_authorized": false,
+  "status": "spatial_guarded_squared_boundary_equivalence_pass_not_release",
+  "summary": {
+    "guarded_mismatch_count": 0,
+    "pure_squared_mismatch_count": 10,
+    "status": "old_sqrt_and_guarded_squared_boundary_predicates_match",
+    "total_cases": 201260
+  },
+  "tool": "v3_phoenix_spatial_squared_boundary_equivalence",
+  "true_zero_copy_claim_authorized": false
+}

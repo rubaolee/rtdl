@@ -1,0 +1,51 @@
+Requirement already satisfied: pip in ./.venv_bench/lib/python3.12/site-packages (26.1.2)
+Requirement already satisfied: setuptools in ./.venv_bench/lib/python3.12/site-packages (82.0.1)
+Requirement already satisfied: wheel in ./.venv_bench/lib/python3.12/site-packages (0.47.0)
+Requirement already satisfied: packaging>=24.0 in ./.venv_bench/lib/python3.12/site-packages (from wheel) (26.2)
+Requirement already satisfied: numpy==1.26.4 in ./.venv_bench/lib/python3.12/site-packages (1.26.4)
+Requirement already satisfied: numba==0.60.0 in ./.venv_bench/lib/python3.12/site-packages (0.60.0)
+Requirement already satisfied: nvidia-cuda-nvcc-cu12==12.4.131 in ./.venv_bench/lib/python3.12/site-packages (12.4.131)
+Collecting cupy-cuda12x==13.6.0
+  Using cached cupy_cuda12x-13.6.0-cp312-cp312-manylinux2014_x86_64.whl.metadata (2.4 kB)
+Requirement already satisfied: shapely in ./.venv_bench/lib/python3.12/site-packages (2.1.2)
+Collecting pandas
+  Using cached pandas-3.0.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)
+Requirement already satisfied: scipy in ./.venv_bench/lib/python3.12/site-packages (1.17.1)
+Requirement already satisfied: networkx in ./.venv_bench/lib/python3.12/site-packages (3.6.1)
+Requirement already satisfied: psutil in ./.venv_bench/lib/python3.12/site-packages (7.2.2)
+Requirement already satisfied: pytest in ./.venv_bench/lib/python3.12/site-packages (9.1.1)
+Requirement already satisfied: llvmlite<0.44,>=0.43.0dev0 in ./.venv_bench/lib/python3.12/site-packages (from numba==0.60.0) (0.43.0)
+Requirement already satisfied: fastrlock>=0.5 in ./.venv_bench/lib/python3.12/site-packages (from cupy-cuda12x==13.6.0) (0.8.3)
+Requirement already satisfied: python-dateutil>=2.8.2 in ./.venv_bench/lib/python3.12/site-packages (from pandas) (2.9.0.post0)
+Requirement already satisfied: iniconfig>=1.0.1 in ./.venv_bench/lib/python3.12/site-packages (from pytest) (2.3.0)
+Requirement already satisfied: packaging>=22 in ./.venv_bench/lib/python3.12/site-packages (from pytest) (26.2)
+Requirement already satisfied: pluggy<2,>=1.5 in ./.venv_bench/lib/python3.12/site-packages (from pytest) (1.6.0)
+Requirement already satisfied: pygments>=2.7.2 in ./.venv_bench/lib/python3.12/site-packages (from pytest) (2.20.0)
+Requirement already satisfied: six>=1.5 in ./.venv_bench/lib/python3.12/site-packages (from python-dateutil>=2.8.2->pandas) (1.17.0)
+Using cached cupy_cuda12x-13.6.0-cp312-cp312-manylinux2014_x86_64.whl (112.9 MB)
+Using cached pandas-3.0.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (10.9 MB)
+Installing collected packages: cupy-cuda12x, pandas
+
+Successfully installed cupy-cuda12x-13.6.0 pandas-3.0.3
+Obtaining file:///workspace/rtdl_v2_vs_v3_pod_20260620_024503/v3.0.2
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: numpy>=1.26 in ./.venv_bench/lib/python3.12/site-packages (from rtdl-source-tree==3.0.2) (1.26.4)
+Building wheels for collected packages: rtdl-source-tree
+  Building editable for rtdl-source-tree (pyproject.toml): started
+  Building editable for rtdl-source-tree (pyproject.toml): finished with status 'done'
+  Created wheel for rtdl-source-tree: filename=rtdl_source_tree-3.0.2-0.editable-py3-none-any.whl size=6591 sha256=faa5367aab750f71690ecb29dd8a3c57b4fc2f0d4edb0cc382030def57fb84da
+  Stored in directory: /tmp/pip-ephem-wheel-cache-pw064q4d/wheels/47/6a/83/f840956398ec6f2fd5583336cbd52c1024d00ee9ee3eda029a
+Successfully built rtdl-source-tree
+Installing collected packages: rtdl-source-tree
+Successfully installed rtdl-source-tree
+numpy 1.26.4
+embree 4.3.0
+cupy 13.6.0 28
+numba [1, 2, 3, 4, 5, 6, 7, 8]

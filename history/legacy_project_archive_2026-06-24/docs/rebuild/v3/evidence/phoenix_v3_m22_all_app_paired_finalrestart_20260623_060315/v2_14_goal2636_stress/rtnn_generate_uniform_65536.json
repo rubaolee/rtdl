@@ -1,0 +1,14 @@
+{
+  "claim_boundary": {
+    "paper_dataset": false,
+    "synthetic_input_only": true
+  },
+  "generated": {
+    "dimension": 3,
+    "format": "rtnn_csv_xyz",
+    "path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_m22_all_app_paired_finalrestart_20260623_060315/v2_14_goal2636_stress/rtnn_uniform_65536.csv",
+    "point_count": 65536,
+    "seed": 2346
+  },
+  "runner": "goal2348_rtnn_v2_2_external_runner"
+}

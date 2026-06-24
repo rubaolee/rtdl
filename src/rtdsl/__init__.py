@@ -558,6 +558,8 @@ from .v2_5_execution_path_policy import V2_5_EXECUTION_PATH_POLICY_VERSION
 from .v2_5_execution_path_policy import V2_5_FIXED_RADIUS_AGGREGATE_DIRECT_GRAPH_MODE
 from .v2_5_execution_path_policy import V2_5_FIXED_RADIUS_AGGREGATE_FULL_BATCH_DIRECT_MODE
 from .v2_5_execution_path_policy import V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_CAP
+from .v2_5_execution_path_policy import V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_BOUNDARY
+from .v2_5_execution_path_policy import V2_5_FIXED_RADIUS_AGGREGATE_LARGE_DIRECT_QUERY_COUNT_FLOOR
 from .v2_5_execution_path_policy import V2_5_FIXED_RADIUS_AGGREGATE_SAME_STREAM_CUPY_MODE
 from .v2_5_execution_path_policy import V2_5_PRIMITIVE_FIRST_SELECTION_DOCTRINE_VERSION
 from .v2_5_execution_path_policy import plan_v2_5_fixed_radius_aggregate_execution_path
@@ -775,11 +777,31 @@ from .v2_8_overlay_area_prepared_payload import validate_v2_8_overlay_area_prepa
 from .prepared_execution import PREPARED_EXECUTION_CLAIM_BOUNDARY
 from .prepared_execution import PREPARED_EXECUTION_REPORT_VERSION
 from .prepared_execution import PREPARED_EXECUTION_REQUIRED_PHASES
+from .prepared_execution import PREPARED_EXECUTION_SESSION_RUNNER_STATUS
+from .prepared_execution import PREPARED_EXECUTION_SESSION_RUNNER_VERSION
 from .prepared_execution import PREPARED_EXECUTION_WORKFLOW
 from .prepared_execution import PreparedExecutionPhaseTiming
 from .prepared_execution import PreparedExecutionReport
+from .prepared_execution import PreparedExecutionSessionResult
+from .prepared_execution import PreparedExecutionSessionTask
 from .prepared_execution import describe_prepared_execution_user_pattern
+from .prepared_execution import make_prepared_input_fingerprint
 from .prepared_execution import prepared_execution_report_from_artifact
+from .prepared_execution import run_aggregate_tree_fused_weighted_vector_sum_2d_prepared_session
+from .prepared_execution import run_aabb_index_query_2d_count_prepared_session
+from .prepared_execution import run_aabb_index_query_2d_optix_prepared_query_set_count_prepared_session
+from .prepared_execution import run_aabb_index_query_2d_range_intersection_prepared_session
+from .prepared_execution import run_fixed_radius_count_threshold_3d_self_query_prepared_session
+from .prepared_execution import run_fixed_radius_ranked_summary_3d_prepared_session
+from .prepared_execution import run_fixed_radius_threshold_reached_count_2d_prepared_session
+from .prepared_execution import run_grouped_vector_sum_2d_prepared_session
+from .prepared_execution import run_point_location_topology_stream_prepared_session
+from .prepared_execution import run_prepared_execution_session
+from .prepared_execution import run_ray_triangle_weighted_summary_device_output_stream_prepared_session
+from .prepared_execution import run_radius_graph_component_union_3d_prepared_session
+from .prepared_execution import run_radius_graph_component_signature_3d_prepared_session
+from .prepared_execution import run_repeated_prepared_execution_session
+from .prepared_execution import run_segment_intersection_topology_stream_prepared_session
 from .prepared_execution import validate_prepared_execution_report
 from .geometry_relation_continuations import GEOMETRY_RELATION_BOUNDS_OVERLAP_AREA_CUPY_VERSION
 from .geometry_relation_continuations import GEOMETRY_RELATION_ACTIVE_SHAPE_ORDINALS_CUPY_VERSION
@@ -1521,13 +1543,6 @@ from .partner_adapters import fixed_radius_count_threshold_2d_optix_partner_devi
 from .partner_adapters import allocate_fixed_radius_count_threshold_2d_partner_device_output_columns
 from .partner_adapters import prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene
 from .partner_adapters import fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns
-from .v4_0_device_array_operator import V4DeviceColumnDescriptor
-from .v4_0_device_array_operator import V4FixedRadiusCountThreshold2D
-from .v4_0_device_array_operator import V4FixedRadiusCountThreshold2DPlan
-from .v4_0_device_array_operator import describe_v4_fixed_radius_count_threshold_2d_route
-from .v4_0_device_array_operator import plan_v4_fixed_radius_count_threshold_2d
-from .v4_0_device_array_operator import prepare_v4_fixed_radius_count_threshold_2d
-from .v4_0_device_array_operator import run_v4_fixed_radius_count_threshold_2d
 from .adapters.reductions import partner_group_any_by_key
 from .adapters.reductions import partner_group_count_by_key
 from .adapters.reductions import partner_group_count_unique_pairs_by_key
@@ -2805,11 +2820,31 @@ __all__ = [
     "PREPARED_EXECUTION_CLAIM_BOUNDARY",
     "PREPARED_EXECUTION_REPORT_VERSION",
     "PREPARED_EXECUTION_REQUIRED_PHASES",
+    "PREPARED_EXECUTION_SESSION_RUNNER_STATUS",
+    "PREPARED_EXECUTION_SESSION_RUNNER_VERSION",
     "PREPARED_EXECUTION_WORKFLOW",
     "PreparedExecutionPhaseTiming",
     "PreparedExecutionReport",
+    "PreparedExecutionSessionResult",
+    "PreparedExecutionSessionTask",
     "describe_prepared_execution_user_pattern",
+    "make_prepared_input_fingerprint",
     "prepared_execution_report_from_artifact",
+    "run_aggregate_tree_fused_weighted_vector_sum_2d_prepared_session",
+    "run_aabb_index_query_2d_count_prepared_session",
+    "run_aabb_index_query_2d_optix_prepared_query_set_count_prepared_session",
+    "run_aabb_index_query_2d_range_intersection_prepared_session",
+    "run_fixed_radius_count_threshold_3d_self_query_prepared_session",
+    "run_fixed_radius_ranked_summary_3d_prepared_session",
+    "run_fixed_radius_threshold_reached_count_2d_prepared_session",
+    "run_grouped_vector_sum_2d_prepared_session",
+    "run_point_location_topology_stream_prepared_session",
+    "run_prepared_execution_session",
+    "run_ray_triangle_weighted_summary_device_output_stream_prepared_session",
+    "run_radius_graph_component_union_3d_prepared_session",
+    "run_radius_graph_component_signature_3d_prepared_session",
+    "run_repeated_prepared_execution_session",
+    "run_segment_intersection_topology_stream_prepared_session",
     "validate_prepared_execution_report",
     "ShapePairBoundsOverlapAreaCupyResult",
     "ShapePairActiveShapeOrdinalsCupyResult",
@@ -3355,13 +3390,6 @@ __all__ = [
     "allocate_fixed_radius_count_threshold_2d_partner_device_output_columns",
     "prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene",
     "fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns",
-    "V4DeviceColumnDescriptor",
-    "V4FixedRadiusCountThreshold2D",
-    "V4FixedRadiusCountThreshold2DPlan",
-    "describe_v4_fixed_radius_count_threshold_2d_route",
-    "plan_v4_fixed_radius_count_threshold_2d",
-    "prepare_v4_fixed_radius_count_threshold_2d",
-    "run_v4_fixed_radius_count_threshold_2d",
     "partner_group_any_by_key",
     "partner_group_count_by_key",
     "partner_group_count_unique_pairs_by_key",

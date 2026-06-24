@@ -1,0 +1,7173 @@
+{
+  "app": "rayjoin_v2_spatial_join",
+  "backend": "embree",
+  "counts_stable": true,
+  "dataset": "data/rayjoin_public_cdb/br_county.cdb",
+  "execution_route": "prepared_embree",
+  "native_phase_timings": {
+    "native_traversal_median_sec": 0.012019524,
+    "native_traversal_total_sec": 18.666411335
+  },
+  "output_contract": "native_embree_prepared_scalar_count_no_row_materialization",
+  "phases_sec": {
+    "prepare_static_scene_sec": 0.0352005809545517,
+    "prepared_query_sec": 0.012743443250656128,
+    "prepared_query_sec_repeat": 1000,
+    "prepared_query_sec_total_sec": 19.38362604379654,
+    "prepared_query_sec_warmup": 20
+  },
+  "prepared_count_required": true,
+  "process_wall_sec": 20.63429220020771,
+  "repeat_protocol": {
+    "measured_query_total_sec": 19.38362604379654,
+    "repeat": 1000,
+    "reported_query_metric": "prepared_query_median",
+    "warmup": 20
+  },
+  "result_mode": "count",
+  "row_count": 47262,
+  "runs": [
+    {
+      "elapsed_sec": 0.6680195555090904,
+      "is_warmup": true,
+      "iteration": 0,
+      "native_traversal_sec": 0.026608272,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01636774092912674,
+      "is_warmup": true,
+      "iteration": 1,
+      "native_traversal_sec": 0.015737307,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011356756091117859,
+      "is_warmup": true,
+      "iteration": 2,
+      "native_traversal_sec": 0.010808677,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011408478021621704,
+      "is_warmup": true,
+      "iteration": 3,
+      "native_traversal_sec": 0.010853934,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.029607050120830536,
+      "is_warmup": true,
+      "iteration": 4,
+      "native_traversal_sec": 0.02893729,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01207730919122696,
+      "is_warmup": true,
+      "iteration": 5,
+      "native_traversal_sec": 0.011445618,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01237177848815918,
+      "is_warmup": true,
+      "iteration": 6,
+      "native_traversal_sec": 0.011648144,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012635588645935059,
+      "is_warmup": true,
+      "iteration": 7,
+      "native_traversal_sec": 0.011864575,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012302078306674957,
+      "is_warmup": true,
+      "iteration": 8,
+      "native_traversal_sec": 0.011597778,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.016750313341617584,
+      "is_warmup": true,
+      "iteration": 9,
+      "native_traversal_sec": 0.016032609,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.041568391025066376,
+      "is_warmup": true,
+      "iteration": 10,
+      "native_traversal_sec": 0.040858172,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012689553201198578,
+      "is_warmup": true,
+      "iteration": 11,
+      "native_traversal_sec": 0.011938496,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012089245021343231,
+      "is_warmup": true,
+      "iteration": 12,
+      "native_traversal_sec": 0.011377018,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012182995676994324,
+      "is_warmup": true,
+      "iteration": 13,
+      "native_traversal_sec": 0.011470926,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011897951364517212,
+      "is_warmup": true,
+      "iteration": 14,
+      "native_traversal_sec": 0.011191846,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.045523978769779205,
+      "is_warmup": true,
+      "iteration": 15,
+      "native_traversal_sec": 0.04481317,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012446552515029907,
+      "is_warmup": true,
+      "iteration": 16,
+      "native_traversal_sec": 0.011734287,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012463949620723724,
+      "is_warmup": true,
+      "iteration": 17,
+      "native_traversal_sec": 0.011688079,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012422241270542145,
+      "is_warmup": true,
+      "iteration": 18,
+      "native_traversal_sec": 0.011695713,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01261930912733078,
+      "is_warmup": true,
+      "iteration": 19,
+      "native_traversal_sec": 0.011890685,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04810860753059387,
+      "is_warmup": false,
+      "iteration": 20,
+      "native_traversal_sec": 0.047405598,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012950979173183441,
+      "is_warmup": false,
+      "iteration": 21,
+      "native_traversal_sec": 0.012223958,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012325815856456757,
+      "is_warmup": false,
+      "iteration": 22,
+      "native_traversal_sec": 0.011611554,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012574300169944763,
+      "is_warmup": false,
+      "iteration": 23,
+      "native_traversal_sec": 0.011858313,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012261822819709778,
+      "is_warmup": false,
+      "iteration": 24,
+      "native_traversal_sec": 0.011553123,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04927801340818405,
+      "is_warmup": false,
+      "iteration": 25,
+      "native_traversal_sec": 0.048529305,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012729249894618988,
+      "is_warmup": false,
+      "iteration": 26,
+      "native_traversal_sec": 0.01202002,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012589313089847565,
+      "is_warmup": false,
+      "iteration": 27,
+      "native_traversal_sec": 0.011871057,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012143976986408234,
+      "is_warmup": false,
+      "iteration": 28,
+      "native_traversal_sec": 0.011444176,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012294657528400421,
+      "is_warmup": false,
+      "iteration": 29,
+      "native_traversal_sec": 0.011580103,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0168132483959198,
+      "is_warmup": false,
+      "iteration": 30,
+      "native_traversal_sec": 0.0160863,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04036957025527954,
+      "is_warmup": false,
+      "iteration": 31,
+      "native_traversal_sec": 0.039644474,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012871526181697845,
+      "is_warmup": false,
+      "iteration": 32,
+      "native_traversal_sec": 0.012150989,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012639567255973816,
+      "is_warmup": false,
+      "iteration": 33,
+      "native_traversal_sec": 0.011929158,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012173213064670563,
+      "is_warmup": false,
+      "iteration": 34,
+      "native_traversal_sec": 0.011442633,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012222081422805786,
+      "is_warmup": false,
+      "iteration": 35,
+      "native_traversal_sec": 0.011511764,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04712582379579544,
+      "is_warmup": false,
+      "iteration": 36,
+      "native_traversal_sec": 0.046424183,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012830257415771484,
+      "is_warmup": false,
+      "iteration": 37,
+      "native_traversal_sec": 0.012167621,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012552537024021149,
+      "is_warmup": false,
+      "iteration": 38,
+      "native_traversal_sec": 0.011883371,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012767702341079712,
+      "is_warmup": false,
+      "iteration": 39,
+      "native_traversal_sec": 0.012047012,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012723222374916077,
+      "is_warmup": false,
+      "iteration": 40,
+      "native_traversal_sec": 0.012003669,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04683602601289749,
+      "is_warmup": false,
+      "iteration": 41,
+      "native_traversal_sec": 0.046051816,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012234628200531006,
+      "is_warmup": false,
+      "iteration": 42,
+      "native_traversal_sec": 0.011559645,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010933592915534973,
+      "is_warmup": false,
+      "iteration": 43,
+      "native_traversal_sec": 0.01035263,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01076546311378479,
+      "is_warmup": false,
+      "iteration": 44,
+      "native_traversal_sec": 0.010221211,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010048359632492065,
+      "is_warmup": false,
+      "iteration": 45,
+      "native_traversal_sec": 0.009515308,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.014236629009246826,
+      "is_warmup": false,
+      "iteration": 46,
+      "native_traversal_sec": 0.013649467,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04545103758573532,
+      "is_warmup": false,
+      "iteration": 47,
+      "native_traversal_sec": 0.044920474,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010835900902748108,
+      "is_warmup": false,
+      "iteration": 48,
+      "native_traversal_sec": 0.010312434,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010763637721538544,
+      "is_warmup": false,
+      "iteration": 49,
+      "native_traversal_sec": 0.010245617,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010474435985088348,
+      "is_warmup": false,
+      "iteration": 50,
+      "native_traversal_sec": 0.009937592,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01046077162027359,
+      "is_warmup": false,
+      "iteration": 51,
+      "native_traversal_sec": 0.009935958,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.051582977175712585,
+      "is_warmup": false,
+      "iteration": 52,
+      "native_traversal_sec": 0.051044557,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011517241597175598,
+      "is_warmup": false,
+      "iteration": 53,
+      "native_traversal_sec": 0.011004179,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011260747909545898,
+      "is_warmup": false,
+      "iteration": 54,
+      "native_traversal_sec": 0.010720189,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011273644864559174,
+      "is_warmup": false,
+      "iteration": 55,
+      "native_traversal_sec": 0.010736791,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01132943481206894,
+      "is_warmup": false,
+      "iteration": 56,
+      "native_traversal_sec": 0.010798549,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.05465642362833023,
+      "is_warmup": false,
+      "iteration": 57,
+      "native_traversal_sec": 0.054082051,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01235903799533844,
+      "is_warmup": false,
+      "iteration": 58,
+      "native_traversal_sec": 0.011657341,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012506462633609772,
+      "is_warmup": false,
+      "iteration": 59,
+      "native_traversal_sec": 0.011785183,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012428037822246552,
+      "is_warmup": false,
+      "iteration": 60,
+      "native_traversal_sec": 0.011719519,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012394003570079803,
+      "is_warmup": false,
+      "iteration": 61,
+      "native_traversal_sec": 0.011671849,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04937470704317093,
+      "is_warmup": false,
+      "iteration": 62,
+      "native_traversal_sec": 0.048680653,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012809209525585175,
+      "is_warmup": false,
+      "iteration": 63,
+      "native_traversal_sec": 0.01211453,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012797288596630096,
+      "is_warmup": false,
+      "iteration": 64,
+      "native_traversal_sec": 0.012086677,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012329697608947754,
+      "is_warmup": false,
+      "iteration": 65,
+      "native_traversal_sec": 0.011633396,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012383341789245605,
+      "is_warmup": false,
+      "iteration": 66,
+      "native_traversal_sec": 0.01167275,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.02180783450603485,
+      "is_warmup": false,
+      "iteration": 67,
+      "native_traversal_sec": 0.02110449,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.03762156516313553,
+      "is_warmup": false,
+      "iteration": 68,
+      "native_traversal_sec": 0.036918543,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012152738869190216,
+      "is_warmup": false,
+      "iteration": 69,
+      "native_traversal_sec": 0.011433014,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01239044964313507,
+      "is_warmup": false,
+      "iteration": 70,
+      "native_traversal_sec": 0.011642452,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012497328221797943,
+      "is_warmup": false,
+      "iteration": 71,
+      "native_traversal_sec": 0.011797126,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012159794569015503,
+      "is_warmup": false,
+      "iteration": 72,
+      "native_traversal_sec": 0.011456519,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04732532799243927,
+      "is_warmup": false,
+      "iteration": 73,
+      "native_traversal_sec": 0.046630726,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012757964432239532,
+      "is_warmup": false,
+      "iteration": 74,
+      "native_traversal_sec": 0.012063914,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012488216161727905,
+      "is_warmup": false,
+      "iteration": 75,
+      "native_traversal_sec": 0.011781677,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012439519166946411,
+      "is_warmup": false,
+      "iteration": 76,
+      "native_traversal_sec": 0.011747342,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012715019285678864,
+      "is_warmup": false,
+      "iteration": 77,
+      "native_traversal_sec": 0.012001585,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04745383560657501,
+      "is_warmup": false,
+      "iteration": 78,
+      "native_traversal_sec": 0.046758899,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013017617166042328,
+      "is_warmup": false,
+      "iteration": 79,
+      "native_traversal_sec": 0.012308649,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01264246553182602,
+      "is_warmup": false,
+      "iteration": 80,
+      "native_traversal_sec": 0.011927044,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01236339658498764,
+      "is_warmup": false,
+      "iteration": 81,
+      "native_traversal_sec": 0.011623116,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0127485990524292,
+      "is_warmup": false,
+      "iteration": 82,
+      "native_traversal_sec": 0.01204626,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04826239496469498,
+      "is_warmup": false,
+      "iteration": 83,
+      "native_traversal_sec": 0.047600138,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01321866363286972,
+      "is_warmup": false,
+      "iteration": 84,
+      "native_traversal_sec": 0.012486096,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013004988431930542,
+      "is_warmup": false,
+      "iteration": 85,
+      "native_traversal_sec": 0.012327405,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012572787702083588,
+      "is_warmup": false,
+      "iteration": 86,
+      "native_traversal_sec": 0.011903569,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012585535645484924,
+      "is_warmup": false,
+      "iteration": 87,
+      "native_traversal_sec": 0.01187816,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04820790886878967,
+      "is_warmup": false,
+      "iteration": 88,
+      "native_traversal_sec": 0.047551045,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012673579156398773,
+      "is_warmup": false,
+      "iteration": 89,
+      "native_traversal_sec": 0.012015371,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01238725334405899,
+      "is_warmup": false,
+      "iteration": 90,
+      "native_traversal_sec": 0.011738806,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01250893622636795,
+      "is_warmup": false,
+      "iteration": 91,
+      "native_traversal_sec": 0.011809891,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012721315026283264,
+      "is_warmup": false,
+      "iteration": 92,
+      "native_traversal_sec": 0.012019449,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04861188679933548,
+      "is_warmup": false,
+      "iteration": 93,
+      "native_traversal_sec": 0.047930837,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012574911117553711,
+      "is_warmup": false,
+      "iteration": 94,
+      "native_traversal_sec": 0.01188312,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012520603835582733,
+      "is_warmup": false,
+      "iteration": 95,
+      "native_traversal_sec": 0.011819088,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012324698269367218,
+      "is_warmup": false,
+      "iteration": 96,
+      "native_traversal_sec": 0.011644958,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012526452541351318,
+      "is_warmup": false,
+      "iteration": 97,
+      "native_traversal_sec": 0.01185706,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048934243619441986,
+      "is_warmup": false,
+      "iteration": 98,
+      "native_traversal_sec": 0.048236348,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012992575764656067,
+      "is_warmup": false,
+      "iteration": 99,
+      "native_traversal_sec": 0.012227455,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012575812637805939,
+      "is_warmup": false,
+      "iteration": 100,
+      "native_traversal_sec": 0.011863743,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01262163370847702,
+      "is_warmup": false,
+      "iteration": 101,
+      "native_traversal_sec": 0.011913768,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01265636831521988,
+      "is_warmup": false,
+      "iteration": 102,
+      "native_traversal_sec": 0.011950928,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04896768182516098,
+      "is_warmup": false,
+      "iteration": 103,
+      "native_traversal_sec": 0.04826389,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01265784353017807,
+      "is_warmup": false,
+      "iteration": 104,
+      "native_traversal_sec": 0.011984753,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01266448199748993,
+      "is_warmup": false,
+      "iteration": 105,
+      "native_traversal_sec": 0.011947132,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012704044580459595,
+      "is_warmup": false,
+      "iteration": 106,
+      "native_traversal_sec": 0.011984222,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012156404554843903,
+      "is_warmup": false,
+      "iteration": 107,
+      "native_traversal_sec": 0.011452351,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.021702900528907776,
+      "is_warmup": false,
+      "iteration": 108,
+      "native_traversal_sec": 0.020990493,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.03845508396625519,
+      "is_warmup": false,
+      "iteration": 109,
+      "native_traversal_sec": 0.037757818,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012981466948986053,
+      "is_warmup": false,
+      "iteration": 110,
+      "native_traversal_sec": 0.012296957,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012655526399612427,
+      "is_warmup": false,
+      "iteration": 111,
+      "native_traversal_sec": 0.011930941,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012372173368930817,
+      "is_warmup": false,
+      "iteration": 112,
+      "native_traversal_sec": 0.011663102,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012698911130428314,
+      "is_warmup": false,
+      "iteration": 113,
+      "native_traversal_sec": 0.011956419,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.03986329585313797,
+      "is_warmup": false,
+      "iteration": 114,
+      "native_traversal_sec": 0.039157519,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013220168650150299,
+      "is_warmup": false,
+      "iteration": 115,
+      "native_traversal_sec": 0.012533306,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012817934155464172,
+      "is_warmup": false,
+      "iteration": 116,
+      "native_traversal_sec": 0.012023386,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012789450585842133,
+      "is_warmup": false,
+      "iteration": 117,
+      "native_traversal_sec": 0.012086196,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012742280960083008,
+      "is_warmup": false,
+      "iteration": 118,
+      "native_traversal_sec": 0.011997508,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01273055374622345,
+      "is_warmup": false,
+      "iteration": 119,
+      "native_traversal_sec": 0.011897457,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0428122878074646,
+      "is_warmup": false,
+      "iteration": 120,
+      "native_traversal_sec": 0.042102949,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012427069246768951,
+      "is_warmup": false,
+      "iteration": 121,
+      "native_traversal_sec": 0.01170403,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01223369687795639,
+      "is_warmup": false,
+      "iteration": 122,
+      "native_traversal_sec": 0.011494572,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012283049523830414,
+      "is_warmup": false,
+      "iteration": 123,
+      "native_traversal_sec": 0.011543404,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012344591319561005,
+      "is_warmup": false,
+      "iteration": 124,
+      "native_traversal_sec": 0.011606945,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04650881886482239,
+      "is_warmup": false,
+      "iteration": 125,
+      "native_traversal_sec": 0.045707792,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012810632586479187,
+      "is_warmup": false,
+      "iteration": 126,
+      "native_traversal_sec": 0.012112876,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012410253286361694,
+      "is_warmup": false,
+      "iteration": 127,
+      "native_traversal_sec": 0.011678641,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012315347790718079,
+      "is_warmup": false,
+      "iteration": 128,
+      "native_traversal_sec": 0.011600773,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012471549212932587,
+      "is_warmup": false,
+      "iteration": 129,
+      "native_traversal_sec": 0.011718537,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04715012013912201,
+      "is_warmup": false,
+      "iteration": 130,
+      "native_traversal_sec": 0.046418903,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012569457292556763,
+      "is_warmup": false,
+      "iteration": 131,
+      "native_traversal_sec": 0.011874794,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012621581554412842,
+      "is_warmup": false,
+      "iteration": 132,
+      "native_traversal_sec": 0.011849376,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012531310319900513,
+      "is_warmup": false,
+      "iteration": 133,
+      "native_traversal_sec": 0.01180926,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012392893433570862,
+      "is_warmup": false,
+      "iteration": 134,
+      "native_traversal_sec": 0.011687929,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.049214862287044525,
+      "is_warmup": false,
+      "iteration": 135,
+      "native_traversal_sec": 0.048492285,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012778885662555695,
+      "is_warmup": false,
+      "iteration": 136,
+      "native_traversal_sec": 0.012105753,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01252802461385727,
+      "is_warmup": false,
+      "iteration": 137,
+      "native_traversal_sec": 0.01180987,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012651301920413971,
+      "is_warmup": false,
+      "iteration": 138,
+      "native_traversal_sec": 0.011939417,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012544810771942139,
+      "is_warmup": false,
+      "iteration": 139,
+      "native_traversal_sec": 0.011831321,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.05006461590528488,
+      "is_warmup": false,
+      "iteration": 140,
+      "native_traversal_sec": 0.049355756,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01286749541759491,
+      "is_warmup": false,
+      "iteration": 141,
+      "native_traversal_sec": 0.012194071,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012881986796855927,
+      "is_warmup": false,
+      "iteration": 142,
+      "native_traversal_sec": 0.012169163,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012551344931125641,
+      "is_warmup": false,
+      "iteration": 143,
+      "native_traversal_sec": 0.011829197,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01273837685585022,
+      "is_warmup": false,
+      "iteration": 144,
+      "native_traversal_sec": 0.012012617,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.049456074833869934,
+      "is_warmup": false,
+      "iteration": 145,
+      "native_traversal_sec": 0.048735658,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012865372002124786,
+      "is_warmup": false,
+      "iteration": 146,
+      "native_traversal_sec": 0.012158102,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012570038437843323,
+      "is_warmup": false,
+      "iteration": 147,
+      "native_traversal_sec": 0.011854836,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012754976749420166,
+      "is_warmup": false,
+      "iteration": 148,
+      "native_traversal_sec": 0.012049857,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012547224760055542,
+      "is_warmup": false,
+      "iteration": 149,
+      "native_traversal_sec": 0.011833846,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.05009660869836807,
+      "is_warmup": false,
+      "iteration": 150,
+      "native_traversal_sec": 0.049371366,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013103485107421875,
+      "is_warmup": false,
+      "iteration": 151,
+      "native_traversal_sec": 0.012367832,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012564107775688171,
+      "is_warmup": false,
+      "iteration": 152,
+      "native_traversal_sec": 0.011831932,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012454301118850708,
+      "is_warmup": false,
+      "iteration": 153,
+      "native_traversal_sec": 0.011761118,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01257447898387909,
+      "is_warmup": false,
+      "iteration": 154,
+      "native_traversal_sec": 0.011868291,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.049179524183273315,
+      "is_warmup": false,
+      "iteration": 155,
+      "native_traversal_sec": 0.048472307,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013202741742134094,
+      "is_warmup": false,
+      "iteration": 156,
+      "native_traversal_sec": 0.012511705,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012421473860740662,
+      "is_warmup": false,
+      "iteration": 157,
+      "native_traversal_sec": 0.011725461,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012544125318527222,
+      "is_warmup": false,
+      "iteration": 158,
+      "native_traversal_sec": 0.011839477,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012776724994182587,
+      "is_warmup": false,
+      "iteration": 159,
+      "native_traversal_sec": 0.012034598,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04932168126106262,
+      "is_warmup": false,
+      "iteration": 160,
+      "native_traversal_sec": 0.048598136,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012938141822814941,
+      "is_warmup": false,
+      "iteration": 161,
+      "native_traversal_sec": 0.012235159,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013072669506072998,
+      "is_warmup": false,
+      "iteration": 162,
+      "native_traversal_sec": 0.012356901,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012931354343891144,
+      "is_warmup": false,
+      "iteration": 163,
+      "native_traversal_sec": 0.012184994,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012667961418628693,
+      "is_warmup": false,
+      "iteration": 164,
+      "native_traversal_sec": 0.011936601,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04956693947315216,
+      "is_warmup": false,
+      "iteration": 165,
+      "native_traversal_sec": 0.048815068,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01312989741563797,
+      "is_warmup": false,
+      "iteration": 166,
+      "native_traversal_sec": 0.012389402,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012877203524112701,
+      "is_warmup": false,
+      "iteration": 167,
+      "native_traversal_sec": 0.012171097,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01271548867225647,
+      "is_warmup": false,
+      "iteration": 168,
+      "native_traversal_sec": 0.011987028,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012820720672607422,
+      "is_warmup": false,
+      "iteration": 169,
+      "native_traversal_sec": 0.012103199,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048669591546058655,
+      "is_warmup": false,
+      "iteration": 170,
+      "native_traversal_sec": 0.047913064,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012848876416683197,
+      "is_warmup": false,
+      "iteration": 171,
+      "native_traversal_sec": 0.012143094,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012559443712234497,
+      "is_warmup": false,
+      "iteration": 172,
+      "native_traversal_sec": 0.01185146,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012658804655075073,
+      "is_warmup": false,
+      "iteration": 173,
+      "native_traversal_sec": 0.011928165,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012345075607299805,
+      "is_warmup": false,
+      "iteration": 174,
+      "native_traversal_sec": 0.011653413,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04818498343229294,
+      "is_warmup": false,
+      "iteration": 175,
+      "native_traversal_sec": 0.047457347,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012709803879261017,
+      "is_warmup": false,
+      "iteration": 176,
+      "native_traversal_sec": 0.012012967,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012445613741874695,
+      "is_warmup": false,
+      "iteration": 177,
+      "native_traversal_sec": 0.011723997,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012904107570648193,
+      "is_warmup": false,
+      "iteration": 178,
+      "native_traversal_sec": 0.012134277,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012607403099536896,
+      "is_warmup": false,
+      "iteration": 179,
+      "native_traversal_sec": 0.011900343,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0487983375787735,
+      "is_warmup": false,
+      "iteration": 180,
+      "native_traversal_sec": 0.048072376,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012639962136745453,
+      "is_warmup": false,
+      "iteration": 181,
+      "native_traversal_sec": 0.011926803,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012662924826145172,
+      "is_warmup": false,
+      "iteration": 182,
+      "native_traversal_sec": 0.011949927,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012461796402931213,
+      "is_warmup": false,
+      "iteration": 183,
+      "native_traversal_sec": 0.01169931,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012379445135593414,
+      "is_warmup": false,
+      "iteration": 184,
+      "native_traversal_sec": 0.011676627,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04880910366773605,
+      "is_warmup": false,
+      "iteration": 185,
+      "native_traversal_sec": 0.048096983,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012961417436599731,
+      "is_warmup": false,
+      "iteration": 186,
+      "native_traversal_sec": 0.0123143,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012762919068336487,
+      "is_warmup": false,
+      "iteration": 187,
+      "native_traversal_sec": 0.0120517,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012616105377674103,
+      "is_warmup": false,
+      "iteration": 188,
+      "native_traversal_sec": 0.011892077,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012573383748531342,
+      "is_warmup": false,
+      "iteration": 189,
+      "native_traversal_sec": 0.011837844,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04946187883615494,
+      "is_warmup": false,
+      "iteration": 190,
+      "native_traversal_sec": 0.04875831,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013261452317237854,
+      "is_warmup": false,
+      "iteration": 191,
+      "native_traversal_sec": 0.012538235,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012635156512260437,
+      "is_warmup": false,
+      "iteration": 192,
+      "native_traversal_sec": 0.011929818,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012282148003578186,
+      "is_warmup": false,
+      "iteration": 193,
+      "native_traversal_sec": 0.011573692,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012613818049430847,
+      "is_warmup": false,
+      "iteration": 194,
+      "native_traversal_sec": 0.011897748,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04889620840549469,
+      "is_warmup": false,
+      "iteration": 195,
+      "native_traversal_sec": 0.04817462,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013058431446552277,
+      "is_warmup": false,
+      "iteration": 196,
+      "native_traversal_sec": 0.012342483,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013067364692687988,
+      "is_warmup": false,
+      "iteration": 197,
+      "native_traversal_sec": 0.012352532,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012756355106830597,
+      "is_warmup": false,
+      "iteration": 198,
+      "native_traversal_sec": 0.01203566,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012343786656856537,
+      "is_warmup": false,
+      "iteration": 199,
+      "native_traversal_sec": 0.011645208,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0491771399974823,
+      "is_warmup": false,
+      "iteration": 200,
+      "native_traversal_sec": 0.048459783,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013236664235591888,
+      "is_warmup": false,
+      "iteration": 201,
+      "native_traversal_sec": 0.012496406,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012800581753253937,
+      "is_warmup": false,
+      "iteration": 202,
+      "native_traversal_sec": 0.012083531,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012945763766765594,
+      "is_warmup": false,
+      "iteration": 203,
+      "native_traversal_sec": 0.012228397,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01266229897737503,
+      "is_warmup": false,
+      "iteration": 204,
+      "native_traversal_sec": 0.01193047,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04965373873710632,
+      "is_warmup": false,
+      "iteration": 205,
+      "native_traversal_sec": 0.048935938,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012346647679805756,
+      "is_warmup": false,
+      "iteration": 206,
+      "native_traversal_sec": 0.011655467,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01165822148323059,
+      "is_warmup": false,
+      "iteration": 207,
+      "native_traversal_sec": 0.010996104,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011984191834926605,
+      "is_warmup": false,
+      "iteration": 208,
+      "native_traversal_sec": 0.011338886,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011602044105529785,
+      "is_warmup": false,
+      "iteration": 209,
+      "native_traversal_sec": 0.0109572,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012025780975818634,
+      "is_warmup": false,
+      "iteration": 210,
+      "native_traversal_sec": 0.011353293,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.043570153415203094,
+      "is_warmup": false,
+      "iteration": 211,
+      "native_traversal_sec": 0.042887039,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012903161346912384,
+      "is_warmup": false,
+      "iteration": 212,
+      "native_traversal_sec": 0.012236451,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012198381125926971,
+      "is_warmup": false,
+      "iteration": 213,
+      "native_traversal_sec": 0.011510472,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012276753783226013,
+      "is_warmup": false,
+      "iteration": 214,
+      "native_traversal_sec": 0.011569584,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012594044208526611,
+      "is_warmup": false,
+      "iteration": 215,
+      "native_traversal_sec": 0.01188849,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04598003625869751,
+      "is_warmup": false,
+      "iteration": 216,
+      "native_traversal_sec": 0.045268306,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013095088303089142,
+      "is_warmup": false,
+      "iteration": 217,
+      "native_traversal_sec": 0.012413368,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012643128633499146,
+      "is_warmup": false,
+      "iteration": 218,
+      "native_traversal_sec": 0.011924568,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01231672614812851,
+      "is_warmup": false,
+      "iteration": 219,
+      "native_traversal_sec": 0.01161989,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012708388268947601,
+      "is_warmup": false,
+      "iteration": 220,
+      "native_traversal_sec": 0.011995564,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04958726465702057,
+      "is_warmup": false,
+      "iteration": 221,
+      "native_traversal_sec": 0.048881184,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013483777642250061,
+      "is_warmup": false,
+      "iteration": 222,
+      "native_traversal_sec": 0.012761881,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013118140399456024,
+      "is_warmup": false,
+      "iteration": 223,
+      "native_traversal_sec": 0.012411584,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012983039021492004,
+      "is_warmup": false,
+      "iteration": 224,
+      "native_traversal_sec": 0.012228085,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012270227074623108,
+      "is_warmup": false,
+      "iteration": 225,
+      "native_traversal_sec": 0.011545007,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04900619387626648,
+      "is_warmup": false,
+      "iteration": 226,
+      "native_traversal_sec": 0.048285792,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013223513960838318,
+      "is_warmup": false,
+      "iteration": 227,
+      "native_traversal_sec": 0.012535661,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012607939541339874,
+      "is_warmup": false,
+      "iteration": 228,
+      "native_traversal_sec": 0.011880745,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013147912919521332,
+      "is_warmup": false,
+      "iteration": 229,
+      "native_traversal_sec": 0.012415301,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012613169848918915,
+      "is_warmup": false,
+      "iteration": 230,
+      "native_traversal_sec": 0.011898108,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.047838784754276276,
+      "is_warmup": false,
+      "iteration": 231,
+      "native_traversal_sec": 0.047112963,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013006418943405151,
+      "is_warmup": false,
+      "iteration": 232,
+      "native_traversal_sec": 0.01230391,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012960173189640045,
+      "is_warmup": false,
+      "iteration": 233,
+      "native_traversal_sec": 0.012247142,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012494631111621857,
+      "is_warmup": false,
+      "iteration": 234,
+      "native_traversal_sec": 0.01176228,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012850508093833923,
+      "is_warmup": false,
+      "iteration": 235,
+      "native_traversal_sec": 0.012127935,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048893965780735016,
+      "is_warmup": false,
+      "iteration": 236,
+      "native_traversal_sec": 0.048171385,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013117603957653046,
+      "is_warmup": false,
+      "iteration": 237,
+      "native_traversal_sec": 0.0123825,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012998536229133606,
+      "is_warmup": false,
+      "iteration": 238,
+      "native_traversal_sec": 0.012255588,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012347608804702759,
+      "is_warmup": false,
+      "iteration": 239,
+      "native_traversal_sec": 0.011619479,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012940675020217896,
+      "is_warmup": false,
+      "iteration": 240,
+      "native_traversal_sec": 0.012218097,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0485989972949028,
+      "is_warmup": false,
+      "iteration": 241,
+      "native_traversal_sec": 0.047883277,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012931957840919495,
+      "is_warmup": false,
+      "iteration": 242,
+      "native_traversal_sec": 0.012247623,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012823536992073059,
+      "is_warmup": false,
+      "iteration": 243,
+      "native_traversal_sec": 0.012124689,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013140879571437836,
+      "is_warmup": false,
+      "iteration": 244,
+      "native_traversal_sec": 0.012394492,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012568570673465729,
+      "is_warmup": false,
+      "iteration": 245,
+      "native_traversal_sec": 0.011838876,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048323601484298706,
+      "is_warmup": false,
+      "iteration": 246,
+      "native_traversal_sec": 0.047603135,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012785039842128754,
+      "is_warmup": false,
+      "iteration": 247,
+      "native_traversal_sec": 0.012097177,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012694679200649261,
+      "is_warmup": false,
+      "iteration": 248,
+      "native_traversal_sec": 0.011979734,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012673303484916687,
+      "is_warmup": false,
+      "iteration": 249,
+      "native_traversal_sec": 0.011966899,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012538902461528778,
+      "is_warmup": false,
+      "iteration": 250,
+      "native_traversal_sec": 0.011843735,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048146650195121765,
+      "is_warmup": false,
+      "iteration": 251,
+      "native_traversal_sec": 0.047410878,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013441093266010284,
+      "is_warmup": false,
+      "iteration": 252,
+      "native_traversal_sec": 0.012692859,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012802943587303162,
+      "is_warmup": false,
+      "iteration": 253,
+      "native_traversal_sec": 0.012078101,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012245140969753265,
+      "is_warmup": false,
+      "iteration": 254,
+      "native_traversal_sec": 0.011553674,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012587450444698334,
+      "is_warmup": false,
+      "iteration": 255,
+      "native_traversal_sec": 0.011823156,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04828298091888428,
+      "is_warmup": false,
+      "iteration": 256,
+      "native_traversal_sec": 0.0475426,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012934841215610504,
+      "is_warmup": false,
+      "iteration": 257,
+      "native_traversal_sec": 0.012213628,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01257278025150299,
+      "is_warmup": false,
+      "iteration": 258,
+      "native_traversal_sec": 0.011882949,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012585364282131195,
+      "is_warmup": false,
+      "iteration": 259,
+      "native_traversal_sec": 0.011874955,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01280234009027481,
+      "is_warmup": false,
+      "iteration": 260,
+      "native_traversal_sec": 0.012070196,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0498771071434021,
+      "is_warmup": false,
+      "iteration": 261,
+      "native_traversal_sec": 0.049166045,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012868337333202362,
+      "is_warmup": false,
+      "iteration": 262,
+      "native_traversal_sec": 0.012176958,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012418940663337708,
+      "is_warmup": false,
+      "iteration": 263,
+      "native_traversal_sec": 0.011731091,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012523621320724487,
+      "is_warmup": false,
+      "iteration": 264,
+      "native_traversal_sec": 0.011805983,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012428127229213715,
+      "is_warmup": false,
+      "iteration": 265,
+      "native_traversal_sec": 0.011668863,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04884161055088043,
+      "is_warmup": false,
+      "iteration": 266,
+      "native_traversal_sec": 0.048131609,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013086065649986267,
+      "is_warmup": false,
+      "iteration": 267,
+      "native_traversal_sec": 0.012404601,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013002254068851471,
+      "is_warmup": false,
+      "iteration": 268,
+      "native_traversal_sec": 0.012293079,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012785695493221283,
+      "is_warmup": false,
+      "iteration": 269,
+      "native_traversal_sec": 0.011998991,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012671448290348053,
+      "is_warmup": false,
+      "iteration": 270,
+      "native_traversal_sec": 0.011921233,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048878513276576996,
+      "is_warmup": false,
+      "iteration": 271,
+      "native_traversal_sec": 0.048158531,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013035409152507782,
+      "is_warmup": false,
+      "iteration": 272,
+      "native_traversal_sec": 0.01230929,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012837909162044525,
+      "is_warmup": false,
+      "iteration": 273,
+      "native_traversal_sec": 0.012110843,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013039246201515198,
+      "is_warmup": false,
+      "iteration": 274,
+      "native_traversal_sec": 0.012288791,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012824289500713348,
+      "is_warmup": false,
+      "iteration": 275,
+      "native_traversal_sec": 0.012099872,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04987943917512894,
+      "is_warmup": false,
+      "iteration": 276,
+      "native_traversal_sec": 0.049129646,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013098999857902527,
+      "is_warmup": false,
+      "iteration": 277,
+      "native_traversal_sec": 0.012422496,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012579582631587982,
+      "is_warmup": false,
+      "iteration": 278,
+      "native_traversal_sec": 0.011797096,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0125664621591568,
+      "is_warmup": false,
+      "iteration": 279,
+      "native_traversal_sec": 0.011861488,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012215450406074524,
+      "is_warmup": false,
+      "iteration": 280,
+      "native_traversal_sec": 0.0115091,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.047370485961437225,
+      "is_warmup": false,
+      "iteration": 281,
+      "native_traversal_sec": 0.046660582,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012077681720256805,
+      "is_warmup": false,
+      "iteration": 282,
+      "native_traversal_sec": 0.011444286,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011866644024848938,
+      "is_warmup": false,
+      "iteration": 283,
+      "native_traversal_sec": 0.011165055,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011691458523273468,
+      "is_warmup": false,
+      "iteration": 284,
+      "native_traversal_sec": 0.011058302,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012289337813854218,
+      "is_warmup": false,
+      "iteration": 285,
+      "native_traversal_sec": 0.01156718,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01179361343383789,
+      "is_warmup": false,
+      "iteration": 286,
+      "native_traversal_sec": 0.011085374,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.045943498611450195,
+      "is_warmup": false,
+      "iteration": 287,
+      "native_traversal_sec": 0.045225905,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012369275093078613,
+      "is_warmup": false,
+      "iteration": 288,
+      "native_traversal_sec": 0.011493179,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011977940797805786,
+      "is_warmup": false,
+      "iteration": 289,
+      "native_traversal_sec": 0.011122164,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01187986135482788,
+      "is_warmup": false,
+      "iteration": 290,
+      "native_traversal_sec": 0.011206644,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011136680841445923,
+      "is_warmup": false,
+      "iteration": 291,
+      "native_traversal_sec": 0.010464843,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012867972254753113,
+      "is_warmup": false,
+      "iteration": 292,
+      "native_traversal_sec": 0.011892789,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.03973744809627533,
+      "is_warmup": false,
+      "iteration": 293,
+      "native_traversal_sec": 0.038654213,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012921392917633057,
+      "is_warmup": false,
+      "iteration": 294,
+      "native_traversal_sec": 0.012131843,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0127401202917099,
+      "is_warmup": false,
+      "iteration": 295,
+      "native_traversal_sec": 0.012020552,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01257651299238205,
+      "is_warmup": false,
+      "iteration": 296,
+      "native_traversal_sec": 0.011898529,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012754961848258972,
+      "is_warmup": false,
+      "iteration": 297,
+      "native_traversal_sec": 0.012085194,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04556584358215332,
+      "is_warmup": false,
+      "iteration": 298,
+      "native_traversal_sec": 0.044869027,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012674443423748016,
+      "is_warmup": false,
+      "iteration": 299,
+      "native_traversal_sec": 0.011982339,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012224987149238586,
+      "is_warmup": false,
+      "iteration": 300,
+      "native_traversal_sec": 0.011482218,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012433335185050964,
+      "is_warmup": false,
+      "iteration": 301,
+      "native_traversal_sec": 0.011727334,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012278757989406586,
+      "is_warmup": false,
+      "iteration": 302,
+      "native_traversal_sec": 0.011538084,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.016979724168777466,
+      "is_warmup": false,
+      "iteration": 303,
+      "native_traversal_sec": 0.015769919,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.040238820016384125,
+      "is_warmup": false,
+      "iteration": 304,
+      "native_traversal_sec": 0.039566927,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013505101203918457,
+      "is_warmup": false,
+      "iteration": 305,
+      "native_traversal_sec": 0.012318177,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012807600200176239,
+      "is_warmup": false,
+      "iteration": 306,
+      "native_traversal_sec": 0.012119719,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012771189212799072,
+      "is_warmup": false,
+      "iteration": 307,
+      "native_traversal_sec": 0.012080706,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.02246107906103134,
+      "is_warmup": false,
+      "iteration": 308,
+      "native_traversal_sec": 0.021681136,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.03969749063253403,
+      "is_warmup": false,
+      "iteration": 309,
+      "native_traversal_sec": 0.039023404,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013078868389129639,
+      "is_warmup": false,
+      "iteration": 310,
+      "native_traversal_sec": 0.012402477,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013132147490978241,
+      "is_warmup": false,
+      "iteration": 311,
+      "native_traversal_sec": 0.012334127,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012840650975704193,
+      "is_warmup": false,
+      "iteration": 312,
+      "native_traversal_sec": 0.011956279,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.050025418400764465,
+      "is_warmup": false,
+      "iteration": 313,
+      "native_traversal_sec": 0.049317152,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013283632695674896,
+      "is_warmup": false,
+      "iteration": 314,
+      "native_traversal_sec": 0.012560839,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012346871197223663,
+      "is_warmup": false,
+      "iteration": 315,
+      "native_traversal_sec": 0.011667881,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012678608298301697,
+      "is_warmup": false,
+      "iteration": 316,
+      "native_traversal_sec": 0.011985224,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012790888547897339,
+      "is_warmup": false,
+      "iteration": 317,
+      "native_traversal_sec": 0.012124479,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04827836900949478,
+      "is_warmup": false,
+      "iteration": 318,
+      "native_traversal_sec": 0.047551917,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013143017888069153,
+      "is_warmup": false,
+      "iteration": 319,
+      "native_traversal_sec": 0.01245118,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012971125543117523,
+      "is_warmup": false,
+      "iteration": 320,
+      "native_traversal_sec": 0.012262011,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012937381863594055,
+      "is_warmup": false,
+      "iteration": 321,
+      "native_traversal_sec": 0.012210753,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01290789246559143,
+      "is_warmup": false,
+      "iteration": 322,
+      "native_traversal_sec": 0.012176547,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.049567922949790955,
+      "is_warmup": false,
+      "iteration": 323,
+      "native_traversal_sec": 0.048833894,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013331905007362366,
+      "is_warmup": false,
+      "iteration": 324,
+      "native_traversal_sec": 0.012612506,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012834228575229645,
+      "is_warmup": false,
+      "iteration": 325,
+      "native_traversal_sec": 0.012127945,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01296631246805191,
+      "is_warmup": false,
+      "iteration": 326,
+      "native_traversal_sec": 0.0122514,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01284923404455185,
+      "is_warmup": false,
+      "iteration": 327,
+      "native_traversal_sec": 0.012110302,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.05038752406835556,
+      "is_warmup": false,
+      "iteration": 328,
+      "native_traversal_sec": 0.049634807,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013190627098083496,
+      "is_warmup": false,
+      "iteration": 329,
+      "native_traversal_sec": 0.012420231,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012816101312637329,
+      "is_warmup": false,
+      "iteration": 330,
+      "native_traversal_sec": 0.012075255,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011873759329319,
+      "is_warmup": false,
+      "iteration": 331,
+      "native_traversal_sec": 0.011241451,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011524051427841187,
+      "is_warmup": false,
+      "iteration": 332,
+      "native_traversal_sec": 0.010971477,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04977906495332718,
+      "is_warmup": false,
+      "iteration": 333,
+      "native_traversal_sec": 0.04922115,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013543255627155304,
+      "is_warmup": false,
+      "iteration": 334,
+      "native_traversal_sec": 0.012817937,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012034125626087189,
+      "is_warmup": false,
+      "iteration": 335,
+      "native_traversal_sec": 0.011195152,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012240208685398102,
+      "is_warmup": false,
+      "iteration": 336,
+      "native_traversal_sec": 0.011545619,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012067742645740509,
+      "is_warmup": false,
+      "iteration": 337,
+      "native_traversal_sec": 0.01138312,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04802044481039047,
+      "is_warmup": false,
+      "iteration": 338,
+      "native_traversal_sec": 0.047279258,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01267782598733902,
+      "is_warmup": false,
+      "iteration": 339,
+      "native_traversal_sec": 0.011814509,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012397482991218567,
+      "is_warmup": false,
+      "iteration": 340,
+      "native_traversal_sec": 0.011532683,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01215951144695282,
+      "is_warmup": false,
+      "iteration": 341,
+      "native_traversal_sec": 0.011484062,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01231905072927475,
+      "is_warmup": false,
+      "iteration": 342,
+      "native_traversal_sec": 0.011536692,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012265309691429138,
+      "is_warmup": false,
+      "iteration": 343,
+      "native_traversal_sec": 0.011359685,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.042245082557201385,
+      "is_warmup": false,
+      "iteration": 344,
+      "native_traversal_sec": 0.0414201,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012984596192836761,
+      "is_warmup": false,
+      "iteration": 345,
+      "native_traversal_sec": 0.012110533,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01349225640296936,
+      "is_warmup": false,
+      "iteration": 346,
+      "native_traversal_sec": 0.012700854,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013102613389492035,
+      "is_warmup": false,
+      "iteration": 347,
+      "native_traversal_sec": 0.012221313,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013047188520431519,
+      "is_warmup": false,
+      "iteration": 348,
+      "native_traversal_sec": 0.012151861,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04456968605518341,
+      "is_warmup": false,
+      "iteration": 349,
+      "native_traversal_sec": 0.043673214,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013583660125732422,
+      "is_warmup": false,
+      "iteration": 350,
+      "native_traversal_sec": 0.012635641,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013035878539085388,
+      "is_warmup": false,
+      "iteration": 351,
+      "native_traversal_sec": 0.012222205,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013336151838302612,
+      "is_warmup": false,
+      "iteration": 352,
+      "native_traversal_sec": 0.012552813,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012364178895950317,
+      "is_warmup": false,
+      "iteration": 353,
+      "native_traversal_sec": 0.011484091,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04578441381454468,
+      "is_warmup": false,
+      "iteration": 354,
+      "native_traversal_sec": 0.044907329,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013212516903877258,
+      "is_warmup": false,
+      "iteration": 355,
+      "native_traversal_sec": 0.012345399,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012750059366226196,
+      "is_warmup": false,
+      "iteration": 356,
+      "native_traversal_sec": 0.011860306,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013011947274208069,
+      "is_warmup": false,
+      "iteration": 357,
+      "native_traversal_sec": 0.012139568,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01292555034160614,
+      "is_warmup": false,
+      "iteration": 358,
+      "native_traversal_sec": 0.012059024,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04789154231548309,
+      "is_warmup": false,
+      "iteration": 359,
+      "native_traversal_sec": 0.047038651,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013339675962924957,
+      "is_warmup": false,
+      "iteration": 360,
+      "native_traversal_sec": 0.012511695,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012979581952095032,
+      "is_warmup": false,
+      "iteration": 361,
+      "native_traversal_sec": 0.012069374,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013051897287368774,
+      "is_warmup": false,
+      "iteration": 362,
+      "native_traversal_sec": 0.012194421,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0131639763712883,
+      "is_warmup": false,
+      "iteration": 363,
+      "native_traversal_sec": 0.012304761,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048121534287929535,
+      "is_warmup": false,
+      "iteration": 364,
+      "native_traversal_sec": 0.047321368,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013139888644218445,
+      "is_warmup": false,
+      "iteration": 365,
+      "native_traversal_sec": 0.012363724,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013016223907470703,
+      "is_warmup": false,
+      "iteration": 366,
+      "native_traversal_sec": 0.012262571,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012603797018527985,
+      "is_warmup": false,
+      "iteration": 367,
+      "native_traversal_sec": 0.011857501,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012741558253765106,
+      "is_warmup": false,
+      "iteration": 368,
+      "native_traversal_sec": 0.011880054,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0474102646112442,
+      "is_warmup": false,
+      "iteration": 369,
+      "native_traversal_sec": 0.046562987,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013310834765434265,
+      "is_warmup": false,
+      "iteration": 370,
+      "native_traversal_sec": 0.012416454,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012933053076267242,
+      "is_warmup": false,
+      "iteration": 371,
+      "native_traversal_sec": 0.012120671,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012917280197143555,
+      "is_warmup": false,
+      "iteration": 372,
+      "native_traversal_sec": 0.01213544,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013046525418758392,
+      "is_warmup": false,
+      "iteration": 373,
+      "native_traversal_sec": 0.012336292,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04894045740365982,
+      "is_warmup": false,
+      "iteration": 374,
+      "native_traversal_sec": 0.048135657,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013021275401115417,
+      "is_warmup": false,
+      "iteration": 375,
+      "native_traversal_sec": 0.012276178,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013083070516586304,
+      "is_warmup": false,
+      "iteration": 376,
+      "native_traversal_sec": 0.012271398,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012950696051120758,
+      "is_warmup": false,
+      "iteration": 377,
+      "native_traversal_sec": 0.012141351,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01285773515701294,
+      "is_warmup": false,
+      "iteration": 378,
+      "native_traversal_sec": 0.01207783,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04828764498233795,
+      "is_warmup": false,
+      "iteration": 379,
+      "native_traversal_sec": 0.047576865,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013284452259540558,
+      "is_warmup": false,
+      "iteration": 380,
+      "native_traversal_sec": 0.012433015,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013013765215873718,
+      "is_warmup": false,
+      "iteration": 381,
+      "native_traversal_sec": 0.012181687,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012725040316581726,
+      "is_warmup": false,
+      "iteration": 382,
+      "native_traversal_sec": 0.011852191,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012996695935726166,
+      "is_warmup": false,
+      "iteration": 383,
+      "native_traversal_sec": 0.012164235,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.047056861221790314,
+      "is_warmup": false,
+      "iteration": 384,
+      "native_traversal_sec": 0.046228191,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011900573968887329,
+      "is_warmup": false,
+      "iteration": 385,
+      "native_traversal_sec": 0.011007465,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012000791728496552,
+      "is_warmup": false,
+      "iteration": 386,
+      "native_traversal_sec": 0.011153884,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01139310747385025,
+      "is_warmup": false,
+      "iteration": 387,
+      "native_traversal_sec": 0.010562169,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011423356831073761,
+      "is_warmup": false,
+      "iteration": 388,
+      "native_traversal_sec": 0.010601674,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011451728641986847,
+      "is_warmup": false,
+      "iteration": 389,
+      "native_traversal_sec": 0.010711904,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01705744117498398,
+      "is_warmup": false,
+      "iteration": 390,
+      "native_traversal_sec": 0.016318803,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.034317247569561005,
+      "is_warmup": false,
+      "iteration": 391,
+      "native_traversal_sec": 0.033484234,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012309953570365906,
+      "is_warmup": false,
+      "iteration": 392,
+      "native_traversal_sec": 0.011527985,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011662356555461884,
+      "is_warmup": false,
+      "iteration": 393,
+      "native_traversal_sec": 0.010819148,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011313825845718384,
+      "is_warmup": false,
+      "iteration": 394,
+      "native_traversal_sec": 0.010561157,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012006580829620361,
+      "is_warmup": false,
+      "iteration": 395,
+      "native_traversal_sec": 0.011117264,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.016795538365840912,
+      "is_warmup": false,
+      "iteration": 396,
+      "native_traversal_sec": 0.015927379,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.03220442682504654,
+      "is_warmup": false,
+      "iteration": 397,
+      "native_traversal_sec": 0.031512265,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01261233538389206,
+      "is_warmup": false,
+      "iteration": 398,
+      "native_traversal_sec": 0.011746931,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012250930070877075,
+      "is_warmup": false,
+      "iteration": 399,
+      "native_traversal_sec": 0.011471187,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012092053890228271,
+      "is_warmup": false,
+      "iteration": 400,
+      "native_traversal_sec": 0.01128313,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012260332703590393,
+      "is_warmup": false,
+      "iteration": 401,
+      "native_traversal_sec": 0.011407886,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04578738659620285,
+      "is_warmup": false,
+      "iteration": 402,
+      "native_traversal_sec": 0.044879216,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013142667710781097,
+      "is_warmup": false,
+      "iteration": 403,
+      "native_traversal_sec": 0.012290595,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012583687901496887,
+      "is_warmup": false,
+      "iteration": 404,
+      "native_traversal_sec": 0.011662781,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012568920850753784,
+      "is_warmup": false,
+      "iteration": 405,
+      "native_traversal_sec": 0.011769193,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012522339820861816,
+      "is_warmup": false,
+      "iteration": 406,
+      "native_traversal_sec": 0.011670356,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01683049649000168,
+      "is_warmup": false,
+      "iteration": 407,
+      "native_traversal_sec": 0.016062585,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.03837023675441742,
+      "is_warmup": false,
+      "iteration": 408,
+      "native_traversal_sec": 0.037651256,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012975573539733887,
+      "is_warmup": false,
+      "iteration": 409,
+      "native_traversal_sec": 0.012110652,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012631475925445557,
+      "is_warmup": false,
+      "iteration": 410,
+      "native_traversal_sec": 0.011880875,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012725479900836945,
+      "is_warmup": false,
+      "iteration": 411,
+      "native_traversal_sec": 0.011996345,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012788325548171997,
+      "is_warmup": false,
+      "iteration": 412,
+      "native_traversal_sec": 0.011928777,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.045519888401031494,
+      "is_warmup": false,
+      "iteration": 413,
+      "native_traversal_sec": 0.044658707,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012887313961982727,
+      "is_warmup": false,
+      "iteration": 414,
+      "native_traversal_sec": 0.012035651,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01269993931055069,
+      "is_warmup": false,
+      "iteration": 415,
+      "native_traversal_sec": 0.011952502,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012577667832374573,
+      "is_warmup": false,
+      "iteration": 416,
+      "native_traversal_sec": 0.011717685,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012677222490310669,
+      "is_warmup": false,
+      "iteration": 417,
+      "native_traversal_sec": 0.011832223,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04530458152294159,
+      "is_warmup": false,
+      "iteration": 418,
+      "native_traversal_sec": 0.044498181,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013213202357292175,
+      "is_warmup": false,
+      "iteration": 419,
+      "native_traversal_sec": 0.012428036,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012839049100875854,
+      "is_warmup": false,
+      "iteration": 420,
+      "native_traversal_sec": 0.011959365,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012836620211601257,
+      "is_warmup": false,
+      "iteration": 421,
+      "native_traversal_sec": 0.011979042,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012753240764141083,
+      "is_warmup": false,
+      "iteration": 422,
+      "native_traversal_sec": 0.011986156,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04815167933702469,
+      "is_warmup": false,
+      "iteration": 423,
+      "native_traversal_sec": 0.047367947,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01303805410861969,
+      "is_warmup": false,
+      "iteration": 424,
+      "native_traversal_sec": 0.012247012,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012658648192882538,
+      "is_warmup": false,
+      "iteration": 425,
+      "native_traversal_sec": 0.011958624,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012628354132175446,
+      "is_warmup": false,
+      "iteration": 426,
+      "native_traversal_sec": 0.011797126,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012570947408676147,
+      "is_warmup": false,
+      "iteration": 427,
+      "native_traversal_sec": 0.011847702,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.017226189374923706,
+      "is_warmup": false,
+      "iteration": 428,
+      "native_traversal_sec": 0.016522951,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.040561243891716,
+      "is_warmup": false,
+      "iteration": 429,
+      "native_traversal_sec": 0.039837602,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01301354169845581,
+      "is_warmup": false,
+      "iteration": 430,
+      "native_traversal_sec": 0.012290946,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012660697102546692,
+      "is_warmup": false,
+      "iteration": 431,
+      "native_traversal_sec": 0.011947062,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012935042381286621,
+      "is_warmup": false,
+      "iteration": 432,
+      "native_traversal_sec": 0.012090444,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012324564158916473,
+      "is_warmup": false,
+      "iteration": 433,
+      "native_traversal_sec": 0.011454425,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0476628914475441,
+      "is_warmup": false,
+      "iteration": 434,
+      "native_traversal_sec": 0.04677492,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012492991983890533,
+      "is_warmup": false,
+      "iteration": 435,
+      "native_traversal_sec": 0.011701595,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012544646859169006,
+      "is_warmup": false,
+      "iteration": 436,
+      "native_traversal_sec": 0.011733105,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012738019227981567,
+      "is_warmup": false,
+      "iteration": 437,
+      "native_traversal_sec": 0.01190927,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012712471187114716,
+      "is_warmup": false,
+      "iteration": 438,
+      "native_traversal_sec": 0.01195165,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.044201917946338654,
+      "is_warmup": false,
+      "iteration": 439,
+      "native_traversal_sec": 0.0434187,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012336932122707367,
+      "is_warmup": false,
+      "iteration": 440,
+      "native_traversal_sec": 0.011632012,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012896105647087097,
+      "is_warmup": false,
+      "iteration": 441,
+      "native_traversal_sec": 0.012052432,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012555241584777832,
+      "is_warmup": false,
+      "iteration": 442,
+      "native_traversal_sec": 0.011811994,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012171968817710876,
+      "is_warmup": false,
+      "iteration": 443,
+      "native_traversal_sec": 0.011480575,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04745069891214371,
+      "is_warmup": false,
+      "iteration": 444,
+      "native_traversal_sec": 0.046755112,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01289115846157074,
+      "is_warmup": false,
+      "iteration": 445,
+      "native_traversal_sec": 0.012195774,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01299159973859787,
+      "is_warmup": false,
+      "iteration": 446,
+      "native_traversal_sec": 0.012147242,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012803077697753906,
+      "is_warmup": false,
+      "iteration": 447,
+      "native_traversal_sec": 0.011958574,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012982755899429321,
+      "is_warmup": false,
+      "iteration": 448,
+      "native_traversal_sec": 0.012173221,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.016857698559761047,
+      "is_warmup": false,
+      "iteration": 449,
+      "native_traversal_sec": 0.016039381,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.03903176635503769,
+      "is_warmup": false,
+      "iteration": 450,
+      "native_traversal_sec": 0.038313995,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012960821390151978,
+      "is_warmup": false,
+      "iteration": 451,
+      "native_traversal_sec": 0.012178372,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01245000958442688,
+      "is_warmup": false,
+      "iteration": 452,
+      "native_traversal_sec": 0.01175738,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012379087507724762,
+      "is_warmup": false,
+      "iteration": 453,
+      "native_traversal_sec": 0.01167289,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01222258061170578,
+      "is_warmup": false,
+      "iteration": 454,
+      "native_traversal_sec": 0.01152535,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.046927206218242645,
+      "is_warmup": false,
+      "iteration": 455,
+      "native_traversal_sec": 0.046188325,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012887649238109589,
+      "is_warmup": false,
+      "iteration": 456,
+      "native_traversal_sec": 0.012188801,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012118518352508545,
+      "is_warmup": false,
+      "iteration": 457,
+      "native_traversal_sec": 0.011419419,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012278258800506592,
+      "is_warmup": false,
+      "iteration": 458,
+      "native_traversal_sec": 0.011575855,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012261636555194855,
+      "is_warmup": false,
+      "iteration": 459,
+      "native_traversal_sec": 0.011549776,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04726749658584595,
+      "is_warmup": false,
+      "iteration": 460,
+      "native_traversal_sec": 0.046432559,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012773372232913971,
+      "is_warmup": false,
+      "iteration": 461,
+      "native_traversal_sec": 0.01209882,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012659668922424316,
+      "is_warmup": false,
+      "iteration": 462,
+      "native_traversal_sec": 0.01194656,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012563817203044891,
+      "is_warmup": false,
+      "iteration": 463,
+      "native_traversal_sec": 0.011842142,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013030096888542175,
+      "is_warmup": false,
+      "iteration": 464,
+      "native_traversal_sec": 0.012243666,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04917806386947632,
+      "is_warmup": false,
+      "iteration": 465,
+      "native_traversal_sec": 0.04841656,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013122215867042542,
+      "is_warmup": false,
+      "iteration": 466,
+      "native_traversal_sec": 0.012425651,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012905262410640717,
+      "is_warmup": false,
+      "iteration": 467,
+      "native_traversal_sec": 0.012186446,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012829020619392395,
+      "is_warmup": false,
+      "iteration": 468,
+      "native_traversal_sec": 0.012108678,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012948863208293915,
+      "is_warmup": false,
+      "iteration": 469,
+      "native_traversal_sec": 0.012208809,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04864479601383209,
+      "is_warmup": false,
+      "iteration": 470,
+      "native_traversal_sec": 0.047934735,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013089828193187714,
+      "is_warmup": false,
+      "iteration": 471,
+      "native_traversal_sec": 0.012376898,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012767352163791656,
+      "is_warmup": false,
+      "iteration": 472,
+      "native_traversal_sec": 0.012023276,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011994980275630951,
+      "is_warmup": false,
+      "iteration": 473,
+      "native_traversal_sec": 0.011364324,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011488370597362518,
+      "is_warmup": false,
+      "iteration": 474,
+      "native_traversal_sec": 0.010924187,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0521494522690773,
+      "is_warmup": false,
+      "iteration": 475,
+      "native_traversal_sec": 0.051597508,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013093717396259308,
+      "is_warmup": false,
+      "iteration": 476,
+      "native_traversal_sec": 0.012432585,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012895084917545319,
+      "is_warmup": false,
+      "iteration": 477,
+      "native_traversal_sec": 0.012169995,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01285696029663086,
+      "is_warmup": false,
+      "iteration": 478,
+      "native_traversal_sec": 0.012129909,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012862026691436768,
+      "is_warmup": false,
+      "iteration": 479,
+      "native_traversal_sec": 0.012154997,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04991478472948074,
+      "is_warmup": false,
+      "iteration": 480,
+      "native_traversal_sec": 0.049193237,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013401426374912262,
+      "is_warmup": false,
+      "iteration": 481,
+      "native_traversal_sec": 0.012678111,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01289491355419159,
+      "is_warmup": false,
+      "iteration": 482,
+      "native_traversal_sec": 0.012173662,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013121701776981354,
+      "is_warmup": false,
+      "iteration": 483,
+      "native_traversal_sec": 0.012408579,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013107001781463623,
+      "is_warmup": false,
+      "iteration": 484,
+      "native_traversal_sec": 0.012391927,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04755549877882004,
+      "is_warmup": false,
+      "iteration": 485,
+      "native_traversal_sec": 0.046844412,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013452328741550446,
+      "is_warmup": false,
+      "iteration": 486,
+      "native_traversal_sec": 0.012754898,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012907616794109344,
+      "is_warmup": false,
+      "iteration": 487,
+      "native_traversal_sec": 0.012185695,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012991584837436676,
+      "is_warmup": false,
+      "iteration": 488,
+      "native_traversal_sec": 0.012268132,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012905433773994446,
+      "is_warmup": false,
+      "iteration": 489,
+      "native_traversal_sec": 0.012191206,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048240065574645996,
+      "is_warmup": false,
+      "iteration": 490,
+      "native_traversal_sec": 0.047521499,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013589635491371155,
+      "is_warmup": false,
+      "iteration": 491,
+      "native_traversal_sec": 0.012874575,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01270102709531784,
+      "is_warmup": false,
+      "iteration": 492,
+      "native_traversal_sec": 0.011992127,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012765787541866302,
+      "is_warmup": false,
+      "iteration": 493,
+      "native_traversal_sec": 0.01202544,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012620240449905396,
+      "is_warmup": false,
+      "iteration": 494,
+      "native_traversal_sec": 0.011859416,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04755892604589462,
+      "is_warmup": false,
+      "iteration": 495,
+      "native_traversal_sec": 0.046854371,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01306973397731781,
+      "is_warmup": false,
+      "iteration": 496,
+      "native_traversal_sec": 0.012327084,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012888230383396149,
+      "is_warmup": false,
+      "iteration": 497,
+      "native_traversal_sec": 0.011972229,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012727856636047363,
+      "is_warmup": false,
+      "iteration": 498,
+      "native_traversal_sec": 0.012012035,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012770891189575195,
+      "is_warmup": false,
+      "iteration": 499,
+      "native_traversal_sec": 0.012041751,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04559636861085892,
+      "is_warmup": false,
+      "iteration": 500,
+      "native_traversal_sec": 0.044868436,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012900955975055695,
+      "is_warmup": false,
+      "iteration": 501,
+      "native_traversal_sec": 0.012175115,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012863047420978546,
+      "is_warmup": false,
+      "iteration": 502,
+      "native_traversal_sec": 0.012143936,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012646324932575226,
+      "is_warmup": false,
+      "iteration": 503,
+      "native_traversal_sec": 0.011928386,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012458480894565582,
+      "is_warmup": false,
+      "iteration": 504,
+      "native_traversal_sec": 0.011736962,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048926450312137604,
+      "is_warmup": false,
+      "iteration": 505,
+      "native_traversal_sec": 0.048207232,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012729577720165253,
+      "is_warmup": false,
+      "iteration": 506,
+      "native_traversal_sec": 0.01203037,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01294388622045517,
+      "is_warmup": false,
+      "iteration": 507,
+      "native_traversal_sec": 0.012199812,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012770392000675201,
+      "is_warmup": false,
+      "iteration": 508,
+      "native_traversal_sec": 0.012036862,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012644842267036438,
+      "is_warmup": false,
+      "iteration": 509,
+      "native_traversal_sec": 0.011917325,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04853770136833191,
+      "is_warmup": false,
+      "iteration": 510,
+      "native_traversal_sec": 0.04783223,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013013787567615509,
+      "is_warmup": false,
+      "iteration": 511,
+      "native_traversal_sec": 0.012345038,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012864872813224792,
+      "is_warmup": false,
+      "iteration": 512,
+      "native_traversal_sec": 0.012184313,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012774601578712463,
+      "is_warmup": false,
+      "iteration": 513,
+      "native_traversal_sec": 0.01211459,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012851148843765259,
+      "is_warmup": false,
+      "iteration": 514,
+      "native_traversal_sec": 0.012188261,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04910777509212494,
+      "is_warmup": false,
+      "iteration": 515,
+      "native_traversal_sec": 0.048427782,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012983836233615875,
+      "is_warmup": false,
+      "iteration": 516,
+      "native_traversal_sec": 0.012322585,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012662321329116821,
+      "is_warmup": false,
+      "iteration": 517,
+      "native_traversal_sec": 0.011978281,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013020873069763184,
+      "is_warmup": false,
+      "iteration": 518,
+      "native_traversal_sec": 0.012331763,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012366458773612976,
+      "is_warmup": false,
+      "iteration": 519,
+      "native_traversal_sec": 0.011680264,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0510706752538681,
+      "is_warmup": false,
+      "iteration": 520,
+      "native_traversal_sec": 0.050403377,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013349443674087524,
+      "is_warmup": false,
+      "iteration": 521,
+      "native_traversal_sec": 0.012402027,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01273857057094574,
+      "is_warmup": false,
+      "iteration": 522,
+      "native_traversal_sec": 0.012043575,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013278059661388397,
+      "is_warmup": false,
+      "iteration": 523,
+      "native_traversal_sec": 0.012593611,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01303708553314209,
+      "is_warmup": false,
+      "iteration": 524,
+      "native_traversal_sec": 0.012262221,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0483291894197464,
+      "is_warmup": false,
+      "iteration": 525,
+      "native_traversal_sec": 0.047599067,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012409009039402008,
+      "is_warmup": false,
+      "iteration": 526,
+      "native_traversal_sec": 0.011706855,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011307582259178162,
+      "is_warmup": false,
+      "iteration": 527,
+      "native_traversal_sec": 0.010655336,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011236444115638733,
+      "is_warmup": false,
+      "iteration": 528,
+      "native_traversal_sec": 0.010582567,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01155698299407959,
+      "is_warmup": false,
+      "iteration": 529,
+      "native_traversal_sec": 0.010887247,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01154276728630066,
+      "is_warmup": false,
+      "iteration": 530,
+      "native_traversal_sec": 0.010855527,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04362720996141434,
+      "is_warmup": false,
+      "iteration": 531,
+      "native_traversal_sec": 0.042955199,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012371242046356201,
+      "is_warmup": false,
+      "iteration": 532,
+      "native_traversal_sec": 0.011648504,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012710779905319214,
+      "is_warmup": false,
+      "iteration": 533,
+      "native_traversal_sec": 0.01194642,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01214369386434555,
+      "is_warmup": false,
+      "iteration": 534,
+      "native_traversal_sec": 0.011432162,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012199722230434418,
+      "is_warmup": false,
+      "iteration": 535,
+      "native_traversal_sec": 0.0114939,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04741116613149643,
+      "is_warmup": false,
+      "iteration": 536,
+      "native_traversal_sec": 0.046708885,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013001605868339539,
+      "is_warmup": false,
+      "iteration": 537,
+      "native_traversal_sec": 0.01228313,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0129767507314682,
+      "is_warmup": false,
+      "iteration": 538,
+      "native_traversal_sec": 0.012270928,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012671969830989838,
+      "is_warmup": false,
+      "iteration": 539,
+      "native_traversal_sec": 0.011960237,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012270219624042511,
+      "is_warmup": false,
+      "iteration": 540,
+      "native_traversal_sec": 0.011564384,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04722868651151657,
+      "is_warmup": false,
+      "iteration": 541,
+      "native_traversal_sec": 0.046521138,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013081498444080353,
+      "is_warmup": false,
+      "iteration": 542,
+      "native_traversal_sec": 0.012376989,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0127873495221138,
+      "is_warmup": false,
+      "iteration": 543,
+      "native_traversal_sec": 0.01206722,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012569047510623932,
+      "is_warmup": false,
+      "iteration": 544,
+      "native_traversal_sec": 0.011849466,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012841448187828064,
+      "is_warmup": false,
+      "iteration": 545,
+      "native_traversal_sec": 0.012129198,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.049597516655921936,
+      "is_warmup": false,
+      "iteration": 546,
+      "native_traversal_sec": 0.048869722,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013464480638504028,
+      "is_warmup": false,
+      "iteration": 547,
+      "native_traversal_sec": 0.012756851,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013023212552070618,
+      "is_warmup": false,
+      "iteration": 548,
+      "native_traversal_sec": 0.012301035,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013065062463283539,
+      "is_warmup": false,
+      "iteration": 549,
+      "native_traversal_sec": 0.012328977,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01281920075416565,
+      "is_warmup": false,
+      "iteration": 550,
+      "native_traversal_sec": 0.012098219,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.05047658830881119,
+      "is_warmup": false,
+      "iteration": 551,
+      "native_traversal_sec": 0.049733123,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013296261429786682,
+      "is_warmup": false,
+      "iteration": 552,
+      "native_traversal_sec": 0.012566309,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013050995767116547,
+      "is_warmup": false,
+      "iteration": 553,
+      "native_traversal_sec": 0.01231982,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012723691761493683,
+      "is_warmup": false,
+      "iteration": 554,
+      "native_traversal_sec": 0.01200415,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012804657220840454,
+      "is_warmup": false,
+      "iteration": 555,
+      "native_traversal_sec": 0.012072901,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048874177038669586,
+      "is_warmup": false,
+      "iteration": 556,
+      "native_traversal_sec": 0.048131759,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012795500457286835,
+      "is_warmup": false,
+      "iteration": 557,
+      "native_traversal_sec": 0.012054937,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011608466506004333,
+      "is_warmup": false,
+      "iteration": 558,
+      "native_traversal_sec": 0.010948413,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011785849928855896,
+      "is_warmup": false,
+      "iteration": 559,
+      "native_traversal_sec": 0.011102106,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01155923306941986,
+      "is_warmup": false,
+      "iteration": 560,
+      "native_traversal_sec": 0.010882037,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.016052111983299255,
+      "is_warmup": false,
+      "iteration": 561,
+      "native_traversal_sec": 0.015362004,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.03883276879787445,
+      "is_warmup": false,
+      "iteration": 562,
+      "native_traversal_sec": 0.038160293,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012610211968421936,
+      "is_warmup": false,
+      "iteration": 563,
+      "native_traversal_sec": 0.011878922,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012402042746543884,
+      "is_warmup": false,
+      "iteration": 564,
+      "native_traversal_sec": 0.011674613,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012110233306884766,
+      "is_warmup": false,
+      "iteration": 565,
+      "native_traversal_sec": 0.011357731,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01261930912733078,
+      "is_warmup": false,
+      "iteration": 566,
+      "native_traversal_sec": 0.011892487,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04471132159233093,
+      "is_warmup": false,
+      "iteration": 567,
+      "native_traversal_sec": 0.043988122,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012545973062515259,
+      "is_warmup": false,
+      "iteration": 568,
+      "native_traversal_sec": 0.011796064,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012244127690792084,
+      "is_warmup": false,
+      "iteration": 569,
+      "native_traversal_sec": 0.011510863,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012378089129924774,
+      "is_warmup": false,
+      "iteration": 570,
+      "native_traversal_sec": 0.011663733,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012523390352725983,
+      "is_warmup": false,
+      "iteration": 571,
+      "native_traversal_sec": 0.011784903,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04785940796136856,
+      "is_warmup": false,
+      "iteration": 572,
+      "native_traversal_sec": 0.047137008,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012694716453552246,
+      "is_warmup": false,
+      "iteration": 573,
+      "native_traversal_sec": 0.011952111,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012452557682991028,
+      "is_warmup": false,
+      "iteration": 574,
+      "native_traversal_sec": 0.011718326,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012658677995204926,
+      "is_warmup": false,
+      "iteration": 575,
+      "native_traversal_sec": 0.011931051,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012463204562664032,
+      "is_warmup": false,
+      "iteration": 576,
+      "native_traversal_sec": 0.011749866,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04985588788986206,
+      "is_warmup": false,
+      "iteration": 577,
+      "native_traversal_sec": 0.049138423,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01260019838809967,
+      "is_warmup": false,
+      "iteration": 578,
+      "native_traversal_sec": 0.011896375,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012516528367996216,
+      "is_warmup": false,
+      "iteration": 579,
+      "native_traversal_sec": 0.011786116,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01248157024383545,
+      "is_warmup": false,
+      "iteration": 580,
+      "native_traversal_sec": 0.011751279,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012609504163265228,
+      "is_warmup": false,
+      "iteration": 581,
+      "native_traversal_sec": 0.011901084,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04972009360790253,
+      "is_warmup": false,
+      "iteration": 582,
+      "native_traversal_sec": 0.04897431,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01338110864162445,
+      "is_warmup": false,
+      "iteration": 583,
+      "native_traversal_sec": 0.012676018,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012868113815784454,
+      "is_warmup": false,
+      "iteration": 584,
+      "native_traversal_sec": 0.012146821,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013080872595310211,
+      "is_warmup": false,
+      "iteration": 585,
+      "native_traversal_sec": 0.012371318,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012840040028095245,
+      "is_warmup": false,
+      "iteration": 586,
+      "native_traversal_sec": 0.012029298,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04886861890554428,
+      "is_warmup": false,
+      "iteration": 587,
+      "native_traversal_sec": 0.048140526,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01035957783460617,
+      "is_warmup": false,
+      "iteration": 588,
+      "native_traversal_sec": 0.009870003,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01045244187116623,
+      "is_warmup": false,
+      "iteration": 589,
+      "native_traversal_sec": 0.009835658,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01042795181274414,
+      "is_warmup": false,
+      "iteration": 590,
+      "native_traversal_sec": 0.009813787,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010163195431232452,
+      "is_warmup": false,
+      "iteration": 591,
+      "native_traversal_sec": 0.009566296,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010957382619380951,
+      "is_warmup": false,
+      "iteration": 592,
+      "native_traversal_sec": 0.010223606,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010643713176250458,
+      "is_warmup": false,
+      "iteration": 593,
+      "native_traversal_sec": 0.010009769,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0407155379652977,
+      "is_warmup": false,
+      "iteration": 594,
+      "native_traversal_sec": 0.039951749,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01210271567106247,
+      "is_warmup": false,
+      "iteration": 595,
+      "native_traversal_sec": 0.011370035,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011740535497665405,
+      "is_warmup": false,
+      "iteration": 596,
+      "native_traversal_sec": 0.011052812,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011876121163368225,
+      "is_warmup": false,
+      "iteration": 597,
+      "native_traversal_sec": 0.011173031,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011927582323551178,
+      "is_warmup": false,
+      "iteration": 598,
+      "native_traversal_sec": 0.011223115,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.047429703176021576,
+      "is_warmup": false,
+      "iteration": 599,
+      "native_traversal_sec": 0.046696331,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012671336531639099,
+      "is_warmup": false,
+      "iteration": 600,
+      "native_traversal_sec": 0.01197821,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012059271335601807,
+      "is_warmup": false,
+      "iteration": 601,
+      "native_traversal_sec": 0.011338164,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012266285717487335,
+      "is_warmup": false,
+      "iteration": 602,
+      "native_traversal_sec": 0.011527273,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012436874210834503,
+      "is_warmup": false,
+      "iteration": 603,
+      "native_traversal_sec": 0.011723407,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04971373826265335,
+      "is_warmup": false,
+      "iteration": 604,
+      "native_traversal_sec": 0.04896852,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01276317983865738,
+      "is_warmup": false,
+      "iteration": 605,
+      "native_traversal_sec": 0.012076527,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012373775243759155,
+      "is_warmup": false,
+      "iteration": 606,
+      "native_traversal_sec": 0.011653654,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012448497116565704,
+      "is_warmup": false,
+      "iteration": 607,
+      "native_traversal_sec": 0.011742983,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012908071279525757,
+      "is_warmup": false,
+      "iteration": 608,
+      "native_traversal_sec": 0.012187479,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04960038512945175,
+      "is_warmup": false,
+      "iteration": 609,
+      "native_traversal_sec": 0.048893387,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01355300098657608,
+      "is_warmup": false,
+      "iteration": 610,
+      "native_traversal_sec": 0.012669114,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012604378163814545,
+      "is_warmup": false,
+      "iteration": 611,
+      "native_traversal_sec": 0.011891837,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012467771768569946,
+      "is_warmup": false,
+      "iteration": 612,
+      "native_traversal_sec": 0.011741851,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013078011572360992,
+      "is_warmup": false,
+      "iteration": 613,
+      "native_traversal_sec": 0.012349807,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.017389468848705292,
+      "is_warmup": false,
+      "iteration": 614,
+      "native_traversal_sec": 0.016051084,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.03989151120185852,
+      "is_warmup": false,
+      "iteration": 615,
+      "native_traversal_sec": 0.03924209,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012947969138622284,
+      "is_warmup": false,
+      "iteration": 616,
+      "native_traversal_sec": 0.012214521,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01252051442861557,
+      "is_warmup": false,
+      "iteration": 617,
+      "native_traversal_sec": 0.011823617,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012534700334072113,
+      "is_warmup": false,
+      "iteration": 618,
+      "native_traversal_sec": 0.011829658,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012459300458431244,
+      "is_warmup": false,
+      "iteration": 619,
+      "native_traversal_sec": 0.011752833,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04788290709257126,
+      "is_warmup": false,
+      "iteration": 620,
+      "native_traversal_sec": 0.047121209,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013150349259376526,
+      "is_warmup": false,
+      "iteration": 621,
+      "native_traversal_sec": 0.012417806,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013250842690467834,
+      "is_warmup": false,
+      "iteration": 622,
+      "native_traversal_sec": 0.012068111,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012904651463031769,
+      "is_warmup": false,
+      "iteration": 623,
+      "native_traversal_sec": 0.011946871,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012759529054164886,
+      "is_warmup": false,
+      "iteration": 624,
+      "native_traversal_sec": 0.012050248,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.047755107283592224,
+      "is_warmup": false,
+      "iteration": 625,
+      "native_traversal_sec": 0.04703797,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012867458164691925,
+      "is_warmup": false,
+      "iteration": 626,
+      "native_traversal_sec": 0.012149947,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012805484235286713,
+      "is_warmup": false,
+      "iteration": 627,
+      "native_traversal_sec": 0.012090364,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01280752569437027,
+      "is_warmup": false,
+      "iteration": 628,
+      "native_traversal_sec": 0.012107016,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012663103640079498,
+      "is_warmup": false,
+      "iteration": 629,
+      "native_traversal_sec": 0.011949386,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04852837324142456,
+      "is_warmup": false,
+      "iteration": 630,
+      "native_traversal_sec": 0.047819345,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013051249086856842,
+      "is_warmup": false,
+      "iteration": 631,
+      "native_traversal_sec": 0.012333065,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012445278465747833,
+      "is_warmup": false,
+      "iteration": 632,
+      "native_traversal_sec": 0.01171992,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012947089970111847,
+      "is_warmup": false,
+      "iteration": 633,
+      "native_traversal_sec": 0.012229509,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01273183524608612,
+      "is_warmup": false,
+      "iteration": 634,
+      "native_traversal_sec": 0.012019599,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04725915938615799,
+      "is_warmup": false,
+      "iteration": 635,
+      "native_traversal_sec": 0.046547106,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012426547706127167,
+      "is_warmup": false,
+      "iteration": 636,
+      "native_traversal_sec": 0.011723106,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01169576495885849,
+      "is_warmup": false,
+      "iteration": 637,
+      "native_traversal_sec": 0.010984973,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013430461287498474,
+      "is_warmup": false,
+      "iteration": 638,
+      "native_traversal_sec": 0.012690445,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01047157496213913,
+      "is_warmup": false,
+      "iteration": 639,
+      "native_traversal_sec": 0.009940998,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.009910039603710175,
+      "is_warmup": false,
+      "iteration": 640,
+      "native_traversal_sec": 0.009375663,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04287910461425781,
+      "is_warmup": false,
+      "iteration": 641,
+      "native_traversal_sec": 0.042263433,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012581057846546173,
+      "is_warmup": false,
+      "iteration": 642,
+      "native_traversal_sec": 0.011907626,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012124501168727875,
+      "is_warmup": false,
+      "iteration": 643,
+      "native_traversal_sec": 0.011452511,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011608138680458069,
+      "is_warmup": false,
+      "iteration": 644,
+      "native_traversal_sec": 0.010945898,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01117638498544693,
+      "is_warmup": false,
+      "iteration": 645,
+      "native_traversal_sec": 0.010509899,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.045801982283592224,
+      "is_warmup": false,
+      "iteration": 646,
+      "native_traversal_sec": 0.045146965,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011393077671527863,
+      "is_warmup": false,
+      "iteration": 647,
+      "native_traversal_sec": 0.010841169,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01148620992898941,
+      "is_warmup": false,
+      "iteration": 648,
+      "native_traversal_sec": 0.010837602,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01132192462682724,
+      "is_warmup": false,
+      "iteration": 649,
+      "native_traversal_sec": 0.010657339,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012320548295974731,
+      "is_warmup": false,
+      "iteration": 650,
+      "native_traversal_sec": 0.011661949,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011204101145267487,
+      "is_warmup": false,
+      "iteration": 651,
+      "native_traversal_sec": 0.010541048,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.045390382409095764,
+      "is_warmup": false,
+      "iteration": 652,
+      "native_traversal_sec": 0.044721376,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01321258395910263,
+      "is_warmup": false,
+      "iteration": 653,
+      "native_traversal_sec": 0.012556751,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012617059051990509,
+      "is_warmup": false,
+      "iteration": 654,
+      "native_traversal_sec": 0.011914901,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012332357466220856,
+      "is_warmup": false,
+      "iteration": 655,
+      "native_traversal_sec": 0.011666799,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012294888496398926,
+      "is_warmup": false,
+      "iteration": 656,
+      "native_traversal_sec": 0.011644155,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04664098471403122,
+      "is_warmup": false,
+      "iteration": 657,
+      "native_traversal_sec": 0.045879087,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012494504451751709,
+      "is_warmup": false,
+      "iteration": 658,
+      "native_traversal_sec": 0.011848014,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012403100728988647,
+      "is_warmup": false,
+      "iteration": 659,
+      "native_traversal_sec": 0.011691826,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012363635003566742,
+      "is_warmup": false,
+      "iteration": 660,
+      "native_traversal_sec": 0.011690394,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01231963187456131,
+      "is_warmup": false,
+      "iteration": 661,
+      "native_traversal_sec": 0.011670656,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.05092857778072357,
+      "is_warmup": false,
+      "iteration": 662,
+      "native_traversal_sec": 0.050218056,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012493200600147247,
+      "is_warmup": false,
+      "iteration": 663,
+      "native_traversal_sec": 0.011782148,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01270003616809845,
+      "is_warmup": false,
+      "iteration": 664,
+      "native_traversal_sec": 0.012011524,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012651614844799042,
+      "is_warmup": false,
+      "iteration": 665,
+      "native_traversal_sec": 0.011975466,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012705698609352112,
+      "is_warmup": false,
+      "iteration": 666,
+      "native_traversal_sec": 0.011967901,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04917062073945999,
+      "is_warmup": false,
+      "iteration": 667,
+      "native_traversal_sec": 0.048469471,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012735947966575623,
+      "is_warmup": false,
+      "iteration": 668,
+      "native_traversal_sec": 0.012074503,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012673385441303253,
+      "is_warmup": false,
+      "iteration": 669,
+      "native_traversal_sec": 0.01197775,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012757830321788788,
+      "is_warmup": false,
+      "iteration": 670,
+      "native_traversal_sec": 0.012090865,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012681663036346436,
+      "is_warmup": false,
+      "iteration": 671,
+      "native_traversal_sec": 0.012012225,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.05017215758562088,
+      "is_warmup": false,
+      "iteration": 672,
+      "native_traversal_sec": 0.049500841,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012603849172592163,
+      "is_warmup": false,
+      "iteration": 673,
+      "native_traversal_sec": 0.01193059,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012508034706115723,
+      "is_warmup": false,
+      "iteration": 674,
+      "native_traversal_sec": 0.011843364,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012540183961391449,
+      "is_warmup": false,
+      "iteration": 675,
+      "native_traversal_sec": 0.011867681,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01278597116470337,
+      "is_warmup": false,
+      "iteration": 676,
+      "native_traversal_sec": 0.012123938,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0499764159321785,
+      "is_warmup": false,
+      "iteration": 677,
+      "native_traversal_sec": 0.049267248,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013056918978691101,
+      "is_warmup": false,
+      "iteration": 678,
+      "native_traversal_sec": 0.012263082,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012751705944538116,
+      "is_warmup": false,
+      "iteration": 679,
+      "native_traversal_sec": 0.011976267,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012403935194015503,
+      "is_warmup": false,
+      "iteration": 680,
+      "native_traversal_sec": 0.011685314,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012498289346694946,
+      "is_warmup": false,
+      "iteration": 681,
+      "native_traversal_sec": 0.011802987,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04923148453235626,
+      "is_warmup": false,
+      "iteration": 682,
+      "native_traversal_sec": 0.04851645,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012665994465351105,
+      "is_warmup": false,
+      "iteration": 683,
+      "native_traversal_sec": 0.011965527,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012457288801670074,
+      "is_warmup": false,
+      "iteration": 684,
+      "native_traversal_sec": 0.011751249,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01256011426448822,
+      "is_warmup": false,
+      "iteration": 685,
+      "native_traversal_sec": 0.011851379,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01267312467098236,
+      "is_warmup": false,
+      "iteration": 686,
+      "native_traversal_sec": 0.011966008,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.050444215536117554,
+      "is_warmup": false,
+      "iteration": 687,
+      "native_traversal_sec": 0.049740447,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012656107544898987,
+      "is_warmup": false,
+      "iteration": 688,
+      "native_traversal_sec": 0.011988119,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012611784040927887,
+      "is_warmup": false,
+      "iteration": 689,
+      "native_traversal_sec": 0.011914078,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012553930282592773,
+      "is_warmup": false,
+      "iteration": 690,
+      "native_traversal_sec": 0.011833416,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012867122888565063,
+      "is_warmup": false,
+      "iteration": 691,
+      "native_traversal_sec": 0.012122535,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04947411268949509,
+      "is_warmup": false,
+      "iteration": 692,
+      "native_traversal_sec": 0.048765143,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013062253594398499,
+      "is_warmup": false,
+      "iteration": 693,
+      "native_traversal_sec": 0.012359406,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012736774981021881,
+      "is_warmup": false,
+      "iteration": 694,
+      "native_traversal_sec": 0.012020191,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012855730950832367,
+      "is_warmup": false,
+      "iteration": 695,
+      "native_traversal_sec": 0.012147071,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012878462672233582,
+      "is_warmup": false,
+      "iteration": 696,
+      "native_traversal_sec": 0.012049707,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04958111792802811,
+      "is_warmup": false,
+      "iteration": 697,
+      "native_traversal_sec": 0.048875133,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012611322104930878,
+      "is_warmup": false,
+      "iteration": 698,
+      "native_traversal_sec": 0.01190951,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012804269790649414,
+      "is_warmup": false,
+      "iteration": 699,
+      "native_traversal_sec": 0.012111884,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012263625860214233,
+      "is_warmup": false,
+      "iteration": 700,
+      "native_traversal_sec": 0.011561619,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012117937207221985,
+      "is_warmup": false,
+      "iteration": 701,
+      "native_traversal_sec": 0.011409911,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.047713570296764374,
+      "is_warmup": false,
+      "iteration": 702,
+      "native_traversal_sec": 0.046993786,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011993557214736938,
+      "is_warmup": false,
+      "iteration": 703,
+      "native_traversal_sec": 0.011287538,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011392325162887573,
+      "is_warmup": false,
+      "iteration": 704,
+      "native_traversal_sec": 0.010727523,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010311514139175415,
+      "is_warmup": false,
+      "iteration": 705,
+      "native_traversal_sec": 0.009779532,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010445967316627502,
+      "is_warmup": false,
+      "iteration": 706,
+      "native_traversal_sec": 0.009923214,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010755784809589386,
+      "is_warmup": false,
+      "iteration": 707,
+      "native_traversal_sec": 0.010218565,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04991679638624191,
+      "is_warmup": false,
+      "iteration": 708,
+      "native_traversal_sec": 0.049386735,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012020237743854523,
+      "is_warmup": false,
+      "iteration": 709,
+      "native_traversal_sec": 0.011349035,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011419631540775299,
+      "is_warmup": false,
+      "iteration": 710,
+      "native_traversal_sec": 0.010821141,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011240735650062561,
+      "is_warmup": false,
+      "iteration": 711,
+      "native_traversal_sec": 0.010611733,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010747164487838745,
+      "is_warmup": false,
+      "iteration": 712,
+      "native_traversal_sec": 0.010212775,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.05186777561903,
+      "is_warmup": false,
+      "iteration": 713,
+      "native_traversal_sec": 0.051293199,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012184470891952515,
+      "is_warmup": false,
+      "iteration": 714,
+      "native_traversal_sec": 0.011444686,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01138642430305481,
+      "is_warmup": false,
+      "iteration": 715,
+      "native_traversal_sec": 0.010666557,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01029747724533081,
+      "is_warmup": false,
+      "iteration": 716,
+      "native_traversal_sec": 0.009772798,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010471060872077942,
+      "is_warmup": false,
+      "iteration": 717,
+      "native_traversal_sec": 0.009938153,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010498322546482086,
+      "is_warmup": false,
+      "iteration": 718,
+      "native_traversal_sec": 0.009975183,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048418812453746796,
+      "is_warmup": false,
+      "iteration": 719,
+      "native_traversal_sec": 0.04789546,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012077122926712036,
+      "is_warmup": false,
+      "iteration": 720,
+      "native_traversal_sec": 0.011425189,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010797396302223206,
+      "is_warmup": false,
+      "iteration": 721,
+      "native_traversal_sec": 0.010265374,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01071757823228836,
+      "is_warmup": false,
+      "iteration": 722,
+      "native_traversal_sec": 0.010182948,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010752268135547638,
+      "is_warmup": false,
+      "iteration": 723,
+      "native_traversal_sec": 0.010210931,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.05249384790658951,
+      "is_warmup": false,
+      "iteration": 724,
+      "native_traversal_sec": 0.051949718,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012758724391460419,
+      "is_warmup": false,
+      "iteration": 725,
+      "native_traversal_sec": 0.01200983,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01253364235162735,
+      "is_warmup": false,
+      "iteration": 726,
+      "native_traversal_sec": 0.011761669,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012493439018726349,
+      "is_warmup": false,
+      "iteration": 727,
+      "native_traversal_sec": 0.011742563,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012505553662776947,
+      "is_warmup": false,
+      "iteration": 728,
+      "native_traversal_sec": 0.011783922,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04695509374141693,
+      "is_warmup": false,
+      "iteration": 729,
+      "native_traversal_sec": 0.046255342,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013103149831295013,
+      "is_warmup": false,
+      "iteration": 730,
+      "native_traversal_sec": 0.012410984,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012237876653671265,
+      "is_warmup": false,
+      "iteration": 731,
+      "native_traversal_sec": 0.011548634,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012520551681518555,
+      "is_warmup": false,
+      "iteration": 732,
+      "native_traversal_sec": 0.011815742,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012476235628128052,
+      "is_warmup": false,
+      "iteration": 733,
+      "native_traversal_sec": 0.011771307,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04970642924308777,
+      "is_warmup": false,
+      "iteration": 734,
+      "native_traversal_sec": 0.04899476,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013054467737674713,
+      "is_warmup": false,
+      "iteration": 735,
+      "native_traversal_sec": 0.012363764,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012364000082015991,
+      "is_warmup": false,
+      "iteration": 736,
+      "native_traversal_sec": 0.011672029,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012653172016143799,
+      "is_warmup": false,
+      "iteration": 737,
+      "native_traversal_sec": 0.011938966,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012407578527927399,
+      "is_warmup": false,
+      "iteration": 738,
+      "native_traversal_sec": 0.011713157,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04991760849952698,
+      "is_warmup": false,
+      "iteration": 739,
+      "native_traversal_sec": 0.049167458,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012867353856563568,
+      "is_warmup": false,
+      "iteration": 740,
+      "native_traversal_sec": 0.012165556,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012560635805130005,
+      "is_warmup": false,
+      "iteration": 741,
+      "native_traversal_sec": 0.011850117,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012492693960666656,
+      "is_warmup": false,
+      "iteration": 742,
+      "native_traversal_sec": 0.011783811,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012615799903869629,
+      "is_warmup": false,
+      "iteration": 743,
+      "native_traversal_sec": 0.011885284,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.049331486225128174,
+      "is_warmup": false,
+      "iteration": 744,
+      "native_traversal_sec": 0.048629836,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013219505548477173,
+      "is_warmup": false,
+      "iteration": 745,
+      "native_traversal_sec": 0.012504842,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012605652213096619,
+      "is_warmup": false,
+      "iteration": 746,
+      "native_traversal_sec": 0.011896285,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01276254653930664,
+      "is_warmup": false,
+      "iteration": 747,
+      "native_traversal_sec": 0.012063302,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012539446353912354,
+      "is_warmup": false,
+      "iteration": 748,
+      "native_traversal_sec": 0.011845549,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.050031185150146484,
+      "is_warmup": false,
+      "iteration": 749,
+      "native_traversal_sec": 0.049318695,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012966923415660858,
+      "is_warmup": false,
+      "iteration": 750,
+      "native_traversal_sec": 0.012257001,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012932002544403076,
+      "is_warmup": false,
+      "iteration": 751,
+      "native_traversal_sec": 0.012219609,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01264912635087967,
+      "is_warmup": false,
+      "iteration": 752,
+      "native_traversal_sec": 0.011939448,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012786865234375,
+      "is_warmup": false,
+      "iteration": 753,
+      "native_traversal_sec": 0.012082079,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04904492199420929,
+      "is_warmup": false,
+      "iteration": 754,
+      "native_traversal_sec": 0.048316801,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013033337891101837,
+      "is_warmup": false,
+      "iteration": 755,
+      "native_traversal_sec": 0.012324298,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012879304587841034,
+      "is_warmup": false,
+      "iteration": 756,
+      "native_traversal_sec": 0.012181106,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012862533330917358,
+      "is_warmup": false,
+      "iteration": 757,
+      "native_traversal_sec": 0.012148354,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012488797307014465,
+      "is_warmup": false,
+      "iteration": 758,
+      "native_traversal_sec": 0.011772099,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.049734994769096375,
+      "is_warmup": false,
+      "iteration": 759,
+      "native_traversal_sec": 0.04903164,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01300966739654541,
+      "is_warmup": false,
+      "iteration": 760,
+      "native_traversal_sec": 0.012316584,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0127505362033844,
+      "is_warmup": false,
+      "iteration": 761,
+      "native_traversal_sec": 0.01205105,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012742780148983002,
+      "is_warmup": false,
+      "iteration": 762,
+      "native_traversal_sec": 0.012028507,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012767091393470764,
+      "is_warmup": false,
+      "iteration": 763,
+      "native_traversal_sec": 0.012030891,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.049786053597927094,
+      "is_warmup": false,
+      "iteration": 764,
+      "native_traversal_sec": 0.049076595,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012926861643791199,
+      "is_warmup": false,
+      "iteration": 765,
+      "native_traversal_sec": 0.01222523,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012749724090099335,
+      "is_warmup": false,
+      "iteration": 766,
+      "native_traversal_sec": 0.012053454,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012418784201145172,
+      "is_warmup": false,
+      "iteration": 767,
+      "native_traversal_sec": 0.01171461,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011273592710494995,
+      "is_warmup": false,
+      "iteration": 768,
+      "native_traversal_sec": 0.010735348,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04955688863992691,
+      "is_warmup": false,
+      "iteration": 769,
+      "native_traversal_sec": 0.048997896,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013052649796009064,
+      "is_warmup": false,
+      "iteration": 770,
+      "native_traversal_sec": 0.01233524,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012518256902694702,
+      "is_warmup": false,
+      "iteration": 771,
+      "native_traversal_sec": 0.011826762,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012582026422023773,
+      "is_warmup": false,
+      "iteration": 772,
+      "native_traversal_sec": 0.011880736,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012898772954940796,
+      "is_warmup": false,
+      "iteration": 773,
+      "native_traversal_sec": 0.012204411,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.049517177045345306,
+      "is_warmup": false,
+      "iteration": 774,
+      "native_traversal_sec": 0.048816962,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013902798295021057,
+      "is_warmup": false,
+      "iteration": 775,
+      "native_traversal_sec": 0.012788932,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012618489563465118,
+      "is_warmup": false,
+      "iteration": 776,
+      "native_traversal_sec": 0.011913929,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012374132871627808,
+      "is_warmup": false,
+      "iteration": 777,
+      "native_traversal_sec": 0.011678501,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012369625270366669,
+      "is_warmup": false,
+      "iteration": 778,
+      "native_traversal_sec": 0.011664955,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04716940224170685,
+      "is_warmup": false,
+      "iteration": 779,
+      "native_traversal_sec": 0.046465431,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01332186907529831,
+      "is_warmup": false,
+      "iteration": 780,
+      "native_traversal_sec": 0.012625731,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012686245143413544,
+      "is_warmup": false,
+      "iteration": 781,
+      "native_traversal_sec": 0.011981497,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012702107429504395,
+      "is_warmup": false,
+      "iteration": 782,
+      "native_traversal_sec": 0.012006435,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012738615274429321,
+      "is_warmup": false,
+      "iteration": 783,
+      "native_traversal_sec": 0.012023477,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04969990998506546,
+      "is_warmup": false,
+      "iteration": 784,
+      "native_traversal_sec": 0.048980693,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013005971908569336,
+      "is_warmup": false,
+      "iteration": 785,
+      "native_traversal_sec": 0.012306625,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012521468102931976,
+      "is_warmup": false,
+      "iteration": 786,
+      "native_traversal_sec": 0.011823146,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012145712971687317,
+      "is_warmup": false,
+      "iteration": 787,
+      "native_traversal_sec": 0.011433355,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011984840035438538,
+      "is_warmup": false,
+      "iteration": 788,
+      "native_traversal_sec": 0.011263121,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04784490913152695,
+      "is_warmup": false,
+      "iteration": 789,
+      "native_traversal_sec": 0.047143811,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012175396084785461,
+      "is_warmup": false,
+      "iteration": 790,
+      "native_traversal_sec": 0.011479854,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012336291372776031,
+      "is_warmup": false,
+      "iteration": 791,
+      "native_traversal_sec": 0.011633105,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012149512767791748,
+      "is_warmup": false,
+      "iteration": 792,
+      "native_traversal_sec": 0.011448534,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012574873864650726,
+      "is_warmup": false,
+      "iteration": 793,
+      "native_traversal_sec": 0.011827825,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012212693691253662,
+      "is_warmup": false,
+      "iteration": 794,
+      "native_traversal_sec": 0.011514028,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04339635372161865,
+      "is_warmup": false,
+      "iteration": 795,
+      "native_traversal_sec": 0.042711284,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011877916753292084,
+      "is_warmup": false,
+      "iteration": 796,
+      "native_traversal_sec": 0.01116788,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011394403874874115,
+      "is_warmup": false,
+      "iteration": 797,
+      "native_traversal_sec": 0.010677809,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011535212397575378,
+      "is_warmup": false,
+      "iteration": 798,
+      "native_traversal_sec": 0.010837472,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012103192508220673,
+      "is_warmup": false,
+      "iteration": 799,
+      "native_traversal_sec": 0.011400552,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011769473552703857,
+      "is_warmup": false,
+      "iteration": 800,
+      "native_traversal_sec": 0.011051409,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04270130395889282,
+      "is_warmup": false,
+      "iteration": 801,
+      "native_traversal_sec": 0.041996937,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012612894177436829,
+      "is_warmup": false,
+      "iteration": 802,
+      "native_traversal_sec": 0.011910052,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012225113809108734,
+      "is_warmup": false,
+      "iteration": 803,
+      "native_traversal_sec": 0.011522414,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012581363320350647,
+      "is_warmup": false,
+      "iteration": 804,
+      "native_traversal_sec": 0.011880745,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012190833687782288,
+      "is_warmup": false,
+      "iteration": 805,
+      "native_traversal_sec": 0.011485384,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04312954843044281,
+      "is_warmup": false,
+      "iteration": 806,
+      "native_traversal_sec": 0.042436472,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012502118945121765,
+      "is_warmup": false,
+      "iteration": 807,
+      "native_traversal_sec": 0.011800823,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012389406561851501,
+      "is_warmup": false,
+      "iteration": 808,
+      "native_traversal_sec": 0.011681016,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012145206332206726,
+      "is_warmup": false,
+      "iteration": 809,
+      "native_traversal_sec": 0.011444506,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012309499084949493,
+      "is_warmup": false,
+      "iteration": 810,
+      "native_traversal_sec": 0.011610352,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.016742289066314697,
+      "is_warmup": false,
+      "iteration": 811,
+      "native_traversal_sec": 0.01594916,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.041650548577308655,
+      "is_warmup": false,
+      "iteration": 812,
+      "native_traversal_sec": 0.04103589,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012769952416419983,
+      "is_warmup": false,
+      "iteration": 813,
+      "native_traversal_sec": 0.012086065,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012307688593864441,
+      "is_warmup": false,
+      "iteration": 814,
+      "native_traversal_sec": 0.011637493,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01240328699350357,
+      "is_warmup": false,
+      "iteration": 815,
+      "native_traversal_sec": 0.011736672,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012479610741138458,
+      "is_warmup": false,
+      "iteration": 816,
+      "native_traversal_sec": 0.011826252,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0499018058180809,
+      "is_warmup": false,
+      "iteration": 817,
+      "native_traversal_sec": 0.049196453,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012965358793735504,
+      "is_warmup": false,
+      "iteration": 818,
+      "native_traversal_sec": 0.012250719,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012719497084617615,
+      "is_warmup": false,
+      "iteration": 819,
+      "native_traversal_sec": 0.01200974,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012464188039302826,
+      "is_warmup": false,
+      "iteration": 820,
+      "native_traversal_sec": 0.011772059,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012111000716686249,
+      "is_warmup": false,
+      "iteration": 821,
+      "native_traversal_sec": 0.011405823,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04818722605705261,
+      "is_warmup": false,
+      "iteration": 822,
+      "native_traversal_sec": 0.047482194,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01261526346206665,
+      "is_warmup": false,
+      "iteration": 823,
+      "native_traversal_sec": 0.011901976,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012583822011947632,
+      "is_warmup": false,
+      "iteration": 824,
+      "native_traversal_sec": 0.011880215,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012429803609848022,
+      "is_warmup": false,
+      "iteration": 825,
+      "native_traversal_sec": 0.011737663,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012518778443336487,
+      "is_warmup": false,
+      "iteration": 826,
+      "native_traversal_sec": 0.011812416,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.047411128878593445,
+      "is_warmup": false,
+      "iteration": 827,
+      "native_traversal_sec": 0.04671214,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012835986912250519,
+      "is_warmup": false,
+      "iteration": 828,
+      "native_traversal_sec": 0.012165446,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0125180184841156,
+      "is_warmup": false,
+      "iteration": 829,
+      "native_traversal_sec": 0.011765607,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012547552585601807,
+      "is_warmup": false,
+      "iteration": 830,
+      "native_traversal_sec": 0.011837183,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012549705803394318,
+      "is_warmup": false,
+      "iteration": 831,
+      "native_traversal_sec": 0.011815301,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.047683507204055786,
+      "is_warmup": false,
+      "iteration": 832,
+      "native_traversal_sec": 0.046991521,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013109065592288971,
+      "is_warmup": false,
+      "iteration": 833,
+      "native_traversal_sec": 0.012401816,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012744106352329254,
+      "is_warmup": false,
+      "iteration": 834,
+      "native_traversal_sec": 0.012031873,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01251588761806488,
+      "is_warmup": false,
+      "iteration": 835,
+      "native_traversal_sec": 0.011803258,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012836962938308716,
+      "is_warmup": false,
+      "iteration": 836,
+      "native_traversal_sec": 0.012141702,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04915062338113785,
+      "is_warmup": false,
+      "iteration": 837,
+      "native_traversal_sec": 0.048445376,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012977555394172668,
+      "is_warmup": false,
+      "iteration": 838,
+      "native_traversal_sec": 0.012291275,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012652277946472168,
+      "is_warmup": false,
+      "iteration": 839,
+      "native_traversal_sec": 0.011961509,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01263979822397232,
+      "is_warmup": false,
+      "iteration": 840,
+      "native_traversal_sec": 0.011929559,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012746885418891907,
+      "is_warmup": false,
+      "iteration": 841,
+      "native_traversal_sec": 0.012047202,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04936540126800537,
+      "is_warmup": false,
+      "iteration": 842,
+      "native_traversal_sec": 0.048676575,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013136334717273712,
+      "is_warmup": false,
+      "iteration": 843,
+      "native_traversal_sec": 0.012432104,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012714162468910217,
+      "is_warmup": false,
+      "iteration": 844,
+      "native_traversal_sec": 0.011976217,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011780470609664917,
+      "is_warmup": false,
+      "iteration": 845,
+      "native_traversal_sec": 0.01116245,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011615753173828125,
+      "is_warmup": false,
+      "iteration": 846,
+      "native_traversal_sec": 0.011060587,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.05037540942430496,
+      "is_warmup": false,
+      "iteration": 847,
+      "native_traversal_sec": 0.049816281,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012741997838020325,
+      "is_warmup": false,
+      "iteration": 848,
+      "native_traversal_sec": 0.01207793,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012376546859741211,
+      "is_warmup": false,
+      "iteration": 849,
+      "native_traversal_sec": 0.011614991,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012296058237552643,
+      "is_warmup": false,
+      "iteration": 850,
+      "native_traversal_sec": 0.011613648,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012240253388881683,
+      "is_warmup": false,
+      "iteration": 851,
+      "native_traversal_sec": 0.011564404,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0496319904923439,
+      "is_warmup": false,
+      "iteration": 852,
+      "native_traversal_sec": 0.048956547,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012642227113246918,
+      "is_warmup": false,
+      "iteration": 853,
+      "native_traversal_sec": 0.011970497,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01237528771162033,
+      "is_warmup": false,
+      "iteration": 854,
+      "native_traversal_sec": 0.011708498,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012610919773578644,
+      "is_warmup": false,
+      "iteration": 855,
+      "native_traversal_sec": 0.011932033,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012318745255470276,
+      "is_warmup": false,
+      "iteration": 856,
+      "native_traversal_sec": 0.011651439,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.05111149698495865,
+      "is_warmup": false,
+      "iteration": 857,
+      "native_traversal_sec": 0.050431401,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012741491198539734,
+      "is_warmup": false,
+      "iteration": 858,
+      "native_traversal_sec": 0.012061389,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01235390454530716,
+      "is_warmup": false,
+      "iteration": 859,
+      "native_traversal_sec": 0.011690995,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012066222727298737,
+      "is_warmup": false,
+      "iteration": 860,
+      "native_traversal_sec": 0.011388931,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012027814984321594,
+      "is_warmup": false,
+      "iteration": 861,
+      "native_traversal_sec": 0.01134703,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.0499720424413681,
+      "is_warmup": false,
+      "iteration": 862,
+      "native_traversal_sec": 0.049293808,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012634702026844025,
+      "is_warmup": false,
+      "iteration": 863,
+      "native_traversal_sec": 0.011960467,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012288391590118408,
+      "is_warmup": false,
+      "iteration": 864,
+      "native_traversal_sec": 0.011612335,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012427963316440582,
+      "is_warmup": false,
+      "iteration": 865,
+      "native_traversal_sec": 0.011750157,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012356653809547424,
+      "is_warmup": false,
+      "iteration": 866,
+      "native_traversal_sec": 0.011689852,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.05040612816810608,
+      "is_warmup": false,
+      "iteration": 867,
+      "native_traversal_sec": 0.049730999,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01281033456325531,
+      "is_warmup": false,
+      "iteration": 868,
+      "native_traversal_sec": 0.012140028,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012549959123134613,
+      "is_warmup": false,
+      "iteration": 869,
+      "native_traversal_sec": 0.011873291,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012483082711696625,
+      "is_warmup": false,
+      "iteration": 870,
+      "native_traversal_sec": 0.011817586,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012283481657505035,
+      "is_warmup": false,
+      "iteration": 871,
+      "native_traversal_sec": 0.011596875,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.051579684019088745,
+      "is_warmup": false,
+      "iteration": 872,
+      "native_traversal_sec": 0.050902436,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012782000005245209,
+      "is_warmup": false,
+      "iteration": 873,
+      "native_traversal_sec": 0.012079423,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01259591430425644,
+      "is_warmup": false,
+      "iteration": 874,
+      "native_traversal_sec": 0.011887869,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012576721608638763,
+      "is_warmup": false,
+      "iteration": 875,
+      "native_traversal_sec": 0.011871608,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012731783092021942,
+      "is_warmup": false,
+      "iteration": 876,
+      "native_traversal_sec": 0.012024739,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04841454327106476,
+      "is_warmup": false,
+      "iteration": 877,
+      "native_traversal_sec": 0.047716891,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013063192367553711,
+      "is_warmup": false,
+      "iteration": 878,
+      "native_traversal_sec": 0.012359455,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012631230056285858,
+      "is_warmup": false,
+      "iteration": 879,
+      "native_traversal_sec": 0.011899872,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012452192604541779,
+      "is_warmup": false,
+      "iteration": 880,
+      "native_traversal_sec": 0.011742362,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012577220797538757,
+      "is_warmup": false,
+      "iteration": 881,
+      "native_traversal_sec": 0.01186724,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048350945115089417,
+      "is_warmup": false,
+      "iteration": 882,
+      "native_traversal_sec": 0.047638942,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012986332178115845,
+      "is_warmup": false,
+      "iteration": 883,
+      "native_traversal_sec": 0.012290845,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01271183043718338,
+      "is_warmup": false,
+      "iteration": 884,
+      "native_traversal_sec": 0.011972099,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01267378032207489,
+      "is_warmup": false,
+      "iteration": 885,
+      "native_traversal_sec": 0.011969474,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012653805315494537,
+      "is_warmup": false,
+      "iteration": 886,
+      "native_traversal_sec": 0.01195671,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04951956868171692,
+      "is_warmup": false,
+      "iteration": 887,
+      "native_traversal_sec": 0.048807835,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012995272874832153,
+      "is_warmup": false,
+      "iteration": 888,
+      "native_traversal_sec": 0.012291106,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012834034860134125,
+      "is_warmup": false,
+      "iteration": 889,
+      "native_traversal_sec": 0.012128476,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012405537068843842,
+      "is_warmup": false,
+      "iteration": 890,
+      "native_traversal_sec": 0.011708808,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012643851339817047,
+      "is_warmup": false,
+      "iteration": 891,
+      "native_traversal_sec": 0.011931111,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048302263021469116,
+      "is_warmup": false,
+      "iteration": 892,
+      "native_traversal_sec": 0.047601911,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01318378746509552,
+      "is_warmup": false,
+      "iteration": 893,
+      "native_traversal_sec": 0.012471308,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012833118438720703,
+      "is_warmup": false,
+      "iteration": 894,
+      "native_traversal_sec": 0.012097478,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012874804437160492,
+      "is_warmup": false,
+      "iteration": 895,
+      "native_traversal_sec": 0.012155097,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012576356530189514,
+      "is_warmup": false,
+      "iteration": 896,
+      "native_traversal_sec": 0.011859906,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04980407655239105,
+      "is_warmup": false,
+      "iteration": 897,
+      "native_traversal_sec": 0.049107424,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013195671141147614,
+      "is_warmup": false,
+      "iteration": 898,
+      "native_traversal_sec": 0.012480415,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013048611581325531,
+      "is_warmup": false,
+      "iteration": 899,
+      "native_traversal_sec": 0.012347422,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012979023158550262,
+      "is_warmup": false,
+      "iteration": 900,
+      "native_traversal_sec": 0.012272841,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012797161936759949,
+      "is_warmup": false,
+      "iteration": 901,
+      "native_traversal_sec": 0.012092979,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04920436441898346,
+      "is_warmup": false,
+      "iteration": 902,
+      "native_traversal_sec": 0.048457118,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012720011174678802,
+      "is_warmup": false,
+      "iteration": 903,
+      "native_traversal_sec": 0.012024088,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012625984847545624,
+      "is_warmup": false,
+      "iteration": 904,
+      "native_traversal_sec": 0.011907186,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012813538312911987,
+      "is_warmup": false,
+      "iteration": 905,
+      "native_traversal_sec": 0.012102066,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012535743415355682,
+      "is_warmup": false,
+      "iteration": 906,
+      "native_traversal_sec": 0.011836291,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.047205209732055664,
+      "is_warmup": false,
+      "iteration": 907,
+      "native_traversal_sec": 0.046490419,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01280461996793747,
+      "is_warmup": false,
+      "iteration": 908,
+      "native_traversal_sec": 0.012117015,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012330621480941772,
+      "is_warmup": false,
+      "iteration": 909,
+      "native_traversal_sec": 0.011613337,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012424223124980927,
+      "is_warmup": false,
+      "iteration": 910,
+      "native_traversal_sec": 0.011719919,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012156769633293152,
+      "is_warmup": false,
+      "iteration": 911,
+      "native_traversal_sec": 0.011442943,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04900311678647995,
+      "is_warmup": false,
+      "iteration": 912,
+      "native_traversal_sec": 0.048286714,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012655377388000488,
+      "is_warmup": false,
+      "iteration": 913,
+      "native_traversal_sec": 0.011942453,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012168683111667633,
+      "is_warmup": false,
+      "iteration": 914,
+      "native_traversal_sec": 0.011452371,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012485802173614502,
+      "is_warmup": false,
+      "iteration": 915,
+      "native_traversal_sec": 0.011765266,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012227267026901245,
+      "is_warmup": false,
+      "iteration": 916,
+      "native_traversal_sec": 0.011528315,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04990704357624054,
+      "is_warmup": false,
+      "iteration": 917,
+      "native_traversal_sec": 0.049190251,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012927070260047913,
+      "is_warmup": false,
+      "iteration": 918,
+      "native_traversal_sec": 0.012233997,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012539565563201904,
+      "is_warmup": false,
+      "iteration": 919,
+      "native_traversal_sec": 0.01184072,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012462474405765533,
+      "is_warmup": false,
+      "iteration": 920,
+      "native_traversal_sec": 0.011755607,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01223868876695633,
+      "is_warmup": false,
+      "iteration": 921,
+      "native_traversal_sec": 0.011541681,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.050188809633255005,
+      "is_warmup": false,
+      "iteration": 922,
+      "native_traversal_sec": 0.049479692,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013078905642032623,
+      "is_warmup": false,
+      "iteration": 923,
+      "native_traversal_sec": 0.012373893,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012643888592720032,
+      "is_warmup": false,
+      "iteration": 924,
+      "native_traversal_sec": 0.011936341,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012329012155532837,
+      "is_warmup": false,
+      "iteration": 925,
+      "native_traversal_sec": 0.011623226,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012609995901584625,
+      "is_warmup": false,
+      "iteration": 926,
+      "native_traversal_sec": 0.011899411,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.05008770525455475,
+      "is_warmup": false,
+      "iteration": 927,
+      "native_traversal_sec": 0.04939469,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01269475370645523,
+      "is_warmup": false,
+      "iteration": 928,
+      "native_traversal_sec": 0.011996686,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012547574937343597,
+      "is_warmup": false,
+      "iteration": 929,
+      "native_traversal_sec": 0.011854365,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012406222522258759,
+      "is_warmup": false,
+      "iteration": 930,
+      "native_traversal_sec": 0.01169381,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012533292174339294,
+      "is_warmup": false,
+      "iteration": 931,
+      "native_traversal_sec": 0.011836522,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04876818507909775,
+      "is_warmup": false,
+      "iteration": 932,
+      "native_traversal_sec": 0.048055283,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012831442058086395,
+      "is_warmup": false,
+      "iteration": 933,
+      "native_traversal_sec": 0.012125531,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012553267180919647,
+      "is_warmup": false,
+      "iteration": 934,
+      "native_traversal_sec": 0.011856921,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012287326157093048,
+      "is_warmup": false,
+      "iteration": 935,
+      "native_traversal_sec": 0.011575065,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012610800564289093,
+      "is_warmup": false,
+      "iteration": 936,
+      "native_traversal_sec": 0.011910892,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.049921147525310516,
+      "is_warmup": false,
+      "iteration": 937,
+      "native_traversal_sec": 0.049206212,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01306101679801941,
+      "is_warmup": false,
+      "iteration": 938,
+      "native_traversal_sec": 0.012355608,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012776777148246765,
+      "is_warmup": false,
+      "iteration": 939,
+      "native_traversal_sec": 0.012068903,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01231463998556137,
+      "is_warmup": false,
+      "iteration": 940,
+      "native_traversal_sec": 0.01160424,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012677058577537537,
+      "is_warmup": false,
+      "iteration": 941,
+      "native_traversal_sec": 0.011969334,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04975070804357529,
+      "is_warmup": false,
+      "iteration": 942,
+      "native_traversal_sec": 0.049036459,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012846961617469788,
+      "is_warmup": false,
+      "iteration": 943,
+      "native_traversal_sec": 0.012154225,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01243535429239273,
+      "is_warmup": false,
+      "iteration": 944,
+      "native_traversal_sec": 0.011740779,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012796886265277863,
+      "is_warmup": false,
+      "iteration": 945,
+      "native_traversal_sec": 0.012052942,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01255490630865097,
+      "is_warmup": false,
+      "iteration": 946,
+      "native_traversal_sec": 0.011852632,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.049986809492111206,
+      "is_warmup": false,
+      "iteration": 947,
+      "native_traversal_sec": 0.049274071,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01283794641494751,
+      "is_warmup": false,
+      "iteration": 948,
+      "native_traversal_sec": 0.012132183,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012867160141468048,
+      "is_warmup": false,
+      "iteration": 949,
+      "native_traversal_sec": 0.012101235,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01252669095993042,
+      "is_warmup": false,
+      "iteration": 950,
+      "native_traversal_sec": 0.011811153,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013146616518497467,
+      "is_warmup": false,
+      "iteration": 951,
+      "native_traversal_sec": 0.01244587,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04796943813562393,
+      "is_warmup": false,
+      "iteration": 952,
+      "native_traversal_sec": 0.0472692,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012858137488365173,
+      "is_warmup": false,
+      "iteration": 953,
+      "native_traversal_sec": 0.012167611,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012708552181720734,
+      "is_warmup": false,
+      "iteration": 954,
+      "native_traversal_sec": 0.01200369,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012553192675113678,
+      "is_warmup": false,
+      "iteration": 955,
+      "native_traversal_sec": 0.011834527,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012438401579856873,
+      "is_warmup": false,
+      "iteration": 956,
+      "native_traversal_sec": 0.01172037,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04838365316390991,
+      "is_warmup": false,
+      "iteration": 957,
+      "native_traversal_sec": 0.04766896,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011971555650234222,
+      "is_warmup": false,
+      "iteration": 958,
+      "native_traversal_sec": 0.011345318,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011668369174003601,
+      "is_warmup": false,
+      "iteration": 959,
+      "native_traversal_sec": 0.010512664,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01114220917224884,
+      "is_warmup": false,
+      "iteration": 960,
+      "native_traversal_sec": 0.010484872,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01112540066242218,
+      "is_warmup": false,
+      "iteration": 961,
+      "native_traversal_sec": 0.010473971,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01098991185426712,
+      "is_warmup": false,
+      "iteration": 962,
+      "native_traversal_sec": 0.010350125,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01070673018693924,
+      "is_warmup": false,
+      "iteration": 963,
+      "native_traversal_sec": 0.010068941,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.03940170258283615,
+      "is_warmup": false,
+      "iteration": 964,
+      "native_traversal_sec": 0.038677656,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010233208537101746,
+      "is_warmup": false,
+      "iteration": 965,
+      "native_traversal_sec": 0.00970499,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010112866759300232,
+      "is_warmup": false,
+      "iteration": 966,
+      "native_traversal_sec": 0.009585983,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.009655147790908813,
+      "is_warmup": false,
+      "iteration": 967,
+      "native_traversal_sec": 0.009129636,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.009907133877277374,
+      "is_warmup": false,
+      "iteration": 968,
+      "native_traversal_sec": 0.009383118,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.010113909840583801,
+      "is_warmup": false,
+      "iteration": 969,
+      "native_traversal_sec": 0.009601332,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.046866171061992645,
+      "is_warmup": false,
+      "iteration": 970,
+      "native_traversal_sec": 0.046335334,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012839935719966888,
+      "is_warmup": false,
+      "iteration": 971,
+      "native_traversal_sec": 0.012154887,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01235731691122055,
+      "is_warmup": false,
+      "iteration": 972,
+      "native_traversal_sec": 0.011649496,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012364134192466736,
+      "is_warmup": false,
+      "iteration": 973,
+      "native_traversal_sec": 0.011671228,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01258852332830429,
+      "is_warmup": false,
+      "iteration": 974,
+      "native_traversal_sec": 0.011881407,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04849494993686676,
+      "is_warmup": false,
+      "iteration": 975,
+      "native_traversal_sec": 0.047796331,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012817136943340302,
+      "is_warmup": false,
+      "iteration": 976,
+      "native_traversal_sec": 0.012105282,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012482449412345886,
+      "is_warmup": false,
+      "iteration": 977,
+      "native_traversal_sec": 0.01177789,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01239069551229477,
+      "is_warmup": false,
+      "iteration": 978,
+      "native_traversal_sec": 0.011700001,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012608341872692108,
+      "is_warmup": false,
+      "iteration": 979,
+      "native_traversal_sec": 0.011824349,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04809674620628357,
+      "is_warmup": false,
+      "iteration": 980,
+      "native_traversal_sec": 0.047394368,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012872949242591858,
+      "is_warmup": false,
+      "iteration": 981,
+      "native_traversal_sec": 0.012171008,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012411549687385559,
+      "is_warmup": false,
+      "iteration": 982,
+      "native_traversal_sec": 0.011707456,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012181833386421204,
+      "is_warmup": false,
+      "iteration": 983,
+      "native_traversal_sec": 0.011469033,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012368299067020416,
+      "is_warmup": false,
+      "iteration": 984,
+      "native_traversal_sec": 0.011655337,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04906497150659561,
+      "is_warmup": false,
+      "iteration": 985,
+      "native_traversal_sec": 0.048366035,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012910068035125732,
+      "is_warmup": false,
+      "iteration": 986,
+      "native_traversal_sec": 0.012202928,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012636043131351471,
+      "is_warmup": false,
+      "iteration": 987,
+      "native_traversal_sec": 0.011940028,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012651167809963226,
+      "is_warmup": false,
+      "iteration": 988,
+      "native_traversal_sec": 0.011936903,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012403815984725952,
+      "is_warmup": false,
+      "iteration": 989,
+      "native_traversal_sec": 0.011695533,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04978402704000473,
+      "is_warmup": false,
+      "iteration": 990,
+      "native_traversal_sec": 0.049073911,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013092957437038422,
+      "is_warmup": false,
+      "iteration": 991,
+      "native_traversal_sec": 0.01234573,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011907711625099182,
+      "is_warmup": false,
+      "iteration": 992,
+      "native_traversal_sec": 0.010564514,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01179473102092743,
+      "is_warmup": false,
+      "iteration": 993,
+      "native_traversal_sec": 0.011150467,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011345013976097107,
+      "is_warmup": false,
+      "iteration": 994,
+      "native_traversal_sec": 0.010714488,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.011923886835575104,
+      "is_warmup": false,
+      "iteration": 995,
+      "native_traversal_sec": 0.011279342,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04681761562824249,
+      "is_warmup": false,
+      "iteration": 996,
+      "native_traversal_sec": 0.046166193,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012623190879821777,
+      "is_warmup": false,
+      "iteration": 997,
+      "native_traversal_sec": 0.011937584,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012607753276824951,
+      "is_warmup": false,
+      "iteration": 998,
+      "native_traversal_sec": 0.011918648,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012621834874153137,
+      "is_warmup": false,
+      "iteration": 999,
+      "native_traversal_sec": 0.011902918,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012836173176765442,
+      "is_warmup": false,
+      "iteration": 1000,
+      "native_traversal_sec": 0.012147202,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04366585612297058,
+      "is_warmup": false,
+      "iteration": 1001,
+      "native_traversal_sec": 0.042974435,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012970298528671265,
+      "is_warmup": false,
+      "iteration": 1002,
+      "native_traversal_sec": 0.012264545,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012546427547931671,
+      "is_warmup": false,
+      "iteration": 1003,
+      "native_traversal_sec": 0.011832534,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01271827518939972,
+      "is_warmup": false,
+      "iteration": 1004,
+      "native_traversal_sec": 0.012000794,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012678809463977814,
+      "is_warmup": false,
+      "iteration": 1005,
+      "native_traversal_sec": 0.011982008,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048874594271183014,
+      "is_warmup": false,
+      "iteration": 1006,
+      "native_traversal_sec": 0.048136789,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013198226690292358,
+      "is_warmup": false,
+      "iteration": 1007,
+      "native_traversal_sec": 0.012463283,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012698039412498474,
+      "is_warmup": false,
+      "iteration": 1008,
+      "native_traversal_sec": 0.011909811,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.013313844799995422,
+      "is_warmup": false,
+      "iteration": 1009,
+      "native_traversal_sec": 0.012564034,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012978076934814453,
+      "is_warmup": false,
+      "iteration": 1010,
+      "native_traversal_sec": 0.012269615,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.048207491636276245,
+      "is_warmup": false,
+      "iteration": 1011,
+      "native_traversal_sec": 0.04747483,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.01315615326166153,
+      "is_warmup": false,
+      "iteration": 1012,
+      "native_traversal_sec": 0.012439598,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012662120163440704,
+      "is_warmup": false,
+      "iteration": 1013,
+      "native_traversal_sec": 0.011965596,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012790434062480927,
+      "is_warmup": false,
+      "iteration": 1014,
+      "native_traversal_sec": 0.012074053,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012957155704498291,
+      "is_warmup": false,
+      "iteration": 1015,
+      "native_traversal_sec": 0.012243666,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.04862870275974274,
+      "is_warmup": false,
+      "iteration": 1016,
+      "native_traversal_sec": 0.047914126,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012993216514587402,
+      "is_warmup": false,
+      "iteration": 1017,
+      "native_traversal_sec": 0.012318918,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012763135135173798,
+      "is_warmup": false,
+      "iteration": 1018,
+      "native_traversal_sec": 0.012059726,
+      "row_count": 47262
+    },
+    {
+      "elapsed_sec": 0.012670330703258514,
+      "is_warmup": false,
+      "iteration": 1019,
+      "native_traversal_sec": 0.011973502,
+      "row_count": 47262
+    }
+  ],
+  "threads": 32,
+  "workload": "pip"
+}

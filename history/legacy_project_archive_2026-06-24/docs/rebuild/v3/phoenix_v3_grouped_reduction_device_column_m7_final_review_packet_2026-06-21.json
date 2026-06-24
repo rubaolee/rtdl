@@ -1,0 +1,212 @@
+{
+  "approved_row_scoped_public_wording": "For a fixed-schema prepared grouped-sum workload on an NVIDIA RTX 4000 Ada Generation pod, 262,144 rows / 1,024 groups, 38,043,648 logical rays, warmup=3 and actual repeat=100, RTDL's OptiX route prepared the ray batch from cupy_device_columns with host_packed_ray_count=0. Compared with the host-packed OptiX route, cold prepare plus the measured repeat100 loop was 3.599x faster. Embree remains the host-packed route while the OptiX candidate uses cupy_device_columns; under that same grouped_sum contract, the OptiX device-column route was 100.019x faster than Embree for cold prepare plus repeat100 loop. That Embree/device-column ratio is same-contract context, not a pure backend-only ratio. This is a row-scoped prepared grouped_reduction result, not a whole-app, whole-database, true_zero_copy_authorized, or broad V3-over-V2 speedup claim.\n\nFor a fixed-schema prepared grouped-sum workload on an NVIDIA RTX 4000 Ada Generation pod, 524,288 rows / 2,048 groups, 76,087,296 logical rays, warmup=3 and actual repeat=100, RTDL's OptiX route prepared the ray batch from cupy_device_columns with host_packed_ray_count=0. Compared with the host-packed OptiX route, cold prepare plus the measured repeat100 loop was 73.586x faster. Embree remains the host-packed route while the OptiX candidate uses cupy_device_columns; under that same grouped_sum contract, the OptiX device-column route was 174.645x faster than Embree for cold prepare plus repeat100 loop. That Embree/device-column ratio is same-contract context, not a pure backend-only ratio. This is a row-scoped prepared grouped_reduction result, not a whole-app, whole-database, true_zero_copy_authorized, or broad V3-over-V2 speedup claim.",
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_rows": [
+    {
+      "all_match_cpu_reference": true,
+      "app_specific_native_engine_logic_allowed": false,
+      "backend_pair_context": "Embree remains host-packed; OptiX candidate uses cupy_device_columns. Embree/OptiX ratios are same-contract context, not pure backend-only ratios.",
+      "embree_cold_plus_loop_sec": 102.75892961025238,
+      "embree_over_optix_device_columns_cold_plus_loop_speedup": 100.0189736595584,
+      "embree_over_optix_device_columns_hot_query_speedup": 203.49210337374194,
+      "existing_m7_row_retained": "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+      "generated_groups": 1024,
+      "generated_rows": 262144,
+      "generic_capability": "grouped_reduction",
+      "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB, 00000000:C1:00.0",
+      "host_packed_ray_count_device_route": 0,
+      "local_gate_reading": "m7_row_evidence_scoped_not_release_after_claude_codex_consensus",
+      "logical_ray_count": 38043648,
+      "logical_ray_count_device_route": 38043648,
+      "m7_promoted": true,
+      "native_engine_customization": false,
+      "operation": "prepared_grouped_sum_i64",
+      "optix_device_columns_cold_plus_loop_sec": 1.027394361793995,
+      "optix_host_packed_cold_plus_loop_sec": 3.6971092373132706,
+      "optix_host_packed_over_device_columns_cold_plus_loop_speedup": 3.5985298097777436,
+      "optix_host_packed_over_device_columns_cold_prepare_speedup": 6.022472943226159,
+      "optix_host_packed_over_device_columns_prepared_ray_batch_speedup": 5.537652230032008,
+      "optix_host_packed_over_device_columns_workload_build_speedup": 32.46586811817605,
+      "partner_continuation_required": false,
+      "phase_attribution": {
+        "cold_prepare_speedup_includes": [
+          "workload_build_sec",
+          "prepared_ray_batch_sec",
+          "native_prepare_sec",
+          "other measured cold setup"
+        ],
+        "largest_524288_note": "At 262,144 rows both workload_build_sec and prepared_ray_batch_sec improve materially.",
+        "not_only_ray_batch_prepare": true
+      },
+      "pre_dedup_hit_events": {
+        "embree": 1853,
+        "interpretation": "pre-dedup hit-event counts can differ across Embree and OptiX, but all rows match the CPU reference after grouped reduction",
+        "optix_device_columns": 3693,
+        "optix_host_packed": 3693
+      },
+      "ray_batch_layout": "cupy_device_columns",
+      "repeat": 100,
+      "replaces_existing_m7_row": false,
+      "row_id": "grouped_reduction_sum_cupy_device_columns_repeat100_262144_rows_1024_groups",
+      "same_contract": true,
+      "source_provenance_disclosed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 3
+    },
+    {
+      "all_match_cpu_reference": true,
+      "app_specific_native_engine_logic_allowed": false,
+      "backend_pair_context": "Embree remains host-packed; OptiX candidate uses cupy_device_columns. Embree/OptiX ratios are same-contract context, not pure backend-only ratios.",
+      "embree_cold_plus_loop_sec": 348.78112457692623,
+      "embree_over_optix_device_columns_cold_plus_loop_speedup": 174.6452159009912,
+      "embree_over_optix_device_columns_hot_query_speedup": 173.01269391970075,
+      "existing_m7_row_retained": "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+      "generated_groups": 2048,
+      "generated_rows": 524288,
+      "generic_capability": "grouped_reduction",
+      "hardware": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB, 00000000:C1:00.0",
+      "host_packed_ray_count_device_route": 0,
+      "local_gate_reading": "m7_row_evidence_scoped_not_release_after_claude_codex_consensus",
+      "logical_ray_count": 76087296,
+      "logical_ray_count_device_route": 76087296,
+      "m7_promoted": true,
+      "native_engine_customization": false,
+      "operation": "prepared_grouped_sum_i64",
+      "optix_device_columns_cold_plus_loop_sec": 1.9970837607979774,
+      "optix_host_packed_cold_plus_loop_sec": 146.95673225075006,
+      "optix_host_packed_over_device_columns_cold_plus_loop_speedup": 73.58566282269021,
+      "optix_host_packed_over_device_columns_cold_prepare_speedup": 218.2482854667527,
+      "optix_host_packed_over_device_columns_prepared_ray_batch_speedup": 8.243011451252803,
+      "optix_host_packed_over_device_columns_workload_build_speedup": 1362.2738130924058,
+      "partner_continuation_required": false,
+      "phase_attribution": {
+        "cold_prepare_speedup_includes": [
+          "workload_build_sec",
+          "prepared_ray_batch_sec",
+          "native_prepare_sec",
+          "other measured cold setup"
+        ],
+        "largest_524288_note": "At 524,288 rows the largest cold-prepare win is mostly workload_build_sec collapsing from host-packed ray materialization to deferred device columns.",
+        "not_only_ray_batch_prepare": true
+      },
+      "pre_dedup_hit_events": {
+        "embree": 3683,
+        "interpretation": "pre-dedup hit-event counts can differ across Embree and OptiX, but all rows match the CPU reference after grouped reduction",
+        "optix_device_columns": 7386,
+        "optix_host_packed": 7386
+      },
+      "ray_batch_layout": "cupy_device_columns",
+      "repeat": 100,
+      "replaces_existing_m7_row": false,
+      "row_id": "grouped_reduction_sum_cupy_device_columns_repeat100_524288_rows_2048_groups",
+      "same_contract": true,
+      "source_provenance_disclosed": true,
+      "true_zero_copy_authorized": false,
+      "warmup": 3
+    }
+  ],
+  "classification_counting_basis": "supplemental_new_rows_after_claude_external_review_and_codex_supersession_consensus",
+  "closed_or_pending_promotion_conditions": [
+    "external_public_row_review_closed_by_claude_external_review",
+    "2_ai_consensus_closed_by_claude_codex",
+    "prior_subagent_only_gap_superseded_by_real_claude_review",
+    "p1_wording_fix_embree_context_applied",
+    "p1_wording_fix_218x_not_headline_applied",
+    "p1_source_manifest_orchestration_scope_acknowledged",
+    "source_manifest_traceability_recorded",
+    "missing_git_head_acknowledged",
+    "exact_device_column_row_identities_recorded",
+    "phase_attribution_not_only_ray_batch_preparation",
+    "whole_app_and_broad_v3_over_v2_claims_remain_false"
+  ],
+  "codex_consensus": "docs/reviews/codex_phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_claude_supersession_consensus_2026-06-22.md",
+  "current_packet_2ai_consensus_status": "claude_codex_consensus_complete_after_subagent_gap_supersession_2026-06-22",
+  "current_packet_external_review_status": "claude_external_approve_with_required_fixes_p1_applied_2026-06-22",
+  "draft_public_wording_not_publishable": "For a fixed-schema prepared grouped-sum workload on an NVIDIA RTX 4000 Ada Generation pod, 262,144 rows / 1,024 groups, 38,043,648 logical rays, warmup=3 and actual repeat=100, RTDL's OptiX route prepared the ray batch from cupy_device_columns with host_packed_ray_count=0. Compared with the host-packed OptiX route, cold prepare plus the measured repeat100 loop was 3.599x faster. Embree remains the host-packed route while the OptiX candidate uses cupy_device_columns; under that same grouped_sum contract, the OptiX device-column route was 100.019x faster than Embree for cold prepare plus repeat100 loop. That Embree/device-column ratio is same-contract context, not a pure backend-only ratio. This is a row-scoped prepared grouped_reduction result, not a whole-app, whole-database, true_zero_copy_authorized, or broad V3-over-V2 speedup claim.\n\nFor a fixed-schema prepared grouped-sum workload on an NVIDIA RTX 4000 Ada Generation pod, 524,288 rows / 2,048 groups, 76,087,296 logical rays, warmup=3 and actual repeat=100, RTDL's OptiX route prepared the ray batch from cupy_device_columns with host_packed_ray_count=0. Compared with the host-packed OptiX route, cold prepare plus the measured repeat100 loop was 73.586x faster. Embree remains the host-packed route while the OptiX candidate uses cupy_device_columns; under that same grouped_sum contract, the OptiX device-column route was 174.645x faster than Embree for cold prepare plus repeat100 loop. That Embree/device-column ratio is same-contract context, not a pure backend-only ratio. This is a row-scoped prepared grouped_reduction result, not a whole-app, whole-database, true_zero_copy_authorized, or broad V3-over-V2 speedup claim.",
+  "external_ai_blocked_note": "docs/reviews/external_ai_blocked_phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_2026-06-21.md",
+  "external_review": "docs/reviews/claude_phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_review_2026-06-22.md",
+  "external_review_required_before_m7": true,
+  "forbidden_public_wording": [
+    "V3 is 218x faster",
+    "RTDL is 218x faster end to end",
+    "RayDB is universally accelerated",
+    "true zero-copy is proven",
+    "all grouped_reduction rows are public claims",
+    "the old grouped_reduction M7 row has been replaced",
+    "the Embree/device-column ratios are pure backend-only ratios"
+  ],
+  "generic_capability": "grouped_reduction",
+  "goal_level_decision_audit": {
+    "decision": "promote both exact cupy_device_columns grouped_sum rows as supplemental row-scoped M7 evidence after real Claude external review, P1 fixes, and Codex supersession consensus",
+    "different_path_now": "Record Claude's superseding external review, keep the old subagent route as historical, promote only the exact rows, update global M7 classification, and continue the generic-engine queue.",
+    "foolish_actions": "It would be foolish to headline the 218.248x cold-prepare phase ratio, call the Embree/device-column comparison pure backend-only, or imply that two grouped_sum rows finish the V3 release.",
+    "other_path": "Keep the rows pending because the old packet used a Codex subagent. That would be procedurally safer than pretending subagent review was enough, but now the real Claude review lets us close the gap directly.",
+    "was_i_foolish": "No for this corrected decision. It replaces the old Codex-subagent-only procedural gap with a real Claude external review, applies the required P1 fixes, and still keeps V3 release, true_zero_copy_authorized, whole-app, and broad V3-over-V2 claims false."
+  },
+  "local_evidence_sufficient_for_external_public_row_review": true,
+  "m7_promotion_authorized": true,
+  "m7_qualified_release_rows": 2,
+  "p1_review_fixes_applied": [
+    "approved public wording states that Embree remains host-packed while the OptiX candidate uses cupy_device_columns",
+    "approved public wording frames Embree/device-column ratios as same-contract context, not pure backend-only ratios",
+    "218.248x appears only as a labeled cold-prepare phase ratio near workload-build/input-path-collapse attribution, not as a headline/public row claim",
+    "real Claude external review supersedes the earlier Codex-subagent-only procedural gap",
+    "source manifest scope explicitly records that orchestration wrappers are not hashed and that the manifested M28 script is the measured benchmark entry point"
+  ],
+  "packet_json_path": "docs/rebuild/v3/phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_2026-06-21.json",
+  "packet_path": "docs/rebuild/v3/phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_2026-06-21.md",
+  "prior_substitute_consensus": "docs/reviews/codex_phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_2ai_consensus_2026-06-21.md",
+  "prior_substitute_review": "docs/reviews/codex_subagent_phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_review_2026-06-21.md",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "remaining_non_release_boundaries": [
+    "release_authorized remains false",
+    "public_speedup_claim_authorized remains false for broad/global V3 claims",
+    "whole_app_speedup_claim_authorized remains false",
+    "broad_v3_faster_than_v2_claim_authorized remains false",
+    "true_zero_copy_authorized remains false",
+    "the existing host-packed/scalar-broadcast row is retained and not silently replaced"
+  ],
+  "retained_existing_m7_row": "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+  "row_scoped_public_speedup_claim_authorized": true,
+  "source_packet": "docs/rebuild/v3/phoenix_v3_grouped_reduction_device_column_ray_batch_pod_evidence_2026-06-21.json",
+  "source_provenance": {
+    "git_head_missing_acknowledged": true,
+    "manifested_benchmark_entry_point": "scripts/v3_0_m28_raydb_prepared_grouped_refresh.py",
+    "orchestration_wrappers_not_manifested": [
+      "scripts/v3_phoenix_grouped_reduction_device_column_pod_evidence.py",
+      "scripts/v3_phoenix_grouped_reduction_device_column_m7_final_review_packet.py"
+    ],
+    "provenance_interpretation": "The remote POD run directory was not a git checkout, so raw evidence JSONs record git_head as unavailable. The SHA256 source manifest is therefore the source traceability record for this packet.",
+    "raw_json_version_confirms_manifested_entry_point": true,
+    "raw_payload_git_head_values": [
+      "fatal: not a git repository (or any of the parent directories): .git"
+    ],
+    "remote_worktree_git_head_available": false,
+    "source_manifest_does_not_cover_orchestration_wrappers": true,
+    "source_manifest_entries": [
+      "c1cc6ce99096d1d12968d44a890518b8dc8a8cb212b7bf31cf578c9a0b221e20  VERSION",
+      "218d58519fd0e13ba0dad4049d3e06f11f863e03772f157e2ebfac88e93fa93c  src/rtdsl/optix_runtime.py",
+      "df703fa260488258ee4db68ab1fcf795ae6edf2ed50f5c89f0b18a7071f18c80  examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+      "3eed5a1bf688a2cc7da6c66cbe4ce23ea3884949275a44fc5e3a8942993f36c7  scripts/v3_0_m28_raydb_prepared_grouped_refresh.py"
+    ],
+    "source_manifest_is_traceability_record": true,
+    "source_manifest_path": "docs/rebuild/v3/evidence/phoenix_v3_grouped_reduction_device_columns_20260621/source_manifest.sha256",
+    "source_manifest_scope_p1_acknowledgement": "The remote pod directory was not a git checkout. The source manifest hashes the runtime, benchmark app, VERSION, and measured M28 benchmark entry point, but not the local orchestration wrappers. Claude accepted this as a traceability gap rather than an integrity failure for this run; future reruns should expand the manifest scope."
+  },
+  "status": "grouped_reduction_device_column_scoped_row_evidence_not_release",
+  "summary": {
+    "all_cpu_reference_match": true,
+    "all_device_routes_remove_host_packed_rays": true,
+    "approved": true,
+    "candidate_row_count": 2,
+    "m7_qualified_release_rows": 2,
+    "max_host_packed_over_device_columns_cold_plus_loop_speedup": 73.58566282269021,
+    "min_embree_over_optix_device_columns_cold_plus_loop_speedup": 100.0189736595584,
+    "min_host_packed_over_device_columns_cold_plus_loop_speedup": 3.5985298097777436
+  },
+  "tool": "v3_phoenix_grouped_reduction_device_column_m7_final_review_packet",
+  "true_zero_copy_authorized": false,
+  "version": "phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_2026_06_21",
+  "whole_app_speedup_claim_authorized": false
+}

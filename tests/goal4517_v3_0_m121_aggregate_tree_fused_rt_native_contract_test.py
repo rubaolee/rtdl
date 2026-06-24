@@ -23,15 +23,15 @@ class Goal4517V30M121AggregateTreeFusedRtNativeContractTest(unittest.TestCase):
         cls.packet = json.loads(PACKET.read_text(encoding="utf-8"))
         cls.contract = cls.packet["contract"]
 
-    def test_contract_surface_is_exported_and_not_executable_yet(self) -> None:
+    def test_contract_surface_is_exported_and_current_runtime_status(self) -> None:
         contract = rt.validate_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract()
-        self.assertEqual(json.loads(json.dumps(contract, sort_keys=True)), self.contract)
+        self.assertEqual(self.contract["status"], "specified_not_implemented")
         self.assertEqual(
             "generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1",
             rt.AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_CONTRACT,
         )
-        self.assertEqual("specified_not_implemented", contract["status"])
-        self.assertFalse(contract["executable"])
+        self.assertEqual("implemented_cuda_device_accumulation_not_rt_core", contract["status"])
+        self.assertTrue(contract["executable"])
         self.assertTrue(contract["app_generic"])
         self.assertEqual("optix", contract["required_first_backend"])
         self.assertIn(
@@ -53,6 +53,12 @@ class Goal4517V30M121AggregateTreeFusedRtNativeContractTest(unittest.TestCase):
         for key, value in self.packet["claim_boundary"].items():
             self.assertFalse(value, key)
         for key, value in self.contract["claim_boundary"].items():
+            self.assertFalse(value, key)
+        current_contract = rt.validate_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract()
+        self.assertTrue(current_contract["claim_boundary"]["runtime_implemented"])
+        for key, value in current_contract["claim_boundary"].items():
+            if key == "runtime_implemented":
+                continue
             self.assertFalse(value, key)
         gate_statuses = {row["gate"]: row["status"] for row in self.packet["implementation_gates"]}
         self.assertEqual("blocked", gate_statuses["native_abi_symbols"])
@@ -91,7 +97,8 @@ class Goal4517V30M121AggregateTreeFusedRtNativeContractTest(unittest.TestCase):
 
         self.assertIn("Goal4517 / V3 M121", report)
         self.assertIn("generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1", report)
-        self.assertIn("Goal4517 aggregate-tree fused RT-native contract", index)
+        self.assertIn("Status: depublished for V3 rebuild", index)
+        self.assertIn("docs/history/quarantine_v3_v4_reset_2026-06-20", index)
         self.assertIn("Goal4517 specifies the future app-agnostic fused RT-native contract", readme)
         self.assertIn("PACKET_VERSION", script)
 

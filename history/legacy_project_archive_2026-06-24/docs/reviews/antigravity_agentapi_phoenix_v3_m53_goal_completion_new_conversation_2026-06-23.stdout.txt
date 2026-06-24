@@ -1,0 +1,8 @@
+{
+  "response": {
+    "newConversation": {
+      "prompt": "You are the external reviewer for Phoenix V3 M53 goal completion.",
+      "conversationId": "2d4f63ed-13ba-42a3-80be-38a9ceb7156a"
+    }
+  }
+}

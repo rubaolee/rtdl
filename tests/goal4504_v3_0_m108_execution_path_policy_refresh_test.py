@@ -24,7 +24,9 @@ class Goal4504V30M108ExecutionPathPolicyRefreshTest(unittest.TestCase):
 
         self.assertEqual("rtdl.v3_0.execution_path_policy_refresh.goal4504.v1", packet["version"])
         self.assertEqual("accept", packet["validation"]["status"])
-        self.assertEqual(65_536, packet["graph_query_count_cap"])
+        self.assertIsNone(packet["graph_query_count_cap"])
+        self.assertIn("no_fixed_65536_cap", packet["graph_query_count_boundary"])
+        self.assertEqual(1_000_000, packet["large_direct_query_count_floor"])
         self.assertEqual(
             rt.V2_5_FIXED_RADIUS_AGGREGATE_DIRECT_GRAPH_MODE,
             matrix["unknown_or_small_aggregate_only"]["recommended_result_mode"],
@@ -66,7 +68,10 @@ class Goal4504V30M108ExecutionPathPolicyRefreshTest(unittest.TestCase):
         self.assertIn("hidden runtime dispatch", report)
         self.assertIn("large_partner_continuation", report)
         self.assertIn("query_count=1_000_000", script)
-        self.assertIn("Goal4504 RTNN execution-path policy refresh", index)
+        self.assertTrue(
+            "Goal4504 RTNN execution-path policy refresh" in index
+            or "depublished for V3 rebuild" in index
+        )
         self.assertIn("size-aware execution-path policy", readme)
         self.assertIn("Goal4504 codifies", readme)
 

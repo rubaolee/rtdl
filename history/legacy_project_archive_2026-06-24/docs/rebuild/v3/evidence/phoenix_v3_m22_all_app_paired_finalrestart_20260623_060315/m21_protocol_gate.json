@@ -1,0 +1,80 @@
+{
+  "all_app_pod_run_authorized_after_result": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "correctness_failures": [
+    {
+      "failed": 1,
+      "gate": "suite_status",
+      "reason": "failed_rows",
+      "suite": "current_goal2636_stress"
+    },
+    {
+      "failed": 2,
+      "gate": "suite_status",
+      "reason": "failed_rows",
+      "suite": "v2_14_goal2626_large"
+    },
+    {
+      "failed": 2,
+      "gate": "suite_status",
+      "reason": "failed_rows",
+      "suite": "v2_14_goal2636_stress"
+    }
+  ],
+  "documented_values": {
+    "app_geomeans_v3_vs_v2": {
+      "barnes_hut": 0.8311935267623469,
+      "contact_manifold": 1.420820765459893,
+      "hausdorff_xhd": 1.1341393339623427,
+      "librts_spatial_index": 1.8267062889765207,
+      "raydb_style": 0.9858853667140974,
+      "robot_collision": 1.0269938199598219,
+      "rt_dbscan": 1.0020144367313761,
+      "rtnn": 1.002810587033941,
+      "spatial_rayjoin": 1.0679516808476088,
+      "triangle_counting": 0.98716224036223
+    },
+    "overall_geomean_v3_vs_v2": 1.0492592130196288,
+    "same_metric_comparison_count": 51,
+    "set_a_apps_over_1_05x": 2,
+    "set_a_geomean_v3_vs_v2": 1.0134653425349955,
+    "set_b_geomean_v3_vs_v2": 1.2097224439827239
+  },
+  "goal_level_decision_audit": {
+    "decision": "Evaluate a completed all-app POD run against the M21 protocol instead of interpreting it manually.",
+    "different_path_now": "Use this dedicated protocol gate to make run outcome interpretation fail-closed and repeatable.",
+    "foolish_actions": "It would be foolish to rely on prose-only fail bars after a costly run produces many rows.",
+    "other_path": "Use the older Set-A/B scorecard gate alone. That gate was built for the old failure baseline and is not the M21 run verdict.",
+    "was_i_foolish": "No for this decision."
+  },
+  "post_run_interpretation": "run is invalid/out-of-scope for performance claims",
+  "protocol_failures": [
+    {
+      "actual": 0.8311935267623469,
+      "bar": "barnes_hut_app_geomean_floor",
+      "threshold": 0.9
+    },
+    {
+      "actual": 0.8311935267623469,
+      "app_id": "barnes_hut",
+      "bar": "new_app_level_severe_regression_floor",
+      "threshold": 0.9
+    }
+  ],
+  "protocol_path": "docs\\rebuild\\v3\\phoenix_v3_m21_all_app_pod_protocol_2026-06-23.json",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "scope_failures": [],
+  "status": "protocol_fail_invalid_or_out_of_scope",
+  "summary_path": "docs\\rebuild\\v3\\evidence\\phoenix_v3_m22_all_app_paired_finalrestart_20260623_060315\\summary.json",
+  "tool": "v3_phoenix_m21_all_app_protocol_gate",
+  "watch_alerts": [
+    {
+      "actual": 0.8029638936724112,
+      "policy": "flag and report without rationalization; do not silently treat as success",
+      "row_id": "goal2626_large|librts_spatial_index|aabb_index_all_count_only|optix|librts_optix_aabb_index",
+      "threshold": 0.95,
+      "watch_row": "librts_optix_aabb_index_watch_row"
+    }
+  ]
+}

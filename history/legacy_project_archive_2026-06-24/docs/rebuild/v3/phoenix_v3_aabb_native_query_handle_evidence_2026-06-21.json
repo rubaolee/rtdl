@@ -1,0 +1,153 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "generic AABB_INDEX_QUERY_2D prepared-session candidate stream; contact_manifold is only the evidence harness",
+  "candidate_summary": {
+    "best_cold_plus_collect_wall_speedup": 1.719211122506422,
+    "best_query_total_speedup": 1.867184952800839,
+    "best_runner_wall_speedup": 1.6868581613412328,
+    "largest_cold_plus_collect_wall_speedup": 1.6365398387280659,
+    "native_query_handle_cache_observed": true
+  },
+  "checks": {
+    "all_backend_errors_empty": true,
+    "all_complete_candidate_coverage": true,
+    "all_cpu_reference_match": true,
+    "all_have_embree_and_optix": true,
+    "all_optix_native_cache_stats_observed": true,
+    "all_query_total_positive": true,
+    "all_runner_completed": true,
+    "all_runner_wall_positive": true,
+    "all_wall_clear_material_floor": true,
+    "claim_flags_false": true,
+    "hardware_gate_pass": true,
+    "rows_are_32768_and_65536": true,
+    "summaries_exist": true
+  },
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not call this a whole Contact Manifold solver speedup.",
+    "Do not call this broad V3-over-V2 proof.",
+    "Do not publish it before external review and Codex consensus.",
+    "Do not hide the remaining prepare/collect phase costs.",
+    "Do not generalize from AABB candidate streaming to every benchmark app."
+  ],
+  "generic_capability": "aabb_candidate_stream",
+  "goal_level_decision_audit": {
+    "decision": "Record native prepared-query handle reuse as an M7 candidate pending external review, not as an already promoted V3 row.",
+    "different_path_now": "Continue through external review and M7 classification, then use the same pattern on the remaining generic-engine queue rather than hand-tuning app code.",
+    "foolish_actions": "The foolish action would be to treat one 32k result as final, omit the 65k rerun, or promote a contact-specific story instead of the generic AABB contract.",
+    "other_path": "I could have moved to a different app after the old no-go result, but the evidence pointed to native query lifetime as the actual generic bottleneck.",
+    "was_i_foolish": "No. This uses the predeclared serious scale, material wall floor, same hardware, and keeps release/M7 flags false before review."
+  },
+  "hardware": {
+    "compute_cap": "8.9",
+    "driver_version": "550.127.05",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "host": "root@213.173.108.14 -p 11592",
+    "rt_hardware_gate": "pass"
+  },
+  "interpretation": "The native prepared-query handle path changes AABB from useful cleanup to a real V3 performance candidate. On the RTX 4000 Ada pod, both serious rows clear the 1.20x cold-plus-collect floor against Embree under the same generic AABB candidate-stream contract. This still does not authorize release wording or M7 promotion until external review and Codex consensus close.",
+  "m7_candidate_reopen_authorized": true,
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "material_wall_speedup_floor": 1.2,
+  "native_generic_change": "OptiX range_intersection_rows now reuses prepared native box-query handles through rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows_packed_queries",
+  "next_engine_action": "Send this packet for external review. If accepted, update the Phoenix M7 row classification with an AABB native-query-handle row. Keep public copy row-scoped: generic AABB candidate streaming only, not full contact solving and not broad V3-over-V2 speedup.",
+  "observed_rows": [
+    {
+      "complete_candidate_coverage": true,
+      "dataset": "jittered_grid",
+      "embree_cache_stats": {
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 52,
+        "range_intersection_misses": 1
+      },
+      "embree_cold_plus_collect_wall_sec": 16.267708137631416,
+      "embree_collect_sec": 0.08004549890756607,
+      "embree_prepare_sec": 0.3413717821240425,
+      "embree_query_total_sec": 14.81022646278143,
+      "evidence_dir": "docs/rebuild/v3/evidence/phoenix_v3_aabb_native_query_handle_32768_r50_20260621",
+      "failed_checks": [],
+      "grid_count": 32768,
+      "matches_cpu_reference": true,
+      "optix_cache_stats": {
+        "native_range_intersection_entries": 1,
+        "native_range_intersection_hits": 52,
+        "native_range_intersection_misses": 1,
+        "point_membership_entries": 0,
+        "point_membership_hits": 0,
+        "point_membership_misses": 0,
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 52,
+        "range_intersection_misses": 1
+      },
+      "optix_cold_plus_collect_wall_sec": 9.46230973303318,
+      "optix_collect_sec": 0.08485520631074905,
+      "optix_native_cache_observed": true,
+      "optix_over_embree_broadphase_wall_speedup": 1.7262320593072173,
+      "optix_over_embree_cold_plus_collect_wall_speedup": 1.719211122506422,
+      "optix_over_embree_collect_speedup": 0.9433186528877284,
+      "optix_over_embree_prepare_speedup": 0.6499132936309407,
+      "optix_over_embree_query_total_speedup": 1.867184952800839,
+      "optix_over_embree_runner_wall_speedup": 1.6868581613412328,
+      "optix_prepare_sec": 0.5252574235200882,
+      "optix_query_total_sec": 7.931847587227821,
+      "repeat": 50,
+      "status": "aabb_prepare_reuse_pod_evidence_pending_2ai_not_m7",
+      "summary_path": "docs/rebuild/v3/evidence/phoenix_v3_aabb_native_query_handle_32768_r50_20260621/summary.json",
+      "warmup": 3
+    },
+    {
+      "complete_candidate_coverage": true,
+      "dataset": "jittered_grid",
+      "embree_cache_stats": {
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 52,
+        "range_intersection_misses": 1
+      },
+      "embree_cold_plus_collect_wall_sec": 32.28731510043144,
+      "embree_collect_sec": 0.19471073895692825,
+      "embree_prepare_sec": 0.6629239246249199,
+      "embree_query_total_sec": 29.281411714851856,
+      "evidence_dir": "docs/rebuild/v3/evidence/phoenix_v3_aabb_native_query_handle_65536_r50_20260621",
+      "failed_checks": [],
+      "grid_count": 65536,
+      "matches_cpu_reference": true,
+      "optix_cache_stats": {
+        "native_range_intersection_entries": 1,
+        "native_range_intersection_hits": 52,
+        "native_range_intersection_misses": 1,
+        "point_membership_entries": 0,
+        "point_membership_hits": 0,
+        "point_membership_misses": 0,
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 52,
+        "range_intersection_misses": 1
+      },
+      "optix_cold_plus_collect_wall_sec": 19.729012601077557,
+      "optix_collect_sec": 0.1993134617805481,
+      "optix_native_cache_observed": true,
+      "optix_over_embree_broadphase_wall_speedup": 1.6432718257752803,
+      "optix_over_embree_cold_plus_collect_wall_speedup": 1.6365398387280659,
+      "optix_over_embree_collect_speedup": 0.9769071151416374,
+      "optix_over_embree_prepare_speedup": 0.8144232108777534,
+      "optix_over_embree_query_total_speedup": 1.7429989855063843,
+      "optix_over_embree_runner_wall_speedup": 1.604630875237165,
+      "optix_prepare_sec": 0.8139796555042267,
+      "optix_query_total_sec": 16.799442775547504,
+      "repeat": 50,
+      "status": "aabb_prepare_reuse_pod_evidence_pending_2ai_not_m7",
+      "summary_path": "docs/rebuild/v3/evidence/phoenix_v3_aabb_native_query_handle_65536_r50_20260621/summary.json",
+      "warmup": 3
+    }
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "source_dirs": [
+    "docs/rebuild/v3/evidence/phoenix_v3_aabb_native_query_handle_32768_r50_20260621",
+    "docs/rebuild/v3/evidence/phoenix_v3_aabb_native_query_handle_65536_r50_20260621"
+  ],
+  "status": "aabb_native_query_handle_m7_candidate_pending_external_review",
+  "tool": "v3_phoenix_aabb_native_query_handle_evidence",
+  "whole_app_speedup_claim_authorized": false
+}

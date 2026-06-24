@@ -1,0 +1,50 @@
+{
+  "app": "librts_spatial_index",
+  "chunk_size": 256,
+  "counts": {
+    "point_contains": 46343760,
+    "range_contains": 32302908,
+    "range_intersects": 70429254
+  },
+  "elapsed_sec": 27.4665132999653,
+  "expected_comparison": {
+    "point_contains": {
+      "actual": 46343760,
+      "expected": 46343760,
+      "matches": true
+    },
+    "range_contains": {
+      "actual": 32302908,
+      "expected": 32302908,
+      "matches": true
+    },
+    "range_intersects": {
+      "actual": 70429254,
+      "expected": 70429254,
+      "matches": true
+    }
+  },
+  "fixture": {
+    "box_count": 32768,
+    "box_query_count": 32768,
+    "dataset": "uniform",
+    "paper_equivalent_dataset": false,
+    "point_query_count": 32768,
+    "seed": 2025
+  },
+  "generic_capability": "aabb_candidate_stream",
+  "mode": "numpy_chunked_cpu_reference",
+  "numeric_dtype": "float32",
+  "operation": "all",
+  "operation_times_sec": {
+    "point_contains_sec": 8.98317679995671,
+    "range_contains_sec": 9.123652899987064,
+    "range_intersects_sec": 9.359673099941574
+  },
+  "oracle_boundary": "Independent chunked NumPy CPU oracle for Phoenix V3 evidence. It is not a product runtime path, not LibRTS authors-code timing, and not public speedup wording.",
+  "primitive_contract": "generic_prepared_aabb_index_query_2d",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "status": "pass",
+  "tool": "v3_phoenix_aabb_cpu_reference_oracle"
+}

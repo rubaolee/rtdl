@@ -1,0 +1,141 @@
+{
+  "artifact": "phoenix_v3_m14_runtime_trunk_retarget_status_2026-06-22",
+  "date": "2026-06-22",
+  "status": "m14_runtime_trunk_status_reconciled_need_third_strict_probe_not_release",
+  "scope": "Phoenix V3 only",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "true_zero_copy_claim_authorized": false,
+  "external_embedding_or_zero_copy_claim_authorized": false,
+  "all_app_pod_spend_authorized": false,
+  "focused_pod_spend_authorized_now": false,
+  "why_this_file_exists": "M13 stopped Spatial LSI speed work, but the current handoff also contains later RTDBSCAN, RayJoin, Barnes-Hut, RTNN, and Hausdorff runtime-trunk evidence. This file reconciles those facts before any new POD decision.",
+  "controlling_inputs": {
+    "m13_spatial_consensus": "docs/reviews/codex_rawls_phoenix_v3_m13_spatial_segment_intersection_2ai_consensus_2026-06-22.md",
+    "rtdbscan_step1_report": "docs/reports/phoenix_v3_step1_rtdbscan_runtime_trunk_probe_pod_ab_2026-06-22.md",
+    "rtdbscan_step1_review": "docs/reviews/claude_phoenix_v3_step1_rtdbscan_runtime_trunk_probe_review_2026-06-22.md",
+    "rayjoin_step2_report": "docs/reports/phoenix_v3_step2_rayjoin_point_location_runner_pod_ab_2026-06-22.md",
+    "rayjoin_step2_review": "docs/reviews/claude_phoenix_v3_step2_rayjoin_point_location_runner_review_2026-06-22.md",
+    "barnes_hut_runner_report": "docs/reports/phoenix_v3_step1_barnes_hut_runner_parity_pod_ab_2026-06-22.md",
+    "barnes_hut_fixed_review": "docs/reviews/second_ai_phoenix_v3_barnes_hut_runner_fixed_review_2026-06-22.md",
+    "rtnn_runner_report": "docs/rebuild/v3/phoenix_v3_rtnn_prepared_execution_runner_repeat50_pod_evidence_2026-06-22.md",
+    "rtnn_result_review": "docs/reviews/kepler_phoenix_v3_rtnn_step2_result_review_2026-06-22.md",
+    "hausdorff_report": "docs/reports/phoenix_v3_hausdorff_threshold_runner_m5_pod_ab_after_m6_1_2026-06-22.md",
+    "hausdorff_consensus": "docs/reviews/codex_kepler_phoenix_v3_hausdorff_m5_after_m6_1_result_2ai_consensus_2026-06-22.md",
+    "set_ab_gate": "docs/rebuild/v3/phoenix_v3_set_a_set_b_scorecard_gate_2026-06-22.json"
+  },
+  "probe_ledger": [
+    {
+      "id": "spatial_lsi_m13",
+      "family": "spatial_rayjoin",
+      "set": "A",
+      "classification": "coverage_only_speed_fail",
+      "runner_vs_legacy_speedup": 0.7857721832832689,
+      "productized_runner_coverage": true,
+      "speed_coverage": false,
+      "review_verdict": "accept_m13_stop_spatial_retarget",
+      "next_action": "stop_spatial_lsi_speed_work"
+    },
+    {
+      "id": "rtdbscan_step1",
+      "family": "rt_dbscan",
+      "set": "A",
+      "classification": "structural_runtime_trunk_credential_not_material",
+      "runner_vs_legacy_geomean": 0.9948584784435961,
+      "legacy_vs_embree_geomean": 2.942859650227,
+      "runner_vs_embree_geomean": 2.927728873898229,
+      "review_verdict": "approve_blocked_not_release",
+      "next_action": "do_not_continue_as_material_probe_without_new_physical_mechanism"
+    },
+    {
+      "id": "rayjoin_point_location_step2",
+      "family": "spatial_rayjoin",
+      "set": "A",
+      "classification": "structural_runtime_trunk_credential_not_material",
+      "runner_vs_legacy_total_repeat_speedup": 0.9737541084926657,
+      "review_verdict": "step2_rayjoin_runner_executes_structural_only_not_material_not_release",
+      "next_action": "stop_pip_scalar_count_wrapper_as_material_candidate"
+    },
+    {
+      "id": "barnes_hut_step1_replacement",
+      "family": "barnes_hut",
+      "set": "A",
+      "classification": "step1_replacement_candidate_evidence_not_release",
+      "runner_vs_existing_fused_control_geomean": 0.999328063165968,
+      "historical_optix_over_runner_geomean": 12.730691398985789,
+      "runtime_trunk_executes": true,
+      "internal_device_residency": true,
+      "no_frontier_or_contribution_host_materialization": true,
+      "review_verdict": "accept_ready_for_pod_report",
+      "interpretation": "Productized runner carries the existing high-performance fused vector-accumulation route at parity and displaces the old frontier-emission route; the wrapper itself is not faster than the existing fused route."
+    },
+    {
+      "id": "rtnn_repeat50_step2",
+      "family": "rtnn",
+      "set": "A",
+      "classification": "accepted_second_set_a_material_probe_not_release",
+      "runner_vs_legacy_hot_speedup": 0.9887810047298636,
+      "runner_vs_legacy_cold_plus_query_speedup": 1.358328972294271,
+      "runner_vs_legacy_runner_wall_speedup": 1.3701759307531247,
+      "runner_over_cupy_hot_speedup": 7.786920419398472,
+      "runner_over_cupy_runner_wall_speedup": 3.1963723420049464,
+      "runtime_trunk_executes": true,
+      "internal_device_residency": true,
+      "review_verdict": "accept_as_second_set_a_material_probe"
+    },
+    {
+      "id": "hausdorff_threshold_m6_1",
+      "family": "hausdorff_xhd",
+      "set": "A",
+      "classification": "positive_focused_runner_backed_probe_not_release",
+      "runner_vs_legacy_phase_total_speedup": 1.0316985871143758,
+      "runner_vs_legacy_wrapper_wall_speedup": 1.0541052556193256,
+      "runner_vs_embree_phase_total_speedup": 1.2227535339931508,
+      "runner_vs_embree_wrapper_wall_speedup": 1.5378108265836372,
+      "review_verdict": "accept_as_positive_focused_runner_backed_hausdorff_probe_not_release"
+    }
+  ],
+  "current_interpretation": {
+    "spatial_lsi": "closed_as_coverage_only_after_m13",
+    "rtdbscan": "structural_yes_material_no",
+    "rayjoin_pip": "structural_yes_material_no",
+    "barnes_hut": "runtime_trunk_carries_real_high_performance_route_at_parity",
+    "rtnn": "accepted_material_set_a_probe_on_cold_and_runner_wall",
+    "hausdorff": "positive_focused_probe_but_not_release_by_itself",
+    "release": "still_blocked",
+    "pod": "no_new_pod_until_status_gate_review"
+  },
+  "next_controlled_work": [
+    {
+      "id": "m15_third_strict_set_a_probe_audit",
+      "type": "local_candidate_audit_and_2ai_review",
+      "purpose": "Audit Triangle and any alternative Set-A candidates for a real reusable runtime-trunk performance source, then choose the best third strict Set-A probe before any POD.",
+      "pod_hours": 0.0,
+      "pod_authorized": false
+    },
+    {
+      "id": "m16_focused_third_probe_or_stop",
+      "type": "depends_on_m15",
+      "purpose": "If M15 identifies a valid third-probe source and 2-AI approval is obtained, run one focused POD A/B. If no valid source exists, record a capability/quality framing risk instead of running all-app.",
+      "pod_hours": 0.0,
+      "pod_authorized": false
+    }
+  ],
+  "m14_2ai_consensus": {
+    "path": "docs/reviews/codex_bernoulli_phoenix_v3_m14_runtime_trunk_retarget_2ai_consensus_2026-06-22.md",
+    "verdict": "accept_m14_need_third_strict_probe",
+    "barnes_hut_material_runtime_trunk_set_a": true,
+    "rtnn_material_runtime_trunk_set_a": true,
+    "hausdorff_material_runtime_trunk_set_a": false,
+    "all_app_protocol_now": false,
+    "pod_authorized": false
+  },
+  "goal_level_decision_audit": {
+    "decision": "Do not run new POD after M13; reconcile current runtime-trunk evidence and seek a status-gate review first.",
+    "was_i_foolish": "No.",
+    "foolish_actions": "The foolish action would be to ignore already-recorded RTNN/Barnes-Hut/Hausdorff evidence, repeat old Spatial/RayJoin work, or jump to all-app POD before the status gate is updated.",
+    "other_path": "Run all-app immediately. That would again mix stale scorecard rows and create pressure to rationalize a blended number.",
+    "different_path_now": "Create a current probe ledger, get 2-AI review on the gate state, and only then choose all-app protocol preparation or a third focused Set-A probe."
+  }
+}

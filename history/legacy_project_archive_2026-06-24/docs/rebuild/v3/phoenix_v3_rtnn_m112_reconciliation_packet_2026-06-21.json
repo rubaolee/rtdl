@@ -1,0 +1,150 @@
+{
+  "blocking_reasons": [
+    "current_65k_raw_summary_wall_timing_regresses",
+    "m104_exact_float64_has_tie_sensitive_kth_checksum_mismatch",
+    "m106_fastest_full_batch_route_is_float32_and_exact_false",
+    "author_same_input_comparison_is_not_same_output_contract",
+    "m110_m111_partner_continuation_has_no_same_contract_speed_baseline",
+    "paper_dataset_reproduction_not_authorized",
+    "fresh_phoenix_m7_review_not_done_for_any_rtnn_row"
+  ],
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "checks": {
+    "all_current_wall_ratios_below_one": true,
+    "intake_not_m7": true,
+    "m104_optix_over_embree_material": true,
+    "m104_strict_signature_false": true,
+    "m104_tie_stable_true": true,
+    "m106_author_same_output_false": true,
+    "m106_best_exact_false": true,
+    "m106_best_query_material": true,
+    "m111_partner_matrix_no_public_speed": true,
+    "m112_public_rt_core_speedup_false": true,
+    "wall_boundary_not_m7": true
+  },
+  "current_65k_raw_summary_boundary": {
+    "all_hot_optix_faster": true,
+    "all_wall_optix_slower": true,
+    "hot_optix_over_embree": {
+      "clustered": 3.3328837799050297,
+      "shell": 1.1816254369605883,
+      "uniform": 1.0835478947384676
+    },
+    "reading": "The small synthetic raw-row ladder is useful boundary evidence: OptiX wins the isolated hot metric, but wall timing loses for every distribution.",
+    "status": "rtnn_ranked_summary_wall_time_boundary_not_m7",
+    "wall_optix_over_embree": {
+      "clustered": 0.6250743900537069,
+      "shell": 0.3157743032193997,
+      "uniform": 0.30313162572346836
+    }
+  },
+  "existing_evidence_promotable_now": false,
+  "failed_checks": [],
+  "generic_capability": "ranked_summary",
+  "goal_level_decision_audit": {
+    "decision": "Reconcile RTNN M112 clean-target evidence with the Phoenix M7 bar without promoting RTNN.",
+    "different_path_now": "Keep RTNN in the engine queue with a narrower next action: exact tie-stable aggregate review or float32 same-contract rerun.",
+    "foolish_actions": "It would be foolish to use the M106 787.53x-vs-Embree figure as a public RTNN row while ignoring float32/exact=false and same-output-contract blockers.",
+    "other_path": "Declare RTNN solved from M112 or leave the wall-time regression packet alone. Either path loses key evidence.",
+    "was_i_foolish": "No. This prevents both under-reading M112 and overclaiming it as V3 release evidence."
+  },
+  "m104_exact_float64_same_input_gate": {
+    "dataset": "KITTI-1M",
+    "embree_median_sec": 120.92776120454073,
+    "k_max": 50,
+    "m7_reading": "Material same-input RTDL OptiX-vs-Embree evidence, but not M7 until the tie-sensitive kth checksum policy is reviewed or repaired.",
+    "optix_median_sec": 7.802571553736925,
+    "optix_over_embree_speedup": 15.49844950112943,
+    "point_count": 1000000,
+    "precision": "float64",
+    "radius": 1.0,
+    "result_mode": "ranked-summary-aggregate",
+    "signature_delta": {
+      "bounded_neighbor_count": 0,
+      "kth_id_checksum": -1826244,
+      "nearest_id_checksum": 0,
+      "row_count": 0,
+      "sum_distance": -3.725290298461914e-09
+    },
+    "strict_signature_match": false,
+    "tie_stable_signature_match": true
+  },
+  "m106_full_batch_aggregate_route": {
+    "author_compute_over_rtdl_speedup": 14.945377510415874,
+    "cold_load_pack_prepare_query_sec": 4.823697678744793,
+    "exact": false,
+    "m7_reading": "This is the strongest RTDL aggregate route, but it is float32, exact=false, and not a same-output author comparison.",
+    "median_query_sec": 0.1535532921552658,
+    "precision": "float32",
+    "query_batch_size": 1000000,
+    "result_mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+    "same_output_contract_author_vs_rtdl": false,
+    "vs_author_total_search_speedup": 2.2616252320324524,
+    "vs_m104_embree_speedup": 787.5295899371816,
+    "vs_m104_generic_optix_speedup": 50.81344362091133
+  },
+  "m111_partner_continuation": {
+    "all_hot_no_hidden_column_copy_ready": true,
+    "all_signature_match": true,
+    "m7_reading": "Real large same-stream partner-continuation runtime evidence, but not an aggregate-only same-contract speed row.",
+    "mode": "prepared_ranked_summary_graph_partner_bridge_chunked",
+    "rows": {
+      "clustered": {
+        "chunk_count": 16,
+        "cupy_hot_device_run_seconds_median_sum": 2.0414103865623474,
+        "hot_no_hidden_column_copy_ready": true,
+        "numba_hot_device_run_seconds_median_sum": 2.0369639173150063,
+        "signature_match": true
+      },
+      "shell": {
+        "chunk_count": 16,
+        "cupy_hot_device_run_seconds_median_sum": 0.609413206577301,
+        "hot_no_hidden_column_copy_ready": true,
+        "numba_hot_device_run_seconds_median_sum": 0.6094037219882011,
+        "signature_match": true
+      },
+      "uniform": {
+        "chunk_count": 16,
+        "cupy_hot_device_run_seconds_median_sum": 0.0829082652926445,
+        "hot_no_hidden_column_copy_ready": true,
+        "numba_hot_device_run_seconds_median_sum": 0.08339004218578339,
+        "signature_match": true
+      }
+    }
+  },
+  "m112_reconciliation": {
+    "internal_clean_target_closed": true,
+    "public_rt_core_speedup_claim_ready": false,
+    "rtnn_has_phoenix_m7_row_now": false,
+    "rtnn_has_real_generic_engine_progress": true,
+    "same_output_author_comparison_ready": false,
+    "why": "M112 shows the ranked_summary engine has strong large-route progress, but the current Phoenix M7 bar requires exact row-scoped public wording, strict or explicitly reviewed parity, and 2-AI review for the exact row."
+  },
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows": 0,
+  "next_engine_queue_effect": "Keep `rtnn_ranked_summary_wall_path` open, but refine it: old M112 evidence proves a large aggregate route exists, while M7 still needs tie/parity or float32 same-contract repair.",
+  "next_m7_paths": [
+    {
+      "can_use_existing_evidence_directly": false,
+      "id": "rtnn_kitti_exact_tie_stable_aggregate_review",
+      "required_evidence": "Rebuild or rerun the exact float64 same-input aggregate gate with a reviewed tie-stable equivalence policy, or repair the kth checksum mismatch."
+    },
+    {
+      "can_use_existing_evidence_directly": false,
+      "id": "rtnn_full_batch_float32_same_contract_m7_rerun",
+      "required_evidence": "Run a focused same-contract float32 aggregate packet with CPU/reference parity, phase/wall timing, source manifest, and 2-AI review."
+    }
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "source_packets": {
+    "current_intake": "docs/rebuild/v3/evidence/phoenix_v3_rtnn_ranked_summary_20260620/rtnn_ranked_summary_intake_summary.json",
+    "current_wall_boundary": "docs/rebuild/v3/phoenix_v3_rtnn_ranked_summary_wall_time_boundary_2026-06-21.json",
+    "m104_same_input_rtdl_gate": "docs/reports/goal4500_v3_0_m104_rtnn_kitti_same_input_rtdl_gate_2026-06-17.json",
+    "m106_full_batch_route_refresh": "docs/reports/goal4502_v3_0_m106_rtnn_full_batch_route_refresh_2026-06-17.json",
+    "m111_chunked_distribution_matrix": "docs/reports/goal4507_v3_0_m111_rtnn_chunked_distribution_matrix_2026-06-17.json",
+    "m112_clean_target_closeout": "docs/reports/goal4508_v3_0_m112_rtnn_clean_target_closeout_2026-06-17.json"
+  },
+  "status": "rtnn_m112_reconciled_no_m7_promotion",
+  "version": "phoenix_v3_rtnn_m112_reconciliation_2026_06_21"
+}

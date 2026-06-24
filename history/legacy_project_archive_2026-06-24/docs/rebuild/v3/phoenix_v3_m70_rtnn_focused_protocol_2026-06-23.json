@@ -1,0 +1,595 @@
+{
+  "checks": {
+    "all_14_rows_named": true,
+    "all_7_shape_groups_named": true,
+    "all_non_authorization_flags_false": true,
+    "all_rows_have_same_contract_incumbents": true,
+    "antigravity_carry_forward_present": true,
+    "claude_carry_forward_present": true,
+    "distribution_bounds_required": true,
+    "full_batch_self_query_constraint_source_present": true,
+    "generic_helper_present": true,
+    "m69_3ai_accepts_protocol_draft_only": true,
+    "m69_audit_complete": true,
+    "no_commands_or_authorization_token": true,
+    "phase_metrics_separated": true
+  },
+  "date": "2026-06-23",
+  "failed_checks": [],
+  "frozen_shapes": [
+    {
+      "comparison_group": "rtnn_clustered_262144_ranked_summary",
+      "distribution": "clustered",
+      "geomean_v3_vs_v2": 0.9713694464408821,
+      "per_distribution_phase_bound_required": true,
+      "point_count": 262144,
+      "query_batch_size": 262144,
+      "query_role": "full_batch_self_query",
+      "ranked_summary_contract": "prepared 3-D fixed-radius bounded ranked-summary aggregate",
+      "rows": [
+        {
+          "backend": "embree",
+          "below_1_05x": true,
+          "case_id": "rtnn_embree_clustered_262144_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 0.945681958160491,
+          "row_id": "goal2636_stress|rtnn|rtnn_clustered_262144_ranked_summary|embree|rtnn_embree_clustered_262144_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "embree",
+            "incumbent_id": "frozen_v2_14_embree_ranked_summary_row",
+            "mode": "same-contract embree fixed-radius ranked-summary aggregate incumbent",
+            "new_current_route_execution_requires_review": true,
+            "result_mode": "ranked-summary aggregate",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        },
+        {
+          "backend": "optix",
+          "below_1_05x": true,
+          "case_id": "rtnn_optix_clustered_262144_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 0.9977546820436802,
+          "row_id": "goal2636_stress|rtnn|rtnn_clustered_262144_ranked_summary|optix|rtnn_optix_clustered_262144_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "optix",
+            "incumbent_id": "legacy_app_front_door_prepared_optix_ranked_summary",
+            "mode": "prepared_optix_ranked_summary",
+            "result_mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        }
+      ],
+      "rows_below_1_05x": 2,
+      "shape_key": "clustered:262144:rtnn_clustered_262144_ranked_summary"
+    },
+    {
+      "comparison_group": "rtnn_clustered_65536_ranked_summary",
+      "distribution": "clustered",
+      "geomean_v3_vs_v2": 1.0828915702991448,
+      "per_distribution_phase_bound_required": true,
+      "point_count": 65536,
+      "query_batch_size": 65536,
+      "query_role": "full_batch_self_query",
+      "ranked_summary_contract": "prepared 3-D fixed-radius bounded ranked-summary aggregate",
+      "rows": [
+        {
+          "backend": "embree",
+          "below_1_05x": false,
+          "case_id": "rtnn_embree_clustered_65536_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 1.1490536563341602,
+          "row_id": "goal2636_stress|rtnn|rtnn_clustered_65536_ranked_summary|embree|rtnn_embree_clustered_65536_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "embree",
+            "incumbent_id": "frozen_v2_14_embree_ranked_summary_row",
+            "mode": "same-contract embree fixed-radius ranked-summary aggregate incumbent",
+            "new_current_route_execution_requires_review": true,
+            "result_mode": "ranked-summary aggregate",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        },
+        {
+          "backend": "optix",
+          "below_1_05x": true,
+          "case_id": "rtnn_optix_clustered_65536_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 1.0205390727932415,
+          "row_id": "goal2636_stress|rtnn|rtnn_clustered_65536_ranked_summary|optix|rtnn_optix_clustered_65536_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "optix",
+            "incumbent_id": "legacy_app_front_door_prepared_optix_ranked_summary",
+            "mode": "prepared_optix_ranked_summary",
+            "result_mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        }
+      ],
+      "rows_below_1_05x": 1,
+      "shape_key": "clustered:65536:rtnn_clustered_65536_ranked_summary"
+    },
+    {
+      "comparison_group": "rtnn_shell_262144_ranked_summary",
+      "distribution": "shell",
+      "geomean_v3_vs_v2": 0.9827280606322594,
+      "per_distribution_phase_bound_required": true,
+      "point_count": 262144,
+      "query_batch_size": 262144,
+      "query_role": "full_batch_self_query",
+      "ranked_summary_contract": "prepared 3-D fixed-radius bounded ranked-summary aggregate",
+      "rows": [
+        {
+          "backend": "embree",
+          "below_1_05x": true,
+          "case_id": "rtnn_embree_shell_262144_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 0.9728061884875627,
+          "row_id": "goal2636_stress|rtnn|rtnn_shell_262144_ranked_summary|embree|rtnn_embree_shell_262144_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "embree",
+            "incumbent_id": "frozen_v2_14_embree_ranked_summary_row",
+            "mode": "same-contract embree fixed-radius ranked-summary aggregate incumbent",
+            "new_current_route_execution_requires_review": true,
+            "result_mode": "ranked-summary aggregate",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        },
+        {
+          "backend": "optix",
+          "below_1_05x": true,
+          "case_id": "rtnn_optix_shell_262144_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 0.9927511282134373,
+          "row_id": "goal2636_stress|rtnn|rtnn_shell_262144_ranked_summary|optix|rtnn_optix_shell_262144_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "optix",
+            "incumbent_id": "legacy_app_front_door_prepared_optix_ranked_summary",
+            "mode": "prepared_optix_ranked_summary",
+            "result_mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        }
+      ],
+      "rows_below_1_05x": 2,
+      "shape_key": "shell:262144:rtnn_shell_262144_ranked_summary"
+    },
+    {
+      "comparison_group": "rtnn_shell_65536_ranked_summary",
+      "distribution": "shell",
+      "geomean_v3_vs_v2": 0.9861020564631944,
+      "per_distribution_phase_bound_required": true,
+      "point_count": 65536,
+      "query_batch_size": 65536,
+      "query_role": "full_batch_self_query",
+      "ranked_summary_contract": "prepared 3-D fixed-radius bounded ranked-summary aggregate",
+      "rows": [
+        {
+          "backend": "embree",
+          "below_1_05x": true,
+          "case_id": "rtnn_embree_shell_65536_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 0.9809269459324993,
+          "row_id": "goal2636_stress|rtnn|rtnn_shell_65536_ranked_summary|embree|rtnn_embree_shell_65536_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "embree",
+            "incumbent_id": "frozen_v2_14_embree_ranked_summary_row",
+            "mode": "same-contract embree fixed-radius ranked-summary aggregate incumbent",
+            "new_current_route_execution_requires_review": true,
+            "result_mode": "ranked-summary aggregate",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        },
+        {
+          "backend": "optix",
+          "below_1_05x": true,
+          "case_id": "rtnn_optix_shell_65536_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 0.9913044695051682,
+          "row_id": "goal2636_stress|rtnn|rtnn_shell_65536_ranked_summary|optix|rtnn_optix_shell_65536_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "optix",
+            "incumbent_id": "legacy_app_front_door_prepared_optix_ranked_summary",
+            "mode": "prepared_optix_ranked_summary",
+            "result_mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        }
+      ],
+      "rows_below_1_05x": 2,
+      "shape_key": "shell:65536:rtnn_shell_65536_ranked_summary"
+    },
+    {
+      "comparison_group": "rtnn_uniform_262144_ranked_summary",
+      "distribution": "uniform",
+      "geomean_v3_vs_v2": 1.0058807519091433,
+      "per_distribution_phase_bound_required": false,
+      "point_count": 262144,
+      "query_batch_size": 262144,
+      "query_role": "full_batch_self_query",
+      "ranked_summary_contract": "prepared 3-D fixed-radius bounded ranked-summary aggregate",
+      "rows": [
+        {
+          "backend": "embree",
+          "below_1_05x": true,
+          "case_id": "rtnn_embree_uniform_262144_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 1.0196698583673482,
+          "row_id": "goal2636_stress|rtnn|rtnn_uniform_262144_ranked_summary|embree|rtnn_embree_uniform_262144_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "embree",
+            "incumbent_id": "frozen_v2_14_embree_ranked_summary_row",
+            "mode": "same-contract embree fixed-radius ranked-summary aggregate incumbent",
+            "new_current_route_execution_requires_review": true,
+            "result_mode": "ranked-summary aggregate",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        },
+        {
+          "backend": "optix",
+          "below_1_05x": true,
+          "case_id": "rtnn_optix_uniform_262144_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 0.992278117038144,
+          "row_id": "goal2636_stress|rtnn|rtnn_uniform_262144_ranked_summary|optix|rtnn_optix_uniform_262144_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "optix",
+            "incumbent_id": "legacy_app_front_door_prepared_optix_ranked_summary",
+            "mode": "prepared_optix_ranked_summary",
+            "result_mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        }
+      ],
+      "rows_below_1_05x": 2,
+      "shape_key": "uniform:262144:rtnn_uniform_262144_ranked_summary"
+    },
+    {
+      "comparison_group": "prepared_3d_ranked_summary",
+      "distribution": "uniform",
+      "geomean_v3_vs_v2": 1.0007326350413122,
+      "per_distribution_phase_bound_required": false,
+      "point_count": 65536,
+      "query_batch_size": 65536,
+      "query_role": "full_batch_self_query",
+      "ranked_summary_contract": "prepared 3-D fixed-radius bounded ranked-summary aggregate",
+      "rows": [
+        {
+          "backend": "embree",
+          "below_1_05x": true,
+          "case_id": "rtnn_embree_prepared_3d_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 1.0036091934976203,
+          "row_id": "goal2626_large|rtnn|prepared_3d_ranked_summary|embree|rtnn_embree_prepared_3d_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "embree",
+            "incumbent_id": "frozen_v2_14_embree_ranked_summary_row",
+            "mode": "same-contract embree fixed-radius ranked-summary aggregate incumbent",
+            "new_current_route_execution_requires_review": true,
+            "result_mode": "ranked-summary aggregate",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        },
+        {
+          "backend": "optix",
+          "below_1_05x": true,
+          "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 0.9978643214163649,
+          "row_id": "goal2626_large|rtnn|prepared_3d_ranked_summary|optix|rtnn_optix_prepared_3d_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "optix",
+            "incumbent_id": "legacy_app_front_door_prepared_optix_ranked_summary",
+            "mode": "prepared_optix_ranked_summary",
+            "result_mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        }
+      ],
+      "rows_below_1_05x": 2,
+      "shape_key": "uniform:65536:prepared_3d_ranked_summary"
+    },
+    {
+      "comparison_group": "rtnn_uniform_65536_ranked_summary",
+      "distribution": "uniform",
+      "geomean_v3_vs_v2": 0.9974907694324137,
+      "per_distribution_phase_bound_required": false,
+      "point_count": 65536,
+      "query_batch_size": 65536,
+      "query_role": "full_batch_self_query",
+      "ranked_summary_contract": "prepared 3-D fixed-radius bounded ranked-summary aggregate",
+      "rows": [
+        {
+          "backend": "embree",
+          "below_1_05x": true,
+          "case_id": "rtnn_embree_uniform_65536_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 1.000678337367988,
+          "row_id": "goal2636_stress|rtnn|rtnn_uniform_65536_ranked_summary|embree|rtnn_embree_uniform_65536_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "embree",
+            "incumbent_id": "frozen_v2_14_embree_ranked_summary_row",
+            "mode": "same-contract embree fixed-radius ranked-summary aggregate incumbent",
+            "new_current_route_execution_requires_review": true,
+            "result_mode": "ranked-summary aggregate",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        },
+        {
+          "backend": "optix",
+          "below_1_05x": true,
+          "case_id": "rtnn_optix_uniform_65536_ranked_summary",
+          "frozen_v3_speedup_vs_v2": 0.994313355198548,
+          "row_id": "goal2636_stress|rtnn|rtnn_uniform_65536_ranked_summary|optix|rtnn_optix_uniform_65536_ranked_summary",
+          "same_contract_incumbent": {
+            "backend": "optix",
+            "incumbent_id": "legacy_app_front_door_prepared_optix_ranked_summary",
+            "mode": "prepared_optix_ranked_summary",
+            "result_mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+            "same_contract_terms": [
+              "same point_count",
+              "same distribution",
+              "same generated points or frozen point file",
+              "same radius and k from the frozen RTNN row config",
+              "query_batch_size equals point_count",
+              "ranked-summary aggregate output contract",
+              "signature or aggregate checks must match before timing is interpreted"
+            ]
+          }
+        }
+      ],
+      "rows_below_1_05x": 2,
+      "shape_key": "uniform:65536:rtnn_uniform_65536_ranked_summary"
+    }
+  ],
+  "future_harness_requirements": {
+    "authorization_token_present": false,
+    "commands_present": false,
+    "exact_shape_count": 7,
+    "future_material_candidate_bar_if_separately_authorized": {
+      "distribution_scope": "uniform, clustered, and shell must each have their own phase rows before clustered/shell claims",
+      "hot_query_speedup_vs_same_contract_incumbent": ">=0.98x; no material claim if hot query regresses materially",
+      "input_load_pack_share_guard": "input-loading/packing cannot be the sole source of a positive result",
+      "runner_after_input_pack_speedup_vs_same_contract_incumbent": ">=1.20x or explicitly explained",
+      "runner_wall_speedup_vs_same_contract_incumbent": ">=1.20x"
+    },
+    "required_distributions": [
+      "uniform",
+      "clustered",
+      "shell"
+    ],
+    "required_metadata": [
+      "mode=prepared_execution_ranked_summary",
+      "productized_execution_path=prepared_execution_session_runner",
+      "runtime_trunk_executes_end_to_end=true",
+      "prepared_execution_session_runner_used=true",
+      "material_probe_candidate recorded without public claim",
+      "release_authorized=false",
+      "public_speedup_claim_authorized=false",
+      "automatic_partner_selection_authorized=false"
+    ],
+    "required_phase_metrics": [
+      "input_load_sec",
+      "input_pack_sec",
+      "input_load_pack_sec",
+      "execution_prepare_sec",
+      "runner_after_input_load_pack_sec",
+      "hot_query_median_sec",
+      "runner_wall_sec",
+      "measured_total_sec",
+      "measured_median_sec",
+      "signature_match_status"
+    ],
+    "status": "requirements_only_no_execution"
+  },
+  "goal_level_decision_audit": {
+    "decision": "draft a focused RTNN protocol without execution after M69 accepted RTNN as bridgeable but not runbook-ready",
+    "different_path_now": "Freeze exact shapes, same-contract incumbents, per-distribution requirements, separated phase metrics, and fail-closed stop conditions for external review.",
+    "foolish_actions": "It would be foolish to use M69's repeat50 runner-wall signal as execution authorization or to hide the 0.988781x hot-query boundary.",
+    "other_path": "Jump directly to POD or tune RTNN app routes. That repeats leaf-first work and ignores the frozen all-app gap.",
+    "was_i_foolish": "No. M70 preserves M69's no-execution boundary and turns the review debt into explicit protocol gates."
+  },
+  "inputs": {
+    "antigravity_m69_review": "docs\\reviews\\antigravity_phoenix_v3_m69_rtnn_phase_shape_bridge_audit_review_2026-06-23.md",
+    "claude_m69_review": "docs\\reviews\\claude_phoenix_v3_m69_rtnn_phase_shape_bridge_audit_recorded_review_2026-06-23.md",
+    "m69_completion_audit": "docs\\reports\\phoenix_v3_m69_goal_completion_audit_2026-06-23.md",
+    "m69_consensus": "docs\\reviews\\codex_claude_antigravity_phoenix_v3_m69_rtnn_phase_shape_bridge_audit_3ai_consensus_2026-06-23.md",
+    "m69_packet": "docs\\rebuild\\v3\\phoenix_v3_m69_rtnn_phase_shape_bridge_audit_2026-06-23.json",
+    "prepared_execution": "src\\rtdsl\\prepared_execution.py",
+    "rtnn_app": "examples\\current\\research_benchmarks\\rtnn\\rtdl_rtnn_benchmark_app.py"
+  },
+  "m69_carry_forward": [
+    "repeat50 phase attribution is uniform-distribution evidence only",
+    "per-distribution phase bounds are required before clustered or shell protocol use",
+    "prepared_execution_ranked_summary currently requires full-batch self-queries",
+    "exact frozen RTNN shapes and same-contract incumbents must be named",
+    "0.988781x hot-query boundary must remain visible",
+    "exact aggregate, productized prepared-session runner, graph partner bridge, and diagnostic rows must not be merged"
+  ],
+  "non_authorization": {
+    "all_app_run_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_v3_over_v2_claim_authorized": false,
+    "c_abi_authorized": false,
+    "embedding_authorized": false,
+    "focused_pod_spend_authorized": false,
+    "paid_pod_spend_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "pod_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "route_specific_rtnn_app_tuning_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "runbook_execution_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v4_work_authorized": false,
+    "watch_row_closure_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "phase_metric_contract": {
+    "m69_uniform_repeat50_reference": {
+      "execution_prepare_delta_sec": 0.3574051186442375,
+      "hot_query_speedup_vs_legacy": 0.9887810047298636,
+      "input_load_pack_share_of_delta": 0.3229305393002245,
+      "runner_after_input_pack_share_of_delta": 0.6770928895191847,
+      "scope": "uniform-distribution repeat50 reference only",
+      "total_runner_wall_delta_sec": 0.8668931350111961
+    },
+    "must_keep_separate": true,
+    "required_metric_names": [
+      "input_load_sec",
+      "input_pack_sec",
+      "input_load_pack_sec",
+      "execution_prepare_sec",
+      "runner_after_input_load_pack_sec",
+      "hot_query_median_sec",
+      "runner_wall_sec",
+      "measured_total_sec",
+      "measured_median_sec",
+      "signature_match_status"
+    ]
+  },
+  "protocol_scope": {
+    "all_app_authorized_now": false,
+    "execution_authorized_now": false,
+    "next_step_if_accepted": "M71_local_rtnn_harness_design_or_dry_run_gate_no_pod",
+    "pod_authorized_now": false,
+    "protocol_type": "review_packet_only",
+    "release_authorized_now": false,
+    "runbook_authorized_now": false
+  },
+  "review_request_verdicts": [
+    "accept_m70_protocol_draft_continue_m71_local_harness_no_execution_no_pod",
+    "accept_m70_protocol_shape_but_revise_before_harness",
+    "blocked_m70_missing_same_contract_or_phase_boundaries",
+    "reject_m70_protocol_repeats_leaf_first_or_overclaims"
+  ],
+  "schema": "rtdl.phoenix_v3.m70.rtnn_focused_protocol.v1",
+  "selected_family": {
+    "automatic_partner_selection_authorized": false,
+    "contract": "generic prepared 3-D fixed-radius bounded ranked-summary aggregate",
+    "current_front_door_mode": "prepared_optix_ranked_summary",
+    "family_id": "fixed_radius_ranked_summary_3d_prepared_session",
+    "full_batch_self_query_required": true,
+    "generic_helper": "run_fixed_radius_ranked_summary_3d_prepared_session",
+    "pressure_app": "rtnn",
+    "productized_app_mode": "prepared_execution_ranked_summary",
+    "route_specific_rtnn_app_tuning_authorized": false
+  },
+  "source_verdicts": {
+    "m69_3ai": "accept_m69_rtnn_bridgeable_continue_m70_protocol_draft_no_pod_no_release",
+    "m70_scope": "protocol_draft_only_no_execution"
+  },
+  "status": "m70_rtnn_focused_protocol_draft_ready_for_review_no_execution_no_pod_no_release",
+  "stop_conditions": [
+    "Stop if a future harness lacks a reviewed local dry-run gate.",
+    "Stop if any frozen RTNN shape lacks an exact same-contract incumbent row.",
+    "Stop if clustered or shell rows reuse the uniform repeat50 phase split without per-distribution measurement.",
+    "Stop if non-self-query batches are proposed without separate code-path review.",
+    "Stop if input-loading/packing, prepare, runner-after-pack, hot-query, and runner-wall metrics are merged.",
+    "Stop if exact aggregate, productized prepared-session runner, graph partner bridge, raw rows, or paper diagnostic rows are merged into one claim.",
+    "Stop if the result is only input-loading/packing consolidation or repeat50 amortization with no runner-after-pack contribution.",
+    "Stop if productized runner metadata does not show prepared_execution_session_runner and runtime_trunk_executes_end_to_end=true.",
+    "Stop if any public, release, all-app, POD, V4, embedding, C ABI, true-zero-copy, route-specific tuning, or watch-row closure wording appears."
+  ],
+  "summary": {
+    "all_app_authorized": false,
+    "execution_authorized": false,
+    "failed_check_count": 0,
+    "next_step_if_accepted": "M71_local_rtnn_harness_design_or_dry_run_gate_no_pod",
+    "pod_authorized": false,
+    "release_authorized": false,
+    "row_count": 14,
+    "shape_group_count": 7,
+    "status": "m70_rtnn_focused_protocol_draft_ready_for_review_no_execution_no_pod_no_release"
+  }
+}

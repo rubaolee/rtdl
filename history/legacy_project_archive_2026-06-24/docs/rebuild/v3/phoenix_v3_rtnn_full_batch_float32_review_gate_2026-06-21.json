@@ -1,0 +1,66 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "generic fixed_radius_neighbors_3d ranked_summary full-batch float32 aggregate; RTNN is only the evidence harness",
+  "checks": {
+    "call_for_review_exists": true,
+    "codex_blocking_review_exists": true,
+    "codex_review_blocks_m7": true,
+    "cold_plus_query_wall_regresses": true,
+    "evidence_exists": true,
+    "evidence_m7_false": true,
+    "evidence_release_false": true,
+    "evidence_status_not_m7": true,
+    "external_blocked_exists": true,
+    "gemini_stderr_records_auth_failure": true,
+    "hot_query_material": true,
+    "runner_wall_regresses": true,
+    "same_contract_signature_match": true
+  },
+  "codex_review_status": "approve_as_prepared_hot_query_intake_blocks_m7",
+  "evidence_status": "rtnn_full_batch_float32_hot_query_candidate_pending_2ai_wall_blocked_not_m7",
+  "external_review_status": "blocked_no_external_ai_verdict",
+  "failed_checks": [],
+  "generic_capability": "ranked_summary",
+  "goal_level_decision_audit": {
+    "decision": "Gate the RTNN full-batch float32 hot-query result as review-blocked/not-M7.",
+    "different_path_now": "Keep the row blocked, then work on pack/prepare amortization or exact/tie-stable parity.",
+    "foolish_actions": "The foolish action would be to promote the 7.790x prepared-hot-query number while hiding the 0.393x cold-plus-query wall and 0.627x runner-wall regressions.",
+    "other_path": "Rejecting RTNN entirely would avoid overclaim risk but would discard useful generic ranked_summary evidence.",
+    "was_i_foolish": "No. The hot-query signal is real, but wall regressions and missing external review block promotion."
+  },
+  "m7_candidate_reopen_authorized": false,
+  "m7_promotion_authorized": false,
+  "next_engine_action": "Keep RTNN full-batch float32 behind a review gate. Future engine work must reduce pack/prepare or establish a stricter exact/tie-stable path before any prepared-hot-query M7 review.",
+  "paper_reproduction_claim_authorized": false,
+  "prepared_hot_query_internal_signal": {
+    "cold_plus_query_speedup_optix_over_cupy_grid": 0.3932213617664132,
+    "hot_speedup_optix_over_cupy_grid": 7.790245749294417,
+    "point_count": 1048576,
+    "repeat": 5,
+    "runner_wall_speedup_optix_over_cupy_grid": 0.6267366084591879,
+    "same_contract_signature_match": true,
+    "sum_distance_relative_error": 1.207354110473936e-10
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "required_blockers_before_m7": [
+    "external_ai_review_missing",
+    "codex_consensus_response_missing_after_external_review",
+    "cold_plus_query_wall_regresses",
+    "runner_wall_regresses",
+    "prepared_hot_query_scope_not_reviewed",
+    "float32_exact_false_boundary_requires_wording",
+    "pack_prepare_amortization_not_solved",
+    "public_wording_review_missing"
+  ],
+  "review_records": {
+    "call_for_review": "docs/reviews/call_for_review_phoenix_v3_rtnn_full_batch_float32_same_contract_rtx_evidence_2026-06-21.md",
+    "codex_blocking_review": "docs/reviews/codex_phoenix_v3_rtnn_full_batch_float32_same_contract_blocking_review_2026-06-21.md",
+    "external_review_blocked": "docs/reviews/external_review_blocked_phoenix_v3_rtnn_full_batch_float32_same_contract_rtx_evidence_2026-06-21.md",
+    "gemini_stderr": "docs/reviews/gemini_phoenix_v3_rtnn_full_batch_float32_same_contract_rtx_evidence_review_2026-06-21.stderr.txt"
+  },
+  "status": "rtnn_full_batch_float32_review_blocked_not_m7",
+  "tool": "v3_phoenix_rtnn_full_batch_float32_review_gate",
+  "universal_nearest_neighbor_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}

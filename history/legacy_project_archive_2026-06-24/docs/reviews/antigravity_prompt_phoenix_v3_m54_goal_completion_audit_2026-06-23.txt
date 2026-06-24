@@ -1,0 +1,45 @@
+You are Antigravity acting as an external critical reviewer for Phoenix V3.
+
+Working directory:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+This is a goal-completion audit for M54. It is not a request to run POD and not
+a release decision.
+
+Active M54 goal:
+Phoenix V3 M54: obtain bounded external review for exactly one focused LibRTS
+stability POD authorization packet, preserving no execution unless explicitly
+authorized and keeping release/all-app/public-claim/V4 boundaries closed.
+
+Required files to inspect:
+- docs/reviews/call_for_review_phoenix_v3_m54_one_focused_librts_stability_pod_authorization_2026-06-23.md
+- docs/reviews/claude_phoenix_v3_m54_one_focused_librts_stability_pod_authorization_recorded_review_2026-06-23.md
+- docs/reviews/codex_claude_phoenix_v3_m54_one_focused_librts_stability_pod_authorization_2ai_consensus_2026-06-23.md
+- docs/reviews/claude_phoenix_v3_m53_open_debt_backfill_recorded_review_2026-06-23.md
+- docs/reviews/codex_claude_antigravity_phoenix_v3_m53_goal_completion_3ai_consensus_2026-06-23.md
+- docs/rebuild/v3/phoenix_v3_m47_librts_stability_protocol_2026-06-23.md
+- docs/reports/phoenix_v3_m48_librts_stability_harness_execution_safety_2026-06-23.md
+- docs/rebuild/v3/phoenix_v3_m51_librts_authorized_runbook_2026-06-23.md
+- docs/reports/phoenix_v3_m52_pod_runner_authorization_surface_audit_2026-06-23.md
+- tests/v3_phoenix_m54_librts_authorization_packet_gate_test.py
+
+Required verdict labels, choose exactly one:
+- accept_m54_goal_complete_authorization_narrow_one_run_no_release
+- revise_m54_before_goal_completion
+- reject_m54_authorization_or_completion_not_safe
+
+Questions to answer explicitly:
+1. Does the M54 packet have all required review inputs and do those inputs exist?
+2. Did Claude give the exact authorization verdict `authorize_m47_one_focused_librts_stability_pod_run`?
+3. Does Codex+Claude consensus keep authorization limited to exactly one M47 focused LibRTS stability run?
+4. Are the two executor preconditions still explicit: real V2.14 root and explicit Linux/POD Python paths, with target-machine dry-run before execute?
+5. Does the M54 work preserve non-authorization of V3 release, all-app benchmark, broad paid POD campaign, public speedup wording, broad V3-over-V2 claim, V4, embedding, C ABI, and true-zero-copy claims?
+6. Is it safe to call the M54 goal complete under the user's 3-AI rule, without treating this as authorization for anything beyond the one focused run?
+
+If accepted, state clearly that the third AI seat completes the M54 goal audit
+but does not broaden execution, release, all-app, public claim, or V4 scope.
+
+Write the recorded review to:
+docs/reviews/antigravity_phoenix_v3_m54_goal_completion_audit_review_2026-06-23.md
+
+Also print the complete review in stdout.

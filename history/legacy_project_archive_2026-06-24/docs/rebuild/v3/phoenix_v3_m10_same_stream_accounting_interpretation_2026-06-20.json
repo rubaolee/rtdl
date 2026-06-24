@@ -1,0 +1,80 @@
+{
+  "status": "m10_same_stream_accounting_interpreted_not_release",
+  "source_artifact": "docs\\rebuild\\v3\\evidence\\phoenix_v3_m4_grouped_continuation_20260620\\m10_same_stream_65536.json",
+  "source_index": "docs\\rebuild\\v3\\evidence\\phoenix_v3_m4_grouped_continuation_20260620\\phoenix_v3_m4_evidence_index_2026-06-20.json",
+  "generic_capability": "same_stream_partner_continuation_accounting",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "same_stream_public_claim_authorized": false,
+  "true_zero_copy_public_claim_authorized": false,
+  "m7_promotion_authorized": false,
+  "phoenix_m7_qualified_release_rows": 0,
+  "current_packet_external_review_status": "claude_approved_after_p0_p1_fixes_internal_note",
+  "current_packet_2ai_consensus_status": "claude_codex_consensus_complete_internal_not_m7",
+  "current_packet_external_review": "docs/reviews/claude_phoenix_v3_m10_same_stream_accounting_interpretation_review_2026-06-21.md",
+  "current_packet_codex_consensus": "docs/reviews/codex_phoenix_v3_m10_same_stream_accounting_interpretation_2ai_consensus_2026-06-21.md",
+  "interpretation": {
+    "raw_index_classification_preserved": "pass_internal_with_accounting_warning",
+    "raw_index_clean_pass_preserved": false,
+    "event_ordering_interpretation": "per_sample_event_ordering_clean",
+    "median_accounting_interpretation": "independent_median_non_additivity_note",
+    "why_this_is_not_an_event_ordering_failure": "Every retained CUDA event sample has same_stream_ready=true and total_event_seconds greater than or equal to both native_event_seconds and partner_event_seconds. The CuPy warning delta is -0.00000012798421084868792 seconds, about -0.128 microseconds, and comes from adding medians that are computed independently and may come from different repeats.",
+    "numba_event_pointer_explanation": "The raw Numba event pointer fields are 0: native_start_event_ptr, native_done_event_ptr, and partner_done_event_ptr all serialize as 0 because the current Numba CUDA event wrapper does not expose stable host-visible event pointer values like the CuPy path does. The timing interpretation still comes from recorded CUDA event elapsed times and retained per-sample same_stream_ready/total>=component checks.",
+    "system_python_binding_gap": "phoenix_m4_system_python_missing_cupy_numba remains open; pod evidence used the rebuild venv.",
+    "why_this_stays_internal": "The M10 path lacks transfer-counter evidence, keeps true_zero_copy_ready=false, has no public wording review, has an open system-Python binding gap, and remains part of an internal M4 packet with zero M7-qualified release rows."
+  },
+  "partner_rows": [
+    {
+      "partner": "cupy",
+      "sample_count": 5,
+      "per_sample_bad_count": 0,
+      "same_stream_ready": true,
+      "true_zero_copy_ready": false,
+      "transfer_counter_observed": false,
+      "raw_event_accounting_status": "warning",
+      "median_native_event_seconds": 0.0007828159928321838,
+      "median_partner_event_seconds": 0.000005152000114321708,
+      "median_total_event_seconds": 0.0007878400087356568,
+      "median_native_plus_partner_seconds": 0.0007879679929465055,
+      "independent_median_delta_seconds": -0.00000012798421084868792,
+      "interpretation": "per-sample clean; independent median sum is 0.128 microseconds above total median because medians can come from different repeats"
+    },
+    {
+      "partner": "numba",
+      "sample_count": 5,
+      "per_sample_bad_count": 0,
+      "same_stream_ready": true,
+      "true_zero_copy_ready": false,
+      "transfer_counter_observed": false,
+      "raw_event_accounting_status": "clean",
+      "median_native_event_seconds": 0.0007847040295600891,
+      "median_partner_event_seconds": 0.000006304000038653612,
+      "median_total_event_seconds": 0.0007912960052490235,
+      "median_native_plus_partner_seconds": 0.0007910080295987427,
+      "independent_median_delta_seconds": 0.000000287975650280742,
+      "numba_event_pointer_explanation": "Raw Numba event pointer fields are 0 because this Numba wrapper path does not expose stable host-visible cudaEvent_t pointer values; timing still uses recorded CUDA event elapsed times.",
+      "interpretation": "per-sample clean and independent median total is also above independent native plus partner median"
+    }
+  ],
+  "hard_boundaries": [
+    "Do not rewrite the raw M4 evidence index from pass_internal_with_accounting_warning to clean_pass.",
+    "Do not claim true-zero-copy readiness from M10.",
+    "Do not claim same-stream public release wording from this packet.",
+    "Do not promote M10 to M7 from this interpretation alone.",
+    "Do not use M10 as public performance evidence."
+  ],
+  "m7_blockers": [
+    "transfer_counter_evidence_missing_in_m10",
+    "raw_m4_index_still_internal_not_m7",
+    "public_same_stream_wording_review_missing",
+    "system_python_binding_gap_open",
+    "m7_row_level_release_review_missing"
+  ],
+  "goal_level_decision_audit": {
+    "decision": "interpret M10 accounting warning as an independent-median methodology note, not an event-ordering failure",
+    "was_i_foolish": "No. The decision preserves the raw artifact and adds a stricter explanation gate instead of hiding the warning.",
+    "foolish_actions": "It would be foolish to edit raw evidence into a clean pass, cite M10 as public same-stream proof, or use the note to claim true-zero-copy.",
+    "other_path": "Leave the warning as an unexplained release blocker. That would keep confusing users and reviewers even though the per-sample event checks are clean.",
+    "different_path_now": "Keep raw M4 classification intact, add this audited interpretation packet, record external-review closure, and keep public same-stream/M7 closure blocked until transfer-counter, system-Python, wording, and row-level release evidence exist."
+  }
+}

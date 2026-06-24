@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Iterable
 
 
@@ -203,6 +203,29 @@ class OptixAabbIndex2D:
     prepared: Any
     row_ids: tuple[int, ...]
     backend: str = "optix"
+    _intersection_query_cache: dict[
+        tuple[tuple[Aabb2D, ...], tuple[int, ...]], tuple[_IdentifiedAabb2D, ...]
+    ] = field(default_factory=dict, compare=False, repr=False)
+    _point_query_cache: dict[
+        tuple[tuple[Point2DLike, ...], tuple[int, ...]], tuple[_IdentifiedPoint2D, ...]
+    ] = field(default_factory=dict, compare=False, repr=False)
+    _native_intersection_query_cache: dict[tuple[_IdentifiedAabb2D, ...], Any] = field(
+        default_factory=dict,
+        compare=False,
+        repr=False,
+    )
+    _query_cache_stats: dict[str, int] = field(
+        default_factory=lambda: {
+            "range_intersection_hits": 0,
+            "range_intersection_misses": 0,
+            "point_membership_hits": 0,
+            "point_membership_misses": 0,
+            "native_range_intersection_hits": 0,
+            "native_range_intersection_misses": 0,
+        },
+        compare=False,
+        repr=False,
+    )
 
     def count(
         self,
@@ -262,13 +285,61 @@ class OptixAabbIndex2D:
     ) -> tuple[tuple[int, int], ...]:
         if row_capacity is None:
             raise ValueError("OptiX prepared AABB row output requires explicit row_capacity")
+        collect_prepared = getattr(self.prepared, "collect_range_intersection_rows_prepared_queries", None)
+        if callable(collect_prepared):
+            native_queries = self._cached_native_intersection_query_handle(query_boxes, query_ids)
+            native = collect_prepared(
+                native_queries,
+                row_capacity=int(row_capacity),
+            )
+        else:
+            query_records = self._cached_intersection_query_records(query_boxes, query_ids)
+            native = self.prepared.collect_range_intersection_rows(
+                query_records,
+                row_capacity=int(row_capacity),
+            )
+        return tuple(
+            sorted((int(query_id), int(indexed_id)) for query_id, indexed_id in native["candidate_id_rows"])
+        )
+
+    def _cached_native_intersection_query_handle(
+        self,
+        query_boxes: Iterable[Any],
+        query_ids: tuple[int, ...],
+    ) -> Any:
+        query_records = self._cached_intersection_query_records(query_boxes, query_ids)
+        cached = self._native_intersection_query_cache.get(query_records)
+        if cached is not None and not bool(getattr(cached, "_closed", False)):
+            self._query_cache_stats["native_range_intersection_hits"] += 1
+            return cached
+        if cached is not None:
+            self._native_intersection_query_cache.pop(query_records, None)
+
+        from .optix_runtime import prepare_optix_aabb_box_queries_2d
+
+        prepared_queries = prepare_optix_aabb_box_queries_2d(query_records)
+        self._native_intersection_query_cache[query_records] = prepared_queries
+        self._query_cache_stats["native_range_intersection_misses"] += 1
+        return prepared_queries
+
+    def _cached_intersection_query_records(
+        self,
+        query_boxes: Iterable[Any],
+        query_ids: tuple[int, ...],
+    ) -> tuple[_IdentifiedAabb2D, ...]:
         normalized_query_boxes = tuple(_normalize_aabb2d(box) for box in query_boxes)
-        if len(query_ids) != len(normalized_query_boxes):
+        query_id_tuple = tuple(int(value) for value in query_ids)
+        if len(query_id_tuple) != len(normalized_query_boxes):
             raise ValueError("query_ids length must match query_boxes length")
-        _validate_u32_ids(query_ids, label="query_ids")
+        _validate_u32_ids(query_id_tuple, label="query_ids")
+        key = (normalized_query_boxes, query_id_tuple)
+        cached = self._intersection_query_cache.get(key)
+        if cached is not None:
+            self._query_cache_stats["range_intersection_hits"] += 1
+            return cached
         query_records = tuple(
             _IdentifiedAabb2D(
-                int(query_ids[index]),
+                int(query_id_tuple[index]),
                 box.min_x,
                 box.min_y,
                 box.max_x,
@@ -276,13 +347,9 @@ class OptixAabbIndex2D:
             )
             for index, box in enumerate(normalized_query_boxes)
         )
-        native = self.prepared.collect_range_intersection_rows(
-            query_records,
-            row_capacity=int(row_capacity),
-        )
-        return tuple(
-            sorted((int(query_id), int(indexed_id)) for query_id, indexed_id in native["candidate_id_rows"])
-        )
+        self._intersection_query_cache[key] = query_records
+        self._query_cache_stats["range_intersection_misses"] += 1
+        return query_records
 
     def point_membership_rows(
         self,
@@ -291,18 +358,7 @@ class OptixAabbIndex2D:
         *,
         row_capacity: int,
     ) -> tuple[tuple[int, int], ...]:
-        points = tuple(_normalize_point2d(point) for point in point_queries)
-        if len(query_ids) != len(points):
-            raise ValueError("query_ids length must match point_queries length")
-        _validate_u32_ids(query_ids, label="query_ids")
-        point_records = tuple(
-            _IdentifiedPoint2D(
-                int(query_ids[index]),
-                point.x,
-                point.y,
-            )
-            for index, point in enumerate(points)
-        )
+        point_records = self._cached_point_query_records(point_queries, query_ids)
         native = self.prepared.collect_point_contains_rows(
             point_records,
             row_capacity=int(row_capacity),
@@ -311,7 +367,47 @@ class OptixAabbIndex2D:
             sorted((int(query_id), int(indexed_id)) for query_id, indexed_id in native["candidate_id_rows"])
         )
 
+    def _cached_point_query_records(
+        self,
+        point_queries: Iterable[Any],
+        query_ids: tuple[int, ...],
+    ) -> tuple[_IdentifiedPoint2D, ...]:
+        points = tuple(_normalize_point2d(point) for point in point_queries)
+        query_id_tuple = tuple(int(value) for value in query_ids)
+        if len(query_id_tuple) != len(points):
+            raise ValueError("query_ids length must match point_queries length")
+        _validate_u32_ids(query_id_tuple, label="query_ids")
+        key = (points, query_id_tuple)
+        cached = self._point_query_cache.get(key)
+        if cached is not None:
+            self._query_cache_stats["point_membership_hits"] += 1
+            return cached
+        point_records = tuple(
+            _IdentifiedPoint2D(
+                int(query_id_tuple[index]),
+                point.x,
+                point.y,
+            )
+            for index, point in enumerate(points)
+        )
+        self._point_query_cache[key] = point_records
+        self._query_cache_stats["point_membership_misses"] += 1
+        return point_records
+
+    def prepared_query_cache_stats(self) -> dict[str, int]:
+        return {
+            **self._query_cache_stats,
+            "range_intersection_entries": len(self._intersection_query_cache),
+            "point_membership_entries": len(self._point_query_cache),
+            "native_range_intersection_entries": len(self._native_intersection_query_cache),
+        }
+
     def close(self) -> None:
+        for prepared_queries in tuple(self._native_intersection_query_cache.values()):
+            close_queries = getattr(prepared_queries, "close", None)
+            if callable(close_queries):
+                close_queries()
+        self._native_intersection_query_cache.clear()
         close = getattr(self.prepared, "close", None)
         if callable(close):
             close()
@@ -388,6 +484,31 @@ class EmbreeAabbIndex2D:
     prepared: Any
     row_ids: tuple[int, ...]
     backend: str = "embree"
+    _intersection_query_cache: dict[
+        tuple[tuple[Aabb2D, ...], tuple[int, ...]], tuple[_IdentifiedAabb2D, ...]
+    ] = field(default_factory=dict, compare=False, repr=False)
+    _count_point_query_cache: dict[tuple[Point2DLike, ...], Any] = field(
+        default_factory=dict,
+        compare=False,
+        repr=False,
+    )
+    _count_box_query_cache: dict[tuple[Aabb2D, ...], Any] = field(
+        default_factory=dict,
+        compare=False,
+        repr=False,
+    )
+    _query_cache_stats: dict[str, int] = field(
+        default_factory=lambda: {
+            "range_intersection_hits": 0,
+            "range_intersection_misses": 0,
+            "count_point_query_hits": 0,
+            "count_point_query_misses": 0,
+            "count_box_query_hits": 0,
+            "count_box_query_misses": 0,
+        },
+        compare=False,
+        repr=False,
+    )
 
     def count(
         self,
@@ -404,11 +525,29 @@ class EmbreeAabbIndex2D:
         query_start = time.perf_counter()
         native_prepared = bool(getattr(self.prepared, "native_aabb_index", False))
         if native_prepared:
+            native_accepts_packed_queries = bool(getattr(self.prepared, "supports_packed_aabb_queries", False))
+            packed_points = (
+                self._cached_count_point_queries(points)
+                if native_accepts_packed_queries and "point_contains" in operations
+                else ()
+            )
+            packed_query_boxes = (
+                self._cached_count_box_queries(query_boxes)
+                if native_accepts_packed_queries
+                and any(name in {"range_contains", "range_intersects"} for name in operations)
+                else ()
+            )
             for name in operations:
                 if name == "point_contains":
-                    counts[name] = self.prepared.count(point_queries=points, operation=name)
+                    counts[name] = self.prepared.count(
+                        point_queries=packed_points if native_accepts_packed_queries else points,
+                        operation=name,
+                    )
                 else:
-                    counts[name] = self.prepared.count(box_queries=query_boxes, operation=name)
+                    counts[name] = self.prepared.count(
+                        box_queries=packed_query_boxes if native_accepts_packed_queries else query_boxes,
+                        operation=name,
+                    )
         else:
             for name in operations:
                 count = 0
@@ -453,8 +592,8 @@ class EmbreeAabbIndex2D:
             "claim_boundary": (
                 "Generic Embree AABB_INDEX_QUERY_2D count subpath using native "
                 "prepared AABB collision traversal when available, with a columnar "
-                "fallback for older libraries; not LibRTS-specific and not NVIDIA "
-                "RT-core accelerated."
+                "conjunctive-scan fallback for older libraries; not LibRTS-specific "
+                "and not NVIDIA RT-core accelerated."
             ),
         }
 
@@ -464,19 +603,13 @@ class EmbreeAabbIndex2D:
         query_ids: tuple[int, ...],
     ) -> tuple[tuple[int, int], ...]:
         normalized_query_boxes = tuple(_normalize_aabb2d(box) for box in query_boxes)
-        if len(query_ids) != len(normalized_query_boxes):
+        query_id_tuple = tuple(int(value) for value in query_ids)
+        if len(query_id_tuple) != len(normalized_query_boxes):
             raise ValueError("query_ids length must match query_boxes length")
         if bool(getattr(self.prepared, "native_aabb_index", False)):
-            _validate_u32_ids(query_ids, label="query_ids")
-            query_records = tuple(
-                _IdentifiedAabb2D(
-                    int(query_ids[index]),
-                    box.min_x,
-                    box.min_y,
-                    box.max_x,
-                    box.max_y,
-                )
-                for index, box in enumerate(normalized_query_boxes)
+            query_records = self._cached_intersection_query_records(
+                normalized_query_boxes,
+                query_id_tuple,
             )
             native = self.prepared.collect_range_intersection_rows(query_records)
             return tuple(
@@ -484,10 +617,71 @@ class EmbreeAabbIndex2D:
             )
         rows: set[tuple[int, int]] = set()
         for query_index, query_box in enumerate(normalized_query_boxes):
-            query_id = int(query_ids[query_index])
+            query_id = int(query_id_tuple[query_index])
             matches = self.prepared.conjunctive_scan(_range_intersects_clauses(query_box))
             rows.update((query_id, int(row["row_id"])) for row in matches)
         return tuple(sorted(rows))
+
+    def _cached_intersection_query_records(
+        self,
+        query_boxes: Iterable[Any],
+        query_ids: tuple[int, ...],
+    ) -> tuple[_IdentifiedAabb2D, ...]:
+        normalized_query_boxes = tuple(_normalize_aabb2d(box) for box in query_boxes)
+        query_id_tuple = tuple(int(value) for value in query_ids)
+        if len(query_id_tuple) != len(normalized_query_boxes):
+            raise ValueError("query_ids length must match query_boxes length")
+        _validate_u32_ids(query_id_tuple, label="query_ids")
+        key = (normalized_query_boxes, query_id_tuple)
+        cached = self._intersection_query_cache.get(key)
+        if cached is not None:
+            self._query_cache_stats["range_intersection_hits"] += 1
+            return cached
+        query_records = tuple(
+            _IdentifiedAabb2D(
+                int(query_id_tuple[index]),
+                box.min_x,
+                box.min_y,
+                box.max_x,
+                box.max_y,
+            )
+            for index, box in enumerate(normalized_query_boxes)
+        )
+        self._intersection_query_cache[key] = query_records
+        self._query_cache_stats["range_intersection_misses"] += 1
+        return query_records
+
+    def _cached_count_point_queries(self, points: tuple[Point2DLike, ...]) -> Any:
+        cached = self._count_point_query_cache.get(points)
+        if cached is not None:
+            self._query_cache_stats["count_point_query_hits"] += 1
+            return cached
+        from .embree_runtime import pack_aabb_point_queries_2d
+
+        packed = pack_aabb_point_queries_2d(points)
+        self._count_point_query_cache[points] = packed
+        self._query_cache_stats["count_point_query_misses"] += 1
+        return packed
+
+    def _cached_count_box_queries(self, query_boxes: tuple[Aabb2D, ...]) -> Any:
+        cached = self._count_box_query_cache.get(query_boxes)
+        if cached is not None:
+            self._query_cache_stats["count_box_query_hits"] += 1
+            return cached
+        from .embree_runtime import pack_aabbs_2d
+
+        packed = pack_aabbs_2d(query_boxes)
+        self._count_box_query_cache[query_boxes] = packed
+        self._query_cache_stats["count_box_query_misses"] += 1
+        return packed
+
+    def prepared_query_cache_stats(self) -> dict[str, int]:
+        return {
+            **self._query_cache_stats,
+            "range_intersection_entries": len(self._intersection_query_cache),
+            "count_point_query_entries": len(self._count_point_query_cache),
+            "count_box_query_entries": len(self._count_box_query_cache),
+        }
 
     def point_membership_rows(
         self,

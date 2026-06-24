@@ -1,0 +1,124 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "generic aabb_index_query_2d prepared-session candidate stream; contact_manifold is only the evidence harness",
+  "checks": {
+    "all_payloads_complete_candidate_coverage": true,
+    "all_payloads_match_cpu_reference": true,
+    "all_payloads_observed_reuse": false,
+    "embree_and_optix_present": false,
+    "has_32768_indexed_aabbs": false,
+    "has_32768_query_aabbs": false,
+    "material_optix_wall_win_after_prepare_reuse": false,
+    "optix_rt_hardware_gate_passed_if_required": true,
+    "phase_table_has_prepare_query_collect_wall": true,
+    "prepare_once_query_many_requested": false,
+    "runner_completed_without_backend_errors": true,
+    "serious_fixture_scale": false
+  },
+  "comparisons": {},
+  "environment": {
+    "cwd": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
+    "env": {
+      "PYTHONPATH": "src;.",
+      "RTDL_EMBREE_LIBRARY": null,
+      "RTDL_OPTIX_LIBRARY": null
+    },
+    "git_head": "8e0f052bffec02507aaf5ed05f75dfe995f39883",
+    "hardware_gate": {
+      "checks": {
+        "has_nvidia_gpu": false,
+        "nvidia_smi_query": false,
+        "optix_capable_gpu_present": false,
+        "rt_hardware_name_present": false
+      },
+      "fail_closed_reason": "No NVIDIA GPU satisfying the V3 OptiX/RT hardware precondition was detected.",
+      "gpus": [],
+      "query_error": "FileNotFoundError(2, 'The system cannot find the file specified', None, 2, None)",
+      "require_rt_hardware": false,
+      "status": "fail",
+      "tool": "v3_optix_hardware_gate"
+    },
+    "nvidia_smi": "ERROR: FileNotFoundError(2, 'The system cannot find the file specified', None, 2, None)",
+    "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "tool": "v3_phoenix_aabb_prepare_reuse_pod_runner_environment"
+  },
+  "failed_checks": [
+    "serious_fixture_scale",
+    "has_32768_indexed_aabbs",
+    "has_32768_query_aabbs",
+    "prepare_once_query_many_requested",
+    "embree_and_optix_present",
+    "all_payloads_observed_reuse",
+    "material_optix_wall_win_after_prepare_reuse"
+  ],
+  "forbidden_public_wording": [
+    "full contact solver speedup",
+    "broad V3-over-V2 speedup",
+    "paper reproduction",
+    "M7-qualified before 2-AI review",
+    "app-specific native contact engine"
+  ],
+  "generic_capability": "aabb_candidate_stream",
+  "goal_level_decision_audit": {
+    "decision": "Run or stage serious AABB prepare-reuse POD evidence through a reusable runner instead of ad hoc app timing.",
+    "different_path_now": "Use the same runner on an RTX pod, require material cold-plus-repeat wall win, then send the packet for 2-AI review before any M7 promotion.",
+    "foolish_actions": "It would be foolish to quote hot-query-only speedups, to use sub-32768 toy fixtures as release evidence, or to treat contact-specific wording as a V3 engine result.",
+    "other_path": "Continue optimizing Contact Manifold directly. That could improve one app but would not prove the reusable AABB prepared-session contract.",
+    "was_i_foolish": "No. The runner keeps the candidate generic and preserves release flags false."
+  },
+  "m7_promotion_authorized": false,
+  "m7_reopen_candidate_pending_2ai_review": false,
+  "material_wall_speedup_floor": 1.2,
+  "parameters": {
+    "backends": [
+      "cpu"
+    ],
+    "dataset": "grid",
+    "discovery_row_capacity": 8,
+    "grid_count": 3,
+    "indexed_aabb_count": 3,
+    "query_aabb_count": 3,
+    "repeat": 1,
+    "resolution": null,
+    "warmup": 0,
+    "witness_capacity": 3
+  },
+  "phase_rows": {
+    "cpu": {
+      "backend": "cpu",
+      "candidate_pairs": 3,
+      "cold_plus_collect_wall_sec": 0.00043869996443390846,
+      "collect_k_bounded_rows_sec": 7.90000194683671e-05,
+      "complete_candidate_coverage": true,
+      "dataset": "grid_3",
+      "emit_aabb_intersection_pair_rows_2d_median_sec": 9.23998886719346e-05,
+      "emit_aabb_intersection_pair_rows_2d_total_sec": 9.23998886719346e-05,
+      "generic_aabb_broadphase_wall_sec": 0.00035969994496554136,
+      "has_prepare_query_collect_wall": true,
+      "indexed_aabb_count": 3,
+      "matches_cpu_reference": true,
+      "overflowed": false,
+      "prepare_aabb_index_2d_sec": 0.0001981999957934022,
+      "prepared_query_cache_stats": null,
+      "python_exact_refinement_sec": 3.7800054997205734e-05,
+      "query_aabb_count": 3,
+      "repeat": null,
+      "runner_wall_sec": 0.0013640000252053142,
+      "valid_rows": 3,
+      "warmup": null
+    }
+  },
+  "public_copy_rules": [
+    "Only say this is evidence for generic AABB candidate streaming, not full contact solving.",
+    "Report prepare, query, collect, and wall phases together.",
+    "Report cold-plus-repeat wall before any hot-query number.",
+    "Do not publish as M7 until external review and Codex consensus close."
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "run_errors": {},
+  "runner_completed": true,
+  "status": "aabb_prepare_reuse_pod_evidence_collected_not_m7",
+  "tool": "v3_phoenix_aabb_prepare_reuse_pod_runner",
+  "whole_app_speedup_claim_authorized": false
+}

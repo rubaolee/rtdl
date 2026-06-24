@@ -1,0 +1,1350 @@
+{
+  "args": {
+    "current_root": "/root/rtdl_v3_rebuild_20260620/current",
+    "execute": true,
+    "samples": 8,
+    "scenario": "all",
+    "seed": 2025,
+    "v2_root": "/root/rtdl_v3_rebuild_20260620/v2_14"
+  },
+  "claim_boundary": {
+    "all_app_pod_spend_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "c_abi_work_authorized": false,
+    "embedding_work_authorized": false,
+    "focused_pod_spend_authorized_now": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v4_work_authorized": false
+  },
+  "failed_checks": [],
+  "goal_level_decision_audit": {
+    "decision": "prepare an executable M47 LibRTS stability protocol harness without authorizing or running POD",
+    "different_path_now": "Use this harness as a reviewed dry-run/intake surface, then request one focused run only if external review authorizes it.",
+    "foolish_actions": "The foolish action would be to run focused POD without reviewed ordering, first-sample, and outlier rules.",
+    "other_path": "Rewrite LibRTS/AABB code immediately or run all-app; both are rejected before stability evidence.",
+    "was_i_foolish": "No."
+  },
+  "preflight": {
+    "current_git_revision": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/root/rtdl_v3_rebuild_20260620/current",
+      "required": false,
+      "returncode": 128,
+      "stderr": "docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/preflight_current_git_revision.stderr.txt",
+      "stderr_empty": false,
+      "stdout": "docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/preflight_current_git_revision.stdout.txt"
+    },
+    "current_preflight_tests": {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "tests.v3_phoenix_librts_aabb_count_runner_test",
+        "tests.v3_phoenix_prepared_execution_session_runner_test",
+        "tests.v3_phoenix_aabb_prepared_query_cache_test"
+      ],
+      "cwd": "/root/rtdl_v3_rebuild_20260620/current",
+      "required": true,
+      "returncode": 0,
+      "stderr": "docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/preflight_current_preflight_tests.stderr.txt",
+      "stderr_empty": false,
+      "stdout": "docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/preflight_current_preflight_tests.stdout.txt"
+    },
+    "current_python_version": {
+      "command": [
+        "/usr/bin/python3",
+        "--version"
+      ],
+      "cwd": "/root/rtdl_v3_rebuild_20260620/current",
+      "required": true,
+      "returncode": 0,
+      "stderr": "docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/preflight_current_python_version.stderr.txt",
+      "stderr_empty": true,
+      "stdout": "docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/preflight_current_python_version.stdout.txt"
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "cwd": "/root/rtdl_v3_rebuild_20260620/current",
+      "required": true,
+      "returncode": 0,
+      "stderr": "docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/preflight_nvidia_smi.stderr.txt",
+      "stderr_empty": true,
+      "stdout": "docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/preflight_nvidia_smi.stdout.txt"
+    },
+    "v2_git_revision": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/root/rtdl_v3_rebuild_20260620/v2_14",
+      "required": false,
+      "returncode": 0,
+      "stderr": "docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/preflight_v2_git_revision.stderr.txt",
+      "stderr_empty": true,
+      "stdout": "docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/preflight_v2_git_revision.stdout.txt"
+    },
+    "v2_python_version": {
+      "command": [
+        "/usr/bin/python3",
+        "--version"
+      ],
+      "cwd": "/root/rtdl_v3_rebuild_20260620/v2_14",
+      "required": true,
+      "returncode": 0,
+      "stderr": "docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/preflight_v2_python_version.stderr.txt",
+      "stderr_empty": true,
+      "stdout": "docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/preflight_v2_python_version.stdout.txt"
+    }
+  },
+  "run_errors": {},
+  "scenario_results": {
+    "embree_32768_stress": {
+      "first_sample_stripped_geomean": 0.9211756326909781,
+      "first_sample_stripped_median": 0.9307350675147374,
+      "geomean": 0.9318846036784767,
+      "m47_status_label": "red_failure_watch_row_open",
+      "max": 1.1237312847312948,
+      "median": 0.9410064166113763,
+      "min": 0.8011486758982834,
+      "paired_samples": [
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.9772643409669399,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 1,
+          "speedup_v2_over_current": 1.010415507235917,
+          "v2_14_sec": 0.9874430447816849,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 1.0018498227000237,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 2,
+          "speedup_v2_over_current": 0.8035550613174673,
+          "v2_14_sec": 0.8050414957106113,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.9935749359428883,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 3,
+          "speedup_v2_over_current": 0.8011486758982834,
+          "v2_14_sec": 0.7960012443363667,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.947750598192215,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 4,
+          "speedup_v2_over_current": 0.9512777657080151,
+          "v2_14_sec": 0.9015740714967251,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.9920637644827366,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 5,
+          "speedup_v2_over_current": 0.9202072965267292,
+          "v2_14_sec": 0.9129043146967888,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.9961314015090466,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 6,
+          "speedup_v2_over_current": 0.9549634753363919,
+          "v2_14_sec": 0.9512691050767899,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.8049868009984493,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 7,
+          "speedup_v2_over_current": 1.1237312847312948,
+          "v2_14_sec": 0.9045888520777225,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.9762152507901192,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 8,
+          "speedup_v2_over_current": 0.9307350675147374,
+          "v2_14_sec": 0.9085977673530579,
+          "v2_14_stderr_empty": true
+        }
+      ],
+      "pass_count_0_95": 4,
+      "sample_count": 8
+    },
+    "optix_cold_single_shot": {
+      "first_sample_stripped_geomean": 0.9740219218705372,
+      "first_sample_stripped_median": 0.9789455850195483,
+      "geomean": 0.984403696827165,
+      "m47_status_label": "red_failure_watch_row_open",
+      "max": 1.0602414225214567,
+      "median": 0.9796449421781168,
+      "min": 0.9292530342749593,
+      "paired_samples": [
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.22134924679994583,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 1,
+          "speedup_v2_over_current": 1.0602414225214567,
+          "v2_14_sec": 0.23468364030122757,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.2106109857559204,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 2,
+          "speedup_v2_over_current": 0.9803442993366853,
+          "v2_14_sec": 0.2064712792634964,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.20790376514196396,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 3,
+          "speedup_v2_over_current": 0.941420682802705,
+          "v2_14_sec": 0.19572490453720093,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.19997182488441467,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 4,
+          "speedup_v2_over_current": 1.022455189993474,
+          "v2_14_sec": 0.2044622302055359,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.21391897648572922,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 5,
+          "speedup_v2_over_current": 0.9292530342749593,
+          "v2_14_sec": 0.19878485798835754,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.2075675129890442,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 6,
+          "speedup_v2_over_current": 0.9789455850195483,
+          "v2_14_sec": 0.20319730043411255,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.20455671101808548,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 7,
+          "speedup_v2_over_current": 0.9980786837814724,
+          "v2_14_sec": 0.20416369289159775,
+          "v2_14_stderr_empty": true
+        },
+        {
+          "current_metadata_failures": [
+            "set_b_control_candidate_missing"
+          ],
+          "current_metadata_ok": false,
+          "current_sec": 0.20688935369253159,
+          "current_stderr_empty": true,
+          "fixture_contract_failures": [],
+          "fixture_contract_matches": true,
+          "sample": 8,
+          "speedup_v2_over_current": 0.9707718021094547,
+          "v2_14_sec": 0.20084235072135925,
+          "v2_14_stderr_empty": true
+        }
+      ],
+      "pass_count_0_95": 6,
+      "sample_count": 8
+    }
+  },
+  "scenarios": {
+    "embree_32768_stress": {
+      "backend": "embree",
+      "box_count": 32768,
+      "mode": "embree_aabb_index",
+      "query_count": 1024,
+      "repeat": 20,
+      "skip_counts": true,
+      "warmup": 5,
+      "watch_status_before_m47": "stability_watch_blocker"
+    },
+    "optix_cold_single_shot": {
+      "backend": "optix",
+      "box_count": 2048,
+      "mode": "optix_aabb_index",
+      "query_count": 1024,
+      "repeat": 1,
+      "skip_counts": false,
+      "warmup": 0,
+      "watch_status_before_m47": "improved_not_closed"
+    }
+  },
+  "schedule": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 1,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 1,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 2,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 2,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 3,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 3,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 4,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 4,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 5,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 5,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 6,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 6,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 7,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 7,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 8,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 8,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 1,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 1,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 2,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 2,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 3,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 3,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 4,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 4,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 5,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 5,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 6,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 6,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 7,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 7,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 8,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/root/rtdl_v3_rebuild_20260620/v2_14/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 8,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    }
+  ],
+  "schema": "rtdl.phoenix_v3.m47_librts_stability_protocol.v1",
+  "status": "m47_librts_stability_protocol_run_complete_not_release",
+  "summary": {
+    "all_app_pod_spend_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "c_abi_work_authorized": false,
+    "embedding_work_authorized": false,
+    "execute": true,
+    "failed_check_count": 0,
+    "focused_pod_spend_authorized_now": false,
+    "paid_pod_authorized_by_this_packet": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "sample_count_per_scenario": 8,
+    "scenario_count": 2,
+    "schedule_row_count": 32,
+    "schema": "rtdl.phoenix_v3.m47_librts_stability_protocol.v1",
+    "status": "m47_librts_stability_protocol_run_complete_not_release",
+    "true_zero_copy_claim_authorized": false,
+    "v4_work_authorized": false
+  }
+}

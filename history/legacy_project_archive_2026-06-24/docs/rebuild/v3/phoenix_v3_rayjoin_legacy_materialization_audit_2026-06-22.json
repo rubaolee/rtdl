@@ -1,0 +1,86 @@
+{
+  "all_app_pod_spend_authorized": false,
+  "artifact": "phoenix_v3_rayjoin_legacy_materialization_audit_2026-06-22",
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "current_hot_routes_already_eliminate_many_host_boundaries": true,
+  "date": "2026-06-22",
+  "exit_criteria": {
+    "current_hot_route_risk_identified": true,
+    "legacy_host_boundary_identified": true,
+    "next_scope_is_runtime_family_not_app": true,
+    "pod_blocked_until_runner_wiring": true,
+    "release_gate_stays_redo_required": true
+  },
+  "external_embedding_or_zero_copy_claim_authorized": false,
+  "failed_checks": [],
+  "focused_pod_spend_authorized": false,
+  "goal_level_decision_audit": {
+    "decision": "Use RayJoin only as a point-location topology-stream family candidate, not as a full-app pod target.",
+    "different_path_now": "Productize one topology-stream route through the shared runner first, then spend pod time only on a focused runner-vs-legacy comparison.",
+    "foolish_actions": "It would be foolish to run full RayJoin or quote old large OptiX-over-Embree ratios without separating host-boundary sources from routes that are already device resident.",
+    "other_path": "Run the RayJoin pod immediately. That would be faster administratively, but likely repeats RTDBSCAN's failure mode if the selected hot route already removed the host boundary.",
+    "was_i_foolish": "No. This avoids direct pod spend before identifying where a real host-boundary source exists."
+  },
+  "host_materialization_source_exists": true,
+  "pod_decision": "No pod yet. First add local runner metadata/tests and confirm the comparison basis: runner-vs-legacy/current-legacy path for productization credit, and V3 runner vs V2.14 for release-score evidence.",
+  "public_speedup_claim_authorized": false,
+  "rayjoin_as_whole_app_target": false,
+  "rayjoin_topology_stream_family_target": true,
+  "recommended_next_probe": "pip_relation_status_corrected_executor_through_prepared_execution_runner",
+  "recommended_next_probe_scope": "Productize the existing point_location_topology_stream relation-status corrected scalar-count route through the shared prepared execution/session runner. Do not present this as full RayJoin.",
+  "release_authorized": false,
+  "route_assessments": [
+    {
+      "evidence": "device_resident_continuation_status says exact authority still downloads candidates and refines membership on host.",
+      "immediate_material_probe": false,
+      "reason": "It has a host boundary, but it is also the validation authority path. It should not be used as a speed claim without a validated device replacement.",
+      "route": "pip_exact_prepared_points",
+      "source": "host_candidate_download_and_host_exact_refine",
+      "v3_runtime_source_exists": true
+    },
+    {
+      "evidence": "native_phase_timings record row_stream_materialized false, candidate_download 0.0, and native_exact_device_scalar_count_produced.",
+      "immediate_material_probe": true,
+      "reason": "This is the cleanest RayJoin topology-stream candidate to productize through the prepared execution runner.",
+      "route": "pip_relation_status_corrected_executor",
+      "source": "device_resident_scalar_count_executor",
+      "v3_runtime_source_exists": true
+    },
+    {
+      "evidence": "default count metadata labels route prepared_right_host_left_exact_count.",
+      "immediate_material_probe": false,
+      "reason": "A better LSI route already exists through prepared-left/dense device columns, so this is a baseline source, not the next trunk target.",
+      "route": "lsi_default_count",
+      "source": "host_packed_left_exact_count",
+      "v3_runtime_source_exists": true
+    },
+    {
+      "evidence": "device_resident_continuation_status says count[index] remains CUDA-resident and prepared-left upload is paid once.",
+      "immediate_material_probe": false,
+      "reason": "The current hot route already removed the host boundary; wrapping it alone risks another RTDBSCAN-like parity result.",
+      "route": "lsi_dense_left_id_count",
+      "source": "device_resident_left_id_count_column",
+      "v3_runtime_source_exists": false
+    },
+    {
+      "evidence": "device continuation says relation flags stay on device and only scalar count is copied back.",
+      "immediate_material_probe": false,
+      "reason": "The current hot route is already device-continuation based; it is a later generalization target, not the first material probe.",
+      "route": "overlay_active_count_device_continuation",
+      "source": "device_resident_shape_pair_active_count_executor",
+      "v3_runtime_source_exists": false
+    }
+  ],
+  "scope": "Phoenix V3 RayJoin Step G1 local/source audit",
+  "source_checks": {
+    "claim_boundaries_present": true,
+    "default_lsi_host_left_route_present": true,
+    "lsi_dense_device_column_route_present": true,
+    "overlay_device_continuation_route_present": true,
+    "pip_partial_host_refine_boundary_recorded": true,
+    "pip_relation_status_device_executor_present": true
+  },
+  "source_file": "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+  "status": "rayjoin_materialization_audit_complete_not_release",
+  "true_zero_copy_claim_authorized": false
+}

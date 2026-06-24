@@ -1,0 +1,58 @@
+{
+  "checks": {
+    "cupy_rawkernel": {
+      "cupy_version": "14.1.1",
+      "driver_version": 12040,
+      "local_runtime_version": 12080,
+      "result": [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        6.0,
+        7.0,
+        8.0
+      ],
+      "runtime_version": 12090,
+      "status": "pass"
+    },
+    "numba_cuda_jit": {
+      "error": "ModuleNotFoundError(\"No module named 'numba'\")",
+      "status": "fail",
+      "traceback": "Traceback (most recent call last):\n  File \"/root/phoenix_v3_work/current_aabb_20260621/scripts/v3_gpu_python_env_gate.py\", line 99, in numba_cuda_jit_check\n    from numba import cuda\nModuleNotFoundError: No module named 'numba'\n"
+    },
+    "torch_cuda": {
+      "error": "ModuleNotFoundError(\"No module named 'torch'\")",
+      "status": "fail",
+      "traceback": "Traceback (most recent call last):\n  File \"/root/phoenix_v3_work/current_aabb_20260621/scripts/v3_gpu_python_env_gate.py\", line 75, in torch_cuda_check\n    import torch\nModuleNotFoundError: No module named 'torch'\n"
+    }
+  },
+  "env": {
+    "CUDA_HOME": null,
+    "CUDA_PATH": null,
+    "NUMBA_CUDA_PREFIX": null,
+    "RTDL_EMBREE_LIBRARY": null,
+    "RTDL_OPTIX_LIBRARY": "/root/phoenix_v3_work/current_aabb_20260621/build/librtdl_optix.so"
+  },
+  "packages": {
+    "cupy": "missing: No package metadata was found for cupy",
+    "cupy-cuda12x": "14.1.1",
+    "numba": "missing: No package metadata was found for numba",
+    "nvidia-cuda-nvcc-cu12": "missing: No package metadata was found for nvidia-cuda-nvcc-cu12",
+    "nvidia-cuda-nvrtc-cu12": "missing: No package metadata was found for nvidia-cuda-nvrtc-cu12",
+    "nvidia-cuda-runtime-cu12": "missing: No package metadata was found for nvidia-cuda-runtime-cu12",
+    "torch": "missing: No package metadata was found for torch"
+  },
+  "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+  "required_packages": {
+    "cupy-cuda12x": "14.1.1",
+    "numba": "0.65.1",
+    "nvidia-cuda-nvcc-cu12": "12.4.131",
+    "nvidia-cuda-nvrtc-cu12": "12.9.86",
+    "nvidia-cuda-runtime-cu12": "12.9.79",
+    "torch": "2.6.0+cu124"
+  },
+  "status": "fail",
+  "tool": "v3_gpu_python_env_gate"
+}

@@ -1,0 +1,129 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_row_ids": [
+    "rtnn_prepared_ranked_summary_npz_cubin_repeat50_1048576_points_k50_radius_0_02"
+  ],
+  "candidate_scope": "row-scoped prepared repeated-session ranked-summary aggregate; RTNN is the evidence harness, not a whole-app or paper-equivalent claim",
+  "checks": {
+    "cache_fill_completed": true,
+    "cache_fill_summary_exists": true,
+    "cold_plus_query_below_material_floor": true,
+    "cubin_cache_file_observed": true,
+    "external_review_missing": true,
+    "hardware_gate_passed": true,
+    "hot_speedup_material": true,
+    "integer_signature_match": true,
+    "npz_source_recorded_on_both_routes": true,
+    "release_flags_false": true,
+    "repeat50": true,
+    "repeat50_completed": true,
+    "repeat50_failed_checks_empty": true,
+    "repeat50_summary_exists": true,
+    "runner_wall_speedup_material": true,
+    "same_contract_signature_match": true,
+    "serious_scale_1m": true
+  },
+  "comparisons": {
+    "cold_plus_query_speedup": 1.3150391330840123,
+    "hot_query_speedup": 7.88855708189875,
+    "runner_wall_speedup": 3.760722286400028
+  },
+  "evidence": {
+    "cache_fill_summary": "docs/rebuild/v3/evidence/phoenix_v3_rtnn_npz_cubin_repeat50_1048576_20260621/cache_fill/summary.json",
+    "repeat50_summary": "docs/rebuild/v3/evidence/phoenix_v3_rtnn_npz_cubin_repeat50_1048576_20260621/repeat50_compare/summary.json",
+    "root": "docs/rebuild/v3/evidence/phoenix_v3_rtnn_npz_cubin_repeat50_1048576_20260621",
+    "run_log": "docs/rebuild/v3/evidence/phoenix_v3_rtnn_npz_cubin_repeat50_1048576_20260621/run.log",
+    "source_manifest": "docs/rebuild/v3/evidence/phoenix_v3_rtnn_npz_cubin_repeat50_1048576_20260621/source_manifest.sha256"
+  },
+  "failed_checks": [],
+  "generic_capability": "fixed_radius_neighbors_3d_prepared_session_amortization",
+  "goal_level_decision_audit": {
+    "decision": "Record RTNN repeat50 prepared-session amortization as a material M7 candidate pending external review, not as immediate promotion.",
+    "different_path_now": "Send this exact scoped candidate for external review; if blocked, keep it as pending and continue another generic engine blocker.",
+    "foolish_actions": "It would be foolish to call this a general RTNN win, a paper-equivalent result, or a release row before external review.",
+    "other_path": "I could keep pursuing single-run RTNN overhead or wait on AABB review, but repeat50 is the direct way to test V3 prepared-session value.",
+    "was_i_foolish": "No. The test matches the V3 prepared-execution thesis and keeps the one-shot/cold-start boundary explicit."
+  },
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "m7_reopen_candidate_pending_2ai_review": true,
+  "material_speedup_floor": 2.0,
+  "measurements": {
+    "cupy_grid": {
+      "cold_plus_query_wall_sec": 0.6041511967778206,
+      "grid_prepare_sec": 0.5054905191063881,
+      "hot_query_median_sec": 0.08415837585926056,
+      "input_load_sec": 0.014502301812171936,
+      "point_column_file": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_repeat50_1048576_20260621_172157/repeat50_compare/rtnn_full_batch_points.csv.npz",
+      "point_column_source": "npz",
+      "runner_wall_sec": 4.938712887465954
+    },
+    "optix": {
+      "cold_plus_query_wall_sec": 0.4594168961048126,
+      "execution_prepare_sec": 0.2323794960975647,
+      "hot_query_median_sec": 0.01066841185092926,
+      "input_load_sec": 0.020568378269672394,
+      "input_pack_sec": 0.19580060988664627,
+      "point_column_file": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_repeat50_1048576_20260621_172157/repeat50_compare/rtnn_full_batch_points.csv.npz",
+      "point_column_source": "npz",
+      "runner_wall_sec": 1.3132352009415627
+    }
+  },
+  "not_release_boundaries": [
+    "No V3 release authorization.",
+    "No broad V3-over-V2 claim.",
+    "No whole RTNN app claim.",
+    "No one-shot or cold-start RTNN speedup claim; cold-plus-query is only 1.315x.",
+    "No paper-equivalent RTNN claim."
+  ],
+  "parameters": {
+    "k_max": 50,
+    "point_column_source": "npz",
+    "point_count": 1048576,
+    "radius": 0.02,
+    "repeat": 50,
+    "routes": [
+      "optix",
+      "cupy_grid"
+    ]
+  },
+  "parity": {
+    "cupy_grid_reference_summary": {
+      "bounded_neighbor_count": 37044632,
+      "kth_id_checksum": 549679635418,
+      "nearest_id_checksum": 549755289600,
+      "row_count": 1048576,
+      "sum_distance": 539061.8025638647
+    },
+    "delta_optix_minus_cupy_grid": {
+      "bounded_neighbor_count": 0,
+      "kth_id_checksum": 0,
+      "nearest_id_checksum": 0,
+      "row_count": 0,
+      "sum_distance": -6.508408114314079e-05
+    },
+    "integer_signature_match": true,
+    "optix_summary": {
+      "bounded_neighbor_count": 37044632,
+      "kth_id_checksum": 549679635418,
+      "nearest_id_checksum": 549755289600,
+      "row_count": 1048576,
+      "sum_distance": 539061.8024987807
+    },
+    "same_contract_signature_match": true,
+    "sum_distance_abs_error": 6.508408114314079e-05,
+    "sum_distance_relative_error": 1.2073584296566818e-10,
+    "sum_distance_relative_tolerance": 0.0001
+  },
+  "promotion_reading": "This is the first RTNN row in the current Phoenix run that clears the 2.0x runner-wall floor, but only for the prepared repeat50/session-amortized contract. It remains pending external review and adds zero M7 rows now.",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "review_required_before_m7": [
+    "External Claude/Gemini review over the exact candidate row id and evidence packet.",
+    "Codex consensus response after external review.",
+    "Public wording review that keeps this scoped to repeat50 prepared-session amortization."
+  ],
+  "status": "rtnn_prepared_repeat50_amortization_m7_candidate_pending_external_review_not_release",
+  "tool": "v3_phoenix_rtnn_prepared_repeat50_amortization_evidence",
+  "whole_app_speedup_claim_authorized": false
+}

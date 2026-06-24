@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs" / "reports" / "goal1668_native_engine_app_agnostic_directive_response_2026-05-10.md"
 DIRECTIVE = ROOT / "docs" / "directives" / "goal1668_antigravity_directive_app_agnostic_engine_2026-05-10.md"
 MANIFEST = ROOT / "docs" / "reports" / "goal1668_native_leakage_manifest_baseline_2026-05-10.json"
-GATE = ROOT / "docs" / "release_reports" / "v1_7_app_agnostic_native_gate.md"
+GATE = ROOT / "docs" / "history" / "release_reports" / "v1_7_app_agnostic_native_gate.md"
 NATIVE = ROOT / "src" / "native"
 
 LEAKAGE_RE = re.compile(

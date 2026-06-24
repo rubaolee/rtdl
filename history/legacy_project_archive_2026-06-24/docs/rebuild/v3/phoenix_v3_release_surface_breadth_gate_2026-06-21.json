@@ -1,0 +1,478 @@
+{
+  "blocking_reasons": [
+    "release_authorization_false",
+    "updated_thirteen_row_release_readiness_consensus_required"
+  ],
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "checks": {
+    "accepted_with_boundary_candidates_not_promotable_now": true,
+    "active_generic_engine_queue_empty": true,
+    "aggregate_release_consensus_blocks_release": true,
+    "aggregate_release_consensus_exists": true,
+    "app_boundary_all_rows_attributed_to_named_apps": true,
+    "app_boundary_has_no_unattributed_m7_rows": true,
+    "app_boundary_release_false": true,
+    "app_boundary_snapshot_is_eight_rows": true,
+    "app_classification_exists": true,
+    "current_capability_coverage_is_nine_of_nine": true,
+    "existing_evidence_promotable_now_false": true,
+    "future_research_records_do_not_include_resolved_spatial_gap": true,
+    "m7_packet_base_rows_still_twelve": true,
+    "m7_packet_broad_speed_false": true,
+    "m7_packet_exists": true,
+    "m7_packet_release_false": true,
+    "m7_packet_rows_extracted_as_twelve": true,
+    "m7_packet_status_not_release": true,
+    "missing_capability_future_work_map_is_empty": true,
+    "missing_capability_future_work_map_matches_queue": true,
+    "missing_packet_capabilities_are_closed": true,
+    "next_engine_queue_closed_not_release": true,
+    "next_engine_work_queue_exists": true,
+    "pending_external_review_candidates_not_promotable_now": true,
+    "planned_capability_floor_is_nine": true,
+    "queue_current_rows_match_surface_rows": true,
+    "queue_supplemental_m7_rows_are_one": true,
+    "route_map_m7_rows_are_five": true,
+    "supplemental_m7_rows_are_seven": true,
+    "surface_row_integrity_flags_block_unsupported_claims": true,
+    "surface_row_integrity_manifest_has_thirteen_rows": true,
+    "surface_row_integrity_manifest_matches_current_surface_rows": true,
+    "surface_row_integrity_manifest_rows_are_unique": true,
+    "surface_row_integrity_paths_exist": true,
+    "surface_row_integrity_rows_are_generic_capability_rows": true
+  },
+  "decision_audit": {
+    "decision": "Update the Phoenix V3 release-surface breadth gate to count 12 base packet rows plus 1 reviewed Spatial supplemental row, while keeping release blocked.",
+    "different_path_now": "Use this gate to show breadth is now 13 rows across 9 capability families, then require fresh aggregate 2-AI release-readiness review before release wording.",
+    "foolish_actions": "The foolish action would be to treat thirteen row-scoped/supplemental wins, a closed active engine queue, or passing docs tests as enough for a V3 major release.",
+    "other_path": "Keep the old twelve-row breadth blocker. That would hide the accepted Spatial default-path row and mislead future agents about the current surface.",
+    "was_i_foolish": "No. This removes a stale missing-capability blocker after default-path Spatial review, but it still refuses to treat breadth coverage as release authorization."
+  },
+  "evidence": {
+    "accepted_with_boundary_candidate_count": 0,
+    "accepted_with_boundary_candidate_ids": [],
+    "active_generic_engine_queue_ids": [],
+    "app_boundary_m7_row_ids": [
+      "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+      "grouped_reduction_sum_cupy_device_columns_repeat100_262144_rows_1024_groups",
+      "grouped_reduction_sum_cupy_device_columns_repeat100_524288_rows_2048_groups",
+      "aabb_candidate_stream_all_count_only_float32_32768",
+      "component_union_clustered3d_65536_524288_repeat5_row_scoped",
+      "prepared_graph_chunk_rt_graph_2a1_cliques_80000_non_graph_stream",
+      "hausdorff_threshold_summary_1048576_threshold_0_4_stability_row_scoped",
+      "collision_flag_stream_8192poses_no_probe_paired_validation_separated_row_scoped"
+    ],
+    "app_boundary_m7_rows": 8,
+    "apps_with_m7_row_count": 8,
+    "apps_with_m7_rows": {
+      "hausdorff_xhd": [
+        "hausdorff_threshold_summary_1048576_threshold_0_4_stability_row_scoped"
+      ],
+      "librts_spatial_index": [
+        "aabb_candidate_stream_all_count_only_float32_32768"
+      ],
+      "raydb_style": [
+        "grouped_reduction_sum_cupy_device_columns_repeat100_262144_rows_1024_groups",
+        "grouped_reduction_sum_cupy_device_columns_repeat100_524288_rows_2048_groups",
+        "grouped_reduction_sum_scalar_broadcast_repeat100_262144"
+      ],
+      "robot_collision": [
+        "collision_flag_stream_8192poses_no_probe_paired_validation_separated_row_scoped"
+      ],
+      "rt_dbscan": [
+        "component_union_clustered3d_65536_524288_repeat5_row_scoped"
+      ],
+      "triangle_counting": [
+        "prepared_graph_chunk_rt_graph_2a1_cliques_80000_non_graph_stream"
+      ]
+    },
+    "base_m7_packet_row_count": 12,
+    "capability_scope_note": "aggregate_frontier/vector_accumulation is now covered by the amended Barnes-Hut Numba CUDA partner M7 row. Spatial topology-stream is now covered only by the default-path guarded squared-boundary row; it still does not authorize release.",
+    "existing_evidence_promotable_now": false,
+    "future_research_capabilities": [
+      "vector_accumulation"
+    ],
+    "future_research_work_ids": [
+      "barnes_hut_vector_accumulation_frontier_shape"
+    ],
+    "m7_capability_families": [
+      "aabb_candidate_stream",
+      "aggregate_frontier",
+      "collision_flag_stream",
+      "component_union",
+      "grouped_reduction",
+      "point_location_topology_stream",
+      "prepared_graph_chunk",
+      "ranked_summary",
+      "threshold_summary"
+    ],
+    "m7_capability_family_count": 9,
+    "m7_row_count_by_capability": {
+      "aabb_candidate_stream": 3,
+      "aggregate_frontier": 1,
+      "collision_flag_stream": 1,
+      "component_union": 1,
+      "grouped_reduction": 3,
+      "point_location_topology_stream": 1,
+      "prepared_graph_chunk": 1,
+      "ranked_summary": 1,
+      "threshold_summary": 1
+    },
+    "m7_rows_by_capability": {
+      "aabb_candidate_stream": [
+        "aabb_candidate_stream_all_count_only_float32_32768",
+        "aabb_candidate_stream_range_intersection_rows_native_query_handle_jittered_grid_32768_repeat50",
+        "aabb_candidate_stream_range_intersection_rows_native_query_handle_jittered_grid_65536_repeat50"
+      ],
+      "aggregate_frontier": [
+        "aggregate_tree_fused_weighted_vector_sum_numba_cuda_131072_repeat11_row_scoped"
+      ],
+      "collision_flag_stream": [
+        "collision_flag_stream_8192poses_no_probe_paired_validation_separated_row_scoped"
+      ],
+      "component_union": [
+        "component_union_clustered3d_65536_524288_repeat5_row_scoped"
+      ],
+      "grouped_reduction": [
+        "grouped_reduction_sum_cupy_device_columns_repeat100_262144_rows_1024_groups",
+        "grouped_reduction_sum_cupy_device_columns_repeat100_524288_rows_2048_groups",
+        "grouped_reduction_sum_scalar_broadcast_repeat100_262144"
+      ],
+      "point_location_topology_stream": [
+        "point_location_topology_stream_relation_status_guarded_squared_boundary_prefilter_zero_county_repeat50_sample7"
+      ],
+      "prepared_graph_chunk": [
+        "prepared_graph_chunk_rt_graph_2a1_cliques_80000_non_graph_stream"
+      ],
+      "ranked_summary": [
+        "rtnn_prepared_ranked_summary_npz_cubin_repeat50_1048576_points_k50_radius_0_02"
+      ],
+      "threshold_summary": [
+        "hausdorff_threshold_summary_1048576_threshold_0_4_stability_row_scoped"
+      ]
+    },
+    "minimum_m7_capability_families_for_major_release": 9,
+    "missing_capability_future_work_map": {},
+    "missing_m7_capability_families": [],
+    "next_engine_queue_status": "generic_engine_work_queue_closed_not_release",
+    "pending_external_review_candidate_count": 0,
+    "pending_external_review_candidate_ids": [],
+    "planned_capability_families": [
+      "aabb_candidate_stream",
+      "aggregate_frontier",
+      "collision_flag_stream",
+      "component_union",
+      "grouped_reduction",
+      "point_location_topology_stream",
+      "prepared_graph_chunk",
+      "ranked_summary",
+      "threshold_summary"
+    ],
+    "route_map_m7_qualified_release_rows": 5,
+    "supplemental_m7_qualified_release_rows": 7,
+    "supplemental_m7_row_count_from_current_queue": 1,
+    "supplemental_m7_rows_from_current_queue": [
+      {
+        "closed_by_consensus": "docs/reviews/codex_phoenix_v3_spatial_default_path_promotion_2ai_consensus_2026-06-22.md",
+        "generic_capability": "point_location_topology_stream",
+        "row_id": "point_location_topology_stream_relation_status_guarded_squared_boundary_prefilter_zero_county_repeat50_sample7",
+        "source_work_id": "spatial_squared_boundary_default_path_topology_stream"
+      }
+    ],
+    "surface_row_integrity": [
+      {
+        "broad_v3_faster_than_v2_claim_authorized": false,
+        "consensus_paths": [
+          "docs/reviews/codex_phoenix_v3_aabb_candidate_stream_32768_m7_final_review_packet_2ai_consensus_2026-06-21.md"
+        ],
+        "consensus_paths_exist": true,
+        "evidence_paths": [
+          "docs/rebuild/v3/phoenix_v3_aabb_candidate_stream_32768_m7_final_review_packet_2026-06-21.json"
+        ],
+        "evidence_paths_exist": true,
+        "generic_capability": "aabb_candidate_stream",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "review_paths": [
+          "docs/reviews/claude_phoenix_v3_aabb_candidate_stream_32768_m7_final_review_packet_review_2026-06-21.md"
+        ],
+        "review_paths_exist": true,
+        "row_id": "aabb_candidate_stream_all_count_only_float32_32768",
+        "source_kind": "base_m7_packet_row",
+        "unsupported_claims_blocked": true
+      },
+      {
+        "broad_v3_faster_than_v2_claim_authorized": false,
+        "consensus_paths": [
+          "docs/reviews/codex_phoenix_v3_aabb_native_query_handle_final_m7_review_2ai_consensus_2026-06-21.md"
+        ],
+        "consensus_paths_exist": true,
+        "evidence_paths": [
+          "docs/rebuild/v3/phoenix_v3_aabb_native_query_handle_review_gate_2026-06-21.json"
+        ],
+        "evidence_paths_exist": true,
+        "generic_capability": "aabb_candidate_stream",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "review_paths": [
+          "docs/reviews/claude_phoenix_v3_aabb_native_query_handle_final_m7_review_2026-06-21.md"
+        ],
+        "review_paths_exist": true,
+        "row_id": "aabb_candidate_stream_range_intersection_rows_native_query_handle_jittered_grid_32768_repeat50",
+        "source_kind": "post_classification_final_review_packet",
+        "unsupported_claims_blocked": true
+      },
+      {
+        "broad_v3_faster_than_v2_claim_authorized": false,
+        "consensus_paths": [
+          "docs/reviews/codex_phoenix_v3_aabb_native_query_handle_final_m7_review_2ai_consensus_2026-06-21.md"
+        ],
+        "consensus_paths_exist": true,
+        "evidence_paths": [
+          "docs/rebuild/v3/phoenix_v3_aabb_native_query_handle_review_gate_2026-06-21.json"
+        ],
+        "evidence_paths_exist": true,
+        "generic_capability": "aabb_candidate_stream",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "review_paths": [
+          "docs/reviews/claude_phoenix_v3_aabb_native_query_handle_final_m7_review_2026-06-21.md"
+        ],
+        "review_paths_exist": true,
+        "row_id": "aabb_candidate_stream_range_intersection_rows_native_query_handle_jittered_grid_65536_repeat50",
+        "source_kind": "post_classification_final_review_packet",
+        "unsupported_claims_blocked": true
+      },
+      {
+        "broad_v3_faster_than_v2_claim_authorized": false,
+        "consensus_paths": [
+          "docs/reviews/codex_phoenix_v3_barnes_hut_fused_partner_m7_candidate_2ai_consensus_2026-06-21.md"
+        ],
+        "consensus_paths_exist": true,
+        "evidence_paths": [
+          "docs/rebuild/v3/phoenix_v3_barnes_hut_fused_partner_m7_candidate_2026-06-21.json"
+        ],
+        "evidence_paths_exist": true,
+        "generic_capability": "aggregate_frontier",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "review_paths": [
+          "docs/reviews/claude_phoenix_v3_barnes_hut_fused_partner_m7_candidate_review_2026-06-21.md"
+        ],
+        "review_paths_exist": true,
+        "row_id": "aggregate_tree_fused_weighted_vector_sum_numba_cuda_131072_repeat11_row_scoped",
+        "source_kind": "post_classification_final_review_packet",
+        "unsupported_claims_blocked": true
+      },
+      {
+        "broad_v3_faster_than_v2_claim_authorized": false,
+        "consensus_paths": [
+          "docs/reviews/codex_phoenix_v3_robot_collision_flag_stream_no_probe_paired_2ai_consensus_2026-06-21.md"
+        ],
+        "consensus_paths_exist": true,
+        "evidence_paths": [
+          "docs/rebuild/v3/phoenix_v3_robot_collision_flag_stream_no_probe_paired_rtx_evidence_2026-06-21.json"
+        ],
+        "evidence_paths_exist": true,
+        "generic_capability": "collision_flag_stream",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "review_paths": [
+          "docs/reviews/claude_phoenix_v3_robot_collision_flag_stream_no_probe_paired_m7_review_2026-06-21.md"
+        ],
+        "review_paths_exist": true,
+        "row_id": "collision_flag_stream_8192poses_no_probe_paired_validation_separated_row_scoped",
+        "source_kind": "base_m7_packet_row",
+        "unsupported_claims_blocked": true
+      },
+      {
+        "broad_v3_faster_than_v2_claim_authorized": false,
+        "consensus_paths": [
+          "docs/reviews/codex_phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_2ai_consensus_2026-06-21.md"
+        ],
+        "consensus_paths_exist": true,
+        "evidence_paths": [
+          "docs/rebuild/v3/phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_2026-06-21.md"
+        ],
+        "evidence_paths_exist": true,
+        "generic_capability": "component_union",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "review_paths": [
+          "docs/reviews/claude_phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_review_2026-06-21.md",
+          "docs/reviews/claude_phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_repeat5_final_review_2026-06-21.md"
+        ],
+        "review_paths_exist": true,
+        "row_id": "component_union_clustered3d_65536_524288_repeat5_row_scoped",
+        "source_kind": "base_m7_packet_row",
+        "unsupported_claims_blocked": true
+      },
+      {
+        "broad_v3_faster_than_v2_claim_authorized": false,
+        "consensus_paths": [
+          "docs/reviews/codex_phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_claude_supersession_consensus_2026-06-22.md"
+        ],
+        "consensus_paths_exist": true,
+        "evidence_paths": [
+          "docs/rebuild/v3/phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_2026-06-21.json"
+        ],
+        "evidence_paths_exist": true,
+        "generic_capability": "grouped_reduction",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "review_paths": [
+          "docs/reviews/claude_phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_review_2026-06-22.md"
+        ],
+        "review_paths_exist": true,
+        "row_id": "grouped_reduction_sum_cupy_device_columns_repeat100_262144_rows_1024_groups",
+        "source_kind": "post_classification_final_review_packet",
+        "unsupported_claims_blocked": true
+      },
+      {
+        "broad_v3_faster_than_v2_claim_authorized": false,
+        "consensus_paths": [
+          "docs/reviews/codex_phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_claude_supersession_consensus_2026-06-22.md"
+        ],
+        "consensus_paths_exist": true,
+        "evidence_paths": [
+          "docs/rebuild/v3/phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_2026-06-21.json"
+        ],
+        "evidence_paths_exist": true,
+        "generic_capability": "grouped_reduction",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "review_paths": [
+          "docs/reviews/claude_phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_review_2026-06-22.md"
+        ],
+        "review_paths_exist": true,
+        "row_id": "grouped_reduction_sum_cupy_device_columns_repeat100_524288_rows_2048_groups",
+        "source_kind": "post_classification_final_review_packet",
+        "unsupported_claims_blocked": true
+      },
+      {
+        "broad_v3_faster_than_v2_claim_authorized": false,
+        "consensus_paths": [
+          "docs/reviews/codex_phoenix_v3_grouped_reduction_sum_262144_m7_final_review_packet_2ai_consensus_2026-06-21.md"
+        ],
+        "consensus_paths_exist": true,
+        "evidence_paths": [
+          "docs/rebuild/v3/phoenix_v3_grouped_reduction_sum_262144_m7_final_review_packet_2026-06-21.json"
+        ],
+        "evidence_paths_exist": true,
+        "generic_capability": "grouped_reduction",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "review_paths": [
+          "docs/reviews/claude_phoenix_v3_grouped_reduction_sum_262144_m7_final_review_packet_review_2026-06-21.md"
+        ],
+        "review_paths_exist": true,
+        "row_id": "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+        "source_kind": "post_classification_final_review_packet",
+        "unsupported_claims_blocked": true
+      },
+      {
+        "broad_v3_faster_than_v2_claim_authorized": false,
+        "consensus_paths": [
+          "docs/reviews/codex_phoenix_v3_hausdorff_threshold_summary_p0_repair_2ai_consensus_2026-06-21.md"
+        ],
+        "consensus_paths_exist": true,
+        "evidence_paths": [
+          "docs/rebuild/v3/phoenix_v3_hausdorff_threshold_summary_repeat5_rtx_evidence_2026-06-21.md"
+        ],
+        "evidence_paths_exist": true,
+        "generic_capability": "threshold_summary",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "review_paths": [
+          "docs/reviews/claude_phoenix_v3_hausdorff_threshold_summary_repeat5_m7_review_2026-06-21.md",
+          "docs/reviews/claude_phoenix_v3_hausdorff_threshold_summary_p0_repair_final_review_2026-06-21.md"
+        ],
+        "review_paths_exist": true,
+        "row_id": "hausdorff_threshold_summary_1048576_threshold_0_4_stability_row_scoped",
+        "source_kind": "base_m7_packet_row",
+        "unsupported_claims_blocked": true
+      },
+      {
+        "broad_v3_faster_than_v2_claim_authorized": false,
+        "consensus_paths": [
+          "docs/reviews/codex_phoenix_v3_spatial_default_path_promotion_2ai_consensus_2026-06-22.md"
+        ],
+        "consensus_paths_exist": true,
+        "evidence_paths": [
+          "docs/rebuild/v3/phoenix_v3_spatial_relation_status_squared_boundary_candidate_2026-06-21.md"
+        ],
+        "evidence_paths_exist": true,
+        "generic_capability": "point_location_topology_stream",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "review_paths": [
+          "docs/reviews/claude_phoenix_v3_spatial_default_path_promotion_review_2026-06-22.md"
+        ],
+        "review_paths_exist": true,
+        "row_id": "point_location_topology_stream_relation_status_guarded_squared_boundary_prefilter_zero_county_repeat50_sample7",
+        "source_kind": "closed_generic_engine_work_supplemental_row",
+        "unsupported_claims_blocked": true
+      },
+      {
+        "broad_v3_faster_than_v2_claim_authorized": false,
+        "consensus_paths": [
+          "docs/reviews/codex_phoenix_v3_triangle_prepared_graph_80000_m7_final_review_packet_2ai_consensus_2026-06-21.md"
+        ],
+        "consensus_paths_exist": true,
+        "evidence_paths": [
+          "docs/rebuild/v3/phoenix_v3_triangle_prepared_graph_80000_m7_final_review_packet_2026-06-21.json"
+        ],
+        "evidence_paths_exist": true,
+        "generic_capability": "prepared_graph_chunk",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "review_paths": [
+          "docs/reviews/claude_phoenix_v3_triangle_prepared_graph_80000_m7_refresh_review_2026-06-21.md"
+        ],
+        "review_paths_exist": true,
+        "row_id": "prepared_graph_chunk_rt_graph_2a1_cliques_80000_non_graph_stream",
+        "source_kind": "base_m7_packet_row",
+        "unsupported_claims_blocked": true
+      },
+      {
+        "broad_v3_faster_than_v2_claim_authorized": false,
+        "consensus_paths": [
+          "docs/reviews/codex_phoenix_v3_rtnn_prepared_repeat50_amortization_2ai_consensus_2026-06-21.md"
+        ],
+        "consensus_paths_exist": true,
+        "evidence_paths": [
+          "docs/rebuild/v3/phoenix_v3_rtnn_prepared_repeat50_review_gate_2026-06-21.json"
+        ],
+        "evidence_paths_exist": true,
+        "generic_capability": "ranked_summary",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "review_paths": [
+          "docs/reviews/claude_phoenix_v3_rtnn_prepared_repeat50_amortization_review_2026-06-21.md"
+        ],
+        "review_paths_exist": true,
+        "row_id": "rtnn_prepared_ranked_summary_npz_cubin_repeat50_1048576_points_k50_radius_0_02",
+        "source_kind": "post_classification_final_review_packet",
+        "unsupported_claims_blocked": true
+      }
+    ],
+    "surface_row_integrity_all_flags_block_unsupported_claims": true,
+    "surface_row_integrity_all_paths_exist": true,
+    "surface_row_integrity_all_rows_are_generic_capability_rows": true,
+    "surface_row_integrity_row_count": 13,
+    "total_m7_row_count": 13,
+    "unattributed_app_boundary_m7_row_count": 0,
+    "unattributed_app_boundary_m7_rows": []
+  },
+  "failed_checks": [],
+  "gate": "phoenix_v3_major_release_surface_breadth",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "required_next_actions": [
+    "Do not publish Phoenix V3 as a major release from the current thirteen-row surface until an aggregate 2-AI release-readiness consensus explicitly authorizes it.",
+    "Seek fresh aggregate release-readiness review against the 13-row, 9-capability surface.",
+    "Do not turn the Spatial row into RTDL-beats-RayJoin, public speedup, true-zero-copy, or broad V3-over-V2 wording."
+  ],
+  "status": "surface_breadth_passed_not_release",
+  "tool": "v3_phoenix_release_surface_breadth_gate"
+}

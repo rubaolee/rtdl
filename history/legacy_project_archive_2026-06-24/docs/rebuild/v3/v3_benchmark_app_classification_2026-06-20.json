@@ -1,0 +1,291 @@
+{
+  "version": "v3_rebuild_benchmark_app_classification_2026_06_21_phoenix_boundary_refresh",
+  "status": "phoenix_boundary_classification_not_release",
+  "v3_release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "phoenix_m7_qualified_release_rows": 8,
+  "source_report": "docs/rebuild/v3/v2_14_vs_v3_rebuild_pod_evidence_2026-06-20.md",
+  "row_classification_authority": "docs/rebuild/v3/phoenix_v3_m7_row_classification_packet_2026-06-20.json",
+  "environment_gate": "docs/rebuild/v3/v3_gpu_environment_gate_2026-06-20.md",
+  "local_artifact_roots": {
+    "initial_v2_14_comparison": "docs/rebuild/v3/evidence/v2_14_vs_v3_rebuild_non_numba_serious_20260620_051207",
+    "current_goal2626_clean": "docs/rebuild/v3/evidence/v3_current_goal2626_clean_env_20260620_055523",
+    "current_goal2636_clean": "docs/rebuild/v3/evidence/v3_current_goal2636_full_clean_20260620_060726",
+    "current_goal3828_clean": "docs/rebuild/v3/evidence/v3_current_goal3828_full_clean_20260620_060412",
+    "gpu_python_env_gate": "docs/rebuild/v3/evidence/v3_gpu_python_env_gate_20260620_061058",
+    "gpu_python_env_gate_script": "docs/rebuild/v3/evidence/v3_gpu_python_env_gate_script_20260620_062113"
+  },
+  "remote_artifact_roots": {
+    "initial_v2_14_comparison": "/root/rtdl_v3_rebuild_20260620/artifacts/v2_14_vs_v3_rebuild_non_numba_serious_20260620_051207",
+    "current_goal2626_clean": "/root/rtdl_v3_rebuild_20260620/artifacts/v3_current_goal2626_clean_env_20260620_055523",
+    "current_goal2636_clean": "/root/rtdl_v3_rebuild_20260620/artifacts/v3_current_goal2636_full_clean_20260620_060726",
+    "current_goal3828_clean": "/root/rtdl_v3_rebuild_20260620/artifacts/v3_current_goal3828_full_clean_20260620_060412",
+    "gpu_python_env_gate": "/root/rtdl_v3_rebuild_20260620/artifacts/v3_gpu_python_env_gate_20260620_061058",
+    "gpu_python_env_gate_script": "/root/rtdl_v3_rebuild_20260620/artifacts/v3_gpu_python_env_gate_script_20260620_062113"
+  },
+  "baseline": {
+    "name": "v2.14",
+    "commit": "8384a38376567fe518d89721453eb4433de08312"
+  },
+  "clean_current_runs": {
+    "goal2626_standard_all_rows": {
+      "status": "pass",
+      "ok_rows": 22,
+      "failed_rows": 0
+    },
+    "goal2636_standard_all_rows": {
+      "status": "pass",
+      "ok_rows": 28,
+      "failed_rows": 0
+    },
+    "goal3828_full_clean": {
+      "status": "pass",
+      "pass_rows": 10,
+      "failed_rows": 0
+    },
+    "gpu_python_environment_gate": {
+      "status": "pass",
+      "checks": [
+        "cupy_rawkernel",
+        "torch_cuda",
+        "numba_cuda_jit"
+      ]
+    }
+  },
+  "classification_values": [
+    "row_scoped_m7_qualified_not_release",
+    "internal_evidence_not_m7",
+    "boundary_lesson_not_m7",
+    "negative_route_not_speed_claim",
+    "dependency_gated_row_scoped_m7_not_release"
+  ],
+  "m7_row_ids": [
+    "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+    "grouped_reduction_sum_cupy_device_columns_repeat100_262144_rows_1024_groups",
+    "grouped_reduction_sum_cupy_device_columns_repeat100_524288_rows_2048_groups",
+    "aabb_candidate_stream_all_count_only_float32_32768",
+    "component_union_clustered3d_65536_524288_repeat5_row_scoped",
+    "prepared_graph_chunk_rt_graph_2a1_cliques_80000_non_graph_stream",
+    "hausdorff_threshold_summary_1048576_threshold_0_4_stability_row_scoped",
+    "collision_flag_stream_8192poses_no_probe_paired_validation_separated_row_scoped"
+  ],
+  "apps": {
+    "hausdorff_xhd": {
+      "classification": "row_scoped_m7_qualified_not_release",
+      "m7_row_id": "hausdorff_threshold_summary_1048576_threshold_0_4_stability_row_scoped",
+      "public_claim_allowed_now": false,
+      "summary": "Exactly one threshold_summary row is M7-qualified: 1,048,576 points per side, threshold 0.4, repeat=5, query mean 1.639x and phase-total mean 1.240x OptiX over Embree. This is not a full Hausdorff-distance or witness-materialization claim.",
+      "representative_current_rows": [
+        "hausdorff_threshold_summary_1048576_threshold_0_4_stability_row_scoped"
+      ],
+      "must_fix_before_public_docs": [
+        "Keep the claim tied to the exact threshold_summary row.",
+        "Do not claim full Hausdorff distance, X-HD reproduction, or broad V3-over-V2 speedup."
+      ]
+    },
+    "spatial_rayjoin": {
+      "classification": "internal_evidence_not_m7",
+      "public_claim_allowed_now": false,
+      "summary": "Prepared all-workload routing now completes and authored routes are useful internal evidence, but RayJoin author RT remains faster than RTDL OptiX on the PIP row and no Spatial RayJoin row is M7-qualified.",
+      "negative_route_explanation": {
+        "row": "rayjoin_all_backend_query_summary",
+        "optix_speedup_vs_embree": 0.03414924661592695,
+        "explanation_doc": "docs/rebuild/v3/v3_negative_route_explanations_2026-06-20.md",
+        "why_slow": [
+          "Tiny route-health fixture, not a RayJoin paper-scale performance row.",
+          "LSI uses tests/fixtures/rayjoin/br_county_subset.cdb with row_count=1.",
+          "Overlay seed uses a subset fixture with row_count=0.",
+          "PIP uses tests/fixtures/rayjoin/br_county_subset.cdb with row_count=6.",
+          "Protocol is warmup=0 and repeat=1, so GPU launch/orchestration overhead dominates.",
+          "The row repairs all-workload runability; it does not authorize OptiX speedup wording."
+        ],
+        "paper_result_comparison_allowed": false
+      },
+      "representative_current_rows": [
+        "rayjoin_all_backend_query_summary",
+        "rayjoin_pip_authored_tiled_x512",
+        "rayjoin_lsi_authored_tiled_x512",
+        "rayjoin_overlay_seed_authored_tiled_x512"
+      ],
+      "claim_limits": [
+        "Do not claim the standard all-workload route is faster on OptiX.",
+        "Do not claim RTDL beats RayJoin.",
+        "Teach authored strengthened routes separately from all-workload route health."
+      ],
+      "must_fix_before_public_docs": [
+        "A future public row needs an M3 phase table, author timing basis, non-paper wording, and new 2-AI consensus."
+      ]
+    },
+    "rt_dbscan": {
+      "classification": "row_scoped_m7_qualified_not_release",
+      "m7_row_id": "component_union_clustered3d_65536_524288_repeat5_row_scoped",
+      "public_claim_allowed_now": false,
+      "summary": "The old very large all-app OptiX-over-Embree row is forbidden. Exactly one component_union row is M7-qualified after repeat=5 RTX evidence: same-contract prepared OptiX fixed-radius threshold columns feeding the same Numba component signature are 1.102x to 1.236x faster end-to-end on zero-noise four-cluster synthetic rows.",
+      "representative_current_rows": [
+        "component_union_clustered3d_65536_524288_repeat5_row_scoped"
+      ],
+      "optimized_row_review": {
+        "evidence_doc": "docs/rebuild/v3/phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_2026-06-21.md",
+        "status": "rtdbscan_component_signature_optimized_rtx_evidence_m7_approved_row_scoped",
+        "speedup_range_optix_over_embree": "1.102x to 1.236x",
+        "old_1483x_all_app_row_public_claim_allowed": false
+      },
+      "must_fix_before_public_docs": [
+        "Do not publish the old 1483x all-app row as RTDBSCAN speedup evidence.",
+        "Document the Numba/CUDA environment gate for partner continuation paths.",
+        "Do not claim noisy or irregular dataset generalization."
+      ]
+    },
+    "robot_collision": {
+      "classification": "row_scoped_m7_qualified_not_release",
+      "m7_row_id": "collision_flag_stream_8192poses_no_probe_paired_validation_separated_row_scoped",
+      "public_claim_allowed_now": false,
+      "summary": "Exactly one collision_flag_stream row is M7-qualified: no-probe paired timing on 8,192 poses with separated CPU probe-reference validation. Tail prepared query execution mean is 5.086x, total-run window mean is 5.075x, and conservative no-probe wrapper mean is 1.171x OptiX over Embree.",
+      "representative_current_rows": [
+        "collision_flag_stream_8192poses_no_probe_paired_validation_separated_row_scoped"
+      ],
+      "must_fix_before_public_docs": [
+        "Keep wording row-scoped.",
+        "Do not claim full robot planning, exact solid collision, continuous collision, zero-copy, or broad V3-over-V2 speedup."
+      ]
+    },
+    "raydb_style": {
+      "classification": "dependency_gated_row_scoped_m7_not_release",
+      "m7_row_id": "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+      "m7_row_ids": [
+        "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+        "grouped_reduction_sum_cupy_device_columns_repeat100_262144_rows_1024_groups",
+        "grouped_reduction_sum_cupy_device_columns_repeat100_524288_rows_2048_groups"
+      ],
+      "public_claim_allowed_now": false,
+      "summary": "Three grouped_reduction rows are M7-qualified: the existing 262,144-row scalar-broadcast prepared grouped_sum row, plus two exact cupy_device_columns prepared grouped_sum rows at 262,144 and 524,288 rows. Whole-app RayDB, count rows, true zero-copy, and broad V3-over-V2 claims remain blocked.",
+      "representative_current_rows": [
+        "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+        "grouped_reduction_sum_cupy_device_columns_repeat100_262144_rows_1024_groups",
+        "grouped_reduction_sum_cupy_device_columns_repeat100_524288_rows_2048_groups"
+      ],
+      "dependency_gate": [
+        "cupy-cuda12x device-column route must be available for cupy_device_columns rows",
+        "torch==2.6.0+cu124",
+        "torch.cuda.is_available() must be true for partner-resident RayDB-style routes that require PyTorch CUDA"
+      ],
+      "must_fix_before_public_docs": [
+        "Document the GPU partner gate for partner-resident rows.",
+        "Do not let CPU-only Torch environments silently enter the release path.",
+        "Do not claim RayDB-style V3 is 158x faster end to end, V3 is 200x faster broadly, true zero-copy, or pure backend-only Embree/device-column ratios."
+      ]
+    },
+    "barnes_hut": {
+      "classification": "internal_evidence_not_m7",
+      "public_claim_allowed_now": false,
+      "summary": "Barnes-Hut evidence exercises fused/partner vector accumulation and aggregate_frontier rows, but current review keeps it internal: the fused Numba CUDA path beats the prepared OptiX frontier path, so no Barnes-Hut RT-core speedup row is M7-qualified.",
+      "representative_current_rows": [
+        "node_coverage_prepared_threshold_decision",
+        "barnes_hut_node_coverage_bodies_8192",
+        "barnes_hut_node_coverage_bodies_32768",
+        "barnes_hut_numba_scale_default_8192"
+      ],
+      "must_fix_before_public_docs": [
+        "Keep Barnes-Hut as internal fused-partner evidence unless a reviewed app-agnostic fused RT-native weighted-vector primitive exists.",
+        "Document the Numba/CUDA environment gate for internal reruns."
+      ]
+    },
+    "librts_spatial_index": {
+      "classification": "row_scoped_m7_qualified_not_release",
+      "m7_row_id": "aabb_candidate_stream_all_count_only_float32_32768",
+      "public_claim_allowed_now": false,
+      "summary": "The small standard row is negative, but exactly one calibrated 32,768/32,768 generic AABB count-only row is M7-qualified. It is not LibRTS authors-code or paper-equivalent timing.",
+      "negative_route_explanation": {
+        "row": "aabb_index_all_count_only",
+        "optix_speedup_vs_embree": 0.06539687665395033,
+        "explanation_doc": "docs/rebuild/v3/v3_negative_route_explanations_2026-06-20.md",
+        "why_slow": [
+          "Small synthetic generic AABB-index fixture, not a LibRTS paper reproduction.",
+          "Payload has paper_reproduction=false and paper_equivalent_dataset=false.",
+          "Fixture uses box_count=1024, point_query_count=512, box_query_count=512.",
+          "Protocol is warmup=0 and repeat=1.",
+          "The OptiX path is a generic RTDL AABB_INDEX_QUERY_2D route, not LibRTS authors-code timing.",
+          "Public docs must tell users to choose Embree for this small measured route and use the calibrated 32768/32768 row for current performance interpretation."
+        ],
+        "paper_result_comparison_allowed": false
+      },
+      "calibrated_replacement_row": {
+        "row": "aabb_candidate_stream_all_count_only_float32_32768",
+        "optix_speedup_vs_embree_query": 814.3388221324167,
+        "optix_speedup_vs_embree_wall": 132.753,
+        "box_count": 32768,
+        "query_count": 32768,
+        "paper_result_comparison_allowed": false,
+        "claim_boundary": "Generic RTDL AABB candidate-stream count-only route, native float32-inclusive boundary, not LibRTS authors-code or paper-equivalent timing."
+      },
+      "representative_current_rows": [
+        "aabb_index_all_count_only",
+        "aabb_candidate_stream_all_count_only_float32_32768"
+      ],
+      "must_fix_before_public_docs": [
+        "Do not publish LibRTS paper or authors-code wording.",
+        "Keep the old 0.065x small-row explanation visible beside the calibrated positive generic AABB row."
+      ]
+    },
+    "rtnn": {
+      "classification": "boundary_lesson_not_m7",
+      "public_claim_allowed_now": false,
+      "summary": "RTNN has distribution-specific hot wins, but wall timing regresses on clustered, shell, and uniform rows. No RTNN row is M7-qualified.",
+      "representative_current_rows": [
+        "prepared_3d_ranked_summary",
+        "rtnn_clustered_65536_ranked_summary",
+        "rtnn_shell_65536_ranked_summary",
+        "rtnn_uniform_65536_ranked_summary"
+      ],
+      "wall_ratios_optix_over_embree": {
+        "clustered": 0.625,
+        "shell": 0.316,
+        "uniform": 0.303
+      },
+      "must_fix_before_public_docs": [
+        "Use distribution-specific hot-path wording only inside the boundary lesson.",
+        "Do not claim universal RTNN acceleration, paper-equivalent performance, or end-to-end speedup."
+      ]
+    },
+    "triangle_counting": {
+      "classification": "row_scoped_m7_qualified_not_release",
+      "m7_row_id": "prepared_graph_chunk_rt_graph_2a1_cliques_80000_non_graph_stream",
+      "public_claim_allowed_now": false,
+      "summary": "Exactly one prepared_graph_chunk row is M7-qualified: generated 80,000-clique K4 row, 347.232x hot-query and 6.342x wall OptiX over Embree, matching the 320,000-triangle oracle. It is synthetic non-graph stream evidence, not RT-Graph paper reproduction.",
+      "representative_current_rows": [
+        "prepared_graph_chunk_rt_graph_2a1_cliques_80000_non_graph_stream"
+      ],
+      "must_fix_before_public_docs": [
+        "Teach this as row-scoped synthetic non-graph stream evidence.",
+        "Do not claim graph-database acceleration, RT-Graph paper reproduction, M113 graph-capture readiness, or automatic partner selection."
+      ]
+    },
+    "contact_manifold": {
+      "classification": "boundary_lesson_not_m7",
+      "public_claim_allowed_now": false,
+      "summary": "Contact Manifold is a scoped broadphase lesson only: query timing is 1.235x and collect-k timing is 2.759x OptiX over Embree, but wall timing is 0.803x, AABB-index preparation is about 4.1x slower on OptiX, and the full contact solver remains app-owned.",
+      "representative_current_rows": [
+        "generic_aabb_broadphase_collect_k"
+      ],
+      "must_fix_before_public_docs": [
+        "Keep claim row-scoped to generic AABB candidate discovery plus bounded row collection.",
+        "Do not claim full contact solving, physics-engine throughput, wall speedup, or broad V3-over-V2 speedup."
+      ]
+    }
+  },
+  "required_next_actions": [
+    "Keep public V3 docs and tutorials on the Phoenix boundary surface, not the older pre-public labels.",
+    "Keep all public performance claims exact-row-scoped.",
+    "Keep v3_release_authorized false until release-readiness blockers are closed by 2-AI consensus.",
+    "Require the GPU Python environment gate before rerunning partner-resident rows.",
+    "Use docs/rebuild/v3/phoenix_v3_m7_row_classification_packet_2026-06-20.json as the row-level authority."
+  ],
+  "goal_level_decision_audit": {
+    "decision": "Replace stale app-level pre-public classifications with Phoenix boundary classifications.",
+    "was_i_foolish": "No for this edit. It removes misleading current-surface labels that could make users think app-level V3 release claims are authorized.",
+    "foolish_actions": "It would be foolish to keep app-level promotion labels after the M7 packet proved that only exact row-scoped claims qualify, with the app-boundary snapshot narrower than the current eleven-row total authority.",
+    "other_path": "Leave the old file as historical and rely on prose elsewhere. That would keep a machine-readable current file misleading.",
+    "different_path_now": "Make the machine-readable current classification match the Phoenix M7 packet and gate it with tests."
+  }
+}

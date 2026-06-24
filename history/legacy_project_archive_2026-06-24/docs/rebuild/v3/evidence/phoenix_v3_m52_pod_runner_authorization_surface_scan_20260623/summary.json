@@ -1,0 +1,1159 @@
+{
+  "schema": "rtdl.phoenix_v3.m52_pod_runner_authorization_surface_scan.v1",
+  "status": "scan_complete_no_run_not_release",
+  "scan_name_filter": "pod|remote|runner|stability_protocol",
+  "scanned_file_count": 126,
+  "token_gated_files": [
+    "scripts/v3_phoenix_m47_librts_stability_protocol.py",
+    "scripts/v3_phoenix_spatial_rayjoin_topology_stream_m3_pod_runner.py"
+  ],
+  "execute_flag_files": [
+    "scripts/rtdl_remote_pod_validation_driver.py",
+    "scripts/v3_phoenix_m47_librts_stability_protocol.py",
+    "scripts/v3_phoenix_spatial_rayjoin_topology_stream_m3_pod_runner.py"
+  ],
+  "current_active_fail_closed_whitelist": [
+    "scripts/v3_phoenix_m47_librts_stability_protocol.py",
+    "scripts/v3_phoenix_spatial_rayjoin_topology_stream_m3_pod_runner.py"
+  ],
+  "release_authorized": false,
+  "all_app_pod_spend_authorized": false,
+  "focused_pod_spend_authorized_now": false,
+  "public_speedup_claim_authorized": false,
+  "rows": [
+    {
+      "name": "goal1026_pre_cloud_runner_dry_run_audit.py",
+      "path": "scripts/goal1026_pre_cloud_runner_dry_run_audit.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1031_local_baseline_smoke_runner.py",
+      "path": "scripts/goal1031_local_baseline_smoke_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal1053_post_goal1048_cloud_batch_runner.py",
+      "path": "scripts/goal1053_post_goal1048_cloud_batch_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1063_pre_pod_local_completion_audit.py",
+      "path": "scripts/goal1063_pre_pod_local_completion_audit.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1068_next_rtx_pod_efficiency_batch.py",
+      "path": "scripts/goal1068_next_rtx_pod_efficiency_batch.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1072_post_scale_up_rtx_pod_batch.py",
+      "path": "scripts/goal1072_post_scale_up_rtx_pod_batch.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1076_barnes_hut_rich_rtx_pod_candidate.py",
+      "path": "scripts/goal1076_barnes_hut_rich_rtx_pod_candidate.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1080_post_pod_public_wording_readiness_audit.py",
+      "path": "scripts/goal1080_post_pod_public_wording_readiness_audit.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1084_facility_recentered_rtx_pod_packet.py",
+      "path": "scripts/goal1084_facility_recentered_rtx_pod_packet.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1096_current_rtx_pod_artifact_intake.py",
+      "path": "scripts/goal1096_current_rtx_pod_artifact_intake.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1099_post_pod_readiness_status_refresh.py",
+      "path": "scripts/goal1099_post_pod_readiness_status_refresh.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1100_post_pod_baseline_gap_audit.py",
+      "path": "scripts/goal1100_post_pod_baseline_gap_audit.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1119_pre_pod_local_gate.py",
+      "path": "scripts/goal1119_pre_pod_local_gate.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1135_changed_path_rtx_pod_plan.py",
+      "path": "scripts/goal1135_changed_path_rtx_pod_plan.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1136_changed_path_rtx_pod_artifact_intake.py",
+      "path": "scripts/goal1136_changed_path_rtx_pod_artifact_intake.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1166_post_goal1165_next_pod_packet.py",
+      "path": "scripts/goal1166_post_goal1165_next_pod_packet.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1168_goal1166_live_pod_intake_audit.py",
+      "path": "scripts/goal1168_goal1166_live_pod_intake_audit.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1171_clean_source_rtx_pod_preflight.py",
+      "path": "scripts/goal1171_clean_source_rtx_pod_preflight.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1172_clean_source_rtx_pod_runbook.py",
+      "path": "scripts/goal1172_clean_source_rtx_pod_runbook.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1182_next_pod_packet.py",
+      "path": "scripts/goal1182_next_pod_packet.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1183_goal1182_pre_pod_readiness_gate.py",
+      "path": "scripts/goal1183_goal1182_pre_pod_readiness_gate.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1188_next_rtx_pod_gap_analysis.py",
+      "path": "scripts/goal1188_next_rtx_pod_gap_analysis.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1189_next_rtx_pod_contract_manifest.py",
+      "path": "scripts/goal1189_next_rtx_pod_contract_manifest.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1190_next_rtx_pod_contract_manifest_supersession.py",
+      "path": "scripts/goal1190_next_rtx_pod_contract_manifest_supersession.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1191_next_pod_local_baseline_schema_probe.py",
+      "path": "scripts/goal1191_next_pod_local_baseline_schema_probe.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1194_public_wording_evidence_pod_packet.py",
+      "path": "scripts/goal1194_public_wording_evidence_pod_packet.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1200_optix_slower_investigation_pod_packet.py",
+      "path": "scripts/goal1200_optix_slower_investigation_pod_packet.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1204_repaired_rtx_pod_packet.py",
+      "path": "scripts/goal1204_repaired_rtx_pod_packet.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1205_repaired_rtx_pod_intake.py",
+      "path": "scripts/goal1205_repaired_rtx_pod_intake.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1257_v1_1_embree_optix_pod_packet.py",
+      "path": "scripts/goal1257_v1_1_embree_optix_pod_packet.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1258_v1_1_embree_optix_pod_intake.py",
+      "path": "scripts/goal1258_v1_1_embree_optix_pod_intake.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1259_v1_1_pre_pod_gate.py",
+      "path": "scripts/goal1259_v1_1_pre_pod_gate.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1267_v1_2_optix_targeted_pod_packet.py",
+      "path": "scripts/goal1267_v1_2_optix_targeted_pod_packet.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1272_v1_2_targeted_pod_intake.py",
+      "path": "scripts/goal1272_v1_2_targeted_pod_intake.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1292_v1_5_generic_optix_evidence_runner.py",
+      "path": "scripts/goal1292_v1_5_generic_optix_evidence_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal1393_v1_5_stable_primitive_evidence_runner.py",
+      "path": "scripts/goal1393_v1_5_stable_primitive_evidence_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal1408_v1_5_vs_v1_0_perf_runner.py",
+      "path": "scripts/goal1408_v1_5_vs_v1_0_perf_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal1485_v1_5_4_managed_buffer_pod_evidence_packet.py",
+      "path": "scripts/goal1485_v1_5_4_managed_buffer_pod_evidence_packet.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1545_v1_5_4_optix_collect_k_device_prefix_pod_runner.py",
+      "path": "scripts/goal1545_v1_5_4_optix_collect_k_device_prefix_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1579_v1_5_4_optix_collect_k_next_arch_validation_runner.py",
+      "path": "scripts/goal1579_v1_5_4_optix_collect_k_next_arch_validation_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal1586_v1_5_4_optix_collect_k_multi_session_validation_runner.py",
+      "path": "scripts/goal1586_v1_5_4_optix_collect_k_multi_session_validation_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal1618_v1_6_4_collect_k_packet_runner.py",
+      "path": "scripts/goal1618_v1_6_4_collect_k_packet_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1661_comprehensive_backend_pod_executor.py",
+      "path": "scripts/goal1661_comprehensive_backend_pod_executor.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1868_road_hazard_partner_priority_flags_pod_smoke.py",
+      "path": "scripts/goal1868_road_hazard_partner_priority_flags_pod_smoke.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1905_v2_partner_pod_batch_acceptance.py",
+      "path": "scripts/goal1905_v2_partner_pod_batch_acceptance.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal1916_v2_post_pod_artifact_manifest.py",
+      "path": "scripts/goal1916_v2_post_pod_artifact_manifest.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2037_embree_cpu_partner_all_thread_runner.py",
+      "path": "scripts/goal2037_embree_cpu_partner_all_thread_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal2077_embree_v18_v2_complete_table_runner.py",
+      "path": "scripts/goal2077_embree_v18_v2_complete_table_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2159_rayjoin_public_cdb_runner.py",
+      "path": "scripts/goal2159_rayjoin_public_cdb_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal2192_rayjoin_same_query_stream_runner.py",
+      "path": "scripts/goal2192_rayjoin_same_query_stream_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2327_rayjoin_pod_artifact_summary.py",
+      "path": "scripts/goal2327_rayjoin_pod_artifact_summary.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2348_rtnn_v2_2_external_runner.py",
+      "path": "scripts/goal2348_rtnn_v2_2_external_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2467_grouped_stream_baseline_pod_runner.py",
+      "path": "scripts/goal2467_grouped_stream_baseline_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2471_grouped_union_telemetry_pod_smoke.py",
+      "path": "scripts/goal2471_grouped_union_telemetry_pod_smoke.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2473_grouped_union_atomic_scale_pod_runner.py",
+      "path": "scripts/goal2473_grouped_union_atomic_scale_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2478_rt_dbscan_project_close_pod_runner.py",
+      "path": "scripts/goal2478_rt_dbscan_project_close_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2483_optix_contract_pod_runner.py",
+      "path": "scripts/goal2483_optix_contract_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2485_robot_collision_matrix_pod_runner.py",
+      "path": "scripts/goal2485_robot_collision_matrix_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2509_optix_partner_resident_scaffold_probe_pod.py",
+      "path": "scripts/goal2509_optix_partner_resident_scaffold_probe_pod.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": false
+    },
+    {
+      "name": "goal2511_optix_partner_resident_device_grouped_i64_pod.py",
+      "path": "scripts/goal2511_optix_partner_resident_device_grouped_i64_pod.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": false
+    },
+    {
+      "name": "goal2512_raydb_style_partner_resident_backend_pod.py",
+      "path": "scripts/goal2512_raydb_style_partner_resident_backend_pod.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": false
+    },
+    {
+      "name": "goal2513_partner_resident_group_capacity_pod.py",
+      "path": "scripts/goal2513_partner_resident_group_capacity_pod.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": false
+    },
+    {
+      "name": "goal2514_partner_resident_compact_output_pod.py",
+      "path": "scripts/goal2514_partner_resident_compact_output_pod.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": false
+    },
+    {
+      "name": "goal2515_partner_resident_grouped_min_max_pod.py",
+      "path": "scripts/goal2515_partner_resident_grouped_min_max_pod.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": false
+    },
+    {
+      "name": "goal2516_partner_resident_composite_avg_sum_count_pod.py",
+      "path": "scripts/goal2516_partner_resident_composite_avg_sum_count_pod.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": false
+    },
+    {
+      "name": "goal2517_partner_resident_fused_sum_count_pod.py",
+      "path": "scripts/goal2517_partner_resident_fused_sum_count_pod.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": false
+    },
+    {
+      "name": "goal2518_partner_resident_fused_sum_count_timing_pod.py",
+      "path": "scripts/goal2518_partner_resident_fused_sum_count_timing_pod.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": false
+    },
+    {
+      "name": "goal2519_partner_resident_grouped_i64_dispatch_boundary_pod.py",
+      "path": "scripts/goal2519_partner_resident_grouped_i64_dispatch_boundary_pod.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": false
+    },
+    {
+      "name": "goal2574_librts_external_runner.py",
+      "path": "scripts/goal2574_librts_external_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal2595_gpu_rmq_author_runner.py",
+      "path": "scripts/goal2595_gpu_rmq_author_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2645_raydb_rt_perf_pod.py",
+      "path": "scripts/goal2645_raydb_rt_perf_pod.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2646_raydb_prepared_payload_perf_pod.py",
+      "path": "scripts/goal2646_raydb_prepared_payload_perf_pod.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2665_v2_5_triton_grouped_continuation_pod_runner.py",
+      "path": "scripts/goal2665_v2_5_triton_grouped_continuation_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2682_v2_5_triton_adapter_front_door_pod_runner.py",
+      "path": "scripts/goal2682_v2_5_triton_adapter_front_door_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2683_raydb_triton_front_door_pod_runner.py",
+      "path": "scripts/goal2683_raydb_triton_front_door_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2684_raydb_hit_stream_triton_pod_runner.py",
+      "path": "scripts/goal2684_raydb_hit_stream_triton_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal2685_raydb_device_hit_stream_handoff_pod_runner.py",
+      "path": "scripts/goal2685_raydb_device_hit_stream_handoff_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal2855_v2_5_current_canonical_harness_packet_runner.py",
+      "path": "scripts/goal2855_v2_5_current_canonical_harness_packet_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2991_v2_6_numba_neutral_handoff_pod_runner.py",
+      "path": "scripts/goal2991_v2_6_numba_neutral_handoff_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2994_raydb_numba_neutral_demo_pod_runner.py",
+      "path": "scripts/goal2994_raydb_numba_neutral_demo_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2995_raydb_numba_minmax_pod_runner.py",
+      "path": "scripts/goal2995_raydb_numba_minmax_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal2997_numba_compact_mask_pod_runner.py",
+      "path": "scripts/goal2997_numba_compact_mask_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal3000_triangle_counting_numba_compact_mask_pod_runner.py",
+      "path": "scripts/goal3000_triangle_counting_numba_compact_mask_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal3003_rayjoin_numba_compact_mask_pod_runner.py",
+      "path": "scripts/goal3003_rayjoin_numba_compact_mask_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal3007_numba_grouped_arg_reducer_pod_runner.py",
+      "path": "scripts/goal3007_numba_grouped_arg_reducer_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal3013_hausdorff_numba_device_score_rows_pod_runner.py",
+      "path": "scripts/goal3013_hausdorff_numba_device_score_rows_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal3016_hausdorff_numba_mode_comparison_pod_runner.py",
+      "path": "scripts/goal3016_hausdorff_numba_mode_comparison_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal3139_numba_kernel_cache_pod_probe.py",
+      "path": "scripts/goal3139_numba_kernel_cache_pod_probe.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal3140_v2_8_canonical_schema_pod_smoke.py",
+      "path": "scripts/goal3140_v2_8_canonical_schema_pod_smoke.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal3143_hausdorff_partner_exact_numba_pod_probe.py",
+      "path": "scripts/goal3143_hausdorff_partner_exact_numba_pod_probe.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal3145_segmented_minmax_front_door_pod_probe.py",
+      "path": "scripts/goal3145_segmented_minmax_front_door_pod_probe.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal3147_compact_mask_front_door_pod_probe.py",
+      "path": "scripts/goal3147_compact_mask_front_door_pod_probe.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal3244_rayjoin_same_slice_repeated_count_runner.py",
+      "path": "scripts/goal3244_rayjoin_same_slice_repeated_count_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal3631_segment_pair_backend_conformance_runner.py",
+      "path": "scripts/goal3631_segment_pair_backend_conformance_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal3785_amd_hiprt_functional_pod_runner.py",
+      "path": "scripts/goal3785_amd_hiprt_functional_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal3823_current_benchmark_front_door_runner.py",
+      "path": "scripts/goal3823_current_benchmark_front_door_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal3828_current_benchmark_scale_profile_runner.py",
+      "path": "scripts/goal3828_current_benchmark_scale_profile_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "goal3927_combined_pod_perf_queue.py",
+      "path": "scripts/goal3927_combined_pod_perf_queue.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal3931_evaluate_combined_pod_perf_manifest.py",
+      "path": "scripts/goal3931_evaluate_combined_pod_perf_manifest.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal3992_grouped_union_extended_telemetry_pod_smoke.py",
+      "path": "scripts/goal3992_grouped_union_extended_telemetry_pod_smoke.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal3996_grouped_union_extended_telemetry_sweep_pod.py",
+      "path": "scripts/goal3996_grouped_union_extended_telemetry_sweep_pod.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "goal4548_m149_legacy_full_runner_repair.py",
+      "path": "scripts/goal4548_m149_legacy_full_runner_repair.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": false
+    },
+    {
+      "name": "goal769_rtx_pod_one_shot.py",
+      "path": "scripts/goal769_rtx_pod_one_shot.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "rtdl_cpu_only_pod_comparison_launch.py",
+      "path": "scripts/rtdl_cpu_only_pod_comparison_launch.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "rtdl_pod_bootstrap_probe.py",
+      "path": "scripts/rtdl_pod_bootstrap_probe.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "rtdl_remote_pod_validation_driver.py",
+      "path": "scripts/rtdl_remote_pod_validation_driver.py",
+      "has_execute_flag": true,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "rtdl_v2_10_pod_validation_bundle.py",
+      "path": "scripts/rtdl_v2_10_pod_validation_bundle.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "rtdl_v2_11_embree_cpu_partner_reference_runner.py",
+      "path": "scripts/rtdl_v2_11_embree_cpu_partner_reference_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "run_goal1828_optix_device_column_pod_validation.py",
+      "path": "scripts/run_goal1828_optix_device_column_pod_validation.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_0_pod_evidence_probe.py",
+      "path": "scripts/v3_0_pod_evidence_probe.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_aabb_prepare_reuse_pod_runner.py",
+      "path": "scripts/v3_phoenix_aabb_prepare_reuse_pod_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_aabb_prepare_reuse_serious_pod_evidence.py",
+      "path": "scripts/v3_phoenix_aabb_prepare_reuse_serious_pod_evidence.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_barnes_hut_runner_parity_pod_ab.py",
+      "path": "scripts/v3_phoenix_barnes_hut_runner_parity_pod_ab.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_component_union_m38_pod_ab.py",
+      "path": "scripts/v3_phoenix_component_union_m38_pod_ab.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_grouped_reduction_device_column_pod_evidence.py",
+      "path": "scripts/v3_phoenix_grouped_reduction_device_column_pod_evidence.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_hausdorff_threshold_runner_pod_ab.py",
+      "path": "scripts/v3_phoenix_hausdorff_threshold_runner_pod_ab.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_m47_librts_stability_protocol.py",
+      "path": "scripts/v3_phoenix_m47_librts_stability_protocol.py",
+      "has_execute_flag": true,
+      "has_auth_token": true,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_rayjoin_point_location_runner_pod_ab.py",
+      "path": "scripts/v3_phoenix_rayjoin_point_location_runner_pod_ab.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_rtdbscan_runner_m3_1_pod_ab.py",
+      "path": "scripts/v3_phoenix_rtdbscan_runner_m3_1_pod_ab.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_rtdbscan_runner_m3_4_pod_ab.py",
+      "path": "scripts/v3_phoenix_rtdbscan_runner_m3_4_pod_ab.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_rtnn_full_batch_float32_pod_evidence.py",
+      "path": "scripts/v3_phoenix_rtnn_full_batch_float32_pod_evidence.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_rtnn_full_batch_float32_same_contract_runner.py",
+      "path": "scripts/v3_phoenix_rtnn_full_batch_float32_same_contract_runner.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_rtnn_prepared_execution_runner_repeat50_pod_ab.py",
+      "path": "scripts/v3_phoenix_rtnn_prepared_execution_runner_repeat50_pod_ab.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_runner_overhead_microbench.py",
+      "path": "scripts/v3_phoenix_runner_overhead_microbench.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": false,
+      "mentions_pod": false,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_spatial_rayjoin_topology_stream_m3_pod_runner.py",
+      "path": "scripts/v3_phoenix_spatial_rayjoin_topology_stream_m3_pod_runner.py",
+      "has_execute_flag": true,
+      "has_auth_token": true,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    },
+    {
+      "name": "v3_phoenix_triangle_runner_m18_pod_ab.py",
+      "path": "scripts/v3_phoenix_triangle_runner_m18_pod_ab.py",
+      "has_execute_flag": false,
+      "has_auth_token": false,
+      "has_dry_run": true,
+      "mentions_pod": true,
+      "parses_args": true
+    }
+  ]
+}

@@ -1,0 +1,556 @@
+{
+  "backends_requested": [
+    "embree",
+    "optix"
+  ],
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "raw generic AABB_INDEX_QUERY_2D range_intersection_rows oracle",
+  "capacity_pressure": {
+    "backend": "optix",
+    "error": "OptiX AABB_INDEX_QUERY_2D range_intersection_rows overflowed capacity 2; emitted at least 13; failure_mode=fail_closed_overflow",
+    "expected_required_unique_rows": 13,
+    "fixture": "dense_capacity_pressure",
+    "low_capacity": 2,
+    "overflow_fail_closed_observed": true
+  },
+  "checks": {
+    "all_requested_backends_have_all_fixtures": true,
+    "all_requested_backends_ran_without_errors": true,
+    "all_rows_match_independent_cpu_oracle": true,
+    "embree_backend_checked_if_requested": true,
+    "optix_backend_checked_if_requested": true,
+    "optix_capacity_pressure_fail_closed_if_requested": true
+  },
+  "environment": {
+    "cwd": "/root/phoenix_v3_work/current_aabb_20260621",
+    "env": {
+      "PYTHONPATH": "src:.",
+      "RTDL_EMBREE_LIBRARY": "/root/rtdl_v3_rebuild_20260620/current/build/librtdl_embree.so",
+      "RTDL_OPTIX_LIBRARY": "/root/phoenix_v3_work/current_aabb_20260621/build/librtdl_optix.so"
+    },
+    "git_head": "fatal: not a git repository (or any of the parent directories): .git",
+    "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 8.9",
+    "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+    "source_manifest": {
+      "algorithm": "sha256",
+      "files": [
+        {
+          "path": "src/rtdsl/aabb_index.py",
+          "sha256": "61d4d19222156d37fcc4f6400e006192a9db966517ab8c6f73ec23244359b51a"
+        },
+        {
+          "path": "src/rtdsl/optix_runtime.py",
+          "sha256": "41e73c6d60fb878a78bceedd014c9fe027a8b8511b512123e0fd7f3275d40700"
+        },
+        {
+          "path": "src/native/optix/rtdl_optix_workloads.cpp",
+          "sha256": "4da826284e50d246d07f894985d27ae6cdb397b895683cce443582150a9c403e"
+        },
+        {
+          "path": "scripts/v3_phoenix_aabb_raw_oracle_evidence.py",
+          "sha256": "d5aaecdb869fce69170bdbfac730bfb2cd243885014025eb1dfebc3d8054d7db"
+        },
+        {
+          "path": "scripts/v3_phoenix_aabb_prepare_reuse_pod_runner.py",
+          "sha256": "9147a83697b260e1f65a58e8b92b51345f2291f3a0a1581b87addf71785a8302"
+        },
+        {
+          "path": "scripts/v3_phoenix_aabb_native_query_handle_evidence.py",
+          "sha256": "78e3fb8417fb9c9b74a2f0f946bfadf0b4a023acfd4ccbb8f6887494d7101c23"
+        }
+      ],
+      "sha256": "f7d8a0ae6e39c691bf7c949b23741181abcc24fc3e3ef405f73c7a113d1e4422"
+    },
+    "tool": "v3_phoenix_aabb_raw_oracle_environment"
+  },
+  "failed_checks": [],
+  "fixtures": [
+    {
+      "expected_row_count": 10,
+      "fixture_boundary": "multiple overlaps, duplicate-prone identical indexed bounds, zero-overlap query, and closed-boundary edge-touch cases",
+      "indexed_box_count": 5,
+      "name": "mixed_overlap_zero_touch_duplicate",
+      "query_box_count": 5
+    },
+    {
+      "expected_row_count": 13,
+      "fixture_boundary": "dense many-to-many overlaps for capacity and duplicate-row pressure",
+      "indexed_box_count": 4,
+      "name": "dense_capacity_pressure",
+      "query_box_count": 4
+    }
+  ],
+  "generic_capability": "aabb_candidate_stream",
+  "goal_level_decision_audit": {
+    "decision": "Add an independent raw AABB oracle gate for the native-query-handle candidate instead of relying on Contact Manifold final witness correctness.",
+    "different_path_now": "Use this oracle as a blocker-closure artifact, then separately add fresh-run stability before requesting another review.",
+    "foolish_actions": "The foolish action would be to call Contact Manifold final witness parity the same as generic AABB candidate-row parity.",
+    "other_path": "I could rerun the large benchmark again. That would test timing stability but would not prove the raw AABB row contract.",
+    "was_i_foolish": "No. This directly targets the Huygens P0 correctness blocker without creating a new performance claim."
+  },
+  "interpretation": "This packet validates raw generic AABB range_intersection_rows against an independent closed-boundary CPU oracle. It is correctness/provenance evidence only; it does not authorize M7 promotion, release wording, full Contact Manifold wording, or broad V3-over-V2 claims.",
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "observed_rows": [
+    {
+      "actual_row_count": 10,
+      "actual_rows": [
+        [
+          201,
+          101
+        ],
+        [
+          201,
+          102
+        ],
+        [
+          201,
+          105
+        ],
+        [
+          202,
+          102
+        ],
+        [
+          202,
+          103
+        ],
+        [
+          202,
+          105
+        ],
+        [
+          204,
+          104
+        ],
+        [
+          205,
+          101
+        ],
+        [
+          205,
+          102
+        ],
+        [
+          205,
+          105
+        ]
+      ],
+      "backend": "embree",
+      "elapsed_sec": 0.030736014246940613,
+      "expected_row_count": 10,
+      "expected_rows": [
+        [
+          201,
+          101
+        ],
+        [
+          201,
+          102
+        ],
+        [
+          201,
+          105
+        ],
+        [
+          202,
+          102
+        ],
+        [
+          202,
+          103
+        ],
+        [
+          202,
+          105
+        ],
+        [
+          204,
+          104
+        ],
+        [
+          205,
+          101
+        ],
+        [
+          205,
+          102
+        ],
+        [
+          205,
+          105
+        ]
+      ],
+      "fixture": "mixed_overlap_zero_touch_duplicate",
+      "matches_independent_cpu_oracle": true,
+      "prepared_query_cache_stats": {
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 0,
+        "range_intersection_misses": 1
+      },
+      "row_capacity": null
+    },
+    {
+      "actual_row_count": 13,
+      "actual_rows": [
+        [
+          401,
+          301
+        ],
+        [
+          401,
+          302
+        ],
+        [
+          401,
+          303
+        ],
+        [
+          401,
+          304
+        ],
+        [
+          402,
+          301
+        ],
+        [
+          402,
+          302
+        ],
+        [
+          402,
+          303
+        ],
+        [
+          402,
+          304
+        ],
+        [
+          403,
+          301
+        ],
+        [
+          403,
+          302
+        ],
+        [
+          403,
+          303
+        ],
+        [
+          404,
+          301
+        ],
+        [
+          404,
+          304
+        ]
+      ],
+      "backend": "embree",
+      "elapsed_sec": 0.0008461698889732361,
+      "expected_row_count": 13,
+      "expected_rows": [
+        [
+          401,
+          301
+        ],
+        [
+          401,
+          302
+        ],
+        [
+          401,
+          303
+        ],
+        [
+          401,
+          304
+        ],
+        [
+          402,
+          301
+        ],
+        [
+          402,
+          302
+        ],
+        [
+          402,
+          303
+        ],
+        [
+          402,
+          304
+        ],
+        [
+          403,
+          301
+        ],
+        [
+          403,
+          302
+        ],
+        [
+          403,
+          303
+        ],
+        [
+          404,
+          301
+        ],
+        [
+          404,
+          304
+        ]
+      ],
+      "fixture": "dense_capacity_pressure",
+      "matches_independent_cpu_oracle": true,
+      "prepared_query_cache_stats": {
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 0,
+        "range_intersection_misses": 1
+      },
+      "row_capacity": null
+    },
+    {
+      "actual_row_count": 10,
+      "actual_rows": [
+        [
+          201,
+          101
+        ],
+        [
+          201,
+          102
+        ],
+        [
+          201,
+          105
+        ],
+        [
+          202,
+          102
+        ],
+        [
+          202,
+          103
+        ],
+        [
+          202,
+          105
+        ],
+        [
+          204,
+          104
+        ],
+        [
+          205,
+          101
+        ],
+        [
+          205,
+          102
+        ],
+        [
+          205,
+          105
+        ]
+      ],
+      "backend": "optix",
+      "elapsed_sec": 0.4306129217147827,
+      "expected_row_count": 10,
+      "expected_rows": [
+        [
+          201,
+          101
+        ],
+        [
+          201,
+          102
+        ],
+        [
+          201,
+          105
+        ],
+        [
+          202,
+          102
+        ],
+        [
+          202,
+          103
+        ],
+        [
+          202,
+          105
+        ],
+        [
+          204,
+          104
+        ],
+        [
+          205,
+          101
+        ],
+        [
+          205,
+          102
+        ],
+        [
+          205,
+          105
+        ]
+      ],
+      "fixture": "mixed_overlap_zero_touch_duplicate",
+      "matches_independent_cpu_oracle": true,
+      "prepared_query_cache_stats": {
+        "native_range_intersection_entries": 1,
+        "native_range_intersection_hits": 0,
+        "native_range_intersection_misses": 1,
+        "point_membership_entries": 0,
+        "point_membership_hits": 0,
+        "point_membership_misses": 0,
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 0,
+        "range_intersection_misses": 1
+      },
+      "row_capacity": 28
+    },
+    {
+      "actual_row_count": 13,
+      "actual_rows": [
+        [
+          401,
+          301
+        ],
+        [
+          401,
+          302
+        ],
+        [
+          401,
+          303
+        ],
+        [
+          401,
+          304
+        ],
+        [
+          402,
+          301
+        ],
+        [
+          402,
+          302
+        ],
+        [
+          402,
+          303
+        ],
+        [
+          402,
+          304
+        ],
+        [
+          403,
+          301
+        ],
+        [
+          403,
+          302
+        ],
+        [
+          403,
+          303
+        ],
+        [
+          404,
+          301
+        ],
+        [
+          404,
+          304
+        ]
+      ],
+      "backend": "optix",
+      "elapsed_sec": 0.000653587281703949,
+      "expected_row_count": 13,
+      "expected_rows": [
+        [
+          401,
+          301
+        ],
+        [
+          401,
+          302
+        ],
+        [
+          401,
+          303
+        ],
+        [
+          401,
+          304
+        ],
+        [
+          402,
+          301
+        ],
+        [
+          402,
+          302
+        ],
+        [
+          402,
+          303
+        ],
+        [
+          402,
+          304
+        ],
+        [
+          403,
+          301
+        ],
+        [
+          403,
+          302
+        ],
+        [
+          403,
+          303
+        ],
+        [
+          404,
+          301
+        ],
+        [
+          404,
+          304
+        ]
+      ],
+      "fixture": "dense_capacity_pressure",
+      "matches_independent_cpu_oracle": true,
+      "prepared_query_cache_stats": {
+        "native_range_intersection_entries": 1,
+        "native_range_intersection_hits": 0,
+        "native_range_intersection_misses": 1,
+        "point_membership_entries": 0,
+        "point_membership_hits": 0,
+        "point_membership_misses": 0,
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 0,
+        "range_intersection_misses": 1
+      },
+      "row_capacity": 34
+    }
+  ],
+  "public_speedup_claim_authorized": false,
+  "raw_aabb_oracle_closes_correctness_blocker": true,
+  "release_authorized": false,
+  "run_errors": {},
+  "source_manifest_sha256": "f7d8a0ae6e39c691bf7c949b23741181abcc24fc3e3ef405f73c7a113d1e4422",
+  "status": "aabb_raw_oracle_pass_not_m7",
+  "tool": "v3_phoenix_aabb_raw_oracle_evidence",
+  "whole_app_speedup_claim_authorized": false
+}

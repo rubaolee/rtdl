@@ -1,0 +1,255 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "generic fixed_radius_neighbors_3d ranked_summary full-batch float32 aggregate; RTNN is only the evidence harness",
+  "checks": {
+    "cold_plus_query_wall_regresses": true,
+    "failed_checks_empty": true,
+    "hardware_gate_pass": true,
+    "hot_speedup_material": true,
+    "integer_signature_match": true,
+    "main_summary_exists": true,
+    "release_flags_false": true,
+    "repeat5_main": true,
+    "runner_completed": true,
+    "runner_status_pending_2ai_not_m7": true,
+    "runner_wall_regresses": true,
+    "same_contract_signature_match": true,
+    "serious_scale_1m": true,
+    "sum_distance_within_tolerance": true,
+    "supplemental_summaries_exist": true
+  },
+  "evidence": {
+    "main": "docs/rebuild/v3/evidence/rtnn_full_batch_float32_same_contract_1048576_r5_20260621",
+    "main_summary": "docs/rebuild/v3/evidence/rtnn_full_batch_float32_same_contract_1048576_r5_20260621/summary.json",
+    "supplemental": [
+      "docs/rebuild/v3/evidence/rtnn_full_batch_float32_same_contract_262144_r3_20260621",
+      "docs/rebuild/v3/evidence/rtnn_full_batch_float32_same_contract_1048576_r3_20260621"
+    ]
+  },
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not call this RTNN M7 without external review and Codex consensus.",
+    "Do not claim RTDL beats CuPy grid end-to-end or wall-clock on this row.",
+    "Do not claim V3 solves nearest-neighbor workloads in general.",
+    "Do not quote the 7.790x hot-query speedup without saying prepared-hot-query only.",
+    "Do not reuse the old M106 787x-vs-Embree figure as public evidence."
+  ],
+  "generic_capability": "ranked_summary",
+  "goal_level_decision_audit": {
+    "decision": "Classify the fresh RTNN full-batch float32 same-contract RTX run as a prepared-hot-query candidate, not as an M7 or end-to-end win.",
+    "different_path_now": "Treat the row as a narrow candidate and direct engine work toward pack/prepare amortization or exact/tie-stable parity before promotion.",
+    "foolish_actions": "The foolish action would be to market the 7.790x hot-query number while hiding the 0.393x cold-plus-query and 0.627x runner-wall regressions.",
+    "other_path": "Reject RTNN entirely because wall time loses, or promote it entirely because hot time wins. Either path would erase important evidence.",
+    "was_i_foolish": "No. The classification keeps the substantial hot-query improvement and the wall-time regression visible at the same time."
+  },
+  "hardware": {
+    "compute_cap": "8.9",
+    "driver_version": "550.127.05",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "host": "root@213.173.108.14 -p 11592",
+    "rt_hardware_gate": "pass",
+    "rtdl_optix_library": "/root/rtdl_v3_rebuild_20260620/current/build/librtdl_optix.so"
+  },
+  "interpretation": "The 1,048,576-point repeat5 run is strong evidence that the prepared RTDL OptiX ranked_summary aggregate has a reusable hot-query advantage over a same-contract CuPy CUDA-core grid reference: 7.790x on the median hot query with matching integer signatures and a 1.21e-10 relative sum-distance error. It is not an end-to-end RTNN win. OptiX still loses cold-plus-query wall time at 0.393x and runner wall time at 0.627x because load, pack, and OptiX execution preparation dominate. This may be reviewed only as a prepared-hot-query candidate; wall/end-to-end wording remains blocked.",
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "m7_reopen_candidate_pending_2ai_review": true,
+  "m7_reopen_candidate_scope": "prepared hot-query only, after data is loaded, packed, and the OptiX plan is prepared",
+  "main_row": {
+    "cold_plus_query_speedup_optix_over_cupy_grid": 0.3932213617664132,
+    "cupy_grid_cold_plus_query_wall_sec": 2.0769412517547607,
+    "cupy_grid_hot_query_median_sec": 0.0843174010515213,
+    "cupy_grid_runner_wall_sec": 3.779928967356682,
+    "distribution": "uniform",
+    "evidence_dir": "docs/rebuild/v3/evidence/rtnn_full_batch_float32_same_contract_1048576_r5_20260621",
+    "hot_speedup_optix_over_cupy_grid": 7.790245749294417,
+    "k_max": 50,
+    "optix_cold_plus_query_wall_sec": 5.28186272084713,
+    "optix_hot_query_median_sec": 0.010823458433151245,
+    "optix_runner_wall_sec": 6.031128413975239,
+    "point_count": 1048576,
+    "radius": 0.02,
+    "repeat": 5,
+    "runner_wall_speedup_optix_over_cupy_grid": 0.6267366084591879,
+    "same_contract_signature_match": true,
+    "sum_distance_relative_error": 1.207354110473936e-10
+  },
+  "next_engine_action": "Keep RTNN ranked_summary open. The next valid engine work is to reduce or amortize OptiX pack/prepare overhead, add a stricter exact/tie-stable path, or seek external review for a narrowly worded prepared-hot-query row.",
+  "not_m7_blockers": [
+    "No external Claude/Gemini review has accepted the exact row.",
+    "OptiX loses the cold-plus-query wall comparison to the same-contract CuPy grid reference.",
+    "OptiX loses runner wall time to the same-contract CuPy grid reference.",
+    "The RTDL route is float32 and exact=false, while the CuPy grid reference is exact.",
+    "The row does not authorize RTNN whole-app, paper reproduction, V2 comparison, or universal NN claims."
+  ],
+  "parity": {
+    "delta_optix_minus_cupy_grid": {
+      "bounded_neighbor_count": 0,
+      "kth_id_checksum": 0,
+      "nearest_id_checksum": 0,
+      "row_count": 0,
+      "sum_distance": -6.508384831249714e-05
+    },
+    "integer_signature_match": true,
+    "same_contract_signature_match": true,
+    "sum_distance_relative_error": 1.207354110473936e-10,
+    "sum_distance_relative_tolerance": 0.0001
+  },
+  "phase_rows": {
+    "cupy_grid": {
+      "cold_plus_query_wall_sec": 2.0769412517547607,
+      "contract": {
+        "approximate": false,
+        "bounded_k": 50,
+        "exact": true,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary",
+        "prepared_search_structure": true,
+        "uniform_grid_cuda_core": true
+      },
+      "elapsed_samples_sec": [
+        0.08795110136270523,
+        0.08425070345401764,
+        0.08384307473897934,
+        0.08446307480335236,
+        0.0843174010515213
+      ],
+      "grid_cell_count": 140608,
+      "grid_prepare_sec": 0.47917482256889343,
+      "has_load_prepare_query_wall": true,
+      "hot_query_median_sec": 0.0843174010515213,
+      "input_load_sec": 1.513449028134346,
+      "mode": "cupy_cuda_core_grid_exact_ranked_summary_3d",
+      "occupied_cell_count": 125033,
+      "ok": true,
+      "query_count": 1048576,
+      "route": "cupy_grid",
+      "runner_wall_sec": 3.779928967356682,
+      "search_count": 1048576,
+      "summary": {
+        "bounded_neighbor_count": 37044632,
+        "kth_id_checksum": 549679635418,
+        "nearest_id_checksum": 549755289600,
+        "row_count": 1048576,
+        "sum_distance": 539061.8025638647
+      }
+    },
+    "optix": {
+      "batch_count": 1,
+      "cold_plus_query_wall_sec": 5.28186272084713,
+      "contract": {
+        "aggregate_batch_request_mode": "homogeneous",
+        "aggregate_batch_requests": [
+          {
+            "k_max": 50,
+            "radius": 0.02
+          }
+        ],
+        "aggregate_request_count": 1,
+        "approximate": false,
+        "batched_queries": true,
+        "bounded_k": 50,
+        "exact": false,
+        "execution_path_policy_version": null,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+        "precision": "float32",
+        "prepared_cuda_graph_replay": false,
+        "prepared_query_points": true,
+        "prepared_search_structure": true,
+        "same_stream_partner_consumer": false
+      },
+      "elapsed_samples_sec": [
+        0.011305801570415497,
+        0.010871522128582,
+        0.010820358991622925,
+        0.010808169841766357,
+        0.010823458433151245
+      ],
+      "execution_prepare_sec": 3.2111802622675896,
+      "has_load_prepare_query_wall": true,
+      "hot_query_median_sec": 0.010823458433151245,
+      "input_load_sec": 1.5459768697619438,
+      "input_pack_sec": 0.5138821303844452,
+      "mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+      "ok": true,
+      "query_batch_size": 1048576,
+      "query_count": 1048576,
+      "route": "optix",
+      "runner_wall_sec": 6.031128413975239,
+      "search_count": 1048576,
+      "summary": {
+        "bounded_neighbor_count": 37044632,
+        "kth_id_checksum": 549679635418,
+        "nearest_id_checksum": 549755289600,
+        "row_count": 1048576,
+        "sum_distance": 539061.8024987809
+      }
+    }
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "scale_rows": [
+    {
+      "cold_plus_query_speedup_optix_over_cupy_grid": 0.17096436089342318,
+      "cupy_grid_cold_plus_query_wall_sec": 0.5974012911319733,
+      "cupy_grid_hot_query_median_sec": 0.0021992623805999756,
+      "cupy_grid_runner_wall_sec": 1.1235903725028038,
+      "distribution": "uniform",
+      "evidence_dir": "docs/rebuild/v3/evidence/rtnn_full_batch_float32_same_contract_262144_r3_20260621",
+      "hot_speedup_optix_over_cupy_grid": 2.4672556607795118,
+      "k_max": 50,
+      "optix_cold_plus_query_wall_sec": 3.4943030700087547,
+      "optix_hot_query_median_sec": 0.0008913800120353699,
+      "optix_runner_wall_sec": 4.042359448969364,
+      "point_count": 262144,
+      "radius": 0.02,
+      "repeat": 3,
+      "runner_wall_speedup_optix_over_cupy_grid": 0.27795409752323563,
+      "same_contract_signature_match": true,
+      "sum_distance_relative_error": 2.6153052160286284e-10
+    },
+    {
+      "cold_plus_query_speedup_optix_over_cupy_grid": 0.39502387427155056,
+      "cupy_grid_cold_plus_query_wall_sec": 2.1009464263916016,
+      "cupy_grid_hot_query_median_sec": 0.0881529375910759,
+      "cupy_grid_runner_wall_sec": 3.6425663828849792,
+      "distribution": "uniform",
+      "evidence_dir": "docs/rebuild/v3/evidence/rtnn_full_batch_float32_same_contract_1048576_r3_20260621",
+      "hot_speedup_optix_over_cupy_grid": 8.09904132797125,
+      "k_max": 50,
+      "optix_cold_plus_query_wall_sec": 5.3185302540659904,
+      "optix_hot_query_median_sec": 0.010884366929531097,
+      "optix_runner_wall_sec": 6.104002006351948,
+      "point_count": 1048576,
+      "radius": 0.02,
+      "repeat": 3,
+      "runner_wall_speedup_optix_over_cupy_grid": 0.5967505218862069,
+      "same_contract_signature_match": true,
+      "sum_distance_relative_error": 1.207371387204919e-10
+    },
+    {
+      "cold_plus_query_speedup_optix_over_cupy_grid": 0.3932213617664132,
+      "cupy_grid_cold_plus_query_wall_sec": 2.0769412517547607,
+      "cupy_grid_hot_query_median_sec": 0.0843174010515213,
+      "cupy_grid_runner_wall_sec": 3.779928967356682,
+      "distribution": "uniform",
+      "evidence_dir": "docs/rebuild/v3/evidence/rtnn_full_batch_float32_same_contract_1048576_r5_20260621",
+      "hot_speedup_optix_over_cupy_grid": 7.790245749294417,
+      "k_max": 50,
+      "optix_cold_plus_query_wall_sec": 5.28186272084713,
+      "optix_hot_query_median_sec": 0.010823458433151245,
+      "optix_runner_wall_sec": 6.031128413975239,
+      "point_count": 1048576,
+      "radius": 0.02,
+      "repeat": 5,
+      "runner_wall_speedup_optix_over_cupy_grid": 0.6267366084591879,
+      "same_contract_signature_match": true,
+      "sum_distance_relative_error": 1.207354110473936e-10
+    }
+  ],
+  "status": "rtnn_full_batch_float32_hot_query_candidate_pending_2ai_wall_blocked_not_m7",
+  "tool": "v3_phoenix_rtnn_full_batch_float32_pod_evidence",
+  "version": "phoenix_v3_rtnn_full_batch_float32_same_contract_rtx_evidence_2026_06_21",
+  "whole_app_speedup_claim_authorized": false
+}

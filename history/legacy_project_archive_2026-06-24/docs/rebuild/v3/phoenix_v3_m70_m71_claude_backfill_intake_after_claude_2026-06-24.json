@@ -1,0 +1,50 @@
+{
+  "accepted_review_count": 2,
+  "all_app_authorized": false,
+  "automatic_partner_selection_authorized": false,
+  "benchmark_execution_authorized": false,
+  "broad_v3_over_v2_wording_authorized": false,
+  "c_abi_authorized": false,
+  "embedding_authorized": false,
+  "focused_pod_spend_authorized": false,
+  "goal_completion_authorized_by_intake_alone": false,
+  "missing_review_count": 0,
+  "next_action": "draft_3ai_consensus_if_all_reviews_accepted",
+  "paid_pod_spend_authorized": false,
+  "paper_reproduction_wording_authorized": false,
+  "pod_spend_authorized": false,
+  "public_speedup_wording_authorized": false,
+  "release_authorized": false,
+  "review_count": 2,
+  "reviews": [
+    {
+      "accepted": true,
+      "milestone": "M70",
+      "missing_non_authorization": [],
+      "missing_required_terms": [],
+      "path": "docs\\reviews\\claude_phoenix_v3_m70_rtnn_focused_protocol_recorded_review_2026-06-23.md",
+      "reasons": [],
+      "status": "accepted",
+      "verdict": "accept_m70_protocol_draft_continue_m71_local_harness_no_execution_no_pod"
+    },
+    {
+      "accepted": true,
+      "milestone": "M71",
+      "missing_non_authorization": [],
+      "missing_required_terms": [],
+      "path": "docs\\reviews\\claude_phoenix_v3_m71_rtnn_local_harness_dry_run_gate_recorded_review_2026-06-23.md",
+      "reasons": [],
+      "status": "accepted",
+      "verdict": "accept_m71_local_dry_run_gate_continue_no_execution_no_pod"
+    }
+  ],
+  "route_specific_rtnn_app_tuning_authorized": false,
+  "rt_core_speedup_wording_authorized": false,
+  "runbook_execution_authorized": false,
+  "status": "claude_backfill_intake_accept_no_authorization",
+  "tool": "v3_phoenix_m70_m71_claude_backfill_intake",
+  "true_zero_copy_claim_authorized": false,
+  "v4_work_authorized": false,
+  "watch_row_closure_authorized": false,
+  "whole_app_speedup_wording_authorized": false
+}

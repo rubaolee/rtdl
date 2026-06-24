@@ -1,0 +1,83 @@
+{
+  "status": "grouped_reduction_scalar_broadcast_optimization_pod_evidence_not_release",
+  "generic_capability": "grouped_reduction",
+  "optimization": "ray_3d_scalar_field_broadcast_for_constant_direction_and_tmax",
+  "source_probe_artifact_dir": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_scalar_broadcast_probe_20260620",
+  "source_repeat100_artifact_dir": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_scalar_broadcast_repeat100_20260620",
+  "source_runner": "scripts\\v3_0_m28_raydb_prepared_grouped_refresh.py",
+  "modified_sources": [
+    "src\\rtdsl\\optix_runtime.py",
+    "examples\\current\\research_benchmarks\\raydb_style\\rtdl_raydb_style_benchmark_app.py"
+  ],
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "m7_promotion_authorized": false,
+  "current_packet_external_review_status": "blocked_current_packet",
+  "current_packet_2ai_consensus_status": "not_recorded_for_this_packet",
+  "external_review_blockage": "docs\\reviews\\external_review_blocked_phoenix_v3_grouped_reduction_scalar_broadcast_optimization_2026-06-20.md",
+  "rows": [
+    {
+      "row_id": "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+      "source_actual_file": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_scalar_broadcast_repeat100_20260620\\grouped_sum_scalar_broadcast_repeat100_262144.json",
+      "generated_rows": 262144,
+      "generated_groups": 1024,
+      "warmup": 3,
+      "repeat": 100,
+      "all_match_cpu_reference": true,
+      "same_contract": true,
+      "hot_query_speedup_embree_over_optix": 203.021747489659,
+      "actual_repeat100_loop_speedup": 200.352573808868,
+      "actual_repeat100_cold_plus_loop_speedup": 27.9170612400067,
+      "embree_workload_build_sec": 1.6202586889267,
+      "optix_workload_build_sec": 1.6438205987215,
+      "embree_cold_plus_loop_sec": 102.218583457172,
+      "optix_cold_plus_loop_sec": 3.66150944679975,
+      "classification": "actual_repeat100_candidate_needs_final_review_not_m7"
+    },
+    {
+      "row_id": "grouped_reduction_sum_scalar_broadcast_repeat100_524288",
+      "source_actual_file": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_scalar_broadcast_repeat100_20260620\\grouped_sum_scalar_broadcast_repeat100_524288.json",
+      "generated_rows": 524288,
+      "generated_groups": 2048,
+      "warmup": 3,
+      "repeat": 100,
+      "all_match_cpu_reference": true,
+      "same_contract": true,
+      "hot_query_speedup_embree_over_optix": 158.970209914865,
+      "actual_repeat100_loop_speedup": 157.641944668856,
+      "actual_repeat100_cold_plus_loop_speedup": 2.9834934390118,
+      "embree_workload_build_sec": 84.9158802554011,
+      "optix_workload_build_sec": 94.8657996356487,
+      "embree_cold_plus_loop_sec": 295.247481323779,
+      "optix_cold_plus_loop_sec": 98.9603253230452,
+      "classification": "actual_repeat100_candidate_with_large_cold_prepare_cost_not_m7"
+    }
+  ],
+  "comparison_to_clean_pre_optimization": {
+    "row_262144_cold_plus_loop_before": 27.0124835909591,
+    "row_262144_cold_plus_loop_after": 27.9170612400067,
+    "row_524288_cold_plus_loop_before": 2.0619336747461,
+    "row_524288_cold_plus_loop_after": 2.9834934390118,
+    "row_524288_embree_workload_build_before_sec": 180.525356508791,
+    "row_524288_embree_workload_build_after_sec": 84.9158802554011,
+    "row_524288_optix_workload_build_before_sec": 184.104037046432,
+    "row_524288_optix_workload_build_after_sec": 94.8657996356487
+  },
+  "claim_boundary": {
+    "generic_packer_optimization": true,
+    "app_specific_native_engine_logic_allowed": false,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "true_zero_copy_authorized": false
+  },
+  "goal_level_decision_audit": {
+    "decision": "promote scalar-broadcast repeat100 artifacts to current local grouped_sum candidate evidence",
+    "was_i_foolish": "No. The probe showed the constant ray direction/tmax arrays were a fixable generic packer cost, and the repeat100 rerun preserved correctness.",
+    "foolish_actions": "It would be foolish to keep quoting pre-optimization cold-plus-loop values after the generic packer rerun succeeded, or to turn the result into a release claim without external review.",
+    "other_path": "Skip optimization and move to another app. That would leave the clearest grouped_sum cold-start blocker partially self-inflicted.",
+    "different_path_now": "Use scalar-broadcast repeat100 artifacts as current local evidence, keep release authorization false, and request external review when available."
+  }
+}

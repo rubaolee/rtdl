@@ -4001,6 +4001,24 @@ static bool rayjoin_cdb_parse_env_double(const char* name, double* out)
     return true;
 }
 
+static bool relation_status_corrected_default_enabled(const char* name)
+{
+    const char* raw = std::getenv(name);
+    if (raw == nullptr || raw[0] == '\0') {
+        return true;
+    }
+    return std::strcmp(raw, "0") != 0
+        && std::strcmp(raw, "false") != 0
+        && std::strcmp(raw, "False") != 0
+        && std::strcmp(raw, "FALSE") != 0
+        && std::strcmp(raw, "off") != 0
+        && std::strcmp(raw, "Off") != 0
+        && std::strcmp(raw, "OFF") != 0
+        && std::strcmp(raw, "no") != 0
+        && std::strcmp(raw, "No") != 0
+        && std::strcmp(raw, "NO") != 0;
+}
+
 static RayjoinCdbScale rayjoin_cdb_scale_from_env()
 {
     double min_x = 0.0;
@@ -8761,6 +8779,10 @@ static void ensure_pip_relation_status_corrected_scalar_count_pipeline()
     std::call_once(g_pip_relation_status_corrected_scalar_count.init, [&]() {
         std::string src(kPipKernelSrc);
         specialize_closed_shape_membership_source_from_env(src);
+        const bool prefilter_zero_relation_status =
+            relation_status_corrected_default_enabled("RTDL_OPTIX_RELATION_STATUS_CORRECTED_PREFILTER_ZERO");
+        const bool squared_exact_f64_boundary =
+            relation_status_corrected_default_enabled("RTDL_OPTIX_RELATION_STATUS_CORRECTED_EXACT_F64_SQUARED_BOUNDARY");
 
         const std::string old_params_fields =
 R"CUDA(    const float* points_x;
@@ -8827,51 +8849,165 @@ R"CUDA(        if (params.output == nullptr && params.output_capacity == 0u) {
         }
         src.replace(pos, old_intersection_count.size(), "");
 
+        const std::string old_positive_prefilter =
+R"CUDA(        if (params.device_prefilter != 0u) {
+            const GpuPolygonRef poly = params.polygons[prim];
+            const float px = params.points_x[pidx];
+            const float py = params.points_y[pidx];
+            relation_status = point_closed_shape_membership_status(px, py, poly, &boundary_element_ordinal);
+            if (relation_status == 0u) {
+                return;
+            }
+        }
+)CUDA";
+        const std::string new_positive_prefilter =
+            prefilter_zero_relation_status ?
+R"CUDA(        {
+            const GpuPolygonRef poly = params.polygons[prim];
+            const float px = params.points_x[pidx];
+            const float py = params.points_y[pidx];
+            relation_status = point_closed_shape_membership_status(px, py, poly, &boundary_element_ordinal);
+            if (relation_status == 0u) {
+                return;
+            }
+        }
+)CUDA" :
+R"CUDA(        {
+            const GpuPolygonRef poly = params.polygons[prim];
+            const float px = params.points_x[pidx];
+            const float py = params.points_y[pidx];
+            relation_status = point_closed_shape_membership_status(px, py, poly, &boundary_element_ordinal);
+        }
+)CUDA";
+        pos = src.find(old_positive_prefilter);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("closed-shape relation-status corrected scalar prefilter snippet not found");
+        }
+        src.replace(pos, old_positive_prefilter.size(), new_positive_prefilter);
+
         const std::string helper_anchor =
 R"CUDA(static __forceinline__ __device__ bool point_in_polygon(
 )CUDA";
-        const std::string helper =
-R"CUDA(static __forceinline__ __device__ bool exact_boundary_contact_f64(
+        std::string helper =
+R"CUDA(static __forceinline__ __device__ bool exact_closed_shape_membership_f64(
         uint32_t pidx,
-        uint32_t prim,
-        uint32_t boundary_element_ordinal)
+        uint32_t prim)
 {
-    if (boundary_element_ordinal == 0xffffffffu) {
-        return false;
-    }
     const GpuPolygonRef poly = params.polygons[prim];
     const uint32_t off = poly.vertex_offset;
     const uint32_t n = poly.vertex_count;
-    if (n < 3u || boundary_element_ordinal < off || boundary_element_ordinal >= off + n) {
+    if (n < 3u) {
         return false;
     }
-    const uint32_t next_ordinal = off + ((boundary_element_ordinal - off + 1u) % n);
     const double px = params.points_x_f64[pidx];
     const double py = params.points_y_f64[pidx];
-    const double ax = params.vertices_x_f64[boundary_element_ordinal];
-    const double ay = params.vertices_y_f64[boundary_element_ordinal];
-    const double bx = params.vertices_x_f64[next_ordinal];
-    const double by = params.vertices_y_f64[next_ordinal];
-    const double dx = bx - ax;
-    const double dy = by - ay;
-    const double len2 = dx * dx + dy * dy;
     const double eps = params.point_eps_f64;
-    const double eps2 = eps * eps;
-    if (len2 <= eps2) {
-        return fabs(px - ax) <= eps && fabs(py - ay) <= eps;
+    for (uint32_t i = 0; i < n; ++i) {
+        const uint32_t j = (i + 1u) % n;
+        const double ax = params.vertices_x_f64[off + i];
+        const double ay = params.vertices_y_f64[off + i];
+        const double bx = params.vertices_x_f64[off + j];
+        const double by = params.vertices_y_f64[off + j];
+        const double dx = bx - ax;
+        const double dy = by - ay;
+        const double len2 = dx * dx + dy * dy;
+        bool on_segment = false;
+        if (len2 <= eps * eps) {
+            on_segment = fabs(px - ax) <= eps && fabs(py - ay) <= eps;
+        } else {
+            const double len = sqrt(len2);
+            const double cross = (px - ax) * dy - (py - ay) * dx;
+            const double dot = (px - ax) * dx + (py - ay) * dy;
+            const double along_eps = eps * len;
+            on_segment = fabs(cross) <= eps * len && dot >= -along_eps && dot <= len2 + along_eps;
+        }
+        if (on_segment) {
+            return true;
+        }
     }
-    const double cross = (px - ax) * dy - (py - ay) * dx;
-    const double dot = (px - ax) * dx + (py - ay) * dy;
-    const double eps2_len2 = eps2 * len2;
-    const bool cross_ok = cross * cross <= eps2_len2;
-    const bool before_start_ok = dot < 0.0 && dot * dot <= eps2_len2;
-    const bool inside_segment = dot >= 0.0 && dot <= len2;
-    const double beyond_end = dot - len2;
-    const bool after_end_ok = dot > len2 && beyond_end * beyond_end <= eps2_len2;
-    return cross_ok && (before_start_ok || inside_segment || after_end_ok);
+
+    bool inside = false;
+    for (uint32_t i = 0, j = n - 1u; i < n; j = i++) {
+        const double xi = params.vertices_x_f64[off + i];
+        const double yi = params.vertices_y_f64[off + i];
+        const double xj = params.vertices_x_f64[off + j];
+        const double yj = params.vertices_y_f64[off + j];
+        if ((yi > py) != (yj > py)) {
+            const double denom = (yj - yi) != 0.0 ? (yj - yi) : 1.0e-20;
+            const double x_cross = (xj - xi) * (py - yi) / denom + xi;
+            if (px <= x_cross) {
+                inside = !inside;
+            }
+        }
+    }
+    return inside;
 }
 
 )CUDA";
+        if (squared_exact_f64_boundary) {
+            const std::string old_exact_f64_boundary =
+R"CUDA(        if (len2 <= eps * eps) {
+            on_segment = fabs(px - ax) <= eps && fabs(py - ay) <= eps;
+        } else {
+            const double len = sqrt(len2);
+            const double cross = (px - ax) * dy - (py - ay) * dx;
+            const double dot = (px - ax) * dx + (py - ay) * dy;
+            const double along_eps = eps * len;
+            on_segment = fabs(cross) <= eps * len && dot >= -along_eps && dot <= len2 + along_eps;
+        }
+)CUDA";
+            const std::string new_exact_f64_boundary =
+R"CUDA(        const double eps2 = eps * eps;
+        if (len2 <= eps2) {
+            on_segment = fabs(px - ax) <= eps && fabs(py - ay) <= eps;
+        } else {
+            const double cross = (px - ax) * dy - (py - ay) * dx;
+            const double dot = (px - ax) * dx + (py - ay) * dy;
+            const double eps2_len2 = eps2 * len2;
+            const double guard_tol = 1.0e-6;
+            const double lo = eps2_len2 * (1.0 - guard_tol);
+            const double hi = eps2_len2 * (1.0 + guard_tol);
+            const double cross2 = cross * cross;
+            if (cross2 > hi) {
+                on_segment = false;
+            } else {
+                bool needs_fallback = cross2 > lo;
+                if (!needs_fallback && dot >= 0.0 && dot <= len2) {
+                    on_segment = true;
+                } else if (!needs_fallback && dot < 0.0) {
+                    const double dot2 = dot * dot;
+                    if (dot2 <= lo) {
+                        on_segment = true;
+                    } else if (dot2 > hi) {
+                        on_segment = false;
+                    } else {
+                        needs_fallback = true;
+                    }
+                } else if (!needs_fallback) {
+                    const double beyond_end = dot - len2;
+                    const double beyond2 = beyond_end * beyond_end;
+                    if (beyond2 <= lo) {
+                        on_segment = true;
+                    } else if (beyond2 > hi) {
+                        on_segment = false;
+                    } else {
+                        needs_fallback = true;
+                    }
+                }
+                if (needs_fallback) {
+                    const double len = sqrt(len2);
+                    const double along_eps = eps * len;
+                    on_segment = fabs(cross) <= along_eps && dot >= -along_eps && dot <= len2 + along_eps;
+                }
+            }
+        }
+)CUDA";
+            const size_t helper_boundary_pos = helper.find(old_exact_f64_boundary);
+            if (helper_boundary_pos == std::string::npos) {
+                throw std::runtime_error("closed-shape relation-status exact f64 boundary snippet not found");
+            }
+            helper.replace(helper_boundary_pos, old_exact_f64_boundary.size(), new_exact_f64_boundary);
+        }
         pos = src.find(helper_anchor);
         if (pos == std::string::npos) {
             throw std::runtime_error("closed-shape relation-status corrected scalar helper anchor not found");
@@ -8896,15 +9032,12 @@ R"CUDA(            if (params.output == nullptr && params.output_capacity == 0u)
         const std::string new_anyhit_positive =
 R"CUDA(            const uint32_t relation_status = optixGetPayload_3();
             atomicAdd(params.candidate_count, 1u);
-            bool keep = relation_status == 1u;
             if (relation_status == 2u) {
                 atomicAdd(params.boundary_candidate_count, 1u);
-                keep = exact_boundary_contact_f64(pidx, prim, optixGetPayload_2());
-                if (!keep) {
-                    atomicAdd(params.dropped_candidate_count, 1u);
-                }
-            } else if (relation_status != 1u) {
-                keep = false;
+            }
+            const bool keep = exact_closed_shape_membership_f64(pidx, prim);
+            if (!keep) {
+                atomicAdd(params.dropped_candidate_count, 1u);
             }
             if (keep) {
                 atomicAdd(params.output_count, 1u);
@@ -16356,35 +16489,34 @@ static void count_prepared_aabb_index_2d_multi_operation_packed_queries_optix(
     *range_intersects_out = static_cast<size_t>(range_intersects);
 }
 
-static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
+static void collect_prepared_aabb_index_2d_range_intersection_rows_packed_queries_optix(
         PreparedAabbIndex2DOptix* prepared,
-        const RtdlAabb2D* box_queries,
-        size_t box_query_count,
+        PreparedAabbIndexQueries2DOptix* prepared_queries,
         RtdlAabbPairRow* rows_out,
         size_t row_capacity,
         size_t* emitted_count_out,
         uint32_t* overflowed_out)
 {
     if (!prepared) throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    if (!prepared_queries) throw std::runtime_error("prepared OptiX AABB query handle must not be null");
     if (!emitted_count_out) throw std::runtime_error("emitted_count_out must not be null");
     if (!overflowed_out) throw std::runtime_error("overflowed_out must not be null");
     if (!rows_out && row_capacity != 0)
         throw std::runtime_error("rows_out pointer must not be null when row_capacity is nonzero");
-    if (!box_queries && box_query_count != 0)
-        throw std::runtime_error("box_queries pointer must not be null when box_query_count is nonzero");
+    if (prepared_queries->operation != kAabbIndexOpRangeContains)
+        throw std::runtime_error("prepared AABB query handle must contain box queries for range_intersection_rows");
     if (prepared->box_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
         throw std::runtime_error("indexed box count exceeds uint32 launch limit");
-    if (box_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+    if (prepared_queries->query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
         throw std::runtime_error("box query count exceeds uint32 launch limit");
     if (row_capacity > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
         throw std::runtime_error("AABB row output capacity exceeds uint32 launch limit");
 
     *emitted_count_out = 0;
     *overflowed_out = 0;
-    if (prepared->box_count == 0 || box_query_count == 0)
+    if (prepared->box_count == 0 || prepared_queries->query_count == 0)
         return;
 
-    PreparedAabbIndexQueries2DOptix prepared_queries(box_queries, box_query_count);
     DevPtr d_hit_count(sizeof(unsigned long long));
     unsigned long long zero = 0ULL;
     upload(d_hit_count.ptr, &zero, 1);
@@ -16394,24 +16526,24 @@ static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
         prepared->accel.handle,
         0,
         0,
-        prepared_queries.d_box_queries.ptr,
-        prepared_queries.query_count,
+        prepared_queries->d_box_queries.ptr,
+        prepared_queries->query_count,
         prepared->d_boxes.ptr,
         prepared->box_count,
         kAabbIndexOpRangeIntersects,
         kAabbIndexIntersectForwardPass,
-        prepared_queries.query_count,
+        prepared_queries->query_count,
         d_hit_count.ptr,
         0,
         d_rows.ptr,
         row_capacity,
         true);
     launch_aabb_index_count_pass_optix(
-        prepared_queries.accel.handle,
+        prepared_queries->accel.handle,
         0,
         0,
-        prepared_queries.d_box_queries.ptr,
-        prepared_queries.query_count,
+        prepared_queries->d_box_queries.ptr,
+        prepared_queries->query_count,
         prepared->d_boxes.ptr,
         prepared->box_count,
         kAabbIndexOpRangeIntersects,
@@ -16448,6 +16580,27 @@ static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
     *emitted_count_out = rows.size();
     if (!rows.empty())
         std::memcpy(rows_out, rows.data(), sizeof(RtdlAabbPairRow) * rows.size());
+}
+
+static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
+        PreparedAabbIndex2DOptix* prepared,
+        const RtdlAabb2D* box_queries,
+        size_t box_query_count,
+        RtdlAabbPairRow* rows_out,
+        size_t row_capacity,
+        size_t* emitted_count_out,
+        uint32_t* overflowed_out)
+{
+    if (!box_queries && box_query_count != 0)
+        throw std::runtime_error("box_queries pointer must not be null when box_query_count is nonzero");
+    PreparedAabbIndexQueries2DOptix prepared_queries(box_queries, box_query_count);
+    collect_prepared_aabb_index_2d_range_intersection_rows_packed_queries_optix(
+        prepared,
+        &prepared_queries,
+        rows_out,
+        row_capacity,
+        emitted_count_out,
+        overflowed_out);
 }
 
 static void collect_prepared_aabb_index_2d_point_contains_rows_optix(
@@ -23557,7 +23710,6 @@ struct PreparedFixedRadiusNeighborsGrid3D {
 
         std::vector<uint32_t> cursor = cell_offsets;
         std::vector<GpuPoint3DHost> sorted_search(source_count);
-        std::vector<RtdlPoint3D> sorted_search_exact(source_count);
         for (size_t i = 0; i < source_count; ++i) {
             const uint32_t cell = search_cell[i];
             const uint32_t dest = cursor[cell]++;
@@ -23567,16 +23719,42 @@ struct PreparedFixedRadiusNeighborsGrid3D {
                 static_cast<float>(source[i].z),
                 source[i].id,
             };
-            sorted_search_exact[dest] = source[i];
         }
 
         d_search = std::make_unique<DevPtr>(sizeof(GpuPoint3DHost) * sorted_search.size());
-        d_search_exact = std::make_unique<DevPtr>(sizeof(RtdlPoint3D) * sorted_search_exact.size());
         d_offsets = std::make_unique<DevPtr>(sizeof(uint32_t) * cell_offsets.size());
         d_ranked_aggregate = std::make_unique<DevPtr>(sizeof(RtdlFixedRadiusRankedNeighborAggregate));
         upload(d_search->ptr, sorted_search.data(), sorted_search.size());
-        upload(d_search_exact->ptr, sorted_search_exact.data(), sorted_search_exact.size());
         upload(d_offsets->ptr, cell_offsets.data(), cell_offsets.size());
+    }
+
+    uint32_t exact_cell_for(const RtdlPoint3D& point) const {
+        const auto coord = [&](double value, double lo, uint32_t dim) -> uint32_t {
+            long long raw = static_cast<long long>(std::floor((value - lo) * inv_cell_size_exact));
+            if (raw < 0) raw = 0;
+            const long long max_raw = static_cast<long long>(dim) - 1;
+            if (raw > max_raw) raw = max_raw;
+            return static_cast<uint32_t>(raw);
+        };
+        const uint32_t ix = coord(point.x, min_x_exact, grid_x);
+        const uint32_t iy = coord(point.y, min_y_exact, grid_y);
+        const uint32_t iz = coord(point.z, min_z_exact, grid_z);
+        return (iz * grid_y + iy) * grid_x + ix;
+    }
+
+    void ensure_exact_search_device() {
+        if (d_search_exact || search_points.empty()) {
+            return;
+        }
+        std::vector<uint32_t> cursor = cell_offsets;
+        std::vector<RtdlPoint3D> sorted_search_exact(search_points.size());
+        for (const RtdlPoint3D& point : search_points) {
+            const uint32_t cell = exact_cell_for(point);
+            const uint32_t dest = cursor[cell]++;
+            sorted_search_exact[dest] = point;
+        }
+        d_search_exact = std::make_unique<DevPtr>(sizeof(RtdlPoint3D) * sorted_search_exact.size());
+        upload(d_search_exact->ptr, sorted_search_exact.data(), sorted_search_exact.size());
     }
 };
 
@@ -23615,10 +23793,13 @@ struct PreparedFixedRadiusQueryPoints3D {
 struct PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D {
     PreparedFixedRadiusNeighborsGrid3D* prepared = nullptr;
     PreparedFixedRadiusQueryPoints3D* prepared_queries = nullptr;
+    CUdeviceptr d_queries = 0;
     size_t request_count = 0;
+    size_t query_count = 0;
     size_t query_block_count = 0;
     uint32_t request_count_u32 = 0;
     uint32_t query_count_u32 = 0;
+    bool self_query = false;
     std::unique_ptr<DevPtr> d_partials;
     std::unique_ptr<DevPtr> d_radii;
     std::unique_ptr<DevPtr> d_k_values;
@@ -23631,26 +23812,34 @@ struct PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D {
             PreparedFixedRadiusQueryPoints3D* prepared_queries_in,
             const double* radii,
             const size_t* k_values,
-            size_t request_count_in)
+            size_t request_count_in,
+            CUdeviceptr query_device_ptr_in = 0,
+            size_t query_count_in = 0,
+            bool self_query_in = false)
         : prepared(prepared_in),
           prepared_queries(prepared_queries_in),
-          request_count(request_count_in)
+          d_queries(prepared_queries_in && prepared_queries_in->d_queries
+                        ? prepared_queries_in->d_queries->ptr
+                        : query_device_ptr_in),
+          request_count(request_count_in),
+          query_count(prepared_queries_in ? prepared_queries_in->query_count : query_count_in),
+          self_query(self_query_in)
     {
         if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius-neighbor 3D handle must not be null");
-        if (!prepared_queries) throw std::runtime_error("prepared fixed-radius query handle must not be null");
+        if (!prepared_queries && !self_query)
+            throw std::runtime_error("prepared fixed-radius query handle must not be null");
         if (!radii && request_count != 0) throw std::runtime_error("radii pointer must not be null when request_count is nonzero");
         if (!k_values && request_count != 0) throw std::runtime_error("k_values pointer must not be null when request_count is nonzero");
         if (request_count == 0)
             throw std::runtime_error("fixed_radius_neighbors_3d graph request_count must be positive");
         if (request_count > static_cast<size_t>(UINT32_MAX))
             throw std::runtime_error("fixed_radius_neighbors_3d graph request_count exceeds uint32 limit");
-        if (prepared_queries->query_count == 0 || prepared->search_points.empty())
+        if (query_count != 0 && !d_queries)
+            throw std::runtime_error("fixed_radius_neighbors_3d graph query device buffer is not initialized");
+        if (query_count == 0 || prepared->search_points.empty())
             throw std::runtime_error("fixed_radius_neighbors_3d graph requires non-empty prepared search and query handles");
-        if (prepared_queries->query_count > static_cast<size_t>(UINT32_MAX))
+        if (query_count > static_cast<size_t>(UINT32_MAX))
             throw std::runtime_error("fixed_radius_neighbors_3d graph query_count exceeds uint32 limit");
-        if (prepared_queries->query_count > 65536u)
-            throw std::runtime_error("fixed_radius_neighbors_3d graph path currently supports query_count <= 65536");
-
         std::vector<float> radii_f(request_count);
         std::vector<uint32_t> k_values_u32(request_count);
         for (size_t request_index = 0; request_index < request_count; ++request_index) {
@@ -23671,8 +23860,8 @@ struct PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D {
 
         ensure_fixed_radius_neighbors_grid_cuda_3d_kernel();
         constexpr unsigned block = 256u;
-        query_count_u32 = static_cast<uint32_t>(prepared_queries->query_count);
-        query_block_count = (prepared_queries->query_count + block - 1u) / block;
+        query_count_u32 = static_cast<uint32_t>(query_count);
+        query_block_count = (query_count + block - 1u) / block;
         request_count_u32 = static_cast<uint32_t>(request_count);
         d_partials = std::make_unique<DevPtr>(
             sizeof(RtdlFixedRadiusRankedNeighborAggregate) * request_count * query_block_count);
@@ -23690,7 +23879,7 @@ struct PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D {
         float inv_cell_size = prepared->inv_cell_size;
         CUdeviceptr d_partials_ptr = d_partials->ptr;
         void* summary_args[] = {
-            &prepared_queries->d_queries->ptr,
+            &d_queries,
             &query_count_u32,
             &prepared->d_search->ptr,
             &prepared->d_offsets->ptr,
@@ -23796,6 +23985,15 @@ static PreparedFixedRadiusQueryPoints3D* prepare_fixed_radius_query_points_grid_
     return new PreparedFixedRadiusQueryPoints3D(query_points, query_count);
 }
 
+static void ensure_exact_search_device_with_timing(PreparedFixedRadiusNeighborsGrid3D* prepared)
+{
+    auto t_start_exact_prepare = std::chrono::steady_clock::now();
+    prepared->ensure_exact_search_device();
+    auto t_end_exact_prepare = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_prepare_s =
+        seconds_between(t_start_exact_prepare, t_end_exact_prepare);
+}
+
 static size_t count_prepared_fixed_radius_neighbors_grid_3d_optix(
         PreparedFixedRadiusNeighborsGrid3D* prepared,
         const RtdlPoint3D* query_points, size_t query_count,
@@ -23818,6 +24016,7 @@ static size_t count_prepared_fixed_radius_neighbors_grid_3d_optix(
     reset_fixed_radius_3d_phase_timings(5u);
     g_optix_last_fixed_radius_3d_prepare_s = 0.0;
     if (query_count == 0 || prepared->search_points.empty()) return 0;
+    ensure_exact_search_device_with_timing(prepared);
 
     auto t_start_upload = std::chrono::steady_clock::now();
     DevPtr d_queries(sizeof(RtdlPoint3D) * query_count);
@@ -23902,6 +24101,7 @@ static RtdlFixedRadiusNeighborSummary summarize_prepared_fixed_radius_neighbors_
     g_optix_last_fixed_radius_3d_prepare_s = 0.0;
     RtdlFixedRadiusNeighborSummary aggregate{0u, 0.0, 0.0, 0.0};
     if (query_count == 0 || prepared->search_points.empty()) return aggregate;
+    ensure_exact_search_device_with_timing(prepared);
 
     auto t_start_upload = std::chrono::steady_clock::now();
     DevPtr d_queries(sizeof(RtdlPoint3D) * query_count);
@@ -23998,6 +24198,7 @@ static void run_prepared_exact_fixed_radius_neighbors_grid_3d_optix(
     reset_fixed_radius_3d_phase_timings(7u);
     g_optix_last_fixed_radius_3d_prepare_s = 0.0;
     if (query_count == 0 || prepared->search_points.empty()) return;
+    ensure_exact_search_device_with_timing(prepared);
 
     auto t_start_upload = std::chrono::steady_clock::now();
     DevPtr d_queries(sizeof(RtdlPoint3D) * query_count);
@@ -24131,6 +24332,7 @@ static void run_prepared_ranked_fixed_radius_neighbors_grid_3d_optix(
     reset_fixed_radius_3d_phase_timings(8u);
     g_optix_last_fixed_radius_3d_prepare_s = 0.0;
     if (query_count == 0 || prepared->search_points.empty()) return;
+    ensure_exact_search_device_with_timing(prepared);
 
     auto t_start_upload = std::chrono::steady_clock::now();
     DevPtr d_queries(sizeof(RtdlPoint3D) * query_count);
@@ -24269,6 +24471,7 @@ static void run_prepared_ranked_fixed_radius_neighbor_summaries_grid_3d_optix(
     reset_fixed_radius_3d_phase_timings(9u);
     g_optix_last_fixed_radius_3d_prepare_s = 0.0;
     if (query_count == 0 || prepared->search_points.empty()) return;
+    ensure_exact_search_device_with_timing(prepared);
 
     auto t_start_upload = std::chrono::steady_clock::now();
     DevPtr d_queries(sizeof(RtdlPoint3D) * query_count);
@@ -24463,6 +24666,7 @@ static RtdlFixedRadiusRankedNeighborAggregate aggregate_prepared_ranked_fixed_ra
         auto t_end_aggregate = std::chrono::steady_clock::now();
         g_optix_last_fixed_radius_3d_exact_refine_s = seconds_between(t_start_aggregate, t_end_aggregate);
     } else {
+        ensure_exact_search_device_with_timing(prepared);
         DevPtr d_summaries(sizeof(RtdlFixedRadiusRankedNeighborSummary) * query_count);
         double min_x = prepared->min_x_exact;
         double min_y = prepared->min_y_exact;
@@ -24687,20 +24891,21 @@ static RtdlFixedRadiusRankedNeighborAggregate aggregate_prepared_query_ranked_fi
     return aggregate;
 }
 
-static void aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid_3d_batch_optix(
+static void aggregate_ranked_fixed_radius_neighbor_summaries_grid_3d_batch_device_queries_optix(
         PreparedFixedRadiusNeighborsGrid3D* prepared,
-        PreparedFixedRadiusQueryPoints3D* prepared_queries,
+        CUdeviceptr d_queries,
+        size_t query_count,
         const double* radii,
         const size_t* k_values,
         size_t request_count,
         RtdlFixedRadiusRankedNeighborAggregate* aggregates_out)
 {
     if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius-neighbor 3D handle must not be null");
-    if (!prepared_queries) throw std::runtime_error("prepared fixed-radius query handle must not be null");
+    if (query_count != 0 && !d_queries) throw std::runtime_error("fixed-radius query device pointer must not be null when query_count is nonzero");
     if (!aggregates_out && request_count != 0) throw std::runtime_error("aggregates_out must not be null when request_count is nonzero");
     if (!radii && request_count != 0) throw std::runtime_error("radii pointer must not be null when request_count is nonzero");
     if (!k_values && request_count != 0) throw std::runtime_error("k_values pointer must not be null when request_count is nonzero");
-    if (prepared_queries->query_count > static_cast<size_t>(UINT32_MAX))
+    if (query_count > static_cast<size_t>(UINT32_MAX))
         throw std::runtime_error("fixed_radius_neighbors_3d query_count exceeds uint32 limit");
     if (request_count > static_cast<size_t>(UINT32_MAX))
         throw std::runtime_error("fixed_radius_neighbors_3d aggregate request_count exceeds uint32 limit");
@@ -24718,7 +24923,7 @@ static void aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid
             throw std::runtime_error("prepared ranked fixed_radius_neighbors_3d aggregate currently supports k_max <= 64");
     }
 
-    const bool use_block_partial_batch = prepared_queries->query_count <= 65536u;
+    const bool use_block_partial_batch = query_count <= 65536u;
     reset_fixed_radius_3d_phase_timings(use_block_partial_batch ? 17u : 16u);
     g_optix_last_fixed_radius_3d_prepare_s = 0.0;
     g_optix_last_fixed_radius_3d_upload_s = 0.0;
@@ -24727,9 +24932,9 @@ static void aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid
         aggregates_out,
         aggregates_out + request_count,
         RtdlFixedRadiusRankedNeighborAggregate{0u, 0u, 0u, 0u, 0.0});
-    if (prepared_queries->query_count == 0 || prepared->search_points.empty()) return;
+    if (query_count == 0 || prepared->search_points.empty()) return;
 
-    uint32_t qc = static_cast<uint32_t>(prepared_queries->query_count);
+    uint32_t qc = static_cast<uint32_t>(query_count);
     uint32_t grid_x = prepared->grid_x;
     uint32_t grid_y = prepared->grid_y;
     uint32_t grid_z = prepared->grid_z;
@@ -24757,7 +24962,7 @@ static void aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid
         upload(d_k_values.ptr, k_values_u32.data(), request_count);
         uint32_t request_count_u32 = static_cast<uint32_t>(request_count);
         void* summary_args[] = {
-            &prepared_queries->d_queries->ptr,
+            &d_queries,
             &qc,
             &prepared->d_search->ptr,
             &prepared->d_offsets->ptr,
@@ -24803,7 +25008,7 @@ static void aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid
             uint32_t k_max_u32 = static_cast<uint32_t>(std::min(k_values[request_index], prepared->search_points.size()));
             CUdeviceptr d_aggregate = d_aggregates.ptr + sizeof(RtdlFixedRadiusRankedNeighborAggregate) * request_index;
             void* summary_args[] = {
-                &prepared_queries->d_queries->ptr,
+                &d_queries,
                 &qc,
                 &prepared->d_search->ptr,
                 &prepared->d_offsets->ptr,
@@ -24840,6 +25045,45 @@ static void aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid
     g_optix_last_fixed_radius_3d_emitted_count = total_queries;
 }
 
+static void aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_grid_3d_batch_optix(
+        PreparedFixedRadiusNeighborsGrid3D* prepared,
+        PreparedFixedRadiusQueryPoints3D* prepared_queries,
+        const double* radii,
+        const size_t* k_values,
+        size_t request_count,
+        RtdlFixedRadiusRankedNeighborAggregate* aggregates_out)
+{
+    if (!prepared_queries) throw std::runtime_error("prepared fixed-radius query handle must not be null");
+    if (prepared_queries->query_count != 0 && !prepared_queries->d_queries)
+        throw std::runtime_error("prepared fixed-radius query device buffer is not initialized");
+    aggregate_ranked_fixed_radius_neighbor_summaries_grid_3d_batch_device_queries_optix(
+        prepared,
+        prepared_queries->d_queries ? prepared_queries->d_queries->ptr : 0,
+        prepared_queries->query_count,
+        radii,
+        k_values,
+        request_count,
+        aggregates_out);
+}
+
+static void aggregate_self_query_ranked_fixed_radius_neighbor_summaries_grid_3d_batch_optix(
+        PreparedFixedRadiusNeighborsGrid3D* prepared,
+        const double* radii,
+        const size_t* k_values,
+        size_t request_count,
+        RtdlFixedRadiusRankedNeighborAggregate* aggregates_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius-neighbor 3D handle must not be null");
+    aggregate_ranked_fixed_radius_neighbor_summaries_grid_3d_batch_device_queries_optix(
+        prepared,
+        prepared->d_search ? prepared->d_search->ptr : 0,
+        prepared->search_points.size(),
+        radii,
+        k_values,
+        request_count,
+        aggregates_out);
+}
+
 static PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D*
 prepare_fixed_radius_ranked_summary_aggregate_batch_graph_3d_optix(
         PreparedFixedRadiusNeighborsGrid3D* prepared,
@@ -24854,6 +25098,25 @@ prepare_fixed_radius_ranked_summary_aggregate_batch_graph_3d_optix(
         radii,
         k_values,
         request_count);
+}
+
+static PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D*
+prepare_fixed_radius_self_query_ranked_summary_aggregate_batch_graph_3d_optix(
+        PreparedFixedRadiusNeighborsGrid3D* prepared,
+        const double* radii,
+        const size_t* k_values,
+        size_t request_count)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius-neighbor 3D handle must not be null");
+    return new PreparedFixedRadiusRankedSummaryAggregateBatchGraph3D(
+        prepared,
+        nullptr,
+        radii,
+        k_values,
+        request_count,
+        prepared->d_search ? prepared->d_search->ptr : 0,
+        prepared->search_points.size(),
+        true);
 }
 
 static void update_fixed_radius_ranked_summary_aggregate_batch_graph_3d_optix(

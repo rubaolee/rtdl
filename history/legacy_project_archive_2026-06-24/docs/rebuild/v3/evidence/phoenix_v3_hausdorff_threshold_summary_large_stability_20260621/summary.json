@@ -1,0 +1,1147 @@
+{
+  "artifact_dir": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621",
+  "claim_boundary": {
+    "full_hausdorff_witness_claim_authorized": false,
+    "m7_promotion_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "copies": 262144,
+  "environment": {
+    "executable": "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+    "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB, 00000000:C1:00.0",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+    "repo_root": "/root/rtdl_v3_rebuild_20260620/current"
+  },
+  "generated_at": "2026-06-21T04:47:39+0000",
+  "independent_runs": 5,
+  "oracle_definition": "The oracle is expected_tiled_hausdorff(copies=N): the app computes the exact Hausdorff summary on the four-point authored base fixture using brute force, then scales deterministic row-count metadata by N because the benchmark input is a tiled repetition of that fixture. The threshold-summary route checks both directed fixed-radius decisions against oracle_within_threshold = oracle['hausdorff_distance'] <= threshold.",
+  "pairs": [
+    {
+      "both_match_oracle": true,
+      "copies": 262144,
+      "embree_phase_total_sec": 19.16271362453699,
+      "embree_query_sec": 9.817220196127892,
+      "embree_wrapper_elapsed_sec": 67.65088251978159,
+      "optix_phase_total_sec": 15.651120267808437,
+      "optix_query_sec": 6.012831449508667,
+      "optix_wrapper_elapsed_sec": 43.683877006173134,
+      "phase_total_optix_over_embree": 1.2243669013234328,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "query_optix_over_embree": 1.6327116897531024,
+      "repeat": 5,
+      "run_index": 1,
+      "same_decision": true,
+      "same_oracle_decision": true,
+      "threshold": 0.4,
+      "warmup": 1,
+      "wrapper_optix_over_embree": 1.5486464836951535
+    },
+    {
+      "both_match_oracle": true,
+      "copies": 262144,
+      "embree_phase_total_sec": 19.87915986031294,
+      "embree_query_sec": 10.256399676203728,
+      "embree_wrapper_elapsed_sec": 70.11457127332687,
+      "optix_phase_total_sec": 15.851504772901535,
+      "optix_query_sec": 6.119939640164375,
+      "optix_wrapper_elapsed_sec": 44.28437568992376,
+      "phase_total_optix_over_embree": 1.254086608502731,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "query_optix_over_embree": 1.6758988289512364,
+      "repeat": 5,
+      "run_index": 2,
+      "same_decision": true,
+      "same_oracle_decision": true,
+      "threshold": 0.4,
+      "warmup": 1,
+      "wrapper_optix_over_embree": 1.5832801113481743
+    },
+    {
+      "both_match_oracle": true,
+      "copies": 262144,
+      "embree_phase_total_sec": 19.656344294548035,
+      "embree_query_sec": 9.974274717271328,
+      "embree_wrapper_elapsed_sec": 68.58958404511213,
+      "optix_phase_total_sec": 15.805572226643562,
+      "optix_query_sec": 6.13072869181633,
+      "optix_wrapper_elapsed_sec": 44.309515073895454,
+      "phase_total_optix_over_embree": 1.2436338281642976,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "query_optix_over_embree": 1.6269313516655202,
+      "repeat": 5,
+      "run_index": 3,
+      "same_decision": true,
+      "same_oracle_decision": true,
+      "threshold": 0.4,
+      "warmup": 1,
+      "wrapper_optix_over_embree": 1.5479651251142006
+    },
+    {
+      "both_match_oracle": true,
+      "copies": 262144,
+      "embree_phase_total_sec": 19.724750578403473,
+      "embree_query_sec": 10.142383717000484,
+      "embree_wrapper_elapsed_sec": 69.39072220772505,
+      "optix_phase_total_sec": 15.829184532165527,
+      "optix_query_sec": 6.222499579191208,
+      "optix_wrapper_elapsed_sec": 44.70408507436514,
+      "phase_total_optix_over_embree": 1.2461002358221298,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "query_optix_over_embree": 1.6299532989793755,
+      "repeat": 5,
+      "run_index": 4,
+      "same_decision": true,
+      "same_oracle_decision": true,
+      "threshold": 0.4,
+      "warmup": 1,
+      "wrapper_optix_over_embree": 1.5522232944102032
+    },
+    {
+      "both_match_oracle": true,
+      "copies": 262144,
+      "embree_phase_total_sec": 19.470995604991913,
+      "embree_query_sec": 9.935143060982227,
+      "embree_wrapper_elapsed_sec": 68.515953309834,
+      "optix_phase_total_sec": 15.804063335061073,
+      "optix_query_sec": 6.102947518229485,
+      "optix_wrapper_elapsed_sec": 44.28718736022711,
+      "phase_total_optix_over_embree": 1.232024650381893,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "query_optix_over_embree": 1.6279253641467484,
+      "repeat": 5,
+      "run_index": 5,
+      "same_decision": true,
+      "same_oracle_decision": true,
+      "threshold": 0.4,
+      "warmup": 1,
+      "wrapper_optix_over_embree": 1.5470829689980712
+    }
+  ],
+  "point_count_per_side": 1048576,
+  "repeat": 5,
+  "rows": [
+    {
+      "backend": "embree",
+      "case_id": "hausdorff_threshold_summary_embree_c262144_r5_w1_sample01",
+      "command": [
+        "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "embree",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--copies",
+        "262144",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1"
+      ],
+      "copies": 262144,
+      "full_hausdorff_witness_claim_authorized": false,
+      "matches_oracle": true,
+      "native_continuation_active": true,
+      "native_continuation_backend": "embree_threshold_count",
+      "oracle": {
+        "directed_a_to_b": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 3,
+          "target_id": 103
+        },
+        "directed_b_to_a": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 103,
+          "target_id": 3
+        },
+        "hausdorff_distance": 0.30000000000000004,
+        "witness_direction": "b_to_a"
+      },
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "oracle_within_threshold": true,
+      "paper_reproduction_claim_authorized": false,
+      "phase_total_sec": 19.16271362453699,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "public_speedup_claim_authorized": false,
+      "query_sec": 9.817220196127892,
+      "query_total_sec": 46.766003623604774,
+      "release_authorized": false,
+      "repeat": 5,
+      "repeat_protocol": {
+        "measured_query_total_sec": 46.766003623604774,
+        "repeat": 5,
+        "reported_query_metric": "sum_of_directed_query_medians",
+        "warmup": 1
+      },
+      "returncode": 0,
+      "rt_core_accelerated": false,
+      "run_index": 1,
+      "run_phases": {
+        "input_construction_sec": 3.6684243232011795,
+        "python_postprocess_sec": 9.462237358093262e-07,
+        "query_fixed_radius_threshold_reached_count_sec": 9.817220196127892,
+        "scene_prepare_sec": 5.676931947469711,
+        "validation_sec": 0.00013621151447296143
+      },
+      "scene_prepare_sec": 5.676931947469711,
+      "status": "ok",
+      "stderr_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_embree_c262144_r5_w1_sample01.stderr.txt",
+      "stdout_json_parse_error": null,
+      "stdout_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_embree_c262144_r5_w1_sample01.stdout.json",
+      "threshold": 0.4,
+      "timed_out": false,
+      "warmup": 1,
+      "whole_app_speedup_claim_authorized": false,
+      "within_threshold": true,
+      "wrapper_elapsed_sec": 67.65088251978159
+    },
+    {
+      "backend": "optix",
+      "case_id": "hausdorff_threshold_summary_optix_c262144_r5_w1_sample01",
+      "command": [
+        "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--copies",
+        "262144",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1",
+        "--require-rt-core"
+      ],
+      "copies": 262144,
+      "full_hausdorff_witness_claim_authorized": false,
+      "matches_oracle": true,
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_threshold_count",
+      "oracle": {
+        "directed_a_to_b": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 3,
+          "target_id": 103
+        },
+        "directed_b_to_a": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 103,
+          "target_id": 3
+        },
+        "hausdorff_distance": 0.30000000000000004,
+        "witness_direction": "b_to_a"
+      },
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "oracle_within_threshold": true,
+      "paper_reproduction_claim_authorized": false,
+      "phase_total_sec": 15.651120267808437,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "public_speedup_claim_authorized": false,
+      "query_sec": 6.012831449508667,
+      "query_total_sec": 27.460745573043823,
+      "release_authorized": false,
+      "repeat": 5,
+      "repeat_protocol": {
+        "measured_query_total_sec": 27.460745573043823,
+        "repeat": 5,
+        "reported_query_metric": "sum_of_directed_query_medians",
+        "warmup": 1
+      },
+      "returncode": 0,
+      "rt_core_accelerated": true,
+      "run_index": 1,
+      "run_phases": {
+        "input_construction_sec": 3.7348156943917274,
+        "python_postprocess_sec": 2.0489096641540527e-06,
+        "query_fixed_radius_threshold_reached_count_sec": 6.012831449508667,
+        "scene_prepare_sec": 5.903257504105568,
+        "validation_sec": 0.00021357089281082153
+      },
+      "scene_prepare_sec": 5.903257504105568,
+      "status": "ok",
+      "stderr_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_optix_c262144_r5_w1_sample01.stderr.txt",
+      "stdout_json_parse_error": null,
+      "stdout_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_optix_c262144_r5_w1_sample01.stdout.json",
+      "threshold": 0.4,
+      "timed_out": false,
+      "warmup": 1,
+      "whole_app_speedup_claim_authorized": false,
+      "within_threshold": true,
+      "wrapper_elapsed_sec": 43.683877006173134
+    },
+    {
+      "backend": "embree",
+      "case_id": "hausdorff_threshold_summary_embree_c262144_r5_w1_sample02",
+      "command": [
+        "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "embree",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--copies",
+        "262144",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1"
+      ],
+      "copies": 262144,
+      "full_hausdorff_witness_claim_authorized": false,
+      "matches_oracle": true,
+      "native_continuation_active": true,
+      "native_continuation_backend": "embree_threshold_count",
+      "oracle": {
+        "directed_a_to_b": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 3,
+          "target_id": 103
+        },
+        "directed_b_to_a": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 103,
+          "target_id": 3
+        },
+        "hausdorff_distance": 0.30000000000000004,
+        "witness_direction": "b_to_a"
+      },
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "oracle_within_threshold": true,
+      "paper_reproduction_claim_authorized": false,
+      "phase_total_sec": 19.87915986031294,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "public_speedup_claim_authorized": false,
+      "query_sec": 10.256399676203728,
+      "query_total_sec": 48.61747266352177,
+      "release_authorized": false,
+      "repeat": 5,
+      "repeat_protocol": {
+        "measured_query_total_sec": 48.61747266352177,
+        "repeat": 5,
+        "reported_query_metric": "sum_of_directed_query_medians",
+        "warmup": 1
+      },
+      "returncode": 0,
+      "rt_core_accelerated": false,
+      "run_index": 2,
+      "run_phases": {
+        "input_construction_sec": 3.641048453748226,
+        "python_postprocess_sec": 7.897615432739258e-07,
+        "query_fixed_radius_threshold_reached_count_sec": 10.256399676203728,
+        "scene_prepare_sec": 5.981565698981285,
+        "validation_sec": 0.0001452416181564331
+      },
+      "scene_prepare_sec": 5.981565698981285,
+      "status": "ok",
+      "stderr_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_embree_c262144_r5_w1_sample02.stderr.txt",
+      "stdout_json_parse_error": null,
+      "stdout_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_embree_c262144_r5_w1_sample02.stdout.json",
+      "threshold": 0.4,
+      "timed_out": false,
+      "warmup": 1,
+      "whole_app_speedup_claim_authorized": false,
+      "within_threshold": true,
+      "wrapper_elapsed_sec": 70.11457127332687
+    },
+    {
+      "backend": "optix",
+      "case_id": "hausdorff_threshold_summary_optix_c262144_r5_w1_sample02",
+      "command": [
+        "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--copies",
+        "262144",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1",
+        "--require-rt-core"
+      ],
+      "copies": 262144,
+      "full_hausdorff_witness_claim_authorized": false,
+      "matches_oracle": true,
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_threshold_count",
+      "oracle": {
+        "directed_a_to_b": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 3,
+          "target_id": 103
+        },
+        "directed_b_to_a": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 103,
+          "target_id": 3
+        },
+        "hausdorff_distance": 0.30000000000000004,
+        "witness_direction": "b_to_a"
+      },
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "oracle_within_threshold": true,
+      "paper_reproduction_claim_authorized": false,
+      "phase_total_sec": 15.851504772901535,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "public_speedup_claim_authorized": false,
+      "query_sec": 6.119939640164375,
+      "query_total_sec": 27.85114875435829,
+      "release_authorized": false,
+      "repeat": 5,
+      "repeat_protocol": {
+        "measured_query_total_sec": 27.85114875435829,
+        "repeat": 5,
+        "reported_query_metric": "sum_of_directed_query_medians",
+        "warmup": 1
+      },
+      "returncode": 0,
+      "rt_core_accelerated": true,
+      "run_index": 2,
+      "run_phases": {
+        "input_construction_sec": 3.7534778490662575,
+        "python_postprocess_sec": 1.8328428268432617e-06,
+        "query_fixed_radius_threshold_reached_count_sec": 6.119939640164375,
+        "scene_prepare_sec": 5.977884151041508,
+        "validation_sec": 0.000201299786567688
+      },
+      "scene_prepare_sec": 5.977884151041508,
+      "status": "ok",
+      "stderr_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_optix_c262144_r5_w1_sample02.stderr.txt",
+      "stdout_json_parse_error": null,
+      "stdout_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_optix_c262144_r5_w1_sample02.stdout.json",
+      "threshold": 0.4,
+      "timed_out": false,
+      "warmup": 1,
+      "whole_app_speedup_claim_authorized": false,
+      "within_threshold": true,
+      "wrapper_elapsed_sec": 44.28437568992376
+    },
+    {
+      "backend": "embree",
+      "case_id": "hausdorff_threshold_summary_embree_c262144_r5_w1_sample03",
+      "command": [
+        "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "embree",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--copies",
+        "262144",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1"
+      ],
+      "copies": 262144,
+      "full_hausdorff_witness_claim_authorized": false,
+      "matches_oracle": true,
+      "native_continuation_active": true,
+      "native_continuation_backend": "embree_threshold_count",
+      "oracle": {
+        "directed_a_to_b": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 3,
+          "target_id": 103
+        },
+        "directed_b_to_a": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 103,
+          "target_id": 3
+        },
+        "hausdorff_distance": 0.30000000000000004,
+        "witness_direction": "b_to_a"
+      },
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "oracle_within_threshold": true,
+      "paper_reproduction_claim_authorized": false,
+      "phase_total_sec": 19.656344294548035,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "public_speedup_claim_authorized": false,
+      "query_sec": 9.974274717271328,
+      "query_total_sec": 47.211767852306366,
+      "release_authorized": false,
+      "repeat": 5,
+      "repeat_protocol": {
+        "measured_query_total_sec": 47.211767852306366,
+        "repeat": 5,
+        "reported_query_metric": "sum_of_directed_query_medians",
+        "warmup": 1
+      },
+      "returncode": 0,
+      "rt_core_accelerated": false,
+      "run_index": 3,
+      "run_phases": {
+        "input_construction_sec": 3.75114007294178,
+        "python_postprocess_sec": 9.98377799987793e-07,
+        "query_fixed_radius_threshold_reached_count_sec": 9.974274717271328,
+        "scene_prepare_sec": 5.93078576028347,
+        "validation_sec": 0.00014274567365646362
+      },
+      "scene_prepare_sec": 5.93078576028347,
+      "status": "ok",
+      "stderr_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_embree_c262144_r5_w1_sample03.stderr.txt",
+      "stdout_json_parse_error": null,
+      "stdout_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_embree_c262144_r5_w1_sample03.stdout.json",
+      "threshold": 0.4,
+      "timed_out": false,
+      "warmup": 1,
+      "whole_app_speedup_claim_authorized": false,
+      "within_threshold": true,
+      "wrapper_elapsed_sec": 68.58958404511213
+    },
+    {
+      "backend": "optix",
+      "case_id": "hausdorff_threshold_summary_optix_c262144_r5_w1_sample03",
+      "command": [
+        "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--copies",
+        "262144",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1",
+        "--require-rt-core"
+      ],
+      "copies": 262144,
+      "full_hausdorff_witness_claim_authorized": false,
+      "matches_oracle": true,
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_threshold_count",
+      "oracle": {
+        "directed_a_to_b": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 3,
+          "target_id": 103
+        },
+        "directed_b_to_a": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 103,
+          "target_id": 3
+        },
+        "hausdorff_distance": 0.30000000000000004,
+        "witness_direction": "b_to_a"
+      },
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "oracle_within_threshold": true,
+      "paper_reproduction_claim_authorized": false,
+      "phase_total_sec": 15.805572226643562,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "public_speedup_claim_authorized": false,
+      "query_sec": 6.13072869181633,
+      "query_total_sec": 27.875450395047665,
+      "release_authorized": false,
+      "repeat": 5,
+      "repeat_protocol": {
+        "measured_query_total_sec": 27.875450395047665,
+        "repeat": 5,
+        "reported_query_metric": "sum_of_directed_query_medians",
+        "warmup": 1
+      },
+      "returncode": 0,
+      "rt_core_accelerated": true,
+      "run_index": 3,
+      "run_phases": {
+        "input_construction_sec": 3.775387890636921,
+        "python_postprocess_sec": 1.8924474716186523e-06,
+        "query_fixed_radius_threshold_reached_count_sec": 6.13072869181633,
+        "scene_prepare_sec": 5.899237789213657,
+        "validation_sec": 0.00021596252918243408
+      },
+      "scene_prepare_sec": 5.899237789213657,
+      "status": "ok",
+      "stderr_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_optix_c262144_r5_w1_sample03.stderr.txt",
+      "stdout_json_parse_error": null,
+      "stdout_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_optix_c262144_r5_w1_sample03.stdout.json",
+      "threshold": 0.4,
+      "timed_out": false,
+      "warmup": 1,
+      "whole_app_speedup_claim_authorized": false,
+      "within_threshold": true,
+      "wrapper_elapsed_sec": 44.309515073895454
+    },
+    {
+      "backend": "embree",
+      "case_id": "hausdorff_threshold_summary_embree_c262144_r5_w1_sample04",
+      "command": [
+        "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "embree",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--copies",
+        "262144",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1"
+      ],
+      "copies": 262144,
+      "full_hausdorff_witness_claim_authorized": false,
+      "matches_oracle": true,
+      "native_continuation_active": true,
+      "native_continuation_backend": "embree_threshold_count",
+      "oracle": {
+        "directed_a_to_b": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 3,
+          "target_id": 103
+        },
+        "directed_b_to_a": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 103,
+          "target_id": 3
+        },
+        "hausdorff_distance": 0.30000000000000004,
+        "witness_direction": "b_to_a"
+      },
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "oracle_within_threshold": true,
+      "paper_reproduction_claim_authorized": false,
+      "phase_total_sec": 19.724750578403473,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "public_speedup_claim_authorized": false,
+      "query_sec": 10.142383717000484,
+      "query_total_sec": 48.02366993576288,
+      "release_authorized": false,
+      "repeat": 5,
+      "repeat_protocol": {
+        "measured_query_total_sec": 48.02366993576288,
+        "repeat": 5,
+        "reported_query_metric": "sum_of_directed_query_medians",
+        "warmup": 1
+      },
+      "returncode": 0,
+      "rt_core_accelerated": false,
+      "run_index": 4,
+      "run_phases": {
+        "input_construction_sec": 3.674412600696087,
+        "python_postprocess_sec": 1.1920928955078125e-06,
+        "query_fixed_radius_threshold_reached_count_sec": 10.142383717000484,
+        "scene_prepare_sec": 5.907802499830723,
+        "validation_sec": 0.00015056878328323364
+      },
+      "scene_prepare_sec": 5.907802499830723,
+      "status": "ok",
+      "stderr_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_embree_c262144_r5_w1_sample04.stderr.txt",
+      "stdout_json_parse_error": null,
+      "stdout_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_embree_c262144_r5_w1_sample04.stdout.json",
+      "threshold": 0.4,
+      "timed_out": false,
+      "warmup": 1,
+      "whole_app_speedup_claim_authorized": false,
+      "within_threshold": true,
+      "wrapper_elapsed_sec": 69.39072220772505
+    },
+    {
+      "backend": "optix",
+      "case_id": "hausdorff_threshold_summary_optix_c262144_r5_w1_sample04",
+      "command": [
+        "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--copies",
+        "262144",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1",
+        "--require-rt-core"
+      ],
+      "copies": 262144,
+      "full_hausdorff_witness_claim_authorized": false,
+      "matches_oracle": true,
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_threshold_count",
+      "oracle": {
+        "directed_a_to_b": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 3,
+          "target_id": 103
+        },
+        "directed_b_to_a": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 103,
+          "target_id": 3
+        },
+        "hausdorff_distance": 0.30000000000000004,
+        "witness_direction": "b_to_a"
+      },
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "oracle_within_threshold": true,
+      "paper_reproduction_claim_authorized": false,
+      "phase_total_sec": 15.829184532165527,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "public_speedup_claim_authorized": false,
+      "query_sec": 6.222499579191208,
+      "query_total_sec": 28.274226255714893,
+      "release_authorized": false,
+      "repeat": 5,
+      "repeat_protocol": {
+        "measured_query_total_sec": 28.274226255714893,
+        "repeat": 5,
+        "reported_query_metric": "sum_of_directed_query_medians",
+        "warmup": 1
+      },
+      "returncode": 0,
+      "rt_core_accelerated": true,
+      "run_index": 4,
+      "run_phases": {
+        "input_construction_sec": 3.6366184055805206,
+        "python_postprocess_sec": 2.034008502960205e-06,
+        "query_fixed_radius_threshold_reached_count_sec": 6.222499579191208,
+        "scene_prepare_sec": 5.969851337373257,
+        "validation_sec": 0.00021317601203918457
+      },
+      "scene_prepare_sec": 5.969851337373257,
+      "status": "ok",
+      "stderr_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_optix_c262144_r5_w1_sample04.stderr.txt",
+      "stdout_json_parse_error": null,
+      "stdout_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_optix_c262144_r5_w1_sample04.stdout.json",
+      "threshold": 0.4,
+      "timed_out": false,
+      "warmup": 1,
+      "whole_app_speedup_claim_authorized": false,
+      "within_threshold": true,
+      "wrapper_elapsed_sec": 44.70408507436514
+    },
+    {
+      "backend": "embree",
+      "case_id": "hausdorff_threshold_summary_embree_c262144_r5_w1_sample05",
+      "command": [
+        "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "embree",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--copies",
+        "262144",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1"
+      ],
+      "copies": 262144,
+      "full_hausdorff_witness_claim_authorized": false,
+      "matches_oracle": true,
+      "native_continuation_active": true,
+      "native_continuation_backend": "embree_threshold_count",
+      "oracle": {
+        "directed_a_to_b": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 3,
+          "target_id": 103
+        },
+        "directed_b_to_a": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 103,
+          "target_id": 3
+        },
+        "hausdorff_distance": 0.30000000000000004,
+        "witness_direction": "b_to_a"
+      },
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "oracle_within_threshold": true,
+      "paper_reproduction_claim_authorized": false,
+      "phase_total_sec": 19.470995604991913,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "public_speedup_claim_authorized": false,
+      "query_sec": 9.935143060982227,
+      "query_total_sec": 47.27795784920454,
+      "release_authorized": false,
+      "repeat": 5,
+      "repeat_protocol": {
+        "measured_query_total_sec": 47.27795784920454,
+        "repeat": 5,
+        "reported_query_metric": "sum_of_directed_query_medians",
+        "warmup": 1
+      },
+      "returncode": 0,
+      "rt_core_accelerated": false,
+      "run_index": 5,
+      "run_phases": {
+        "input_construction_sec": 3.737279735505581,
+        "python_postprocess_sec": 8.791685104370117e-07,
+        "query_fixed_radius_threshold_reached_count_sec": 9.935143060982227,
+        "scene_prepare_sec": 5.798428662121296,
+        "validation_sec": 0.0001432672142982483
+      },
+      "scene_prepare_sec": 5.798428662121296,
+      "status": "ok",
+      "stderr_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_embree_c262144_r5_w1_sample05.stderr.txt",
+      "stdout_json_parse_error": null,
+      "stdout_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_embree_c262144_r5_w1_sample05.stdout.json",
+      "threshold": 0.4,
+      "timed_out": false,
+      "warmup": 1,
+      "whole_app_speedup_claim_authorized": false,
+      "within_threshold": true,
+      "wrapper_elapsed_sec": 68.515953309834
+    },
+    {
+      "backend": "optix",
+      "case_id": "hausdorff_threshold_summary_optix_c262144_r5_w1_sample05",
+      "command": [
+        "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+        "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--copies",
+        "262144",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1",
+        "--require-rt-core"
+      ],
+      "copies": 262144,
+      "full_hausdorff_witness_claim_authorized": false,
+      "matches_oracle": true,
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_threshold_count",
+      "oracle": {
+        "directed_a_to_b": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 3,
+          "target_id": 103
+        },
+        "directed_b_to_a": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 1048576,
+          "source_id": 103,
+          "target_id": 3
+        },
+        "hausdorff_distance": 0.30000000000000004,
+        "witness_direction": "b_to_a"
+      },
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "oracle_within_threshold": true,
+      "paper_reproduction_claim_authorized": false,
+      "phase_total_sec": 15.804063335061073,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "public_speedup_claim_authorized": false,
+      "query_sec": 6.102947518229485,
+      "query_total_sec": 27.79902832210064,
+      "release_authorized": false,
+      "repeat": 5,
+      "repeat_protocol": {
+        "measured_query_total_sec": 27.79902832210064,
+        "repeat": 5,
+        "reported_query_metric": "sum_of_directed_query_medians",
+        "warmup": 1
+      },
+      "returncode": 0,
+      "rt_core_accelerated": true,
+      "run_index": 5,
+      "run_phases": {
+        "input_construction_sec": 3.801113083958626,
+        "python_postprocess_sec": 1.773238182067871e-06,
+        "query_fixed_radius_threshold_reached_count_sec": 6.102947518229485,
+        "scene_prepare_sec": 5.899795174598694,
+        "validation_sec": 0.00020578503608703613
+      },
+      "scene_prepare_sec": 5.899795174598694,
+      "status": "ok",
+      "stderr_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_optix_c262144_r5_w1_sample05.stderr.txt",
+      "stdout_json_parse_error": null,
+      "stdout_path": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/hausdorff_threshold_summary_optix_c262144_r5_w1_sample05.stdout.json",
+      "threshold": 0.4,
+      "timed_out": false,
+      "warmup": 1,
+      "whole_app_speedup_claim_authorized": false,
+      "within_threshold": true,
+      "wrapper_elapsed_sec": 44.28718736022711
+    }
+  ],
+  "status": "hausdorff_threshold_summary_large_stability_evidence_not_promoted",
+  "summary": {
+    "all_pairs_match_oracle": true,
+    "all_pairs_same_decision": true,
+    "all_phase_total_pairs_above_1x": true,
+    "backend_stats": {
+      "embree": {
+        "phase_total_sec": {
+          "count": 5,
+          "max": 19.87915986031294,
+          "mean": 19.57879279255867,
+          "median": 19.656344294548035,
+          "min": 19.16271362453699,
+          "relative_stddev": 0.014040710466354397,
+          "stddev": 0.27490016088106256
+        },
+        "query_sec": {
+          "count": 5,
+          "max": 10.256399676203728,
+          "mean": 10.025084273517132,
+          "median": 9.974274717271328,
+          "min": 9.817220196127892,
+          "relative_stddev": 0.017359363270065542,
+          "stddev": 0.174029079717005
+        },
+        "wrapper_elapsed_sec": {
+          "count": 5,
+          "max": 70.11457127332687,
+          "mean": 68.85234267115592,
+          "median": 68.58958404511213,
+          "min": 67.65088251978159,
+          "relative_stddev": 0.013602832487041219,
+          "stddev": 0.9365868836960941
+        }
+      },
+      "optix": {
+        "phase_total_sec": {
+          "count": 5,
+          "max": 15.851504772901535,
+          "mean": 15.788289026916027,
+          "median": 15.805572226643562,
+          "min": 15.651120267808437,
+          "relative_stddev": 0.005010466848321832,
+          "stddev": 0.07910669876108611
+        },
+        "query_sec": {
+          "count": 5,
+          "max": 6.222499579191208,
+          "mean": 6.117789375782013,
+          "median": 6.119939640164375,
+          "min": 6.012831449508667,
+          "relative_stddev": 0.012224607070026513,
+          "stddev": 0.07478757125611787
+        },
+        "wrapper_elapsed_sec": {
+          "count": 5,
+          "max": 44.70408507436514,
+          "mean": 44.25380804091692,
+          "median": 44.28718736022711,
+          "min": 43.683877006173134,
+          "relative_stddev": 0.008246505017074598,
+          "stddev": 0.36493925003407757
+        }
+      }
+    },
+    "failed_rows": [],
+    "full_hausdorff_witness_claim_authorized": false,
+    "m7_promotion_authorized": false,
+    "pair_count": 5,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "ratio_stats": {
+      "phase_total_optix_over_embree": {
+        "count": 5,
+        "max": 1.254086608502731,
+        "mean": 1.240042444838897,
+        "median": 1.2436338281642976,
+        "min": 1.2243669013234328,
+        "relative_stddev": 0.009514787461846447,
+        "stddev": 0.01179874030631055
+      },
+      "query_optix_over_embree": {
+        "count": 5,
+        "max": 1.6758988289512364,
+        "mean": 1.6386841066991966,
+        "median": 1.6299532989793755,
+        "min": 1.6269313516655202,
+        "relative_stddev": 0.012766794941706867,
+        "stddev": 0.020920743964462737
+      },
+      "wrapper_optix_over_embree": {
+        "count": 5,
+        "max": 1.5832801113481743,
+        "mean": 1.5558395967131606,
+        "median": 1.5486464836951535,
+        "min": 1.5470829689980712,
+        "relative_stddev": 0.009939042247429494,
+        "stddev": 0.015463555481955769
+      }
+    },
+    "release_authorized": false,
+    "row_count": 10,
+    "status": "hausdorff_threshold_summary_large_stability_evidence_not_promoted",
+    "weakest_phase_total_optix_speedup_vs_embree": 1.2243669013234328,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "threshold": 0.4,
+  "version": "rtdl.v3.phoenix.hausdorff.threshold_summary.large_stability.v1",
+  "warmup": 1
+}

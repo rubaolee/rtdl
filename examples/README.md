@@ -1,129 +1,29 @@
-# RTDL Examples
+# RTDL V3.0.0 Examples
 
-This directory is organized for current RTDL users first. Start in
-`v4_0/` for the V4.0 Python GPU operator route, or `current/` for the broader
-V3 Python+RTDL benchmark-app and primitive/prepared surface.
+Use these examples with the source tree on `PYTHONPATH`.
 
-The `v4_0/` tree is the learner-facing source of truth for the current V4.0
-device-array operator route. The `current/` tree remains the V3 source of truth
-for generic Python+partner+RTDL examples. Historical version evidence belongs in
-`docs/reports/`, `docs/reviews/`, `docs/history/`, and release notes rather
-than in the first-run examples path.
+First run:
 
-Run examples from the repository root with source-tree usage:
-
-```bash
-PYTHONPATH=src:. python examples/v4_0/getting_started/v4_fixed_radius_cupy_hello.py
+```powershell
+$env:PYTHONPATH = "src;."
+py -3 examples\current\getting_started\rtdl_hello_world.py
 ```
 
-Start with the portable CPU reference path, then move to Embree for CPU RT and
-OptiX for NVIDIA RT when those native backends are configured.
-
-For a full Linux/pod smoke run across tutorials, examples, demos, and benchmark
-front doors, install the native/runtime prerequisites first:
+Linux or macOS:
 
 ```bash
-apt-get install -y libgeos-dev pkg-config libembree-dev
-python -m pip install numpy pillow imageio imageio-ffmpeg  # Dependency install only; this does not install RTDL
+PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world.py
 ```
 
-If system Python is externally managed, create a virtual environment and run
-the same `pip` command inside it.
+## Current Layout
 
-## Start Here
-
-| Purpose | Directory | First command |
-| --- | --- | --- |
-| Current V4.0 GPU route | `v4_0/getting_started/` | `PYTHONPATH=src:. python examples/v4_0/getting_started/v4_fixed_radius_cupy_hello.py` |
-| V3 runnable RTDL programs | `current/getting_started/` | `PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world.py` |
-| Primitive discovery workflow | `current/getting_started/` | `PYTHONPATH=src:. python examples/current/getting_started/rtdl_primitive_discovery_workflow.py` |
-| Individual feature examples | `current/features/` | `PYTHONPATH=src:. python examples/current/features/ray_queries/rtdl_ray_triangle_any_hit.py` |
-| Complete current applications | `current/apps/` | `PYTHONPATH=src:. python examples/current/apps/ml/rtdl_outlier_detection_app.py --backend cpu_python_reference` |
-| Partner continuation examples | `current/partners/` | `PYTHONPATH=src:. python examples/current/partners/rtdl_partner_anyhit.py --partner numpy --backend embree` |
-| Demoted or design-pressure learner apps | `current/learner_apps/` | read the learner-app README before treating any result as performance evidence |
-| Paper-facing performance studies | `current/research_benchmarks/` | read the benchmark README before running |
-
-## Directory Map
-
-| Directory | Audience | Contents |
-| --- | --- | --- |
-| `current/getting_started/` | New learner | Hello world, backend selection, primitive discovery, feature cookbook |
-| `v4_0/getting_started/` | V4 learner | Current source-tree fixed-radius GPU route with CuPy, Numba, and PyTorch |
-| `current/features/` | User learning one RTDL primitive family | Ray queries, neighbors, database reductions, graph traversal, spatial rows |
-| `current/apps/` | User building an application | Analytics, geospatial, ML, robotics, simulation, trajectory examples |
-| `current/partners/` | Advanced user | NumPy/CuPy/Numba/user-owned continuation examples around RTDL outputs |
-| `current/learner_apps/` | Learner/research reader | Demoted or design-pressure app-scale examples that are not benchmark claims |
-| `current/research_benchmarks/hausdorff_xhd/` | Research/performance reader | Hausdorff/X-HD-inspired RTDL study and benchmark harnesses |
-| `current/research_benchmarks/spatial_rayjoin/` | Research/performance reader | RayJoin-inspired spatial join study |
-| `legacy_or_backend_proofs/` | Backend maintainer | Backend proof demos that are not the first learner path |
-| `visual_demo/` | Visual demo reader | Rendering/visual query demos |
-| `reference/` | Test/doc maintainer | Canonical reference kernels used by docs and tests |
-| `generated/` | Auditor | Preserved generated bundles |
-| `internal/` | Maintainer | Historical/internal development artifacts |
-
-## V3.0 Feature Families
-
-| Feature family | Directory |
+| Path | Use |
 | --- | --- |
-| Ray queries and row reductions | `current/features/ray_queries/` |
-| Fixed-radius and KNN rows | `current/features/neighbors/` |
-| Columnar database scans and grouped reductions | `current/features/database/` |
-| Graph traversal and triangle counting | `current/features/graph/` |
-| Segment/polygon and polygon-set spatial rows | `current/features/spatial/` |
+| `current/getting_started/` | First examples and smoke checks. |
+| `current/features/` | Feature-level examples. |
+| `current/apps/` | Application-shaped examples. |
+| `current/partners/` | Explicit partner examples. |
+| `current/research_benchmarks/` | Benchmark code inventory for developers. |
 
-## Important Performance Applications
-
-| Study | Directory | Boundary |
-| --- | --- | --- |
-| Hausdorff vs X-HD-style baselines | `current/research_benchmarks/hausdorff_xhd/` | Serious RTDL language/runtime study, not a claim that every Hausdorff input beats every CUDA implementation |
-| Spatial joins vs RayJoin-style baselines | `current/research_benchmarks/spatial_rayjoin/` | Serious RTDL spatial-query study, not a claim that RTDL reproduces every RayJoin paper result |
-| RT-DBSCAN-style neighbor clustering | `current/research_benchmarks/rt_dbscan/` | Serious fixed-radius/component study over generic primitives, not a DBSCAN-native engine ABI |
-| Robot collision screening | `current/research_benchmarks/robot_collision/` | Prepared static-scene screening study, not a planner or swept-collision solver |
-| RayDB-style grouped aggregates | `current/research_benchmarks/raydb_style/` | Columnar grouped-reduction study, not SQL, SSB, or a DBMS |
-| Barnes-Hut / RT-BarnesHut-style | `current/research_benchmarks/barnes_hut/` | Hierarchical aggregate-frontier study, not an app-specific force primitive |
-| LibRTS-style spatial index | `current/research_benchmarks/librts_spatial_index/` | Generic AABB point/range count study, not full mutable LibRTS reproduction |
-| RTNN neighbor search | `current/research_benchmarks/rtnn/` | Serious neighbor-search study over generic prepared fixed-radius and partner top-k contracts, not a full RTNN paper reproduction or ANN-index claim |
-| Triangle counting | `current/research_benchmarks/triangle_counting/` | RT-Graph/SIGMETRICS 2025 target; single-contract graph benchmark with accepted segmented/streamed-lowering limitation |
-
-## Demoted Research/Learner Apps
-
-| App | Directory | Boundary |
-| --- | --- | --- |
-| GPU-RMQ | `current/learner_apps/gpu_rmq/` | Demoted after Goal2612; useful for primitive design pressure, not a benchmark app or speedup claim |
-
-## Compatibility
-
-Older imports such as `from examples import rtdl_hello_world` are kept through a
-lazy compatibility map in `examples/__init__.py`.  New documentation should use
-the explicit `examples/current/...` paths.
-
-## Claim Boundaries
-
-- Short canonical boundary page:
-  [Current Claim Boundaries](../docs/learn/current_claim_boundaries.md).
-- `--backend optix` is not by itself a broad NVIDIA RT-core speedup claim.
-- `examples/v4_0/` is the current V4.0 source-tree front door for the exact
-  fixed-radius Python GPU route.
-- Partner examples show user-owned continuation around RTDL outputs; RTDL does
-  not claim to accelerate arbitrary NumPy, CuPy, Numba, or user-owned extension
-  programs.
-- `legacy_or_backend_proofs/`, `generated/`, `reference/`, and `internal/` are
-  not first-run learner directories.
-
-For guided learning and support boundaries, prefer:
-
-- [Project Front Page](../README.md)
-- [Docs Index](../docs/README.md)
-- [Tutorials](../tutorials/README.md)
-- [Current Tutorial Track](../tutorials/current/README.md)
-- [App And Example Quickstart](../docs/app_example_quickstart.md)
-- [Application Catalog](../docs/application_catalog.md)
-- [Choosing A Partner For Custom Logic](../docs/learn/partner_choice_for_custom_logic.md)
-- [Benchmark Partner Reference Matrix](../docs/learn/benchmark_partner_reference_matrix.md)
-- [Current Support Matrix](../docs/current_main_support_matrix.md)
-- [App Engine Support Matrix](../docs/app_engine_support_matrix.md)
-- [Performance Model](../docs/performance_model.md)
-
-Selecting `--backend optix` does not automatically make a public RT-core
-speedup claim; use the support matrix and reviewed evidence before publishing
-performance wording.
+The default user path is `current/getting_started/`. Benchmark directories are
+developer workspaces.

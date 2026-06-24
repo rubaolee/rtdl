@@ -1,0 +1,470 @@
+{
+  "checks": {
+    "all_14_rows_planned": true,
+    "all_7_shape_groups_planned": true,
+    "all_non_authorization_flags_false": true,
+    "dry_run_only": true,
+    "m70_not_goal_complete": true,
+    "m70_packet_no_execution": true,
+    "m70_provisional_allows_m71_local_only": true,
+    "no_command_templates": true,
+    "source_full_batch_constraint_present": true,
+    "source_generic_helper_call_present": true,
+    "source_metadata_fields_present": true,
+    "source_no_route_specific_tuning_marker": true,
+    "source_productized_mode_present": true,
+    "source_timing_fields_present": true
+  },
+  "date": "2026-06-23",
+  "dry_run_plan": [
+    {
+      "command_present": false,
+      "distribution": "clustered",
+      "dry_run_only": true,
+      "fail_if_query_batch_size_differs_from_point_count": true,
+      "per_distribution_phase_bound_required": true,
+      "point_count": 262144,
+      "query_batch_size": 262144,
+      "query_role": "full_batch_self_query",
+      "required_metadata_fields": [
+        "prepared_execution_session_runner_used",
+        "productized_execution_path",
+        "runtime_trunk_executes_end_to_end",
+        "material_probe_candidate",
+        "release_authorized",
+        "public_speedup_claim_authorized",
+        "broad_v3_faster_than_v2_claim_authorized",
+        "signature_match_status"
+      ],
+      "required_timing_fields": [
+        "input_load",
+        "input_pack",
+        "input_load_pack",
+        "runner_after_input_load_pack",
+        "hot_query_median",
+        "runner_wall",
+        "runner_measured_total",
+        "runner_measured_median"
+      ],
+      "rows": [
+        {
+          "backend": "embree",
+          "case_id": "rtnn_embree_clustered_262144_ranked_summary",
+          "same_contract_incumbent": "frozen_v2_14_embree_ranked_summary_row",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        },
+        {
+          "backend": "optix",
+          "case_id": "rtnn_optix_clustered_262144_ranked_summary",
+          "same_contract_incumbent": "legacy_app_front_door_prepared_optix_ranked_summary",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        }
+      ],
+      "shape_key": "clustered:262144:rtnn_clustered_262144_ranked_summary"
+    },
+    {
+      "command_present": false,
+      "distribution": "clustered",
+      "dry_run_only": true,
+      "fail_if_query_batch_size_differs_from_point_count": true,
+      "per_distribution_phase_bound_required": true,
+      "point_count": 65536,
+      "query_batch_size": 65536,
+      "query_role": "full_batch_self_query",
+      "required_metadata_fields": [
+        "prepared_execution_session_runner_used",
+        "productized_execution_path",
+        "runtime_trunk_executes_end_to_end",
+        "material_probe_candidate",
+        "release_authorized",
+        "public_speedup_claim_authorized",
+        "broad_v3_faster_than_v2_claim_authorized",
+        "signature_match_status"
+      ],
+      "required_timing_fields": [
+        "input_load",
+        "input_pack",
+        "input_load_pack",
+        "runner_after_input_load_pack",
+        "hot_query_median",
+        "runner_wall",
+        "runner_measured_total",
+        "runner_measured_median"
+      ],
+      "rows": [
+        {
+          "backend": "embree",
+          "case_id": "rtnn_embree_clustered_65536_ranked_summary",
+          "same_contract_incumbent": "frozen_v2_14_embree_ranked_summary_row",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        },
+        {
+          "backend": "optix",
+          "case_id": "rtnn_optix_clustered_65536_ranked_summary",
+          "same_contract_incumbent": "legacy_app_front_door_prepared_optix_ranked_summary",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        }
+      ],
+      "shape_key": "clustered:65536:rtnn_clustered_65536_ranked_summary"
+    },
+    {
+      "command_present": false,
+      "distribution": "shell",
+      "dry_run_only": true,
+      "fail_if_query_batch_size_differs_from_point_count": true,
+      "per_distribution_phase_bound_required": true,
+      "point_count": 262144,
+      "query_batch_size": 262144,
+      "query_role": "full_batch_self_query",
+      "required_metadata_fields": [
+        "prepared_execution_session_runner_used",
+        "productized_execution_path",
+        "runtime_trunk_executes_end_to_end",
+        "material_probe_candidate",
+        "release_authorized",
+        "public_speedup_claim_authorized",
+        "broad_v3_faster_than_v2_claim_authorized",
+        "signature_match_status"
+      ],
+      "required_timing_fields": [
+        "input_load",
+        "input_pack",
+        "input_load_pack",
+        "runner_after_input_load_pack",
+        "hot_query_median",
+        "runner_wall",
+        "runner_measured_total",
+        "runner_measured_median"
+      ],
+      "rows": [
+        {
+          "backend": "embree",
+          "case_id": "rtnn_embree_shell_262144_ranked_summary",
+          "same_contract_incumbent": "frozen_v2_14_embree_ranked_summary_row",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        },
+        {
+          "backend": "optix",
+          "case_id": "rtnn_optix_shell_262144_ranked_summary",
+          "same_contract_incumbent": "legacy_app_front_door_prepared_optix_ranked_summary",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        }
+      ],
+      "shape_key": "shell:262144:rtnn_shell_262144_ranked_summary"
+    },
+    {
+      "command_present": false,
+      "distribution": "shell",
+      "dry_run_only": true,
+      "fail_if_query_batch_size_differs_from_point_count": true,
+      "per_distribution_phase_bound_required": true,
+      "point_count": 65536,
+      "query_batch_size": 65536,
+      "query_role": "full_batch_self_query",
+      "required_metadata_fields": [
+        "prepared_execution_session_runner_used",
+        "productized_execution_path",
+        "runtime_trunk_executes_end_to_end",
+        "material_probe_candidate",
+        "release_authorized",
+        "public_speedup_claim_authorized",
+        "broad_v3_faster_than_v2_claim_authorized",
+        "signature_match_status"
+      ],
+      "required_timing_fields": [
+        "input_load",
+        "input_pack",
+        "input_load_pack",
+        "runner_after_input_load_pack",
+        "hot_query_median",
+        "runner_wall",
+        "runner_measured_total",
+        "runner_measured_median"
+      ],
+      "rows": [
+        {
+          "backend": "embree",
+          "case_id": "rtnn_embree_shell_65536_ranked_summary",
+          "same_contract_incumbent": "frozen_v2_14_embree_ranked_summary_row",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        },
+        {
+          "backend": "optix",
+          "case_id": "rtnn_optix_shell_65536_ranked_summary",
+          "same_contract_incumbent": "legacy_app_front_door_prepared_optix_ranked_summary",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        }
+      ],
+      "shape_key": "shell:65536:rtnn_shell_65536_ranked_summary"
+    },
+    {
+      "command_present": false,
+      "distribution": "uniform",
+      "dry_run_only": true,
+      "fail_if_query_batch_size_differs_from_point_count": true,
+      "per_distribution_phase_bound_required": false,
+      "point_count": 262144,
+      "query_batch_size": 262144,
+      "query_role": "full_batch_self_query",
+      "required_metadata_fields": [
+        "prepared_execution_session_runner_used",
+        "productized_execution_path",
+        "runtime_trunk_executes_end_to_end",
+        "material_probe_candidate",
+        "release_authorized",
+        "public_speedup_claim_authorized",
+        "broad_v3_faster_than_v2_claim_authorized",
+        "signature_match_status"
+      ],
+      "required_timing_fields": [
+        "input_load",
+        "input_pack",
+        "input_load_pack",
+        "runner_after_input_load_pack",
+        "hot_query_median",
+        "runner_wall",
+        "runner_measured_total",
+        "runner_measured_median"
+      ],
+      "rows": [
+        {
+          "backend": "embree",
+          "case_id": "rtnn_embree_uniform_262144_ranked_summary",
+          "same_contract_incumbent": "frozen_v2_14_embree_ranked_summary_row",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        },
+        {
+          "backend": "optix",
+          "case_id": "rtnn_optix_uniform_262144_ranked_summary",
+          "same_contract_incumbent": "legacy_app_front_door_prepared_optix_ranked_summary",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        }
+      ],
+      "shape_key": "uniform:262144:rtnn_uniform_262144_ranked_summary"
+    },
+    {
+      "command_present": false,
+      "distribution": "uniform",
+      "dry_run_only": true,
+      "fail_if_query_batch_size_differs_from_point_count": true,
+      "per_distribution_phase_bound_required": false,
+      "point_count": 65536,
+      "query_batch_size": 65536,
+      "query_role": "full_batch_self_query",
+      "required_metadata_fields": [
+        "prepared_execution_session_runner_used",
+        "productized_execution_path",
+        "runtime_trunk_executes_end_to_end",
+        "material_probe_candidate",
+        "release_authorized",
+        "public_speedup_claim_authorized",
+        "broad_v3_faster_than_v2_claim_authorized",
+        "signature_match_status"
+      ],
+      "required_timing_fields": [
+        "input_load",
+        "input_pack",
+        "input_load_pack",
+        "runner_after_input_load_pack",
+        "hot_query_median",
+        "runner_wall",
+        "runner_measured_total",
+        "runner_measured_median"
+      ],
+      "rows": [
+        {
+          "backend": "embree",
+          "case_id": "rtnn_embree_prepared_3d_ranked_summary",
+          "same_contract_incumbent": "frozen_v2_14_embree_ranked_summary_row",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        },
+        {
+          "backend": "optix",
+          "case_id": "rtnn_optix_prepared_3d_ranked_summary",
+          "same_contract_incumbent": "legacy_app_front_door_prepared_optix_ranked_summary",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        }
+      ],
+      "shape_key": "uniform:65536:prepared_3d_ranked_summary"
+    },
+    {
+      "command_present": false,
+      "distribution": "uniform",
+      "dry_run_only": true,
+      "fail_if_query_batch_size_differs_from_point_count": true,
+      "per_distribution_phase_bound_required": false,
+      "point_count": 65536,
+      "query_batch_size": 65536,
+      "query_role": "full_batch_self_query",
+      "required_metadata_fields": [
+        "prepared_execution_session_runner_used",
+        "productized_execution_path",
+        "runtime_trunk_executes_end_to_end",
+        "material_probe_candidate",
+        "release_authorized",
+        "public_speedup_claim_authorized",
+        "broad_v3_faster_than_v2_claim_authorized",
+        "signature_match_status"
+      ],
+      "required_timing_fields": [
+        "input_load",
+        "input_pack",
+        "input_load_pack",
+        "runner_after_input_load_pack",
+        "hot_query_median",
+        "runner_wall",
+        "runner_measured_total",
+        "runner_measured_median"
+      ],
+      "rows": [
+        {
+          "backend": "embree",
+          "case_id": "rtnn_embree_uniform_65536_ranked_summary",
+          "same_contract_incumbent": "frozen_v2_14_embree_ranked_summary_row",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        },
+        {
+          "backend": "optix",
+          "case_id": "rtnn_optix_uniform_65536_ranked_summary",
+          "same_contract_incumbent": "legacy_app_front_door_prepared_optix_ranked_summary",
+          "would_validate_phase_fields": true,
+          "would_validate_signature": true
+        }
+      ],
+      "shape_key": "uniform:65536:rtnn_uniform_65536_ranked_summary"
+    }
+  ],
+  "fail_closed_conditions": [
+    "fail if query_batch_size differs from point_count",
+    "fail if productized mode is not prepared_execution_ranked_summary",
+    "fail if helper call is not run_fixed_radius_ranked_summary_3d_prepared_session",
+    "fail if any required timing field is missing",
+    "fail if signature_match_status is missing",
+    "fail if runtime_trunk_executes_end_to_end is missing or false in future measured output",
+    "fail if commands or authorization tokens are introduced into this dry-run gate"
+  ],
+  "failed_checks": [],
+  "goal_level_decision_audit": {
+    "decision": "continue from M70 provisional acceptance to a local RTNN harness dry-run gate without execution",
+    "different_path_now": "Use M71 to validate source-surface routing, exact shape plans, telemetry fields, and fail-closed boundaries while keeping M70 pending Claude backfill.",
+    "foolish_actions": "It would be foolish to turn a dry-run gate into a live benchmark or to ignore missing telemetry fields.",
+    "other_path": "Wait for Claude before doing any local work. That protects 3AI completion but leaves useful no-execution validation undone.",
+    "was_i_foolish": "No. M71 validates schema and telemetry readiness only and remains non-executing."
+  },
+  "inputs": {
+    "m70_packet": "docs\\rebuild\\v3\\phoenix_v3_m70_rtnn_focused_protocol_2026-06-23.json",
+    "m70_pending_status": "docs\\reports\\phoenix_v3_m70_status_pending_claude_backfill_2026-06-23.md",
+    "m70_provisional_consensus": "docs\\reviews\\codex_antigravity_phoenix_v3_m70_provisional_2ai_consensus_pending_claude_2026-06-23.md",
+    "prepared_execution": "src\\rtdsl\\prepared_execution.py",
+    "rtnn_app": "examples\\current\\research_benchmarks\\rtnn\\rtdl_rtnn_benchmark_app.py"
+  },
+  "non_authorization": {
+    "all_app_run_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "benchmark_execution_authorized": false,
+    "broad_v3_over_v2_claim_authorized": false,
+    "c_abi_authorized": false,
+    "embedding_authorized": false,
+    "focused_pod_spend_authorized": false,
+    "paid_pod_spend_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "pod_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "route_specific_rtnn_app_tuning_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "runbook_execution_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v4_work_authorized": false,
+    "watch_row_closure_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "required_metadata_fields": [
+    "prepared_execution_session_runner_used",
+    "productized_execution_path",
+    "runtime_trunk_executes_end_to_end",
+    "material_probe_candidate",
+    "release_authorized",
+    "public_speedup_claim_authorized",
+    "broad_v3_faster_than_v2_claim_authorized",
+    "signature_match_status"
+  ],
+  "required_timing_fields": [
+    "input_load",
+    "input_pack",
+    "input_load_pack",
+    "runner_after_input_load_pack",
+    "hot_query_median",
+    "runner_wall",
+    "runner_measured_total",
+    "runner_measured_median"
+  ],
+  "schema": "rtdl.phoenix_v3.m71.rtnn_local_harness_dry_run_gate.v1",
+  "scope": {
+    "all_app_authorized": false,
+    "authorization_token_present": false,
+    "benchmark_execution_authorized": false,
+    "commands_generated": false,
+    "dry_run_gate_only": true,
+    "pod_authorized": false,
+    "release_authorized": false,
+    "runbook_authorized": false
+  },
+  "source_surface": {
+    "full_batch_self_query_constraint_present": true,
+    "generic_helper_call_present": true,
+    "generic_helper_defined": true,
+    "metadata_fields_missing": [],
+    "metadata_fields_present": [
+      "prepared_execution_session_runner_used",
+      "productized_execution_path",
+      "runtime_trunk_executes_end_to_end",
+      "material_probe_candidate",
+      "release_authorized",
+      "public_speedup_claim_authorized",
+      "broad_v3_faster_than_v2_claim_authorized",
+      "signature_match_status"
+    ],
+    "no_command_templates": true,
+    "no_route_specific_tuning_marker_present": true,
+    "productized_mode_present": true,
+    "required_metadata_fields_present": true,
+    "required_timing_fields_present": true,
+    "telemetry_split_helper_present": true,
+    "timing_fields": {
+      "hot_query_median": true,
+      "input_load": true,
+      "input_load_pack": true,
+      "input_pack": true,
+      "runner_after_input_load_pack": true,
+      "runner_measured_median": true,
+      "runner_measured_total": true,
+      "runner_wall": true
+    }
+  },
+  "status": "m71_rtnn_local_harness_dry_run_gate_ready_no_execution_no_pod",
+  "summary": {
+    "benchmark_execution_authorized": false,
+    "dry_run_only": true,
+    "failed_check_count": 0,
+    "pod_authorized": false,
+    "release_authorized": false,
+    "row_count": 14,
+    "shape_group_count": 7,
+    "status": "m71_rtnn_local_harness_dry_run_gate_ready_no_execution_no_pod",
+    "telemetry_contract_ready": true
+  }
+}

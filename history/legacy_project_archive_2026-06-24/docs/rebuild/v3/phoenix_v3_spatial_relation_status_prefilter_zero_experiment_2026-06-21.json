@@ -1,0 +1,183 @@
+{
+  "author_bar": {
+    "author_query_ms": 1.86566,
+    "author_result_count_parity_verified": false,
+    "author_result_count_printed": false,
+    "author_timer_basis": "query_exec -poly1 br_county.cdb -poly2 br_county.cdb -mode=rt -query=pip -warmup=5 -repeat=50 -check=false"
+  },
+  "baseline_without_prefilter": {
+    "count_mode": "relation_status_corrected_executor_validated",
+    "point_order_mode": "y_then_x",
+    "prepared_query_ms": 5.406518,
+    "row_count": 47262,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_hotpath_probe_20260621/relation_status_y_then_x_sample2.json"
+  },
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "checks": {
+    "all_order_packets_exist": true,
+    "all_public_claim_flags_false": true,
+    "author_basis_not_m7": true,
+    "evidence_dir_exists": true,
+    "native_source_default_enables_prefilter_zero": true,
+    "native_source_does_not_keep_default_off_prefilter_gate": true,
+    "native_source_has_prefilter_zero_flag": true,
+    "old_hotpath_was_not_m7": true,
+    "restored_smoke_count_consistent": true,
+    "restored_smoke_count_is_exact_47262": true,
+    "restored_smoke_material_speedup_vs_old_best": true,
+    "restored_smoke_still_slower_than_author_query": true,
+    "stable_sample7_count_consistent": true,
+    "stable_sample7_count_is_exact_47262": true,
+    "stable_sample7_material_speedup_vs_old_best": true,
+    "stable_sample7_still_slower_than_author_query": true
+  },
+  "dataset": "data/rayjoin_public_cdb/br_county.cdb",
+  "failed_checks": [],
+  "failed_followup_experiment": {
+    "decision": "The boundary-helper fast path was reverted. The surviving source keeps full f64 exact membership after zero-status prefiltering.",
+    "name": "boundary_helper_exact_contact_fast_path",
+    "observed_error": "validated relation-status corrected closed-shape count did not match exact prepared count: 47259 != 47262",
+    "status": "rejected_exact_count_mismatch_not_kept"
+  },
+  "generic_capability": "point_location_topology_stream",
+  "goal_level_decision_audit": {
+    "decision": "Record relation-status zero prefiltering as real generic Spatial topology-stream optimization evidence, but keep it not-M7.",
+    "different_path_now": "Keep the correct prefilter-zero result as no-go optimization evidence, preserve the author bar, and continue only if a next generic optimization can clear that bar without count loss.",
+    "foolish_actions": "I made one tooling mistake by using a Bash heredoc in PowerShell for a local JSON summary; it made no file changes and I reran it with a PowerShell here-string. The boundary-helper optimization was also a deliberately bounded experiment; it became invalid because it changed the exact count to 47,259.",
+    "other_path": "I could have left Spatial closed as future research. That would avoid risk, but it would not test the obvious generic native bottleneck exposed by the M3 phase table.",
+    "was_i_foolish": "No for the goal-level decision. The foolish move would be to call a 1.903 ms correct near-miss a release row when the same-dataset author Query bar is 1.865660 ms."
+  },
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "optimization": {
+    "default_enabled": true,
+    "implementation_summary": "The current source enables relation-status zero prefiltering by default: the corrected scalar-count pipeline drops relation_status == 0 candidates in the OptiX intersection stage before full f64 exact membership refinement unless the env flag is explicitly set to a false-like value.",
+    "name": "relation_status_zero_prefilter",
+    "native_flag": "RTDL_OPTIX_RELATION_STATUS_CORRECTED_PREFILTER_ZERO",
+    "why_generic": "The change narrows the reusable point-location topology stream before the exact scalar-count continuation. It is not RayJoin-app custom logic."
+  },
+  "paper_reproduction_claim_authorized": false,
+  "pod": {
+    "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+    "host": "213.173.108.14:11592",
+    "remote_repo": "/root/rtdl_v3_rebuild_20260620/current"
+  },
+  "prefilter_zero_results": [
+    {
+      "m7_promotion_authorized": false,
+      "name": "natural",
+      "prepared_query_ms_median": 2.7602575719356537,
+      "public_speedup_claim_authorized": false,
+      "row_count": 47262,
+      "row_count_consistent": true,
+      "rt_traversal_ms_median": 2.718469,
+      "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_relation_status_prefilter_zero_experiment_20260621/prefilter_zero_relation_status_natural_repeat50_sample3.json"
+    },
+    {
+      "m7_promotion_authorized": false,
+      "name": "x_then_y",
+      "prepared_query_ms_median": 2.7578920125961304,
+      "public_speedup_claim_authorized": false,
+      "row_count": 47262,
+      "row_count_consistent": true,
+      "rt_traversal_ms_median": 2.702759,
+      "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_relation_status_prefilter_zero_experiment_20260621/prefilter_zero_relation_status_x_then_y_repeat50_sample3.json"
+    },
+    {
+      "m7_promotion_authorized": false,
+      "name": "morton_xy",
+      "prepared_query_ms_median": 2.221863716840744,
+      "public_speedup_claim_authorized": false,
+      "row_count": 47262,
+      "row_count_consistent": true,
+      "rt_traversal_ms_median": 2.178863,
+      "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_relation_status_prefilter_zero_experiment_20260621/prefilter_zero_relation_status_morton_xy_repeat50_sample3.json"
+    },
+    {
+      "m7_promotion_authorized": false,
+      "name": "y_then_x_sample5",
+      "prepared_query_ms_median": 2.008996903896332,
+      "public_speedup_claim_authorized": false,
+      "row_count": 47262,
+      "row_count_consistent": true,
+      "rt_traversal_ms_median": 1.966967,
+      "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_relation_status_prefilter_zero_experiment_20260621/prefilter_zero_relation_status_y_then_x_repeat50_sample5.json"
+    },
+    {
+      "m7_promotion_authorized": false,
+      "name": "y_then_x_sample7",
+      "prepared_query_ms_median": 1.903492957353592,
+      "public_speedup_claim_authorized": false,
+      "row_count": 47262,
+      "row_count_consistent": true,
+      "rt_traversal_ms_median": 1.859084,
+      "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_relation_status_prefilter_zero_experiment_20260621/prefilter_zero_relation_status_y_then_x_repeat50_sample7.json"
+    },
+    {
+      "m7_promotion_authorized": false,
+      "name": "restored_y_then_x_sample3",
+      "prepared_query_ms_median": 1.8972046673297882,
+      "public_speedup_claim_authorized": false,
+      "row_count": 47262,
+      "row_count_consistent": true,
+      "rt_traversal_ms_median": 1.8592680000000001,
+      "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_relation_status_prefilter_zero_experiment_20260621/prefilter_zero_restored_y_then_x_repeat50_sample3.json"
+    }
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "required_next_actions": [
+    "Do not promote Spatial topology-stream to M7 from this packet.",
+    "If this path is continued, find a correctness-preserving optimization that clears the 1.865660 ms author Query bar with stable margin.",
+    "Keep the failed boundary-helper fast path rejected unless a new proof explains the three-count loss.",
+    "Only after a new promotable packet exists, request external AI review and Codex consensus."
+  ],
+  "restored_library_smoke": {
+    "prepared_query_ms_median": 1.8972046673297882,
+    "row_count": 47262,
+    "row_count_consistent": true,
+    "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_relation_status_prefilter_zero_experiment_20260621/prefilter_zero_restored_y_then_x_repeat50_sample3.json",
+    "speedup_vs_old_best_legal_route": 2.849728388877189
+  },
+  "row_scoped_public_speedup_claim_authorized": false,
+  "rtdl_beats_rayjoin_claim_authorized": false,
+  "source": {
+    "author_basis": "docs/rebuild/v3/phoenix_v3_spatial_rayjoin_author_basis_same_county_2026-06-21.json",
+    "evidence_dir": "docs/rebuild/v3/evidence/phoenix_v3_spatial_relation_status_prefilter_zero_experiment_20260621",
+    "native_file": "src/native/optix/rtdl_optix_workloads.cpp",
+    "native_file_sha256": "0921cc29c10b023d242005cd9f2d5d62188669136ce1a5e91340b21c11fb588a",
+    "old_hotpath_no_go": "docs/rebuild/v3/phoenix_v3_spatial_rayjoin_hotpath_probe_no_go_2026-06-21.json"
+  },
+  "stable_candidate": {
+    "author_speedup_vs_rtdl": 1.0202785916799373,
+    "point_order_mode": "y_then_x",
+    "prepared_query_ms_median": 1.903492957353592,
+    "query_repeat": 50,
+    "row_count": 47262,
+    "row_count_consistent": true,
+    "rt_traversal_ms_median": 1.859084,
+    "rtdl_relative_to_author_query": 0.9801244563540752,
+    "sample_repeat": 7,
+    "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_relation_status_prefilter_zero_experiment_20260621/prefilter_zero_relation_status_y_then_x_repeat50_sample7.json",
+    "speedup_vs_old_best_legal_route": 2.8403141598782855,
+    "warmup": 5
+  },
+  "status": "spatial_relation_status_prefilter_zero_near_miss_not_m7",
+  "summary": {
+    "author_query_ms": 1.86566,
+    "author_speedup_vs_stable_prefilter": 1.0202785916799373,
+    "m7_rows_added": 0,
+    "old_best_prepared_query_ms": 5.406518,
+    "row_count": 47262,
+    "row_count_consistent": true,
+    "stable_prefilter_prepared_query_ms": 1.903492957353592,
+    "stable_prefilter_speedup_vs_old_best": 2.8403141598782855,
+    "status": "correct_material_optimization_but_not_m7",
+    "still_missing_author_bar_by_ms": 0.03783295735359182
+  },
+  "tool": "v3_phoenix_spatial_relation_status_prefilter_zero_experiment",
+  "true_zero_copy_claim_authorized": false,
+  "v4_embedding_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}

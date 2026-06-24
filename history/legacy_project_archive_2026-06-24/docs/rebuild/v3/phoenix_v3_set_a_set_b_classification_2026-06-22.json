@@ -1,0 +1,179 @@
+{
+  "artifact": "phoenix_v3_set_a_set_b_classification_2026-06-22",
+  "status": "classification_frozen_for_next_full_paired_run",
+  "date": "2026-06-22",
+  "scope": "Phoenix V3 all-app V2.14-vs-current paired scorecard",
+  "classification_frozen_before_next_full_paired_run": true,
+  "classification_basis": "mechanism_before_next_run_not_result_after_next_run",
+  "classification_unit": "app_id rules; every row inherits its app_id classification and unknown app_id fails the gate",
+  "case_id_whitelist_frozen": true,
+  "future_case_id_policy": "Every scored case_id must be listed in approved_case_ids_by_app before the next full paired run starts; new case_ids under a known app_id are unclassified until a written preregistration update is reviewed.",
+  "source_proposal": "docs/reviews/phoenix_v3_set_a_set_b_release_bar_proposal_2026-06-22.md",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "thresholds": {
+    "set_a_geomean_v3_vs_v2_min": 1.2,
+    "set_a_app_geomean_win_threshold": 1.05,
+    "set_a_app_severe_regression_floor": 0.9,
+    "set_a_required_fraction_apps_over_threshold": 0.75,
+    "set_b_geomean_v3_vs_v2_min": 0.98,
+    "set_b_row_regression_floor": 0.95,
+    "required_focused_productized_material_probe_count_before_full_all_app_pod_run": 2
+  },
+  "current_precondition_state": {
+    "focused_productized_material_probe_count": 3,
+    "focused_productized_material_probes": [
+      {
+        "id": "aabb_runner_m2_1",
+        "path": "docs/reports/phoenix_v3_aabb_runner_route_m2_1_pod_ab_2026-06-22.md",
+        "classification": "material_focused_productized_path_probe_not_release"
+      },
+      {
+        "id": "hausdorff_threshold_runner_m5_after_m6_1",
+        "path": "docs/reports/phoenix_v3_hausdorff_threshold_runner_m5_pod_ab_after_m6_1_2026-06-22.md",
+        "classification": "positive_focused_productized_runner_backed_probe_not_release"
+      },
+      {
+        "id": "triangle_m19_env_corrected_productized_runner",
+        "path": "docs/reports/phoenix_v3_m19_triangle_env_corrected_pod_result_2026-06-22.md",
+        "classification": "accepted_third_strict_set_a_material_probe_not_release"
+      }
+    ],
+    "missing_focused_productized_material_probe_count": 0,
+    "full_all_app_pod_spend_authorized_now": false
+  },
+  "app_classification": {
+    "barnes_hut": {
+      "set": "A",
+      "label": "architecture_bearing",
+      "rationale": "frontier, node-coverage, and vector-accumulation work can compound across prepared execution and continuation phases"
+    },
+    "contact_manifold": {
+      "set": "B",
+      "label": "ceiling_control",
+      "rationale": "current all-app rows are AABB broadphase collect-k controls; target is no added overhead unless routed through a shared AABB primitive with separate focused evidence"
+    },
+    "hausdorff_xhd": {
+      "set": "A",
+      "label": "architecture_bearing",
+      "rationale": "threshold-summary and exact witness routes use repeated fixed-radius/summary behavior where prepared execution and stream summaries can matter"
+    },
+    "librts_spatial_index": {
+      "set": "B",
+      "label": "ceiling_control",
+      "rationale": "current all-app rows are AABB index count-only controls; target is parity with explanation, not broad speedup"
+    },
+    "raydb_style": {
+      "set": "B",
+      "label": "ceiling_control",
+      "rationale": "current all-app rows are bounded grouped count/sum controls; reusable grouped_reduction evidence remains internal but the app row should not carry the major-version speed claim"
+    },
+    "robot_collision": {
+      "set": "B",
+      "label": "ceiling_control",
+      "rationale": "single any-hit / collision-flag stream control; V3 must avoid overhead but should not require material speedup here"
+    },
+    "rt_dbscan": {
+      "set": "A",
+      "label": "architecture_bearing",
+      "rationale": "neighbor query plus component-union/component-signature continuation is a residency and continuation-rich workload"
+    },
+    "rtnn": {
+      "set": "A",
+      "label": "architecture_bearing",
+      "rationale": "prepared neighbor/ranked-summary workloads can expose amortized prepared-session, packing, and continuation effects"
+    },
+    "spatial_rayjoin": {
+      "set": "A",
+      "label": "architecture_bearing",
+      "rationale": "multi-phase LSI/PIP/overlay/topology-stream behavior can expose prepared execution, stream, and continuation effects"
+    },
+    "triangle_counting": {
+      "set": "A",
+      "label": "architecture_bearing",
+      "rationale": "prepared graph/chunk execution is the architecture-bearing part of the triangle workload"
+    }
+  },
+  "approved_case_ids_by_app": {
+    "barnes_hut": [
+      "barnes_hut_embree_node_coverage",
+      "barnes_hut_embree_node_coverage_bodies_131072",
+      "barnes_hut_embree_node_coverage_bodies_32768",
+      "barnes_hut_optix_node_coverage",
+      "barnes_hut_optix_node_coverage_bodies_131072",
+      "barnes_hut_optix_node_coverage_bodies_32768"
+    ],
+    "contact_manifold": [
+      "contact_manifold_embree_aabb_broadphase_collect_k",
+      "contact_manifold_optix_aabb_broadphase_collect_k"
+    ],
+    "hausdorff_xhd": [
+      "hausdorff_embree_threshold",
+      "hausdorff_embree_threshold_copies_16384",
+      "hausdorff_embree_threshold_copies_262144",
+      "hausdorff_embree_threshold_copies_65536",
+      "hausdorff_optix_exact_grouped_seeded_pruned_points_131072",
+      "hausdorff_optix_exact_grouped_seeded_pruned_points_32768",
+      "hausdorff_optix_threshold",
+      "hausdorff_optix_threshold_copies_16384",
+      "hausdorff_optix_threshold_copies_262144",
+      "hausdorff_optix_threshold_copies_65536"
+    ],
+    "librts_spatial_index": [
+      "librts_embree_aabb_index",
+      "librts_optix_aabb_index"
+    ],
+    "raydb_style": [
+      "raydb_embree_count",
+      "raydb_embree_sum",
+      "raydb_optix_partner_resident_count",
+      "raydb_optix_partner_resident_sum"
+    ],
+    "robot_collision": [
+      "robot_collision_embree_prepared_buffers",
+      "robot_collision_optix_prepared_device_buffers"
+    ],
+    "rt_dbscan": [
+      "rt_dbscan_embree_fixed_radius_rows",
+      "rt_dbscan_optix_grouped_stream"
+    ],
+    "rtnn": [
+      "rtnn_embree_clustered_262144_ranked_summary",
+      "rtnn_embree_clustered_65536_ranked_summary",
+      "rtnn_embree_prepared_3d_ranked_summary",
+      "rtnn_embree_shell_262144_ranked_summary",
+      "rtnn_embree_shell_65536_ranked_summary",
+      "rtnn_embree_uniform_262144_ranked_summary",
+      "rtnn_embree_uniform_65536_ranked_summary",
+      "rtnn_optix_clustered_262144_ranked_summary",
+      "rtnn_optix_clustered_65536_ranked_summary",
+      "rtnn_optix_prepared_3d_ranked_summary",
+      "rtnn_optix_shell_262144_ranked_summary",
+      "rtnn_optix_shell_65536_ranked_summary",
+      "rtnn_optix_uniform_262144_ranked_summary",
+      "rtnn_optix_uniform_65536_ranked_summary"
+    ],
+    "spatial_rayjoin": [
+      "rayjoin_embree_lsi_tiled_x2048",
+      "rayjoin_embree_overlay_seed_tiled_x2048",
+      "rayjoin_embree_pip_tiled_x2048",
+      "rayjoin_optix_promoted_lsi_tiled_x2048",
+      "rayjoin_optix_promoted_overlay_seed_tiled_x2048",
+      "rayjoin_optix_promoted_pip_tiled_x2048",
+      "spatial_rayjoin_embree_generic"
+    ],
+    "triangle_counting": [
+      "triangle_counting_embree_rt_graph_2a1",
+      "triangle_counting_embree_rt_graph_2a1_cliques_20000",
+      "triangle_counting_embree_rt_graph_2a1_cliques_80000"
+    ]
+  },
+  "goal_level_decision_audit": {
+    "decision": "Freeze Set A / Set B classification before the next full all-app pod run.",
+    "was_i_foolish": "No for this decision.",
+    "foolish_actions": "It would be foolish to run another full paired pod suite and classify rows after seeing results.",
+    "other_path": "Continue tuning routes and keep a blended geomean only. That would repeat the ambiguous 1.012x failure mode.",
+    "different_path_now": "Use a frozen two-number scorecard and require at least two focused material productized-path probes before spending full all-app pod time."
+  }
+}

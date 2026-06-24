@@ -1,0 +1,151 @@
+{
+  "acceptance_checks": [
+    "The packet claim-boundary gate passes on the pod before measurement.",
+    "OptiX hardware gate passes before measurement.",
+    "Native Embree and OptiX libraries build in the measured source tree.",
+    "Both planned scales run with warmup=3 and include independent Embree/OptiX count/sum rows.",
+    "Every row records cold_prepare_total_sec, workload_build_sec, elapsed_median_sec, repeat, and warmup.",
+    "Every row matches CPU reference and keeps public/release claim flags false.",
+    "Post-run intake computes repeat-aware totals for repeat counts 1, 2, 5, 10, 25, 50, 100, 500, and 1000.",
+    "No public wording is written until an external review accepts the rerun and a Codex consensus records the exact allowed claim."
+  ],
+  "failure_policy": {
+    "if_524288_sum_exceeds_time_budget": "Preserve logs and classify as time-budget blocker; do not backfill from the old 524288 warmup=2 evidence.",
+    "no_merge_with_old_warmup1_or_warmup2_rows": true,
+    "no_public_claim_from_partial_success": true,
+    "no_scale_down_without_new_packet": true,
+    "preserve_failed_artifacts": true
+  },
+  "generic_capability": "grouped_reduction",
+  "goal": "Fresh M7-designated grouped_reduction prepared-query rerun",
+  "goal_level_decision_audit": {
+    "decision": "prepare a fresh M7-designated grouped_reduction rerun packet before using pod time",
+    "different_path_now": "Freeze the rerun contract locally, test it, then seek review before execution.",
+    "foolish_actions": "It would be foolish to rerun ad hoc or reuse old warmup=1/2 rows as a release row.",
+    "other_path": "Run the pod immediately. That would risk another unreviewed evidence surface.",
+    "was_i_foolish": "No. The feasibility packet showed that old warmup-asymmetric evidence is not enough for promotion."
+  },
+  "m7_promotion_authorized_before_run": false,
+  "planned_rows": [
+    {
+      "backends": [
+        "embree",
+        "optix"
+      ],
+      "generated_groups": 1024,
+      "generated_rows": 262144,
+      "id": "m7_grouped_reduction_262144",
+      "modes": [
+        "count",
+        "sum"
+      ],
+      "output": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/m7_grouped_reduction_262144_warmup3.json",
+      "warmup": 3
+    },
+    {
+      "backends": [
+        "embree",
+        "optix"
+      ],
+      "generated_groups": 2048,
+      "generated_rows": 524288,
+      "id": "m7_grouped_reduction_524288",
+      "modes": [
+        "count",
+        "sum"
+      ],
+      "output": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/m7_grouped_reduction_524288_warmup3.json",
+      "warmup": 3
+    }
+  ],
+  "prepared_query_public_contract": {
+    "rules": [
+      "A prepared-query row must show cold/setup time, hot prepared-query time, and repeat-aware totals together.",
+      "Any speedup claim must name the repeat count or say hot prepared-query only.",
+      "Single-query end-to-end speedup must be shown even when the intended workload is repeated.",
+      "Whole-database or paper-reproduction wording remains false unless a separate packet authorizes it.",
+      "Warmup count, repeats, backend, groups, rows, and hardware must be identical or explicitly explained."
+    ],
+    "status": "draft_required_before_public_wording"
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "remote": {
+    "artifact_dir": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620",
+    "python": "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+    "ssh": "ssh root@213.173.108.14 -p 11592 -i C:\\Users\\Lestat\\.ssh\\id_ed25519_rtdl_codex_current_pod",
+    "workdir": "/root/rtdl_v3_rebuild_20260620/current"
+  },
+  "required_commands": [
+    {
+      "command": "mkdir -p /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620 && nvidia-smi > /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/nvidia-smi.txt && cat VERSION > /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/source_version.txt && sha256sum VERSION scripts/v3_0_m28_raydb_prepared_grouped_refresh.py scripts/v3_optix_hardware_gate.py scripts/v3_gpu_python_env_gate.py scripts/v3_phoenix_grouped_reduction_m7_feasibility.py scripts/v3_phoenix_grouped_reduction_m7_rerun_packet.py > /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/source_manifest.sha256 && PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_gpu_python_env_gate.py --json-out /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/gpu_env_gate.json",
+      "id": "env_probe",
+      "purpose": "Record GPU, source identity, Python environment, and artifact directory.",
+      "required": true
+    },
+    {
+      "command": "/root/rtdl_v3_rebuild_20260620/.venv/bin/python -c \"import json,pathlib; p=pathlib.Path('docs/rebuild/v3/phoenix_v3_grouped_reduction_m7_rerun_packet_2026-06-20.json'); d=json.loads(p.read_text()); assert d['release_authorized'] is False; assert d['public_speedup_claim_authorized'] is False; assert d['whole_app_speedup_claim_authorized'] is False; assert d['m7_promotion_authorized_before_run'] is False; print('grouped reduction M7 rerun claim-boundary gate ok')\" > /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/claim_boundary_gate.txt 2>&1",
+      "id": "claim_boundary_gate",
+      "purpose": "Fail if this packet drifts into release or public-claim authorization before measurement.",
+      "required": true
+    },
+    {
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_optix_hardware_gate.py --require-rt-hardware --json-out /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/optix_hardware_gate.json",
+      "id": "optix_hardware_gate",
+      "purpose": "Require NVIDIA OptiX-capable hardware before measuring OptiX rows.",
+      "required": true
+    },
+    {
+      "command": "make build-embree build-optix OPTIX_PREFIX=/workspace/vendor/optix-dev-8.0.0",
+      "id": "native_build",
+      "purpose": "Build native Embree and OptiX libraries for the measured tree.",
+      "required": true
+    },
+    {
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_0_m28_raydb_prepared_grouped_refresh.py --generated-rows 262144 --generated-groups 1024 --modes count,sum --backends embree,optix --warmup 3 --include-iteration-walls --output /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/m7_grouped_reduction_262144_warmup3.json",
+      "generated_groups": 1024,
+      "generated_rows": 262144,
+      "generic_capability": "grouped_reduction",
+      "id": "m7_grouped_reduction_262144",
+      "purpose": "Run fresh grouped_reduction rows at 262144 generated rows with standardized warmup=3.",
+      "required": true,
+      "warmup": 3
+    },
+    {
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_0_m28_raydb_prepared_grouped_refresh.py --generated-rows 524288 --generated-groups 2048 --modes count,sum --backends embree,optix --warmup 3 --include-iteration-walls --output /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/m7_grouped_reduction_524288_warmup3.json",
+      "generated_groups": 2048,
+      "generated_rows": 524288,
+      "generic_capability": "grouped_reduction",
+      "id": "m7_grouped_reduction_524288",
+      "purpose": "Run fresh grouped_reduction rows at 524288 generated rows with standardized warmup=3.",
+      "required": true,
+      "warmup": 3
+    },
+    {
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_phoenix_grouped_reduction_m7_feasibility.py --fresh-rerun --source m7_262144=/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/m7_grouped_reduction_262144_warmup3.json --source m7_524288=/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/m7_grouped_reduction_524288_warmup3.json --json-out /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/m7_grouped_reduction_post_run_intake.json --md-out /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/m7_grouped_reduction_post_run_intake.md",
+      "generic_capability": "grouped_reduction",
+      "id": "post_run_intake",
+      "purpose": "Compute repeat-aware totals from the fresh warmup=3 rows.",
+      "required": true
+    },
+    {
+      "command": "find /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620 -maxdepth 2 -type f | sort > /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_grouped_reduction_m7_20260620/artifact_file_index.txt",
+      "id": "artifact_manifest",
+      "purpose": "Record final artifact file list after measurement.",
+      "required": true
+    }
+  ],
+  "source_feasibility_packet": "docs/rebuild/v3/phoenix_v3_grouped_reduction_m7_feasibility_2026-06-20.md",
+  "status": "ready_for_external_review_not_executed",
+  "summary": {
+    "all_planned_rows_warmup": 3,
+    "command_count": 8,
+    "m7_promotion_authorized_before_run": false,
+    "planned_independent_rows": 8,
+    "planned_scale_count": 2,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false
+  },
+  "version": "phoenix_v3_grouped_reduction_m7_rerun_packet_2026_06_20",
+  "whole_app_speedup_claim_authorized": false
+}

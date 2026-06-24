@@ -1,0 +1,41 @@
+You are the external critical reviewer for Phoenix V3 M21.
+
+Please review this call-for-review and supporting protocol packet:
+
+- docs/reviews/call_for_review_phoenix_v3_m21_all_app_pod_protocol_2026-06-23.md
+- docs/rebuild/v3/phoenix_v3_m21_all_app_pod_protocol_2026-06-23.json
+- docs/rebuild/v3/phoenix_v3_m21_all_app_pod_protocol_2026-06-23.md
+- docs/reports/phoenix_v3_m21_all_app_pod_protocol_2026-06-23.md
+- scripts/phoenix_v3_serious_paired_v2x_runner.sh
+- scripts/v3_phoenix_m21_all_app_protocol_gate.py
+
+Return one of these verdict labels:
+
+- authorize_m21_one_all_app_pod_run
+- revise_m21_protocol_before_run
+- deny_m21_all_app_run_do_more_focused_work
+- approve_blocked_not_release
+
+Important boundary: this is not a release review, not a public speedup review, and not a broad V3-over-V2 authorization. Unless your verdict is exactly authorize_m21_one_all_app_pod_run, the all-app POD run remains unauthorized.
+
+Please answer these questions explicitly:
+
+1. Does the protocol satisfy every M20 required item?
+2. Are the fail-closed bars sufficient and correctly stated?
+3. Is the non-release boundary explicit enough?
+4. Is the frozen case-ID whitelist preserved tightly enough?
+5. Is the same hardware and project-venv interpreter gate strong enough after the runner patch?
+6. Is the LibRTS OptiX AABB watch-row status correct?
+7. Are the correctness/oracle gates sufficient before performance rows are accepted?
+8. Is the new M21 protocol gate the right post-run evaluator, rather than the older baseline-oriented Set-A/B gate?
+9. Is the post-run interpretation strict enough to prevent claiming release from blocker clearance?
+10. Should one all-app POD run be authorized now, or should more focused work happen first?
+
+If you authorize one run, state:
+
+one_all_app_pod_run_authorized: true
+max_run_count: 1
+expected_resource_window_hours: 5.5-7.0
+hard_cap_hours_before_new_review: 8.0
+
+If you do not authorize the run, name the concrete blocking protocol defect or focused engineering work required before another review.

@@ -36,14 +36,40 @@ class Goal2727RaydbPreparedGroupedReductionOpponentTest(unittest.TestCase):
 
         self.assertIn("prepare_generic_ray_triangle_primitive_grouped_i64_reduction_3d", source)
         self.assertIn("prepared.prepare_ray_batch", source)
+        self.assertIn("prepared.prepare_ray_batch_device_columns", source)
+        self.assertIn("_make_paper_rt_partner_ray_columns", source)
+        self.assertIn("ray_batch_layout", source)
         self.assertIn("prepared.run_prepared_rays", source)
         self.assertIn("\"prepared_steady_state\": True", source)
         self.assertIn("\"prepared_primitive_payload_reused\": True", source)
         self.assertIn("\"prepared_optix_scene_reused\": True", source)
         self.assertIn("\"prepared_ray_batch_reused\": True", source)
-        self.assertIn("\"native_device_column_path_used\": False", source)
+        self.assertIn("\"native_device_column_path_used\": ray_batch_layout != \"host_packed\"", source)
+        self.assertIn("\"prepared_ray_batch_layout\"", source)
         self.assertIn("\"host_row_bridge_bypassed\": False", source)
         self.assertIn("\"true_zero_copy_authorized\": False", source)
+
+    def test_deferred_device_column_workload_keeps_logical_ray_count_without_host_pack(self) -> None:
+        fixture = raydb.make_benchmark_fixture(
+            fixture_kind="generated",
+            generated_rows=256,
+            generated_groups=16,
+            generated_revenue_mod=16,
+        )
+        plan = raydb.make_plan("sum")
+        descriptor = raydb.prepare_paper_rt_encoded_table_descriptor(fixture, plan)
+        workload = raydb._make_paper_rt_encoded_packed_workload(
+            fixture,
+            plan,
+            "sum",
+            table_descriptor=descriptor,
+            materialize_rays=False,
+        )
+
+        self.assertEqual(workload["ray_materialization"], "deferred_device_columns")
+        self.assertGreater(workload["logical_ray_count"], 0)
+        self.assertEqual(workload["rays"].count, 0)
+        self.assertEqual(workload["triangles"].count, 256)
 
     def test_run_result_mode_dispatches_to_prepared_grouped_reduction(self) -> None:
         source = inspect.getsource(raydb.run_result_mode)

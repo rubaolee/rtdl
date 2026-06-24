@@ -136,6 +136,66 @@ class Goal4406V30M10SameStreamEvidenceTest(unittest.TestCase):
         self.assertFalse(packet.claim_readiness["true_zero_copy_ready"])
         self.assertFalse(packet.claim_readiness["public_claim_authorized"])
 
+    def test_instrumentation_tolerates_independent_event_medians(self) -> None:
+        packet = build_v3_m10_same_stream_instrumentation(
+            partner="cupy",
+            hardware="unit_test_gpu",
+            prepare_seconds=0.1,
+            host_run_seconds=0.03,
+            native_event_seconds=0.010,
+            partner_event_seconds=0.004,
+            total_event_seconds=0.013,
+            validation_seconds=0.001,
+            data_ptrs={"component_labels": 1234},
+            metadata={
+                "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_on_stream",
+                "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            },
+            same_stream_evidence=_synthetic_evidence("cupy"),
+        )
+        event_record = next(
+            record for record in packet.to_metadata()["evidence_records"]
+            if record["kind"] == "cuda_event_pair"
+        )
+        details = event_record["details"]
+        self.assertEqual(details["median_total_event_seconds"], 0.013)
+        self.assertEqual(details["median_native_plus_partner_seconds"], 0.014)
+        self.assertIn("independent_median_accounting_warning", details)
+
+    def test_instrumentation_rejects_total_below_individual_component_median(self) -> None:
+        with self.assertRaisesRegex(GraphValidationError, "smaller than an event component"):
+            build_v3_m10_same_stream_instrumentation(
+                partner="cupy",
+                hardware="unit_test_gpu",
+                prepare_seconds=0.1,
+                host_run_seconds=0.03,
+                native_event_seconds=0.010,
+                partner_event_seconds=0.004,
+                total_event_seconds=0.003,
+                validation_seconds=0.001,
+                data_ptrs={"component_labels": 1234},
+                metadata={
+                    "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_on_stream",
+                    "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+                },
+                same_stream_evidence=_synthetic_evidence("cupy"),
+            )
+
+    def test_validator_rejects_event_sample_total_below_component(self) -> None:
+        payload = _synthetic_payload()
+        row = dict(payload["partner_rows"][0])
+        row["event_samples"] = (
+            {
+                "native_event_seconds": 0.010,
+                "partner_event_seconds": 0.004,
+                "total_event_seconds": 0.003,
+                "same_stream_ready": True,
+            },
+        )
+        payload["partner_rows"] = (row, payload["partner_rows"][1])
+        with self.assertRaisesRegex(GraphValidationError, "event sample total is smaller"):
+            validate_v3_m10_same_stream_payload(payload)
+
 
 def _synthetic_payload() -> dict[str, object]:
     rows = tuple(_synthetic_row(partner) for partner in V3_M10_PARTNERS)

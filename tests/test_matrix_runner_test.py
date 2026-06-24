@@ -4,6 +4,7 @@ import importlib.util
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -77,6 +78,29 @@ class TestMatrixRunnerTest(unittest.TestCase):
         payload = json.loads(cp.stdout)
         self.assertEqual(payload["group"], "v0_2_local")
         self.assertTrue(payload["ok"])
+
+    def test_cli_json_out_writes_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            out_path = Path(tmp) / "matrix.json"
+            cp = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_PATH),
+                    "--group",
+                    "v0_2_local",
+                    "--json-out",
+                    str(out_path),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(cp.returncode, 0, cp.stdout + "\n" + cp.stderr)
+            stdout_payload = json.loads(cp.stdout)
+            file_payload = json.loads(out_path.read_text(encoding="utf-8"))
+            self.assertEqual(file_payload, stdout_payload)
+            self.assertEqual(file_payload["group"], "v0_2_local")
 
 
 if __name__ == "__main__":

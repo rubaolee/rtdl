@@ -1,0 +1,183 @@
+{
+  "checks": {
+    "app_adapter_calls_productized_helper": true,
+    "historical_predecessor_material_floor": true,
+    "m29_confirms_no_v2_14_equivalent_current_trunk_surface": true,
+    "m45_blocks_new_barnes_hut_app_tuning": true,
+    "m66_redirect_to_barnes_hut_pre_audit_recorded": true,
+    "non_authorization_flags_closed": true,
+    "runner_control_output_equivalence": true,
+    "runner_internal_residency_all_samples": true,
+    "runner_no_frontier_or_contribution_host_materialization": true,
+    "runner_packet_status_not_release": true,
+    "runner_parity_each_size_floor": true,
+    "runner_parity_geomean_floor": true,
+    "runner_runtime_trunk_all_samples": true,
+    "source_helper_is_current_and_generic": true,
+    "step2_audit_requires_productized_runtime_before_pod": true
+  },
+  "date": "2026-06-23",
+  "decision": {
+    "all_app_now_authorized": false,
+    "barnes_hut_should_be_current_coding_target": false,
+    "material_source_found_against_historical_predecessor": true,
+    "new_material_source_found_against_current_fused_control": false,
+    "next_action": "Send this M67 packet for external review. If accepted, Barnes-Hut can be counted as an existing Step-1 replacement material family and the next engineering target should move to the next Set-A family. If rejected, select a different family rather than doing Barnes-Hut app-specific tuning.",
+    "pod_now_authorized": false,
+    "runner_preserves_current_fused_control_speed": true,
+    "status": "existing_evidence_answers_pre_audit_requires_external_counting_review"
+  },
+  "failed_checks": [],
+  "goal_level_decision_audit": {
+    "decision": "Treat Barnes-Hut M67 as a local phase-structure reconciliation audit, not a new Barnes-Hut coding branch.",
+    "different_path_now": "Ask external review whether existing productized Barnes-Hut evidence counts as the Step-1 material family, then move to the next generic Set-A family or select a replacement.",
+    "foolish_actions": "The risky action would be ignoring that M45 already blocked new Barnes-Hut app tuning and that M28/M29 already productized the fused runner route.",
+    "other_path": "Run another focused POD or write another Barnes-Hut-specific route. That would repeat the leaf-first mistake.",
+    "was_i_foolish": "No after rereading M45/M66/M29. The foolish path would be to turn M66's redirect into more Barnes-Hut app tuning."
+  },
+  "inputs": {
+    "barnes_hut_app": "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+    "m29_surface": "docs/rebuild/v3/evidence/phoenix_v3_m29_barnes_hut_surface_Cv7ppr/summary.json",
+    "m45_reaudit": "docs/reports/phoenix_v3_m45_barnes_hut_blocker_reaudit_2026-06-23.md",
+    "m66_consensus": "docs/reviews/codex_claude_antigravity_phoenix_v3_m66_topology_stream_pod_authorization_non_go_3ai_consensus_2026-06-23.md",
+    "prepared_execution": "src/rtdsl/prepared_execution.py",
+    "runner_packet": "docs/rebuild/v3/evidence/phoenix_v3_barnes_hut_runner_parity_pod_ab_fixed_20260622_182718/summary.json",
+    "step2_pre_audit": "docs/rebuild/v3/phoenix_v3_barnes_hut_step2_pre_audit_2026-06-22.json"
+  },
+  "non_authorization": {
+    "all_app_run_authorized": false,
+    "app_specific_barnes_hut_engine_tuning_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_v3_over_v2_claim_authorized": false,
+    "focused_pod_spend_authorized": false,
+    "paid_pod_spend_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "watch_row_closure_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "phase_structure": {
+    "current_fused_control": {
+      "new_compressible_phase_found": false,
+      "path": "fused_frontier_force_sum_bucketized_numba_cuda",
+      "process_wall_rows": [
+        {
+          "body_count": 32768,
+          "control_process_wall_sec_median": 1.282758541405201,
+          "runner_process_wall_over_control": 1.1520992372741432,
+          "runner_process_wall_sec_median": 1.4778651371598244
+        },
+        {
+          "body_count": 65536,
+          "control_process_wall_sec_median": 2.475153051316738,
+          "runner_process_wall_over_control": 1.1806776225089513,
+          "runner_process_wall_sec_median": 2.9223578199744225
+        },
+        {
+          "body_count": 131072,
+          "control_process_wall_sec_median": 5.4205823093652725,
+          "runner_process_wall_over_control": 1.1590001958962317,
+          "runner_process_wall_sec_median": 6.282455958425999
+        }
+      ],
+      "reading": "The current fused control already removed the material frontier/contribution path. The runner requirement is parity plus metadata, not a fresh speedup over this control.",
+      "role": "current fastest app-front-door control",
+      "rows": [
+        {
+          "body_count": 32768,
+          "existing_fused_control_sec_median": 0.010797493159770966,
+          "parity_floor_0_95_pass": true,
+          "runner_sec_median": 0.010791808366775513,
+          "runner_vs_existing_fused_control_speedup": 1.0005267692681565
+        },
+        {
+          "body_count": 65536,
+          "existing_fused_control_sec_median": 0.015763111412525177,
+          "parity_floor_0_95_pass": true,
+          "runner_sec_median": 0.01577340066432953,
+          "runner_vs_existing_fused_control_speedup": 0.9993476833548253
+        },
+        {
+          "body_count": 131072,
+          "existing_fused_control_sec_median": 0.04140310734510422,
+          "parity_floor_0_95_pass": true,
+          "runner_sec_median": 0.04148145765066147,
+          "runner_vs_existing_fused_control_speedup": 0.9981111969059264
+        }
+      ],
+      "runner_parity_with_existing_fused_partner": true,
+      "runner_vs_control_geomean": 0.999328063165968
+    },
+    "historical_predecessor": {
+      "compressible_nonzero_phase_found": true,
+      "hot_speedup_geomean": 12.730691398985789,
+      "path": "prepared_aggregate_frontier_weighted_vector_optix",
+      "reading": "The old frontier route has a non-zero hot physical cost that the fused vector route displaces. This is useful predecessor-displacement evidence, not proof that the wrapper is faster than the current fused route.",
+      "role": "historical no-go predecessor, not primary public claim",
+      "rows": [
+        {
+          "body_count": 32768,
+          "historical_optix_over_runner_speedup": 8.798504886596174,
+          "historical_optix_sec_median": 0.09495177865028381,
+          "historical_reference_floor_1_20_pass": true,
+          "runner_sec_median": 0.010791808366775513
+        },
+        {
+          "body_count": 65536,
+          "historical_optix_over_runner_speedup": 13.607503294647792,
+          "historical_optix_sec_median": 0.21463660150766373,
+          "historical_reference_floor_1_20_pass": true,
+          "runner_sec_median": 0.01577340066432953
+        },
+        {
+          "body_count": 131072,
+          "historical_optix_over_runner_speedup": 17.23330777450105,
+          "historical_optix_sec_median": 0.7148627266287804,
+          "historical_reference_floor_1_20_pass": true,
+          "runner_sec_median": 0.04148145765066147
+        }
+      ]
+    },
+    "productized_runner": {
+      "contribution_rows_materialized_on_host": false,
+      "frontier_rows_materialized_on_host": false,
+      "internal_device_residency_between_rtdl_phases": true,
+      "output_equivalence_to_current_control": true,
+      "path": "prepared_execution_fused_vector_sum_numba_cuda",
+      "role": "productized runtime-trunk carrier for the fused partner route",
+      "runtime_trunk_executes_end_to_end": true
+    }
+  },
+  "reconciliation": {
+    "external_review_required_before_counting_as_accepted_set_a_family": true,
+    "m45_old_all_app_blocker_status": "focused_fix_covered_pending_full_suite_validation",
+    "m66_redirect_scope": "local_barnes_hut_phase_structure_pre_audit",
+    "new_barnes_hut_app_tuning_allowed": false,
+    "new_barnes_hut_runtime_coding_required_now": false,
+    "reconciled_reading": "Do not start Barnes-Hut app tuning. The local pre-audit should decide whether existing aggregate-tree fused-vector runner evidence already satisfies the material-source question or needs external rejection."
+  },
+  "schema": "rtdl.phoenix_v3.m67.barnes_hut_phase_structure_pre_audit.v1",
+  "source_surface": {
+    "app_adapter_calls_helper": true,
+    "helper_body_has_no_barnes_name": true,
+    "helper_present": true,
+    "helper_records_internal_residency": true,
+    "helper_records_materialization_flags": true,
+    "helper_records_runtime_trunk": true
+  },
+  "status": "m67_barnes_hut_phase_structure_pre_audit_ready_for_external_review_no_pod_no_release",
+  "summary": {
+    "all_app_authorized": false,
+    "barnes_hut_should_be_current_coding_target": false,
+    "external_review_required_before_counting": true,
+    "failed_check_count": 0,
+    "historical_optix_over_runner_geomean": 12.730691398985789,
+    "m29_classification": "v2_14_has_cpu_fused_or_typed_stream_only",
+    "pod_authorized": false,
+    "runner_vs_existing_fused_control_geomean": 0.999328063165968,
+    "status": "m67_barnes_hut_phase_structure_pre_audit_ready_for_external_review_no_pod_no_release"
+  }
+}

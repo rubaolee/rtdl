@@ -1,0 +1,9 @@
+{
+  "dimension": 3,
+  "format": "rtnn_csv_xyz",
+  "generated_by_runner": true,
+  "path": "/root/phoenix_v3_work/evidence/rtnn_full_batch_float32_same_contract_1048576_r3_20260621/rtnn_full_batch_points.csv",
+  "point_count": 1048576,
+  "runtime_materialized": true,
+  "seed": 4502
+}

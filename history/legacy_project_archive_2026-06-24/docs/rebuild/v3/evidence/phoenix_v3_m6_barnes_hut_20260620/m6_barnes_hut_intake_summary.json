@@ -1,0 +1,89 @@
+{
+  "artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\docs\\rebuild\\v3\\evidence\\phoenix_v3_m6_barnes_hut_20260620\\m6_barnes_hut_rerank_32768_65536_131072_partitioned_r11.json",
+  "body_summaries": [
+    {
+      "body_count": 32768,
+      "checksum_delta_x": 3.4524418879300356e-09,
+      "checksum_delta_y": 5.1004462875425816e-09,
+      "checksum_tolerance_x": 0.0001,
+      "checksum_tolerance_y": 0.0001,
+      "contribution_row_count": 15514679,
+      "fastest_ms": 11.249,
+      "fastest_route_id": "numba_cuda_fused",
+      "optix_numba_ms": 82.435,
+      "optix_numba_over_fastest": 7.328211765388345,
+      "route_count": 4,
+      "route_parity_passed": true
+    },
+    {
+      "body_count": 65536,
+      "checksum_delta_x": 1.130176769947866e-07,
+      "checksum_delta_y": 1.5523568208664074e-07,
+      "checksum_tolerance_x": 0.0001,
+      "checksum_tolerance_y": 0.0001,
+      "contribution_row_count": 55935606,
+      "fastest_ms": 34.738,
+      "fastest_route_id": "numba_cuda_fused",
+      "optix_numba_ms": 177.858,
+      "optix_numba_over_fastest": 5.120049883650066,
+      "route_count": 4,
+      "route_parity_passed": true
+    },
+    {
+      "body_count": 131072,
+      "checksum_delta_x": 1.0069925338029861e-08,
+      "checksum_delta_y": 2.1653249859809875e-07,
+      "checksum_tolerance_x": 0.0003430581928083964,
+      "checksum_tolerance_y": 0.0004193880008341344,
+      "contribution_row_count": 68023506,
+      "fastest_ms": 44.445,
+      "fastest_route_id": "numba_cuda_fused",
+      "optix_numba_ms": 618.302,
+      "optix_numba_over_fastest": 13.91167731446378,
+      "route_count": 4,
+      "route_parity_passed": true
+    }
+  ],
+  "checks": {
+    "all_body_counts_have_four_routes": true,
+    "route_parity_passed": true,
+    "serious_scale_present": true,
+    "top_level_claim_flags_false": true
+  },
+  "failures": [],
+  "fastest_by_scale": {
+    "131072": "numba_cuda_fused",
+    "32768": "numba_cuda_fused",
+    "65536": "numba_cuda_fused"
+  },
+  "generic_capability": "aggregate_frontier_vector_accumulation",
+  "headline": "M6 Barnes-Hut confirms the current fastest route is fused CPU/Numba or fused Numba CUDA, while prepared OptiX remains bounded device-column evidence.",
+  "methodology": {
+    "body_counts": [
+      32768,
+      65536,
+      131072
+    ],
+    "bucket_size": 64,
+    "max_depth": 32,
+    "repeat": 11,
+    "routes": [
+      "cpu_numba_fused",
+      "numba_cuda_fused",
+      "optix_numba_prepared_frontier",
+      "optix_cupy_prepared_frontier"
+    ],
+    "theta": 0.5,
+    "timing_note": "Fused Numba CUDA uses CUDA-event kernel timing when available; CPU/Numba and prepared OptiX routes use the runner's hot median. The route ratios therefore compare CUDA-event kernel time against wall-clock hot median; they are not kernel-to-kernel comparisons. Large rows are route-parity evidence, not full exact-force oracle rows.",
+    "warmup": 3
+  },
+  "optix_fastest_scales": [],
+  "overall_status": "internal_m6_route_parity_evidence",
+  "phoenix_m7_qualified_release_rows": 0,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rt_core_speedup_claim_authorized": false,
+  "status": "pass",
+  "timing_basis_mixed": true,
+  "tool": "v3_phoenix_m6_barnes_hut_intake"
+}

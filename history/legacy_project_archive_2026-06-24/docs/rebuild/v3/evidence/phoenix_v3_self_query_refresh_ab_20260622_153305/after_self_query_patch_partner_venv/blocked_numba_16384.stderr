@@ -1,0 +1,28 @@
+Traceback (most recent call last):
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 3353, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 3322, in main
+    run_rt_dbscan_benchmark(
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 2864, in run_rt_dbscan_benchmark
+    result = rt.fixed_radius_graph_component_size_signature_3d_v2_8(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/v2_8_fixed_radius_graph_component_front_door.py", line 543, in fixed_radius_graph_component_size_signature_3d_v2_8
+    lower_result = radius_graph_component_signature_3d_optix_numba_prepared_grouped_stream_partner_columns(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/partner_adapters.py", line 8431, in radius_graph_component_signature_3d_optix_numba_prepared_grouped_stream_partner_columns
+    return prepared.run_component_signature(min_neighbors=min_neighbors, return_metadata=return_metadata)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/partner_adapters.py", line 8162, in run_component_signature
+    core_flag_cache_reused = self._refresh_core_flags(min_neighbors)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/partner_adapters.py", line 7668, in _refresh_core_flags
+    threshold_result = fixed_radius_count_threshold_3d_optix_prepared_self_partner_device_columns(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/partner_adapters.py", line 10602, in fixed_radius_count_threshold_3d_optix_prepared_self_partner_device_columns
+    native_result = prepared.write_device_count_threshold_self_columns(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/optix_runtime.py", line 7764, in write_device_count_threshold_self_columns
+    dlpack_stream=cuda_stream_ptr,
+                  ^^^^^^^^^^^^^^^
+NameError: name 'cuda_stream_ptr' is not defined

@@ -1,0 +1,80 @@
+I20260621 17:54:34.228245 744257 context.h:51] Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260621 17:54:34.228654 744257 context.h:58] Scaled Bounding Box, Bottom-left: (-67140727844348, -66938108796192), Top-right: (67140727844347, 66938108796191)
+I20260621 17:54:34.228672 744257 context.h:61] Unscaled Bounding Box, Bottom-left: (-73.9909, -33.7516), Top-right: (-32.3922, 5.27216)
+I20260621 17:54:34.398494 744257 primitive.h:256] Enlarge limit: 5 max iter:5 ne: 326193 aabbs: 29033 Compress ratio: 0.910994 Time: 0.437 ms
+I20260621 17:54:34.399611 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.401512 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.403376 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.405277 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.407159 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.409034 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.410909 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.412784 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.414656 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.416548 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.418414 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.420279 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.422138 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.424003 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.425870 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.427765 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.429651 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.431524 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.433395 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.435261 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.437125 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.439003 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.440871 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.442744 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.444613 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.446478 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.448354 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.450217 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.452086 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.453966 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.455842 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.457716 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.459578 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.461382 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.463194 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.465008 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.466823 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.468647 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.470472 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.472287 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.474102 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.475979 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.477885 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.479768 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.481662 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.483546 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.485423 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.487289 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.489176 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.491065 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.492951 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.494819 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.496694 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.498564 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+I20260621 17:54:34.500450 744257 rt_engine.cu:554] optixLaunch, [w,h,d] = 342738,1,1
+Timing results:
+ - Read map 0: 3260.95 ms
+
+ - Read map 1: 3120.94 ms
+
+ - Load Data: 2.63309 ms
+
+ - Create App: 166.332 ms
+
+ - Init: 0.371933 ms
+
+ - Adaptive Grouping: 0.544071 ms
+
+ - Build Index: 0.937939 ms
+
+ - Warmup: 9.48906 ms
+
+ - Query: 1.86566 ms
+
+ - Cleanup: 3.15309 ms
+

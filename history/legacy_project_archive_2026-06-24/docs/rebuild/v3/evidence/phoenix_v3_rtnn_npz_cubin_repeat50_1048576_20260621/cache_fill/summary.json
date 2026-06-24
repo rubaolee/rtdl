@@ -1,0 +1,182 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "generic fixed_radius_neighbors_3d ranked_summary full-batch float32 aggregate; RTNN is only the evidence harness",
+  "checks": {
+    "all_routes_ok": true,
+    "cupy_grid_reference_route_present": false,
+    "material_rtdl_over_reference_speedup": false,
+    "optix_rt_hardware_gate_passed_if_required": true,
+    "phase_table_has_load_prepare_query_wall": true,
+    "point_column_source_recorded": true,
+    "rtdl_optix_route_present": true,
+    "runner_completed_without_route_errors": true,
+    "same_contract_signature_match": false,
+    "serious_fixture_scale": true
+  },
+  "comparisons": {},
+  "environment": {
+    "cwd": "/root/phoenix_v3_work/current_aabb_20260621",
+    "env": {
+      "PYTHONPATH": "src:.",
+      "RTDL_OPTIX_LIBRARY": "/root/phoenix_v3_work/current_aabb_20260621/build/librtdl_optix.so"
+    },
+    "git_head": "fatal: not a git repository (or any of the parent directories): .git",
+    "hardware_gate": {
+      "checks": {
+        "has_nvidia_gpu": true,
+        "nvidia_smi_query": true,
+        "optix_capable_gpu_present": true,
+        "rt_hardware_name_present": true
+      },
+      "fail_closed_reason": null,
+      "gpus": [
+        {
+          "compute_cap": "8.9",
+          "driver_version": "550.127.05",
+          "name": "NVIDIA RTX 4000 Ada Generation"
+        }
+      ],
+      "query_error": null,
+      "require_rt_hardware": true,
+      "status": "pass",
+      "tool": "v3_optix_hardware_gate"
+    },
+    "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 8.9",
+    "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+    "tool": "v3_phoenix_rtnn_full_batch_float32_same_contract_environment"
+  },
+  "failed_checks": [
+    "cupy_grid_reference_route_present",
+    "same_contract_signature_match",
+    "material_rtdl_over_reference_speedup"
+  ],
+  "forbidden_public_wording": [
+    "RTNN is solved",
+    "V3 proves universal nearest-neighbor acceleration",
+    "M106 787x is a public RTNN row",
+    "float32 same-contract runner is M7 without 2-AI review",
+    "RTDL beats the RTNN paper implementation for the whole app"
+  ],
+  "generic_capability": "ranked_summary",
+  "goal_level_decision_audit": {
+    "decision": "Stage RTNN full-batch float32 same-contract evidence through a reusable runner instead of promoting M106 directly.",
+    "different_path_now": "Run this checked-in runner on an RTX pod with OptiX plus CuPy grid reference, then seek 2-AI review before reopening any RTNN M7 row.",
+    "foolish_actions": "It would be foolish to quote the M106 787.53x-vs-Embree or 2.26x-vs-author figures as a public RTNN win without same-contract reference parity.",
+    "other_path": "Repair the exact float64 tie policy first. That remains valid, but it is a semantic review path rather than the fastest route to fresh full-batch evidence.",
+    "was_i_foolish": "No. This follows the M112-approved rerun path and keeps all release flags false."
+  },
+  "m7_promotion_authorized": false,
+  "m7_reopen_candidate_pending_2ai_review": false,
+  "material_speedup_floor": 2.0,
+  "parameters": {
+    "distribution": "uniform",
+    "dry_run": false,
+    "k_max": 50,
+    "point_column_source": "npz",
+    "point_count": 1048576,
+    "query_batch_size": 1048576,
+    "radius": 0.02,
+    "repeat": 5,
+    "result_mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+    "routes": [
+      "optix"
+    ],
+    "seed": 4502
+  },
+  "parity": {
+    "reason": "optix and cupy_grid payloads are both required",
+    "same_contract_signature_match": false
+  },
+  "phase_rows": {
+    "optix": {
+      "batch_count": 1,
+      "cold_plus_query_wall_sec": 2.9566894248127937,
+      "contract": {
+        "aggregate_batch_request_mode": "homogeneous",
+        "aggregate_batch_requests": [
+          {
+            "k_max": 50,
+            "radius": 0.02
+          }
+        ],
+        "aggregate_request_count": 1,
+        "approximate": false,
+        "batched_queries": true,
+        "bounded_k": 50,
+        "exact": false,
+        "execution_path_policy_version": null,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+        "point_column_source": "npz",
+        "precision": "float32",
+        "prepared_cuda_graph_replay": false,
+        "prepared_query_points": true,
+        "prepared_search_as_query_points": false,
+        "prepared_search_structure": true,
+        "same_stream_partner_consumer": false
+      },
+      "elapsed_samples_sec": [
+        0.011297978460788727,
+        0.010880909860134125,
+        0.010822802782058716,
+        0.010807402431964874,
+        0.010893009603023529
+      ],
+      "execution_prepare_sec": 2.7240359261631966,
+      "has_load_prepare_query_wall": true,
+      "hot_query_median_sec": 0.010880909860134125,
+      "input_load_sec": 0.02547644078731537,
+      "input_pack_sec": 0.19629614800214767,
+      "mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+      "ok": true,
+      "point_column_file": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_repeat50_1048576_20260621_172157/cache_fill/rtnn_full_batch_points.csv.npz",
+      "point_column_source": "npz",
+      "query_batch_size": 1048576,
+      "query_count": 1048576,
+      "route": "optix",
+      "runner_wall_sec": 3.347685307264328,
+      "search_count": 1048576,
+      "summary": {
+        "bounded_neighbor_count": 37044632,
+        "kth_id_checksum": 549679635418,
+        "nearest_id_checksum": 549755289600,
+        "row_count": 1048576,
+        "sum_distance": 539061.8024987807
+      }
+    }
+  },
+  "point_manifest": {
+    "column_source_manifest": {
+      "coordinate_dtype": "float64",
+      "format": "rtnn_npz_xyz_columns_v1",
+      "ids_dtype": "uint32",
+      "path": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_repeat50_1048576_20260621_172157/cache_fill/rtnn_full_batch_points.csv.npz",
+      "point_count": 1048576,
+      "source_csv": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_repeat50_1048576_20260621_172157/cache_fill/rtnn_full_batch_points.csv"
+    },
+    "column_source_path": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_repeat50_1048576_20260621_172157/cache_fill/rtnn_full_batch_points.csv.npz",
+    "column_source_runtime_materialized": true,
+    "dimension": 3,
+    "format": "rtnn_csv_xyz",
+    "generated_by_runner": true,
+    "path": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_repeat50_1048576_20260621_172157/cache_fill/rtnn_full_batch_points.csv",
+    "point_column_source": "npz",
+    "point_count": 1048576,
+    "runtime_materialized": true,
+    "seed": 4502
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "required_future_review": [
+    "Save the full route payloads, environment, and point manifest from a real RTX run.",
+    "Verify same-contract summary parity against the CuPy grid reference.",
+    "Report load, pack/grid prepare, execution prepare, query wall, and cold-plus-query wall.",
+    "Send the packet to Claude or Gemini and record Codex consensus before any M7 promotion."
+  ],
+  "run_errors": {},
+  "runner_completed": true,
+  "serious_point_count_floor": 262144,
+  "status": "rtnn_full_batch_float32_same_contract_evidence_collected_not_m7",
+  "tool": "v3_phoenix_rtnn_full_batch_float32_same_contract_runner",
+  "whole_app_speedup_claim_authorized": false
+}

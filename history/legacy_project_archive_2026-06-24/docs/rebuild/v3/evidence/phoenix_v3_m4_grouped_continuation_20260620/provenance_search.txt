@@ -1,0 +1,14 @@
+searched_git_and_build_provenance
+/root/rtdl_v3_rebuild_20260620/v2_14/.git
+/workspace/rtdl_v2_vs_v3_pod_20260620_024503/v3.0.2/.git
+/workspace/rtdl_v2_vs_v3_pod_20260620_024503/v2.14/.git
+-rw-r--r-- 1 root root    135 Jun 20 04:54 /root/rtdl_v3_rebuild_20260620/current_build_embree.log
+-rw-r--r-- 1 root root    231 Jun 20 04:50 /root/rtdl_v3_rebuild_20260620/current_build_optix.log
+-rw-r--r-- 1 root root    508 Jun 20 04:54 /root/rtdl_v3_rebuild_20260620/current_build_optix_sdk.log
+-rw-r--r-- 1 root root   1414 Jun 20 06:03 /root/rtdl_v3_rebuild_20260620/run_current_goal2626_clean_env.log
+-rw-r--r-- 1 root root   1412 Jun 20 05:51 /root/rtdl_v3_rebuild_20260620/run_current_goal2626_repaired.log
+-rw-r--r-- 1 root root   1854 Jun 20 06:08 /root/rtdl_v3_rebuild_20260620/run_current_goal2636_full_clean.log
+-rw-r--r-- 1 root root 151639 Jun 20 06:05 /root/rtdl_v3_rebuild_20260620/run_current_goal3828_full_clean.log
+-rw-r--r-- 1 root root  46726 Jun 20 05:44 /root/rtdl_v3_rebuild_20260620/run_current_goal3828_numba_repaired.log
+-rw-r--r-- 1 root root    135 Jun 20 04:55 /root/rtdl_v3_rebuild_20260620/v2_14_build_embree.log
+-rw-r--r-- 1 root root    684 Jun 20 04:55 /root/rtdl_v3_rebuild_20260620/v2_14_build_optix_sdk.log

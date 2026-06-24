@@ -1,0 +1,34 @@
+{
+  "artifact_dir": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_m5_topology_20260620",
+  "checks": {
+    "gpu_env_gate_passed": true,
+    "m5_graph_gate_ready": true,
+    "optix_hardware_gate_passed": true,
+    "overlay_same_contract_ready": true,
+    "pip_same_contract_ready": false
+  },
+  "failures": [
+    "PIP backend-parity query filter was not requested",
+    "PIP backend-parity query filter did not pass",
+    "PIP backend-parity query filter did not accept 100000 points"
+  ],
+  "headline": "M5 author-code comparison: present. Evidence remains internal until M7.",
+  "m5_author_code_comparison_status": "complete",
+  "metrics": {
+    "overlay_active_count": 174,
+    "overlay_embree_over_optix_timed_median": 499.11182637483904,
+    "pip_correctness_sample": 100000,
+    "pip_parity_filter_rejected_count": null,
+    "pip_point_count": 100000,
+    "pip_positive_face_count": 43738,
+    "pip_rtdl_optix_native_traversal_speedup_vs_rtdl_embree": 2.81950020885248,
+    "pip_rtdl_optix_speedup_vs_rtdl_embree": 1.9134539427183954
+  },
+  "overall_status": "fail",
+  "phoenix_m7_qualified_release_rows": 0,
+  "public_speedup_claim_authorized": false,
+  "query_exec_status": "present",
+  "release_authorized": false,
+  "status": "fail",
+  "tool": "v3_phoenix_m5_topology_intake"
+}

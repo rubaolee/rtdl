@@ -1,0 +1,8 @@
+{
+  "response": {
+    "newConversation": {
+      "prompt": "You are Antigravity acting as an external critical reviewer for Phoenix V3 M57.",
+      "conversationId": "ada68c47-7631-469f-82db-afc7a851c4c8"
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "tool": "phoenix_v3_runner_overhead_m12_local",
+  "status": "m12_local_runner_overhead_reduction_not_pod_not_release",
+  "date": "2026-06-22",
+  "trigger": "M11 2-AI consensus accepted Spatial LSI as productized-runner coverage but performance fail and required local generic runner-overhead reduction before more POD.",
+  "m11_consensus": "docs/reviews/codex_jason_phoenix_v3_m11_spatial_segment_intersection_2ai_consensus_2026-06-22.md",
+  "changed_files": [
+    "src/rtdsl/prepared_execution.py",
+    "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+    "scripts/v3_phoenix_runner_overhead_microbench.py",
+    "tests/v3_phoenix_runner_overhead_microbench_test.py",
+    "tests/v3_phoenix_spatial_segment_intersection_runner_wiring_test.py"
+  ],
+  "implementation": {
+    "generic_runner_hooks": [
+      "PreparedExecutionSessionTask.measured_run_prepared",
+      "PreparedExecutionSessionTask.finalize_output"
+    ],
+    "effect": "Measured repeats can execute a lightweight hot-path callable while the full output payload is finalized exactly once after timing.",
+    "default_behavior_unchanged": true,
+    "native_algorithm_changed": false,
+    "pod_used": false
+  },
+  "spatial_lsi_route_update": {
+    "route": "prepared_execution_segment_intersection_topology_stream",
+    "hot_method": "PreparedExecutionRayJoinSegmentIntersectionTopologyStream.run_hot",
+    "finalize_method": "PreparedExecutionRayJoinSegmentIntersectionTopologyStream.finalize_run",
+    "expected_effect": "Avoid repeated M3 table and prepared-handle payload construction inside each measured repeat."
+  },
+  "local_microbench": {
+    "evidence": "docs/rebuild/v3/evidence/phoenix_v3_runner_overhead_m12_local_microbench_20260622.json",
+    "iterations": 20000,
+    "runner_iterations": 2000,
+    "heavy_full_runner_call_sec": 0.0009929465000168421,
+    "heavy_finalize_once_runner_call_sec": 0.0008233700499986298,
+    "heavy_finalize_once_speedup_vs_full": 1.2059541150646593,
+    "heavy_finalize_once_saved_fraction": 0.17078105418100165
+  },
+  "local_gates": [
+    {
+      "command": "py -3 -m unittest tests.v3_phoenix_runner_overhead_microbench_test tests.v3_phoenix_spatial_segment_intersection_runner_wiring_test tests.v3_phoenix_prepared_execution_session_runner_test",
+      "status": "pass",
+      "tests": 36
+    }
+  ],
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "focused_pod_spend_authorized": false,
+    "full_all_app_pod_spend_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v4_embedding_or_external_zero_copy_authorized": false
+  },
+  "next_decision": {
+    "recommended_review_question": "Does M12 local overhead reduction justify one new focused POD rerun of the same Spatial LSI A/B, or is more local proof needed?",
+    "needs_2ai_review_before_pod": true
+  },
+  "goal_level_decision_audit": {
+    "decision": "Reduce generic prepared-execution runner overhead locally using hot-repeat/finalize-once hooks.",
+    "was_i_foolish": "No.",
+    "if_yes_what_actions_made_it_foolish": "The foolish action would be to rerun POD before reducing the visible generic runner overhead.",
+    "was_there_another_path": "Yes: retarget another Set-A family, but M11 review warned that this could hide a real runtime cost behind heavier work.",
+    "can_i_try_a_different_path_now": "Yes: document the local reduction and request 2-AI review before any focused rerun."
+  }
+}

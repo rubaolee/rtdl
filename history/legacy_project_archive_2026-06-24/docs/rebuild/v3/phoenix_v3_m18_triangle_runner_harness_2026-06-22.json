@@ -1,0 +1,252 @@
+{
+  "tool": "phoenix_v3_m18_triangle_runner_harness",
+  "date": "2026-06-22",
+  "status": "m19_env_corrected_triangle_focused_pod_accepted_third_strict_set_a_probe",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "focused_pod_spend_authorized_now": false,
+  "all_app_pod_spend_authorized": false,
+  "true_zero_copy_claim_authorized": false,
+  "external_embedding_or_zero_copy_claim_authorized": false,
+  "third_strict_set_a_material_probe_closed": true,
+  "source_verdict": {
+    "m17_consensus": "docs/reviews/codex_bernoulli_phoenix_v3_m17_triangle_focused_pod_protocol_2ai_consensus_2026-06-22.md",
+    "m17_verdict": "accept_m17_authorize_m18_runner_harness_no_pod"
+  },
+  "initial_m18_review": {
+    "review_file": "docs/reviews/codex_bernoulli_phoenix_v3_m18_triangle_runner_harness_initial_review_2026-06-22.md",
+    "verdict": "revise_m18_harness",
+    "blocking_issue": "first draft read weighted_hit_sum_out.get() inside the measured runner body while claiming hot_path_host_materialization=false",
+    "focused_pod_spend_authorized_now": false
+  },
+  "second_m18_review": {
+    "review_file": "docs/reviews/codex_bernoulli_phoenix_v3_m18_triangle_runner_harness_second_review_2026-06-22.md",
+    "verdict": "revise_m18_harness",
+    "blocking_issues": [
+      "failure_checks checked only runner oracle status, not Embree and legacy controls",
+      "edge file had no checksum recording/enforcement before variants"
+    ],
+    "focused_pod_spend_authorized_now": false
+  },
+  "m18_revision": {
+    "status": "hot_path_scalar_materialization_boundary_fixed",
+    "prepared_execution_helper_change": "run_ray_triangle_weighted_summary_device_output_stream_prepared_session now accepts finalize_weighted_summary",
+    "runner_change": "launch_weighted_summary_device_output_stream enqueues/synchronizes device-output work only; finalize_weighted_summary_device_output_stream reads weighted_hit_sum_out once after measured repeats",
+    "regression_test": "tests.v3_phoenix_triangle_runner_m18_pod_ab_test.test_host_scalar_read_is_finalize_only_not_measured_launch_body",
+    "behavior_test": "tests.v3_phoenix_prepared_execution_session_runner_test.test_ray_triangle_weighted_summary_helper_can_finalize_scalar_after_measured_repeats"
+  },
+  "m18_revision_2": {
+    "status": "control_oracle_and_edge_checksum_fail_closed",
+    "edge_file_change": "real runs now compute expected K4 binary sha256, record actual sha256/edge count/byte count, and stop before variants when identity preflight fails",
+    "oracle_change": "failure_checks now requires Embree, legacy OptiX, and productized runner variants to expose and match oracle_triangle_count",
+    "regression_tests": [
+      "tests.v3_phoenix_triangle_runner_m18_pod_ab_test.test_failure_checks_fail_closed_on_control_oracle_mismatch",
+      "tests.v3_phoenix_triangle_runner_m18_pod_ab_test.test_edge_file_metadata_checksums_exact_k4_fixture"
+    ]
+  },
+  "final_m18_pod_authorization": {
+    "review_file": "docs/reviews/codex_bernoulli_phoenix_v3_m18_triangle_runner_harness_final_pod_authorization_2026-06-22.md",
+    "verdict": "accept_m18_authorize_one_focused_triangle_pod",
+    "authorized_run_count": 1,
+    "hard_cap": "2 h / $0.50",
+    "all_app_pod_authorized": false,
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "status": "authorization_consumed_by_attempt_1"
+  },
+  "pod_run_attempt_1": {
+    "status": "failed_wrong_interpreter_no_performance_evidence",
+    "intake_report": "docs/reports/phoenix_v3_m18_triangle_focused_pod_failed_env_intake_2026-06-22.md",
+    "evidence_dir": "docs/rebuild/v3/evidence/phoenix_v3_triangle_runner_m18_focused_pod_ab_20260622",
+    "remote_command_interpreter": "/usr/bin/python3",
+    "failed_check_count": 6,
+    "variant_count": 2,
+    "comparisons_available": false,
+    "edge_file_preflight_status": "pass",
+    "edge_file_sha256": "8bc1bd3fc75d86707d326fc4e2913cae7d6c380c5afa788f08b5bdbb18127005",
+    "rt_hardware_gate_status": "pass",
+    "embree_same_contract_control": {
+      "status": "ok",
+      "oracle_triangle_count": 320000,
+      "observed_triangle_count": 320000,
+      "triangle_count_matches_oracle": true,
+      "query_median_ms": 543.298989534378,
+      "wrapper_wall_sec": 11.217252418398857
+    },
+    "legacy_app_front_door_optix": {
+      "status": "failed",
+      "failure": "ModuleNotFoundError: No module named 'cupy'"
+    },
+    "productized_prepared_execution_runner": {
+      "status": "failed",
+      "failure": "ModuleNotFoundError(\"No module named 'cupy'\")"
+    },
+    "interpretation": "The authorized attempt was consumed, but it is environment failure only. It does not produce Triangle speed evidence, third strict Set-A evidence, release evidence, or broad V3-over-V2 evidence."
+  },
+  "pod_environment_diagnosis": {
+    "status": "project_venv_has_required_python_gpu_packages",
+    "failing_interpreter": "/usr/bin/python3",
+    "verified_interpreter": "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+    "verified_packages": {
+      "cupy": "present",
+      "numba": "present"
+    },
+    "remote_no_benchmark_smoke": {
+      "status": "pass",
+      "command_scope": "py_compile plus import cupy/numba and M18 runner only; no benchmark run",
+      "result": "venv-smoke-ok triangle_runner_m18_harness_ready_not_pod_authorized"
+    },
+    "diagnosis_scope": "read_only_no_benchmark_no_environment_change"
+  },
+  "m19_external_authorization": {
+    "call_for_review": "docs/reviews/call_for_review_phoenix_v3_m19_triangle_env_corrected_rerun_2026-06-22.md",
+    "claude_review": "docs/reviews/claude_phoenix_v3_m19_triangle_env_corrected_rerun_review_2026-06-22.md",
+    "codex_claude_consensus": "docs/reviews/codex_claude_phoenix_v3_m19_triangle_env_corrected_rerun_2ai_consensus_2026-06-22.md",
+    "verdict": "authorize_m19_one_env_corrected_triangle_replacement_pod",
+    "prelaunch_subprocess_interpreter_check": "pass",
+    "authorized_run_count": 1,
+    "status": "consumed_by_m19_env_corrected_attempt"
+  },
+  "m19_env_corrected_pod_result": {
+    "status": "focused_triangle_productized_runner_pod_accepted_third_strict_set_a_probe",
+    "result_report": "docs/reports/phoenix_v3_m19_triangle_env_corrected_pod_result_2026-06-22.md",
+    "result_review": "docs/reviews/claude_phoenix_v3_m19_triangle_env_corrected_pod_result_review_2026-06-22.md",
+    "result_consensus": "docs/reviews/codex_claude_phoenix_v3_m19_triangle_result_2ai_consensus_2026-06-22.md",
+    "evidence_dir": "docs/rebuild/v3/evidence/phoenix_v3_triangle_runner_m18_focused_pod_ab_venv_20260622",
+    "run_log": "docs/rebuild/v3/evidence/phoenix_v3_triangle_runner_m18_focused_pod_ab_venv_20260622.run.log",
+    "exit_code": 0,
+    "failed_check_count": 0,
+    "variant_count": 3,
+    "all_variant_oracle_checks_passed": true,
+    "edge_file_preflight_status": "pass",
+    "edge_file_sha256": "8bc1bd3fc75d86707d326fc4e2913cae7d6c380c5afa788f08b5bdbb18127005",
+    "rt_hardware_gate_status": "pass",
+    "productized_execution_path": "prepared_execution_session_runner",
+    "runtime_executed": true,
+    "runtime_trunk_executes_end_to_end": true,
+    "internal_device_residency_between_rtdl_phases": true,
+    "hot_path_host_materialization": false,
+    "weighted_hit_sum": 320000,
+    "oracle_triangle_count": 320000,
+    "timings": {
+      "embree_query_median_ms": 549.2332428693771,
+      "embree_wall_sec": 11.425547204911709,
+      "legacy_query_median_ms": 1.583486795425415,
+      "legacy_wall_sec": 1.8036402389407158,
+      "runner_median_sec": 0.0002274438738822937,
+      "runner_outer_wall_sec": 0.8520944193005562,
+      "runner_prepare_or_cache_sec": 0.3262270614504814
+    },
+    "comparisons": {
+      "runner_vs_embree_hot_speedup": 2414.807809480132,
+      "runner_vs_embree_wall_speedup": 13.408780700958467,
+      "runner_vs_legacy_hot_speedup": 6.962099125364431,
+      "runner_vs_legacy_wall_speedup": 2.1167140613609914,
+      "legacy_vs_embree_hot_speedup": 346.85053544877945,
+      "legacy_vs_embree_wall_speedup": 6.334715182237214
+    },
+    "bar_check": {
+      "oracle_all_variants": "pass",
+      "runtime_trunk_metadata": "pass",
+      "runner_vs_embree_hot_ge_1_20x": "pass",
+      "runner_vs_embree_wall_ge_1_20x": "pass",
+      "runner_vs_legacy_wall_ge_0_98x": "pass",
+      "claim_flags_false": "pass"
+    },
+    "third_strict_set_a_material_probe_interpretation": "closed_by_claude_result_review",
+    "third_strict_set_a_material_probe_closed": true,
+    "another_focused_triangle_rerun_authorized": false,
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "all_app_pod_spend_authorized": false
+  },
+  "implementation": {
+    "script": "scripts/v3_phoenix_triangle_runner_m18_pod_ab.py",
+    "test": "tests/v3_phoenix_triangle_runner_m18_pod_ab_test.py",
+    "schema": "rtdl.phoenix_v3.triangle_runner_m18_pod_ab.v1",
+    "status": "triangle_runner_m18_harness_ready_not_pod_authorized",
+    "variants": [
+      "embree_same_contract_control",
+      "legacy_app_front_door_optix",
+      "productized_prepared_execution_runner"
+    ],
+    "m16_helper": "run_ray_triangle_weighted_summary_device_output_stream_prepared_session",
+    "device_output_executor": "prepare_ray_batch_any_hit_weighted_sum_device_output_graph_executor",
+    "heartbeat": "subprocess variants and in-process runner variant emit heartbeat at heartbeat-sec intervals",
+    "real_run_fail_closed_gates": [
+      "repeat >= 5",
+      "cliques >= 80000 unless explicit smoke flag",
+      "K4 edge-file sha256/edge-count/byte-count preflight before real variants",
+      "all three variants match oracle_triangle_count",
+      "OptiX RT hardware gate when --require-rt-hardware is passed",
+      "CuPy/Numba partner availability",
+      "OptiX device-output executor symbols",
+      "M16 metadata runtime_trunk_executes_end_to_end"
+    ]
+  },
+  "local_verification": [
+    {
+      "command": "$env:PYTHONPATH='src;.'; py -3 -m unittest tests.v3_phoenix_triangle_runner_m18_pod_ab_test",
+      "result": "6 tests OK after hot-path scalar-read, control-oracle, and edge-checksum regression coverage"
+    },
+    {
+      "command": "$env:PYTHONPATH='src;.'; py -3 -m unittest tests.v3_phoenix_prepared_execution_session_runner_test tests.v3_phoenix_triangle_runner_m18_pod_ab_test",
+      "result": "40 tests OK"
+    },
+    {
+      "command": "$env:PYTHONPATH='src;.'; py -3 -m unittest tests.v3_phoenix_prepared_execution_session_runner_test tests.v3_phoenix_triangle_runner_m18_pod_ab_test tests.v3_phoenix_m18_triangle_runner_harness_packet_test tests.v3_phoenix_m17_triangle_focused_pod_protocol_test tests.v3_phoenix_m16_triangle_runner_wiring_test",
+      "result": "58 tests OK"
+    },
+    {
+      "command": "$env:PYTHONPATH='src;.'; py -3 scripts\\v3_phoenix_triangle_runner_m18_pod_ab.py --output-dir build\\phoenix_v3_m18_triangle_dry_run --edge-file build\\phoenix_v3_m18_triangle_dry_run\\k4.edge --cliques 80000 --repeat 5 --warmup 1 --dry-run",
+      "result": "dry-run summary status triangle_runner_m18_harness_ready_not_pod_authorized; failed_check_count=0; variant_count=3; edge_file_preflight_status=dry_run_not_required"
+    },
+    {
+      "command": "py -3 scripts\\v3_release_wording_gate.py --pretty",
+      "result": "status pass; violations []"
+    },
+    {
+      "command": "py -3 -m py_compile scripts\\v3_phoenix_triangle_runner_m18_pod_ab.py src\\rtdsl\\prepared_execution.py",
+      "result": "OK"
+    }
+  ],
+  "dry_run_artifact": {
+    "summary": "build/phoenix_v3_m18_triangle_dry_run/summary.json",
+    "runner_variant": "build/phoenix_v3_m18_triangle_dry_run/productized_prepared_execution_runner.json",
+    "comparisons": "dry_run_no_performance_interpretation",
+    "pod_run_authorized_by_m18": false
+  },
+  "focused_pod_command_consumed_attempt_1": "PYTHONPATH=src:. python3 scripts/v3_phoenix_triangle_runner_m18_pod_ab.py --output-dir docs/rebuild/v3/evidence/phoenix_v3_triangle_runner_m18_focused_pod_ab_20260622 --edge-file build/phoenix_v3_m18_triangle/k4_cliques_80000.edge --cliques 80000 --partner cupy --warmup 1 --repeat 5 --require-rt-hardware --generate-edge-file",
+  "focused_pod_command_if_later_2ai_authorized": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_phoenix_triangle_runner_m18_pod_ab.py --output-dir docs/rebuild/v3/evidence/phoenix_v3_triangle_runner_m18_focused_pod_ab_venv_20260622 --edge-file build/phoenix_v3_m18_triangle/k4_cliques_80000.edge --cliques 80000 --partner cupy --warmup 1 --repeat 5 --require-rt-hardware --generate-edge-file",
+  "success_bars_carried_from_m17": {
+    "correctness": "all variants match oracle_triangle_count=320000",
+    "productized_runtime": "runner metadata runtime_executed=true, productized_execution_path=prepared_execution_session_runner, runtime_trunk_executes_end_to_end=true",
+    "material_set_a_candidate": "runner OptiX beats Embree same-contract control by >=1.20x on hot query median and runner-inclusive wall",
+    "legacy_no_regression": "runner-inclusive wall >=0.98x of legacy app-front-door OptiX route",
+    "claim_boundary": "release/public/broad V3-over-V2/V4/zero-copy/all-app flags remain false"
+  },
+  "resource_budget_if_authorized_by_review": {
+    "focused_pod_wall_hours": "0.75-1.5",
+    "focused_pod_cost_at_1_usd_per_4_hours": "0.19-0.38 USD",
+    "hard_cap_before_new_review_hours": 2.0,
+    "hard_cap_before_new_review_cost_usd": 0.5,
+    "all_app_pod_wall_hours": "not authorized"
+  },
+  "recommended_next_step": {
+    "id": "m19_environment_corrected_focused_triangle_pod_rerun_review",
+    "pod_now": false,
+    "review_first": true,
+    "requested_verdict": "move_to_next_phoenix_v3_gate_under_set_a_set_b_scorecard",
+    "note": "Claude accepted the M19 Triangle result as the third strict Set-A material probe. Do not rerun Triangle; no release/all-app/public/broad-V3 authorization follows from this focused result."
+  },
+  "decision_audit": {
+    "decision": "record the consumed M18 focused POD attempt as wrong-interpreter environment failure and seek 2-AI authorization before any replacement run",
+    "was_i_foolish": "Yes.",
+    "foolish_actions": "I used python3 on the POD without first verifying the historical project venv that earlier GPU work used, so the single focused authorization was consumed before CuPy paths could run.",
+    "other_path": "Run a read-only interpreter/package gate first and substitute the verified venv interpreter into the command before launch.",
+    "different_path_now": "Preserve the failed artifacts, keep all claims blocked, and ask 2-AI for a narrowly scoped venv-based replacement run."
+  }
+}

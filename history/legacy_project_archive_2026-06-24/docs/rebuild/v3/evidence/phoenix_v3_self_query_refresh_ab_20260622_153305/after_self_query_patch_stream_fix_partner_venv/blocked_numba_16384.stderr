@@ -1,0 +1,52 @@
+/root/rtdl_v3_rebuild_20260620/venv_partner_py312/lib/python3.12/site-packages/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 64 will likely result in GPU under-utilization due to low occupancy.
+  warn(NumbaPerformanceWarning(msg))
+Traceback (most recent call last):
+  File "/root/rtdl_v3_rebuild_20260620/venv_partner_py312/lib/python3.12/site-packages/numba/cuda/cudadrv/driver.py", line 2834, in add_ptx
+    driver.cuLinkAddData(self.handle, enums.CU_JIT_INPUT_PTX,
+  File "/root/rtdl_v3_rebuild_20260620/venv_partner_py312/lib/python3.12/site-packages/numba/cuda/cudadrv/driver.py", line 327, in safe_cuda_api_call
+    self._check_ctypes_error(fname, retcode)
+  File "/root/rtdl_v3_rebuild_20260620/venv_partner_py312/lib/python3.12/site-packages/numba/cuda/cudadrv/driver.py", line 399, in _check_ctypes_error
+    raise CudaAPIError(retcode, msg)
+numba.cuda.cudadrv.driver.CudaAPIError: [222] Call to cuLinkAddData results in CUDA_ERROR_UNSUPPORTED_PTX_VERSION
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 3353, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 3322, in main
+    run_rt_dbscan_benchmark(
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 2864, in run_rt_dbscan_benchmark
+    result = rt.fixed_radius_graph_component_size_signature_3d_v2_8(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/v2_8_fixed_radius_graph_component_front_door.py", line 543, in fixed_radius_graph_component_size_signature_3d_v2_8
+    lower_result = radius_graph_component_signature_3d_optix_numba_prepared_grouped_stream_partner_columns(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/partner_adapters.py", line 8431, in radius_graph_component_signature_3d_optix_numba_prepared_grouped_stream_partner_columns
+    return prepared.run_component_signature(min_neighbors=min_neighbors, return_metadata=return_metadata)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/partner_adapters.py", line 8166, in run_component_signature
+    self.parent_border_init_kernel[self.label_blocks, self.threads](
+  File "/root/rtdl_v3_rebuild_20260620/venv_partner_py312/lib/python3.12/site-packages/numba/cuda/dispatcher.py", line 539, in __call__
+    return self.dispatcher.call(args, self.griddim, self.blockdim,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/venv_partner_py312/lib/python3.12/site-packages/numba/cuda/dispatcher.py", line 681, in call
+    kernel = _dispatcher.Dispatcher._cuda_call(self, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/venv_partner_py312/lib/python3.12/site-packages/numba/cuda/dispatcher.py", line 689, in _compile_for_args
+    return self.compile(tuple(argtypes))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/venv_partner_py312/lib/python3.12/site-packages/numba/cuda/dispatcher.py", line 934, in compile
+    kernel.bind()
+  File "/root/rtdl_v3_rebuild_20260620/venv_partner_py312/lib/python3.12/site-packages/numba/cuda/dispatcher.py", line 197, in bind
+    self._codelibrary.get_cufunc()
+  File "/root/rtdl_v3_rebuild_20260620/venv_partner_py312/lib/python3.12/site-packages/numba/cuda/codegen.py", line 214, in get_cufunc
+    cubin = self.get_cubin(cc=device.compute_capability)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/venv_partner_py312/lib/python3.12/site-packages/numba/cuda/codegen.py", line 188, in get_cubin
+    linker.add_ptx(ptx.encode())
+  File "/root/rtdl_v3_rebuild_20260620/venv_partner_py312/lib/python3.12/site-packages/numba/cuda/cudadrv/driver.py", line 2837, in add_ptx
+    raise LinkerError("%s\n%s" % (e, self.error_log))
+numba.cuda.cudadrv.driver.LinkerError: [222] Call to cuLinkAddData results in CUDA_ERROR_UNSUPPORTED_PTX_VERSION
+ptxas application ptx input, line 9; fatal   : Unsupported .version 8.7; current version is '8.4'

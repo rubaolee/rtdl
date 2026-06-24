@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/root/rtdl_v3_rebuild_20260620/v2_14/scripts/goal3866_rayjoin_representative_scale_profile.py", line 391, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/v2_14/scripts/goal3866_rayjoin_representative_scale_profile.py", line 385, in main
+    payload = build_dry_run(args) if args.dry_run else run_representative_profile(args)
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/v2_14/scripts/goal3866_rayjoin_representative_scale_profile.py", line 248, in run_representative_profile
+    data_dir = _resolve_data_dir(args.data_dir)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/v2_14/scripts/goal3866_rayjoin_representative_scale_profile.py", line 60, in _resolve_data_dir
+    raise FileNotFoundError(
+FileNotFoundError: RayJoin public-CDB data directory not found; checked: /root/rtdl_goal3293/data/rayjoin_public_cdb, /root/rtdl/data/rayjoin_public_cdb, /root/rtdl_v3_rebuild_20260620/v2_14/data/rayjoin_public_cdb, /root/rtdl_v3_rebuild_20260620/v2_14/data/rayjoin

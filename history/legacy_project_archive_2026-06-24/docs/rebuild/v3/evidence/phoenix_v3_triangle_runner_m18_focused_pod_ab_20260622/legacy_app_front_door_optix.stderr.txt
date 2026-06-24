@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py", line 4568, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py", line 4536, in main
+    run_app(
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py", line 4343, in run_app
+    return rt_graph_2a1_generic_rt_payload(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py", line 830, in rt_graph_2a1_generic_rt_payload
+    contract = _build_rt_graph_triangle_summary_contract_binary(edge_file, partner=partner)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py", line 2615, in _build_rt_graph_triangle_summary_contract_binary
+    return build_rt_graph_triangle_summary_contract_cupy_binary(edge_file, materialize_host_columns=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/triangle_counting/rt_graph_contract.py", line 206, in build_rt_graph_triangle_summary_contract_cupy_binary
+    import cupy as cp
+ModuleNotFoundError: No module named 'cupy'

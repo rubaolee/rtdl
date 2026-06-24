@@ -1,0 +1,9 @@
+=src;. : The term '=src;.' is not recognized as the name of a cmdlet, function, script file, or operable program. 
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ ='src;.'; py -3 scripts/run_test_matrix.py --group v3_rebuild
++ ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (=src;.:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+Could not find platform independent libraries <prefix>

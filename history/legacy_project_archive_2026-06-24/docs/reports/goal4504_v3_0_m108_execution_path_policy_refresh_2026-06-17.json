@@ -1,0 +1,116 @@
+{
+  "claim_boundary": {
+    "automatic_partner_selection_authorized": false,
+    "explicit_result_mode_required": true,
+    "hidden_auto_dispatch_allowed": false,
+    "policy_is_explain_only": true,
+    "public_speedup_claim_authorized": false,
+    "release_readiness_authorized": false
+  },
+  "conclusion": "The fixed-radius aggregate execution-path policy is now size-aware. Unknown or small aggregate-only OptiX work keeps the Goal2841 direct graph recommendation; Phoenix removes the fixed 65,536-query native graph cap, but explicit large aggregate-only work still uses the measured Goal4502/Phoenix full-batch prepared direct aggregate recommendation until graph replay has material large-workload evidence; partner continuations keep the same-stream graph/device-partial route with an explicit large-workload evidence warning.",
+  "evidence_refs": [
+    "Goal2841",
+    "Goal4502",
+    "docs/reports/goal4502_v3_0_m106_rtnn_full_batch_route_refresh_2026-06-17.json"
+  ],
+  "goal": "Goal4504 / V3 M108",
+  "graph_query_count_boundary": "no_fixed_65536_cap; native graph query_count is bounded by uint32",
+  "graph_query_count_cap": null,
+  "large_direct_query_count_floor": 1000000,
+  "operation": "fixed_radius_ranked_summary_aggregate_3d",
+  "policy_version": "rtdl.v2_5.execution_path_policy.v1",
+  "result_modes": {
+    "direct_graph": "ranked-summary-aggregate-prepared-query-batch-graph-float32",
+    "full_batch_direct": "ranked-summary-aggregate-prepared-query-batch-float32",
+    "same_stream_cupy": "ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32"
+  },
+  "scenario_matrix": {
+    "embree_backend": {
+      "backend": "embree",
+      "direct_native_graph_preferred_when_no_partner_continuation": false,
+      "evidence_goal": "Goal2841",
+      "hidden_auto_dispatch_allowed": false,
+      "large_aggregate_only_full_batch_direct_preferred": false,
+      "public_speedup_claim_authorized": false,
+      "query_batch_size": null,
+      "query_count": 1000000,
+      "reasons": [
+        "The measured Goal2841 policy applies only to the OptiX fixed-radius graph path."
+      ],
+      "recommended_result_mode": "backend_specific_policy_required",
+      "requires_partner_continuation": false,
+      "same_stream_required_for_partner_continuation": false,
+      "selected_path": "no_optix_graph_policy",
+      "warnings": [
+        "Use explicit backend-specific measurement before selecting this path."
+      ]
+    },
+    "large_aggregate_only_kitti_1m": {
+      "backend": "optix",
+      "direct_native_graph_preferred_when_no_partner_continuation": false,
+      "evidence_goal": "Goal4502",
+      "hidden_auto_dispatch_allowed": false,
+      "large_aggregate_only_full_batch_direct_preferred": true,
+      "public_speedup_claim_authorized": false,
+      "query_batch_size": 1000000,
+      "query_count": 1000000,
+      "reasons": [
+        "No partner continuation is required and the query_count is in the large aggregate-only evidence band, so the Goal4502/Phoenix full-batch prepared direct aggregate remains the current measured route.",
+        "Goal4502 measured the KITTI-1M full-batch direct aggregate at 1.68x faster than the older M105 direct graph row while preserving the aggregate signature."
+      ],
+      "recommended_result_mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+      "requires_partner_continuation": false,
+      "same_stream_required_for_partner_continuation": false,
+      "selected_path": "prepared_full_batch_direct_aggregate",
+      "warnings": []
+    },
+    "large_partner_continuation": {
+      "backend": "optix",
+      "direct_native_graph_preferred_when_no_partner_continuation": false,
+      "evidence_goal": "Goal2841",
+      "hidden_auto_dispatch_allowed": false,
+      "large_aggregate_only_full_batch_direct_preferred": false,
+      "public_speedup_claim_authorized": false,
+      "query_batch_size": 65536,
+      "query_count": 1000000,
+      "reasons": [
+        "A partner continuation is required, so same-stream ordering and entrypoint metadata matter.",
+        "Goal2841 proves this path is traceable but slower than direct native graph replay."
+      ],
+      "recommended_result_mode": "ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32",
+      "requires_partner_continuation": true,
+      "same_stream_required_for_partner_continuation": true,
+      "selected_path": "same_stream_partner_continuation",
+      "warnings": [
+        "The graph/device-partial partner-continuation path no longer has a fixed 65,536-query native cap, but large partner-continuation workloads still need explicit chunking or fresh large-partial evidence before recommendation."
+      ]
+    },
+    "unknown_or_small_aggregate_only": {
+      "backend": "optix",
+      "direct_native_graph_preferred_when_no_partner_continuation": true,
+      "evidence_goal": "Goal2841",
+      "hidden_auto_dispatch_allowed": false,
+      "large_aggregate_only_full_batch_direct_preferred": false,
+      "public_speedup_claim_authorized": false,
+      "query_batch_size": null,
+      "query_count": null,
+      "reasons": [
+        "No partner continuation is required, so direct native graph replay is the fastest measured path.",
+        "Goal2841 measured same-stream replay at 1.923x the direct median on the 65K fixture."
+      ],
+      "recommended_result_mode": "ranked-summary-aggregate-prepared-query-batch-graph-float32",
+      "requires_partner_continuation": false,
+      "same_stream_required_for_partner_continuation": false,
+      "selected_path": "direct_native_graph_replay",
+      "warnings": []
+    }
+  },
+  "validation": {
+    "errors": [],
+    "operation": "fixed_radius_ranked_summary_aggregate_3d",
+    "policy_version": "rtdl.v2_5.execution_path_policy.v1",
+    "primitive_first_selection_doctrine_version": "rtdl.v2_5.primitive_first_selection_doctrine.v1",
+    "status": "accept"
+  },
+  "version": "rtdl.v3_0.execution_path_policy_refresh.goal4504.v1"
+}

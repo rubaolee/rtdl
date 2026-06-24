@@ -1,0 +1,473 @@
+{
+  "app": "bounded_collision_witness_contact_manifold",
+  "backend": "optix",
+  "candidate_id_rows": [
+    [
+      0,
+      20000,
+      10000
+    ],
+    [
+      1,
+      20001,
+      10001
+    ],
+    [
+      2,
+      20002,
+      10002
+    ],
+    [
+      3,
+      20003,
+      10003
+    ],
+    [
+      4,
+      20004,
+      10004
+    ],
+    [
+      5,
+      20005,
+      10005
+    ],
+    [
+      6,
+      20006,
+      10006
+    ],
+    [
+      7,
+      20007,
+      10007
+    ],
+    [
+      8,
+      20008,
+      10008
+    ],
+    [
+      9,
+      20009,
+      10009
+    ],
+    [
+      10,
+      20010,
+      10010
+    ],
+    [
+      11,
+      20011,
+      10011
+    ],
+    [
+      12,
+      20012,
+      10012
+    ],
+    [
+      13,
+      20013,
+      10013
+    ],
+    [
+      14,
+      20014,
+      10014
+    ],
+    [
+      15,
+      20015,
+      10015
+    ],
+    [
+      16,
+      20016,
+      10016
+    ],
+    [
+      17,
+      20017,
+      10017
+    ],
+    [
+      18,
+      20018,
+      10018
+    ],
+    [
+      19,
+      20019,
+      10019
+    ],
+    [
+      20,
+      20020,
+      10020
+    ],
+    [
+      21,
+      20021,
+      10021
+    ],
+    [
+      22,
+      20022,
+      10022
+    ],
+    [
+      23,
+      20023,
+      10023
+    ],
+    [
+      24,
+      20024,
+      10024
+    ],
+    [
+      25,
+      20025,
+      10025
+    ],
+    [
+      26,
+      20026,
+      10026
+    ],
+    [
+      27,
+      20027,
+      10027
+    ],
+    [
+      28,
+      20028,
+      10028
+    ],
+    [
+      29,
+      20029,
+      10029
+    ],
+    [
+      30,
+      20030,
+      10030
+    ],
+    [
+      31,
+      20031,
+      10031
+    ],
+    [
+      32,
+      20032,
+      10032
+    ],
+    [
+      33,
+      20033,
+      10033
+    ],
+    [
+      34,
+      20034,
+      10034
+    ],
+    [
+      35,
+      20035,
+      10035
+    ],
+    [
+      36,
+      20036,
+      10036
+    ],
+    [
+      37,
+      20037,
+      10037
+    ],
+    [
+      38,
+      20038,
+      10038
+    ],
+    [
+      39,
+      20039,
+      10039
+    ],
+    [
+      40,
+      20040,
+      10040
+    ],
+    [
+      41,
+      20041,
+      10041
+    ],
+    [
+      42,
+      20042,
+      10042
+    ],
+    [
+      43,
+      20043,
+      10043
+    ],
+    [
+      44,
+      20044,
+      10044
+    ],
+    [
+      45,
+      20045,
+      10045
+    ],
+    [
+      46,
+      20046,
+      10046
+    ],
+    [
+      47,
+      20047,
+      10047
+    ],
+    [
+      48,
+      20048,
+      10048
+    ],
+    [
+      49,
+      20049,
+      10049
+    ],
+    [
+      50,
+      20050,
+      10050
+    ],
+    [
+      51,
+      20051,
+      10051
+    ],
+    [
+      52,
+      20052,
+      10052
+    ],
+    [
+      53,
+      20053,
+      10053
+    ],
+    [
+      54,
+      20054,
+      10054
+    ],
+    [
+      55,
+      20055,
+      10055
+    ],
+    [
+      56,
+      20056,
+      10056
+    ],
+    [
+      57,
+      20057,
+      10057
+    ],
+    [
+      58,
+      20058,
+      10058
+    ],
+    [
+      59,
+      20059,
+      10059
+    ],
+    [
+      60,
+      20060,
+      10060
+    ],
+    [
+      61,
+      20061,
+      10061
+    ],
+    [
+      62,
+      20062,
+      10062
+    ],
+    [
+      63,
+      20063,
+      10063
+    ]
+  ],
+  "claim_boundary": "Native mode validates only the generic app-name-free COLLECT_K_BOUNDED i64 collector over Python oracle rows; it is not native collision/contact logic.",
+  "complete_candidate_coverage": true,
+  "cpu_reference_elapsed_sec": 0.07646147161722183,
+  "cpu_reference_valid_count": 64,
+  "dataset": "grid_64",
+  "engine_boundary": {
+    "candidate_discovery_owner": "AABB_INDEX_QUERY_2D",
+    "contact_manifold_logic_owner": "Python app/reference or partner continuation",
+    "engine_primitive_owner": "COLLECT_K_BOUNDED",
+    "native_collision_logic_allowed": false
+  },
+  "library_path": "/root/rtdl_v3_rebuild_20260620/current/build/librtdl_optix.so",
+  "matches_cpu_reference": true,
+  "mode": "native_collect_k",
+  "native_collect_elapsed_sec": 0.0002506151795387268,
+  "native_collect_max_sec": 0.00047716498374938965,
+  "native_collect_min_sec": 0.00023192912340164185,
+  "native_collect_repeat_count": 3,
+  "native_collect_runs_sec": [
+    0.00047716498374938965,
+    0.0002506151795387268,
+    0.00023192912340164185
+  ],
+  "native_collect_timing_scope": "median_preserves_legacy_field_total_records_repeat_aggregate",
+  "native_collect_total_sec": 0.0009597092866897583,
+  "native_generic_symbol": "rtdl_optix_collect_k_bounded_i64",
+  "overflowed": false,
+  "primitive_under_test": "COLLECT_K_BOUNDED",
+  "repeat_count": 3,
+  "row_schema": [
+    "query_group_id",
+    "query_triangle_id",
+    "scene_triangle_id"
+  ],
+  "v2_4_phase_timing": {
+    "phase_contract_version": "rtdl.partner.v2.4",
+    "phases_sec": {
+      "materialization": 0.0002506151795387268
+    },
+    "promoted_performance_path": false,
+    "same_phase_contract_as_basis": true,
+    "source": "contact_manifold.native_collect_k",
+    "validation": {
+      "errors": [],
+      "known_phases": [
+        "materialization"
+      ],
+      "status": "accept"
+    }
+  },
+  "v2_4_prepared_session": {
+    "app_owned_interpretation": "Rows may represent contact witnesses in this benchmark, but RTDL sees only bounded int64 rows and valid_count.",
+    "app_specific_native_vocab_allowed": false,
+    "backend": "optix",
+    "descriptor_only": true,
+    "input_buffers": [
+      {
+        "access_mode": "read",
+        "alignment_bytes": 1,
+        "byte_offset": 0,
+        "capacity_elements": 192,
+        "data_ptr_observed": false,
+        "device": "cpu:0",
+        "dtype": "int64",
+        "element_count": 192,
+        "lifetime": "session_retained",
+        "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+        "mutability": "immutable",
+        "name": "candidate_id_rows",
+        "scope": "rtdl_primitive_handoff_only",
+        "shape": [
+          64,
+          3
+        ],
+        "source_protocol": "rtdl_generic_i64_rows",
+        "stream_handle": 0,
+        "strides_bytes": null
+      }
+    ],
+    "native_engine_boundary": "app_agnostic_native_engine",
+    "native_symbols": [
+      "rtdl_optix_collect_k_bounded_i64"
+    ],
+    "output_buffers": [
+      {
+        "access_mode": "write",
+        "alignment_bytes": 1,
+        "byte_offset": 0,
+        "capacity_elements": 384,
+        "data_ptr_observed": false,
+        "device": "cpu:0",
+        "dtype": "int64",
+        "element_count": 384,
+        "lifetime": "session_retained",
+        "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+        "mutability": "mutable",
+        "name": "bounded_witness_rows",
+        "scope": "rtdl_primitive_handoff_only",
+        "shape": [
+          128,
+          3
+        ],
+        "source_protocol": "rtdl_generic_i64_rows",
+        "stream_handle": 0,
+        "strides_bytes": null
+      },
+      {
+        "access_mode": "write",
+        "alignment_bytes": 1,
+        "byte_offset": 0,
+        "capacity_elements": 1,
+        "data_ptr_observed": false,
+        "device": "cpu:0",
+        "dtype": "uint64",
+        "element_count": 1,
+        "lifetime": "session_retained",
+        "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+        "mutability": "mutable",
+        "name": "valid_count",
+        "scope": "rtdl_primitive_handoff_only",
+        "shape": [
+          1
+        ],
+        "source_protocol": "rtdl_scalar_status",
+        "stream_handle": 0,
+        "strides_bytes": null
+      }
+    ],
+    "overflow_policy": "fail_closed_no_partial_rows",
+    "phase_contract": "bounded_witness_collection",
+    "primitive": "aabb_index_2d_bounded_i64_rows",
+    "requires_phase_timing": true,
+    "reusable_output_buffers": true,
+    "reusable_query_buffers": true,
+    "reusable_scene": true,
+    "row_schema": [
+      "query_group_id",
+      "query_triangle_id",
+      "scene_triangle_id"
+    ],
+    "same_phase_contract_as_basis_required": true,
+    "session_id": "generic_bounded_i64_rows_optix_64x128",
+    "status": "protocol_descriptor_only",
+    "v2_4_protocol_version": "rtdl.partner.v2.4"
+  },
+  "valid_count": 64,
+  "witness_capacity": 128
+}

@@ -353,6 +353,131 @@ static std::string compile_to_cubin_with_nvcc(const char* cuda_src,
                        std::istreambuf_iterator<char>());
 }
 
+static bool cubin_cache_env_is_disabled(const char* value)
+{
+    if (!value || value[0] == '\0') return false;
+    const std::string raw(value);
+    return raw != "0" && raw != "false" && raw != "FALSE" && raw != "False";
+}
+
+static uint64_t fnv1a64_update(uint64_t hash, const char* data, size_t size)
+{
+    constexpr uint64_t prime = 1099511628211ull;
+    for (size_t i = 0; i < size; ++i) {
+        hash ^= static_cast<unsigned char>(data[i]);
+        hash *= prime;
+    }
+    return hash;
+}
+
+static uint64_t fnv1a64_update_string(uint64_t hash, const std::string& value)
+{
+    const uint64_t size = static_cast<uint64_t>(value.size());
+    hash = fnv1a64_update(hash, reinterpret_cast<const char*>(&size), sizeof(size));
+    return fnv1a64_update(hash, value.data(), value.size());
+}
+
+static std::string hex_u64(uint64_t value)
+{
+    constexpr char digits[] = "0123456789abcdef";
+    std::string out(16, '0');
+    for (int shift = 60, index = 0; shift >= 0; shift -= 4, ++index) {
+        out[static_cast<size_t>(index)] = digits[(value >> shift) & 0xfull];
+    }
+    return out;
+}
+
+static std::string cubin_cache_safe_name(const char* name)
+{
+    std::string safe;
+    const std::string raw = name ? name : "kernel.cu";
+    safe.reserve(raw.size());
+    for (char ch : raw) {
+        const bool keep =
+            (ch >= 'a' && ch <= 'z') ||
+            (ch >= 'A' && ch <= 'Z') ||
+            (ch >= '0' && ch <= '9') ||
+            ch == '.' || ch == '_' || ch == '-';
+        safe.push_back(keep ? ch : '_');
+    }
+    return safe.empty() ? "kernel.cu" : safe;
+}
+
+static std::filesystem::path cubin_cache_root()
+{
+    namespace fs = std::filesystem;
+    if (const char* configured = std::getenv("RTDL_OPTIX_CUBIN_CACHE_DIR");
+        configured && configured[0] != '\0') {
+        return fs::path(configured);
+    }
+    if (const char* xdg = std::getenv("XDG_CACHE_HOME"); xdg && xdg[0] != '\0') {
+        return fs::path(xdg) / "rtdl" / "optix_cubin";
+    }
+    if (const char* home = std::getenv("HOME"); home && home[0] != '\0') {
+        return fs::path(home) / ".cache" / "rtdl" / "optix_cubin";
+    }
+    std::error_code ignored;
+    return fs::temp_directory_path(ignored) / "rtdl-optix-cubin-cache";
+}
+
+static std::filesystem::path cubin_cache_path(
+        const char* cuda_src,
+        const char* name,
+        const std::string& arch,
+        const std::vector<std::string>& include_opts,
+        const std::vector<const char*>& extra_opts)
+{
+    uint64_t hash = 1469598103934665603ull;
+    hash = fnv1a64_update_string(hash, "rtdl_optix_cubin_cache_v1");
+    hash = fnv1a64_update_string(hash, name ? name : "");
+    hash = fnv1a64_update_string(hash, arch);
+    hash = fnv1a64_update_string(hash, cuda_src ? std::string(cuda_src) : std::string());
+    for (const std::string& opt : include_opts) {
+        hash = fnv1a64_update_string(hash, opt);
+    }
+    for (const char* opt : extra_opts) {
+        hash = fnv1a64_update_string(hash, opt ? std::string(opt) : std::string());
+    }
+    return cubin_cache_root() /
+        (cubin_cache_safe_name(name) + "." + arch + "." + hex_u64(hash) + ".cubin");
+}
+
+static std::string read_cached_cubin(const std::filesystem::path& path)
+{
+    std::ifstream cached(path, std::ios::binary);
+    if (!cached) return {};
+    return std::string((std::istreambuf_iterator<char>(cached)),
+                       std::istreambuf_iterator<char>());
+}
+
+static void write_cached_cubin(const std::filesystem::path& path, const std::string& cubin)
+{
+    namespace fs = std::filesystem;
+    std::error_code ignored;
+    fs::create_directories(path.parent_path(), ignored);
+    if (!fs::is_directory(path.parent_path(), ignored)) {
+        return;
+    }
+
+    fs::path tmp_path = path;
+    tmp_path += ".tmp.";
+    tmp_path += std::to_string(static_cast<long long>(getpid()));
+    {
+        std::ofstream out(tmp_path, std::ios::binary);
+        if (!out) return;
+        out.write(cubin.data(), static_cast<std::streamsize>(cubin.size()));
+        if (!out) {
+            fs::remove(tmp_path, ignored);
+            return;
+        }
+    }
+    std::error_code rename_error;
+    fs::rename(tmp_path, path, rename_error);
+    if (rename_error) {
+        fs::remove(tmp_path, ignored);
+    }
+}
+
 static void append_include_arg(std::vector<std::string>& include_opts,
                                std::unordered_set<std::string>& seen,
                                const std::string& include_dir) {
@@ -378,6 +503,19 @@ static std::string compile_to_cubin(const char* cuda_src,
     std::unordered_set<std::string> seen_nvcc_include_opts;
     append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_OPTIX_INCLUDE_DIR);
     append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_CUDA_INCLUDE_DIR);
+    const std::string arch = default_cuda_cubin_arch();
+    const bool cache_disabled = cubin_cache_env_is_disabled(
+        std::getenv("RTDL_OPTIX_DISABLE_CUBIN_CACHE"));
+    if (!cache_disabled) {
+        const std::filesystem::path cache_path =
+            cubin_cache_path(cuda_src, name, arch, nvcc_include_opts, extra_opts);
+        if (std::string cached = read_cached_cubin(cache_path); !cached.empty()) {
+            return cached;
+        }
+        std::string cubin = compile_to_cubin_with_nvcc(cuda_src, name, nvcc_include_opts, extra_opts);
+        write_cached_cubin(cache_path, cubin);
+        return cubin;
+    }
     return compile_to_cubin_with_nvcc(cuda_src, name, nvcc_include_opts, extra_opts);
 }
 

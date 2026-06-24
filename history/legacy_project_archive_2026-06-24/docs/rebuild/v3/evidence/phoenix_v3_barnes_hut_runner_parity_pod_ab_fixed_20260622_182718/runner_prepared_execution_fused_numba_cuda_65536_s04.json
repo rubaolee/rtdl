@@ -1,0 +1,543 @@
+{
+  "app": "barnes_hut_force_app",
+  "app_boundary": "Phoenix V3 prepared-execution runner route for the reusable no-C++ Numba CUDA aggregate-tree fused weighted-vector partner API. It avoids frontier and contribution-row materialization and keeps the native engine app-agnostic, but it is not an RT-core primitive, not automatic partner selection, not V4 external buffer interop, and not public speedup wording.",
+  "backend": "prepared_execution_runner_numba_cuda_fused_aggregate_tree_vector_sum",
+  "benchmark_metadata": {
+    "authors_code_comparison": false,
+    "benchmark": "barnes_hut_ppopp2025_style",
+    "benchmark_scope": "RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.",
+    "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+    "contract": "generic_bucketized_aggregate_tree_2d_v1+generic_aggregate_tree_fused_weighted_vector_sum_2d_numba_cuda_v1+prepared_execution_session_runner+explicit_numba_cuda_partner_force_interpretation",
+    "mode": "prepared_execution_fused_vector_sum_numba_cuda",
+    "native_engine_app_specific": false,
+    "paper_reference": {
+      "authors": [
+        "Vani Nagarajan",
+        "Rohan Gangaraju",
+        "Kirshanthan Sundararajah",
+        "Artem Pelenitsyn",
+        "Milind Kulkarni"
+      ],
+      "authors_code_comparison": false,
+      "doi": "10.1145/3710848.3710885",
+      "paper_reproduction": false,
+      "title": "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+      "venue": "PPoPP 2025"
+    },
+    "paper_reproduction": false,
+    "public_speedup_claim_authorized": false,
+    "reconstruction_instrument": true,
+    "research_benchmark": true,
+    "rt_core_accelerated": false
+  },
+  "body_count": 65536,
+  "boundary": "Phoenix V3 prepared-execution runner route for the reusable no-C++ Numba CUDA aggregate-tree fused weighted-vector partner API. It avoids frontier and contribution-row materialization and keeps the native engine app-agnostic, but it is not an RT-core primitive, not automatic partner selection, not V4 external buffer interop, and not public speedup wording.",
+  "bucket_size": 32,
+  "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+  "claim_flags": {
+    "automatic_partner_selection_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "contribution_rows_materialized_on_host": false,
+    "frontier_rows_materialized_on_host": false,
+    "full_all_app_rerun_authorized_by_this_packet": false,
+    "fused_aggregate_tree_contract": true,
+    "hot_path_host_materialization": false,
+    "native_engine_app_specific": false,
+    "numba_cuda_jit_used": true,
+    "numba_cuda_python_source_used": true,
+    "productized_execution_path": "prepared_execution_session_runner",
+    "public_speedup_claim_authorized": false,
+    "python_vector_sum_used": false,
+    "raw_c_or_cuda_kernel_required": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rt_cores_used": false,
+    "runtime_trunk_executes_end_to_end": true,
+    "same_device_resident_contract": true,
+    "same_logical_frontier_contract": true,
+    "true_zero_copy_claim_authorized": false,
+    "v4_embedding_or_external_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "max_depth": 32,
+  "medians": {
+    "fused_numba_cuda_call_wall_seconds": 0.01579412817955017,
+    "fused_numba_cuda_kernel_event_seconds": 0.015143808364868163,
+    "fused_numba_cuda_partner_wall_seconds": 0.01549222320318222,
+    "prepared_execution_runner_measured_seconds": 0.01579412817955017
+  },
+  "mode": "prepared_execution_fused_vector_sum_numba_cuda",
+  "prepared_execution_session_runner": {
+    "actual_output_contract": "generic_aggregate_tree_fused_weighted_vector_sum_2d_numba_cuda_v1",
+    "actual_output_partner": "numba_cuda",
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+    "continuation_contract": "generic_aggregate_tree_fused_weighted_vector_sum_2d_numba_cuda_v1",
+    "contribution_rows_materialized_on_host": false,
+    "explicit_backend": "partner",
+    "explicit_partner": "numba_cuda",
+    "explicit_partner_choice_required": true,
+    "external_device_buffer_interop_authorized": false,
+    "focused_material_gain_required_before_all_app": true,
+    "frontier_rows_materialized_on_host": false,
+    "full_all_app_rerun_authorized_by_this_packet": false,
+    "hot_path_host_materialization": false,
+    "internal_device_residency_between_rtdl_phases": true,
+    "measured_best_sec": 0.015761949121952057,
+    "measured_median_sec": 0.01579412817955017,
+    "measured_repeat_count": 11,
+    "measured_repeat_seconds": [
+      0.01578173041343689,
+      0.015841476619243622,
+      0.015840813517570496,
+      0.01579020917415619,
+      0.015787698328495026,
+      0.015772700309753418,
+      0.015861615538597107,
+      0.01579412817955017,
+      0.015761949121952057,
+      0.01579604297876358,
+      0.015827558934688568
+    ],
+    "measured_total_sec": 0.17385592311620712,
+    "output_contract": "generic_aggregate_tree_fused_weighted_vector_sum_2d_numba_cuda_v1",
+    "output_contract_matches_requested": true,
+    "output_counts_match_requested": true,
+    "output_partner_matches_requested": true,
+    "output_type": "tuple",
+    "per_iteration_fingerprint_recompute_avoided": true,
+    "per_iteration_task_reconstruction_avoided": true,
+    "phoenix_v3_redesign_step": "step1_replacement_runtime_trunk_probe",
+    "prepared_execution_report": {
+      "app_specific_engine_logic_allowed": false,
+      "automatic_partner_selection_allowed": false,
+      "claim_boundary": {},
+      "explicit_backend": "partner",
+      "explicit_partner": "numba_cuda",
+      "explicit_partner_choice_required": true,
+      "notes": [
+        "generic aggregate-tree fused weighted-vector sum routed through Phoenix V3 prepared execution/session runner"
+      ],
+      "phase_timings": [
+        {
+          "best_repeat_seconds": null,
+          "phase": "prepare",
+          "repeat_seconds": [],
+          "role": "prepare_explicit_session_on_cache_miss",
+          "seconds": 1.0052474662661552,
+          "setup_candidate": true,
+          "source_keys": [],
+          "steady_state_candidate": false,
+          "validation_candidate": false
+        },
+        {
+          "best_repeat_seconds": null,
+          "phase": "cache_load",
+          "repeat_seconds": [],
+          "role": "load_explicit_prepared_session_from_cache_on_hit",
+          "seconds": 0.0,
+          "setup_candidate": false,
+          "source_keys": [],
+          "steady_state_candidate": false,
+          "validation_candidate": false
+        },
+        {
+          "best_repeat_seconds": 0.015791937708854675,
+          "phase": "warmup",
+          "repeat_seconds": [
+            0.01641666889190674,
+            0.015839554369449615,
+            0.015791937708854675
+          ],
+          "role": "caller_requested_prepared_session_warmup",
+          "seconds": 0.04804816097021103,
+          "setup_candidate": false,
+          "source_keys": [],
+          "steady_state_candidate": false,
+          "validation_candidate": false
+        },
+        {
+          "best_repeat_seconds": null,
+          "phase": "steady_state_stream",
+          "repeat_seconds": [],
+          "role": "no_separate_stream_phase_recorded_by_minimal_runner",
+          "seconds": 0.0,
+          "setup_candidate": false,
+          "source_keys": [],
+          "steady_state_candidate": true,
+          "validation_candidate": false
+        },
+        {
+          "best_repeat_seconds": null,
+          "phase": "planner",
+          "repeat_seconds": [],
+          "role": "caller_preplanned_single_prepared_operation",
+          "seconds": 0.0,
+          "setup_candidate": false,
+          "source_keys": [],
+          "steady_state_candidate": true,
+          "validation_candidate": false
+        },
+        {
+          "best_repeat_seconds": 0.015761949121952057,
+          "phase": "executor",
+          "repeat_seconds": [
+            0.01578173041343689,
+            0.015841476619243622,
+            0.015840813517570496,
+            0.01579020917415619,
+            0.015787698328495026,
+            0.015772700309753418,
+            0.015861615538597107,
+            0.01579412817955017,
+            0.015761949121952057,
+            0.01579604297876358,
+            0.015827558934688568
+          ],
+          "role": "median_of_repeated_explicit_prepared_operations",
+          "seconds": 0.01579412817955017,
+          "setup_candidate": false,
+          "source_keys": [],
+          "steady_state_candidate": true,
+          "validation_candidate": false
+        },
+        {
+          "best_repeat_seconds": null,
+          "phase": "validation",
+          "repeat_seconds": [],
+          "role": "caller_supplied_validation_after_execution",
+          "seconds": 0.0,
+          "setup_candidate": false,
+          "source_keys": [],
+          "steady_state_candidate": false,
+          "validation_candidate": true
+        }
+      ],
+      "prepared_execution_claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_speedup_claim_authorized": false,
+      "schema": "rtdl.v2_8.prepared_execution_report.v1",
+      "source_commit": null,
+      "source_goal": null,
+      "source_schema": null,
+      "summary_sec": {
+        "setup": 1.0052474662661552,
+        "steady_state": 0.01579412817955017,
+        "validation": 0.0,
+        "warmup": 0.04804816097021103
+      },
+      "true_zero_copy_claim_authorized": false,
+      "warmup_count": 3,
+      "workflow": [
+        "prepare",
+        "pack_or_cache",
+        "warm",
+        "run_steady_state",
+        "explain_timings"
+      ],
+      "workflow_name": "aggregate_tree_fused_weighted_vector_sum_2d_prepared_session"
+    },
+    "prepared_execution_report_validation": {
+      "claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+      "errors": [],
+      "phase_count": 7,
+      "schema": "rtdl.v2_8.prepared_execution_report.v1",
+      "status": "accept",
+      "workflow": [
+        "prepare",
+        "pack_or_cache",
+        "warm",
+        "run_steady_state",
+        "explain_timings"
+      ]
+    },
+    "prepared_session": {
+      "automatic_partner_selection_authorized": false,
+      "cache_event_log": [
+        {
+          "event": "miss",
+          "stable_id": "25d576aede9f02d1762ec31a"
+        },
+        {
+          "event": "put",
+          "stable_id": "25d576aede9f02d1762ec31a"
+        }
+      ],
+      "cache_hit": false,
+      "cache_key": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "backend": "partner",
+        "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "device": "cuda",
+        "explicit_key_required": true,
+        "input_fingerprints": [
+          [
+            "aggregate_tree",
+            "e8a13834faaba3b01cd9002e"
+          ],
+          [
+            "source_points",
+            "6432a07dce80dc7564af7320"
+          ],
+          [
+            "target_points",
+            "6432a07dce80dc7564af7320"
+          ]
+        ],
+        "parameter_fingerprint": [
+          [
+            "output_contract",
+            "fe0aa6265625742a086231b7"
+          ],
+          [
+            "softening",
+            "0602d7c813c1f6e7351a5832"
+          ],
+          [
+            "source_count",
+            "0f255ec16482c343fd099ba9"
+          ],
+          [
+            "target_count",
+            "0f255ec16482c343fd099ba9"
+          ],
+          [
+            "theta",
+            "d2cbad71ff333de67d07ec67"
+          ],
+          [
+            "tree_node_count",
+            "604bdba4ae56af689c9c920d"
+          ]
+        ],
+        "partner": "numba_cuda",
+        "primitive": "aggregate_tree_fused_weighted_vector_sum_2d",
+        "stable_id": "25d576aede9f02d1762ec31a"
+      },
+      "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+      "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+      "explicit_cache_lookup": true,
+      "policy": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_claim_authorized": false,
+        "cache_enabled": true,
+        "cache_key": {
+          "app_specific_native_engine_logic_allowed": false,
+          "automatic_partner_selection_authorized": false,
+          "backend": "partner",
+          "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+          "device": "cuda",
+          "explicit_key_required": true,
+          "input_fingerprints": [
+            [
+              "aggregate_tree",
+              "e8a13834faaba3b01cd9002e"
+            ],
+            [
+              "source_points",
+              "6432a07dce80dc7564af7320"
+            ],
+            [
+              "target_points",
+              "6432a07dce80dc7564af7320"
+            ]
+          ],
+          "parameter_fingerprint": [
+            [
+              "output_contract",
+              "fe0aa6265625742a086231b7"
+            ],
+            [
+              "softening",
+              "0602d7c813c1f6e7351a5832"
+            ],
+            [
+              "source_count",
+              "0f255ec16482c343fd099ba9"
+            ],
+            [
+              "target_count",
+              "0f255ec16482c343fd099ba9"
+            ],
+            [
+              "theta",
+              "d2cbad71ff333de67d07ec67"
+            ],
+            [
+              "tree_node_count",
+              "604bdba4ae56af689c9c920d"
+            ]
+          ],
+          "partner": "numba_cuda",
+          "primitive": "aggregate_tree_fused_weighted_vector_sum_2d",
+          "stable_id": "25d576aede9f02d1762ec31a"
+        },
+        "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+        "cold_prepare_phase": "prepare_scene_or_payload",
+        "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "hot_query_phase": "prepared_query",
+        "invalidation_events": [
+          "explicit_invalidate",
+          "backend_context_reset",
+          "close"
+        ],
+        "lifetime_state": "session_retained",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "reuse_scope": "explicit_user_session",
+        "status": "internal_contract_not_release_authorization",
+        "true_zero_copy_claim_authorized": false
+      },
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "stable_id": "25d576aede9f02d1762ec31a",
+      "true_zero_copy_claim_authorized": false
+    },
+    "primitive": "aggregate_tree_fused_weighted_vector_sum_2d",
+    "primitive_family": "aggregate_tree_fused_weighted_vector_sum_2d",
+    "productized_execution_path": "prepared_execution_session_runner",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "repeat_outputs_retained": true,
+    "repeated_prepared_session_execution": true,
+    "row_contract": "generic_aggregate_tree_fused_weighted_vector_sum_2d_numba_cuda_v1",
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_executed": true,
+    "runtime_trunk_executes_end_to_end": true,
+    "runtime_trunk_family": "aggregate_tree_fused_weighted_vector_sum_2d_explicit_partner",
+    "runtime_trunk_phase_sequence": [
+      "prepare_weighted_source_target_columns",
+      "prepare_aggregate_tree_columns",
+      "partner_fused_tree_traversal_and_vector_accumulation",
+      "device_resident_vector_and_count_columns",
+      "summary_return"
+    ],
+    "runtime_trunk_probe_candidate": true,
+    "schema": "rtdl.v3.phoenix.prepared_execution_session_runner.m3_3",
+    "set_a_probe_candidate": true,
+    "single_cache_lookup_for_measured_repeats": true,
+    "single_report_after_measured_repeats": true,
+    "status": "executed_not_release_authorization",
+    "true_zero_copy_claim_authorized": false,
+    "v3_v4_residency_boundary": "RTDL-owned device-resident intermediates between RTDL phases are V3; exposing device buffers to an external host remains V4 and is not authorized here.",
+    "v4_embedding_or_external_zero_copy_authorized": false,
+    "validate_each_repeat": false,
+    "validation_output_type": "NoneType",
+    "validation_passed": null,
+    "whole_app_speedup_claim_authorized": false,
+    "workflow_name": "aggregate_tree_fused_weighted_vector_sum_2d_prepared_session"
+  },
+  "run_phases": {
+    "body_generation_sec": 0.20824822783470154,
+    "call_wall_median_sec": 0.01579412817955017,
+    "kernel_event_median_sec": 0.015143808364868163,
+    "partner_wall_median_sec": 0.01549222320318222,
+    "prepared_api_prepare_seconds": 0.066701240837574,
+    "runner_measured_median_sec": 0.01579412817955017,
+    "runner_prepare_or_cache_sec": 1.0052474662661552,
+    "total_sec": 2.8922117725014687,
+    "tree_build_sec": 0.9518189281225204,
+    "vector_copy_to_host_sec": 0.024336986243724823,
+    "vector_run_median_sec": 0.015143808364868163
+  },
+  "softening": 0.05,
+  "theta": 0.5,
+  "tree_summary": {
+    "bucket_size": 32,
+    "leaf_node_count": 4096,
+    "max_depth": 6,
+    "max_leaf_member_count": 16,
+    "morton_bits": 16,
+    "source_count": 65536,
+    "tree_node_count": 5461
+  },
+  "validation": {
+    "reason": "user_skip_validation",
+    "skipped": true
+  },
+  "vector_sum_summary": {
+    "aggregate_contribution_row_count": 8316197,
+    "aggregate_tree_columns_resident": true,
+    "call_wall_median_seconds": 0.01579412817955017,
+    "checksum_force_x": -1297.4488795657612,
+    "checksum_force_y": 579.165983783949,
+    "contract": "generic_aggregate_tree_fused_weighted_vector_sum_2d_numba_cuda_v1",
+    "contribution_row_count": 21121461,
+    "contribution_rows_materialized_on_host": false,
+    "exact_contribution_row_count": 12805264,
+    "force_output_mode": "force_summary",
+    "force_rows": [],
+    "force_rows_truncated": true,
+    "frontier_rows_emitted": false,
+    "frontier_rows_materialized_on_host": false,
+    "hot_path_host_materialization": false,
+    "internal_device_residency_between_rtdl_phases": true,
+    "kernel_event_median_seconds": 0.015143808364868163,
+    "kernel_event_seconds": [
+      0.015133119583129883,
+      0.01515395164489746,
+      0.015134143829345702,
+      0.015143808364868163,
+      0.015148351669311524,
+      0.015140288352966309,
+      0.015185888290405274,
+      0.015145055770874024,
+      0.015131999969482422,
+      0.015140928268432618,
+      0.015165023803710938
+    ],
+    "logical_reference_contract": "generic_aggregate_frontier_weighted_vector_sum_2d_v1",
+    "materialized_contribution_rows": false,
+    "materialized_frontier_rows": false,
+    "numba_cuda_jit_used": true,
+    "numba_cuda_python_source_used": true,
+    "output_columns_reused": true,
+    "parallel_by_source": true,
+    "partner_wall_median_seconds": 0.01549222320318222,
+    "partner_wall_seconds": [
+      0.01549222320318222,
+      0.015498295426368713,
+      0.015497103333473206,
+      0.015478052198886871,
+      0.015503451228141785,
+      0.015484251081943512,
+      0.015568830072879791,
+      0.01548735797405243,
+      0.015465803444385529,
+      0.015477828681468964,
+      0.015537813305854797
+    ],
+    "prepare_seconds": 0.066701240837574,
+    "prepared_lookup_columns_resident": true,
+    "raw_c_or_cuda_kernel_required": false,
+    "repeat": 11,
+    "repeat_seconds": [
+      0.01578173041343689,
+      0.015841476619243622,
+      0.015840813517570496,
+      0.01579020917415619,
+      0.015787698328495026,
+      0.015772700309753418,
+      0.015861615538597107,
+      0.01579412817955017,
+      0.015761949121952057,
+      0.01579604297876358,
+      0.015827558934688568
+    ],
+    "run_median_seconds": 0.015143808364868163,
+    "runtime_trunk_executes_end_to_end": true,
+    "source_columns_reused": true,
+    "source_count": 65536,
+    "target_columns_reused": true,
+    "target_count": 65536,
+    "tree_node_count": 5461,
+    "visited_node_total": 12138984,
+    "warmup": 3
+  }
+}

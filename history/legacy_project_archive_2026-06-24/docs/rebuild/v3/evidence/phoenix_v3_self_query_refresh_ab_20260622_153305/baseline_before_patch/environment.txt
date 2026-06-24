@@ -1,0 +1,5 @@
+2026-06-22T15:33:05Z
+NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB
+58d657e62b1412af84104e2b5ada9deaa10250b9e32f597d50ce7d181f8a55bb  src/rtdsl/partner_adapters.py
+31f4fbf1ccaa9dae30bc0bbfac9d1087437db010eda0a31dccebaab24c5323df  src/rtdsl/optix_runtime.py
+7b166ca9494f3a2f85803c8dc367eefcec5a04a595b90c8d786deb8007fb8b09  src/rtdsl/embree_runtime.py

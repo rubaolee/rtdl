@@ -1,0 +1,59 @@
+{
+  "all_app_authorized": false,
+  "antigravity_ready": true,
+  "antigravity_reviews": [
+    {
+      "exists": true,
+      "path": "docs\\reviews\\antigravity_phoenix_v3_m70_rtnn_focused_protocol_review_2026-06-23.md"
+    },
+    {
+      "exists": true,
+      "path": "docs\\reviews\\antigravity_phoenix_v3_m71_rtnn_local_harness_dry_run_gate_review_2026-06-23.md"
+    },
+    {
+      "exists": true,
+      "path": "docs\\reviews\\antigravity_phoenix_v3_m70_m71_backfill_packet_intake_review_2026-06-24.md"
+    }
+  ],
+  "audit_ready": false,
+  "audit_status": "m70_m71_goal_completion_pending_claude_backfill",
+  "automatic_partner_selection_authorized": false,
+  "benchmark_execution_authorized": false,
+  "broad_v3_over_v2_wording_authorized": false,
+  "c_abi_authorized": false,
+  "claude_ready": false,
+  "decision_audit": {
+    "different_path": "Use this builder after Claude accepts, then write the final consensus record.",
+    "if_yes_actions": "Not applicable.",
+    "other_path": "Manually write the final consensus, but that is easier to overclaim.",
+    "was_i_foolish": "No. This builder records readiness only after the three review seats exist."
+  },
+  "embedding_authorized": false,
+  "focused_pod_spend_authorized": false,
+  "goal_completion_authorized_by_builder": false,
+  "goal_completion_ready_for_human_record": false,
+  "intake_status": "pending_claude_backfill",
+  "paid_pod_spend_authorized": false,
+  "paper_reproduction_wording_authorized": false,
+  "pod_spend_authorized": false,
+  "public_speedup_wording_authorized": false,
+  "release_authorized": false,
+  "required_claude_reviews": [
+    "docs\\reviews\\claude_phoenix_v3_m70_rtnn_focused_protocol_recorded_review_2026-06-23.md",
+    "docs\\reviews\\claude_phoenix_v3_m71_rtnn_local_harness_dry_run_gate_recorded_review_2026-06-23.md"
+  ],
+  "reviewers": [
+    "codex",
+    "claude",
+    "antigravity"
+  ],
+  "route_specific_rtnn_app_tuning_authorized": false,
+  "rt_core_speedup_wording_authorized": false,
+  "runbook_execution_authorized": false,
+  "status": "m70_m71_final_3ai_consensus_pending",
+  "tool": "v3_phoenix_m70_m71_final_3ai_consensus",
+  "true_zero_copy_claim_authorized": false,
+  "v4_work_authorized": false,
+  "watch_row_closure_authorized": false,
+  "whole_app_speedup_wording_authorized": false
+}

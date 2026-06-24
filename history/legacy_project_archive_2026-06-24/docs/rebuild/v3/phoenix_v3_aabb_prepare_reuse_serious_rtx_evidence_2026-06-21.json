@@ -1,0 +1,109 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "checks": {
+    "all_payloads_complete_candidate_coverage": true,
+    "all_payloads_match_cpu_reference": true,
+    "all_payloads_observed_reuse": true,
+    "embree_and_optix_present": true,
+    "has_32768_indexed_aabbs": true,
+    "has_32768_query_aabbs": true,
+    "material_wall_speedup_below_floor": true,
+    "material_wall_speedup_positive_but_low_margin": true,
+    "no_backend_errors": true,
+    "phase_table_has_prepare_query_collect_wall": true,
+    "release_flags_false": true,
+    "rt_hardware_gate_passed": true,
+    "runner_blocks_m7": true,
+    "runner_completed": true,
+    "runner_status_not_m7": true,
+    "serious_fixture_scale": true,
+    "summary_exists": true
+  },
+  "comparisons": {
+    "material_wall_speedup_floor": 1.2,
+    "optix_over_embree_broadphase_wall_speedup": 1.1406836106866993,
+    "optix_over_embree_cold_plus_collect_wall_speedup": 1.1400086912394385,
+    "optix_over_embree_collect_speedup": 1.0052018880223554,
+    "optix_over_embree_prepare_speedup": 0.6235016572276956,
+    "optix_over_embree_query_median_speedup": 1.1111257348931924,
+    "optix_over_embree_query_total_speedup": 1.1778290019129094,
+    "optix_over_embree_runner_wall_speedup": 1.1365948503003616
+  },
+  "evidence_dir": "docs/rebuild/v3/evidence/phoenix_v3_aabb_prepare_reuse_serious_20260621",
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not promote this row to M7.",
+    "Do not claim V3 AABB is faster from a 1.140x low-margin wall result.",
+    "Do not quote the 1.178x query-total speedup as a release claim.",
+    "Do not claim full contact solver speedup or broad V3-over-V2 speedup.",
+    "Do not treat this as 2-AI reviewed evidence."
+  ],
+  "generic_capability": "aabb_candidate_stream",
+  "goal_level_decision_audit": {
+    "decision": "Record the serious AABB prepare-reuse RTX run as useful not-M7 evidence.",
+    "different_path_now": "Use this low-margin evidence to drive engine-level overhead work or another reviewer-approved prepared-reuse shape before any M7 review.",
+    "foolish_actions": "The foolish action would be to round 1.140x up into a V3 win, quote query-only numbers, or ignore that OptiX prepare remains slower.",
+    "other_path": "Skip the run and keep the runner as a plan. That would preserve a clean story but would not answer whether prepare reuse materially fixes AABB.",
+    "was_i_foolish": "No. The run used serious scale, RTX hardware, both backends, parity, phase accounting, and the predeclared material-speedup floor."
+  },
+  "hardware": {
+    "compute_cap": "8.9",
+    "driver_version": "550.127.05",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "host": "root@213.173.108.14 -p 11592",
+    "rt_hardware_gate": "pass"
+  },
+  "interpretation": "This serious RTX run is useful V3 engine evidence but not an M7 reopen candidate. Reusing the prepared AABB path moves the wall comparison from the earlier contact regression into a positive 1.140x cold-plus-collect wall result, but it is below the runner's 1.20 material-speedup floor. OptiX query work improves, while OptiX prepare is still slower than Embree.",
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "m7_reopen_candidate_pending_2ai_review": false,
+  "next_engine_action": "Keep AABB prepare-reuse in the Phoenix queue. The next valid work is generic engine tuning that either reduces OptiX prepare/query overhead or finds a reviewer-approved workload shape where repeated prepared reuse clears the material wall-speedup floor without app-specific native logic.",
+  "parameters": {
+    "backends": [
+      "embree",
+      "optix"
+    ],
+    "dataset": "jittered_grid",
+    "discovery_row_capacity": 65536,
+    "grid_count": 32768,
+    "indexed_aabb_count": 32768,
+    "query_aabb_count": 32768,
+    "repeat": 50,
+    "resolution": null,
+    "warmup": 3,
+    "witness_capacity": 32768
+  },
+  "phase_rows": {
+    "embree": {
+      "cold_plus_collect_wall_sec": 19.03412125259638,
+      "collect_k_bounded_rows_sec": 0.08360826224088669,
+      "complete_candidate_coverage": true,
+      "emit_aabb_intersection_pair_rows_2d_median_sec": 0.3546620272099972,
+      "emit_aabb_intersection_pair_rows_2d_total_sec": 17.48808915168047,
+      "generic_aabb_broadphase_wall_sec": 18.95051299035549,
+      "matches_cpu_reference": true,
+      "prepare_aabb_index_2d_sec": 0.3321964964270592,
+      "runner_wall_sec": 19.517995707690716,
+      "valid_rows": 32768
+    },
+    "optix": {
+      "cold_plus_collect_wall_sec": 16.69647029787302,
+      "collect_k_bounded_rows_sec": 0.08317559212446213,
+      "complete_candidate_coverage": true,
+      "emit_aabb_intersection_pair_rows_2d_median_sec": 0.3191916234791279,
+      "emit_aabb_intersection_pair_rows_2d_total_sec": 14.847731821238995,
+      "generic_aabb_broadphase_wall_sec": 16.613294705748558,
+      "matches_cpu_reference": true,
+      "prepare_aabb_index_2d_sec": 0.5327916815876961,
+      "runner_wall_sec": 17.17234219610691,
+      "valid_rows": 32768
+    }
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "source_summary": "docs/rebuild/v3/evidence/phoenix_v3_aabb_prepare_reuse_serious_20260621/summary.json",
+  "status": "aabb_prepare_reuse_serious_rtx_evidence_not_m7_low_margin",
+  "tool": "v3_phoenix_aabb_prepare_reuse_serious_pod_evidence",
+  "version": "phoenix_v3_aabb_prepare_reuse_serious_rtx_evidence_2026_06_21",
+  "whole_app_speedup_claim_authorized": false
+}

@@ -8,7 +8,7 @@ import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable
 
 ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
 sys.path.insert(0, str(ROOT / "src"))
@@ -31,6 +31,14 @@ CLAIM_BOUNDARY = (
     "evidence, does not add native RTDL engine ABI, and does not authorize "
     "public speedup wording."
 )
+
+
+def _prepared_runner_phase_seconds(metadata: dict[str, Any], phase: str) -> float:
+    report = metadata.get("prepared_execution_report", {})
+    for row in report.get("phase_timings", []):
+        if row.get("phase") == phase:
+            return float(row.get("seconds", 0.0))
+    return 0.0
 
 
 @dataclass(frozen=True)
@@ -336,41 +344,35 @@ def run_embree_aabb_counts(
         raise ValueError("query_repeat must be positive")
     if warmup < 0:
         raise ValueError("warmup must be non-negative")
-    prepared_start = time.perf_counter()
-    prepared = rt.prepare_aabb_index_2d(
-        fixture.boxes,
-        point_queries=fixture.point_queries,
-        box_queries=fixture.box_queries,
-        backend="embree",
-    )
-    prepare_sec = time.perf_counter() - prepared_start
-    query_runs: list[dict[str, object]] = []
+    cache = rt.ExplicitPreparedSessionCache(max_entries=1)
     try:
-        for iteration in range(warmup + query_repeat):
-            primitive_result = prepared.count(
-                point_queries=fixture.point_queries,
-                box_queries=fixture.box_queries,
-                operation=operation,
-            )
-            query_runs.append(
-                {
-                    "iteration": iteration,
-                    "is_warmup": iteration < warmup,
-                    "counts": dict(primitive_result["counts"]),
-                    "query_sec": float(primitive_result["run_phases"]["query_aabb_index_2d_sec"]),
-                }
-            )
+        result = rt.run_aabb_index_query_2d_count_prepared_session(
+            indexed_boxes=fixture.boxes,
+            point_queries=fixture.point_queries,
+            box_queries=fixture.box_queries,
+            operation=operation,
+            backend="embree",
+            partner="none",
+            cache=cache,
+            device="cpu:0",
+            warmup_count=warmup,
+            measured_repeat_count=query_repeat,
+            retain_repeat_outputs=True,
+        )
     finally:
-        prepared.close()
-    measured = [row for row in query_runs if not bool(row["is_warmup"])]
-    if not measured:
+        cache.clear()
+    runner_metadata = result.to_metadata()
+    measured_outputs = tuple(result.output)
+    if not measured_outputs:
         raise RuntimeError("prepared Embree AABB repeat produced no measured rows")
-    count_signatures = {json.dumps(row["counts"], sort_keys=True) for row in measured}
+    count_signatures = {json.dumps(row["counts"], sort_keys=True) for row in measured_outputs}
     if len(count_signatures) != 1:
         raise RuntimeError("prepared Embree AABB repeat changed counts")
-    query_secs = [float(row["query_sec"]) for row in measured]
+    query_secs = [float(value) for value in runner_metadata.get("measured_repeat_seconds", ())]
     query_median_sec = float(statistics.median(query_secs))
     query_total_sec = float(sum(query_secs))
+    prepare_sec = _prepared_runner_phase_seconds(runner_metadata, "prepare")
+    primitive_result = dict(measured_outputs[-1])
     cpu_counts = run_counts(fixture, operation)["counts"] if validate_reference else None
     matches_cpu_reference = primitive_result["counts"] == cpu_counts if cpu_counts is not None else None
     return {
@@ -397,9 +399,34 @@ def run_embree_aabb_counts(
         "repeat_protocol": {
             "repeat": int(query_repeat),
             "warmup": int(warmup),
-            "measured_run_count": len(measured),
+            "measured_run_count": len(measured_outputs),
             "query_sec_median": query_median_sec,
             "query_sec_total": query_total_sec,
+        },
+        "prepared_execution_session_runner_used": True,
+        "productized_execution_path": "prepared_execution_session_runner",
+        "set_a_probe_candidate": bool(runner_metadata.get("set_a_probe_candidate")),
+        "set_b_control_candidate": bool(runner_metadata.get("set_b_control_candidate")),
+        "prepared_execution_session_runner_metadata": {
+            "last_run": runner_metadata,
+            "runtime_executed_count": 1 if runner_metadata.get("runtime_executed") is True else 0,
+            "cache_hit_count": 1 if runner_metadata.get("prepared_session", {}).get("cache_hit") is True else 0,
+            "measured_repeat_count": int(runner_metadata.get("measured_repeat_count", query_repeat)),
+            "repeated_execution": bool(runner_metadata.get("repeated_prepared_session_execution")),
+            "single_cache_lookup_for_measured_repeats": bool(
+                runner_metadata.get("single_cache_lookup_for_measured_repeats")
+            ),
+            "single_report_after_measured_repeats": bool(
+                runner_metadata.get("single_report_after_measured_repeats")
+            ),
+            "row_contract": runner_metadata.get("row_contract"),
+            "count_contract": runner_metadata.get("count_contract"),
+            "primitive_family": runner_metadata.get("primitive_family"),
+            "set_a_probe_candidate": bool(runner_metadata.get("set_a_probe_candidate")),
+            "set_b_control_candidate": bool(runner_metadata.get("set_b_control_candidate")),
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "broad_v3_faster_than_v2_claim_authorized": False,
         },
         "index": primitive_result["index"],
         "paper": PAPER,
@@ -431,6 +458,128 @@ def run_optix_aabb_counts(
     if warmup < 0:
         raise ValueError("warmup must be non-negative")
     operations = OPERATIONS if operation == "all" else (operation,)
+
+    if prepared_queries:
+        cache = rt.ExplicitPreparedSessionCache(max_entries=1)
+        retain_repeat_outputs = query_repeat != 1
+        try:
+            result = rt.run_aabb_index_query_2d_optix_prepared_query_set_count_prepared_session(
+                indexed_boxes=fixture.boxes,
+                point_queries=fixture.point_queries,
+                box_queries=fixture.box_queries,
+                operation=operation,
+                partner="none",
+                cache=cache,
+                device="cuda:0",
+                warmup_count=warmup,
+                measured_repeat_count=query_repeat,
+                retain_repeat_outputs=retain_repeat_outputs,
+            )
+        finally:
+            cache.clear()
+        runner_metadata = result.to_metadata()
+        measured_outputs = result.output if isinstance(result.output, tuple) else (result.output,)
+        if not measured_outputs:
+            raise RuntimeError("prepared OptiX AABB runner produced no measured rows")
+        count_signatures = {json.dumps(row["counts"], sort_keys=True) for row in measured_outputs}
+        if len(count_signatures) != 1:
+            raise RuntimeError("prepared OptiX AABB runner changed counts")
+        counts = dict(measured_outputs[-1]["counts"])
+        query_values = [float(value) for value in runner_metadata.get("measured_repeat_seconds", ())]
+        query_median_sec = float(statistics.median(query_values))
+        query_total_sec_value = float(sum(query_values))
+        scene_prepare_sec = _prepared_runner_phase_seconds(runner_metadata, "prepare")
+        query_key = "multi_operation_packed_queries" if operation == "all" else operation
+        query_sec = {query_key: query_median_sec}
+        query_total_sec = {query_key: query_total_sec_value}
+        query_prepare_sec = {"prepared_query_handles_in_runner_prepare_phase": 0.0}
+        multi_operation_native_used = operation == "all"
+
+        cpu_counts = run_counts(fixture, operation)["counts"] if validate_reference else None
+        matches_cpu_reference = counts == cpu_counts if cpu_counts is not None else None
+
+        return {
+            "app": "librts_spatial_index",
+            "mode": "optix_aabb_index",
+            "operation": operation,
+            "generic_primitive": "AABB_INDEX_QUERY_2D",
+            "primitive_contract": "generic_prepared_aabb_index_query_2d_optix_prepared_query_set_count",
+            "counts": counts,
+            "matches_cpu_reference": matches_cpu_reference,
+            "cpu_reference_skipped": not validate_reference,
+            "elapsed_sec": scene_prepare_sec + sum(query_sec.values()),
+            "fixture": fixture.metadata(),
+            "run_phases": {
+                "scene_prepare_sec": scene_prepare_sec,
+                "query_prepare_sec": query_prepare_sec,
+                "query_sec": query_sec,
+                "query_median_sec": float(sum(query_sec.values())),
+                "query_summed_median_sec": float(sum(query_sec.values())),
+                "query_total_sec": float(sum(query_total_sec.values())),
+                "query_repeat": int(query_repeat),
+                "query_warmup": int(warmup),
+                "prepared_execution_session_runner_prepare_sec": scene_prepare_sec,
+                "prepared_execution_session_runner_measured_median_sec": query_median_sec,
+            },
+            "repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "measured_run_count": len(measured_outputs),
+                "query_sec_median": float(sum(query_sec.values())),
+                "query_sec_total": float(sum(query_total_sec.values())),
+            },
+            "prepared_session_residency": {
+                "runner_prepared_session": runner_metadata.get("prepared_session"),
+                "explicit_reuse_helper": "prepared_execution_session_runner",
+                "cache_enabled_by_default": False,
+                "cold_hot_phase_split_required": True,
+                "prepare_once_query_many_pattern": True,
+                "automatic_partner_selection_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+            },
+            "prepared_execution_session_runner_used": True,
+            "productized_execution_path": "prepared_execution_session_runner",
+            "set_a_probe_candidate": bool(runner_metadata.get("set_a_probe_candidate")),
+            "set_b_control_candidate": bool(runner_metadata.get("set_b_control_candidate")),
+            "prepared_execution_session_runner_metadata": {
+                "last_run": runner_metadata,
+                "runtime_executed_count": 1 if runner_metadata.get("runtime_executed") is True else 0,
+                "cache_hit_count": 1 if runner_metadata.get("prepared_session", {}).get("cache_hit") is True else 0,
+                "measured_repeat_count": int(runner_metadata.get("measured_repeat_count", query_repeat)),
+                "repeated_execution": bool(runner_metadata.get("repeated_prepared_session_execution")),
+                "single_cache_lookup_for_measured_repeats": bool(
+                    runner_metadata.get("single_cache_lookup_for_measured_repeats")
+                ),
+                "single_report_after_measured_repeats": bool(
+                    runner_metadata.get("single_report_after_measured_repeats")
+                ),
+                "row_contract": runner_metadata.get("row_contract"),
+                "count_contract": runner_metadata.get("count_contract"),
+                "primitive_family": runner_metadata.get("primitive_family"),
+                "prepared_query_mode": runner_metadata.get("prepared_query_mode"),
+                "set_a_probe_candidate": bool(runner_metadata.get("set_a_probe_candidate")),
+                "set_b_control_candidate": bool(runner_metadata.get("set_b_control_candidate")),
+                "release_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "broad_v3_faster_than_v2_claim_authorized": False,
+            },
+            "prepared_queries": True,
+            "multi_operation_native_used": multi_operation_native_used,
+            "paper": PAPER,
+            "claim_boundary": (
+                "Generic RTDL OptiX AABB_INDEX_QUERY_2D prepared-query-set "
+                "count path for point_contains, range_contains, and range_intersects. "
+                "This is not a LibRTS-specific native symbol."
+            ),
+            "native_engine_customization": False,
+            "rt_core_accelerated": True,
+            "automatic_partner_selection_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "authors_code_comparison": False,
+            "paper_reproduction": False,
+        }
 
     started = time.perf_counter()
     prepared = rt.prepare_optix_aabb_index_2d(fixture.boxes)

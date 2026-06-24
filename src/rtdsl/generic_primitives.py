@@ -1782,6 +1782,19 @@ class GenericPreparedFixedRadiusCountThreshold2D:
         self._prepared_scene = self._scene_cm.__enter__()
         self.scene_prepare_sec = time.perf_counter() - scene_prepare_start
 
+    def prepare_query_points(self, query_points: Any):
+        """Pack reusable 2-D query points for repeated prepared-session runs."""
+        from .embree_runtime import PackedPoints, pack_points
+
+        packed = (
+            query_points
+            if isinstance(query_points, PackedPoints)
+            else pack_points(records=query_points, dimension=2)
+        )
+        if int(packed.dimension) != 2:
+            raise ValueError("prepared fixed-radius count-threshold query points must be 2-D")
+        return packed
+
     def run(
         self,
         query_points: Any,
@@ -1839,8 +1852,12 @@ class GenericPreparedFixedRadiusCountThreshold2D:
         if threshold < 0:
             raise ValueError("threshold must be non-negative")
 
+        from .embree_runtime import PackedPoints
+
+        query_points_were_prepacked = isinstance(query_points, PackedPoints)
         query_start = time.perf_counter()
-        if hasattr(self._prepared_scene, "count_threshold_reached"):
+        native_scalar_count_used = hasattr(self._prepared_scene, "count_threshold_reached")
+        if native_scalar_count_used:
             threshold_reached_count = int(
                 self._prepared_scene.count_threshold_reached(query_points, radius=radius, threshold=threshold)
             )
@@ -1851,6 +1868,10 @@ class GenericPreparedFixedRadiusCountThreshold2D:
             threshold_reached_count = scalar_summary["result"]
         query_sec = time.perf_counter() - query_start
         self.query_batch_count += 1
+        handle = getattr(self._prepared_scene, "_handle", None)
+        handle_value = getattr(handle, "value", None)
+        prepared_search_structure_resident = bool(handle_value) and self.backend == "optix"
+        threshold_summary_rows_materialized_on_host = not native_scalar_count_used
         result = {
             "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
             "summary_primitive": "REDUCE_INT(COUNT)",
@@ -1862,6 +1883,19 @@ class GenericPreparedFixedRadiusCountThreshold2D:
             "threshold": int(threshold),
             "threshold_reached_count": threshold_reached_count,
             "result_layout": "aggregate_threshold_reached_count",
+            "native_scalar_count_used": native_scalar_count_used,
+            "threshold_summary_rows_materialized_on_host": threshold_summary_rows_materialized_on_host,
+            "hot_path_host_materialization": threshold_summary_rows_materialized_on_host,
+            "prepared_search_structure_resident_between_rtdl_phases": prepared_search_structure_resident,
+            "query_points_prepacked_by_caller": query_points_were_prepacked,
+            "query_points_device_resident_between_rtdl_phases": False,
+            "internal_device_residency_between_rtdl_phases": prepared_search_structure_resident,
+            "internal_residency_scope": (
+                "prepared_search_structure_only_query_points_not_device_resident"
+                if prepared_search_structure_resident
+                else "not_reported_by_backend"
+            ),
+            "true_zero_copy_claim_authorized": False,
             "run_phases": {
                 "scene_prepare_sec": self.scene_prepare_sec,
                 "scene_prepare_sec_this_batch": 0.0,

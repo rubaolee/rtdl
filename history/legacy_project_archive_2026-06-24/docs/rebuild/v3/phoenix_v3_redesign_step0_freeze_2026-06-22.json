@@ -1,0 +1,46 @@
+{
+  "artifact": "phoenix_v3_redesign_step0_freeze_2026-06-22",
+  "status": "step0_frozen_not_release",
+  "date": "2026-06-22",
+  "scope": "Phoenix V3 redesign Step 0",
+  "controlling_redesign": "docs/rebuild/v3/proposed_v3_redesign_build_the_runtime_trunk_first_2026-06-22.md",
+  "external_review": "docs/reviews/claude_phoenix_v3_external_review_2026-06-22.md",
+  "handoff": "docs/handoff/HANDOFF_PHOENIX_V3_REDESIGN_START_AT_STEP_0_2026-06-22.md",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "cache_thread_status": "closed_as_hygiene_only",
+  "cache_thread_rule": "Keep landed parity fixes, but do not chase symbol/query/prepared-query cache work as Phoenix V3 core progress.",
+  "set_a_set_b_status": "frozen_before_next_full_paired_run",
+  "set_a_set_b_classification": "docs/rebuild/v3/phoenix_v3_set_a_set_b_classification_2026-06-22.json",
+  "set_a_set_b_scorecard": "docs/rebuild/v3/phoenix_v3_set_a_set_b_scorecard_gate_2026-06-22.json",
+  "all_app_paired_runs_status": "paused_until_runtime_trunk_executes",
+  "all_app_runner_guard": "scripts/phoenix_v3_serious_paired_v2x_runner.sh",
+  "all_app_runner_guard_env": {
+    "PHOENIX_V3_ALLOW_ALL_APP_RUN": "must be 1",
+    "PHOENIX_V3_RUNTIME_TRUNK_EXECUTED": "must be 1"
+  },
+  "runtime_trunk_status": "not_yet_executing",
+  "runtime_trunk_next_step": "Step 1: make fixed-radius self-query to grouped-stream continuation execute through one productized runner path with internal device residency evidence.",
+  "paused_partial_work": [
+    {
+      "id": "m4_1_librts_optix_prepared_query_set_route",
+      "status": "paused_not_step1_progress",
+      "reason": "It extends the cache/prepared-query thread and does not prove execution-runtime trunk execution on a residency-rich Set-A family."
+    }
+  ],
+  "step0_exit_criteria": {
+    "cache_thread_closed": true,
+    "set_a_set_b_classification_frozen": true,
+    "two_number_scorecard_adopted": true,
+    "all_app_runs_paused": true,
+    "release_gate_stays_redo_required": true
+  },
+  "goal_level_decision_audit": {
+    "decision": "Accept the redesign Step 0 freeze and block all-app paired runs until the runtime trunk executes.",
+    "was_i_foolish": "No for this decision.",
+    "foolish_actions": "It would be foolish to keep tuning per-route caches, complete the paused M4.1 prepared-query route as if it were V3 core progress, or run the all-app suite before runtime_executed is true on Step-1 probes.",
+    "other_path": "The old path was to chase parity/regression repairs and then average them into a blended geomean. That already produced 1.012x and does not solve V3.",
+    "different_path_now": "Build one runtime trunk probe first, measure its own material gain and residency, then generalize before spending all-app pod time."
+  }
+}

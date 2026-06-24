@@ -1,0 +1,8 @@
+{
+  "response": {
+    "sendMessage": {
+      "recipientId": "6e83f583-5dd9-468e-89b4-e380866f7389",
+      "content": "Read docs/reviews/antigravity_prompt_phoenix_v3_m55_goal_completion_audit_2026-06-23.txt and follow it exactly. Write the requested recorded review file."
+    }
+  }
+}

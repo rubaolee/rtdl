@@ -1,0 +1,115 @@
+{
+  "tool": "phoenix_v3_rtdbscan_component_union_redo_alignment",
+  "date": "2026-06-22",
+  "status": "rtdbscan_component_union_redo_aligned_reusable_capability_not_release",
+  "scope": "Phoenix V3 only. V4, C ABI, embedding, SDK, multi-language host work, app-specific native DBSCAN engines, paper reproduction, and broad V2.x speedup claims are out of scope.",
+  "generic_capability": "component_union",
+  "app_probe": "rt_dbscan",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "row_scoped_public_speedup_claim_authorized_for_exact_rows_only": true,
+  "whole_app_speedup_claim_authorized": false,
+  "paper_reproduction_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "true_zero_copy_authorized": false,
+  "automatic_backend_or_partner_selection_authorized": false,
+  "app_specific_native_engine_logic_allowed": false,
+  "m7_rows_retained_as_internal_release_surface_evidence": [
+    {
+      "row_id": "component_union_clustered3d_65536_524288_repeat5_row_scoped",
+      "packet": "docs/rebuild/v3/phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_2026-06-21.json",
+      "operation": "prepared_fixed_radius_threshold_columns_plus_numba_component_signature",
+      "row_scope": "zero-noise four-cluster synthetic clustered3d rows from 65536 to 524288 points, repeat=5",
+      "m7_status": "m7_approved_row_scoped_after_claude_repeat5_option_b_and_codex_consensus",
+      "same_contract": true,
+      "validation_basis": "4096-point CPU reference control plus large-row OptiX/Embree intra-run canonical component-signature agreement",
+      "app_specific_native_engine_logic_allowed": false,
+      "native_dbscan_abi_added": false,
+      "allowed_wording_scope": "exact row-scoped component_union/component-signature route only",
+      "release_authorized": false,
+      "whole_app_speedup_claim_authorized": false,
+      "paper_reproduction_claim_authorized": false,
+      "broad_v3_faster_than_v2_claim_authorized": false
+    }
+  ],
+  "current_surface_crosscheck": {
+    "release_surface_gate": "docs/rebuild/v3/phoenix_v3_release_surface_breadth_gate_2026-06-21.json",
+    "component_union_row_count_expected": 1,
+    "component_union_rows_are_in_current_surface": true,
+    "current_surface_release_authorized": false,
+    "current_surface_public_speedup_claim_authorized": false,
+    "current_surface_broad_v3_faster_than_v2_claim_authorized": false
+  },
+  "route_contract": {
+    "embree_mode": "embree_core_flags_numba_prepared_grid_column_signature_3d",
+    "optix_mode": "optix_rt_core_flags_numba_prepared_grid_column_signature_3d",
+    "column_signature_strategy": "numba_label_count_and_flag_count_label_columns",
+    "column_signature_materializes_point_ids": false,
+    "column_signature_materializes_core_flags": false,
+    "native_dbscan_abi_added": false,
+    "full_dbscan_labels_claim_authorized": false
+  },
+  "retained_evidence_summary": {
+    "external_reviews": [
+      "docs/reviews/claude_phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_review_2026-06-21.md",
+      "docs/reviews/claude_phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_repeat5_final_review_2026-06-21.md"
+    ],
+    "codex_consensus": "docs/reviews/codex_phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_2ai_consensus_2026-06-21.md",
+    "optimized_packet": "docs/rebuild/v3/phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_2026-06-21.json",
+    "previous_no_go_packet": "docs/rebuild/v3/phoenix_v3_rtdbscan_continuation_bottleneck_no_go_2026-06-21.json",
+    "speedup_range_for_approved_large_rows": "1.102x to 1.236x OptiX over same-contract Embree end-to-end",
+    "strongest_approved_large_row_speedup": 1.2356860771339773,
+    "weakest_approved_large_row_speedup": 1.1019949345652873,
+    "large_rows_repeat5": true,
+    "large_rows_component_signature_match": true,
+    "large_rows_independent_cpu_reference": false,
+    "large_rows_continuation_still_dominates_at_262144_and_524288": true
+  },
+  "redo_interpretation": {
+    "closed_as_reusable_engine_capability": true,
+    "counts_as_benchmark_app_development": false,
+    "counts_as_full_rtdbscan_or_dbscan_product_claim": false,
+    "counts_as_paper_reproduction": false,
+    "counts_as_broad_v3_over_v2_speedup": false,
+    "counts_as_productized_execution_path_gap1_completion": false,
+    "why_not_gap1_completion": "The row proves a useful component_union/component-signature route, but it is not yet a productized prepared execution/session runner path shared across multiple Set-A probes.",
+    "why_keep_in_v3": "The row captures a reusable component_union continuation capability, removes point-id/core-flag materialization from the component signature, and has Claude/Codex review closure under strict wording."
+  },
+  "serious_v2x_context": {
+    "evidence": "docs/rebuild/v3/evidence/phoenix_v3_serious_v2x_paired_20260622_074100/summary.json",
+    "same_metric_comparison_count": 52,
+    "overall_geomean_v3_speedup_vs_v2_14": 1.0117790403434224,
+    "apps_with_geomean_gt_1_05": 1,
+    "apps_with_geomean_lt_0_95": 2,
+    "release_consideration_eligible": false,
+    "interpretation": "The RTDBSCAN component_union row does not override the failed broad V2.14 vs Phoenix V3 performance gate."
+  },
+  "set_a_set_b_measurement_note": {
+    "proposal": "docs/reviews/phoenix_v3_set_a_set_b_release_bar_proposal_2026-06-22.md",
+    "classification_for_future_all_app_scorecard": "RTDBSCAN is a Set-A candidate only when the shared component_union/productized execution path is the measured source of the win; materializing Embree neighbor rows remain Set-B controls.",
+    "freeze_before_run_required": true
+  },
+  "forbidden_readings": [
+    "RTDBSCAN is faster.",
+    "Full DBSCAN is accelerated end to end.",
+    "RTDL reproduces the RTDBSCAN paper.",
+    "RT cores accelerate full DBSCAN labels.",
+    "The old 1483.603x route-mixed all-app row is public evidence.",
+    "The RT threshold phase alone is the RTDBSCAN app speedup.",
+    "The component_union row proves broad V3-over-V2.x speedup.",
+    "The component_union row completes Gap 1 productized execution path."
+  ],
+  "next_after_closure": [
+    "Keep the component_union row in the current 13-row / 9-capability internal surface.",
+    "Do not spend Phoenix time on RTDBSCAN app-specific shortcuts or native DBSCAN ABI.",
+    "If RTDBSCAN is used next, productize the shared component_union/typed-stream continuation through the prepared execution/session runner and measure it as a Set-A route.",
+    "Keep release, RTDBSCAN paper, full DBSCAN, and broad V3-over-V2 wording blocked until serious paired evidence and external review justify a new claim."
+  ],
+  "goal_level_decision_audit": {
+    "decision": "Close RTDBSCAN component_union for Phoenix redo as one retained row-scoped reusable capability, not as full RTDBSCAN, paper, or V3 release evidence.",
+    "was_i_foolish": "No. The decision keeps the reviewed repeat=5 component_union row while preserving the old no-go limits and the serious V2.x performance blocker.",
+    "foolish_actions": "It would be foolish to revive the old 1483.603x route-mixed row, call component_signature full DBSCAN labels, or turn a 1.102x-1.236x row-scoped range into broad V3 success.",
+    "other_path": "Delete RTDBSCAN from V3 because the earlier no-go was real. That would ignore the later same-contract optimization and review closure.",
+    "different_path_now": "Retain exactly one component_union row, document its limits, and only count future RTDBSCAN work if it lands in a shared productized continuation/runner path."
+  }
+}

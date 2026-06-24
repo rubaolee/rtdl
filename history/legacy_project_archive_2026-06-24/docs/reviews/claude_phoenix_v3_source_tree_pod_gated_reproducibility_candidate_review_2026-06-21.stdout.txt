@@ -1,0 +1,25 @@
+Review written. Here is the concise stdout summary:
+
+---
+
+**Claude Review: Phoenix V3 Source-Tree / Pod-Gated Reproducibility Candidate**
+**Verdict: `approve-with-amendments-not-release`**
+
+**One P0 amendment required before `source_tree_pod_gated_candidate_reviewed: true`:**
+
+The Numba CUDA path exports (`NUMBA_CUDA_PREFIX`, `CUDA_HOME`, `CUDA_PATH`, `PATH`, `LD_LIBRARY_PATH`) are documented in the runbook's "Python GPU Partner Gate" section but are absent from the candidate document. Without them, a user following only the candidate cannot reach `numba_cuda_jit: pass` in the GPU partner gate.
+
+**What the candidate gets right:**
+- All package pins (6 packages, exact versions) are consistent across candidate, install script, and gate script.
+- The `--accept-experimental-pod-gate` flag is load-bearing, machine-verified, and cannot be accidentally omitted.
+- All five required negative boundaries are explicitly stated and machine-checked: not a general installer, not package-install wording, not release authorization, not second-RTX confirmation, not broad V3-over-V2 speedup.
+- The gate script correctly hardcodes `source_tree_pod_gated_candidate_reviewed: False` — it requires a Codex code change, not just a doc edit, to update.
+- `installer_closes_release_blocker: false` is preserved correctly and unconditionally.
+
+**Install gate fields after this review + Codex consensus + P0 amendment:**
+- `source_tree_pod_gated_candidate_reviewed`: `false` → `true` (only this field)
+- All other fields unchanged; gate status remains `staged_pod_gate_present_general_release_installer_not_ready`
+
+**Next sequence:** (1) Codex applies Numba exports amendment, (2) Codex records consensus, (3) gate script updated to `reviewed: True`, (4) product-scope decision on narrow scoped wording vs. general installer to close the blocker, (5) secondary hardware waiver or second RTX run, (6) new aggregate release-readiness review.
+
+This review does not authorize release and does not change any gate field.

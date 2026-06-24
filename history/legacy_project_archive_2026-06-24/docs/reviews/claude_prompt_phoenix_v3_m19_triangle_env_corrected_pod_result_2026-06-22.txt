@@ -1,0 +1,19 @@
+You are an external critical reviewer for Phoenix V3. Please review:
+
+docs/reviews/call_for_review_phoenix_v3_m19_triangle_env_corrected_pod_result_2026-06-22.md
+
+Task:
+- Decide whether the M19 focused Triangle environment-corrected POD result
+  closes Triangle as the third strict Set-A material runtime-trunk probe.
+- Be strict. This is not a release review, not an all-app spend review, and not
+  a broad V3-over-V2 review.
+- Return one requested verdict label:
+  accept_m19_triangle_third_strict_set_a_probe
+  accept_m19_result_but_do_not_close_probe
+  revise_m19_result_interpretation
+  reject_m19_result
+- Explicitly answer all authorization questions in the packet.
+- If accepting, state exact claim boundaries and next action.
+- If not accepting, state blockers and required remediation.
+
+Please output Markdown only. Do not edit files.

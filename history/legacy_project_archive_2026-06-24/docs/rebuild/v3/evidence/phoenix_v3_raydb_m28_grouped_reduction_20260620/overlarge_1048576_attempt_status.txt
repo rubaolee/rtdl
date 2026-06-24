@@ -1,0 +1,3 @@
+stopped overlarge 1048576-row attempt at 2026-06-20T19:25:18Z after >20m
+reason: overlarge Phoenix RayDB exploratory row exceeded bounded-goal time budget before producing JSON
+command: scripts/v3_0_m28_raydb_prepared_grouped_refresh.py --generated-rows 1048576 --generated-groups 4096 --modes count,sum --backends embree,optix --warmup 2 --repeat-overrides embree:count=200,embree:sum=5,optix:count=2000,optix:sum=500 --include-iteration-walls

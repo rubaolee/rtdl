@@ -2,6 +2,17 @@
 
 This directory is the revision archive for RTDL.
 
+## Current V3 Cleanup Archive
+
+The 2026-06-24 V3 cleanup moved old user-facing and process-heavy project
+material out of the default documentation path and into:
+
+[legacy_project_archive_2026-06-24](legacy_project_archive_2026-06-24/README.md)
+
+That archive contains old docs, rebuild packets, reviews, handoffs, reports,
+retired tutorials, internal examples, scratch logs, and unused working files.
+It is audit-only and must not be treated as current V3 user guidance.
+
 If you are asking whether RTDL has a full public history, start here:
 
 - [Complete History Map](COMPLETE_HISTORY.md)

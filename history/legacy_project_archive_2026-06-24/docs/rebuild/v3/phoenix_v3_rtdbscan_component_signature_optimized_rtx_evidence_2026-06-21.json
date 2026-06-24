@@ -1,0 +1,109 @@
+{
+  "status": "rtdbscan_component_signature_optimized_rtx_evidence_m7_approved_row_scoped",
+  "generic_capability": "component_union",
+  "source_artifact": "docs/rebuild/v3/evidence/phoenix_v3_rtdbscan_component_signature_optimized_20260621/summary.json",
+  "repeat5_large_artifact": "docs/rebuild/v3/evidence/phoenix_v3_rtdbscan_component_signature_optimized_large_repeat5_20260621/summary.json",
+  "remote_artifact": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_rtdbscan_component_signature_optimized_20260621",
+  "pod": {
+    "host": "root@213.173.108.14",
+    "port": 11592,
+    "gpu": "NVIDIA RTX 4000 Ada Generation"
+  },
+  "external_review": [
+    "docs/reviews/claude_phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_review_2026-06-21.md",
+    "docs/reviews/claude_phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_repeat5_final_review_2026-06-21.md"
+  ],
+  "codex_consensus": "docs/reviews/codex_phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_2ai_consensus_2026-06-21.md",
+  "route_contract": {
+    "embree_mode": "embree_core_flags_numba_prepared_grid_column_signature_3d",
+    "optix_mode": "optix_rt_core_flags_numba_prepared_grid_column_signature_3d",
+    "column_signature_strategy": "numba_label_count_and_flag_count_label_columns",
+    "column_signature_uses_numba_label_count_and_flag_count": true,
+    "column_signature_materializes_point_ids": false,
+    "column_signature_materializes_core_flags": false
+  },
+  "summary": {
+    "failed_rows": [],
+    "validation_reference_pass": true,
+    "large_signature_pass": true,
+    "serious_pair_count": 3,
+    "large_pair_count": 1,
+    "strongest_serious_optix_speedup_vs_embree": 1.2356860771339773,
+    "weakest_serious_optix_speedup_vs_embree": 1.1019949345652873,
+    "large_repeat5_rows_pass": true,
+    "large_scale_correctness_basis": "OptiX/Embree intra-run canonical component-signature agreement, not independent CPU reference validation"
+  },
+  "pairs": [
+    {
+      "point_count": 4096,
+      "repeat": 3,
+      "embree_sec": 0.018203578889369965,
+      "optix_sec": 0.01088082417845726,
+      "optix_speedup_vs_embree": 1.6729963273748039,
+      "rt_threshold_speedup_vs_embree_compact_rows": 2.0495545408119726,
+      "same_canonical_component_signature": true,
+      "continuation_dominates_optix": false
+    },
+    {
+      "point_count": 65536,
+      "repeat": 5,
+      "embree_sec": 0.389338705688715,
+      "optix_sec": 0.3150789774954319,
+      "optix_speedup_vs_embree": 1.2356860771339773,
+      "rt_threshold_speedup_vs_embree_compact_rows": 1.2535332852701746,
+      "same_canonical_component_signature": true,
+      "continuation_dominates_optix": false
+    },
+    {
+      "point_count": 262144,
+      "repeat": 5,
+      "measured_iterations": 4,
+      "embree_sec": 2.698013737797737,
+      "optix_sec": 2.401328593492508,
+      "optix_speedup_vs_embree": 1.1235504150116034,
+      "rt_threshold_speedup_vs_embree_compact_rows": 1.2621183454676224,
+      "same_canonical_component_signature": true,
+      "continuation_dominates_optix": true
+    },
+    {
+      "point_count": 524288,
+      "repeat": 5,
+      "measured_iterations": 4,
+      "embree_sec": 9.008331146091223,
+      "optix_sec": 8.174566745758057,
+      "optix_speedup_vs_embree": 1.1019949345652873,
+      "rt_threshold_speedup_vs_embree_compact_rows": 1.4801367849201907,
+      "same_canonical_component_signature": true,
+      "continuation_dominates_optix": true
+    }
+  ],
+  "claim_boundary": {
+    "local_evidence_sufficient_for_external_public_row_review": true,
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "row_scoped_public_speedup_claim_authorized": true,
+    "whole_app_speedup_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "m7_promotion_authorized": true,
+    "current_packet_external_review_status": "claude_approved_after_repeat5_option_b",
+    "current_packet_2ai_consensus_status": "claude_codex_consensus_complete"
+  },
+  "m7_qualified_release_rows": 1,
+  "row_scoped_public_speedup_claim_authorized": true,
+  "m7_promotion_authorized": true,
+  "candidate_row_scoped_wording": "RTDL V3 includes a generic component-signature continuation route where prepared OptiX fixed-radius threshold columns feeding the same Numba component signature are 1.102x to 1.236x faster end-to-end than the same-contract Embree route on zero-noise four-cluster synthetic clustered3d rows from 65,536 to 524,288 points on an RTX 4000 Ada pod; at 262,144 and 524,288 points, the Numba continuation still dominates wall time.",
+  "forbidden_wording": [
+    "RTDBSCAN is faster.",
+    "V3 is faster than V2.",
+    "RTDL reproduces the RTDBSCAN paper.",
+    "RT cores accelerate full DBSCAN end-to-end."
+  ],
+  "goal_level_decision_audit": {
+    "decision": "reopen component_union as an external-review candidate after the same-contract RTX rerun, but do not promote it before review",
+    "was_i_foolish": "No. The previous blocker was explicitly rerun after optimization missing; that blocker is now addressed with RTX artifact evidence.",
+    "foolish_actions": "The foolish action would be converting a modest row-scoped speedup into a broad RTDBSCAN, paper, or V3-over-V2 claim.",
+    "other_path": "Keep RTDBSCAN closed as no-go despite the new evidence; that would ignore the actual generic-engine change and rerun.",
+    "different_path_now": "Send this exact packet to external review, then either promote one row-scoped M7 claim with strict wording or record the remaining blocker."
+  }
+}

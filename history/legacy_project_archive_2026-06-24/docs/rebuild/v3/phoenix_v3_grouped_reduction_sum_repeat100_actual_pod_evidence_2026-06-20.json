@@ -1,0 +1,73 @@
+{
+  "status": "grouped_reduction_sum_repeat100_actual_pod_evidence_not_release",
+  "superseded_by_current_packet": "docs\\rebuild\\v3\\phoenix_v3_grouped_reduction_scalar_broadcast_optimization_pod_evidence_2026-06-20.md",
+  "current_candidate_values_source": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_scalar_broadcast_repeat100_20260620",
+  "generic_capability": "grouped_reduction",
+  "source_artifact_dir": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_repeat100_actual_20260620",
+  "source_clean_rerun_artifact_dir": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_repeat100_actual_524288_clean_20260620",
+  "source_runner": "scripts\\v3_0_m28_raydb_prepared_grouped_refresh.py",
+  "hardware": "NVIDIA RTX 4000 Ada Generation, driver 550.127.05, 20475 MiB",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows": 0,
+  "current_packet_external_review_status": "blocked_current_packet",
+  "current_packet_2ai_consensus_status": "not_recorded_for_this_packet",
+  "external_review_blockage": "docs\\reviews\\external_review_blocked_phoenix_v3_grouped_reduction_scalar_broadcast_optimization_2026-06-20.md",
+  "supersedes_modeled_repeat100_candidate_values": true,
+  "artifact_location_note": "The first background launch used incorrect PowerShell quoting, so finished JSON/log/gate files were moved from remote / into the intended artifact directory after completion. Measurement commands ran from /root/rtdl_v3_rebuild_20260620/current against the intended runner and are preserved in repeat100_actual.log. A second 524,288-row clean rerun used correct artifact quoting and is the current source for the 524,288-row candidate numbers.",
+  "clean_rerun_confirms_large_cold_prepare_cost": true,
+  "rows": [
+    {
+      "row_id": "grouped_reduction_sum_repeat100_actual_262144",
+      "source_actual_file": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_repeat100_actual_20260620\\grouped_sum_repeat100_actual_262144.json",
+      "generated_rows": 262144,
+      "generated_groups": 1024,
+      "warmup": 3,
+      "repeat": 100,
+      "all_match_cpu_reference": true,
+      "same_contract": true,
+      "hot_query_speedup_embree_over_optix": 197.0559860056879,
+      "actual_repeat100_loop_speedup": 199.50065452338947,
+      "actual_repeat100_cold_plus_loop_speedup": 27.012483590959093,
+      "embree_actual_loop_total_sec": 101.03155428171158,
+      "optix_actual_loop_total_sec": 0.5064221695065498,
+      "embree_cold_plus_loop_sec": 102.94045209884644,
+      "optix_cold_plus_loop_sec": 3.810847371816635,
+      "classification": "actual_repeat100_candidate_needs_final_review_not_m7"
+    },
+    {
+      "row_id": "grouped_reduction_sum_repeat100_actual_524288",
+      "source_actual_file": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_repeat100_actual_524288_clean_20260620\\grouped_sum_repeat100_actual_524288_clean.json",
+      "source_first_run_file": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_repeat100_actual_20260620\\grouped_sum_repeat100_actual_524288.json",
+      "generated_rows": 524288,
+      "generated_groups": 2048,
+      "warmup": 3,
+      "repeat": 100,
+      "all_match_cpu_reference": true,
+      "same_contract": true,
+      "hot_query_speedup_embree_over_optix": 157.203082448875,
+      "actual_repeat100_loop_speedup": 155.54702752851,
+      "actual_repeat100_cold_plus_loop_speedup": 2.0619336747461,
+      "embree_actual_loop_total_sec": 207.336016848683,
+      "optix_actual_loop_total_sec": 1.33294747024775,
+      "embree_cold_plus_loop_sec": 388.025988876819,
+      "optix_cold_plus_loop_sec": 188.185485124588,
+      "classification": "actual_repeat100_candidate_with_large_cold_prepare_cost_not_m7"
+    }
+  ],
+  "forbidden_public_reading": [
+    "Do not claim V3 is 224x faster from grouped_reduction.",
+    "Do not claim RTDL is 33x faster end to end from the old modeled repeat100 packet.",
+    "Do not hide cold prepare cost.",
+    "Do not call either row M7-qualified before external public-row review."
+  ],
+  "goal_level_decision_audit": {
+    "decision": "replace grouped_sum modeled repeat100 candidate values with actual repeat100 pod evidence",
+    "was_i_foolish": "Partly. The previous modeled wording was disclosed, but keeping it after pod access would be too weak for Phoenix V3.",
+    "foolish_actions": "The foolish action would be to leave 32x/33x modeled repeat100 as current candidate wording after actual repeat100 showed 27.012x and a clean-confirmed 2.062x cold-plus-loop speedup.",
+    "other_path": "Wait for external review of the modeled packet. That would preserve a known measurement gap.",
+    "different_path_now": "Use actual repeat100 evidence, use the clean 524,288-row rerun for that scale, keep release authorization false, and request external review when Claude or another reviewer is available."
+  }
+}

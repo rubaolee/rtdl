@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import unittest
+from types import SimpleNamespace
 from unittest import mock
 
 import rtdsl as rt
+from rtdsl import optix_runtime
 from rtdsl.optix_runtime import _find_optional_backend_symbol
 from rtdsl.optix_runtime import _load_optix_library
 from examples import rtdl_dbscan_clustering_app as dbscan
@@ -86,6 +88,55 @@ class Goal757PreparedOptixFixedRadiusPortableTest(unittest.TestCase):
         prepared.close()
         with self.assertRaisesRegex(RuntimeError, "closed"):
             prepared.run((), radius=0.5, threshold=1)
+
+    def test_prepared_handle_caches_library_and_hot_query_symbols(self):
+        lookup_counts: dict[str, int] = {}
+        calls: list[str] = []
+
+        def prepare_symbol(_records, _count, _max_radius, handle_out, _error, _error_size):
+            calls.append("prepare")
+            handle_out._obj.value = 123
+            return 0
+
+        def count_symbol(_handle, _records, count, _radius, _threshold, reached_out, _error, _error_size):
+            calls.append("count")
+            reached_out._obj.value = count
+            return 0
+
+        def destroy_symbol(_handle):
+            calls.append("destroy")
+            return 0
+
+        symbols = {
+            "rtdl_optix_prepare_fixed_radius_count_threshold_2d": prepare_symbol,
+            "rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d": count_symbol,
+            "rtdl_optix_destroy_prepared_fixed_radius_count_threshold_2d": destroy_symbol,
+        }
+        library = SimpleNamespace(**symbols)
+
+        def fake_find(_library, symbol_name: str):
+            lookup_counts[symbol_name] = lookup_counts.get(symbol_name, 0) + 1
+            return symbols.get(symbol_name)
+
+        points = (rt.Point(id=1, x=0.0, y=0.0), rt.Point(id=2, x=1.0, y=0.0))
+        with (
+            mock.patch.object(optix_runtime, "_load_optix_library", return_value=library) as load_library,
+            mock.patch.object(optix_runtime, "_find_optional_backend_symbol", side_effect=fake_find),
+        ):
+            with rt.prepare_optix_fixed_radius_count_threshold_2d(points, max_radius=1.0) as prepared:
+                self.assertEqual(prepared.count_threshold_reached(points, radius=0.5, threshold=1), 2)
+                self.assertEqual(prepared.count_threshold_reached(points, radius=0.5, threshold=1), 2)
+
+        self.assertEqual(load_library.call_count, 1)
+        self.assertEqual(
+            lookup_counts,
+            {
+                "rtdl_optix_prepare_fixed_radius_count_threshold_2d": 1,
+                "rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d": 1,
+                "rtdl_optix_destroy_prepared_fixed_radius_count_threshold_2d": 1,
+            },
+        )
+        self.assertEqual(calls, ["prepare", "count", "count", "destroy"])
 
     def test_outlier_app_prepared_optix_summary_matches_oracle(self):
         def fake_prepare(search_points, *, max_radius):

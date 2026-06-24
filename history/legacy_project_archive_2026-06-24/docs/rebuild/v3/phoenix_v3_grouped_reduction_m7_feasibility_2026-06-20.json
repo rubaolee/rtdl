@@ -1,0 +1,407 @@
+{
+  "allowed_internal_reading": "Internal evidence shows the generic prepared grouped-reduction primitive can be much faster than Embree in the hot prepared-query window, especially for repeated queries or sum mode.",
+  "forbidden_public_reading": "Do not claim RayDB-style V3 is 158x faster end to end, do not claim whole-database speedup, and do not hide cold/setup cost behind hot-query ratios.",
+  "fresh_rerun": false,
+  "generic_capability": "grouped_reduction",
+  "goal_level_decision_audit": {
+    "decision": "attempt grouped_reduction M7 feasibility through repeat-aware amortization instead of quoting hot ratios",
+    "different_path_now": "Compute repeat-aware end-to-end scenarios and keep M7 promotion false unless the public contract is closed.",
+    "foolish_actions": "It would be foolish to promote the 158x sum hot-query ratio without cold/setup cost and repeat-count context.",
+    "other_path": "Start with Triangle or docs. That remains possible, but grouped_reduction is the cleanest reusable engine candidate.",
+    "was_i_foolish": "No. The packet tests whether the strongest reusable evidence can become a user-responsible row."
+  },
+  "m7_blockers": [
+    "prepared_query_contract_not_yet_public_tutorial",
+    "repeat_count_and_amortization_policy_not_reviewed",
+    "cold_setup_costs_must_be_reported_next_to_hot_speedups",
+    "no_fresh_m7_pod_rerun_after_feasibility_packet",
+    "no_public_row_level_external_review_for_promoted_wording"
+  ],
+  "m7_promoted": false,
+  "m7_qualified_release_rows": 0,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "scales": [
+    {
+      "generated_groups": 1024,
+      "generated_rows": 262144,
+      "label": "m4_m28_262144",
+      "pairs": [
+        {
+          "both_match_cpu_reference": true,
+          "break_even_repeat_count": 1.0,
+          "break_even_repeat_count_ceiling": 1,
+          "claim_status": "internal_feasibility_not_m7",
+          "embree_cold_prepare_total_sec": 6.716343387961388,
+          "embree_hot_query_sec": 0.009120110422372818,
+          "embree_rt_core_accelerated": false,
+          "embree_workload_build_sec": 6.553225785493851,
+          "hot_query_speedup_embree_over_optix": 9.863861076975764,
+          "m7_blockers": [
+            "prepared_query_contract_not_yet_public_tutorial",
+            "repeat_count_and_amortization_policy_not_reviewed",
+            "no_fresh_m7_pod_rerun_after_feasibility_packet"
+          ],
+          "m7_promoted": false,
+          "max_workload_build_sec": 6.553225785493851,
+          "min_workload_build_sec": 0.10034296661615372,
+          "mode": "count",
+          "optix_cold_prepare_total_sec": 0.37104421854019165,
+          "optix_hot_query_sec": 0.0009245984256267548,
+          "optix_rt_core_accelerated": true,
+          "optix_workload_build_sec": 0.10034296661615372,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "repeat_scenarios": {
+            "1": {
+              "embree_total_sec": 6.7254634983837605,
+              "end_to_end_speedup": 18.080718575400873,
+              "optix_total_sec": 0.3719688169658184,
+              "repeat_count": 1
+            },
+            "10": {
+              "embree_total_sec": 6.807544492185116,
+              "end_to_end_speedup": 17.900919987225343,
+              "optix_total_sec": 0.3802902027964592,
+              "repeat_count": 10
+            },
+            "100": {
+              "embree_total_sec": 7.628354430198669,
+              "end_to_end_speedup": 16.458009908365575,
+              "optix_total_sec": 0.4635040611028671,
+              "repeat_count": 100
+            },
+            "1000": {
+              "embree_total_sec": 15.836453810334206,
+              "end_to_end_speedup": 12.222856264905127,
+              "optix_total_sec": 1.2956426441669464,
+              "repeat_count": 1000
+            },
+            "2": {
+              "embree_total_sec": 6.734583608806133,
+              "end_to_end_speedup": 18.060344674460122,
+              "optix_total_sec": 0.37289341539144516,
+              "repeat_count": 2
+            },
+            "25": {
+              "embree_total_sec": 6.944346148520708,
+              "end_to_end_speedup": 17.618126166571614,
+              "optix_total_sec": 0.3941591791808605,
+              "repeat_count": 25
+            },
+            "5": {
+              "embree_total_sec": 6.761943940073252,
+              "end_to_end_speedup": 17.999824706669266,
+              "optix_total_sec": 0.3756672106683254,
+              "repeat_count": 5
+            },
+            "50": {
+              "embree_total_sec": 7.1723489090800285,
+              "end_to_end_speedup": 17.18857754316547,
+              "optix_total_sec": 0.4172741398215294,
+              "repeat_count": 50
+            },
+            "500": {
+              "embree_total_sec": 11.276398599147797,
+              "end_to_end_speedup": 13.531514349170495,
+              "optix_total_sec": 0.833343431353569,
+              "repeat_count": 500
+            }
+          }
+        },
+        {
+          "both_match_cpu_reference": true,
+          "break_even_repeat_count": 1.0,
+          "break_even_repeat_count_ceiling": 1,
+          "claim_status": "internal_feasibility_not_m7",
+          "embree_cold_prepare_total_sec": 105.27661307901144,
+          "embree_hot_query_sec": 0.9995158091187477,
+          "embree_rt_core_accelerated": false,
+          "embree_workload_build_sec": 105.15805099904537,
+          "hot_query_speedup_embree_over_optix": 202.77399588111928,
+          "m7_blockers": [
+            "prepared_query_contract_not_yet_public_tutorial",
+            "repeat_count_and_amortization_policy_not_reviewed",
+            "no_fresh_m7_pod_rerun_after_feasibility_packet",
+            "large_sum_workload_build_cost_must_be_prominent"
+          ],
+          "m7_promoted": false,
+          "max_workload_build_sec": 105.15805099904537,
+          "min_workload_build_sec": 64.07684455811977,
+          "mode": "sum",
+          "optix_cold_prepare_total_sec": 65.40001656860113,
+          "optix_hot_query_sec": 0.004929210990667343,
+          "optix_rt_core_accelerated": true,
+          "optix_workload_build_sec": 64.07684455811977,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "repeat_scenarios": {
+            "1": {
+              "embree_total_sec": 106.27612888813019,
+              "end_to_end_speedup": 1.6248943810192922,
+              "optix_total_sec": 65.4049457795918,
+              "repeat_count": 1
+            },
+            "10": {
+              "embree_total_sec": 115.27177117019892,
+              "end_to_end_speedup": 1.7612374140790852,
+              "optix_total_sec": 65.4493086785078,
+              "repeat_count": 10
+            },
+            "100": {
+              "embree_total_sec": 205.2281939908862,
+              "end_to_end_speedup": 3.1145704115660777,
+              "optix_total_sec": 65.89293766766787,
+              "repeat_count": 100
+            },
+            "1000": {
+              "embree_total_sec": 1104.7924221977592,
+              "end_to_end_speedup": 15.708866150516421,
+              "optix_total_sec": 70.32922755926847,
+              "repeat_count": 1000
+            },
+            "2": {
+              "embree_total_sec": 107.27564469724894,
+              "end_to_end_speedup": 1.6400527399371148,
+              "optix_total_sec": 65.40987499058247,
+              "repeat_count": 2
+            },
+            "25": {
+              "embree_total_sec": 130.26450830698013,
+              "end_to_end_speedup": 1.9880655276191546,
+              "optix_total_sec": 65.52324684336782,
+              "repeat_count": 25
+            },
+            "5": {
+              "embree_total_sec": 110.27419212460518,
+              "end_to_end_speedup": 1.6855141119964108,
+              "optix_total_sec": 65.42466262355447,
+              "repeat_count": 5
+            },
+            "50": {
+              "embree_total_sec": 155.25240353494883,
+              "end_to_end_speedup": 2.364976924132021,
+              "optix_total_sec": 65.6464771181345,
+              "repeat_count": 50
+            },
+            "500": {
+              "embree_total_sec": 605.0345176383853,
+              "end_to_end_speedup": 8.915315509580033,
+              "optix_total_sec": 67.8646220639348,
+              "repeat_count": 500
+            }
+          }
+        }
+      ],
+      "source": "docs/rebuild/v3/evidence/phoenix_v3_m4_grouped_continuation_20260620/m28_raydb_grouped_reduction_262144.json",
+      "source_warmup": 1,
+      "status": "ok"
+    },
+    {
+      "generated_groups": 2048,
+      "generated_rows": 524288,
+      "label": "raydb_m28_524288",
+      "pairs": [
+        {
+          "both_match_cpu_reference": true,
+          "break_even_repeat_count": 17.175676237136,
+          "break_even_repeat_count_ceiling": 18,
+          "claim_status": "internal_feasibility_not_m7",
+          "embree_cold_prepare_total_sec": 0.2948594316840172,
+          "embree_hot_query_sec": 0.014880668371915817,
+          "embree_rt_core_accelerated": false,
+          "embree_workload_build_sec": 0.19857029616832733,
+          "hot_query_speedup_embree_over_optix": 8.751651958249713,
+          "m7_blockers": [
+            "prepared_query_contract_not_yet_public_tutorial",
+            "repeat_count_and_amortization_policy_not_reviewed",
+            "no_fresh_m7_pod_rerun_after_feasibility_packet",
+            "single_query_end_to_end_not_optix_win"
+          ],
+          "m7_promoted": false,
+          "max_workload_build_sec": 0.19857029616832733,
+          "min_workload_build_sec": 0.19736924767494202,
+          "mode": "count",
+          "optix_cold_prepare_total_sec": 0.5212407112121582,
+          "optix_hot_query_sec": 0.0017003268003463745,
+          "optix_rt_core_accelerated": true,
+          "optix_workload_build_sec": 0.19736924767494202,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "repeat_scenarios": {
+            "1": {
+              "embree_total_sec": 0.309740100055933,
+              "end_to_end_speedup": 0.5923040601922056,
+              "optix_total_sec": 0.5229410380125046,
+              "repeat_count": 1
+            },
+            "10": {
+              "embree_total_sec": 0.44366611540317535,
+              "end_to_end_speedup": 0.8242843998918965,
+              "optix_total_sec": 0.538243979215622,
+              "repeat_count": 10
+            },
+            "100": {
+              "embree_total_sec": 1.782926268875599,
+              "end_to_end_speedup": 2.5791912309251113,
+              "optix_total_sec": 0.6912733912467957,
+              "repeat_count": 100
+            },
+            "1000": {
+              "embree_total_sec": 15.175527803599834,
+              "end_to_end_speedup": 6.831000059482099,
+              "optix_total_sec": 2.2215675115585327,
+              "repeat_count": 1000
+            },
+            "2": {
+              "embree_total_sec": 0.3246207684278488,
+              "end_to_end_speedup": 0.6187479489796748,
+              "optix_total_sec": 0.524641364812851,
+              "repeat_count": 2
+            },
+            "25": {
+              "embree_total_sec": 0.6668761409819126,
+              "end_to_end_speedup": 1.182931200746278,
+              "optix_total_sec": 0.5637488812208176,
+              "repeat_count": 25
+            },
+            "5": {
+              "embree_total_sec": 0.36926277354359627,
+              "end_to_end_speedup": 0.6970610842795696,
+              "optix_total_sec": 0.5297423452138901,
+              "repeat_count": 5
+            },
+            "50": {
+              "embree_total_sec": 1.038892850279808,
+              "end_to_end_speedup": 1.7136177602766922,
+              "optix_total_sec": 0.6062570512294769,
+              "repeat_count": 50
+            },
+            "500": {
+              "embree_total_sec": 7.735193617641926,
+              "end_to_end_speedup": 5.640345944295076,
+              "optix_total_sec": 1.3714041113853455,
+              "repeat_count": 500
+            }
+          }
+        },
+        {
+          "both_match_cpu_reference": true,
+          "break_even_repeat_count": 1.0,
+          "break_even_repeat_count_ceiling": 1,
+          "claim_status": "internal_feasibility_not_m7",
+          "embree_cold_prepare_total_sec": 218.0280032530427,
+          "embree_hot_query_sec": 2.1040648743510246,
+          "embree_rt_core_accelerated": false,
+          "embree_workload_build_sec": 217.96437430381775,
+          "hot_query_speedup_embree_over_optix": 158.0103024602698,
+          "m7_blockers": [
+            "prepared_query_contract_not_yet_public_tutorial",
+            "repeat_count_and_amortization_policy_not_reviewed",
+            "no_fresh_m7_pod_rerun_after_feasibility_packet",
+            "large_sum_workload_build_cost_must_be_prominent"
+          ],
+          "m7_promoted": false,
+          "max_workload_build_sec": 217.96437430381775,
+          "min_workload_build_sec": 213.2654801607132,
+          "mode": "sum",
+          "optix_cold_prepare_total_sec": 215.8428713157773,
+          "optix_hot_query_sec": 0.013315998017787933,
+          "optix_rt_core_accelerated": true,
+          "optix_workload_build_sec": 213.2654801607132,
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "repeat_scenarios": {
+            "1": {
+              "embree_total_sec": 220.13206812739372,
+              "end_to_end_speedup": 1.0198089332847462,
+              "optix_total_sec": 215.8561873137951,
+              "repeat_count": 1
+            },
+            "10": {
+              "embree_total_sec": 239.06865199655294,
+              "end_to_end_speedup": 1.106922145767896,
+              "optix_total_sec": 215.97603129595518,
+              "repeat_count": 10
+            },
+            "100": {
+              "embree_total_sec": 428.43449068814516,
+              "end_to_end_speedup": 1.9727663591556968,
+              "optix_total_sec": 217.1744711175561,
+              "repeat_count": 100
+            },
+            "1000": {
+              "embree_total_sec": 2322.0928776040673,
+              "end_to_end_speedup": 10.133113696873817,
+              "optix_total_sec": 229.15886933356524,
+              "repeat_count": 1000
+            },
+            "2": {
+              "embree_total_sec": 222.23613300174475,
+              "end_to_end_speedup": 1.029492955661901,
+              "optix_total_sec": 215.86950331181288,
+              "repeat_count": 2
+            },
+            "25": {
+              "embree_total_sec": 270.6296251118183,
+              "end_to_end_speedup": 1.2518961932072212,
+              "optix_total_sec": 216.175771266222,
+              "repeat_count": 25
+            },
+            "5": {
+              "embree_total_sec": 228.54832762479782,
+              "end_to_end_speedup": 1.05853785576541,
+              "optix_total_sec": 215.90945130586624,
+              "repeat_count": 5
+            },
+            "50": {
+              "embree_total_sec": 323.23124697059393,
+              "end_to_end_speedup": 1.4929251801057277,
+              "optix_total_sec": 216.5086712166667,
+              "repeat_count": 50
+            },
+            "500": {
+              "embree_total_sec": 1270.060440428555,
+              "end_to_end_speedup": 5.708114483216602,
+              "optix_total_sec": 222.50087032467127,
+              "repeat_count": 500
+            }
+          }
+        }
+      ],
+      "source": "docs/rebuild/v3/evidence/phoenix_v3_raydb_m28_grouped_reduction_20260620/m28_raydb_grouped_reduction_524288.json",
+      "source_warmup": 2,
+      "status": "ok"
+    }
+  ],
+  "source_evidence": [
+    {
+      "label": "m4_m28_262144",
+      "path": "docs/rebuild/v3/evidence/phoenix_v3_m4_grouped_continuation_20260620/m28_raydb_grouped_reduction_262144.json"
+    },
+    {
+      "label": "raydb_m28_524288",
+      "path": "docs/rebuild/v3/evidence/phoenix_v3_raydb_m28_grouped_reduction_20260620/m28_raydb_grouped_reduction_524288.json"
+    }
+  ],
+  "status": "grouped_reduction_m7_feasibility_not_promoted",
+  "summary": {
+    "all_cpu_reference_match": true,
+    "all_optix_hot_faster": true,
+    "any_sum_row_has_large_cold_cost": true,
+    "count_rows_need_repeat_amortization": true,
+    "m7_qualified_release_rows": 0,
+    "max_hot_query_speedup": 202.77399588111928,
+    "max_repeat_1_end_to_end_speedup": 18.080718575400873,
+    "pair_count": 4,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "scale_count": 2,
+    "sum_rows_with_large_cold_cost": [
+      "262144/sum",
+      "524288/sum"
+    ]
+  },
+  "version": "phoenix_v3_grouped_reduction_m7_feasibility_2026_06_20",
+  "whole_app_speedup_claim_authorized": false
+}

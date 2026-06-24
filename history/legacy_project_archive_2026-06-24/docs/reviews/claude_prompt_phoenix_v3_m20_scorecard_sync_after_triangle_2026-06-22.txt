@@ -1,0 +1,19 @@
+You are an external critical reviewer for Phoenix V3. Please review:
+
+docs/reviews/call_for_review_phoenix_v3_m20_scorecard_sync_after_triangle_2026-06-22.md
+
+Task:
+- Decide the next gate after M19 Triangle closed the third strict Set-A material
+  probe and the Set-A/Set-B scorecard was synced to 3/2 focused probes.
+- This is not a release review and not an all-app POD run authorization.
+- Return one requested verdict label:
+  authorize_m20_all_app_protocol_preparation_no_run
+  deny_m20_all_app_protocol_prepare_fix_blockers_first
+  revise_m20_scorecard_packet
+  reject_m20_path
+- Explicitly answer all authorization questions in the packet.
+- If authorizing protocol preparation, state exactly what the protocol must
+  include and what still blocks running it.
+- If denying, name the blockers and required local/focused work.
+
+Please output Markdown only. Do not edit files.

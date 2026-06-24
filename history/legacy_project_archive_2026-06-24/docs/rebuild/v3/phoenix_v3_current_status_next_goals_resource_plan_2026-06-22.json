@@ -1,0 +1,153 @@
+{
+  "artifact": "phoenix_v3_current_status_next_goals_resource_plan_2026-06-22",
+  "status": "phoenix_v3_redesign_in_progress_not_release",
+  "date": "2026-06-22",
+  "scope": "Phoenix V3 only",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "true_zero_copy_claim_authorized": false,
+  "external_embedding_or_zero_copy_claim_authorized": false,
+  "all_app_pod_spend_authorized": false,
+  "controlling_files": {
+    "redesign": "docs/rebuild/v3/proposed_v3_redesign_build_the_runtime_trunk_first_2026-06-22.md",
+    "handoff": "docs/handoff/HANDOFF_PHOENIX_V3_REDESIGN_START_AT_STEP_0_2026-06-22.md",
+    "release_bar": "docs/reviews/phoenix_v3_set_a_set_b_release_bar_proposal_2026-06-22.md",
+    "step1_report": "docs/reports/phoenix_v3_step1_rtdbscan_runtime_trunk_probe_pod_ab_2026-06-22.md",
+    "step1_claude_review": "docs/reviews/claude_phoenix_v3_step1_rtdbscan_runtime_trunk_probe_review_2026-06-22.md"
+  },
+  "completed": [
+    {
+      "id": "step0_freeze",
+      "status": "complete",
+      "result": "Cache/prepared-query hygiene thread closed as strategy; Set-A/Set-B scorecard adopted; all-app runner guarded."
+    },
+    {
+      "id": "step1_rtdbscan_structural_probe",
+      "status": "structural_credential_complete_performance_not_met",
+      "runner_vs_legacy_geomean": 0.9948584784435961,
+      "legacy_vs_embree_geomean": 2.942859650227,
+      "runner_vs_embree_geomean": 2.927728873898229,
+      "runtime_trunk_executes_all_runner_samples": true,
+      "internal_device_residency_all_runner_samples": true,
+      "hot_path_host_materialization_any_runner_sample": false,
+      "material_set_a_candidate": false,
+      "external_review_verdict": "approve_blocked_not_release"
+    }
+  ],
+  "current_distance_to_v3": {
+    "step0": "complete",
+    "step1": "partially_complete_structural_yes_material_no",
+    "step2": "not_started",
+    "step3": "blocked_until_step2",
+    "step4": "blocked_until_step2_and_step3",
+    "step5_all_app_run": "blocked",
+    "step6_external_release_decision": "blocked",
+    "plain_summary": "Phoenix V3 has a real prepared runtime trunk credential on RTDBSCAN, but no accepted material runtime-sourced performance win from that route. V3 remains redo_required, not release-ready."
+  },
+  "next_goals": [
+    {
+      "id": "g1_rayjoin_legacy_materialization_audit",
+      "status": "next",
+      "purpose": "Check whether RayJoin legacy path materializes an inter-phase LSI-to-PIP/overlay intermediate to host; without this source, RayJoin would likely repeat RTDBSCAN parity.",
+      "estimated_wall_hours_min": 0.5,
+      "estimated_wall_hours_max": 1.5,
+      "estimated_pod_hours_min": 0.0,
+      "estimated_pod_hours_max": 0.25,
+      "pod_cost_usd_min_at_1_usd_per_4h": 0.0,
+      "pod_cost_usd_max_at_1_usd_per_4h": 0.0625,
+      "exit_criteria": [
+        "Document exact legacy RayJoin phase boundaries.",
+        "Record whether intermediate rows/arrays cross the host boundary.",
+        "Select RayJoin only if a real V3 runtime source exists."
+      ],
+      "stop_or_pivot_condition": "If legacy RayJoin is already device-resident across phases, stop RayJoin as the next material probe and audit Barnes-Hut instead."
+    },
+    {
+      "id": "g2_rayjoin_runner_trunk_design_and_local_tests",
+      "status": "blocked_until_g1_finds_source",
+      "purpose": "Route RayJoin through the same productized prepared-session runner without app-specific engine semantics.",
+      "estimated_wall_hours_min": 2.0,
+      "estimated_wall_hours_max": 4.0,
+      "estimated_pod_hours_min": 0.0,
+      "estimated_pod_hours_max": 0.0,
+      "pod_cost_usd_min_at_1_usd_per_4h": 0.0,
+      "pod_cost_usd_max_at_1_usd_per_4h": 0.0,
+      "exit_criteria": [
+        "Runner metadata records runtime_trunk_executes_end_to_end.",
+        "Internal V3 residency metadata is present.",
+        "No external device-buffer or embedding claim appears.",
+        "Local focused tests cover the new runner path."
+      ],
+      "stop_or_pivot_condition": "If the implementation requires app-specific native ABI or external host buffer ownership, reject it as not V3."
+    },
+    {
+      "id": "g3_rayjoin_focused_same_pod_ab",
+      "status": "blocked_until_g2_passes",
+      "purpose": "Measure runner vs legacy RayJoin on the same RT hardware and same dataset family.",
+      "estimated_wall_hours_min": 0.5,
+      "estimated_wall_hours_max": 1.5,
+      "estimated_pod_hours_min": 0.5,
+      "estimated_pod_hours_max": 1.5,
+      "pod_cost_usd_min_at_1_usd_per_4h": 0.125,
+      "pod_cost_usd_max_at_1_usd_per_4h": 0.375,
+      "exit_criteria": [
+        "Signatures/results match legacy.",
+        "Runner vs legacy speedup is reported, not runner vs a weaker control.",
+        "Material candidate only if the gain is runtime-sourced and clears the focused bar.",
+        "Claude or other external review records a verdict."
+      ],
+      "stop_or_pivot_condition": "If runner vs legacy is parity or slower, record RayJoin as structural/no-go and move to Barnes-Hut; do not tune caches."
+    },
+    {
+      "id": "g4_second_family_or_barnes_hut_fallback",
+      "status": "blocked_until_g3_result",
+      "purpose": "Prove the trunk generalizes beyond one family, preferably Barnes-Hut frontier/vector accumulation if RayJoin does not produce a material source.",
+      "estimated_wall_hours_min": 3.0,
+      "estimated_wall_hours_max": 6.0,
+      "estimated_pod_hours_min": 0.5,
+      "estimated_pod_hours_max": 2.0,
+      "pod_cost_usd_min_at_1_usd_per_4h": 0.125,
+      "pod_cost_usd_max_at_1_usd_per_4h": 0.5,
+      "exit_criteria": [
+        "A second Set-A family flows through the same runner pattern.",
+        "Focused same-pod A/B records runner vs legacy.",
+        "Result is classified as material, parity, or no-go before any all-app run."
+      ],
+      "stop_or_pivot_condition": "If two honest Set-A families with real performance sources both fail, trigger capability/quality-framing review instead of further speed claims."
+    },
+    {
+      "id": "g5_all_app_paired_run",
+      "status": "blocked",
+      "purpose": "Run full V2.14 vs Phoenix V3 only after enough focused runtime-sourced Set-A probes justify pod spend.",
+      "estimated_wall_hours_min": 2.0,
+      "estimated_wall_hours_max": 5.0,
+      "estimated_pod_hours_min": 2.0,
+      "estimated_pod_hours_max": 5.0,
+      "pod_cost_usd_min_at_1_usd_per_4h": 0.5,
+      "pod_cost_usd_max_at_1_usd_per_4h": 1.25,
+      "exit_criteria": [
+        "Set-A and Set-B classification frozen before the run.",
+        "Set-A clears the accepted material bar from productized runtime path.",
+        "Set-B meets parity with user-language explanations.",
+        "Every surprising row is explained."
+      ],
+      "stop_or_pivot_condition": "If focused probes do not show material runtime-sourced wins, do not run all-app."
+    }
+  ],
+  "budget_guidance": {
+    "near_term_pod_need": "Keep pod use minimal until RayJoin or Barnes-Hut has a confirmed performance source.",
+    "first_go_no_go_window": "G1 through G3 needs roughly 3 to 7 wall hours if RayJoin has a source, with about 0.5 to 1.75 pod hours.",
+    "first_go_no_go_cost_usd_at_1_usd_per_4h": "about 0.13 to 0.44 USD of pod time",
+    "full_release_candidate_window": "A responsible release-candidate path needs at least two focused family results, then one all-app run and external review. Expect roughly 8 to 18 wall hours plus 3 to 8 pod hours if the engineering path works.",
+    "full_release_candidate_pod_cost_usd_at_1_usd_per_4h": "about 0.75 to 2.00 USD of pod time",
+    "risk": "If RayJoin and Barnes-Hut both fail as material runtime-sourced probes, Phoenix V3 should be reframed or redesigned instead of spending more pod time."
+  },
+  "goal_level_decision_audit": {
+    "decision": "Stop treating RTDBSCAN as a material probe and make RayJoin legacy-materialization audit the next controlled goal.",
+    "was_i_foolish": "No for this decision; yes would be continuing RTDBSCAN micro-tuning or all-app runs after a 0.994858x incumbent result.",
+    "foolish_actions": "Counting runner-vs-Embree as V3 speedup, ignoring the legacy-vs-Embree baseline, or spending pod time before identifying a real inter-phase cost to remove.",
+    "other_path": "The old path was cache hygiene and blended all-app geomean. It already produced 1.012x and did not solve V3.",
+    "different_path_now": "Audit a new Set-A family for a real runtime performance source, then run a focused A/B only if that source exists."
+  }
+}

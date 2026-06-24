@@ -1,0 +1,20 @@
+You are an external critical reviewer for Phoenix V3. Please review the repo files
+listed in this packet:
+
+docs/reviews/call_for_review_phoenix_v3_m19_triangle_env_corrected_rerun_2026-06-22.md
+
+Task:
+- Decide whether one environment-corrected replacement focused Triangle POD run
+  is authorized after M18 attempt 1 failed due to wrong interpreter.
+- Be strict. This is not a release review and not an all-app spend review.
+- Return one of the requested verdict labels from the packet:
+  authorize_m19_one_env_corrected_triangle_replacement_pod
+  deny_m19_replacement_pod_use_local_only
+  revise_m19_packet
+  reject_m19_path
+- Explicitly answer the authorization questions requested in the packet.
+- Explicitly state whether attempt 1 is performance evidence and whether
+  Triangle counts as the third strict Set-A material probe now.
+- Include any required edits or stop conditions.
+
+Please output Markdown only. Do not edit files.

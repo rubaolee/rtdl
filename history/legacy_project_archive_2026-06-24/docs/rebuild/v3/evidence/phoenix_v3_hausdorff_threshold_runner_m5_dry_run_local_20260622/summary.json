@@ -1,0 +1,196 @@
+{
+  "comparisons": {
+    "legacy_vs_embree": {
+      "available": true,
+      "baseline_phase_total_sec": null,
+      "baseline_query_sec": null,
+      "baseline_variant": "same_contract_embree",
+      "baseline_wrapper_wall_sec": null,
+      "candidate_phase_total_sec": null,
+      "candidate_query_sec": null,
+      "candidate_variant": "legacy_app_front_door_prepared_optix",
+      "candidate_wrapper_wall_sec": null,
+      "phase_total_speedup": null,
+      "query_speedup": null,
+      "wrapper_wall_speedup": null
+    },
+    "runner_vs_embree": {
+      "available": true,
+      "baseline_phase_total_sec": null,
+      "baseline_query_sec": null,
+      "baseline_variant": "same_contract_embree",
+      "baseline_wrapper_wall_sec": null,
+      "candidate_phase_total_sec": null,
+      "candidate_query_sec": null,
+      "candidate_variant": "productized_prepared_execution_runner",
+      "candidate_wrapper_wall_sec": null,
+      "phase_total_speedup": null,
+      "query_speedup": null,
+      "wrapper_wall_speedup": null
+    },
+    "runner_vs_legacy": {
+      "available": true,
+      "baseline_phase_total_sec": null,
+      "baseline_query_sec": null,
+      "baseline_variant": "legacy_app_front_door_prepared_optix",
+      "baseline_wrapper_wall_sec": null,
+      "candidate_phase_total_sec": null,
+      "candidate_query_sec": null,
+      "candidate_variant": "productized_prepared_execution_runner",
+      "candidate_wrapper_wall_sec": null,
+      "phase_total_speedup": null,
+      "query_speedup": null,
+      "wrapper_wall_speedup": null
+    }
+  },
+  "environment": {
+    "executable": "C:\\Python311\\python.exe",
+    "hardware_gate": {
+      "require_rt_hardware": false,
+      "status": "not_required"
+    },
+    "nvidia_smi": "unavailable: [WinError 2] The system cannot find the file specified",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "repo_root": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review"
+  },
+  "failed_checks": [],
+  "run_errors": {},
+  "schema": "rtdl.phoenix_v3.hausdorff_threshold_runner_pod_ab.v1",
+  "summary": {
+    "all_app_rerun_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "comparisons": {
+      "legacy_vs_embree": {
+        "available": true,
+        "baseline_phase_total_sec": null,
+        "baseline_query_sec": null,
+        "baseline_variant": "same_contract_embree",
+        "baseline_wrapper_wall_sec": null,
+        "candidate_phase_total_sec": null,
+        "candidate_query_sec": null,
+        "candidate_variant": "legacy_app_front_door_prepared_optix",
+        "candidate_wrapper_wall_sec": null,
+        "phase_total_speedup": null,
+        "query_speedup": null,
+        "wrapper_wall_speedup": null
+      },
+      "runner_vs_embree": {
+        "available": true,
+        "baseline_phase_total_sec": null,
+        "baseline_query_sec": null,
+        "baseline_variant": "same_contract_embree",
+        "baseline_wrapper_wall_sec": null,
+        "candidate_phase_total_sec": null,
+        "candidate_query_sec": null,
+        "candidate_variant": "productized_prepared_execution_runner",
+        "candidate_wrapper_wall_sec": null,
+        "phase_total_speedup": null,
+        "query_speedup": null,
+        "wrapper_wall_speedup": null
+      },
+      "runner_vs_legacy": {
+        "available": true,
+        "baseline_phase_total_sec": null,
+        "baseline_query_sec": null,
+        "baseline_variant": "legacy_app_front_door_prepared_optix",
+        "baseline_wrapper_wall_sec": null,
+        "candidate_phase_total_sec": null,
+        "candidate_query_sec": null,
+        "candidate_variant": "productized_prepared_execution_runner",
+        "candidate_wrapper_wall_sec": null,
+        "phase_total_speedup": null,
+        "query_speedup": null,
+        "wrapper_wall_speedup": null
+      }
+    },
+    "copies": 1,
+    "failed_checks": [],
+    "points_per_side": 4,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "repeat": 5,
+    "schema": "rtdl.phoenix_v3.hausdorff_threshold_runner_pod_ab.v1",
+    "serious_points_per_side_floor": 1048576,
+    "status": "hausdorff_threshold_runner_m5_collected_not_release",
+    "threshold": 0.4,
+    "true_zero_copy_claim_authorized": false,
+    "v4_external_buffer_claim_authorized": false,
+    "variant_count": 3,
+    "warmup": 1,
+    "whole_hausdorff_speedup_claim_authorized": false
+  },
+  "variants": {
+    "legacy_app_front_door_prepared_optix": {
+      "all_app_rerun_authorized": false,
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\hausdorff_xhd\\rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--copies",
+        "1",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1",
+        "--require-rt-core"
+      ],
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "status": "dry_run",
+      "variant": "legacy_app_front_door_prepared_optix"
+    },
+    "productized_prepared_execution_runner": {
+      "all_app_rerun_authorized": false,
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\hausdorff_xhd\\rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--optix-summary-mode",
+        "directed_threshold_prepared_runner",
+        "--hausdorff-threshold",
+        "0.4",
+        "--copies",
+        "1",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1",
+        "--require-rt-core"
+      ],
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "status": "dry_run",
+      "variant": "productized_prepared_execution_runner"
+    },
+    "same_contract_embree": {
+      "all_app_rerun_authorized": false,
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\hausdorff_xhd\\rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "embree",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--copies",
+        "1",
+        "--repeat",
+        "5",
+        "--warmup",
+        "1"
+      ],
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "status": "dry_run",
+      "variant": "same_contract_embree"
+    }
+  }
+}

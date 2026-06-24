@@ -1,0 +1,112 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "generic prepared fixed-radius-neighbor handle avoids constructing and uploading the double-precision exact search device buffer for float32 aggregate/self-query routes",
+  "checks": {
+    "cold_plus_query_reduction_is_real": true,
+    "integer_parity_with_cupy": true,
+    "integer_parity_with_lazy_old": true,
+    "lazy_evidence_exists": true,
+    "lazy_old_mode_is_prepared_query_baseline": true,
+    "lazy_self_cold_vs_cupy_below_material_floor": true,
+    "lazy_self_hot_vs_cupy_is_material": true,
+    "lazy_self_query_mode_is_explicit": true,
+    "lazy_self_runner_wall_vs_cupy_below_material_floor": true,
+    "prepare_reduction_is_real": true,
+    "previous_evidence_exists": true,
+    "release_flags_false": true,
+    "repeat5": true,
+    "serious_scale": true,
+    "sum_distance_relative_error_below_tolerance": true
+  },
+  "comparisons": {
+    "lazy_old_prepared_query_to_lazy_self_query_cold_plus_query_speedup": 1.9608361390062163,
+    "lazy_old_prepared_query_to_lazy_self_query_hot_speedup": 2.488011858059304,
+    "lazy_old_prepared_query_to_lazy_self_query_runner_wall_speedup": 1.2500446141840997,
+    "lazy_self_query_over_cupy_cold_plus_query_speedup": 1.2923831784497384,
+    "lazy_self_query_over_cupy_hot_speedup": 19.28004908907922,
+    "lazy_self_query_over_cupy_runner_wall_speedup": 1.0755039262547479,
+    "old_prepared_query_prepare_reduction_prepatch_to_lazy": 1.0765195909307164,
+    "self_query_cold_plus_query_reduction_prepatch_to_lazy": 1.0799977526647153,
+    "self_query_prepare_reduction_prepatch_to_lazy": 1.110843453756742,
+    "self_query_runner_wall_reduction_prepatch_to_lazy": 1.0250912407784354
+  },
+  "evidence": {
+    "lazy_cupy_grid_reference": "docs/rebuild/v3/evidence/rtnn_lazy_exact_prepare_20260621/cupy_grid_reference_lazy_exact_compare.json",
+    "lazy_old_prepared_query": "docs/rebuild/v3/evidence/rtnn_lazy_exact_prepare_20260621/old_prepared_query_lazy_exact.json",
+    "lazy_self_query": "docs/rebuild/v3/evidence/rtnn_lazy_exact_prepare_20260621/new_prepared_self_query_lazy_exact.json",
+    "previous_old_prepared_query": "docs/rebuild/v3/evidence/rtnn_self_query_20260621/old_prepared_query.json",
+    "previous_self_query": "docs/rebuild/v3/evidence/rtnn_self_query_20260621/new_prepared_self_query.json"
+  },
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not call lazy exact a major V3 performance row.",
+    "Do not quote the hot-path CuPy ratio without the cold and runner-wall ratios.",
+    "Do not claim RTNN, nearest-neighbor, or V3-over-V2 broad speedup from this packet.",
+    "Do not promote this to M7 without external review and a material cold/runner result."
+  ],
+  "generic_capability": "fixed_radius_neighbors_3d_lazy_exact_search_device_materialization",
+  "goal_level_decision_audit": {
+    "decision": "Record lazy exact-search materialization as a generic RTNN overhead reduction while keeping RTNN ranked_summary out of M7.",
+    "different_path_now": "Use this packet as a closed small optimization and move to the next larger generic bottleneck: input/column residency or externally reviewed prepared-handle scope.",
+    "foolish_actions": "It would be foolish to market the lazy-exact change as a major V3 win, hide the same-day CuPy wall comparison, or keep tuning RTNN wording instead of larger ingestion/prepare costs.",
+    "other_path": "I could have skipped documenting this because the gain is small, but that would make the engine change hard to audit and easy to overclaim later.",
+    "was_i_foolish": "No. This records the optimization and its limits instead of pretending that a small prepare reduction fixes the V3 wall-clock problem."
+  },
+  "interpretation": "Lazy exact-search materialization is a valid generic engine cleanup: float32 aggregate/self-query routes no longer pay for the unused double-precision exact search device buffer during prepared search construction. The RTX POD rerun shows real but small movement: self-query prepare improves by 1.111x and self-query cold-plus-query improves by 1.080x. It does not solve the V3 RTNN wall problem.",
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "m7_reopen_candidate_pending_2ai_review": false,
+  "material_speedup_floor": 2.0,
+  "measurements": {
+    "lazy_cupy_grid_reference": {
+      "cold_plus_query_sec": 0.6977095007896423,
+      "grid_prepare_sec": 0.6137842759490013,
+      "hot_median_sec": 0.08392522484064102,
+      "input_load_sec": 1.5524375811219215,
+      "runner_wall_sec": 2.250147081911564
+    },
+    "lazy_old_prepared_query": {
+      "cold_plus_query_sec": 1.0585823357105255,
+      "execution_prepare_sec": 0.5388396382331848,
+      "hot_median_sec": 0.010830208659172058,
+      "input_load_sec": 1.5567351654171944,
+      "input_pack_sec": 0.5089124888181686,
+      "runner_wall_sec": 2.61531750112772
+    },
+    "lazy_self_query": {
+      "cold_plus_query_sec": 0.539862722158432,
+      "execution_prepare_sec": 0.3569938912987709,
+      "hot_median_sec": 0.004352957010269165,
+      "input_load_sec": 1.5523166060447693,
+      "input_pack_sec": 0.17851587384939194,
+      "runner_wall_sec": 2.0921793282032013
+    },
+    "previous_self_query": {
+      "cold_plus_query_sec": 0.5830505266785622,
+      "execution_prepare_sec": 0.3965643271803856,
+      "hot_median_sec": 0.004359312355518341,
+      "input_load_sec": 1.561624176800251,
+      "input_pack_sec": 0.18212688714265823,
+      "runner_wall_sec": 2.144674703478813
+    }
+  },
+  "next_engine_action": "Keep RTNN ranked_summary open. The remaining useful work is larger generic ingestion/column residency or prepared-handle scope review, not more wording around this small lazy-exact improvement.",
+  "not_m7_blockers": [
+    "Lazy exact improves self-query execution_prepare by only 1.111x and self-query cold-plus-query by only 1.080x.",
+    "Lazy self-query over same-day CuPy grid is 1.292x cold-plus-query and 1.076x runner-wall, both below the 2.0x material floor.",
+    "This is a generic overhead reduction, not a broad RTNN, V2, or whole-app claim.",
+    "No external review or 2-AI consensus has promoted this row."
+  ],
+  "parity": {
+    "integer_signature_match_with_cupy": true,
+    "integer_signature_match_with_lazy_old_prepared_query": true,
+    "sum_distance_delta_lazy_self_minus_cupy": -6.508373189717531e-05,
+    "sum_distance_relative_error": 1.207351950882563e-10,
+    "sum_distance_relative_tolerance": 0.0001
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "status": "rtnn_lazy_exact_prepare_reduces_prepare_not_m7_wall_floor_not_met",
+  "tool": "v3_phoenix_rtnn_lazy_exact_prepare_evidence",
+  "whole_app_speedup_claim_authorized": false
+}

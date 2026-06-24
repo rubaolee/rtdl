@@ -1,0 +1,31 @@
+{
+  "cwd": "/root/phoenix_v3_work/current_aabb_20260621",
+  "env": {
+    "PYTHONPATH": "src:.",
+    "RTDL_OPTIX_LIBRARY": "/root/phoenix_v3_work/current_aabb_20260621/build/librtdl_optix.so"
+  },
+  "git_head": "fatal: not a git repository (or any of the parent directories): .git",
+  "hardware_gate": {
+    "checks": {
+      "has_nvidia_gpu": true,
+      "nvidia_smi_query": true,
+      "optix_capable_gpu_present": true,
+      "rt_hardware_name_present": true
+    },
+    "fail_closed_reason": null,
+    "gpus": [
+      {
+        "compute_cap": "8.9",
+        "driver_version": "550.127.05",
+        "name": "NVIDIA RTX 4000 Ada Generation"
+      }
+    ],
+    "query_error": null,
+    "require_rt_hardware": false,
+    "status": "pass",
+    "tool": "v3_optix_hardware_gate"
+  },
+  "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 8.9",
+  "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+  "tool": "v3_phoenix_rtnn_full_batch_float32_same_contract_environment"
+}

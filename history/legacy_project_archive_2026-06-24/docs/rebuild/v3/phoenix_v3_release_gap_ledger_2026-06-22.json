@@ -1,0 +1,141 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "checks": {
+    "claim_boundaries_present": true,
+    "current_core_gap_external_verdict_blocks_release": true,
+    "done_item_count_is_eight": true,
+    "external_verdict_obtained": true,
+    "external_verdict_release_false": true,
+    "external_verdict_scoped_packet_true": true,
+    "major_performance_redo_required": true,
+    "objective_conformance_passed_not_release": true,
+    "objective_coverage_5_of_5": true,
+    "readiness_redo_required": true,
+    "readiness_release_false": true,
+    "remaining_gap_count_is_one": true,
+    "set_a_set_b_proposal_only_not_authorization": true
+  },
+  "claim_boundaries": [
+    "Do not claim V3 broadly beats V2.x.",
+    "Do not claim package install or SDK readiness.",
+    "Do not claim multi-GPU or broad hardware portability.",
+    "Do not claim public Spatial speedup, RTDL-beats-RayJoin, or paper reproduction.",
+    "Do not claim true zero-copy, V4 C ABI, embedding, or multi-language host support.",
+    "Do not turn app-specific native engines into the V3 release surface."
+  ],
+  "decision_audit": {
+    "decision": "Record that Phoenix V3 still has a P0 major runtime-performance gap even after the scoped Claude verdict.",
+    "different_path_now": "Keep the P0 gap machine-readable: V3 needs serious all-app runtime stress-test wins before release.",
+    "foolish_actions": "The foolish action was letting row-scoped evidence and a scoped verdict replace broad V2.x runtime-performance proof.",
+    "other_path": "Keep the no-remaining-P0 ledger. That would mislead the next worker and the user.",
+    "was_i_foolish": "Yes. I previously treated scoped release authorization as if it closed the V3 major-version gap."
+  },
+  "done": [
+    {
+      "evidence": "docs/rebuild/v3/phoenix_v3_release_readiness_gate_2026-06-21.json",
+      "id": "current_surface_width",
+      "note": "13 current M7/supplemental rows across 9 capability families.",
+      "state": "done"
+    },
+    {
+      "evidence": "docs/rebuild/v3/phoenix_v3_objective_conformance_gate_2026-06-22.json",
+      "id": "objective_capability_mapping",
+      "note": "RayDB, RTDBSCAN, Spatial RayJoin, Triangle, and RTNN objectives map to reusable capability rows.",
+      "state": "done"
+    },
+    {
+      "evidence": "scripts/v3_release_wording_gate.py",
+      "id": "unsupported_claim_boundaries",
+      "note": "Release, broad V3-over-V2, package-install, hardware portability, V4/C ABI, and embedding claims remain blocked.",
+      "state": "done"
+    },
+    {
+      "evidence": "docs/rebuild/v3/phoenix_v3_install_reproducibility_gate_2026-06-21.json",
+      "id": "source_tree_pod_gated_scope",
+      "note": "Scoped source-tree/pod-gated thirteen-row installer blocker is closed, but general package install is not claimed.",
+      "state": "done"
+    },
+    {
+      "evidence": "docs/rebuild/v3/phoenix_v3_secondary_platform_gate_2026-06-21.json",
+      "id": "single_rtx_hardware_scope",
+      "note": "Secondary-platform blocker is closed only by a reviewed single-RTX hardware waiver.",
+      "state": "done"
+    },
+    {
+      "evidence": "docs/rebuild/v3/evidence/phoenix_v3_latest_v3_rebuild_matrix_after_aabb_runner_m2_20260622.json",
+      "id": "local_validation",
+      "note": "Full v3_rebuild matrix is green: 111 modules / 557 tests OK.",
+      "state": "done"
+    },
+    {
+      "evidence": "docs/reviews/claude_phoenix_v3_aggregate_release_readiness_13_row_after_dossier_review_2026-06-22.md",
+      "id": "external_scoped_packet_verdict",
+      "note": "Claude external aggregate review returned release_ready for the exact source_tree_pod_gated_thirteen_row scope; this is scoped evidence, not V3 major release authorization.",
+      "state": "done"
+    },
+    {
+      "evidence": "docs/rebuild/v3/phoenix_v3_core_gaps_external_verdict_status_2026-06-22.md",
+      "id": "current_core_gap_external_redirect",
+      "note": "Claude core-gap review is recorded as approve_blocked_not_release; continue non-release engineering, redirect effort to Gap 1, and do not authorize public speedup claims.",
+      "state": "done"
+    }
+  ],
+  "evidence": {
+    "accepted_external_verdict": "release_ready",
+    "current_core_gap_external_release_authorized": false,
+    "current_core_gap_external_review_path": "docs\\reviews\\claude_phoenix_v3_external_review_2026-06-22.md",
+    "current_core_gap_external_status_line": "external_verdict_obtained_claude_approve_blocked_not_release",
+    "current_core_gap_external_status_path": "docs\\rebuild\\v3\\phoenix_v3_core_gaps_external_verdict_status_2026-06-22.md",
+    "current_core_gap_external_verdict": "approve_blocked_not_release",
+    "external_verdict_intake_path": "docs\\rebuild\\v3\\phoenix_v3_external_verdict_intake_2026-06-22.json",
+    "external_verdict_intake_status": "external_verdict_obtained",
+    "major_performance_mandate_blocking_reasons": [
+      "broad_v2x_performance_not_proven",
+      "serious_all_app_paired_evidence_failed_release_bar",
+      "current_scoped_13_row_surface_not_v3_major_release"
+    ],
+    "major_performance_mandate_status": "redo_required",
+    "objective_capabilities_covered": [
+      "raydb_grouped_reduction",
+      "rtdbscan_component_union",
+      "spatial_rayjoin_topology_stream",
+      "triangle_prepared_graph",
+      "rtnn_ranked_summary"
+    ],
+    "objective_conformance_path": "docs\\rebuild\\v3\\phoenix_v3_objective_conformance_gate_2026-06-22.json",
+    "objective_conformance_status": "objective_conformance_passed_not_release",
+    "readiness_blocking_reasons": [
+      "broad_v2x_performance_not_proven",
+      "serious_all_app_paired_evidence_failed_release_bar",
+      "current_scoped_13_row_surface_not_v3_major_release",
+      "current_core_gap_external_review_blocks_release"
+    ],
+    "readiness_path": "docs\\rebuild\\v3\\phoenix_v3_release_readiness_gate_2026-06-21.json",
+    "readiness_status": "redo_required",
+    "reference_file_count": 24,
+    "scoped_packet_authorized": true,
+    "set_a_set_b_release_bar_proposal_path": "docs\\reviews\\phoenix_v3_set_a_set_b_release_bar_proposal_2026-06-22.md",
+    "set_a_set_b_release_bar_proposal_precondition": "freeze Set A / Set B classification and require runtime_executed True on >=2 Set-A probes before another full all-app pod run",
+    "set_a_set_b_release_bar_proposal_status": "proposal_only_not_authorization",
+    "valid_external_verdict_obtained": true
+  },
+  "failed_checks": [],
+  "next_action_policy": {
+    "if_external_tool_no_output": "record the no-output attempt and continue non-release V3 cleanup without changing release flags",
+    "if_external_verdict_blocked": "fix the named P0/P1 blockers, rerun gates, and request a new bounded review",
+    "if_external_verdict_release_ready": "treat it as scoped packet evidence unless the major performance mandate also passes"
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "remaining": [
+    {
+      "evidence": "docs/rebuild/v3/phoenix_v3_redo_mandate_major_version_performance_2026-06-22.md",
+      "id": "major_runtime_performance_mandate",
+      "required_action": "Prove broad V2.x performance superiority across serious benchmark-app stress tests and express wins as reusable RTRDL runtime capabilities.",
+      "severity": "P0",
+      "state": "remaining"
+    }
+  ],
+  "status": "redo_required_major_performance_p0_open",
+  "tool": "v3_phoenix_release_gap_ledger"
+}

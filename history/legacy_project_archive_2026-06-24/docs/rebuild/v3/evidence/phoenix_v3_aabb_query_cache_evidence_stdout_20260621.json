@@ -1,0 +1,155 @@
+{
+  "blocker_summary": {
+    "best_cold_plus_collect_wall_speedup": 1.1880894980002084,
+    "best_collect_speedup": 0.9359129179213015,
+    "best_prepare_speedup": 0.8028080240214733,
+    "best_query_total_speedup": 1.237603301067228,
+    "cache_was_observed": true,
+    "largest_cold_plus_collect_wall_speedup": 1.1351174352209814
+  },
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "generic aabb_index_query_2d prepared-session candidate stream; contact_manifold is only the evidence harness",
+  "checks": {
+    "all_backend_errors_empty": true,
+    "all_cache_stats_observed": true,
+    "all_complete_candidate_coverage": true,
+    "all_cpu_reference_match": true,
+    "all_have_embree_and_optix": true,
+    "all_query_total_positive": true,
+    "all_runner_completed": true,
+    "all_wall_below_material_floor": true,
+    "claim_flags_false": true,
+    "collect_not_material_win": true,
+    "hardware_gate_pass": true,
+    "larger_scale_not_better": true,
+    "optix_prepare_slower_on_all_rows": true,
+    "rows_are_32768_and_65536": true,
+    "summaries_exist": true
+  },
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not promote AABB prepare-reuse to M7 from these cache-hit rows.",
+    "Do not quote query-total speedup as a V3 win while cold-plus-collect wall is below 1.20x.",
+    "Do not treat contact_manifold as the optimized product; it is only the evidence harness.",
+    "Do not claim full contact solving, broad AABB acceleration, or broad V3-over-V2 speedup.",
+    "Do not keep scale-shopping this contract without a new reviewed rationale."
+  ],
+  "generic_capability": "aabb_candidate_stream",
+  "goal_level_decision_audit": {
+    "decision": "Record the AABB prepared-query record cache as a correct generic cleanup but not as a V3 M7 performance row.",
+    "different_path_now": "Move the AABB route to deeper generic overhead work: native packed query buffer reuse, prepare-cost reduction, and collect/compaction improvement.",
+    "foolish_actions": "The foolish action would be to celebrate 1.188x as close enough, or quote query-total speedup while hiding prepare and collect costs.",
+    "other_path": "I could keep trying larger AABB sizes. The 65,536 row already got worse, so that would be scale-shopping rather than solving the engine bottleneck.",
+    "was_i_foolish": "No. The packet accepts the cache evidence but refuses to turn sub-floor wall speedups into a release claim."
+  },
+  "hardware": {
+    "compute_cap": "8.9",
+    "driver_version": "550.127.05",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "host": "root@213.173.108.14 -p 11592",
+    "rt_hardware_gate": "pass"
+  },
+  "interpretation": "The prepared-query record cache is real and generic: both serious rows show one range-intersection cache entry with one miss and 52 hits per backend. However, the material wall result still fails the V3 floor. The 32,768-row cold-plus-collect wall ratio is below 1.20x, and the 65,536-row ratio is lower again. This is a correct engine cleanup, not a V3 performance promotion.",
+  "m7_candidate_reopen_authorized": false,
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "material_wall_speedup_floor": 1.2,
+  "next_engine_action": "Keep AABB prepare-reuse in the open generic-engine queue. The next useful work is below Python query-record reuse: cache or reuse native packed query buffers, reduce OptiX prepare cost, and reduce row-output collect/compaction overhead. Do not run more scale-only AABB attempts without a new contract rationale.",
+  "observed_rows": [
+    {
+      "complete_candidate_coverage": true,
+      "dataset": "jittered_grid",
+      "embree_cache_observed": true,
+      "embree_cache_stats": {
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 52,
+        "range_intersection_misses": 1
+      },
+      "embree_cold_plus_collect_wall_sec": 16.17991392314434,
+      "embree_collect_sec": 0.079732246696949,
+      "embree_prepare_sec": 0.32432661205530167,
+      "embree_query_total_sec": 14.7350537404418,
+      "evidence_dir": "docs/rebuild/v3/evidence/phoenix_v3_aabb_prepare_reuse_query_cache_stats_32768_r50_20260621",
+      "failed_checks": [
+        "material_optix_wall_win_after_prepare_reuse"
+      ],
+      "grid_count": 32768,
+      "matches_cpu_reference": true,
+      "optix_cache_observed": true,
+      "optix_cache_stats": {
+        "point_membership_entries": 0,
+        "point_membership_hits": 0,
+        "point_membership_misses": 0,
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 52,
+        "range_intersection_misses": 1
+      },
+      "optix_cold_plus_collect_wall_sec": 13.618430219590664,
+      "optix_collect_sec": 0.08519195020198822,
+      "optix_over_embree_broadphase_wall_speedup": 1.189676953583606,
+      "optix_over_embree_cold_plus_collect_wall_speedup": 1.1880894980002084,
+      "optix_over_embree_collect_speedup": 0.9359129179213015,
+      "optix_over_embree_prepare_speedup": 0.5769841945622983,
+      "optix_over_embree_query_total_speedup": 1.237603301067228,
+      "optix_over_embree_runner_wall_speedup": 1.1805654521555224,
+      "optix_prepare_sec": 0.56210657954216,
+      "optix_query_total_sec": 11.906120263040066,
+      "repeat": 50,
+      "status": "aabb_prepare_reuse_pod_evidence_collected_not_m7",
+      "summary_path": "docs/rebuild/v3/evidence/phoenix_v3_aabb_prepare_reuse_query_cache_stats_32768_r50_20260621/summary.json",
+      "warmup": 3
+    },
+    {
+      "complete_candidate_coverage": true,
+      "dataset": "jittered_grid",
+      "embree_cache_observed": true,
+      "embree_cache_stats": {
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 52,
+        "range_intersection_misses": 1
+      },
+      "embree_cold_plus_collect_wall_sec": 32.340053878724575,
+      "embree_collect_sec": 0.1782299056649208,
+      "embree_prepare_sec": 0.6656829342246056,
+      "embree_query_total_sec": 29.36246732622385,
+      "evidence_dir": "docs/rebuild/v3/evidence/phoenix_v3_aabb_prepare_reuse_query_cache_stats_65536_r50_20260621",
+      "failed_checks": [
+        "material_optix_wall_win_after_prepare_reuse"
+      ],
+      "grid_count": 65536,
+      "matches_cpu_reference": true,
+      "optix_cache_observed": true,
+      "optix_cache_stats": {
+        "point_membership_entries": 0,
+        "point_membership_hits": 0,
+        "point_membership_misses": 0,
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 52,
+        "range_intersection_misses": 1
+      },
+      "optix_cold_plus_collect_wall_sec": 28.490491710603237,
+      "optix_collect_sec": 0.2030264064669609,
+      "optix_over_embree_broadphase_wall_speedup": 1.136963797472404,
+      "optix_over_embree_cold_plus_collect_wall_speedup": 1.1351174352209814,
+      "optix_over_embree_collect_speedup": 0.8778656371181188,
+      "optix_over_embree_prepare_speedup": 0.8028080240214733,
+      "optix_over_embree_query_total_speedup": 1.160835328240567,
+      "optix_over_embree_runner_wall_speedup": 1.129423455076115,
+      "optix_prepare_sec": 0.8291931748390198,
+      "optix_query_total_sec": 25.294257171452045,
+      "repeat": 50,
+      "status": "aabb_prepare_reuse_pod_evidence_collected_not_m7",
+      "summary_path": "docs/rebuild/v3/evidence/phoenix_v3_aabb_prepare_reuse_query_cache_stats_65536_r50_20260621/summary.json",
+      "warmup": 3
+    }
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "source_dirs": [
+    "docs/rebuild/v3/evidence/phoenix_v3_aabb_prepare_reuse_query_cache_stats_32768_r50_20260621",
+    "docs/rebuild/v3/evidence/phoenix_v3_aabb_prepare_reuse_query_cache_stats_65536_r50_20260621"
+  ],
+  "status": "aabb_prepare_reuse_query_cache_evidence_not_m7_wall_floor_not_met",
+  "tool": "v3_phoenix_aabb_prepare_reuse_query_cache_evidence",
+  "whole_app_speedup_claim_authorized": false
+}

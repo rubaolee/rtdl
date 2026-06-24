@@ -301,6 +301,14 @@ def _triangle_aabb(triangle: Triangle2D) -> tuple[float, float, float, float]:
     return (min(xs), min(ys), max(xs), max(ys))
 
 
+def _prepared_runner_phase_seconds(metadata: dict[str, Any], phase: str) -> float:
+    report = metadata.get("prepared_execution_report") or {}
+    for row in report.get("phase_timings", ()):
+        if row.get("phase") == phase:
+            return float(row.get("seconds", 0.0))
+    return 0.0
+
+
 def aabb_broadphase_witness_rows(
     fixture: CollisionWitnessFixture,
     *,
@@ -339,37 +347,41 @@ def aabb_broadphase_witness_rows(
     broadphase_started = time.perf_counter()
 
     if normalized_discovery_backend in {"embree", "optix"} and (warmup_count > 0 or repeat_count > 1):
-        prepare_started = time.perf_counter()
-        prepared = rt.prepare_aabb_index_2d(
-            indexed_boxes,
-            indexed_ids=indexed_ids,
-            resolution=resolution,
-            backend=normalized_discovery_backend,
-        )
-        prepare_sec = time.perf_counter() - prepare_started
+        cache = rt.ExplicitPreparedSessionCache(max_entries=1)
         query_times: list[float] = []
         rows: tuple[tuple[int, int], ...] | None = None
+        prepared_query_cache_stats: dict[str, int] | None = None
+        runner_metadata_rows: list[dict[str, Any]] = []
+        runner_wall_started = time.perf_counter()
         try:
-            for iteration in range(warmup_count + repeat_count):
-                query_started = time.perf_counter()
-                if normalized_discovery_backend == "optix":
-                    emitted_rows = prepared.intersection_rows(
-                        query_boxes,
-                        query_ids,
-                        row_capacity=resolved_row_capacity,
-                    )
-                else:
-                    emitted_rows = prepared.intersection_rows(query_boxes, query_ids)
-                query_sec = time.perf_counter() - query_started
-                if iteration >= warmup_count:
-                    query_times.append(query_sec)
-                    rows = emitted_rows
+            for iteration in range(repeat_count):
+                result = rt.run_aabb_index_query_2d_range_intersection_prepared_session(
+                    indexed_boxes=indexed_boxes,
+                    query_boxes=query_boxes,
+                    indexed_ids=indexed_ids,
+                    query_ids=query_ids,
+                    backend=normalized_discovery_backend,
+                    partner="none",
+                    cache=cache,
+                    row_capacity=resolved_row_capacity,
+                    resolution=resolution,
+                    device="cuda:0" if normalized_discovery_backend == "optix" else "cpu:0",
+                    warmup_count=warmup_count if iteration == 0 else 0,
+                )
+                metadata = result.to_metadata()
+                runner_metadata_rows.append(metadata)
+                query_times.append(_prepared_runner_phase_seconds(metadata, "executor"))
+                rows = result.output["candidate_id_rows"]
+                if isinstance(result.output.get("prepared_query_cache_stats"), dict):
+                    prepared_query_cache_stats = dict(result.output["prepared_query_cache_stats"])
         finally:
-            close = getattr(prepared, "close", None)
-            if callable(close):
-                close()
+            cache.clear()
         if rows is None:
             raise RuntimeError("prepared AABB discovery did not run a measured query")
+        runner_wall_sec = time.perf_counter() - runner_wall_started
+        first_runner_metadata = runner_metadata_rows[0]
+        last_runner_metadata = runner_metadata_rows[-1]
+        prepare_sec = _prepared_runner_phase_seconds(first_runner_metadata, "prepare")
         query_median_sec = statistics.median(query_times)
         query_total_sec = float(sum(query_times))
         broadphase = {
@@ -389,6 +401,29 @@ def aabb_broadphase_witness_rows(
             "pruning_ratio": None,
             "row_capacity": resolved_row_capacity,
             "complete_candidate_coverage": True,
+            "prepared_query_cache_stats": prepared_query_cache_stats,
+            "prepared_execution_session_runner_used": True,
+            "productized_execution_path": "prepared_execution_session_runner",
+            "prepared_execution_session_runner_metadata": {
+                "first_run": first_runner_metadata,
+                "last_run": last_runner_metadata,
+                "runtime_executed_count": sum(
+                    1 for metadata in runner_metadata_rows if metadata.get("runtime_executed") is True
+                ),
+                "cache_hit_count": sum(
+                    1
+                    for metadata in runner_metadata_rows
+                    if metadata.get("prepared_session", {}).get("cache_hit") is True
+                ),
+                "repeat_count": int(repeat_count),
+                "warmup_count": int(warmup_count),
+                "runner_wall_sec": runner_wall_sec,
+                "row_contract": last_runner_metadata.get("row_contract"),
+                "primitive_family": last_runner_metadata.get("primitive_family"),
+                "release_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "broad_v3_faster_than_v2_claim_authorized": False,
+            },
             "run_phases": {
                 "prepare_aabb_index_2d_sec": prepare_sec,
                 "emit_aabb_intersection_pair_rows_2d_median_sec": query_median_sec,
@@ -396,6 +431,7 @@ def aabb_broadphase_witness_rows(
                 "emit_aabb_intersection_pair_rows_2d_min_sec": min(query_times),
                 "emit_aabb_intersection_pair_rows_2d_max_sec": max(query_times),
                 "emit_aabb_intersection_pair_rows_2d_measured_count": len(query_times),
+                "prepared_execution_session_runner_wall_sec": runner_wall_sec,
             },
             "discovery_warmup_count": int(warmup_count),
             "discovery_repeat_count": int(repeat_count),
@@ -454,6 +490,14 @@ def aabb_broadphase_witness_rows(
         "discovery_row_capacity": resolved_row_capacity,
         "discovery_warmup_count": int(warmup_count),
         "discovery_repeat_count": int(repeat_count),
+        "prepared_query_cache_stats": broadphase.get("prepared_query_cache_stats"),
+        "prepared_execution_session_runner_used": bool(
+            broadphase.get("prepared_execution_session_runner_used")
+        ),
+        "productized_execution_path": broadphase.get("productized_execution_path"),
+        "prepared_execution_session_runner_metadata": broadphase.get(
+            "prepared_execution_session_runner_metadata"
+        ),
         "exact_refinement_checks": exact_refinement_checks,
         "exact_refinement_checks_avoided": max(0, all_pairs_count - exact_refinement_checks),
         "resolution": int(resolution),
@@ -469,6 +513,70 @@ def aabb_broadphase_witness_rows(
             "AABB candidate discovery is generic RTDL broadphase behavior. The final "
             "triangle-intersection refinement and contact interpretation remain app-owned; "
             "no collision-specific native engine logic or public speedup claim is made."
+        ),
+    }
+
+
+def describe_aabb_broadphase_prepared_session_residency(
+    fixture: CollisionWitnessFixture,
+    *,
+    backend: str,
+    resolution: int,
+    row_capacity: int | None,
+    warmup_count: int,
+    repeat_count: int,
+) -> dict[str, Any]:
+    normalized_backend = backend.strip().lower().replace("-", "_")
+    if normalized_backend in {"python", "cpu_python_reference"}:
+        normalized_backend = "cpu"
+    device = "cuda:0" if normalized_backend == "optix" else "cpu:0"
+    session_key = rt.make_prepared_session_cache_key(
+        primitive="aabb_index_query_2d",
+        backend=normalized_backend,
+        input_fingerprints={
+            "indexed_aabbs": {
+                "count": len(fixture.scene_triangles),
+                "source": "scene_triangle_aabbs",
+            },
+            "query_aabbs": {
+                "count": len(fixture.query_triangles),
+                "source": "query_triangle_aabbs",
+            },
+        },
+        parameters={
+            "operation": "range_intersection_rows",
+            "row_capacity": row_capacity,
+            "resolution": int(resolution),
+            "row_contract": "generic_aabb_intersection_pair_rows_2d",
+        },
+        partner="none",
+        device=device,
+    )
+    session_policy = rt.RtdlPreparedSessionResidencyPolicy(
+        cache_key=session_key,
+        cache_enabled=False,
+        lifetime_state="session_retained",
+        reuse_scope="explicit_user_session",
+        invalidation_events=("explicit_invalidate", "input_fingerprint_change", "backend_context_reset", "close"),
+        cold_prepare_phase="prepare_aabb_index_2d",
+        hot_query_phase="emit_aabb_intersection_pair_rows_2d",
+    )
+    return {
+        "cache_key": session_key.to_metadata(),
+        "policy": session_policy.to_metadata(),
+        "explicit_reuse_helper": "get_or_prepare_explicit_session",
+        "cache_enabled_by_default": False,
+        "cold_hot_phase_split_required": True,
+        "prepare_once_query_many_pattern": True,
+        "query_reuse_observed_within_payload": bool(warmup_count > 0 or repeat_count > 1),
+        "automatic_partner_selection_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "app_specific_native_engine_logic_allowed": False,
+        "claim_boundary": (
+            "Generic AABB_INDEX_QUERY_2D prepared-session residency metadata only. "
+            "It records explicit lifetime and cold/hot phase split; it is not a "
+            "public speedup claim and not contact-specific native engine logic."
         ),
     }
 
@@ -697,6 +805,22 @@ def aabb_broadphase_collect_k_payload(
         "exact_refinement_checks_avoided": broadphase["exact_refinement_checks_avoided"],
         "run_phases": broadphase["run_phases"]
         | {"collect_k_bounded_rows_sec": collect_elapsed_sec},
+        "prepared_query_cache_stats": broadphase.get("prepared_query_cache_stats"),
+        "prepared_execution_session_runner_used": bool(
+            broadphase.get("prepared_execution_session_runner_used")
+        ),
+        "productized_execution_path": broadphase.get("productized_execution_path"),
+        "prepared_execution_session_runner_metadata": broadphase.get(
+            "prepared_execution_session_runner_metadata"
+        ),
+        "prepared_session_residency": describe_aabb_broadphase_prepared_session_residency(
+            fixture,
+            backend=broadphase["candidate_discovery_backend"],
+            resolution=resolved_resolution,
+            row_capacity=broadphase["discovery_row_capacity"],
+            warmup_count=discovery_warmup_count,
+            repeat_count=discovery_repeat_count,
+        ),
         "v2_4_prepared_session": v2_4_session,
         "v2_4_phase_timing": v2_4_phase_timing,
         "engine_boundary": scope_payload()["engine_boundary"],

@@ -1,0 +1,35 @@
+You are the third independent AI reviewer for Phoenix V3 M57.
+
+Working directory:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Review whether exactly one future source-signature-gated LibRTS M47 rerun should be authorized after the fail-closed fix.
+
+Read:
+
+- docs/reviews/call_for_review_phoenix_v3_m57_source_signature_gated_librts_rerun_authorization_2026-06-23.md
+- docs/reviews/claude_phoenix_v3_m57_fail_closed_rereview_2026-06-23.raw.md
+- scripts/v3_phoenix_m47_librts_stability_protocol.py
+- tests/v3_phoenix_m47_librts_stability_protocol_test.py
+- tests/v3_phoenix_m57_librts_rerun_authorization_packet_gate_test.py
+- docs/reports/phoenix_v3_m57_v3_rebuild_after_preflight_fail_closed_fix_2026-06-23.combined.txt
+- docs/reports/phoenix_v3_m56_goal_completion_audit_2026-06-23.md
+- docs/reviews/codex_claude_antigravity_phoenix_v3_m56_goal_completion_3ai_consensus_2026-06-23.md
+
+Choose exactly one verdict:
+
+- authorize_m57_one_source_signature_gated_librts_rerun_after_fail_closed_fix
+- request_m57_changes_before_authorization
+- reject_m57_rerun_authorization
+
+Audit:
+
+1. Does the M47 harness now abort before measured samples when preflight returns errors?
+2. Does the test suite cover that fail-closed behavior?
+3. Is the M57 packet narrow enough: one run, unchanged scenarios, exactly 8 paired samples, real roots, explicit Python paths, target dry-run first, source-signature gate required?
+4. Does the new token avoid reusing the consumed M54/M55 token?
+5. Are the residual risks preserved, especially that a metadata-fixed run may still be performance-red?
+6. Does this review avoid authorizing release, all-app, public claims, V4, embedding, C ABI, true-zero-copy, watch-row closure, scenario/sample changes, or a second run?
+
+If you authorize, state the exact token and exact preconditions. Write the completed review to:
+docs/reviews/antigravity_phoenix_v3_m57_authorization_after_fail_closed_fix_review_2026-06-23.md

@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 3353, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 3322, in main
+    run_rt_dbscan_benchmark(
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 2847, in run_rt_dbscan_benchmark
+    with rt.prepare_v2_8_fixed_radius_graph_component_continuation_3d(
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/v2_8_fixed_radius_graph_component_front_door.py", line 504, in prepare_v2_8_fixed_radius_graph_component_continuation_3d
+    lower_prepared = prepare_optix_numba_radius_graph_grouped_stream_continuation_3d(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/partner_adapters.py", line 8408, in prepare_optix_numba_radius_graph_grouped_stream_continuation_3d
+    return PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/partner_adapters.py", line 7614, in __init__
+    cuda, np = _numba_cuda_stack_for_radius_graph()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/partner_adapters.py", line 6046, in _numba_cuda_stack_for_radius_graph
+    from numba import cuda
+ModuleNotFoundError: No module named 'numba'

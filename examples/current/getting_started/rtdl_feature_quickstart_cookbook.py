@@ -382,11 +382,21 @@ def run_cookbook() -> dict[str, object]:
         "backend": "cpu_python_reference",
         "feature_count": len(recipes),
         "recipes": recipes,
-        "honesty_boundary": (
+        "note": (
             "This cookbook uses the portable CPU Python reference path so every "
-            "feature shape is easy to learn. Use feature docs and support "
-            "matrices before making backend/performance claims."
+            "feature shape is easy to learn and inspect."
         ),
+    }
+
+
+def summarize_cookbook(payload: dict[str, object]) -> dict[str, object]:
+    recipes = payload["recipes"]
+    assert isinstance(recipes, list)
+    return {
+        "app": payload["app"],
+        "backend": payload["backend"],
+        "feature_count": payload["feature_count"],
+        "features": [recipe["feature"] for recipe in recipes if isinstance(recipe, dict)],
     }
 
 
@@ -394,8 +404,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Run one compact CPU Python reference recipe for each current RTDL feature."
     )
-    parser.parse_args(argv)
-    print(json.dumps(run_cookbook(), indent=2, sort_keys=True))
+    parser.add_argument("--json", action="store_true", help="Print the full recipe payload with rows.")
+    args = parser.parse_args(argv)
+    payload = run_cookbook()
+    output = payload if args.json else summarize_cookbook(payload)
+    print(json.dumps(output, indent=2, sort_keys=True))
     return 0
 
 

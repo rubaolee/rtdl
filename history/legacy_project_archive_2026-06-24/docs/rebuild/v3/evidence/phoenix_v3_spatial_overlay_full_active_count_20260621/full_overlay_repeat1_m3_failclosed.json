@@ -1,0 +1,198 @@
+{
+  "case_shape": {
+    "left_cdb": "/root/rtdl_v3_rebuild_20260620/current/data/rayjoin_public_cdb/br_county.cdb",
+    "left_shape_count": 15700,
+    "right_cdb": "/root/rtdl_v3_rebuild_20260620/current/data/rayjoin_public_cdb/br_soil.cdb",
+    "right_shape_count": 7774
+  },
+  "claim_boundary": {
+    "benchmark_app": "spatial_rayjoin",
+    "full_polygon_overlay_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_section57_full_reproduction_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_active_count_only": true,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "workload": "overlay_seed"
+  },
+  "comparison": {
+    "active_count": 19277,
+    "active_counts_match": false,
+    "all_counts_stable": true,
+    "all_row_materialization_avoided": true,
+    "embree_over_optix_timed_median": 1262.2056762619693,
+    "old_embree_raw_relation_row_contract": "generic_row_count_raw_view_no_python_dicts",
+    "old_embree_raw_relation_row_count_not_comparable": true,
+    "old_raw_relation_row_contract_rejected": true,
+    "old_raw_relation_row_count_not_comparable": true,
+    "optix_over_embree_timed_median": 0.0007922639065936597,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "same_backends": [
+      "embree",
+      "optix"
+    ],
+    "same_output_contract": true,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "environment": {
+    "git_head": null,
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "failure_reasons": [
+    "active_count_mismatch"
+  ],
+  "goal": "Goal4430 V3.0 M33 Spatial RayJoin overlay active-count same-contract refresh",
+  "parameters": {
+    "embree_threads": "auto",
+    "left_cdb": "data/rayjoin_public_cdb/br_county.cdb",
+    "repeat": 1,
+    "right_cdb": "data/rayjoin_public_cdb/br_soil.cdb",
+    "warmup": 0
+  },
+  "planned": {
+    "embree_threads": "auto",
+    "left_cdb": "data/rayjoin_public_cdb/br_county.cdb",
+    "output_contract": "overlay_active_pair_dependency_count",
+    "repeat": 1,
+    "right_cdb": "data/rayjoin_public_cdb/br_soil.cdb",
+    "same_contract_backends": [
+      "embree",
+      "optix"
+    ],
+    "warmup": 0
+  },
+  "rows": [
+    {
+      "active_count": 21228,
+      "backend": "embree",
+      "claim_boundary": {
+        "full_polygon_overlay_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_section57_full_reproduction_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_stable": true,
+      "execution_route": "prepared_embree_shape_pair_active_count_2d",
+      "left_shape_count": 15700,
+      "native_symbol": "rtdl_embree_shape_pair_active_count_2d_count",
+      "native_traversal_median_sec": 20.564365979,
+      "output_contract": "overlay_active_pair_dependency_count",
+      "repeat": 1,
+      "right_shape_count": 7774,
+      "row_materialization_avoided": true,
+      "setup_sec": 0.33314254879951477,
+      "threads": "auto",
+      "timed_max_sec": 20.57024759799242,
+      "timed_median_sec": 20.57024759799242,
+      "timed_min_sec": 20.57024759799242,
+      "timed_total_sec": 20.57024759799242,
+      "warmup": 0
+    },
+    {
+      "active_count": 19277,
+      "backend": "optix",
+      "claim_boundary": {
+        "full_polygon_overlay_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_section57_full_reproduction_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_stable": true,
+      "execution_route": "prepared_optix_shape_pair_active_count_device_continuation_reuse",
+      "left_shape_count": 15700,
+      "native_symbol": "rtdl_optix_run_shape_pair_relation_active_device_prepared_left_executor",
+      "native_traversal_median_sec": 0.01629706472158432,
+      "output_contract": "overlay_active_pair_dependency_count",
+      "prepare_active_count_executor_sec": 0.0003528594970703125,
+      "repeat": 1,
+      "right_shape_count": 7774,
+      "row_materialization_avoided": true,
+      "setup_sec": 1.779498353600502,
+      "threads": null,
+      "timed_median_sec": 0.01629706472158432,
+      "timed_total_sec": 0.01629706472158432,
+      "topology_stream_m3_phase_table": {
+        "contract": "topology_stream_m3_phase_table_v1",
+        "full_m3_phase_table_complete": true,
+        "m7_promotion_authorized": false,
+        "missing_m3_phases_for_public_row": [],
+        "output_contract": "overlay_active_pair_dependency_count",
+        "phase_seconds": {
+          "device_transfer_or_residency_sec": 0.0,
+          "host_return_or_scalar_materialization_sec": 1.895e-05,
+          "query_stream_prepare_sec": 0.2060217633843422,
+          "rt_traversal_sec": 0.011459154,
+          "static_scene_prepare_sec": 1.5693791508674622,
+          "topology_continuation_sec": 0.00477611
+        },
+        "public_speedup_claim_authorized": false,
+        "query_count": 122051800,
+        "query_stream_resident": true,
+        "release_authorized": false,
+        "repeat": 1,
+        "row_scoped_public_speedup_claim_authorized": false,
+        "source_phase_keys": {
+          "app_phases_sec": [
+            "active_count_device_continuation_sec",
+            "left_shape_pack_sec",
+            "prepare_active_count_executor_sec",
+            "prepare_left_set_sec",
+            "prepare_static_scene_sec",
+            "prepared_query_sec",
+            "prepared_query_sec_repeat",
+            "prepared_query_sec_total_sec",
+            "prepared_query_sec_warmup"
+          ],
+          "native_phase_timings": [
+            "active_count",
+            "active_scan",
+            "containment",
+            "flag_download",
+            "left_prepare",
+            "left_upload",
+            "mode",
+            "pair_count",
+            "traversal"
+          ]
+        },
+        "status": "complete_non_authorizing_m3_table",
+        "table_basis": "prepared_optix_shape_pair_active_count_phase_timers_plus_native_last_phase_timings; non-authorizing V3 topology-stream accounting",
+        "true_zero_copy_claim_authorized": false,
+        "warmup": 0
+      },
+      "topology_stream_prepared_handle": {
+        "app_specific_native_engine_logic_allowed": false,
+        "backend": "optix",
+        "contract": "topology_stream_prepared_handle_v1",
+        "full_m3_phase_table_complete": true,
+        "generic_capability": "point_location_topology_stream",
+        "m7_promotion_authorized": false,
+        "output_contract": "overlay_active_pair_dependency_count",
+        "public_speedup_claim_authorized": false,
+        "query_count": 122051800,
+        "query_stream_prepared": true,
+        "query_stream_residency": "device_resident_prepared_left_shape_set_with_reusable_active_count_executor",
+        "release_authorized": false,
+        "reusable_engine_surface": true,
+        "row_scoped_public_speedup_claim_authorized": false,
+        "static_scene_prepared": true,
+        "status": "prepared_topology_stream_handle_non_authorizing",
+        "true_zero_copy_claim_authorized": false,
+        "v4_embedding_claim_authorized": false
+      },
+      "warmup": 0
+    }
+  ],
+  "status": "fail",
+  "version": "rtdl.v3_0.spatial_rayjoin_overlay_active_count_same_contract.m33"
+}

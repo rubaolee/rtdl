@@ -1,0 +1,140 @@
+{
+  "tool": "phoenix_v3_m17_triangle_focused_pod_protocol",
+  "date": "2026-06-22",
+  "status": "m17_protocol_ready_for_review_no_pod_run",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "true_zero_copy_claim_authorized": false,
+  "external_embedding_or_zero_copy_claim_authorized": false,
+  "focused_pod_spend_authorized_now": false,
+  "all_app_pod_spend_authorized": false,
+  "third_strict_set_a_material_probe_closed": false,
+  "source_verdict": {
+    "m16_consensus": "docs/reviews/codex_bernoulli_phoenix_v3_m16_triangle_runner_wiring_2ai_consensus_2026-06-22.md",
+    "m16_verdict": "accept_m16_prepare_m17_focused_pod_protocol_no_run"
+  },
+  "m17_2ai_consensus": {
+    "consensus_file": "docs/reviews/codex_bernoulli_phoenix_v3_m17_triangle_focused_pod_protocol_2ai_consensus_2026-06-22.md",
+    "codex_position": "accept_m17_authorize_m18_runner_harness_no_pod",
+    "bernoulli_verdict": "accept_m17_authorize_m18_runner_harness_no_pod",
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "focused_pod_spend_authorized_now": false,
+    "all_app_pod_spend_authorized": false,
+    "m17_protocol_sufficient_for_m18_harness_only": true,
+    "runner_harness_is_pre_run_blocker": true,
+    "triangle_counts_as_third_strict_set_a_material_probe_now": false,
+    "next_step": "m18_local_triangle_runner_harness_no_pod"
+  },
+  "row": {
+    "row_id": "prepared_graph_chunk_rt_graph_2a1_cliques_80000_non_graph_stream_m17_rerun",
+    "source_old_row": "prepared_graph_chunk_rt_graph_2a1_cliques_80000_non_graph_stream",
+    "workload": "Generated K4 clique ladder, 80,000 cliques",
+    "edge_count": 480000,
+    "oracle_triangle_count": 320000,
+    "serious_scale_floor_cliques": 80000,
+    "smoke_rows_do_not_count": true,
+    "synthetic_scope": "synthetic K4 clique-ladder row, not RT-Graph paper reproduction and not graph database acceleration"
+  },
+  "variants": [
+    {
+      "id": "embree_same_contract_control",
+      "role": "same-contract non-RT-core control",
+      "required": true,
+      "command": "$env:PYTHONPATH='src;.'; py -3 examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_2a1_generic_rt --edge-file build/phoenix_v3_m17_triangle/k4_cliques_80000.edge --edge-format binary --backend embree --detail summary --partner none --warmup 1 --repeat 5",
+      "must_report": [
+        "query_median_ms",
+        "query_total_ms",
+        "total wall time",
+        "oracle match"
+      ]
+    },
+    {
+      "id": "legacy_app_front_door_optix",
+      "role": "old Triangle app-front-door OptiX route control",
+      "required": true,
+      "command": "$env:PYTHONPATH='src;.'; py -3 examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py --mode rt_graph_2a1_generic_rt --edge-file build/phoenix_v3_m17_triangle/k4_cliques_80000.edge --edge-format binary --backend optix --detail summary --partner cupy --warmup 1 --repeat 5",
+      "must_report": [
+        "query_median_ms",
+        "query_total_ms",
+        "total wall time",
+        "partner_summary_contract_used",
+        "oracle match"
+      ]
+    },
+    {
+      "id": "productized_prepared_execution_runner",
+      "role": "current M16 Phoenix V3 productized runner route",
+      "required": true,
+      "harness_status": "required_before_pod_run_not_yet_authorized_by_m17_packet",
+      "required_harness": "scripts/v3_phoenix_triangle_runner_m17_pod_ab.py or equivalent reviewed runner harness",
+      "required_helper": "run_ray_triangle_weighted_summary_device_output_stream_prepared_session",
+      "command_template": "$env:PYTHONPATH='src;.'; py -3 scripts/v3_phoenix_triangle_runner_m17_pod_ab.py --output-dir docs/rebuild/v3/evidence/phoenix_v3_triangle_runner_m17_focused_pod_ab_20260622 --edge-file build/phoenix_v3_m17_triangle/k4_cliques_80000.edge --cliques 80000 --repeat 5 --warmup 1 --require-rt-hardware",
+      "must_report": [
+        "runtime_executed",
+        "runtime_trunk_executes_end_to_end",
+        "productized_execution_path=prepared_execution_session_runner",
+        "primitive_family=ray_triangle_weighted_summary_device_output_stream",
+        "internal_device_residency_between_rtdl_phases",
+        "device_output_stream_validated",
+        "prepared_scene_reused",
+        "prepared_ray_batch_reused",
+        "ray_weights_device_resident",
+        "hot_path_host_materialization=false",
+        "weighted_hit_sum=320000",
+        "hot query median",
+        "runner-inclusive wall",
+        "prepare/cache/executor/finalize phase table"
+      ]
+    }
+  ],
+  "pre_run_gates": [
+    "M17 must obtain 2-AI review before any focused POD run.",
+    "The productized runner harness must exist and pass local dry-run/unit tests before POD.",
+    "The POD must pass the OptiX RT hardware gate on the same RTX 4000 Ada hardware class.",
+    "The K4 80,000-clique edge file must be generated once and checksummed before variants run.",
+    "All three variants must use the same edge file, same oracle, warmup=1, repeat=5, and separate output files.",
+    "The runner route must expose M16 metadata; otherwise the run is classified as harness failure, not performance evidence.",
+    "The runner process must print heartbeat output at least every 30 seconds.",
+    "No all-app run may be started from this protocol."
+  ],
+  "success_bars": {
+    "correctness": "all variants must match oracle_triangle_count=320000",
+    "productized_runtime": "runner metadata must set runtime_executed=true, productized_execution_path=prepared_execution_session_runner, and runtime_trunk_executes_end_to_end=true",
+    "material_set_a_candidate": "runner OptiX must beat Embree same-contract control by at least 1.20x on both hot query median and runner-inclusive wall",
+    "legacy_no_regression": "runner-inclusive wall must be at least 0.98x of the legacy app-front-door OptiX route, or the result is productized coverage only and not the third strict Set-A material probe",
+    "claim_boundary": "all release/public/broad V3-over-V2/V4/zero-copy flags must remain false"
+  },
+  "failure_classification": {
+    "no_runner_harness": "stop and create/review M18 runner harness; do not spend POD",
+    "hardware_gate_fail": "stop and record environment failure",
+    "oracle_mismatch": "stop; correctness failure, no performance interpretation",
+    "metadata_missing": "classify as productized-runner failure, no Set-A credit",
+    "runner_slower_than_embree_or_below_1_20x": "classify as coverage or negative evidence, no third strict Set-A credit",
+    "runner_regresses_vs_legacy_below_0_98x": "classify as productized coverage only unless 2-AI accepts a specific justified exception"
+  },
+  "resource_budget_if_authorized_later": {
+    "m18_runner_harness_local_work_hours": "1.5-3.0",
+    "focused_pod_wall_hours": "0.75-1.5",
+    "focused_pod_cost_at_1_usd_per_4_hours": "0.19-0.38 USD",
+    "hard_cap_before_new_review_hours": 2.0,
+    "hard_cap_before_new_review_cost_usd": 0.5,
+    "all_app_pod_wall_hours": "not authorized"
+  },
+  "recommended_next_step": {
+    "id": "m18_local_triangle_runner_harness_no_pod",
+    "pod_now": false,
+    "reviewed_verdict": "accept_m17_authorize_m18_runner_harness_no_pod",
+    "review_first": true,
+    "note": "Because the current Triangle app CLI has no M16 productized runner mode, the conservative next step is to write and locally test the focused runner harness before any POD spend."
+  },
+  "decision_audit": {
+    "decision": "write a protocol that exposes the missing runner harness as a pre-run gate instead of running POD from old Triangle numbers",
+    "was_i_foolish": "No.",
+    "foolish_actions": "It would be foolish to reuse the old 347x/6.342x Triangle row as current Phoenix runner evidence or to run POD without a productized runner harness.",
+    "other_path": "Authorize a focused POD run immediately because the POD is online. That risks measuring the old app route again and learning nothing about V3.",
+    "different_path_now": "Freeze the exact row, controls, metrics, bars, harness gate, and resource cap; then seek 2-AI review before spending POD."
+  }
+}

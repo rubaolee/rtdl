@@ -60,7 +60,8 @@ def _scale_value(scale: str, *, quick: int, standard: int, large: int) -> int:
 
 
 def _py(path: str, *args: object) -> tuple[str, ...]:
-    return ("python3", path, *(str(arg) for arg in args))
+    python_bin = os.environ.get("PYTHON_BIN") or sys.executable
+    return (python_bin, path, *(str(arg) for arg in args))
 
 
 def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
@@ -730,7 +731,7 @@ def collect_environment_probe(env: dict[str, str]) -> dict[str, object]:
         "git_commit": _probe_command(("git", "rev-parse", "HEAD"), env=env).get("stdout", ""),
         "git_status_short": _probe_command(("git", "status", "--short"), env=env).get("stdout", ""),
         "uname": _probe_command(("uname", "-a"), env=env).get("stdout", ""),
-        "python": _probe_command(("python3", "--version"), env=env).get("stdout", ""),
+        "python": _probe_command((os.environ.get("PYTHON_BIN") or sys.executable, "--version"), env=env).get("stdout", ""),
         "nvidia_smi": _probe_command(
             (
                 "nvidia-smi",

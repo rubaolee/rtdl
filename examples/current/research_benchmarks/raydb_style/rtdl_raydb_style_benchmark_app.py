@@ -227,6 +227,7 @@ def run_result_mode(
     generated_groups: int = DEFAULT_GENERATED_GROUP_COUNT,
     generated_revenue_mod: int = DEFAULT_GENERATED_REVENUE_MOD,
     summary_only_iterations: bool = False,
+    ray_batch_layout: str = "host_packed",
 ) -> dict[str, Any]:
     if repeat <= 0:
         raise ValueError("repeat must be positive")
@@ -258,6 +259,7 @@ def run_result_mode(
             repeat=repeat,
             warmup=warmup,
             summary_only_iterations=summary_only_iterations,
+            ray_batch_layout=ray_batch_layout,
         )
     if backend == PAPER_RT_OPTIX_BACKEND:
         return _run_paper_rt_native_result_mode(
@@ -277,6 +279,7 @@ def run_result_mode(
             repeat=repeat,
             warmup=warmup,
             summary_only_iterations=summary_only_iterations,
+            ray_batch_layout=ray_batch_layout,
         )
     if backend == PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND:
         return _run_paper_rt_v2_5_primitive_first_result_mode(
@@ -287,6 +290,7 @@ def run_result_mode(
             repeat=repeat,
             warmup=warmup,
             summary_only_iterations=summary_only_iterations,
+            ray_batch_layout=ray_batch_layout,
         )
     if backend == PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND:
         return _run_paper_rt_hit_stream_triton_result_mode(
@@ -678,6 +682,7 @@ def _make_paper_rt_encoded_packed_workload(
     sy: float = 1.0,
     z_bias: float = 0.25,
     table_descriptor: dict[str, Any] | None = None,
+    materialize_rays: bool = True,
 ) -> dict[str, Any]:
     """Build the RayDB paper shape with typed buffers instead of Python objects."""
     try:
@@ -748,7 +753,8 @@ def _make_paper_rt_encoded_packed_workload(
         x_count = 0
         y_count = 0
 
-    if matched_scan_values and x_count and y_count:
+    logical_ray_count = len(matched_scan_values) * int(x_count) * int(y_count)
+    if materialize_rays and matched_scan_values and x_count and y_count:
         xs = min_x + np.arange(x_count, dtype=np.float64) * interval_x
         ys = (np.arange(y_count, dtype=np.float64) + 1.0) * interval_y
         grid_y, grid_x = np.meshgrid(ys, xs, indexing="ij")
@@ -765,10 +771,10 @@ def _make_paper_rt_encoded_packed_workload(
             ox,
             oy,
             oz,
-            np.zeros(ray_count, dtype=np.float64),
-            np.zeros(ray_count, dtype=np.float64),
-            np.ones(ray_count, dtype=np.float64),
-            np.full(ray_count, 2.0 * float(z_bias), dtype=np.float64),
+            0.0,
+            0.0,
+            1.0,
+            2.0 * float(z_bias),
         )
     else:
         rays = rt.pack_rays_3d_from_arrays((), (), (), (), (), (), (), ())
@@ -784,6 +790,8 @@ def _make_paper_rt_encoded_packed_workload(
         "primitive_values": aggregate_values,
         "triangles": triangles,
         "rays": rays,
+        "logical_ray_count": int(logical_ray_count),
+        "ray_materialization": "host_packed" if materialize_rays else "deferred_device_columns",
         "sx": sx,
         "sy": sy,
         "z_bias": z_bias,
@@ -1967,6 +1975,7 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
     backend: str = "optix",
     backend_label: str = PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND,
     summary_only_iterations: bool = False,
+    ray_batch_layout: str = "host_packed",
 ) -> dict[str, Any]:
     if mode not in PAPER_RT_RESULT_MODES:
         raise ValueError(f"unsupported paper RT result mode: {mode}")
@@ -1974,6 +1983,10 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
         raise ValueError("repeat must be positive")
     if warmup < 0:
         raise ValueError("warmup must be non-negative")
+    if ray_batch_layout not in {"host_packed", "cupy_device_columns", "torch_device_columns"}:
+        raise ValueError("ray_batch_layout must be host_packed, cupy_device_columns, or torch_device_columns")
+    if backend != "optix" and ray_batch_layout != "host_packed":
+        raise ValueError("device-column ray_batch_layout is currently supported only for the OptiX backend")
 
     prepare_started = time.perf_counter()
     table_descriptor = prepare_paper_rt_encoded_table_descriptor(fixture, plan)
@@ -1982,6 +1995,7 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
         plan,
         mode,
         table_descriptor=table_descriptor,
+        materialize_rays=ray_batch_layout == "host_packed",
     )
     workload_built = time.perf_counter()
     group_count = len(workload["group_tuples"])
@@ -1995,7 +2009,13 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
     )
     prepared_ready = time.perf_counter()
     ray_batch_started = time.perf_counter()
-    prepared_rays = prepared.prepare_ray_batch(workload["rays"])
+    if ray_batch_layout == "host_packed":
+        prepared_rays = prepared.prepare_ray_batch(workload["rays"])
+        ray_columns_partner = None
+    else:
+        ray_columns_partner = "cupy" if ray_batch_layout == "cupy_device_columns" else "torch"
+        ray_columns = _make_paper_rt_partner_ray_columns(workload, partner=ray_columns_partner)
+        prepared_rays = prepared.prepare_ray_batch_device_columns(ray_columns)
     ray_batch_ready = time.perf_counter()
     cpu_rows = rt.evaluate_columnar_grouped_aggregate(fixture, plan).rows
 
@@ -2091,6 +2111,9 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
             "prepared_primitive_payload_reused": True,
             "prepared_optix_scene_reused": True,
             "prepared_ray_batch_reused": True,
+            "prepared_ray_batch_layout": ray_batch_layout,
+            "prepared_ray_batch_column_partner": ray_columns_partner,
+            "prepared_ray_batch_created_from": primitive_result.get("transfer_metadata", {}).get("ray_batch_created_from"),
             "v2_4_phase_timing": rt.v2_4_phase_timing_metadata(
                 {
                     "query_preparation": 0.0,
@@ -2106,7 +2129,7 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
             "native_rt_core_lowering_path_present": True,
             "native_rt_core_lowering_ready": False,
             "native_device_hit_stream_columns_ready": False,
-            "native_device_column_path_used": False,
+            "native_device_column_path_used": ray_batch_layout != "host_packed",
             "host_row_bridge_bypassed": False,
             "rt_core_accelerated": bool(primitive_result.get("rt_core_accelerated", False)),
             "rt_core_claim_authorized": False,
@@ -2114,7 +2137,10 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
             "scan_fields": list(workload["scan_fields"]),
             "group_keys": list(workload["group_keys"]),
             "triangle_count": _packed_or_sequence_count(workload["triangles"]),
-            "ray_count": _packed_or_sequence_count(workload["rays"]),
+            "ray_count": int(getattr(prepared_rays, "ray_count", workload.get("logical_ray_count", 0))),
+            "logical_ray_count": int(workload.get("logical_ray_count", _packed_or_sequence_count(workload["rays"]))),
+            "host_packed_ray_count": _packed_or_sequence_count(workload["rays"]),
+            "ray_materialization": workload.get("ray_materialization"),
             "packed_host_buffers": bool(workload.get("packed_host_buffers", False)),
             "query_scan_value_count": len(workload["query_scan_values"]),
             "hit_event_count_before_dedup": primitive_result.get("hit_event_count_before_dedup"),
@@ -2145,6 +2171,7 @@ def _run_paper_rt_v2_5_primitive_first_result_mode(
     repeat: int,
     warmup: int,
     summary_only_iterations: bool = False,
+    ray_batch_layout: str = "host_packed",
 ) -> dict[str, Any]:
     primitive_plan = describe_raydb_v2_5_primitive_first_plan(mode)
     result = _run_paper_rt_prepared_grouped_reduction_result_mode(
@@ -2155,6 +2182,7 @@ def _run_paper_rt_v2_5_primitive_first_result_mode(
         repeat=repeat,
         warmup=warmup,
         summary_only_iterations=summary_only_iterations,
+        ray_batch_layout=ray_batch_layout,
     )
     metadata = dict(result["metadata"])
     metadata.update(
@@ -3115,6 +3143,7 @@ def run_suite(
     generated_groups: int = DEFAULT_GENERATED_GROUP_COUNT,
     generated_revenue_mod: int = DEFAULT_GENERATED_REVENUE_MOD,
     summary_only_iterations: bool = False,
+    ray_batch_layout: str = "host_packed",
 ) -> dict[str, Any]:
     if backend == "cpu_python_reference":
         modes = CPU_RESULT_MODES
@@ -3148,6 +3177,7 @@ def run_suite(
             generated_groups=generated_groups,
             generated_revenue_mod=generated_revenue_mod,
             summary_only_iterations=summary_only_iterations,
+            ray_batch_layout=ray_batch_layout,
         )
         for mode in modes
     }
@@ -3229,6 +3259,15 @@ def main(argv: list[str] | None = None) -> int:
             "metadata.prepared_iteration_wall_summary remains populated."
         ),
     )
+    parser.add_argument(
+        "--ray-batch-layout",
+        choices=("host_packed", "cupy_device_columns", "torch_device_columns"),
+        default="host_packed",
+        help=(
+            "Prepared grouped-reduction ray-batch layout. Device-column layouts "
+            "require the OptiX prepared grouped backend and CUDA partner columns."
+        ),
+    )
     args = parser.parse_args(argv)
     payload = (
         run_suite(
@@ -3241,6 +3280,7 @@ def main(argv: list[str] | None = None) -> int:
             generated_groups=args.generated_groups,
             generated_revenue_mod=args.generated_revenue_mod,
             summary_only_iterations=args.summary_only_iterations,
+            ray_batch_layout=args.ray_batch_layout,
         )
         if args.mode == "all"
         else run_result_mode(
@@ -3254,6 +3294,7 @@ def main(argv: list[str] | None = None) -> int:
             generated_groups=args.generated_groups,
             generated_revenue_mod=args.generated_revenue_mod,
             summary_only_iterations=args.summary_only_iterations,
+            ray_batch_layout=args.ray_batch_layout,
         )
     )
     print(json.dumps(payload, indent=2, sort_keys=True))

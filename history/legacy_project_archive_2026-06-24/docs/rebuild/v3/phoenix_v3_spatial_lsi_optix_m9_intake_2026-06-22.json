@@ -1,0 +1,110 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_next_work": [
+    {
+      "description": "Add a productized prepared-session wrapper for the existing LSI generic segment-pair left-id count route, mirroring the point-location runner metadata and residency gates.",
+      "focused_pod_after_implementation_and_2ai_review": true,
+      "id": "m10_segment_intersection_topology_stream_prepared_session",
+      "kind": "shared_runtime_trunk_candidate",
+      "pod_before_implementation": false,
+      "risk": "The measured V3-vs-V2 loss is only 15.4 microseconds; productization may mainly improve evidence/contract quality before it improves speed.",
+      "why_it_might_help": "It converts existing app-layer residency work into a reusable V3 runtime path and makes the source of any Set-A win productized."
+    },
+    {
+      "all_app_pod_before_focused_probe": false,
+      "description": "After a productized LSI route exists, run a focused repeat-stability probe on the same RT hardware before any all-app spend.",
+      "id": "m10_metric_hygiene_repeat_stability",
+      "kind": "measurement_candidate",
+      "pod_before_productized_route": false,
+      "why_it_might_help": "A 15-microsecond delta can be dispatch jitter; repeat stability prevents overreacting to noise."
+    },
+    {
+      "description": "Do not add RayJoin-only native logic or paper-specific shortcuts to make this row green.",
+      "id": "reject_rayjoin_specific_native_tuning",
+      "kind": "forbidden_shortcut",
+      "why_rejected": "Phoenix V3 is a language/runtime release. Benchmark apps are probes, not the product."
+    }
+  ],
+  "checks": {
+    "active_payload_not_productized_even_if_current_code_has_runner": true,
+    "lsi_app_layer_device_residency_exists": true,
+    "not_an_optix_vs_embree_slowdown": true,
+    "old_docs_already_point_to_reusable_runner_gap": true,
+    "payload_has_no_topology_stream_handle": true,
+    "payload_not_productized_runner": true,
+    "pip_productized_runner_blocks_lsi": true,
+    "point_location_runner_exists": true,
+    "segment_intersection_runner_current_state_recorded": true,
+    "target_is_microsecond_delta": true,
+    "target_row_found": true,
+    "v2_v3_same_metric_source": true
+  },
+  "failed_checks": [],
+  "focused_pod_spend_authorized": false,
+  "full_all_app_pod_spend_authorized": false,
+  "goal_level_decision_audit": {
+    "can_i_try_a_different_path_now": "Yes: first productize or explicitly reject a generic segment_intersection_topology_stream prepared-session route, then seek 2-AI review before focused POD.",
+    "decision": "Treat Spatial/RayJoin LSI OptiX as a local mechanics intake and candidate productized segment-intersection trunk item, not as immediate POD work.",
+    "if_yes_what_actions_made_it_foolish": "The foolish path would be to call this an OptiX failure, burn POD rerunning a 15-microsecond delta, or tune RayJoin-specific code before checking whether the shared runtime trunk is even executing.",
+    "was_i_foolish": "No.",
+    "was_there_another_path": "Yes: jump straight to a focused POD run. That would be premature because the payload already shows the row bypasses the productized runner."
+  },
+  "implementation_authorized_by_this_packet": false,
+  "metric_interpretation": {
+    "current_embree_metric_source": "elapsed_sec",
+    "current_embree_sec": 0.05346676707267761,
+    "current_optix_metric_source": "phases_sec.prepared_query_sec",
+    "current_optix_sec": 0.0001379847526550293,
+    "current_optix_vs_current_embree_ratio": 387.4831533477322,
+    "ratio_warning": "The OptiX/Embree ratio mixes Embree elapsed_sec with OptiX phases_sec.prepared_query_sec, so it is useful only as a sanity check that OptiX is not slow in this row, not as a public speedup claim.",
+    "row_is_v3_vs_v2_regression_not_optix_vs_embree_result": true
+  },
+  "needs_2ai_review_before_m10": true,
+  "productized_runner_coverage": {
+    "current_lsi_route_scope": "app-layer prepared-left dense left-id count wrapper",
+    "existing_productized_spatial_runner_scope": "PIP point-location only",
+    "gap": "LSI has useful RTDL-owned device-resident pieces, but the measured active loss row does not enter the shared prepared_execution_session_runner and emits no topology_stream_prepared_handle. If current code now contains a segment_intersection_topology_stream runner, that is M10 follow-up work; it does not retroactively change the frozen M9 active row payload. The V3 trunk gap is generic segment_intersection_topology_stream productization, not RayJoin-specific paper tuning.",
+    "point_location_topology_stream_productized_runner_exists": true,
+    "segment_intersection_topology_stream_productized_runner_exists_in_current_code": true
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "route_mapping": {
+    "app_layer_wrapper": "PreparedRayJoinOptixCompactGroupedCountSegments.run_packed_left_dense_count",
+    "execution_route": "prepared_optix_left_id_dense_count_prepared_left_reuse",
+    "native_calls_seen_in_app_code": [
+      "prepare_segment_pair_intersection_optix",
+      "pack_segment_pair_intersection_left_set",
+      "prepare_segment_pair_relation_left_set_optix",
+      "left_id_count_prepared_left_device_columns"
+    ],
+    "payload_device_residency_status": "dense_left_id_count_device_column_complete: count[index] remains CUDA-resident during the route; left segment-set upload is paid once by the prepared-left handle; validation copy is optional",
+    "payload_native_boundary": "The engine sees generic segment-pair left-id count device columns. RayJoin workload interpretation, prepared-handle reuse, prepared-left reuse, and left-ID remapping stay in Python.",
+    "prepared_execution_session_runner_present": false,
+    "productized_execution_path": null,
+    "topology_stream_prepared_handle_present": false,
+    "workload": "lsi"
+  },
+  "source_row": {
+    "absolute_delta_microseconds": 15.437602996826172,
+    "absolute_delta_sec": 1.5437602996826172e-05,
+    "current_command": "python3 examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py --workload lsi --execution-route prepared_optix_left_id_dense_count --result-mode count --dataset derived/authored_lsi_crossing_tiled_x2048 --no-rows --repeat 5 --warmup 1",
+    "frozen_speedup_vs_v2": 0.8881209503239741,
+    "primary_metric_source_v2": "phases_sec.prepared_query_sec",
+    "primary_metric_source_v3": "phases_sec.prepared_query_sec",
+    "v2_command": "python3 examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py --workload lsi --execution-route prepared_optix_left_id_dense_count --result-mode count --dataset derived/authored_lsi_crossing_tiled_x2048 --no-rows --repeat 5 --warmup 1",
+    "v2_sec": 0.00012254714965820312,
+    "v3_sec": 0.0001379847526550293,
+    "v3_speedup_vs_v2": 0.8881209503239741
+  },
+  "status": "m9_spatial_lsi_optix_mechanics_intake_not_release_not_pod",
+  "target": {
+    "app_id": "spatial_rayjoin",
+    "case_id": "rayjoin_optix_promoted_lsi_tiled_x2048",
+    "comparison_group": "rayjoin_lsi_authored_tiled_x2048",
+    "row_id": "goal2636_stress|spatial_rayjoin|rayjoin_lsi_authored_tiled_x2048|optix|rayjoin_optix_promoted_lsi_tiled_x2048",
+    "set": "A",
+    "why_targeted": "Largest uncovered Set-A row loss in the M8 blocker queue after Barnes-Hut and LibRTS Embree were marked covered pending full-suite validation."
+  },
+  "tool": "v3_phoenix_spatial_lsi_optix_m9_intake"
+}

@@ -1,0 +1,131 @@
+{
+  "status": "aabb_candidate_stream_32768_m7_qualified_row_scoped",
+  "generic_capability": "aabb_candidate_stream",
+  "candidate_row_id": "aabb_candidate_stream_all_count_only_float32_32768",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "row_scoped_public_speedup_claim_authorized": true,
+  "whole_app_speedup_claim_authorized": false,
+  "paper_reproduction_claim_authorized": false,
+  "librts_authors_code_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "m7_promotion_authorized": true,
+  "m7_qualified_release_rows": 1,
+  "local_evidence_sufficient_for_external_public_row_review": true,
+  "external_review_required_before_m7": true,
+  "current_packet_external_review_status": "claude_approved_after_p0_wording_fix",
+  "current_packet_2ai_consensus_status": "claude_codex_consensus_complete",
+  "external_review": "docs/reviews/claude_phoenix_v3_aabb_candidate_stream_32768_m7_final_review_packet_review_2026-06-21.md",
+  "codex_consensus": "docs/reviews/codex_phoenix_v3_aabb_candidate_stream_32768_m7_final_review_packet_2ai_consensus_2026-06-21.md",
+  "source_packets": [
+    "docs/rebuild/v3/phoenix_v3_aabb_candidate_stream_m7_feasibility_2026-06-21.md",
+    "docs/rebuild/v3/evidence/v3_claim_grade_all_benchmarks_calibrated_20260620/summary.json",
+    "docs/rebuild/v3/evidence/phoenix_v3_aabb_cpu_reference_oracle_20260621/aabb_cpu_reference_32768_float32.json",
+    "docs/rebuild/v3/evidence/phoenix_v3_aabb_cpu_reference_oracle_20260621/aabb_cpu_reference_32768.json",
+    "docs/rebuild/v3/evidence/v2_14_vs_v3_same_rt_hardware_paired_20260620_140120/v2_14_goal3828_full/librts_spatial_index_optix_scale_default_32768.stdout.json",
+    "docs/rebuild/v3/evidence/v2_14_vs_v3_same_rt_hardware_paired_20260620_140120/current_goal3828_full/librts_spatial_index_optix_scale_default_32768.stdout.json"
+  ],
+  "tutorial": "tutorials/current/12_aabb_candidate_stream.md",
+  "candidate_row": {
+    "app_id": "librts_spatial_index",
+    "comparison_group": "aabb_index_all_count_only_large_32768",
+    "candidate_row_id": "aabb_candidate_stream_all_count_only_float32_32768",
+    "operation": "all_count_only",
+    "primitive_contract": "generic_prepared_aabb_index_query_2d",
+    "generic_primitive": "AABB_INDEX_QUERY_2D",
+    "numeric_contract": "native_float32_inclusive_boundary",
+    "dataset": "uniform_synthetic",
+    "box_count": 32768,
+    "point_query_count": 32768,
+    "box_query_count": 32768,
+    "warmup": 2,
+    "repeat": 5,
+    "counts": {
+      "point_contains": 46343760,
+      "range_contains": 32302908,
+      "range_intersects": 70429254
+    },
+    "counts_match_between_backends": true,
+    "matches_float32_cpu_reference": true,
+    "matches_float64_cpu_reference": false,
+    "float64_mismatch_counts": {
+      "point_contains_delta_backend_minus_float64": 10,
+      "range_contains_delta_backend_minus_float64": 8,
+      "range_intersects_delta_backend_minus_float64": 19
+    },
+    "embree_query_median_sec": 36.09376148879528,
+    "optix_query_median_sec": 0.04432278126478195,
+    "query_optix_over_embree": 814.3388221324167,
+    "embree_wall_sec": 255.32958994805813,
+    "optix_wall_sec": 1.9233407154679298,
+    "wall_optix_over_embree": 132.75317674847796,
+    "embree_elapsed_sec": 36.47207508981228,
+    "optix_elapsed_sec": 0.4940243363380432,
+    "elapsed_optix_over_embree": 73.82647454204714,
+    "same_contract": true,
+    "partner_continuation_required": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "native_engine_customization": false,
+    "paper_equivalent_dataset": false,
+    "authors_code_comparison": false,
+    "local_gate_reading": "m7_qualified_row_scoped_after_claude_codex_consensus",
+    "m7_promoted": true
+  },
+  "cpu_reference_evidence": {
+    "float32_oracle": "docs/rebuild/v3/evidence/phoenix_v3_aabb_cpu_reference_oracle_20260621/aabb_cpu_reference_32768_float32.json",
+    "float32_status": "pass",
+    "float32_elapsed_sec": 27.4665132999653,
+    "float64_oracle": "docs/rebuild/v3/evidence/phoenix_v3_aabb_cpu_reference_oracle_20260621/aabb_cpu_reference_32768.json",
+    "float64_status": "complete_with_expected_mismatch",
+    "precision_contract_note": "The native Embree/OptiX AABB count-only row matches an independent chunked NumPy float32-inclusive CPU oracle, not a float64 exact-geometry oracle. Any public wording must name the native float32-inclusive numeric contract."
+  },
+  "v2_14_context": {
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "large_v2_14_optix_row_available": true,
+    "large_v2_14_embree_row_available": false,
+    "v2_14_optix_query_median_sec": 0.04285041242837906,
+    "current_goal3828_optix_query_median_sec": 0.045732758939266205,
+    "current_claim_grade_optix_query_median_sec": 0.04432278126478195,
+    "interpretation": "The row is not a V3-over-V2 performance improvement. The possible M7 claim is only current RTDL OptiX versus current RTDL Embree under one native float32-inclusive generic AABB count-only contract."
+  },
+  "closed_local_blockers": [
+    "cpu_reference_skipped_and_matches_reference_null_closed_by_float32_oracle",
+    "count_only_scope_disclosed",
+    "paper_equivalent_dataset_false_disclosed",
+    "authors_code_comparison_false_disclosed",
+    "large_v2_14_optix_context_disclosed_without_v2_speedup_claim"
+  ],
+  "closed_promotion_conditions": [
+    "fresh_external_public_row_review_closed_by_claude",
+    "reviewer_accepted_float32_numeric_contract_wording_after_p0_fix",
+    "reviewer_accepted_non_paper_non_authors_code_non_v2_boundary",
+    "2_ai_consensus_closed_by_claude_codex",
+    "final_public_wording_approved_for_exact_row",
+    "whole_app_paper_authors_code_float64_and_broad_v3_over_v2_claims_remain_false"
+  ],
+  "remaining_non_release_boundaries": [
+    "release_authorized remains false",
+    "public_speedup_claim_authorized remains false for broad/global V3 claims",
+    "row_scoped_public_speedup_claim_authorized applies only to aabb_candidate_stream_all_count_only_float32_32768",
+    "LibRTS paper and authors-code claims remain false",
+    "full spatial-index acceleration remains false",
+    "float64 exact-geometry wording remains false",
+    "broad_v3_faster_than_v2_claim_authorized remains false"
+  ],
+  "approved_row_scoped_public_wording": "For a native float32-inclusive generic prepared AABB count-only workload on an NVIDIA RTX 4000 Ada Generation pod, 32,768 indexed boxes plus 32,768 point queries and 32,768 box queries, warmup=2 and repeat=5, RTDL's OptiX route was 814.339x faster than the RTDL Embree route for the measured float32-inclusive query median and 132.753x faster for the measured wall path. Embree and OptiX counts match an independent chunked NumPy float32 CPU oracle for point_contains, range_contains, and range_intersects. This is a row-scoped AABB candidate-stream result, not a LibRTS paper reproduction, not LibRTS authors-code timing, not full spatial-index acceleration, and not a V3-over-V2 speedup claim.",
+  "forbidden_public_wording": [
+    "RTDL reproduces the LibRTS paper",
+    "RTDL beats LibRTS authors code",
+    "V3 is 814x faster than V2",
+    "Generic AABB count-only proves full spatial-index acceleration",
+    "Any AABB row beyond aabb_candidate_stream_all_count_only_float32_32768 is M7-qualified",
+    "The AABB row matches a float64 exact-geometry oracle"
+  ],
+  "goal_level_decision_audit": {
+    "decision": "promote only the native float32-inclusive AABB count-only 32768 row to M7-qualified row-scoped status after Claude/Codex consensus",
+    "was_i_foolish": "No. Claude conditionally approved the exact row, the P0 wording fix is applied, and second-AI consensus is now recorded.",
+    "foolish_actions": "It would be foolish to hide the float64 mismatch, call this LibRTS paper evidence, promote other AABB rows, or use the 814.339x current OptiX-over-Embree ratio as a V3-over-V2 claim.",
+    "other_path": "Leave the row blocked after external approval. That would under-use a reusable V3 capability whose numeric contract is now explicit.",
+    "different_path_now": "Promote one exact row, keep release and broad claims false, and continue Phoenix V3 with the next reusable capability."
+  }
+}

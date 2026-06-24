@@ -1,0 +1,126 @@
+{
+  "version": "phoenix_v3_m4_evidence_index_2026_06_20",
+  "status": "internal_m4_evidence_not_release_evidence",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "phoenix_m7_qualified_release_rows": 0,
+  "source_identity": {
+    "current_commit": "no_git_worktree",
+    "source_version": "v3-rebuild-2026-06-20",
+    "source_manifest": "source_manifest.sha256",
+    "caveat": "Source identity for this pod run is VERSION-string plus file-hash based, not git-commit based."
+  },
+  "binding_environment": {
+    "python": "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+    "gpu_env_gate": "gpu_env_gate.json",
+    "gpu_env_gate_status": "pass",
+    "system_python3_gpu_env_gate": "system_python3_gpu_env_gate.json",
+    "system_python3_gpu_env_gate_status": "fail",
+    "open_packaging_gap": {
+      "id": "phoenix_m4_system_python_missing_cupy_numba",
+      "status": "open",
+      "owner": "Phoenix V3 rebuild owner",
+      "target_fix_milestone": "before Phoenix M7 release qualification",
+      "description": "System python3 on the pod is missing CuPy and Numba; the M4 evidence is bound to the rebuild venv path until packaging is repaired."
+    }
+  },
+  "rows": [
+    {
+      "gate": "M9",
+      "artifact": "m9_grouped_stream_partner_65536.json",
+      "scale": "65536 points",
+      "result_classification": "pass_internal",
+      "clean_pass": true,
+      "release_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "public_claim_authorized": false,
+      "public_zero_copy_wording_authorized": false,
+      "phoenix_m7_qualified": false,
+      "source_manifest": "source_manifest.sha256",
+      "source_identity": "no_git_worktree / v3-rebuild-2026-06-20"
+    },
+    {
+      "gate": "M10",
+      "artifact": "m10_same_stream_65536.json",
+      "scale": "65536 points",
+      "result_classification": "pass_internal_with_accounting_warning",
+      "clean_pass": false,
+      "accounting_warning_count": 1,
+      "true_zero_copy_ready": false,
+      "release_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "public_claim_authorized": false,
+      "public_zero_copy_wording_authorized": false,
+      "phoenix_m7_qualified": false,
+      "source_manifest": "source_manifest.sha256",
+      "source_identity": "no_git_worktree / v3-rebuild-2026-06-20"
+    },
+    {
+      "gate": "M11",
+      "artifact": "m11_no_hidden_copy_65536.json",
+      "scale": "65536 points",
+      "result_classification": "pass_internal_measured_window",
+      "clean_pass": true,
+      "release_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "public_claim_authorized": false,
+      "public_zero_copy_wording_authorized": false,
+      "phoenix_m7_qualified": false,
+      "source_manifest": "source_manifest.sha256",
+      "source_identity": "no_git_worktree / v3-rebuild-2026-06-20"
+    },
+    {
+      "gate": "M18",
+      "artifact": "m18_device_grouped_65536.json",
+      "scale": "65536 rays / 1024 groups",
+      "result_classification": "pass_internal",
+      "clean_pass": true,
+      "release_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "public_claim_authorized": false,
+      "public_zero_copy_wording_authorized": false,
+      "phoenix_m7_qualified": false,
+      "source_manifest": "source_manifest.sha256",
+      "source_identity": "no_git_worktree / v3-rebuild-2026-06-20"
+    },
+    {
+      "gate": "M23",
+      "artifact": "m23_dbscan_component_signature_524288.json",
+      "scale": "65536 copies / 524288 points",
+      "result_classification": "pass_internal",
+      "clean_pass": true,
+      "release_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "public_claim_authorized": false,
+      "public_zero_copy_wording_authorized": false,
+      "phoenix_m7_qualified": false,
+      "source_manifest": "source_manifest.sha256",
+      "source_identity": "no_git_worktree / v3-rebuild-2026-06-20"
+    },
+    {
+      "gate": "M28",
+      "artifact": "m28_raydb_grouped_reduction_262144.json",
+      "scale": "262144 rows / 1024 groups",
+      "result_classification": "pass_internal_same_contract_cpu_reference_only",
+      "clean_pass": true,
+      "independent_rows": [
+        "embree/count",
+        "embree/sum",
+        "optix/count",
+        "optix/sum"
+      ],
+      "internal_same_contract_ratios": {
+        "count_embree_over_optix_median": 9.863861076975764,
+        "sum_embree_over_optix_median": 202.77399588111928
+      },
+      "ratio_citation_policy": "internal CPU-reference comparisons only; must not be cited as cross-backend speedup until M7 qualification",
+      "release_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "public_claim_authorized": false,
+      "public_zero_copy_wording_authorized": false,
+      "phoenix_m7_qualified": false,
+      "source_manifest": "source_manifest.sha256",
+      "source_identity": "no_git_worktree / v3-rebuild-2026-06-20"
+    }
+  ]
+}

@@ -1,0 +1,258 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "generic RTNN fixed-radius ranked-summary input/column ingestion; not an app-specific native route and not V4 interop",
+  "checks": {
+    "base_runner_reads_npz_columns": true,
+    "base_runner_records_point_column_source": true,
+    "cupy_grid_reference_uses_same_column_source": true,
+    "cupy_references_use_vectorized_column_stack": true,
+    "graph_route_not_material": true,
+    "input_load_dominates_runner_wall": true,
+    "phoenix_runner_defaults_to_npz": true,
+    "phoenix_runner_exposes_point_column_source": true,
+    "phoenix_runner_writes_npz_columns": true,
+    "self_query_evidence_exists": true,
+    "self_query_graph_evidence_exists": true,
+    "self_query_hot_is_material": true,
+    "self_query_runner_wall_not_material": true
+  },
+  "comparisons": {
+    "graph_over_direct_cold_plus_query_speedup": 1.0129426339577363,
+    "new_self_query_over_cupy_cold_plus_query_speedup": 1.213754759923802,
+    "new_self_query_over_cupy_hot_speedup": 19.437209556705984,
+    "new_self_query_over_cupy_runner_wall_speedup": 1.0304378375759553,
+    "self_query_input_load_over_hot_query": 358.22718113406836,
+    "self_query_non_hot_over_hot_query": 490.9754604792026
+  },
+  "evidence": {
+    "base_runner": "scripts/goal2348_rtnn_v2_2_external_runner.py",
+    "phoenix_runner": "scripts/v3_phoenix_rtnn_full_batch_float32_same_contract_runner.py",
+    "self_query": "docs/rebuild/v3/phoenix_v3_rtnn_prepared_self_query_evidence_2026-06-21.json",
+    "self_query_graph": "docs/rebuild/v3/phoenix_v3_rtnn_self_query_graph_evidence_2026-06-21.json"
+  },
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not call the existing 19.437x hot-query result an end-to-end V3 win.",
+    "Do not claim npz ingestion is a speedup until the POD rerun proves it.",
+    "Do not describe this as zero-copy, embedding, C ABI, or V4 interop.",
+    "Do not promote RTNN from this packet alone."
+  ],
+  "generic_capability": "fixed_radius_neighbors_3d_column_ingestion",
+  "goal_level_decision_audit": {
+    "decision": "Move RTNN wall-path work from prose to a V3 NPZ column-source surface and a rerun gate, while keeping current RTNN rows out of M7.",
+    "different_path_now": "Run the NPZ column-source RTNN evidence path on the pod; only a material same-contract cold/runner result plus review can reopen M7.",
+    "foolish_actions": "It would be foolish to repackage the 19.437x hot-query number or the 1.030x runner-wall number as proof that V3 solves RTNN.",
+    "other_path": "I could wait for external review of AABB or design a new Barnes-Hut primitive, but that would not address the current RTNN wall-path blocker.",
+    "was_i_foolish": "No. This implements a generic V3 ingestion path inside the existing Python-hosted surface and blocks public claims until POD evidence exists."
+  },
+  "implemented_v3_surface": {
+    "app_specific_native_engine": false,
+    "column_source_manifest_format": "rtnn_npz_xyz_columns_v1",
+    "default_point_column_source": "npz",
+    "point_column_source_choices": [
+      "csv",
+      "numpy_csv",
+      "npz"
+    ],
+    "uses_existing_vectorized_pack_points": true,
+    "v4_c_abi_or_embedding": false
+  },
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "material_speedup_floor": 2.0,
+  "measurements": {
+    "cupy_grid_reference": {
+      "cold_plus_query_sec": 0.7076803520321846,
+      "grid_prepare_sec": 0.622947484254837,
+      "hot_median_sec": 0.08473286777734756,
+      "input_load_sec": 1.5022736117243767,
+      "runner_wall_sec": 2.2099539637565613
+    },
+    "direct_self_query": {
+      "claim_boundary": {
+        "aggregate_requests_batched": true,
+        "broad_rt_core_speedup_claim_authorized": false,
+        "device_ranked_summary_aggregate": true,
+        "device_ranked_summary_rows": false,
+        "device_resident_query_points": true,
+        "embree_ranked_summary_aggregate": false,
+        "embree_ranked_summary_rows": false,
+        "float32_precision": true,
+        "materializes_neighbor_rows": false,
+        "materializes_summary_rows": false,
+        "paper_equivalent_rtnn_row": false,
+        "partitioned_or_batched_like_rtnn": true,
+        "prepared_cuda_graph_replay": false,
+        "prepared_search_as_query_points": true,
+        "rt_core_neighbor_search_claim_authorized": false,
+        "rtdl_speedup_claim_authorized": false,
+        "same_stream_partner_consumer": false
+      },
+      "cold_plus_query_sec": 0.5516196936368942,
+      "contract": {
+        "aggregate_batch_request_mode": "homogeneous",
+        "aggregate_batch_requests": [
+          {
+            "k_max": 50,
+            "radius": 0.02
+          }
+        ],
+        "aggregate_request_count": 1,
+        "approximate": false,
+        "batched_queries": true,
+        "bounded_k": 50,
+        "exact": false,
+        "execution_path_policy_version": null,
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-prepared-self-query-batch-float32",
+        "precision": "float32",
+        "prepared_cuda_graph_replay": false,
+        "prepared_query_points": false,
+        "prepared_search_as_query_points": true,
+        "prepared_search_structure": true,
+        "same_stream_partner_consumer": false
+      },
+      "execution_prepare_sec": 0.3719489797949791,
+      "hot_median_sec": 0.004358917474746704,
+      "input_load_sec": 1.5632658749818802,
+      "input_pack_sec": 0.17531179636716843,
+      "query_count": 1048576,
+      "ranked_aggregate_batch_summaries": [
+        {
+          "batch_index": 0,
+          "bounded_neighbor_count": 37044632,
+          "k_max": 50,
+          "kth_id_checksum": 549679635418,
+          "nearest_id_checksum": 549755289600,
+          "precision": "float32",
+          "query_count": 1048576,
+          "query_resident": true,
+          "query_source": "prepared_search",
+          "radius": 0.02,
+          "request_index": 0,
+          "sum_distance": 539061.8024987809
+        }
+      ],
+      "ranked_aggregate_summary": {
+        "bounded_neighbor_count": 37044632,
+        "kth_id_checksum": 549679635418,
+        "nearest_id_checksum": 549755289600,
+        "row_count": 1048576,
+        "sum_distance": 539061.8024987809
+      },
+      "repeat": 5,
+      "result_mode": "ranked-summary-aggregate-prepared-self-query-batch-float32",
+      "search_count": 1048576
+    },
+    "new_prepared_self_query": {
+      "cold_plus_query_sec": 0.5830505266785622,
+      "execution_prepare_sec": 0.3965643271803856,
+      "execution_prepare_share_of_runner_wall": 0.1849065159099095,
+      "hot_median_sec": 0.004359312355518341,
+      "hot_query_share_of_runner_wall": 0.002032621706428126,
+      "input_load_sec": 1.561624176800251,
+      "input_load_share_of_runner_wall": 0.7281403442056675,
+      "input_pack_sec": 0.18212688714265823,
+      "input_pack_share_of_runner_wall": 0.08492051817799483,
+      "non_hot_share_of_runner_wall": 0.9979673782935718,
+      "runner_wall_sec": 2.144674703478813
+    },
+    "self_query_graph": {
+      "claim_boundary": {
+        "aggregate_requests_batched": true,
+        "broad_rt_core_speedup_claim_authorized": false,
+        "device_ranked_summary_aggregate": true,
+        "device_ranked_summary_rows": false,
+        "device_resident_query_points": true,
+        "embree_ranked_summary_aggregate": false,
+        "embree_ranked_summary_rows": false,
+        "float32_precision": true,
+        "materializes_neighbor_rows": false,
+        "materializes_summary_rows": false,
+        "paper_equivalent_rtnn_row": false,
+        "partitioned_or_batched_like_rtnn": true,
+        "prepared_cuda_graph_replay": true,
+        "prepared_search_as_query_points": true,
+        "rt_core_neighbor_search_claim_authorized": false,
+        "rtdl_speedup_claim_authorized": false,
+        "same_stream_partner_consumer": false
+      },
+      "cold_plus_query_sec": 0.5445715039968491,
+      "contract": {
+        "aggregate_batch_request_mode": "homogeneous",
+        "aggregate_batch_requests": [
+          {
+            "k_max": 50,
+            "radius": 0.02
+          }
+        ],
+        "aggregate_request_count": 1,
+        "approximate": false,
+        "batched_queries": true,
+        "bounded_k": 50,
+        "exact": false,
+        "execution_path_policy_version": "rtdl.v2_5.execution_path_policy.v1",
+        "family": "fixed_radius_neighbors_3d",
+        "mode": "ranked-summary-aggregate-prepared-self-query-batch-graph-float32",
+        "precision": "float32",
+        "prepared_cuda_graph_replay": true,
+        "prepared_query_points": false,
+        "prepared_search_as_query_points": true,
+        "prepared_search_structure": true,
+        "same_stream_partner_consumer": false
+      },
+      "execution_prepare_sec": 0.36131851375102997,
+      "hot_median_sec": 0.0043890997767448425,
+      "input_load_sec": 1.5590011402964592,
+      "input_pack_sec": 0.17886389046907425,
+      "query_count": 1048576,
+      "ranked_aggregate_batch_summaries": [
+        {
+          "batch_index": 0,
+          "bounded_neighbor_count": 37044632,
+          "cuda_graph_replay": true,
+          "k_max": 50,
+          "kth_id_checksum": 549679635418,
+          "nearest_id_checksum": 549755289600,
+          "precision": "float32",
+          "query_count": 1048576,
+          "query_resident": true,
+          "query_source": "prepared_search",
+          "radius": 0.02,
+          "request_buffer_update_count": 0,
+          "request_index": 0,
+          "sum_distance": 539061.8024987808
+        }
+      ],
+      "ranked_aggregate_summary": {
+        "bounded_neighbor_count": 37044632,
+        "kth_id_checksum": 549679635418,
+        "nearest_id_checksum": 549755289600,
+        "row_count": 1048576,
+        "sum_distance": 539061.8024987808
+      },
+      "repeat": 5,
+      "result_mode": "ranked-summary-aggregate-prepared-self-query-batch-graph-float32",
+      "search_count": 1048576
+    }
+  },
+  "not_m7_blockers": [
+    "The existing POD evidence still has only 1.030x runner-wall speedup versus CuPy.",
+    "Input load is 72.8% of the current prepared self-query runner wall.",
+    "The NPZ column-source path is implemented and locally tested, but it still needs a fresh same-hardware RTX POD rerun.",
+    "No external Claude/Gemini review has accepted a rerun as an M7 row."
+  ],
+  "pod_rerun_requirements": [
+    "Run the serious same-contract RTNN runner with --point-column-source npz on the RTX pod.",
+    "Save optix and cupy_grid full payloads, point_manifest.json, environment.json, and summary.json.",
+    "Require point_column_source=npz on both phase rows.",
+    "Require same-contract integer parity and sum-distance relative error <= 1e-4.",
+    "Require cold-plus-query and runner-wall speedups to clear the material floor before M7 review.",
+    "Send the rerun packet to external AI and record Codex consensus before any public wording."
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "status": "rtnn_npz_column_source_ready_for_pod_rerun_not_m7",
+  "tool": "v3_phoenix_rtnn_column_source_residency_gap",
+  "whole_app_speedup_claim_authorized": false
+}

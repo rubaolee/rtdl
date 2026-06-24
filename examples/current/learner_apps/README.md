@@ -1,11 +1,10 @@
-# RTDL v3.0 Learner Apps
+# RTDL V3 Learner Apps
 
-This directory is for runnable app-scale examples that are useful for learning,
-design pressure, or negative benchmark decisions, but are not promoted benchmark
-apps.
+This directory contains runnable app-scale examples for users who want to study
+larger RTDL shapes after the getting-started examples.
 
-| Directory | Purpose | Boundary |
-| --- | --- | --- |
-| `gpu_rmq/` | GPU-RMQ-style RMQ learner/design-pressure app over CPU oracle, local hierarchy, paper-style generic closest-hit RT lowering, and grouped candidate argmin | Demoted after Goal2612; not a benchmark app and not a public speedup claim |
+| Directory | Purpose |
+| --- | --- |
+| `gpu_rmq/` | Range-minimum-query learner app over CPU oracle, local hierarchy, RT lowering, and grouped candidate argmin. |
 
-Promoted benchmark apps live in `../research_benchmarks/`.
+Benchmark development code lives in `../research_benchmarks/`.

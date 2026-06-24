@@ -34,6 +34,24 @@ def _write_query_cdb(path: Path, points: list[dict[str, float | int]]) -> None:
             handle.write(f"{float(point['x']):.12e} {float(point['y']):.12e}\n")
 
 
+def _random_query_points_from_bounds(
+    bounds: tuple[float, float, float, float],
+    count: int,
+    rng: random.Random,
+    *,
+    start_id: int = 1,
+) -> list[dict[str, float | int]]:
+    min_x, min_y, max_x, max_y = bounds
+    return [
+        {
+            "id": start_id + index,
+            "x": rng.uniform(min_x, max_x),
+            "y": rng.uniform(min_y, max_y),
+        }
+        for index in range(count)
+    ]
+
+
 def _query_points_from_cdb(path: Path) -> list[dict[str, float | int]]:
     dataset = rt.load_cdb(path)
     points: list[dict[str, float | int]] = []
@@ -47,18 +65,78 @@ def _query_points_from_cdb(path: Path) -> list[dict[str, float | int]]:
 
 def _generate_query_points(base_cdb: Path, query_cdb: Path, point_count: int, seed: int) -> list[dict[str, float | int]]:
     base = rt.load_cdb(base_cdb)
-    min_x, min_y, max_x, max_y = _bbox(base)
     rng = random.Random(seed)
-    points = [
-        {
-            "id": index + 1,
-            "x": rng.uniform(min_x, max_x),
-            "y": rng.uniform(min_y, max_y),
-        }
-        for index in range(point_count)
-    ]
+    points = _random_query_points_from_bounds(_bbox(base), point_count, rng)
     _write_query_cdb(query_cdb, points)
     return points
+
+
+def _renumber_points(points: list[dict[str, float | int]]) -> list[dict[str, float | int]]:
+    return [
+        {
+            "id": index + 1,
+            "x": float(point["x"]),
+            "y": float(point["y"]),
+        }
+        for index, point in enumerate(points)
+    ]
+
+
+def _filter_backend_parity_points(
+    optix_prepared,
+    embree_prepared,
+    *,
+    base_dataset,
+    initial_points: list[dict[str, float | int]],
+    target_count: int,
+    seed: int,
+    oversample: int,
+    max_rounds: int,
+) -> dict[str, object]:
+    bounds = _bbox(base_dataset)
+    rng = random.Random(seed + 1_000_003)
+    accepted: list[dict[str, float | int]] = []
+    first_rejected: list[dict[str, object]] = []
+    candidates = initial_points
+    total_candidates = 0
+    evaluated_candidates = 0
+    rounds = 0
+    while len(accepted) < target_count and rounds <= max_rounds:
+        optix_rows = optix_prepared.run(candidates)
+        embree_rows = embree_prepared.run(candidates)
+        total_candidates += len(candidates)
+        for point, optix_row, embree_row in zip(candidates, optix_rows, embree_rows):
+            evaluated_candidates += 1
+            optix_key = (optix_row["point_id"], optix_row["face_id"], optix_row["segment_id"])
+            embree_key = (embree_row["point_id"], embree_row["face_id"], embree_row["segment_id"])
+            if optix_key == embree_key:
+                accepted.append({"id": len(accepted) + 1, "x": float(point["x"]), "y": float(point["y"])})
+                if len(accepted) >= target_count:
+                    break
+            elif len(first_rejected) < 10:
+                first_rejected.append({"point": point, "optix": optix_row, "embree": embree_row})
+        if len(accepted) >= target_count:
+            break
+        rounds += 1
+        next_count = max(target_count - len(accepted) + oversample, 1024)
+        candidates = _random_query_points_from_bounds(bounds, next_count, rng, start_id=total_candidates + 1)
+    if len(accepted) < target_count:
+        raise RuntimeError(
+            f"backend-parity query filter accepted {len(accepted)} of {target_count} required points"
+        )
+    accepted = _renumber_points(accepted[:target_count])
+    return {
+        "status": "pass",
+        "target_count": target_count,
+        "accepted_count": len(accepted),
+        "total_candidates": total_candidates,
+        "evaluated_candidates": evaluated_candidates,
+        "rejected_count": evaluated_candidates - len(accepted),
+        "oversample": oversample,
+        "max_rounds": max_rounds,
+        "first_rejected": first_rejected,
+        "points": accepted,
+    }
 
 
 def _time_rtdl(label: str, prepared, points, *, warmups: int, repeats: int) -> dict[str, object]:
@@ -173,20 +251,25 @@ def _comparison_metrics(rayjoin, optix: dict[str, object], embree: dict[str, obj
     embree_ms = float(embree["hot_median_sec"]) * 1000.0
     optix_native = optix.get("native_traversal_median_sec")
     embree_native = embree.get("native_traversal_median_sec")
+    optix_native_ms = None if optix_native is None else float(optix_native) * 1000.0
+    embree_native_ms = None if embree_native is None else float(embree_native) * 1000.0
     rayjoin_ms = None if rayjoin is None or rayjoin.get("query_ms") is None else float(rayjoin["query_ms"])
     return {
         "rtdl_optix_speedup_vs_rtdl_embree": embree_ms / optix_ms,
         "rtdl_embree_relative_speed_vs_rtdl_optix": optix_ms / embree_ms,
         "rtdl_optix_native_traversal_speedup_vs_rtdl_embree": (
-            float(embree_native) / float(optix_native) if optix_native and embree_native else None
+            embree_native_ms / optix_native_ms if optix_native_ms and embree_native_ms else None
         ),
         "rayjoin_rt_speedup_vs_rtdl_optix": optix_ms / rayjoin_ms if rayjoin_ms else None,
         "rayjoin_rt_speedup_vs_rtdl_embree": embree_ms / rayjoin_ms if rayjoin_ms else None,
+        "rayjoin_rt_speedup_vs_rtdl_optix_native_traversal": (
+            optix_native_ms / rayjoin_ms if optix_native_ms and rayjoin_ms else None
+        ),
     }
 
 
 def _write_markdown(path: Path, payload: dict[str, object]) -> None:
-    rayjoin = payload.get("rayjoin_rt", {})
+    rayjoin = payload.get("rayjoin_rt") or {}
     optix = payload["rtdl"]["optix"]
     embree = payload["rtdl"]["embree"]
     rayjoin_query = rayjoin.get("query_ms")
@@ -208,6 +291,8 @@ def _write_markdown(path: Path, payload: dict[str, object]) -> None:
     )
     rayjoin_vs_embree = embree_ms / rayjoin_ms if rayjoin_ms else None
     rayjoin_vs_optix = optix_ms / rayjoin_ms if rayjoin_ms else None
+    comparison = payload.get("comparison", {})
+    rayjoin_vs_optix_native = comparison.get("rayjoin_rt_speedup_vs_rtdl_optix_native_traversal")
     optix_vs_embree = embree_ms / optix_ms
     embree_vs_optix = optix_ms / embree_ms
     native_traversal_ratio = embree_native_ms / optix_native_ms if optix_native_ms and embree_native_ms else None
@@ -226,7 +311,7 @@ def _write_markdown(path: Path, payload: dict[str, object]) -> None:
         f"- RTDL timed output: {payload['protocol']['timed_output']}",
         f"- RTDL row materialization during timing: {payload['protocol']['row_materialization_in_timed_path']}",
         "",
-        "The query point stream is the safe 100k CDB stream generated for this run: ambiguous boundary/tie points were rejected so the hardware comparison measures traversal and closest-hit behavior instead of floating-point tie policy.",
+        "The query point stream is the backend-parity-filtered 100k CDB stream generated for this run: ambiguous boundary/tie points were rejected so the hardware comparison measures traversal and closest-hit behavior instead of floating-point tie policy.",
         "",
         "## Results",
         "",
@@ -251,10 +336,21 @@ def _write_markdown(path: Path, payload: dict[str, object]) -> None:
             "",
             f"- End-to-end RTDL OptiX is {optix_vs_embree:.2f}x faster than RTDL Embree for the same CDB face-id count contract.",
             f"- Native traversal alone shows the RT-core effect more directly: OptiX {optix_native_ms:.6f} ms vs Embree {embree_native_ms:.6f} ms, or {native_traversal_ratio:.2f}x faster traversal.",
-            f"- The RTDL OptiX wall median is much larger than its native traversal median because this route still pays host/GPU staging, launch, and count-return overhead. That is why RayJoin's author implementation is {rayjoin_vs_optix:.2f}x faster than RTDL OptiX even though both use RT hardware.",
-            "- This supports the paper's PIP claim under the right contract: RT cores help CDB point-location strongly. The earlier flat/no-speedup PIP results were measuring a more generic RTDL path rather than this RayJoin-specialized closest-hit face-id route.",
+            "- The RTDL OptiX wall median is much larger than its native traversal median because this route still pays host/GPU staging, launch, and count-return overhead.",
         ]
     )
+    if rayjoin_ms is None:
+        lines.append(
+            "- RayJoin author `query_exec` was not provided for this run, so author-code comparison remains blocked."
+        )
+    else:
+        lines.extend(
+            [
+                f"- RayJoin author Query time ({rayjoin_ms:.6f} ms) is faster than the RTDL OptiX hot median ({optix_ms:.6f} ms) on this same-contract PIP row.",
+                f"- RayJoin author Query time is also {rayjoin_vs_optix_native:.2f}x faster than the RTDL OptiX native traversal median ({optix_native_ms:.6f} ms).",
+                "- This shows RT cores are effective for CDB point-location and that RayJoin's specialized implementation achieves lower per-query latency than the current RTDL OptiX path on this hardware. It does not reproduce the RayJoin paper's experimental comparison.",
+            ]
+        )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -265,6 +361,13 @@ def main() -> None:
     parser.add_argument("--point-count", type=int, default=100000)
     parser.add_argument("--seed", type=int, default=4373)
     parser.add_argument("--generate-query-cdb", action="store_true")
+    parser.add_argument(
+        "--filter-backend-parity",
+        action="store_true",
+        help="When generating a query CDB, reject candidate points whose OptiX and Embree rows disagree.",
+    )
+    parser.add_argument("--parity-filter-oversample", type=int, default=2048)
+    parser.add_argument("--parity-filter-max-rounds", type=int, default=5)
     parser.add_argument("--rtdl-warmups", type=int, default=3)
     parser.add_argument("--rtdl-repeats", type=int, default=200)
     parser.add_argument("--optix-repeats", type=int)
@@ -279,18 +382,35 @@ def main() -> None:
     embree_repeats = args.rtdl_repeats if args.embree_repeats is None else args.embree_repeats
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    points = (
-        _generate_query_points(args.base_cdb, args.query_cdb, args.point_count, args.seed)
-        if args.generate_query_cdb or not args.query_cdb.exists()
-        else _query_points_from_cdb(args.query_cdb)
-    )
-    packed_points = rt.pack_points(records=points, dimension=2)
     base = rt.load_cdb(args.base_cdb)
     segments = rt.chains_to_rayjoin_cdb_segments(base)
 
     embree = rt.prepare_rayjoin_cdb_point_location_2d_embree(segments)
     optix = rt.prepare_rayjoin_cdb_point_location_2d_optix(segments)
+    parity_filter_report: dict[str, object] | None = None
     try:
+        if args.generate_query_cdb or not args.query_cdb.exists():
+            if args.filter_backend_parity:
+                rng = random.Random(args.seed)
+                candidate_count = int(args.point_count) + int(args.parity_filter_oversample)
+                initial_points = _random_query_points_from_bounds(_bbox(base), candidate_count, rng)
+                parity_filter_report = _filter_backend_parity_points(
+                    optix,
+                    embree,
+                    base_dataset=base,
+                    initial_points=initial_points,
+                    target_count=int(args.point_count),
+                    seed=int(args.seed),
+                    oversample=int(args.parity_filter_oversample),
+                    max_rounds=int(args.parity_filter_max_rounds),
+                )
+                points = parity_filter_report.pop("points")
+                _write_query_cdb(args.query_cdb, points)
+            else:
+                points = _generate_query_points(args.base_cdb, args.query_cdb, args.point_count, args.seed)
+        else:
+            points = _query_points_from_cdb(args.query_cdb)
+        packed_points = rt.pack_points(records=points, dimension=2)
         correctness = _correctness_sample(optix, embree, points, args.correctness_sample)
         optix_timing = _time_rtdl("optix", optix, packed_points, warmups=args.rtdl_warmups, repeats=optix_repeats)
         embree_timing = _time_rtdl("embree", embree, packed_points, warmups=args.rtdl_warmups, repeats=embree_repeats)
@@ -316,6 +436,12 @@ def main() -> None:
             "query_cdb": str(args.query_cdb),
             "point_count": len(points),
             "seed": args.seed,
+            "artifact_methodology_label": "parity_filtered_100k",
+            "legacy_safe100k_name_retired": True,
+            "legacy_safe100k_name_retired_reason": (
+                "The accepted stream is backend-parity filtered; the old safe100k label "
+                "was misleading for unfiltered random bbox candidates."
+            ),
             "rtdl_warmups": args.rtdl_warmups,
             "rtdl_repeats_default": args.rtdl_repeats,
             "optix_repeats": optix_repeats,
@@ -327,6 +453,12 @@ def main() -> None:
             "timed_output": "scalar positive-face count for RTDL; RayJoin author Query timer for PIP",
             "row_materialization_in_timed_path": False,
             "embree_threads_env": os.environ.get("RTDL_EMBREE_THREADS", "auto"),
+            "query_generation": (
+                "backend_parity_filtered_random_bbox"
+                if args.filter_backend_parity and (args.generate_query_cdb or not args.query_cdb.exists())
+                else ("random_bbox" if args.generate_query_cdb else "existing_cdb")
+            ),
+            "parity_filter_requested": bool(args.filter_backend_parity),
         },
         "input_shape": {
             "base_chains": len(base.chains),
@@ -334,9 +466,22 @@ def main() -> None:
             "query_points": len(points),
         },
         "correctness_sample": correctness,
+        "parity_filter": parity_filter_report,
         "rayjoin_rt": rayjoin,
         "rtdl": {"optix": optix_timing, "embree": embree_timing},
         "comparison": _comparison_metrics(rayjoin, optix_timing, embree_timing),
+        "comparison_methodology": {
+            "timing_basis_note": (
+                "RayJoin author timing uses the internal C++ Query timer parsed from query_exec stdout. "
+                "RTDL OptiX/Embree hot medians use Python time.perf_counter around count_positive_faces "
+                "and include Python dispatch and scalar count-return overhead. The "
+                "rayjoin_rt_speedup_vs_rtdl_optix_native_traversal comparison is the narrower native-traversal "
+                "basis; neither comparison is a paper-reproduction claim."
+            ),
+            "rayjoin_timer": "query_exec stdout Timing breakdown: Query",
+            "rtdl_total_timer": "Python time.perf_counter around prepared.count_positive_faces",
+            "rtdl_native_timer": "prepared.last_phase_timings()['traversal']",
+        },
     }
     json_path = args.output_dir / "summary.json"
     md_path = args.output_dir / "summary.md"

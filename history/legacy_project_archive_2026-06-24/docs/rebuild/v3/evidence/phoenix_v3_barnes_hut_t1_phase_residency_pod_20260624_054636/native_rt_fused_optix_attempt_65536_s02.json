@@ -1,0 +1,22 @@
+{
+  "app": "barnes_hut_force_app",
+  "body_count": 65536,
+  "bucket_size": 32,
+  "claim_flags": {
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rt_cores_used": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "max_depth": 32,
+  "mode": "native_rt_fused_optix_attempt",
+  "native_rt_fused_failure_reason": "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE native OptiX traversal is not implemented yet; the ABI is exported fail-closed until an optixLaunch/optixTrace implementation and equivalence gate land",
+  "native_rt_fused_runtime_implemented": false,
+  "native_rt_fused_symbol_available": true,
+  "run_phases": {
+    "prepare_attempt_wall_sec": 0.0,
+    "total_sec": 1.6914255321025848
+  },
+  "theta": 0.5
+}

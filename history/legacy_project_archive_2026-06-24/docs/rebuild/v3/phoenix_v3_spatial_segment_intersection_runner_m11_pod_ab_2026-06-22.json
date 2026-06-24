@@ -1,0 +1,72 @@
+{
+  "tool": "phoenix_v3_spatial_segment_intersection_runner_m11_pod_ab",
+  "status": "m11_focused_pod_ab_complete_productized_coverage_pass_performance_fail",
+  "date": "2026-06-22",
+  "evidence_dir": "docs/rebuild/v3/evidence/phoenix_v3_spatial_lsi_segment_runner_m10_focused_pod_ab_20260622",
+  "pod": {
+    "ssh": "root@213.173.108.14 -p 11592",
+    "key_used": "C:\\Users\\Lestat\\.ssh\\id_ed25519_rtdl_codex_current_pod",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "driver": "550.127.05",
+    "remote_tree": "/root/rtdl_v3_rebuild_20260620/current"
+  },
+  "protocol": {
+    "dataset": "derived/authored_lsi_crossing_tiled_x2048",
+    "workload": "lsi",
+    "old_route": "prepared_optix_left_id_dense_count",
+    "new_route": "prepared_execution_segment_intersection_topology_stream",
+    "repeat": 5,
+    "warmup": 1,
+    "outer_samples_per_route": 9,
+    "no_rows": true
+  },
+  "result": {
+    "old_hot_median_sec": 0.00012440979480743408,
+    "new_inner_hot_median_sec": 0.00013191252946853638,
+    "new_runner_median_sec": 0.00020245462656021118,
+    "old_vs_new_inner_speedup": 0.9431234114656877,
+    "old_hot_vs_new_runner_speedup": 0.6145070474367939,
+    "new_runner_vs_old_hot_slowdown": 1.62732063720206,
+    "old_row_counts": [
+      2048
+    ],
+    "new_row_counts": [
+      2048
+    ]
+  },
+  "metadata_gates": {
+    "all_old_returncode_zero": true,
+    "all_new_returncode_zero": true,
+    "new_all_productized_path": true,
+    "new_all_runtime_trunk_executes": true,
+    "new_all_validation_passed": true,
+    "new_all_internal_residency": true,
+    "new_all_no_hot_host_materialization": true,
+    "new_all_prepared_handle_contract": true,
+    "new_all_m3_contract": true,
+    "new_all_m3_full_table": true
+  },
+  "interpretation": {
+    "productized_runner_coverage": "pass",
+    "performance_result": "fail",
+    "why": "The new route executes through the productized runner with clean metadata, but it is slower than the old route on both the inner hot metric and runner-inclusive metric.",
+    "noise_boundary": "The inner hot regression is about 7.5 microseconds, smaller than the M9 15.4 microsecond frozen-row delta; the runner-inclusive overhead is much larger and should be treated as a real productized-runner cost unless reduced.",
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "full_all_app_pod_spend_authorized": false
+  },
+  "next_decision": {
+    "do_not_count_as_speed_win": true,
+    "do_not_run_all_app_from_this_result": true,
+    "candidate_next_work": "Reduce generic prepared_execution_session_runner overhead or retarget to a Set-A family where productized-runner overhead amortizes across more work.",
+    "needs_2ai_review_before_next_pod_or_claim": true
+  },
+  "goal_level_decision_audit": {
+    "decision": "Classify M11 as productized-runner coverage pass but performance fail.",
+    "was_i_foolish": "No.",
+    "if_yes_what_actions_made_it_foolish": "The foolish action would be to call clean metadata a performance success or to hide the runner-inclusive slowdown.",
+    "was_there_another_path": "Yes: keep tuning this route immediately. That would be premature without review because the focused POD shows the current local productized wrapper adds overhead.",
+    "can_i_try_a_different_path_now": "Yes: record the negative result, seek review, and decide whether to optimize generic runner overhead or retarget a different Set-A family."
+  }
+}

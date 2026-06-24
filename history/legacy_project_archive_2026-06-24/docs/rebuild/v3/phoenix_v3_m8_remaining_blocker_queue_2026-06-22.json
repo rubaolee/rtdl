@@ -1,0 +1,185 @@
+{
+  "active_row_losses": [
+    {
+      "app_id": "spatial_rayjoin",
+      "backend": "optix",
+      "case_id": "rayjoin_optix_promoted_lsi_tiled_x2048",
+      "loss_fraction": 0.11187904967602591,
+      "recommended_target": true,
+      "row_id": "goal2636_stress|spatial_rayjoin|rayjoin_lsi_authored_tiled_x2048|optix|rayjoin_optix_promoted_lsi_tiled_x2048",
+      "set": "A",
+      "speedup": 0.8881209503239741,
+      "suite": "goal2636_stress"
+    },
+    {
+      "app_id": "rtnn",
+      "backend": "embree",
+      "case_id": "rtnn_embree_clustered_262144_ranked_summary",
+      "loss_fraction": 0.054318041839508946,
+      "recommended_target": false,
+      "row_id": "goal2636_stress|rtnn|rtnn_clustered_262144_ranked_summary|embree|rtnn_embree_clustered_262144_ranked_summary",
+      "set": "A",
+      "speedup": 0.945681958160491,
+      "suite": "goal2636_stress"
+    },
+    {
+      "app_id": "spatial_rayjoin",
+      "backend": "embree",
+      "case_id": "spatial_rayjoin_embree_generic",
+      "loss_fraction": 0.03580278055417607,
+      "recommended_target": false,
+      "row_id": "goal2626_large|spatial_rayjoin|rayjoin_all_backend_query_summary|embree|spatial_rayjoin_embree_generic",
+      "set": "A",
+      "speedup": 0.9641972194458239,
+      "suite": "goal2626_large"
+    },
+    {
+      "app_id": "rtnn",
+      "backend": "embree",
+      "case_id": "rtnn_embree_shell_262144_ranked_summary",
+      "loss_fraction": 0.02719381151243727,
+      "recommended_target": false,
+      "row_id": "goal2636_stress|rtnn|rtnn_shell_262144_ranked_summary|embree|rtnn_embree_shell_262144_ranked_summary",
+      "set": "A",
+      "speedup": 0.9728061884875627,
+      "suite": "goal2636_stress"
+    },
+    {
+      "app_id": "rt_dbscan",
+      "backend": "optix",
+      "case_id": "rt_dbscan_optix_grouped_stream",
+      "loss_fraction": 0.024959949937183312,
+      "recommended_target": false,
+      "row_id": "goal2626_large|rt_dbscan|dbscan_cluster_signature|optix|rt_dbscan_optix_grouped_stream",
+      "set": "A",
+      "speedup": 0.9750400500628167,
+      "suite": "goal2626_large"
+    }
+  ],
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "checks": {
+    "barnes_hut_covered_rows_present": true,
+    "librts_embree_covered": true,
+    "librts_optix_watch_recorded": true,
+    "pod_spend_still_false": true,
+    "release_still_false": true,
+    "spatial_lsi_optix_is_top_active_row_loss": true
+  },
+  "covered_pending_full_suite_validation": [
+    {
+      "app_id": "barnes_hut",
+      "case_id": "barnes_hut_embree_node_coverage",
+      "frozen_speedup": 1.0159569894948057,
+      "planning_speedup": 1.0316494799682434,
+      "row_id": "goal2626_large|barnes_hut|node_coverage_prepared_threshold_decision|embree|barnes_hut_embree_node_coverage",
+      "source": "barnes_hut_m7_focused_generic_symbol_cache"
+    },
+    {
+      "app_id": "barnes_hut",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "frozen_speedup": 0.6217023860571815,
+      "planning_speedup": 0.9994250353039235,
+      "row_id": "goal2626_large|barnes_hut|node_coverage_prepared_threshold_decision|optix|barnes_hut_optix_node_coverage",
+      "source": "barnes_hut_m7_focused_generic_symbol_cache"
+    },
+    {
+      "app_id": "librts_spatial_index",
+      "case_id": "librts_embree_aabb_index",
+      "frozen_speedup": 0.8693053349379956,
+      "planning_speedup": 1.9232634469173864,
+      "row_id": "goal2626_large|librts_spatial_index|aabb_index_all_count_only|embree|librts_embree_aabb_index",
+      "source": "librts_repeat9_focused_generic_count_cache"
+    },
+    {
+      "app_id": "barnes_hut",
+      "case_id": "barnes_hut_embree_node_coverage_bodies_131072",
+      "frozen_speedup": 1.006668758835713,
+      "planning_speedup": 1.0062960155640486,
+      "row_id": "goal2636_stress|barnes_hut|barnes_hut_node_coverage_bodies_131072|embree|barnes_hut_embree_node_coverage_bodies_131072",
+      "source": "barnes_hut_m7_focused_generic_symbol_cache"
+    },
+    {
+      "app_id": "barnes_hut",
+      "case_id": "barnes_hut_optix_node_coverage_bodies_131072",
+      "frozen_speedup": 0.9614474083364788,
+      "planning_speedup": 0.9901466092791473,
+      "row_id": "goal2636_stress|barnes_hut|barnes_hut_node_coverage_bodies_131072|optix|barnes_hut_optix_node_coverage_bodies_131072",
+      "source": "barnes_hut_m7_focused_generic_symbol_cache"
+    },
+    {
+      "app_id": "barnes_hut",
+      "case_id": "barnes_hut_embree_node_coverage_bodies_32768",
+      "frozen_speedup": 1.0018265554211925,
+      "planning_speedup": 0.9895920209083747,
+      "row_id": "goal2636_stress|barnes_hut|barnes_hut_node_coverage_bodies_32768|embree|barnes_hut_embree_node_coverage_bodies_32768",
+      "source": "barnes_hut_m7_focused_generic_symbol_cache"
+    },
+    {
+      "app_id": "barnes_hut",
+      "case_id": "barnes_hut_optix_node_coverage_bodies_32768",
+      "frozen_speedup": 0.5910153814336409,
+      "planning_speedup": 1.0377884010870022,
+      "row_id": "goal2636_stress|barnes_hut|barnes_hut_node_coverage_bodies_32768|optix|barnes_hut_optix_node_coverage_bodies_32768",
+      "source": "barnes_hut_m7_focused_generic_symbol_cache"
+    }
+  ],
+  "failed_checks": [],
+  "focused_pod_spend_authorized": false,
+  "full_all_app_pod_spend_authorized": false,
+  "goal_level_decision_audit": {
+    "decision": "Choose Spatial/RayJoin LSI OptiX as the next non-POD investigation target after M7.",
+    "different_path_now": "Do a local Spatial/RayJoin LSI OptiX mechanics intake and seek review before any implementation or POD spend.",
+    "foolish_actions": "It would be foolish to keep burning effort on Barnes-Hut or LibRTS Embree after focused generic fixes already cover them for planning, or to run all-app POD before the remaining blockers move.",
+    "other_path": "Attack RTNN clustered Embree first. That is plausible, but RTNN symbol-cache work already measured no material gain, while Spatial/RayJoin has the larger uncovered row loss.",
+    "was_i_foolish": "No for this decision."
+  },
+  "interpretation": {
+    "why_not_all_app_pod_now": "Planning projection is still far below the V3 release bar: Set-A geomean is not near 1.20x and Set-A app wins remain below the required count.",
+    "why_not_barnes_or_librts_embree_now": "Both are already covered by focused generic runtime fixes for planning, pending full-suite validation.",
+    "why_spatial_next": "Spatial/RayJoin LSI OptiX is the largest uncovered architecture-bearing row loss and targets topology/stream mechanics rather than app-specific tuning."
+  },
+  "next_target_recommendation": {
+    "id": "spatial_rayjoin_lsi_optix_topology_stream",
+    "initial_action": "non-POD local intake of Spatial/RayJoin LSI OptiX route mechanics and existing topology-stream evidence",
+    "pod_authorized_now": false,
+    "reason": "Largest uncovered Set-A row loss after Barnes-Hut and LibRTS Embree focused fixes; architecture-bearing Spatial/RayJoin LSI/topology route.",
+    "row_id": "goal2636_stress|spatial_rayjoin|rayjoin_lsi_authored_tiled_x2048|optix|rayjoin_optix_promoted_lsi_tiled_x2048"
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "score_projection_for_planning_only": {
+    "frozen_all_rows_geomean": 1.0117790403434224,
+    "planning_all_rows_geomean_after_covered_fixes": 1.048703116681512,
+    "planning_set_a_app_geomeans": {
+      "barnes_hut": 1.008971208978369,
+      "hausdorff_xhd": 1.1485359503887191,
+      "rt_dbscan": 0.9880558497344825,
+      "rtnn": 1.0033271925133553,
+      "spatial_rayjoin": 1.0270156968652566,
+      "triangle_counting": 0.9874175127685646
+    },
+    "planning_set_a_app_wins_over_1_05x": 1,
+    "planning_set_a_app_wins_required": 5,
+    "planning_set_a_geomean_after_covered_fixes": 1.03906646344581,
+    "planning_set_b_app_geomeans": {
+      "contact_manifold": 1.0170584228123953,
+      "librts_spatial_index": 1.3939658541516884,
+      "raydb_style": 1.0456998138688391,
+      "robot_collision": 0.9932179101450812
+    },
+    "planning_set_b_geomean_after_covered_fixes": 1.0901627238822078
+  },
+  "status": "m8_remaining_blocker_queue_not_release_not_pod",
+  "tool": "v3_phoenix_remaining_blocker_queue",
+  "watch_rows": [
+    {
+      "app_id": "librts_spatial_index",
+      "case_id": "librts_optix_aabb_index",
+      "frozen_speedup": 1.0103352224861961,
+      "reason": "Original frozen row was near parity, but repeat=9 focused rerun regressed; profile separately before spending large POD time.",
+      "repeat9_focused_speedup": 0.912782157408891,
+      "row_id": "goal2626_large|librts_spatial_index|aabb_index_all_count_only|optix|librts_optix_aabb_index",
+      "status": "unstable_watch_not_current_primary_target"
+    }
+  ]
+}

@@ -1,0 +1,308 @@
+{
+  "aabb_candidate_checks": 3,
+  "aabb_candidate_checks_avoided": 6,
+  "aabb_candidate_pair_count": 3,
+  "aabb_pruning_ratio": 0.6666666666666667,
+  "all_pairs_count": 9,
+  "app": "bounded_collision_witness_contact_manifold",
+  "backend": "cpu_python_reference",
+  "candidate_discovery_backend": "cpu",
+  "candidate_discovery_contract": "generic_aabb_intersection_pair_rows_2d",
+  "candidate_discovery_primitive": "AABB_INDEX_QUERY_2D",
+  "candidate_id_rows": [
+    [
+      0,
+      20000,
+      10000
+    ],
+    [
+      1,
+      20001,
+      10001
+    ],
+    [
+      2,
+      20002,
+      10002
+    ]
+  ],
+  "claim_boundary": "AABB candidate discovery is generic RTDL broadphase behavior. The final triangle-intersection refinement and contact interpretation remain app-owned; no collision-specific native engine logic or public speedup claim is made.",
+  "complete_candidate_coverage": true,
+  "dataset": "grid_3",
+  "discovery_row_capacity": 8,
+  "engine_boundary": {
+    "candidate_discovery_owner": "AABB_INDEX_QUERY_2D",
+    "contact_manifold_logic_owner": "Python app/reference or partner continuation",
+    "engine_primitive_owner": "COLLECT_K_BOUNDED",
+    "native_collision_logic_allowed": false
+  },
+  "exact_refinement_checks": 3,
+  "exact_refinement_checks_avoided": 6,
+  "matches_cpu_reference": true,
+  "mode": "aabb_broadphase_collect_k",
+  "overflowed": false,
+  "phoenix_v3_aabb_prepare_reuse_runner": {
+    "dataset": "grid",
+    "discovery_backend": "cpu",
+    "discovery_row_capacity": 8,
+    "generic_capability": "aabb_candidate_stream",
+    "indexed_aabb_count": 3,
+    "m7_promotion_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "query_aabb_count": 3,
+    "repeat": 1,
+    "runner": "scripts/v3_phoenix_aabb_prepare_reuse_pod_runner.py",
+    "runner_wall_sec": 0.0013640000252053142,
+    "serious_scale": false,
+    "serious_scale_floor": 32768,
+    "warmup": 0,
+    "whole_app_speedup_claim_authorized": false,
+    "witness_capacity": 3
+  },
+  "prepared_query_cache_stats": null,
+  "prepared_session_residency": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "cache_enabled_by_default": false,
+    "cache_key": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "backend": "cpu",
+      "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+      "device": "cpu:0",
+      "explicit_key_required": true,
+      "input_fingerprints": [
+        [
+          "indexed_aabbs",
+          "8bf5775d60dbc341986ecf92"
+        ],
+        [
+          "query_aabbs",
+          "c8b6345dd965826a1536f678"
+        ]
+      ],
+      "parameter_fingerprint": [
+        [
+          "operation",
+          "8b9fe2976cbdac0730805ddb"
+        ],
+        [
+          "resolution",
+          "b17ef6d19c7a5b1ee83b907c"
+        ],
+        [
+          "row_capacity",
+          "2c624232cdd221771294dfbb"
+        ],
+        [
+          "row_contract",
+          "ec06807413df7f0a1d2ebe6e"
+        ]
+      ],
+      "partner": "none",
+      "primitive": "aabb_index_query_2d",
+      "stable_id": "661b37a7f5c989ca208e7915"
+    },
+    "claim_boundary": "Generic AABB_INDEX_QUERY_2D prepared-session residency metadata only. It records explicit lifetime and cold/hot phase split; it is not a public speedup claim and not contact-specific native engine logic.",
+    "cold_hot_phase_split_required": true,
+    "explicit_reuse_helper": "get_or_prepare_explicit_session",
+    "policy": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "cache_enabled": false,
+      "cache_key": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "backend": "cpu",
+        "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "device": "cpu:0",
+        "explicit_key_required": true,
+        "input_fingerprints": [
+          [
+            "indexed_aabbs",
+            "8bf5775d60dbc341986ecf92"
+          ],
+          [
+            "query_aabbs",
+            "c8b6345dd965826a1536f678"
+          ]
+        ],
+        "parameter_fingerprint": [
+          [
+            "operation",
+            "8b9fe2976cbdac0730805ddb"
+          ],
+          [
+            "resolution",
+            "b17ef6d19c7a5b1ee83b907c"
+          ],
+          [
+            "row_capacity",
+            "2c624232cdd221771294dfbb"
+          ],
+          [
+            "row_contract",
+            "ec06807413df7f0a1d2ebe6e"
+          ]
+        ],
+        "partner": "none",
+        "primitive": "aabb_index_query_2d",
+        "stable_id": "661b37a7f5c989ca208e7915"
+      },
+      "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+      "cold_prepare_phase": "prepare_aabb_index_2d",
+      "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+      "hot_query_phase": "emit_aabb_intersection_pair_rows_2d",
+      "invalidation_events": [
+        "explicit_invalidate",
+        "input_fingerprint_change",
+        "backend_context_reset",
+        "close"
+      ],
+      "lifetime_state": "session_retained",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "reuse_scope": "explicit_user_session",
+      "status": "internal_contract_not_release_authorization",
+      "true_zero_copy_claim_authorized": false
+    },
+    "prepare_once_query_many_pattern": true,
+    "public_speedup_claim_authorized": false,
+    "query_reuse_observed_within_payload": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "primitive_under_test": "COLLECT_K_BOUNDED",
+  "resolution": 16,
+  "resolution_policy": "adaptive_sqrt_capped_16_256",
+  "row_schema": [
+    "query_group_id",
+    "query_triangle_id",
+    "scene_triangle_id"
+  ],
+  "run_phases": {
+    "collect_k_bounded_rows_sec": 7.90000194683671e-05,
+    "emit_aabb_intersection_pair_rows_2d_sec": 9.23998886719346e-05,
+    "generic_aabb_broadphase_sec": 0.00035969994496554136,
+    "generic_aabb_broadphase_wall_sec": 0.00035969994496554136,
+    "prepare_aabb_index_2d_sec": 0.0001981999957934022,
+    "python_exact_refinement_sec": 3.7800054997205734e-05
+  },
+  "v2_4_phase_timing": {
+    "phase_contract_version": "rtdl.partner.v2.4",
+    "phases_sec": {
+      "materialization": 7.90000194683671e-05,
+      "partner_continuation": 3.7800054997205734e-05,
+      "rt_traversal": 9.23998886719346e-05,
+      "scene_build": 0.0001981999957934022
+    },
+    "promoted_performance_path": false,
+    "same_phase_contract_as_basis": true,
+    "source": "contact_manifold.aabb_broadphase_collect_k",
+    "validation": {
+      "errors": [],
+      "known_phases": [
+        "scene_build",
+        "rt_traversal",
+        "partner_continuation",
+        "materialization"
+      ],
+      "status": "accept"
+    }
+  },
+  "v2_4_prepared_session": {
+    "app_owned_interpretation": "Rows may represent contact witnesses in this benchmark, but RTDL sees only bounded int64 rows and valid_count.",
+    "app_specific_native_vocab_allowed": false,
+    "backend": "cpu",
+    "descriptor_only": true,
+    "input_buffers": [
+      {
+        "access_mode": "read",
+        "alignment_bytes": 1,
+        "byte_offset": 0,
+        "capacity_elements": 9,
+        "data_ptr_observed": false,
+        "device": "cpu:0",
+        "dtype": "int64",
+        "element_count": 9,
+        "lifetime": "session_retained",
+        "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+        "mutability": "immutable",
+        "name": "candidate_id_rows",
+        "scope": "rtdl_primitive_handoff_only",
+        "shape": [
+          3,
+          3
+        ],
+        "source_protocol": "rtdl_generic_i64_rows",
+        "stream_handle": 0,
+        "strides_bytes": null
+      }
+    ],
+    "native_engine_boundary": "app_agnostic_native_engine",
+    "native_symbols": [],
+    "output_buffers": [
+      {
+        "access_mode": "write",
+        "alignment_bytes": 1,
+        "byte_offset": 0,
+        "capacity_elements": 9,
+        "data_ptr_observed": false,
+        "device": "cpu:0",
+        "dtype": "int64",
+        "element_count": 9,
+        "lifetime": "session_retained",
+        "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+        "mutability": "mutable",
+        "name": "bounded_witness_rows",
+        "scope": "rtdl_primitive_handoff_only",
+        "shape": [
+          3,
+          3
+        ],
+        "source_protocol": "rtdl_generic_i64_rows",
+        "stream_handle": 0,
+        "strides_bytes": null
+      },
+      {
+        "access_mode": "write",
+        "alignment_bytes": 1,
+        "byte_offset": 0,
+        "capacity_elements": 1,
+        "data_ptr_observed": false,
+        "device": "cpu:0",
+        "dtype": "uint64",
+        "element_count": 1,
+        "lifetime": "session_retained",
+        "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+        "mutability": "mutable",
+        "name": "valid_count",
+        "scope": "rtdl_primitive_handoff_only",
+        "shape": [
+          1
+        ],
+        "source_protocol": "rtdl_scalar_status",
+        "stream_handle": 0,
+        "strides_bytes": null
+      }
+    ],
+    "overflow_policy": "fail_closed_no_partial_rows",
+    "phase_contract": "bounded_witness_collection",
+    "primitive": "aabb_index_2d_bounded_i64_rows",
+    "requires_phase_timing": true,
+    "reusable_output_buffers": true,
+    "reusable_query_buffers": true,
+    "reusable_scene": true,
+    "row_schema": [
+      "query_group_id",
+      "query_triangle_id",
+      "scene_triangle_id"
+    ],
+    "same_phase_contract_as_basis_required": true,
+    "session_id": "generic_bounded_i64_rows_cpu_3x3",
+    "status": "protocol_descriptor_only",
+    "v2_4_protocol_version": "rtdl.partner.v2.4"
+  },
+  "valid_count": 3,
+  "witness_capacity": 3
+}

@@ -1,0 +1,30 @@
+{
+  "all_claim_flags_false": true,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "classification_supersedes_raw_material_candidate_field": true,
+  "full_all_app_rerun_authorized_by_this_packet": false,
+  "geomean_runner_vs_embree_speedup": 2.934280113671061,
+  "geomean_runner_vs_legacy_speedup": 0.9929975216946967,
+  "legacy_parity_recovered": true,
+  "material_set_a_candidate": false,
+  "material_vs_incumbent_legacy_candidate": false,
+  "public_speedup_claim_authorized": false,
+  "reason": "raw script used old parity-plus-Embree gate; Phoenix classification requires material speedup versus incumbent legacy OptiX path",
+  "release_authorized": false,
+  "runner_metadata_present_all_runner_samples": true,
+  "scales": {
+    "262144": {
+      "runner_vs_embree_speedup": 2.124428589223621,
+      "runner_vs_legacy_speedup": 0.9934991730627669
+    },
+    "65536": {
+      "runner_vs_embree_speedup": 4.0528544141989755,
+      "runner_vs_legacy_speedup": 0.992496123627386
+    }
+  },
+  "second_set_a_material_probe_obtained": false,
+  "source_summary": "docs\\rebuild\\v3\\evidence\\phoenix_v3_rtdbscan_m3_2_pod_ab_20260622_193805\\summary.json",
+  "source_summary_material_set_a_candidate_raw": true,
+  "status": "m3_2_rtdbscan_runner_parity_recovered_not_material_set_a_not_release",
+  "true_zero_copy_claim_authorized": false
+}

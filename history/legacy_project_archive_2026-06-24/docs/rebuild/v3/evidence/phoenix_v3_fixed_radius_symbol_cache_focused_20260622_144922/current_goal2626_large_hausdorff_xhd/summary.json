@@ -1,0 +1,849 @@
+{
+  "case_repeat": 5,
+  "claim_boundary": {
+    "future_partner_baseline": "Triton/Numba no-new-C++ path",
+    "internal_baseline_only": true,
+    "public_speedup_claim_authorized": false
+  },
+  "dry_run": false,
+  "environment": {
+    "env_subset": {
+      "RTDL_EMBREE_LIBRARY": "/root/rtdl_v3_rebuild_20260620/current/build/librtdl_embree.so",
+      "RTDL_OPTIX_LIBRARY": "/root/rtdl_v3_rebuild_20260620/current/build/librtdl_optix.so"
+    },
+    "git_commit": "",
+    "git_status_short": "",
+    "native_libraries": {
+      "embree": "/root/rtdl_v3_rebuild_20260620/current/build/librtdl_embree.so",
+      "embree_exists": true,
+      "optix": "/root/rtdl_v3_rebuild_20260620/current/build/librtdl_optix.so",
+      "optix_exists": true
+    },
+    "nvcc": {
+      "command": [
+        "nvcc",
+        "--version"
+      ],
+      "error": "FileNotFoundError(2, 'No such file or directory')"
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi",
+        "--query-gpu=name,driver_version,memory.total",
+        "--format=csv,noheader"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB"
+    },
+    "optix_headers": [],
+    "python": "Python 3.12.3",
+    "repo_root": "/root/rtdl_v3_rebuild_20260620/current",
+    "uname": "Linux 2bcb58b259e4 6.8.0-40-generic #40~22.04.3-Ubuntu SMP PREEMPT_DYNAMIC Tue Jul 30 17:30:19 UTC 2 x86_64 x86_64 x86_64 GNU/Linux"
+  },
+  "generated_at": "2026-06-22T15:05:57+0000",
+  "goal": "Goal2626",
+  "promoted_benchmark_apps": [
+    "hausdorff_xhd",
+    "spatial_rayjoin",
+    "rt_dbscan",
+    "robot_collision",
+    "raydb_style",
+    "barnes_hut",
+    "librts_spatial_index",
+    "rtnn",
+    "triangle_counting",
+    "contact_manifold"
+  ],
+  "purpose": "Embree vs OptiX/RT baseline across promoted benchmark apps before Triton/Numba partner work.",
+  "ratios": [
+    {
+      "app_id": "hausdorff_xhd",
+      "comparison_group": "hausdorff_threshold_decision",
+      "embree_sec": 0.5765824094414711,
+      "embree_speedup_vs_optix": 0.40023983951636893,
+      "metric_sources": {
+        "embree": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+        "optix": "run_phases.query_fixed_radius_threshold_reached_count_sec"
+      },
+      "optix_sec": 0.2307712510228157,
+      "optix_speedup_vs_embree": 2.498501901280875
+    }
+  ],
+  "rows": [
+    {
+      "app_id": "hausdorff_xhd",
+      "app_name": "Hausdorff / X-HD-style",
+      "backend": "embree",
+      "case_id": "hausdorff_embree_threshold",
+      "comparison_group": "hausdorff_threshold_decision",
+      "notes": "Same threshold-decision contract as OptiX; despite option name, the prepared threshold path supports Embree.",
+      "payload": {
+        "app": "hausdorff_distance",
+        "backend": "embree",
+        "claim_boundary": {
+          "app_specific_native_engine_logic_allowed": false,
+          "automatic_partner_selection_authorized": false,
+          "broad_rt_core_speedup_claim_authorized": false,
+          "full_paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false
+        },
+        "copies": 16384,
+        "directed_a_to_b": {
+          "covered_source_count": 65536,
+          "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+          "identity_parity_available": true,
+          "label": "a_to_b",
+          "query_repeat_protocol": {
+            "measured_run_count": 1,
+            "query_sec_median": 0.3252989277243614,
+            "query_sec_total": 0.3252989277243614,
+            "repeat": 1,
+            "warmup": 0
+          },
+          "radius": 0.4,
+          "row_count": null,
+          "run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.3252989277243614,
+            "query_fixed_radius_threshold_reached_count_total_sec": 0.3252989277243614,
+            "query_repeat": 1,
+            "query_warmup": 0,
+            "scene_prepare_sec": 0.1438063308596611
+          },
+          "source_count": 65536,
+          "summary_mode": "scalar_threshold_count",
+          "summary_primitive": "REDUCE_INT(COUNT)",
+          "violating_source_ids": [],
+          "within_threshold": true
+        },
+        "directed_b_to_a": {
+          "covered_source_count": 65536,
+          "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+          "identity_parity_available": true,
+          "label": "b_to_a",
+          "query_repeat_protocol": {
+            "measured_run_count": 1,
+            "query_sec_median": 0.2512834817171097,
+            "query_sec_total": 0.2512834817171097,
+            "repeat": 1,
+            "warmup": 0
+          },
+          "radius": 0.4,
+          "row_count": null,
+          "run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.2512834817171097,
+            "query_fixed_radius_threshold_reached_count_total_sec": 0.2512834817171097,
+            "query_repeat": 1,
+            "query_warmup": 0,
+            "scene_prepare_sec": 0.1727127656340599
+          },
+          "source_count": 65536,
+          "summary_mode": "scalar_threshold_count",
+          "summary_primitive": "REDUCE_INT(COUNT)",
+          "violating_source_ids": [],
+          "within_threshold": true
+        },
+        "embree_result_mode": null,
+        "hausdorff_distance": null,
+        "hausdorff_threshold": 0.4,
+        "matches_oracle": true,
+        "native_continuation_active": true,
+        "native_continuation_backend": "embree_threshold_count",
+        "optix_performance": {
+          "class": "optix_traversal_prepared_summary",
+          "note": "Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only."
+        },
+        "optix_summary_mode": "directed_threshold_prepared",
+        "oracle": {
+          "directed_a_to_b": {
+            "distance": 0.30000000000000004,
+            "distance_reduction_rows": [
+              {
+                "directed_distance": 0.30000000000000004
+              }
+            ],
+            "row_count": 65536,
+            "source_id": 3,
+            "target_id": 103
+          },
+          "directed_b_to_a": {
+            "distance": 0.30000000000000004,
+            "distance_reduction_rows": [
+              {
+                "directed_distance": 0.30000000000000004
+              }
+            ],
+            "row_count": 65536,
+            "source_id": 103,
+            "target_id": 3
+          },
+          "hausdorff_distance": 0.30000000000000004,
+          "witness_direction": "b_to_a"
+        },
+        "oracle_decision_matches": true,
+        "oracle_identity_matches": true,
+        "oracle_within_threshold": true,
+        "point_count_a": 65536,
+        "point_count_b": 65536,
+        "prepared_session_residency": {
+          "automatic_partner_selection_authorized": false,
+          "cache_enabled_by_default": false,
+          "cache_key": {
+            "app_specific_native_engine_logic_allowed": false,
+            "automatic_partner_selection_authorized": false,
+            "backend": "embree",
+            "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+            "device": "cpu",
+            "explicit_key_required": true,
+            "input_fingerprints": [
+              [
+                "source_points",
+                "7413556a906c4f7a1587bdb7"
+              ],
+              [
+                "target_points",
+                "7413556a906c4f7a1587bdb7"
+              ]
+            ],
+            "parameter_fingerprint": [
+              [
+                "threshold",
+                "f3e360d89952f40d3b79d0b0"
+              ]
+            ],
+            "partner": "none",
+            "primitive": "fixed_radius_threshold_2d",
+            "stable_id": "07b2de7e8d4c6fb3140c3561"
+          },
+          "cold_hot_phase_split_required": true,
+          "explicit_reuse_helper": "get_or_prepare_explicit_session",
+          "policy": {
+            "app_specific_native_engine_logic_allowed": false,
+            "automatic_partner_selection_authorized": false,
+            "broad_rt_core_claim_authorized": false,
+            "cache_enabled": false,
+            "cache_key": {
+              "app_specific_native_engine_logic_allowed": false,
+              "automatic_partner_selection_authorized": false,
+              "backend": "embree",
+              "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+              "device": "cpu",
+              "explicit_key_required": true,
+              "input_fingerprints": [
+                [
+                  "source_points",
+                  "7413556a906c4f7a1587bdb7"
+                ],
+                [
+                  "target_points",
+                  "7413556a906c4f7a1587bdb7"
+                ]
+              ],
+              "parameter_fingerprint": [
+                [
+                  "threshold",
+                  "f3e360d89952f40d3b79d0b0"
+                ]
+              ],
+              "partner": "none",
+              "primitive": "fixed_radius_threshold_2d",
+              "stable_id": "07b2de7e8d4c6fb3140c3561"
+            },
+            "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+            "cold_prepare_phase": "prepare_scene_or_payload",
+            "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+            "hot_query_phase": "prepared_query",
+            "invalidation_events": [
+              "explicit_invalidate",
+              "backend_context_reset",
+              "close"
+            ],
+            "lifetime_state": "session_retained",
+            "public_speedup_claim_authorized": false,
+            "release_authorized": false,
+            "reuse_scope": "explicit_user_session",
+            "status": "internal_contract_not_release_authorization",
+            "true_zero_copy_claim_authorized": false
+          },
+          "prepare_once_query_many_pattern": true,
+          "public_speedup_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false
+        },
+        "repeat_protocol": {
+          "measured_query_total_sec": 0.5765824094414711,
+          "repeat": 1,
+          "reported_query_metric": "sum_of_directed_query_medians",
+          "warmup": 0
+        },
+        "rt_core_accelerated": false,
+        "rtdl_role": "RTDL/embree uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.",
+        "run_phases": {
+          "input_construction_sec": 0.19245140999555588,
+          "python_postprocess_sec": 8.344650268554688e-07,
+          "query_fixed_radius_threshold_reached_count_sec": 0.5765824094414711,
+          "scene_prepare_sec": 0.316519096493721,
+          "validation_sec": 0.00012973695993423462
+        },
+        "within_threshold": true
+      },
+      "primary_metric_sec": 0.5765824094414711,
+      "primary_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "--backend",
+            "embree",
+            "--copies",
+            "16384",
+            "--optix-summary-mode",
+            "directed_threshold_prepared",
+            "--hausdorff-threshold",
+            "0.4",
+            "--repeat",
+            "1",
+            "--warmup",
+            "0"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "ion_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_within_threshold\": true,\n  \"point_count_a\": 65536,\n  \"point_count_b\": 65536,\n  \"prepared_session_residency\": {\n    \"automatic_partner_selection_authorized\": false,\n    \"cache_enabled_by_default\": false,\n    \"cache_key\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"backend\": \"embree\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"device\": \"cpu\",\n      \"explicit_key_required\": true,\n      \"input_fingerprints\": [\n        [\n          \"source_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ],\n        [\n          \"target_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ]\n      ],\n      \"parameter_fingerprint\": [\n        [\n          \"threshold\",\n          \"f3e360d89952f40d3b79d0b0\"\n        ]\n      ],\n      \"partner\": \"none\",\n      \"primitive\": \"fixed_radius_threshold_2d\",\n      \"stable_id\": \"07b2de7e8d4c6fb3140c3561\"\n    },\n    \"cold_hot_phase_split_required\": true,\n    \"explicit_reuse_helper\": \"get_or_prepare_explicit_session\",\n    \"policy\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"broad_rt_core_claim_authorized\": false,\n      \"cache_enabled\": false,\n      \"cache_key\": {\n        \"app_specific_native_engine_logic_allowed\": false,\n        \"automatic_partner_selection_authorized\": false,\n        \"backend\": \"embree\",\n        \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n        \"device\": \"cpu\",\n        \"explicit_key_required\": true,\n        \"input_fingerprints\": [\n          [\n            \"source_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ],\n          [\n            \"target_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ]\n        ],\n        \"parameter_fingerprint\": [\n          [\n            \"threshold\",\n            \"f3e360d89952f40d3b79d0b0\"\n          ]\n        ],\n        \"partner\": \"none\",\n        \"primitive\": \"fixed_radius_threshold_2d\",\n        \"stable_id\": \"07b2de7e8d4c6fb3140c3561\"\n      },\n      \"claim_boundary\": \"Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.\",\n      \"cold_prepare_phase\": \"prepare_scene_or_payload\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"hot_query_phase\": \"prepared_query\",\n      \"invalidation_events\": [\n        \"explicit_invalidate\",\n        \"backend_context_reset\",\n        \"close\"\n      ],\n      \"lifetime_state\": \"session_retained\",\n      \"public_speedup_claim_authorized\": false,\n      \"release_authorized\": false,\n      \"reuse_scope\": \"explicit_user_session\",\n      \"status\": \"internal_contract_not_release_authorization\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"prepare_once_query_many_pattern\": true,\n    \"public_speedup_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false\n  },\n  \"repeat_protocol\": {\n    \"measured_query_total_sec\": 0.5596336200833321,\n    \"repeat\": 1,\n    \"reported_query_metric\": \"sum_of_directed_query_medians\",\n    \"warmup\": 0\n  },\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL/embree uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.19467177987098694,\n    \"python_postprocess_sec\": 7.003545761108398e-07,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.5596336200833321,\n    \"scene_prepare_sec\": 0.2997536286711693,\n    \"validation_sec\": 0.00013137608766555786\n  },\n  \"within_threshold\": true\n}\n",
+          "wall_elapsed_sec": 1.7485311776399612
+        },
+        {
+          "command": [
+            "python3",
+            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "--backend",
+            "embree",
+            "--copies",
+            "16384",
+            "--optix-summary-mode",
+            "directed_threshold_prepared",
+            "--hausdorff-threshold",
+            "0.4",
+            "--repeat",
+            "1",
+            "--warmup",
+            "0"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "ion_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_within_threshold\": true,\n  \"point_count_a\": 65536,\n  \"point_count_b\": 65536,\n  \"prepared_session_residency\": {\n    \"automatic_partner_selection_authorized\": false,\n    \"cache_enabled_by_default\": false,\n    \"cache_key\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"backend\": \"embree\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"device\": \"cpu\",\n      \"explicit_key_required\": true,\n      \"input_fingerprints\": [\n        [\n          \"source_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ],\n        [\n          \"target_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ]\n      ],\n      \"parameter_fingerprint\": [\n        [\n          \"threshold\",\n          \"f3e360d89952f40d3b79d0b0\"\n        ]\n      ],\n      \"partner\": \"none\",\n      \"primitive\": \"fixed_radius_threshold_2d\",\n      \"stable_id\": \"07b2de7e8d4c6fb3140c3561\"\n    },\n    \"cold_hot_phase_split_required\": true,\n    \"explicit_reuse_helper\": \"get_or_prepare_explicit_session\",\n    \"policy\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"broad_rt_core_claim_authorized\": false,\n      \"cache_enabled\": false,\n      \"cache_key\": {\n        \"app_specific_native_engine_logic_allowed\": false,\n        \"automatic_partner_selection_authorized\": false,\n        \"backend\": \"embree\",\n        \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n        \"device\": \"cpu\",\n        \"explicit_key_required\": true,\n        \"input_fingerprints\": [\n          [\n            \"source_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ],\n          [\n            \"target_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ]\n        ],\n        \"parameter_fingerprint\": [\n          [\n            \"threshold\",\n            \"f3e360d89952f40d3b79d0b0\"\n          ]\n        ],\n        \"partner\": \"none\",\n        \"primitive\": \"fixed_radius_threshold_2d\",\n        \"stable_id\": \"07b2de7e8d4c6fb3140c3561\"\n      },\n      \"claim_boundary\": \"Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.\",\n      \"cold_prepare_phase\": \"prepare_scene_or_payload\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"hot_query_phase\": \"prepared_query\",\n      \"invalidation_events\": [\n        \"explicit_invalidate\",\n        \"backend_context_reset\",\n        \"close\"\n      ],\n      \"lifetime_state\": \"session_retained\",\n      \"public_speedup_claim_authorized\": false,\n      \"release_authorized\": false,\n      \"reuse_scope\": \"explicit_user_session\",\n      \"status\": \"internal_contract_not_release_authorization\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"prepare_once_query_many_pattern\": true,\n    \"public_speedup_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false\n  },\n  \"repeat_protocol\": {\n    \"measured_query_total_sec\": 0.5592590942978859,\n    \"repeat\": 1,\n    \"reported_query_metric\": \"sum_of_directed_query_medians\",\n    \"warmup\": 0\n  },\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL/embree uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.19447927176952362,\n    \"python_postprocess_sec\": 7.152557373046875e-07,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.5592590942978859,\n    \"scene_prepare_sec\": 0.3171590268611908,\n    \"validation_sec\": 0.00013975054025650024\n  },\n  \"within_threshold\": true\n}\n",
+          "wall_elapsed_sec": 1.713869996368885
+        },
+        {
+          "command": [
+            "python3",
+            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "--backend",
+            "embree",
+            "--copies",
+            "16384",
+            "--optix-summary-mode",
+            "directed_threshold_prepared",
+            "--hausdorff-threshold",
+            "0.4",
+            "--repeat",
+            "1",
+            "--warmup",
+            "0"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "ion_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_within_threshold\": true,\n  \"point_count_a\": 65536,\n  \"point_count_b\": 65536,\n  \"prepared_session_residency\": {\n    \"automatic_partner_selection_authorized\": false,\n    \"cache_enabled_by_default\": false,\n    \"cache_key\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"backend\": \"embree\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"device\": \"cpu\",\n      \"explicit_key_required\": true,\n      \"input_fingerprints\": [\n        [\n          \"source_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ],\n        [\n          \"target_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ]\n      ],\n      \"parameter_fingerprint\": [\n        [\n          \"threshold\",\n          \"f3e360d89952f40d3b79d0b0\"\n        ]\n      ],\n      \"partner\": \"none\",\n      \"primitive\": \"fixed_radius_threshold_2d\",\n      \"stable_id\": \"07b2de7e8d4c6fb3140c3561\"\n    },\n    \"cold_hot_phase_split_required\": true,\n    \"explicit_reuse_helper\": \"get_or_prepare_explicit_session\",\n    \"policy\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"broad_rt_core_claim_authorized\": false,\n      \"cache_enabled\": false,\n      \"cache_key\": {\n        \"app_specific_native_engine_logic_allowed\": false,\n        \"automatic_partner_selection_authorized\": false,\n        \"backend\": \"embree\",\n        \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n        \"device\": \"cpu\",\n        \"explicit_key_required\": true,\n        \"input_fingerprints\": [\n          [\n            \"source_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ],\n          [\n            \"target_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ]\n        ],\n        \"parameter_fingerprint\": [\n          [\n            \"threshold\",\n            \"f3e360d89952f40d3b79d0b0\"\n          ]\n        ],\n        \"partner\": \"none\",\n        \"primitive\": \"fixed_radius_threshold_2d\",\n        \"stable_id\": \"07b2de7e8d4c6fb3140c3561\"\n      },\n      \"claim_boundary\": \"Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.\",\n      \"cold_prepare_phase\": \"prepare_scene_or_payload\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"hot_query_phase\": \"prepared_query\",\n      \"invalidation_events\": [\n        \"explicit_invalidate\",\n        \"backend_context_reset\",\n        \"close\"\n      ],\n      \"lifetime_state\": \"session_retained\",\n      \"public_speedup_claim_authorized\": false,\n      \"release_authorized\": false,\n      \"reuse_scope\": \"explicit_user_session\",\n      \"status\": \"internal_contract_not_release_authorization\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"prepare_once_query_many_pattern\": true,\n    \"public_speedup_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false\n  },\n  \"repeat_protocol\": {\n    \"measured_query_total_sec\": 0.5557258129119873,\n    \"repeat\": 1,\n    \"reported_query_metric\": \"sum_of_directed_query_medians\",\n    \"warmup\": 0\n  },\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL/embree uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.19505701959133148,\n    \"python_postprocess_sec\": 5.587935447692871e-07,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.5557258129119873,\n    \"scene_prepare_sec\": 0.30528559535741806,\n    \"validation_sec\": 0.0001322031021118164\n  },\n  \"within_threshold\": true\n}\n",
+          "wall_elapsed_sec": 1.7219491824507713
+        },
+        {
+          "command": [
+            "python3",
+            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "--backend",
+            "embree",
+            "--copies",
+            "16384",
+            "--optix-summary-mode",
+            "directed_threshold_prepared",
+            "--hausdorff-threshold",
+            "0.4",
+            "--repeat",
+            "1",
+            "--warmup",
+            "0"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "sion_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_within_threshold\": true,\n  \"point_count_a\": 65536,\n  \"point_count_b\": 65536,\n  \"prepared_session_residency\": {\n    \"automatic_partner_selection_authorized\": false,\n    \"cache_enabled_by_default\": false,\n    \"cache_key\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"backend\": \"embree\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"device\": \"cpu\",\n      \"explicit_key_required\": true,\n      \"input_fingerprints\": [\n        [\n          \"source_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ],\n        [\n          \"target_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ]\n      ],\n      \"parameter_fingerprint\": [\n        [\n          \"threshold\",\n          \"f3e360d89952f40d3b79d0b0\"\n        ]\n      ],\n      \"partner\": \"none\",\n      \"primitive\": \"fixed_radius_threshold_2d\",\n      \"stable_id\": \"07b2de7e8d4c6fb3140c3561\"\n    },\n    \"cold_hot_phase_split_required\": true,\n    \"explicit_reuse_helper\": \"get_or_prepare_explicit_session\",\n    \"policy\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"broad_rt_core_claim_authorized\": false,\n      \"cache_enabled\": false,\n      \"cache_key\": {\n        \"app_specific_native_engine_logic_allowed\": false,\n        \"automatic_partner_selection_authorized\": false,\n        \"backend\": \"embree\",\n        \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n        \"device\": \"cpu\",\n        \"explicit_key_required\": true,\n        \"input_fingerprints\": [\n          [\n            \"source_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ],\n          [\n            \"target_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ]\n        ],\n        \"parameter_fingerprint\": [\n          [\n            \"threshold\",\n            \"f3e360d89952f40d3b79d0b0\"\n          ]\n        ],\n        \"partner\": \"none\",\n        \"primitive\": \"fixed_radius_threshold_2d\",\n        \"stable_id\": \"07b2de7e8d4c6fb3140c3561\"\n      },\n      \"claim_boundary\": \"Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.\",\n      \"cold_prepare_phase\": \"prepare_scene_or_payload\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"hot_query_phase\": \"prepared_query\",\n      \"invalidation_events\": [\n        \"explicit_invalidate\",\n        \"backend_context_reset\",\n        \"close\"\n      ],\n      \"lifetime_state\": \"session_retained\",\n      \"public_speedup_claim_authorized\": false,\n      \"release_authorized\": false,\n      \"reuse_scope\": \"explicit_user_session\",\n      \"status\": \"internal_contract_not_release_authorization\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"prepare_once_query_many_pattern\": true,\n    \"public_speedup_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false\n  },\n  \"repeat_protocol\": {\n    \"measured_query_total_sec\": 0.5594439059495926,\n    \"repeat\": 1,\n    \"reported_query_metric\": \"sum_of_directed_query_medians\",\n    \"warmup\": 0\n  },\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL/embree uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.1914472132921219,\n    \"python_postprocess_sec\": 7.37607479095459e-07,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.5594439059495926,\n    \"scene_prepare_sec\": 0.29496467113494873,\n    \"validation_sec\": 0.00013437122106552124\n  },\n  \"within_threshold\": true\n}\n",
+          "wall_elapsed_sec": 1.660678580403328
+        },
+        {
+          "command": [
+            "python3",
+            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "--backend",
+            "embree",
+            "--copies",
+            "16384",
+            "--optix-summary-mode",
+            "directed_threshold_prepared",
+            "--hausdorff-threshold",
+            "0.4",
+            "--repeat",
+            "1",
+            "--warmup",
+            "0"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "sion_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_within_threshold\": true,\n  \"point_count_a\": 65536,\n  \"point_count_b\": 65536,\n  \"prepared_session_residency\": {\n    \"automatic_partner_selection_authorized\": false,\n    \"cache_enabled_by_default\": false,\n    \"cache_key\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"backend\": \"embree\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"device\": \"cpu\",\n      \"explicit_key_required\": true,\n      \"input_fingerprints\": [\n        [\n          \"source_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ],\n        [\n          \"target_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ]\n      ],\n      \"parameter_fingerprint\": [\n        [\n          \"threshold\",\n          \"f3e360d89952f40d3b79d0b0\"\n        ]\n      ],\n      \"partner\": \"none\",\n      \"primitive\": \"fixed_radius_threshold_2d\",\n      \"stable_id\": \"07b2de7e8d4c6fb3140c3561\"\n    },\n    \"cold_hot_phase_split_required\": true,\n    \"explicit_reuse_helper\": \"get_or_prepare_explicit_session\",\n    \"policy\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"broad_rt_core_claim_authorized\": false,\n      \"cache_enabled\": false,\n      \"cache_key\": {\n        \"app_specific_native_engine_logic_allowed\": false,\n        \"automatic_partner_selection_authorized\": false,\n        \"backend\": \"embree\",\n        \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n        \"device\": \"cpu\",\n        \"explicit_key_required\": true,\n        \"input_fingerprints\": [\n          [\n            \"source_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ],\n          [\n            \"target_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ]\n        ],\n        \"parameter_fingerprint\": [\n          [\n            \"threshold\",\n            \"f3e360d89952f40d3b79d0b0\"\n          ]\n        ],\n        \"partner\": \"none\",\n        \"primitive\": \"fixed_radius_threshold_2d\",\n        \"stable_id\": \"07b2de7e8d4c6fb3140c3561\"\n      },\n      \"claim_boundary\": \"Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.\",\n      \"cold_prepare_phase\": \"prepare_scene_or_payload\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"hot_query_phase\": \"prepared_query\",\n      \"invalidation_events\": [\n        \"explicit_invalidate\",\n        \"backend_context_reset\",\n        \"close\"\n      ],\n      \"lifetime_state\": \"session_retained\",\n      \"public_speedup_claim_authorized\": false,\n      \"release_authorized\": false,\n      \"reuse_scope\": \"explicit_user_session\",\n      \"status\": \"internal_contract_not_release_authorization\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"prepare_once_query_many_pattern\": true,\n    \"public_speedup_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false\n  },\n  \"repeat_protocol\": {\n    \"measured_query_total_sec\": 0.5765824094414711,\n    \"repeat\": 1,\n    \"reported_query_metric\": \"sum_of_directed_query_medians\",\n    \"warmup\": 0\n  },\n  \"rt_core_accelerated\": false,\n  \"rtdl_role\": \"RTDL/embree uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.19245140999555588,\n    \"python_postprocess_sec\": 8.344650268554688e-07,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.5765824094414711,\n    \"scene_prepare_sec\": 0.316519096493721,\n    \"validation_sec\": 0.00012973695993423462\n  },\n  \"within_threshold\": true\n}\n",
+          "wall_elapsed_sec": 1.7258642092347145
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "directed_a_to_b.run_phases.query_fixed_radius_threshold_reached_count_sec",
+          0.3252989277243614
+        ],
+        [
+          "directed_a_to_b.run_phases.query_fixed_radius_threshold_reached_count_total_sec",
+          0.3252989277243614
+        ],
+        [
+          "directed_a_to_b.run_phases.scene_prepare_sec",
+          0.1438063308596611
+        ],
+        [
+          "directed_b_to_a.run_phases.query_fixed_radius_threshold_reached_count_sec",
+          0.2512834817171097
+        ],
+        [
+          "directed_b_to_a.run_phases.query_fixed_radius_threshold_reached_count_total_sec",
+          0.2512834817171097
+        ],
+        [
+          "directed_b_to_a.run_phases.scene_prepare_sec",
+          0.1727127656340599
+        ],
+        [
+          "repeat_protocol.measured_query_total_sec",
+          0.5765824094414711
+        ],
+        [
+          "run_phases.input_construction_sec",
+          0.19245140999555588
+        ],
+        [
+          "run_phases.python_postprocess_sec",
+          8.344650268554688e-07
+        ],
+        [
+          "run_phases.query_fixed_radius_threshold_reached_count_sec",
+          0.5765824094414711
+        ],
+        [
+          "run_phases.scene_prepare_sec",
+          0.316519096493721
+        ],
+        [
+          "run_phases.validation_sec",
+          0.00012973695993423462
+        ]
+      ],
+      "wall_median_sec": 1.7219491824507713
+    },
+    {
+      "app_id": "hausdorff_xhd",
+      "app_name": "Hausdorff / X-HD-style",
+      "backend": "optix",
+      "case_id": "hausdorff_optix_threshold",
+      "comparison_group": "hausdorff_threshold_decision",
+      "notes": "",
+      "payload": {
+        "app": "hausdorff_distance",
+        "backend": "optix",
+        "claim_boundary": {
+          "app_specific_native_engine_logic_allowed": false,
+          "automatic_partner_selection_authorized": false,
+          "broad_rt_core_speedup_claim_authorized": false,
+          "full_paper_reproduction_claim_authorized": false,
+          "public_speedup_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false
+        },
+        "copies": 16384,
+        "directed_a_to_b": {
+          "covered_source_count": 65536,
+          "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+          "identity_parity_available": true,
+          "label": "a_to_b",
+          "query_repeat_protocol": {
+            "measured_run_count": 1,
+            "query_sec_median": 0.09293542057275772,
+            "query_sec_total": 0.09293542057275772,
+            "repeat": 1,
+            "warmup": 0
+          },
+          "radius": 0.4,
+          "row_count": null,
+          "run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.09293542057275772,
+            "query_fixed_radius_threshold_reached_count_total_sec": 0.09293542057275772,
+            "query_repeat": 1,
+            "query_warmup": 0,
+            "scene_prepare_sec": 1.3498442471027374
+          },
+          "source_count": 65536,
+          "summary_mode": "scalar_threshold_count",
+          "summary_primitive": "REDUCE_INT(COUNT)",
+          "violating_source_ids": [],
+          "within_threshold": true
+        },
+        "directed_b_to_a": {
+          "covered_source_count": 65536,
+          "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+          "identity_parity_available": true,
+          "label": "b_to_a",
+          "query_repeat_protocol": {
+            "measured_run_count": 1,
+            "query_sec_median": 0.13783583045005798,
+            "query_sec_total": 0.13783583045005798,
+            "repeat": 1,
+            "warmup": 0
+          },
+          "radius": 0.4,
+          "row_count": null,
+          "run_phases": {
+            "query_fixed_radius_threshold_reached_count_sec": 0.13783583045005798,
+            "query_fixed_radius_threshold_reached_count_total_sec": 0.13783583045005798,
+            "query_repeat": 1,
+            "query_warmup": 0,
+            "scene_prepare_sec": 0.13787180930376053
+          },
+          "source_count": 65536,
+          "summary_mode": "scalar_threshold_count",
+          "summary_primitive": "REDUCE_INT(COUNT)",
+          "violating_source_ids": [],
+          "within_threshold": true
+        },
+        "embree_result_mode": null,
+        "hausdorff_distance": null,
+        "hausdorff_threshold": 0.4,
+        "matches_oracle": true,
+        "native_continuation_active": true,
+        "native_continuation_backend": "optix_threshold_count",
+        "optix_performance": {
+          "class": "optix_traversal_prepared_summary",
+          "note": "Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only."
+        },
+        "optix_summary_mode": "directed_threshold_prepared",
+        "oracle": {
+          "directed_a_to_b": {
+            "distance": 0.30000000000000004,
+            "distance_reduction_rows": [
+              {
+                "directed_distance": 0.30000000000000004
+              }
+            ],
+            "row_count": 65536,
+            "source_id": 3,
+            "target_id": 103
+          },
+          "directed_b_to_a": {
+            "distance": 0.30000000000000004,
+            "distance_reduction_rows": [
+              {
+                "directed_distance": 0.30000000000000004
+              }
+            ],
+            "row_count": 65536,
+            "source_id": 103,
+            "target_id": 3
+          },
+          "hausdorff_distance": 0.30000000000000004,
+          "witness_direction": "b_to_a"
+        },
+        "oracle_decision_matches": true,
+        "oracle_identity_matches": true,
+        "oracle_within_threshold": true,
+        "point_count_a": 65536,
+        "point_count_b": 65536,
+        "prepared_session_residency": {
+          "automatic_partner_selection_authorized": false,
+          "cache_enabled_by_default": false,
+          "cache_key": {
+            "app_specific_native_engine_logic_allowed": false,
+            "automatic_partner_selection_authorized": false,
+            "backend": "optix",
+            "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+            "device": "cuda:0",
+            "explicit_key_required": true,
+            "input_fingerprints": [
+              [
+                "source_points",
+                "7413556a906c4f7a1587bdb7"
+              ],
+              [
+                "target_points",
+                "7413556a906c4f7a1587bdb7"
+              ]
+            ],
+            "parameter_fingerprint": [
+              [
+                "threshold",
+                "f3e360d89952f40d3b79d0b0"
+              ]
+            ],
+            "partner": "none",
+            "primitive": "fixed_radius_threshold_2d",
+            "stable_id": "e6437f1bc73939888dc6f213"
+          },
+          "cold_hot_phase_split_required": true,
+          "explicit_reuse_helper": "get_or_prepare_explicit_session",
+          "policy": {
+            "app_specific_native_engine_logic_allowed": false,
+            "automatic_partner_selection_authorized": false,
+            "broad_rt_core_claim_authorized": false,
+            "cache_enabled": false,
+            "cache_key": {
+              "app_specific_native_engine_logic_allowed": false,
+              "automatic_partner_selection_authorized": false,
+              "backend": "optix",
+              "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+              "device": "cuda:0",
+              "explicit_key_required": true,
+              "input_fingerprints": [
+                [
+                  "source_points",
+                  "7413556a906c4f7a1587bdb7"
+                ],
+                [
+                  "target_points",
+                  "7413556a906c4f7a1587bdb7"
+                ]
+              ],
+              "parameter_fingerprint": [
+                [
+                  "threshold",
+                  "f3e360d89952f40d3b79d0b0"
+                ]
+              ],
+              "partner": "none",
+              "primitive": "fixed_radius_threshold_2d",
+              "stable_id": "e6437f1bc73939888dc6f213"
+            },
+            "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+            "cold_prepare_phase": "prepare_scene_or_payload",
+            "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+            "hot_query_phase": "prepared_query",
+            "invalidation_events": [
+              "explicit_invalidate",
+              "backend_context_reset",
+              "close"
+            ],
+            "lifetime_state": "session_retained",
+            "public_speedup_claim_authorized": false,
+            "release_authorized": false,
+            "reuse_scope": "explicit_user_session",
+            "status": "internal_contract_not_release_authorization",
+            "true_zero_copy_claim_authorized": false
+          },
+          "prepare_once_query_many_pattern": true,
+          "public_speedup_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false
+        },
+        "repeat_protocol": {
+          "measured_query_total_sec": 0.2307712510228157,
+          "repeat": 1,
+          "reported_query_metric": "sum_of_directed_query_medians",
+          "warmup": 0
+        },
+        "rt_core_accelerated": true,
+        "rtdl_role": "RTDL/optix uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.",
+        "run_phases": {
+          "input_construction_sec": 0.19040346145629883,
+          "python_postprocess_sec": 9.238719940185547e-07,
+          "query_fixed_radius_threshold_reached_count_sec": 0.2307712510228157,
+          "scene_prepare_sec": 1.487716056406498,
+          "validation_sec": 0.00017417967319488525
+        },
+        "within_threshold": true
+      },
+      "primary_metric_sec": 0.2307712510228157,
+      "primary_metric_source": "run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "runs": [
+        {
+          "command": [
+            "python3",
+            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "--backend",
+            "optix",
+            "--copies",
+            "16384",
+            "--optix-summary-mode",
+            "directed_threshold_prepared",
+            "--hausdorff-threshold",
+            "0.4",
+            "--require-rt-core",
+            "--repeat",
+            "1",
+            "--warmup",
+            "0"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_within_threshold\": true,\n  \"point_count_a\": 65536,\n  \"point_count_b\": 65536,\n  \"prepared_session_residency\": {\n    \"automatic_partner_selection_authorized\": false,\n    \"cache_enabled_by_default\": false,\n    \"cache_key\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"backend\": \"optix\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"device\": \"cuda:0\",\n      \"explicit_key_required\": true,\n      \"input_fingerprints\": [\n        [\n          \"source_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ],\n        [\n          \"target_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ]\n      ],\n      \"parameter_fingerprint\": [\n        [\n          \"threshold\",\n          \"f3e360d89952f40d3b79d0b0\"\n        ]\n      ],\n      \"partner\": \"none\",\n      \"primitive\": \"fixed_radius_threshold_2d\",\n      \"stable_id\": \"e6437f1bc73939888dc6f213\"\n    },\n    \"cold_hot_phase_split_required\": true,\n    \"explicit_reuse_helper\": \"get_or_prepare_explicit_session\",\n    \"policy\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"broad_rt_core_claim_authorized\": false,\n      \"cache_enabled\": false,\n      \"cache_key\": {\n        \"app_specific_native_engine_logic_allowed\": false,\n        \"automatic_partner_selection_authorized\": false,\n        \"backend\": \"optix\",\n        \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n        \"device\": \"cuda:0\",\n        \"explicit_key_required\": true,\n        \"input_fingerprints\": [\n          [\n            \"source_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ],\n          [\n            \"target_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ]\n        ],\n        \"parameter_fingerprint\": [\n          [\n            \"threshold\",\n            \"f3e360d89952f40d3b79d0b0\"\n          ]\n        ],\n        \"partner\": \"none\",\n        \"primitive\": \"fixed_radius_threshold_2d\",\n        \"stable_id\": \"e6437f1bc73939888dc6f213\"\n      },\n      \"claim_boundary\": \"Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.\",\n      \"cold_prepare_phase\": \"prepare_scene_or_payload\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"hot_query_phase\": \"prepared_query\",\n      \"invalidation_events\": [\n        \"explicit_invalidate\",\n        \"backend_context_reset\",\n        \"close\"\n      ],\n      \"lifetime_state\": \"session_retained\",\n      \"public_speedup_claim_authorized\": false,\n      \"release_authorized\": false,\n      \"reuse_scope\": \"explicit_user_session\",\n      \"status\": \"internal_contract_not_release_authorization\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"prepare_once_query_many_pattern\": true,\n    \"public_speedup_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false\n  },\n  \"repeat_protocol\": {\n    \"measured_query_total_sec\": 0.22970154881477356,\n    \"repeat\": 1,\n    \"reported_query_metric\": \"sum_of_directed_query_medians\",\n    \"warmup\": 0\n  },\n  \"rt_core_accelerated\": true,\n  \"rtdl_role\": \"RTDL/optix uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.19293418526649475,\n    \"python_postprocess_sec\": 8.791685104370117e-07,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.22970154881477356,\n    \"scene_prepare_sec\": 1.6131225749850273,\n    \"validation_sec\": 0.0001758784055709839\n  },\n  \"within_threshold\": true\n}\n",
+          "wall_elapsed_sec": 2.7207352593541145
+        },
+        {
+          "command": [
+            "python3",
+            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "--backend",
+            "optix",
+            "--copies",
+            "16384",
+            "--optix-summary-mode",
+            "directed_threshold_prepared",
+            "--hausdorff-threshold",
+            "0.4",
+            "--require-rt-core",
+            "--repeat",
+            "1",
+            "--warmup",
+            "0"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_within_threshold\": true,\n  \"point_count_a\": 65536,\n  \"point_count_b\": 65536,\n  \"prepared_session_residency\": {\n    \"automatic_partner_selection_authorized\": false,\n    \"cache_enabled_by_default\": false,\n    \"cache_key\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"backend\": \"optix\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"device\": \"cuda:0\",\n      \"explicit_key_required\": true,\n      \"input_fingerprints\": [\n        [\n          \"source_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ],\n        [\n          \"target_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ]\n      ],\n      \"parameter_fingerprint\": [\n        [\n          \"threshold\",\n          \"f3e360d89952f40d3b79d0b0\"\n        ]\n      ],\n      \"partner\": \"none\",\n      \"primitive\": \"fixed_radius_threshold_2d\",\n      \"stable_id\": \"e6437f1bc73939888dc6f213\"\n    },\n    \"cold_hot_phase_split_required\": true,\n    \"explicit_reuse_helper\": \"get_or_prepare_explicit_session\",\n    \"policy\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"broad_rt_core_claim_authorized\": false,\n      \"cache_enabled\": false,\n      \"cache_key\": {\n        \"app_specific_native_engine_logic_allowed\": false,\n        \"automatic_partner_selection_authorized\": false,\n        \"backend\": \"optix\",\n        \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n        \"device\": \"cuda:0\",\n        \"explicit_key_required\": true,\n        \"input_fingerprints\": [\n          [\n            \"source_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ],\n          [\n            \"target_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ]\n        ],\n        \"parameter_fingerprint\": [\n          [\n            \"threshold\",\n            \"f3e360d89952f40d3b79d0b0\"\n          ]\n        ],\n        \"partner\": \"none\",\n        \"primitive\": \"fixed_radius_threshold_2d\",\n        \"stable_id\": \"e6437f1bc73939888dc6f213\"\n      },\n      \"claim_boundary\": \"Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.\",\n      \"cold_prepare_phase\": \"prepare_scene_or_payload\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"hot_query_phase\": \"prepared_query\",\n      \"invalidation_events\": [\n        \"explicit_invalidate\",\n        \"backend_context_reset\",\n        \"close\"\n      ],\n      \"lifetime_state\": \"session_retained\",\n      \"public_speedup_claim_authorized\": false,\n      \"release_authorized\": false,\n      \"reuse_scope\": \"explicit_user_session\",\n      \"status\": \"internal_contract_not_release_authorization\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"prepare_once_query_many_pattern\": true,\n    \"public_speedup_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false\n  },\n  \"repeat_protocol\": {\n    \"measured_query_total_sec\": 0.23522047698497772,\n    \"repeat\": 1,\n    \"reported_query_metric\": \"sum_of_directed_query_medians\",\n    \"warmup\": 0\n  },\n  \"rt_core_accelerated\": true,\n  \"rtdl_role\": \"RTDL/optix uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.19271575659513474,\n    \"python_postprocess_sec\": 9.760260581970215e-07,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.23522047698497772,\n    \"scene_prepare_sec\": 1.5362590476870537,\n    \"validation_sec\": 0.00017430633306503296\n  },\n  \"within_threshold\": true\n}\n",
+          "wall_elapsed_sec": 2.7367305606603622
+        },
+        {
+          "command": [
+            "python3",
+            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "--backend",
+            "optix",
+            "--copies",
+            "16384",
+            "--optix-summary-mode",
+            "directed_threshold_prepared",
+            "--hausdorff-threshold",
+            "0.4",
+            "--require-rt-core",
+            "--repeat",
+            "1",
+            "--warmup",
+            "0"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_within_threshold\": true,\n  \"point_count_a\": 65536,\n  \"point_count_b\": 65536,\n  \"prepared_session_residency\": {\n    \"automatic_partner_selection_authorized\": false,\n    \"cache_enabled_by_default\": false,\n    \"cache_key\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"backend\": \"optix\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"device\": \"cuda:0\",\n      \"explicit_key_required\": true,\n      \"input_fingerprints\": [\n        [\n          \"source_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ],\n        [\n          \"target_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ]\n      ],\n      \"parameter_fingerprint\": [\n        [\n          \"threshold\",\n          \"f3e360d89952f40d3b79d0b0\"\n        ]\n      ],\n      \"partner\": \"none\",\n      \"primitive\": \"fixed_radius_threshold_2d\",\n      \"stable_id\": \"e6437f1bc73939888dc6f213\"\n    },\n    \"cold_hot_phase_split_required\": true,\n    \"explicit_reuse_helper\": \"get_or_prepare_explicit_session\",\n    \"policy\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"broad_rt_core_claim_authorized\": false,\n      \"cache_enabled\": false,\n      \"cache_key\": {\n        \"app_specific_native_engine_logic_allowed\": false,\n        \"automatic_partner_selection_authorized\": false,\n        \"backend\": \"optix\",\n        \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n        \"device\": \"cuda:0\",\n        \"explicit_key_required\": true,\n        \"input_fingerprints\": [\n          [\n            \"source_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ],\n          [\n            \"target_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ]\n        ],\n        \"parameter_fingerprint\": [\n          [\n            \"threshold\",\n            \"f3e360d89952f40d3b79d0b0\"\n          ]\n        ],\n        \"partner\": \"none\",\n        \"primitive\": \"fixed_radius_threshold_2d\",\n        \"stable_id\": \"e6437f1bc73939888dc6f213\"\n      },\n      \"claim_boundary\": \"Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.\",\n      \"cold_prepare_phase\": \"prepare_scene_or_payload\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"hot_query_phase\": \"prepared_query\",\n      \"invalidation_events\": [\n        \"explicit_invalidate\",\n        \"backend_context_reset\",\n        \"close\"\n      ],\n      \"lifetime_state\": \"session_retained\",\n      \"public_speedup_claim_authorized\": false,\n      \"release_authorized\": false,\n      \"reuse_scope\": \"explicit_user_session\",\n      \"status\": \"internal_contract_not_release_authorization\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"prepare_once_query_many_pattern\": true,\n    \"public_speedup_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false\n  },\n  \"repeat_protocol\": {\n    \"measured_query_total_sec\": 0.23182956129312515,\n    \"repeat\": 1,\n    \"reported_query_metric\": \"sum_of_directed_query_medians\",\n    \"warmup\": 0\n  },\n  \"rt_core_accelerated\": true,\n  \"rtdl_role\": \"RTDL/optix uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.19100691378116608,\n    \"python_postprocess_sec\": 9.164214134216309e-07,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.23182956129312515,\n    \"scene_prepare_sec\": 1.7085367292165756,\n    \"validation_sec\": 0.00017371773719787598\n  },\n  \"within_threshold\": true\n}\n",
+          "wall_elapsed_sec": 2.858118548989296
+        },
+        {
+          "command": [
+            "python3",
+            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "--backend",
+            "optix",
+            "--copies",
+            "16384",
+            "--optix-summary-mode",
+            "directed_threshold_prepared",
+            "--hausdorff-threshold",
+            "0.4",
+            "--require-rt-core",
+            "--repeat",
+            "1",
+            "--warmup",
+            "0"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "n_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_within_threshold\": true,\n  \"point_count_a\": 65536,\n  \"point_count_b\": 65536,\n  \"prepared_session_residency\": {\n    \"automatic_partner_selection_authorized\": false,\n    \"cache_enabled_by_default\": false,\n    \"cache_key\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"backend\": \"optix\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"device\": \"cuda:0\",\n      \"explicit_key_required\": true,\n      \"input_fingerprints\": [\n        [\n          \"source_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ],\n        [\n          \"target_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ]\n      ],\n      \"parameter_fingerprint\": [\n        [\n          \"threshold\",\n          \"f3e360d89952f40d3b79d0b0\"\n        ]\n      ],\n      \"partner\": \"none\",\n      \"primitive\": \"fixed_radius_threshold_2d\",\n      \"stable_id\": \"e6437f1bc73939888dc6f213\"\n    },\n    \"cold_hot_phase_split_required\": true,\n    \"explicit_reuse_helper\": \"get_or_prepare_explicit_session\",\n    \"policy\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"broad_rt_core_claim_authorized\": false,\n      \"cache_enabled\": false,\n      \"cache_key\": {\n        \"app_specific_native_engine_logic_allowed\": false,\n        \"automatic_partner_selection_authorized\": false,\n        \"backend\": \"optix\",\n        \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n        \"device\": \"cuda:0\",\n        \"explicit_key_required\": true,\n        \"input_fingerprints\": [\n          [\n            \"source_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ],\n          [\n            \"target_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ]\n        ],\n        \"parameter_fingerprint\": [\n          [\n            \"threshold\",\n            \"f3e360d89952f40d3b79d0b0\"\n          ]\n        ],\n        \"partner\": \"none\",\n        \"primitive\": \"fixed_radius_threshold_2d\",\n        \"stable_id\": \"e6437f1bc73939888dc6f213\"\n      },\n      \"claim_boundary\": \"Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.\",\n      \"cold_prepare_phase\": \"prepare_scene_or_payload\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"hot_query_phase\": \"prepared_query\",\n      \"invalidation_events\": [\n        \"explicit_invalidate\",\n        \"backend_context_reset\",\n        \"close\"\n      ],\n      \"lifetime_state\": \"session_retained\",\n      \"public_speedup_claim_authorized\": false,\n      \"release_authorized\": false,\n      \"reuse_scope\": \"explicit_user_session\",\n      \"status\": \"internal_contract_not_release_authorization\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"prepare_once_query_many_pattern\": true,\n    \"public_speedup_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false\n  },\n  \"repeat_protocol\": {\n    \"measured_query_total_sec\": 0.24082496762275696,\n    \"repeat\": 1,\n    \"reported_query_metric\": \"sum_of_directed_query_medians\",\n    \"warmup\": 0\n  },\n  \"rt_core_accelerated\": true,\n  \"rtdl_role\": \"RTDL/optix uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.2010800614953041,\n    \"python_postprocess_sec\": 1.914799213409424e-06,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.24082496762275696,\n    \"scene_prepare_sec\": 1.5565584897994995,\n    \"validation_sec\": 0.0001904815435409546\n  },\n  \"within_threshold\": true\n}\n",
+          "wall_elapsed_sec": 2.7636769488453865
+        },
+        {
+          "command": [
+            "python3",
+            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "--backend",
+            "optix",
+            "--copies",
+            "16384",
+            "--optix-summary-mode",
+            "directed_threshold_prepared",
+            "--hausdorff-threshold",
+            "0.4",
+            "--require-rt-core",
+            "--repeat",
+            "1",
+            "--warmup",
+            "0"
+          ],
+          "returncode": 0,
+          "stderr_tail": "",
+          "stdout_tail": "on_matches\": true,\n  \"oracle_identity_matches\": true,\n  \"oracle_within_threshold\": true,\n  \"point_count_a\": 65536,\n  \"point_count_b\": 65536,\n  \"prepared_session_residency\": {\n    \"automatic_partner_selection_authorized\": false,\n    \"cache_enabled_by_default\": false,\n    \"cache_key\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"backend\": \"optix\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"device\": \"cuda:0\",\n      \"explicit_key_required\": true,\n      \"input_fingerprints\": [\n        [\n          \"source_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ],\n        [\n          \"target_points\",\n          \"7413556a906c4f7a1587bdb7\"\n        ]\n      ],\n      \"parameter_fingerprint\": [\n        [\n          \"threshold\",\n          \"f3e360d89952f40d3b79d0b0\"\n        ]\n      ],\n      \"partner\": \"none\",\n      \"primitive\": \"fixed_radius_threshold_2d\",\n      \"stable_id\": \"e6437f1bc73939888dc6f213\"\n    },\n    \"cold_hot_phase_split_required\": true,\n    \"explicit_reuse_helper\": \"get_or_prepare_explicit_session\",\n    \"policy\": {\n      \"app_specific_native_engine_logic_allowed\": false,\n      \"automatic_partner_selection_authorized\": false,\n      \"broad_rt_core_claim_authorized\": false,\n      \"cache_enabled\": false,\n      \"cache_key\": {\n        \"app_specific_native_engine_logic_allowed\": false,\n        \"automatic_partner_selection_authorized\": false,\n        \"backend\": \"optix\",\n        \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n        \"device\": \"cuda:0\",\n        \"explicit_key_required\": true,\n        \"input_fingerprints\": [\n          [\n            \"source_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ],\n          [\n            \"target_points\",\n            \"7413556a906c4f7a1587bdb7\"\n          ]\n        ],\n        \"parameter_fingerprint\": [\n          [\n            \"threshold\",\n            \"f3e360d89952f40d3b79d0b0\"\n          ]\n        ],\n        \"partner\": \"none\",\n        \"primitive\": \"fixed_radius_threshold_2d\",\n        \"stable_id\": \"e6437f1bc73939888dc6f213\"\n      },\n      \"claim_boundary\": \"Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.\",\n      \"cold_prepare_phase\": \"prepare_scene_or_payload\",\n      \"contract_version\": \"rtdl.v2_10.prepared_session_residency.goal3873.v1\",\n      \"hot_query_phase\": \"prepared_query\",\n      \"invalidation_events\": [\n        \"explicit_invalidate\",\n        \"backend_context_reset\",\n        \"close\"\n      ],\n      \"lifetime_state\": \"session_retained\",\n      \"public_speedup_claim_authorized\": false,\n      \"release_authorized\": false,\n      \"reuse_scope\": \"explicit_user_session\",\n      \"status\": \"internal_contract_not_release_authorization\",\n      \"true_zero_copy_claim_authorized\": false\n    },\n    \"prepare_once_query_many_pattern\": true,\n    \"public_speedup_claim_authorized\": false,\n    \"true_zero_copy_claim_authorized\": false\n  },\n  \"repeat_protocol\": {\n    \"measured_query_total_sec\": 0.2307712510228157,\n    \"repeat\": 1,\n    \"reported_query_metric\": \"sum_of_directed_query_medians\",\n    \"warmup\": 0\n  },\n  \"rt_core_accelerated\": true,\n  \"rtdl_role\": \"RTDL/optix uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.\",\n  \"run_phases\": {\n    \"input_construction_sec\": 0.19040346145629883,\n    \"python_postprocess_sec\": 9.238719940185547e-07,\n    \"query_fixed_radius_threshold_reached_count_sec\": 0.2307712510228157,\n    \"scene_prepare_sec\": 1.487716056406498,\n    \"validation_sec\": 0.00017417967319488525\n  },\n  \"within_threshold\": true\n}\n",
+          "wall_elapsed_sec": 2.6509090587496758
+        }
+      ],
+      "setup_results": [],
+      "status": "ok",
+      "timing_metrics": [
+        [
+          "directed_a_to_b.run_phases.query_fixed_radius_threshold_reached_count_sec",
+          0.09293542057275772
+        ],
+        [
+          "directed_a_to_b.run_phases.query_fixed_radius_threshold_reached_count_total_sec",
+          0.09293542057275772
+        ],
+        [
+          "directed_a_to_b.run_phases.scene_prepare_sec",
+          1.3498442471027374
+        ],
+        [
+          "directed_b_to_a.run_phases.query_fixed_radius_threshold_reached_count_sec",
+          0.13783583045005798
+        ],
+        [
+          "directed_b_to_a.run_phases.query_fixed_radius_threshold_reached_count_total_sec",
+          0.13783583045005798
+        ],
+        [
+          "directed_b_to_a.run_phases.scene_prepare_sec",
+          0.13787180930376053
+        ],
+        [
+          "repeat_protocol.measured_query_total_sec",
+          0.2307712510228157
+        ],
+        [
+          "run_phases.input_construction_sec",
+          0.19040346145629883
+        ],
+        [
+          "run_phases.python_postprocess_sec",
+          9.238719940185547e-07
+        ],
+        [
+          "run_phases.query_fixed_radius_threshold_reached_count_sec",
+          0.2307712510228157
+        ],
+        [
+          "run_phases.scene_prepare_sec",
+          1.487716056406498
+        ],
+        [
+          "run_phases.validation_sec",
+          0.00017417967319488525
+        ]
+      ],
+      "wall_median_sec": 2.7367305606603622
+    }
+  ],
+  "scale": "large"
+}

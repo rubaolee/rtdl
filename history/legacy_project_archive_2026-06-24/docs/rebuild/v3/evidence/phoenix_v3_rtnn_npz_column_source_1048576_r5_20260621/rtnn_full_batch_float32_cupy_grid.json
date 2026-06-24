@@ -1,0 +1,57 @@
+{
+  "claim_boundary": {
+    "cuda_core_baseline": true,
+    "native_abi_changed_for_rtnn": false,
+    "paper_equivalent_rtnn_row": false,
+    "rtdl_speedup_claim_authorized": false,
+    "stronger_than_all_pairs_baseline": true,
+    "uses_rt_cores": false
+  },
+  "contract": {
+    "approximate": false,
+    "bounded_k": 50,
+    "exact": true,
+    "family": "fixed_radius_neighbors_3d",
+    "mode": "ranked-summary",
+    "point_column_source": "npz",
+    "prepared_search_structure": true,
+    "uniform_grid_cuda_core": true
+  },
+  "dtype": "float32",
+  "elapsed_runs_sec": [
+    0.08838139474391937,
+    0.08644464612007141,
+    0.08405770361423492,
+    0.08433333784341812,
+    0.0841754749417305
+  ],
+  "elapsed_sec": 0.0841754749417305,
+  "external": "CuPy",
+  "grid_cell_count": 140608,
+  "grid_dimensions": [
+    52,
+    52,
+    52
+  ],
+  "grid_prepare_sec": 0.481854148209095,
+  "input_load_sec": 0.018326133489608765,
+  "k_max": 50,
+  "mode": "cupy_cuda_core_grid_exact_ranked_summary_3d",
+  "occupied_cell_count": 125033,
+  "ok": true,
+  "phoenix_v3_runner_wall_sec": 1.132729709148407,
+  "point_column_file": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_column_source_1048576_r5_20260621_170733_envpartial/rtnn_full_batch_points.csv.npz",
+  "point_column_source": "npz",
+  "query_count": 1048576,
+  "radius": 0.02,
+  "row": "phoenix_v3_rtnn_full_batch_float32_cupy_grid_reference",
+  "runner": "goal2348_rtnn_v2_2_external_runner",
+  "search_count": 1048576,
+  "summary": {
+    "bounded_neighbor_count": 37044632,
+    "kth_id_checksum": 549679635418,
+    "nearest_id_checksum": 549755289600,
+    "row_count": 1048576,
+    "sum_distance": 539061.8025638647
+  }
+}

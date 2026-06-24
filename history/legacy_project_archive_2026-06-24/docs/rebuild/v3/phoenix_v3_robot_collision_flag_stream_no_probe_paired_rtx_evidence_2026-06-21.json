@@ -1,0 +1,138 @@
+{
+  "status": "robot_collision_flag_stream_no_probe_paired_rtx_evidence_m7_approved_row_scoped",
+  "generic_capability": "collision_flag_stream",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "row_scoped_public_speedup_claim_authorized": true,
+  "whole_app_speedup_claim_authorized": false,
+  "robot_planning_speedup_claim_authorized": false,
+  "exact_solid_collision_claim_authorized": false,
+  "continuous_collision_claim_authorized": false,
+  "paper_reproduction_claim_authorized": false,
+  "true_zero_copy_claim_authorized": false,
+  "m7_promotion_authorized": true,
+  "review_required_before_m7": true,
+  "candidate_row_id": "collision_flag_stream_8192poses_no_probe_paired_validation_separated_row_scoped",
+  "app_id": "robot_collision",
+  "comparison_group": "prepared_collision_flags",
+  "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+  "shape": {
+    "pose_count": 8192,
+    "link_count": 2,
+    "group_count": 16384,
+    "probe_points_per_group": 9,
+    "segment_count": 147456,
+    "static_obstacle_count": 2048,
+    "static_obstacle_triangle_count": 4096
+  },
+  "evidence_source": {
+    "remote_host": "root@213.173.108.14 -p 11592",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "remote_artifact": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_robot_collision_flag_stream_no_probe_paired_20260621",
+    "local_artifact": "docs/rebuild/v3/evidence/phoenix_v3_robot_collision_flag_stream_no_probe_paired_20260621/summary.json",
+    "runner": "scripts/v3_phoenix_robot_collision_flag_stream_no_probe_paired.py"
+  },
+  "validation_protocol": {
+    "validation_repeats": 5,
+    "validation_warmup": 1,
+    "cpu_probe_reference_run_separately_from_performance_timing": true,
+    "embree_probe_reference_seconds": 373.43956404179335,
+    "optix_probe_reference_seconds": 374.38090950995684,
+    "embree_wrapper_seconds": 375.51095109432936,
+    "optix_wrapper_seconds": 376.7467232272029,
+    "embree_tail_total_run_median_sec": 0.011401370167732239,
+    "optix_tail_total_run_median_sec": 0.002196419984102249,
+    "all_validation_rows_match_probe_reference": true,
+    "validation_same_contract": true,
+    "validation_same_shape": true
+  },
+  "timing_protocol": {
+    "sample_count": 5,
+    "timed_repeats": 101,
+    "timed_warmup": 5,
+    "measured_runs_per_sample": 96,
+    "timed_rows_use_no_probe_reference": true,
+    "timed_rows_probe_reference_disabled": true,
+    "wrapper_elapsed_definition": "runner-measured subprocess wall time for the app command with --no-probe-reference; includes Python/app process overhead, app lowering, backend setup, repeated prepared invocations, and JSON output, but excludes the CPU probe-reference oracle",
+    "tail_total_run_definition": "payload tail_medians.total_run_seconds from repeated prepared flag-stream invocations after dropping warmup rows",
+    "total_run_window_definition": "payload run_summary.total_run_seconds.total_sec over the measured no-probe repeated prepared invocation window"
+  },
+  "timed_pair_results": [
+    {
+      "sample": 1,
+      "tail_total_run_optix_speedup_vs_embree": 5.047133802570298,
+      "total_run_window_optix_speedup_vs_embree": 5.034451751022955,
+      "wrapper_no_probe_optix_speedup_vs_embree": 1.1725725381630197,
+      "traversal_optix_speedup_vs_embree": 70.83594013389202
+    },
+    {
+      "sample": 2,
+      "tail_total_run_optix_speedup_vs_embree": 5.068379178229193,
+      "total_run_window_optix_speedup_vs_embree": 5.00214272752398,
+      "wrapper_no_probe_optix_speedup_vs_embree": 1.0827873042297134,
+      "traversal_optix_speedup_vs_embree": 60.40873603653645
+    },
+    {
+      "sample": 3,
+      "tail_total_run_optix_speedup_vs_embree": 5.053303431949119,
+      "total_run_window_optix_speedup_vs_embree": 5.036172081802144,
+      "wrapper_no_probe_optix_speedup_vs_embree": 1.239242813233654,
+      "traversal_optix_speedup_vs_embree": 69.07788582219979
+    },
+    {
+      "sample": 4,
+      "tail_total_run_optix_speedup_vs_embree": 5.131463294432053,
+      "total_run_window_optix_speedup_vs_embree": 5.166963107310666,
+      "wrapper_no_probe_optix_speedup_vs_embree": 1.1797252541250225,
+      "traversal_optix_speedup_vs_embree": 73.27155890032252
+    },
+    {
+      "sample": 5,
+      "tail_total_run_optix_speedup_vs_embree": 5.12975982142556,
+      "total_run_window_optix_speedup_vs_embree": 5.134056846822711,
+      "wrapper_no_probe_optix_speedup_vs_embree": 1.1794079097044472,
+      "traversal_optix_speedup_vs_embree": 69.71421464697312
+    }
+  ],
+  "aggregate_ratios": {
+    "tail_total_run_optix_speedup_vs_embree_mean": 5.086007905721244,
+    "tail_total_run_optix_speedup_vs_embree_min": 5.047133802570298,
+    "tail_total_run_optix_speedup_vs_embree_stddev": 0.037072828389912105,
+    "total_run_window_optix_speedup_vs_embree_mean": 5.074757302896491,
+    "total_run_window_optix_speedup_vs_embree_min": 5.00214272752398,
+    "total_run_window_optix_speedup_vs_embree_stddev": 0.06388204698157822,
+    "wrapper_no_probe_optix_speedup_vs_embree_mean": 1.1707471638911713,
+    "wrapper_no_probe_optix_speedup_vs_embree_min": 1.0827873042297134,
+    "wrapper_no_probe_optix_speedup_vs_embree_stddev": 0.05017476956406156,
+    "traversal_optix_speedup_vs_embree_mean": 68.66166710798478,
+    "traversal_optix_speedup_vs_embree_min": 60.40873603653645,
+    "traversal_optix_speedup_vs_embree_stddev": 4.367391238215809
+  },
+  "gate_reading": {
+    "validation_status": "pass",
+    "timed_status": "pass",
+    "all_timed_pairs_same_contract_shape_signature_counts": true,
+    "timed_rows_probe_reference_disabled": true,
+    "all_wrapper_no_probe_pairs_above_1x": true,
+    "local_evidence_sufficient_for_external_public_row_review": true,
+    "current_packet_external_review_status": "claude_approved_with_p1_amendments_resolved",
+    "current_packet_2ai_consensus_status": "claude_codex_consensus_complete"
+  },
+  "allowed_wording": "RTDL V3 includes a generic collision_flag_stream route where, on the 8,192-pose / 147,456-segment discrete sampled probe contract on a single RTX 4000 Ada pod, prepared OptiX grouped segment any-hit flags beat the same-contract Embree route across five no-probe paired process samples: tail prepared invocation speedup mean 5.086x, total-run window speedup mean 5.075x, and no-probe wrapper speedup mean 1.171x with weakest no-probe wrapper speedup 1.083x. CPU probe-reference validation was run separately and matched both backends. This is sampled flag-stream evidence, not full robot planning, exact solid collision, or continuous collision. The tail and window speedups measure the prepared query execution phase; the wrapper speedup is the conservative process-level bound that includes all costs except the CPU probe-reference oracle.",
+  "forbidden_public_wording": [
+    "Robot Collision V3 is 5x faster end to end",
+    "RTDL accelerates full robot planning",
+    "RTDL supports exact solid collision for this row",
+    "RTDL supports continuous collision for this row",
+    "V3 is broadly faster than V2 for robot collision",
+    "This row proves zero-copy",
+    "This row is M7-qualified before external review"
+  ],
+  "goal_level_decision_audit": {
+    "decision": "send the no-probe paired robot collision flag-stream packet for external row-scoped M7 review instead of promoting it directly",
+    "was_i_foolish": "No. The new evidence directly addresses the previous CPU-oracle wall-accounting blocker while keeping validation and performance timing separate.",
+    "foolish_actions": "It would be foolish to call the old 5.166x hot-tail number end-to-end speedup, or to treat this no-probe packet as release authorization before external review.",
+    "other_path": "Close collision_flag_stream as a no-go despite the no-probe evidence. That is safe but would ignore a same-contract paired run that now shows no-oracle wrapper wins in every sample.",
+    "different_path_now": "Use this packet only as external review input, then either promote a row-scoped M7 claim with Claude/Codex consensus or write a final no-go."
+  }
+}

@@ -1,0 +1,53 @@
+You are reviewing Phoenix V3 M57 for RTDL.
+
+Working directory:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Task:
+Critically review whether exactly one future source-signature-gated LibRTS M47 rerun should be authorized.
+
+Read:
+
+- docs/reviews/call_for_review_phoenix_v3_m57_source_signature_gated_librts_rerun_authorization_2026-06-23.md
+- docs/reports/phoenix_v3_m56_librts_set_b_metadata_diagnosis_and_preflight_repair_2026-06-23.md
+- docs/reports/phoenix_v3_m56_goal_completion_audit_2026-06-23.md
+- docs/reviews/codex_claude_antigravity_phoenix_v3_m56_goal_completion_3ai_consensus_2026-06-23.md
+- docs/reports/phoenix_v3_m55_librts_authorized_pod_run_intake_2026-06-23.md
+- docs/reviews/codex_claude_antigravity_phoenix_v3_m55_goal_completion_3ai_consensus_2026-06-23.md
+- scripts/v3_phoenix_m47_librts_stability_protocol.py
+- tests/v3_phoenix_m47_librts_stability_protocol_test.py
+- tests/v3_phoenix_m57_librts_rerun_authorization_packet_gate_test.py
+- docs/reports/phoenix_v3_m57_v3_rebuild_before_authorization_review_2026-06-23.combined.txt
+
+Choose exactly one verdict label:
+
+- authorize_m57_one_source_signature_gated_librts_rerun
+- request_m57_changes_before_authorization
+- reject_m57_rerun_authorization
+
+Answer:
+
+1. Does M56 provide enough local repair evidence to justify exactly one source-signature-gated rerun?
+2. Are the M57 execution conditions narrow enough to prevent another broad POD campaign?
+3. Does the proposed token avoid reusing the consumed M54/M55 token?
+4. Does the required current_librts_set_b_source_signature dry-run preflight adequately address the known M55 metadata failure before measured samples?
+5. Are the residual risks from M56 carried forward, especially that a metadata-fixed rerun may still be performance-red?
+6. If authorized, is the next allowed action only target dry-run, then exactly one execution if the dry-run passes?
+
+Preserve non-authorization:
+
+- no V3 release
+- no all-app benchmark run
+- no broad paid POD campaign
+- no public speedup wording
+- no broad V3-over-V2 claim
+- no V4 work
+- no embedding
+- no C ABI
+- no true zero-copy claim
+- no watch-row closure
+- no scenario changes
+- no sample-count changes
+- no second M57 run
+
+If you authorize, state the exact token and exact preconditions. Include residual risks.

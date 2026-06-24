@@ -1,0 +1,23 @@
+Review written. Here is the concise summary:
+
+---
+
+**Verdict: `accept-with-amendments-not-release`**
+
+The `source_tree_pod_gated_eleven_row` scope is precise enough to close the installer/reproducibility blocker without claiming a general installer. Two P0 amendments are required before any gate field changes:
+
+**P0 Amendment 1:** The wording candidate must add an explicit gate script delta section specifying exactly which fields in `v3_phoenix_install_reproducibility_gate.py` change, what values they take, and what happens to `required_next_action`.
+
+**P0 Amendment 2:** The gate payload must include a new machine-readable `release_scope: source_tree_pod_gated_eleven_row` field (and `installer_closes_release_blocker_scope: source_tree_pod_gated_eleven_row`) alongside the changed blocker field, so the scoped acceptance is verifiable from the gate output, not only from prose.
+
+**Fields that may change after amendments + Codex consensus:**
+- `installer_closes_release_blocker: false → true`
+- `release_scope: source_tree_pod_gated_eleven_row` (new field)
+- `installer_closes_release_blocker_scope: source_tree_pod_gated_eleven_row` (new field)
+- `source_tree_pod_gated_scoped_release_wording_reviewed: false → true`
+
+**Fields that must remain false and unchanged:**
+- `release_authorized`, `general_release_installer_ready`, `package_install_claim_authorized`, `secondary_rt_performance_confirmation_authorized`, `broad_v3_faster_than_v2_claim_authorized`
+- Gate status: `staged_pod_gate_present_general_release_installer_not_ready` — no change
+
+The release remains `blocked_not_release`. Secondary hardware and external release-readiness consensus are still open P0 blockers on independent tracks.

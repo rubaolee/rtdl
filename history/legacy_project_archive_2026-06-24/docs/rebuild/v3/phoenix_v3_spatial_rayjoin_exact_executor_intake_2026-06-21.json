@@ -1,0 +1,96 @@
+{
+  "checks": {
+    "all_public_claim_flags_false": true,
+    "author_gap_is_prior_not_direct_current_packet": true,
+    "continuation_dominates_traversal": true,
+    "device_filtered_rejection_recorded": true,
+    "exact_executor_not_m7": true,
+    "exact_executor_packet_passed": true,
+    "full_m3_table_present": true,
+    "m3_gap_kept_not_m7": true,
+    "query_stream_reusable_executor_residency": true,
+    "row_count_stable": true
+  },
+  "exact_executor_packet": {
+    "count_mode": "exact_prepared_points_executor",
+    "dataset": "/root/rtdl_v3_rebuild_20260620/current/data/rayjoin_public_cdb/br_county.cdb",
+    "failed_checks": [],
+    "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+    "point_order_mode": "morton_xy",
+    "prepared_query_sec_median": 0.023217812180519104,
+    "prepared_query_total_sec_median": 1.1688360273838043,
+    "query_repeat": 50,
+    "query_stream_residency": "device_resident_prepared_point_probe_columns_with_reusable_exact_executor",
+    "row_count": 47262,
+    "runner_wall_sec_median": 2.8939708545804024,
+    "sample_repeat": 5,
+    "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_rayjoin_topology_m3_public_county_exact_executor_repeat50_20260621/summary.json",
+    "warmup": 5
+  },
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not treat the public-county exact-executor packet as RayJoin-author comparison evidence.",
+    "Do not publish the rejected device-filtered route.",
+    "Do not call prepared point-column residency true zero-copy.",
+    "Do not promote Spatial RayJoin to M7 without same-contract author-basis review."
+  ],
+  "generic_capability": "point_location_topology_stream",
+  "goal_level_decision_audit": {
+    "decision": "Convert the Spatial exact-executor POD result into a not-M7 intake packet that identifies the generic topology-continuation bottleneck.",
+    "different_path_now": "Use the intake to drive generic exact topology-continuation work, then rerun a same-dataset author-basis packet before any M7 review.",
+    "foolish_actions": "The foolish action would be to quote the executor result as RTDL beating RayJoin, or to hide that exact refinement dominates the prepared query.",
+    "other_path": "Run more Spatial app timings immediately. That could add numbers, but it would not clarify the generic engine bottleneck or release boundary.",
+    "was_i_foolish": "No. The packet prevents a fresh full-M3 POD result from being mistaken for an author comparison or public speedup row."
+  },
+  "m3_bottleneck": {
+    "device_transfer_or_residency_sec_median": 0.0,
+    "host_return_or_scalar_materialization_sec_median": 7.6802e-05,
+    "query_stream_prepare_sec_median": 0.05608516186475754,
+    "reading": "The reusable executor keeps query columns resident and removes device-transfer cost, but the hot path is dominated by exact topology continuation/refinement, not RT traversal.",
+    "rt_traversal_fraction_of_prepared_query": 0.018842559178210164,
+    "rt_traversal_or_candidate_emission_sec_median": 0.000437483,
+    "static_scene_prepare_sec_median": 0.19943977892398834,
+    "topology_continuation_exact_refine_sec_median": 0.023139639,
+    "topology_continuation_fraction_of_prepared_query": 0.9966330513869565,
+    "topology_continuation_over_rt_traversal": 52.89265868616609
+  },
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "next_engine_actions": [
+    "Move exact closed-shape membership/refinement work out of host GEOS/refine loops where a generic exact device continuation is possible.",
+    "Keep the executor capacity policy explicit and fail-closed on overflow.",
+    "Only compare to RayJoin author timing in a same-dataset packet with the timer basis printed beside RTDL wall and native/M3 phases.",
+    "Seek external review before any Spatial RayJoin M7 wording."
+  ],
+  "paper_reproduction_claim_authorized": false,
+  "prior_author_gap": {
+    "direct_current_packet_comparison_authorized": false,
+    "methodology_note": "RayJoin author timing uses the internal C++ Query timer parsed from query_exec stdout. RTDL OptiX/Embree hot medians use Python time.perf_counter around count_positive_faces and include Python dispatch and scalar count-return overhead. The rayjoin_rt_speedup_vs_rtdl_optix_native_traversal comparison is the narrower native-traversal basis; neither comparison is a paper-reproduction claim.",
+    "query_count": 100000,
+    "rayjoin_rt_speedup_vs_rtdl_optix_native_traversal": 3.860711740744286,
+    "rtdl_optix_speedup_vs_rtdl_embree": 1.91993187575488,
+    "scope": "prior_100k_same_stream_author_comparison_not_direct_public_county_packet"
+  },
+  "public_speedup_claim_authorized": false,
+  "rejected_device_filtered_probe": {
+    "device_filtered_count": 47570,
+    "exact_count": 47262,
+    "publishable_fast_route": false,
+    "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_rayjoin_topology_m3_public_county_device_filtered_smoke_20260621/run.log",
+    "status": "rejected_exact_count_mismatch"
+  },
+  "release_authorized": false,
+  "row_scoped_public_speedup_claim_authorized": false,
+  "rtdl_beats_rayjoin_claim_authorized": false,
+  "source_packets": {
+    "device_filtered_rejected_log": "docs/rebuild/v3/evidence/phoenix_v3_spatial_rayjoin_topology_m3_public_county_device_filtered_smoke_20260621/run.log",
+    "exact_executor_summary": "docs/rebuild/v3/evidence/phoenix_v3_spatial_rayjoin_topology_m3_public_county_exact_executor_repeat50_20260621/summary.json",
+    "m3_gap_analysis": "docs/rebuild/v3/phoenix_v3_spatial_rayjoin_m3_gap_analysis_2026-06-21.json",
+    "m5_author_gap": "docs/rebuild/v3/evidence/phoenix_v3_m5_topology_20260620/m5_topology_intake_summary.json"
+  },
+  "status": "spatial_rayjoin_exact_executor_intake_not_m7",
+  "tool": "v3_phoenix_spatial_rayjoin_exact_executor_intake",
+  "true_zero_copy_claim_authorized": false,
+  "v4_embedding_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}

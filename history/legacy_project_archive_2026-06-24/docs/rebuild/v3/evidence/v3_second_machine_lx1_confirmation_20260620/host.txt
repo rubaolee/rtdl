@@ -1,0 +1,6 @@
+host=lx1
+user=lestat
+pwd=/home/lestat/work/rtdl_v3_second_machine_confirm_20260620
+Python 3.12.3
+git version 2.43.0
+NVIDIA GeForce GTX 1070, 580.126.09, 8192 MiB

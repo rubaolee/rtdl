@@ -1,0 +1,4 @@
+{
+  "response": {},
+  "error": "failed to fetch available models: rpc error: code = Unavailable desc = connection error: desc = \"error reading server preface: read tcp 127.0.0.1:59864-\u003e127.0.0.1:57804: wsarecv: An existing connection was forcibly closed by the remote host.\""
+}

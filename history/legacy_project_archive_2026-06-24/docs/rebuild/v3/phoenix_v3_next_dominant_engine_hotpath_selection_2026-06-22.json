@@ -1,0 +1,302 @@
+{
+  "artifact": "docs/rebuild/v3/phoenix_v3_next_dominant_engine_hotpath_selection_2026-06-22.json",
+  "date": "2026-06-22",
+  "status": "active_p0_prepared_execution_session_runner_not_release",
+  "scope": "Phoenix V3 only; V4, C ABI, embedding, SDK, and multi-language host work are out of scope.",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "full_all_app_rerun_authorized_now": false,
+  "current_release_blocker": {
+    "status": "redo_required",
+    "reason": "The serious same-RT-hardware V2.14 vs current Phoenix V3 paired run failed the major-version performance bar.",
+    "same_metric_comparison_count": 52,
+    "overall_geomean_v3_speedup_vs_v2_14": 1.0117790403434224,
+    "apps_with_geomean_gt_1_05": 1,
+    "apps_with_geomean_lt_0_95": 2,
+    "release_consideration_eligible": false,
+    "evidence": "docs/rebuild/v3/evidence/phoenix_v3_serious_v2x_paired_20260622_074100/summary.json"
+  },
+  "external_review_alignment": {
+    "review_path": "docs/reviews/claude_phoenix_v3_external_review_2026-06-22.md",
+    "intake_path": "docs/rebuild/v3/phoenix_v3_core_gaps_external_verdict_intake_2026-06-22.json",
+    "status_line": "external_verdict_obtained_claude_approve_blocked_not_release",
+    "verdict": "approve_blocked_not_release",
+    "direction_decision": "continue_with_redirect",
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "major_version_mandate_overridden": false,
+    "accepted_interpretation": "Gap 1 is the critical path; Gaps 2-4 are downstream symptoms. Continue non-release engineering, but redirect effort away from cache hygiene and into a productized execution path that actually executes."
+  },
+  "set_a_set_b_bar_proposal": {
+    "proposal_path": "docs/reviews/phoenix_v3_set_a_set_b_release_bar_proposal_2026-06-22.md",
+    "status": "proposal_only_not_authorization",
+    "release_gate_changed_by_this_file": false,
+    "working_next_measurement_design": "Before another all-app run, freeze Set A residency/multi-phase probes and Set B ceiling/materializing controls. Set A wins must come from the productized execution path, not from caches; Set B targets parity with explanation.",
+    "precondition_before_all_app_pod_time": "execution_path_executes runtime_executed true on at least two Set-A probes with focused material per-probe evidence"
+  },
+  "why_old_queue_is_not_enough": {
+    "old_queue_status": "generic_engine_work_queue_closed_not_release",
+    "old_queue_path": "docs/rebuild/v3/phoenix_v3_next_generic_engine_work_queue_2026-06-21.json",
+    "interpretation": "The 2026-06-21 queue closed old row-promotion candidates for the scoped 13-row surface. It does not answer the Phoenix redo question after the all-app V2.14 paired run failed the major-version performance mandate."
+  },
+  "selected_p0": {
+    "id": "prepared_execution_session_runner",
+    "priority": "P0",
+    "generic_capability": "productized_prepared_execution_session",
+    "decision": "Build a small productized prepared execution/session runner that actually routes selected existing generic primitives through one reusable runtime path with explicit backend, explicit partner, phase accounting, residency metadata, and no release claims.",
+    "why_this_first": [
+      "It is the most reusable V3-shaped fix: the same layer can serve fixed-radius threshold/self-query, AABB native query handles, grouped reduction, topology streams, and prepared graph/chunk rows.",
+      "It addresses Gap 1 directly: the execution graph and prepared graph code still mostly plan or validate, while the user-visible fast routes live in scattered benchmark/app surfaces.",
+      "It gives V3 a language/runtime surface instead of another benchmark-row patch.",
+      "It creates a single place to enforce explicit backend/partner selection, cold/hot phase accounting, no-hidden-copy metadata, and claim boundaries."
+    ],
+    "current_code_evidence": [
+      {
+        "path": "src/rtdsl/v3_0_execution_graph.py",
+        "evidence": "V3_EXECUTION_GRAPH_STATUS is m2_no_execution_skeleton and prepared graph metadata reports executes: false."
+      },
+      {
+        "path": "src/rtdsl/v3_0_prepared_graph_chunk_executor.py",
+        "evidence": "The chunk executor is a contract/adoption-gate surface; several readiness paths explicitly report runtime_executed: false."
+      },
+      {
+        "path": "src/rtdsl/prepared_execution.py",
+        "evidence": "Prepared execution reporting and phase contracts exist, but they are reporting surfaces rather than the default runtime runner."
+      },
+      {
+        "path": "src/rtdsl/prepared_session_residency.py",
+        "evidence": "Explicit prepared-session cache/residency contracts exist and forbid automatic partner/backend selection, but they are not yet the unified execution path for V3 primitives."
+      }
+    ],
+    "first_primitives_to_route": [
+      {
+        "primitive_family": "fixed_radius_count_threshold_self_query",
+        "evidence_apps": [
+          "hausdorff_xhd",
+          "rt_dbscan",
+          "barnes_hut"
+        ],
+        "reason": "Common fixed-radius runtime code already has focused symbol-cache and self-query contract evidence; the self-query refresh proved metadata correctness but no material speedup, so the next step must target runner-level reuse rather than more count-refresh polishing.",
+        "latest_evidence": [
+          "docs/reports/phoenix_v3_fixed_radius_symbol_cache_focused_evidence_2026-06-22.md",
+          "docs/reports/phoenix_v3_fixed_radius_graph_self_query_refresh_focused_evidence_2026-06-22.md"
+        ]
+      },
+      {
+        "primitive_family": "aabb_index_query_2d_native_query_handle",
+        "evidence_apps": [
+          "librts_spatial_index",
+          "contact_manifold"
+        ],
+        "reason": "AABB native query-handle work is a proven generic prepared-session primitive with material row-scoped evidence, but OptiX prepare and route-fit disclosures must remain explicit.",
+        "latest_evidence": [
+          "docs/rebuild/v3/phoenix_v3_aabb_native_query_handle_review_gate_2026-06-21.md",
+          "docs/reports/phoenix_v3_librts_aabb_count_cache_focused_evidence_2026-06-22.md"
+        ]
+      },
+      {
+        "primitive_family": "grouped_reduction_and_component_union_continuation",
+        "evidence_apps": [
+          "raydb_style",
+          "rt_dbscan",
+          "triangle_counting"
+        ],
+        "reason": "The old M0-M149 work contains real grouped and chunked continuation pieces; V3 needs a small generic continuation runner before any app-shaped union or reduction row can count as language/runtime progress. RayDB grouped_reduction and RTDBSCAN component_union are now redo-closed as retained reusable evidence, so new app-specific variants do not count unless they land in a shared runner or continuation primitive.",
+        "latest_evidence": [
+          "docs/rebuild/v3/phoenix_v3_raydb_grouped_reduction_redo_alignment_2026-06-22.md",
+          "docs/rebuild/v3/phoenix_v3_rtdbscan_component_union_redo_alignment_2026-06-22.md",
+          "docs/rebuild/v3/phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_2026-06-21.md",
+          "docs/rebuild/v3/phoenix_v3_rtdbscan_component_signature_optimized_rtx_evidence_2026-06-21.md",
+          "docs/rebuild/v3/phoenix_v3_triangle_prepared_graph_80000_m7_final_review_packet_2026-06-21.md"
+        ]
+      },
+      {
+        "primitive_family": "point_location_topology_stream",
+        "evidence_apps": [
+          "spatial_rayjoin"
+        ],
+        "reason": "Spatial topology_stream is now redo-closed as exactly one internal point_location_topology_stream row. It can count as future Set-A work only if the productized topology/point-location execution path is the measured source of the win; public RayJoin author comparisons require separate result-count and paper-scope proof.",
+        "latest_evidence": [
+          "docs/rebuild/v3/phoenix_v3_spatial_topology_stream_redo_alignment_2026-06-22.md",
+          "docs/rebuild/v3/phoenix_v3_spatial_relation_status_squared_boundary_candidate_2026-06-21.json",
+          "docs/rebuild/v3/phoenix_v3_spatial_rayjoin_hotpath_probe_no_go_2026-06-21.json"
+        ]
+      }
+    ],
+    "m1_deliverable": "A minimal runner contract and implementation for one selected primitive family that records explicit backend, explicit partner, prepared-session key, cold/hot phases, residency, materialization flags, correctness status, and release/public-claim flags all false.",
+    "m1_current_status": "A minimal generic runner smoke implementation is landed in src/rtdsl/prepared_execution.py and recorded in docs/reports/phoenix_v3_prepared_execution_session_runner_m1_smoke_2026-06-22.md. It exists as a generic runner, but has no pod performance evidence.",
+    "m1_1_current_status": {
+      "report": "docs/reports/phoenix_v3_fixed_radius_self_query_runner_binding_m1_1_2026-06-22.md",
+      "status": "m1_1_fixed_radius_self_query_runner_binding_validated_not_release",
+      "primitive_family": "fixed_radius_count_threshold_self_query",
+      "adapter": "fixed_radius_count_threshold_3d_optix_prepared_self_partner_device_columns",
+      "runtime_executed_in_local_contract_test": true,
+      "wired_into_real_benchmark_route": false,
+      "pod_performance_evidence": false,
+      "release_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "full_all_app_rerun_authorized_by_this_packet": false
+    },
+    "m1_2_current_status": {
+      "report": "docs/reports/phoenix_v3_grouped_stream_runner_route_m1_2_2026-06-22.md",
+      "status": "m1_2_runner_backed_fixed_radius_probe_route_validated_not_release",
+      "probe_route": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+      "primitive_family": "fixed_radius_count_threshold_self_query",
+      "productized_execution_path_visible_in_route": true,
+      "runner_metadata_expected": [
+        "prepared_execution_session_runner_used",
+        "prepared_execution_session_runner_metadata",
+        "productized_execution_path",
+        "core_flag_refresh_runtime_executed"
+      ],
+      "pod_performance_evidence": true,
+      "pod_ab_report": "docs/reports/phoenix_v3_grouped_stream_runner_route_pod_ab_2026-06-22.md",
+      "pod_ab_status": "m1_2_runner_route_pod_ab_neutral_not_release",
+      "geomean_before_over_after_speedup": 0.9978812011247638,
+      "material_speedup_observed": false,
+      "release_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "full_all_app_rerun_authorized_by_this_packet": false
+    },
+    "m2_current_status": {
+      "report": "docs/reports/phoenix_v3_aabb_native_query_handle_runner_route_m2_2026-06-22.md",
+      "status": "m2_aabb_native_query_handle_runner_contract_validated_not_release",
+      "primitive_family": "aabb_index_query_2d_native_query_handle",
+      "helper": "run_aabb_index_query_2d_range_intersection_prepared_session",
+      "code": [
+        "src/rtdsl/prepared_execution.py",
+        "src/rtdsl/__init__.py"
+      ],
+      "test": "tests/v3_phoenix_prepared_execution_session_runner_test.py",
+      "route": "examples/current/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py::aabb_broadphase_witness_rows",
+      "route_test": "tests/v3_phoenix_aabb_prepare_reuse_pod_runner_test.py::test_contact_aabb_route_uses_productized_prepared_session_runner",
+      "runtime_executed_in_local_contract_test": true,
+      "set_a_probe_candidate": true,
+      "productized_execution_path_visible_in_helper": true,
+      "m2_1_route_status": "m2_1_aabb_runner_backed_contact_route_validated_not_release",
+      "wired_into_real_benchmark_route": true,
+      "productized_execution_path_visible_in_route": true,
+      "route_runtime_executed_count_in_test": 3,
+      "route_cache_hit_count_in_test": 2,
+      "m2_1_pod_ab_status": "m2_1_aabb_runner_route_pod_ab_pending_2ai_not_m7",
+      "pod_performance_evidence": true,
+      "pod_ab_report": "docs/reports/phoenix_v3_aabb_runner_route_m2_1_pod_ab_2026-06-22.md",
+      "pod_ab_call_for_review": "docs/reviews/call_for_review_phoenix_v3_aabb_runner_route_m2_1_pod_ab_2026-06-22.md",
+      "pod_ab_evidence_dir": "docs/rebuild/v3/evidence/phoenix_v3_aabb_runner_m2_1_pod_ab_20260622_180241",
+      "pod_ab_summary": "docs/rebuild/v3/evidence/phoenix_v3_aabb_runner_m2_1_pod_ab_20260622_180241/summary.json",
+      "pod_ab_productized_runner_visible_for_prepared_backends": true,
+      "pod_ab_optix_over_embree_cold_plus_collect_wall_speedup": 1.34595769645315,
+      "pod_ab_optix_over_embree_query_total_speedup": 1.73787303873785,
+      "pod_ab_embree_runtime_executed_count": 50,
+      "pod_ab_optix_runtime_executed_count": 50,
+      "pod_ab_embree_cache_hit_count": 49,
+      "pod_ab_optix_cache_hit_count": 49,
+      "pod_ab_m7_reopen_candidate_pending_2ai_review": true,
+      "pod_performance_evidence_note": "The 2026-06-22 focused pod rerun uses the updated runner-backed Contact Manifold AABB route. It is positive focused Set-A evidence pending external review, not release or M7 authorization.",
+      "material_speedup_observed": true,
+      "interpretation": "A second Set-A primitive family is routed through the same prepared execution/session runner, visible inside one real Contact Manifold AABB probe route, and has focused RTX 4000 Ada pod evidence clearing the 1.20x material cold-plus-collect floor. It remains pending external review and does not authorize release readiness.",
+      "release_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "broad_v3_faster_than_v2_claim_authorized": false,
+      "full_all_app_rerun_authorized_by_this_packet": false
+    },
+    "rtdbscan_component_signature_runner_contract_status": {
+      "report": "docs/reports/phoenix_v3_rtdbscan_component_signature_runner_route_m3_2026-06-22.md",
+      "route_report": "docs/reports/phoenix_v3_rtdbscan_component_signature_runner_route_m3_1_2026-06-22.md",
+      "status": "rtdbscan_component_signature_runner_route_wired_local_validated_not_release",
+      "helper": "run_radius_graph_component_signature_3d_prepared_session",
+      "primitive": "fixed_radius_graph_component_signature_3d",
+      "primitive_family": "fixed_radius_graph_component_signature",
+      "continuation_contract": "grouped_stream_component_size_signature_3d",
+      "row_contract": "generic_fixed_radius_graph_component_signature_3d",
+      "productized_execution_path": "prepared_execution_session_runner",
+      "runtime_executed_in_local_contract_test": true,
+      "explicit_partner": "numba",
+      "set_a_probe_candidate": true,
+      "wired_into_real_benchmark_route": true,
+      "route": "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py::optix_rt_core_grouped_stream_numba_column_signature_3d",
+      "route_test": "tests.v3_phoenix_rtdbscan_component_signature_optimization_test",
+      "route_local_contract_validated": true,
+      "route_runtime_executed_count_in_fake_runner_test": 3,
+      "route_cache_hit_count_in_fake_runner_test": 2,
+      "pod_performance_evidence": false,
+      "material_speedup_observed": false,
+      "next_route_target": "RTDBSCAN component-signature / component-union continuation",
+      "next_action": "Run one focused same-hardware pod A/B for the existing RTDBSCAN benchmark route now wired through the app-agnostic component-signature helper. Accept it as Set-A material evidence only if route metadata proves productized_execution_path: prepared_execution_session_runner and the measured wall win clears the focused lower bound.",
+      "release_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "broad_v3_faster_than_v2_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "full_all_app_rerun_authorized_by_this_packet": false
+    },
+    "m2_deliverable": "Make the runner-backed primitive observable inside one real Set-A probe route, then gather focused same-pod A/B evidence proving the runner changes runtime behavior or removes measurable overhead without changing correctness signatures. Repeat on at least two Set-A probes before any all-app rerun.",
+    "m3_deliverable": "Freeze the Set A / Set B classification and only then preregister the next all-app V2.14 vs current V3 rerun if focused evidence is material."
+  },
+  "deferred_or_rejected_paths": [
+    {
+      "id": "more_symbol_cache_polishing",
+      "decision": "defer",
+      "reason": "The broad fixed-radius symbol-cache focused run produced 1.062x on 17 rows and the RTNN symbol-cache run produced 1.001x; useful hygiene, not a V3 rescue path."
+    },
+    {
+      "id": "self_query_count_refresh_speed_claim",
+      "decision": "reject_as_speed_path",
+      "reason": "The self-query refresh A/B produced correct metadata and unchanged signatures but 0.998x geomean after-vs-before."
+    },
+    {
+      "id": "app_specific_native_engine_shortcuts",
+      "decision": "reject",
+      "reason": "Phoenix V3 is a language/runtime rebuild. Benchmark apps are probes, not optimization targets."
+    },
+    {
+      "id": "raydb_specific_grouped_sum_variants",
+      "decision": "reject_unless_shared_runtime_primitive",
+      "reason": "RayDB grouped_reduction is redo-closed as retained reusable engine evidence. More RayDB grouped_sum variants do not count as Phoenix progress unless the work lands in shared grouped_reduction, component continuation, or productized runner code."
+    },
+    {
+      "id": "spatial_public_rayjoin_speedup_wording",
+      "decision": "reject_until_author_result_count_and_paper_scope_are_proven",
+      "reason": "Spatial topology_stream is redo-closed as one internal point_location_topology_stream row, but author result-count parity is not verified and the old device-filtered 47570-count route remains rejected. Public Spatial/RayJoin speedup wording does not count as Phoenix progress."
+    },
+    {
+      "id": "repeat_full_all_app_now",
+      "decision": "reject_for_now",
+      "reason": "The latest focused fixes are not broad/material enough to justify burning pod time on another full V2.14 vs V3 run."
+    }
+  ],
+  "pod_trigger_for_next_full_run": {
+    "required_before_full_rerun": [
+      "one selected P0 runner primitive lands as generic runtime code",
+      "execution_path_executes runtime_executed true on at least two Set-A probes",
+      "focused pod A/B shows material improvement or removes a dominant overhead class across more than one Set-A probe",
+      "Set A / Set B classification is frozen before the run",
+      "correctness signatures or oracles remain unchanged",
+      "claim-boundary tests pass",
+      "external review packet is prepared if the result is proposed for M7"
+    ],
+    "minimum_full_release_bar": {
+      "overall_geomean_v3_speedup_vs_v2_14": ">= 1.20x for release consideration",
+      "app_geomean_wins_gt_1_05": ">= 8 of 10",
+      "app_geomean_regressions_lt_0_95": "0 without accepted explanation",
+      "surprising_rows": "must have user-readable explanations"
+    }
+  },
+  "non_claims": [
+    "V3 is not done.",
+    "V3 is not release-ready.",
+    "The selected P0 does not authorize public speedup wording.",
+    "The selected P0 does not authorize broad V3-over-V2 wording.",
+    "The selected P0 does not authorize true zero-copy wording.",
+    "The selected P0 does not authorize V4, C ABI, embedding, SDK, or multi-language host scope.",
+    "No app-specific native engine shortcut counts as Phoenix V3 core progress."
+  ],
+  "decision_audit": {
+    "decision": "Select prepared_execution_session_runner as the next dominant Phoenix V3 P0 hot path, and keep release blocked.",
+    "was_i_foolish": "No for this decision. It uses the serious paired failure and focused follow-up evidence to choose a reusable runtime layer instead of chasing another app row.",
+    "foolish_actions": "The foolish action would be to treat the old closed 13-row queue as proof that V3 has no engine work left, or to keep polishing symbol lookup and self-query count refresh after evidence showed no major release-scale gain.",
+    "other_path": "Continue app-specific tuning, rerun the full benchmark immediately, or promote scoped rows. Those paths would repeat the earlier failure: impressive local facts without a user-responsible V3 runtime.",
+    "different_path_now": "Use the existing M0-M149 prepared/session/continuation work to build one small productized prepared execution/session runner, prove it with focused pod evidence, and only then consider a new all-app paired run."
+  }
+}

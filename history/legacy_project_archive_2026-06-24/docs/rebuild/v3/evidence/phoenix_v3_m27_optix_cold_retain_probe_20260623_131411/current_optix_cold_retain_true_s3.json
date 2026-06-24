@@ -1,0 +1,18 @@
+{
+  "count_contract": "generic_prepared_aabb_index_query_2d_optix_prepared_query_set_count",
+  "counts": {
+    "point_contains": 86548,
+    "range_contains": 60039,
+    "range_intersects": 133517
+  },
+  "measured_repeat_count": 1,
+  "outer_prepare_or_cache_sec": 0.27679187059402466,
+  "output_type": "tuple",
+  "prepare_sec": 0.27679187059402466,
+  "prepared_query_mode": "optix_prepared_query_set",
+  "query_median_sec": 0.3123709112405777,
+  "query_total_sec": 0.3123709112405777,
+  "repeat_outputs_retained": true,
+  "retain_repeat_outputs": true,
+  "runtime_executed": true
+}

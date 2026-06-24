@@ -1,0 +1,66 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "comparison": {
+    "heavy_finalize_once_saved_fraction": 0.17078105418100165,
+    "heavy_finalize_once_speedup_vs_full": 1.2059541150646593
+  },
+  "finalized_runner_metadata": {
+    "measured_output_finalized_once": true,
+    "measured_run_prepared_override_used": true,
+    "output_finalize_sec": 4.910002462565899e-05,
+    "per_repeat_output_finalization_avoided": true,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "runtime_executed": true,
+    "schema": "rtdl.v3.phoenix.prepared_execution_session_runner.m3_3"
+  },
+  "full_all_app_rerun_authorized_by_this_packet": false,
+  "iterations": 20000,
+  "last_runner_metadata": {
+    "app_specific_native_engine_logic_allowed": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "prepared_execution_report_validation": {
+      "claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+      "errors": [],
+      "phase_count": 7,
+      "schema": "rtdl.v2_8.prepared_execution_report.v1",
+      "status": "accept",
+      "workflow": [
+        "prepare",
+        "pack_or_cache",
+        "warm",
+        "run_steady_state",
+        "explain_timings"
+      ]
+    },
+    "productized_execution_path": "prepared_execution_session_runner",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "runtime_executed": true,
+    "schema": "rtdl.v3.phoenix.prepared_execution_session_runner.m3_3",
+    "true_zero_copy_claim_authorized": false
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "runner_iterations": 2000,
+  "schema": "rtdl.phoenix_v3.runner_overhead_microbench.v1",
+  "status": "local_microbench_not_release_evidence",
+  "timing_per_call_sec": {
+    "heavy_finalize_once_runner_call": 0.0008233700499986298,
+    "heavy_full_runner_call": 0.0009929465000168421,
+    "noop_runner_call": 0.000834827699989546,
+    "phase_to_dict": 7.731850026175379e-07,
+    "report_to_dict": 1.0219570004846901e-05,
+    "stable_id_read": 2.2379999863915145e-07
+  },
+  "timing_sec": {
+    "heavy_finalize_once_runner_calls": 1.6467400999972597,
+    "heavy_full_runner_calls": 1.985893000033684,
+    "noop_runner_calls": 1.6696553999790922,
+    "phase_to_dict": 0.01546370005235076,
+    "report_to_dict": 0.20439140009693801,
+    "stable_id_reads": 0.004475999972783029
+  },
+  "true_zero_copy_claim_authorized": false,
+  "v4_embedding_or_external_zero_copy_authorized": false
+}

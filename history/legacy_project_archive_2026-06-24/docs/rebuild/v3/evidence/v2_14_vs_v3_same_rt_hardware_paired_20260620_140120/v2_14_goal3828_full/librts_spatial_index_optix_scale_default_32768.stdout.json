@@ -1,0 +1,162 @@
+{
+  "app": "librts_spatial_index",
+  "authors_code_comparison": false,
+  "automatic_partner_selection_authorized": false,
+  "claim_boundary": "Generic RTDL OptiX AABB_INDEX_QUERY_2D count-only path for point_contains, range_contains, and range_intersects. This is not a LibRTS-specific native symbol.",
+  "counts": {
+    "point_contains": 46343760,
+    "range_contains": 32302908,
+    "range_intersects": 70429254
+  },
+  "cpu_reference_skipped": true,
+  "elapsed_sec": 0.48317374289035797,
+  "fixture": {
+    "box_count": 32768,
+    "box_query_count": 32768,
+    "dataset": "uniform",
+    "paper_equivalent_dataset": false,
+    "point_query_count": 32768,
+    "seed": 2025
+  },
+  "generic_primitive": "AABB_INDEX_QUERY_2D",
+  "matches_cpu_reference": null,
+  "mode": "optix_aabb_index",
+  "multi_operation_native_used": true,
+  "native_engine_customization": false,
+  "operation": "all",
+  "paper": {
+    "authors_code": "https://github.com/RTSpatial/RTSpatial",
+    "doi": "10.1145/3710848.3710850",
+    "title": "LibRTS: A Spatial Indexing Library by Ray Tracing",
+    "venue": "PPoPP 2025"
+  },
+  "paper_reproduction": false,
+  "prepared_queries": true,
+  "prepared_session_residency": {
+    "automatic_partner_selection_authorized": false,
+    "cache_enabled_by_default": false,
+    "cache_key": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "backend": "optix",
+      "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+      "device": "cuda:0",
+      "explicit_key_required": true,
+      "input_fingerprints": [
+        [
+          "box_queries",
+          "e3d0d26a0cc33a8c2099e0b7"
+        ],
+        [
+          "boxes",
+          "e3d0d26a0cc33a8c2099e0b7"
+        ],
+        [
+          "point_queries",
+          "e3d0d26a0cc33a8c2099e0b7"
+        ]
+      ],
+      "parameter_fingerprint": [
+        [
+          "operation",
+          "5cf7504d9781301d83347546"
+        ],
+        [
+          "prepared_queries",
+          "b5bea41b6c623f7c09f1bf24"
+        ]
+      ],
+      "partner": "none",
+      "primitive": "aabb_index_query_2d",
+      "stable_id": "b42cb78f5ad901ff549605af"
+    },
+    "cold_hot_phase_split_required": true,
+    "explicit_reuse_helper": "get_or_prepare_explicit_session",
+    "policy": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_rt_core_claim_authorized": false,
+      "cache_enabled": false,
+      "cache_key": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "backend": "optix",
+        "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "device": "cuda:0",
+        "explicit_key_required": true,
+        "input_fingerprints": [
+          [
+            "box_queries",
+            "e3d0d26a0cc33a8c2099e0b7"
+          ],
+          [
+            "boxes",
+            "e3d0d26a0cc33a8c2099e0b7"
+          ],
+          [
+            "point_queries",
+            "e3d0d26a0cc33a8c2099e0b7"
+          ]
+        ],
+        "parameter_fingerprint": [
+          [
+            "operation",
+            "5cf7504d9781301d83347546"
+          ],
+          [
+            "prepared_queries",
+            "b5bea41b6c623f7c09f1bf24"
+          ]
+        ],
+        "partner": "none",
+        "primitive": "aabb_index_query_2d",
+        "stable_id": "b42cb78f5ad901ff549605af"
+      },
+      "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+      "cold_prepare_phase": "prepare_scene_or_payload",
+      "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+      "hot_query_phase": "prepared_query",
+      "invalidation_events": [
+        "explicit_invalidate",
+        "backend_context_reset",
+        "close"
+      ],
+      "lifetime_state": "session_retained",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "reuse_scope": "explicit_user_session",
+      "status": "internal_contract_not_release_authorization",
+      "true_zero_copy_claim_authorized": false
+    },
+    "prepare_once_query_many_pattern": true,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "primitive_contract": "generic_prepared_aabb_index_query_2d",
+  "public_speedup_claim_authorized": false,
+  "repeat_protocol": {
+    "measured_run_count": 3,
+    "query_sec_median": 0.04285041242837906,
+    "query_sec_total": 0.13142772763967514,
+    "repeat": 3,
+    "warmup": 1
+  },
+  "rt_core_accelerated": true,
+  "run_phases": {
+    "query_median_sec": 0.04285041242837906,
+    "query_prepare_sec": {
+      "point_contains": 0.012420997023582458,
+      "range_contains": 0.08704572916030884,
+      "range_intersects": 0.0
+    },
+    "query_repeat": 3,
+    "query_sec": {
+      "multi_operation_packed_queries": 0.04285041242837906
+    },
+    "query_summed_median_sec": 0.04285041242837906,
+    "query_total_sec": 0.13142772763967514,
+    "query_warmup": 1,
+    "scene_prepare_sec": 0.3408566042780876
+  },
+  "true_zero_copy_claim_authorized": false
+}

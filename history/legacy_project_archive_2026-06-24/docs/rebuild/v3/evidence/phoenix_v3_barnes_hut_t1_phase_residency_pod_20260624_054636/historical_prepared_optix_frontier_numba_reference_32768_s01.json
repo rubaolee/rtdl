@@ -1,0 +1,222 @@
+{
+  "app": "barnes_hut_force_app",
+  "app_boundary": "Prepared RTDL/OptiX aggregate-frontier device columns plus explicit numba Barnes-Hut weighted-vector partner continuation. The native engine remains app-agnostic; force-law math and partner choice remain app code. This is not an automatic partner dispatch, not an OptiX-vs-Embree comparison, and not public speedup wording.",
+  "backend": "optix+partner",
+  "benchmark_metadata": {
+    "authors_code_comparison": false,
+    "benchmark": "barnes_hut_ppopp2025_style",
+    "benchmark_scope": "RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.",
+    "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+    "contract": "generic_aggregate_frontier_device_columns_2d_v1+generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_v1/generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_numba_v1+explicit_partner_force_interpretation",
+    "mode": "prepared_aggregate_frontier_weighted_vector_optix",
+    "native_engine_app_specific": false,
+    "paper_reference": {
+      "authors": [
+        "Vani Nagarajan",
+        "Rohan Gangaraju",
+        "Kirshanthan Sundararajah",
+        "Artem Pelenitsyn",
+        "Milind Kulkarni"
+      ],
+      "authors_code_comparison": false,
+      "doi": "10.1145/3710848.3710885",
+      "paper_reproduction": false,
+      "title": "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+      "venue": "PPoPP 2025"
+    },
+    "paper_reproduction": false,
+    "public_speedup_claim_authorized": false,
+    "reconstruction_instrument": true,
+    "research_benchmark": true,
+    "rt_core_accelerated": true
+  },
+  "body_count": 32768,
+  "boundary": "Prepared RTDL/OptiX aggregate-frontier device columns plus explicit numba Barnes-Hut weighted-vector partner continuation. The native engine remains app-agnostic; force-law math and partner choice remain app code. This is not an automatic partner dispatch, not an OptiX-vs-Embree comparison, and not public speedup wording.",
+  "bucket_size": 32,
+  "capacity": {
+    "capacity_attempts": [
+      {
+        "attempt_index": 0,
+        "attempted_count": 12006704,
+        "capacity": 22937600,
+        "overflow": false,
+        "row_count": 12006704,
+        "traversal_seconds": 0.087705303
+      }
+    ],
+    "final_row_capacity": 12007728,
+    "frontier_capacity_multiplier": 700,
+    "initial_capacity": 22937600
+  },
+  "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+  "claim_flags": {
+    "automatic_partner_selection_allowed": false,
+    "contribution_rows_materialized_on_host": false,
+    "explicit_partner_choice": true,
+    "frontier_columns_materialized_on_host": false,
+    "native_engine_app_specific": false,
+    "prepared_lookup_columns_resident": true,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "same_frontier_contract": true,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "hot_repeats": [
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.082195208,
+      "hot_seconds_native_plus_partner": 0.08607584290390778,
+      "partner_seconds": 0.003880634903907776,
+      "repeat_index": 0.0,
+      "wall_seconds": 0.0968293696641922
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.080990404,
+      "hot_seconds_native_plus_partner": 0.08482676010342026,
+      "partner_seconds": 0.0038363561034202576,
+      "repeat_index": 1.0,
+      "wall_seconds": 0.09358163923025131
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.080452308,
+      "hot_seconds_native_plus_partner": 0.08430578553763199,
+      "partner_seconds": 0.0038534775376319885,
+      "repeat_index": 2.0,
+      "wall_seconds": 0.09527778625488281
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.081368104,
+      "hot_seconds_native_plus_partner": 0.0852140340994873,
+      "partner_seconds": 0.0038459300994873047,
+      "repeat_index": 3.0,
+      "wall_seconds": 0.09396054595708847
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.081054085,
+      "hot_seconds_native_plus_partner": 0.08490076760812759,
+      "partner_seconds": 0.003846682608127594,
+      "repeat_index": 4.0,
+      "wall_seconds": 0.09567703306674957
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.081790446,
+      "hot_seconds_native_plus_partner": 0.08563110853900528,
+      "partner_seconds": 0.0038406625390052795,
+      "repeat_index": 5.0,
+      "wall_seconds": 0.09446362406015396
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.081693094,
+      "hot_seconds_native_plus_partner": 0.08550426714100265,
+      "partner_seconds": 0.003811173141002655,
+      "repeat_index": 6.0,
+      "wall_seconds": 0.09630420804023743
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.081257891,
+      "hot_seconds_native_plus_partner": 0.08511121952602005,
+      "partner_seconds": 0.00385332852602005,
+      "repeat_index": 7.0,
+      "wall_seconds": 0.09448976069688797
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.08051732,
+      "hot_seconds_native_plus_partner": 0.08438402231819153,
+      "partner_seconds": 0.0038667023181915283,
+      "repeat_index": 8.0,
+      "wall_seconds": 0.09511050581932068
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.081521549,
+      "hot_seconds_native_plus_partner": 0.08537417717144394,
+      "partner_seconds": 0.003852628171443939,
+      "repeat_index": 9.0,
+      "wall_seconds": 0.09414644539356232
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.08086043,
+      "hot_seconds_native_plus_partner": 0.08471650033967972,
+      "partner_seconds": 0.003856070339679718,
+      "repeat_index": 10.0,
+      "wall_seconds": 0.09547950327396393
+    }
+  ],
+  "max_depth": 32,
+  "medians": {
+    "frontier_traversal_seconds": 0.081257891,
+    "hot_seconds_native_plus_partner": 0.08511121952602005,
+    "partner_seconds": 0.003852628171443939,
+    "wall_seconds": 0.09511050581932068
+  },
+  "mode": "prepared_aggregate_frontier_weighted_vector_optix",
+  "partner": "numba",
+  "run_phases": {
+    "body_generation_sec": 0.08356992155313492,
+    "frontier_prepare_wall_sec": 0.37951894849538803,
+    "partner_prepare_seconds": 0.03013502061367035,
+    "tree_build_sec": 0.4439798966050148,
+    "vector_prepare_wall_sec": 0.801275834441185
+  },
+  "softening": 0.05,
+  "theta": 0.5,
+  "tree_summary": {
+    "bucket_size": 32,
+    "leaf_node_count": 2260,
+    "max_depth": 6,
+    "max_leaf_member_count": 32,
+    "morton_bits": 16,
+    "source_count": 32768,
+    "tree_node_count": 3013
+  },
+  "validation": {
+    "reason": "user_skip_validation",
+    "skipped": true
+  },
+  "vector_sum_summary": {
+    "aggregate_contribution_row_count": 3473415,
+    "checksum_force_x": -4733.575645893039,
+    "checksum_force_y": 46717.65234663913,
+    "contract": "generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_numba_v1",
+    "exact_contribution_row_count": 8533289,
+    "force_output_mode": "force_summary",
+    "force_rows": [],
+    "force_rows_truncated": true,
+    "frontier_contract": "generic_aggregate_frontier_device_columns_2d_v1",
+    "frontier_row_count": 12006704,
+    "partner_contract": "generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_numba_v1",
+    "source_count": 32768
+  }
+}

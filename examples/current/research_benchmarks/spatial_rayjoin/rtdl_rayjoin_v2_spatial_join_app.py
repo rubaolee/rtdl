@@ -26,14 +26,19 @@ from rtdsl.datasets import chains_to_segment_columns
 from rtdsl.datasets import chains_to_segments
 from rtdsl.datasets import chains_to_topology_rows
 from rtdsl.datasets import load_cdb
+from rtdsl.v3_0_topology_stream_accounting import build_topology_stream_m3_phase_table
+from rtdsl.v3_0_topology_stream_accounting import build_topology_stream_prepared_handle_metadata
 
 
 _WORKLOADS = ("pip", "lsi", "overlay_seed")
 _PREPARED_OPTIX_WORKLOADS = ("pip", "lsi", "overlay_seed")
 _PIP_BOUNDARY_EVENT_COUNT_MODE = "boundary_event_point_id_count_device_columns"
+_PIP_RELATION_STATUS_CORRECTED_EXECUTOR_VALIDATED_MODE = "relation_status_corrected_executor_validated"
 _PIP_COUNT_MODES = (
     "exact",
     "exact_prepared_points",
+    "exact_prepared_points_executor",
+    _PIP_RELATION_STATUS_CORRECTED_EXECUTOR_VALIDATED_MODE,
     "device_filtered_validated",
     "device_filtered_prepared_points_validated",
     "point_id_count_device_columns_validated",
@@ -244,6 +249,38 @@ def _json_ready(value):
     if isinstance(value, dict):
         return {str(key): _json_ready(item) for key, item in value.items()}
     return value
+
+
+def _count_input_records(value: object) -> int:
+    count_attr = getattr(value, "count", None)
+    if count_attr is not None and not callable(count_attr):
+        return int(count_attr)
+    try:
+        return len(value)  # type: ignore[arg-type]
+    except TypeError:
+        return 1
+
+
+def _topology_stream_query_count(workload: str, inputs: dict[str, object]) -> int:
+    if workload == "pip":
+        return _count_input_records(inputs["points"])
+    if workload == "lsi":
+        return _count_input_records(inputs["left"])
+    return _count_input_records(inputs["left"])
+
+
+def _topology_stream_runtime_query_count(
+    *,
+    workload: str,
+    inputs: dict[str, object],
+    prepared_point_columns_metadata: dict[str, object] | None = None,
+    packed_query_stream: object | None = None,
+) -> int:
+    if prepared_point_columns_metadata is not None and "point_count" in prepared_point_columns_metadata:
+        return int(prepared_point_columns_metadata["point_count"])
+    if packed_query_stream is not None:
+        return _count_input_records(packed_query_stream)
+    return _topology_stream_query_count(workload, inputs)
 
 
 def _phase_time(phases: dict[str, float], label: str, fn):
@@ -566,6 +603,7 @@ def run_rayjoin_prepared_optix_workload(
     warmup: int = 0,
     device_filtered_batch_request_count: int | None = None,
     device_filtered_batch_stream_count: int | str | None = None,
+    exact_executor_max_candidate_rows: int | None = None,
     prepare_left_for_count: bool = False,
 ) -> dict[str, object]:
     """Run the RayJoin-style prepared OptiX route with phase boundaries.
@@ -582,7 +620,9 @@ def run_rayjoin_prepared_optix_workload(
         raise ValueError("result_mode must be 'count' or 'rows'")
     if count_mode not in _PIP_COUNT_MODES:
         raise ValueError(
-            "count_mode must be 'exact', 'exact_prepared_points', 'device_filtered_validated', "
+            "count_mode must be 'exact', 'exact_prepared_points', 'exact_prepared_points_executor', "
+            f"'{_PIP_RELATION_STATUS_CORRECTED_EXECUTOR_VALIDATED_MODE}', "
+            "'device_filtered_validated', "
             "'device_filtered_prepared_points_validated', "
             "'point_id_count_device_columns_validated', or "
             f"'{_PIP_BOUNDARY_EVENT_COUNT_MODE}'"
@@ -626,6 +666,15 @@ def run_rayjoin_prepared_optix_workload(
             )
     if isinstance(device_filtered_batch_stream_count, str) and device_filtered_batch_stream_count != "auto":
         raise ValueError("device_filtered_batch_stream_count must be positive, None, or 'auto'")
+    if exact_executor_max_candidate_rows is not None:
+        exact_executor_max_candidate_rows = int(exact_executor_max_candidate_rows)
+        if exact_executor_max_candidate_rows < 0:
+            raise ValueError("exact_executor_max_candidate_rows must be non-negative")
+        if workload != "pip" or result_mode != "count" or count_mode != "exact_prepared_points_executor":
+            raise ValueError(
+                "exact_executor_max_candidate_rows is only valid for PIP "
+                "exact_prepared_points_executor count workloads"
+            )
 
     resolved_dataset = dataset or _DEFAULT_DATASETS[workload]
     case = _load_rayjoin_case(
@@ -838,14 +887,19 @@ def run_rayjoin_prepared_optix_workload(
         point_id_count_metadata: dict[str, object] | None = None
         prepared_point_columns_metadata: dict[str, object] | None = None
         prepared_point_batch_executor_metadata: dict[str, object] | None = None
+        exact_prepared_points_executor_metadata: dict[str, object] | None = None
+        relation_status_corrected_executor_metadata: dict[str, object] | None = None
+        exact_prepared_points_executor_capacity: int | None = None
         prepared_point_columns = None
         boundary_event_count_metadata: dict[str, object] | None = None
         boundary_event_columns = None
         boundary_event_count_columns = None
+        exact_prepared_points_executor = None
+        relation_status_corrected_executor = None
         prepared_point_batch_executor = None
         try:
             if result_mode == "count":
-                if count_mode == "exact_prepared_points":
+                if count_mode in {"exact_prepared_points", "exact_prepared_points_executor"}:
                     validation_exact_count = int(
                         _phase_time(
                             phases,
@@ -859,18 +913,115 @@ def run_rayjoin_prepared_optix_workload(
                         lambda: prepared.prepare_point_probe_columns(packed_points),
                     )
                     prepared_point_columns_metadata = prepared_point_columns.to_metadata()
-                    row_count = int(
-                        _phase_repeat_time(
+                    if count_mode == "exact_prepared_points_executor":
+                        if exact_executor_max_candidate_rows:
+                            exact_prepared_points_executor_capacity = int(exact_executor_max_candidate_rows)
+                        else:
+                            exact_prepared_points_executor_capacity = max(
+                                1,
+                                int(validation_exact_count) * 2,
+                                _count_input_records(ordered_points),
+                            )
+                        exact_prepared_points_executor = _phase_time(
                             phases,
-                            "prepared_query_sec",
-                            query_repeat=query_repeat,
-                            warmup=warmup,
-                            fn=lambda: prepared.count_prepared_points_exact(prepared_point_columns),
+                            "prepare_exact_scalar_count_executor_sec",
+                            lambda: prepared.prepare_exact_prepared_points_scalar_count_executor(
+                                prepared_point_columns,
+                                max_candidate_rows=exact_prepared_points_executor_capacity,
+                            ),
                         )
-                    )
+                        exact_prepared_points_executor_metadata = exact_prepared_points_executor.to_metadata()
+                        row_count = int(
+                            _phase_repeat_time(
+                                phases,
+                                "prepared_query_sec",
+                                query_repeat=query_repeat,
+                                warmup=warmup,
+                                fn=lambda: exact_prepared_points_executor.run(),
+                            )
+                        )
+                    else:
+                        row_count = int(
+                            _phase_repeat_time(
+                                phases,
+                                "prepared_query_sec",
+                                query_repeat=query_repeat,
+                                warmup=warmup,
+                                fn=lambda: prepared.count_prepared_points_exact(prepared_point_columns),
+                            )
+                        )
                     if row_count != validation_exact_count:
                         raise RuntimeError(
                             "exact prepared-points closed-shape count did not match host-points exact prepared count: "
+                            f"{row_count} != {validation_exact_count}"
+                        )
+                elif count_mode == _PIP_RELATION_STATUS_CORRECTED_EXECUTOR_VALIDATED_MODE:
+                    validation_exact_count = int(
+                        _phase_time(
+                            phases,
+                            "validation_exact_query_sec",
+                            lambda: _run_prepared_count_with_boundary_mode(prepared, packed_points, None),
+                        )
+                    )
+                    prepared_point_columns = _phase_time(
+                        phases,
+                        "prepare_query_points_sec",
+                        lambda: prepared.prepare_point_probe_columns(packed_points),
+                    )
+                    prepared_point_columns_metadata = prepared_point_columns.to_metadata()
+                    relation_status_corrected_executor = _phase_time(
+                        phases,
+                        "prepare_relation_status_corrected_scalar_count_executor_sec",
+                        lambda: prepared.prepare_relation_status_corrected_scalar_count_executor(
+                            prepared_point_columns,
+                        ),
+                    )
+                    relation_status_corrected_executor_metadata = (
+                        relation_status_corrected_executor.to_metadata()
+                    )
+                    relation_status_result = _phase_repeat_time(
+                        phases,
+                        "prepared_query_sec",
+                        query_repeat=query_repeat,
+                        warmup=warmup,
+                        fn=lambda: relation_status_corrected_executor.run(),
+                        stability_value=lambda value: int(value["row_count"]),
+                    )
+                    row_count = int(relation_status_result["row_count"])
+                    native_phase_timings = {
+                        "mode": "relation_status_corrected_scalar_count_executor_run",
+                        "point_upload": 0.0,
+                        "candidate_count_pass": float(relation_status_result["traversal_seconds"]),
+                        "candidate_write_pass": 0.0,
+                        "candidate_download": 0.0,
+                        "exact_refine": 0.0,
+                        "raw_candidate_count": int(relation_status_result["candidate_row_count"]),
+                        "emitted_count": row_count,
+                        "boundary_candidate_count": int(
+                            relation_status_result["boundary_candidate_row_count"]
+                        ),
+                        "dropped_candidate_count": int(
+                            relation_status_result["dropped_candidate_row_count"]
+                        ),
+                        "row_stream_materialized": bool(
+                            relation_status_result["row_stream_materialized"]
+                        ),
+                        "boundary_candidate_row_stream_materialized": bool(
+                            relation_status_result["boundary_candidate_row_stream_materialized"]
+                        ),
+                        "native_exact_device_scalar_count_produced": bool(
+                            relation_status_result["native_exact_device_scalar_count_produced"]
+                        ),
+                        "relation_status_correction_used": bool(
+                            relation_status_result["relation_status_correction_used"]
+                        ),
+                        "reusable_native_executor_used": bool(
+                            relation_status_result["reusable_native_executor_used"]
+                        ),
+                    }
+                    if row_count != validation_exact_count:
+                        raise RuntimeError(
+                            "validated relation-status corrected closed-shape count did not match exact prepared count: "
                             f"{row_count} != {validation_exact_count}"
                         )
                 elif count_mode in _PIP_POSITIVE_COUNT_MODES:
@@ -1025,8 +1176,13 @@ def run_rayjoin_prepared_optix_workload(
                     fn=run_positive_hits_once,
                     stability_value=lambda value: int(value[0]),
                 )
-            native_phase_timings = prepared.last_phase_timings()
+            if native_phase_timings is None:
+                native_phase_timings = prepared.last_phase_timings()
         finally:
+            if exact_prepared_points_executor is not None:
+                exact_prepared_points_executor.close()
+            if relation_status_corrected_executor is not None:
+                relation_status_corrected_executor.close()
             if prepared_point_batch_executor is not None:
                 prepared_point_batch_executor.close()
             if prepared_point_columns is not None:
@@ -1040,6 +1196,12 @@ def run_rayjoin_prepared_optix_workload(
             pip_count_output_contracts = {
                 "exact": "point_to_shape_positive_hit_count",
                 "exact_prepared_points": "point_to_shape_positive_hit_count_exact_prepared_points",
+                "exact_prepared_points_executor": (
+                    "point_to_shape_positive_hit_count_exact_prepared_points_executor"
+                ),
+                _PIP_RELATION_STATUS_CORRECTED_EXECUTOR_VALIDATED_MODE: (
+                    "point_to_shape_positive_hit_count_relation_status_corrected_executor_validated"
+                ),
                 "device_filtered_validated": "point_to_shape_positive_hit_count_device_filtered_validated",
                 "device_filtered_prepared_points_validated": (
                     "point_to_shape_positive_hit_count_device_filtered_prepared_points_validated"
@@ -1074,15 +1236,40 @@ def run_rayjoin_prepared_optix_workload(
             ),
             "exact_prepared_points_matches_host_exact": (
                 True
-                if count_mode == "exact_prepared_points"
+                if count_mode in {"exact_prepared_points", "exact_prepared_points_executor"}
                 and result_mode == "count"
                 else None
             ),
             "exact_prepared_points_reuses_query_columns": (
                 True
-                if count_mode == "exact_prepared_points"
+                if count_mode in {"exact_prepared_points", "exact_prepared_points_executor"}
                 and result_mode == "count"
                 else None
+            ),
+            "exact_prepared_points_executor": exact_prepared_points_executor_metadata,
+            "relation_status_corrected_executor": relation_status_corrected_executor_metadata,
+            "relation_status_corrected_matches_host_exact": (
+                True
+                if count_mode == _PIP_RELATION_STATUS_CORRECTED_EXECUTOR_VALIDATED_MODE
+                and result_mode == "count"
+                else None
+            ),
+            "relation_status_corrected_executor_reuses_query_columns": (
+                True
+                if count_mode == _PIP_RELATION_STATUS_CORRECTED_EXECUTOR_VALIDATED_MODE
+                and result_mode == "count"
+                else None
+            ),
+            "exact_prepared_points_executor_capacity": exact_prepared_points_executor_capacity,
+            "exact_prepared_points_executor_capacity_policy": (
+                "explicit_max_candidate_rows"
+                if count_mode == "exact_prepared_points_executor"
+                and exact_executor_max_candidate_rows
+                else (
+                    "auto_max_of_2x_validation_exact_count_and_query_count"
+                    if count_mode == "exact_prepared_points_executor"
+                    else None
+                )
             ),
             "point_id_count_device_columns": point_id_count_metadata,
             "prepared_point_probe_columns": prepared_point_columns_metadata,
@@ -1102,16 +1289,87 @@ def run_rayjoin_prepared_optix_workload(
             "boundary_event_grouped_count_device_columns_complete: first-boundary-event columns "
             "and grouped point-id counts remain CUDA-resident; this is not a PIP membership contract"
         )
-    elif workload == "pip" and count_mode == "exact_prepared_points":
+    elif workload == "pip" and count_mode in {"exact_prepared_points", "exact_prepared_points_executor"}:
         device_resident_continuation_status = (
             "partial_exact_prepared_points: query point columns remain prepared on the device, "
             "but exact authority still downloads candidates and refines membership on the host"
+        )
+    elif workload == "pip" and count_mode == _PIP_RELATION_STATUS_CORRECTED_EXECUTOR_VALIDATED_MODE:
+        device_resident_continuation_status = (
+            "validated_relation_status_corrected_executor: query point columns remain prepared on the device, "
+            "the reusable native scalar-count executor fuses relation-status correction into the device path, "
+            "and exact prepared count remains the validation authority"
         )
     else:
         device_resident_continuation_status = (
             "not_complete: prepared query can avoid Python row materialization for counts, "
             "but generic downstream row-stream continuation still needs pod/native work"
         )
+
+    topology_stream_output_contract = str(summary["output_contract"])
+    topology_stream_query_prepared = bool(
+        summary.get("prepared_point_probe_columns")
+        or summary.get("prepared_left_for_count")
+        or summary.get("prepared_point_batch_executor")
+        or summary.get("exact_prepared_points_executor")
+        or summary.get("relation_status_corrected_executor")
+    )
+    if summary.get("exact_prepared_points_executor"):
+        topology_stream_query_residency = "device_resident_prepared_point_probe_columns_with_reusable_exact_executor"
+    elif summary.get("relation_status_corrected_executor"):
+        topology_stream_query_residency = (
+            "device_resident_prepared_point_probe_columns_with_reusable_relation_status_corrected_executor"
+        )
+    elif summary.get("prepared_point_probe_columns"):
+        topology_stream_query_residency = "device_resident_prepared_point_probe_columns"
+    elif summary.get("prepared_point_batch_executor"):
+        topology_stream_query_residency = "device_resident_prepared_point_batch_executor"
+    elif summary.get("prepared_left_for_count"):
+        topology_stream_query_residency = "prepared_left_segment_set_handle"
+    else:
+        topology_stream_query_residency = "host_packed_query_stream"
+    topology_stream_query_count = _topology_stream_runtime_query_count(
+        workload=workload,
+        inputs=case.inputs,
+        prepared_point_columns_metadata=(
+            prepared_point_columns_metadata
+            if workload == "pip"
+            else None
+        ),
+        packed_query_stream=(
+            packed_points
+            if workload == "pip"
+            else packed_left
+        ),
+    )
+    topology_stream_generic_capability = {
+        "pip": "point_location_topology_stream",
+        "lsi": "segment_intersection_topology_stream",
+        "overlay_seed": "shape_pair_topology_stream",
+    }[workload]
+    topology_stream_m3_phase_table = build_topology_stream_m3_phase_table(
+        phases_sec=phases,
+        native_phase_timings=native_phase_timings or {},
+        output_contract=topology_stream_output_contract,
+        query_count=topology_stream_query_count,
+        repeat=query_repeat,
+        warmup=warmup,
+        query_stream_resident=topology_stream_query_prepared,
+        table_basis=(
+            "prepared_optix_app_phase_timers_plus_native_last_phase_timings; "
+            "non-authorizing V3 topology-stream accounting"
+        ),
+    )
+    topology_stream_prepared_handle = build_topology_stream_prepared_handle_metadata(
+        backend="optix",
+        generic_capability=topology_stream_generic_capability,
+        output_contract=topology_stream_output_contract,
+        query_count=topology_stream_query_count,
+        static_scene_prepared=True,
+        query_stream_prepared=topology_stream_query_prepared,
+        query_stream_residency=topology_stream_query_residency,
+        m3_phase_table=topology_stream_m3_phase_table,
+    )
 
     payload: dict[str, object] = {
         "app": "rayjoin_v2_spatial_join",
@@ -1126,6 +1384,8 @@ def run_rayjoin_prepared_optix_workload(
         "summary": summary,
         "phases_sec": phases,
         "native_phase_timings": native_phase_timings or {},
+        "topology_stream_m3_phase_table": topology_stream_m3_phase_table,
+        "topology_stream_prepared_handle": topology_stream_prepared_handle,
         "repeat_protocol": {
             "repeat": int(query_repeat),
             "warmup": int(warmup),
@@ -1150,6 +1410,311 @@ def run_rayjoin_prepared_optix_workload(
     }
     if include_rows and result_mode == "rows":
         payload["rows"] = rows
+    return payload
+
+
+class PreparedExecutionRayJoinPointLocationTopologyStream:
+    """Prepared app adapter for the generic point-location topology stream."""
+
+    def __init__(
+        self,
+        points,
+        shapes,
+        *,
+        dataset: str,
+        dataset_note: str,
+        point_order_mode: str = "morton_xy",
+        point_eps: float = 1.0e-9,
+    ) -> None:
+        if point_order_mode not in _PIP_POINT_ORDER_MODES:
+            raise ValueError("point_order_mode must be one of: natural, x_then_y, y_then_x, morton_xy")
+        self._dataset = dataset
+        self._dataset_note = dataset_note
+        self._point_order_mode = point_order_mode
+        self._point_eps = float(point_eps)
+        self._closed = False
+        self._prepare_phases_sec: dict[str, float] = {}
+        self._point_count = _count_input_records(tuple(points))
+        self._shape_count = _count_input_records(tuple(shapes))
+
+        from rtdsl.optix_runtime import pack_points
+        from rtdsl.optix_runtime import pack_polygons
+        from rtdsl.optix_runtime import prepare_point_closed_shape_membership_2d_optix
+
+        self._ordered_points = _phase_time(
+            self._prepare_phases_sec,
+            "query_point_order_sec",
+            lambda: _order_points_for_locality(tuple(points), point_order_mode),
+        )
+        self._packed_points = _phase_time(
+            self._prepare_phases_sec,
+            "query_pack_sec",
+            lambda: pack_points(records=self._ordered_points, dimension=2),
+        )
+        self._packed_shapes = _phase_time(
+            self._prepare_phases_sec,
+            "static_shape_pack_sec",
+            lambda: pack_polygons(records=tuple(shapes)),
+        )
+        self._prepared = _phase_time(
+            self._prepare_phases_sec,
+            "prepare_static_scene_sec",
+            lambda: prepare_point_closed_shape_membership_2d_optix(self._packed_shapes),
+        )
+        self._validation_exact_count = int(
+            _phase_time(
+                self._prepare_phases_sec,
+                "validation_exact_query_sec",
+                lambda: _run_prepared_count_with_boundary_mode(self._prepared, self._packed_points, None),
+            )
+        )
+        self._prepared_point_columns = _phase_time(
+            self._prepare_phases_sec,
+            "prepare_query_points_sec",
+            lambda: self._prepared.prepare_point_probe_columns(self._packed_points),
+        )
+        self._prepared_point_columns_metadata = self._prepared_point_columns.to_metadata()
+        self._executor = _phase_time(
+            self._prepare_phases_sec,
+            "prepare_relation_status_corrected_scalar_count_executor_sec",
+            lambda: self._prepared.prepare_relation_status_corrected_scalar_count_executor(
+                self._prepared_point_columns,
+                point_eps=self._point_eps,
+            ),
+        )
+        self._executor_metadata = self._executor.to_metadata()
+
+    @property
+    def query_count(self) -> int:
+        return self._point_count
+
+    @property
+    def shape_count(self) -> int:
+        return self._shape_count
+
+    @property
+    def prepare_phases_sec(self) -> dict[str, float]:
+        return dict(self._prepare_phases_sec)
+
+    def run(self) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared execution RayJoin point-location topology stream is closed")
+        phases: dict[str, float] = {}
+        relation_status_result = _phase_time(
+            phases,
+            "prepared_query_sec",
+            self._executor.run,
+        )
+        row_count = int(relation_status_result["row_count"])
+        native_phase_timings = {
+            "mode": "relation_status_corrected_scalar_count_executor_run",
+            "point_upload": 0.0,
+            "candidate_count_pass": float(relation_status_result["traversal_seconds"]),
+            "candidate_write_pass": 0.0,
+            "candidate_download": 0.0,
+            "exact_refine": 0.0,
+            "raw_candidate_count": int(relation_status_result["candidate_row_count"]),
+            "emitted_count": row_count,
+            "boundary_candidate_count": int(
+                relation_status_result["boundary_candidate_row_count"]
+            ),
+            "dropped_candidate_count": int(
+                relation_status_result["dropped_candidate_row_count"]
+            ),
+            "row_stream_materialized": bool(
+                relation_status_result["row_stream_materialized"]
+            ),
+            "boundary_candidate_row_stream_materialized": bool(
+                relation_status_result["boundary_candidate_row_stream_materialized"]
+            ),
+            "native_exact_device_scalar_count_produced": bool(
+                relation_status_result["native_exact_device_scalar_count_produced"]
+            ),
+            "relation_status_correction_used": bool(
+                relation_status_result["relation_status_correction_used"]
+            ),
+            "reusable_native_executor_used": bool(
+                relation_status_result["reusable_native_executor_used"]
+            ),
+        }
+        topology_stream_output_contract = (
+            "point_to_shape_positive_hit_count_relation_status_corrected_executor_validated"
+        )
+        topology_stream_phases = {**self._prepare_phases_sec, **phases}
+        topology_stream_m3_phase_table = build_topology_stream_m3_phase_table(
+            phases_sec=topology_stream_phases,
+            native_phase_timings=native_phase_timings,
+            output_contract=topology_stream_output_contract,
+            query_count=self.query_count,
+            repeat=1,
+            warmup=0,
+            query_stream_resident=True,
+            table_basis=(
+                "prepared_execution_runner_point_location_topology_stream_phase_timers; "
+                "non-authorizing V3 topology-stream accounting"
+            ),
+        )
+        topology_stream_prepared_handle = build_topology_stream_prepared_handle_metadata(
+            backend="optix",
+            generic_capability="point_location_topology_stream",
+            output_contract=topology_stream_output_contract,
+            query_count=self.query_count,
+            static_scene_prepared=True,
+            query_stream_prepared=True,
+            query_stream_residency=(
+                "device_resident_prepared_point_probe_columns_with_reusable_relation_status_corrected_executor"
+            ),
+            m3_phase_table=topology_stream_m3_phase_table,
+        )
+        return {
+            "app": "rayjoin_v2_spatial_join",
+            "workload": "pip",
+            "execution_route": "prepared_execution_runner_point_location_topology_stream",
+            "backend": "optix",
+            "dataset": self._dataset,
+            "dataset_note": self._dataset_note,
+            "row_count": row_count,
+            "summary": {
+                "positive_hit_row_count": row_count,
+                "output_contract": topology_stream_output_contract,
+                "validation_exact_count": self._validation_exact_count,
+                "relation_status_corrected_matches_host_exact": row_count == self._validation_exact_count,
+                "point_order_mode": self._point_order_mode,
+            },
+            "phases_sec": phases,
+            "prepare_phases_sec": self.prepare_phases_sec,
+            "native_phase_timings": native_phase_timings,
+            "prepared_point_probe_columns": self._prepared_point_columns_metadata,
+            "relation_status_corrected_executor": self._executor_metadata,
+            "topology_stream_m3_phase_table": topology_stream_m3_phase_table,
+            "topology_stream_prepared_handle": topology_stream_prepared_handle,
+            "device_resident_continuation_status": (
+                "prepared_execution_runner_relation_status_corrected_executor: query point "
+                "columns remain prepared on the device, the reusable native scalar-count "
+                "executor fuses relation-status correction into the device path, and exact "
+                "prepared count remains the validation authority"
+            ),
+            "native_engine_boundary": (
+                "The engine sees a generic prepared point-location topology stream. "
+                "RayJoin workload interpretation and dataset policy stay in Python."
+            ),
+            "claim_boundary": {
+                "full_rayjoin_reproduction": False,
+                "paper_scale_perf_claim_authorized": False,
+                "rtdl_beats_rayjoin_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "broad_v3_faster_than_v2_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+                "v4_embedding_or_external_zero_copy_authorized": False,
+            },
+            "metadata": {
+                "internal_device_residency_between_rtdl_phases": True,
+                "hot_path_host_materialization": False,
+                "app_specific_native_engine_logic_allowed": False,
+                "automatic_partner_selection_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "broad_v3_faster_than_v2_claim_authorized": False,
+                "true_zero_copy_authorized": False,
+                "v4_embedding_or_external_zero_copy_authorized": False,
+            },
+        }
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        for handle in (
+            getattr(self, "_executor", None),
+            getattr(self, "_prepared_point_columns", None),
+            getattr(self, "_prepared", None),
+        ):
+            close = getattr(handle, "close", None)
+            if callable(close):
+                close()
+        self._closed = True
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def run_rayjoin_prepared_execution_point_location_topology_stream_workload(
+    workload: str = "pip",
+    *,
+    dataset: str | None = None,
+    point_order_mode: str = "morton_xy",
+    query_repeat: int = 1,
+    warmup: int = 0,
+    point_eps: float = 1.0e-9,
+) -> dict[str, object]:
+    if workload != "pip":
+        raise ValueError("prepared_execution_point_location_topology_stream currently supports only PIP")
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+    resolved_dataset = dataset or _DEFAULT_DATASETS["pip"]
+    case = _load_rayjoin_case("pip", resolved_dataset)
+    points = tuple(case.inputs["points"])
+    shapes = tuple(case.inputs["polygons"])
+
+    from rtdsl.prepared_execution import make_prepared_input_fingerprint
+    from rtdsl.prepared_execution import run_point_location_topology_stream_prepared_session
+    from rtdsl.prepared_session_residency import ExplicitPreparedSessionCache
+
+    cache = ExplicitPreparedSessionCache(max_entries=1)
+
+    def prepare_session() -> PreparedExecutionRayJoinPointLocationTopologyStream:
+        return PreparedExecutionRayJoinPointLocationTopologyStream(
+            points,
+            shapes,
+            dataset=resolved_dataset,
+            dataset_note=case.note,
+            point_order_mode=point_order_mode,
+            point_eps=point_eps,
+        )
+
+    result = run_point_location_topology_stream_prepared_session(
+        query_stream_fingerprint={
+            "points": make_prepared_input_fingerprint(points),
+            "point_order_mode": point_order_mode,
+        },
+        static_scene_fingerprint={
+            "polygons": make_prepared_input_fingerprint(shapes),
+        },
+        output_contract="point_to_shape_positive_hit_count_relation_status_corrected_executor_validated",
+        query_count=len(points),
+        shape_count=len(shapes),
+        backend="optix",
+        partner="none",
+        cache=cache,
+        prepare_session=prepare_session,
+        run_topology_stream=lambda prepared: prepared.run(),
+        validate_output=lambda output: {
+            "matches_validation_exact_count": (
+                int(output["row_count"]) == int(output["summary"]["validation_exact_count"])
+            )
+        },
+        warmup_count=warmup,
+        measured_repeat_count=query_repeat,
+    )
+    payload = dict(result.output)
+    payload["prepared_execution_session_runner"] = result.to_metadata()
+    payload["runtime_trunk_executes_end_to_end"] = bool(
+        result.to_metadata()["runtime_trunk_executes_end_to_end"]
+    )
+    payload["internal_device_residency_between_rtdl_phases"] = bool(
+        result.to_metadata()["internal_device_residency_between_rtdl_phases"]
+    )
+    payload["hot_path_host_materialization"] = bool(
+        result.to_metadata()["hot_path_host_materialization"]
+    )
+    payload["release_authorized"] = False
+    payload["public_speedup_claim_authorized"] = False
+    payload["broad_v3_faster_than_v2_claim_authorized"] = False
+    payload["full_all_app_rerun_authorized_by_this_packet"] = False
     return payload
 
 
@@ -1993,6 +2558,317 @@ def run_rayjoin_prepared_optix_left_id_dense_count_workload(
             packed_left.close()
 
 
+class PreparedExecutionRayJoinSegmentIntersectionTopologyStream:
+    """Prepared app adapter for the generic segment-intersection topology stream."""
+
+    def __init__(
+        self,
+        left_segments,
+        right_segments,
+        *,
+        dataset: str,
+        dataset_note: str,
+    ) -> None:
+        self._dataset = dataset
+        self._dataset_note = dataset_note
+        self._closed = False
+        self._left_segments, self._left_segment_count = _reusable_segment_input(left_segments)
+        self._right_segments, self._right_segment_count = _reusable_segment_input(right_segments)
+        self._prepared = prepare_rayjoin_optix_compact_grouped_count_segments(
+            self._right_segments,
+            dataset=dataset,
+            dataset_note=dataset_note,
+        )
+        self._packed_left = pack_rayjoin_optix_compact_grouped_count_left_segments(
+            self._left_segments
+        )
+        self._prepare_phases_sec = {
+            "prepare_static_scene_sec": float(self._prepared.prepare_static_scene_sec),
+            "query_column_prepare_sec": float(self._packed_left.column_prepare_seconds),
+            "query_pack_sec": float(self._packed_left.pack_seconds),
+            "prepared_left_set_sec": float(self._packed_left.prepared_left_set_seconds),
+        }
+
+    @property
+    def query_count(self) -> int:
+        return self._left_segment_count
+
+    @property
+    def right_segment_count(self) -> int:
+        return self._right_segment_count
+
+    @property
+    def prepare_phases_sec(self) -> dict[str, float]:
+        return dict(self._prepare_phases_sec)
+
+    def run_hot(self) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared execution segment-intersection topology stream is closed")
+        payload = self._prepared.run_packed_left_dense_count(
+            self._packed_left,
+            include_rows=False,
+            query_repeat=1,
+            warmup=0,
+        )
+        return {
+            "row_count": int(payload["row_count"]),
+            "summary": dict(payload["summary"]),
+            "phases_sec": dict(payload["phases_sec"]),
+            "dense_left_id_count_columns": dict(payload["dense_left_id_count_columns"]),
+        }
+
+    def finalize_run(self, hot_output: dict[str, object]) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared execution segment-intersection topology stream is closed")
+        payload = dict(hot_output)
+        phases = dict(payload["phases_sec"])
+        dense_metadata = dict(payload["dense_left_id_count_columns"])
+        row_count = int(payload["row_count"])
+        native_query_sec = float(
+            dense_metadata.get("reduction_seconds")
+            or phases.get("left_id_count_device_columns_sec")
+            or phases["prepared_query_sec"]
+        )
+        native_phase_timings = {
+            "mode": "segment_intersection_left_id_dense_count_prepared_left_device_columns",
+            "left_upload": 0.0,
+            "native_query_sec": native_query_sec,
+            "candidate_count_pass": native_query_sec,
+            "exact_refine": 0.0,
+            "count_download": 0.0,
+            "row_download": 0.0,
+            "row_stream_materialized": False,
+            "count_column_materialized_on_host": bool(
+                dense_metadata.get("count_column_materialized_on_host")
+            ),
+            "group_key_column_materialized_on_host": bool(
+                dense_metadata.get("group_key_column_materialized_on_host")
+            ),
+            "source_row_count_materialized_on_host_for_metadata": bool(
+                dense_metadata.get("source_row_count_materialized_on_host_for_metadata")
+            ),
+            "device_resident_dense_count_column": bool(dense_metadata.get("device_resident")),
+            "native_symbol": dense_metadata.get("native_symbol"),
+            "source_row_count": int(dense_metadata.get("source_row_count", row_count)),
+            "overflow": bool(dense_metadata.get("overflow")),
+        }
+        topology_stream_output_contract = (
+            "segment_segment_intersection_count_by_left_id_dense_device_column"
+        )
+        topology_stream_phases = {**self._prepare_phases_sec, **phases}
+        topology_stream_m3_phase_table = build_topology_stream_m3_phase_table(
+            phases_sec=topology_stream_phases,
+            native_phase_timings=native_phase_timings,
+            output_contract=topology_stream_output_contract,
+            query_count=self.query_count,
+            repeat=1,
+            warmup=0,
+            query_stream_resident=True,
+            table_basis=(
+                "prepared_execution_runner_segment_intersection_topology_stream_phase_timers; "
+                "non-authorizing V3 topology-stream accounting"
+            ),
+        )
+        topology_stream_prepared_handle = build_topology_stream_prepared_handle_metadata(
+            backend="optix",
+            generic_capability="segment_intersection_topology_stream",
+            output_contract=topology_stream_output_contract,
+            query_count=self.query_count,
+            static_scene_prepared=True,
+            query_stream_prepared=True,
+            query_stream_residency=(
+                "device_resident_prepared_left_segment_set_dense_left_id_count"
+            ),
+            m3_phase_table=topology_stream_m3_phase_table,
+        )
+        return {
+            "app": "rayjoin_v2_spatial_join",
+            "workload": "lsi",
+            "execution_route": "prepared_execution_runner_segment_intersection_topology_stream",
+            "backend": "optix",
+            "dataset": self._dataset,
+            "dataset_note": self._dataset_note,
+            "row_count": row_count,
+            "summary": {
+                "intersection_count": row_count,
+                "left_group_capacity": self._packed_left.count,
+                "output_contract": topology_stream_output_contract,
+                "right_segment_count": self.right_segment_count,
+            },
+            "phases_sec": phases,
+            "prepare_phases_sec": self.prepare_phases_sec,
+            "native_phase_timings": native_phase_timings,
+            "dense_left_id_count_columns": dense_metadata,
+            "prepared_reuse": {
+                "enabled": True,
+                "right_segment_count": self.right_segment_count,
+                "prepare_static_scene_sec": self._prepared.prepare_static_scene_sec,
+                "prepare_static_scene_paid_once": True,
+            },
+            "packed_left_reuse": {
+                "enabled": True,
+                "left_segment_count": self._packed_left.count,
+                "column_prepare_seconds": self._packed_left.column_prepare_seconds,
+                "pack_seconds": self._packed_left.pack_seconds,
+                "prepared_left_set_seconds": self._packed_left.prepared_left_set_seconds,
+                "native_prepared_left_set_enabled": True,
+                "native_prepared_left_set_paid_once": True,
+                "query_pack_paid_in_call": False,
+            },
+            "left_id_remap": {
+                "enabled": True,
+                "reason": "generic segment-intersection count primitive uses direct-address key capacity",
+                "original_left_id_count": len(self._packed_left.original_left_ids),
+            },
+            "topology_stream_m3_phase_table": topology_stream_m3_phase_table,
+            "topology_stream_prepared_handle": topology_stream_prepared_handle,
+            "device_resident_continuation_status": (
+                "prepared_execution_runner_segment_intersection_topology_stream: "
+                "left segment query stream is a prepared device-resident left-set, "
+                "dense left-id counts remain CUDA-resident inside RTDL, and only scalar "
+                "metadata is materialized for this summary"
+            ),
+            "native_engine_boundary": (
+                "The engine sees a generic segment-intersection topology stream with "
+                "left-id dense-count continuation. RayJoin workload interpretation, "
+                "dataset policy, and left-ID remapping stay in Python."
+            ),
+            "claim_boundary": {
+                "full_rayjoin_reproduction": False,
+                "paper_scale_perf_claim_authorized": False,
+                "rtdl_beats_rayjoin_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "broad_v3_faster_than_v2_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+                "v4_embedding_or_external_zero_copy_authorized": False,
+            },
+            "metadata": {
+                "internal_device_residency_between_rtdl_phases": bool(
+                    dense_metadata.get("device_resident")
+                ),
+                "hot_path_host_materialization": False,
+                "app_specific_native_engine_logic_allowed": False,
+                "automatic_partner_selection_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "broad_v3_faster_than_v2_claim_authorized": False,
+                "true_zero_copy_authorized": False,
+                "v4_embedding_or_external_zero_copy_authorized": False,
+            },
+        }
+
+    def run(self) -> dict[str, object]:
+        return self.finalize_run(self.run_hot())
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        for handle in (
+            getattr(self, "_packed_left", None),
+            getattr(self, "_prepared", None),
+        ):
+            close = getattr(handle, "close", None)
+            if callable(close):
+                close()
+        self._closed = True
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def run_rayjoin_prepared_execution_segment_intersection_topology_stream_workload(
+    workload: str = "lsi",
+    *,
+    dataset: str | None = None,
+    query_repeat: int = 1,
+    warmup: int = 0,
+) -> dict[str, object]:
+    if workload != "lsi":
+        raise ValueError("prepared_execution_segment_intersection_topology_stream currently supports only LSI")
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+    resolved_dataset = dataset or _DEFAULT_DATASETS["lsi"]
+    case = _load_rayjoin_case(
+        "lsi",
+        resolved_dataset,
+        segment_column_inputs=True,
+    )
+    left_segments = tuple(case.inputs["left"])
+    right_segments = tuple(case.inputs["right"])
+
+    from rtdsl.prepared_execution import make_prepared_input_fingerprint
+    from rtdsl.prepared_execution import run_segment_intersection_topology_stream_prepared_session
+    from rtdsl.prepared_session_residency import ExplicitPreparedSessionCache
+
+    cache = ExplicitPreparedSessionCache(max_entries=1)
+
+    def prepare_session() -> PreparedExecutionRayJoinSegmentIntersectionTopologyStream:
+        return PreparedExecutionRayJoinSegmentIntersectionTopologyStream(
+            left_segments,
+            right_segments,
+            dataset=resolved_dataset,
+            dataset_note=case.note,
+        )
+
+    output_contract = "segment_segment_intersection_count_by_left_id_dense_device_column"
+    result = run_segment_intersection_topology_stream_prepared_session(
+        query_stream_fingerprint={
+            "left_segments": make_prepared_input_fingerprint(left_segments),
+            "query_stream_shape": "prepared_left_segment_set",
+        },
+        static_scene_fingerprint={
+            "right_segments": make_prepared_input_fingerprint(right_segments),
+        },
+        output_contract=output_contract,
+        query_count=len(left_segments),
+        right_segment_count=len(right_segments),
+        backend="optix",
+        partner="none",
+        cache=cache,
+        prepare_session=prepare_session,
+        run_topology_stream=lambda prepared: prepared.run(),
+        measured_run_prepared=lambda prepared: prepared.run_hot(),
+        finalize_output=lambda prepared, output: prepared.finalize_run(output),
+        validate_output=lambda output: {
+            "dense_source_row_count_matches_summary": (
+                int(output["row_count"])
+                == int(output["dense_left_id_count_columns"]["source_row_count"])
+            ),
+            "dense_output_device_resident": bool(
+                output["dense_left_id_count_columns"]["device_resident"]
+            ),
+            "output_contract_matches": (
+                output["summary"]["output_contract"] == output_contract
+            ),
+        },
+        warmup_count=warmup,
+        measured_repeat_count=query_repeat,
+    )
+    payload = dict(result.output)
+    payload["prepared_execution_session_runner"] = result.to_metadata()
+    payload["productized_execution_path"] = "prepared_execution_session_runner"
+    payload["runtime_trunk_executes_end_to_end"] = bool(
+        result.to_metadata()["runtime_trunk_executes_end_to_end"]
+    )
+    payload["internal_device_residency_between_rtdl_phases"] = bool(
+        result.to_metadata()["internal_device_residency_between_rtdl_phases"]
+    )
+    payload["hot_path_host_materialization"] = bool(
+        result.to_metadata()["hot_path_host_materialization"]
+    )
+    payload["release_authorized"] = False
+    payload["public_speedup_claim_authorized"] = False
+    payload["broad_v3_faster_than_v2_claim_authorized"] = False
+    payload["full_all_app_rerun_authorized_by_this_packet"] = False
+    payload["focused_pod_spend_authorized_by_this_packet"] = False
+    return payload
+
+
 class RayJoinOptixShapePairActiveCountPackedLeftShapes:
     """App-layer packed left closed shapes for repeated active-count queries."""
 
@@ -2243,6 +3119,39 @@ class PreparedRayJoinOptixShapePairActiveCount:
             executor.close()
         phases["active_count_device_continuation_sec"] = phases["prepared_query_sec"]
         native_phase_timings = self._prepared.last_phase_timings()
+        topology_stream_output_contract = "overlay_active_pair_dependency_count"
+        topology_stream_query_count = int(packed_left.count) * int(self._right_shape_count)
+        topology_m3_phases = {
+            "prepare_static_scene_sec": self.prepare_static_scene_sec,
+            "left_shape_pack_sec": packed_left.pack_seconds,
+            "prepare_left_set_sec": packed_left.prepared_left_set_seconds,
+            **phases,
+        }
+        topology_stream_m3_phase_table = build_topology_stream_m3_phase_table(
+            phases_sec=topology_m3_phases,
+            native_phase_timings=native_phase_timings or {},
+            output_contract=topology_stream_output_contract,
+            query_count=topology_stream_query_count,
+            repeat=query_repeat,
+            warmup=warmup,
+            query_stream_resident=True,
+            table_basis=(
+                "prepared_optix_shape_pair_active_count_phase_timers_plus_native_last_phase_timings; "
+                "non-authorizing V3 topology-stream accounting"
+            ),
+        )
+        topology_stream_prepared_handle = build_topology_stream_prepared_handle_metadata(
+            backend="optix",
+            generic_capability="point_location_topology_stream",
+            output_contract=topology_stream_output_contract,
+            query_count=topology_stream_query_count,
+            static_scene_prepared=True,
+            query_stream_prepared=True,
+            query_stream_residency=(
+                "device_resident_prepared_left_shape_set_with_reusable_active_count_executor"
+            ),
+            m3_phase_table=topology_stream_m3_phase_table,
+        )
         return {
             "app": "rayjoin_v2_spatial_join",
             "workload": "overlay_seed",
@@ -2253,10 +3162,12 @@ class PreparedRayJoinOptixShapePairActiveCount:
             "row_count": active_count,
             "summary": {
                 "active_seed_count": active_count,
-                "output_contract": "overlay_active_pair_dependency_count",
+                "output_contract": topology_stream_output_contract,
             },
             "phases_sec": phases,
             "native_phase_timings": native_phase_timings,
+            "topology_stream_m3_phase_table": topology_stream_m3_phase_table,
+            "topology_stream_prepared_handle": topology_stream_prepared_handle,
             "prepared_reuse": {
                 "enabled": True,
                 "right_shape_count": self._right_shape_count,
@@ -2598,6 +3509,7 @@ def run_rayjoin_suite(
     result_mode: str = "rows",
     include_rows: bool = True,
     pip_count_mode: str = "exact",
+    point_order_mode: str = "natural",
     query_repeat: int = 1,
     warmup: int = 0,
 ) -> dict[str, object]:
@@ -2608,8 +3520,10 @@ def run_rayjoin_suite(
                 result_mode=result_mode,
                 include_rows=include_rows,
                 count_mode=pip_count_mode if workload == "pip" else "exact",
+                point_order_mode=point_order_mode if workload == "pip" else "natural",
                 query_repeat=query_repeat,
                 warmup=warmup,
+                prepare_left_for_count=workload == "lsi" and result_mode == "count",
             )
             for workload in _PREPARED_OPTIX_WORKLOADS
         }
@@ -2674,6 +3588,33 @@ def run_rayjoin_suite(
                 "full_rayjoin_reproduction": False,
                 "paper_scale_perf_claim_authorized": False,
                 "public_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            },
+        }
+    if execution_route == "prepared_execution_segment_intersection_topology_stream":
+        return {
+            "app": "rayjoin_v2_spatial_join",
+            "paper": "RayJoin: Fast and Precise Spatial Join, ICS 2024",
+            "backend": "optix",
+            "execution_route": execution_route,
+            "workloads": {
+                "lsi": run_rayjoin_prepared_execution_segment_intersection_topology_stream_workload(
+                    "lsi",
+                    query_repeat=query_repeat,
+                    warmup=warmup,
+                )
+            },
+            "all_match_cpu_python_reference": None,
+            "implementation_stage": "prepared_execution_segment_intersection_topology_stream_route",
+            "native_engine_boundary": (
+                "The engine sees a generic segment-intersection topology stream. "
+                "RayJoin interpretation and ID remapping stay in Python."
+            ),
+            "claim_boundary": {
+                "full_rayjoin_reproduction": False,
+                "paper_scale_perf_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "broad_v3_faster_than_v2_claim_authorized": False,
                 "true_zero_copy_claim_authorized": False,
             },
         }
@@ -3195,6 +4136,8 @@ def main(argv: list[str] | None = None) -> int:
             "prepared_optix_compact_grouped_count",
             "prepared_optix_left_id_dense_count",
             "prepared_optix_shape_pair_active_count",
+            "prepared_execution_point_location_topology_stream",
+            "prepared_execution_segment_intersection_topology_stream",
             "primitive_first_plan",
             "segmented_compact_mask_numba_plan",
             "v2_6_numba_compact_mask_plan",
@@ -3219,6 +4162,12 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--point-order-mode",
+        choices=_PIP_POINT_ORDER_MODES,
+        default="natural",
+        help="For PIP prepared routes, choose the query point order used by both legacy and runner A/B paths.",
+    )
+    parser.add_argument(
         "--dataset",
         default=None,
         help="Override the default dataset for a single workload run.",
@@ -3238,6 +4187,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
     args = parser.parse_args(argv)
     include_rows = not args.no_rows
+    if args.execution_route == "prepared_optix_shape_pair_active_count" and args.point_order_mode != "natural":
+        raise ValueError(
+            "--point-order-mode is only valid for PIP point-location routes; "
+            "prepared_optix_shape_pair_active_count uses overlay shape-pair inputs"
+        )
     if args.workload == "all":
         if args.dataset is not None:
             raise ValueError("--dataset is only valid when --workload is not all")
@@ -3316,6 +4270,31 @@ def main(argv: list[str] | None = None) -> int:
                     )
                 },
             }
+        elif args.execution_route == "prepared_execution_point_location_topology_stream":
+            payload = {
+                "app": "rayjoin_v2_spatial_join",
+                "execution_route": args.execution_route,
+                "workloads": {
+                    "pip": run_rayjoin_prepared_execution_point_location_topology_stream_workload(
+                        "pip",
+                        point_order_mode=args.point_order_mode,
+                        query_repeat=args.repeat,
+                        warmup=args.warmup,
+                    )
+                },
+            }
+        elif args.execution_route == "prepared_execution_segment_intersection_topology_stream":
+            payload = {
+                "app": "rayjoin_v2_spatial_join",
+                "execution_route": args.execution_route,
+                "workloads": {
+                    "lsi": run_rayjoin_prepared_execution_segment_intersection_topology_stream_workload(
+                        "lsi",
+                        query_repeat=args.repeat,
+                        warmup=args.warmup,
+                    )
+                },
+            }
         else:
             payload = run_rayjoin_suite(
                 backend=args.backend,
@@ -3323,6 +4302,7 @@ def main(argv: list[str] | None = None) -> int:
                 result_mode=args.result_mode,
                 include_rows=include_rows,
                 pip_count_mode=args.pip_count_mode,
+                point_order_mode=args.point_order_mode,
                 query_repeat=args.repeat,
                 warmup=args.warmup,
             )
@@ -3374,6 +4354,20 @@ def main(argv: list[str] | None = None) -> int:
                 query_repeat=args.repeat,
                 warmup=args.warmup,
             )
+        elif args.execution_route == "prepared_execution_point_location_topology_stream":
+            payload = run_rayjoin_prepared_execution_point_location_topology_stream_workload(
+                args.workload,
+                dataset=args.dataset,
+                query_repeat=args.repeat,
+                warmup=args.warmup,
+            )
+        elif args.execution_route == "prepared_execution_segment_intersection_topology_stream":
+            payload = run_rayjoin_prepared_execution_segment_intersection_topology_stream_workload(
+                args.workload,
+                dataset=args.dataset,
+                query_repeat=args.repeat,
+                warmup=args.warmup,
+            )
         elif args.execution_route == "prepared_optix":
             payload = run_rayjoin_prepared_optix_workload(
                 args.workload,
@@ -3381,6 +4375,7 @@ def main(argv: list[str] | None = None) -> int:
                 result_mode=args.result_mode,
                 include_rows=include_rows,
                 count_mode=args.pip_count_mode,
+                point_order_mode=args.point_order_mode,
                 query_repeat=args.repeat,
                 warmup=args.warmup,
             )

@@ -1,0 +1,186 @@
+{
+  "candidate_policy": {
+    "must_be_set_a": true,
+    "must_have_or_require_productized_prepared_session_runner": true,
+    "must_not_repeat_recent_non_go": true,
+    "must_preserve_non_authorization": true,
+    "must_start_local_no_pod": true,
+    "selection_unit": "generic runtime family, not benchmark app ownership"
+  },
+  "candidates": [
+    {
+      "family": "barnes_hut_aggregate_tree_fused_vector_sum",
+      "pressure_app": "barnes_hut",
+      "rank": "excluded_currently",
+      "reason": "M67 3-AI counted it internally as an existing material family and blocked more Barnes-Hut-specific work.",
+      "set_a_app_geomean": 0.8441965065233041
+    },
+    {
+      "family": "spatial_rayjoin_topology_stream",
+      "pressure_app": "spatial_rayjoin",
+      "rank": "excluded_currently",
+      "reason": "M66 rejected a repeat topology-stream run because the current route removes no new physical work.",
+      "set_a_app_geomean": 1.0270156968652566
+    },
+    {
+      "family": "fixed_radius_ranked_summary_3d_prepared_session",
+      "pressure_app": "rtnn",
+      "rank": "selected",
+      "reason": "Generic ranked-summary surface exists, all-app app-win is still below target, and local bridge audit can test scope before POD.",
+      "set_a_app_geomean": 1.0033271925133553
+    },
+    {
+      "family": "triangle_prepared_graph_chunk_execution",
+      "pressure_app": "triangle_counting",
+      "rank": "reserve_candidate",
+      "reason": "M19 already accepted a strict focused probe; useful if RTNN bridge fails, but not the cleanest next no-POD bridge.",
+      "set_a_app_geomean": 0.9874175127685646
+    },
+    {
+      "family": "rt_dbscan_component_union",
+      "pressure_app": "rt_dbscan",
+      "rank": "reserve_candidate",
+      "reason": "M40 gives component-union evidence, but M35 says the incumbent comparison is still bottlenecked by grouped-union work.",
+      "set_a_app_geomean": 0.9880558497344825
+    },
+    {
+      "family": "hausdorff_threshold_summary",
+      "pressure_app": "hausdorff_xhd",
+      "rank": "defer",
+      "reason": "Already the only Set-A app above 1.05x in the frozen scorecard; less urgent for the next app-win bridge.",
+      "set_a_app_geomean": 1.1485359503887191
+    }
+  ],
+  "checks": {
+    "all_non_authorization_flags_false": true,
+    "classification_frozen": true,
+    "m35_blocks_rtdbscan_and_rayjoin_as_immediate_material_targets": true,
+    "m40_component_union_already_has_focused_probe": true,
+    "m43_grouped_reduction_already_closed_bounded_step2": true,
+    "m66_blocks_repeat_topology_stream_pod": true,
+    "m67_accepts_barnes_hut_as_existing_material_family": true,
+    "scorecard_blocks_all_app_pod_spend": true,
+    "scorecard_blocks_release": true,
+    "selected_evidence_hot_query_boundary_recorded": true,
+    "selected_evidence_internal_residency": true,
+    "selected_evidence_repeat50_wall_material_signal": true,
+    "selected_evidence_runtime_trunk_executes": true,
+    "selected_family_below_app_win_threshold": true,
+    "selected_family_is_set_a": true,
+    "selected_family_not_severe_regression": true,
+    "selected_has_productized_helper": true,
+    "selected_helper_has_generic_contract": true
+  },
+  "date": "2026-06-23",
+  "failed_checks": [],
+  "goal_level_decision_audit": {
+    "decision": "Select RTNN fixed-radius ranked-summary as the next generic Set-A family for local no-POD phase/shape bridge audit.",
+    "different_path_now": "Use M69 to perform a local ranked-summary phase/shape bridge audit first, then seek review before any runbook or POD request.",
+    "foolish_actions": "The foolish action would be to quote the repeat50 wall speedup as a broad RTNN or V3 claim, or to skip the all-app shape bridge.",
+    "other_path": "Pick Triangle, RTDBSCAN, Hausdorff, or Spatial immediately. Those remain valid later, but each is either already accepted, recently non-go, already above the app-win threshold, or still tied to a known continuation bottleneck.",
+    "was_i_foolish": "No. The decision explicitly rejects Barnes-Hut repetition, RayJoin rerun, LibRTS Set-B drift, and app-specific RTNN shortcuts."
+  },
+  "inputs": {
+    "classification": "docs/rebuild/v3/phoenix_v3_set_a_set_b_classification_2026-06-22.json",
+    "m35_gap_ledger": "docs/reports/phoenix_v3_m35_focused_evidence_gap_ledger_2026-06-23.md",
+    "m40_component_union": "docs/reports/phoenix_v3_m40_component_union_focused_pod_intake_2026-06-23.md",
+    "m43_grouped_reduction": "docs/reports/phoenix_v3_m43_grouped_reduction_cupy_warp_prepared_runner_2026-06-23.md",
+    "m44_scorecard": "docs/reports/phoenix_v3_m44_step2_scorecard_sync_after_m43_2026-06-23.md",
+    "m66_consensus": "docs/reviews/codex_claude_antigravity_phoenix_v3_m66_topology_stream_pod_authorization_non_go_3ai_consensus_2026-06-23.md",
+    "m67_consensus": "docs/reviews/codex_claude_antigravity_phoenix_v3_m67_barnes_hut_phase_structure_pre_audit_3ai_consensus_2026-06-23.md",
+    "prepared_execution": "src/rtdsl/prepared_execution.py",
+    "rtnn_evidence": "docs/rebuild/v3/evidence/phoenix_v3_rtnn_prepared_execution_runner_repeat50_20260622/summary.json",
+    "rtnn_report": "docs/rebuild/v3/phoenix_v3_rtnn_prepared_execution_runner_repeat50_pod_evidence_2026-06-22.md",
+    "scorecard": "docs/rebuild/v3/phoenix_v3_set_a_set_b_scorecard_gate_2026-06-22.json"
+  },
+  "next_work": {
+    "all_app_authorized": false,
+    "goal_id": "M69",
+    "must_answer": [
+      "Which all-app RTNN rows remain below the 1.05x Set-A app-win threshold?",
+      "Do those rows share the generic fixed_radius_ranked_summary_3d prepared-session surface?",
+      "Is the repeat50 material signal broad enough to justify a later focused runbook?",
+      "Which phase is actually compressible: prepare, input packing, ranked-summary aggregate, or runner process wall?",
+      "How much of the runner-wall delta is input-loading/packing consolidation rather than ranked-summary execution compression?",
+      "Does the next change belong in a generic ranked-summary runner/phase bridge rather than app code?"
+    ],
+    "pod_authorized": false,
+    "scope": "No-POD local audit mapping the existing fixed-radius ranked-summary prepared-session runner evidence to the frozen RTNN all-app shapes.",
+    "stop_conditions": [
+      "If the only positive signal is repeat50 amortization with no all-app shape bridge, stop.",
+      "If runner-wall improvement is attributable entirely to input-loading/packing consolidation with no ranked-summary phase compression, stop before any runbook.",
+      "If the route requires app-specific RTNN shortcuts, stop.",
+      "If source inspection shows no current productized ranked-summary helper, stop.",
+      "If M69 cannot define same-contract focused evidence before POD, stop."
+    ],
+    "work_item": "local_rtnn_ranked_summary_phase_shape_bridge_audit"
+  },
+  "non_authorization": {
+    "all_app_run_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_v3_over_v2_claim_authorized": false,
+    "focused_pod_spend_authorized": false,
+    "paid_pod_spend_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "pod_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "route_specific_rtnn_app_tuning_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "watch_row_closure_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "schema": "rtdl.phoenix_v3.m68.next_set_a_family_selection.v1",
+  "selected_family": {
+    "evidence": {
+      "input_load_pack_consolidation_sec": 0.2799462676048279,
+      "internal_device_residency_between_rtdl_phases": true,
+      "legacy_input_load_plus_pack_sec": 1.9954497441649437,
+      "point_count": 1048576,
+      "repeat": 50,
+      "runner_after_input_load_pack_sec": 0.6263171136379242,
+      "runner_input_load_pack_sec": 1.7155034765601158,
+      "runner_vs_legacy_cold_plus_query_speedup": 1.358328972294271,
+      "runner_vs_legacy_hot_speedup": 0.9887810047298636,
+      "runner_vs_legacy_runner_wall_speedup": 1.3701759307531247,
+      "runtime_trunk_executes_end_to_end": true,
+      "signature_match_runner_vs_cupy": true,
+      "signature_match_runner_vs_legacy": true,
+      "status": "rtnn_prepared_execution_runner_repeat50_collected_not_release"
+    },
+    "family_id": "fixed_radius_ranked_summary_3d_prepared_session",
+    "pressure_app": "rtnn",
+    "scorecard_need": "turn an existing focused runner signal into an auditable bridge to frozen RTNN all-app shapes, or reject it as too narrow",
+    "selection_verdict": "select_for_m69_local_phase_shape_bridge_audit_no_pod_no_release",
+    "set_a_app_geomean_v3_vs_v2": 1.0033271925133553,
+    "source_surface": {
+      "continuation_contract_present": true,
+      "helper_body_has_no_rtnn_name": true,
+      "helper_generic_contract_present": true,
+      "helper_present": true,
+      "materialization_flag_present": true,
+      "runtime_trunk_family_present": true
+    },
+    "why_selected": [
+      "It is a frozen Set-A architecture-bearing app still below the 1.05x app-win threshold.",
+      "It already has a productized prepared-session runner surface.",
+      "Existing same-RT-hardware evidence shows a material runner-wall signal at repeat50.",
+      "The hot-query boundary is explicit, so M69 can avoid overclaiming.",
+      "The next step can be a local phase/shape bridge audit before any POD request."
+    ]
+  },
+  "status": "m68_next_set_a_family_selection_ready_for_external_review_no_pod_no_release",
+  "summary": {
+    "all_app_authorized": false,
+    "failed_check_count": 0,
+    "pod_authorized": false,
+    "release_authorized": false,
+    "rtnn_runner_vs_legacy_hot_speedup": 0.9887810047298636,
+    "rtnn_runner_vs_legacy_runner_wall_speedup": 1.3701759307531247,
+    "rtnn_set_a_app_geomean": 1.0033271925133553,
+    "selected_family_id": "fixed_radius_ranked_summary_3d_prepared_session",
+    "selected_next_goal": "M69",
+    "selected_pressure_app": "rtnn",
+    "status": "m68_next_set_a_family_selection_ready_for_external_review_no_pod_no_release"
+  }
+}

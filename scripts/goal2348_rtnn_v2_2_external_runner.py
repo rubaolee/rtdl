@@ -341,6 +341,81 @@ def _read_xyz_columns(path: Path) -> tuple[list[int], list[float], list[float], 
     return ids, xs, ys, zs
 
 
+def _read_xyz_columns_npz(path: Path):
+    try:
+        import numpy as np  # noqa: PLC0415
+    except Exception as exc:  # pragma: no cover - optional dependency path
+        raise RuntimeError("NumPy is required for RTNN npz point-column source") from exc
+
+    with np.load(path) as data:
+        x = np.asarray(data["x"], dtype=np.float64)
+        y = np.asarray(data["y"], dtype=np.float64)
+        z = np.asarray(data["z"], dtype=np.float64)
+        ids = np.asarray(data["ids"], dtype=np.uint32) if "ids" in data else np.arange(x.size, dtype=np.uint32)
+    if ids.ndim != 1 or x.ndim != 1 or y.ndim != 1 or z.ndim != 1:
+        raise ValueError("RTNN npz point columns must be one-dimensional")
+    if not (ids.size == x.size == y.size == z.size):
+        raise ValueError("RTNN npz point columns have mismatched lengths")
+    return ids, x, y, z
+
+
+def _read_xyz_columns_numpy_csv(path: Path):
+    try:
+        import numpy as np  # noqa: PLC0415
+    except Exception as exc:  # pragma: no cover - optional dependency path
+        raise RuntimeError("NumPy is required for RTNN numpy_csv point-column source") from exc
+
+    values = np.loadtxt(path, delimiter=",", dtype=np.float64)
+    if values.ndim == 1:
+        values = values.reshape(1, -1)
+    if values.shape[1] != 3:
+        raise ValueError("RTNN CSV point source must have x,y,z columns")
+    ids = np.arange(values.shape[0], dtype=np.uint32)
+    return ids, values[:, 0], values[:, 1], values[:, 2]
+
+
+def _read_xyz_columns_with_source(
+    path: Path,
+    *,
+    source: str = "csv",
+    column_file: Path | None = None,
+):
+    normalized = source.replace("-", "_")
+    if normalized == "csv":
+        return _read_xyz_columns(path)
+    if normalized == "numpy_csv":
+        return _read_xyz_columns_numpy_csv(path)
+    if normalized == "npz":
+        npz_path = Path(column_file) if column_file is not None else Path(str(path) + ".npz")
+        return _read_xyz_columns_npz(npz_path)
+    raise ValueError("point_column_source must be one of: csv, numpy_csv, npz")
+
+
+def _xyz_columns_to_numpy(columns, *, dtype):
+    try:
+        import numpy as np  # noqa: PLC0415
+    except Exception as exc:  # pragma: no cover - optional dependency path
+        raise RuntimeError("NumPy is required for RTNN point-column conversion") from exc
+
+    xs = np.asarray(columns[1], dtype=dtype)
+    ys = np.asarray(columns[2], dtype=dtype)
+    zs = np.asarray(columns[3], dtype=dtype)
+    if xs.ndim != 1 or ys.ndim != 1 or zs.ndim != 1:
+        raise ValueError("RTNN point columns must be one-dimensional")
+    if not (xs.size == ys.size == zs.size):
+        raise ValueError("RTNN point columns have mismatched lengths")
+    return np.ascontiguousarray(np.column_stack((xs, ys, zs)), dtype=dtype)
+
+
+def _column_ids_to_numpy(columns):
+    try:
+        import numpy as np  # noqa: PLC0415
+    except Exception as exc:  # pragma: no cover - optional dependency path
+        raise RuntimeError("NumPy is required for RTNN point id conversion") from exc
+
+    return np.ascontiguousarray(np.asarray(columns[0], dtype=np.uint32))
+
+
 def _slice_columns(
     columns: tuple[list[int], list[float], list[float], list[float]],
     begin: int,
@@ -896,22 +971,35 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
     radius = float(args.radius)
     k_max = int(args.k_max)
     result_mode = str(args.result_mode)
+    self_query_batch_mode = "ranked-summary-aggregate-prepared-self-query-batch-float32"
+    self_query_graph_mode = "ranked-summary-aggregate-prepared-self-query-batch-graph-float32"
     same_stream_graph_mode = "ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32"
-    graph_modes = {
+    prepared_query_graph_modes = {
         "ranked-summary-aggregate-prepared-query-batch-graph-float32",
         same_stream_graph_mode,
+    }
+    graph_modes = {
+        *prepared_query_graph_modes,
+        self_query_graph_mode,
+    }
+    self_query_modes = {
+        self_query_batch_mode,
+        self_query_graph_mode,
     }
     batch_aggregate_modes = {
         "ranked-summary-aggregate-prepared-query-batch-float32",
         *graph_modes,
+        *self_query_modes,
     }
     prepared_query_modes = {
         "ranked-summary-aggregate-prepared-query-float32",
-        *batch_aggregate_modes,
+        "ranked-summary-aggregate-prepared-query-batch-float32",
+        *prepared_query_graph_modes,
     }
     float32_aggregate_modes = {
         "ranked-summary-aggregate-float32",
         *prepared_query_modes,
+        *self_query_modes,
     }
     backend = str(getattr(args, "backend", "optix"))
     batch_size = int(args.query_batch_size)
@@ -924,10 +1012,12 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         "ranked-summary-aggregate-prepared-query-float32",
         "ranked-summary-aggregate-prepared-query-batch-float32",
         "ranked-summary-aggregate-prepared-query-batch-graph-float32",
+        self_query_batch_mode,
+        self_query_graph_mode,
         same_stream_graph_mode,
     }
     if result_mode not in ("count", "summary", "ranked-summary-raw", *aggregate_modes):
-        raise ValueError("batched RTDL path currently supports count, summary, ranked-summary-raw, ranked-summary-aggregate, ranked-summary-aggregate-float32, ranked-summary-aggregate-prepared-query-float32, ranked-summary-aggregate-prepared-query-batch-float32, ranked-summary-aggregate-prepared-query-batch-graph-float32, and ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32")
+        raise ValueError("batched RTDL path currently supports count, summary, ranked-summary-raw, ranked-summary-aggregate, ranked-summary-aggregate-float32, ranked-summary-aggregate-prepared-query-float32, ranked-summary-aggregate-prepared-query-batch-float32, ranked-summary-aggregate-prepared-query-batch-graph-float32, ranked-summary-aggregate-prepared-self-query-batch-float32, ranked-summary-aggregate-prepared-self-query-batch-graph-float32, and ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32")
     if backend not in {"optix", "embree"}:
         raise ValueError("batched RTDL path supports backend='optix' or backend='embree'")
     embree_supported_modes = {"ranked-summary-raw", "ranked-summary-aggregate"}
@@ -949,12 +1039,31 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         else radius
     )
 
+    point_column_source = str(getattr(args, "point_column_source", "csv")).replace("-", "_")
+    point_column_file = getattr(args, "point_column_file", None)
     load_started = time.perf_counter()
-    search_columns = _read_xyz_columns(args.point_file)
-    query_columns = search_columns if args.query_file is None else _read_xyz_columns(args.query_file)
+    search_columns = _read_xyz_columns_with_source(
+        args.point_file,
+        source=point_column_source,
+        column_file=Path(point_column_file) if point_column_file else None,
+    )
+    query_columns = (
+        search_columns
+        if args.query_file is None
+        else _read_xyz_columns_with_source(args.query_file, source=point_column_source)
+    )
     load_sec = time.perf_counter() - load_started
     search_count = len(search_columns[0])
     query_count = len(query_columns[0])
+    if result_mode in self_query_modes:
+        if backend != "optix":
+            raise ValueError("prepared self-query batch mode currently requires backend='optix'")
+        if args.query_file is not None:
+            raise ValueError("prepared self-query batch mode requires query_file to be omitted")
+        if query_count != search_count:
+            raise ValueError("prepared self-query batch mode requires query_count == search_count")
+        if batch_size != query_count:
+            raise ValueError("prepared self-query batch mode is a full-batch route; set query_batch_size to the point count")
 
     pack_started = time.perf_counter()
     search = rt.pack_points(
@@ -964,21 +1073,24 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         z=search_columns[3],
         dimension=3,
     )
-    query_batches = []
-    for begin in range(0, query_count, batch_size):
-        batch_columns = _slice_columns(query_columns, begin, min(query_count, begin + batch_size))
-        query_batches.append(
-            (
-                rt.pack_points(
-                    ids=batch_columns[0],
-                    x=batch_columns[1],
-                    y=batch_columns[2],
-                    z=batch_columns[3],
-                    dimension=3,
-                ),
-                tuple(int(value) for value in batch_columns[0]),
+    if result_mode in self_query_modes:
+        query_batches = [(None, tuple())]
+    else:
+        query_batches = []
+        for begin in range(0, query_count, batch_size):
+            batch_columns = _slice_columns(query_columns, begin, min(query_count, begin + batch_size))
+            query_batches.append(
+                (
+                    rt.pack_points(
+                        ids=batch_columns[0],
+                        x=batch_columns[1],
+                        y=batch_columns[2],
+                        z=batch_columns[3],
+                        dimension=3,
+                    ),
+                    tuple(int(value) for value in batch_columns[0]),
+                )
             )
-        )
     pack_sec = time.perf_counter() - pack_started
 
     prepare_started = time.perf_counter()
@@ -989,14 +1101,22 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         if result_mode in prepared_query_modes:
             prepared_query_batches = [prepared.prepare_query_points(batch) for batch, _batch_ids in query_batches]
         if result_mode in graph_modes:
-            prepared_query_batch_graphs = [
-                prepared.prepare_ranked_summary_prepared_queries_batch_graph(
-                    prepared_query,
-                    aggregate_batch_requests,
-                    precision="float32",
-                )
-                for prepared_query in prepared_query_batches
-            ]
+            if result_mode == self_query_graph_mode:
+                prepared_query_batch_graphs = [
+                    prepared.prepare_ranked_summary_self_query_batch_graph(
+                        aggregate_batch_requests,
+                        precision="float32",
+                    )
+                ]
+            else:
+                prepared_query_batch_graphs = [
+                    prepared.prepare_ranked_summary_prepared_queries_batch_graph(
+                        prepared_query,
+                        aggregate_batch_requests,
+                        precision="float32",
+                    )
+                    for prepared_query in prepared_query_batches
+                ]
     else:
         prepared = rt.prepare_embree_fixed_radius_neighbors_3d(search)
     prepare_sec = time.perf_counter() - prepare_started
@@ -1128,6 +1248,31 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
                             ],
                         }
                         run_same_stream_entrypoint_metadata.append(same_stream_entrypoint_for_batch)
+                    elif result_mode == self_query_batch_mode:
+                        aggregates = prepared.aggregate_ranked_summary_self_query_batch(
+                            aggregate_batch_requests,
+                            precision="float32",
+                        )
+                        aggregate = aggregates[0]
+                        run_ranked_aggregate_batch_summaries.extend(
+                            {
+                                "batch_index": batch_index,
+                                "request_index": request_index,
+                                **dict(item),
+                            }
+                            for request_index, item in enumerate(aggregates)
+                        )
+                    elif result_mode == self_query_graph_mode:
+                        aggregates = prepared_query_batch_graphs[batch_index].replay()
+                        aggregate = aggregates[0]
+                        run_ranked_aggregate_batch_summaries.extend(
+                            {
+                                "batch_index": batch_index,
+                                "request_index": request_index,
+                                **dict(item),
+                            }
+                            for request_index, item in enumerate(aggregates)
+                        )
                     elif result_mode == "ranked-summary-aggregate-prepared-query-batch-graph-float32":
                         aggregates = prepared_query_batch_graphs[batch_index].replay()
                         aggregate = aggregates[0]
@@ -1271,6 +1416,8 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
         "k_max": k_max,
         "result_mode": result_mode,
         "input_load_sec": load_sec,
+        "point_column_source": point_column_source,
+        "point_column_file": str(point_column_file) if point_column_file else None,
         "input_pack_sec": pack_sec,
         "execution_prepare_sec": prepare_sec,
         "repeat": repeat,
@@ -1291,8 +1438,10 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             "approximate": False,
             "bounded_k": k_max,
             "prepared_search_structure": backend in {"optix", "embree"},
+            "point_column_source": point_column_source,
             "batched_queries": True,
             "prepared_query_points": result_mode in prepared_query_modes,
+            "prepared_search_as_query_points": result_mode in self_query_modes,
             "aggregate_request_count": aggregate_request_count if result_mode in batch_aggregate_modes else 1,
             "aggregate_batch_requests": aggregate_batch_requests
             if result_mode in batch_aggregate_modes
@@ -1319,7 +1468,8 @@ def run_rtdl_batched_3d_neighbors(args: argparse.Namespace) -> dict[str, object]
             "partitioned_or_batched_like_rtnn": True,
             "device_ranked_summary_rows": backend == "optix" and result_mode == "ranked-summary-raw",
             "device_ranked_summary_aggregate": backend == "optix" and result_mode in aggregate_modes,
-            "device_resident_query_points": result_mode in prepared_query_modes,
+            "device_resident_query_points": result_mode in prepared_query_modes or result_mode in self_query_modes,
+            "prepared_search_as_query_points": result_mode in self_query_modes,
             "float32_precision": result_mode in float32_aggregate_modes,
             "aggregate_requests_batched": result_mode in batch_aggregate_modes,
             "prepared_cuda_graph_replay": result_mode in graph_modes,
@@ -1404,9 +1554,19 @@ def run_rtdl_adaptive_partitioned_3d_neighbors(args: argparse.Namespace) -> dict
     if divisions <= 0:
         raise ValueError("partition_divisions must be positive")
 
+    point_column_source = str(getattr(args, "point_column_source", "csv")).replace("-", "_")
+    point_column_file = getattr(args, "point_column_file", None)
     load_started = time.perf_counter()
-    search_columns = _read_xyz_columns(args.point_file)
-    query_columns = search_columns if args.query_file is None else _read_xyz_columns(args.query_file)
+    search_columns = _read_xyz_columns_with_source(
+        args.point_file,
+        source=point_column_source,
+        column_file=Path(point_column_file) if point_column_file else None,
+    )
+    query_columns = (
+        search_columns
+        if args.query_file is None
+        else _read_xyz_columns_with_source(args.query_file, source=point_column_source)
+    )
     load_sec = time.perf_counter() - load_started
     search_count = len(search_columns[0])
     query_count = len(query_columns[0])
@@ -1630,14 +1790,25 @@ def run_cupy_3d_ranked_summary(args: argparse.Namespace) -> dict[str, object]:
     import cupy as cp  # noqa: PLC0415
     import numpy as np  # noqa: PLC0415
 
+    point_column_source = str(getattr(args, "point_column_source", "csv")).replace("-", "_")
+    point_column_file = getattr(args, "point_column_file", None)
     load_started = time.perf_counter()
-    search_columns = _read_xyz_columns(args.point_file)
-    query_columns = search_columns if args.query_file is None else _read_xyz_columns(args.query_file)
+    search_columns = _read_xyz_columns_with_source(
+        args.point_file,
+        source=point_column_source,
+        column_file=Path(point_column_file) if point_column_file else None,
+    )
+    query_columns = (
+        search_columns
+        if args.query_file is None
+        else _read_xyz_columns_with_source(args.query_file, source=point_column_source)
+    )
     load_sec = time.perf_counter() - load_started
-    search_np = np.asarray(list(zip(search_columns[1], search_columns[2], search_columns[3])), dtype=np.float32 if dtype_name == "float32" else np.float64)
-    query_np = np.asarray(list(zip(query_columns[1], query_columns[2], query_columns[3])), dtype=search_np.dtype)
-    search_ids_np = np.asarray(search_columns[0], dtype=np.uint32)
-    query_ids_np = np.asarray(query_columns[0], dtype=np.uint32)
+    dtype = np.float32 if dtype_name == "float32" else np.float64
+    search_np = _xyz_columns_to_numpy(search_columns, dtype=dtype)
+    query_np = _xyz_columns_to_numpy(query_columns, dtype=dtype)
+    search_ids_np = _column_ids_to_numpy(search_columns)
+    query_ids_np = _column_ids_to_numpy(query_columns)
 
     upload_started = time.perf_counter()
     search = cp.asarray(search_np)
@@ -1722,6 +1893,8 @@ def run_cupy_3d_ranked_summary(args: argparse.Namespace) -> dict[str, object]:
         "k_max": k_max,
         "dtype": dtype_name,
         "input_load_sec": load_sec,
+        "point_column_source": point_column_source,
+        "point_column_file": str(point_column_file) if point_column_file else None,
         "device_upload_sec": upload_sec,
         "summary": last_summary,
         "contract": {
@@ -1732,6 +1905,7 @@ def run_cupy_3d_ranked_summary(args: argparse.Namespace) -> dict[str, object]:
             "bounded_k": k_max,
             "prepared_search_structure": False,
             "batched_queries": True,
+            "point_column_source": point_column_source,
         },
         "claim_boundary": {
             "uses_rt_cores": False,
@@ -1763,17 +1937,27 @@ def run_cupy_grid_3d_ranked_summary(args: argparse.Namespace) -> dict[str, objec
     import cupy as cp  # noqa: PLC0415
     import numpy as np  # noqa: PLC0415
 
+    point_column_source = str(getattr(args, "point_column_source", "csv")).replace("-", "_")
+    point_column_file = getattr(args, "point_column_file", None)
     load_started = time.perf_counter()
-    search_columns = _read_xyz_columns(args.point_file)
-    query_columns = search_columns if args.query_file is None else _read_xyz_columns(args.query_file)
+    search_columns = _read_xyz_columns_with_source(
+        args.point_file,
+        source=point_column_source,
+        column_file=Path(point_column_file) if point_column_file else None,
+    )
+    query_columns = (
+        search_columns
+        if args.query_file is None
+        else _read_xyz_columns_with_source(args.query_file, source=point_column_source)
+    )
     load_sec = time.perf_counter() - load_started
     dtype = np.float32 if dtype_name == "float32" else np.float64
     if dtype is not np.float32:
         raise ValueError("cupy grid RawKernel baseline currently supports float32")
-    search_np = np.asarray(list(zip(search_columns[1], search_columns[2], search_columns[3])), dtype=np.float32)
-    query_np = np.asarray(list(zip(query_columns[1], query_columns[2], query_columns[3])), dtype=np.float32)
-    search_ids_np = np.asarray(search_columns[0], dtype=np.uint32)
-    query_ids_np = np.asarray(query_columns[0], dtype=np.uint32)
+    search_np = _xyz_columns_to_numpy(search_columns, dtype=np.float32)
+    query_np = _xyz_columns_to_numpy(query_columns, dtype=np.float32)
+    search_ids_np = _column_ids_to_numpy(search_columns)
+    query_ids_np = _column_ids_to_numpy(query_columns)
 
     prepare_started = time.perf_counter()
     if len(search_np) == 0 or len(query_np) == 0:
@@ -2001,6 +2185,8 @@ void rtdl_grid_ranked_summary_3d(
         "k_max": k_max,
         "dtype": dtype_name,
         "input_load_sec": load_sec,
+        "point_column_source": point_column_source,
+        "point_column_file": str(point_column_file) if point_column_file else None,
         "grid_prepare_sec": prepare_sec,
         "grid_dimensions": [nx, ny, nz],
         "grid_cell_count": num_cells,
@@ -2013,6 +2199,7 @@ void rtdl_grid_ranked_summary_3d(
             "approximate": False,
             "bounded_k": k_max,
             "prepared_search_structure": True,
+            "point_column_source": point_column_source,
             "uniform_grid_cuda_core": True,
         },
         "claim_boundary": {
@@ -2103,7 +2290,7 @@ def main(argv: list[str] | None = None) -> int:
     batched3d.add_argument("--k-max", type=int, default=50)
     batched3d.add_argument("--backend", choices=("optix", "embree"), default="optix")
     batched3d.add_argument("--query-batch-size", type=int, default=65536)
-    batched3d.add_argument("--result-mode", choices=("count", "summary", "ranked-summary-raw", "ranked-summary-aggregate", "ranked-summary-aggregate-float32", "ranked-summary-aggregate-prepared-query-float32", "ranked-summary-aggregate-prepared-query-batch-float32", "ranked-summary-aggregate-prepared-query-batch-graph-float32", "ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32"), default="ranked-summary-raw")
+    batched3d.add_argument("--result-mode", choices=("count", "summary", "ranked-summary-raw", "ranked-summary-aggregate", "ranked-summary-aggregate-float32", "ranked-summary-aggregate-prepared-query-float32", "ranked-summary-aggregate-prepared-query-batch-float32", "ranked-summary-aggregate-prepared-query-batch-graph-float32", "ranked-summary-aggregate-prepared-self-query-batch-float32", "ranked-summary-aggregate-prepared-self-query-batch-graph-float32", "ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32"), default="ranked-summary-raw")
     batched3d.add_argument("--aggregate-request-count", type=int, default=1)
     batched3d.add_argument("--aggregate-radius-multipliers", help="Comma-separated per-request radius multipliers for prepared-query aggregate batches.")
     batched3d.add_argument("--aggregate-k-values", help="Comma-separated per-request k_max values for prepared-query aggregate batches.")
@@ -2135,6 +2322,8 @@ def main(argv: list[str] | None = None) -> int:
     cupy3d.add_argument("--query-batch-size", type=int, default=1024)
     cupy3d.add_argument("--dtype", choices=("float32", "float64"), default="float32")
     cupy3d.add_argument("--repeat", type=int, default=1)
+    cupy3d.add_argument("--point-column-source", choices=("csv", "numpy_csv", "npz"), default="csv")
+    cupy3d.add_argument("--point-column-file", type=Path)
     cupy3d.add_argument("--row-label", default="cupy_3d_ranked_summary")
     cupy3d.add_argument("--json-out", type=Path, required=True)
 
@@ -2149,6 +2338,8 @@ def main(argv: list[str] | None = None) -> int:
     cupy_grid3d.add_argument("--dtype", choices=("float32",), default="float32")
     cupy_grid3d.add_argument("--max-grid-cells", type=int, default=2_000_000)
     cupy_grid3d.add_argument("--repeat", type=int, default=1)
+    cupy_grid3d.add_argument("--point-column-source", choices=("csv", "numpy_csv", "npz"), default="csv")
+    cupy_grid3d.add_argument("--point-column-file", type=Path)
     cupy_grid3d.add_argument("--row-label", default="cupy_grid_3d_ranked_summary")
     cupy_grid3d.add_argument("--json-out", type=Path, required=True)
 

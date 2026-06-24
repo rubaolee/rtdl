@@ -1,0 +1,108 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "generic aabb_index_query_2d prepared-session candidate stream; contact_manifold is only the evidence harness",
+  "checks": {
+    "all_backend_errors_empty": true,
+    "all_below_material_floor": true,
+    "all_complete_candidate_coverage": true,
+    "all_cpu_reference_match": true,
+    "all_have_embree_and_optix": true,
+    "all_runner_completed": true,
+    "all_summaries_exist": true,
+    "hardware_gate_pass": true,
+    "larger_scale_not_better": true,
+    "latest_failed_material_check": true,
+    "scales_are_32768_and_65536": true
+  },
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not promote either 32,768 or 65,536 prepare-reuse row to M7.",
+    "Do not claim V3 AABB prepare-reuse is faster from sub-floor 1.140x or 1.087x wall ratios.",
+    "Do not use query-total speedup without reporting cold-plus-collect wall.",
+    "Do not keep increasing scale until a ratio crosses the floor without a contract rationale.",
+    "Do not claim full contact solver or broad V3-over-V2 speedup."
+  ],
+  "generic_capability": "aabb_candidate_stream",
+  "goal_level_decision_audit": {
+    "decision": "Record the 65,536-row AABB prepare-reuse rerun as scale evidence that does not clear the M7 material floor.",
+    "different_path_now": "Use this no-go scale packet to drive actual generic overhead work instead of more app-specific or scale-only experiments.",
+    "foolish_actions": "The foolish action would be to keep shopping scales or quote query-only wins after the 65,536-row wall result got worse.",
+    "other_path": "Skip the scale rerun and assume 32,768 was representative. That would leave a plausible but untested scale question open.",
+    "was_i_foolish": "No. The rerun tested whether a serious larger scale amortizes the prepared AABB path enough to meet the predeclared floor."
+  },
+  "hardware": {
+    "compute_cap": "8.9",
+    "driver_version": "550.127.05",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "host": "root@213.173.108.14 -p 11592",
+    "rt_hardware_gate": "pass"
+  },
+  "interpretation": "The AABB prepare-reuse scale check does not reopen M7. At 32,768 AABBs, OptiX/Embree cold-plus-collect wall speedup was 1.140x, below the 1.20 floor. At 65,536 AABBs, it fell to 1.087x. Query-total speedup stayed positive but also declined, and OptiX collect became slower at 65,536. Scaling the same prepared-session shape therefore does not solve the V3 material wall requirement.",
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "m7_reopen_candidate_pending_2ai_review": false,
+  "material_wall_speedup_floor": 1.2,
+  "next_engine_action": "Stop scale-shopping this row. The next valid AABB work is generic engine overhead reduction: reduce OptiX prepare cost, reduce repeated query overhead, improve collect/compaction cost, or find a separately justified contract shape before any new M7 review.",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "scale_rows": [
+    {
+      "complete_candidate_coverage": true,
+      "dataset": "jittered_grid",
+      "embree_cold_plus_collect_wall_sec": 19.03412125259638,
+      "embree_collect_sec": 0.08360826224088669,
+      "embree_prepare_sec": 0.3321964964270592,
+      "embree_query_total_sec": 17.48808915168047,
+      "evidence_dir": "docs/rebuild/v3/evidence/phoenix_v3_aabb_prepare_reuse_serious_20260621",
+      "failed_checks": [
+        "material_optix_wall_win_after_prepare_reuse"
+      ],
+      "grid_count": 32768,
+      "matches_cpu_reference": true,
+      "optix_cold_plus_collect_wall_sec": 16.69647029787302,
+      "optix_collect_sec": 0.08317559212446213,
+      "optix_over_embree_broadphase_wall_speedup": 1.1406836106866993,
+      "optix_over_embree_cold_plus_collect_wall_speedup": 1.1400086912394385,
+      "optix_over_embree_collect_speedup": 1.0052018880223554,
+      "optix_over_embree_prepare_speedup": 0.6235016572276956,
+      "optix_over_embree_query_total_speedup": 1.1778290019129094,
+      "optix_over_embree_runner_wall_speedup": 1.1365948503003616,
+      "optix_prepare_sec": 0.5327916815876961,
+      "optix_query_total_sec": 14.847731821238995,
+      "repeat": 50,
+      "status": "aabb_prepare_reuse_pod_evidence_collected_not_m7",
+      "summary_path": "docs/rebuild/v3/evidence/phoenix_v3_aabb_prepare_reuse_serious_20260621/summary.json"
+    },
+    {
+      "complete_candidate_coverage": true,
+      "dataset": "jittered_grid",
+      "embree_cold_plus_collect_wall_sec": 38.37565106898546,
+      "embree_collect_sec": 0.17854443937540054,
+      "embree_prepare_sec": 0.6701027825474739,
+      "embree_query_total_sec": 35.19947750866413,
+      "evidence_dir": "docs/rebuild/v3/evidence/phoenix_v3_aabb_prepare_reuse_65536_r50_20260621",
+      "failed_checks": [
+        "material_optix_wall_win_after_prepare_reuse"
+      ],
+      "grid_count": 65536,
+      "matches_cpu_reference": true,
+      "optix_cold_plus_collect_wall_sec": 35.30389289557934,
+      "optix_collect_sec": 0.19697663933038712,
+      "optix_over_embree_broadphase_wall_speedup": 1.0880222674872808,
+      "optix_over_embree_cold_plus_collect_wall_speedup": 1.0870090497524356,
+      "optix_over_embree_collect_speedup": 0.9064244368385714,
+      "optix_over_embree_prepare_speedup": 0.7424958975590354,
+      "optix_over_embree_query_total_speedup": 1.1086496063215927,
+      "optix_over_embree_runner_wall_speedup": 1.0837020201049419,
+      "optix_prepare_sec": 0.9025003165006638,
+      "optix_query_total_sec": 31.74986696243286,
+      "repeat": 50,
+      "status": "aabb_prepare_reuse_pod_evidence_collected_not_m7",
+      "summary_path": "docs/rebuild/v3/evidence/phoenix_v3_aabb_prepare_reuse_65536_r50_20260621/summary.json"
+    }
+  ],
+  "status": "aabb_prepare_reuse_scale_evidence_not_m7_scale_does_not_clear_floor",
+  "tool": "v3_phoenix_aabb_prepare_reuse_scale_evidence",
+  "version": "phoenix_v3_aabb_prepare_reuse_scale_evidence_2026_06_21",
+  "whole_app_speedup_claim_authorized": false
+}

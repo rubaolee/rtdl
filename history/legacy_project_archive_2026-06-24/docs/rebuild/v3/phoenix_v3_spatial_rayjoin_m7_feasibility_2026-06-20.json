@@ -1,0 +1,102 @@
+{
+  "version": "phoenix_v3_spatial_rayjoin_m7_feasibility_2026_06_20",
+  "status": "spatial_rayjoin_m7_feasibility_not_promoted",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "paper_reproduction_claim_authorized": false,
+  "rtdl_beats_rayjoin_claim_authorized": false,
+  "phoenix_m7_qualified_release_rows": 0,
+  "generic_capability": "point_location_topology_stream",
+  "current_packet_external_review_status": "claude_approved_with_required_fixes",
+  "current_packet_2ai_consensus_status": "claude_codex_consensus_complete_no_m7_promotion",
+  "current_packet_external_review_blockage": "docs/reviews/external_review_blocked_phoenix_v3_spatial_rayjoin_m7_feasibility_2026-06-20.md",
+  "current_packet_external_review": "docs/reviews/claude_phoenix_v3_spatial_rayjoin_m7_feasibility_review_2026-06-21.md",
+  "current_packet_codex_consensus": "docs/reviews/codex_phoenix_v3_spatial_rayjoin_m7_feasibility_2ai_consensus_2026-06-21.md",
+  "evidence_sources": {
+    "m5_report": "docs/rebuild/v3/phoenix_v3_m5_topology_pod_evidence_2026-06-20.md",
+    "m5_artifact": "docs/rebuild/v3/evidence/phoenix_v3_m5_topology_20260620",
+    "rayjoin_author_build": "docs/rebuild/v3/evidence/rayjoin_author_build_20260620",
+    "m7_classification_packet": "docs/rebuild/v3/phoenix_v3_m7_row_classification_packet_2026-06-20.md",
+    "external_review": "docs/reviews/claude_phoenix_v3_m5_author_recovery_review_2026-06-20.md",
+    "codex_consensus": "docs/reviews/codex_phoenix_v3_m5_author_recovery_2ai_consensus_2026-06-20.md"
+  },
+  "tiny_negative_row": {
+    "row": "rayjoin_all_backend_query_summary",
+    "optix_speedup_vs_embree": 0.03414924661592695,
+    "public_speedup_claim_authorized": false,
+    "paper_result_comparison_allowed": false,
+    "explanation_doc": "docs/rebuild/v3/v3_negative_route_explanations_2026-06-20.md"
+  },
+  "m5_pip_point_location": {
+    "point_count": 100000,
+    "query_generation": "backend_parity_filtered_random_bbox",
+    "parity_filter_rejected_count": 1,
+    "optix_repeats": 1000,
+    "embree_repeats": 1000,
+    "row_materialization_in_timed_path": false,
+    "exact_mismatch_count": 0,
+    "positive_face_count": 43738,
+    "rtdl_optix_speedup_vs_rtdl_embree": 1.91993187575488,
+    "rtdl_optix_native_traversal_speedup_vs_embree": 2.834,
+    "rayjoin_rt_speedup_vs_rtdl_optix": 5.72759569862135,
+    "rayjoin_rt_speedup_vs_rtdl_optix_native_traversal": 3.860711740744286,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "public_speedup_claim_authorized": false
+  },
+  "m5_overlay_active_count": {
+    "output_contract": "overlay_active_pair_dependency_count",
+    "left_cdb": "br_county_start256_count512.cdb",
+    "right_cdb": "br_soil_start256_count512.cdb",
+    "active_count": 174,
+    "optix_repeats": 25,
+    "embree_repeats": 25,
+    "active_counts_match": true,
+    "row_materialization_avoided_in_timed_path": true,
+    "optix_speedup_vs_rtdl_embree_timed_median": 499.11182637483904,
+    "full_polygon_overlay_claim_authorized": false,
+    "rayjoin_section57_full_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false
+  },
+  "authored_hot_route_rows": [
+    {
+      "row": "rayjoin_overlay_seed_authored_tiled_x2048",
+      "optix_speedup_vs_embree": 30489.613,
+      "evidence_basis": "docs/rebuild/v3/phoenix_v3_m7_row_classification_packet_2026-06-20.json",
+      "classification": "internal_hot_route_not_m7"
+    },
+    {
+      "row": "rayjoin_lsi_authored_tiled_x2048",
+      "optix_speedup_vs_embree": 516.792,
+      "evidence_basis": "docs/rebuild/v3/phoenix_v3_m7_row_classification_packet_2026-06-20.json",
+      "classification": "internal_hot_route_not_m7"
+    },
+    {
+      "row": "rayjoin_pip_authored_tiled_x2048",
+      "optix_speedup_vs_embree": 10.703,
+      "evidence_basis": "docs/rebuild/v3/phoenix_v3_m7_row_classification_packet_2026-06-20.json",
+      "classification": "internal_hot_route_not_m7"
+    }
+  ],
+  "m7_blockers": [
+    "rayjoin_author_rt_faster_than_rtdl_optix",
+    "not_full_rayjoin_paper_reproduction",
+    "not_full_polygon_overlay_or_materialization",
+    "mixed_timing_basis_requires_public_methodology_review",
+    "m3_phase_table_gap_for_pip_before_public_row",
+    "tiny_standard_row_is_negative_and_must_stay_explained",
+    "broad_v3_faster_than_v2_claim_authorized_false",
+    "no_public_row_level_release_review",
+    "no_future_public_row_2ai_consensus_for_spatial_rayjoin_m7_promotion"
+  ],
+  "allowed_internal_reading": "Spatial RayJoin is strong internal Phoenix V3 point-location/topology-stream evidence with same-contract RTDL OptiX-over-Embree wins and authored hot-route OptiX signals.",
+  "forbidden_public_reading": "Do not claim RTDL beats RayJoin, RayJoin paper reproduction, full polygon overlay acceleration, broad V3-over-V2 speedup, or M7 promotion from this packet.",
+  "next_step": "A future public-row packet must choose one user contract, one exact dataset, RTDL OptiX/Embree same-contract timing, author timing if cited, an M3 phase table, non-paper wording, and external public-row review.",
+  "goal_level_decision_audit": {
+    "decision": "classify Spatial RayJoin as strong internal topology-stream evidence, not an M7 release row",
+    "was_i_foolish": "No. The decision uses M5 pod evidence, external review, and M7 classification rather than quoting only the largest speedup.",
+    "foolish_actions": "It would be foolish to hide that RayJoin author RT is faster than RTDL OptiX or to mix tiny route-health and authored hot-route rows without contract boundaries.",
+    "other_path": "Tune RayJoin immediately, which would be premature before evidence categories are separated.",
+    "different_path_now": "Keep release flags false, document the route split, and define the exact future public-row packet requirements."
+  }
+}

@@ -1,0 +1,6 @@
+run_id=phoenix_v3_librts_aabb_count_cache_focused_20260622_140223
+purpose=focused patched-current LibRTS generic Embree AABB count query-cache evidence
+started_utc=2026-06-22T14:02:23Z
+v2_dir=/root/rtdl_v3_rebuild_20260620/v2_14
+current_dir=/root/rtdl_v3_rebuild_20260620/current
+patch_backup_dir=/root/rtdl_v3_rebuild_20260620/phoenix_v3_patch_backups_20260622_aabb_count_cache

@@ -1,0 +1,40 @@
+{
+  "status": "rtdbscan_component_signature_optimization_pending_rtx_evidence",
+  "generic_capability": "component_union",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows": 0,
+  "changed_route": "optix_rt_core_flags_numba_prepared_grid_column_signature_3d",
+  "optimization_kind": "prepared_grid_column_signature_host_materialization_reduction",
+  "source_file": "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+  "test_file": "tests/v3_phoenix_rtdbscan_component_signature_optimization_test.py",
+  "old_signature_strategy": "_cluster_signature_from_partner_columns copied point_ids, component_labels, and is_core to host for the column-signature mode",
+  "new_signature_strategy": "_cluster_signature_from_numba_label_columns reuses the generic run_numba_label_count_and_flag_count_i64 continuation and does not materialize point_ids or core_flags on host",
+  "generic_engine_reason": "The optimization reuses an existing generic Numba label/flag-count primitive; it does not add a DBSCAN-native ABI or app-specific native engine.",
+  "local_verification": {
+    "focused_unittest": "py -3 -m unittest tests.v3_phoenix_rtdbscan_component_signature_optimization_test tests.v3_phoenix_rtdbscan_continuation_bottleneck_no_go_test tests.v3_phoenix_rtdbscan_same_contract_rerun_test tests.v3_rebuild_tutorial_surface_test",
+    "focused_unittest_status": "pass",
+    "v3_rebuild_matrix": "py -3 scripts/run_test_matrix.py --group v3_rebuild",
+    "v3_rebuild_matrix_status": "pass_46_modules_215_tests"
+  },
+  "evidence_boundary": {
+    "rtx_performance_rerun_completed": false,
+    "same_contract_rtdbscan_no_go_superseded": false,
+    "current_no_go_packet": "docs/rebuild/v3/phoenix_v3_rtdbscan_continuation_bottleneck_no_go_2026-06-21.md",
+    "required_before_reopen": [
+      "rerun same-contract RTDBSCAN OptiX and Embree rows on RTX hardware after this code change",
+      "show component-signature continuation improvement at 65,536, 262,144, and 524,288 points",
+      "preserve canonical component-size signature parity",
+      "obtain external review before any M7 promotion"
+    ]
+  },
+  "goal_level_decision_audit": {
+    "decision": "land a generic component-signature continuation optimization but keep RTDBSCAN out of M7 until RTX evidence exists",
+    "was_i_foolish": "No. This changes a measured generic bottleneck without inventing DBSCAN-specific native semantics.",
+    "foolish_actions": "It would be foolish to call this an M7 fix before same-contract RTX reruns quantify the effect.",
+    "other_path": "Rerun old evidence unchanged or write more no-go prose; neither changes the bottleneck.",
+    "different_path_now": "Use the existing generic Numba label/flag-count continuation in the prepared-grid column-signature path, then require a serious RTX rerun."
+  }
+}

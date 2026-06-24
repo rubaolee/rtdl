@@ -1,0 +1,4 @@
+expected_source_version=v3-rebuild-2026-06-20
+actual_source_version=v3-rebuild-2026-06-20
+
+source_version_match=pass

@@ -26,17 +26,45 @@ class Goal3684NativeRelationStatusCorrectedScalarCountTest(unittest.TestCase):
         for forbidden in ("rayjoin", "cdb", "county"):
             self.assertNotIn(forbidden, symbol.lower())
 
-    def test_optix_path_uses_native_double_lookup_without_boundary_rows(self) -> None:
+    def test_optix_path_uses_native_double_full_predicate_without_boundary_rows(self) -> None:
         workloads = (ROOT / "src/native/optix/rtdl_optix_workloads.cpp").read_text(encoding="utf-8")
         start = workloads.index("static void ensure_pip_relation_status_corrected_scalar_count_pipeline")
         end = workloads.index("static void ensure_pip_point_id_count_device_columns_pipeline", start)
         body = workloads[start:end]
-        self.assertIn("exact_boundary_contact_f64", body)
+        self.assertNotIn("exact_boundary_contact_f64", body)
+        self.assertIn("exact_closed_shape_membership_f64", body)
         self.assertIn("points_x_f64", body)
         self.assertIn("vertices_x_f64", body)
+        self.assertIn("closed-shape relation-status corrected scalar prefilter snippet", body)
+        self.assertIn("src.replace(pos, old_positive_prefilter.size(), new_positive_prefilter)", body)
+        self.assertIn("relation_status_corrected_default_enabled", body)
+        self.assertIn(
+            'relation_status_corrected_default_enabled("RTDL_OPTIX_RELATION_STATUS_CORRECTED_PREFILTER_ZERO")',
+            body,
+        )
+        self.assertIn(
+            'relation_status_corrected_default_enabled("RTDL_OPTIX_RELATION_STATUS_CORRECTED_EXACT_F64_SQUARED_BOUNDARY")',
+            body,
+        )
+        self.assertNotIn(
+            'std::getenv("RTDL_OPTIX_RELATION_STATUS_CORRECTED_PREFILTER_ZERO") != nullptr',
+            body,
+        )
+        self.assertNotIn(
+            'std::getenv("RTDL_OPTIX_RELATION_STATUS_CORRECTED_EXACT_F64_SQUARED_BOUNDARY") != nullptr',
+            body,
+        )
         self.assertIn("atomicAdd(params.candidate_count, 1u)", body)
         self.assertIn("atomicAdd(params.boundary_candidate_count, 1u)", body)
         self.assertIn("atomicAdd(params.dropped_candidate_count, 1u)", body)
+        self.assertIn("const bool keep = exact_closed_shape_membership_f64(pidx, prim)", body)
+        self.assertIn("RTDL_OPTIX_RELATION_STATUS_CORRECTED_EXACT_F64_SQUARED_BOUNDARY", body)
+        self.assertIn("closed-shape relation-status exact f64 boundary snippet not found", body)
+        self.assertIn("squared_exact_f64_boundary", body)
+        self.assertIn("const double guard_tol = 1.0e-6;", body)
+        self.assertIn("bool needs_fallback", body)
+        self.assertIn("const double len = sqrt(len2);", body)
+        self.assertNotIn("bool keep = relation_status == 1u", body)
         self.assertIn("point_closed_shape_relation_status_corrected_scalar_count_kernel.cu", body)
         self.assertNotIn("point_ids_out", body)
         self.assertNotIn("shape_ids_out", body)

@@ -1,0 +1,88 @@
+{
+  "app": "rayjoin_v2_spatial_join",
+  "backend": "optix",
+  "claim_boundary": {
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "requires_pod_for_optix_perf": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_0_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "dataset": "derived/authored_lsi_crossing_tiled_x2048",
+  "dataset_note": "Authored crossing-segment fixture tiled 2048 times; one positive intersection per tile.",
+  "dense_left_id_count_columns": {
+    "ambiguous_count_device_ptr_nonzero": false,
+    "ambiguous_count_materialized_on_host_for_metadata": false,
+    "count_column_materialized_on_host": false,
+    "counts_device_ptr_nonzero": true,
+    "device_ordinal": 0,
+    "device_resident": true,
+    "group_capacity": 2048,
+    "group_capacity_semantics": "direct-address key capacity",
+    "group_key_column_materialized_on_host": false,
+    "group_key_semantics": "dense output uses direct-address array index as the implicit group key",
+    "native_symbol": "rtdl_optix_prepared_segment_pair_left_id_count_prepared_left_device_columns",
+    "output_residency": "device_resident_dense_grouped_count_column",
+    "overflow": false,
+    "overflow_device_ptr_nonzero": true,
+    "overflow_materialized_on_host_for_metadata": true,
+    "owner_handle": 89668768,
+    "producer": "device_column_grouped_count_i64",
+    "public_speedup_claim_authorized": false,
+    "reduction_seconds": 3.8921e-05,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "schema": "device_grouped_count_i64_dense_columns",
+    "source_row_count": 2048,
+    "source_row_count_device_ptr_nonzero": true,
+    "source_row_count_materialized_on_host_for_metadata": true,
+    "true_zero_copy_authorized": false
+  },
+  "device_resident_continuation_status": "dense_left_id_count_device_column_complete: count[index] remains CUDA-resident during the route; left segment-set upload is paid once by the prepared-left handle; validation copy is optional",
+  "execution_route": "prepared_optix_left_id_dense_count_prepared_left_reuse",
+  "left_id_remap": {
+    "enabled": true,
+    "original_left_id_count": 2048,
+    "reason": "generic left-id count primitive uses direct-address key capacity"
+  },
+  "native_engine_boundary": "The engine sees generic segment-pair left-id count device columns. RayJoin workload interpretation, prepared-handle reuse, prepared-left reuse, and left-ID remapping stay in Python.",
+  "packed_left_reuse": {
+    "column_prepare_seconds": 0.0023781880736351013,
+    "enabled": true,
+    "left_segment_count": 2048,
+    "native_prepared_left_set_enabled": true,
+    "native_prepared_left_set_paid_once": true,
+    "pack_seconds": 0.00018625706434249878,
+    "prepared_left_set_seconds": 8.740276098251343e-05,
+    "query_pack_paid_in_call": false
+  },
+  "phases_sec": {
+    "left_id_count_device_columns_sec": 0.0001236051321029663,
+    "prepared_query_sec": 0.0001236051321029663,
+    "prepared_query_sec_repeat": 5,
+    "prepared_query_sec_total_sec": 0.0006637796759605408,
+    "prepared_query_sec_warmup": 1
+  },
+  "prepared_reuse": {
+    "enabled": true,
+    "prepare_static_scene_paid_once": true,
+    "prepare_static_scene_sec": 0.5184832140803337,
+    "right_segment_count": 2048
+  },
+  "repeat_protocol": {
+    "measured_query_total_sec": 0.0006637796759605408,
+    "repeat": 5,
+    "reported_query_metric": "prepared_query_median",
+    "warmup": 1
+  },
+  "row_count": 2048,
+  "summary": {
+    "intersection_count": 2048,
+    "left_group_capacity": 2048,
+    "output_contract": "segment_segment_intersection_count_by_left_id_dense_device_column"
+  },
+  "workload": "lsi"
+}

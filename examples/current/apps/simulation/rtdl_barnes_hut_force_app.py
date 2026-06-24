@@ -396,8 +396,11 @@ def _run_prepared_node_coverage(
         kwargs["max_radius"] = radius
     query_runs: list[dict[str, object]] = []
     with rt.prepare_generic_fixed_radius_count_threshold_2d(**kwargs) as prepared:
+        query_prepare_start = time.perf_counter()
+        prepared_query_points = prepared.prepare_query_points(_body_points(bodies))
+        query_points_prepare_sec = time.perf_counter() - query_prepare_start
         for iteration in range(warmup + query_repeat):
-            result = prepared.count_threshold_reached(_body_points(bodies), radius=radius, threshold=1)
+            result = prepared.count_threshold_reached(prepared_query_points, radius=radius, threshold=1)
             query_runs.append(
                 {
                     "iteration": iteration,
@@ -432,11 +435,14 @@ def _run_prepared_node_coverage(
         "summary_primitive": "REDUCE_INT(COUNT)",
         "run_phases": {
             "scene_prepare_sec": prepare_sec,
+            "query_points_prepare_sec": query_points_prepare_sec,
             "query_fixed_radius_threshold_reached_count_sec": query_median_sec,
             "query_fixed_radius_threshold_reached_count_total_sec": float(sum(query_secs)),
             "query_repeat": int(query_repeat),
             "query_warmup": int(warmup),
         },
+        "query_points_prepared_once": True,
+        "query_points_prepacked_by_caller": True,
         "query_repeat_protocol": {
             "repeat": int(query_repeat),
             "warmup": int(warmup),

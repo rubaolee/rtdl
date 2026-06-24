@@ -1,0 +1,41 @@
+{
+  "accepted_candidates": [
+    {
+      "accepted": true,
+      "bytes": 9969,
+      "candidate_id": "claude_phoenix_v3_external_review_2026-06-22",
+      "exists": true,
+      "external_reviewer": "claude",
+      "external_reviewer_provenance": true,
+      "path": "docs\\reviews\\claude_phoenix_v3_external_review_2026-06-22.md",
+      "raw_verdict": "approve_blocked_not_release",
+      "reasons": [],
+      "release_authorized": false,
+      "scoped_packet_authorized": false,
+      "status_line": "external_verdict_obtained_claude_approve_blocked_not_release",
+      "verdict": "approve_blocked_not_release"
+    }
+  ],
+  "accepted_verdict": "approve_blocked_not_release",
+  "candidate_count": 1,
+  "current_rejections": [],
+  "decision_audit": {
+    "decision": "Treat only a real external Claude/Gemini/human verdict file as scoped packet evidence, not as V3 major release authorization.",
+    "different_path_now": "Use this intake guard to record scoped packet evidence while the major V2.x performance gate remains the actual release authority.",
+    "foolish_actions": "The foolish action was accepting a scoped external review as V3 release authorization instead of only as evidence for the 13-row packet.",
+    "other_path": "A looser path could rely on prose discipline alone, but that already created release-boundary confusion.",
+    "was_i_foolish": "Yes. The prior intake translated a scoped release_ready verdict into release_authorized true, which skipped the major performance mandate."
+  },
+  "release_authorized": false,
+  "scoped_packet_authorized": false,
+  "status": "external_verdict_obtained",
+  "status_line": "external_verdict_obtained_claude_approve_blocked_not_release",
+  "tool": "v3_phoenix_external_verdict_intake",
+  "valid_external_verdict_obtained": true,
+  "valid_verdict_labels": [
+    "release_ready",
+    "approve_blocked_not_release",
+    "block_p0",
+    "block_p1"
+  ]
+}

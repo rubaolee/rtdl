@@ -1,0 +1,82 @@
+{
+  "status": "aabb_candidate_stream_m7_feasibility_not_promoted",
+  "generic_capability": "aabb_candidate_stream",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "paper_reproduction_claim_authorized": false,
+  "librts_authors_code_claim_authorized": false,
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows": 0,
+  "current_packet_external_review_status": "blocked_current_packet",
+  "current_packet_external_review_blockage": "docs/reviews/external_review_blocked_phoenix_v3_aabb_candidate_stream_m7_feasibility_2026-06-21.md",
+  "source_artifact": "docs/rebuild/v3/evidence/v3_claim_grade_all_benchmarks_calibrated_20260620/summary.json",
+  "paired_v2_v3_source": "docs/rebuild/v3/evidence/v2_14_vs_v3_same_rt_hardware_paired_20260620_140120/paired_v2_v3_summary.json",
+  "tutorial": "tutorials/current/12_aabb_candidate_stream.md",
+  "candidate_row": {
+    "app_id": "librts_spatial_index",
+    "comparison_group": "aabb_index_all_count_only_large_32768",
+    "dataset": "uniform",
+    "box_count": 32768,
+    "point_query_count": 32768,
+    "box_query_count": 32768,
+    "operation": "all",
+    "primitive_contract": "generic_prepared_aabb_index_query_2d",
+    "generic_primitive": "AABB_INDEX_QUERY_2D",
+    "paper_equivalent_dataset": false,
+    "authors_code_comparison": false,
+    "cpu_reference_skipped": true,
+    "matches_cpu_reference": null,
+    "counts_match_between_backends": true,
+    "counts": {
+      "point_contains": 46343760,
+      "range_contains": 32302908,
+      "range_intersects": 70429254
+    },
+    "embree_query_median_sec": 36.09376148879528,
+    "optix_query_median_sec": 0.04432278126478195,
+    "query_optix_over_embree": 814.3388221324167,
+    "embree_wall_sec": 255.32958994805813,
+    "optix_wall_sec": 1.9233407154679298,
+    "wall_optix_over_embree": 132.75317674847796,
+    "embree_elapsed_sec": 36.47207508981228,
+    "optix_elapsed_sec": 0.4940243363380432,
+    "elapsed_optix_over_embree": 73.82647454204714,
+    "warmup": 2,
+    "repeat": 5
+  },
+  "paired_v2_v3_context": {
+    "app_geomean_speedup_vs_v2_14": 1.1629427337471825,
+    "paired_rows_are_small_standard_rows": true,
+    "large_32768_v2_14_same_row_absent": true,
+    "small_embree_v3_speedup_vs_v2": 1.2061962735375036,
+    "small_optix_v3_speedup_vs_v2": 1.1212402422774685
+  },
+  "m7_blockers": [
+    "cpu_reference_skipped_and_matches_reference_null",
+    "paper_equivalent_dataset_false",
+    "authors_code_comparison_false",
+    "large_32768_v2_14_same_row_absent",
+    "public_row_level_external_review_not_done",
+    "must_keep_count_only_scope"
+  ],
+  "allowed_internal_wording": [
+    "Generic AABB candidate-stream is a strong current-side V3 OptiX-over-Embree candidate.",
+    "The row is count-only and same-contract between RTDL Embree and RTDL OptiX.",
+    "It is not LibRTS authors-code or paper-equivalent timing."
+  ],
+  "forbidden_public_wording": [
+    "RTDL reproduces the LibRTS paper",
+    "RTDL beats LibRTS authors code",
+    "AABB candidate stream is M7-qualified",
+    "V3 is 814x faster than V2",
+    "Generic AABB count-only proves full spatial-index acceleration"
+  ],
+  "goal_level_decision_audit": {
+    "decision": "create a focused AABB candidate-stream feasibility packet without M7 promotion",
+    "was_i_foolish": "No. The evidence is strong enough to isolate as a candidate, but not complete enough for public release wording.",
+    "foolish_actions": "It would be foolish to call the 814x query ratio a LibRTS paper result, author-code win, or V3-over-V2 result.",
+    "other_path": "Rerun the pod immediately. That may be useful later, but first the current evidence needs a focused claim boundary.",
+    "different_path_now": "Record the strong generic AABB signal, expose the missing reference and paired-large-row blockers, and add a rebuild lesson."
+  }
+}

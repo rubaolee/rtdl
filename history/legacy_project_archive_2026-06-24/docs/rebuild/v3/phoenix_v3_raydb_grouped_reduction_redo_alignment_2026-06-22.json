@@ -1,0 +1,124 @@
+{
+  "tool": "phoenix_v3_raydb_grouped_reduction_redo_alignment",
+  "date": "2026-06-22",
+  "status": "raydb_grouped_reduction_redo_aligned_reusable_capability_not_release",
+  "scope": "Phoenix V3 only. V4, C ABI, embedding, SDK, multi-language host work, app-specific native engines, and broad V2.x speedup claims are out of scope.",
+  "generic_capability": "grouped_reduction",
+  "app_probe": "raydb_style",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "row_scoped_public_speedup_claim_authorized_for_exact_rows_only": true,
+  "whole_app_speedup_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "true_zero_copy_authorized": false,
+  "automatic_backend_or_partner_selection_authorized": false,
+  "app_specific_native_engine_logic_allowed": false,
+  "m7_rows_retained_as_internal_release_surface_evidence": [
+    {
+      "row_id": "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+      "packet": "docs/rebuild/v3/phoenix_v3_grouped_reduction_sum_262144_m7_final_review_packet_2026-06-21.json",
+      "operation": "group_sum_i64",
+      "row_scope": "262144 rows / 1024 groups / warmup=3 / actual repeat=100",
+      "m7_status": "m7_row_evidence_scoped_not_release_after_claude_codex_consensus",
+      "same_contract": true,
+      "cpu_reference_match": true,
+      "app_specific_native_engine_logic_allowed": false,
+      "native_engine_customization": false,
+      "allowed_wording_scope": "exact row-scoped prepared grouped_reduction only",
+      "release_authorized": false,
+      "broad_v3_faster_than_v2_claim_authorized": false
+    },
+    {
+      "row_id": "grouped_reduction_sum_cupy_device_columns_repeat100_262144_rows_1024_groups",
+      "packet": "docs/rebuild/v3/phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_2026-06-21.json",
+      "operation": "prepared_grouped_sum_i64",
+      "row_scope": "262144 rows / 1024 groups / cupy_device_columns / warmup=3 / actual repeat=100",
+      "m7_status": "m7_row_evidence_scoped_not_release_after_claude_codex_consensus",
+      "same_contract": true,
+      "cpu_reference_match": true,
+      "app_specific_native_engine_logic_allowed": false,
+      "native_engine_customization": false,
+      "allowed_wording_scope": "exact row-scoped prepared grouped_reduction only",
+      "release_authorized": false,
+      "broad_v3_faster_than_v2_claim_authorized": false
+    },
+    {
+      "row_id": "grouped_reduction_sum_cupy_device_columns_repeat100_524288_rows_2048_groups",
+      "packet": "docs/rebuild/v3/phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_2026-06-21.json",
+      "operation": "prepared_grouped_sum_i64",
+      "row_scope": "524288 rows / 2048 groups / cupy_device_columns / warmup=3 / actual repeat=100",
+      "m7_status": "m7_row_evidence_scoped_not_release_after_claude_codex_consensus",
+      "same_contract": true,
+      "cpu_reference_match": true,
+      "app_specific_native_engine_logic_allowed": false,
+      "native_engine_customization": false,
+      "allowed_wording_scope": "exact row-scoped prepared grouped_reduction only",
+      "release_authorized": false,
+      "broad_v3_faster_than_v2_claim_authorized": false
+    }
+  ],
+  "current_surface_crosscheck": {
+    "release_surface_gate": "docs/rebuild/v3/phoenix_v3_release_surface_breadth_gate_2026-06-21.json",
+    "grouped_reduction_row_count_expected": 3,
+    "grouped_reduction_rows_are_in_current_surface": true,
+    "current_surface_release_authorized": false,
+    "current_surface_public_speedup_claim_authorized": false,
+    "current_surface_broad_v3_faster_than_v2_claim_authorized": false
+  },
+  "device_column_review_supersession": {
+    "old_subagent_consensus_is_historical_only": true,
+    "claude_external_review": "docs/reviews/claude_phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_review_2026-06-22.md",
+    "codex_supersession_consensus": "docs/reviews/codex_phoenix_v3_grouped_reduction_device_column_m7_final_review_packet_claude_supersession_consensus_2026-06-22.md",
+    "current_packet_external_review_status": "claude_external_approve_with_required_fixes_p1_applied_2026-06-22",
+    "current_packet_2ai_consensus_status": "claude_codex_consensus_complete_after_subagent_gap_supersession_2026-06-22",
+    "p1_status_fields_updated": true,
+    "p1_source_manifest_orchestration_scope_acknowledged": true
+  },
+  "redo_interpretation": {
+    "closed_as_reusable_engine_capability": true,
+    "counts_as_benchmark_app_development": false,
+    "counts_as_v4_or_embedding_work": false,
+    "counts_as_whole_raydb_or_database_product_claim": false,
+    "counts_as_broad_v3_over_v2_speedup": false,
+    "counts_as_productized_execution_path_gap1_completion": false,
+    "why_not_gap1_completion": "The rows prove exact grouped_reduction capability and device-column input-path improvements, but they do not prove that the Phoenix productized prepared execution/session runner executes across multiple Set-A probes.",
+    "why_keep_in_v3": "The rows are reusable grouped_reduction engine evidence with exact row identities, CPU-reference agreement, source provenance records, and review/consensus closure."
+  },
+  "serious_v2x_context": {
+    "evidence": "docs/rebuild/v3/evidence/phoenix_v3_serious_v2x_paired_20260622_074100/summary.json",
+    "same_metric_comparison_count": 52,
+    "overall_geomean_v3_speedup_vs_v2_14": 1.0117790403434224,
+    "apps_with_geomean_gt_1_05": 1,
+    "apps_with_geomean_lt_0_95": 2,
+    "release_consideration_eligible": false,
+    "interpretation": "The RayDB grouped_reduction rows do not override the failed broad V2.14 vs Phoenix V3 performance gate."
+  },
+  "set_a_set_b_measurement_note": {
+    "proposal": "docs/reviews/phoenix_v3_set_a_set_b_release_bar_proposal_2026-06-22.md",
+    "classification_for_future_all_app_scorecard": "treat bounded RayDB grouped_sum/count rows as Set-B or row-scoped controls unless they become part of a productized multi-phase execution path shared by other Set-A probes",
+    "reason": "A single fused grouped_reduction row can be excellent engine evidence while still being too narrow to prove broad runtime superiority.",
+    "freeze_before_run_required": true
+  },
+  "forbidden_readings": [
+    "V3 is release-ready because RayDB grouped_reduction has large row-scoped wins.",
+    "RTDL is a database engine.",
+    "RayDB is accelerated end to end.",
+    "The grouped_reduction rows prove broad V3-over-V2.x speedup.",
+    "The device-column rows prove true zero-copy.",
+    "The grouped_reduction rows complete Gap 1 productized execution path.",
+    "The Embree/device-column ratios are pure backend-only ratios."
+  ],
+  "next_after_closure": [
+    "Keep grouped_reduction in the current 13-row / 9-capability internal surface.",
+    "Do not spend more Phoenix time on RayDB-specific grouped_sum variants unless the work lands in a shared grouped_reduction or productized runner primitive.",
+    "Move the next Phoenix engineering focus to a second Set-A runner-backed family or a shared continuation path such as RTDBSCAN component_union.",
+    "Keep release and broad V3-over-V2 wording blocked until productized execution evidence and serious paired performance evidence justify a new review."
+  ],
+  "goal_level_decision_audit": {
+    "decision": "Close RayDB grouped_reduction for Phoenix redo as retained reusable engine evidence, not as V3 release evidence or Gap-1 completion.",
+    "was_i_foolish": "No. The decision preserves the strongest exact grouped_reduction rows while refusing to over-read them as broad V3 success.",
+    "foolish_actions": "It would be foolish to headline the large row-scoped speedups as V3 release performance, call RayDB a solved database product, or treat grouped_sum row closure as the productized execution path.",
+    "other_path": "Delete or demote all RayDB grouped_reduction work. That would throw away real reusable engine evidence and repeat the mistake of ignoring M0-M149 work.",
+    "different_path_now": "Retain the exact rows, document the non-release boundary, and move Phoenix work to shared runtime paths that can affect multiple probes."
+  }
+}

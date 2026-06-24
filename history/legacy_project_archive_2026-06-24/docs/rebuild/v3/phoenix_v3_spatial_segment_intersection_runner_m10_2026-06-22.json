@@ -1,0 +1,69 @@
+{
+  "tool": "phoenix_v3_spatial_segment_intersection_runner_m10",
+  "status": "m10_local_productized_runner_implemented_not_pod_not_release",
+  "date": "2026-06-22",
+  "m9_consensus": "docs/reviews/codex_heisenberg_phoenix_v3_m9_spatial_lsi_optix_2ai_consensus_2026-06-22.md",
+  "implemented_files": [
+    "src/rtdsl/prepared_execution.py",
+    "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+    "tests/v3_phoenix_spatial_segment_intersection_runner_wiring_test.py",
+    "scripts/v3_phoenix_spatial_lsi_optix_m9_intake.py",
+    "tests/v3_phoenix_spatial_lsi_optix_m9_intake_test.py"
+  ],
+  "new_runtime_helper": {
+    "name": "run_segment_intersection_topology_stream_prepared_session",
+    "file": "src/rtdsl/prepared_execution.py",
+    "primitive": "segment_intersection_topology_stream",
+    "productized_execution_path": "prepared_execution_session_runner",
+    "rayjoin_named_in_helper": false,
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "focused_pod_spend_authorized": false
+  },
+  "new_app_route": {
+    "execution_route": "prepared_execution_segment_intersection_topology_stream",
+    "file": "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+    "workload": "lsi",
+    "adapter_class": "PreparedExecutionRayJoinSegmentIntersectionTopologyStream",
+    "uses_existing_native_pieces": [
+      "prepare_segment_pair_intersection_optix",
+      "pack_rayjoin_optix_compact_grouped_count_left_segments",
+      "left_id_count_prepared_left_device_columns"
+    ],
+    "native_algorithm_changed": false,
+    "rayjoin_paper_specific_shortcut_added": false,
+    "emits_prepared_execution_session_runner": true,
+    "emits_topology_stream_prepared_handle": true,
+    "emits_topology_stream_m3_phase_table": true,
+    "emits_runtime_trunk_executes_end_to_end": true
+  },
+  "local_gates": [
+    {
+      "command": "py -3 -m unittest tests.v3_phoenix_spatial_segment_intersection_runner_wiring_test tests.v3_phoenix_rayjoin_prepared_execution_runner_wiring_test tests.v3_phoenix_spatial_lsi_optix_m9_intake_test",
+      "status": "pass",
+      "tests": 9
+    },
+    {
+      "command": "py -3 examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py --help | Select-String -Pattern 'prepared_execution_segment_intersection_topology_stream|execution-route' -Context 0,2",
+      "status": "pass",
+      "meaning": "CLI route is mounted; this is not a GPU performance run."
+    }
+  ],
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "focused_pod_spend_authorized": false,
+    "full_all_app_pod_spend_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v4_embedding_or_external_zero_copy_authorized": false
+  },
+  "next_review_question": "Should M10 be accepted as a local productized-runner implementation and authorized for one focused same-RT-hardware POD A/B against the old LSI route, or must more local evidence be collected first?",
+  "goal_level_decision_audit": {
+    "decision": "Implement the smallest local generic segment-intersection topology-stream prepared-session route after M9 2-AI approval.",
+    "was_i_foolish": "No.",
+    "if_yes_what_actions_made_it_foolish": "The foolish actions would be to change native algorithms, tune RayJoin paper-specific behavior, or call this a performance win without POD evidence.",
+    "was_there_another_path": "Yes: continue documentation-only analysis or burn POD immediately. Both would leave the productized-runner gap unresolved or spend money before the route existed.",
+    "can_i_try_a_different_path_now": "Yes: request 2-AI review of M10 and only then consider a focused POD A/B."
+  }
+}

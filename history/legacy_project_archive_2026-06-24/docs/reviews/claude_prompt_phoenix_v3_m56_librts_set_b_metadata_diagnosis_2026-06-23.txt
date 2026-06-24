@@ -1,0 +1,48 @@
+You are reviewing Phoenix V3 M56 for RTDL.
+
+Working directory:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Task:
+Read and critically review:
+
+- docs/reviews/call_for_review_phoenix_v3_m56_librts_set_b_metadata_diagnosis_2026-06-23.md
+- docs/reports/phoenix_v3_m56_librts_set_b_metadata_diagnosis_and_preflight_repair_2026-06-23.md
+- scripts/v3_phoenix_m47_librts_stability_protocol.py
+- tests/v3_phoenix_m47_librts_stability_protocol_test.py
+- tests/v3_phoenix_m56_librts_set_b_metadata_diagnosis_test.py
+- scripts/run_test_matrix.py
+- docs/reports/phoenix_v3_m55_librts_authorized_pod_run_intake_2026-06-23.md
+- docs/reviews/codex_claude_antigravity_phoenix_v3_m55_goal_completion_3ai_consensus_2026-06-23.md
+- docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/summary.json
+
+Use one verdict label exactly:
+
+- accept_m56_local_diagnosis_and_preflight_repair_no_pod_authorization
+- request_m56_changes_before_completion
+- reject_m56_diagnosis_or_scope
+
+Answer these questions explicitly:
+
+1. Is the diagnosis correctly scoped: productized runner executed, but metadata exposure/signature was insufficient?
+2. Is it acceptable to treat stale or insufficiently source-signed target root as an inference from copied payloads rather than a fully proven remote-file fact?
+3. Does the new current_librts_set_b_source_signature preflight materially prevent another M55-style paid run failure before samples execute?
+4. Does the repair avoid changing M55 evidence or claiming watch-row closure?
+5. Are the new tests sufficient for local completion of M56?
+6. Is the next allowed action external completion audit and, only later, a separate reviewed authorization packet if another POD run is needed?
+
+Preserve non-authorization:
+
+- no V3 release
+- no all-app benchmark run
+- no broad paid POD campaign
+- no second M47 run
+- no public speedup wording
+- no broad V3-over-V2 claim
+- no V4 work
+- no embedding
+- no C ABI
+- no true zero-copy claim
+- no watch-row closure
+
+Write a concise but critical review. If you accept, include any residual risks.

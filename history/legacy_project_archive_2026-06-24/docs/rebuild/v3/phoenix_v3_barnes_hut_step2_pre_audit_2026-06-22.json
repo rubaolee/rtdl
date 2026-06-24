@@ -1,0 +1,112 @@
+{
+  "schema": "rtdl.phoenix_v3.barnes_hut_step1_replacement_pre_audit.v2",
+  "date": "2026-06-22",
+  "status": "conditional_go_for_step1_replacement_implementation_with_required_gates_pod_not_authorized",
+  "scope": "Phoenix V3 only",
+  "redesign_position": "step_1_replacement_candidate_not_step_2_generalization",
+  "why_not_step_2": "RTDBSCAN and RayJoin proved structural runner execution but did not produce material Set-A gains; therefore Barnes-Hut is a replacement attempt to satisfy Step 1's material-exit requirement, not Step 2 generalization.",
+  "step_1_completion_verified": false,
+  "step_1_structural_evidence": [
+    "docs/reports/phoenix_v3_step1_rtdbscan_runtime_trunk_probe_pod_ab_2026-06-22.md",
+    "docs/reports/phoenix_v3_step2_rayjoin_point_location_runner_pod_ab_2026-06-22.md"
+  ],
+  "step_1_material_evidence_count": 0,
+  "candidate_family": "aggregate_tree_fused_weighted_vector_sum_2d_numba_cuda",
+  "generic_capability": "aggregate_frontier",
+  "refined_generic_capability": "vector_accumulation",
+  "contract": "generic_aggregate_tree_fused_weighted_vector_sum_2d_numba_cuda_v1",
+  "source_evidence": {
+    "vector_contract": "docs/rebuild/v3/phoenix_v3_barnes_hut_vector_accumulation_contract_2026-06-21.json",
+    "same_basis_no_go": "docs/rebuild/v3/phoenix_v3_barnes_hut_same_basis_wall_time_no_go_2026-06-21.json",
+    "fused_partner_candidate": "docs/rebuild/v3/phoenix_v3_barnes_hut_fused_partner_m7_candidate_2026-06-21.json",
+    "external_review": "docs/reviews/claude_phoenix_v3_barnes_hut_fused_partner_m7_candidate_review_2026-06-21.md",
+    "codex_consensus": "docs/reviews/codex_phoenix_v3_barnes_hut_fused_partner_m7_candidate_2ai_consensus_2026-06-21.md"
+  },
+  "m7_row_amendments_incorporated": true,
+  "m7_row_amendment_evidence": {
+    "classification_script": "scripts/v3_phoenix_m7_row_classification_packet.py",
+    "evidence_tree_structure": "barnes_hut_theta_0.5_2d_bucketized",
+    "large_scale_validation_tier": "route_parity_plus_checksum_no_independent_oracle",
+    "primary_claim_uses_cpu_numba_fused": true,
+    "prepared_optix_ratio_supporting_metadata_only": true,
+    "evidence_source_artifact_pinned": true
+  },
+  "set_ab_classification": {
+    "classification_path": "docs/rebuild/v3/phoenix_v3_set_a_set_b_classification_2026-06-22.json",
+    "classification_review": "docs/reviews/claude_phoenix_v3_set_a_set_b_classification_gate_review_2026-06-22.md",
+    "classification_consensus": "docs/reviews/codex_phoenix_v3_set_a_set_b_classification_gate_2ai_consensus_2026-06-22.md",
+    "classification_frozen_before_next_full_paired_run": true,
+    "barnes_hut_set": "A",
+    "all_app_pod_spend_authorized_now": false
+  },
+  "incumbent_findings": {
+    "current_prepared_optix_frontier_shape": {
+      "status": "historical_no_go_reference_not_primary_claim",
+      "reason": "frontier-emission shape is slower than fused Numba CUDA on the same wall basis at every serious scale",
+      "prepared_optix_numba_wall_ms": {
+        "32768": 82.434527,
+        "65536": 177.85808,
+        "131072": 618.301734
+      }
+    },
+    "current_fused_partner_app_front_door": {
+      "status": "fastest_existing_route_and_primary_parity_control",
+      "reason": "generic no-C++ Numba CUDA partner route already eliminates frontier and contribution row materialization outside the productized runner",
+      "candidate_wall_ms": {
+        "32768": 11.738643,
+        "65536": 35.643227,
+        "131072": 45.492701
+      },
+      "frontier_rows_materialized_on_host": false,
+      "contribution_rows_materialized_on_host": false,
+      "rt_cores_used": false
+    }
+  },
+  "pre_audit_decision": {
+    "pod_now_authorized": false,
+    "runtime_implementation_authorized": true,
+    "implementation_authorized_as": "Step 1 material-probe replacement candidate, not Step 2 generalization",
+    "reason": "Do not spend pod time until the existing generic fused partner is routed through prepared_execution_session_runner as a productized runtime node.",
+    "next_engine_action": "Add an app-agnostic prepared-execution helper for aggregate-tree fused weighted-vector continuation and wire Barnes-Hut to it as an adapter."
+  },
+  "required_comparisons_after_implementation": {
+    "historical_no_go_reference": "productized runner-wrapped fused partner versus current prepared OptiX frontier-emission no-go / V2.x-style frontier route",
+    "primary_parity_control": "productized runner-wrapped fused partner versus existing app-front-door fused Numba CUDA partner",
+    "control_interpretation": "A V3 material claim may use the productized path against the old frontier/CPU baseline, but must not claim the runner wrapper itself is faster than the already-fused partner unless the parity control actually shows it."
+  },
+  "parity_failure_rule": {
+    "runner_vs_existing_fused_partner_min_each_size": 0.95,
+    "runner_vs_existing_fused_partner_target_geomean": 0.98,
+    "failure_action": "If the productized runner is more than 5% slower than the existing app-front-door fused partner at any serious size, the pod packet is no-go for claim use and a runner overhead bug must be logged before promotion."
+  },
+  "expected_effect": {
+    "why_it_can_be_material": "The fused partner avoids aggregate-frontier row emission, host frontier materialization, and host contribution materialization that dominate the old frontier-emission shape.",
+    "why_runner_wrapper_alone_may_not_be_material": "The existing app-front-door fused partner already removed those costs, so the runner must preserve its performance rather than pretend to create it."
+  },
+  "hard_guards": {
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "full_all_app_rerun_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "app_specific_native_engine_logic_allowed": false
+  },
+  "exit_criteria_for_next_pod_ab": [
+    "generic helper lives in src/rtdsl/prepared_execution.py or another runtime module, not only in the Barnes-Hut app",
+    "helper name and metadata are app-agnostic and contain no Barnes-Hut-specific native semantics",
+    "Barnes-Hut app adapter calls the productized helper",
+    "runner metadata reports runtime_executed true, partner explicit numba_cuda, internal residency true, no frontier/contribution row host materialization",
+    "local tests prove claim flags stay false",
+    "then run focused pod A/B with both historical no-go reference and primary parity control"
+  ],
+  "external_pre_audit_review": "docs/reviews/claude_phoenix_v3_barnes_hut_step1_replacement_pre_audit_review_2026-06-22.md",
+  "goal_level_decision_audit": {
+    "decision": "Continue with Barnes-Hut as a Step 1 replacement material-probe candidate only after productizing the fused partner as a runtime-trunk node, not by running another app-front-door pod benchmark first.",
+    "was_i_foolish": "No after amendment. The audit no longer pretends Step 1 is complete and separates a real performance source from a runner-wrapper parity control.",
+    "foolish_actions": "The foolish action would be to compare against the slow OptiX frontier route only, hide that the fast fused partner already exists, and call that a pure runner win.",
+    "other_path": "Run pod immediately against the old OptiX route. That would likely produce a large number but would not prove the productized runtime path exists.",
+    "different_path_now": "First wire the generic fused partner through prepared_execution_session_runner; then run pod with both the historical no-go reference and the primary parity control."
+  }
+}

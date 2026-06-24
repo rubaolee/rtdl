@@ -1,0 +1,131 @@
+{
+  "checks": [
+    {
+      "detail": "v3.0.2",
+      "name": "version marker",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "src/rtdsl/__init__.py",
+      "name": "src/rtdsl",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "README.md",
+      "name": "front page",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "tutorials/current/README.md",
+      "name": "top-level tutorials",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "examples/current/README.md",
+      "name": "current examples",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "docs/release_reports/v3_0_2/README.md",
+      "name": "v3.0.2 release package",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "docs/learn/v3_0_app_author_implementation_strategy.md",
+      "name": "V3 app-author strategy",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "scripts/run_test_matrix.py --group v3_current (39 modules)",
+      "name": "V3 current test matrix",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "pyproject.toml",
+      "name": "optional editable source-tree metadata",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "3.12.3",
+      "name": "python version",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "rtdsl",
+      "name": "module rtdsl",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "numpy",
+      "name": "module numpy",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "imageio",
+      "name": "optional module imageio",
+      "required": false,
+      "status": "warn"
+    },
+    {
+      "detail": "imageio_ffmpeg",
+      "name": "optional module imageio-ffmpeg",
+      "required": false,
+      "status": "warn"
+    },
+    {
+      "detail": "cupy",
+      "name": "optional module cupy",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "numba",
+      "name": "optional module numba",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "/workspace/rtdl_v2_vs_v3_pod_20260620_024503/v3.0.2/build/librtdl_optix.so",
+      "name": "optional OptiX library",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "build/librtdl_embree.so",
+      "name": "optional Embree library",
+      "required": false,
+      "status": "pass"
+    }
+  ],
+  "ok": true,
+  "repo": "/workspace/rtdl_v2_vs_v3_pod_20260620_024503/v3.0.2",
+  "required_failures": [],
+  "tool": "rtdl_source_tree_doctor",
+  "version": "v3.0.2",
+  "warnings": [
+    {
+      "detail": "imageio",
+      "name": "optional module imageio",
+      "required": false,
+      "status": "warn"
+    },
+    {
+      "detail": "imageio_ffmpeg",
+      "name": "optional module imageio-ffmpeg",
+      "required": false,
+      "status": "warn"
+    }
+  ]
+}

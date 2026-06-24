@@ -1,0 +1,173 @@
+{
+  "accepted_secondary_role": "source-tree, dependency, wording, and GPU-Python compatibility confirmation; secondary RT blocker closed only by reviewed single-RTX hardware-scope waiver",
+  "checks": {
+    "all_hosts_are_gtx_1070": true,
+    "all_hosts_are_lx1": true,
+    "all_matrix_runs_ok": true,
+    "all_source_tree_doctors_ok": true,
+    "all_wording_gates_pass": true,
+    "gpu_env_gate_exists": true,
+    "gpu_env_gate_pass": true,
+    "no_lx1_all_app_performance_summary": true,
+    "no_lx1_paired_performance_summary": true,
+    "v3_all_benchmark_lx1_confirmation_20260620_doctor_exists": true,
+    "v3_all_benchmark_lx1_confirmation_20260620_exists": true,
+    "v3_all_benchmark_lx1_confirmation_20260620_host_exists": true,
+    "v3_all_benchmark_lx1_confirmation_20260620_matrix_exists": true,
+    "v3_all_benchmark_lx1_confirmation_20260620_wording_exists": true,
+    "v3_paired_report_lx1_confirmation_20260620_doctor_exists": true,
+    "v3_paired_report_lx1_confirmation_20260620_exists": true,
+    "v3_paired_report_lx1_confirmation_20260620_host_exists": true,
+    "v3_paired_report_lx1_confirmation_20260620_matrix_exists": true,
+    "v3_paired_report_lx1_confirmation_20260620_wording_exists": true,
+    "v3_second_machine_lx1_confirmation_20260620_doctor_exists": true,
+    "v3_second_machine_lx1_confirmation_20260620_exists": true,
+    "v3_second_machine_lx1_confirmation_20260620_host_exists": true,
+    "v3_second_machine_lx1_confirmation_20260620_matrix_exists": true,
+    "v3_second_machine_lx1_confirmation_20260620_wording_exists": true,
+    "waiver_candidate_exists": true,
+    "waiver_candidate_has_required_scope": true,
+    "waiver_claude_review_accepts_not_release": true,
+    "waiver_claude_review_exists": true,
+    "waiver_codex_consensus_accepts_not_release": true,
+    "waiver_codex_consensus_exists": true
+  },
+  "decision_audit": {
+    "decision": "Close the secondary RT blocker only by reviewed single-RTX hardware-scope waiver.",
+    "different_path_now": "Use the reviewed waiver to remove only the secondary blocker, then require aggregate release-readiness review before any release authorization.",
+    "foolish_actions": "The foolish action would be treating lx1 or the reachable RTX 4000 Ada pod as second-RT-hardware portability evidence.",
+    "other_path": "Run a true second RTX-class machine. That remains stronger evidence but is not available in the known machine set.",
+    "was_i_foolish": "No. The gate keeps second-machine RT confirmation false while requiring both Claude review and Codex consensus for the waiver."
+  },
+  "evidence": {
+    "classification": {
+      "all_app_performance_suite_rerun_on_lx1": false,
+      "gpu": "NVIDIA GeForce GTX 1070",
+      "has_rt_cores_for_claims": false,
+      "lx1_role": "secondary_compatibility_and_reproducibility_host",
+      "paired_v2_v3_performance_suite_rerun_on_lx1": false
+    },
+    "gpu_env_gate": {
+      "cupy_rawkernel": "pass",
+      "numba_cuda_jit": "pass",
+      "packages": {
+        "cupy": "missing: No package metadata was found for cupy",
+        "cupy-cuda12x": "14.0.1",
+        "numba": "0.65.1",
+        "nvidia-cuda-nvcc-cu12": "missing: No package metadata was found for nvidia-cuda-nvcc-cu12",
+        "nvidia-cuda-nvrtc-cu12": "12.6.85",
+        "nvidia-cuda-runtime-cu12": "12.6.77",
+        "torch": "2.12.1+cu126"
+      },
+      "pass": true,
+      "path": "docs\\rebuild\\v3\\evidence\\v3_second_machine_lx1_confirmation_20260620\\gpu_env_gate_summary.json",
+      "status": "pass",
+      "torch_cuda": "pass"
+    },
+    "hardware_scope_waiver": {
+      "candidate": "docs\\rebuild\\v3\\v3_secondary_rt_hardware_scope_waiver_candidate_2026-06-21.md",
+      "claude_review": "docs\\reviews\\claude_phoenix_v3_secondary_rt_hardware_scope_waiver_review_2026-06-21.md",
+      "codex_consensus": "docs\\reviews\\codex_phoenix_v3_secondary_rt_hardware_scope_waiver_2ai_consensus_2026-06-21.md",
+      "method": "reviewed_hardware_scoped_waiver",
+      "reviewed": true,
+      "scope": "single_rtx_4000_ada_driver_550_127_05_pod"
+    },
+    "hosts": [
+      {
+        "gpu": "NVIDIA GeForce GTX 1070",
+        "gtx_1070": true,
+        "host_lx1": true,
+        "path": "docs\\rebuild\\v3\\evidence\\v3_all_benchmark_lx1_confirmation_20260620\\host.txt",
+        "text": "lx1\n2026-06-20T08:28:12-04:00\nLinux lx1 6.17.0-20-generic #20~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Mar 19 01:28:37 UTC 2 x86_64 x86_64 x86_64 GNU/Linux\nNVIDIA GeForce GTX 1070, 580.126.09, 8192 MiB"
+      },
+      {
+        "gpu": "NVIDIA GeForce GTX 1070",
+        "gtx_1070": true,
+        "host_lx1": true,
+        "path": "docs\\rebuild\\v3\\evidence\\v3_paired_report_lx1_confirmation_20260620\\host.txt",
+        "text": "lx1\n2026-06-20T10:31:38-04:00\nLinux lx1 6.17.0-20-generic #20~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Mar 19 01:28:37 UTC 2 x86_64 x86_64 x86_64 GNU/Linux\nNVIDIA GeForce GTX 1070, 580.126.09, 8192 MiB"
+      },
+      {
+        "gpu": "NVIDIA GeForce GTX 1070",
+        "gtx_1070": true,
+        "host_lx1": true,
+        "path": "docs\\rebuild\\v3\\evidence\\v3_second_machine_lx1_confirmation_20260620\\host.txt",
+        "text": "host=lx1\nuser=lestat\npwd=/home/lestat/work/rtdl_v3_second_machine_confirm_20260620\nPython 3.12.3\ngit version 2.43.0\nNVIDIA GeForce GTX 1070, 580.126.09, 8192 MiB"
+      }
+    ],
+    "source_tree_doctors": [
+      {
+        "ok": true,
+        "path": "docs\\rebuild\\v3\\evidence\\v3_all_benchmark_lx1_confirmation_20260620\\source_tree_doctor.json",
+        "required_failures": [],
+        "status": "v3_rebuild_ready"
+      },
+      {
+        "ok": true,
+        "path": "docs\\rebuild\\v3\\evidence\\v3_paired_report_lx1_confirmation_20260620\\source_tree_doctor.json",
+        "required_failures": [],
+        "status": "v3_rebuild_ready"
+      },
+      {
+        "ok": true,
+        "path": "docs\\rebuild\\v3\\evidence\\v3_second_machine_lx1_confirmation_20260620\\source_tree_doctor.json",
+        "required_failures": [],
+        "status": "v3_rebuild_ready"
+      }
+    ],
+    "v3_rebuild_matrices": [
+      {
+        "module_count": 8,
+        "ok": true,
+        "path": "docs\\rebuild\\v3\\evidence\\v3_all_benchmark_lx1_confirmation_20260620\\v3_rebuild_matrix.json",
+        "returncode": 0
+      },
+      {
+        "module_count": 9,
+        "ok": true,
+        "path": "docs\\rebuild\\v3\\evidence\\v3_paired_report_lx1_confirmation_20260620\\v3_rebuild_matrix.json",
+        "returncode": 0
+      },
+      {
+        "module_count": 6,
+        "ok": true,
+        "path": "docs\\rebuild\\v3\\evidence\\v3_second_machine_lx1_confirmation_20260620\\v3_rebuild_matrix.json",
+        "returncode": 0
+      }
+    ],
+    "wording_gates": [
+      {
+        "pass": true,
+        "path": "docs\\rebuild\\v3\\evidence\\v3_all_benchmark_lx1_confirmation_20260620\\wording_gate.json",
+        "status": "pass",
+        "violations": []
+      },
+      {
+        "pass": true,
+        "path": "docs\\rebuild\\v3\\evidence\\v3_paired_report_lx1_confirmation_20260620\\wording_gate.json",
+        "status": "pass",
+        "violations": []
+      },
+      {
+        "pass": true,
+        "path": "docs\\rebuild\\v3\\evidence\\v3_second_machine_lx1_confirmation_20260620\\wording_gate.json",
+        "status": "pass",
+        "violations": []
+      }
+    ]
+  },
+  "failed_checks": [],
+  "hardware_performance_scope": "single_rtx_4000_ada_driver_550_127_05_pod",
+  "multi_gpu_performance_portability_claim_authorized": false,
+  "rejected_secondary_role": "second RT-core performance confirmation and multi-GPU performance portability for V3 public speed claims",
+  "release_authorized": false,
+  "required_next_action": "Obtain a new aggregate release-readiness review that explicitly covers the source-tree/pod-gated thirteen-row scope, scoped installer closure, and single-RTX hardware waiver.",
+  "secondary_compatibility_confirmed": true,
+  "secondary_platform_closes_release_blocker": true,
+  "secondary_platform_closes_release_blocker_method": "reviewed_hardware_scoped_waiver",
+  "secondary_platform_closes_release_blocker_scope": "single_rtx_4000_ada_driver_550_127_05_pod",
+  "secondary_rt_hardware_scope_waiver_reviewed": true,
+  "secondary_rt_performance_confirmation_authorized": false,
+  "status": "compatibility_confirmed_hardware_scope_waiver_reviewed_not_release",
+  "tool": "v3_phoenix_secondary_platform_gate"
+}

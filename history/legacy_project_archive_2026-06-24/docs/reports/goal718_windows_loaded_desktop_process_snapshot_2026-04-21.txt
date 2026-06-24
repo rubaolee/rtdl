@@ -1,0 +1,153 @@
+2026-04-21T14:14:52.8308077-04:00
+[
+    {
+        "ProcessName":  "System",
+        "Id":  4,
+        "CPU":  15952.59375,
+        "WorkingSet64":  10272768
+    },
+    {
+        "ProcessName":  "chrome",
+        "Id":  1824,
+        "CPU":  12079.5,
+        "WorkingSet64":  264527872
+    },
+    {
+        "ProcessName":  "dwm",
+        "Id":  1256,
+        "CPU":  8210.84375,
+        "WorkingSet64":  101666816
+    },
+    {
+        "ProcessName":  "chrome",
+        "Id":  12280,
+        "CPU":  4684.046875,
+        "WorkingSet64":  552030208
+    },
+    {
+        "ProcessName":  "svchost",
+        "Id":  4056,
+        "CPU":  4061.546875,
+        "WorkingSet64":  23322624
+    },
+    {
+        "ProcessName":  "AdobeCollabSync",
+        "Id":  1476,
+        "CPU":  4024.625,
+        "WorkingSet64":  44720128
+    },
+    {
+        "ProcessName":  "Codex",
+        "Id":  4140,
+        "CPU":  2262.59375,
+        "WorkingSet64":  335224832
+    },
+    {
+        "ProcessName":  "MsMpEng",
+        "Id":  4984,
+        "CPU":  1972.890625,
+        "WorkingSet64":  318492672
+    },
+    {
+        "ProcessName":  "chrome",
+        "Id":  15244,
+        "CPU":  1934.765625,
+        "WorkingSet64":  675966976
+    },
+    {
+        "ProcessName":  "svchost",
+        "Id":  13092,
+        "CPU":  1254.984375,
+        "WorkingSet64":  15544320
+    },
+    {
+        "ProcessName":  "Codex",
+        "Id":  11224,
+        "CPU":  1246.578125,
+        "WorkingSet64":  174305280
+    },
+    {
+        "ProcessName":  "chrome",
+        "Id":  9500,
+        "CPU":  1184.125,
+        "WorkingSet64":  215433216
+    },
+    {
+        "ProcessName":  "chrome",
+        "Id":  3796,
+        "CPU":  1064.796875,
+        "WorkingSet64":  77500416
+    },
+    {
+        "ProcessName":  "svchost",
+        "Id":  1872,
+        "CPU":  882.21875,
+        "WorkingSet64":  21389312
+    },
+    {
+        "ProcessName":  "Codex",
+        "Id":  10972,
+        "CPU":  858.71875,
+        "WorkingSet64":  186867712
+    },
+    {
+        "ProcessName":  "explorer",
+        "Id":  4888,
+        "CPU":  393.46875,
+        "WorkingSet64":  288997376
+    },
+    {
+        "ProcessName":  "codex",
+        "Id":  4808,
+        "CPU":  354.296875,
+        "WorkingSet64":  82124800
+    },
+    {
+        "ProcessName":  "svchost",
+        "Id":  4772,
+        "CPU":  205.90625,
+        "WorkingSet64":  49909760
+    },
+    {
+        "ProcessName":  "svchost",
+        "Id":  1748,
+        "CPU":  144.59375,
+        "WorkingSet64":  38744064
+    },
+    {
+        "ProcessName":  "svchost",
+        "Id":  3520,
+        "CPU":  110.625,
+        "WorkingSet64":  22167552
+    },
+    {
+        "ProcessName":  "svchost",
+        "Id":  3452,
+        "CPU":  110.375,
+        "WorkingSet64":  11264000
+    },
+    {
+        "ProcessName":  "services",
+        "Id":  1532,
+        "CPU":  108.125,
+        "WorkingSet64":  15466496
+    },
+    {
+        "ProcessName":  "lsass",
+        "Id":  1560,
+        "CPU":  97.375,
+        "WorkingSet64":  28622848
+    },
+    {
+        "ProcessName":  "csrss",
+        "Id":  1440,
+        "CPU":  91.65625,
+        "WorkingSet64":  5865472
+    },
+    {
+        "ProcessName":  "ctfmon",
+        "Id":  4872,
+        "CPU":  85.265625,
+        "WorkingSet64":  50315264
+    }
+]

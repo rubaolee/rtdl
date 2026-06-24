@@ -1,0 +1,4 @@
+{
+  "response": {},
+  "error": "failed to fetch available models: rpc error: code = Unauthenticated desc = missing CSRF token"
+}

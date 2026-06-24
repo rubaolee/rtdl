@@ -1,0 +1,39 @@
+{
+  "candidate_count": 47259,
+  "candidate_minus_exact": -3,
+  "candidate_route": "relation_status_corrected_executor_validated",
+  "checks": {
+    "exact_executor_intake_remains_not_m7": true,
+    "failed_before_evidence_promotion": true,
+    "mismatch_recorded": true,
+    "rejected_log_exists": true,
+    "relation_status_mode_was_explicit": true
+  },
+  "dataset": "/root/rtdl_v3_rebuild_20260620/current/data/rayjoin_public_cdb/br_county.cdb",
+  "exact_authority_count": 47262,
+  "failed_checks": [],
+  "failure_class": "validated_candidate_exactness_mismatch",
+  "generic_capability": "point_location_topology_stream",
+  "goal_level_decision_audit": {
+    "decision": "Reject the relation-status corrected Spatial executor for Phoenix M7 after exact-count validation failed on public county.",
+    "different_path_now": "Do not promote relation-status corrected Spatial. Continue with exact topology-continuation correctness repair or another generic engine target.",
+    "foolish_actions": "The foolish action would be to keep the faster-looking route, hide the 47259 != 47262 mismatch, or call it an acceptable approximation for V3.",
+    "other_path": "I could have skipped this route because old history had mixed correctness. Testing it with a fail-closed gate was better because it produced current evidence.",
+    "was_i_foolish": "No. I tried a plausible existing generic continuation route but required exact parity before allowing evidence promotion."
+  },
+  "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+  "interpretation": "The relation-status corrected executor is a reusable generic device-side scalar-count candidate, but it is not exact on the public county packet. The fail-closed validation worked and no Spatial RayJoin M7 or public speedup claim is authorized.",
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "next_engine_action": "Keep the route diagnostic-only until relation-status boundary semantics match exact prepared closed-shape membership on public county plus adverse subset evidence.",
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "row_scoped_public_speedup_claim_authorized": false,
+  "rtdl_beats_rayjoin_claim_authorized": false,
+  "source_log": "docs/rebuild/v3/evidence/phoenix_v3_spatial_rayjoin_relation_status_corrected_rejected_smoke_20260621/run.log",
+  "status": "spatial_rayjoin_relation_status_corrected_executor_no_go_exact_mismatch",
+  "tool": "v3_phoenix_spatial_rayjoin_relation_status_corrected_no_go",
+  "true_zero_copy_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}

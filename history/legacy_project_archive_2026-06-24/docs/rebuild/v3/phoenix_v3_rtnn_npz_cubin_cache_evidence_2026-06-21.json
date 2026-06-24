@@ -1,0 +1,138 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "cache_reductions": {
+    "cold_plus_query": 6.85399860949065,
+    "execution_prepare": 13.221440888493243,
+    "runner_wall": 4.269734872599255
+  },
+  "candidate_scope": "generic RTNN fixed-radius ranked-summary input-column ingestion plus generic OptiX CUBIN cache; RTNN is the evidence harness",
+  "checks": {
+    "cache_file_observed": true,
+    "cache_reduces_execution_prepare_at_least_2x": true,
+    "cache_reduces_runner_wall_at_least_2x": true,
+    "cold_plus_below_material_floor": true,
+    "cold_plus_positive_vs_cupy": true,
+    "cold_runner_completed": true,
+    "cold_summary_exists": true,
+    "hardware_gate_passed": true,
+    "hot_speedup_is_material": true,
+    "integer_signature_match": true,
+    "npz_source_recorded_on_both_routes": true,
+    "release_flags_false": true,
+    "repeat5": true,
+    "runner_wall_below_material_floor": true,
+    "runner_wall_positive_vs_cupy": true,
+    "same_contract_signature_match": true,
+    "serious_scale": true,
+    "warm_failed_checks_empty": true,
+    "warm_runner_completed": true,
+    "warm_summary_exists": true
+  },
+  "evidence": {
+    "cold_summary": "docs/rebuild/v3/evidence/phoenix_v3_rtnn_npz_cubin_cache_1048576_r5_20260621/cold_compare/summary.json",
+    "root": "docs/rebuild/v3/evidence/phoenix_v3_rtnn_npz_cubin_cache_1048576_r5_20260621",
+    "run_log": "docs/rebuild/v3/evidence/phoenix_v3_rtnn_npz_cubin_cache_1048576_r5_20260621/run.log",
+    "source_manifest": "docs/rebuild/v3/evidence/phoenix_v3_rtnn_npz_cubin_cache_1048576_r5_20260621/source_manifest.sha256",
+    "warm_summary": "docs/rebuild/v3/evidence/phoenix_v3_rtnn_npz_cubin_cache_1048576_r5_20260621/warm_compare/summary.json"
+  },
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not call 1.328x runner-wall speedup a Phoenix V3 material performance win.",
+    "Do not quote the 7.784x hot-query speedup without the warm-cache and wall-time boundary.",
+    "Do not promote RTNN to M7 from this packet.",
+    "Do not claim whole-app, V2 comparison, or broad V3 speedup wording."
+  ],
+  "generic_capability": "fixed_radius_neighbors_3d_npz_ingestion_plus_optix_cubin_cache",
+  "goal_level_decision_audit": {
+    "decision": "Combine the V3 NPZ input-column path with the generic OptiX CUBIN cache on the RTX POD, but keep RTNN not M7 because material wall speed is still missing.",
+    "different_path_now": "Work on reusable prepared-session amortization or input-pack/device-column reuse, or switch to another P0 generic engine item if RTNN remains below the floor.",
+    "foolish_actions": "It would be foolish to treat the hot-query result or the new 1.328x runner-wall result as a release-grade RTNN win.",
+    "other_path": "I could have stopped after the NPZ-only rerun, but that would ignore the existing generic CUBIN cache improvement and leave the blocker diagnosis incomplete.",
+    "was_i_foolish": "No. This tests two reusable V3 engine improvements together and still blocks promotion when the material floor is not met."
+  },
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "m7_reopen_candidate_pending_2ai_review": false,
+  "material_speedup_floor": 2.0,
+  "measurements": {
+    "cold_optix": {
+      "cold_plus_query_wall_sec": 3.2233414575457573,
+      "execution_prepare_sec": 2.998142696917057,
+      "hot_query_median_sec": 0.010838903486728668,
+      "input_load_sec": 0.020203255116939545,
+      "input_pack_sec": 0.19415660202503204,
+      "point_column_file": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_cache_1048576_r5_20260621_171002/cold_compare/rtnn_full_batch_points.csv.npz",
+      "point_column_source": "npz",
+      "runner_wall_sec": 3.605145402252674
+    },
+    "warm_cupy_grid": {
+      "cold_plus_query_wall_sec": 0.586500346660614,
+      "grid_prepare_sec": 0.48766984045505524,
+      "hot_query_median_sec": 0.08430434763431549,
+      "input_load_sec": 0.014526158571243286,
+      "point_column_file": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_cache_1048576_r5_20260621_171002/warm_compare/rtnn_full_batch_points.csv.npz",
+      "point_column_source": "npz",
+      "runner_wall_sec": 1.1216768994927406
+    },
+    "warm_optix": {
+      "cold_plus_query_wall_sec": 0.4702862724661827,
+      "execution_prepare_sec": 0.22676368802785873,
+      "hot_query_median_sec": 0.01083105057477951,
+      "input_load_sec": 0.025110282003879547,
+      "input_pack_sec": 0.20758125185966492,
+      "point_column_file": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_cache_1048576_r5_20260621_171002/warm_compare/rtnn_full_batch_points.csv.npz",
+      "point_column_source": "npz",
+      "runner_wall_sec": 0.8443487733602524
+    }
+  },
+  "next_engine_action": "Keep RTNN ranked_summary open. The next reusable work is prepared-session amortization or device-column pack reuse; do not publish RTNN wall-speedup wording from a 1.328x runner-wall result.",
+  "not_m7_blockers": [
+    "Warm NPZ+CUBIN runner-wall speedup is 1.328x, below the 2.0x material floor.",
+    "Warm NPZ+CUBIN cold-plus-query speedup is 1.247x, below the 2.0x material floor.",
+    "The non-hot OptiX path is still about 42x the hot query, so prepare/pack/session overhead remains the blocker.",
+    "No external Claude/Gemini review has accepted this as an M7 row."
+  ],
+  "parity": {
+    "cupy_grid_reference_summary": {
+      "bounded_neighbor_count": 37044632,
+      "kth_id_checksum": 549679635418,
+      "nearest_id_checksum": 549755289600,
+      "row_count": 1048576,
+      "sum_distance": 539061.8025638647
+    },
+    "delta_optix_minus_cupy_grid": {
+      "bounded_neighbor_count": 0,
+      "kth_id_checksum": 0,
+      "nearest_id_checksum": 0,
+      "row_count": 0,
+      "sum_distance": -6.508408114314079e-05
+    },
+    "integer_signature_match": true,
+    "optix_summary": {
+      "bounded_neighbor_count": 37044632,
+      "kth_id_checksum": 549679635418,
+      "nearest_id_checksum": 549755289600,
+      "row_count": 1048576,
+      "sum_distance": 539061.8024987807
+    },
+    "same_contract_signature_match": true,
+    "sum_distance_abs_error": 6.508408114314079e-05,
+    "sum_distance_relative_error": 1.2073584296566818e-10,
+    "sum_distance_relative_tolerance": 0.0001
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "remaining_overhead": {
+    "warm_optix_input_pack_plus_prepare_sec": 0.43434493988752365,
+    "warm_optix_non_hot_over_hot_query": 42.42018987163269,
+    "warm_optix_non_hot_sec": 0.4594552218914032
+  },
+  "status": "rtnn_npz_cubin_cache_wall_improves_not_m7_material_floor_not_met",
+  "tool": "v3_phoenix_rtnn_npz_cubin_cache_evidence",
+  "warm_comparison_vs_cupy_grid": {
+    "cold_plus_query_speedup": 1.2471134732149511,
+    "hot_query_speedup": 7.7835799078088685,
+    "runner_wall_speedup": 1.3284520980930739
+  },
+  "whole_app_speedup_claim_authorized": false
+}

@@ -1,0 +1,37 @@
+You are reviewing Phoenix V3 M58 for RTDL.
+
+Working directory:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Task:
+Critically review the copied M58 evidence from the single M57-authorized source-signature-gated LibRTS M47 POD rerun.
+
+Read:
+
+- docs/reviews/call_for_review_phoenix_v3_m58_librts_m57_authorized_pod_rerun_intake_2026-06-23.md
+- docs/reports/phoenix_v3_m58_librts_m57_authorized_pod_rerun_intake_2026-06-23.md
+- docs/reviews/codex_claude_antigravity_phoenix_v3_m57_one_rerun_authorization_3ai_consensus_2026-06-23.md
+- docs/rebuild/v3/evidence/phoenix_v3_m58_librts_m57_authorized_target_dry_run_20260624_0054/summary.json
+- docs/rebuild/v3/evidence/phoenix_v3_m58_librts_m57_authorized_target_dry_run_20260624_0054/preflight_current_librts_set_b_source_signature.stdout.txt
+- docs/rebuild/v3/evidence/phoenix_v3_m58_librts_m57_authorized_execution_20260624_0055/summary.json
+- docs/rebuild/v3/evidence/phoenix_v3_m58_librts_m57_authorized_execution_20260624_0055/m58_execution_driver.log
+- tests/v3_phoenix_m58_librts_authorized_rerun_intake_gate_test.py
+- docs/reports/phoenix_v3_m58_v3_rebuild_before_external_review_2026-06-23.combined.txt
+
+Choose exactly one verdict:
+
+- accept_m58_valid_yellow_watch_rows_open_no_closure
+- request_m58_clarification_before_completion
+- reject_m58_evidence_invalid_or_scope_breached
+
+Answer:
+
+1. Was M58 within the exact M57 one-run authorization?
+2. Is the target dry-run/source-signature gate evidence sufficient?
+3. Is the execution copy-back complete enough for review?
+4. Do the M47 yellow labels follow from the summary metrics and metadata?
+5. Is it correct that set_b_control_candidate_missing is cleared?
+6. Is it also correct that neither watch row is green/closed?
+7. What is the next allowed action?
+
+Preserve non-authorization: no V3 release, no all-app benchmark run, no broad paid POD campaign, no second M57 run, no public speedup wording, no broad V3-over-V2 claim, no V4, no embedding, no C ABI, no true-zero-copy claim, no watch-row closure.

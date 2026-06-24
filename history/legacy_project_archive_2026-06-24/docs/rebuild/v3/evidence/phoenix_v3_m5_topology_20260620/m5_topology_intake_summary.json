@@ -1,0 +1,40 @@
+{
+  "artifact_dir": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_m5_topology_20260620",
+  "checks": {
+    "gpu_env_gate_passed": true,
+    "m5_graph_gate_ready": true,
+    "optix_hardware_gate_passed": true,
+    "overlay_same_contract_ready": true,
+    "pip_same_contract_ready": true
+  },
+  "comparison_methodology": {
+    "rayjoin_timer": "query_exec stdout Timing breakdown: Query",
+    "rtdl_native_timer": "prepared.last_phase_timings()['traversal']",
+    "rtdl_total_timer": "Python time.perf_counter around prepared.count_positive_faces",
+    "timing_basis_note": "RayJoin author timing uses the internal C++ Query timer parsed from query_exec stdout. RTDL OptiX/Embree hot medians use Python time.perf_counter around count_positive_faces and include Python dispatch and scalar count-return overhead. The rayjoin_rt_speedup_vs_rtdl_optix_native_traversal comparison is the narrower native-traversal basis; neither comparison is a paper-reproduction claim."
+  },
+  "failures": [],
+  "generic_capability": "point_location_topology_stream",
+  "headline": "M5 author-code comparison: present. Evidence remains internal until M7.",
+  "m5_author_code_comparison_status": "complete",
+  "metrics": {
+    "overlay_active_count": 174,
+    "overlay_embree_over_optix_timed_median": 499.11182637483904,
+    "pip_correctness_sample": 100000,
+    "pip_parity_filter_rejected_count": 1,
+    "pip_point_count": 100000,
+    "pip_positive_face_count": 43738,
+    "pip_rayjoin_rt_speedup_vs_rtdl_optix_native_traversal": 3.860711740744286,
+    "pip_rtdl_optix_native_traversal_speedup_vs_rtdl_embree": 2.833970485049823,
+    "pip_rtdl_optix_speedup_vs_rtdl_embree": 1.91993187575488
+  },
+  "overall_status": "internal_evidence_with_author_code",
+  "overlay_author_comparison_status": "not_applicable_internal_same_contract_only",
+  "phoenix_m7_qualified_release_rows": 0,
+  "public_speedup_claim_authorized": false,
+  "query_exec_status": "present",
+  "release_authorized": false,
+  "status": "pass",
+  "status_label": "internal-author-complete",
+  "tool": "v3_phoenix_m5_topology_intake"
+}

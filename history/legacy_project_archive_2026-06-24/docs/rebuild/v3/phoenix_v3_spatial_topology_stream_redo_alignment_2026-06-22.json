@@ -1,0 +1,118 @@
+{
+  "tool": "phoenix_v3_spatial_topology_stream_redo_alignment",
+  "date": "2026-06-22",
+  "status": "spatial_topology_stream_redo_aligned_internal_row_not_public_speedup",
+  "scope": "Phoenix V3 only. V4, C ABI, embedding, SDK, multi-language host work, RayJoin paper reproduction, RTDL-beats-RayJoin wording, and broad V2.x speedup claims are out of scope.",
+  "generic_capability": "point_location_topology_stream",
+  "app_probe": "spatial_rayjoin",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "row_scoped_public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "paper_reproduction_claim_authorized": false,
+  "rtdl_beats_rayjoin_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "true_zero_copy_authorized": false,
+  "v4_embedding_claim_authorized": false,
+  "app_specific_native_engine_logic_allowed": false,
+  "m7_rows_retained_as_internal_release_surface_evidence": [
+    {
+      "row_id": "point_location_topology_stream_relation_status_guarded_squared_boundary_prefilter_zero_county_repeat50_sample7",
+      "packet": "docs/rebuild/v3/phoenix_v3_spatial_relation_status_squared_boundary_candidate_2026-06-21.json",
+      "operation": "relation_status_corrected_executor_validated_with_guarded_squared_boundary_and_prefilter_zero",
+      "row_scope": "br_county.cdb self query, point-order y_then_x, exact emitted count 47262, repeat=50, sample=7",
+      "m7_status": "default_path_m7_row_accepted_with_boundary_not_release",
+      "same_dataset": true,
+      "row_count_consistent": true,
+      "author_result_count_parity_verified": false,
+      "app_specific_native_engine_logic_allowed": false,
+      "allowed_wording_scope": "internal point_location_topology_stream release-surface row only",
+      "release_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "row_scoped_public_speedup_claim_authorized": false,
+      "rtdl_beats_rayjoin_claim_authorized": false,
+      "paper_reproduction_claim_authorized": false,
+      "broad_v3_faster_than_v2_claim_authorized": false
+    }
+  ],
+  "current_surface_crosscheck": {
+    "release_surface_gate": "docs/rebuild/v3/phoenix_v3_release_surface_breadth_gate_2026-06-21.json",
+    "point_location_topology_stream_row_count_expected": 1,
+    "point_location_topology_stream_rows_are_in_current_surface": true,
+    "current_surface_release_authorized": false,
+    "current_surface_public_speedup_claim_authorized": false,
+    "current_surface_broad_v3_faster_than_v2_claim_authorized": false
+  },
+  "default_path_evidence": {
+    "packet": "docs/rebuild/v3/phoenix_v3_spatial_relation_status_squared_boundary_candidate_2026-06-21.json",
+    "external_review": "docs/reviews/claude_phoenix_v3_spatial_default_path_promotion_review_2026-06-22.md",
+    "codex_consensus": "docs/reviews/codex_phoenix_v3_spatial_default_path_promotion_2ai_consensus_2026-06-22.md",
+    "dataset": "data/rayjoin_public_cdb/br_county.cdb",
+    "exact_emitted_count": 47262,
+    "default_path_median_ms": 1.0805986821651459,
+    "default_path_worst_ms": 1.083526760339737,
+    "author_query_ms": 1.86566,
+    "default_path_speedup_vs_author_query_timer": 1.7265058997313072,
+    "default_path_speedup_vs_disable_control": 5.371926183589535,
+    "author_result_count_parity_verified": false,
+    "author_result_count_printed": false,
+    "interpretation": "The default path clears the same-dataset RayJoin author Query timer as a timing bar, but the packet keeps RTDL-beats-RayJoin, public Spatial speedup, and paper reproduction claims false."
+  },
+  "historical_no_go_context": {
+    "previous_hotpath_no_go": "docs/rebuild/v3/phoenix_v3_spatial_rayjoin_hotpath_probe_no_go_2026-06-21.json",
+    "status": "superseded_for_one_default_path_internal_row_but_retained_as_warning",
+    "best_older_legal_rtdl_query_ms": 5.406518,
+    "author_query_ms": 1.86566,
+    "device_filtered_route_rejected": true,
+    "device_filtered_observed_count": 47570,
+    "expected_exact_count": 47262,
+    "interpretation": "The older hotpath no-go remains important because it rejects route-mixed or over-counting paths. The later guarded squared-boundary default path is the only retained Spatial row."
+  },
+  "redo_interpretation": {
+    "closed_as_reusable_engine_capability": true,
+    "counts_as_benchmark_app_development": false,
+    "counts_as_rayjoin_paper_reproduction": false,
+    "counts_as_rtdl_beats_rayjoin_public_claim": false,
+    "counts_as_broad_v3_over_v2_speedup": false,
+    "counts_as_productized_execution_path_gap1_completion": false,
+    "why_not_gap1_completion": "The row proves a generic point-location topology-stream predicate optimization in one default path, but it does not prove a productized prepared execution/session runner across multiple Set-A probes.",
+    "why_keep_in_v3": "The row closes the old missing Spatial topology-stream capability-family gap with an exact count, default-on generic predicate optimization, guarded fallback, and Claude/Codex boundary review."
+  },
+  "serious_v2x_context": {
+    "evidence": "docs/rebuild/v3/evidence/phoenix_v3_serious_v2x_paired_20260622_074100/summary.json",
+    "same_metric_comparison_count": 52,
+    "overall_geomean_v3_speedup_vs_v2_14": 1.0117790403434224,
+    "apps_with_geomean_gt_1_05": 1,
+    "apps_with_geomean_lt_0_95": 2,
+    "release_consideration_eligible": false,
+    "interpretation": "The Spatial topology-stream row does not override the failed broad V2.14 vs Phoenix V3 performance gate."
+  },
+  "set_a_set_b_measurement_note": {
+    "proposal": "docs/reviews/phoenix_v3_set_a_set_b_release_bar_proposal_2026-06-22.md",
+    "classification_for_future_all_app_scorecard": "Spatial topology-stream can be a Set-A probe only if the productized topology/point-location execution path is the measured source of the win and exactness remains stable; public RayJoin author comparisons require their own result-count and paper-scope proof.",
+    "freeze_before_run_required": true
+  },
+  "forbidden_readings": [
+    "RTDL beats RayJoin.",
+    "Spatial RayJoin is publicly accelerated.",
+    "RTDL reproduces the RayJoin paper.",
+    "The default-path row authorizes public speedup wording.",
+    "The device-filtered 47570-count route is acceptable.",
+    "The author Query timer alone proves same-result RayJoin parity.",
+    "The Spatial row proves broad V3-over-V2.x speedup.",
+    "The Spatial row completes Gap 1 productized execution path."
+  ],
+  "next_after_closure": [
+    "Keep the topology-stream row in the current 13-row / 9-capability internal surface.",
+    "Do not spend Phoenix time on Spatial/RayJoin public speedup wording unless author result-count parity and paper-scope requirements are separately proven.",
+    "If Spatial is used next, productize the generic point-location topology stream through the prepared execution/session runner and measure it as a Set-A route.",
+    "Keep release, public Spatial, RTDL-beats-RayJoin, RayJoin paper, true-zero-copy, and broad V3-over-V2 wording blocked."
+  ],
+  "goal_level_decision_audit": {
+    "decision": "Close Spatial topology_stream for Phoenix redo as one retained internal point_location_topology_stream row, not as public Spatial/RayJoin speedup or V3 release evidence.",
+    "was_i_foolish": "No. The decision keeps the reviewed default-path row while explicitly preserving the author-result-count and public-claim blockers.",
+    "foolish_actions": "It would be foolish to turn the default-path timing bar into RTDL-beats-RayJoin wording, ignore the author result-count parity gap, or revive over-counting device-filtered routes.",
+    "other_path": "Demote Spatial entirely because earlier hotpath probes failed. That would hide the later guarded squared-boundary default-path evidence and reopen a solved capability-family gap.",
+    "different_path_now": "Retain exactly one internal topology-stream row, document the public-claim blockers, and only count future Spatial work if it lands in a shared productized topology runner."
+  }
+}

@@ -15,6 +15,7 @@ class _PreparedFixedRadius:
         self.scalar_count = scalar_count
         self.run_calls = 0
         self.scalar_calls = 0
+        self.query_inputs = []
 
     def __enter__(self):
         type(self).enter_count += 1
@@ -25,10 +26,12 @@ class _PreparedFixedRadius:
 
     def run(self, _query_points, *, radius: float, threshold: int = 0):
         self.run_calls += 1
+        self.query_inputs.append(_query_points)
         return self.rows
 
     def count_threshold_reached(self, _query_points, *, radius: float, threshold: int):
         self.scalar_calls += 1
+        self.query_inputs.append(_query_points)
         if self.scalar_count is None:
             return sum(int(row["threshold_reached"]) for row in self.rows)
         return self.scalar_count
@@ -147,6 +150,27 @@ class Goal1298V15GenericFixedRadiusThresholdCountTest(unittest.TestCase):
         self.assertEqual(_PreparedFixedRadius.enter_count, 1)
         self.assertEqual(_PreparedFixedRadius.exit_count, 1)
         self.assertIn("query_fixed_radius_threshold_reached_count_sec", result["run_phases"])
+
+    def test_prepared_query_points_are_reusable_packed_inputs(self) -> None:
+        prepared = _PreparedFixedRadius(scalar_count=2)
+        points = (
+            rt.Point(id=1, x=0.0, y=0.0),
+            rt.Point(id=2, x=1.0, y=0.0),
+        )
+
+        with rt.prepare_generic_fixed_radius_count_threshold_2d(
+            search_points=("search",),
+            backend="optix",
+            max_radius=1.0,
+            prepare_scene=lambda search_points, *, max_radius: prepared,
+        ) as session:
+            prepared_queries = session.prepare_query_points(points)
+            result = session.count_threshold_reached(prepared_queries, radius=1.0, threshold=1)
+
+        self.assertIsInstance(prepared_queries, rt.PackedPoints)
+        self.assertIs(prepared.query_inputs[-1], prepared_queries)
+        self.assertTrue(result["query_points_prepacked_by_caller"])
+        self.assertEqual(result["threshold_reached_count"], 2)
 
     def test_prepared_embree_rows_and_scalar_fallback(self) -> None:
         prepared = _PreparedRowsOnlyFixedRadius(

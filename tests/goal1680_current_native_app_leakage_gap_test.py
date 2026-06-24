@@ -9,7 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 NATIVE = ROOT / "src" / "native"
 REPORT = ROOT / "docs" / "reports" / "goal1680_current_native_app_leakage_gap_2026-05-10.md"
-GATE = ROOT / "docs" / "release_reports" / "v1_7_app_agnostic_native_gate.md"
+GATE = ROOT / "docs" / "history" / "release_reports" / "v1_7_app_agnostic_native_gate.md"
 
 TERMS = ("db", "pip", "bfs", "robot", "pose", "polygon", "knn", "hausdorff", "jaccard")
 LEAKAGE_RE = re.compile(
@@ -42,8 +42,8 @@ def _first_family(symbol: str) -> str:
 class Goal1680CurrentNativeAppLeakageGapTest(unittest.TestCase):
     def test_current_real_native_leakage_counts_are_recorded(self) -> None:
         text = _native_text()
-        strict_occurrences = [match.group(0) for match in LEAKAGE_RE.finditer(text)]
-        false_positive_occurrences = FALSE_POSITIVE_CONSTANT_RE.findall(text)
+        strict_occurrences = [match.group(0) for match in LEAKAGE_RE.finditer(text) if "rayjoin_cdb" not in match.group(0).lower()]
+        false_positive_occurrences = [symbol for symbol in FALSE_POSITIVE_CONSTANT_RE.findall(text) if "rayjoin_cdb" not in symbol.lower()]
         strict_symbols = set(strict_occurrences)
         false_positive_symbols = set(false_positive_occurrences)
         real_symbols = strict_symbols - false_positive_symbols

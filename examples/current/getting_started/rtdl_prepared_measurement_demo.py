@@ -176,7 +176,7 @@ def run_demo(
 
     return {
         "app": "prepared_measurement_demo",
-        "status": "current_v3_0_2_source_tree_tutorial",
+        "status": "current_v3_teaching_demo",
         "command": _command_for(backend=backend, repeats=int(repeats), warmup=int(warmup)),
         "commit": _git_commit(),
         "backend": backend,
@@ -213,15 +213,28 @@ def run_demo(
             "observed_triangle_hit_count": triangle_hit_count,
             "visible_hit_label": prepared.visible_label,
         },
-        "performance_evidence": False,
-        "claim_boundary": {
+        "measurement_scope": {
             "teaching_demo_only": True,
-            "not_public_speedup_evidence": True,
             "setup_prepare_warmup_excluded_from_steady_state": True,
-            "automatic_partner_selection_authorized": False,
-            "true_zero_copy_claim_authorized": False,
-            "public_speedup_claim_authorized": False,
         },
+    }
+
+
+def summarize_demo(payload: dict[str, object]) -> dict[str, object]:
+    correctness = payload["correctness"]
+    prepared = payload["prepared_session_residency"]
+    assert isinstance(correctness, dict)
+    assert isinstance(prepared, dict)
+    return {
+        "app": payload["app"],
+        "backend": payload["backend"],
+        "validated": correctness["validated"],
+        "visible_hit_label": correctness["visible_hit_label"],
+        "prepared_call_count": prepared["prepared_call_count"],
+        "cache_hit_sequence": prepared["cache_hit_sequence"],
+        "warmup_repeat_count": payload["warmup_repeat_count"],
+        "steady_state_repeat_count": payload["steady_state_repeat_count"],
+        "steady_state_avg_s": payload["steady_state_avg_s"],
     }
 
 
@@ -232,8 +245,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--backend", default="cpu_python_reference", choices=BACKENDS)
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--warmup", type=int, default=1)
+    parser.add_argument("--json", action="store_true", help="Print the full measurement payload.")
     args = parser.parse_args(argv)
-    print(json.dumps(run_demo(backend=args.backend, repeats=args.repeats, warmup=args.warmup), indent=2))
+    payload = run_demo(backend=args.backend, repeats=args.repeats, warmup=args.warmup)
+    output = payload if args.json else summarize_demo(payload)
+    print(json.dumps(output, indent=2, sort_keys=True))
     return 0
 
 

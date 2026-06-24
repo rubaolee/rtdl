@@ -1,0 +1,35 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 753b752..59de87c 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -6,7 +6,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
+ 
+ set(OPTIX_MODULE_EXTENSION ".ptx")
+ set(OPTIX_PROGRAM_TARGET "--ptx")
+-set(ENABLED_ARCHS "86")
++set(ENABLED_ARCHS 89)
+ 
+ set(SHADERS
+         algo/rt_lsi_custom.cu
+@@ -27,6 +27,8 @@ NVCUDA_COMPILE_MODULE(
+         "--prec-div=true"
+         "-I${OptiX_INCLUDE}"
+         "-I${CMAKE_CURRENT_SOURCE_DIR}"
++        -I${GLOG_INCLUDE_DIRS}
++        -I${GFLAGS_INCLUDE_DIRS}
+ )
+ 
+ message("PROGRAM_MODULES: ${PROGRAM_MODULES}")
+diff --git a/src/util/markers.h b/src/util/markers.h
+index 8c786ed..11bfa74 100644
+--- a/src/util/markers.h
++++ b/src/util/markers.h
+@@ -1,7 +1,7 @@
+ 
+ #ifndef UTIL_MARKERS_H
+ #define UTIL_MARKERS_H
+-#include <nvToolsExt.h>
++#include <nvtx3/nvToolsExt.h>
+ 
+ namespace rayjoin {
+ 

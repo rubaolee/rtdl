@@ -1,0 +1,27 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "claim_boundary": {
+    "public_speedup_claim_authorized": false
+  },
+  "full_all_app_rerun_authorized_by_this_packet": false,
+  "native_phase_timings": {
+    "boundary_candidate_row_stream_materialized": false,
+    "candidate_download": 0.0,
+    "row_stream_materialized": false
+  },
+  "phases_sec": {
+    "prepared_query_sec": 0.02,
+    "prepared_query_sec_repeat": 50,
+    "prepared_query_sec_total_sec": 1.0,
+    "prepared_query_sec_warmup": 5
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "row_count": 47262,
+  "summary": {
+    "output_contract": "point_to_shape_positive_hit_count_relation_status_corrected_executor_validated",
+    "point_order_mode": "y_then_x",
+    "validation_exact_count": 47262
+  },
+  "true_zero_copy_claim_authorized": false
+}

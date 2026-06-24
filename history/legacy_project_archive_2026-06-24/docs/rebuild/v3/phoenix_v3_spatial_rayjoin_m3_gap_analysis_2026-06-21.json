@@ -1,0 +1,107 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "checks": {
+    "all_public_claim_flags_false": true,
+    "device_resident_residual_is_near_native": true,
+    "device_transfer_is_effectively_removed": true,
+    "large_default_and_device_counts_match": true,
+    "large_device_resident_clears_material_speedup": true,
+    "same_stream_author_remains_faster": true,
+    "same_stream_optix_beats_embree": true,
+    "topology_contract_not_m7": true
+  },
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not call the device-resident internal delta true zero-copy.",
+    "Do not claim RTDL beats RayJoin from the same-stream PIP evidence.",
+    "Do not publish Spatial RayJoin M7 wording until a fresh full-M3 public row passes review.",
+    "Do not implement a RayJoin-only native shortcut; the target is a reusable topology-stream prepared route."
+  ],
+  "generic_capability": "point_location_topology_stream",
+  "goal_level_decision_audit": {
+    "decision": "Use old and current RayJoin evidence to define a V3 topology-stream M3 gap and optimization target, not to promote Spatial RayJoin.",
+    "different_path_now": "Treat resident topology-stream columns and full phase accounting as the next generic V3 engine task.",
+    "foolish_actions": "The foolish action would be to quote either the 1.920x OptiX/Embree row or the 2x device-resident delta as a public Spatial RayJoin win while hiding the RayJoin-author gap and incomplete M3 table.",
+    "other_path": "Keep rerunning author comparisons. That may produce more tables, but it does not itself reduce RTDL host/query staging or make V3 user-responsible.",
+    "was_i_foolish": "No. This converts the confusing RayJoin evidence into a reusable V3 engine target and keeps every release/public flag false."
+  },
+  "large_pip_device_resident_delta": {
+    "contract": "Base map R is -poly1; query map S is -poly2; the query point stream is every point returned by S.get_points(), not one representative point per chain.",
+    "count": 3823783,
+    "counts_match": true,
+    "default_host_points": {
+      "point_upload_median_sec": 0.014036073999999999,
+      "row_download_median_sec": 2.7447e-05,
+      "rt_traversal_median_sec": 0.11887049499999999,
+      "visible_residual_after_native_transfer_sec": 0.14098751841905977,
+      "wall_median_sec": 0.27392153441905975
+    },
+    "device_resident_points": {
+      "point_upload_median_sec": 0.0,
+      "row_download_median_sec": 9.653e-06,
+      "rt_traversal_median_sec": 0.11867809900000001,
+      "visible_residual_after_native_transfer_sec": 0.0013727365816574005,
+      "wall_median_sec": 0.12006048858165741
+    },
+    "device_resident_wall_speedup_vs_default": 2.2815293995139454,
+    "query_points": 5288684,
+    "reading": "The old large-PIP evidence shows the useful V3 direction: keep the query point stream resident inside RTDL's prepared route and the hot wall time moves close to native traversal. This is internal V3 topology-stream residency evidence, not a true zero-copy product claim.",
+    "visible_residual_reduction_vs_default": 102.70544276516308
+  },
+  "m3_public_row_gap": {
+    "available_now": [
+      "same-contract RTDL OptiX/Embree wall timing",
+      "same-stream RayJoin author timer basis",
+      "native traversal and point-upload medians for large PIP route",
+      "device-resident internal route delta"
+    ],
+    "current_state": "partial_m3_gap_analysis_not_public_row",
+    "missing_or_not_public_row_ready": [
+      "single fresh runner that emits all M3 phases together",
+      "static scene prepare for the large device-resident route in the same packet",
+      "query-stream prepare separated from device transfer/residency",
+      "topology continuation separated from RT traversal",
+      "host scalar return separated from Python dispatch",
+      "fresh external public-row review plus Codex consensus"
+    ],
+    "next_engine_target": "Build or repair a reusable topology-stream prepared handle/runner that keeps query columns resident, emits the full M3 phase table, and proves the same contract against Embree and RayJoin author timing without RayJoin-specific native logic.",
+    "required_phases": [
+      "static_scene_prepare_sec",
+      "query_stream_prepare_sec",
+      "device_transfer_or_residency_sec",
+      "rt_traversal_sec",
+      "topology_continuation_sec",
+      "host_return_or_scalar_materialization_sec"
+    ]
+  },
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "row_scoped_public_speedup_claim_authorized": false,
+  "rtdl_beats_rayjoin_claim_authorized": false,
+  "same_stream_pip_100k": {
+    "contract": "scalar_exact_positive_membership_count",
+    "embree_hot_median_sec": 0.07173530664294958,
+    "exact_backend_counts_match": true,
+    "optix_hot_median_sec": 0.007081935182213783,
+    "optix_over_embree_wall_speedup": 10.129336798098938,
+    "query_count": 100000,
+    "rayjoin_author_over_rtdl_optix_wall_speedup": 11.541427261964087,
+    "rayjoin_author_query_sec": 0.00061361,
+    "reading": "RTDL OptiX is much faster than RTDL Embree on this exact scalar-count same-stream contract, but RayJoin author RT is still faster than RTDL OptiX."
+  },
+  "source_packets": {
+    "large_pip_default": "docs/reports/goal4374_rayjoin_exact_paper_suite_2026-06-13/pip_county_zipcode_rtdl_optix_fixed8_default_final_w5r60.json",
+    "large_pip_device_resident": "docs/reports/goal4374_rayjoin_exact_paper_suite_2026-06-13/pip_county_zipcode_rtdl_optix_device_resident_w5r60.json",
+    "same_stream_author_comparison": "docs/reports/goal4354_rayjoin_original_vs_rtdl_pod/goal4354_rayjoin_original_vs_rtdl_same_stream_summary.json",
+    "topology_contract": "docs/rebuild/v3/phoenix_v3_spatial_rayjoin_topology_stream_contract_2026-06-21.json"
+  },
+  "status": "spatial_rayjoin_m3_gap_analysis_not_m7",
+  "tool": "v3_phoenix_spatial_rayjoin_m3_gap_analysis",
+  "true_zero_copy_claim_authorized": false,
+  "v4_embedding_claim_authorized": false,
+  "version": "phoenix_v3_spatial_rayjoin_m3_gap_analysis_2026_06_21",
+  "whole_app_speedup_claim_authorized": false
+}

@@ -42,6 +42,15 @@ def main() -> int:
         help="Comma-separated backend:mode=repeat entries.",
     )
     parser.add_argument("--include-iteration-walls", action="store_true")
+    parser.add_argument(
+        "--optix-ray-batch-layout",
+        choices=("host_packed", "cupy_device_columns", "torch_device_columns"),
+        default="host_packed",
+        help=(
+            "Ray-batch layout for the OptiX prepared grouped-reduction route. "
+            "Embree always uses host_packed."
+        ),
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
         "--output",
@@ -80,6 +89,9 @@ def main() -> int:
             "mode": mode,
             "repeat": int(repeat_overrides.get((backend, mode), DEFAULT_REPEAT_OVERRIDES[(backend, mode)])),
             "warmup": int(args.warmup),
+            "ray_batch_layout": (
+                str(args.optix_ray_batch_layout) if backend == "optix" else "host_packed"
+            ),
         }
         for backend in backends
         for mode in modes
@@ -118,6 +130,7 @@ def main() -> int:
             warmup=int(planned["warmup"]),
             repeat=int(planned["repeat"]),
             summary_only_iterations=not args.include_iteration_walls,
+            ray_batch_layout=str(planned["ray_batch_layout"]),
         )
         rows.append(
             _compact_row(
@@ -158,6 +171,7 @@ def _base_payload(*, args: argparse.Namespace, modes: tuple[str, ...], backends:
             "backends": backends,
             "warmup": int(args.warmup),
             "include_iteration_walls": bool(args.include_iteration_walls),
+            "optix_ray_batch_layout": str(args.optix_ray_batch_layout),
         },
         "environment": _environment_snapshot(),
         "claim_boundary": {
@@ -200,11 +214,18 @@ def _compact_row(
         "cold_prepare_total_sec": float(timings.get("cold_prepare_total", 0.0)),
         "prepared_native_total_sec": float(timings.get("prepared_native_total", 0.0)),
         "prepared_ray_batch_sec": float(timings.get("prepared_ray_batch", 0.0)),
+        "prepared_ray_batch_layout": metadata.get("prepared_ray_batch_layout", "host_packed"),
+        "prepared_ray_batch_column_partner": metadata.get("prepared_ray_batch_column_partner"),
+        "prepared_ray_batch_created_from": metadata.get("prepared_ray_batch_created_from"),
+        "native_device_column_path_used": bool(metadata.get("native_device_column_path_used", False)),
         "traversal_median_sec": float(timings.get("traversal", 0.0)),
         "native_call_wall_median_sec": float(timings.get("native_call_wall", 0.0)),
         "row_presentation_median_sec": float(timings.get("row_presentation", 0.0)),
         "triangle_count": int(metadata["triangle_count"]),
         "ray_count": int(metadata["ray_count"]),
+        "logical_ray_count": int(metadata.get("logical_ray_count", metadata["ray_count"])),
+        "host_packed_ray_count": int(metadata.get("host_packed_ray_count", metadata["ray_count"])),
+        "ray_materialization": metadata.get("ray_materialization"),
         "hit_event_count_before_dedup": metadata.get("hit_event_count_before_dedup"),
         "contract": metadata["contract"],
         "native_symbol": metadata.get("native_symbol"),

@@ -33,6 +33,11 @@ NUMBA_SQRT_F64_OPERATION = "sqrt_f64"
 NUMBA_PARTNER_CONTINUATION_STATUS = V2_5_STATUS_PREVIEW_NOT_PROMOTED
 NUMBA_GROUP_ID_VALIDATION_MODE = "device_resident_error_flag"
 NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION = "rtdl.v2_9.numba_grouped_vector_sum_offsets_session.v1"
+NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_AUTO = "auto"
+NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_THREAD_PER_GROUP = "thread_per_group_serial"
+NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_BLOCK_PER_GROUP_TILED = "block_per_group_tiled"
+NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_WARP_PER_GROUP_TILED = "warp_per_group_tiled"
+NUMBA_GROUPED_VECTOR_SUM_OFFSETS_TILED_ROWS_PER_GROUP_THRESHOLD = 32.0
 _NUMBA_KERNEL_CACHE: dict[tuple[int, str], Any] = {}
 _NUMBA_CUDA_TOOLCHAIN_ENVIRONMENT: dict[str, object] | None = None
 
@@ -449,6 +454,7 @@ def run_numba_grouped_vector_sum_f64x2_by_offsets(
     *,
     block_size: int = 256,
     validate_row_offsets: bool = True,
+    kernel_strategy: str = NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_AUTO,
 ) -> dict[str, object]:
     """Run grouped vector sum for presegmented rows over Numba CUDA arrays."""
 
@@ -470,18 +476,54 @@ def run_numba_grouped_vector_sum_f64x2_by_offsets(
     started = perf_counter()
     sum_x = cuda.device_array((group_count,), dtype=np.float64)
     sum_y = cuda.device_array((group_count,), dtype=np.float64)
+    resolved_strategy = _resolve_numba_grouped_vector_sum_offsets_strategy(
+        requested=kernel_strategy,
+        row_count=row_count,
+        group_count=group_count,
+        block_size=block_size,
+    )
     if group_count:
-        grid = ((group_count + block_size - 1) // block_size,)
-        _cached_numba_kernel(cuda, _numba_grouped_vector_sum_f64x2_offsets_kernel)[grid, block_size](
-            row_offsets,
-            values_x,
-            values_y,
-            sum_x,
-            sum_y,
-            group_count,
-        )
+        if resolved_strategy == NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_WARP_PER_GROUP_TILED:
+            groups_per_block = max(1, block_size // 32)
+            grid = ((group_count + groups_per_block - 1) // groups_per_block,)
+            _cached_numba_kernel(cuda, _numba_grouped_vector_sum_f64x2_offsets_warp_tiled_kernel)[grid, block_size](
+                row_offsets,
+                values_x,
+                values_y,
+                sum_x,
+                sum_y,
+                group_count,
+            )
+        elif resolved_strategy == NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_BLOCK_PER_GROUP_TILED:
+            grid = (group_count,)
+            _cached_numba_kernel(cuda, _numba_grouped_vector_sum_f64x2_offsets_tiled_kernel)[grid, block_size](
+                row_offsets,
+                values_x,
+                values_y,
+                sum_x,
+                sum_y,
+                group_count,
+            )
+        else:
+            grid = ((group_count + block_size - 1) // block_size,)
+            _cached_numba_kernel(cuda, _numba_grouped_vector_sum_f64x2_offsets_kernel)[grid, block_size](
+                row_offsets,
+                values_x,
+                values_y,
+                sum_x,
+                sum_y,
+                group_count,
+            )
+    else:
+        grid = (0,)
     cuda.synchronize()
     elapsed = perf_counter() - started
+    launch_metadata = _numba_grouped_vector_sum_offsets_launch_metadata(
+        strategy=resolved_strategy,
+        row_count=row_count,
+        group_count=group_count,
+        block_size=block_size,
+    )
 
     return _numba_run_result(
         operation=NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION,
@@ -494,8 +536,7 @@ def run_numba_grouped_vector_sum_f64x2_by_offsets(
             "component_count": 2,
             "componentwise_reduction": "independent_float64_sum_per_group_by_offsets",
             "presegmented_row_offsets": True,
-            "adapter_kernel": "numba_grouped_vector_sum_offsets_f64x2_kernel",
-            "program_count": (group_count + block_size - 1) // block_size if group_count else 0,
+            **launch_metadata,
             "threads_per_block": block_size,
             "global_atomic_add_used": False,
             "row_offset_validation_host_sync_used": validate_row_offsets,
@@ -510,6 +551,7 @@ def prepare_numba_grouped_vector_sum_f64x2_offsets_session(
     *,
     block_size: int = 256,
     validate_row_offsets: bool = True,
+    kernel_strategy: str = NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_AUTO,
 ) -> dict[str, object]:
     """Prepare reusable output buffers for presegmented grouped vector sums."""
 
@@ -526,8 +568,20 @@ def prepare_numba_grouped_vector_sum_f64x2_offsets_session(
         cuda=cuda,
         np=np,
     )
+    resolved_strategy = _resolve_numba_grouped_vector_sum_offsets_strategy(
+        requested=kernel_strategy,
+        row_count=row_count,
+        group_count=group_count,
+        block_size=block_size,
+    )
     sum_x = cuda.device_array((group_count,), dtype=np.float64)
     sum_y = cuda.device_array((group_count,), dtype=np.float64)
+    launch_metadata = _numba_grouped_vector_sum_offsets_launch_metadata(
+        strategy=resolved_strategy,
+        row_count=row_count,
+        group_count=group_count,
+        block_size=block_size,
+    )
     return {
         "session_version": NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION,
         "contract_version": V2_5_PARTNER_CONTINUATION_VERSION,
@@ -541,6 +595,9 @@ def prepare_numba_grouped_vector_sum_f64x2_offsets_session(
         "group_count": group_count,
         "row_count": row_count,
         "block_size": block_size,
+        "requested_kernel_strategy": str(kernel_strategy),
+        "resolved_kernel_strategy": resolved_strategy,
+        **launch_metadata,
         "presegmented_row_offsets": True,
         "row_offset_validation_performed_at_prepare": bool(validate_row_offsets),
         "output_columns_reused": True,
@@ -572,20 +629,54 @@ def run_numba_prepared_grouped_vector_sum_f64x2_by_offsets(
     sum_y = outputs["sum_y"]
     group_count = int(session["group_count"])
     block_size = int(session["block_size"])
+    resolved_strategy = str(
+        session.get(
+            "resolved_kernel_strategy",
+            NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_THREAD_PER_GROUP,
+        )
+    )
     cuda.synchronize()
     started = perf_counter()
     if group_count:
-        grid = ((group_count + block_size - 1) // block_size,)
-        _cached_numba_kernel(cuda, _numba_grouped_vector_sum_f64x2_offsets_kernel)[grid, block_size](
-            row_offsets,
-            values_x,
-            values_y,
-            sum_x,
-            sum_y,
-            group_count,
-        )
+        if resolved_strategy == NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_WARP_PER_GROUP_TILED:
+            groups_per_block = max(1, block_size // 32)
+            grid = ((group_count + groups_per_block - 1) // groups_per_block,)
+            _cached_numba_kernel(cuda, _numba_grouped_vector_sum_f64x2_offsets_warp_tiled_kernel)[grid, block_size](
+                row_offsets,
+                values_x,
+                values_y,
+                sum_x,
+                sum_y,
+                group_count,
+            )
+        elif resolved_strategy == NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_BLOCK_PER_GROUP_TILED:
+            grid = (group_count,)
+            _cached_numba_kernel(cuda, _numba_grouped_vector_sum_f64x2_offsets_tiled_kernel)[grid, block_size](
+                row_offsets,
+                values_x,
+                values_y,
+                sum_x,
+                sum_y,
+                group_count,
+            )
+        else:
+            grid = ((group_count + block_size - 1) // block_size,)
+            _cached_numba_kernel(cuda, _numba_grouped_vector_sum_f64x2_offsets_kernel)[grid, block_size](
+                row_offsets,
+                values_x,
+                values_y,
+                sum_x,
+                sum_y,
+                group_count,
+            )
     cuda.synchronize()
     elapsed = perf_counter() - started
+    launch_metadata = _numba_grouped_vector_sum_offsets_launch_metadata(
+        strategy=resolved_strategy,
+        row_count=int(session["row_count"]),
+        group_count=group_count,
+        block_size=block_size,
+    )
     return _numba_run_result(
         operation=NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION,
         outputs={"sum_x": sum_x, "sum_y": sum_y},
@@ -598,8 +689,8 @@ def run_numba_prepared_grouped_vector_sum_f64x2_by_offsets(
             "component_count": 2,
             "componentwise_reduction": "independent_float64_sum_per_group_by_offsets",
             "presegmented_row_offsets": True,
-            "adapter_kernel": "numba_grouped_vector_sum_offsets_f64x2_kernel",
-            "program_count": (group_count + block_size - 1) // block_size if group_count else 0,
+            "requested_kernel_strategy": str(session.get("requested_kernel_strategy", resolved_strategy)),
+            **launch_metadata,
             "threads_per_block": block_size,
             "global_atomic_add_used": False,
             "prepared_session_reused": True,
@@ -1511,6 +1602,166 @@ def _numba_grouped_vector_sum_f64x2_offsets_kernel(cuda: Any):
             output_y[group] = local_y
 
     return kernel
+
+
+def _numba_grouped_vector_sum_f64x2_offsets_tiled_kernel(cuda: Any):
+    from numba import float64
+
+    @cuda.jit
+    def kernel(row_offsets, values_x, values_y, output_x, output_y, group_count):
+        group = cuda.blockIdx.x
+        lane = cuda.threadIdx.x
+        local_x = 0.0
+        local_y = 0.0
+        shared_x = cuda.shared.array(256, dtype=float64)
+        shared_y = cuda.shared.array(256, dtype=float64)
+        if group < group_count:
+            start = row_offsets[group]
+            end = row_offsets[group + 1]
+            index = start + lane
+            while index < end:
+                local_x += values_x[index]
+                local_y += values_y[index]
+                index += cuda.blockDim.x
+        shared_x[lane] = local_x
+        shared_y[lane] = local_y
+        cuda.syncthreads()
+        stride = cuda.blockDim.x // 2
+        while stride > 0:
+            if lane < stride:
+                shared_x[lane] += shared_x[lane + stride]
+                shared_y[lane] += shared_y[lane + stride]
+            cuda.syncthreads()
+            stride //= 2
+        if lane == 0 and group < group_count:
+            output_x[group] = shared_x[0]
+            output_y[group] = shared_y[0]
+
+    return kernel
+
+
+def _numba_grouped_vector_sum_f64x2_offsets_warp_tiled_kernel(cuda: Any):
+    from numba import float64
+
+    @cuda.jit
+    def kernel(row_offsets, values_x, values_y, output_x, output_y, group_count):
+        thread = cuda.threadIdx.x
+        warp = thread // 32
+        lane = thread - (warp * 32)
+        groups_per_block = cuda.blockDim.x // 32
+        group = cuda.blockIdx.x * groups_per_block + warp
+        local_x = 0.0
+        local_y = 0.0
+        shared_x = cuda.shared.array(256, dtype=float64)
+        shared_y = cuda.shared.array(256, dtype=float64)
+        if group < group_count:
+            start = row_offsets[group]
+            end = row_offsets[group + 1]
+            index = start + lane
+            while index < end:
+                local_x += values_x[index]
+                local_y += values_y[index]
+                index += 32
+        shared_x[thread] = local_x
+        shared_y[thread] = local_y
+        cuda.syncthreads()
+        stride = 16
+        while stride > 0:
+            if lane < stride:
+                shared_x[thread] += shared_x[thread + stride]
+                shared_y[thread] += shared_y[thread + stride]
+            cuda.syncthreads()
+            stride //= 2
+        if lane == 0 and group < group_count:
+            output_x[group] = shared_x[thread]
+            output_y[group] = shared_y[thread]
+
+    return kernel
+
+
+def _resolve_numba_grouped_vector_sum_offsets_strategy(
+    *,
+    requested: str,
+    row_count: int,
+    group_count: int,
+    block_size: int,
+) -> str:
+    requested = str(requested).strip().lower().replace("-", "_")
+    if requested in {"", NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_AUTO}:
+        if (
+            group_count > 0
+            and block_size <= 256
+            and _is_power_of_two(block_size)
+            and block_size % 32 == 0
+            and (float(row_count) / float(group_count))
+            >= NUMBA_GROUPED_VECTOR_SUM_OFFSETS_TILED_ROWS_PER_GROUP_THRESHOLD
+        ):
+            return NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_WARP_PER_GROUP_TILED
+        return NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_THREAD_PER_GROUP
+    if requested == NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_THREAD_PER_GROUP:
+        return NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_THREAD_PER_GROUP
+    if requested == NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_BLOCK_PER_GROUP_TILED:
+        if block_size > 256 or not _is_power_of_two(block_size):
+            raise ValueError("block_per_group_tiled requires a power-of-two block_size <= 256")
+        return NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_BLOCK_PER_GROUP_TILED
+    if requested == NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_WARP_PER_GROUP_TILED:
+        if block_size > 256 or not _is_power_of_two(block_size) or block_size % 32 != 0:
+            raise ValueError("warp_per_group_tiled requires a power-of-two block_size <= 256 divisible by 32")
+        return NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_WARP_PER_GROUP_TILED
+    raise ValueError(f"unsupported grouped vector-sum offsets kernel strategy: {requested!r}")
+
+
+def _numba_grouped_vector_sum_offsets_launch_metadata(
+    *,
+    strategy: str,
+    row_count: int,
+    group_count: int,
+    block_size: int,
+) -> dict[str, object]:
+    rows_per_group_mean = (float(row_count) / float(group_count)) if group_count else 0.0
+    groups_per_block = None
+    threads_per_group = None
+    if strategy == NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_WARP_PER_GROUP_TILED:
+        adapter_kernel = "numba_grouped_vector_sum_offsets_warp_tiled_f64x2_kernel"
+        groups_per_block = max(1, int(block_size) // 32)
+        threads_per_group = 32
+        program_count = (int(group_count) + groups_per_block - 1) // groups_per_block if group_count else 0
+        parallelism_axis = "group_count_warp_per_group_row_parallel"
+        tiled = True
+        serial = False
+    elif strategy == NUMBA_GROUPED_VECTOR_SUM_OFFSETS_STRATEGY_BLOCK_PER_GROUP_TILED:
+        adapter_kernel = "numba_grouped_vector_sum_offsets_tiled_f64x2_kernel"
+        program_count = int(group_count)
+        parallelism_axis = "group_count_block_per_group_row_parallel"
+        tiled = True
+        serial = False
+        groups_per_block = 1
+        threads_per_group = int(block_size)
+    else:
+        adapter_kernel = "numba_grouped_vector_sum_offsets_f64x2_kernel"
+        program_count = (int(group_count) + int(block_size) - 1) // int(block_size) if group_count else 0
+        parallelism_axis = "group_count_thread_per_group"
+        tiled = False
+        serial = True
+        groups_per_block = int(block_size)
+        threads_per_group = 1
+    return {
+        "adapter_kernel": adapter_kernel,
+        "kernel_strategy": strategy,
+        "resolved_kernel_strategy": strategy,
+        "program_count": program_count,
+        "launch_parallelism_axis": parallelism_axis,
+        "rows_per_group_mean": rows_per_group_mean,
+        "groups_per_block": groups_per_block,
+        "threads_per_group": threads_per_group,
+        "tiled_row_parallel_reduction_used": tiled,
+        "thread_per_group_serial_loop_used": serial,
+    }
+
+
+def _is_power_of_two(value: int) -> bool:
+    value = int(value)
+    return value > 0 and (value & (value - 1)) == 0
 
 
 def _validate_numba_grouped_vector_offsets_shape(

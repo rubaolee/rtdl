@@ -30,7 +30,7 @@ class Goal2825RtnnCudaGraphReplayPreparedBatchTest(unittest.TestCase):
         self.assertIn("g_frn3d_grid_ranked_summary_aggregate_f32_blocks_batch.fn", workloads)
         self.assertIn("cuGraphLaunch(graph_handle->graph_exec, graph_handle->stream)", workloads)
         self.assertIn("reset_fixed_radius_3d_phase_timings(18u)", workloads)
-        self.assertIn("graph path currently supports query_count <= 65536", workloads)
+        self.assertIn("fixed_radius_neighbors_3d graph query_count exceeds uint32 limit", workloads)
         self.assertNotIn("rtnn", workloads.lower())
 
         self.assertIn("rtdl_optix_prepare_fixed_radius_ranked_summary_aggregate_batch_graph_3d", api)

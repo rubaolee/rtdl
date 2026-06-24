@@ -1,0 +1,3 @@
+mkdir -p build
+PYTHONPATH=src:. python3 -c "import rtdsl as rt; print('Embree', '.'.join(map(str, rt.embree_version())))"
+Embree 4.3.0

@@ -26,13 +26,19 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
             "rtdl_optix_prepare_aabb_point_queries_2d",
             "rtdl_optix_prepare_aabb_box_queries_2d",
             "rtdl_optix_count_prepared_aabb_index_2d_packed_queries",
+            "rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows_packed_queries",
             "rtdl_optix_destroy_prepared_aabb_index_2d",
         ):
             self.assertIn(symbol, prelude + api)
         self.assertIn("PreparedAabbIndex2DOptix", workloads)
         self.assertIn("PreparedAabbIndexQueries2DOptix", workloads)
+        self.assertIn(
+            "collect_prepared_aabb_index_2d_range_intersection_rows_packed_queries_optix",
+            workloads,
+        )
         self.assertIn("prepare_optix_aabb_index_2d", wrapper)
         self.assertIn("collect_aabb_intersection_pair_rows_2d_optix", wrapper)
+        self.assertIn("collect_range_intersection_rows_prepared_queries", wrapper)
         self.assertIn("prepare_optix_aabb_point_queries_2d", wrapper)
         self.assertIn("prepare_optix_aabb_box_queries_2d", wrapper)
         self.assertNotIn("librts", (prelude + api + workloads).lower())

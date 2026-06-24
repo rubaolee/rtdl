@@ -1,0 +1,8 @@
+{
+  "command": "/usr/bin/python3 -m unittest tests.v3_rebuild_reset_test tests.v3_rebuild_evidence_classification_test tests.v3_rebuild_spatial_rayjoin_route_test tests.v3_rebuild_tutorial_surface_test tests.v3_negative_route_explanation_test tests.v3_claim_grade_all_benchmarks_test tests.v3_paired_v2_v3_benchmark_test tests.v3_gpu_python_env_gate_script_test tests.v3_release_wording_gate_test",
+  "group": "v3_rebuild",
+  "module_count": 9,
+  "ok": true,
+  "output": ".............................\n----------------------------------------------------------------------\nRan 29 tests in 0.578s\n\nOK",
+  "returncode": 0
+}

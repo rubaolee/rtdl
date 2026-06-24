@@ -1,23 +1,22 @@
-# RTDL Current Examples
+# Current V3 Examples
 
-This is the current learner-facing example tree for the RTDL v3.0.2
-released Python+partner+RTDL source-tree surface. This tree is intentionally
-named `current/` so learner-facing examples are not frozen under an old release
-number.
+Start here:
 
-| Directory | Purpose |
-| --- | --- |
-| `getting_started/` | smallest programs, primitive discovery, feature cookbook, and measurement discipline demo |
-| `features/` | examples grouped by primitive or workload feature |
-| `apps/` | complete application-level examples |
-| `partners/` | examples that continue RTDL outputs with NumPy, CuPy, Numba, or user-owned native code |
-| `learner_apps/` | app-scale learner and design-pressure cases that are not promoted benchmarks |
-| `research_benchmarks/` | serious performance studies such as Hausdorff/X-HD and spatial/RayJoin |
-
-Use source-tree execution from the repository root:
-
-```bash
-PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world.py
-PYTHONPATH=src:. python examples/current/getting_started/rtdl_primitive_discovery_workflow.py
-PYTHONPATH=src:. python examples/current/getting_started/rtdl_prepared_measurement_demo.py
+```powershell
+py -3 examples\current\getting_started\rtdl_hello_world.py
+py -3 examples\current\getting_started\rtdl_hello_world_backends.py
+py -3 examples\current\getting_started\rtdl_prepared_measurement_demo.py
 ```
+
+Directory guide:
+
+| Directory | Meaning |
+| --- | --- |
+| `getting_started/` | First user examples. |
+| `features/` | Small examples organized by RTDL feature. |
+| `apps/` | Application-shaped examples for developers. |
+| `partners/` | Explicit partner integration examples. |
+| `research_benchmarks/` | Serious benchmark code inventory for developers. |
+
+Use [../../docs/learn/performance_wording.md](../../docs/learn/performance_wording.md)
+before making any performance statement.

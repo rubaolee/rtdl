@@ -1,0 +1,54 @@
+Please review Phoenix V3 Phase H/G capability completion candidate.
+
+Primary packet:
+docs/rebuild/v3/phoenix_v3_phase_h_g_capability_completion_candidate_2026-06-24.md
+
+Call-for-review:
+docs/reviews/call_for_review_phoenix_v3_phase_h_g_capability_completion_candidate_2026-06-24.md
+
+Context:
+docs/reviews/codex_claude_antigravity_phoenix_v3_phase_a_performance_source_consensus_2026-06-24.md
+docs/rebuild/v3/phoenix_v3_phase_h_capability_branch_status_2026-06-24.md
+docs/rebuild/v3/v3_release_authorization_blockers_2026-06-20.md
+docs/learn/current_claim_boundaries.md
+docs/public_documentation_map.md
+README.md
+tutorials/current/README.md
+scripts/v3_release_wording_gate.py
+scripts/rtdl_source_tree_doctor.py
+
+Claude first review:
+docs/reviews/claude_phoenix_v3_phase_h_g_capability_completion_candidate_review_2026-06-24.md
+
+Claude amendment review:
+docs/reviews/claude_phoenix_v3_phase_h_g_capability_completion_candidate_amendment_review_2026-06-24.md
+
+Local validation after amendments:
+- py -3 -m unittest tests.v3_release_wording_gate_test tests.v3_public_docs_rebuild_surface_test tests.v3_rebuild_tutorial_surface_test tests.v3_phoenix_release_readiness_gate_test tests.v3_phoenix_major_performance_mandate_gate_test tests.v3_rebuild_reset_test tests.goal4278_source_tree_doctor_test -> 39 tests OK
+- py -3 scripts/v3_release_wording_gate.py --pretty -> status pass, violations []
+- py -3 scripts/rtdl_source_tree_doctor.py --json --run-smoke -> ok true, status v3_capability_branch_ready
+- py -3 scripts/run_test_matrix.py --group v3_rebuild -> 148 modules, 754 tests OK
+
+Review scope:
+This is NOT a high-performance V3 release, NOT broad V3-over-V2 speed wording,
+NOT an all-app benchmark victory, NOT V4, NOT embedding, NOT C ABI, NOT
+external zero-copy.
+
+Use exactly one verdict label:
+- accept_phase_h_g_capability_release_ready
+- accept_with_required_amendments
+- reject_overclaims_or_missing_gates
+- reject_wrong_branch_reopened_performance_path
+
+Questions:
+1. Does the amended packet correctly follow the Phase A No-Go fork into Phase H?
+2. Does it keep B/C/D high-performance work closed after A failed?
+3. Are broad performance, release, V4, embedding, C ABI, and zero-copy claims blocked?
+4. Are user-facing doors clean enough for a capability/quality V3 learner path?
+5. Is the dual-track blocker ledger correct: capability branch pending review, high-performance branch blocked?
+6. Are the local gates adequate for forwarding to release-owner decision?
+7. What exact amendments, if any, are required before release-owner authorization?
+
+Please save or return a concise markdown review with the verdict and findings.
+This review must not authorize public speedup wording, all-app victory, V4,
+embedding, C ABI, zero-copy, or release-owner authorization.

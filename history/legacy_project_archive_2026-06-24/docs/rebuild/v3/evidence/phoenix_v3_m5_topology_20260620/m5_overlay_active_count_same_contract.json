@@ -1,0 +1,126 @@
+{
+  "case_shape": {
+    "left_cdb": "/root/rtdl_v3_rebuild_20260620/current/data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+    "left_shape_count": 478,
+    "right_cdb": "/root/rtdl_v3_rebuild_20260620/current/data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+    "right_shape_count": 501
+  },
+  "claim_boundary": {
+    "benchmark_app": "spatial_rayjoin",
+    "full_polygon_overlay_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rayjoin_section57_full_reproduction_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "same_contract_active_count_only": true,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "workload": "overlay_seed"
+  },
+  "comparison": {
+    "active_count": 174,
+    "active_counts_match": true,
+    "all_counts_stable": true,
+    "all_row_materialization_avoided": true,
+    "embree_over_optix_timed_median": 499.11182637483904,
+    "old_embree_raw_relation_row_contract": "generic_row_count_raw_view_no_python_dicts",
+    "old_embree_raw_relation_row_count_not_comparable": true,
+    "old_raw_relation_row_contract_rejected": true,
+    "old_raw_relation_row_count_not_comparable": true,
+    "optix_over_embree_timed_median": 0.0020035590165499062,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "same_backends": [
+      "embree",
+      "optix"
+    ],
+    "same_output_contract": true,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "environment": {
+    "git_head": null,
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "goal": "Goal4430 V3.0 M33 Spatial RayJoin overlay active-count same-contract refresh",
+  "parameters": {
+    "embree_threads": "auto",
+    "left_cdb": "data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+    "repeat": 25,
+    "right_cdb": "data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+    "warmup": 2
+  },
+  "planned": {
+    "embree_threads": "auto",
+    "left_cdb": "data/rayjoin_public_cdb/br_county_start256_count512.cdb",
+    "output_contract": "overlay_active_pair_dependency_count",
+    "repeat": 25,
+    "right_cdb": "data/rayjoin_public_cdb/br_soil_start256_count512.cdb",
+    "same_contract_backends": [
+      "embree",
+      "optix"
+    ],
+    "warmup": 2
+  },
+  "rows": [
+    {
+      "active_count": 174,
+      "backend": "embree",
+      "claim_boundary": {
+        "full_polygon_overlay_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_section57_full_reproduction_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_stable": true,
+      "execution_route": "prepared_embree_shape_pair_active_count_2d",
+      "left_shape_count": 478,
+      "native_symbol": "rtdl_embree_shape_pair_active_count_2d_count",
+      "native_traversal_median_sec": 0.100408217,
+      "output_contract": "overlay_active_pair_dependency_count",
+      "repeat": 25,
+      "right_shape_count": 501,
+      "row_materialization_avoided": true,
+      "setup_sec": 0.043192058801651,
+      "threads": "auto",
+      "timed_max_sec": 0.1216636523604393,
+      "timed_median_sec": 0.10109212249517441,
+      "timed_min_sec": 0.08691808581352234,
+      "timed_total_sec": 2.5040615499019623,
+      "warmup": 2
+    },
+    {
+      "active_count": 174,
+      "backend": "optix",
+      "claim_boundary": {
+        "full_polygon_overlay_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_section57_full_reproduction_claim_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "counts_stable": true,
+      "execution_route": "prepared_optix_shape_pair_active_count_device_continuation_reuse",
+      "left_shape_count": 478,
+      "native_symbol": "rtdl_optix_run_shape_pair_relation_active_device_prepared_left_executor",
+      "native_traversal_median_sec": 0.00020254403352737427,
+      "output_contract": "overlay_active_pair_dependency_count",
+      "prepare_active_count_executor_sec": 0.0005370080471038818,
+      "repeat": 25,
+      "right_shape_count": 501,
+      "row_materialization_avoided": true,
+      "setup_sec": 2.6863933876156807,
+      "threads": null,
+      "timed_median_sec": 0.00020254403352737427,
+      "timed_total_sec": 0.005134500563144684,
+      "warmup": 2
+    }
+  ],
+  "status": "ok",
+  "version": "rtdl.v3_0.spatial_rayjoin_overlay_active_count_same_contract.m33"
+}

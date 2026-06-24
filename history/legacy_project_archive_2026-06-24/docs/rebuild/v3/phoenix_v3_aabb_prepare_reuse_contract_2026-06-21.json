@@ -1,0 +1,196 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "checks": {
+    "aabb_existing_m7_row_remains_one": true,
+    "contact_boundary_not_m7": true,
+    "contact_prepare_is_slower": true,
+    "contact_wall_is_slower": true,
+    "prepare_cost_blocker_present": true,
+    "smoke_blocks_app_specific_native_logic": true,
+    "smoke_blocks_public_speed": true,
+    "smoke_blocks_true_zero_copy": true,
+    "smoke_metadata_for_generic_contract": true,
+    "smoke_metadata_present": true
+  },
+  "current_contact_gap": {
+    "collect_k_optix_over_embree": 2.7590511659809116,
+    "prepare_aabb_index_optix_over_embree": 0.24317940095569324,
+    "query_optix_over_embree": 1.2348474960917915,
+    "reading": "Hot query and bounded-row collection improve, but OptiX AABB-index preparation dominates enough that the current wall path is slower.",
+    "row": "contact_manifold / generic_aabb_broadphase_collect_k",
+    "wall_optix_over_embree": 0.8029757821318222
+  },
+  "current_packet_2ai_consensus_status": "claude_codex_consensus_complete_queue_advancement_not_m7",
+  "current_packet_external_review_status": "claude_approve_with_amendments_p1_applied",
+  "existing_m7_aabb_row": {
+    "remains_the_only_aabb_m7_row": true,
+    "row_id": "aabb_candidate_stream_all_count_only_float32_32768",
+    "scope": "native_float32_inclusive_count_only_32768"
+  },
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not promote contact_manifold from this packet.",
+    "Do not claim full contact solver or physics throughput.",
+    "Do not claim device-buffer interop or automatic partner selection.",
+    "Do not use the existing 1.235x query ratio as wall or end-to-end speedup.",
+    "Do not claim a broad V3-over-V2 AABB/contact speedup."
+  ],
+  "future_m7_candidate_requirements": [
+    "Use the generic aabb_index_query_2d prepared-session contract, not contact-specific native logic.",
+    "Use a serious fixture: at least 32,768 indexed AABBs and 32,768 query AABBs, or a reviewer-approved equivalent scale with a non-trivial prepare phase.",
+    "Prepare indexed AABB scene once, then run repeated query/collect rows under an explicit user session.",
+    "Report prepare/query/collect/wall phases separately and include cold-plus-repeat wall timing.",
+    "Keep CPU-reference parity and fail-closed overflow behavior visible.",
+    "Show material OptiX wall win after prepare reuse, not only hot-query win; 1.01x-style noise is not enough.",
+    "Obtain fresh external review plus Codex consensus before any new M7 row."
+  ],
+  "generic_capability": "aabb_candidate_stream",
+  "goal_level_decision_audit": {
+    "decision": "Add generic AABB prepare-reuse contract visibility without promoting a new M7 row.",
+    "different_path_now": "Keep AABB in the engine queue as a prepare-reuse candidate and require a repeated-session POD row with wall win, parity, overflow behavior, and 2-AI review.",
+    "foolish_actions": "It would be foolish to publish the 1.235x query or 2.759x collect-k ratios while ignoring the 0.803x wall ratio and 0.243x prepare ratio.",
+    "other_path": "Directly rerun the pod. That may be needed next, but without a generic prepared-session contract the rerun would not prove a V3 engine capability.",
+    "was_i_foolish": "No. The current contact row is wall-slower, so the honest move is to expose the reusable prepared-session contract before rerunning performance."
+  },
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "new_runtime_contract_smoke": {
+    "app": "bounded_collision_witness_contact_manifold",
+    "candidate_discovery_backend": "cpu",
+    "matches_cpu_reference": true,
+    "mode": "aabb_broadphase_collect_k",
+    "prepared_session_residency": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "cache_enabled_by_default": false,
+      "cache_key": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "backend": "cpu",
+        "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "device": "cpu:0",
+        "explicit_key_required": true,
+        "input_fingerprints": [
+          [
+            "indexed_aabbs",
+            "8bf5775d60dbc341986ecf92"
+          ],
+          [
+            "query_aabbs",
+            "74047663784b4a2b725382bf"
+          ]
+        ],
+        "parameter_fingerprint": [
+          [
+            "operation",
+            "8b9fe2976cbdac0730805ddb"
+          ],
+          [
+            "resolution",
+            "b17ef6d19c7a5b1ee83b907c"
+          ],
+          [
+            "row_capacity",
+            "2c624232cdd221771294dfbb"
+          ],
+          [
+            "row_contract",
+            "ec06807413df7f0a1d2ebe6e"
+          ]
+        ],
+        "partner": "none",
+        "primitive": "aabb_index_query_2d",
+        "stable_id": "d76c67e451cd75bf873ac82e"
+      },
+      "claim_boundary": "Generic AABB_INDEX_QUERY_2D prepared-session residency metadata only. It records explicit lifetime and cold/hot phase split; it is not a public speedup claim and not contact-specific native engine logic.",
+      "cold_hot_phase_split_required": true,
+      "explicit_reuse_helper": "get_or_prepare_explicit_session",
+      "policy": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_claim_authorized": false,
+        "cache_enabled": false,
+        "cache_key": {
+          "app_specific_native_engine_logic_allowed": false,
+          "automatic_partner_selection_authorized": false,
+          "backend": "cpu",
+          "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+          "device": "cpu:0",
+          "explicit_key_required": true,
+          "input_fingerprints": [
+            [
+              "indexed_aabbs",
+              "8bf5775d60dbc341986ecf92"
+            ],
+            [
+              "query_aabbs",
+              "74047663784b4a2b725382bf"
+            ]
+          ],
+          "parameter_fingerprint": [
+            [
+              "operation",
+              "8b9fe2976cbdac0730805ddb"
+            ],
+            [
+              "resolution",
+              "b17ef6d19c7a5b1ee83b907c"
+            ],
+            [
+              "row_capacity",
+              "2c624232cdd221771294dfbb"
+            ],
+            [
+              "row_contract",
+              "ec06807413df7f0a1d2ebe6e"
+            ]
+          ],
+          "partner": "none",
+          "primitive": "aabb_index_query_2d",
+          "stable_id": "d76c67e451cd75bf873ac82e"
+        },
+        "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+        "cold_prepare_phase": "prepare_aabb_index_2d",
+        "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "hot_query_phase": "emit_aabb_intersection_pair_rows_2d",
+        "invalidation_events": [
+          "explicit_invalidate",
+          "input_fingerprint_change",
+          "backend_context_reset",
+          "close"
+        ],
+        "lifetime_state": "session_retained",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "reuse_scope": "explicit_user_session",
+        "status": "internal_contract_not_release_authorization",
+        "true_zero_copy_claim_authorized": false
+      },
+      "prepare_once_query_many_pattern": true,
+      "public_speedup_claim_authorized": false,
+      "query_reuse_observed_within_payload": false,
+      "true_zero_copy_claim_authorized": false
+    },
+    "reading": "The contact harness now emits the same generic prepared-session residency metadata family as other V3 prepared routes. This is contract visibility, not performance promotion."
+  },
+  "pod_runner": {
+    "local_smoke_command": "py -3 scripts/v3_phoenix_aabb_prepare_reuse_pod_runner.py --dataset grid --grid-count 3 --backends cpu --warmup 0 --repeat 1 --witness-capacity 3 --discovery-row-capacity 8 --allow-non-serious-local-smoke --output-dir <tmp>",
+    "m7_promotion_authorized_by_runner_alone": false,
+    "script": "scripts/v3_phoenix_aabb_prepare_reuse_pod_runner.py",
+    "serious_default_command": "PYTHONPATH=src:. python scripts/v3_phoenix_aabb_prepare_reuse_pod_runner.py --dataset jittered_grid --grid-count 32768 --warmup 3 --repeat 50 --backends embree,optix --require-rt-hardware --output-dir docs/rebuild/v3/evidence/phoenix_v3_aabb_prepare_reuse_YYYYMMDD",
+    "status": "runner_available_not_yet_rt_pod_evidence"
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "review_records": {
+    "call_for_review": "docs/reviews/call_for_review_phoenix_v3_aabb_prepare_reuse_contract_2026-06-21.md",
+    "claude_review": "docs/reviews/claude_phoenix_v3_aabb_prepare_reuse_contract_review_2026-06-21.md",
+    "codex_consensus": "docs/reviews/codex_phoenix_v3_aabb_prepare_reuse_contract_2ai_consensus_2026-06-21.md"
+  },
+  "source_packets": {
+    "aabb_count_only_m7": "docs/rebuild/v3/phoenix_v3_aabb_candidate_stream_32768_m7_final_review_packet_2026-06-21.json",
+    "contact_broadphase_boundary": "docs/rebuild/v3/phoenix_v3_contact_manifold_broadphase_boundary_2026-06-21.json"
+  },
+  "status": "aabb_prepare_reuse_contract_candidate_not_m7",
+  "version": "phoenix_v3_aabb_prepare_reuse_contract_2026_06_21"
+}

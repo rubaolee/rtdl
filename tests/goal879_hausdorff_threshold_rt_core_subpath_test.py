@@ -11,22 +11,40 @@ class _FakePreparedThreshold:
         self,
         *,
         search_points,
-        query_points,
-        radius: float,
-        threshold: int,
         backend: str,
         max_radius: float,
-        prepare_scene,
     ):
+        self.search_points = search_points
+        self.backend = backend
+        self.max_radius = max_radius
+        self.scene_prepare_sec = 0.001
+        return self
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        return None
+
+    def count_threshold_reached(self, query_points, *, radius: float, threshold: int):
         self.query_count = len(query_points)
         self.radius = radius
         self.threshold = threshold
-        self.backend = backend
-        self.max_radius = max_radius
         return {
             "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
             "summary_primitive": "REDUCE_INT(COUNT)",
+            "backend": self.backend,
+            "prepared": True,
+            "scene_reusable": True,
             "threshold_reached_count": len(query_points),
+            "result_layout": "aggregate_threshold_reached_count",
+            "native_scalar_count_used": True,
+            "threshold_summary_rows_materialized_on_host": False,
+            "hot_path_host_materialization": False,
+            "prepared_search_structure_resident_between_rtdl_phases": True,
+            "query_points_device_resident_between_rtdl_phases": False,
+            "internal_device_residency_between_rtdl_phases": True,
+            "internal_residency_scope": "prepared_search_structure_only_query_points_not_device_resident",
             "run_phases": {
                 "scene_prepare_sec": 0.001,
                 "query_fixed_radius_threshold_reached_count_sec": 0.002,
@@ -35,8 +53,8 @@ class _FakePreparedThreshold:
 
 
 class _PartialPreparedThreshold(_FakePreparedThreshold):
-    def __call__(self, **kwargs):
-        result = super().__call__(**kwargs)
+    def count_threshold_reached(self, *args, **kwargs):
+        result = super().count_threshold_reached(*args, **kwargs)
         result["threshold_reached_count"] = max(0, self.query_count - 1)
         return result
 
@@ -46,7 +64,7 @@ class Goal879HausdorffThresholdRtCoreSubpathTest(unittest.TestCase):
         fake = _FakePreparedThreshold()
         with mock.patch.object(
             app.rt,
-            "run_generic_prepared_fixed_radius_threshold_reached_count_2d",
+            "prepare_generic_fixed_radius_count_threshold_2d",
             side_effect=fake,
         ):
             payload = app.run_app(
@@ -72,7 +90,7 @@ class Goal879HausdorffThresholdRtCoreSubpathTest(unittest.TestCase):
     def test_optix_threshold_failure_keeps_scalar_identity_boundary(self) -> None:
         with mock.patch.object(
             app.rt,
-            "run_generic_prepared_fixed_radius_threshold_reached_count_2d",
+            "prepare_generic_fixed_radius_count_threshold_2d",
             side_effect=_PartialPreparedThreshold(),
         ):
             payload = app.run_app(

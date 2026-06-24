@@ -1,0 +1,167 @@
+{
+  "actual_repeat100_clean_override_rows": [
+    524288
+  ],
+  "actual_repeat100_evidence_status": "ok",
+  "actual_repeat100_scalar_broadcast_override_rows": [
+    262144,
+    524288
+  ],
+  "candidate_scope": "sum-only actual-repeat100 prepared grouped-reduction public wording candidate",
+  "current_packet_2ai_consensus_status": "not_recorded_for_this_packet",
+  "current_packet_external_review_status": "blocked_current_packet",
+  "excluded_rows": [
+    {
+      "blockers": [
+        "public_prepared_query_tutorial_not_written",
+        "final_public_row_wording_review_required",
+        "m7_promotion_authorized_false",
+        "repeat_1_end_to_end_not_optix_win",
+        "count_mode_requires_double_digit_repeat_amortization",
+        "count_mode_high_breakeven_blocks_public_claim"
+      ],
+      "break_even_repeat_count_ceiling": 14,
+      "m7_promoted": false,
+      "modeled_repeat_100_end_to_end_speedup": 2.452212724904239,
+      "reason": "count row kept internal because break-even requires double-digit repeats",
+      "row_id": "grouped_reduction_count_repeat100_262144"
+    },
+    {
+      "blockers": [
+        "public_prepared_query_tutorial_not_written",
+        "final_public_row_wording_review_required",
+        "m7_promotion_authorized_false",
+        "repeat_1_end_to_end_not_optix_win",
+        "count_mode_requires_double_digit_repeat_amortization",
+        "count_mode_high_breakeven_blocks_public_claim"
+      ],
+      "break_even_repeat_count_ceiling": 14,
+      "m7_promoted": false,
+      "modeled_repeat_100_end_to_end_speedup": 2.633207352645078,
+      "reason": "count row kept internal because break-even requires double-digit repeats",
+      "row_id": "grouped_reduction_count_repeat100_524288"
+    }
+  ],
+  "external_review_blockage": "docs/reviews/external_review_blocked_phoenix_v3_grouped_reduction_scalar_broadcast_optimization_2026-06-20.md",
+  "forbidden_public_wording": [
+    "V3 is 224x faster",
+    "RayDB is 224x faster",
+    "RTDL is 33x faster end to end",
+    "RTDL accelerates database workloads broadly",
+    "count rows are public grouped_reduction speedup rows",
+    "repeat 100 is only modeled",
+    "whole-app speedup is authorized"
+  ],
+  "generic_capability": "grouped_reduction",
+  "goal_level_decision_audit": {
+    "decision": "replace modeled repeat100 candidate wording with actual repeat100 pod evidence",
+    "different_path_now": "Use the actual repeat100 pod artifacts as current candidate evidence with the scalar-broadcast optimized repeat100 rerun as the current source for both scales, and keep release authorization false until final external review.",
+    "foolish_actions": "It would be foolish to keep presenting modeled 32x/33x repeat100 numbers as the current candidate after measuring actual repeat100, to quote the first 524,288-row run without recording the clean rerun, or to keep using the pre-optimization evidence after the scalar-broadcast packer rerun succeeded.",
+    "other_path": "Wait for external review of the modeled wording. That would leave a known measurement gap in the strongest V3 candidate.",
+    "was_i_foolish": "Partly. The earlier modeled wording was honest about being modeled, but it was weaker than V3 should accept once pod time was available. The first actual 524,288-row run also needed a clean confirmation because the launch had a quoting mistake around artifact placement. After that, leaving the 76M-ray scalar-field allocations in place would have left a fixable generic packer cost in the V3 candidate path."
+  },
+  "m7_candidate_rows": 2,
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows": 0,
+  "next_review_questions": [
+    "Is actual repeat-100 wording acceptable if cold prepare is shown beside loop timing?",
+    "Should the 262,144-row sum row become M7-qualified after final external review?",
+    "Should the 524,288-row sum row remain candidate despite its large cold prepare cost?",
+    "Is the public wording understandable without project history?",
+    "Are the count-row exclusions still strong enough?"
+  ],
+  "public_copy_rules": [
+    "Say fixed-schema prepared grouped-sum workload.",
+    "Name hardware, row count, group count, backend pair, warmup, and repeat count.",
+    "Say actual repeat 100 when quoting repeat-100 evidence.",
+    "Report both actual 100-query loop speedup and cold-plus-loop speedup.",
+    "Use the scalar-broadcast optimized repeat100 rerun when quoting current values.",
+    "Do not quote the older modeled repeat 100 values as current candidate wording.",
+    "Always show cold prepare cost next to repeat-100 wording.",
+    "Keep whole-app and whole-database speedup unauthorized."
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "actual_evidence_supersedes_modeled_value": true,
+      "actual_repeat100_cold_plus_loop_speedup": 27.917061240006728,
+      "actual_repeat100_loop_speedup": 200.35257380886821,
+      "all_match_cpu_reference": true,
+      "blockers": [
+        "final_public_row_wording_review_required",
+        "m7_promotion_authorized_false",
+        "external_review_required",
+        "whole_app_speedup_claim_authorized_false"
+      ],
+      "candidate_public_row_id": "grouped_reduction_sum_scalar_broadcast_repeat100_262144_public_wording_candidate",
+      "draft_public_wording_not_publishable": "Draft only: for a fixed-schema prepared grouped-sum workload on an NVIDIA RTX 4000 Ada Generation pod (262,144 rows / 1,024 groups), actual repeat=100 measurement showed 200.353x OptiX-over-Embree speedup for the 100-query prepared loop. Counting cold prepare once plus the measured 100-query loop, the speedup was 27.917x. The hot prepared-query median ratio was 203.022x. This is not a whole-app or whole-database speedup claim, and it is not publishable until final external public-row review.",
+      "embree_actual_loop_total_sec": 100.50838639587164,
+      "embree_cold_plus_loop_sec": 102.21858345717192,
+      "embree_cold_prepare_total_sec": 1.7101970613002777,
+      "generated_groups": 1024,
+      "generated_rows": 262144,
+      "hot_query_speedup_embree_over_optix": 203.0217474896593,
+      "m7_promoted": false,
+      "operation": "group_sum_i64",
+      "optix_actual_loop_total_sec": 0.5016575753688812,
+      "optix_cold_plus_loop_sec": 3.661509446799755,
+      "optix_cold_prepare_total_sec": 3.159851871430874,
+      "previous_actual_row_id": "grouped_reduction_sum_repeat100_actual_262144",
+      "previous_modeled_row_id": "grouped_reduction_sum_repeat100_262144",
+      "promotion_status": "sum_only_actual_repeat100_candidate_needs_final_review",
+      "recommended_public_repeat_count": 100,
+      "repeat": 100,
+      "row_id": "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+      "same_contract": true,
+      "source_actual_file": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_scalar_broadcast_repeat100_20260620\\grouped_sum_scalar_broadcast_repeat100_262144.json",
+      "source_previous_modeled_repeat100_end_to_end_speedup": 32.39486383442566,
+      "warmup": 3
+    },
+    {
+      "actual_evidence_supersedes_modeled_value": true,
+      "actual_repeat100_cold_plus_loop_speedup": 2.983493439011798,
+      "actual_repeat100_loop_speedup": 157.641944668856,
+      "all_match_cpu_reference": true,
+      "blockers": [
+        "final_public_row_wording_review_required",
+        "m7_promotion_authorized_false",
+        "external_review_required",
+        "whole_app_speedup_claim_authorized_false",
+        "large_cold_prepare_cost_limits_public_claim"
+      ],
+      "candidate_public_row_id": "grouped_reduction_sum_scalar_broadcast_repeat100_524288_public_wording_candidate",
+      "draft_public_wording_not_publishable": "Draft only: for a fixed-schema prepared grouped-sum workload on an NVIDIA RTX 4000 Ada Generation pod (524,288 rows / 2,048 groups), actual repeat=100 measurement showed 157.642x OptiX-over-Embree speedup for the 100-query prepared loop. Counting cold prepare once plus the measured 100-query loop, the speedup was 2.983x. The hot prepared-query median ratio was 158.970x. This is not a whole-app or whole-database speedup claim, and it is not publishable until final external public-row review.",
+      "embree_actual_loop_total_sec": 210.18336031585932,
+      "embree_cold_plus_loop_sec": 295.24748132377863,
+      "embree_cold_prepare_total_sec": 85.06412100791931,
+      "generated_groups": 2048,
+      "generated_rows": 524288,
+      "hot_query_speedup_embree_over_optix": 158.97020991486545,
+      "m7_promoted": false,
+      "operation": "group_sum_i64",
+      "optix_actual_loop_total_sec": 1.3332959115505219,
+      "optix_cold_plus_loop_sec": 98.96032532304525,
+      "optix_cold_prepare_total_sec": 97.62702941149473,
+      "previous_actual_row_id": "grouped_reduction_sum_repeat100_actual_524288",
+      "previous_modeled_row_id": "grouped_reduction_sum_repeat100_524288",
+      "promotion_status": "sum_only_actual_repeat100_candidate_needs_final_review",
+      "recommended_public_repeat_count": 100,
+      "repeat": 100,
+      "row_id": "grouped_reduction_sum_scalar_broadcast_repeat100_524288",
+      "same_contract": true,
+      "source_actual_file": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_scalar_broadcast_repeat100_20260620\\grouped_sum_scalar_broadcast_repeat100_524288.json",
+      "source_previous_modeled_repeat100_end_to_end_speedup": 33.60842411097631,
+      "warmup": 3
+    }
+  ],
+  "source_actual_repeat100_clean_evidence_dir": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_repeat100_actual_524288_clean_20260620",
+  "source_actual_repeat100_evidence_dir": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_repeat100_actual_20260620",
+  "source_actual_repeat100_scalar_broadcast_evidence_dir": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_scalar_broadcast_repeat100_20260620",
+  "source_contract": "docs\\rebuild\\v3\\phoenix_v3_grouped_reduction_prepared_query_contract_2026-06-20.json",
+  "source_contract_status": "prepared_query_contract_draft_not_release",
+  "status": "sum_only_actual_repeat100_candidate_wording_not_release",
+  "supersedes_modeled_repeat100_packet": true,
+  "supersession_reason": "A pod rerun measured repeat=100 directly for grouped_sum on the same Embree/OptiX contract. A clean 524,288-row rerun then confirmed the large cold cost. The current packet then applied the generic scalar broadcast ray-packer optimization and reran actual repeat100; those optimized actual-repeat100 artifacts now supply the current candidate numbers. Public candidate wording must use actual repeat100 loop and cold-plus-loop values instead of formula projections.",
+  "whole_app_speedup_claim_authorized": false
+}

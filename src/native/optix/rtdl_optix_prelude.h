@@ -13,9 +13,10 @@
 // - PointNearestSegment uses CUDA-parallel brute-force
 // - FixedRadiusNeighbors currently uses CUDA-parallel brute-force
 //
-// Device kernels are embedded as CUDA source strings and compiled to PTX at
-// runtime via NVRTC.  Compiled pipelines are cached across calls in static
-// singletons so the JIT cost is paid only once per workload type per process.
+// Device kernels are embedded as CUDA source strings and compiled to PTX/CUBIN
+// at runtime.  Loaded modules are cached across calls in static singletons; CUBIN
+// helpers also use a content-addressed disk cache so a new process can avoid
+// repeating nvcc compilation for the same source, options, and target arch.
 //
 // Build requirements:
 //   - CUDA Toolkit >= 11.0 11.0  (nvrtc.h, cuda.h, cuda_runtime.h)
@@ -1567,6 +1568,13 @@ int  rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows(
          size_t* emitted_count_out,
          uint32_t* overflowed_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows_packed_queries(
+         void* prepared,
+         void* prepared_queries,
+         RtdlAabbPairRow* rows_out, size_t row_capacity,
+         size_t* emitted_count_out,
+         uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows(
          void* prepared,
          const RtdlPoint* point_queries, size_t point_query_count,
@@ -1886,6 +1894,20 @@ int  rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_
          const size_t* k_values,
          size_t request_count,
          RtdlFixedRadiusRankedNeighborAggregate* aggregates_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_aggregate_self_query_ranked_fixed_radius_neighbor_summaries_3d_f32_batch(
+         void* prepared,
+         const double* radii,
+         const size_t* k_values,
+         size_t request_count,
+         RtdlFixedRadiusRankedNeighborAggregate* aggregates_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_prepare_fixed_radius_self_query_ranked_summary_aggregate_batch_graph_3d(
+         void* prepared,
+         const double* radii,
+         const size_t* k_values,
+         size_t request_count,
+         void** graph_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_launch_fixed_radius_ranked_summary_aggregate_batch_graph_device_partials_3d(
          void* graph,

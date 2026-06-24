@@ -5,9 +5,11 @@ from examples import rtdl_hausdorff_distance_app as app
 
 
 class _FakePreparedThreshold:
-    def __init__(self, target, max_radius: float):
-        self.target = target
+    def __init__(self, *, search_points, backend: str, max_radius: float):
+        self.target = search_points
+        self.backend = backend
         self.max_radius = max_radius
+        self.scene_prepare_sec = 0.001
 
     def __enter__(self):
         return self
@@ -22,12 +24,35 @@ class _FakePreparedThreshold:
         self.query_count = len(query_points)
         self.radius = radius
         self.threshold = threshold
-        return len(query_points)
+        return {
+            "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+            "summary_primitive": "REDUCE_INT(COUNT)",
+            "backend": self.backend,
+            "prepared": True,
+            "scene_reusable": True,
+            "threshold_reached_count": len(query_points),
+            "result_layout": "aggregate_threshold_reached_count",
+            "native_scalar_count_used": True,
+            "threshold_summary_rows_materialized_on_host": False,
+            "hot_path_host_materialization": False,
+            "prepared_search_structure_resident_between_rtdl_phases": True,
+            "query_points_device_resident_between_rtdl_phases": False,
+            "internal_device_residency_between_rtdl_phases": True,
+            "internal_residency_scope": "prepared_search_structure_only_query_points_not_device_resident",
+            "run_phases": {
+                "scene_prepare_sec": 0.001,
+                "query_fixed_radius_threshold_reached_count_sec": 0.002,
+            },
+        }
 
 
 class Goal1132HausdorffPhaseContractTest(unittest.TestCase):
     def test_optix_threshold_mode_reports_clean_phase_split(self) -> None:
-        with mock.patch.object(app.rt, "prepare_optix_fixed_radius_count_threshold_2d", side_effect=_FakePreparedThreshold):
+        with mock.patch.object(
+            app.rt,
+            "prepare_generic_fixed_radius_count_threshold_2d",
+            side_effect=_FakePreparedThreshold,
+        ):
             payload = app.run_app(
                 "optix",
                 copies=2,

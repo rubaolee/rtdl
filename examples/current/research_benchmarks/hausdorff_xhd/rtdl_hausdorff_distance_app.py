@@ -17,6 +17,11 @@ import rtdsl as rt
 from rtdsl.optix_runtime import prepare_optix_point_group_nearest_witness_2d
 from rtdsl.reference import Point
 
+DIRECTED_THRESHOLD_PREPARED_MODES = (
+    "directed_threshold_prepared",
+    "directed_threshold_prepared_runner",
+)
+
 
 @rt.kernel(backend="rtdl", precision="float_approx")
 def hausdorff_nearest_rows_kernel():
@@ -102,10 +107,11 @@ def _enforce_rt_core_requirement(backend: str, optix_summary_mode: str, require_
         return
     if backend != "optix":
         raise ValueError("--require-rt-core is only meaningful with --backend optix or optix_device_max_nearest")
-    if optix_summary_mode != "directed_threshold_prepared":
+    if optix_summary_mode not in DIRECTED_THRESHOLD_PREPARED_MODES:
         raise RuntimeError(
             "hausdorff_distance RT-core path requires --backend optix "
-            "--optix-summary-mode directed_threshold_prepared or --backend optix_device_max_nearest"
+            "--optix-summary-mode directed_threshold_prepared[_runner] or "
+            "--backend optix_device_max_nearest"
         )
 
 
@@ -232,11 +238,182 @@ def _run_prepared_directed_threshold(
     label: str,
     query_repeat: int = 1,
     warmup: int = 0,
+    use_productized_runner: bool = False,
 ) -> dict[str, object]:
     if query_repeat <= 0:
         raise ValueError("query_repeat must be positive")
     if warmup < 0:
         raise ValueError("warmup must be non-negative")
+    if use_productized_runner:
+        cache = rt.ExplicitPreparedSessionCache(max_entries=1)
+        source_fingerprint = {
+            "kind": "directed_threshold_query_points_2d",
+            "label": label,
+            "count": len(source),
+            "first_id": int(source[0].id) if source else None,
+            "last_id": int(source[-1].id) if source else None,
+        }
+        target_fingerprint = {
+            "kind": "directed_threshold_search_points_2d",
+            "label": label,
+            "count": len(target),
+            "first_id": int(target[0].id) if target else None,
+            "last_id": int(target[-1].id) if target else None,
+        }
+        result = rt.run_fixed_radius_threshold_reached_count_2d_prepared_session(
+            search_points=target,
+            query_points=source,
+            radius=radius,
+            threshold=1,
+            backend=backend,
+            partner="none",
+            cache=cache,
+            max_radius=radius,
+            search_fingerprint=target_fingerprint,
+            query_fingerprint=source_fingerprint,
+            device="cuda:0" if backend == "optix" else "cpu",
+            warmup_count=warmup,
+            measured_repeat_count=query_repeat,
+            require_repeat5_material_probe=backend == "optix" and query_repeat >= 5,
+            retain_repeat_outputs=True,
+        )
+        metadata = result.to_metadata()
+        outputs = tuple(result.output) if isinstance(result.output, tuple) else (result.output,)
+        if not outputs:
+            raise RuntimeError("prepared threshold runner produced no measured outputs")
+        covered_counts = {int(output["threshold_reached_count"]) for output in outputs}
+        if len(covered_counts) != 1:
+            raise RuntimeError("prepared threshold runner changed covered-source count")
+        covered_count = next(iter(covered_counts))
+        measured_seconds = [float(value) for value in metadata["measured_repeat_seconds"]]
+        if len(measured_seconds) != query_repeat:
+            raise RuntimeError("prepared threshold runner repeat accounting mismatch")
+        inner_query_seconds = [
+            float(output.get("run_phases", {}).get("query_fixed_radius_threshold_reached_count_sec"))
+            for output in outputs
+            if isinstance(output.get("run_phases", {}).get("query_fixed_radius_threshold_reached_count_sec"), (int, float))
+        ]
+        query_seconds_for_phase_total = (
+            inner_query_seconds if len(inner_query_seconds) == query_repeat else measured_seconds
+        )
+        query_sec = float(statistics.median(query_seconds_for_phase_total))
+        runner_outer_query_sec = float(statistics.median(measured_seconds))
+        report_phases = {
+            phase["phase"]: phase
+            for phase in metadata["prepared_execution_report"]["phase_timings"]
+        }
+        warmup_seconds = [
+            float(value)
+            for value in report_phases.get("warmup", {}).get("repeat_seconds", ())
+        ]
+        legacy_aligned_prepare_sec = float(
+            metadata.get(
+                "legacy_aligned_prepare_sec",
+                metadata["prepared_execution_report"]["summary_sec"]["setup"],
+            )
+        )
+        outer_prepare_sec = float(metadata.get("outer_prepare_sec", metadata["prepared_execution_report"]["summary_sec"]["setup"]))
+        outer_cache_load_sec = float(metadata.get("outer_cache_load_sec", 0.0))
+        violating = [] if covered_count == len(source) else None
+        return {
+            "label": label,
+            "radius": radius,
+            "source_count": len(source),
+            "covered_source_count": covered_count,
+            "within_threshold": covered_count == len(source),
+            "violating_source_ids": violating,
+            "identity_parity_available": violating is not None,
+            "row_count": None,
+            "summary_mode": "scalar_threshold_count",
+            "generic_primitive": outputs[-1]["primitive"],
+            "summary_primitive": outputs[-1]["summary_primitive"],
+            "run_phases": {
+                "scene_prepare_sec": legacy_aligned_prepare_sec,
+                f"{backend}_prepare_sec": legacy_aligned_prepare_sec,
+                "runner_outer_prepare_sec": outer_prepare_sec,
+                "runner_outer_cache_load_sec": outer_cache_load_sec,
+                "runner_native_prepare_sec": metadata.get("native_prepare_sec"),
+                "query_fixed_radius_threshold_reached_count_sec": query_sec,
+                f"{backend}_query_sec": query_sec,
+                "query_fixed_radius_threshold_reached_count_total_sec": float(
+                    sum(query_seconds_for_phase_total)
+                ),
+                "runner_outer_query_sec": runner_outer_query_sec,
+                "runner_outer_query_total_sec": float(sum(measured_seconds)),
+                "query_repeat": int(query_repeat),
+                "query_warmup": int(warmup),
+                "warmup_total_sec": float(sum(warmup_seconds)),
+            },
+            "query_repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "measured_run_count": len(query_seconds_for_phase_total),
+                "query_sec_median": query_sec,
+                "query_sec_total": float(sum(query_seconds_for_phase_total)),
+                "runner_outer_query_sec_median": runner_outer_query_sec,
+                "runner_outer_query_sec_total": float(sum(measured_seconds)),
+                "reported_query_metric": "inner_primitive_query_median_with_runner_outer_metric_disclosed",
+                "reported_prepare_metric": "legacy_aligned_native_prepare_with_runner_outer_metric_disclosed",
+            },
+            "prepared_execution_session_runner": {
+                "used": True,
+                "schema": metadata["schema"],
+                "status": metadata["status"],
+                "productized_execution_path": metadata["productized_execution_path"],
+                "runtime_executed": bool(metadata["runtime_executed"]),
+                "runtime_trunk_executes_end_to_end": bool(
+                    metadata["runtime_trunk_executes_end_to_end"]
+                ),
+                "cache_hit": bool(metadata["prepared_session"]["cache_hit"]),
+                "measured_repeat_count": int(metadata["measured_repeat_count"]),
+                "measured_repeat_seconds": tuple(metadata["measured_repeat_seconds"]),
+                "output_finalize_sec": float(metadata["output_finalize_sec"]),
+                "prepared_execution_report": metadata["prepared_execution_report"],
+                "prepared_execution_report_validation": metadata[
+                    "prepared_execution_report_validation"
+                ],
+                "material_probe_repeat_requirement_met": bool(
+                    metadata["material_probe_repeat_requirement_met"]
+                ),
+                "repeat5_material_probe_candidate": bool(
+                    metadata["repeat5_material_probe_candidate"]
+                ),
+                "native_scalar_count_used": bool(metadata["native_scalar_count_used"]),
+                "threshold_summary_rows_materialized_on_host": bool(
+                    metadata["threshold_summary_rows_materialized_on_host"]
+                ),
+                "hot_path_host_materialization": bool(metadata["hot_path_host_materialization"]),
+                "prepared_search_structure_resident_between_rtdl_phases": bool(
+                    metadata["prepared_search_structure_resident_between_rtdl_phases"]
+                ),
+                "query_points_device_resident_between_rtdl_phases": bool(
+                    metadata["query_points_device_resident_between_rtdl_phases"]
+                ),
+                "internal_device_residency_between_rtdl_phases": bool(
+                    metadata["internal_device_residency_between_rtdl_phases"]
+                ),
+                "internal_residency_scope": metadata["internal_residency_scope"],
+                "large_input_fingerprint_hot_path_avoided": bool(
+                    metadata["large_input_fingerprint_hot_path_avoided"]
+                ),
+                "release_authorized": bool(metadata["release_authorized"]),
+                "public_speedup_claim_authorized": bool(
+                    metadata["public_speedup_claim_authorized"]
+                ),
+                "broad_v3_faster_than_v2_claim_authorized": bool(
+                    metadata["broad_v3_faster_than_v2_claim_authorized"]
+                ),
+                "true_zero_copy_claim_authorized": bool(
+                    metadata["true_zero_copy_claim_authorized"]
+                ),
+                "automatic_partner_selection_authorized": bool(
+                    metadata["automatic_partner_selection_authorized"]
+                ),
+                "app_specific_native_engine_logic_allowed": bool(
+                    metadata["app_specific_native_engine_logic_allowed"]
+                ),
+            },
+        }
     kwargs: dict[str, object] = {"search_points": target, "backend": backend}
     if backend == "optix":
         kwargs["max_radius"] = radius
@@ -279,7 +456,9 @@ def _run_prepared_directed_threshold(
         "summary_primitive": result["summary_primitive"],
         "run_phases": {
             "scene_prepare_sec": prepare_sec,
+            f"{backend}_prepare_sec": prepare_sec,
             "query_fixed_radius_threshold_reached_count_sec": query_sec,
+            f"{backend}_query_sec": query_sec,
             "query_fixed_radius_threshold_reached_count_total_sec": float(sum(query_secs)),
             "query_repeat": int(query_repeat),
             "query_warmup": int(warmup),
@@ -302,8 +481,12 @@ def _native_continuation_backend(
 ) -> str:
     if backend == "optix_device_max_nearest":
         return "optix_device_query_nearest_witness_partner_global_max"
+    if backend == "optix" and optix_summary_mode == "directed_threshold_prepared_runner":
+        return "optix_threshold_count_prepared_execution_runner"
     if backend == "optix" and optix_summary_mode == "directed_threshold_prepared":
         return "optix_threshold_count"
+    if backend == "embree" and optix_summary_mode == "directed_threshold_prepared_runner":
+        return "embree_threshold_count_prepared_execution_runner"
     if backend == "embree" and optix_summary_mode == "directed_threshold_prepared":
         return "embree_threshold_count"
     if backend == "embree" and embree_result_mode == "directed_summary":
@@ -837,8 +1020,11 @@ def run_app(
         raise ValueError("Hausdorff distance requires non-empty point sets")
     if embree_result_mode not in {"rows", "directed_summary"}:
         raise ValueError("embree_result_mode must be 'rows' or 'directed_summary'")
-    if optix_summary_mode not in {"rows", "directed_threshold_prepared"}:
-        raise ValueError("optix_summary_mode must be 'rows' or 'directed_threshold_prepared'")
+    if optix_summary_mode not in {"rows", *DIRECTED_THRESHOLD_PREPARED_MODES}:
+        raise ValueError(
+            "optix_summary_mode must be 'rows', 'directed_threshold_prepared', "
+            "or 'directed_threshold_prepared_runner'"
+        )
     if backend == "partner_exact" and partner not in {"torch", "cupy", "numba"}:
         raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
     if hausdorff_threshold < 0:
@@ -1212,7 +1398,8 @@ def run_app(
             },
         }
 
-    if backend in {"embree", "optix"} and optix_summary_mode == "directed_threshold_prepared":
+    if backend in {"embree", "optix"} and optix_summary_mode in DIRECTED_THRESHOLD_PREPARED_MODES:
+        use_productized_runner = optix_summary_mode == "directed_threshold_prepared_runner"
         directed_ab = _run_prepared_directed_threshold(
             points_a,
             points_b,
@@ -1221,6 +1408,7 @@ def run_app(
             label="a_to_b",
             query_repeat=query_repeat,
             warmup=warmup,
+            use_productized_runner=use_productized_runner,
         )
         directed_ba = _run_prepared_directed_threshold(
             points_b,
@@ -1230,6 +1418,7 @@ def run_app(
             label="b_to_a",
             query_repeat=query_repeat,
             warmup=warmup,
+            use_productized_runner=use_productized_runner,
         )
         run_phases["scene_prepare_sec"] = float(directed_ab["run_phases"]["scene_prepare_sec"]) + float(
             directed_ba["run_phases"]["scene_prepare_sec"]
@@ -1239,6 +1428,40 @@ def run_app(
         ) + float(
             directed_ba["run_phases"]["query_fixed_radius_threshold_reached_count_sec"]
         )
+        if "runner_outer_query_sec" in directed_ab["run_phases"] and "runner_outer_query_sec" in directed_ba["run_phases"]:
+            run_phases["runner_outer_query_sec"] = float(
+                directed_ab["run_phases"]["runner_outer_query_sec"]
+            ) + float(directed_ba["run_phases"]["runner_outer_query_sec"])
+        if (
+            "runner_outer_query_total_sec" in directed_ab["run_phases"]
+            and "runner_outer_query_total_sec" in directed_ba["run_phases"]
+        ):
+            run_phases["runner_outer_query_total_sec"] = float(
+                directed_ab["run_phases"]["runner_outer_query_total_sec"]
+            ) + float(directed_ba["run_phases"]["runner_outer_query_total_sec"])
+        if (
+            "runner_outer_prepare_sec" in directed_ab["run_phases"]
+            and "runner_outer_prepare_sec" in directed_ba["run_phases"]
+        ):
+            run_phases["runner_outer_prepare_sec"] = float(
+                directed_ab["run_phases"]["runner_outer_prepare_sec"]
+            ) + float(directed_ba["run_phases"]["runner_outer_prepare_sec"])
+        if (
+            "runner_outer_cache_load_sec" in directed_ab["run_phases"]
+            and "runner_outer_cache_load_sec" in directed_ba["run_phases"]
+        ):
+            run_phases["runner_outer_cache_load_sec"] = float(
+                directed_ab["run_phases"]["runner_outer_cache_load_sec"]
+            ) + float(directed_ba["run_phases"]["runner_outer_cache_load_sec"])
+        if (
+            isinstance(directed_ab["run_phases"].get("runner_native_prepare_sec"), (int, float))
+            and isinstance(directed_ba["run_phases"].get("runner_native_prepare_sec"), (int, float))
+        ):
+            run_phases["runner_native_prepare_sec"] = float(
+                directed_ab["run_phases"]["runner_native_prepare_sec"]
+            ) + float(directed_ba["run_phases"]["runner_native_prepare_sec"])
+        run_phases[f"{backend}_prepare_sec"] = run_phases["scene_prepare_sec"]
+        run_phases[f"{backend}_query_sec"] = run_phases["query_fixed_radius_threshold_reached_count_sec"]
         postprocess_start = time.perf_counter()
         within_threshold = bool(directed_ab["within_threshold"] and directed_ba["within_threshold"])
         run_phases["python_postprocess_sec"] = time.perf_counter() - postprocess_start
@@ -1264,6 +1487,66 @@ def run_app(
             reuse_scope="explicit_user_session",
             invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
         )
+        runner_ab = directed_ab.get("prepared_execution_session_runner")
+        runner_ba = directed_ba.get("prepared_execution_session_runner")
+        runner_used = bool(runner_ab and runner_ba)
+        runtime_executed_count = sum(
+            1
+            for runner in (runner_ab, runner_ba)
+            if isinstance(runner, dict) and bool(runner.get("runtime_executed"))
+        )
+        runner_cache_hit_count = sum(
+            1
+            for runner in (runner_ab, runner_ba)
+            if isinstance(runner, dict) and bool(runner.get("cache_hit"))
+        )
+        both_runtime_trunk = bool(
+            runner_used
+            and all(
+                bool(runner.get("runtime_trunk_executes_end_to_end"))
+                for runner in (runner_ab, runner_ba)
+                if isinstance(runner, dict)
+            )
+        )
+        both_no_threshold_rows = bool(
+            runner_used
+            and all(
+                not bool(runner.get("threshold_summary_rows_materialized_on_host"))
+                for runner in (runner_ab, runner_ba)
+                if isinstance(runner, dict)
+            )
+        )
+        both_internal_residency = bool(
+            runner_used
+            and all(
+                bool(runner.get("internal_device_residency_between_rtdl_phases"))
+                for runner in (runner_ab, runner_ba)
+                if isinstance(runner, dict)
+            )
+        )
+        runner_summary = {
+            "used": runner_used,
+            "productized_execution_path": "prepared_execution_session_runner"
+            if runner_used
+            else None,
+            "both_directed_legs_runtime_executed": runtime_executed_count == 2,
+            "runtime_executed_count": runtime_executed_count,
+            "cache_hit_count": runner_cache_hit_count,
+            "both_directed_legs_runtime_trunk_end_to_end": both_runtime_trunk,
+            "both_directed_legs_no_threshold_rows_materialized_on_host": both_no_threshold_rows,
+            "both_directed_legs_internal_device_residency_between_rtdl_phases": both_internal_residency,
+            "directed_a_to_b": runner_ab,
+            "directed_b_to_a": runner_ba,
+            "release_authorized": False,
+            "all_app_rerun_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "broad_v3_faster_than_v2_claim_authorized": False,
+            "whole_hausdorff_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "v4_external_buffer_claim_authorized": False,
+            "automatic_partner_selection_authorized": False,
+            "app_specific_native_engine_logic_allowed": False,
+        }
         return {
             "app": "hausdorff_distance",
             "backend": backend,
@@ -1309,18 +1592,30 @@ def run_app(
             "prepared_session_residency": {
                 "cache_key": session_key.to_metadata(),
                 "policy": session_policy.to_metadata(),
-                "explicit_reuse_helper": "get_or_prepare_explicit_session",
-                "cache_enabled_by_default": False,
+                "explicit_reuse_helper": (
+                    "prepared_execution_session_runner"
+                    if use_productized_runner
+                    else "get_or_prepare_explicit_session"
+                ),
+                "cache_enabled_by_default": use_productized_runner,
                 "cold_hot_phase_split_required": True,
                 "prepare_once_query_many_pattern": True,
+                "productized_execution_path": "prepared_execution_session_runner"
+                if use_productized_runner
+                else None,
                 "automatic_partner_selection_authorized": False,
                 "true_zero_copy_claim_authorized": False,
                 "public_speedup_claim_authorized": False,
             },
+            "prepared_execution_session_runner": runner_summary,
             "claim_boundary": {
                 "public_speedup_claim_authorized": False,
                 "broad_rt_core_speedup_claim_authorized": False,
+                "broad_v3_faster_than_v2_claim_authorized": False,
+                "all_app_rerun_authorized": False,
+                "whole_hausdorff_speedup_claim_authorized": False,
                 "true_zero_copy_claim_authorized": False,
+                "v4_external_buffer_claim_authorized": False,
                 "automatic_partner_selection_authorized": False,
                 "app_specific_native_engine_logic_allowed": False,
                 "full_paper_reproduction_claim_authorized": False,
@@ -1433,9 +1728,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--optix-summary-mode",
-        choices=("rows", "directed_threshold_prepared"),
+        choices=("rows", *DIRECTED_THRESHOLD_PREPARED_MODES),
         default="rows",
-        help="OptiX-only: use prepared fixed-radius threshold traversal for Hausdorff <= radius decisions",
+        help=(
+            "OptiX/Embree threshold mode: use prepared fixed-radius threshold traversal, "
+            "with *_runner selecting the productized prepared-execution runner"
+        ),
     )
     parser.add_argument(
         "--hausdorff-threshold",

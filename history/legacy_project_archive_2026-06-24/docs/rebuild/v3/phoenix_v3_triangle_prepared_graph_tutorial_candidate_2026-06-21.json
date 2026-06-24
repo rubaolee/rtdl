@@ -1,0 +1,63 @@
+{
+  "status": "triangle_prepared_graph_tutorial_candidate_not_m7",
+  "generic_capability": "prepared_graph_chunk",
+  "generic_capability_status": "candidate_executor_linkage_not_closed",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "paper_reproduction_claim_authorized": false,
+  "graph_database_claim_authorized": false,
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows": 0,
+  "underlying_intake_2ai_consensus": "docs/reviews/codex_phoenix_v3_triangle_prepared_graph_intake_2ai_consensus_2026-06-20.md",
+  "current_packet_external_review_status": "blocked_current_packet",
+  "current_packet_external_review_blockage": "docs/reviews/external_review_blocked_phoenix_v3_triangle_prepared_graph_tutorial_candidate_2026-06-21.md",
+  "source_intake": "docs/rebuild/v3/phoenix_v3_triangle_prepared_graph_intake_2026-06-20.md",
+  "source_evidence": "docs/rebuild/v3/evidence/phoenix_v3_triangle_prepared_graph_20260620/triangle_prepared_graph_intake_summary.json",
+  "tutorial": "tutorials/current/10_triangle_prepared_graph_chunk.md",
+  "allowed_teaching_reading": [
+    "Triangle prepared-graph chunk is a V3 rebuild example of a reusable RT-Graph 2A1 ray-triangle weighted-any-hit subpath.",
+    "The generated K4 clique-ladder rows show strong same-contract OptiX-over-Embree hot-query wins.",
+    "Wall-time wins are smaller than hot-query wins and must be shown beside them."
+  ],
+  "forbidden_public_wording": [
+    "Triangle V3 is 347x faster end to end",
+    "RTDL reproduces the RT-Graph paper",
+    "RTDL accelerates graph databases",
+    "prepared_graph_chunk executor linkage is closed",
+    "Triangle is M7-qualified"
+  ],
+  "rows": [
+    {
+      "workload": "K4 clique ladder, 20,000 cliques",
+      "comparison_group": "triangle_count_rt_graph_2a1_cliques_20000",
+      "hot_optix_over_embree": 116.05985639108538,
+      "wall_optix_over_embree": 1.6768981818785074,
+      "oracle_triangle_count": 80000,
+      "synthetic_fixture_boundary": "K4 clique ladder; not graph database or paper dataset"
+    },
+    {
+      "workload": "K4 clique ladder, 80,000 cliques",
+      "comparison_group": "triangle_count_rt_graph_2a1_cliques_80000",
+      "hot_optix_over_embree": 347.23219125688223,
+      "wall_optix_over_embree": 6.342008514587283,
+      "oracle_triangle_count": 320000,
+      "synthetic_fixture_boundary": "K4 clique ladder; not graph database or paper dataset"
+    }
+  ],
+  "m7_blockers": [
+    "synthetic_k4_clique_ladder_not_paper_dataset",
+    "not_graph_database_or_full_triangle_counting_app",
+    "no_author_code_or_paper_dataset_comparison",
+    "prepared_graph_chunk_executor_linkage_not_closed",
+    "hot_query_vs_wall_timing_ratio_not_characterized_for_release",
+    "public_row_level_external_review_not_done"
+  ],
+  "goal_level_decision_audit": {
+    "decision": "promote Triangle only to tutorial-grade internal candidate wording, not M7",
+    "was_i_foolish": "No. The underlying intake already has 2-AI internal-candidate consensus, and this packet keeps all release flags false.",
+    "foolish_actions": "It would be foolish to turn the 116x and 347x hot-query ratios into end-to-end, paper, or graph-database claims.",
+    "other_path": "Rerun the pod or claim M7 immediately, but that would skip the synthetic-boundary and executor-linkage gaps.",
+    "different_path_now": "Teach the reusable prepared-graph chunk shape with exact hot and wall ratios while preserving all blockers."
+  }
+}

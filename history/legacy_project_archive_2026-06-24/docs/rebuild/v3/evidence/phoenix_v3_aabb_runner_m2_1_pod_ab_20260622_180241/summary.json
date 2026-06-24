@@ -1,0 +1,183 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "generic aabb_index_query_2d prepared-session candidate stream; contact_manifold is only the evidence harness",
+  "checks": {
+    "all_payloads_complete_candidate_coverage": true,
+    "all_payloads_match_cpu_reference": true,
+    "all_payloads_observed_reuse": true,
+    "embree_and_optix_present": true,
+    "has_32768_indexed_aabbs": true,
+    "has_32768_query_aabbs": true,
+    "material_optix_wall_win_after_prepare_reuse": true,
+    "optix_rt_hardware_gate_passed_if_required": true,
+    "phase_table_has_prepare_query_collect_wall": true,
+    "prepare_once_query_many_requested": true,
+    "productized_runner_visible_for_prepared_backends": true,
+    "runner_completed_without_backend_errors": true,
+    "serious_fixture_scale": true
+  },
+  "comparisons": {
+    "optix_over_embree_broadphase_wall_speedup": 1.3479963765606264,
+    "optix_over_embree_cold_plus_collect_wall_speedup": 1.345957696453154,
+    "optix_over_embree_collect_speedup": 0.9454728984530454,
+    "optix_over_embree_prepare_speedup": 0.6997819064895856,
+    "optix_over_embree_query_median_speedup": 1.9207411573829731,
+    "optix_over_embree_query_total_speedup": 1.7378730387378494,
+    "optix_over_embree_runner_wall_speedup": 1.336839858781006
+  },
+  "environment": {
+    "cwd": "/root/rtdl_v3_rebuild_20260620/current",
+    "env": {
+      "PYTHONPATH": "src:.",
+      "RTDL_EMBREE_LIBRARY": null,
+      "RTDL_OPTIX_LIBRARY": "/root/rtdl_v3_rebuild_20260620/current/build/librtdl_optix.so"
+    },
+    "git_head": "fatal: not a git repository (or any of the parent directories): .git",
+    "hardware_gate": {
+      "checks": {
+        "has_nvidia_gpu": true,
+        "nvidia_smi_query": true,
+        "optix_capable_gpu_present": true,
+        "rt_hardware_name_present": true
+      },
+      "fail_closed_reason": null,
+      "gpus": [
+        {
+          "compute_cap": "8.9",
+          "driver_version": "550.127.05",
+          "name": "NVIDIA RTX 4000 Ada Generation"
+        }
+      ],
+      "query_error": null,
+      "require_rt_hardware": true,
+      "status": "pass",
+      "tool": "v3_optix_hardware_gate"
+    },
+    "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 8.9",
+    "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+    "tool": "v3_phoenix_aabb_prepare_reuse_pod_runner_environment"
+  },
+  "failed_checks": [],
+  "forbidden_public_wording": [
+    "full contact solver speedup",
+    "broad V3-over-V2 speedup",
+    "paper reproduction",
+    "M7-qualified before 2-AI review",
+    "app-specific native contact engine"
+  ],
+  "generic_capability": "aabb_candidate_stream",
+  "goal_level_decision_audit": {
+    "decision": "Run or stage serious AABB prepare-reuse POD evidence through a reusable runner instead of ad hoc app timing.",
+    "different_path_now": "Use the same runner on an RTX pod, require material cold-plus-repeat wall win, then send the packet for 2-AI review before any M7 promotion.",
+    "foolish_actions": "It would be foolish to quote hot-query-only speedups, to use sub-32768 toy fixtures as release evidence, or to treat contact-specific wording as a V3 engine result.",
+    "other_path": "Continue optimizing Contact Manifold directly. That could improve one app but would not prove the reusable AABB prepared-session contract.",
+    "was_i_foolish": "No. The runner keeps the candidate generic and preserves release flags false."
+  },
+  "m7_promotion_authorized": false,
+  "m7_reopen_candidate_pending_2ai_review": true,
+  "material_wall_speedup_floor": 1.2,
+  "parameters": {
+    "backends": [
+      "embree",
+      "optix"
+    ],
+    "dataset": "jittered_grid",
+    "discovery_row_capacity": 65536,
+    "grid_count": 32768,
+    "indexed_aabb_count": 32768,
+    "query_aabb_count": 32768,
+    "repeat": 50,
+    "resolution": null,
+    "warmup": 3,
+    "witness_capacity": 32768
+  },
+  "phase_rows": {
+    "embree": {
+      "backend": "embree",
+      "candidate_pairs": 32768,
+      "cold_plus_collect_wall_sec": 23.404921278357506,
+      "collect_k_bounded_rows_sec": 0.08326888084411621,
+      "complete_candidate_coverage": true,
+      "dataset": "jittered_grid_32768",
+      "emit_aabb_intersection_pair_rows_2d_median_sec": 0.3073468990623951,
+      "emit_aabb_intersection_pair_rows_2d_total_sec": 15.47908653318882,
+      "generic_aabb_broadphase_wall_sec": 23.32165239751339,
+      "has_prepare_query_collect_wall": true,
+      "indexed_aabb_count": 32768,
+      "matches_cpu_reference": true,
+      "overflowed": false,
+      "prepare_aabb_index_2d_sec": 0.4238158315420151,
+      "prepared_execution_session_runner_cache_hit_count": 49,
+      "prepared_execution_session_runner_runtime_executed_count": 50,
+      "prepared_execution_session_runner_used": true,
+      "prepared_query_cache_stats": {
+        "count_box_query_entries": 0,
+        "count_box_query_hits": 0,
+        "count_box_query_misses": 0,
+        "count_point_query_entries": 0,
+        "count_point_query_hits": 0,
+        "count_point_query_misses": 0,
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 52,
+        "range_intersection_misses": 1
+      },
+      "productized_execution_path": "prepared_execution_session_runner",
+      "python_exact_refinement_sec": 0.05603620409965515,
+      "query_aabb_count": 32768,
+      "repeat": null,
+      "runner_wall_sec": 23.917910486459732,
+      "valid_rows": 32768,
+      "warmup": null
+    },
+    "optix": {
+      "backend": "optix",
+      "candidate_pairs": 32768,
+      "cold_plus_collect_wall_sec": 17.389046728610992,
+      "collect_k_bounded_rows_sec": 0.08807114511728287,
+      "complete_candidate_coverage": true,
+      "dataset": "jittered_grid_32768",
+      "emit_aabb_intersection_pair_rows_2d_median_sec": 0.16001474112272263,
+      "emit_aabb_intersection_pair_rows_2d_total_sec": 8.906914480030537,
+      "generic_aabb_broadphase_wall_sec": 17.30097558349371,
+      "has_prepare_query_collect_wall": true,
+      "indexed_aabb_count": 32768,
+      "matches_cpu_reference": true,
+      "overflowed": false,
+      "prepare_aabb_index_2d_sec": 0.6056398823857307,
+      "prepared_execution_session_runner_cache_hit_count": 49,
+      "prepared_execution_session_runner_runtime_executed_count": 50,
+      "prepared_execution_session_runner_used": true,
+      "prepared_query_cache_stats": {
+        "native_range_intersection_entries": 1,
+        "native_range_intersection_hits": 52,
+        "native_range_intersection_misses": 1,
+        "point_membership_entries": 0,
+        "point_membership_hits": 0,
+        "point_membership_misses": 0,
+        "range_intersection_entries": 1,
+        "range_intersection_hits": 52,
+        "range_intersection_misses": 1
+      },
+      "productized_execution_path": "prepared_execution_session_runner",
+      "python_exact_refinement_sec": 0.06072470545768738,
+      "query_aabb_count": 32768,
+      "repeat": null,
+      "runner_wall_sec": 17.891380429267883,
+      "valid_rows": 32768,
+      "warmup": null
+    }
+  },
+  "public_copy_rules": [
+    "Only say this is evidence for generic AABB candidate streaming, not full contact solving.",
+    "Report prepare, query, collect, and wall phases together.",
+    "Report cold-plus-repeat wall before any hot-query number.",
+    "Do not publish as M7 until external review and Codex consensus close."
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "run_errors": {},
+  "runner_completed": true,
+  "status": "aabb_prepare_reuse_pod_evidence_pending_2ai_not_m7",
+  "tool": "v3_phoenix_aabb_prepare_reuse_pod_runner",
+  "whole_app_speedup_claim_authorized": false
+}

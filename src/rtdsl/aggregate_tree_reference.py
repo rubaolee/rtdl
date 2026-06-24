@@ -1179,8 +1179,8 @@ def aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract() -> dict[str
         "cpu_reference_api": "sum_aggregate_frontier_weighted_vectors_2d",
         "partner_reference_contract": "generic_aggregate_tree_fused_weighted_vector_sum_2d_numba_cuda_v1",
         "partner_reference_api": "sum_aggregate_tree_fused_weighted_vectors_2d_numba_cuda",
-        "status": "specified_not_implemented",
-        "executable": False,
+        "status": "implemented_cuda_device_accumulation_not_rt_core",
+        "executable": True,
         "app_generic": True,
         "required_first_backend": "optix",
         "future_backends": ("hiprt",),
@@ -1248,6 +1248,15 @@ def aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract() -> dict[str
             "explicit user-selected route; no hidden partner dispatch",
             "measured comparison against CPU reference and Numba CUDA partner reference",
         ),
+        "implemented_runtime": {
+            "backend_library": "optix",
+            "runtime_path": "native CUDA fused aggregate-tree traversal and vector accumulation",
+            "uses_optix_trace": False,
+            "device_resident_output_columns": True,
+            "frontier_rows_materialized_on_host": False,
+            "contribution_rows_materialized_on_host": False,
+            "hot_path_host_materialization": False,
+        },
         "rt_core_claim_requirements": (
             "OptiX implementation must launch an OptiX pipeline, not only CUDA kernels",
             "device program must call optixTrace or equivalent hardware traversal",
@@ -1255,7 +1264,7 @@ def aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract() -> dict[str
             "CUDA-only fused implementation may be useful device evidence but not RT-core evidence",
         ),
         "claim_boundary": {
-            "runtime_implemented": False,
+            "runtime_implemented": True,
             "public_speedup_claim_authorized": False,
             "rt_core_speedup_claim_authorized": False,
             "whole_app_speedup_claim_authorized": False,
@@ -1264,10 +1273,11 @@ def aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract() -> dict[str
             "paper_reproduction_claim_authorized": False,
         },
         "reader_guidance": (
-            "This contract is the next implementation target after the frontier "
-            "device-column route. It specifies the clean RT-native shape, but no "
-            "runtime or performance claim is authorized until backend symbols and "
-            "equivalence tests exist."
+            "This contract now has a CUDA device-resident implementation inside "
+            "the OptiX backend library. It is V3 internal-residency evidence, not "
+            "RT-core evidence: public, whole-app, and RT-core speedup claims remain "
+            "blocked until an implementation launches an OptiX pipeline with "
+            "optixTrace and passes the release review gates."
         ),
     }
 
@@ -1297,6 +1307,7 @@ def validate_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract() ->
         "hot_path_forbidden_outputs",
         "must_avoid",
         "implementation_requirements",
+        "implemented_runtime",
         "rt_core_claim_requirements",
         "claim_boundary",
         "reader_guidance",
@@ -1308,10 +1319,10 @@ def validate_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract() ->
         raise ValueError("aggregate-tree fused RT-native primitive mismatch")
     if contract["contract"] != AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_CONTRACT:
         raise ValueError("aggregate-tree fused RT-native contract mismatch")
-    if contract["status"] != "specified_not_implemented":
-        raise ValueError("aggregate-tree fused RT-native status must remain explicit")
-    if bool(contract["executable"]):
-        raise ValueError("aggregate-tree fused RT-native contract must not claim executability yet")
+    if contract["status"] != "implemented_cuda_device_accumulation_not_rt_core":
+        raise ValueError("aggregate-tree fused RT-native status must reflect current CUDA device implementation")
+    if bool(contract["executable"]) is not True:
+        raise ValueError("aggregate-tree fused RT-native contract must expose the implemented device path")
     if not bool(contract["app_generic"]):
         raise ValueError("aggregate-tree fused RT-native contract must remain app-generic")
     if tuple(contract["required_native_symbols"]) != (
@@ -1337,6 +1348,10 @@ def validate_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract() ->
     if not isinstance(claim_boundary, Mapping):
         raise ValueError("aggregate-tree fused RT-native contract must include a claim boundary")
     for key, value in claim_boundary.items():
+        if key == "runtime_implemented":
+            if bool(value) is not True:
+                raise ValueError("aggregate-tree fused runtime_implemented must be true")
+            continue
         if bool(value):
             raise ValueError(f"aggregate-tree fused RT-native must not authorize {key}")
     boundary_text = " ".join(str(value) for value in contract.values()).lower()
@@ -1355,7 +1370,7 @@ def validate_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract() ->
         "device-resident vector/count output columns",
         "no hidden partner dispatch",
         "cuda-only fused implementation may be useful device evidence but not rt-core evidence",
-        "no runtime or performance claim",
+        "not rt-core evidence",
     ):
         if phrase not in boundary_text:
             raise ValueError("aggregate-tree fused RT-native guidance is incomplete")

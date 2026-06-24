@@ -1,0 +1,1058 @@
+{
+  "args": {
+    "current_root": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
+    "execute": false,
+    "samples": 8,
+    "scenario": "all",
+    "seed": 2025,
+    "v2_root": null
+  },
+  "claim_boundary": {
+    "all_app_pod_spend_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "c_abi_work_authorized": false,
+    "embedding_work_authorized": false,
+    "focused_pod_spend_authorized_now": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v4_work_authorized": false
+  },
+  "failed_checks": [],
+  "goal_level_decision_audit": {
+    "decision": "prepare an executable M47 LibRTS stability protocol harness without authorizing or running POD",
+    "different_path_now": "Use this harness as a reviewed dry-run/intake surface, then request one focused run only if external review authorizes it.",
+    "foolish_actions": "The foolish action would be to run focused POD without reviewed ordering, first-sample, and outlier rules.",
+    "other_path": "Rewrite LibRTS/AABB code immediately or run all-app; both are rejected before stability evidence.",
+    "was_i_foolish": "No."
+  },
+  "preflight": {
+    "current_git_revision": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
+      "required": false
+    },
+    "current_preflight_tests": {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "-m",
+        "unittest",
+        "tests.v3_phoenix_librts_aabb_count_runner_test",
+        "tests.v3_phoenix_prepared_execution_session_runner_test",
+        "tests.v3_phoenix_aabb_prepared_query_cache_test"
+      ],
+      "cwd": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
+      "required": true
+    },
+    "current_python_version": {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "--version"
+      ],
+      "cwd": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
+      "required": true
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "cwd": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
+      "required": true
+    }
+  },
+  "run_errors": {},
+  "scenario_results": {},
+  "scenarios": {
+    "embree_32768_stress": {
+      "backend": "embree",
+      "box_count": 32768,
+      "mode": "embree_aabb_index",
+      "query_count": 1024,
+      "repeat": 20,
+      "skip_counts": true,
+      "warmup": 5,
+      "watch_status_before_m47": "stability_watch_blocker"
+    },
+    "optix_cold_single_shot": {
+      "backend": "optix",
+      "box_count": 2048,
+      "mode": "optix_aabb_index",
+      "query_count": 1024,
+      "repeat": 1,
+      "skip_counts": false,
+      "warmup": 0,
+      "watch_status_before_m47": "improved_not_closed"
+    }
+  },
+  "schedule": [
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 1,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 1,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 2,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 2,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 3,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 3,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 4,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 4,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 5,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 5,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 6,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 6,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 7,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 7,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 8,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "optix_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "2048",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 8,
+      "scenario_id": "optix_cold_single_shot",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 1,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 1,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 2,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 2,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 3,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 3,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 4,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 4,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 5,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 5,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 6,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 6,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 7,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "v2_14",
+        "current"
+      ],
+      "sample": 7,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\librts_spatial_index\\rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 8,
+      "scenario_id": "embree_32768_stress",
+      "tree": "current"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "<v2-root-required-on-execute>/examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+        "--mode",
+        "embree_aabb_index",
+        "--dataset",
+        "uniform",
+        "--operation",
+        "all",
+        "--box-count",
+        "32768",
+        "--query-count",
+        "1024",
+        "--seed",
+        "2025",
+        "--repeat",
+        "20",
+        "--warmup",
+        "5",
+        "--skip-counts"
+      ],
+      "order": [
+        "current",
+        "v2_14"
+      ],
+      "sample": 8,
+      "scenario_id": "embree_32768_stress",
+      "tree": "v2_14"
+    }
+  ],
+  "schema": "rtdl.phoenix_v3.m47_librts_stability_protocol.v1",
+  "status": "m47_librts_stability_protocol_dry_run_no_pod_not_release",
+  "summary": {
+    "all_app_pod_spend_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "c_abi_work_authorized": false,
+    "embedding_work_authorized": false,
+    "execute": false,
+    "failed_check_count": 0,
+    "focused_pod_spend_authorized_now": false,
+    "paid_pod_authorized_by_this_packet": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "sample_count_per_scenario": 8,
+    "scenario_count": 2,
+    "schedule_row_count": 32,
+    "schema": "rtdl.phoenix_v3.m47_librts_stability_protocol.v1",
+    "status": "m47_librts_stability_protocol_dry_run_no_pod_not_release",
+    "true_zero_copy_claim_authorized": false,
+    "v4_work_authorized": false
+  }
+}

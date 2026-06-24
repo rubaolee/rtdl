@@ -28,14 +28,14 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
         result = self._run()
 
         self.assertEqual(0, result.returncode, result.stderr)
-        self.assertIn("RTDL Source Tree Doctor", result.stdout)
-        self.assertIn("version: v3.0.2", result.stdout)
-        self.assertIn("[PASS] version marker", result.stdout)
-        self.assertIn("[PASS] V3 current test matrix", result.stdout)
+        self.assertIn("RTDL V3 Source Tree Doctor", result.stdout)
+        self.assertIn("surface: current V3", result.stdout)
+        self.assertIn("[PASS] current V3 marker", result.stdout)
+        self.assertIn("[PASS] current V3 test matrix", result.stdout)
         self.assertNotIn("V4 preparatory C ABI", result.stdout)
-        self.assertIn("optional module cupy", result.stdout)
-        self.assertIn("optional OptiX library", result.stdout)
-        self.assertIn("Optional warnings only affect native/partner paths", result.stdout)
+        self.assertNotIn("optional module cupy", result.stdout)
+        self.assertNotIn("optional OptiX library", result.stdout)
+        self.assertIn("Core V3 checks passed", result.stdout)
 
     def test_json_output_is_machine_readable_and_fail_closed_for_required_checks(self) -> None:
         result = self._run("--json")
@@ -43,38 +43,32 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stderr)
         payload = json.loads(result.stdout)
         self.assertEqual("rtdl_source_tree_doctor", payload["tool"])
-        self.assertEqual("v3.0.2", payload["version"])
+        self.assertEqual("v3.0.0", payload["version"])
         self.assertTrue(payload["ok"])
         self.assertEqual([], payload["required_failures"])
 
         names = {item["name"] for item in payload["checks"]}
         for required in (
-            "version marker",
-            "src/rtdsl",
+            "current V3 marker",
+            "pyproject V3 package version",
             "front page",
-            "top-level tutorials",
-            "current examples",
-            "v3.0.2 release package",
-            "V3 app-author strategy",
-            "V3 current test matrix",
+            "docs index",
+            "current V3 status",
+            "public documentation map",
+            "tutorials path",
+            "V3 tutorial path",
+            "examples path",
+            "performance wording guide",
+            "source-tree doctor docs",
+            "current V3 test matrix",
             "module rtdsl",
             "module numpy",
+            "optional module cupy",
+            "optional OptiX library",
         ):
             self.assertIn(required, names)
         self.assertNotIn("V4 preparatory C ABI surface", names)
         self.assertNotIn("V4 preparatory C ABI docs", names)
-
-    def test_reviewer_option_reports_v4_prep_without_required_failures(self) -> None:
-        result = self._run("--json", "--include-v4-prep")
-
-        self.assertEqual(0, result.returncode, result.stderr)
-        payload = json.loads(result.stdout)
-        checks = {item["name"]: item for item in payload["checks"]}
-        self.assertIn("V4 preparatory C ABI surface", checks)
-        self.assertIn("V4 preparatory C ABI docs", checks)
-        self.assertFalse(checks["V4 preparatory C ABI surface"]["required"])
-        self.assertFalse(checks["V4 preparatory C ABI docs"]["required"])
-        self.assertEqual([], payload["required_failures"])
 
     def test_smoke_option_runs_portable_hello_world(self) -> None:
         result = self._run("--json", "--run-smoke")
@@ -92,16 +86,16 @@ class Goal4278SourceTreeDoctorTest(unittest.TestCase):
                 (ROOT / "README.md").read_text(encoding="utf-8"),
                 (ROOT / "docs" / "README.md").read_text(encoding="utf-8"),
                 (ROOT / "docs" / "learn" / "README.md").read_text(encoding="utf-8"),
-                (ROOT / "tutorials" / "current" / "01_source_tree_first_run.md").read_text(
+                (ROOT / "tutorials" / "current" / "01_first_run.md").read_text(
                     encoding="utf-8"
                 ),
             ]
         )
 
         self.assertIn("scripts/rtdl_source_tree_doctor.py", docs)
-        self.assertIn("scripts/run_test_matrix.py --group v3_current", docs)
+        self.assertIn("run_test_matrix.py --group v3_current_surface", docs)
         self.assertIn("Source-Tree Doctor", docs)
-        self.assertIn("not a benchmark", docs)
+        self.assertIn("checkout sanity check", docs)
         self.assertNotIn("examples/v2_0", docs)
         self.assertNotIn("v2.6", docs)
 

@@ -1,0 +1,92 @@
+{
+  "status": "robot_collision_flag_stream_boundary_not_m7",
+  "generic_capability": "collision_flag_stream",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "robot_planning_speedup_claim_authorized": false,
+  "exact_solid_collision_claim_authorized": false,
+  "continuous_collision_claim_authorized": false,
+  "paper_reproduction_claim_authorized": false,
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows": 0,
+  "source_artifacts": [
+    "docs/rebuild/v3/evidence/v3_claim_grade_all_benchmarks_calibrated_20260620/summary.json",
+    "docs/rebuild/v3/evidence/v2_14_vs_v3_same_rt_hardware_paired_20260620_140120/paired_v2_v3_summary.json"
+  ],
+  "candidate_row": {
+    "app_id": "robot_collision",
+    "comparison_group": "prepared_collision_flags",
+    "generic_capability": "collision_flag_stream",
+    "contract": "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1",
+    "embree_case_id": "robot_collision_embree_prepared_buffers",
+    "optix_case_id": "robot_collision_optix_prepared_device_buffers",
+    "warmup_count": 1,
+    "repeat_count": 5,
+    "tail_measurement_count": 4,
+    "run_level_probe_reference_matches": true,
+    "shape": {
+      "pose_count": 8192,
+      "link_count": 2,
+      "group_count": 16384,
+      "probe_points_per_group": 9,
+      "segment_count": 147456,
+      "static_obstacle_triangle_count": 2048
+    },
+    "primary_metric_source": "tail_medians.total_run_seconds",
+    "embree_primary_sec": 0.011322040110826492,
+    "optix_primary_sec": 0.002191603183746338,
+    "hot_optix_over_embree": 5.166099499578449,
+    "embree_traversal_sec": 0.005855341,
+    "optix_traversal_sec": 0.0000837625,
+    "traversal_optix_over_embree": 69.90408595731981,
+    "embree_wall_median_sec": 188.93361238390207,
+    "optix_wall_median_sec": 189.56367976218462,
+    "wall_optix_over_embree": 0.9966762231083877,
+    "embree_probe_reference_sec": 187.05930729955435,
+    "optix_probe_reference_sec": 187.21781291812658,
+    "probe_reference_ratio_embree_over_optix": 0.9991533625134188,
+    "discrete_sampled_probe_contract_only": true,
+    "continuous_collision_supported": false,
+    "exact_solid_collision_claim_authorized": false,
+    "native_engine_touch_kind": "generic_rt_primitive_only",
+    "matches_cpu_reference": null,
+    "summary_matches_cpu_reference_field": null,
+    "reference_evidence_note": "Every recorded run reports matches_probe_reference=true; the all-app summary row still has matches_cpu_reference=null, so this packet treats correctness as probe-reference evidence and keeps M7 blocked on wall/setup/contract scope.",
+    "paper_reproduction_claim_authorized": false
+  },
+  "paired_v2_v3_context": {
+    "app_geomean_speedup_vs_v2_14": 1.015679032862817,
+    "paired_rows_are_standard_goal2626_rows": true,
+    "large_or_new_m7_row_same_v2_14_baseline_absent": true,
+    "embree_v3_speedup_vs_v2_14": 1.0030988288747607,
+    "optix_v3_speedup_vs_v2_14": 1.0284170094728975
+  },
+  "m7_blockers": [
+    "wall_timing_is_parity_not_speedup",
+    "probe_reference_dominates_wall_time",
+    "discrete_sampled_probe_contract_only_not_full_robot_planning",
+    "exact_solid_and_continuous_collision_claims_false",
+    "summary_matches_cpu_reference_field_null_in_all_app_row",
+    "standard_paired_v2_v3_rows_are_parity_not_large_speedups",
+    "fresh_external_review_blocked_or_pending"
+  ],
+  "forbidden_public_wording": [
+    "Robot Collision V3 is 5.166x faster end to end",
+    "RTDL accelerates full robot planning",
+    "RTDL supports exact solid or continuous collision for this row",
+    "collision_flag_stream is M7-qualified",
+    "V3 is broadly faster than V2 for robot collision"
+  ],
+  "allowed_rebuild_wording": [
+    "This is a rebuild lesson for a collision_flag_stream boundary.",
+    "The hot prepared collision-flag tail metric is 5.166x OptiX over Embree.",
+    "The wall ratio is 0.997x, so the current wall path is parity or slightly slower for OptiX.",
+    "The row is discrete sampled probe evidence, not a full robot-planning or exact-collision claim."
+  ],
+  "external_review": {
+    "call_for_review": "docs/reviews/call_for_review_phoenix_v3_robot_collision_flag_stream_boundary_2026-06-21.md",
+    "blocked_record": "docs/reviews/external_review_blocked_phoenix_v3_robot_collision_flag_stream_boundary_2026-06-21.md",
+    "required_before_m7": true
+  }
+}

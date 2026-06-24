@@ -2665,9 +2665,14 @@ def run_rt_dbscan_benchmark(
                 continuation_elapsed = time.perf_counter() - continuation_start
                 run_timing["optix_rt_count_threshold_sec"] = optix_elapsed
                 run_timing["numba_component_continuation_sec"] = continuation_elapsed
+                signature_strategy = None
                 if column_signature_mode:
                     signature_start = time.perf_counter()
-                    run_signature = _cluster_signature_from_partner_columns(result["columns"], partner="numba")
+                    run_signature = _cluster_signature_from_numba_label_columns(
+                        result["columns"],
+                        point_count=len(points),
+                    )
+                    signature_strategy = "numba_label_count_and_flag_count_label_columns"
                     run_timing["column_signature_sec"] = time.perf_counter() - signature_start
                     run_rows = ()
                 else:
@@ -2685,6 +2690,7 @@ def run_rt_dbscan_benchmark(
                         "elapsed_sec": time.perf_counter() - run_start,
                         "timing_sec": run_timing,
                         "signature": run_signature,
+                        "signature_strategy": signature_strategy,
                         "rows": run_rows,
                         "metadata": dict(result["metadata"]),
                         "threshold_metadata": dict(threshold_result["metadata"]),
@@ -2729,6 +2735,17 @@ def run_rt_dbscan_benchmark(
                     if column_signature_mode
                     else "python_row_dicts_after_label_densification"
                 ),
+                "column_signature_strategy": (
+                    measured_runs[-1].get("signature_strategy") if column_signature_mode else None
+                ),
+                "column_signature_uses_numba_label_count_and_flag_count": (
+                    measured_runs[-1].get("signature_strategy")
+                    == "numba_label_count_and_flag_count_label_columns"
+                    if column_signature_mode
+                    else False
+                ),
+                "column_signature_materializes_point_ids": False if column_signature_mode else None,
+                "column_signature_materializes_core_flags": False if column_signature_mode else None,
                 "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
                 "threshold_metadata": threshold_metadata,
                 "prepared_query_repeat_protocol": {
@@ -2827,77 +2844,155 @@ def run_rt_dbscan_benchmark(
         prepare_start = time.perf_counter()
         prepared_query_runs: list[dict[str, object]] = []
         prepare_sec = 0.0
-        with rt.prepare_v2_8_fixed_radius_graph_component_continuation_3d(
-            points,
-            radius=resolved_radius,
-            component_threshold=resolved_min_neighbors,
-            backend="optix",
-            partner=grouped_stream_partner,
-            strategy="grouped_stream",
-            grouped_union_query_block_size=resolved_query_block_size if blocked_grouped_stream else None,
-            grouped_union_same_root_culling=grouped_union_same_root_culling,
-            grouped_union_direct_side_effect=grouped_union_direct_side_effect,
-        ) as prepared:
-            prepare_sec = time.perf_counter() - prepare_start
-            for iteration in range(repeat):
-                run_timing: dict[str, float] = {}
-                run_start = time.perf_counter()
+        use_productized_runner = column_signature_mode and grouped_stream_partner == "numba"
+        if use_productized_runner:
+            runner_cache = rt.ExplicitPreparedSessionCache(max_entries=1)
+            fingerprint_start = time.perf_counter()
+            point_rows_for_runner = tuple(points)
+            point_rows_fingerprint = rt.make_prepared_input_fingerprint(point_rows_for_runner)
+            prepare_sec += time.perf_counter() - fingerprint_start
+            try:
+                measured_repeat_count = int(repeat) - int(warmup)
+                if measured_repeat_count <= 0:
+                    raise RuntimeError("RT-DBSCAN grouped-stream repeat produced no measured rows")
                 adapter_start = time.perf_counter()
-                if column_signature_mode and grouped_stream_partner == "numba":
-                    result = rt.fixed_radius_graph_component_size_signature_3d_v2_8(
-                        prepared,
-                        component_threshold=resolved_min_neighbors,
-                        return_metadata=True,
-                    )
-                else:
-                    result = rt.fixed_radius_graph_component_labels_3d_v2_8(
-                        prepared,
-                        component_threshold=resolved_min_neighbors,
-                        return_metadata=True,
-                    )
-                run_timing["adapter_run_sec"] = time.perf_counter() - adapter_start
-                signature_strategy = None
-                if column_signature_mode:
-                    signature_start = time.perf_counter()
-                    if grouped_stream_partner == "numba" and "label_counts" in result["columns"]:
-                        run_signature = _cluster_signature_from_numba_signature_count_columns(
-                            result["columns"],
-                        )
-                        signature_strategy = "numba_direct_component_signature_counts"
-                    elif grouped_stream_partner == "numba":
-                        run_signature = _cluster_signature_from_numba_label_columns(
-                            result["columns"],
-                            point_count=len(points),
-                        )
-                        signature_strategy = "numba_label_count_and_flag_count_label_columns"
-                    else:
-                        run_signature = _cluster_signature_from_partner_columns(
-                            result["columns"],
-                            partner=grouped_stream_partner,
-                        )
-                        signature_strategy = "host_column_materialized_signature"
-                    run_timing["column_signature_sec"] = time.perf_counter() - signature_start
-                    run_rows = ()
-                else:
-                    rows_start = time.perf_counter()
-                    run_rows = _rows_from_partner_columns(result["columns"], partner=grouped_stream_partner)
-                    run_timing["rows_materialization_sec"] = time.perf_counter() - rows_start
-                    densify_start = time.perf_counter()
-                    run_rows = _densify_cluster_labels(run_rows)
-                    run_timing["densify_cluster_labels_sec"] = time.perf_counter() - densify_start
-                    run_signature = cluster_signature(run_rows)
-                prepared_query_runs.append(
-                    {
-                        "iteration": iteration,
-                        "is_warmup": iteration < warmup,
-                        "elapsed_sec": time.perf_counter() - run_start,
-                        "timing_sec": run_timing,
-                        "signature": run_signature,
-                        "signature_strategy": signature_strategy,
-                        "rows": run_rows,
-                        "metadata": dict(result["metadata"]),
-                    }
+                runner_result = rt.run_radius_graph_component_signature_3d_prepared_session(
+                    point_rows=point_rows_for_runner,
+                    point_rows_fingerprint=point_rows_fingerprint,
+                    radius=resolved_radius,
+                    min_neighbors=resolved_min_neighbors,
+                    partner="numba",
+                    cache=runner_cache,
+                    grouped_union_query_block_size=(
+                        resolved_query_block_size if blocked_grouped_stream else None
+                    ),
+                    grouped_union_same_root_culling=grouped_union_same_root_culling,
+                    grouped_union_direct_side_effect=grouped_union_direct_side_effect,
+                    warmup_count=warmup,
+                    measured_repeat_count=measured_repeat_count,
+                    retain_repeat_outputs=True,
                 )
+                adapter_batch_sec = time.perf_counter() - adapter_start
+                runner_metadata = runner_result.to_metadata()
+                runner_metadata["route_adapter_batch_call_sec"] = adapter_batch_sec
+                phase_summary = runner_metadata["prepared_execution_report"]["summary_sec"]
+                prepare_sec += float(phase_summary["setup"])
+                cache_load_sec = 0.0
+                for phase in runner_metadata["prepared_execution_report"]["phase_timings"]:
+                    if phase["phase"] == "cache_load":
+                        cache_load_sec = float(phase["seconds"])
+                        break
+                retained_outputs = tuple(runner_result.output)
+                if len(retained_outputs) != measured_repeat_count:
+                    raise RuntimeError("RT-DBSCAN repeated runner output count mismatch")
+                measured_repeat_seconds = tuple(
+                    float(value) for value in runner_metadata.get("measured_repeat_seconds", ())
+                )
+                if len(measured_repeat_seconds) != measured_repeat_count:
+                    raise RuntimeError("RT-DBSCAN repeated runner timing count mismatch")
+                for measured_index, result in enumerate(retained_outputs):
+                    run_timing: dict[str, float] = {}
+                    run_timing["adapter_run_sec"] = measured_repeat_seconds[measured_index]
+                    run_timing["prepared_runner_setup_sec"] = 0.0
+                    run_timing["prepared_runner_steady_state_sec"] = measured_repeat_seconds[measured_index]
+                    run_timing["prepared_runner_validation_sec"] = 0.0
+                    run_timing["prepared_runner_cache_load_sec"] = cache_load_sec
+                    signature_start = time.perf_counter()
+                    run_signature = _cluster_signature_from_numba_signature_count_columns(
+                        result["columns"],
+                    )
+                    signature_strategy = "numba_direct_component_signature_counts"
+                    run_timing["column_signature_sec"] = time.perf_counter() - signature_start
+                    prepared_query_runs.append(
+                        {
+                            "iteration": int(warmup) + measured_index,
+                            "is_warmup": False,
+                            "elapsed_sec": measured_repeat_seconds[measured_index]
+                            + run_timing["column_signature_sec"],
+                            "timing_sec": run_timing,
+                            "signature": run_signature,
+                            "signature_strategy": signature_strategy,
+                            "rows": (),
+                            "metadata": dict(result["metadata"]),
+                            "prepared_execution_session_runner_metadata": (
+                                runner_metadata if measured_index == 0 else None
+                            ),
+                        }
+                    )
+            finally:
+                runner_cache.clear()
+        else:
+            with rt.prepare_v2_8_fixed_radius_graph_component_continuation_3d(
+                points,
+                radius=resolved_radius,
+                component_threshold=resolved_min_neighbors,
+                backend="optix",
+                partner=grouped_stream_partner,
+                strategy="grouped_stream",
+                grouped_union_query_block_size=resolved_query_block_size if blocked_grouped_stream else None,
+                grouped_union_same_root_culling=grouped_union_same_root_culling,
+                grouped_union_direct_side_effect=grouped_union_direct_side_effect,
+            ) as prepared:
+                prepare_sec = time.perf_counter() - prepare_start
+                for iteration in range(repeat):
+                    run_timing: dict[str, float] = {}
+                    run_start = time.perf_counter()
+                    adapter_start = time.perf_counter()
+                    if column_signature_mode and grouped_stream_partner == "numba":
+                        result = rt.fixed_radius_graph_component_size_signature_3d_v2_8(
+                            prepared,
+                            component_threshold=resolved_min_neighbors,
+                            return_metadata=True,
+                        )
+                    else:
+                        result = rt.fixed_radius_graph_component_labels_3d_v2_8(
+                            prepared,
+                            component_threshold=resolved_min_neighbors,
+                            return_metadata=True,
+                        )
+                    run_timing["adapter_run_sec"] = time.perf_counter() - adapter_start
+                    signature_strategy = None
+                    if column_signature_mode:
+                        signature_start = time.perf_counter()
+                        if grouped_stream_partner == "numba" and "label_counts" in result["columns"]:
+                            run_signature = _cluster_signature_from_numba_signature_count_columns(
+                                result["columns"],
+                            )
+                            signature_strategy = "numba_direct_component_signature_counts"
+                        elif grouped_stream_partner == "numba":
+                            run_signature = _cluster_signature_from_numba_label_columns(
+                                result["columns"],
+                                point_count=len(points),
+                            )
+                            signature_strategy = "numba_label_count_and_flag_count_label_columns"
+                        else:
+                            run_signature = _cluster_signature_from_partner_columns(
+                                result["columns"],
+                                partner=grouped_stream_partner,
+                            )
+                            signature_strategy = "host_column_materialized_signature"
+                        run_timing["column_signature_sec"] = time.perf_counter() - signature_start
+                        run_rows = ()
+                    else:
+                        rows_start = time.perf_counter()
+                        run_rows = _rows_from_partner_columns(result["columns"], partner=grouped_stream_partner)
+                        run_timing["rows_materialization_sec"] = time.perf_counter() - rows_start
+                        densify_start = time.perf_counter()
+                        run_rows = _densify_cluster_labels(run_rows)
+                        run_timing["densify_cluster_labels_sec"] = time.perf_counter() - densify_start
+                        run_signature = cluster_signature(run_rows)
+                    prepared_query_runs.append(
+                        {
+                            "iteration": iteration,
+                            "is_warmup": iteration < warmup,
+                            "elapsed_sec": time.perf_counter() - run_start,
+                            "timing_sec": run_timing,
+                            "signature": run_signature,
+                            "signature_strategy": signature_strategy,
+                            "rows": run_rows,
+                            "metadata": dict(result["metadata"]),
+                        }
+                    )
         measured_runs = [row for row in prepared_query_runs if not bool(row["is_warmup"])]
         if not measured_runs:
             raise RuntimeError("RT-DBSCAN grouped-stream repeat produced no measured rows")
@@ -2912,6 +3007,11 @@ def run_rt_dbscan_benchmark(
         rows = measured_runs[-1]["rows"]
         result = {"metadata": dict(measured_runs[-1]["metadata"])}
         metadata = dict(result["metadata"])
+        runner_metadatas = [
+            dict(row["prepared_execution_session_runner_metadata"])
+            for row in measured_runs
+            if row.get("prepared_execution_session_runner_metadata") is not None
+        ]
         metadata.update(
             {
                 "path": (
@@ -2932,7 +3032,11 @@ def run_rt_dbscan_benchmark(
                     else "optix_rt_grouped_stream_cupy_radius_graph_components_3d"
                 ),
                 "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
-                "front_door_operation": "fixed_radius_graph_component_labels_3d",
+                "front_door_operation": (
+                    "fixed_radius_graph_component_size_signature_3d"
+                    if column_signature_mode
+                    else "fixed_radius_graph_component_labels_3d"
+                ),
                 "v2_8_front_door_route": True,
                 "native_engine_summary_contract": (
                     "generic_prepared_fixed_radius_grouped_union_3d_self_range_device_workspaces"
@@ -3025,6 +3129,70 @@ def run_rt_dbscan_benchmark(
                 },
             }
         )
+        if runner_metadatas:
+            runner_runtime_executed_count = sum(
+                1 for row in runner_metadatas if bool(row.get("runtime_executed"))
+            )
+            runner_trunk_executed_count = sum(
+                1 for row in runner_metadatas if bool(row.get("runtime_trunk_executes_end_to_end"))
+            )
+            runner_measured_repeat_count = sum(
+                int(row.get("measured_repeat_count") or 1)
+                for row in runner_metadatas
+                if bool(row.get("runtime_executed"))
+            )
+            metadata.update(
+                {
+                    "prepared_execution_session_runner_used": True,
+                    "productized_execution_path": "prepared_execution_session_runner",
+                    "prepared_execution_session_runner_runtime_executed_count": runner_runtime_executed_count,
+                    "phoenix_v3_redesign_step": "step1_runtime_trunk_probe",
+                    "runtime_trunk_family": "fixed_radius_self_query_to_grouped_stream_component_signature_3d",
+                    "runtime_trunk_executes_end_to_end_count": runner_trunk_executed_count,
+                    "runtime_trunk_executes_end_to_end": runner_trunk_executed_count > 0,
+                    "internal_device_residency_between_rtdl_phases": all(
+                        bool(row.get("internal_device_residency_between_rtdl_phases"))
+                        for row in runner_metadatas
+                        if bool(row.get("runtime_executed"))
+                    ),
+                    "hot_path_host_materialization": any(
+                        bool(row.get("hot_path_host_materialization"))
+                        for row in runner_metadatas
+                    ),
+                    "external_device_buffer_interop_authorized": False,
+                    "v4_embedding_or_external_zero_copy_authorized": False,
+                    "focused_material_gain_required_before_all_app": True,
+                    "full_all_app_rerun_authorized_by_this_packet": False,
+                    "prepared_execution_session_runner_measured_repeat_count": runner_measured_repeat_count,
+                    "prepared_execution_session_runner_repeated_execution": any(
+                        bool(row.get("repeated_prepared_session_execution"))
+                        for row in runner_metadatas
+                    ),
+                    "prepared_execution_session_runner_single_cache_lookup_for_measured_repeats": all(
+                        bool(row.get("single_cache_lookup_for_measured_repeats"))
+                        for row in runner_metadatas
+                    ),
+                    "prepared_execution_session_runner_single_report_after_measured_repeats": all(
+                        bool(row.get("single_report_after_measured_repeats"))
+                        for row in runner_metadatas
+                    ),
+                    "prepared_execution_session_runner_cache_hit_count": sum(
+                        1
+                        for row in runner_metadatas
+                        if bool(row.get("prepared_session", {}).get("cache_hit"))
+                    ),
+                    "prepared_execution_session_runner_last_metadata": runner_metadatas[-1],
+                    "prepared_execution_session_runner_claims_authorized": False,
+                    "release_authorized": False,
+                    "public_speedup_claim_authorized": False,
+                    "broad_v3_faster_than_v2_claim_authorized": False,
+                    "true_zero_copy_claim_authorized": False,
+                    "automatic_partner_selection_authorized": False,
+                    "app_specific_native_engine_logic_allowed": False,
+                }
+            )
+        else:
+            metadata["prepared_execution_session_runner_used"] = False
     elif mode == "optix_rt_core_flags_cupy_microcell_graph_components_3d":
         point_columns = rt.point_rows_to_partner_columns(points, partner="cupy")
         output_columns = rt.allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(

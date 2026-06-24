@@ -45,6 +45,36 @@ class Goal4425V30M28RaydbPreparedGroupedRefreshTest(unittest.TestCase):
         self.assertEqual(set(planned), {("embree", "count"), ("embree", "sum"), ("optix", "count"), ("optix", "sum")})
         self.assertGreaterEqual(planned[("optix", "count")]["repeat"], 1000)
         self.assertLess(planned[("embree", "sum")]["repeat"], planned[("embree", "count")]["repeat"])
+        self.assertEqual(planned[("optix", "sum")]["ray_batch_layout"], "host_packed")
+
+    def test_runner_dry_run_records_explicit_optix_device_column_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output = Path(tmpdir) / "dry_run.json"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--dry-run",
+                    "--backends",
+                    "embree,optix",
+                    "--optix-ray-batch-layout",
+                    "cupy_device_columns",
+                    "--output",
+                    str(output),
+                ],
+                cwd=str(ROOT),
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            payload = json.loads(output.read_text(encoding="utf-8"))
+
+        planned = {(row["backend"], row["mode"]): row for row in payload["planned_rows"]}
+        self.assertEqual(planned[("embree", "sum")]["ray_batch_layout"], "host_packed")
+        self.assertEqual(planned[("optix", "sum")]["ray_batch_layout"], "cupy_device_columns")
+        self.assertEqual(payload["parameters"]["optix_ray_batch_layout"], "cupy_device_columns")
 
     def test_report_and_runner_capture_m28_boundary(self) -> None:
         source = SCRIPT.read_text(encoding="utf-8")
@@ -54,6 +84,9 @@ class Goal4425V30M28RaydbPreparedGroupedRefreshTest(unittest.TestCase):
             "primitive_first_no_partner_needed",
             "same_contract_prepared_query_refresh_not_public_speedup",
             "prepared_primitive_payload_reused",
+            "prepared_ray_batch_layout",
+            "native_device_column_path_used",
+            "host_packed_ray_count",
             "v2_5_selected_path",
         ):
             self.assertIn(phrase, source)
@@ -86,6 +119,8 @@ class Goal4425V30M28RaydbPreparedGroupedRefreshTest(unittest.TestCase):
             self.assertTrue(row["matches_cpu_reference"])
             self.assertTrue(row["prepared_primitive_payload_reused"])
             self.assertTrue(row["prepared_ray_batch_reused"])
+            self.assertEqual(row.get("prepared_ray_batch_layout", "host_packed"), "host_packed")
+            self.assertFalse(row.get("native_device_column_path_used", False))
             self.assertEqual(row["v2_5_selected_path"], "prepared_fused_generic_grouped_reduction")
             self.assertFalse(row["partner_continuation_required"])
             self.assertFalse(row["claim_boundary"]["public_speedup_claim_authorized"])

@@ -1,0 +1,180 @@
+{
+  "status": "hausdorff_threshold_summary_repeat5_rtx_evidence_m7_approved_row_scoped",
+  "version": 1,
+  "generic_capability": "threshold_summary",
+  "candidate_row_id": "hausdorff_threshold_summary_1048576_threshold_0_4_stability_row_scoped",
+  "m7_qualified_release_rows": 1,
+  "external_review": [
+    "docs/reviews/claude_phoenix_v3_hausdorff_threshold_summary_repeat5_m7_review_2026-06-21.md",
+    "docs/reviews/claude_phoenix_v3_hausdorff_threshold_summary_p0_repair_final_review_2026-06-21.md"
+  ],
+  "codex_consensus": "docs/reviews/codex_phoenix_v3_hausdorff_threshold_summary_p0_repair_2ai_consensus_2026-06-21.md",
+  "generated_from": {
+    "local_summary_json": "docs/rebuild/v3/evidence/phoenix_v3_hausdorff_threshold_summary_repeat5_20260621/summary.json",
+    "local_summary_md": "docs/rebuild/v3/evidence/phoenix_v3_hausdorff_threshold_summary_repeat5_20260621/summary.md",
+    "stability_summary_json": "docs/rebuild/v3/evidence/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/summary.json",
+    "stability_summary_md": "docs/rebuild/v3/evidence/phoenix_v3_hausdorff_threshold_summary_large_stability_20260621/summary.md",
+    "remote_artifact": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_hausdorff_threshold_summary_repeat5_20260621"
+  },
+  "environment": {
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "remote_host": "root@213.173.108.14 -p 11592",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "contract": {
+    "app": "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+    "same_contract": true,
+    "summary_mode": "directed_threshold_prepared",
+    "threshold": 0.4,
+    "repeat": 5,
+    "warmup": 1,
+    "optix_requires_rt_core": true,
+    "scope": "prepared fixed-radius threshold decision",
+    "not_scope": [
+      "full exact Hausdorff distance",
+      "witness materialization",
+      "X-HD paper reproduction",
+      "whole application speedup",
+      "V3-over-V2 broad speedup",
+      "threshold values other than 0.4",
+      "all input sizes",
+      "other GPUs or pods"
+    ],
+    "prepared_mode_timing_definition": "directed_threshold_prepared uses prepared fixed-radius threshold traversal for the hot query phase. The reported phase-total metric still includes input construction, scene preparation, the sum of directed query medians, Python postprocess, and validation. Scene preparation is not excluded from the phase-total claim."
+  },
+  "oracle_definition": "The oracle is expected_tiled_hausdorff(copies=N): the app computes the exact Hausdorff summary on the four-point authored base fixture using brute force, then scales deterministic row-count metadata by N because the benchmark input is a tiled repetition of that fixture. The threshold-summary route checks both directed fixed-radius decisions against oracle_within_threshold = oracle['hausdorff_distance'] <= threshold.",
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "row_scoped_public_speedup_claim_authorized": true,
+    "whole_app_speedup_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "full_hausdorff_witness_claim_authorized": false,
+    "m7_promotion_authorized": true
+  },
+  "summary": {
+    "all_pairs_match_oracle": true,
+    "all_pairs_same_decision": true,
+    "all_pairs_repeat_warmup": true,
+    "strongest_query_optix_speedup_vs_embree": 1.8914684826636867,
+    "weakest_query_optix_speedup_vs_embree": 1.6854780771390951,
+    "strongest_phase_total_optix_speedup_vs_embree": 1.2643173197147244,
+    "weakest_phase_total_optix_speedup_vs_embree": 0.5832587404633324,
+    "review_reading": "query wins across rows; phase-total mixed; only largest row is a phase-total win",
+    "stability_repair": {
+      "independent_paired_samples": 5,
+      "all_pairs_match_oracle": true,
+      "all_pairs_same_decision": true,
+      "all_phase_total_pairs_above_1x": true,
+      "weakest_phase_total_optix_speedup_vs_embree": 1.2243669013234328,
+      "phase_total_ratio_mean": 1.240042444838897,
+      "phase_total_ratio_stddev": 0.01179874030631055,
+      "query_ratio_mean": 1.6386841066991966,
+      "query_ratio_stddev": 0.020920743964462737,
+      "wrapper_ratio_mean": 1.5558395967131606,
+      "wrapper_ratio_stddev": 0.015463555481955769
+    }
+  },
+  "pairs": [
+    {
+      "copies": 16384,
+      "point_count_a": 65536,
+      "point_count_b": 65536,
+      "repeat": 5,
+      "warmup": 1,
+      "threshold": 0.4,
+      "embree_query_sec": 0.4956856742501259,
+      "optix_query_sec": 0.2620639353990555,
+      "query_optix_over_embree": 1.8914684826636867,
+      "embree_phase_total_sec": 1.0326922684907913,
+      "optix_phase_total_sec": 1.7705560103058815,
+      "phase_total_optix_over_embree": 0.5832587404633324,
+      "wrapper_optix_over_embree": 1.1465422958413487,
+      "both_match_oracle": true,
+      "same_decision": true,
+      "m7_candidate": false,
+      "blocker": "phase_total_regression"
+    },
+    {
+      "copies": 65536,
+      "point_count_a": 262144,
+      "point_count_b": 262144,
+      "repeat": 5,
+      "warmup": 1,
+      "threshold": 0.4,
+      "embree_query_sec": 2.130100905895233,
+      "optix_query_sec": 1.16320239007473,
+      "query_optix_over_embree": 1.8312384191012407,
+      "embree_phase_total_sec": 4.395329363644123,
+      "optix_phase_total_sec": 4.418867908418179,
+      "phase_total_optix_over_embree": 0.9946731730248797,
+      "wrapper_optix_over_embree": 1.3775550089756434,
+      "both_match_oracle": true,
+      "same_decision": true,
+      "m7_candidate": false,
+      "blocker": "phase_total_parity_not_win"
+    },
+    {
+      "copies": 262144,
+      "point_count_a": 1048576,
+      "point_count_b": 1048576,
+      "repeat": 5,
+      "warmup": 1,
+      "threshold": 0.4,
+      "embree_query_sec": 10.239592514932156,
+      "optix_query_sec": 6.0751858204603195,
+      "query_optix_over_embree": 1.6854780771390951,
+      "embree_phase_total_sec": 19.904695972800255,
+      "optix_phase_total_sec": 15.743433758616447,
+      "phase_total_optix_over_embree": 1.2643173197147244,
+      "wrapper_optix_over_embree": 1.5884974201344255,
+      "both_match_oracle": true,
+      "same_decision": true,
+      "m7_candidate": true,
+      "m7_promotion_authorized": true,
+      "row_scoped_public_speedup_claim_authorized": true,
+      "stability_repair": {
+        "independent_paired_samples": 5,
+        "all_phase_total_pairs_above_1x": true,
+        "weakest_phase_total_optix_speedup_vs_embree": 1.2243669013234328,
+        "phase_total_ratio_mean": 1.240042444838897,
+        "phase_total_ratio_stddev": 0.01179874030631055,
+        "query_ratio_mean": 1.6386841066991966,
+        "query_ratio_stddev": 0.020920743964462737,
+        "wrapper_ratio_mean": 1.5558395967131606,
+        "wrapper_ratio_stddev": 0.015463555481955769
+      },
+      "candidate_public_wording": "RTDL V3 includes a generic Hausdorff threshold-summary route where, at 1,048,576 points per side and threshold 0.4 on a single RTX 4000 Ada pod, prepared OptiX fixed-radius threshold decisions beat the same-contract Embree route across five independent paired process samples: query speedup mean 1.639x, phase-total speedup mean 1.240x (phase-total includes scene preparation), weakest phase-total speedup 1.224x, with repeat=5/warmup=1 inside each sample. Smaller rows in the same rerun are query wins but not phase-total wins."
+    }
+  ],
+  "current_gate_reading": {
+    "local_evidence_sufficient_for_external_public_row_review": true,
+    "current_packet_external_review_status": "claude_approved_after_p0_repair_and_scene_prepare_wording",
+    "current_packet_2ai_consensus_status": "claude_codex_consensus_complete",
+    "m7_promotion_authorized": true,
+    "row_scoped_public_speedup_claim_authorized": true
+  },
+  "local_evidence_sufficient_for_external_public_row_review": true,
+  "current_packet_external_review_status": "claude_approved_after_p0_repair_and_scene_prepare_wording",
+  "current_packet_2ai_consensus_status": "claude_codex_consensus_complete",
+  "m7_promotion_authorized": true,
+  "row_scoped_public_speedup_claim_authorized": true,
+  "approved_row_scoped_public_wording": "RTDL V3 includes a generic Hausdorff threshold-summary route where, at 1,048,576 points per side and threshold 0.4 on a single RTX 4000 Ada pod, prepared OptiX fixed-radius threshold decisions beat the same-contract Embree route across five independent paired process samples: query speedup mean 1.639x, phase-total speedup mean 1.240x (phase-total includes scene preparation), weakest phase-total speedup 1.224x, with repeat=5/warmup=1 inside each sample. Smaller rows in the same rerun are query wins but not phase-total wins.",
+  "forbidden_wording": [
+    "RTDL computes full Hausdorff faster.",
+    "Hausdorff V3 is faster end to end.",
+    "X-HD is reproduced.",
+    "V3 is faster than V2.",
+    "OptiX is faster for all Hausdorff scales.",
+    "OptiX is faster for all threshold values.",
+    "OptiX is faster for all RTX GPUs."
+  ],
+  "goal_level_decision_audit": {
+    "decision": "Send only the large threshold-summary row for external row-scoped M7 review, while keeping smaller rows blocked.",
+    "was_i_foolish": "No. The evidence repairs the old repeat and RTX blockers, but the mixed phase-total rows make all-scale promotion unsafe.",
+    "foolish_actions": "Not applicable. The foolish action would be promoting all Hausdorff threshold-summary rows from query speedup alone.",
+    "other_path": "Keep the entire Hausdorff capability blocked without review, which is safer but wastes the large-row phase-total evidence.",
+    "different_path_now": "External review of exactly the large row, followed by either row-scoped classification or an explicit no-go boundary."
+  }
+}

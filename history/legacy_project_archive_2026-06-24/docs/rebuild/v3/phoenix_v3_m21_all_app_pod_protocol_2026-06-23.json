@@ -1,0 +1,265 @@
+{
+  "artifact": "phoenix_v3_m21_all_app_pod_protocol_2026-06-23",
+  "status": "protocol_prepared_external_review_required_no_run",
+  "date": "2026-06-23",
+  "scope": "Phoenix V3 serious same-RT-hardware V2.14 vs current all-app paired POD protocol",
+  "source_external_verdict": {
+    "path": "docs/reviews/claude_phoenix_v3_m20_scorecard_sync_after_triangle_review_2026-06-22.md",
+    "verdict": "authorize_m20_all_app_protocol_preparation_no_run",
+    "authorization_scope": "protocol preparation only"
+  },
+  "authorizations": {
+    "protocol_preparation_authorized_by_m20": true,
+    "external_m21_run_authorization_obtained": false,
+    "all_app_pod_run_authorized_now": false,
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "release_based_on_all_app_run_outcome": false
+  },
+  "non_release_header": "No outcome of this all-app paired run, including full clearance of Barnes-Hut and LibRTS Embree AABB blocking bars, constitutes release authorization or public V3-over-V2 speedup authorization.",
+  "resource_budget_estimate_if_later_authorized": {
+    "prior_serious_paired_run_id": "phoenix_v3_serious_v2x_paired_20260622_074100",
+    "prior_elapsed_hours_approx": 5.78,
+    "expected_hours_low": 5.5,
+    "expected_hours_high": 7.0,
+    "hard_cap_hours_before_new_review": 8.0,
+    "cost_model_usd_per_4_hours": 1.0,
+    "expected_cost_usd_low": 1.38,
+    "expected_cost_usd_high": 1.75,
+    "hard_cap_cost_usd": 2.0,
+    "current_protocol_work_consumes_long_pod_run": false
+  },
+  "hardware_gate": {
+    "required_same_hardware": true,
+    "pod_access_hint": "ssh root@213.173.108.14 -p 11592 -i C:\\Users\\Lestat\\.ssh\\id_ed25519_rtdl_codex_current_pod",
+    "required_gpu_name": "NVIDIA RTX 4000 Ada Generation",
+    "required_driver_version": "550.127.05",
+    "required_compute_capability": "8.9",
+    "runner_fail_exit_code_on_mismatch": 67,
+    "fail_if_gpu_or_driver_differs_without_new_review": true
+  },
+  "latest_no_benchmark_pod_preflight": {
+    "status": "pass",
+    "scope": "ssh/GPU/venv/import check only; no benchmark run",
+    "hostname": "2bcb58b259e4",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "driver": "550.127.05",
+    "compute_capability": "8.9",
+    "python": "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+    "cupy": "14.1.1",
+    "numba": "0.65.1",
+    "all_app_pod_run_started": false
+  },
+  "remote_paths": {
+    "base": "/root/rtdl_v3_rebuild_20260620",
+    "current_tree": "/root/rtdl_v3_rebuild_20260620/current",
+    "v2_14_tree": "/root/rtdl_v3_rebuild_20260620/v2_14",
+    "project_venv_python": "/root/rtdl_v3_rebuild_20260620/.venv/bin/python"
+  },
+  "interpreter_preflight": {
+    "required_project_venv_python": "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+    "runner_script": "scripts/phoenix_v3_serious_paired_v2x_runner.sh",
+    "runner_enforcement": "runner uses PYTHON_BIN or base/.venv/bin/python explicitly and fails before benchmarks if sys.executable does not match",
+    "fail_exit_codes": {
+      "missing_or_not_executable": 65,
+      "sys_executable_mismatch": 66,
+      "required_import_failure": 68,
+      "benchmark_child_interpreter_mismatch": 69
+    },
+    "required_prelaunch_checks": [
+      "python_bin exists and is executable",
+      "sys.executable realpath equals /root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+      "cupy import succeeds under the same interpreter, otherwise runner exits 68 before benchmarks",
+      "numba import succeeds under the same interpreter, otherwise runner exits 68 before benchmarks",
+      "all suite subprocesses are launched through the same python_bin",
+      "benchmark child helpers for goal2626/goal2636 and goal3828 resolve harmless child probes to the same python_bin, otherwise runner exits 69 before benchmarks"
+    ],
+    "fail_closed_if_any_check_fails": true
+  },
+  "runner_command_if_later_m21_external_review_authorizes": "cd /root/rtdl_v3_rebuild_20260620/current && PHOENIX_V3_ALLOW_ALL_APP_RUN=1 PHOENIX_V3_RUNTIME_TRUNK_EXECUTED=1 BASE=/root/rtdl_v3_rebuild_20260620 PYTHON_BIN=/root/rtdl_v3_rebuild_20260620/.venv/bin/python RUN_ID=phoenix_v3_m21_all_app_paired_$(date -u +%Y%m%d_%H%M%S) bash scripts/phoenix_v3_serious_paired_v2x_runner.sh",
+  "analysis_command_after_artifact_copy": "py -3 scripts/phoenix_v3_serious_v2x_paired_analysis.py <copied_run_dir> --json-out docs/rebuild/v3/evidence/<run_id>/summary.json --md-out docs/rebuild/v3/evidence/<run_id>/summary.md",
+  "protocol_gate_command_after_analysis": "py -3 scripts/v3_phoenix_m21_all_app_protocol_gate.py --summary docs/rebuild/v3/evidence/<run_id>/summary.json --protocol docs/rebuild/v3/phoenix_v3_m21_all_app_pod_protocol_2026-06-23.json --json-out docs/rebuild/v3/evidence/<run_id>/m21_protocol_gate.json --markdown-out docs/rebuild/v3/evidence/<run_id>/m21_protocol_gate.md --pretty",
+  "protocol_gate_script": "scripts/v3_phoenix_m21_all_app_protocol_gate.py",
+  "frozen_case_id_whitelist": {
+    "source": "docs/rebuild/v3/phoenix_v3_set_a_set_b_classification_2026-06-22.json",
+    "classification_frozen_before_run": true,
+    "case_id_whitelist_frozen": true,
+    "unknown_app_id_policy": "protocol_fail_out_of_scope",
+    "unknown_case_id_policy": "protocol_fail_out_of_scope",
+    "unrecognized_rows_must_not_be_scored": true,
+    "app_classification": {
+      "barnes_hut": "A",
+      "contact_manifold": "B",
+      "hausdorff_xhd": "A",
+      "librts_spatial_index": "B",
+      "raydb_style": "B",
+      "robot_collision": "B",
+      "rt_dbscan": "A",
+      "rtnn": "A",
+      "spatial_rayjoin": "A",
+      "triangle_counting": "A"
+    },
+    "approved_case_ids_by_app": {
+      "barnes_hut": [
+        "barnes_hut_embree_node_coverage",
+        "barnes_hut_embree_node_coverage_bodies_131072",
+        "barnes_hut_embree_node_coverage_bodies_32768",
+        "barnes_hut_optix_node_coverage",
+        "barnes_hut_optix_node_coverage_bodies_131072",
+        "barnes_hut_optix_node_coverage_bodies_32768"
+      ],
+      "contact_manifold": [
+        "contact_manifold_embree_aabb_broadphase_collect_k",
+        "contact_manifold_optix_aabb_broadphase_collect_k"
+      ],
+      "hausdorff_xhd": [
+        "hausdorff_embree_threshold",
+        "hausdorff_embree_threshold_copies_16384",
+        "hausdorff_embree_threshold_copies_262144",
+        "hausdorff_embree_threshold_copies_65536",
+        "hausdorff_optix_exact_grouped_seeded_pruned_points_131072",
+        "hausdorff_optix_exact_grouped_seeded_pruned_points_32768",
+        "hausdorff_optix_threshold",
+        "hausdorff_optix_threshold_copies_16384",
+        "hausdorff_optix_threshold_copies_262144",
+        "hausdorff_optix_threshold_copies_65536"
+      ],
+      "librts_spatial_index": [
+        "librts_embree_aabb_index",
+        "librts_optix_aabb_index"
+      ],
+      "raydb_style": [
+        "raydb_embree_count",
+        "raydb_embree_sum",
+        "raydb_optix_partner_resident_count",
+        "raydb_optix_partner_resident_sum"
+      ],
+      "robot_collision": [
+        "robot_collision_embree_prepared_buffers",
+        "robot_collision_optix_prepared_device_buffers"
+      ],
+      "rt_dbscan": [
+        "rt_dbscan_embree_fixed_radius_rows",
+        "rt_dbscan_optix_grouped_stream"
+      ],
+      "rtnn": [
+        "rtnn_embree_clustered_262144_ranked_summary",
+        "rtnn_embree_clustered_65536_ranked_summary",
+        "rtnn_embree_prepared_3d_ranked_summary",
+        "rtnn_embree_shell_262144_ranked_summary",
+        "rtnn_embree_shell_65536_ranked_summary",
+        "rtnn_embree_uniform_262144_ranked_summary",
+        "rtnn_embree_uniform_65536_ranked_summary",
+        "rtnn_optix_clustered_262144_ranked_summary",
+        "rtnn_optix_clustered_65536_ranked_summary",
+        "rtnn_optix_prepared_3d_ranked_summary",
+        "rtnn_optix_shell_262144_ranked_summary",
+        "rtnn_optix_shell_65536_ranked_summary",
+        "rtnn_optix_uniform_262144_ranked_summary",
+        "rtnn_optix_uniform_65536_ranked_summary"
+      ],
+      "spatial_rayjoin": [
+        "rayjoin_embree_lsi_tiled_x2048",
+        "rayjoin_embree_overlay_seed_tiled_x2048",
+        "rayjoin_embree_pip_tiled_x2048",
+        "rayjoin_optix_promoted_lsi_tiled_x2048",
+        "rayjoin_optix_promoted_overlay_seed_tiled_x2048",
+        "rayjoin_optix_promoted_pip_tiled_x2048",
+        "spatial_rayjoin_embree_generic"
+      ],
+      "triangle_counting": [
+        "triangle_counting_embree_rt_graph_2a1",
+        "triangle_counting_embree_rt_graph_2a1_cliques_20000",
+        "triangle_counting_embree_rt_graph_2a1_cliques_80000"
+      ]
+    }
+  },
+  "focused_probe_precondition_state": {
+    "required_focused_productized_material_probe_count_before_full_all_app_pod_run": 2,
+    "verified_focused_productized_material_probe_count": 3,
+    "precondition_closed": true,
+    "verified_probes": [
+      "aabb_runner_m2_1",
+      "hausdorff_threshold_runner_m5_after_m6_1",
+      "triangle_m19_env_corrected_productized_runner"
+    ]
+  },
+  "correctness_oracle_gate": {
+    "all_required_suites_must_exit_zero": true,
+    "required_suites": [
+      "goal2626_large",
+      "goal2636_stress",
+      "goal3828_full"
+    ],
+    "required_trees": [
+      "v2_14",
+      "current"
+    ],
+    "goal2626_goal2636_rows_must_have_status_ok": true,
+    "goal3828_rows_must_have_status_pass": true,
+    "primary_metric_source_mismatch_count_must_equal_zero": true,
+    "missing_promoted_apps_must_equal_empty": true,
+    "correctness_failure_policy": "invalidate_app_rows_and_protocol_fail_if_any_required_app_loses_oracle",
+    "performance_rows_accepted_only_after_correctness": true
+  },
+  "fail_closed_bars": [
+    {
+      "id": "barnes_hut_app_geomean_floor",
+      "metric": "app_geomean_speedup_vs_v2.barnes_hut",
+      "fail_if": "< 0.90",
+      "protocol_fail": true,
+      "basis": "frozen Set-A severe-regression floor"
+    },
+    {
+      "id": "librts_embree_aabb_index_row_floor",
+      "row_id": "goal2626_large|librts_spatial_index|aabb_index_all_count_only|embree|librts_embree_aabb_index",
+      "metric": "same_metric_rows.v3_speedup_vs_v2",
+      "fail_if": "< 0.95",
+      "protocol_fail": true,
+      "basis": "frozen Set-B row floor"
+    },
+    {
+      "id": "set_b_geomean_floor",
+      "metric": "set_b_geomean_v3_vs_v2",
+      "fail_if": "< 0.98",
+      "protocol_fail": true,
+      "basis": "frozen Set-B geomean floor"
+    },
+    {
+      "id": "new_app_level_severe_regression_floor",
+      "metric": "any_app_geomean_speedup_vs_v2",
+      "fail_if": "< 0.90",
+      "protocol_fail": true,
+      "basis": "no new app-level severe regression accepted"
+    }
+  ],
+  "documented_not_pass_fail_for_this_evidence_run": {
+    "set_a_geomean_v3_vs_v2": "report exact measured value; not pass/fail for this run because M8 projection already remains below release bar",
+    "set_a_apps_over_1_05x": "report exact measured count; not pass/fail for this run because M8 projection remains far below release bar",
+    "overall_geomean_v3_vs_v2": "report exact measured value; not release authorization"
+  },
+  "watch_rows": [
+    {
+      "id": "librts_optix_aabb_index_watch_row",
+      "row_id": "goal2626_large|librts_spatial_index|aabb_index_all_count_only|optix|librts_optix_aabb_index",
+      "current_frozen_scorecard_speedup": 1.0103352224861961,
+      "status": "watch_disclose_unstable_inconclusive_not_current_blocking_row",
+      "alert_if": "< 0.95",
+      "alert_policy": "flag and report without rationalization; do not silently treat as success"
+    }
+  ],
+  "post_run_interpretation": {
+    "if_all_fail_closed_bars_clear": "blocking bars cleared; scorecard baseline advances; release remains not authorized and public V3-over-V2 speedup claims remain unauthorized",
+    "if_any_fail_closed_bar_fails": "protocol fail; no further all-app POD run before local or focused corrective work plus renewed external review",
+    "if_case_or_correctness_gate_fails": "run is invalid/out-of-scope for performance claims",
+    "if_set_a_release_numbers_remain_low": "record honestly; this evidence run does not become release by clearing only the two frozen blockers"
+  },
+  "goal_level_decision_audit": {
+    "decision": "Prepare a fail-closed all-app POD protocol before spending another long same-hardware V2.14 vs Phoenix V3 run.",
+    "was_i_foolish": "No for this decision.",
+    "foolish_actions": "It would be foolish to spend 5.5-7 POD hours before freezing case IDs, interpreter, hardware, correctness gates, and fail bars.",
+    "other_path": "Run all-app immediately because three focused probes are closed. That would repeat the earlier pattern of measuring first and arguing after.",
+    "different_path_now": "Submit this protocol for external authorization first; only run if the review explicitly authorizes the run and accepts the non-release boundary."
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "version": "phoenix_v3_m5_topology_rerun_packet_2026_06_20",
+  "status": "ready_for_external_review_not_executed",
+  "goal": "Phoenix V3 M5 point-location/topology rerun packet",
+  "goal4392_gate": "M5",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "phoenix_m7_qualified_release_rows": 0,
+  "primary_generic_capabilities": [
+    "point_location_topology_stream",
+    "compact_positive_stream"
+  ],
+  "source_docs": [
+    "docs/reports/goal4397_v3_0_m5_topology_pilot_local_prep_2026-06-15.md",
+    "docs/reports/goal4373_rayjoin_cdb_point_location_compare_safe100k_final_2026-06-13/summary.json",
+    "docs/reports/goal4430_v3_0_m33_rayjoin_overlay_active_count_same_contract_2026-06-16.json"
+  ],
+  "remote": {
+    "ssh": "ssh root@213.173.108.14 -p 11592 -i C:\\Users\\Lestat\\.ssh\\id_ed25519_rtdl_codex_current_pod",
+    "workdir": "/root/rtdl_v3_rebuild_20260620/current",
+    "artifact_dir": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_m5_topology_20260620",
+    "python": "/root/rtdl_v3_rebuild_20260620/.venv/bin/python"
+  },
+  "local_artifact_dir": "docs/rebuild/v3/evidence/phoenix_v3_m5_topology_20260620",
+  "scope": {
+    "full_m5_author_code_completion_requires_query_exec": true,
+    "query_exec_known_missing_on_current_pod_preflight": true,
+    "if_query_exec_missing": "Record M5 author-code blocker and run only RTDL same-contract internal evidence. Do not classify M5 as complete.",
+    "full_polygon_overlay_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false
+  },
+  "pre_run_gates": [
+    {
+      "id": "claim_boundary_gate",
+      "required_assertions": {
+        "release_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "phoenix_m7_qualified_release_rows": 0
+      }
+    },
+    {
+      "id": "optix_hardware_gate",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_optix_hardware_gate.py --require-rt-hardware --json-out $ART/optix_hardware_gate.json"
+    },
+    {
+      "id": "m5_local_graph_gate",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python -c \"import json, rtdsl as rt; print(json.dumps(rt.validate_m5_topology_pilots(), sort_keys=True))\" > $ART/m5_local_graph_gate.json"
+    },
+    {
+      "id": "author_query_exec_preflight",
+      "command": ": > $ART/rayjoin_query_exec_path.txt; for candidate in /workspace/rayjoin/build/query_exec /workspace/RayJoin/build/query_exec /workspace/rayjoin/build/src/query_exec /workspace/RayJoin/build/src/query_exec /root/rayjoin/build/query_exec /root/RayJoin/build/query_exec; do if test -x \"$candidate\"; then printf \"%s\\n\" \"$candidate\" > $ART/rayjoin_query_exec_path.txt; break; fi; done; if ! test -s $ART/rayjoin_query_exec_path.txt && test -d /workspace; then timeout 20s find /workspace -maxdepth 6 -type f -name query_exec -print -quit > $ART/rayjoin_query_exec_path.txt 2>/dev/null || true; fi; if ! test -s $ART/rayjoin_query_exec_path.txt && test -d /root; then timeout 20s find /root -maxdepth 5 -path /root/rtdl_v3_rebuild_20260620/artifacts -prune -o -type f -name query_exec -print -quit > $ART/rayjoin_query_exec_path.txt 2>/dev/null || true; fi; if test -s $ART/rayjoin_query_exec_path.txt; then echo present > $ART/rayjoin_query_exec_status.txt; else echo missing > $ART/rayjoin_query_exec_status.txt; fi"
+    }
+  ],
+  "required_commands": [
+    {
+      "id": "env_probe",
+      "purpose": "Record GPU, source identity, and binding Python environment.",
+      "command": "mkdir -p $ART && nvidia-smi > $ART/nvidia-smi.txt && cat VERSION > $ART/source_version.txt && sha256sum VERSION src/rtdsl/v3_0_m5_topology_pilots.py scripts/goal4373_rayjoin_cdb_point_location_compare.py scripts/v3_0_m33_rayjoin_overlay_active_count_same_contract.py scripts/v3_optix_hardware_gate.py scripts/v3_phoenix_m5_topology_intake.py > $ART/source_manifest.sha256 && PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_gpu_python_env_gate.py --json-out $ART/gpu_env_gate.json",
+      "required": true
+    },
+    {
+      "id": "optix_hardware_gate",
+      "purpose": "Fail closed unless the pod exposes NVIDIA OptiX/RT-capable hardware.",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_optix_hardware_gate.py --require-rt-hardware --json-out $ART/optix_hardware_gate.json",
+      "required": true
+    },
+    {
+      "id": "native_build",
+      "purpose": "Build native OptiX and Embree libraries used by M5 rows.",
+      "command": "make build-embree build-optix OPTIX_PREFIX=/workspace/vendor/optix-dev-8.0.0",
+      "required": true
+    },
+    {
+      "id": "m5_local_graph_gate",
+      "purpose": "Validate Goal4397 no-execution topology graph contract.",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python -c \"import json, rtdsl as rt; print(json.dumps(rt.validate_m5_topology_pilots(), sort_keys=True))\" > $ART/m5_local_graph_gate.json",
+      "required": true
+    },
+    {
+      "id": "author_query_exec_preflight",
+      "purpose": "Detect whether author RayJoin query_exec is available for full M5.",
+      "command": ": > $ART/rayjoin_query_exec_path.txt; for candidate in /workspace/rayjoin/build/query_exec /workspace/RayJoin/build/query_exec /workspace/rayjoin/build/src/query_exec /workspace/RayJoin/build/src/query_exec /root/rayjoin/build/query_exec /root/RayJoin/build/query_exec; do if test -x \"$candidate\"; then printf \"%s\\n\" \"$candidate\" > $ART/rayjoin_query_exec_path.txt; break; fi; done; if ! test -s $ART/rayjoin_query_exec_path.txt && test -d /workspace; then timeout 20s find /workspace -maxdepth 6 -type f -name query_exec -print -quit > $ART/rayjoin_query_exec_path.txt 2>/dev/null || true; fi; if ! test -s $ART/rayjoin_query_exec_path.txt && test -d /root; then timeout 20s find /root -maxdepth 5 -path /root/rtdl_v3_rebuild_20260620/artifacts -prune -o -type f -name query_exec -print -quit > $ART/rayjoin_query_exec_path.txt 2>/dev/null || true; fi; if test -s $ART/rayjoin_query_exec_path.txt; then echo present > $ART/rayjoin_query_exec_status.txt; else echo missing > $ART/rayjoin_query_exec_status.txt; fi",
+      "required": true
+    },
+    {
+      "id": "m5_pip_point_location_rtdl_parity_filtered_100k",
+      "purpose": "Run RTDL OptiX/Embree same-contract PIP point-location topology evidence at 100k generated query points.",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/goal4373_rayjoin_cdb_point_location_compare.py --base-cdb data/rayjoin_public_cdb/br_county.cdb --query-cdb $ART/goal4373_query_points_parity_filtered_100k.cdb --generate-query-cdb --filter-backend-parity --parity-filter-oversample 2048 --point-count 100000 --seed 4373 --rtdl-warmups 3 --rtdl-repeats 1000 --optix-repeats 1000 --embree-repeats 1000 --correctness-sample 100000 --output-dir $ART/m5_pip_point_location_parity_filtered_100k",
+      "required": true,
+      "generic_capability": "point_location_topology_stream"
+    },
+    {
+      "id": "m5_overlay_active_count_same_contract",
+      "purpose": "Run RTDL OptiX/Embree same-contract overlay active-count topology slice.",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_0_m33_rayjoin_overlay_active_count_same_contract.py --left-cdb data/rayjoin_public_cdb/br_county_start256_count512.cdb --right-cdb data/rayjoin_public_cdb/br_soil_start256_count512.cdb --warmup 2 --repeat 25 --output $ART/m5_overlay_active_count_same_contract.json",
+      "required": true,
+      "generic_capability": "point_location_topology_stream"
+    },
+    {
+      "id": "m5_topology_intake",
+      "purpose": "Validate M5 artifacts and headline query_exec missing as author-code blocked.",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_phoenix_m5_topology_intake.py --artifact-dir $ART --json-out $ART/m5_topology_intake_summary.json --md-out $ART/m5_topology_intake_summary.md --pretty",
+      "required": true
+    }
+  ],
+  "acceptance_checks": [
+    "All command outputs are preserved under the artifact directory.",
+    "source_manifest.sha256 records hashes for VERSION and the critical M5 scripts.",
+    "OptiX/RT hardware gate passes before benchmark rows run.",
+    "If rayjoin_query_exec_status.txt is missing, M5 remains blocked for author-code completion.",
+    "PIP point-location rows record RTDL OptiX and RTDL Embree under the same point-location contract.",
+    "PIP query generation records a backend-parity filter that rejects exact-row tie points before timing.",
+    "PIP OptiX and Embree repeat counts are equal at 1000.",
+    "Overlay active-count rows record RTDL OptiX and RTDL Embree under overlay_active_pair_dependency_count.",
+    "m5_topology_intake_summary.json records top-level M5 author-code comparison status.",
+    "Full polygon overlay, RayJoin paper reproduction, public speedup, and release authorization remain false.",
+    "Any OptiX/Embree ratio is internal same-contract evidence only until M7 qualification."
+  ],
+  "failure_policy": {
+    "preserve_failed_artifacts": true,
+    "no_scale_down_without_new_packet": true,
+    "no_public_claim_from_partial_success": true,
+    "query_exec_missing_is_blocker_not_failure_of_rtdl_topology": true
+  }
+}

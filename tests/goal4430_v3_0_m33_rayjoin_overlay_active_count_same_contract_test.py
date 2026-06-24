@@ -86,6 +86,11 @@ class Goal4430V30M33RayjoinOverlayActiveCountSameContractTest(unittest.TestCase)
         self.assertFalse(payload["claim_boundary"]["full_polygon_overlay_claim_authorized"])
         self.assertFalse(payload["claim_boundary"]["rt_core_speedup_claim_authorized"])
 
+    def test_runner_preserves_optix_m3_metadata_when_payload_provides_it(self) -> None:
+        source = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn('"topology_stream_m3_phase_table": payload.get("topology_stream_m3_phase_table")', source)
+        self.assertIn('"topology_stream_prepared_handle": payload.get("topology_stream_prepared_handle")', source)
+
     def test_report_records_m33_boundary(self) -> None:
         report = REPORT.read_text(encoding="utf-8")
         for phrase in (

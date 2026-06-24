@@ -25,6 +25,7 @@ PREPARED_SESSION_ALLOWED_BACKENDS = (
     "apple_rt",
     "vulkan",
     "oracle",
+    "partner",
 )
 PREPARED_SESSION_ALLOWED_LIFETIME_STATES = (
     "caller_retained",
@@ -100,6 +101,7 @@ class RtdlPreparedSessionCacheKey:
     parameter_fingerprint: tuple[tuple[str, str], ...] = ()
     partner: str = "none"
     device: str = "unknown"
+    _stable_id: str = field(init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         primitive = str(self.primitive).strip()
@@ -127,19 +129,24 @@ class RtdlPreparedSessionCacheKey:
         object.__setattr__(self, "device", device)
         object.__setattr__(self, "input_fingerprints", inputs)
         object.__setattr__(self, "parameter_fingerprint", parameters)
+        object.__setattr__(
+            self,
+            "_stable_id",
+            _stable_digest(
+                {
+                    "primitive": primitive,
+                    "backend": backend,
+                    "partner": partner,
+                    "device": device,
+                    "inputs": inputs,
+                    "parameters": parameters,
+                }
+            ),
+        )
 
     @property
     def stable_id(self) -> str:
-        return _stable_digest(
-            {
-                "primitive": self.primitive,
-                "backend": self.backend,
-                "partner": self.partner,
-                "device": self.device,
-                "inputs": self.input_fingerprints,
-                "parameters": self.parameter_fingerprint,
-            }
-        )
+        return self._stable_id
 
     def to_metadata(self) -> dict[str, Any]:
         return {

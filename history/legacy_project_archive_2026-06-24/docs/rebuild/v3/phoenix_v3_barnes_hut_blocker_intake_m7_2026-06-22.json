@@ -1,0 +1,146 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "checks": {
+    "all_six_barnes_hut_rows_replaced": true,
+    "focused_metric_sources_match": true,
+    "focused_patch_removes_barnes_hut_severe_regression_projection": true,
+    "runner_claim_flags_false": true,
+    "runner_parity_packet_failed_checks_empty": true,
+    "runner_parity_with_existing_fused_partner": true
+  },
+  "failed_checks": [],
+  "focused_evidence_dir": "docs\\rebuild\\v3\\evidence\\phoenix_v3_barnes_hut_symbol_cache_focused_20260622_135158",
+  "frozen_summary": "docs\\rebuild\\v3\\evidence\\phoenix_v3_serious_v2x_paired_20260622_074100\\summary.json",
+  "full_all_app_rerun_authorized_by_this_packet": false,
+  "goal_level_decision_audit": {
+    "decision": "Reclassify Barnes-Hut from active severe-regression target to focused-fix-covered pending full-suite validation.",
+    "different_path_now": "Record the focused fix, preserve release non-authorization, and redirect engineering to the next unfixed shared-runtime blocker.",
+    "foolish_actions": "It would be foolish to keep tuning Barnes-Hut after the generic fixed-radius OptiX hot-path regression is already covered, or to claim release from a focused replacement projection.",
+    "other_path": "Run another Barnes-Hut POD or a full all-app suite immediately. That would spend money before the remaining non-Barnes blockers are addressed.",
+    "was_i_foolish": "No for this decision."
+  },
+  "interpretation": {
+    "barnes_hut_blocker_state": "focused_generic_runtime_fix_removes_projected_severe_regression_pending_full_all_app_validation",
+    "next_resource_decision": "do_not_spend_more_barnes_hut_pod_time_before_attacking_librts_spatial_rayjoin_or_rtnn_rows",
+    "why_not_release": "This substitutes focused same-hardware Barnes-Hut evidence only for planning. The frozen all-app scorecard and release gate remain blocked until a reviewed full paired rerun."
+  },
+  "projection": {
+    "frozen_all_rows_geomean": 1.0117790403434224,
+    "frozen_barnes_hut_app_geomean": 0.8441965065233041,
+    "projected_all_rows_geomean_if_only_barnes_hut_focused_rows_supersede": 1.032810184691523,
+    "projected_barnes_hut_app_geomean": 1.008971208978369,
+    "projected_set_a_app_geomeans": {
+      "barnes_hut": 1.008971208978369,
+      "hausdorff_xhd": 1.1485359503887191,
+      "rt_dbscan": 0.9880558497344825,
+      "rtnn": 1.0033271925133553,
+      "spatial_rayjoin": 1.0270156968652566,
+      "triangle_counting": 0.9874175127685646
+    },
+    "projected_set_a_geomean": 1.03906646344581,
+    "projected_set_b_app_geomeans": {
+      "contact_manifold": 1.0170584228123953,
+      "librts_spatial_index": 0.9371711684548437,
+      "raydb_style": 1.0456998138688391,
+      "robot_collision": 0.9932179101450812
+    },
+    "projected_set_b_geomean": 1.0069425307714026
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "replacement_rows": [
+    {
+      "backend": "embree",
+      "case_id": "barnes_hut_embree_node_coverage",
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "focused_patched_v3_sec": 0.12931054085493088,
+      "focused_patched_v3_speedup_vs_v2": 1.0316494799682434,
+      "focused_v2_sec": 0.13340315222740173,
+      "frozen_v2_sec": 0.1341770812869072,
+      "frozen_v3_sec": 0.1320696473121643,
+      "frozen_v3_speedup_vs_v2": 1.0159569894948057,
+      "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "row_id": "goal2626_large|barnes_hut|node_coverage_prepared_threshold_decision|embree|barnes_hut_embree_node_coverage",
+      "suite": "goal2626_large"
+    },
+    {
+      "backend": "optix",
+      "case_id": "barnes_hut_optix_node_coverage",
+      "comparison_group": "node_coverage_prepared_threshold_decision",
+      "focused_patched_v3_sec": 0.04233485460281372,
+      "focused_patched_v3_speedup_vs_v2": 0.9994250353039235,
+      "focused_v2_sec": 0.04231051355600357,
+      "frozen_v2_sec": 0.04236645996570587,
+      "frozen_v3_sec": 0.06814588606357574,
+      "frozen_v3_speedup_vs_v2": 0.6217023860571815,
+      "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "row_id": "goal2626_large|barnes_hut|node_coverage_prepared_threshold_decision|optix|barnes_hut_optix_node_coverage",
+      "suite": "goal2626_large"
+    },
+    {
+      "backend": "embree",
+      "case_id": "barnes_hut_embree_node_coverage_bodies_131072",
+      "comparison_group": "barnes_hut_node_coverage_bodies_131072",
+      "focused_patched_v3_sec": 0.5503570288419724,
+      "focused_patched_v3_speedup_vs_v2": 1.0062960155640486,
+      "focused_v2_sec": 0.5538220852613449,
+      "frozen_v2_sec": 0.5625223517417908,
+      "frozen_v3_sec": 0.558795876801014,
+      "frozen_v3_speedup_vs_v2": 1.006668758835713,
+      "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "row_id": "goal2636_stress|barnes_hut|barnes_hut_node_coverage_bodies_131072|embree|barnes_hut_embree_node_coverage_bodies_131072",
+      "suite": "goal2636_stress"
+    },
+    {
+      "backend": "optix",
+      "case_id": "barnes_hut_optix_node_coverage_bodies_131072",
+      "comparison_group": "barnes_hut_node_coverage_bodies_131072",
+      "focused_patched_v3_sec": 0.2981278523802757,
+      "focused_patched_v3_speedup_vs_v2": 0.9901466092791473,
+      "focused_v2_sec": 0.2951902821660042,
+      "frozen_v2_sec": 0.29448458552360535,
+      "frozen_v3_sec": 0.30629297345876694,
+      "frozen_v3_speedup_vs_v2": 0.9614474083364788,
+      "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "row_id": "goal2636_stress|barnes_hut|barnes_hut_node_coverage_bodies_131072|optix|barnes_hut_optix_node_coverage_bodies_131072",
+      "suite": "goal2636_stress"
+    },
+    {
+      "backend": "embree",
+      "case_id": "barnes_hut_embree_node_coverage_bodies_32768",
+      "comparison_group": "barnes_hut_node_coverage_bodies_32768",
+      "focused_patched_v3_sec": 0.12866880744695663,
+      "focused_patched_v3_speedup_vs_v2": 0.9895920209083747,
+      "focused_v2_sec": 0.12732962518930435,
+      "frozen_v2_sec": 0.12830742448568344,
+      "frozen_v3_sec": 0.12807349115610123,
+      "frozen_v3_speedup_vs_v2": 1.0018265554211925,
+      "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "row_id": "goal2636_stress|barnes_hut|barnes_hut_node_coverage_bodies_32768|embree|barnes_hut_embree_node_coverage_bodies_32768",
+      "suite": "goal2636_stress"
+    },
+    {
+      "backend": "optix",
+      "case_id": "barnes_hut_optix_node_coverage_bodies_32768",
+      "comparison_group": "barnes_hut_node_coverage_bodies_32768",
+      "focused_patched_v3_sec": 0.04211796820163727,
+      "focused_patched_v3_speedup_vs_v2": 1.0377884010870022,
+      "focused_v2_sec": 0.043709538877010345,
+      "frozen_v2_sec": 0.042753733694553375,
+      "frozen_v3_sec": 0.07233946025371552,
+      "frozen_v3_speedup_vs_v2": 0.5910153814336409,
+      "primary_metric_source": "node_coverage.run_phases.query_fixed_radius_threshold_reached_count_sec",
+      "row_id": "goal2636_stress|barnes_hut|barnes_hut_node_coverage_bodies_32768|optix|barnes_hut_optix_node_coverage_bodies_32768",
+      "suite": "goal2636_stress"
+    }
+  ],
+  "runner_parity": {
+    "historical_optix_over_runner_geomean": 12.730691398985789,
+    "historical_optix_reference_is_primary_claim": false,
+    "runner_parity_with_existing_fused_partner": true,
+    "runner_vs_existing_fused_control_geomean": 0.999328063165968
+  },
+  "runner_parity_summary": "docs\\rebuild\\v3\\evidence\\phoenix_v3_barnes_hut_runner_parity_pod_ab_fixed_20260622_182718\\summary.json",
+  "status": "barnes_hut_focused_fix_intake_not_release",
+  "tool": "v3_phoenix_barnes_hut_blocker_intake"
+}

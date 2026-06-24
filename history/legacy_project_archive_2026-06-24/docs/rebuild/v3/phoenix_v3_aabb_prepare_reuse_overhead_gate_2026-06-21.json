@@ -1,0 +1,86 @@
+{
+  "blocker_summary": {
+    "best_cold_plus_collect_wall_speedup": 1.1400086912394385,
+    "best_collect_speedup": 1.0052018880223554,
+    "best_prepare_speedup": 0.7424958975590354,
+    "best_query_total_speedup": 1.1778290019129094,
+    "latest_cold_plus_collect_wall_speedup": 1.0870090497524356
+  },
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "generic aabb_index_query_2d prepared-session candidate stream; contact_manifold is only the evidence harness",
+  "checks": {
+    "all_wall_speedups_below_material_floor": true,
+    "claim_flags_false": true,
+    "collect_is_not_material_win": true,
+    "larger_scale_not_better": true,
+    "optix_prepare_slower_on_all_rows": true,
+    "query_total_positive_but_not_promotable": true,
+    "rows_cover_32768_and_65536": true,
+    "scale_evidence_exists": true,
+    "scale_evidence_not_m7": true,
+    "scale_shopping_already_blocked": true,
+    "serious_evidence_exists": true,
+    "serious_evidence_not_m7": true
+  },
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not promote AABB prepare-reuse to M7 from 1.140x or 1.087x wall evidence.",
+    "Do not quote query-total speedup as a V3 win while cold-plus-collect wall is below 1.20x.",
+    "Do not keep scale-shopping this contract without a new reviewer-approved rationale.",
+    "Do not claim full contact solving, broad AABB-index acceleration, or broad V3-over-V2 speedup."
+  ],
+  "full_contact_solver_claim_authorized": false,
+  "generic_capability": "aabb_candidate_stream",
+  "goal_level_decision_audit": {
+    "decision": "Add a hard overhead gate for AABB prepare-reuse instead of treating sub-floor ratios as V3 progress.",
+    "different_path_now": "Use the gate as the work order for real generic overhead reduction: prepare, query, and collect/compaction must improve before AABB can reopen M7.",
+    "foolish_actions": "The foolish action would be to promote query-only wins, keep increasing scale until a ratio looks good, or call this full contact/AABB acceleration.",
+    "other_path": "I could have moved straight to code tuning. That might be useful, but without this gate the current evidence would remain easy to misread.",
+    "was_i_foolish": "No. This gate prevents a low-margin 1.140x row and a worse 1.087x scale row from being mistaken for a major V3 optimization."
+  },
+  "interpretation": "AABB prepare-reuse is a useful V3 engine target, but the current evidence is blocked. The 32,768 row was only 1.140x cold-plus-collect wall versus Embree, below the 1.20 material floor; the 65,536 rerun fell to 1.087x. OptiX prepare is slower on both rows, query-total wins are not valid public claims without wall clearance, and collect is neutral or slower. This is not a V3 performance win yet.",
+  "m7_candidate_reopen_authorized": false,
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "material_wall_speedup_floor": 1.2,
+  "next_engine_action": "Do generic AABB overhead work before any new M7 attempt: reduce OptiX prepare cost, reduce repeated query overhead, improve collect/compaction cost, or propose a separately justified prepared-session contract that clears the wall floor without contact-specific native logic.",
+  "observed_ratios": [
+    {
+      "cold_plus_collect_wall_speedup": 1.1400086912394385,
+      "collect_speedup": 1.0052018880223554,
+      "grid_count": 32768,
+      "prepare_speedup": 0.6235016572276956,
+      "query_total_speedup": 1.1778290019129094,
+      "repeat": 50,
+      "runner_wall_speedup": 1.1365948503003616
+    },
+    {
+      "cold_plus_collect_wall_speedup": 1.0870090497524356,
+      "collect_speedup": 0.9064244368385714,
+      "grid_count": 65536,
+      "prepare_speedup": 0.7424958975590354,
+      "query_total_speedup": 1.1086496063215927,
+      "repeat": 50,
+      "runner_wall_speedup": 1.0837020201049419
+    }
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "required_blockers_before_m7": [
+    "optix_prepare_slower_than_embree",
+    "material_wall_floor_not_met",
+    "larger_scale_not_better",
+    "query_only_claim_forbidden",
+    "collect_not_material_win",
+    "external_m7_review_missing_for_new_row",
+    "generic_overhead_reduction_required",
+    "same_contract_public_wording_review_missing"
+  ],
+  "source_packets": {
+    "scale_evidence": "docs/rebuild/v3/phoenix_v3_aabb_prepare_reuse_scale_evidence_2026-06-21.json",
+    "serious_evidence": "docs/rebuild/v3/phoenix_v3_aabb_prepare_reuse_serious_rtx_evidence_2026-06-21.json"
+  },
+  "status": "aabb_prepare_reuse_overhead_gate_blocked_not_m7",
+  "tool": "v3_phoenix_aabb_prepare_reuse_overhead_gate",
+  "whole_app_speedup_claim_authorized": false
+}

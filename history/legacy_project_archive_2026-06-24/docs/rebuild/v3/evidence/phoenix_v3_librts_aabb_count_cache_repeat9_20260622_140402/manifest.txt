@@ -1,0 +1,6 @@
+run_id=phoenix_v3_librts_aabb_count_cache_repeat9_20260622_140402
+purpose=repeat9 stability for patched-current LibRTS generic Embree AABB count query-cache evidence
+started_utc=2026-06-22T14:04:02Z
+v2_dir=/root/rtdl_v3_rebuild_20260620/v2_14
+current_dir=/root/rtdl_v3_rebuild_20260620/current
+case_repeat=9

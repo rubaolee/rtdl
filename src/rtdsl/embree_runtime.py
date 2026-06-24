@@ -1652,6 +1652,10 @@ def _normalize_point2d_xy(point) -> tuple[float, float]:
 
 
 def pack_aabb_point_queries_2d(points) -> PackedPoints:
+    if isinstance(points, PackedPoints):
+        if points.dimension != 2:
+            raise ValueError("AABB_INDEX_QUERY_2D point queries require 2-D points")
+        return points
     point_tuple = tuple(points)
     point_xy = tuple(_normalize_point2d_xy(point) for point in point_tuple)
     array = (_RtdlPoint * len(point_xy))(
@@ -3591,17 +3595,19 @@ class PreparedEmbreeFixedRadiusCountThreshold2D:
         self._library = _load_configured_embree_library()
         self._handle = ctypes.c_void_p()
         self._closed = False
-        create = _require_optional_embree_symbol(
-            self._library,
-            "rtdl_embree_fixed_radius_count_threshold_2d_create",
-        )
+        self._optional_symbols: dict[str, object | None] = {}
+        create = self._optional_symbol("rtdl_embree_fixed_radius_count_threshold_2d_create")
         if create is None:
             raise RuntimeError(
                 "loaded Embree backend library does not export "
                 "rtdl_embree_fixed_radius_count_threshold_2d_create; "
                 "rebuild the Embree backend from current main"
             )
-        packed_search = pack_points(records=search_points, dimension=2)
+        packed_search = (
+            search_points
+            if isinstance(search_points, PackedPoints)
+            else pack_points(records=search_points, dimension=2)
+        )
         error = ctypes.create_string_buffer(4096)
         status = create(
             packed_search.records,
@@ -3612,13 +3618,15 @@ class PreparedEmbreeFixedRadiusCountThreshold2D:
         )
         _check_status(status, error)
 
+    def _optional_symbol(self, name: str):
+        if name not in self._optional_symbols:
+            self._optional_symbols[name] = _require_optional_embree_symbol(self._library, name)
+        return self._optional_symbols[name]
+
     def close(self) -> None:
         if self._closed:
             return
-        destroy = _require_optional_embree_symbol(
-            self._library,
-            "rtdl_embree_fixed_radius_count_threshold_2d_destroy",
-        )
+        destroy = self._optional_symbol("rtdl_embree_fixed_radius_count_threshold_2d_destroy")
         if destroy is not None and self._handle:
             destroy(self._handle)
         self._closed = True
@@ -3649,17 +3657,18 @@ class PreparedEmbreeFixedRadiusCountThreshold2D:
             raise ValueError("radius must be non-negative")
         if threshold < 0:
             raise ValueError("threshold must be non-negative")
-        run = _require_optional_embree_symbol(
-            self._library,
-            "rtdl_embree_fixed_radius_count_threshold_2d_run",
-        )
+        run = self._optional_symbol("rtdl_embree_fixed_radius_count_threshold_2d_run")
         if run is None:
             raise RuntimeError(
                 "loaded Embree backend library does not export "
                 "rtdl_embree_fixed_radius_count_threshold_2d_run; "
                 "rebuild the Embree backend from current main"
             )
-        packed_queries = pack_points(records=query_points, dimension=2)
+        packed_queries = (
+            query_points
+            if isinstance(query_points, PackedPoints)
+            else pack_points(records=query_points, dimension=2)
+        )
         rows_ptr = ctypes.POINTER(_RtdlFixedRadiusCountRow)()
         row_count = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
@@ -3710,10 +3719,8 @@ class PreparedEmbreeFixedRadiusCountThreshold3D:
         self._handle = ctypes.c_void_p()
         self._closed = False
         self._last_traversal_seconds = 0.0
-        create = _require_optional_embree_symbol(
-            self._library,
-            "rtdl_embree_fixed_radius_count_threshold_3d_create",
-        )
+        self._optional_symbols: dict[str, object | None] = {}
+        create = self._optional_symbol("rtdl_embree_fixed_radius_count_threshold_3d_create")
         if create is None:
             raise RuntimeError(
                 "loaded Embree backend library does not export "
@@ -3735,13 +3742,15 @@ class PreparedEmbreeFixedRadiusCountThreshold3D:
     def last_traversal_seconds(self) -> float:
         return float(self._last_traversal_seconds)
 
+    def _optional_symbol(self, name: str):
+        if name not in self._optional_symbols:
+            self._optional_symbols[name] = _require_optional_embree_symbol(self._library, name)
+        return self._optional_symbols[name]
+
     def close(self) -> None:
         if self._closed:
             return
-        destroy = _require_optional_embree_symbol(
-            self._library,
-            "rtdl_embree_fixed_radius_count_threshold_3d_destroy",
-        )
+        destroy = self._optional_symbol("rtdl_embree_fixed_radius_count_threshold_3d_destroy")
         if destroy is not None and self._handle:
             destroy(self._handle)
         self._closed = True
@@ -3772,10 +3781,7 @@ class PreparedEmbreeFixedRadiusCountThreshold3D:
             raise ValueError("radius must be non-negative")
         if threshold < 0:
             raise ValueError("threshold must be non-negative")
-        run = _require_optional_embree_symbol(
-            self._library,
-            "rtdl_embree_fixed_radius_count_threshold_3d_run",
-        )
+        run = self._optional_symbol("rtdl_embree_fixed_radius_count_threshold_3d_run")
         if run is None:
             raise RuntimeError(
                 "loaded Embree backend library does not export "
@@ -3852,6 +3858,7 @@ class PreparedEmbreeFixedRadiusNeighbors3D:
 
     def __init__(self, search_points) -> None:
         self._library = _load_configured_embree_library()
+        self._optional_symbols: dict[str, object | None] = {}
         self._handle = ctypes.c_void_p()
         self._closed = False
         self._last_traversal_seconds = 0.0
@@ -3859,10 +3866,7 @@ class PreparedEmbreeFixedRadiusNeighbors3D:
         if packed_search.dimension != 3:
             raise ValueError("prepare_embree_fixed_radius_neighbors_3d requires 3-D points")
         self._packed_search = packed_search
-        create = _require_optional_embree_symbol(
-            self._library,
-            "rtdl_embree_fixed_radius_neighbors_3d_create",
-        )
+        create = self._optional_symbol("rtdl_embree_fixed_radius_neighbors_3d_create")
         if create is None:
             raise RuntimeError(
                 "loaded Embree backend library does not export "
@@ -3881,6 +3885,11 @@ class PreparedEmbreeFixedRadiusNeighbors3D:
         _check_status(status, error)
         self.prepare_seconds = time.perf_counter() - started
 
+    def _optional_symbol(self, name: str):
+        if name not in self._optional_symbols:
+            self._optional_symbols[name] = _require_optional_embree_symbol(self._library, name)
+        return self._optional_symbols[name]
+
     @property
     def closed(self) -> bool:
         return self._closed
@@ -3892,10 +3901,7 @@ class PreparedEmbreeFixedRadiusNeighbors3D:
     def close(self) -> None:
         if self._closed:
             return
-        destroy = _require_optional_embree_symbol(
-            self._library,
-            "rtdl_embree_fixed_radius_neighbors_3d_destroy",
-        )
+        destroy = self._optional_symbol("rtdl_embree_fixed_radius_neighbors_3d_destroy")
         if destroy is not None and self._handle:
             destroy(self._handle)
         self._closed = True
@@ -3935,10 +3941,7 @@ class PreparedEmbreeFixedRadiusNeighbors3D:
                 field_names=self._summary_fields,
                 _free_on_close=False,
             )
-        run = _require_optional_embree_symbol(
-            self._library,
-            "rtdl_embree_fixed_radius_neighbors_3d_ranked_summary_run",
-        )
+        run = self._optional_symbol("rtdl_embree_fixed_radius_neighbors_3d_ranked_summary_run")
         if run is None:
             raise RuntimeError(
                 "loaded Embree backend library does not export "
@@ -3999,10 +4002,7 @@ class PreparedEmbreeFixedRadiusNeighbors3D:
                 "kth_id_checksum": 0,
                 "sum_distance": 0.0,
             }
-        run = _require_optional_embree_symbol(
-            self._library,
-            "rtdl_embree_fixed_radius_neighbors_3d_ranked_summary_aggregate_run",
-        )
+        run = self._optional_symbol("rtdl_embree_fixed_radius_neighbors_3d_ranked_summary_aggregate_run")
         if run is None:
             raise RuntimeError(
                 "loaded Embree backend library does not export "
@@ -4523,6 +4523,7 @@ class PreparedEmbreeAabbIndex2D:
 
     supported_operations = EMBREE_AABB_INDEX_SUPPORTED_OPERATIONS
     native_aabb_index = True
+    supports_packed_aabb_queries = True
 
     def __init__(self, boxes):
         packed = pack_aabbs_2d(boxes)
@@ -4532,6 +4533,7 @@ class PreparedEmbreeAabbIndex2D:
         self._handle = ctypes.c_void_p()
         self._closed = False
         self._library = _load_embree_library()
+        self._optional_symbols = {}
         if _embree_version_from_library(self._library)[0] < 4:
             raise RuntimeError(
                 "native Embree AABB_INDEX_QUERY_2D count path requires Embree 4 collision support"
@@ -4551,6 +4553,11 @@ class PreparedEmbreeAabbIndex2D:
             len(error),
         )
         _check_status(status, error)
+
+    def _optional_symbol(self, symbol_name: str):
+        if symbol_name not in self._optional_symbols:
+            self._optional_symbols[symbol_name] = _require_optional_embree_symbol(self._library, symbol_name)
+        return self._optional_symbols[symbol_name]
 
     def count(self, *, point_queries=(), box_queries=(), operation: str) -> int:
         if self._closed:
@@ -4576,7 +4583,7 @@ class PreparedEmbreeAabbIndex2D:
             if box_count == 0:
                 return 0
 
-        count_symbol = _require_optional_embree_symbol(self._library, "rtdl_embree_count_prepared_aabb_index_2d")
+        count_symbol = self._optional_symbol("rtdl_embree_count_prepared_aabb_index_2d")
         if count_symbol is None:
             raise RuntimeError(
                 "loaded Embree backend does not export rtdl_embree_count_prepared_aabb_index_2d; "
@@ -4609,10 +4616,7 @@ class PreparedEmbreeAabbIndex2D:
                 "complete_candidate_coverage": True,
                 "native_generic_symbol": "rtdl_embree_collect_prepared_aabb_index_2d_range_intersection_rows",
             }
-        collect_symbol = _require_optional_embree_symbol(
-            self._library,
-            "rtdl_embree_collect_prepared_aabb_index_2d_range_intersection_rows",
-        )
+        collect_symbol = self._optional_symbol("rtdl_embree_collect_prepared_aabb_index_2d_range_intersection_rows")
         if collect_symbol is None:
             raise RuntimeError(
                 "loaded Embree backend does not export "
@@ -4664,7 +4668,7 @@ class PreparedEmbreeAabbIndex2D:
     def close(self) -> None:
         if self._closed:
             return
-        destroy = _require_optional_embree_symbol(self._library, "rtdl_embree_destroy_prepared_aabb_index_2d")
+        destroy = self._optional_symbol("rtdl_embree_destroy_prepared_aabb_index_2d")
         if destroy is not None and self._handle:
             destroy(self._handle)
         self._handle = ctypes.c_void_p()

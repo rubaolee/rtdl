@@ -1,0 +1,109 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "generic prepared fixed-radius self-query aggregate batch; RTNN is the serious same-contract evidence harness",
+  "checks": {
+    "call_for_review_exists": true,
+    "cold_plus_query_vs_cupy_below_material_floor": true,
+    "cupy_evidence_exists": true,
+    "external_review_blocked_exists": true,
+    "hot_speedup_vs_cupy_is_material": true,
+    "hot_speedup_vs_old_is_material": true,
+    "input_pack_reduction_vs_old_is_material": true,
+    "integer_parity_with_cupy": true,
+    "integer_parity_with_old_prepared_query": true,
+    "new_evidence_exists": true,
+    "new_mode_is_explicit_self_query": true,
+    "old_evidence_exists": true,
+    "old_mode_is_baseline_prepared_query": true,
+    "release_flags_false": true,
+    "repeat5": true,
+    "runner_wall_vs_cupy_below_material_floor": true,
+    "serious_scale": true,
+    "sum_distance_relative_error_below_tolerance": true
+  },
+  "comparisons": {
+    "execution_prepare_reduction_old_to_new": 1.462742327461506,
+    "input_pack_reduction_old_to_new": 2.7842127218230144,
+    "new_self_query_over_cupy_cold_plus_query_speedup": 1.213754759923802,
+    "new_self_query_over_cupy_hot_speedup": 19.437209556705984,
+    "new_self_query_over_cupy_runner_wall_speedup": 1.0304378375759553,
+    "old_prepared_query_to_new_self_query_cold_plus_query_speedup": 1.88314655656404,
+    "old_prepared_query_to_new_self_query_hot_speedup": 2.4816227052950195,
+    "old_prepared_query_to_new_self_query_runner_wall_speedup": 1.2316204806859892
+  },
+  "evidence": {
+    "cupy_grid_reference": "docs/rebuild/v3/evidence/rtnn_self_query_20260621/cupy_grid_reference.json",
+    "new_prepared_self_query": "docs/rebuild/v3/evidence/rtnn_self_query_20260621/new_prepared_self_query.json",
+    "old_prepared_query": "docs/rebuild/v3/evidence/rtnn_self_query_20260621/old_prepared_query.json"
+  },
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not quote 19.437x without saying it is hot-query prepared self-query only.",
+    "Do not call 1.030x runner-wall speedup a major V3 performance win.",
+    "Do not claim broad V3 faster-than-V2 from this packet.",
+    "Do not promote this row to M7 without external review and a material cold/runner result."
+  ],
+  "generic_capability": "fixed_radius_neighbors_3d_prepared_self_query_aggregate_batch",
+  "goal_level_decision_audit": {
+    "decision": "Record prepared self-query as a real generic engine optimization, but keep RTNN ranked_summary out of M7 because cold/runner wall speed is still below the material floor.",
+    "different_path_now": "Use self-query as one Phoenix V3 engine capability, then continue toward generic ingestion/prepare amortization before any major release claim.",
+    "foolish_actions": "It would be foolish to market the 19.437x hot-query number alone or hide the 1.030x runner-wall result.",
+    "other_path": "I could have stopped at the old prepared-query route and argued from 7.7x hot speedup, but that left duplicated query packing and weaker evidence.",
+    "was_i_foolish": "No. This decision separates a material prepared-path improvement from a release-quality whole-run claim."
+  },
+  "interpretation": "The self-query path is a real generic engine improvement: it reuses prepared search device columns as query columns for fixed_radius_neighbors_3d aggregate workloads. On the RTX 4000 Ada POD it gives 2.482x hot-query speedup and 2.784x input-pack reduction over the prior prepared-query batch route, while preserving same-contract integer parity. It also gives a 19.437x hot-query speedup over the CuPy grid reference. It is not an M7 row yet: cold-plus-query vs CuPy is only 1.214x and runner-wall is only 1.030x.",
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "m7_reopen_candidate_pending_2ai_review": false,
+  "material_speedup_floor": 2.0,
+  "measurements": {
+    "cupy_grid_reference": {
+      "cold_plus_query_sec": 0.7076803520321846,
+      "grid_prepare_sec": 0.622947484254837,
+      "hot_median_sec": 0.08473286777734756,
+      "input_load_sec": 1.5022736117243767,
+      "runner_wall_sec": 2.2099539637565613
+    },
+    "new_prepared_self_query": {
+      "cold_plus_query_sec": 0.5830505266785622,
+      "execution_prepare_sec": 0.3965643271803856,
+      "hot_median_sec": 0.004359312355518341,
+      "input_load_sec": 1.561624176800251,
+      "input_pack_sec": 0.18212688714265823,
+      "runner_wall_sec": 2.144674703478813
+    },
+    "old_prepared_query": {
+      "cold_plus_query_sec": 1.0979695916175842,
+      "execution_prepare_sec": 0.5800714269280434,
+      "hot_median_sec": 0.01081816852092743,
+      "input_load_sec": 1.5434556975960732,
+      "input_pack_sec": 0.5070799961686134,
+      "runner_wall_sec": 2.6414252892136574
+    }
+  },
+  "next_engine_action": "Keep RTNN ranked_summary open. The next reusable work is reducing prepared search construction and file/column ingestion overhead, or documenting this strictly as a prepared-handle repeated-query capability rather than a one-shot whole-run speed claim.",
+  "not_m7_blockers": [
+    "New self-query cold-plus-query vs CuPy is only 1.214x, below the 2.0x material floor.",
+    "New self-query runner-wall vs CuPy is only 1.030x, so file/input overhead still dominates whole-run evidence.",
+    "This is a prepared/reuse-path win, not a broad V3-vs-V2 or whole-app win.",
+    "No external Claude/Gemini review has accepted this as an M7 release row."
+  ],
+  "parity": {
+    "integer_signature_match_with_cupy": true,
+    "integer_signature_match_with_old_prepared_query": true,
+    "sum_distance_delta_new_minus_cupy": -6.508384831249714e-05,
+    "sum_distance_relative_error": 1.207354110473936e-10,
+    "sum_distance_relative_tolerance": 0.0001
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "review_records": {
+    "call_for_review": "docs/reviews/call_for_review_phoenix_v3_rtnn_prepared_self_query_evidence_2026-06-21.md",
+    "external_review_blocked": "docs/reviews/external_review_blocked_phoenix_v3_rtnn_prepared_self_query_evidence_2026-06-21.md",
+    "external_review_status": "blocked_no_external_ai_verdict",
+    "two_ai_consensus_exists": false
+  },
+  "status": "rtnn_prepared_self_query_hot_path_material_not_m7_wall_floor_not_met",
+  "tool": "v3_phoenix_rtnn_self_query_evidence",
+  "whole_app_speedup_claim_authorized": false
+}

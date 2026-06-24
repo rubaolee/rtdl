@@ -1,0 +1,71 @@
+{
+  "status": "rtnn_ranked_summary_wall_time_boundary_not_m7",
+  "generic_capability": "ranked_summary",
+  "generic_capability_status": "distribution_specific_candidate_wall_regression",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "universal_rtnn_acceleration_claim_authorized": false,
+  "paper_reproduction_claim_authorized": false,
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows": 0,
+  "underlying_intake_2ai_consensus": "docs/reviews/codex_phoenix_v3_rtnn_ranked_summary_intake_2ai_consensus_2026-06-20.md",
+  "current_packet_external_review_status": "claude_approved_after_p1_tutorial_fix",
+  "current_packet_2ai_consensus_status": "claude_codex_consensus_complete_no_m7_promotion",
+  "current_packet_external_review_blockage": "docs/reviews/external_review_blocked_phoenix_v3_rtnn_ranked_summary_wall_time_boundary_2026-06-21.md",
+  "current_packet_external_review": "docs/reviews/claude_phoenix_v3_rtnn_ranked_summary_wall_time_boundary_review_2026-06-21.md",
+  "current_packet_codex_consensus": "docs/reviews/codex_phoenix_v3_rtnn_ranked_summary_wall_time_boundary_2ai_consensus_2026-06-21.md",
+  "source_intake": "docs/rebuild/v3/phoenix_v3_rtnn_ranked_summary_intake_2026-06-20.md",
+  "source_evidence": "docs/rebuild/v3/evidence/phoenix_v3_rtnn_ranked_summary_20260620/rtnn_ranked_summary_intake_summary.json",
+  "tutorial": "tutorials/current/11_rtnn_ranked_summary_boundary.md",
+  "rows": [
+    {
+      "distribution": "clustered",
+      "hot_optix_over_embree": 3.3328837799050297,
+      "wall_optix_over_embree": 0.6250743900537069,
+      "query_count": 65536,
+      "k_max": 50,
+      "reading": "hot signal, wall blocker"
+    },
+    {
+      "distribution": "shell",
+      "hot_optix_over_embree": 1.1816254369605883,
+      "wall_optix_over_embree": 0.3157743032193997,
+      "query_count": 65536,
+      "k_max": 50,
+      "reading": "small hot signal, wall blocker"
+    },
+    {
+      "distribution": "uniform",
+      "hot_optix_over_embree": 1.0835478947384676,
+      "wall_optix_over_embree": 0.30313162572346836,
+      "query_count": 65536,
+      "k_max": 50,
+      "reading": "marginal hot signal, wall blocker"
+    }
+  ],
+  "m7_blockers": [
+    "wall_timing_optix_slower_than_embree_for_all_three_distributions",
+    "distribution_specific_not_universal_rtnn_acceleration",
+    "paper_equivalent_rtnn_row_false",
+    "summary_rows_materialized",
+    "no_author_code_or_external_ann_baseline_comparison",
+    "prepared_cuda_graph_replay_false",
+    "no_multi_run_variance_evidence",
+    "public_row_level_external_review_not_done"
+  ],
+  "forbidden_public_wording": [
+    "RTNN V3 is 3.333x faster",
+    "V3 proves universal RTNN acceleration",
+    "RTDL beats Embree for RTNN end to end",
+    "RTNN is M7-qualified",
+    "ranked_summary is a paper-equivalent RTNN row"
+  ],
+  "goal_level_decision_audit": {
+    "decision": "teach RTNN as a wall-time boundary lesson, not as a performance claim",
+    "was_i_foolish": "No. The prior 2-AI intake already accepts the hot signal and blocks M7 because wall timing regresses.",
+    "foolish_actions": "It would be foolish to quote the clustered 3.333x hot result without saying OptiX loses wall timing on all three distributions.",
+    "other_path": "Rerun the pod immediately, but the current user-facing gap is that the evidence boundary is not yet in the tutorial path.",
+    "different_path_now": "Add a rebuild-only RTNN lesson that makes hot metric versus wall metric impossible to miss."
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "candidate": "prepared_grouped_reduction_cupy_device_column_ray_batch",
+  "checks": {
+    "current_m7_packet_release_false": true,
+    "current_m7_packet_still_single_row": true,
+    "raydb_route_can_defer_host_rays": true,
+    "raydb_route_can_prepare_device_columns": true,
+    "raydb_route_has_explicit_layout": true,
+    "raydb_route_records_device_column_metadata": true,
+    "runner_exposes_optix_layout_switch": true,
+    "runner_keeps_embree_host_packed": true,
+    "runner_records_host_packed_ray_count": true,
+    "runtime_has_generic_device_column_ray_batch": true,
+    "runtime_triangle_scalar_broadcast_added": true
+  },
+  "default_route_unchanged": true,
+  "existing_m7_row_unchanged": "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+  "failed_checks": [],
+  "forbidden_wording": [
+    "Do not claim the device-column candidate is faster before pod evidence exists.",
+    "Do not replace the current grouped_reduction M7 row with this candidate without fresh M7 review.",
+    "Do not call this true zero-copy; it is an explicit V3 partner-device ray-column route, not V4 interop.",
+    "Do not promote whole RayDB or count rows from this code change alone."
+  ],
+  "generic_capability": "grouped_reduction",
+  "goal_level_decision_audit": {
+    "decision": "add an explicit device-column ray-batch candidate for grouped-reduction prepare amortization, with release flags false",
+    "different_path_now": "Run the explicit cupy_device_columns candidate on the RT hardware pod, compare against the host-packed/current route, and only reopen M7 if wall and cold-plus-loop evidence materially improves.",
+    "foolish_actions": "It would be foolish to call this a V3 performance win before the pod rerun, or to hide that the current M7 row remains only the 262,144-row host-packed repeat100 case.",
+    "other_path": "Keep tuning RayDB-specific encoding or rewrite a native database operator. That would violate the Phoenix requirement that apps are evidence harnesses, not V3 products.",
+    "was_i_foolish": "No. The current 524,288-row blocker is dominated by host ray-record construction and ray-batch preparation, so the next honest path is to test an existing generic device-column ABI instead of polishing prose."
+  },
+  "m7_promotion_authorized": false,
+  "modified_sources": [
+    "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+    "scripts/v3_0_m28_raydb_prepared_grouped_refresh.py",
+    "src/rtdsl/optix_runtime.py"
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "required_pod_evidence_before_any_promotion": [
+    "same RTX/RT-core host for Embree and OptiX",
+    "same generated_rows/generated_groups/mode/repeat/warmup",
+    "CPU-reference parity for both backends",
+    "prepared_ray_batch_layout=cupy_device_columns on OptiX rows",
+    "native_device_column_path_used=true on OptiX rows",
+    "host_packed_ray_count=0 and logical_ray_count>0 on OptiX candidate rows",
+    "cold_prepare_total_sec, workload_build_sec, prepared_ray_batch_sec, prepared_iteration_total_sec, and native_call_wall_median_sec recorded",
+    "source manifest and 2-AI review before any M7 reopening"
+  ],
+  "rerun_command": "py -3 scripts/v3_0_m28_raydb_prepared_grouped_refresh.py --generated-rows 524288 --generated-groups 2048 --generated-revenue-mod 64 --modes sum --backends embree,optix --warmup 3 --repeat-overrides embree:sum=100,optix:sum=100 --optix-ray-batch-layout cupy_device_columns --output docs/rebuild/v3/evidence/phoenix_v3_grouped_reduction_device_columns_YYYYMMDD/grouped_sum_device_columns_524288_repeat100.json",
+  "status": "grouped_reduction_device_column_ray_batch_candidate_pending_pod_not_m7",
+  "tool": "v3_phoenix_grouped_reduction_device_column_candidate",
+  "what_changed": [
+    "RayDB prepared grouped reduction accepts explicit ray_batch_layout.",
+    "host_packed remains the default and the current M7 evidence path.",
+    "cupy_device_columns can defer Python host ray-record materialization and prepare the OptiX ray batch from partner-owned CUDA columns.",
+    "The M28 runner records prepared_ray_batch_layout, native_device_column_path_used, logical_ray_count, and host_packed_ray_count.",
+    "The generic 3-D triangle packer now accepts scalar fields just like the 3-D ray packer."
+  ],
+  "whole_app_speedup_claim_authorized": false,
+  "why_this_is_generic_engine_work": "The candidate reuses RTDL's generic prepared ray-batch device-column ABI and generic ray/triangle grouped i64 reduction. RayDB remains only the evidence harness that supplies columns and checks the CPU oracle."
+}

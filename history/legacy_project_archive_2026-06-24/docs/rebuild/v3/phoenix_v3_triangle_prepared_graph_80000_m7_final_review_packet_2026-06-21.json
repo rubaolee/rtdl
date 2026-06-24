@@ -1,0 +1,119 @@
+{
+  "status": "triangle_prepared_graph_chunk_80000_m7_qualified_row_scoped",
+  "generic_capability": "prepared_graph_chunk",
+  "candidate_row_id": "prepared_graph_chunk_rt_graph_2a1_cliques_80000_non_graph_stream",
+  "source_comparison_group": "triangle_count_rt_graph_2a1_cliques_80000",
+  "source_app_id": "triangle_counting",
+  "source_intake": "docs/rebuild/v3/phoenix_v3_triangle_prepared_graph_intake_2026-06-20.md",
+  "source_tutorial_candidate": "docs/rebuild/v3/phoenix_v3_triangle_prepared_graph_tutorial_candidate_2026-06-21.md",
+  "source_evidence": "docs/rebuild/v3/evidence/phoenix_v3_triangle_prepared_graph_20260620/triangle_prepared_graph_intake_summary.json",
+  "executor_linkage_evidence": [
+    "docs/reports/goal4531_v3_0_m134_triangle_weighted_replay_graph_capture_2026-06-17.md",
+    "docs/reports/goal4540_v3_0_m141_triangle_non_graph_stream_closure_gate_2026-06-17.md"
+  ],
+  "previous_2ai_internal_intake_consensus": "docs/reviews/codex_phoenix_v3_triangle_prepared_graph_intake_2ai_consensus_2026-06-20.md",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "row_scoped_public_speedup_claim_authorized": true,
+  "whole_app_speedup_claim_authorized": false,
+  "paper_reproduction_claim_authorized": false,
+  "graph_database_claim_authorized": false,
+  "m113_graph_capture_claim_authorized": false,
+  "m7_promotion_authorized": true,
+  "m7_qualified_release_rows": 1,
+  "local_evidence_sufficient_for_external_public_row_review": true,
+  "external_review_required_before_m7": true,
+  "current_packet_external_review_status": "claude_reviewed_approved_with_amendments_2026-06-21",
+  "external_review": "docs/reviews/codex_subagent_phoenix_v3_triangle_prepared_graph_80000_m7_final_review_packet_review_2026-06-21.md",
+  "claude_review": "docs/reviews/claude_phoenix_v3_triangle_prepared_graph_80000_m7_refresh_review_2026-06-21.md",
+  "current_packet_2ai_consensus_status": "claude_codex_consensus_complete",
+  "codex_consensus": "docs/reviews/codex_phoenix_v3_triangle_prepared_graph_80000_m7_final_review_packet_2ai_consensus_2026-06-21.md",
+  "hardware": "NVIDIA RTX 4000 Ada Generation pod",
+  "row": {
+    "workload": "Generated K4 clique ladder, 80,000 cliques",
+    "oracle_triangle_count": 320000,
+    "same_contract": "rt_graph_2a1_mapped_to_generic_ray_triangle_any_hit",
+    "embree_query_median_ms": 547.887,
+    "optix_query_median_ms": 1.578,
+    "hot_optix_over_embree": 347.23219125688223,
+    "embree_wall_s": 15.792,
+    "optix_wall_s": 2.49,
+    "wall_optix_over_embree": 6.342008514587283,
+    "oracle_match": true,
+    "phase_timing_accept": true,
+    "optix_rt_core_and_embree_non_rt_core": true
+  },
+  "supporting_row_not_promoted": {
+    "source_comparison_group": "triangle_count_rt_graph_2a1_cliques_20000",
+    "workload": "Generated K4 clique ladder, 20,000 cliques",
+    "oracle_triangle_count": 80000,
+    "hot_optix_over_embree": 116.05985639108538,
+    "wall_optix_over_embree": 1.6768981818785074,
+    "promotion_status": "supporting_evidence_only_not_m7"
+  },
+  "closed_or_reframed_prior_blockers": [
+    {
+      "old_blocker": "prepared_graph_chunk_executor_linkage_not_closed",
+      "current_resolution": "closed only for non-graph device-output stream continuation by Goal4531 and Goal4540; M113 graph capture remains blocked"
+    },
+    {
+      "old_blocker": "hot_query_vs_wall_timing_ratio_not_characterized_for_release",
+      "current_resolution": "hot-query and wall ratios are both named in proposed wording; 347.232x may not be quoted without 6.342x wall"
+    },
+    {
+      "old_blocker": "synthetic_k4_clique_ladder_not_paper_dataset",
+      "current_resolution": "not closed as paper evidence; converted to explicit synthetic-workload row scope"
+    }
+  ],
+  "closed_promotion_conditions": [
+    "claude_external_review_completed_2026-06-21",
+    "p1_wording_fixes_applied",
+    "codex_consensus_recorded",
+    "exact_row_scope_only"
+  ],
+  "remaining_non_release_boundaries": [
+    "not_v3_release_authorization",
+    "not_global_public_speedup_authorization",
+    "not_rt_graph_paper_reproduction",
+    "not_graph_database_acceleration",
+    "not_full_triangle_app_speedup",
+    "not_m113_graph_capture_readiness",
+    "not_automatic_partner_selection",
+    "not_broad_v3_over_v2_speedup",
+    "not_any_triangle_row_beyond_exact_80000_clique_row"
+  ],
+  "non_claims": [
+    "not RT-Graph paper reproduction",
+    "not graph database acceleration",
+    "not full triangle-counting application speedup",
+    "not end-to-end 347x speedup",
+    "not M113 CUDA graph capture readiness",
+    "not automatic partner selection",
+    "not broad V3-over-V2 speedup",
+    "not any Triangle row beyond the exact 80,000-clique synthetic row"
+  ],
+  "draft_row_scoped_public_wording": "For the generated K4 clique-ladder synthetic RT-Graph 2A1 weighted-any-hit contract on an NVIDIA RTX 4000 Ada Generation pod, exactly `prepared_graph_chunk_rt_graph_2a1_cliques_80000_non_graph_stream` shows RTDL OptiX 347.232x faster than RTDL Embree for the measured hot-query median and 6.342x faster for the measured benchmark wall-time median for this exact row. Both routes match the 320,000-triangle oracle. This is a synthetic non-graph device-output stream prepared-chunk row; it is not RT-Graph paper reproduction, graph-database acceleration, M113 graph-capture readiness, full Triangle app speedup, automatic partner selection, or broad V3-over-V2 speedup.",
+  "forbidden_public_wording": [
+    "Triangle V3 is 347x faster end to end",
+    "RTDL reproduces the RT-Graph paper",
+    "RTDL accelerates graph databases",
+    "prepared_graph_chunk executor linkage is fully closed",
+    "M113 graph capture is ready for Triangle",
+    "Any Triangle row other than the exact 80,000-clique non-graph stream row is M7-qualified",
+    "Triangle automatically selects the best partner",
+    "V3 is broadly faster than V2 because of Triangle"
+  ],
+  "review_fixes_applied": [
+    "visible draft wording now says automatic partner selection is not authorized",
+    "measured wall path was replaced by measured benchmark wall-time median for this exact row",
+    "347.232x hot-query wording remains paired with 6.342x wall-time wording",
+    "RT-Graph 2A1 is framed as a synthetic contract name, not paper reproduction"
+  ],
+  "goal_level_decision_audit": {
+    "decision": "prepare a Triangle final-review candidate only for the exact 80,000-clique non-graph stream row",
+    "was_i_foolish": "No. The old blocker was too broad: M113 graph capture remains blocked, but Goal4531 and Goal4540 provide a narrower non-graph device-output stream executor closure that can be reviewed honestly.",
+    "foolish_actions": "It would be foolish to call this a graph compiler, RT-Graph paper result, graph database accelerator, or 347x end-to-end Triangle speedup.",
+    "other_path": "Keep Triangle tutorial-only forever, or promote the old intake directly. The first wastes valid executor evidence; the second skips the exact non-claim boundary.",
+    "different_path_now": "Submit only the 80,000-clique synthetic non-graph stream row for external public-row review and keep all promotion flags false until review closes."
+  }
+}

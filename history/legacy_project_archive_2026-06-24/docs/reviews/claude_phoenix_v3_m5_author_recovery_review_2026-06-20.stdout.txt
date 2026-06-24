@@ -1,0 +1,17 @@
+Review written to `docs/reviews/claude_phoenix_v3_m5_author_recovery_review_2026-06-20.md`.
+
+**Verdict: approve-with-required-fixes**
+
+All call-for-review facts verified against the JSON artifacts and diff. Key findings:
+
+**No P0 blockers** — the bounded M5 author-recovery goal can be closed. The upgrade from `internal-author-blocked` to `internal-author-complete` is justified, CUDA shims are correctly disclosed as build-environment-only changes, and release/public speedup claims are unconditionally blocked by the intake script.
+
+**Three P1 items required before any M7 promotion:**
+
+1. **Wording risk in the markdown generator** (`goal4373_rayjoin_cdb_point_location_compare.py` lines 342-345): "This supports the paper's PIP claim" is imprecise (this evidence does not reproduce the paper's experiment), and the retroactive explanation of earlier adverse PIP results can seed overclaims if this markdown is used as a documentation template.
+
+2. **Timing comparison methodology undisclosed**: The 5.748x figure compares RayJoin's internal C++ Query timer against RTDL's Python wall-clock — the magnitude is inflated by Python dispatch overhead. The native-traversal-comparable ratio (~3.86x) must be recorded alongside it with a disclosure note.
+
+3. **No `generic_capability` field in the intake JSON**: The M1-M7 compliance table requires every P0 row to name `point_location_topology_stream`; the intake summary doesn't record this.
+
+**Two P2 observations**: status label inconsistency across three documents (`internal-author-complete` vs `internal_evidence_with_author_code`), and the overlay row's author-comparison absence is unstated in the intake JSON.

@@ -1,0 +1,50 @@
+You are Claude acting as an external critical reviewer for Phoenix V3.
+
+Working directory:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Review packet:
+docs/reviews/call_for_review_phoenix_v3_m54_one_focused_librts_stability_pod_authorization_2026-06-23.md
+
+Required context:
+- docs/reviews/claude_phoenix_v3_m53_open_debt_backfill_recorded_review_2026-06-23.md
+- docs/reviews/codex_claude_phoenix_v3_m53_open_debt_backfill_2ai_consensus_2026-06-23.md
+- docs/rebuild/v3/phoenix_v3_m47_librts_stability_protocol_2026-06-23.md
+- docs/reports/phoenix_v3_m48_librts_stability_harness_execution_safety_2026-06-23.md
+- docs/rebuild/v3/phoenix_v3_m51_librts_authorized_runbook_2026-06-23.md
+- docs/reports/phoenix_v3_m52_pod_runner_authorization_surface_audit_2026-06-23.md
+- scripts/v3_phoenix_m47_librts_stability_protocol.py
+- tests/v3_phoenix_m47_librts_stability_protocol_test.py
+- tests/v3_phoenix_m54_librts_authorization_packet_gate_test.py
+- docs/rebuild/v3/evidence/phoenix_v3_m51_librts_authorized_runbook_dry_run_20260623/summary.json
+
+Task:
+Critically review whether Phoenix V3 M54 should authorize exactly one focused
+LibRTS stability POD run using the M47/M48/M51 suite.
+
+You must choose exactly one verdict label:
+- authorize_m47_one_focused_librts_stability_pod_run
+- revise_m54_missing_p1_execution_preconditions
+- reject_m54_pod_authorization_not_safe
+
+Answer these questions explicitly:
+1. Is the M47/M48/M51 suite ready for exactly one focused LibRTS stability POD run once real roots and Linux/POD Python paths are supplied?
+2. Are the two M53 P1 items fully captured as pre-execution requirements?
+3. Does the M51 runbook require full evidence copy-back before interpretation?
+4. Does the M52 authorization-surface audit confirm that only M47 token-gated execution is in scope for this request?
+5. If authorization is granted, is it limited to exactly one focused LibRTS stability run and no broader spend?
+6. Are there any P0/P1 findings that must be fixed before the one focused run?
+
+If and only if you choose `authorize_m47_one_focused_librts_stability_pod_run`,
+state the exact allowed token:
+M47_FOCUSED_LIBRTS_STABILITY_AUTHORIZED
+
+The authorization, if granted, is only for one focused LibRTS stability run and
+must not authorize release, all-app benchmarking, broad paid POD spend, public
+speedup wording, broad V3-over-V2 claims, V4 work, embedding, C ABI, or true
+zero-copy claims.
+
+Write your recorded review to:
+docs/reviews/claude_phoenix_v3_m54_one_focused_librts_stability_pod_authorization_recorded_review_2026-06-23.md
+
+Also print the complete review in stdout.

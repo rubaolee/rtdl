@@ -76,6 +76,18 @@ def run_v3_m10_same_stream_evidence_case(
     numba_row = next(row for row in rows if row["partner"] == "numba")
     cupy_total = float(cupy_row["total_event_seconds_median"])
     numba_total = float(numba_row["total_event_seconds_median"])
+    event_accounting_warnings = tuple(
+        {
+            "partner": str(row["partner"]),
+            "warning": row["event_accounting"]["warning"],
+            "median_total_event_seconds": row["event_accounting"]["median_total_event_seconds"],
+            "median_native_plus_partner_seconds": row["event_accounting"][
+                "median_native_plus_partner_seconds"
+            ],
+        }
+        for row in rows
+        if isinstance(row.get("event_accounting"), Mapping) and row["event_accounting"].get("warning")
+    )
     payload = {
         "version": V3_M10_SAME_STREAM_VERSION,
         "status": V3_M10_SAME_STREAM_STATUS,
@@ -99,6 +111,13 @@ def run_v3_m10_same_stream_evidence_case(
             "signature_match": True,
             "same_stream_ready": all(bool(row["same_stream_ready"]) for row in rows),
             "true_zero_copy_ready": all(bool(row["true_zero_copy_ready"]) for row in rows),
+            "event_accounting_status": (
+                "succeeded_with_independent_median_accounting_warning"
+                if event_accounting_warnings
+                else "clean"
+            ),
+            "event_accounting_warning_count": len(event_accounting_warnings),
+            "event_accounting_warnings": event_accounting_warnings,
         },
         "claim_boundary": {
             "public_speedup_claim_authorized": False,
@@ -141,6 +160,17 @@ def build_v3_m10_same_stream_instrumentation(
     host_timer_id = f"{partner}_host_timer_record"
     validation_id = f"{partner}_validation_timer_record"
     event_details = dict(same_stream_evidence)
+    native_partner_sum_seconds = float(native_event_seconds) + float(partner_event_seconds)
+    median_total_seconds = float(total_event_seconds)
+    event_details["median_native_event_seconds"] = float(native_event_seconds)
+    event_details["median_partner_event_seconds"] = float(partner_event_seconds)
+    event_details["median_total_event_seconds"] = median_total_seconds
+    event_details["median_native_plus_partner_seconds"] = native_partner_sum_seconds
+    if median_total_seconds + 1.0e-9 < native_partner_sum_seconds:
+        event_details["independent_median_accounting_warning"] = (
+            "median(total_event) is smaller than median(native_event)+median(partner_event); "
+            "these medians are computed independently and may come from different repeats"
+        )
     evidence = (
         EvidenceRecord(
             evidence_id=event_id,
@@ -271,8 +301,8 @@ def build_v3_m10_same_stream_instrumentation(
         evidence_records=evidence,
         residency_evidence=residency,
     )
-    if float(total_event_seconds) + 1.0e-9 < float(native_event_seconds) + float(partner_event_seconds):
-        raise GraphValidationError("total event time is smaller than native plus partner events")
+    if float(total_event_seconds) + 1.0e-9 < max(float(native_event_seconds), float(partner_event_seconds)):
+        raise GraphValidationError("total event time is smaller than an event component")
     return packet
 
 
@@ -355,6 +385,18 @@ def _validate_partner_row(row: Mapping[str, object]) -> None:
         raise GraphValidationError(f"{partner} partner event time must be non-negative")
     if float(evidence.get("total_event_ms", -1.0)) < float(evidence.get("native_event_ms", 0.0)):
         raise GraphValidationError(f"{partner} total event time is smaller than native event time")
+    for sample in tuple(row.get("event_samples", ())):
+        if not isinstance(sample, Mapping):
+            raise GraphValidationError(f"{partner} event sample must be a mapping")
+        native_seconds = float(sample.get("native_event_seconds", -1.0))
+        partner_seconds = float(sample.get("partner_event_seconds", -1.0))
+        total_seconds = float(sample.get("total_event_seconds", -1.0))
+        if native_seconds < 0.0 or partner_seconds < 0.0 or total_seconds < 0.0:
+            raise GraphValidationError(f"{partner} event sample has negative timing")
+        if total_seconds + 1.0e-9 < max(native_seconds, partner_seconds):
+            raise GraphValidationError(f"{partner} event sample total is smaller than a component")
+        if sample.get("same_stream_ready") is not True:
+            raise GraphValidationError(f"{partner} event sample did not prove same_stream_ready")
     if bool(evidence.get("transfer_counter_observed")):
         raise GraphValidationError(f"{partner} transfer counters are not part of M10 evidence")
     instrumentation = row.get("instrumentation", {})
@@ -457,6 +499,12 @@ def _run_partner_row(
             metadata=metadata,
             same_stream_evidence=same_stream_evidence,
         )
+        event_accounting = _event_accounting_summary(
+            instrumentation=instrumentation,
+            native_event_seconds=statistics.median(native_event_samples),
+            partner_event_seconds=statistics.median(partner_event_samples),
+            total_event_seconds=statistics.median(total_event_samples),
+        )
         return {
             "partner": partner,
             "backend": "optix",
@@ -475,6 +523,7 @@ def _run_partner_row(
             "metadata": metadata,
             "same_stream_ready": bool(same_stream_evidence.get("same_stream_ready")),
             "true_zero_copy_ready": bool(same_stream_evidence.get("true_zero_copy_ready")),
+            "event_accounting": event_accounting,
             "numba_cuda_compat_env": dict(compat_env) if partner == "numba" else None,
             "instrumentation": instrumentation.to_metadata(),
             "claim_readiness": instrumentation.claim_readiness,
@@ -484,3 +533,27 @@ def _run_partner_row(
         close = getattr(prepared, "close", None)
         if close is not None:
             close()
+
+
+def _event_accounting_summary(
+    *,
+    instrumentation: InstrumentationPacket,
+    native_event_seconds: float,
+    partner_event_seconds: float,
+    total_event_seconds: float,
+) -> dict[str, object]:
+    warning = ""
+    for record in instrumentation.to_metadata()["evidence_records"]:
+        if record["kind"] != "cuda_event_pair":
+            continue
+        details = record["details"]
+        warning = str(details.get("independent_median_accounting_warning", ""))
+        break
+    return {
+        "median_native_event_seconds": float(native_event_seconds),
+        "median_partner_event_seconds": float(partner_event_seconds),
+        "median_total_event_seconds": float(total_event_seconds),
+        "median_native_plus_partner_seconds": float(native_event_seconds) + float(partner_event_seconds),
+        "warning": warning,
+        "status": "warning" if warning else "clean",
+    }

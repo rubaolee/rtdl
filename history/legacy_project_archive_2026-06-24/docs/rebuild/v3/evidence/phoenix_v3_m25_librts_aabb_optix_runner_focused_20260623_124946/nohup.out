@@ -1,0 +1,26 @@
+2026-06-23T12:49:46Z ARTIFACT /root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_m25_librts_aabb_optix_runner_focused_20260623_124946
+2026-06-23T12:49:46Z START tree=v2_14 backend=embree label=m22_exact_2048x1024_r1w0 boxes=2048 queries=1024 repeat=1 warmup=0 skip=no
+2026-06-23T12:49:47Z DONE tree=v2_14 backend=embree label=m22_exact_2048x1024_r1w0
+2026-06-23T12:49:47Z START tree=v2_14 backend=embree label=repeat50_2048x1024_r50w5 boxes=2048 queries=1024 repeat=50 warmup=5 skip=no
+2026-06-23T12:49:54Z DONE tree=v2_14 backend=embree label=repeat50_2048x1024_r50w5
+2026-06-23T12:49:54Z START tree=v2_14 backend=embree label=stress_32768x1024_r20w5 boxes=32768 queries=1024 repeat=20 warmup=5 skip=yes
+2026-06-23T12:50:19Z DONE tree=v2_14 backend=embree label=stress_32768x1024_r20w5
+2026-06-23T12:50:19Z START tree=v2_14 backend=optix label=m22_exact_2048x1024_r1w0 boxes=2048 queries=1024 repeat=1 warmup=0 skip=no
+2026-06-23T12:50:21Z DONE tree=v2_14 backend=optix label=m22_exact_2048x1024_r1w0
+2026-06-23T12:50:21Z START tree=v2_14 backend=optix label=repeat50_2048x1024_r50w5 boxes=2048 queries=1024 repeat=50 warmup=5 skip=no
+2026-06-23T12:50:22Z DONE tree=v2_14 backend=optix label=repeat50_2048x1024_r50w5
+2026-06-23T12:50:22Z START tree=v2_14 backend=optix label=stress_32768x1024_r20w5 boxes=32768 queries=1024 repeat=20 warmup=5 skip=yes
+2026-06-23T12:50:24Z DONE tree=v2_14 backend=optix label=stress_32768x1024_r20w5
+2026-06-23T12:50:24Z START tree=current backend=embree label=m22_exact_2048x1024_r1w0 boxes=2048 queries=1024 repeat=1 warmup=0 skip=no
+2026-06-23T12:50:25Z DONE tree=current backend=embree label=m22_exact_2048x1024_r1w0
+2026-06-23T12:50:25Z START tree=current backend=embree label=repeat50_2048x1024_r50w5 boxes=2048 queries=1024 repeat=50 warmup=5 skip=no
+2026-06-23T12:50:32Z DONE tree=current backend=embree label=repeat50_2048x1024_r50w5
+2026-06-23T12:50:32Z START tree=current backend=embree label=stress_32768x1024_r20w5 boxes=32768 queries=1024 repeat=20 warmup=5 skip=yes
+2026-06-23T12:50:59Z DONE tree=current backend=embree label=stress_32768x1024_r20w5
+2026-06-23T12:50:59Z START tree=current backend=optix label=m22_exact_2048x1024_r1w0 boxes=2048 queries=1024 repeat=1 warmup=0 skip=no
+2026-06-23T12:51:01Z DONE tree=current backend=optix label=m22_exact_2048x1024_r1w0
+2026-06-23T12:51:01Z START tree=current backend=optix label=repeat50_2048x1024_r50w5 boxes=2048 queries=1024 repeat=50 warmup=5 skip=no
+2026-06-23T12:51:03Z DONE tree=current backend=optix label=repeat50_2048x1024_r50w5
+2026-06-23T12:51:03Z START tree=current backend=optix label=stress_32768x1024_r20w5 boxes=32768 queries=1024 repeat=20 warmup=5 skip=yes
+2026-06-23T12:51:05Z DONE tree=current backend=optix label=stress_32768x1024_r20w5
+2026-06-23T12:51:05Z ALL_DONE

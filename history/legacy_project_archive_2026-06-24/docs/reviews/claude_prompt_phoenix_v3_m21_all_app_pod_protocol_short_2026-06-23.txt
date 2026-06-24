@@ -1,0 +1,66 @@
+You are the external critical reviewer for Phoenix V3 M21.
+
+Do not search the whole repository. Review only these files:
+
+- docs/reviews/call_for_review_phoenix_v3_m21_all_app_pod_protocol_2026-06-23.md
+- docs/rebuild/v3/phoenix_v3_m21_all_app_pod_protocol_2026-06-23.json
+- docs/rebuild/v3/phoenix_v3_m21_all_app_pod_protocol_2026-06-23.md
+- scripts/phoenix_v3_serious_paired_v2x_runner.sh
+- scripts/v3_phoenix_m21_all_app_protocol_gate.py
+- docs/reviews/codex_phoenix_v3_m21_all_app_pod_protocol_self_review_2026-06-23.md
+
+Context summary:
+
+- M20 verdict was authorize_m20_all_app_protocol_preparation_no_run.
+- M21 must not authorize release, public speedup wording, or broad V3-over-V2 claims.
+- Only one exact verdict may authorize the all-app run: authorize_m21_one_all_app_pod_run.
+- Any other verdict means no run.
+- Protocol includes hard fail bars:
+  - Barnes-Hut app geomean < 0.90x -> protocol FAIL
+  - goal2626_large|librts_spatial_index|aabb_index_all_count_only|embree|librts_embree_aabb_index < 0.95x -> protocol FAIL
+  - Set-B geomean < 0.98x -> protocol FAIL
+  - any new app-level severe regression < 0.90x -> protocol FAIL
+- Set-A geomean, Set-A apps over 1.05x, and overall geomean must be reported exactly but are not pass/fail thresholds for this evidence run.
+- Same-hardware/venv preflight passed without running benchmarks:
+  - GPU NVIDIA RTX 4000 Ada Generation
+  - driver 550.127.05
+  - compute capability 8.9
+  - python /root/rtdl_v3_rebuild_20260620/.venv/bin/python
+  - cupy 14.1.1
+  - numba 0.65.1
+- Remote bash -n on the patched runner passed, without overwriting remote files or running benchmarks.
+- Local validation passed:
+  - 23 targeted tests OK
+  - protocol JSON parses
+  - scoped git diff --check clean
+  - v3 release wording gate pass
+- The old 1.012x all-app summary fails the new M21 protocol gate, as it should.
+
+Return one verdict label:
+
+- authorize_m21_one_all_app_pod_run
+- revise_m21_protocol_before_run
+- deny_m21_all_app_run_do_more_focused_work
+- approve_blocked_not_release
+
+Please answer briefly but explicitly:
+
+1. Does the protocol satisfy every M20 required item?
+2. Are runner preflight and M21 protocol gate sufficient for one run?
+3. Is the non-release boundary strong enough?
+4. Is one all-app POD run authorized now?
+5. If not authorized, name the concrete blocker.
+
+If and only if you authorize the run, state exactly:
+
+one_all_app_pod_run_authorized: true
+max_run_count: 1
+expected_resource_window_hours: 5.5-7.0
+hard_cap_hours_before_new_review: 8.0
+
+No matter what, keep these false:
+
+release_authorized: false
+public_speedup_claim_authorized: false
+broad_v3_faster_than_v2_claim_authorized: false
+release_based_on_all_app_run_outcome: false

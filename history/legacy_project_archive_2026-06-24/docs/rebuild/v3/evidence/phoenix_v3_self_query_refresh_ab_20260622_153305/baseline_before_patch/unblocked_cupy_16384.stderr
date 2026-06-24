@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 3353, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 3322, in main
+    run_rt_dbscan_benchmark(
+  File "/root/rtdl_v3_rebuild_20260620/current/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 2847, in run_rt_dbscan_benchmark
+    with rt.prepare_v2_8_fixed_radius_graph_component_continuation_3d(
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/v2_8_fixed_radius_graph_component_front_door.py", line 495, in prepare_v2_8_fixed_radius_graph_component_continuation_3d
+    lower_prepared = prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/partner_adapters.py", line 8379, in prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d
+    return PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/partner_adapters.py", line 7135, in __init__
+    self.runtime = _partner_module(partner)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v3_rebuild_20260620/current/src/rtdsl/partner_adapters.py", line 139, in _partner_module
+    import cupy
+ModuleNotFoundError: No module named 'cupy'

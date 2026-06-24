@@ -1,0 +1,20 @@
+{
+  "column_source_manifest": {
+    "coordinate_dtype": "float64",
+    "format": "rtnn_npz_xyz_columns_v1",
+    "ids_dtype": "uint32",
+    "path": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_cache_1048576_r5_20260621_171002/cold_compare/rtnn_full_batch_points.csv.npz",
+    "point_count": 1048576,
+    "source_csv": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_cache_1048576_r5_20260621_171002/cold_compare/rtnn_full_batch_points.csv"
+  },
+  "column_source_path": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_cache_1048576_r5_20260621_171002/cold_compare/rtnn_full_batch_points.csv.npz",
+  "column_source_runtime_materialized": true,
+  "dimension": 3,
+  "format": "rtnn_csv_xyz",
+  "generated_by_runner": true,
+  "path": "/root/phoenix_v3_work/evidence/phoenix_v3_rtnn_npz_cubin_cache_1048576_r5_20260621_171002/cold_compare/rtnn_full_batch_points.csv",
+  "point_column_source": "npz",
+  "point_count": 1048576,
+  "runtime_materialized": true,
+  "seed": 4502
+}

@@ -1,0 +1,27 @@
+Review saved to `docs/reviews/claude_phoenix_v3_secondary_rt_hardware_scope_waiver_review_2026-06-21.md`.
+
+---
+
+**Verdict: `accept-with-amendments-not-release`**
+
+The waiver candidate is logically sound and avoids all named overclaims. It can close exactly one blocker — `secondary_rt_performance_confirmation_not_closed` — by explicitly narrowing the hardware scope to a single RTX 4000 Ada pod rather than claiming second-machine confirmation. This mechanism was already endorsed in the prior eleven-row Claude review.
+
+**Fields allowed to flip (after P0 amendments are implemented):**
+- `secondary_rt_hardware_scope_waiver_reviewed`: `false` → `true`
+- `secondary_platform_closes_release_blocker`: `false` → `true`
+- `secondary_platform_closes_release_blocker_method`: absent → `reviewed_hardware_scoped_waiver`
+- `secondary_platform_closes_release_blocker_scope`: absent → `single_rtx_4000_ada_driver_550_127_05_pod`
+
+**Fields that must remain false (no exceptions):**
+- `secondary_rt_performance_confirmation_authorized`
+- `multi_gpu_performance_portability_claim_authorized`
+- `broad_v3_faster_than_v2_claim_authorized`
+- `release_authorized`
+- `package_install_claim_authorized`
+
+**Three required P0 amendments before implementation:**
+1. **`v3_phoenix_secondary_platform_gate.py`** — add waiver-file detection logic; when this review file is present and passes a required-phrase check, output the waiver-state fields instead of hardcoded `False`.
+2. **`v3_phoenix_release_readiness_gate.py`** — replace the `secondary_platform_does_not_close_release_blocker` check with two waiver-state checks; remove `secondary_rt_performance_confirmation_not_closed` from `blocking_reasons`; update `REQUIRED_SECONDARY_PLATFORM_PHRASES` to expect waiver-state strings.
+3. **`v3_secondary_platform_strategy_2026-06-21.md`** — add a waiver-state section with the required phrases; remove the conflicting `secondary_platform_closes_release_blocker: false` literal that the gate currently requires.
+
+After these amendments, four blocking reasons remain (`release_authorization_false`, `eleven_row_surface_still_too_narrow_for_major_release`, `broad_v3_faster_than_v2_claim_not_authorized`, `current_eleven_row_release_readiness_consensus_blocks_release`). The gate must continue to return `blocked_not_release` and `--strict-release` must exit nonzero.

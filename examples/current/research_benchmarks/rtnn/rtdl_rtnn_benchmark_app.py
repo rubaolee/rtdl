@@ -8,6 +8,7 @@ import json
 import os
 import sys
 import tempfile
+import time
 from pathlib import Path
 from typing import Any
 
@@ -85,6 +86,31 @@ def _count_rtnn_csv_xyz_rows(path: Path) -> int:
     if count <= 0:
         raise ValueError("RTNN point file must contain at least one point row")
     return count
+
+
+def _load_rtnn_csv_xyz_records(path: Path):
+    ids: list[int] = []
+    xs: list[float] = []
+    ys: list[float] = []
+    zs: list[float] = []
+    with path.open("r", encoding="utf-8") as handle:
+        for idx, raw_line in enumerate(handle):
+            stripped = raw_line.strip()
+            if not stripped:
+                continue
+            x, y, z = (float(part) for part in stripped.split(","))
+            ids.append(idx)
+            xs.append(x)
+            ys.append(y)
+            zs.append(z)
+    if not ids:
+        raise ValueError("RTNN point file must contain at least one point row")
+    return ids, xs, ys, zs
+
+
+def _load_rtnn_csv_xyz_packed_points(path: Path):
+    ids, xs, ys, zs = _load_rtnn_csv_xyz_records(path)
+    return rt.pack_points(ids=ids, x=xs, y=ys, z=zs, dimension=3)
 
 
 def scope_payload() -> dict[str, Any]:
@@ -411,6 +437,178 @@ def rtnn_prepared_optix_ranked_summary_payload(
             "amd_performance_claim_authorized": False,
         },
     }
+
+
+def rtnn_prepared_execution_ranked_summary_payload(
+    *,
+    point_count: int | None,
+    radius: float,
+    k: int,
+    repeat: int,
+    warmups: int,
+    query_batch_size: int | None,
+    distribution: str,
+    seed: int,
+    point_file: str | Path | None = None,
+) -> dict[str, Any]:
+    """Run the fixed-radius ranked-summary contract through the Phoenix V3 runner."""
+
+    external_point_file = Path(point_file).resolve() if point_file is not None else None
+    inferred_point_count = _count_rtnn_csv_xyz_rows(external_point_file) if external_point_file else None
+    if point_count is None:
+        point_count = inferred_point_count
+    if point_count is None or point_count <= 0:
+        raise ValueError("point_count must be positive")
+    if inferred_point_count is not None and int(point_count) != inferred_point_count:
+        raise ValueError("point_count must match the external RTNN point-file row count")
+    if radius <= 0.0:
+        raise ValueError("radius must be positive")
+    if k <= 0:
+        raise ValueError("k must be positive")
+    if repeat <= 0:
+        raise ValueError("repeat must be positive")
+    if warmups < 0:
+        raise ValueError("warmups must be non-negative")
+    point_count = int(point_count)
+    batch_size = query_batch_size or point_count
+    if batch_size != point_count:
+        raise ValueError("prepared_execution_ranked_summary currently requires full-batch self queries")
+
+    from scripts import goal2348_rtnn_v2_2_external_runner as rtnn_runner
+
+    point_fingerprint = (
+        {
+            "point_count": point_count,
+            "source": "external_rtnn_csv_xyz",
+            "path": str(external_point_file),
+        }
+        if external_point_file
+        else {
+            "point_count": point_count,
+            "distribution": distribution,
+            "seed": seed,
+            "source": "generated_rtnn_csv_xyz",
+        }
+    )
+    query_fingerprint = {
+        **point_fingerprint,
+        "query_batch_size": batch_size,
+        "query_role": "self_query_full_batch",
+    }
+
+    def run_payload_with_file(active_point_file: Path, generated: dict[str, Any]) -> dict[str, Any]:
+        started = time.perf_counter()
+        load_started = time.perf_counter()
+        ids, xs, ys, zs = _load_rtnn_csv_xyz_records(active_point_file)
+        input_load_sec = time.perf_counter() - load_started
+        pack_started = time.perf_counter()
+        packed_points = rt.pack_points(ids=ids, x=xs, y=ys, z=zs, dimension=3)
+        input_pack_sec = time.perf_counter() - pack_started
+        input_load_pack_sec = input_load_sec + input_pack_sec
+        cache = rt.ExplicitPreparedSessionCache(max_entries=1)
+        runner_started = time.perf_counter()
+        runner_result = rt.run_fixed_radius_ranked_summary_3d_prepared_session(
+            search_points=packed_points,
+            query_points=packed_points,
+            radius=radius,
+            k_max=k,
+            backend="optix",
+            partner="none",
+            cache=cache,
+            search_fingerprint=point_fingerprint,
+            query_fingerprint=query_fingerprint,
+            prepared_query_points=True,
+            precision="float32",
+            warmup_count=warmups,
+            measured_repeat_count=repeat,
+            require_repeat50_material_probe=repeat >= 50,
+            validate_output=lambda output: {
+                "query_count_ok": int(output["query_count"]) == point_count,
+                "integer_signatures_present": all(
+                    key in output
+                    for key in (
+                        "bounded_neighbor_count",
+                        "nearest_id_checksum",
+                        "kth_id_checksum",
+                    )
+                ),
+                "distance_summary_present": "sum_distance" in output,
+            },
+            device="cuda:0",
+        )
+        runner_sec = time.perf_counter() - runner_started
+        runner_wall_sec = time.perf_counter() - started
+        metadata = runner_result.to_metadata()
+        return {
+            "benchmark_app": BENCHMARK_NAME,
+            "mode": "prepared_execution_ranked_summary",
+            "contract": "generic prepared 3-D fixed-radius bounded ranked-summary aggregate",
+            "generated_input": generated,
+            "point_count": point_count,
+            "radius": radius,
+            "k": k,
+            "repeat": repeat,
+            "warmups": warmups,
+            "query_batch_size": batch_size,
+            "distribution": distribution,
+            "seed": seed,
+            "external_point_file_used": bool(external_point_file),
+            "prepared_execution_session_runner_used": True,
+            "productized_execution_path": "prepared_execution_session_runner",
+            "runner_payload": runner_result.output,
+            "runner_metadata": metadata,
+            "timing_sec": {
+                "runner_wall": runner_wall_sec,
+                "input_load": input_load_sec,
+                "input_pack": input_pack_sec,
+                "input_load_pack": input_load_pack_sec,
+                "runner_after_input_load_pack": runner_sec,
+                "runner_measured_total": float(metadata["measured_total_sec"]),
+                "runner_measured_median": float(metadata["measured_median_sec"]),
+                "runner_measured_best": float(metadata["measured_best_sec"]),
+                "hot_query_median": float(metadata["measured_median_sec"]),
+            },
+            "signature_match_status": runner_result.validation_output,
+            "material_probe_candidate": bool(metadata["repeat50_material_probe_candidate"]),
+            "runtime_trunk_executes_end_to_end": bool(metadata["runtime_trunk_executes_end_to_end"]),
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "broad_v3_faster_than_v2_claim_authorized": False,
+            "claim_boundary": {
+                **CLAIM_BOUNDARY,
+                "native_engine_customization": False,
+                "full_rtnn_paper_reproduction": False,
+                "public_speedup_claim_authorized": False,
+                "broad_rt_core_speedup_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+                "automatic_partner_selection_authorized": False,
+                "external_device_buffer_interop_authorized": False,
+                "v4_embedding_or_external_zero_copy_authorized": False,
+                "full_all_app_rerun_authorized_by_this_packet": False,
+            },
+        }
+
+    if external_point_file:
+        generated = {
+            "path": str(external_point_file),
+            "point_count": point_count,
+            "dimension": 3,
+            "format": "rtnn_csv_xyz",
+            "source": "external_point_file",
+            "generated": False,
+        }
+        return run_payload_with_file(external_point_file, generated)
+
+    with tempfile.TemporaryDirectory(prefix="rtdl_rtnn_prepared_execution_") as tmp:
+        generated_point_file = Path(tmp) / f"rtnn_{distribution}_{point_count}.csv"
+        generated = rtnn_runner.generate_point_file(
+            generated_point_file,
+            point_count=point_count,
+            dimension=3,
+            seed=seed,
+            distribution=distribution,
+        )
+        return run_payload_with_file(generated_point_file, generated)
 
 
 def rtnn_prepared_ranked_summary_raw_payload(
@@ -1027,6 +1225,19 @@ def run_app(
             seed=20260519,
             point_file=point_file,
         )
+    if mode == "prepared_execution_ranked_summary":
+        use_external_points = point_file is not None
+        return rtnn_prepared_execution_ranked_summary_payload(
+            point_count=None if use_external_points else copies,
+            radius=0.02,
+            k=k,
+            repeat=repeats,
+            warmups=warmups,
+            query_batch_size=None if use_external_points else copies,
+            distribution="uniform",
+            seed=20260519,
+            point_file=point_file,
+        )
     if mode == "prepared_ranked_summary_raw":
         return rtnn_prepared_ranked_summary_raw_payload(
             backend=backend,
@@ -1093,6 +1304,7 @@ def main(argv: list[str] | None = None) -> int:
             "rtnn_known_results",
             "rtnn_command_plan",
             "prepared_optix_ranked_summary",
+            "prepared_execution_ranked_summary",
             "prepared_ranked_summary_raw",
             "prepared_ranked_summary_graph_partner_bridge",
             "prepared_ranked_summary_graph_partner_bridge_plan",
@@ -1131,6 +1343,19 @@ def main(argv: list[str] | None = None) -> int:
             radius=args.radius,
             k=args.k,
             repeat=args.repeat,
+            query_batch_size=args.query_batch_size,
+            distribution=args.distribution,
+            seed=args.seed,
+            point_file=args.point_file,
+        )
+    elif args.mode == "prepared_execution_ranked_summary":
+        point_count = args.point_count if args.point_count is not None else (None if args.point_file else args.copies)
+        payload = rtnn_prepared_execution_ranked_summary_payload(
+            point_count=point_count,
+            radius=args.radius,
+            k=args.k,
+            repeat=args.repeat,
+            warmups=args.warmups,
             query_batch_size=args.query_batch_size,
             distribution=args.distribution,
             seed=args.seed,

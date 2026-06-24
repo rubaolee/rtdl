@@ -1,0 +1,87 @@
+{
+  "all_app_ratio_row": {
+    "claim_status": "internal_ratio_not_m7_validation_missing",
+    "comparison_group": "dbscan_cluster_signature",
+    "dataset": "clustered3d",
+    "embree_case_id": "rt_dbscan_embree_fixed_radius_rows",
+    "embree_primary_metric_sec": 25.960369415581226,
+    "embree_wall_median_sec": 27.594838991761208,
+    "main_blocker": "all_app_ratio_row_has_matches_reference_null",
+    "matches_reference": null,
+    "optix_case_id": "rt_dbscan_optix_grouped_stream",
+    "optix_over_embree_speedup": 1483.6033210889875,
+    "optix_primary_metric_sec": 0.017498187720775604,
+    "optix_wall_median_sec": 3.516517572104931,
+    "point_count": 8192,
+    "reference_signature": null
+  },
+  "allowed_internal_reading": "RTDBSCAN has strong internal evidence for component_union: a huge small-scale OptiX/Embree ratio and a separate 524,288-point M23 oracle-matching component signature run.",
+  "app_id": "rt_dbscan",
+  "forbidden_public_reading": "Do not claim RTDBSCAN V3 is 1483x faster end to end; do not claim paper reproduction; do not claim full DBSCAN acceleration from component signatures.",
+  "generic_capability": "component_union",
+  "goal_level_decision_audit": {
+    "decision": "classify RTDBSCAN component_union feasibility without promotion",
+    "different_path_now": "Write the feasibility boundary first, then produce a focused same-scale rerun packet if RTDBSCAN remains the next candidate.",
+    "foolish_actions": "It would be foolish to combine the 1483x all-app ratio with the 524,288-point M23 validation as if they were the same M7 row.",
+    "other_path": "Run a pod rerun immediately. That is plausible but needs a precise packet first.",
+    "was_i_foolish": "No. The packet separates the strong ratio row from the validated M23 scale row."
+  },
+  "m23_scale_evidence": {
+    "all_match_oracle": true,
+    "claim_status": "internal_scale_parity_not_m7_no_same_scale_embree_baseline",
+    "cluster_size_signatures_match": true,
+    "copies": 65536,
+    "core_counts_match": true,
+    "hot_component_label_elapsed_sec_median_by_partner": {
+      "cupy": 0.0005934387445449829,
+      "numba": 0.0006683692336082458
+    },
+    "main_blocker": "no_same_scale_embree_baseline_for_m23_component_signature",
+    "materializes_python_rows": false,
+    "native_continuation_active": true,
+    "noise_counts_match": true,
+    "output_mode": "component_signature",
+    "partners": [
+      "cupy",
+      "numba"
+    ],
+    "partners_present": [
+      "cupy",
+      "numba"
+    ],
+    "point_count": 524288,
+    "prepare_sec_by_partner": {
+      "cupy": 1.3524085655808449,
+      "numba": 1.2064588218927383
+    },
+    "rt_core_accelerated": true,
+    "status": "m49_dbscan_app_uses_compact_component_signature_without_python_row_materialization"
+  },
+  "m7_blockers": [
+    "all_app_ratio_row_has_matches_reference_null",
+    "all_app_ratio_row_is_8192_points_not_m23_524288_scale",
+    "m23_scale_evidence_has_no_same_scale_embree_baseline",
+    "component_signature_not_full_dbscan_labels",
+    "no_public_component_union_contract",
+    "no_final_external_public_row_review",
+    "broad_v3_faster_than_v2_claim_authorized_false"
+  ],
+  "m7_promoted": false,
+  "m7_qualified_release_rows": 0,
+  "next_rerun_requirements": [
+    "Use the same component-size signature contract for Embree and OptiX at the same scale.",
+    "Keep validation on or attach an oracle signature artifact, not matches_reference: null.",
+    "Report prepare, hot query, wall, warmup, repeat, partner, and backend separately.",
+    "State component_signature only; do not call it full DBSCAN labels.",
+    "Keep count/core/noise and cluster-size signature parity visible."
+  ],
+  "paper_reproduction_claim_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "source_evidence": {
+    "all_app_summary": "docs\\rebuild\\v3\\evidence\\v3_claim_grade_all_benchmarks_calibrated_20260620\\summary.json",
+    "m23_evidence": "docs\\rebuild\\v3\\evidence\\phoenix_v3_m4_grouped_continuation_20260620\\m23_dbscan_component_signature_524288.json"
+  },
+  "status": "rtdbscan_component_union_m7_feasibility_not_promoted",
+  "whole_app_speedup_claim_authorized": false
+}

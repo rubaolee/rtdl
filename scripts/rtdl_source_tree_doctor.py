@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check whether this RTDL checkout is ready for source-tree use."""
+"""Check whether this RTDL checkout has the current V3 source-tree surface."""
 
 from __future__ import annotations
 
@@ -8,19 +8,21 @@ import importlib.util
 import json
 import os
 from pathlib import Path
-import platform
 import subprocess
 import sys
+import tomllib
 from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
-EXPECTED_VERSION = "v4.0.0"
+EXPECTED_VERSION = "v3.0.0"
+EXPECTED_PROJECT_VERSION = "3.0.0"
 
 
 def _status_line(status: str, name: str, detail: str) -> str:
-    return f"[{status.upper():4}] {name}: {detail}"
+    label = "INFO" if status == "warn" else status.upper()
+    return f"[{label:4}] {name}: {detail}"
 
 
 def _check(name: str, status: str, detail: str, *, required: bool = True) -> dict[str, Any]:
@@ -31,10 +33,6 @@ def _module_available(module_name: str) -> bool:
     return importlib.util.find_spec(module_name) is not None
 
 
-def _path_candidates_exist(candidates: list[Path]) -> list[Path]:
-    return [path for path in candidates if path.exists()]
-
-
 def _library_candidates(stem: str) -> list[Path]:
     return [
         ROOT / "build" / f"lib{stem}.so",
@@ -42,6 +40,10 @@ def _library_candidates(stem: str) -> list[Path]:
         ROOT / "build" / f"{stem}.dll",
         ROOT / "build" / f"lib{stem}.dll",
     ]
+
+
+def _existing_paths(candidates: list[Path]) -> list[Path]:
+    return [path for path in candidates if path.exists()]
 
 
 def _run_smoke() -> dict[str, Any]:
@@ -61,177 +63,33 @@ def _run_smoke() -> dict[str, Any]:
             check=False,
         )
     except Exception as exc:  # pragma: no cover - defensive wrapper
-        return _check("hello-world smoke", "fail", f"could not run: {exc}", required=True)
+        return _check("hello-world smoke", "fail", f"could not run: {exc}")
 
     if completed.returncode == 0:
         return _check("hello-world smoke", "pass", "examples/current/getting_started/rtdl_hello_world.py ran")
     detail = (completed.stderr or completed.stdout).strip().splitlines()
     message = detail[-1] if detail else f"exit code {completed.returncode}"
-    return _check("hello-world smoke", "fail", message, required=True)
+    return _check("hello-world smoke", "fail", message)
 
 
-def _v3_current_test_matrix_check() -> dict[str, Any]:
+def _v3_current_matrix_check() -> dict[str, Any]:
     try:
         from scripts import run_test_matrix
 
-        modules = run_test_matrix.group_modules("v3_current")
+        modules = run_test_matrix.group_modules("v3_current_surface")
     except Exception as exc:  # pragma: no cover - defensive import check
-        return _check("V3 current test matrix", "fail", f"could not load v3_current group: {exc}")
+        return _check("current V3 test matrix", "fail", f"could not load v3_current_surface group: {exc}")
 
     if not modules:
-        return _check("V3 current test matrix", "fail", "v3_current group has no modules")
+        return _check("current V3 test matrix", "fail", "v3_current_surface group has no modules")
     return _check(
-        "V3 current test matrix",
+        "current V3 test matrix",
         "pass",
-        f"scripts/run_test_matrix.py --group v3_current ({len(modules)} modules)",
+        f"scripts/run_test_matrix.py --group v3_current_surface ({len(modules)} modules)",
     )
 
 
-def _v4_current_test_matrix_check() -> dict[str, Any]:
-    try:
-        from scripts import run_test_matrix
-
-        modules = run_test_matrix.group_modules("v4_current")
-    except Exception as exc:  # pragma: no cover - defensive import check
-        return _check("V4 current test matrix", "fail", f"could not load v4_current group: {exc}")
-
-    if not modules:
-        return _check("V4 current test matrix", "fail", "v4_current group has no modules")
-    return _check(
-        "V4 current test matrix",
-        "pass",
-        f"scripts/run_test_matrix.py --group v4_current ({len(modules)} modules)",
-    )
-
-
-def _v3_c_abi_surface_check() -> dict[str, Any]:
-    prep = ROOT / "docs" / "history" / "v4_preparatory_embedding"
-    staging = prep / "staging"
-    examples = prep / "examples" / "embedding"
-    required_files = (
-        staging / "include" / "rtdl" / "rtdl.h",
-        ROOT / "src" / "native" / "rtdl_c_api.cpp",
-        examples / "c_api_aabb2_overlap_client.c",
-        examples / "c_api_direct_link_client.c",
-        examples / "c_api_host_runtime_client.c",
-        examples / "c_api_cuda_buffer_metadata_client.c",
-        examples / "python_ctypes_client.py",
-        examples / "python_ctypes_aabb2_query_client.py",
-        examples / "python_ctypes_cuda_buffer_metadata_client.py",
-        examples / "python_ctypes_dlpack_like_metadata_client.py",
-        examples / "README.md",
-        staging / "packaging" / "rtdl-c-api.pc",
-        staging / "packaging" / "rtdl-c-api-config.cmake",
-    )
-    missing = [path.relative_to(ROOT).as_posix() for path in required_files if not path.exists()]
-    makefile = ROOT / "Makefile"
-    makefile_text = makefile.read_text(encoding="utf-8") if makefile.exists() else ""
-    if "build-c-api:" not in makefile_text:
-        missing.append("Makefile build-c-api target")
-    if "stage-c-api:" not in makefile_text:
-        missing.append("Makefile stage-c-api target")
-    if "package-c-api-stage:" not in makefile_text:
-        missing.append("Makefile package-c-api-stage target")
-    if "stage-c-api-prefix:" not in makefile_text:
-        missing.append("Makefile stage-c-api-prefix target")
-    if missing:
-        return _check(
-            "V4 preparatory C ABI surface",
-            "warn",
-            "missing optional V4 preparatory files: " + ", ".join(missing),
-            required=False,
-        )
-    return _check(
-        "V4 preparatory C ABI surface",
-        "pass",
-        "optional V4 preparatory files fenced under docs/history/v4_preparatory_embedding/staging: archived draft header, make build-c-api/stage-c-api/stage-c-api-prefix/package-c-api-stage, pkg-config and CMake metadata, C examples including host runtime and CUDA metadata, Python ctypes examples including CUDA and DLPack-like metadata",
-        required=False,
-    )
-
-
-def _v3_c_abi_docs_check() -> dict[str, Any]:
-    prep = ROOT / "docs" / "history" / "v4_preparatory_embedding"
-    required_files = (
-        prep / "v3_0_c_abi_draft.md",
-        prep / "v3_0_c_abi_stability_policy.md",
-        prep / "v3_0_c_abi_ownership_threading_contract.md",
-        prep / "v3_0_c_abi_staging_contract.md",
-        prep / "v3_0_c_abi_symbol_manifest_v0_1_3.json",
-        prep / "v3_0_zero_copy_interop_contract.md",
-        prep / "v3_0_toolchain_support_matrix.md",
-        prep / "v3_0_binding_and_device_interop_matrix.md",
-    )
-    missing = [path.relative_to(ROOT).as_posix() for path in required_files if not path.exists()]
-    history_readme = prep / "README.md"
-    history_text = history_readme.read_text(encoding="utf-8") if history_readme.exists() else ""
-    required_links = (
-        "V4 Preparatory Embedding Archive",
-        "V3.0 excludes embedding/SDK/zero-copy work",
-        "do not make V3.0 an SDK or embeddability release",
-    )
-    missing_links = [link for link in required_links if link not in history_text]
-    if missing or missing_links:
-        detail_parts = []
-        if missing:
-            detail_parts.append("missing files: " + ", ".join(missing))
-        if missing_links:
-            detail_parts.append("missing history archive wording: " + ", ".join(missing_links))
-        return _check(
-            "V4 preparatory C ABI docs",
-            "warn",
-            "; ".join(detail_parts),
-            required=False,
-        )
-    return _check(
-        "V4 preparatory C ABI docs",
-        "pass",
-        "optional V4 preparatory docs: draft, stability, ownership/threading, symbol manifest, zero-copy, toolchain support, binding/device interop docs",
-        required=False,
-    )
-
-
-def _v4_active_surface_check() -> dict[str, Any]:
-    required_files = (
-        ROOT / "src" / "v4" / "README.md",
-        ROOT / "src" / "v4" / "include" / "rtdl" / "rtdl.h",
-        ROOT / "src" / "v4" / "rtdl_v4_c_api.cpp",
-        ROOT / "docs" / "engineering" / "rtdl_v4_0_design_review_packet_2026-06-19.md",
-    )
-    missing = [path.relative_to(ROOT).as_posix() for path in required_files if not path.exists()]
-    makefile_text = (ROOT / "Makefile").read_text(encoding="utf-8") if (ROOT / "Makefile").exists() else ""
-    for target in ("help-v4-dev:", "build-v4-c-api:", "test-v4-active:"):
-        if target not in makefile_text:
-            missing.append(f"Makefile {target.rstrip(':')} target")
-    try:
-        from scripts import run_test_matrix
-
-        modules = run_test_matrix.group_modules("v4_active")
-    except Exception as exc:  # pragma: no cover - defensive import check
-        missing.append(f"v4_active matrix load failed: {exc}")
-        modules = ()
-    if not modules:
-        missing.append("scripts/run_test_matrix.py v4_active group")
-    if missing:
-        return _check(
-            "V4 active experimental ABI surface",
-            "warn",
-            "missing optional V4 active files: " + ", ".join(missing),
-            required=False,
-        )
-    return _check(
-        "V4 active experimental ABI surface",
-        "pass",
-        "src/v4 active pre-1.0 ABI header/source, hidden Makefile targets, and v4_active test matrix are present",
-        required=False,
-    )
-
-
-def gather_checks(
-    *,
-    run_smoke: bool = False,
-    include_v4_prep: bool = False,
-    include_v4_active: bool = False,
-) -> dict[str, Any]:
+def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
     if str(SRC) not in sys.path:
         sys.path.insert(0, str(SRC))
     if str(ROOT) not in sys.path:
@@ -243,93 +101,81 @@ def gather_checks(
     version = version_file.read_text(encoding="utf-8").strip() if version_file.exists() else ""
     checks.append(
         _check(
-            "version marker",
+            "current V3 marker",
             "pass" if version == EXPECTED_VERSION else "fail",
-            version or "VERSION is missing",
+            "VERSION" if version == EXPECTED_VERSION else (version or "VERSION is missing"),
         )
     )
 
+    pyproject = ROOT / "pyproject.toml"
+    if pyproject.exists():
+        project_version = tomllib.loads(pyproject.read_text(encoding="utf-8")).get("project", {}).get("version", "")
+        checks.append(
+            _check(
+                "pyproject V3 package version",
+                "pass" if project_version == EXPECTED_PROJECT_VERSION else "fail",
+                "project.version" if project_version == EXPECTED_PROJECT_VERSION else (project_version or "project.version missing"),
+            )
+        )
+    else:
+        checks.append(_check("pyproject V3 package version", "fail", "pyproject.toml missing"))
+
     required_paths = {
-        "src/rtdsl": ROOT / "src" / "rtdsl" / "__init__.py",
         "front page": ROOT / "README.md",
-        "top-level tutorials": ROOT / "tutorials" / "v4_0" / "README.md",
-        "V4 examples": ROOT / "examples" / "v4_0" / "README.md",
-        "V3 examples": ROOT / "examples" / "current" / "README.md",
-        "V4.0.0 release package": ROOT / "docs" / "release_reports" / "v4_0_0" / "README.md",
-        "V3 app-author strategy": ROOT / "docs" / "learn" / "v3_0_app_author_implementation_strategy.md",
+        "docs index": ROOT / "docs" / "README.md",
+        "current V3 status": ROOT / "docs" / "current_v3_status.md",
+        "public documentation map": ROOT / "docs" / "public_documentation_map.md",
+        "tutorials path": ROOT / "tutorials" / "README.md",
+        "V3 tutorial path": ROOT / "tutorials" / "current" / "README.md",
+        "examples path": ROOT / "examples" / "README.md",
+        "performance wording guide": ROOT / "docs" / "learn" / "performance_wording.md",
+        "source-tree doctor docs": ROOT / "docs" / "learn" / "source_tree_doctor.md",
+        "V3 hello world": ROOT / "examples" / "current" / "getting_started" / "rtdl_hello_world.py",
     }
     for name, path in required_paths.items():
         checks.append(_check(name, "pass" if path.exists() else "fail", path.relative_to(ROOT).as_posix()))
 
-    checks.append(_v4_current_test_matrix_check())
-    if include_v4_prep:
-        checks.append(_v3_c_abi_surface_check())
-        checks.append(_v3_c_abi_docs_check())
-    if include_v4_active:
-        checks.append(_v4_active_surface_check())
-
-    editable_metadata = ROOT / "pyproject.toml"
-    checks.append(
-        _check(
-            "optional editable source-tree metadata",
-            "pass" if editable_metadata.exists() else "warn",
-            editable_metadata.relative_to(ROOT).as_posix(),
-            required=False,
-        )
-    )
+    checks.append(_v3_current_matrix_check())
 
     checks.append(
         _check(
-            "python version",
-            "pass" if sys.version_info >= (3, 10) else "warn",
-            platform.python_version(),
-            required=False,
+            "module rtdsl",
+            "pass" if _module_available("rtdsl") else "fail",
+            "rtdsl" if _module_available("rtdsl") else "module not importable",
         )
     )
-
-    core_modules = {"rtdsl": "rtdsl", "numpy": "numpy"}
-    for name, module in core_modules.items():
-        checks.append(_check(f"module {name}", "pass" if _module_available(module) else "fail", module))
-
-    optional_modules = {
-        "imageio": "imageio",
-        "imageio-ffmpeg": "imageio_ffmpeg",
-        "cupy": "cupy",
-        "numba": "numba",
-    }
-    if include_v4_active:
-        optional_modules["torch"] = "torch"
-    for name, module in optional_modules.items():
+    checks.append(
+        _check(
+            "module numpy",
+            "pass" if _module_available("numpy") else "fail",
+            "numpy" if _module_available("numpy") else "module not importable",
+        )
+    )
+    for module_name in ("imageio", "imageio_ffmpeg", "cupy", "numba"):
         checks.append(
             _check(
-                f"optional module {name}",
-                "pass" if _module_available(module) else "warn",
-                module,
+                f"optional module {module_name}",
+                "pass" if _module_available(module_name) else "warn",
+                module_name,
                 required=False,
             )
         )
 
-    optix_env = os.environ.get("RTDL_OPTIX_LIBRARY") or os.environ.get("RTDL_OPTIX_LIB")
-    optix_candidates = _path_candidates_exist(_library_candidates("rtdl_optix"))
-    if optix_env:
-        optix_status = "pass" if Path(optix_env).exists() else "warn"
-        optix_detail = optix_env
-    elif optix_candidates:
-        optix_status = "pass"
-        optix_detail = optix_candidates[0].relative_to(ROOT).as_posix()
-    else:
-        optix_status = "warn"
-        optix_detail = "set RTDL_OPTIX_LIBRARY or build/librtdl_optix.so for OptiX examples"
-    checks.append(_check("optional OptiX library", optix_status, optix_detail, required=False))
-
-    embree_candidates = _path_candidates_exist(_library_candidates("rtdl_embree"))
+    optix = _existing_paths(_library_candidates("rtdl_optix"))
+    checks.append(
+        _check(
+            "optional OptiX library",
+            "pass" if optix else "warn",
+            optix[0].relative_to(ROOT).as_posix() if optix else "build/librtdl_optix.so/dylib/dll not found",
+            required=False,
+        )
+    )
+    embree = _existing_paths(_library_candidates("rtdl_embree"))
     checks.append(
         _check(
             "optional Embree library",
-            "pass" if embree_candidates else "warn",
-            embree_candidates[0].relative_to(ROOT).as_posix()
-            if embree_candidates
-            else "build/librtdl_embree.so/dylib/dll not found",
+            "pass" if embree else "warn",
+            embree[0].relative_to(ROOT).as_posix() if embree else "build/librtdl_embree.so/dylib/dll not found",
             required=False,
         )
     )
@@ -347,45 +193,35 @@ def gather_checks(
         "required_failures": required_failures,
         "warnings": warnings,
         "ok": not required_failures,
+        "status": "current_v3_ready" if not required_failures else "current_v3_blocked",
     }
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Check the RTDL source-tree environment.")
+    parser = argparse.ArgumentParser(description="Check the current RTDL V3 source-tree state.")
     parser.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     parser.add_argument("--strict", action="store_true", help="treat optional warnings as failures")
     parser.add_argument("--run-smoke", action="store_true", help="run the portable hello-world example")
-    parser.add_argument(
-        "--include-v4-prep",
-        action="store_true",
-        help="also check archived V4 preparatory embedding/C ABI surfaces",
-    )
-    parser.add_argument(
-        "--include-v4-active",
-        action="store_true",
-        help="also check active experimental V4 ABI development surfaces",
-    )
+    parser.add_argument("--show-optional", action="store_true", help="show optional native/partner dependency checks")
     args = parser.parse_args(argv)
 
-    payload = gather_checks(
-        run_smoke=args.run_smoke,
-        include_v4_prep=args.include_v4_prep,
-        include_v4_active=args.include_v4_active,
-    )
+    payload = gather_checks(run_smoke=args.run_smoke)
     if args.json:
         print(json.dumps(payload, indent=2, sort_keys=True))
     else:
-        print("RTDL Source Tree Doctor")
+        print("RTDL V3 Source Tree Doctor")
         print(f"repo: {payload['repo']}")
-        print(f"version: {payload['version'] or 'unknown'}")
+        print("surface: current V3")
         for item in payload["checks"]:
+            if not item["required"] and not args.show_optional:
+                continue
             print(_status_line(item["status"], item["name"], item["detail"]))
         if payload["required_failures"]:
-            print("Required checks failed. Fix those before running current examples.")
+            print("Required checks failed. Fix those before running the current V3 gate.")
         elif payload["warnings"]:
-            print("Core source-tree checks passed. Optional warnings only affect native/partner paths.")
+            print("Core V3 checks passed. Optional native/partner extras can be installed when needed.")
         else:
-            print("All checked source-tree and optional paths are available.")
+            print("All checked V3 source-tree paths and optional dependencies are available.")
 
     if payload["required_failures"] or (args.strict and payload["warnings"]):
         return 1

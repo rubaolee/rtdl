@@ -1,0 +1,8 @@
+{
+  "response": {
+    "sendMessage": {
+      "recipientId": "9216e45e-10b4-4c0b-80a3-c83cd6920ff2",
+      "content": "Read docs/reviews/antigravity_prompt_phoenix_v3_m56_goal_completion_audit_2026-06-23.txt and follow it exactly. Write the completed review to docs/reviews/antigravity_phoenix_v3_m56_goal_completion_audit_review_2026-06-23.md. Preserve the requested verdict labels and non-authorization boundaries."
+    }
+  }
+}

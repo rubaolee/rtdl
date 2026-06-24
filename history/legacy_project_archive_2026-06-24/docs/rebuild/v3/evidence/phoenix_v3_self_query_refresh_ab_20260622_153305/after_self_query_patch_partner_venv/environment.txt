@@ -1,0 +1,9 @@
+2026-06-22T15:39:30Z
+NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB
+cupy 14.1.1
+numba 0.65.1
+numpy 2.1.2
+dd7717a14b827db1aaf2aede6cb03d877429a0ec55d0d85592d7155e909ea132  src/rtdsl/partner_adapters.py
+31f4fbf1ccaa9dae30bc0bbfac9d1087437db010eda0a31dccebaab24c5323df  src/rtdsl/optix_runtime.py
+7b166ca9494f3a2f85803c8dc367eefcec5a04a595b90c8d786deb8007fb8b09  src/rtdsl/embree_runtime.py
+e3ea3c66a09fd8d6eb522ed74661516396dbf05ac9068fabbe050d1fbbdc107c  tests/v3_phoenix_fixed_radius_graph_self_query_refresh_test.py

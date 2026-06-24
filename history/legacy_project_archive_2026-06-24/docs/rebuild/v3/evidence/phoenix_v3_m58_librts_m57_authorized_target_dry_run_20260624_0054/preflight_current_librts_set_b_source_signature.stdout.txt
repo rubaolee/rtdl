@@ -1,0 +1,13 @@
+{
+  "checks": {
+    "librts_app_exposes_metadata_set_b_twice": true,
+    "librts_app_exposes_optix_prepared_query_mode": true,
+    "librts_app_exposes_payload_set_b": true,
+    "prepared_embree_count_helper_present": true,
+    "prepared_helpers_mark_not_set_a_probe": true,
+    "prepared_helpers_mark_set_b_control": true,
+    "prepared_optix_helper_marks_prepared_query_mode": true,
+    "prepared_optix_query_set_helper_present": true
+  },
+  "failed": []
+}

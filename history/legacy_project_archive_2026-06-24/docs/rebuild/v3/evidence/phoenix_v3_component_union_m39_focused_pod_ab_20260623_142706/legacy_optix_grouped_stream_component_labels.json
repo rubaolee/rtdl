@@ -1,0 +1,511 @@
+{
+  "all_app_pod_spend_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "canonical_component_signature": {
+    "cluster_sizes": [
+      262144
+    ],
+    "core_count": 262144,
+    "noise_count": 0
+  },
+  "canonical_component_signature_stable": true,
+  "component_label_outputs_present": true,
+  "component_labels_contract": true,
+  "component_signature_substituted_for_labels": false,
+  "dataset": "clustered3d",
+  "external_embedding_or_zero_copy_claim_authorized": false,
+  "extra_metadata": {
+    "expected_route": "existing optix grouped-stream component-label route",
+    "legacy_optix_grouped_stream_label_control": true
+  },
+  "focused_pod_spend_authorized_now": false,
+  "hot_query_median_sec": 1.7074866220355034,
+  "metadata_sample": {
+    "adapter": "PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D.run",
+    "adjacency_write_pass_count": 0,
+    "all_core_flags_true": true,
+    "app_specific_engine_logic_allowed": false,
+    "automatic_hidden_dispatcher": false,
+    "automatic_partner_selection_allowed": false,
+    "boundary_assignment_canonical_policy": "single_pass_candidate_root_rebased",
+    "boundary_assignment_policy": "single_pass_candidate_root_rebased",
+    "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.",
+    "component_label_policy": "positive_root_index_labels_noise_minus_one",
+    "component_threshold": 4,
+    "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+    "continuation_contract": "grouped_stream_component_label_columns_3d",
+    "core_flag_cache_reused": true,
+    "core_flag_threshold": 4,
+    "count_metadata": {
+      "adapter": "fixed_radius_count_threshold_3d_optix_prepared_self_partner_device_columns",
+      "app_count_host_materialization": false,
+      "app_count_materialization": "native_optix_rt_self_query_device_columns",
+      "direct_device_handoff_authorized": true,
+      "host_query_point_repack_avoided": true,
+      "host_query_point_upload_avoided": true,
+      "input_contract": "prepared_native_self_query_device_search_scene",
+      "native_engine_row_contract": "generic_prepared_fixed_radius_count_threshold_3d_self_device_columns",
+      "native_metadata": {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "host_query_point_repack_avoided": true,
+        "host_query_point_upload_avoided": true,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 0.0004143714904785156,
+        "native_engine_row_contract": "generic_prepared_fixed_radius_count_threshold_3d_self_device_columns",
+        "native_execution_path": "prepared_rt_core_count_threshold_3d_self_query",
+        "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_self_device_outputs",
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "prepared_search_device_buffer_reused_as_query": true,
+        "query_count": 262144,
+        "query_source": "prepared_search_points_self_query_device",
+        "radius": 3.0,
+        "rt_core_accelerated": true,
+        "search_count": 262144,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cuda_array_interface"
+        ],
+        "threshold": 4,
+        "transfer_mode": "prepared_device_search_points_self_count_threshold_columns",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "output_columns_reused": true,
+      "paper_speedup_claim_authorized": false,
+      "partner": "numba",
+      "query_count": 262144,
+      "radius": 3.0,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "self_query_prepared_search_buffer_reused": true,
+      "threshold": 4,
+      "true_zero_copy_authorized": false,
+      "v2_0_release_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "direct_device_handoff_authorized": true,
+    "external_host_buffer_exposure_authorized": false,
+    "fallback_candidate_policy": "not_needed_all_items_satisfy_predicate",
+    "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+    "front_door_status": "explicit_front_door_over_existing_grouped_stream_contract",
+    "grouped_stream_continuation_pass_count": 1,
+    "grouped_stream_policy": "optix_applies_all_items_grouped_union_without_predicate_or_fallback_workspace",
+    "grouped_union_direct_side_effect_enabled": false,
+    "grouped_union_query_block_count": 1,
+    "grouped_union_query_block_size": null,
+    "grouped_union_query_blocked_candidate": false,
+    "grouped_union_same_root_culling_enabled": true,
+    "hidden_dispatch_allowed": false,
+    "hot_path_host_materialization": false,
+    "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+    "internal_device_residency_between_rtdl_phases": true,
+    "internal_device_residency_scope": "RTDL-owned fixed-radius count columns, grouped-union parent/border workspaces, and component-label columns remain device-resident between RTDL phases.",
+    "lower_adapter": "PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D.run",
+    "lower_partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+    "materializes_bounded_directed_adjacency_chunks": false,
+    "materializes_directed_adjacency_stream": false,
+    "materializes_neighbor_rows": false,
+    "materializes_neighbor_summaries": false,
+    "min_neighbors": 4,
+    "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_device_parent_workspace",
+    "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+    "native_grouped_stream_metadata": {
+      "backend": "optix",
+      "boundary_assignment_canonical_policy": "single_pass_candidate_root_rebased",
+      "boundary_assignment_pass_count": 1,
+      "boundary_assignment_policy": "single_pass_candidate_root_rebased",
+      "direct_device_handoff_authorized": true,
+      "fallback_candidate_policy": "not_needed_all_items_satisfy_predicate",
+      "grouped_union_direct_side_effect_enabled": false,
+      "grouped_union_direct_side_effect_policy": "disabled_by_default_anyhit_side_effect",
+      "grouped_union_extended_telemetry_enabled": false,
+      "grouped_union_intersection_culling_policy": "all_items_target_gt_source_before_anyhit",
+      "grouped_union_root_read_telemetry_enabled": false,
+      "grouped_union_same_root_culling_enabled": true,
+      "grouped_union_same_root_culling_policy": "parent_union_same_root_before_anyhit",
+      "grouped_union_telemetry_buffer_length": 0,
+      "grouped_union_telemetry_contract": null,
+      "grouped_union_telemetry_counter_count": 0,
+      "grouped_union_telemetry_requested": false,
+      "item_count": 262144,
+      "materializes_directed_adjacency_stream": false,
+      "materializes_neighbor_rows": false,
+      "native_elapsed_sec": 1.6842812225222588,
+      "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_device_parent_workspace",
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+      "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "output_columns_true_zero_copy_authorized": true,
+      "paper_speedup_claim_authorized": false,
+      "performance_claim_authorized": false,
+      "predicate_mode": "all_items_true_no_fallback_candidates",
+      "query_count": 262144,
+      "query_index_offset": 0,
+      "query_source": "prepared_search_points_self_query_device",
+      "radius": 3.0,
+      "rt_core_accelerated": true,
+      "search_count": 262144,
+      "source_devices": [
+        "cuda:0"
+      ],
+      "source_protocols": [
+        "cuda_array_interface"
+      ],
+      "transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+      "true_zero_copy_authorized": false,
+      "v2_0_release_authorized": false
+    },
+    "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+    "numba_cuda_jit_used": true,
+    "numba_workspace_host_reset_copy_used": false,
+    "numba_workspace_init_policy": "device_parent_iota_optional_border_fill",
+    "operation": "fixed_radius_graph_component_labels_3d",
+    "optix_backend_used": true,
+    "output_columns_reused": true,
+    "output_columns_true_zero_copy_authorized": true,
+    "partner": "numba",
+    "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+    "point_count": 262144,
+    "prepared_grouped_stream_reused": true,
+    "prepared_grouped_stream_run_count": 6,
+    "prepared_optix_scene_reused": true,
+    "producer_contract": "prepared_fixed_radius_graph_hit_stream_3d",
+    "public_speedup_claim_authorized": false,
+    "query_source": "prepared_search_points_self_query_device",
+    "radius": 3.0,
+    "raw_cuda_kernel_required": false,
+    "release_authorized": false,
+    "result_columns": [
+      "point_ids",
+      "component_labels",
+      "is_core",
+      "neighbor_counts"
+    ],
+    "rt_core_accelerated": true,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "typed_result_stream": {
+      "app_specific_engine_logic_allowed": false,
+      "automatic_partner_selection_allowed": false,
+      "claim_boundary": "v2.8 typed result streams are an internal generic contract for RTDL runtime development. They do not authorize release, public speedup wording, broad RT-core wording, true-zero-copy wording, hidden dispatch, hidden partner selection, app-specific native-engine behavior, or user-defined shader injection.",
+      "column_names": [
+        "point_ids",
+        "component_labels",
+        "is_core",
+        "neighbor_counts"
+      ],
+      "columns": [
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 262144,
+            "data_ptr_observed": true,
+            "device": "cuda:0",
+            "dtype": "uint32",
+            "element_count": 262144,
+            "lifetime": "session_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "immutable",
+            "name": "point_ids",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              262144
+            ],
+            "source_protocol": "numba_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": true,
+          "dtype": "uint32",
+          "name": "point_ids",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "item_id",
+          "shape": [
+            262144
+          ]
+        },
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 262144,
+            "data_ptr_observed": true,
+            "device": "cuda:0",
+            "dtype": "int64",
+            "element_count": 262144,
+            "lifetime": "session_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "component_labels",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              262144
+            ],
+            "source_protocol": "numba_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": true,
+          "dtype": "int64",
+          "name": "component_labels",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "group_key",
+          "shape": [
+            262144
+          ]
+        },
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 262144,
+            "data_ptr_observed": true,
+            "device": "cuda:0",
+            "dtype": "uint32",
+            "element_count": 262144,
+            "lifetime": "session_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "is_core",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              262144
+            ],
+            "source_protocol": "numba_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": true,
+          "dtype": "uint32",
+          "name": "is_core",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "mask",
+          "shape": [
+            262144
+          ]
+        },
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 262144,
+            "data_ptr_observed": true,
+            "device": "cuda:0",
+            "dtype": "uint32",
+            "element_count": 262144,
+            "lifetime": "session_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "neighbor_counts",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              262144
+            ],
+            "source_protocol": "numba_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": true,
+          "dtype": "uint32",
+          "name": "neighbor_counts",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "payload",
+          "shape": [
+            262144
+          ]
+        }
+      ],
+      "contract_version": "rtdl.v2_8.typed_result_stream.v1",
+      "device_resident_column_count": 4,
+      "event_or_group_ordering_required": true,
+      "grouped_continuation_ready": true,
+      "hidden_dispatch_allowed": false,
+      "ordering": "stable_row_order",
+      "page_capacity": 262144,
+      "producer_primitive": "fixed_radius_graph_component_labels_3d",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_speedup_claim_authorized": false,
+      "segmented_page_failure_mode": "fail_closed_overflow",
+      "status": "internal_contract_no_native_promotion",
+      "status_column_names": [
+        "row_count",
+        "capacity",
+        "overflow",
+        "complete_candidate_coverage"
+      ],
+      "status_columns": [
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 1,
+            "data_ptr_observed": false,
+            "device": "cuda:0",
+            "dtype": "uint64",
+            "element_count": 1,
+            "lifetime": "caller_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "row_count",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              1
+            ],
+            "source_protocol": "numba_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": false,
+          "dtype": "uint64",
+          "name": "row_count",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "status",
+          "shape": [
+            1
+          ]
+        },
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 1,
+            "data_ptr_observed": false,
+            "device": "cuda:0",
+            "dtype": "uint64",
+            "element_count": 1,
+            "lifetime": "caller_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "capacity",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              1
+            ],
+            "source_protocol": "numba_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": false,
+          "dtype": "uint64",
+          "name": "capacity",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "status",
+          "shape": [
+            1
+          ]
+        },
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 1,
+            "data_ptr_observed": false,
+            "device": "cuda:0",
+            "dtype": "uint32",
+            "element_count": 1,
+            "lifetime": "caller_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "overflow",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              1
+            ],
+            "source_protocol": "numba_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": false,
+          "dtype": "uint32",
+          "name": "overflow",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "status",
+          "shape": [
+            1
+          ]
+        },
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 1,
+            "data_ptr_observed": false,
+            "device": "cuda:0",
+            "dtype": "uint32",
+            "element_count": 1,
+            "lifetime": "caller_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "complete_candidate_coverage",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              1
+            ],
+            "source_protocol": "numba_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": false,
+          "dtype": "uint32",
+          "name": "complete_candidate_coverage",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "status",
+          "shape": [
+            1
+          ]
+        }
+      ],
+      "stream_id": "fixed_radius_graph_component_labels_3d_runtime",
+      "stream_kind": "adjacency_stream",
+      "target": "typed_device_resident_result_streams_and_grouped_continuation",
+      "true_zero_copy_claim_authorized": false
+    },
+    "user_selected_backend": "optix",
+    "user_selected_partner": "numba",
+    "user_selected_strategy": "grouped_stream",
+    "v2_0_release_authorized": false,
+    "v4_embedding_or_external_zero_copy_authorized": false,
+    "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "min_neighbors": 4,
+  "point_count": 262144,
+  "public_speedup_claim_authorized": false,
+  "radius": 3.0,
+  "release_authorized": false,
+  "repeat": 5,
+  "runner_inclusive_wall_median_sec": 13.74199703335762,
+  "schema": "rtdl.phoenix_v3.component_union_m38_pod_ab.v1",
+  "seed": 20260623,
+  "status": "ok",
+  "timing_breakdown_sec": {
+    "canonical_signature_from_labels_sec": 0.02261985093355179,
+    "legacy_grouped_stream_label_adapter_sec": 1.6848656013607979,
+    "prepare_sec": 2.02653881162405
+  },
+  "true_zero_copy_claim_authorized": false,
+  "variant": "legacy_optix_grouped_stream_component_labels",
+  "warmup": 1
+}

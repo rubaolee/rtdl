@@ -1,0 +1,477 @@
+{
+  "app": "librts_spatial_index",
+  "authors_code_comparison": false,
+  "candidate_checks": null,
+  "claim_boundary": "LibRTS-style benchmark call into generic Embree AABB_INDEX_QUERY_2D using app-agnostic prepared AABB collision traversal when available, with a columnar fallback for older libraries. This is not authors-code timing, not NVIDIA RT-core accelerated, and does not authorize public speedup wording.",
+  "counts": {
+    "point_contains": 86548,
+    "range_contains": 60039,
+    "range_intersects": 133517
+  },
+  "cpu_reference_skipped": false,
+  "elapsed_sec": 0.16616451740264893,
+  "fixture": {
+    "box_count": 2048,
+    "box_query_count": 1024,
+    "dataset": "uniform",
+    "paper_equivalent_dataset": false,
+    "point_query_count": 1024,
+    "seed": 2025
+  },
+  "generic_primitive": "AABB_INDEX_QUERY_2D",
+  "index": {
+    "indexed_boxes": 2048,
+    "native_index": "embree_native_aabb_collision_index",
+    "primary_fields": []
+  },
+  "matches_cpu_reference": true,
+  "mode": "embree_aabb_index",
+  "native_engine_customization": false,
+  "operation": "all",
+  "paper": {
+    "authors_code": "https://github.com/RTSpatial/RTSpatial",
+    "doi": "10.1145/3710848.3710850",
+    "title": "LibRTS: A Spatial Indexing Library by Ray Tracing",
+    "venue": "PPoPP 2025"
+  },
+  "paper_reproduction": false,
+  "prepared_execution_session_runner_metadata": {
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "cache_hit_count": 0,
+    "count_contract": "generic_prepared_aabb_index_query_2d_count",
+    "last_run": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_v3_faster_than_v2_claim_authorized": false,
+      "claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+      "count_contract": "generic_prepared_aabb_index_query_2d_count",
+      "explicit_backend": "embree",
+      "explicit_partner": "none",
+      "explicit_partner_choice_required": true,
+      "full_all_app_rerun_authorized_by_this_packet": false,
+      "legacy_aligned_prepare_metric_available": false,
+      "legacy_aligned_prepare_sec": 0.06621038168668747,
+      "measured_best_sec": 0.09897349029779434,
+      "measured_median_sec": 0.09995413571596146,
+      "measured_output_finalized_once": false,
+      "measured_repeat_count": 50,
+      "measured_repeat_seconds": [
+        0.10093481093645096,
+        0.1793234646320343,
+        0.10109589248895645,
+        0.1001671552658081,
+        0.09972281008958817,
+        0.09991209208965302,
+        0.099939726293087,
+        0.10026571899652481,
+        0.09984774887561798,
+        0.10023944824934006,
+        0.09963186085224152,
+        0.10039660334587097,
+        0.09993056952953339,
+        0.09897349029779434,
+        0.10071565955877304,
+        0.09969695657491684,
+        0.09988517314195633,
+        0.10075738281011581,
+        0.100339874625206,
+        0.09999922662973404,
+        0.09973711520433426,
+        0.09932822734117508,
+        0.1002773642539978,
+        0.10034428536891937,
+        0.09956715255975723,
+        0.10002253949642181,
+        0.09995999187231064,
+        0.09943384677171707,
+        0.10056595504283905,
+        0.10003365576267242,
+        0.10085482895374298,
+        0.0993562713265419,
+        0.09994827955961227,
+        0.10023956000804901,
+        0.10063722729682922,
+        0.09945092350244522,
+        0.09934284538030624,
+        0.099924735724926,
+        0.09979162365198135,
+        0.1003507524728775,
+        0.09963864088058472,
+        0.10046500712633133,
+        0.0995660126209259,
+        0.09986250102519989,
+        0.10079864412546158,
+        0.09980259835720062,
+        0.10033243149518967,
+        0.09985073655843735,
+        0.10002404451370239,
+        0.09937448054552078
+      ],
+      "measured_run_prepared_override_used": false,
+      "measured_total_sec": 5.080657944083214,
+      "native_prepare_sec": null,
+      "native_prepare_seconds_source": null,
+      "outer_cache_load_sec": 0.0,
+      "outer_prepare_or_cache_sec": 0.06621038168668747,
+      "outer_prepare_sec": 0.06621038168668747,
+      "output_finalize_sec": 0.0,
+      "output_type": "tuple",
+      "per_iteration_fingerprint_recompute_avoided": true,
+      "per_iteration_task_reconstruction_avoided": true,
+      "per_repeat_output_finalization_avoided": false,
+      "prepared_execution_report": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "claim_boundary": {},
+        "explicit_backend": "embree",
+        "explicit_partner": "none",
+        "explicit_partner_choice_required": true,
+        "notes": [
+          "generic AABB count primitive routed through Phoenix V3 prepared execution/session runner"
+        ],
+        "phase_timings": [
+          {
+            "best_repeat_seconds": null,
+            "phase": "prepare",
+            "repeat_seconds": [],
+            "role": "prepare_explicit_session_on_cache_miss",
+            "seconds": 0.06621038168668747,
+            "setup_candidate": true,
+            "source_keys": [],
+            "steady_state_candidate": false,
+            "validation_candidate": false
+          },
+          {
+            "best_repeat_seconds": null,
+            "phase": "cache_load",
+            "repeat_seconds": [],
+            "role": "load_explicit_prepared_session_from_cache_on_hit",
+            "seconds": 0.0,
+            "setup_candidate": false,
+            "source_keys": [],
+            "steady_state_candidate": false,
+            "validation_candidate": false
+          },
+          {
+            "best_repeat_seconds": 0.03053736686706543,
+            "phase": "warmup",
+            "repeat_seconds": [
+              0.03053736686706543,
+              0.08502896875143051,
+              0.09894455969333649,
+              0.10489699244499207,
+              0.09933724254369736
+            ],
+            "role": "caller_requested_prepared_session_warmup",
+            "seconds": 0.41874513030052185,
+            "setup_candidate": false,
+            "source_keys": [],
+            "steady_state_candidate": false,
+            "validation_candidate": false
+          },
+          {
+            "best_repeat_seconds": null,
+            "phase": "steady_state_stream",
+            "repeat_seconds": [],
+            "role": "no_separate_stream_phase_recorded_by_minimal_runner",
+            "seconds": 0.0,
+            "setup_candidate": false,
+            "source_keys": [],
+            "steady_state_candidate": true,
+            "validation_candidate": false
+          },
+          {
+            "best_repeat_seconds": null,
+            "phase": "planner",
+            "repeat_seconds": [],
+            "role": "caller_preplanned_single_prepared_operation",
+            "seconds": 0.0,
+            "setup_candidate": false,
+            "source_keys": [],
+            "steady_state_candidate": true,
+            "validation_candidate": false
+          },
+          {
+            "best_repeat_seconds": 0.09897349029779434,
+            "phase": "executor",
+            "repeat_seconds": [
+              0.10093481093645096,
+              0.1793234646320343,
+              0.10109589248895645,
+              0.1001671552658081,
+              0.09972281008958817,
+              0.09991209208965302,
+              0.099939726293087,
+              0.10026571899652481,
+              0.09984774887561798,
+              0.10023944824934006,
+              0.09963186085224152,
+              0.10039660334587097,
+              0.09993056952953339,
+              0.09897349029779434,
+              0.10071565955877304,
+              0.09969695657491684,
+              0.09988517314195633,
+              0.10075738281011581,
+              0.100339874625206,
+              0.09999922662973404,
+              0.09973711520433426,
+              0.09932822734117508,
+              0.1002773642539978,
+              0.10034428536891937,
+              0.09956715255975723,
+              0.10002253949642181,
+              0.09995999187231064,
+              0.09943384677171707,
+              0.10056595504283905,
+              0.10003365576267242,
+              0.10085482895374298,
+              0.0993562713265419,
+              0.09994827955961227,
+              0.10023956000804901,
+              0.10063722729682922,
+              0.09945092350244522,
+              0.09934284538030624,
+              0.099924735724926,
+              0.09979162365198135,
+              0.1003507524728775,
+              0.09963864088058472,
+              0.10046500712633133,
+              0.0995660126209259,
+              0.09986250102519989,
+              0.10079864412546158,
+              0.09980259835720062,
+              0.10033243149518967,
+              0.09985073655843735,
+              0.10002404451370239,
+              0.09937448054552078
+            ],
+            "role": "median_of_repeated_explicit_prepared_operations",
+            "seconds": 0.09995413571596146,
+            "setup_candidate": false,
+            "source_keys": [],
+            "steady_state_candidate": true,
+            "validation_candidate": false
+          },
+          {
+            "best_repeat_seconds": null,
+            "phase": "validation",
+            "repeat_seconds": [],
+            "role": "caller_supplied_validation_after_execution",
+            "seconds": 0.0,
+            "setup_candidate": false,
+            "source_keys": [],
+            "steady_state_candidate": false,
+            "validation_candidate": true
+          }
+        ],
+        "prepared_execution_claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "schema": "rtdl.v2_8.prepared_execution_report.v1",
+        "source_commit": null,
+        "source_goal": null,
+        "source_schema": null,
+        "summary_sec": {
+          "setup": 0.06621038168668747,
+          "steady_state": 0.09995413571596146,
+          "validation": 0.0,
+          "warmup": 0.41874513030052185
+        },
+        "true_zero_copy_claim_authorized": false,
+        "warmup_count": 5,
+        "workflow": [
+          "prepare",
+          "pack_or_cache",
+          "warm",
+          "run_steady_state",
+          "explain_timings"
+        ],
+        "workflow_name": "aabb_index_query_2d_count_prepared_session"
+      },
+      "prepared_execution_report_validation": {
+        "claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+        "errors": [],
+        "phase_count": 7,
+        "schema": "rtdl.v2_8.prepared_execution_report.v1",
+        "status": "accept",
+        "workflow": [
+          "prepare",
+          "pack_or_cache",
+          "warm",
+          "run_steady_state",
+          "explain_timings"
+        ]
+      },
+      "prepared_session": {
+        "automatic_partner_selection_authorized": false,
+        "cache_event_log": [
+          {
+            "event": "miss",
+            "stable_id": "f284fb78d414140f75cbbc68"
+          },
+          {
+            "event": "put",
+            "stable_id": "f284fb78d414140f75cbbc68"
+          }
+        ],
+        "cache_hit": false,
+        "cache_key": {
+          "app_specific_native_engine_logic_allowed": false,
+          "automatic_partner_selection_authorized": false,
+          "backend": "embree",
+          "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+          "device": "cpu:0",
+          "explicit_key_required": true,
+          "input_fingerprints": [
+            [
+              "box_queries",
+              "b34985f0e4de56dc46ceb019"
+            ],
+            [
+              "indexed_boxes",
+              "37571dc621ae543551aa79c7"
+            ],
+            [
+              "point_queries",
+              "9996c3db8326eb49201daa57"
+            ]
+          ],
+          "parameter_fingerprint": [
+            [
+              "indexed_ids",
+              "339e32c94c7ebea74ab19eb0"
+            ],
+            [
+              "operation",
+              "5cf7504d9781301d83347546"
+            ],
+            [
+              "resolution",
+              "e29c9c180c6279b0b02abd6a"
+            ]
+          ],
+          "partner": "none",
+          "primitive": "aabb_index_query_2d_native_query_handle",
+          "stable_id": "f284fb78d414140f75cbbc68"
+        },
+        "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+        "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "explicit_cache_lookup": true,
+        "policy": {
+          "app_specific_native_engine_logic_allowed": false,
+          "automatic_partner_selection_authorized": false,
+          "broad_rt_core_claim_authorized": false,
+          "cache_enabled": true,
+          "cache_key": {
+            "app_specific_native_engine_logic_allowed": false,
+            "automatic_partner_selection_authorized": false,
+            "backend": "embree",
+            "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+            "device": "cpu:0",
+            "explicit_key_required": true,
+            "input_fingerprints": [
+              [
+                "box_queries",
+                "b34985f0e4de56dc46ceb019"
+              ],
+              [
+                "indexed_boxes",
+                "37571dc621ae543551aa79c7"
+              ],
+              [
+                "point_queries",
+                "9996c3db8326eb49201daa57"
+              ]
+            ],
+            "parameter_fingerprint": [
+              [
+                "indexed_ids",
+                "339e32c94c7ebea74ab19eb0"
+              ],
+              [
+                "operation",
+                "5cf7504d9781301d83347546"
+              ],
+              [
+                "resolution",
+                "e29c9c180c6279b0b02abd6a"
+              ]
+            ],
+            "partner": "none",
+            "primitive": "aabb_index_query_2d_native_query_handle",
+            "stable_id": "f284fb78d414140f75cbbc68"
+          },
+          "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+          "cold_prepare_phase": "prepare_scene_or_payload",
+          "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+          "hot_query_phase": "prepared_query",
+          "invalidation_events": [
+            "explicit_invalidate",
+            "backend_context_reset",
+            "close"
+          ],
+          "lifetime_state": "session_retained",
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "reuse_scope": "explicit_user_session",
+          "status": "internal_contract_not_release_authorization",
+          "true_zero_copy_claim_authorized": false
+        },
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "stable_id": "f284fb78d414140f75cbbc68",
+        "true_zero_copy_claim_authorized": false
+      },
+      "primitive": "aabb_index_query_2d_native_query_handle",
+      "primitive_family": "aabb_index_query_2d_native_query_handle",
+      "productized_execution_path": "prepared_execution_session_runner",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "repeat_outputs_retained": true,
+      "repeated_prepared_session_execution": true,
+      "row_contract": "generic_prepared_aabb_index_query_2d_count",
+      "runtime_executed": true,
+      "schema": "rtdl.v3.phoenix.prepared_execution_session_runner.m3_3",
+      "set_a_probe_candidate": true,
+      "single_cache_lookup_for_measured_repeats": true,
+      "single_report_after_measured_repeats": true,
+      "status": "executed_not_release_authorization",
+      "true_zero_copy_claim_authorized": false,
+      "validate_each_repeat": false,
+      "validation_output_type": "NoneType",
+      "validation_passed": null,
+      "workflow_name": "aabb_index_query_2d_count_prepared_session"
+    },
+    "measured_repeat_count": 50,
+    "primitive_family": "aabb_index_query_2d_native_query_handle",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "repeated_execution": true,
+    "row_contract": "generic_prepared_aabb_index_query_2d_count",
+    "runtime_executed_count": 1,
+    "single_cache_lookup_for_measured_repeats": true,
+    "single_report_after_measured_repeats": true
+  },
+  "prepared_execution_session_runner_used": true,
+  "primitive_contract": "generic_prepared_aabb_index_query_2d_count",
+  "productized_execution_path": "prepared_execution_session_runner",
+  "repeat_protocol": {
+    "measured_run_count": 50,
+    "query_sec_median": 0.09995413571596146,
+    "query_sec_total": 5.080657944083214,
+    "repeat": 50,
+    "warmup": 5
+  },
+  "rt_core_accelerated": false,
+  "run_phases": {
+    "query_median_sec": 0.09995413571596146,
+    "query_repeat": 50,
+    "query_sec": 0.09995413571596146,
+    "query_summed_median_sec": 0.09995413571596146,
+    "query_total_sec": 5.080657944083214,
+    "query_warmup": 5,
+    "scene_prepare_sec": 0.06621038168668747
+  }
+}

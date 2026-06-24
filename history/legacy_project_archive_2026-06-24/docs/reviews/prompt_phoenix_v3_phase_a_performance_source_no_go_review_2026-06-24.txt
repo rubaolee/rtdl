@@ -1,0 +1,30 @@
+Review the Phoenix V3 Phase A performance-source packet.
+
+Main file:
+docs/reviews/call_for_review_phoenix_v3_phase_a_performance_source_no_go_2026-06-24.md
+
+Please inspect the referenced evidence files if available, especially:
+- docs/reviews/claude_goal0_verdict_barnes_hut_2026-06-24.md
+- docs/rebuild/v3/phoenix_v3_phase_a_anti_avoidance_lock_rtnn_2026-06-24.md
+- docs/rebuild/v3/evidence/phoenix_v3_phaseA_rtnn_clustered262144_20260624_110456/summary.json
+
+Question:
+Has Phase A honestly failed to prove a V3 performance source under Claude's A-H
+roadmap and Goal 0 anti-avoidance lock, such that the project should enter
+Phase H capability/quality release planning rather than continue Phase A or
+search for a third winner?
+
+Return exactly one verdict label from:
+- accept_phase_a_no_go_enter_phase_h_capability_quality
+- revise_phase_a_before_no_go_due_to_missing_evidence
+- reject_phase_a_no_go_continue_with_named_non_metric_shopping_experiment
+
+If rejecting the No-Go, name the exact family, scorecard row, dominant measured
+phase, concrete >=1.20x runtime-sourced hypothesis, and why this does not
+violate the no-third-search anti-avoidance lock.
+
+Preserve non-authorization:
+No V3 release, no all-app benchmark, no public speedup wording, no broad
+V3-over-V2 wording, no V4, no embedding, no C ABI, no external zero-copy claim,
+and no further Phase A candidate search unless the verdict explicitly rejects
+No-Go with a named non-metric-shopping experiment.

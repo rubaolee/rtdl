@@ -1,0 +1,151 @@
+{
+  "claim_boundary": {
+    "app_specific_native_engine_logic_allowed": false,
+    "authors_code_comparison": false,
+    "native_engine_customization": false,
+    "paper_reproduction_claim_authorized": false,
+    "partner_continuation_required": false,
+    "primitive_first_no_partner_needed": true,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "comparison": {
+    "all_match_cpu_reference": true,
+    "all_prepared_steady_state": true,
+    "all_primitive_payload_reused": true,
+    "all_ray_batch_reused": true,
+    "no_partner_continuation_required": true,
+    "public_speedup_claim_authorized": false,
+    "same_contract_backend_pairs": [
+      {
+        "both_match_cpu_reference": true,
+        "comparison_scope": "internal_same_contract_prepared_query_refresh_not_public_speedup",
+        "embree_median_sec": 2.098339445888996,
+        "embree_over_optix_median": 10.011408734478744,
+        "mode": "sum",
+        "optix_median_sec": 0.20959482342004776,
+        "same_contract": true
+      }
+    ]
+  },
+  "environment": {
+    "git_head": "fatal: not a git repository (or any of the parent directories): .git",
+    "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 20475 MiB, 00000000:C1:00.0",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64"
+  },
+  "goal": "Goal4425 V3.0 M28 RayDB prepared grouped-reduction refresh",
+  "parameters": {
+    "backends": [
+      "embree",
+      "optix"
+    ],
+    "generated_groups": 2048,
+    "generated_revenue_mod": 64,
+    "generated_rows": 524288,
+    "include_iteration_walls": true,
+    "modes": [
+      "sum"
+    ],
+    "warmup": 0
+  },
+  "planned_rows": [
+    {
+      "backend": "embree",
+      "backend_label": "paper_rt_embree",
+      "mode": "sum",
+      "repeat": 1,
+      "warmup": 0
+    },
+    {
+      "backend": "optix",
+      "backend_label": "paper_rt_optix_prepared_grouped_reduction",
+      "mode": "sum",
+      "repeat": 1,
+      "warmup": 0
+    }
+  ],
+  "rows": [
+    {
+      "backend": "embree",
+      "backend_label": "paper_rt_embree",
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "cold_prepare_total_sec": 91.50505036860704,
+      "contract": "raydb_paper_triangle_scan_prepared_grouped_reduction_embree",
+      "elapsed_median_sec": 2.098339445888996,
+      "hit_event_count_before_dedup": 3683,
+      "matches_cpu_reference": true,
+      "mode": "sum",
+      "native_call_wall_median_sec": 2.097670905292034,
+      "native_symbol": "rtdl_embree_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction",
+      "partner_continuation_available": true,
+      "partner_continuation_required": false,
+      "prepared_iteration_count": 1,
+      "prepared_iteration_total_sec": 2.098339445888996,
+      "prepared_native_total_sec": 0.15603193640708923,
+      "prepared_primitive_payload_reused": true,
+      "prepared_ray_batch_reused": true,
+      "prepared_ray_batch_sec": 9.052455425262451e-06,
+      "prepared_steady_state": true,
+      "ray_count": 76087296,
+      "repeat": 1,
+      "row_count": 524288,
+      "row_presentation_median_sec": 0.0006685405969619751,
+      "rt_core_accelerated": false,
+      "traversal_median_sec": 2.096523293,
+      "triangle_count": 524288,
+      "v2_4_backend": "embree",
+      "v2_4_primitive": "ray_triangle_grouped_i64_reduction_3d",
+      "v2_5_selected_path": "prepared_fused_generic_grouped_reduction",
+      "v2_5_selection_reason": "continuation_matches_existing_fused_app_agnostic_rtdl_primitive",
+      "warmup": 0,
+      "workload_build_sec": 91.34900509566069
+    },
+    {
+      "backend": "optix",
+      "backend_label": "paper_rt_optix_prepared_grouped_reduction",
+      "claim_boundary": {
+        "public_speedup_claim_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "cold_prepare_total_sec": 85.71031432598829,
+      "contract": "raydb_paper_triangle_scan_prepared_grouped_reduction_optix",
+      "elapsed_median_sec": 0.20959482342004776,
+      "hit_event_count_before_dedup": 7386,
+      "matches_cpu_reference": true,
+      "mode": "sum",
+      "native_call_wall_median_sec": 0.20804715156555176,
+      "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction",
+      "partner_continuation_available": true,
+      "partner_continuation_required": false,
+      "prepared_iteration_count": 1,
+      "prepared_iteration_total_sec": 0.20959482342004776,
+      "prepared_native_total_sec": 0.23543278872966766,
+      "prepared_primitive_payload_reused": true,
+      "prepared_ray_batch_reused": true,
+      "prepared_ray_batch_sec": 2.509492225944996,
+      "prepared_steady_state": true,
+      "ray_count": 76087296,
+      "repeat": 1,
+      "row_count": 524288,
+      "row_presentation_median_sec": 0.0015476718544960022,
+      "rt_core_accelerated": true,
+      "traversal_median_sec": 0.012701448,
+      "triangle_count": 524288,
+      "v2_4_backend": "optix",
+      "v2_4_primitive": "ray_triangle_grouped_i64_reduction_3d",
+      "v2_5_selected_path": "prepared_fused_generic_grouped_reduction",
+      "v2_5_selection_reason": "continuation_matches_existing_fused_app_agnostic_rtdl_primitive",
+      "warmup": 0,
+      "workload_build_sec": 82.9653854817152
+    }
+  ],
+  "status": "ok",
+  "version": "rtdl.v3_0.raydb_prepared_grouped_refresh.m28"
+}

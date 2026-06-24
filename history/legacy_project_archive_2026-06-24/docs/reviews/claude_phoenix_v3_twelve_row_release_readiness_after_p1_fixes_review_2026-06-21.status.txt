@@ -1,0 +1,4 @@
+status=terminated_no_output_after_340s
+reason=initial prompt asked Claude to inspect too many current files and produced no stdout/stderr artifact in time
+next_action=rerun compact fact-based review prompt with verified absolute Claude CLI path
+claude_path=C:\Users\Lestat\.local\bin\claude.exe

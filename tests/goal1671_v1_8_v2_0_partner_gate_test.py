@@ -5,7 +5,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-GATE = ROOT / "docs" / "release_reports" / "v1_8_v2_0_python_partner_rtdl_gate.md"
+GATE = ROOT / "docs" / "history" / "release_reports" / "v1_8_v2_0_python_partner_rtdl_gate.md"
 CURRENT_ARCHITECTURE = ROOT / "docs" / "current_architecture.md"
 DOCS_INDEX = ROOT / "docs" / "README.md"
 PUBLIC_MAP = ROOT / "docs" / "public_documentation_map.md"

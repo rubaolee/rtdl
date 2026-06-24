@@ -148,6 +148,53 @@ class Goal671OptixPreparedAnyHitCountPortableTest(unittest.TestCase):
         self.assertEqual(packed.records[0].id, 10)
         self.assertEqual(packed.records[1].ox, 2.0)
 
+    def test_pack_rays_3d_from_arrays_broadcasts_scalar_fields(self) -> None:
+        try:
+            import numpy as np
+        except ImportError:
+            self.skipTest("numpy is not available")
+        packed = rt.pack_rays_3d_from_arrays(
+            ids=np.array([20, 21], dtype=np.uint32),
+            ox=np.array([1.0, 2.0]),
+            oy=np.array([3.0, 4.0]),
+            oz=np.array([5.0, 6.0]),
+            dx=0.0,
+            dy=0.0,
+            dz=1.0,
+            tmax=0.5,
+        )
+        self.assertEqual(packed.count, 2)
+        self.assertEqual(packed.dimension, 3)
+        self.assertEqual(packed.records[0].id, 20)
+        self.assertEqual(packed.records[1].ox, 2.0)
+        self.assertEqual(packed.records[0].dz, 1.0)
+        self.assertEqual(packed.records[1].tmax, 0.5)
+
+    def test_pack_triangles_3d_from_arrays_broadcasts_scalar_fields(self) -> None:
+        try:
+            import numpy as np
+        except ImportError:
+            self.skipTest("numpy is not available")
+        packed = rt.pack_triangles_3d_from_arrays(
+            ids=np.array([30, 31], dtype=np.uint32),
+            x0=np.array([1.0, 2.0]),
+            y0=0.0,
+            z0=np.array([3.0, 4.0]),
+            x1=np.array([5.0, 6.0]),
+            y1=0.0,
+            z1=0.25,
+            x2=np.array([7.0, 8.0]),
+            y2=1.0,
+            z2=0.25,
+        )
+        self.assertEqual(packed.count, 2)
+        self.assertEqual(packed.dimension, 3)
+        self.assertEqual(packed.records[0].id, 30)
+        self.assertEqual(packed.records[1].x0, 2.0)
+        self.assertEqual(packed.records[0].y0, 0.0)
+        self.assertEqual(packed.records[1].y2, 1.0)
+        self.assertEqual(packed.records[1].z2, 0.25)
+
     def test_pack_triangles_2d_from_arrays_preserves_c_abi_records(self) -> None:
         try:
             import numpy as np

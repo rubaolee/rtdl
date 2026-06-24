@@ -1,0 +1,6 @@
+run_id=phoenix_v3_barnes_hut_symbol_cache_focused_20260622_135158
+purpose=focused patched-current Barnes-Hut generic prepared OptiX symbol-cache evidence
+started_utc=2026-06-22T13:51:58Z
+v2_dir=/root/rtdl_v3_rebuild_20260620/v2_14
+current_dir=/root/rtdl_v3_rebuild_20260620/current
+patch_backup_dir=/root/rtdl_v3_rebuild_20260620/phoenix_v3_patch_backups_20260622

@@ -21,7 +21,9 @@ class Goal1906PublicV2ClaimBoundaryScanTest(unittest.TestCase):
         self.assertGreater(len(payload["accepted_negative_occurrences"]), 0)
         self.assertIn("README.md", payload["public_files_scanned"])
         self.assertIn("docs/partner_acceleration_boundaries.md", payload["public_files_scanned"])
-        self.assertTrue(payload["claim_boundary"]["v2_0_release_authorized"])
+        version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+        is_v2 = version.startswith("v2.")
+        self.assertEqual(payload["claim_boundary"]["v2_0_release_authorized"], is_v2)
         self.assertFalse(payload["claim_boundary"]["package_install_claim_authorized"])
 
     def test_positive_forbidden_wording_fails_fixture(self) -> None:

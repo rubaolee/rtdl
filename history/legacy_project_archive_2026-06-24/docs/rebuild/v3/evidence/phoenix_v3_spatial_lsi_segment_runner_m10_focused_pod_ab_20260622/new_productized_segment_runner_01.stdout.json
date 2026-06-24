@@ -1,0 +1,520 @@
+{
+  "app": "rayjoin_v2_spatial_join",
+  "backend": "optix",
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "claim_boundary": {
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v4_embedding_or_external_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "dataset": "derived/authored_lsi_crossing_tiled_x2048",
+  "dataset_note": "Authored crossing-segment fixture tiled 2048 times; one positive intersection per tile.",
+  "dense_left_id_count_columns": {
+    "ambiguous_count_device_ptr_nonzero": false,
+    "ambiguous_count_materialized_on_host_for_metadata": false,
+    "count_column_materialized_on_host": false,
+    "counts_device_ptr_nonzero": true,
+    "device_ordinal": 0,
+    "device_resident": true,
+    "group_capacity": 2048,
+    "group_capacity_semantics": "direct-address key capacity",
+    "group_key_column_materialized_on_host": false,
+    "group_key_semantics": "dense output uses direct-address array index as the implicit group key",
+    "native_symbol": "rtdl_optix_prepared_segment_pair_left_id_count_prepared_left_device_columns",
+    "output_residency": "device_resident_dense_grouped_count_column",
+    "overflow": false,
+    "overflow_device_ptr_nonzero": true,
+    "overflow_materialized_on_host_for_metadata": true,
+    "owner_handle": 52013232,
+    "producer": "device_column_grouped_count_i64",
+    "public_speedup_claim_authorized": false,
+    "reduction_seconds": 4.1941e-05,
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "schema": "device_grouped_count_i64_dense_columns",
+    "source_row_count": 2048,
+    "source_row_count_device_ptr_nonzero": true,
+    "source_row_count_materialized_on_host_for_metadata": true,
+    "true_zero_copy_authorized": false
+  },
+  "device_resident_continuation_status": "prepared_execution_runner_segment_intersection_topology_stream: left segment query stream is a prepared device-resident left-set, dense left-id counts remain CUDA-resident inside RTDL, and only scalar metadata is materialized for this summary",
+  "execution_route": "prepared_execution_runner_segment_intersection_topology_stream",
+  "focused_pod_spend_authorized_by_this_packet": false,
+  "full_all_app_rerun_authorized_by_this_packet": false,
+  "hot_path_host_materialization": false,
+  "internal_device_residency_between_rtdl_phases": true,
+  "left_id_remap": {
+    "enabled": true,
+    "original_left_id_count": 2048,
+    "reason": "generic segment-intersection count primitive uses direct-address key capacity"
+  },
+  "metadata": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "hot_path_host_materialization": false,
+    "internal_device_residency_between_rtdl_phases": true,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_authorized": false,
+    "v4_embedding_or_external_zero_copy_authorized": false
+  },
+  "native_engine_boundary": "The engine sees a generic segment-intersection topology stream with left-id dense-count continuation. RayJoin workload interpretation, dataset policy, and left-ID remapping stay in Python.",
+  "native_phase_timings": {
+    "candidate_count_pass": 4.1941e-05,
+    "count_column_materialized_on_host": false,
+    "count_download": 0.0,
+    "device_resident_dense_count_column": true,
+    "exact_refine": 0.0,
+    "group_key_column_materialized_on_host": false,
+    "left_upload": 0.0,
+    "mode": "segment_intersection_left_id_dense_count_prepared_left_device_columns",
+    "native_query_sec": 4.1941e-05,
+    "native_symbol": "rtdl_optix_prepared_segment_pair_left_id_count_prepared_left_device_columns",
+    "overflow": false,
+    "row_download": 0.0,
+    "row_stream_materialized": false,
+    "source_row_count": 2048,
+    "source_row_count_materialized_on_host_for_metadata": true
+  },
+  "packed_left_reuse": {
+    "column_prepare_seconds": 0.0019414350390434265,
+    "enabled": true,
+    "left_segment_count": 2048,
+    "native_prepared_left_set_enabled": true,
+    "native_prepared_left_set_paid_once": true,
+    "pack_seconds": 0.00019840896129608154,
+    "prepared_left_set_seconds": 8.878111839294434e-05,
+    "query_pack_paid_in_call": false
+  },
+  "phases_sec": {
+    "left_id_count_device_columns_sec": 0.00013259798288345337,
+    "prepared_query_sec": 0.00013259798288345337,
+    "prepared_query_sec_repeat": 1,
+    "prepared_query_sec_total_sec": 0.00013259798288345337,
+    "prepared_query_sec_warmup": 0
+  },
+  "prepare_phases_sec": {
+    "prepare_static_scene_sec": 0.4825851395726204,
+    "prepared_left_set_sec": 8.878111839294434e-05,
+    "query_column_prepare_sec": 0.0019414350390434265,
+    "query_pack_sec": 0.00019840896129608154
+  },
+  "prepared_execution_session_runner": {
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+    "continuation_contract": "segment_segment_intersection_count_by_left_id_dense_device_column",
+    "explicit_backend": "optix",
+    "explicit_partner": "none",
+    "explicit_partner_choice_required": true,
+    "external_device_buffer_interop_authorized": false,
+    "focused_material_gain_required_before_all_app": true,
+    "full_all_app_rerun_authorized_by_this_packet": false,
+    "hot_path_host_materialization": false,
+    "internal_device_residency_between_rtdl_phases": true,
+    "legacy_aligned_prepare_metric_available": false,
+    "legacy_aligned_prepare_sec": 0.48542146384716034,
+    "measured_best_sec": 0.00019121915102005005,
+    "measured_median_sec": 0.0002173781394958496,
+    "measured_repeat_count": 5,
+    "measured_repeat_seconds": [
+      0.00027389824390411377,
+      0.00021814554929733276,
+      0.0002173781394958496,
+      0.0001992359757423401,
+      0.00019121915102005005
+    ],
+    "measured_total_sec": 0.0010998770594596863,
+    "native_phase_host_download_seconds": 0.0,
+    "native_prepare_sec": null,
+    "native_prepare_seconds_source": null,
+    "outer_cache_load_sec": 0.0,
+    "outer_prepare_or_cache_sec": 0.48542146384716034,
+    "outer_prepare_sec": 0.48542146384716034,
+    "output_type": "dict",
+    "per_iteration_fingerprint_recompute_avoided": true,
+    "per_iteration_task_reconstruction_avoided": true,
+    "phoenix_v3_redesign_step": "step2_runtime_trunk_generalization_probe",
+    "prepared_execution_report": {
+      "app_specific_engine_logic_allowed": false,
+      "automatic_partner_selection_allowed": false,
+      "claim_boundary": {},
+      "explicit_backend": "optix",
+      "explicit_partner": "none",
+      "explicit_partner_choice_required": true,
+      "notes": [
+        "generic segment-intersection topology stream routed through Phoenix V3 prepared execution/session runner"
+      ],
+      "phase_timings": [
+        {
+          "best_repeat_seconds": null,
+          "phase": "prepare",
+          "repeat_seconds": [],
+          "role": "prepare_explicit_session_on_cache_miss",
+          "seconds": 0.48542146384716034,
+          "setup_candidate": true,
+          "source_keys": [],
+          "steady_state_candidate": false,
+          "validation_candidate": false
+        },
+        {
+          "best_repeat_seconds": null,
+          "phase": "cache_load",
+          "repeat_seconds": [],
+          "role": "load_explicit_prepared_session_from_cache_on_hit",
+          "seconds": 0.0,
+          "setup_candidate": false,
+          "source_keys": [],
+          "steady_state_candidate": false,
+          "validation_candidate": false
+        },
+        {
+          "best_repeat_seconds": 0.18209755420684814,
+          "phase": "warmup",
+          "repeat_seconds": [
+            0.18209755420684814
+          ],
+          "role": "caller_requested_prepared_session_warmup",
+          "seconds": 0.18209755420684814,
+          "setup_candidate": false,
+          "source_keys": [],
+          "steady_state_candidate": false,
+          "validation_candidate": false
+        },
+        {
+          "best_repeat_seconds": null,
+          "phase": "steady_state_stream",
+          "repeat_seconds": [],
+          "role": "no_separate_stream_phase_recorded_by_minimal_runner",
+          "seconds": 0.0,
+          "setup_candidate": false,
+          "source_keys": [],
+          "steady_state_candidate": true,
+          "validation_candidate": false
+        },
+        {
+          "best_repeat_seconds": null,
+          "phase": "planner",
+          "repeat_seconds": [],
+          "role": "caller_preplanned_single_prepared_operation",
+          "seconds": 0.0,
+          "setup_candidate": false,
+          "source_keys": [],
+          "steady_state_candidate": true,
+          "validation_candidate": false
+        },
+        {
+          "best_repeat_seconds": 0.00019121915102005005,
+          "phase": "executor",
+          "repeat_seconds": [
+            0.00027389824390411377,
+            0.00021814554929733276,
+            0.0002173781394958496,
+            0.0001992359757423401,
+            0.00019121915102005005
+          ],
+          "role": "median_of_repeated_explicit_prepared_operations",
+          "seconds": 0.0002173781394958496,
+          "setup_candidate": false,
+          "source_keys": [],
+          "steady_state_candidate": true,
+          "validation_candidate": false
+        },
+        {
+          "best_repeat_seconds": null,
+          "phase": "validation",
+          "repeat_seconds": [],
+          "role": "caller_supplied_validation_after_execution",
+          "seconds": 3.3229589462280273e-06,
+          "setup_candidate": false,
+          "source_keys": [],
+          "steady_state_candidate": false,
+          "validation_candidate": true
+        }
+      ],
+      "prepared_execution_claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_speedup_claim_authorized": false,
+      "schema": "rtdl.v2_8.prepared_execution_report.v1",
+      "source_commit": null,
+      "source_goal": null,
+      "source_schema": null,
+      "summary_sec": {
+        "setup": 0.48542146384716034,
+        "steady_state": 0.0002173781394958496,
+        "validation": 3.3229589462280273e-06,
+        "warmup": 0.18209755420684814
+      },
+      "true_zero_copy_claim_authorized": false,
+      "warmup_count": 1,
+      "workflow": [
+        "prepare",
+        "pack_or_cache",
+        "warm",
+        "run_steady_state",
+        "explain_timings"
+      ],
+      "workflow_name": "segment_intersection_topology_stream_prepared_session"
+    },
+    "prepared_execution_report_validation": {
+      "claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+      "errors": [],
+      "phase_count": 7,
+      "schema": "rtdl.v2_8.prepared_execution_report.v1",
+      "status": "accept",
+      "workflow": [
+        "prepare",
+        "pack_or_cache",
+        "warm",
+        "run_steady_state",
+        "explain_timings"
+      ]
+    },
+    "prepared_session": {
+      "automatic_partner_selection_authorized": false,
+      "cache_event_log": [
+        {
+          "event": "miss",
+          "stable_id": "684052d6c9e425028ac56d66"
+        },
+        {
+          "event": "put",
+          "stable_id": "684052d6c9e425028ac56d66"
+        }
+      ],
+      "cache_hit": false,
+      "cache_key": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "backend": "optix",
+        "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "device": "unknown",
+        "explicit_key_required": true,
+        "input_fingerprints": [
+          [
+            "query_stream",
+            "1013c1d7074f71f37f2808bb"
+          ],
+          [
+            "static_scene",
+            "034f44ba8e3aa26477acabb4"
+          ]
+        ],
+        "parameter_fingerprint": [
+          [
+            "output_contract",
+            "e9c85766e8247b3333aada30"
+          ],
+          [
+            "query_count",
+            "bfa0ec8bdf2946547879d50a"
+          ],
+          [
+            "right_segment_count",
+            "bfa0ec8bdf2946547879d50a"
+          ]
+        ],
+        "partner": "none",
+        "primitive": "segment_intersection_topology_stream",
+        "stable_id": "684052d6c9e425028ac56d66"
+      },
+      "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+      "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+      "explicit_cache_lookup": true,
+      "policy": {
+        "app_specific_native_engine_logic_allowed": false,
+        "automatic_partner_selection_authorized": false,
+        "broad_rt_core_claim_authorized": false,
+        "cache_enabled": true,
+        "cache_key": {
+          "app_specific_native_engine_logic_allowed": false,
+          "automatic_partner_selection_authorized": false,
+          "backend": "optix",
+          "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+          "device": "unknown",
+          "explicit_key_required": true,
+          "input_fingerprints": [
+            [
+              "query_stream",
+              "1013c1d7074f71f37f2808bb"
+            ],
+            [
+              "static_scene",
+              "034f44ba8e3aa26477acabb4"
+            ]
+          ],
+          "parameter_fingerprint": [
+            [
+              "output_contract",
+              "e9c85766e8247b3333aada30"
+            ],
+            [
+              "query_count",
+              "bfa0ec8bdf2946547879d50a"
+            ],
+            [
+              "right_segment_count",
+              "bfa0ec8bdf2946547879d50a"
+            ]
+          ],
+          "partner": "none",
+          "primitive": "segment_intersection_topology_stream",
+          "stable_id": "684052d6c9e425028ac56d66"
+        },
+        "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+        "cold_prepare_phase": "prepare_scene_or_payload",
+        "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "hot_query_phase": "prepared_query",
+        "invalidation_events": [
+          "explicit_invalidate",
+          "backend_context_reset",
+          "close"
+        ],
+        "lifetime_state": "session_retained",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "reuse_scope": "explicit_user_session",
+        "status": "internal_contract_not_release_authorization",
+        "true_zero_copy_claim_authorized": false
+      },
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "stable_id": "684052d6c9e425028ac56d66",
+      "true_zero_copy_claim_authorized": false
+    },
+    "primitive": "segment_intersection_topology_stream",
+    "primitive_family": "segment_intersection_topology_stream",
+    "productized_execution_path": "prepared_execution_session_runner",
+    "public_speedup_claim_authorized": false,
+    "query_stream_residency": "device_resident_prepared_left_segment_set_dense_left_id_count",
+    "release_authorized": false,
+    "repeat_outputs_retained": false,
+    "repeated_prepared_session_execution": true,
+    "row_contract": "segment_segment_intersection_count_by_left_id_dense_device_column",
+    "runtime_executed": true,
+    "runtime_trunk_executes_end_to_end": true,
+    "runtime_trunk_family": "segment_intersection_topology_stream_left_id_dense_count",
+    "runtime_trunk_phase_sequence": [
+      "prepare_segment_intersection_static_scene",
+      "prepare_device_resident_left_segment_query_stream",
+      "rt_core_segment_intersection_traversal",
+      "device_resident_left_id_count_continuation",
+      "scalar_or_summary_return"
+    ],
+    "runtime_trunk_probe_candidate": true,
+    "schema": "rtdl.v3.phoenix.prepared_execution_session_runner.m3_3",
+    "set_a_probe_candidate": true,
+    "single_cache_lookup_for_measured_repeats": true,
+    "single_report_after_measured_repeats": true,
+    "status": "executed_not_release_authorization",
+    "topology_stream_m3_phase_table_contract": "topology_stream_m3_phase_table_v1",
+    "topology_stream_prepared_handle_contract": "topology_stream_prepared_handle_v1",
+    "true_zero_copy_claim_authorized": false,
+    "v3_v4_residency_boundary": "RTDL-owned device-resident intermediates between RTDL phases are V3; exposing device buffers to an external host remains V4 and is not authorized here.",
+    "v4_embedding_or_external_zero_copy_authorized": false,
+    "validate_each_repeat": false,
+    "validation_output_type": "dict",
+    "validation_passed": true,
+    "workflow_name": "segment_intersection_topology_stream_prepared_session"
+  },
+  "prepared_reuse": {
+    "enabled": true,
+    "prepare_static_scene_paid_once": true,
+    "prepare_static_scene_sec": 0.4825851395726204,
+    "right_segment_count": 2048
+  },
+  "productized_execution_path": "prepared_execution_session_runner",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "row_count": 2048,
+  "runtime_trunk_executes_end_to_end": true,
+  "summary": {
+    "intersection_count": 2048,
+    "left_group_capacity": 2048,
+    "output_contract": "segment_segment_intersection_count_by_left_id_dense_device_column",
+    "right_segment_count": 2048
+  },
+  "topology_stream_m3_phase_table": {
+    "contract": "topology_stream_m3_phase_table_v1",
+    "full_m3_phase_table_complete": true,
+    "m7_promotion_authorized": false,
+    "missing_m3_phases_for_public_row": [],
+    "output_contract": "segment_segment_intersection_count_by_left_id_dense_device_column",
+    "phase_seconds": {
+      "device_transfer_or_residency_sec": 0.0,
+      "host_return_or_scalar_materialization_sec": 0.0,
+      "query_stream_prepare_sec": 0.0002871900796890259,
+      "rt_traversal_sec": 8.3882e-05,
+      "static_scene_prepare_sec": 0.4825851395726204,
+      "topology_continuation_sec": 0.0
+    },
+    "public_speedup_claim_authorized": false,
+    "query_count": 2048,
+    "query_stream_resident": true,
+    "release_authorized": false,
+    "repeat": 1,
+    "row_scoped_public_speedup_claim_authorized": false,
+    "source_phase_keys": {
+      "app_phases_sec": [
+        "left_id_count_device_columns_sec",
+        "prepare_static_scene_sec",
+        "prepared_left_set_sec",
+        "prepared_query_sec",
+        "prepared_query_sec_repeat",
+        "prepared_query_sec_total_sec",
+        "prepared_query_sec_warmup",
+        "query_column_prepare_sec",
+        "query_pack_sec"
+      ],
+      "native_phase_timings": [
+        "candidate_count_pass",
+        "count_column_materialized_on_host",
+        "count_download",
+        "device_resident_dense_count_column",
+        "exact_refine",
+        "group_key_column_materialized_on_host",
+        "left_upload",
+        "mode",
+        "native_query_sec",
+        "native_symbol",
+        "overflow",
+        "row_download",
+        "row_stream_materialized",
+        "source_row_count",
+        "source_row_count_materialized_on_host_for_metadata"
+      ]
+    },
+    "status": "complete_non_authorizing_m3_table",
+    "table_basis": "prepared_execution_runner_segment_intersection_topology_stream_phase_timers; non-authorizing V3 topology-stream accounting",
+    "true_zero_copy_claim_authorized": false,
+    "warmup": 0
+  },
+  "topology_stream_prepared_handle": {
+    "app_specific_native_engine_logic_allowed": false,
+    "backend": "optix",
+    "contract": "topology_stream_prepared_handle_v1",
+    "full_m3_phase_table_complete": true,
+    "generic_capability": "segment_intersection_topology_stream",
+    "m7_promotion_authorized": false,
+    "output_contract": "segment_segment_intersection_count_by_left_id_dense_device_column",
+    "public_speedup_claim_authorized": false,
+    "query_count": 2048,
+    "query_stream_prepared": true,
+    "query_stream_residency": "device_resident_prepared_left_segment_set_dense_left_id_count",
+    "release_authorized": false,
+    "reusable_engine_surface": true,
+    "row_scoped_public_speedup_claim_authorized": false,
+    "static_scene_prepared": true,
+    "status": "prepared_topology_stream_handle_non_authorizing",
+    "true_zero_copy_claim_authorized": false,
+    "v4_embedding_claim_authorized": false
+  },
+  "workload": "lsi"
+}

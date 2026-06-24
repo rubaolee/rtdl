@@ -1,0 +1,93 @@
+# Call For Review: Phoenix V3 M44 Goal Completion Audit
+
+Date: 2026-06-23
+
+Please critically review whether the active M44 goal is complete. This is a
+completion audit, not a release review.
+
+Active goal:
+
+```text
+Phoenix V3 M44: sync the Step-2 scorecard after M43, record Claude review debt,
+and identify the next authorized runtime-trunk work without paid
+POD/all-app/release claims.
+```
+
+Primary audit file:
+
+- `docs/reports/phoenix_v3_m44_goal_completion_audit_pending_3ai_2026-06-23.md`
+
+Required supporting files:
+
+- `docs/reviews/codex_antigravity_phoenix_v3_m43_grouped_reduction_cupy_warp_2ai_consensus_2026-06-23.md`
+- `docs/reviews/phoenix_v3_claude_review_debt_register_2026-06-23.md`
+- `docs/reports/phoenix_v3_m44_step2_scorecard_sync_after_m43_2026-06-23.md`
+- `docs/reports/phoenix_v3_m45_barnes_hut_blocker_reaudit_2026-06-23.md`
+- `docs/reports/phoenix_v3_m46_librts_set_b_watch_rows_status_and_next_protocol_2026-06-23.md`
+- `docs/rebuild/v3/phoenix_v3_m47_librts_stability_protocol_2026-06-23.md`
+- `scripts/v3_phoenix_m47_librts_stability_protocol.py`
+- `tests/v3_phoenix_m47_librts_stability_protocol_test.py`
+- `docs/reports/phoenix_v3_m48_librts_stability_harness_execution_safety_2026-06-23.md`
+- `docs/reports/phoenix_v3_m49_current_blocker_queue_after_m48_2026-06-23.md`
+- `docs/reports/phoenix_v3_m50_spatial_topology_stream_runner_fail_closed_2026-06-23.md`
+- `docs/reviews/call_for_review_phoenix_v3_m50_spatial_topology_runner_fail_closed_2026-06-23.md`
+- `docs/rebuild/v3/phoenix_v3_m51_librts_authorized_runbook_2026-06-23.md`
+- `docs/reviews/call_for_review_phoenix_v3_m51_librts_authorized_runbook_2026-06-23.md`
+- `docs/reports/phoenix_v3_m52_pod_runner_authorization_surface_audit_2026-06-23.md`
+- `docs/reviews/call_for_review_phoenix_v3_m52_pod_runner_authorization_surface_audit_2026-06-23.md`
+- `tests/v3_phoenix_review_debt_and_completion_gate_test.py`
+- `tests/v3_phoenix_m50_spatial_runner_fail_closed_gate_test.py`
+- `tests/v3_phoenix_m51_librts_authorized_runbook_gate_test.py`
+- `tests/v3_phoenix_m52_pod_surface_audit_gate_test.py`
+- `docs/reports/phoenix_v3_m44_review_debt_gate_and_rebuild_validation_2026-06-23.md`
+- `docs/reviews/antigravity_phoenix_v3_m44_goal_completion_audit_review_2026-06-23.md`
+- `docs/reviews/codex_antigravity_phoenix_v3_m44_goal_completion_audit_interim_2ai_consensus_2026-06-23.md`
+- `docs/rebuild/v3/evidence/phoenix_v3_m47_librts_stability_protocol_dry_run_20260623/summary.json`
+- `docs/handoff/PHOENIX_V3_CURRENT_HANDOFF_2026-06-22.md`
+- `docs/handoff/REFRESH_LOCAL_2026-04-13.md`
+
+Requested verdict labels:
+
+- `accept_m44_goal_complete_pending_claude_debt_backfill`
+- `accept_m44_substantively_done_but_do_not_mark_complete_until_3ai`
+- `revise_m44_missing_evidence_or_next_work`
+- `reject_m44_goal_not_satisfied`
+
+Review questions:
+
+1. Does the evidence prove that M44 synced the Step-2 scorecard after M43?
+2. Does the evidence prove that Claude review debt was recorded and made
+   actionable for later backfill?
+3. Does the evidence identify the next authorized runtime-trunk work without
+   authorizing POD/all-app/release?
+4. Is the M45 correction fair: Barnes-Hut is focused-fix-covered pending
+   validation, not the next active coding target?
+5. Is the M46/M47 LibRTS direction fair: watch rows remain open and the next
+   step is a focused stability protocol, not immediate all-app/POD?
+6. Does the M47 harness preserve dry-run safety and prevent accidental POD
+   execution?
+7. Does M48 correctly harden M47 execution safety without authorizing a run?
+8. Does M49 correctly prevent stale Spatial/RayJoin route-tuning interpretation?
+9. Does M50 correctly make the Spatial/RayJoin runner dry-run by default and
+   token-gated for execution?
+10. Does M51 prepare the LibRTS runbook without authorizing execution?
+11. Does M52 correctly audit current vs historical POD runner authorization?
+12. Are all non-authorization boundaries preserved?
+13. Does the new local review-debt/completion-gate test correctly reduce
+   memory/process drift?
+14. Does the Antigravity interim completion review support the same bounded
+   verdict?
+15. Can the goal be called complete under the user's `3-AI` completion-audit
+   rule, or should it remain active until another external AI also reviews?
+
+Non-authorization to preserve:
+
+- no V3 release
+- no all-app benchmark run
+- no paid POD spend
+- no public speedup wording
+- no broad V3-over-V2 claim
+- no V4 work
+- no embedding
+- no C ABI
+- no true zero-copy claim

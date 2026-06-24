@@ -1,0 +1,278 @@
+{
+  "checks": {
+    "all_claim_flags_false": true,
+    "cupy_reference_present_unless_skipped": true,
+    "legacy_route_present": true,
+    "no_all_app_authorization": true,
+    "runner_completed_without_errors": true,
+    "runner_internal_residency": true,
+    "runner_productized_path": true,
+    "runner_repeat50_material_candidate": true,
+    "runner_route_present": true,
+    "runner_runtime_trunk_executes": true,
+    "runner_step3_residency_default_ready": true,
+    "same_signature_runner_vs_cupy_unless_skipped": true,
+    "same_signature_runner_vs_legacy": true,
+    "scorecard_bound_shape_valid": true,
+    "serious_fixture_scale": true,
+    "serious_material_config_or_explicit_smoke": true
+  },
+  "environment": {
+    "cwd": "/root/rtdl_v3_rebuild_20260620/current",
+    "git_dirty": [
+      "fatal: not a git repository (or any of the parent directories): .git"
+    ],
+    "git_head": "fatal: not a git repository (or any of the parent directories): .git",
+    "hardware_gate": {
+      "checks": {
+        "has_nvidia_gpu": true,
+        "nvidia_smi_query": true,
+        "optix_capable_gpu_present": true,
+        "rt_hardware_name_present": true
+      },
+      "fail_closed_reason": null,
+      "gpus": [
+        {
+          "compute_cap": "8.9",
+          "driver_version": "550.127.05",
+          "name": "NVIDIA RTX 4000 Ada Generation"
+        }
+      ],
+      "query_error": null,
+      "require_rt_hardware": true,
+      "status": "pass",
+      "tool": "v3_optix_hardware_gate"
+    },
+    "nvidia_smi": "NVIDIA RTX 4000 Ada Generation, 550.127.05, 8.9",
+    "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]"
+  },
+  "failed_checks": [],
+  "goal_level_decision_audit": {
+    "decision": "Run RTNN as a focused productized-runner repeat50 evidence packet before any all-app run.",
+    "different_path_now": "Use this focused A/B to test same-contract legacy parity, scorecard-row movement, runner metadata, and material repeat50 boundary before spending on larger POD runs.",
+    "foolish_actions": "The foolish action would be to call the old RTNN repeat50 row a V3 runtime-trunk result without routing it through the productized prepared-execution runner.",
+    "other_path": "Retry symbol-cache or all-app runs. Those paths would not prove shared runtime machinery.",
+    "was_i_foolish": "No. This directly tests the runtime trunk on a second Set-A family."
+  },
+  "non_authorization": {
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "full_all_app_rerun_authorized_by_this_packet": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false
+  },
+  "point_manifest": {
+    "cluster_count": 8,
+    "cluster_stddev": 0.035,
+    "dimension": 3,
+    "distribution": "clustered",
+    "format": "rtnn_csv_xyz",
+    "generated_by_runner": true,
+    "path": "/root/rtdl_v3_rebuild_20260620/current/docs/rebuild/v3/evidence/phoenix_v3_phaseA_rtnn_clustered262144_20260624_110456/rtnn_runner_repeat50_points.csv",
+    "point_count": 262144,
+    "runtime_materialized": true,
+    "seed": 20260622
+  },
+  "run_errors": {},
+  "schema": "rtdl.phoenix_v3.rtnn_prepared_execution_runner_repeat50_pod_ab.v1",
+  "status": "rtnn_prepared_execution_runner_repeat50_collected_not_release",
+  "summary": {
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "comparisons": {
+      "runner_vs_legacy_cold_plus_query_speedup": 1.5809404755935226,
+      "runner_vs_legacy_hot_speedup": 0.9956258378432054,
+      "runner_vs_legacy_runner_wall_speedup": 1.03855736873106
+    },
+    "distribution": "clustered",
+    "full_all_app_rerun_authorized_by_this_packet": false,
+    "k_max": 50,
+    "parity": {
+      "runner_vs_cupy_signature_match": false,
+      "runner_vs_legacy": {
+        "bounded_neighbor_count_delta": 0,
+        "kth_id_checksum_delta": 0,
+        "nearest_id_checksum_delta": 0,
+        "row_count_delta": 0,
+        "sum_distance_delta": 0.0,
+        "sum_distance_relative_error": 0.0
+      },
+      "runner_vs_legacy_signature_match": true
+    },
+    "phase_rows": {
+      "legacy_app_front_door_prepared_optix": {
+        "cold_plus_query_wall_sec": 0.7885641604661942,
+        "execution_prepare_sec": 0.21209345012903214,
+        "hot_query_median_sec": 0.06424447149038315,
+        "input_load_sec": 0.38206416368484497,
+        "input_pack_sec": 0.1301620751619339,
+        "mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+        "ok": true,
+        "productized_execution_path": "legacy_goal2348_app_front_door",
+        "query_count": 262144,
+        "runner_wall_sec": 4.002292715013027,
+        "search_count": 262144,
+        "summary": {
+          "bounded_neighbor_count": 12719503,
+          "kth_id_checksum": 34320535384,
+          "nearest_id_checksum": 34359607296,
+          "row_count": 262144,
+          "sum_distance": 95828.3022657379
+        },
+        "variant": "legacy_app_front_door_prepared_optix"
+      },
+      "productized_prepared_execution_runner": {
+        "cold_plus_query_wall_sec": 0.4987943395972252,
+        "execution_prepare_sec": 0.007803700864315033,
+        "hot_query_median_sec": 0.06452672183513641,
+        "input_load_pack_sec": 0.42646391689777374,
+        "internal_device_residency_between_rtdl_phases": true,
+        "mode": "prepared_execution_ranked_summary",
+        "ok": true,
+        "productized_execution_path": "prepared_execution_session_runner",
+        "query_count": 262144,
+        "repeat50_material_probe_candidate": true,
+        "runner_after_input_load_pack_sec": 3.42722050845623,
+        "runner_wall_sec": 3.8537040278315544,
+        "runtime_trunk_executes_end_to_end": true,
+        "search_count": 262144,
+        "step3_audit_missing_fields": [],
+        "step3_audit_status": "accept_step3_ready",
+        "step3_residency_default_ready": true,
+        "summary": {
+          "bounded_neighbor_count": 12719503,
+          "kth_id_checksum": 34320535384,
+          "nearest_id_checksum": 34359607296,
+          "row_count": 262144,
+          "sum_distance": 95828.3022657379
+        },
+        "variant": "productized_prepared_execution_runner"
+      }
+    },
+    "point_count": 262144,
+    "public_speedup_claim_authorized": false,
+    "radius": 0.02,
+    "release_authorized": false,
+    "repeat": 50,
+    "runner_step3_audit": {
+      "broad_v3_faster_than_v2_claim_authorized": false,
+      "claim_boundaries_closed": true,
+      "hot_path_host_materialization": false,
+      "hot_path_host_materialization_reported": true,
+      "internal_device_residency_between_rtdl_phases": true,
+      "internal_device_residency_reported": true,
+      "measured_repeat_seconds_present": true,
+      "missing_step3_fields": [],
+      "output_finalize_sec_present": true,
+      "phase_accounting_accept": true,
+      "phase_accounting_present": true,
+      "phase_accounting_validation_status": "accept",
+      "productized_execution_path": "prepared_execution_session_runner",
+      "productized_runner_used": true,
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "runtime_executed": true,
+      "runtime_trunk_executes_end_to_end": true,
+      "runtime_trunk_executes_end_to_end_reported": true,
+      "schema": "rtdl.v3.phoenix.prepared_execution_session_audit.v1",
+      "set_a_probe_candidate": true,
+      "set_b_control_candidate": false,
+      "status": "accept_step3_ready",
+      "step3_residency_default_ready": true,
+      "topology_stream_m3_bridge_complete": false,
+      "topology_stream_m3_bridge_contract_ok": false,
+      "topology_stream_m3_bridge_non_authorizing": false,
+      "topology_stream_m3_bridge_ready": true,
+      "topology_stream_set_a_candidate": false,
+      "true_zero_copy_claim_authorized": false,
+      "v4_embedding_or_external_zero_copy_authorized": false
+    },
+    "runtime_sourced_material_gain_candidate": false,
+    "runtime_trunk_executes_end_to_end": true,
+    "schema": "rtdl.phoenix_v3.rtnn_prepared_execution_runner_repeat50_pod_ab.v1",
+    "scorecard_bound_runtime_sourced_movement_candidate": true,
+    "scorecard_bound_shape": {
+      "app": "rtnn",
+      "comparison_group": "rtnn_clustered_262144_ranked_summary",
+      "distribution": "clustered",
+      "point_count": 262144,
+      "query_batch_size": 262144,
+      "rows": [
+        {
+          "backend": "embree",
+          "case_id": "rtnn_embree_clustered_262144_ranked_summary",
+          "directly_moved_by_this_optix_runner": false,
+          "frozen_v3_speedup_vs_v2": 0.945681958160491,
+          "row_id": "goal2636_stress|rtnn|rtnn_clustered_262144_ranked_summary|embree|rtnn_embree_clustered_262144_ranked_summary"
+        },
+        {
+          "backend": "optix",
+          "case_id": "rtnn_optix_clustered_262144_ranked_summary",
+          "directly_moved_by_this_optix_runner": true,
+          "frozen_v3_speedup_vs_v2": 0.9977546820436802,
+          "row_id": "goal2636_stress|rtnn|rtnn_clustered_262144_ranked_summary|optix|rtnn_optix_clustered_262144_ranked_summary"
+        }
+      ],
+      "scorecard_metric": "frozen_row_v3_speedup_vs_v2",
+      "set": "A",
+      "shape_geomean_v3_vs_v2": 0.9713694464408821,
+      "shape_key": "clustered:262144:rtnn_clustered_262144_ranked_summary",
+      "source": "docs/rebuild/v3/phoenix_v3_set_a_set_b_scorecard_gate_2026-06-22.json"
+    },
+    "scorecard_movement_projection": {
+      "direct_optix_rows_crossing_1_05x": [],
+      "direct_optix_rows_moved": [
+        "rtnn_optix_clustered_262144_ranked_summary"
+      ],
+      "direct_optix_runner_wall_crosses_1_05x_any_row": false,
+      "direct_optix_runner_wall_moves_any_row": true,
+      "directly_moves_backend": "optix",
+      "embree_rows_not_moved_by_this_optix_runner": [
+        "rtnn_embree_clustered_262144_ranked_summary"
+      ],
+      "projection_method": "projected row speedup = frozen row v3_speedup_vs_v2 * runner_vs_legacy same-contract speedup",
+      "rows": [
+        {
+          "backend": "embree",
+          "case_id": "rtnn_embree_clustered_262144_ranked_summary",
+          "directly_moved_by_this_optix_runner": false,
+          "frozen_v3_speedup_vs_v2": 0.945681958160491,
+          "hot_crosses_1_05x": false,
+          "projected_cold_plus_query_v3_speedup_vs_v2": null,
+          "projected_hot_v3_speedup_vs_v2": null,
+          "projected_runner_wall_v3_speedup_vs_v2": null,
+          "row_id": "goal2636_stress|rtnn|rtnn_clustered_262144_ranked_summary|embree|rtnn_embree_clustered_262144_ranked_summary",
+          "runner_wall_crosses_1_05x": false,
+          "runner_wall_moves_toward_target": false
+        },
+        {
+          "backend": "optix",
+          "case_id": "rtnn_optix_clustered_262144_ranked_summary",
+          "directly_moved_by_this_optix_runner": true,
+          "frozen_v3_speedup_vs_v2": 0.9977546820436802,
+          "hot_crosses_1_05x": false,
+          "projected_cold_plus_query_v3_speedup_vs_v2": 1.5773907615557998,
+          "projected_hot_v3_speedup_vs_v2": 0.9933903412717201,
+          "projected_runner_wall_v3_speedup_vs_v2": 1.03622547722238,
+          "row_id": "goal2636_stress|rtnn|rtnn_clustered_262144_ranked_summary|optix|rtnn_optix_clustered_262144_ranked_summary",
+          "runner_wall_crosses_1_05x": false,
+          "runner_wall_moves_toward_target": true
+        }
+      ],
+      "runner_vs_legacy_cold_plus_query_speedup": 1.5809404755935226,
+      "runner_vs_legacy_hot_speedup": 0.9956258378432054,
+      "runner_vs_legacy_runner_wall_speedup": 1.03855736873106
+    },
+    "seed": 20260622,
+    "status": "rtnn_prepared_execution_runner_repeat50_collected_not_release",
+    "true_zero_copy_claim_authorized": false,
+    "variants": [
+      "legacy_app_front_door_prepared_optix",
+      "productized_prepared_execution_runner"
+    ],
+    "warmups": 3
+  },
+  "variant_payload_paths": {
+    "legacy_app_front_door_prepared_optix": "docs/rebuild/v3/evidence/phoenix_v3_phaseA_rtnn_clustered262144_20260624_110456/legacy_app_front_door_prepared_optix.json",
+    "productized_prepared_execution_runner": "docs/rebuild/v3/evidence/phoenix_v3_phaseA_rtnn_clustered262144_20260624_110456/productized_prepared_execution_runner.json"
+  }
+}

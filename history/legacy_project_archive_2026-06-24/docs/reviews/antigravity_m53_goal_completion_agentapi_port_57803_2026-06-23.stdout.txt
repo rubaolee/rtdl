@@ -1,0 +1,4 @@
+{
+  "response": {},
+  "error": "failed to fetch available models: rpc error: code = Unavailable desc = connection error: desc = \"error reading server preface: EOF\""
+}

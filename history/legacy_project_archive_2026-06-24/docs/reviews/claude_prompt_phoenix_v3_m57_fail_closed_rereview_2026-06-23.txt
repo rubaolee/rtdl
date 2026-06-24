@@ -1,0 +1,29 @@
+You previously reviewed Phoenix V3 M57 and authorized with a non-blocking caveat: during --execute, preflight failure did not abort before measured samples.
+
+Please re-review after the fix.
+
+Working directory:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Read:
+
+- docs/reviews/call_for_review_phoenix_v3_m57_source_signature_gated_librts_rerun_authorization_2026-06-23.md
+- scripts/v3_phoenix_m47_librts_stability_protocol.py
+- tests/v3_phoenix_m47_librts_stability_protocol_test.py
+- tests/v3_phoenix_m57_librts_rerun_authorization_packet_gate_test.py
+- docs/reports/phoenix_v3_m57_v3_rebuild_after_preflight_fail_closed_fix_2026-06-23.combined.txt
+- docs/reviews/claude_phoenix_v3_m57_source_signature_gated_librts_rerun_authorization_review_2026-06-23.raw.md
+
+Check specifically:
+
+1. Does build_or_run_packet now return STATUS_FAILED and avoid execute_schedule when execute_preflight returns errors?
+2. Does test_execute_aborts_before_samples_when_preflight_fails cover this?
+3. After this fix, do you still authorize exactly one future M57 source-signature-gated M47 rerun?
+
+Use exactly one verdict:
+
+- authorize_m57_one_source_signature_gated_librts_rerun_after_fail_closed_fix
+- request_m57_changes_before_authorization
+- reject_m57_rerun_authorization
+
+Preserve non-authorization: no V3 release, no all-app benchmark run, no broad paid POD campaign, no public speedup wording, no broad V3-over-V2 claim, no V4, no embedding, no C ABI, no true-zero-copy claim, no watch-row closure, no scenario/sample-count changes, no second M57 run.

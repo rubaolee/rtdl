@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 import sys
@@ -39,7 +40,7 @@ def run_workflow() -> dict[str, object]:
     plan = plans[0]
     return {
         "app": "primitive_discovery_workflow",
-        "status": "metadata_only_no_execution",
+        "status": "metadata_preview",
         "primitive_match": {
             "id": primitive_matches[0].node_id,
             "title": primitive_matches[0].title,
@@ -80,16 +81,34 @@ def run_workflow() -> dict[str, object]:
             ),
             "warnings": plan.warnings,
         },
-        "claim_boundary": (
-            "This example does not run a backend, dispatch a partner, select a "
-            "partner, authorize performance wording, or authorize release "
-            "readiness. It only shows how to inspect RTDL primitive metadata."
-        ),
+        "note": "This preview shows how RTDL describes a primitive before you run a backend.",
     }
 
 
-def main() -> int:
-    print(json.dumps(run_workflow(), indent=2, sort_keys=True))
+def summarize_workflow(payload: dict[str, object]) -> dict[str, object]:
+    primitive = payload["primitive_match"]
+    recipe = payload["recipe_match"]
+    plan = payload["advisory_plan"]
+    assert isinstance(primitive, dict)
+    assert isinstance(recipe, dict)
+    assert isinstance(plan, dict)
+    return {
+        "app": payload["app"],
+        "mode": "metadata preview",
+        "primitive": primitive["title"],
+        "recipe": recipe["title"],
+        "recommendation": plan["recommendation"],
+        "next_step": "choose an explicit backend and partner when you are ready to execute the route",
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Preview RTDL primitive and recipe metadata.")
+    parser.add_argument("--json", action="store_true", help="Print the full metadata payload.")
+    args = parser.parse_args(argv)
+    payload = run_workflow()
+    output = payload if args.json else summarize_workflow(payload)
+    print(json.dumps(output, indent=2, sort_keys=True))
     return 0
 
 

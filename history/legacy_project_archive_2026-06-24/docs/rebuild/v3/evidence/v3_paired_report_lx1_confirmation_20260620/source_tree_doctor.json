@@ -1,0 +1,174 @@
+{
+  "checks": [
+    {
+      "detail": "v3-rebuild-2026-06-20",
+      "name": "version marker",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "3.0.0.dev20260620",
+      "name": "pyproject V3 rebuild version",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "README.md",
+      "name": "front page reset",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "docs/README.md",
+      "name": "docs index reset",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "tutorials/README.md",
+      "name": "tutorials rebuild path",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "tutorials/current/README.md",
+      "name": "V3 tutorial path",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "examples/README.md",
+      "name": "examples rebuild status",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "docs/learn/current_claim_boundaries.md",
+      "name": "claim boundary suspended",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "docs/rebuild/v3/README.md",
+      "name": "V3 rebuild control",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "docs/rebuild/v3/v3_setup_and_rerun_runbook_2026-06-20.md",
+      "name": "V3 setup rerun runbook",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "docs/rebuild/v3/v3_release_authorization_blockers_2026-06-20.md",
+      "name": "V3 release blockers",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "scripts/v3_install_gpu_pod_env.sh",
+      "name": "V3 GPU pod installer",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "docs/release_reports/README.md",
+      "name": "release reports paused",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "docs/history/quarantine_v3_v4_reset_2026-06-20/README.md",
+      "name": "quarantine index",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "examples/current/getting_started/rtdl_hello_world.py",
+      "name": "V3 hello world",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "scripts/run_test_matrix.py --group v3_rebuild (9 modules)",
+      "name": "V3 rebuild test matrix",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "rtdsl",
+      "name": "module rtdsl",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "numpy",
+      "name": "module numpy",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "detail": "imageio",
+      "name": "optional module imageio",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "imageio_ffmpeg",
+      "name": "optional module imageio_ffmpeg",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "cupy",
+      "name": "optional module cupy",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "numba",
+      "name": "optional module numba",
+      "required": false,
+      "status": "pass"
+    },
+    {
+      "detail": "build/librtdl_optix.so/dylib/dll not found",
+      "name": "optional OptiX library",
+      "required": false,
+      "status": "warn"
+    },
+    {
+      "detail": "build/librtdl_embree.so/dylib/dll not found",
+      "name": "optional Embree library",
+      "required": false,
+      "status": "warn"
+    },
+    {
+      "detail": "examples/current/getting_started/rtdl_hello_world.py ran",
+      "name": "hello-world smoke",
+      "required": true,
+      "status": "pass"
+    }
+  ],
+  "ok": true,
+  "repo": "/home/lestat/work/rtdl_v3_paired_confirm_20260620/current",
+  "required_failures": [],
+  "status": "v3_rebuild_ready",
+  "tool": "rtdl_source_tree_doctor",
+  "version": "v3-rebuild-2026-06-20",
+  "warnings": [
+    {
+      "detail": "build/librtdl_optix.so/dylib/dll not found",
+      "name": "optional OptiX library",
+      "required": false,
+      "status": "warn"
+    },
+    {
+      "detail": "build/librtdl_embree.so/dylib/dll not found",
+      "name": "optional Embree library",
+      "required": false,
+      "status": "warn"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "status": "rtdbscan_continuation_bottleneck_no_go_not_promoted",
+  "generic_capability": "component_union",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows": 0,
+  "current_packet_external_review_status": "blocked_current_packet",
+  "current_packet_2ai_consensus_status": "not_recorded_for_this_packet",
+  "external_review_blockage": "docs/reviews/external_review_blocked_phoenix_v3_rtdbscan_continuation_bottleneck_no_go_2026-06-21.md",
+  "same_contract_source": "docs/rebuild/v3/evidence/phoenix_v3_rtdbscan_same_contract_20260620_fresh/summary.json",
+  "same_contract_packet": "docs/rebuild/v3/phoenix_v3_rtdbscan_same_contract_pod_evidence_2026-06-20.md",
+  "m23_grouped_stream_source": "docs/rebuild/v3/evidence/phoenix_v3_m4_grouped_continuation_20260620/m23_dbscan_component_signature_524288.json",
+  "verdict": "do_not_promote_rtdbscan_to_m7_from_current_evidence",
+  "why_no_go_now": [
+    "The fair same-contract route shows only 1.150x, 1.079x, and 1.071x serious OptiX-over-Embree wall speedups.",
+    "At 262,144 and 524,288 points, the shared Numba component-signature continuation dominates the OptiX wall time.",
+    "The M23 grouped-stream component-signature route is valid internal evidence, but it is a different contract and has no same-scale Embree baseline.",
+    "The old 1483.603x all-app row compared different routes and had matches_reference null."
+  ],
+  "same_contract_rows": [
+    {
+      "point_count": 4096,
+      "optix_speedup_vs_embree": 1.4657467573121599,
+      "rt_threshold_speedup_vs_embree_compact_rows": 2.0607793009329582,
+      "optix_sec": 0.012644287198781967,
+      "optix_rt_count_threshold_sec": 0.005601361393928528,
+      "optix_numba_component_continuation_sec": 0.004297021776437759,
+      "continuation_dominates_optix": false,
+      "same_canonical_component_signature": true,
+      "validation_control": true
+    },
+    {
+      "point_count": 65536,
+      "optix_speedup_vs_embree": 1.1502402630367083,
+      "rt_threshold_speedup_vs_embree_compact_rows": 1.2973527952747557,
+      "optix_sec": 0.33977610617876053,
+      "optix_rt_count_threshold_sec": 0.1667071469128132,
+      "optix_numba_component_continuation_sec": 0.13713721930980682,
+      "continuation_dominates_optix": false,
+      "same_canonical_component_signature": true,
+      "validation_control": false
+    },
+    {
+      "point_count": 262144,
+      "optix_speedup_vs_embree": 1.079263171393757,
+      "rt_threshold_speedup_vs_embree_compact_rows": 1.3118499178355432,
+      "optix_sec": 2.545088078826666,
+      "optix_rt_count_threshold_sec": 0.6554994583129883,
+      "optix_numba_component_continuation_sec": 1.728318229317665,
+      "continuation_to_rt_threshold_ratio": 2.636642494115583,
+      "optix_continuation_wall_share": 0.679073080113817,
+      "continuation_dominates_optix": true,
+      "same_canonical_component_signature": true,
+      "validation_control": false
+    },
+    {
+      "point_count": 524288,
+      "optix_speedup_vs_embree": 1.071038907298004,
+      "rt_threshold_speedup_vs_embree_compact_rows": 1.4703640801800524,
+      "optix_sec": 8.545055072754622,
+      "optix_rt_count_threshold_sec": 1.3103947713971138,
+      "optix_numba_component_continuation_sec": 6.906373325735331,
+      "continuation_to_rt_threshold_ratio": 5.27045490328335,
+      "optix_continuation_wall_share": 0.8082339125930505,
+      "continuation_dominates_optix": true,
+      "same_canonical_component_signature": true,
+      "validation_control": false
+    }
+  ],
+  "m23_grouped_stream_internal_row": {
+    "point_count": 524288,
+    "partners": ["cupy", "numba"],
+    "output_mode": "component_signature",
+    "oracle_match": true,
+    "cluster_size_signatures_match": true,
+    "core_counts_match": true,
+    "noise_counts_match": true,
+    "materializes_python_rows": false,
+    "native_continuation_active": true,
+    "rt_core_accelerated": true,
+    "cupy_hot_component_label_elapsed_sec_median": 0.0005934387445449829,
+    "numba_hot_component_label_elapsed_sec_median": 0.0006683692336082458,
+    "cupy_prepare_sec": 1.3524085655808449,
+    "numba_prepare_sec": 1.2064588218927383,
+    "promotion_blocker": "different_contract_no_same_scale_embree_baseline"
+  },
+  "forbidden_public_wording": [
+    "RTDBSCAN V3 is 1483x faster",
+    "RTDBSCAN is M7-qualified",
+    "M23 grouped-stream component signature proves same-contract DBSCAN speedup",
+    "The RT threshold phase alone is the RTDBSCAN app speedup",
+    "component_signature is full DBSCAN labels"
+  ],
+  "allowed_internal_wording": [
+    "RTDBSCAN has useful internal V3 evidence for component-signature routes.",
+    "The same-contract OptiX route is slightly faster than Embree overall but not enough for M7.",
+    "The current bottleneck is the shared continuation, not the RT threshold phase alone."
+  ],
+  "reopen_requirements": [
+    "Optimize the shared component-signature continuation under the same Embree/OptiX contract and rerun the same-contract matrix.",
+    "Or add a same-scale Embree baseline for the M23 grouped-stream component-signature contract.",
+    "Keep component_signature distinct from full DBSCAN labels.",
+    "Keep validation/signature parity and phase timing visible.",
+    "Obtain external review before any M7 or public speedup wording."
+  ],
+  "goal_level_decision_audit": {
+    "decision": "classify RTDBSCAN as no-go for M7 from current evidence and avoid a new pod rerun until a real same-contract optimization exists",
+    "was_i_foolish": "No. The current evidence already identifies the bottleneck and prevents a route-mixing mistake.",
+    "foolish_actions": "It would be foolish to promote the old 1483.603x row, to mix M23 grouped-stream evidence with the same-contract Numba route, or to spend pod time rerunning unchanged code.",
+    "other_path": "Run a new pod matrix immediately. That would not solve the measured continuation bottleneck without a changed same-contract implementation.",
+    "different_path_now": "Record the no-go boundary, gate it in tests, teach the route split, and move to another V3 capability or a real continuation optimization design."
+  }
+}

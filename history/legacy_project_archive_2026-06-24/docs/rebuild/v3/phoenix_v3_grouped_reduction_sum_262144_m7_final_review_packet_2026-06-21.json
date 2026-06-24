@@ -1,0 +1,128 @@
+{
+  "status": "grouped_reduction_sum_262144_m7_qualified_row_scoped",
+  "generic_capability": "grouped_reduction",
+  "candidate_row_id": "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "row_scoped_public_speedup_claim_authorized": true,
+  "whole_app_speedup_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "m7_promotion_authorized": true,
+  "m7_qualified_release_rows": 1,
+  "local_evidence_sufficient_for_external_public_row_review": true,
+  "external_review_required_before_m7": true,
+  "current_packet_external_review_status": "claude_approved",
+  "current_packet_2ai_consensus_status": "claude_codex_consensus_complete",
+  "external_review": "docs/reviews/claude_phoenix_v3_grouped_reduction_sum_262144_m7_final_review_packet_review_2026-06-21.md",
+  "codex_consensus": "docs/reviews/codex_phoenix_v3_grouped_reduction_sum_262144_m7_final_review_packet_2ai_consensus_2026-06-21.md",
+  "previous_external_review_blockage": "docs/reviews/external_review_blocked_phoenix_v3_grouped_reduction_sum_262144_m7_final_review_packet_2026-06-21.md",
+  "source_provenance": {
+    "git_head_available": false,
+    "git_head_artifact_value": "fatal: not a git repository (or any of the parent directories): .git",
+    "traceability_basis": "source_manifest.sha256",
+    "source_manifest": "docs/rebuild/v3/evidence/phoenix_v3_grouped_reduction_scalar_broadcast_repeat100_20260620/source_manifest.sha256",
+    "source_version": "docs/rebuild/v3/evidence/phoenix_v3_grouped_reduction_scalar_broadcast_repeat100_20260620/source_version.txt",
+    "source_version_value": "v3-rebuild-2026-06-20",
+    "manifest_files": [
+      "VERSION",
+      "src/rtdsl/optix_runtime.py",
+      "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+      "scripts/v3_0_m28_raydb_prepared_grouped_refresh.py",
+      "scripts/v3_gpu_python_env_gate.py",
+      "scripts/v3_optix_hardware_gate.py"
+    ],
+    "promotion_note": "The pod artifact has no git HEAD. Promotion relies on the saved source_manifest.sha256 file as the source traceability record."
+  },
+  "source_packets": [
+    "docs/rebuild/v3/phoenix_v3_grouped_reduction_prepared_query_contract_2026-06-20.md",
+    "docs/rebuild/v3/phoenix_v3_grouped_reduction_sum_m7_candidate_wording_2026-06-20.md",
+    "docs/rebuild/v3/phoenix_v3_grouped_reduction_scalar_broadcast_optimization_pod_evidence_2026-06-20.md"
+  ],
+  "source_artifacts": [
+    "docs/rebuild/v3/evidence/phoenix_v3_grouped_reduction_scalar_broadcast_repeat100_20260620/grouped_sum_scalar_broadcast_repeat100_262144.json"
+  ],
+  "candidate_row": {
+    "row_id": "grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+    "operation": "group_sum_i64",
+    "generated_rows": 262144,
+    "generated_groups": 1024,
+    "warmup": 3,
+    "repeat": 100,
+    "hardware": "NVIDIA RTX 4000 Ada Generation",
+    "backend_pair": "Embree baseline versus OptiX candidate",
+    "partner_continuation_required": false,
+    "same_contract": true,
+    "all_match_cpu_reference": true,
+    "app_specific_native_engine_logic_allowed": false,
+    "native_engine_customization": false,
+    "hot_query_speedup_embree_over_optix": 203.021747489659,
+    "actual_repeat100_loop_speedup": 200.352573808868,
+    "actual_repeat100_cold_plus_loop_speedup": 27.9170612400067,
+    "embree_workload_build_sec": 1.6202586889267,
+    "optix_workload_build_sec": 1.6438205987215,
+    "embree_cold_plus_loop_sec": 102.218583457172,
+    "optix_cold_plus_loop_sec": 3.66150944679975,
+    "embree_hit_event_count_before_dedup": 1853,
+    "optix_hit_event_count_before_dedup": 3693,
+    "hit_event_count_note": "Embree and OptiX differ before deduplication because traversal/order details differ by backend; both rows match the CPU reference after reduction.",
+    "cold_prepare_disclosed": true,
+    "actual_repeat100_measured_not_modeled": true,
+    "source_provenance_disclosed": true,
+    "local_gate_reading": "m7_qualified_row_scoped_after_claude_codex_consensus",
+    "m7_promoted": true
+  },
+  "excluded_rows": [
+    {
+      "row_id": "grouped_reduction_sum_scalar_broadcast_repeat100_524288",
+      "reason": "large_cold_prepare_cost_limits_public_claim",
+      "actual_repeat100_cold_plus_loop_speedup": 2.9834934390118,
+      "optix_cold_plus_loop_sec": 98.9603253230452,
+      "m7_promoted": false
+    },
+    {
+      "row_id": "grouped_reduction_count_repeat100_262144",
+      "reason": "count_row_kept_internal_double_digit_break_even",
+      "break_even_repeat_count_ceiling": 14,
+      "m7_promoted": false
+    },
+    {
+      "row_id": "grouped_reduction_count_repeat100_524288",
+      "reason": "count_row_kept_internal_double_digit_break_even",
+      "break_even_repeat_count_ceiling": 14,
+      "m7_promoted": false
+    }
+  ],
+  "closed_promotion_conditions": [
+    "fresh_external_public_row_review_closed_by_claude",
+    "2_ai_consensus_closed_by_claude_codex",
+    "source_provenance_gap_documented",
+    "final_public_wording_approved_for_exact_row",
+    "whole_app_and_broad_v3_over_v2_claims_remain_false"
+  ],
+  "remaining_non_release_boundaries": [
+    "release_authorized remains false",
+    "public_speedup_claim_authorized remains false for broad/global V3 claims",
+    "row_scoped_public_speedup_claim_authorized applies only to grouped_reduction_sum_scalar_broadcast_repeat100_262144",
+    "grouped_reduction_sum_scalar_broadcast_repeat100_524288 remains excluded",
+    "count rows remain internal",
+    "broad_v3_faster_than_v2_claim_authorized remains false",
+    "whole_app_speedup_claim_authorized remains false"
+  ],
+  "approved_row_scoped_public_wording": "For a fixed-schema prepared grouped-sum workload on an NVIDIA RTX 4000 Ada Generation pod, 262,144 rows / 1,024 groups, warmup=3 and actual repeat=100, RTDL's OptiX route was 200.353x faster than the Embree route for the measured 100-query prepared loop. Counting cold prepare once plus that measured loop, OptiX was 27.917x faster. This is a row-scoped grouped_reduction prepared-query result, not a whole-app, whole-database, or broad V3-over-V2 speedup claim.",
+  "forbidden_public_wording": [
+    "V3 is 200x faster",
+    "RTDL is 200x faster end to end",
+    "RTDL is a database engine",
+    "RayDB is accelerated end to end",
+    "grouped_reduction proves broad V3-over-V2 speedup",
+    "524,288 grouped_sum is the public row",
+    "count rows are public grouped_reduction speedup rows"
+  ],
+  "goal_level_decision_audit": {
+    "decision": "promote only the 262144-row grouped_sum actual repeat100 row to M7-qualified row-scoped status after Claude/Codex consensus",
+    "was_i_foolish": "No. Claude approved the exact row subject to documenting source provenance and recording second-AI consensus; both conditions are now recorded.",
+    "foolish_actions": "It would be foolish to treat this as a V3 release, hide the missing git_head provenance gap, include the 524288-row/count rows, or claim broad V3-over-V2 speedup.",
+    "other_path": "Leave the row in blocked candidate status even after external approval. That would under-use the strongest reusable V3 capability evidence.",
+    "different_path_now": "Promote one exact row, keep release and broad claims false, and continue Phoenix V3 with the next reusable capability."
+  }
+}

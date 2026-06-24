@@ -29,6 +29,7 @@ from .triton_partner_continuation import run_triton_grouped_argmin_f64
 from .triton_partner_continuation import run_triton_grouped_topk_f64
 from .triton_partner_continuation import run_triton_grouped_vector_sum_f64x2_by_offsets
 from .partner_continuation_protocol import PartnerContinuationOverflowError
+from .partner_protocol import v2_4_phase_timing_metadata
 
 _UINT32_MAX = 2**32 - 1
 _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS = {}
@@ -37,6 +38,7 @@ _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL = None
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS = None
 _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL = None
+_CUPY_GROUPED_VECTOR_SUM_OFFSETS_WARP_F64X2_KERNEL = None
 _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
 _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL = None
 _NUMBA_I32_PARENT_BORDER_INIT_KERNEL = None
@@ -456,10 +458,8 @@ def partner_group_vector_sum_2d_by_key(keys, values_x, values_y, group_count: in
     raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
 
 
-def _cupy_grouped_vector_sum_2d_by_offsets(cupy, row_offsets, values_x, values_y):
+def _cupy_grouped_vector_sum_2d_by_offsets(cupy, row_offsets, values_x, values_y, *, validate_row_offsets: bool = True):
     """Reduce presegmented grouped 2D vectors with a generic CuPy RawKernel."""
-
-    global _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL
 
     row_offsets = row_offsets.astype(cupy.int64, copy=False)
     values_x = values_x.astype(cupy.float64, copy=False)
@@ -477,15 +477,97 @@ def _cupy_grouped_vector_sum_2d_by_offsets(cupy, row_offsets, values_x, values_y
             {
                 "presegmented_row_offsets": True,
                 "adapter_kernel": "cupy_grouped_vector_sum_offsets_f64x2_kernel",
+                "kernel_strategy": "thread_per_group_serial",
                 "program_count": 0,
                 "threads_per_block": 128,
+                "groups_per_block": 128,
+                "threads_per_group": 1,
+                "launch_parallelism_axis": "group_count_thread_per_group",
+                "rows_per_group_mean": 0.0,
+                "tiled_row_parallel_reduction_used": False,
+                "thread_per_group_serial_loop_used": True,
                 "global_atomic_add_used": False,
             },
         )
-    if bool(cupy.any(row_offsets[1:] < row_offsets[:-1]).item()):
-        raise ValueError("row_offsets must be monotonically nondecreasing")
-    if int(row_offsets[0].item()) != 0 or int(row_offsets[-1].item()) != row_count:
-        raise ValueError("row_offsets must start at 0 and end at the row count")
+    if validate_row_offsets:
+        if bool(cupy.any(row_offsets[1:] < row_offsets[:-1]).item()):
+            raise ValueError("row_offsets must be monotonically nondecreasing")
+        if int(row_offsets[0].item()) != 0 or int(row_offsets[-1].item()) != row_count:
+            raise ValueError("row_offsets must start at 0 and end at the row count")
+    output_x = cupy.empty((group_count,), dtype=cupy.float64)
+    output_y = cupy.empty((group_count,), dtype=cupy.float64)
+    metadata = _cupy_launch_grouped_vector_sum_2d_by_offsets(
+        cupy,
+        row_offsets,
+        values_x,
+        values_y,
+        output_x,
+        output_y,
+    )
+    return (output_x, output_y, metadata)
+
+
+def _cupy_launch_grouped_vector_sum_2d_by_offsets(cupy, row_offsets, values_x, values_y, output_x, output_y):
+    group_count = int(row_offsets.size) - 1
+    row_count = int(values_x.size)
+    strategy = (
+        "warp_per_group_tiled"
+        if group_count > 0 and (float(row_count) / float(group_count)) >= 32.0
+        else "thread_per_group_serial"
+    )
+    if strategy == "warp_per_group_tiled":
+        kernel = _cupy_grouped_vector_sum_offsets_warp_kernel(cupy)
+        threads_per_block = 256
+        groups_per_block = 8
+        threads_per_group = 32
+        blocks = (max(1, math.ceil(group_count / groups_per_block)),)
+        kernel(
+            blocks,
+            (threads_per_block,),
+            (row_offsets, values_x, values_y, output_x, output_y, group_count),
+        )
+        return {
+            "presegmented_row_offsets": True,
+            "adapter_kernel": "cupy_grouped_vector_sum_offsets_warp_f64x2_kernel",
+            "kernel_strategy": strategy,
+            "program_count": int(blocks[0]),
+            "threads_per_block": threads_per_block,
+            "groups_per_block": groups_per_block,
+            "threads_per_group": threads_per_group,
+            "launch_parallelism_axis": "group_count_warp_per_group_row_parallel",
+            "rows_per_group_mean": (float(row_count) / float(group_count)) if group_count else 0.0,
+            "tiled_row_parallel_reduction_used": True,
+            "thread_per_group_serial_loop_used": False,
+            "global_atomic_add_used": False,
+        }
+
+    kernel = _cupy_grouped_vector_sum_offsets_serial_kernel(cupy)
+    threads_per_block = 128
+    blocks = (max(1, math.ceil(group_count / threads_per_block)),)
+    kernel(
+        blocks,
+        (threads_per_block,),
+        (row_offsets, values_x, values_y, output_x, output_y, group_count),
+    )
+    return {
+        "presegmented_row_offsets": True,
+        "adapter_kernel": "cupy_grouped_vector_sum_offsets_f64x2_kernel",
+        "kernel_strategy": strategy,
+        "program_count": int(blocks[0]),
+        "threads_per_block": threads_per_block,
+        "groups_per_block": threads_per_block,
+        "threads_per_group": 1,
+        "launch_parallelism_axis": "group_count_thread_per_group",
+        "rows_per_group_mean": (float(row_count) / float(group_count)) if group_count else 0.0,
+        "tiled_row_parallel_reduction_used": False,
+        "thread_per_group_serial_loop_used": True,
+        "global_atomic_add_used": False,
+    }
+
+
+def _cupy_grouped_vector_sum_offsets_serial_kernel(cupy):
+    global _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL
+
     if _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL is None:
         source = r'''
         extern "C" __global__
@@ -517,26 +599,53 @@ def _cupy_grouped_vector_sum_2d_by_offsets(cupy, row_offsets, values_x, values_y
             source,
             "rtdl_cupy_grouped_vector_sum_offsets_f64x2",
         )
-    output_x = cupy.empty((group_count,), dtype=cupy.float64)
-    output_y = cupy.empty((group_count,), dtype=cupy.float64)
-    threads_per_block = 128
-    blocks = (max(1, math.ceil(group_count / threads_per_block)),)
-    _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL(
-        blocks,
-        (threads_per_block,),
-        (row_offsets, values_x, values_y, output_x, output_y, group_count),
-    )
-    return (
-        output_x,
-        output_y,
-        {
-            "presegmented_row_offsets": True,
-            "adapter_kernel": "cupy_grouped_vector_sum_offsets_f64x2_kernel",
-            "program_count": int(blocks[0]),
-            "threads_per_block": threads_per_block,
-            "global_atomic_add_used": False,
-        },
-    )
+    return _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL
+
+
+def _cupy_grouped_vector_sum_offsets_warp_kernel(cupy):
+    global _CUPY_GROUPED_VECTOR_SUM_OFFSETS_WARP_F64X2_KERNEL
+
+    if _CUPY_GROUPED_VECTOR_SUM_OFFSETS_WARP_F64X2_KERNEL is None:
+        source = r'''
+        extern "C" __global__
+        void rtdl_cupy_grouped_vector_sum_offsets_warp_f64x2(
+            const long long* row_offsets,
+            const double* values_x,
+            const double* values_y,
+            double* output_x,
+            double* output_y,
+            const long long group_count
+        ) {
+            const int thread = threadIdx.x;
+            const int lane = thread & 31;
+            const int warp = thread >> 5;
+            const int groups_per_block = blockDim.x >> 5;
+            const long long group = (long long)blockIdx.x * groups_per_block + warp;
+            double sum_x = 0.0;
+            double sum_y = 0.0;
+            if (group < group_count) {
+                const long long start = row_offsets[group];
+                const long long end = row_offsets[group + 1];
+                for (long long index = start + lane; index < end; index += 32) {
+                    sum_x += values_x[index];
+                    sum_y += values_y[index];
+                }
+            }
+            for (int delta = 16; delta > 0; delta >>= 1) {
+                sum_x += __shfl_down_sync(0xffffffff, sum_x, delta);
+                sum_y += __shfl_down_sync(0xffffffff, sum_y, delta);
+            }
+            if (lane == 0 && group < group_count) {
+                output_x[group] = sum_x;
+                output_y[group] = sum_y;
+            }
+        }
+        '''
+        _CUPY_GROUPED_VECTOR_SUM_OFFSETS_WARP_F64X2_KERNEL = cupy.RawKernel(
+            source,
+            "rtdl_cupy_grouped_vector_sum_offsets_warp_f64x2",
+        )
+    return _CUPY_GROUPED_VECTOR_SUM_OFFSETS_WARP_F64X2_KERNEL
 
 
 def partner_group_max_by_key(keys, values, group_count: int, *, partner: str = "torch", initial=0):
@@ -2303,6 +2412,7 @@ def grouped_vector_sum_2d_partner_columns(
             row_offsets,
             values_x,
             values_y,
+            validate_row_offsets=bool(validate_row_offsets),
         )
     else:
         sum_x, sum_y = partner_group_vector_sum_2d_by_key(
@@ -2382,8 +2492,9 @@ def prepare_grouped_vector_sum_2d_partner_columns_session(
 ) -> dict[str, object]:
     """Prepare a reusable grouped-vector sum session over presegmented columns."""
 
-    if str(partner).strip().lower().replace("-", "_") != "numba":
-        raise ValueError("prepared grouped vector-sum sessions currently require partner='numba'")
+    normalized_partner = str(partner).strip().lower().replace("-", "_")
+    if normalized_partner not in {"numba", "cupy"}:
+        raise ValueError("prepared grouped vector-sum sessions currently require partner='numba' or partner='cupy'")
     if not isinstance(vector_columns, dict):
         raise ValueError("vector_columns must be a mapping")
     group_count = int(group_count)
@@ -2402,6 +2513,110 @@ def prepare_grouped_vector_sum_2d_partner_columns_session(
         raise ValueError("values_y length must match group_ids length")
     if _column_length({"row_offsets": row_offsets}, "row_offsets") != group_count + 1:
         raise ValueError("row_offsets length must equal group_count + 1")
+
+    if normalized_partner == "cupy":
+        runtime = _partner_module("cupy")
+        cupy = runtime["module"]
+        row_offsets = row_offsets.astype(cupy.int64, copy=False)
+        values_x = values_x.astype(cupy.float64, copy=False)
+        values_y = values_y.astype(cupy.float64, copy=False)
+        if validate_row_offsets:
+            if bool(cupy.any(row_offsets[1:] < row_offsets[:-1]).item()):
+                raise ValueError("row_offsets must be monotonically nondecreasing")
+            if int(row_offsets[0].item()) != 0 or int(row_offsets[-1].item()) != row_count:
+                raise ValueError("row_offsets must start at 0 and end at the row count")
+        sum_x = cupy.empty((group_count,), dtype=cupy.float64)
+        sum_y = cupy.empty((group_count,), dtype=cupy.float64)
+        rows_per_group_mean = (float(row_count) / float(group_count)) if group_count else 0.0
+        use_warp = group_count > 0 and rows_per_group_mean >= 32.0
+        launch_metadata = {
+            "adapter_kernel": (
+                "cupy_grouped_vector_sum_offsets_warp_f64x2_kernel"
+                if use_warp
+                else "cupy_grouped_vector_sum_offsets_f64x2_kernel"
+            ),
+            "kernel_strategy": "warp_per_group_tiled" if use_warp else "thread_per_group_serial",
+            "program_count": (
+                math.ceil(group_count / 8)
+                if use_warp
+                else (math.ceil(group_count / 128) if group_count else 0)
+            ),
+            "threads_per_block": 256 if use_warp else 128,
+            "groups_per_block": 8 if use_warp else 128,
+            "threads_per_group": 32 if use_warp else 1,
+            "launch_parallelism_axis": (
+                "group_count_warp_per_group_row_parallel"
+                if use_warp
+                else "group_count_thread_per_group"
+            ),
+            "rows_per_group_mean": rows_per_group_mean,
+            "tiled_row_parallel_reduction_used": use_warp,
+            "thread_per_group_serial_loop_used": not use_warp,
+            "global_atomic_add_used": False,
+        }
+        columns = {
+            "group_ids": cupy.arange(group_count, dtype=cupy.int64),
+            "sum_x": sum_x,
+            "sum_y": sum_y,
+        }
+        metadata = {
+            "adapter": "prepare_grouped_vector_sum_2d_partner_columns_session",
+            "partner": "cupy",
+            "session_version": "rtdl.v3.phoenix.cupy_grouped_vector_sum_offsets_session.v1",
+            "input_contract": "caller_supplied_presegmented_grouped_vector_rows_2d",
+            "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+            "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+            "v2_5_cupy_presegmented_offsets_used": True,
+            "v2_5_cupy_adapter_kernel": launch_metadata["adapter_kernel"],
+            "v2_5_cupy_kernel_strategy": launch_metadata["kernel_strategy"],
+            "v2_5_cupy_global_atomic_add_used": False,
+            "v2_5_cupy_offset_program_count": launch_metadata["program_count"],
+            "v2_5_cupy_threads_per_block": launch_metadata["threads_per_block"],
+            "v2_5_cupy_groups_per_block": launch_metadata["groups_per_block"],
+            "v2_5_cupy_threads_per_group": launch_metadata["threads_per_group"],
+            "v2_5_cupy_launch_parallelism_axis": launch_metadata["launch_parallelism_axis"],
+            "v2_5_cupy_rows_per_group_mean": launch_metadata["rows_per_group_mean"],
+            "v2_5_cupy_tiled_row_parallel_reduction_used": launch_metadata[
+                "tiled_row_parallel_reduction_used"
+            ],
+            "v2_5_cupy_thread_per_group_serial_loop_used": launch_metadata[
+                "thread_per_group_serial_loop_used"
+            ],
+            "row_offset_validation_performed_at_prepare": bool(validate_row_offsets),
+            "per_run_neutral_handoff_validation_used": False,
+            "output_columns_reused": True,
+            "native_engine_row_contract": "not_called_partner_continuation_only",
+            "group_count": group_count,
+            "row_count": row_count,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_5_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "claim_boundary": (
+                "Prepared generic grouped vector-sum session over caller-supplied CuPy columns. "
+                "It reuses output columns, does not call native RT traversal, and does not "
+                "authorize true zero-copy, release, or speedup claims."
+            ),
+        }
+        session = {
+            "adapter": "grouped_vector_sum_2d_partner_columns_session",
+            "partner": "cupy",
+            "cupy_session": {
+                "row_offsets": row_offsets,
+                "values_x": values_x,
+                "values_y": values_y,
+                "outputs": {"sum_x": sum_x, "sum_y": sum_y},
+                "group_count": group_count,
+                "row_count": row_count,
+                "launch_metadata": launch_metadata,
+            },
+            "columns": columns,
+            "metadata": metadata,
+        }
+        if return_metadata:
+            return {"session": session, "columns": columns, "metadata": metadata}
+        return session
 
     from .numba_partner_continuation import prepare_numba_grouped_vector_sum_f64x2_offsets_session
     from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
@@ -2441,8 +2656,21 @@ def prepare_grouped_vector_sum_2d_partner_columns_session(
         "v2_6_neutral_handoff_validation_status": validation["status"],
         "v2_6_neutral_handoff_column_count": handoff["column_count"],
         "v2_5_numba_presegmented_offsets_used": True,
-        "v2_5_numba_adapter_kernel": "numba_grouped_vector_sum_offsets_f64x2_kernel",
+        "v2_5_numba_adapter_kernel": numba_session["adapter_kernel"],
+        "v2_5_numba_kernel_strategy": numba_session["resolved_kernel_strategy"],
         "v2_5_numba_global_atomic_add_used": False,
+        "v2_5_numba_offset_program_count": numba_session["program_count"],
+        "v2_5_numba_threads_per_block": int(numba_session["block_size"]),
+        "v2_5_numba_groups_per_block": numba_session["groups_per_block"],
+        "v2_5_numba_threads_per_group": numba_session["threads_per_group"],
+        "v2_5_numba_launch_parallelism_axis": numba_session["launch_parallelism_axis"],
+        "v2_5_numba_rows_per_group_mean": numba_session["rows_per_group_mean"],
+        "v2_5_numba_tiled_row_parallel_reduction_used": bool(
+            numba_session["tiled_row_parallel_reduction_used"]
+        ),
+        "v2_5_numba_thread_per_group_serial_loop_used": bool(
+            numba_session["thread_per_group_serial_loop_used"]
+        ),
         "row_offset_validation_performed_at_prepare": bool(validate_row_offsets),
         "per_run_neutral_handoff_validation_used": False,
         "output_columns_reused": True,
@@ -2481,10 +2709,59 @@ def run_grouped_vector_sum_2d_partner_columns_session(
 
     if not isinstance(prepared_session, dict):
         raise ValueError("prepared_session must be a mapping")
-    if prepared_session.get("partner") != "numba":
-        raise ValueError("prepared grouped vector-sum sessions currently require partner='numba'")
+    if prepared_session.get("partner") not in {"numba", "cupy"}:
+        raise ValueError("prepared grouped vector-sum sessions currently require partner='numba' or partner='cupy'")
     if prepared_session.get("adapter") != "grouped_vector_sum_2d_partner_columns_session":
         raise ValueError("unexpected prepared grouped vector-sum session adapter")
+
+    if prepared_session.get("partner") == "cupy":
+        cupy = _partner_module("cupy")["module"]
+        cupy_session = prepared_session["cupy_session"]
+        started = time.perf_counter()
+        launch_metadata = _cupy_launch_grouped_vector_sum_2d_by_offsets(
+            cupy,
+            cupy_session["row_offsets"],
+            cupy_session["values_x"],
+            cupy_session["values_y"],
+            cupy_session["outputs"]["sum_x"],
+            cupy_session["outputs"]["sum_y"],
+        )
+        cupy.cuda.Stream.null.synchronize()
+        elapsed = time.perf_counter() - started
+        columns = dict(prepared_session["columns"])
+        metadata = dict(prepared_session["metadata"])
+        metadata.update(
+            {
+                "adapter": "run_grouped_vector_sum_2d_partner_columns_session",
+                "prepared_session_reused": True,
+                "output_columns_reused": True,
+                "per_run_neutral_handoff_validation_used": False,
+                "phase_timing": v2_4_phase_timing_metadata(
+                    {"partner_continuation": elapsed},
+                    promoted_performance_path=False,
+                    same_phase_contract_as_basis=False,
+                    source="run_cupy_prepared_grouped_vector_sum_f64x2_by_offsets",
+                ),
+                "v2_5_cupy_preview_kernel_status": "preview_not_promoted",
+                "v2_5_cupy_adapter_kernel": launch_metadata.get("adapter_kernel"),
+                "v2_5_cupy_kernel_strategy": launch_metadata.get("kernel_strategy"),
+                "v2_5_cupy_offset_program_count": launch_metadata.get("program_count"),
+                "v2_5_cupy_threads_per_block": launch_metadata.get("threads_per_block"),
+                "v2_5_cupy_groups_per_block": launch_metadata.get("groups_per_block"),
+                "v2_5_cupy_threads_per_group": launch_metadata.get("threads_per_group"),
+                "v2_5_cupy_launch_parallelism_axis": launch_metadata.get("launch_parallelism_axis"),
+                "v2_5_cupy_rows_per_group_mean": launch_metadata.get("rows_per_group_mean"),
+                "v2_5_cupy_tiled_row_parallel_reduction_used": bool(
+                    launch_metadata.get("tiled_row_parallel_reduction_used")
+                ),
+                "v2_5_cupy_thread_per_group_serial_loop_used": bool(
+                    launch_metadata.get("thread_per_group_serial_loop_used")
+                ),
+            }
+        )
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
 
     from .numba_partner_continuation import run_numba_prepared_grouped_vector_sum_f64x2_by_offsets
 
@@ -2499,6 +2776,23 @@ def run_grouped_vector_sum_2d_partner_columns_session(
             "per_run_neutral_handoff_validation_used": False,
             "phase_timing": numba_result["phase_timing"],
             "v2_5_numba_preview_kernel_status": numba_result["status"],
+            "v2_5_numba_adapter_kernel": numba_result.get("adapter_kernel"),
+            "v2_5_numba_kernel_strategy": numba_result.get("resolved_kernel_strategy"),
+            "v2_5_numba_offset_program_count": numba_result.get("program_count"),
+            "v2_5_numba_threads_per_block": numba_result.get("threads_per_block"),
+            "v2_5_numba_groups_per_block": numba_result.get("groups_per_block"),
+            "v2_5_numba_threads_per_group": numba_result.get("threads_per_group"),
+            "v2_5_numba_launch_parallelism_axis": numba_result.get("launch_parallelism_axis"),
+            "v2_5_numba_rows_per_group_mean": numba_result.get("rows_per_group_mean"),
+            "v2_5_numba_tiled_row_parallel_reduction_used": bool(
+                numba_result.get("tiled_row_parallel_reduction_used")
+            ),
+            "v2_5_numba_thread_per_group_serial_loop_used": bool(
+                numba_result.get("thread_per_group_serial_loop_used")
+            ),
+            "v2_5_numba_row_offset_validation_host_sync_used": numba_result.get(
+                "row_offset_validation_host_sync_used"
+            ),
         }
     )
     if return_metadata:
@@ -7097,6 +7391,19 @@ class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
             pass
 
 
+class _BorrowedPreparedSessionHandle:
+    """Forward a caller-owned prepared handle without letting a cache close it."""
+
+    def __init__(self, prepared) -> None:
+        self._prepared = prepared
+
+    def __getattr__(self, name: str):
+        return getattr(self._prepared, name)
+
+    def close(self) -> None:
+        return None
+
+
 class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
     """Prepared generic OptiX RT grouped stream continuation plus CuPy labels."""
 
@@ -7150,6 +7457,11 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
         self._cached_core_flags = None
         self._cached_neighbor_counts = None
         self._cached_count_metadata: dict[str, object] | None = None
+        from .prepared_session_residency import ExplicitPreparedSessionCache
+
+        self.prepared_execution_session_cache = ExplicitPreparedSessionCache(max_entries=8)
+        self.prepared_execution_session_handle = _BorrowedPreparedSessionHandle(self.prepared_native)
+        self._cached_count_runner_metadata: dict[str, object] | None = None
         self._cached_all_core_flags_true: bool | None = None
         self.parent_initial = self.cupy.arange(self.point_count, dtype=self.cupy.int32)
         self.parent_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
@@ -7167,19 +7479,30 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             raise ValueError("min_neighbors must be at least 1")
         core_flag_cache_reused = self._cached_core_threshold == min_neighbors
         if not core_flag_cache_reused:
-            threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
-                self.prepared_native,
-                self.point_rows,
+            from .prepared_execution import (
+                run_fixed_radius_count_threshold_3d_self_query_prepared_session,
+            )
+
+            runner_result = run_fixed_radius_count_threshold_3d_self_query_prepared_session(
+                search_points={
+                    "kind": "prepared_native_self_query_handle",
+                    "point_count": self.point_count,
+                    "handle_id": id(self.prepared_native),
+                },
                 radius=self.radius,
                 threshold=min_neighbors,
                 partner=self.partner,
+                cache=self.prepared_execution_session_cache,
                 output_columns=self.count_columns,
-                return_metadata=True,
+                prepare_session=lambda: self.prepared_execution_session_handle,
+                device="cuda:0",
             )
+            threshold_result = runner_result.output
             self._cached_core_threshold = min_neighbors
             self._cached_core_flags = threshold_result["columns"]["threshold_flags"]
             self._cached_neighbor_counts = threshold_result["columns"]["neighbor_counts"]
             self._cached_count_metadata = dict(threshold_result["metadata"])
+            self._cached_count_runner_metadata = runner_result.to_metadata()
             self._cached_all_core_flags_true = bool(self.cupy.all(self._cached_core_flags).item())
         core_flags = self._cached_core_flags
         neighbor_counts = self._cached_neighbor_counts
@@ -7326,6 +7649,12 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             "grouped_stream_continuation_pass_count": continuation_pass_count,
             "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
             "count_metadata": self._cached_count_metadata,
+            "prepared_execution_session_runner_used": True,
+            "prepared_execution_session_runner_metadata": self._cached_count_runner_metadata,
+            "productized_execution_path": "prepared_execution_session_runner",
+            "core_flag_refresh_runtime_executed": bool(
+                (self._cached_count_runner_metadata or {}).get("runtime_executed", False)
+            ),
             "native_grouped_stream_metadata": native_metadata,
             "automatic_hidden_dispatcher": False,
             "direct_device_handoff_authorized": True,
@@ -7385,9 +7714,8 @@ def _run_cupy_grouped_stream_same_stream_evidence(
 
     core_flag_cache_reused = prepared._cached_core_threshold == min_neighbors
     if not core_flag_cache_reused:
-        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_self_partner_device_columns(
             prepared.prepared_native,
-            prepared.point_rows,
             radius=prepared.radius,
             threshold=min_neighbors,
             partner=prepared.partner,
@@ -7667,9 +7995,8 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         core_flag_cache_reused = self._cached_core_threshold == min_neighbors
         if core_flag_cache_reused:
             return True
-        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_self_partner_device_columns(
             self.prepared_native,
-            self.point_rows,
             radius=self.radius,
             threshold=min_neighbors,
             partner=self.partner,
@@ -7963,6 +8290,15 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
             "count_metadata": self._cached_count_metadata,
             "native_grouped_stream_metadata": native_metadata,
+            "internal_device_residency_between_rtdl_phases": True,
+            "internal_device_residency_scope": (
+                "RTDL-owned fixed-radius count columns, grouped-union parent/border "
+                "workspaces, and component-label columns remain device-resident "
+                "between RTDL phases."
+            ),
+            "external_host_buffer_exposure_authorized": False,
+            "v4_embedding_or_external_zero_copy_authorized": False,
+            "hot_path_host_materialization": False,
             "automatic_hidden_dispatcher": False,
             "direct_device_handoff_authorized": True,
             "output_columns_true_zero_copy_authorized": True,
@@ -8141,6 +8477,15 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "grouped_union_telemetry": telemetry_host,
             "same_stream_evidence": same_stream_evidence,
             "transfer_counter_snapshot": transfer_counter_snapshot,
+            "internal_device_residency_between_rtdl_phases": True,
+            "internal_device_residency_scope": (
+                "RTDL-owned fixed-radius count columns, grouped-union parent/border "
+                "workspaces, and component-label columns remain device-resident "
+                "between RTDL phases."
+            ),
+            "external_host_buffer_exposure_authorized": False,
+            "v4_embedding_or_external_zero_copy_authorized": False,
+            "hot_path_host_materialization": False,
             "same_stream_ready": same_stream_evidence["same_stream_ready"],
             "true_zero_copy_ready": False,
             "automatic_hidden_dispatcher": False,
@@ -8260,6 +8605,15 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
             "count_metadata": self._cached_count_metadata,
             "native_grouped_stream_metadata": native_metadata,
+            "internal_device_residency_between_rtdl_phases": True,
+            "internal_device_residency_scope": (
+                "RTDL-owned fixed-radius count columns, grouped-union parent/border "
+                "workspaces, and component-signature workspaces remain device-resident "
+                "between RTDL phases."
+            ),
+            "external_host_buffer_exposure_authorized": False,
+            "v4_embedding_or_external_zero_copy_authorized": False,
+            "hot_path_host_materialization": False,
             "automatic_hidden_dispatcher": False,
             "direct_device_handoff_authorized": True,
             "output_columns_true_zero_copy_authorized": True,

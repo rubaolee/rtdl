@@ -1,0 +1,31 @@
+artifact_file_index.txt	0 bytes
+goal4373_query_points_parity_filtered_100k.cdb	3986641 bytes
+gpu_env_gate.json	1173 bytes
+gpu_env_gate.stdout.json	1173 bytes
+m5_final_author_parity_20260620T182304Z.log	1582 bytes
+m5_final_author_parity_after_claude_20260620T183451Z.log	2475 bytes
+m5_local_graph_gate.json	572 bytes
+m5_overlay_active_count_same_contract.json	4878 bytes
+m5_pip_point_location_parity_filtered_100k/METHODOLOGY_NOTE.md	591 bytes
+m5_pip_point_location_parity_filtered_100k/summary.json	19344 bytes
+m5_pip_point_location_parity_filtered_100k/summary.md	2639 bytes
+m5_pip_point_location_parity_filtered_100k_pre_author_20260620T181810Z/METHODOLOGY_NOTE.md	591 bytes
+m5_pip_point_location_parity_filtered_100k_pre_author_20260620T181810Z/summary.json	3496 bytes
+m5_pip_point_location_parity_filtered_100k_pre_author_20260620T181810Z/summary.md	2122 bytes
+m5_query_exec_author_recovery_20260620T181810Z.log	1668 bytes
+m5_query_exec_author_recovery_parity_20260620T181901Z.log	1611 bytes
+m5_remote_run.log	11811 bytes
+m5_topology_intake_summary.author_recovery.stdout.json	1294 bytes
+m5_topology_intake_summary.author_recovery_parity.stdout.json	1143 bytes
+m5_topology_intake_summary.final_after_claude.stdout.json	2087 bytes
+m5_topology_intake_summary.final_author_parity.stdout.json	1142 bytes
+m5_topology_intake_summary.json	2087 bytes
+m5_topology_intake_summary.md	726 bytes
+m5_topology_intake_summary.stdout.json	1212 bytes
+nvidia-smi.txt	1778 bytes
+optix_hardware_gate.json	438 bytes
+optix_hardware_gate.stdout.json	438 bytes
+rayjoin_query_exec_path.txt	48 bytes
+rayjoin_query_exec_status.txt	8 bytes
+source_manifest.sha256	634 bytes
+source_version.txt	22 bytes

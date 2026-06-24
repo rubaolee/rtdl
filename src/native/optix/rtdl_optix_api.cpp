@@ -2878,6 +2878,25 @@ extern "C" int rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows_packed_queries(
+        void* prepared,
+        void* prepared_queries,
+        RtdlAabbPairRow* rows_out, size_t row_capacity,
+        size_t* emitted_count_out,
+        uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        collect_prepared_aabb_index_2d_range_intersection_rows_packed_queries_optix(
+            reinterpret_cast<PreparedAabbIndex2DOptix*>(prepared),
+            reinterpret_cast<PreparedAabbIndexQueries2DOptix*>(prepared_queries),
+            rows_out,
+            row_capacity,
+            emitted_count_out,
+            overflowed_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows(
         void* prepared,
         const RtdlPoint* point_queries, size_t point_query_count,
@@ -3566,6 +3585,7 @@ struct AggregateFrontierDeviceNode2D {
     double cx = 0.0;
     double cy = 0.0;
     double half_size = 0.0;
+    double mass = 0.0;
     int64_t dfs_index = 0;
     int64_t resume_index = -1;
     uint64_t child_begin = 0;
@@ -3631,11 +3651,60 @@ struct AggregateFrontierDeviceColumnsPrepared2D {
     }
 };
 
+struct AggregateTreeFusedWeightedVectorSumOutput2D {
+    CUdeviceptr vector_x = 0;
+    CUdeviceptr vector_y = 0;
+    CUdeviceptr visited_counts = 0;
+    CUdeviceptr aggregate_counts = 0;
+    CUdeviceptr exact_counts = 0;
+    uint64_t source_count = 0;
+    int32_t diagnostic_status_code = 0;
+    uint32_t overflow = 0;
+
+    ~AggregateTreeFusedWeightedVectorSumOutput2D() {
+        if (exact_counts) cuMemFree(exact_counts);
+        if (aggregate_counts) cuMemFree(aggregate_counts);
+        if (visited_counts) cuMemFree(visited_counts);
+        if (vector_y) cuMemFree(vector_y);
+        if (vector_x) cuMemFree(vector_x);
+    }
+};
+
+struct AggregateTreeFusedWeightedVectorSumPrepared2D {
+    CUdeviceptr nodes = 0;
+    CUdeviceptr child_indices = 0;
+    CUdeviceptr member_indices = 0;
+    CUdeviceptr root_indices = 0;
+    CUdeviceptr target_leaf_dfs = 0;
+    CUdeviceptr target_ids = 0;
+    CUdeviceptr target_x = 0;
+    CUdeviceptr target_y = 0;
+    CUdeviceptr target_weight = 0;
+    uint64_t target_count = 0;
+    uint64_t node_count = 0;
+    uint64_t child_count = 0;
+    uint64_t member_count = 0;
+    uint64_t root_count = 0;
+    int32_t device_ordinal = -1;
+    std::unique_ptr<AggregateTreeFusedWeightedVectorSumOutput2D> last_output;
+    std::mutex mutex;
+
+    ~AggregateTreeFusedWeightedVectorSumPrepared2D() {
+        last_output.reset();
+        if (target_leaf_dfs) cuMemFree(target_leaf_dfs);
+        if (root_indices) cuMemFree(root_indices);
+        if (member_indices) cuMemFree(member_indices);
+        if (child_indices) cuMemFree(child_indices);
+        if (nodes) cuMemFree(nodes);
+    }
+};
+
 struct AggregateFrontierDeviceColumnsCuFunctions {
     CUmodule module = nullptr;
     CUfunction count_fn = nullptr;
     CUfunction prefix_fn = nullptr;
     CUfunction write_fn = nullptr;
+    CUfunction fused_vector_sum_fn = nullptr;
     std::once_flag init;
 };
 
@@ -3650,6 +3719,7 @@ struct AggregateFrontierDeviceNode2D {
     double cx;
     double cy;
     double half_size;
+    double mass;
     long long dfs_index;
     long long resume_index;
     unsigned long long child_begin;
@@ -3880,6 +3950,156 @@ extern "C" __global__ void rtdl_aggregate_frontier_write_2d(
         }
     }
 }
+
+static __device__ __forceinline__ long long rtdl_af_fused_source_leaf_dfs(
+        const long long* target_ids,
+        const long long* target_leaf_dfs,
+        unsigned long long target_count,
+        const long long* source_ids,
+        unsigned long long source_index)
+{
+    const long long source_id = source_ids[source_index];
+    if (source_index < target_count && target_ids[source_index] == source_id) {
+        return target_leaf_dfs[source_index];
+    }
+    for (unsigned long long target_index = 0ull; target_index < target_count; ++target_index) {
+        if (target_ids[target_index] == source_id) {
+            return target_leaf_dfs[target_index];
+        }
+    }
+    return -1ll;
+}
+
+static __device__ __forceinline__ int rtdl_af_fused_node_contains_source(
+        const AggregateFrontierDeviceNode2D* nodes,
+        unsigned long long node_index,
+        long long source_leaf_dfs)
+{
+    if (source_leaf_dfs < 0ll) {
+        return 0;
+    }
+    const AggregateFrontierDeviceNode2D node = nodes[node_index];
+    const long long node_end = node.resume_index > node.dfs_index
+        ? node.resume_index
+        : node.dfs_index + 1ll;
+    return source_leaf_dfs >= node.dfs_index && source_leaf_dfs < node_end;
+}
+
+extern "C" __global__ void rtdl_aggregate_tree_fused_weighted_vector_sum_2d(
+        const AggregateFrontierDeviceNode2D* nodes,
+        const unsigned long long* child_indices,
+        const unsigned long long* member_indices,
+        const unsigned long long* root_indices,
+        unsigned long long root_count,
+        const long long* target_ids,
+        const long long* target_leaf_dfs,
+        unsigned long long target_count,
+        const double* target_xs,
+        const double* target_ys,
+        const double* target_weights,
+        const long long* source_ids,
+        const double* source_xs,
+        const double* source_ys,
+        const double* source_weights,
+        unsigned long long source_count,
+        double theta,
+        double softening_sq,
+        double* out_x,
+        double* out_y,
+        unsigned long long* out_visited,
+        unsigned long long* out_aggregate,
+        unsigned long long* out_exact,
+        unsigned int* overflow,
+        int* status)
+{
+    const unsigned long long source_index =
+        (unsigned long long)blockIdx.x * (unsigned long long)blockDim.x + (unsigned long long)threadIdx.x;
+    if (source_index >= source_count) {
+        return;
+    }
+
+    const int kMaxStack = 256;
+    unsigned long long stack[kMaxStack];
+    int top = 0;
+    if (root_count > (unsigned long long)kMaxStack) {
+        atomicExch(overflow, 1u);
+        atomicMax(status, 1);
+        return;
+    }
+    for (unsigned long long root_pos = root_count; root_pos > 0ull; --root_pos) {
+        stack[top++] = root_indices[root_pos - 1ull];
+    }
+
+    const long long source_id = source_ids[source_index];
+    const long long source_leaf_dfs = rtdl_af_fused_source_leaf_dfs(
+        target_ids, target_leaf_dfs, target_count, source_ids, source_index);
+    const double sx = source_xs[source_index];
+    const double sy = source_ys[source_index];
+    const double smass = source_weights[source_index];
+    double sum_x = 0.0;
+    double sum_y = 0.0;
+    unsigned long long visited = 0ull;
+    unsigned long long aggregate_count = 0ull;
+    unsigned long long exact_count = 0ull;
+
+    while (top > 0) {
+        const unsigned long long node_index = stack[--top];
+        const AggregateFrontierDeviceNode2D node = nodes[node_index];
+        ++visited;
+        const double dx_node = node.cx - sx;
+        const double dy_node = node.cy - sy;
+        const double distance = sqrt(dx_node * dx_node + dy_node * dy_node);
+        const double opening_ratio = distance == 0.0 ? INFINITY : (2.0 * node.half_size) / distance;
+        const int contains_source = rtdl_af_fused_node_contains_source(
+            nodes, node_index, source_leaf_dfs);
+        if (!contains_source && opening_ratio < theta) {
+            const double dist_sq = dx_node * dx_node + dy_node * dy_node + softening_sq;
+            if (dist_sq != 0.0) {
+                const double inv_dist = 1.0 / sqrt(dist_sq);
+                const double scale = smass * node.mass * inv_dist * inv_dist * inv_dist;
+                sum_x += dx_node * scale;
+                sum_y += dy_node * scale;
+            }
+            ++aggregate_count;
+            continue;
+        }
+        if (node.child_begin != node.child_end) {
+            const unsigned long long child_count = node.child_end - node.child_begin;
+            if (top + (int)child_count > kMaxStack) {
+                atomicExch(overflow, 1u);
+                atomicMax(status, 2);
+                return;
+            }
+            for (unsigned long long child_pos = node.child_end; child_pos > node.child_begin; --child_pos) {
+                stack[top++] = child_indices[child_pos - 1ull];
+            }
+            continue;
+        }
+        for (unsigned long long member_index = node.member_begin; member_index < node.member_end; ++member_index) {
+            const unsigned long long target_index = member_indices[member_index];
+            const long long target_id = target_ids[target_index];
+            if (target_id == source_id) {
+                continue;
+            }
+            const double dx = target_xs[target_index] - sx;
+            const double dy = target_ys[target_index] - sy;
+            const double dist_sq = dx * dx + dy * dy + softening_sq;
+            if (dist_sq != 0.0) {
+                const double inv_dist = 1.0 / sqrt(dist_sq);
+                const double scale = smass * target_weights[target_index] * inv_dist * inv_dist * inv_dist;
+                sum_x += dx * scale;
+                sum_y += dy * scale;
+            }
+            ++exact_count;
+        }
+    }
+
+    out_x[source_index] = sum_x;
+    out_y[source_index] = sum_y;
+    out_visited[source_index] = visited;
+    out_aggregate[source_index] = aggregate_count;
+    out_exact[source_index] = exact_count;
+}
 )CUDA";
 
 static void ensure_aggregate_frontier_device_columns_2d_kernels()
@@ -3901,6 +4121,10 @@ static void ensure_aggregate_frontier_device_columns_2d_kernels()
             &g_aggregate_frontier_device_columns_2d.write_fn,
             g_aggregate_frontier_device_columns_2d.module,
             "rtdl_aggregate_frontier_write_2d"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_aggregate_frontier_device_columns_2d.fused_vector_sum_fn,
+            g_aggregate_frontier_device_columns_2d.module,
+            "rtdl_aggregate_tree_fused_weighted_vector_sum_2d"));
     });
 }
 
@@ -4022,6 +4246,7 @@ extern "C" int rtdl_optix_prepare_aggregate_frontier_device_columns_2d(
                 nodes[node_index].cx,
                 nodes[node_index].cy,
                 nodes[node_index].half_size,
+                0.0,
                 nodes[node_index].dfs_index,
                 nodes[node_index].resume_index >= 0 ? nodes[node_index].resume_index : -1,
                 child_offsets[node_index],
@@ -4262,10 +4487,147 @@ extern "C" int rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d(
             throw std::runtime_error("aggregate-tree fused vector-sum child_ids must not be null when child CSR is non-empty");
         if (node_count != 0 && member_offsets && member_offsets[node_count] != 0 && !member_ids)
             throw std::runtime_error("aggregate-tree fused vector-sum member_ids must not be null when member CSR is non-empty");
-        throw std::runtime_error(
-            "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE native OptiX "
-            "traversal is not implemented yet; the ABI is exported fail-closed "
-            "until an optixLaunch/optixTrace implementation and equivalence gate land");
+
+        (void)get_optix_context();
+        auto prepared = std::make_unique<AggregateTreeFusedWeightedVectorSumPrepared2D>();
+        prepared->target_ids = static_cast<CUdeviceptr>(target_ids_device_ptr);
+        prepared->target_x = static_cast<CUdeviceptr>(target_x_device_ptr);
+        prepared->target_y = static_cast<CUdeviceptr>(target_y_device_ptr);
+        prepared->target_weight = static_cast<CUdeviceptr>(target_weight_device_ptr);
+        prepared->target_count = static_cast<uint64_t>(target_count);
+        prepared->node_count = static_cast<uint64_t>(node_count);
+        CUdevice current_device = 0;
+        CU_CHECK(cuCtxGetDevice(&current_device));
+        prepared->device_ordinal = static_cast<int32_t>(current_device);
+
+        if (node_count == 0) {
+            *prepared_out = prepared.release();
+            return;
+        }
+
+        std::vector<int64_t> target_ids(static_cast<size_t>(target_count));
+        std::vector<double> target_weights(static_cast<size_t>(target_count));
+        if (target_count != 0) {
+            download(target_ids.data(), static_cast<CUdeviceptr>(target_ids_device_ptr), target_ids.size());
+            download(target_weights.data(), static_cast<CUdeviceptr>(target_weight_device_ptr), target_weights.size());
+        }
+        std::unordered_map<int64_t, uint64_t> target_index_by_id;
+        target_index_by_id.reserve(target_ids.size());
+        for (size_t target_index = 0; target_index < target_ids.size(); ++target_index) {
+            const auto inserted = target_index_by_id.emplace(
+                target_ids[target_index],
+                static_cast<uint64_t>(target_index));
+            if (!inserted.second)
+                throw std::runtime_error("aggregate-tree fused vector-sum duplicate target id");
+        }
+
+        for (size_t node_index = 0; node_index < node_count; ++node_index) {
+            if (nodes[node_index].dfs_index != static_cast<int64_t>(node_index))
+                throw std::runtime_error("aggregate-tree fused vector-sum nodes must be supplied in contiguous DFS order");
+            if (nodes[node_index].half_size < 0.0)
+                throw std::runtime_error("aggregate-tree fused vector-sum node half_size must be non-negative");
+            if (child_offsets[node_index] > child_offsets[node_index + 1] ||
+                    member_offsets[node_index] > member_offsets[node_index + 1])
+                throw std::runtime_error("aggregate-tree fused vector-sum CSR offsets must be monotonic");
+        }
+        const uint64_t child_count = child_offsets[node_count];
+        const uint64_t member_count = member_offsets[node_count];
+
+        std::unordered_map<int64_t, uint64_t> node_index_by_id;
+        node_index_by_id.reserve(node_count);
+        for (size_t node_index = 0; node_index < node_count; ++node_index) {
+            const auto inserted = node_index_by_id.emplace(nodes[node_index].id, static_cast<uint64_t>(node_index));
+            if (!inserted.second)
+                throw std::runtime_error("aggregate-tree fused vector-sum duplicate node id");
+        }
+
+        std::vector<uint64_t> child_indices(static_cast<size_t>(child_count));
+        std::unordered_set<int64_t> child_id_set;
+        child_id_set.reserve(static_cast<size_t>(child_count));
+        for (uint64_t child_index = 0; child_index < child_count; ++child_index) {
+            const int64_t child_id = child_ids[child_index];
+            const auto found = node_index_by_id.find(child_id);
+            if (found == node_index_by_id.end())
+                throw std::runtime_error("aggregate-tree fused vector-sum child id is not present in node array");
+            child_indices[static_cast<size_t>(child_index)] = found->second;
+            child_id_set.insert(child_id);
+        }
+
+        std::vector<uint64_t> member_indices(static_cast<size_t>(member_count));
+        for (uint64_t member_index = 0; member_index < member_count; ++member_index) {
+            const int64_t member_id = member_ids[member_index];
+            const auto found = target_index_by_id.find(member_id);
+            if (found == target_index_by_id.end())
+                throw std::runtime_error("aggregate-tree fused vector-sum member id is not present in target id column");
+            member_indices[static_cast<size_t>(member_index)] = found->second;
+        }
+
+        std::vector<int64_t> target_leaf_dfs(static_cast<size_t>(target_count), -1);
+        for (size_t node_index = 0; node_index < node_count; ++node_index) {
+            if (nodes[node_index].is_leaf == 0)
+                continue;
+            for (uint64_t member_pos = member_offsets[node_index];
+                    member_pos < member_offsets[node_index + 1]; ++member_pos) {
+                const uint64_t target_index = member_indices[static_cast<size_t>(member_pos)];
+                target_leaf_dfs[static_cast<size_t>(target_index)] = nodes[node_index].dfs_index;
+            }
+        }
+        for (size_t target_index = 0; target_index < target_leaf_dfs.size(); ++target_index) {
+            if (target_leaf_dfs[target_index] < 0)
+                throw std::runtime_error("aggregate-tree fused vector-sum target id is not assigned to a leaf node");
+        }
+
+        std::vector<uint64_t> root_indices;
+        for (size_t node_index = 0; node_index < node_count; ++node_index) {
+            if (child_id_set.find(nodes[node_index].id) == child_id_set.end())
+                root_indices.push_back(static_cast<uint64_t>(node_index));
+        }
+        if (root_indices.empty())
+            throw std::runtime_error("aggregate-tree fused vector-sum tree must contain at least one root");
+
+        std::vector<AggregateFrontierDeviceNode2D> device_nodes(node_count);
+        for (size_t node_index = 0; node_index < node_count; ++node_index) {
+            double node_mass = 0.0;
+            for (uint64_t member_pos = member_offsets[node_index]; member_pos < member_offsets[node_index + 1]; ++member_pos) {
+                node_mass += target_weights[static_cast<size_t>(member_indices[static_cast<size_t>(member_pos)])];
+            }
+            device_nodes[node_index] = {
+                nodes[node_index].id,
+                nodes[node_index].cx,
+                nodes[node_index].cy,
+                nodes[node_index].half_size,
+                node_mass,
+                nodes[node_index].dfs_index,
+                nodes[node_index].resume_index >= 0 ? nodes[node_index].resume_index : -1,
+                child_offsets[node_index],
+                child_offsets[node_index + 1],
+                member_offsets[node_index],
+                member_offsets[node_index + 1],
+                nodes[node_index].is_leaf != 0 ? 1u : 0u,
+            };
+        }
+
+        prepared->child_count = child_count;
+        prepared->member_count = member_count;
+        prepared->root_count = static_cast<uint64_t>(root_indices.size());
+        CU_CHECK(cuMemAlloc(&prepared->nodes, sizeof(AggregateFrontierDeviceNode2D) * device_nodes.size()));
+        upload(prepared->nodes, device_nodes.data(), device_nodes.size());
+        if (!child_indices.empty()) {
+            CU_CHECK(cuMemAlloc(&prepared->child_indices, sizeof(uint64_t) * child_indices.size()));
+            upload(prepared->child_indices, child_indices.data(), child_indices.size());
+        }
+        if (!member_indices.empty()) {
+            CU_CHECK(cuMemAlloc(&prepared->member_indices, sizeof(uint64_t) * member_indices.size()));
+            upload(prepared->member_indices, member_indices.data(), member_indices.size());
+        }
+        if (!target_leaf_dfs.empty()) {
+            CU_CHECK(cuMemAlloc(&prepared->target_leaf_dfs, sizeof(int64_t) * target_leaf_dfs.size()));
+            upload(prepared->target_leaf_dfs, target_leaf_dfs.data(), target_leaf_dfs.size());
+        }
+        CU_CHECK(cuMemAlloc(&prepared->root_indices, sizeof(uint64_t) * root_indices.size()));
+        upload(prepared->root_indices, root_indices.data(), root_indices.size());
+
+        *prepared_out = prepared.release();
     }, error_out, error_size);
 }
 
@@ -4297,16 +4659,137 @@ extern "C" int rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d(
             throw std::runtime_error("aggregate-tree fused vector-sum theta must be positive and finite");
         if (softening < 0.0 || !std::isfinite(softening))
             throw std::runtime_error("aggregate-tree fused vector-sum softening must be non-negative and finite");
-        throw std::runtime_error(
-            "AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE native OptiX "
-            "run path is not implemented yet; the ABI is exported fail-closed "
-            "until optixTrace traversal, device output columns, and timing split are validated");
+
+        auto* prepared_owner = reinterpret_cast<AggregateTreeFusedWeightedVectorSumPrepared2D*>(prepared);
+        std::lock_guard<std::mutex> lock(prepared_owner->mutex);
+        (void)get_optix_context();
+        ensure_aggregate_frontier_device_columns_2d_kernels();
+
+        auto output = std::make_unique<AggregateTreeFusedWeightedVectorSumOutput2D>();
+        output->source_count = static_cast<uint64_t>(source_count);
+        if (source_count != 0) {
+            CU_CHECK(cuMemAlloc(&output->vector_x, sizeof(double) * static_cast<size_t>(source_count)));
+            CU_CHECK(cuMemAlloc(&output->vector_y, sizeof(double) * static_cast<size_t>(source_count)));
+            CU_CHECK(cuMemAlloc(&output->visited_counts, sizeof(uint64_t) * static_cast<size_t>(source_count)));
+            CU_CHECK(cuMemAlloc(&output->aggregate_counts, sizeof(uint64_t) * static_cast<size_t>(source_count)));
+            CU_CHECK(cuMemAlloc(&output->exact_counts, sizeof(uint64_t) * static_cast<size_t>(source_count)));
+        }
+        CUdeviceptr overflow_device = 0;
+        CUdeviceptr status_device = 0;
+        CU_CHECK(cuMemAlloc(&overflow_device, sizeof(uint32_t)));
+        CU_CHECK(cuMemAlloc(&status_device, sizeof(int32_t)));
+        const uint32_t zero32 = 0u;
+        const int32_t zero_i32 = 0;
+        upload(overflow_device, &zero32, 1);
+        upload(status_device, &zero_i32, 1);
+
+        const auto traversal_start = std::chrono::steady_clock::now();
+        CUstream stream = 0;
+        if (source_count != 0 && prepared_owner->root_count != 0) {
+            CUdeviceptr nodes_ptr = prepared_owner->nodes;
+            CUdeviceptr child_indices_ptr = prepared_owner->child_indices;
+            CUdeviceptr member_indices_ptr = prepared_owner->member_indices;
+            CUdeviceptr root_indices_ptr = prepared_owner->root_indices;
+            uint64_t root_count = prepared_owner->root_count;
+            CUdeviceptr target_ids_ptr = prepared_owner->target_ids;
+            CUdeviceptr target_leaf_dfs_ptr = prepared_owner->target_leaf_dfs;
+            uint64_t target_count64 = prepared_owner->target_count;
+            CUdeviceptr target_x_ptr = prepared_owner->target_x;
+            CUdeviceptr target_y_ptr = prepared_owner->target_y;
+            CUdeviceptr target_weight_ptr = prepared_owner->target_weight;
+            CUdeviceptr source_ids_ptr = static_cast<CUdeviceptr>(source_ids_device_ptr);
+            CUdeviceptr source_x_ptr = static_cast<CUdeviceptr>(source_x_device_ptr);
+            CUdeviceptr source_y_ptr = static_cast<CUdeviceptr>(source_y_device_ptr);
+            CUdeviceptr source_weight_ptr = static_cast<CUdeviceptr>(source_weight_device_ptr);
+            uint64_t source_count64 = static_cast<uint64_t>(source_count);
+            double theta_value = theta;
+            double softening_sq = softening * softening;
+            CUdeviceptr vector_x_ptr = output->vector_x;
+            CUdeviceptr vector_y_ptr = output->vector_y;
+            CUdeviceptr visited_counts_ptr = output->visited_counts;
+            CUdeviceptr aggregate_counts_ptr = output->aggregate_counts;
+            CUdeviceptr exact_counts_ptr = output->exact_counts;
+            void* fused_args[] = {
+                &nodes_ptr,
+                &child_indices_ptr,
+                &member_indices_ptr,
+                &root_indices_ptr,
+                &root_count,
+                &target_ids_ptr,
+                &target_leaf_dfs_ptr,
+                &target_count64,
+                &target_x_ptr,
+                &target_y_ptr,
+                &target_weight_ptr,
+                &source_ids_ptr,
+                &source_x_ptr,
+                &source_y_ptr,
+                &source_weight_ptr,
+                &source_count64,
+                &theta_value,
+                &softening_sq,
+                &vector_x_ptr,
+                &vector_y_ptr,
+                &visited_counts_ptr,
+                &aggregate_counts_ptr,
+                &exact_counts_ptr,
+                &overflow_device,
+                &status_device,
+            };
+            unsigned threads = 128u;
+            if (const char* raw_threads = std::getenv("RTDL_OPTIX_AGG_TREE_FUSED_THREADS");
+                    raw_threads && raw_threads[0] != '\0') {
+                char* end = nullptr;
+                const unsigned long parsed = std::strtoul(raw_threads, &end, 10);
+                if (end != raw_threads && *end == '\0' &&
+                        (parsed == 32ul || parsed == 64ul || parsed == 128ul ||
+                         parsed == 256ul || parsed == 512ul || parsed == 1024ul)) {
+                    threads = static_cast<unsigned>(parsed);
+                }
+            }
+            const unsigned blocks = static_cast<unsigned>((source_count + threads - 1u) / threads);
+            CU_CHECK(cuLaunchKernel(
+                g_aggregate_frontier_device_columns_2d.fused_vector_sum_fn,
+                blocks, 1, 1,
+                threads, 1, 1,
+                0, stream, fused_args, nullptr));
+        }
+        CU_CHECK(cuStreamSynchronize(stream));
+        const auto traversal_end = std::chrono::steady_clock::now();
+
+        uint32_t overflow = 0u;
+        int32_t status = 0;
+        download(&overflow, overflow_device, 1);
+        download(&status, status_device, 1);
+        cuMemFree(status_device);
+        cuMemFree(overflow_device);
+
+        output->overflow = overflow;
+        output->diagnostic_status_code = status;
+        columns_out->source_ids_device_ptr = source_ids_device_ptr;
+        columns_out->vector_x_device_ptr = static_cast<uint64_t>(output->vector_x);
+        columns_out->vector_y_device_ptr = static_cast<uint64_t>(output->vector_y);
+        columns_out->visited_counts_device_ptr = static_cast<uint64_t>(output->visited_counts);
+        columns_out->aggregate_counts_device_ptr = static_cast<uint64_t>(output->aggregate_counts);
+        columns_out->exact_counts_device_ptr = static_cast<uint64_t>(output->exact_counts);
+        columns_out->source_count = static_cast<uint64_t>(source_count);
+        columns_out->diagnostic_status_code = status;
+        columns_out->overflow = overflow;
+        columns_out->device_ordinal = prepared_owner->device_ordinal;
+        columns_out->owner_handle = prepared_owner;
+        columns_out->bvh_build_seconds = 0.0;
+        columns_out->traversal_seconds = std::chrono::duration<double>(
+            traversal_end - traversal_start).count();
+        columns_out->continuation_seconds = 0.0;
+        columns_out->copy_seconds = 0.0;
+
+        prepared_owner->last_output = std::move(output);
     }, error_out, error_size);
 }
 
 extern "C" void rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d(void* prepared)
 {
-    (void)prepared;
+    delete reinterpret_cast<AggregateTreeFusedWeightedVectorSumPrepared2D*>(prepared);
 }
 
 struct CollectKStageProfile {
@@ -6423,6 +6906,24 @@ extern "C" int rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_aggregate_self_query_ranked_fixed_radius_neighbor_summaries_3d_f32_batch(
+        void* prepared,
+        const double* radii,
+        const size_t* k_values,
+        size_t request_count,
+        RtdlFixedRadiusRankedNeighborAggregate* aggregates_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        aggregate_self_query_ranked_fixed_radius_neighbor_summaries_grid_3d_batch_optix(
+            reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared),
+            radii,
+            k_values,
+            request_count,
+            aggregates_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_prepare_fixed_radius_ranked_summary_aggregate_batch_graph_3d(
         void* prepared,
         void* prepared_queries,
@@ -6439,6 +6940,26 @@ extern "C" int rtdl_optix_prepare_fixed_radius_ranked_summary_aggregate_batch_gr
         *graph_out = prepare_fixed_radius_ranked_summary_aggregate_batch_graph_3d_optix(
             reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared),
             reinterpret_cast<PreparedFixedRadiusQueryPoints3D*>(prepared_queries),
+            radii,
+            k_values,
+            request_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_fixed_radius_self_query_ranked_summary_aggregate_batch_graph_3d(
+        void* prepared,
+        const double* radii,
+        const size_t* k_values,
+        size_t request_count,
+        void** graph_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!graph_out)
+            throw std::runtime_error("graph_out must not be null");
+        *graph_out = nullptr;
+        *graph_out = prepare_fixed_radius_self_query_ranked_summary_aggregate_batch_graph_3d_optix(
+            reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared),
             radii,
             k_values,
             request_count);

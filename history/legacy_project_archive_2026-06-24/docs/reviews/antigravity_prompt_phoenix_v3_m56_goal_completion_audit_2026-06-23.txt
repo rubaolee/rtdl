@@ -1,0 +1,32 @@
+You are the third independent AI reviewer for Phoenix V3 M56.
+
+Working directory:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Review the M56 local diagnosis and preflight repair:
+
+- docs/reviews/call_for_review_phoenix_v3_m56_librts_set_b_metadata_diagnosis_2026-06-23.md
+- docs/reports/phoenix_v3_m56_librts_set_b_metadata_diagnosis_and_preflight_repair_2026-06-23.md
+- docs/reviews/claude_phoenix_v3_m56_librts_set_b_metadata_diagnosis_recorded_review_2026-06-23.md
+- scripts/v3_phoenix_m47_librts_stability_protocol.py
+- tests/v3_phoenix_m47_librts_stability_protocol_test.py
+- tests/v3_phoenix_m56_librts_set_b_metadata_diagnosis_test.py
+- scripts/run_test_matrix.py
+- docs/rebuild/v3/evidence/phoenix_v3_m55_librts_authorized_execution_20260623_2340/summary.json
+
+Choose exactly one verdict label:
+
+- accept_m56_goal_complete_preflight_repair_no_pod_no_release
+- request_m56_changes_before_goal_completion
+- reject_m56_goal_completion
+
+Audit:
+
+1. Did M56 correctly preserve M55 as valid red/open evidence without rewriting it?
+2. Did M56 correctly diagnose the problem as missing Set-B metadata exposure/signature, not skipped productized runner execution?
+3. Does the required current_librts_set_b_source_signature preflight reduce the risk of wasting another POD run on a stale target current root?
+4. Do local tests and v3_rebuild evidence support completion?
+5. Are Claude's residual risks carried forward accurately?
+6. Does M56 avoid authorizing any rerun, release, all-app, public speedup claim, V4, embedding, C ABI, true-zero-copy claim, or watch-row closure?
+
+Return a concise critical review. Include the verdict label exactly once near the top.

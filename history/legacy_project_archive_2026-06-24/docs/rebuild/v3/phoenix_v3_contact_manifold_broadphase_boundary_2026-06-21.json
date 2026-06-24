@@ -1,0 +1,92 @@
+{
+  "status": "contact_manifold_broadphase_boundary_not_m7",
+  "generic_capability": "aabb_candidate_stream",
+  "secondary_capability": "bounded_witness_collection",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "full_contact_solver_claim_authorized": false,
+  "physics_solver_claim_authorized": false,
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows": 0,
+  "current_packet_external_review_status": "claude_approved_boundary_not_m7",
+  "current_packet_2ai_consensus_status": "claude_codex_consensus_complete_no_m7_promotion",
+  "source_artifacts": [
+    "docs/rebuild/v3/evidence/v3_claim_grade_all_benchmarks_calibrated_20260620/summary.json",
+    "docs/rebuild/v3/evidence/v2_14_vs_v3_same_rt_hardware_paired_20260620_140120/paired_v2_v3_summary.json"
+  ],
+  "candidate_row": {
+    "app_id": "contact_manifold",
+    "comparison_group": "generic_aabb_broadphase_collect_k",
+    "candidate_discovery_primitive": "AABB_INDEX_QUERY_2D",
+    "candidate_discovery_contract": "generic_aabb_intersection_pair_rows_2d",
+    "primitive_under_test": "COLLECT_K_BOUNDED",
+    "row_schema": [
+      "query_group_id",
+      "query_triangle_id",
+      "scene_triangle_id"
+    ],
+    "valid_count": 4096,
+    "witness_capacity": 4096,
+    "overflowed": false,
+    "matches_cpu_reference": true,
+    "phase_contract_version": "rtdl.partner.v2.4",
+    "phase_validation_status": "accept",
+    "same_phase_contract_as_basis": true,
+    "primary_metric_source": "run_phases.emit_aabb_intersection_pair_rows_2d_median_sec",
+    "query_metric_scope": "emit_aabb_intersection_pair_rows_2d_only_not_wall_not_full_contact_solver",
+    "embree_primary_sec": 0.03006485477089882,
+    "optix_primary_sec": 0.02434701845049858,
+    "query_optix_over_embree": 1.2348474960917915,
+    "embree_wall_median_sec": 1.323679082095623,
+    "optix_wall_median_sec": 1.6484670042991638,
+    "wall_optix_over_embree": 0.8029757821318222,
+    "embree_collect_k_bounded_rows_sec": 0.024335913360118866,
+    "optix_collect_k_bounded_rows_sec": 0.008820392191410065,
+    "collect_k_optix_over_embree": 2.7590511659809116,
+    "embree_prepare_aabb_index_2d_sec": 0.06733669340610504,
+    "optix_prepare_aabb_index_2d_sec": 0.2769013047218323,
+    "prepare_aabb_index_optix_over_embree": 0.24317940095569324,
+    "embree_generic_aabb_broadphase_wall_sec": 0.5495973378419876,
+    "optix_generic_aabb_broadphase_wall_sec": 0.8566809743642807,
+    "phase_wall_optix_over_embree": 0.6415425978729463,
+    "claim_boundary": "AABB candidate discovery is generic RTDL broadphase behavior. The final triangle-intersection refinement and contact interpretation remain app-owned."
+  },
+  "paired_v2_v3_context": {
+    "app_geomean_speedup_vs_v2_14": 0.9964547635407576,
+    "paired_rows_are_standard_goal2626_rows": true,
+    "embree_v3_speedup_vs_v2_14": 1.0037013324521886,
+    "optix_v3_speedup_vs_v2_14": 0.9892605137398928
+  },
+  "m7_blockers": [
+    "wall_timing_optix_slower_than_embree",
+    "full_contact_solver_not_claimed",
+    "broadphase_candidate_discovery_only",
+    "optix_prepare_aabb_index_cost_offsets_hot_query_gain",
+    "standard_paired_v2_v3_rows_are_parity_or_regression",
+    "aabb_index_preparation_optix_4x_slower_fix_required_before_candidacy",
+    "overflow_path_larger_dataset_not_validated",
+    "future_public_row_review_required_before_m7"
+  ],
+  "forbidden_public_wording": [
+    "Contact Manifold V3 is 1.235x faster end to end",
+    "RTDL accelerates the full contact solver",
+    "AABB broadphase collect-k proves physics/contact-manifold acceleration",
+    "contact_manifold is M7-qualified",
+    "V3 is broadly faster than V2 for contact manifold"
+  ],
+  "allowed_rebuild_wording": [
+    "This is a rebuild lesson for generic AABB broadphase candidate discovery plus bounded row collection.",
+    "The query metric is 1.235x OptiX over Embree.",
+    "The collect-k materialization phase is 2.759x OptiX over Embree.",
+    "The wall ratio is 0.803x, so OptiX is slower on the current wall path.",
+    "The row matches the CPU reference and phase validation accepts the v2.4 contract."
+  ],
+  "external_review": {
+    "call_for_review": "docs/reviews/call_for_review_phoenix_v3_contact_manifold_broadphase_boundary_2026-06-21.md",
+    "historical_blocked_record": "docs/reviews/external_review_blocked_phoenix_v3_contact_manifold_broadphase_boundary_2026-06-21.md",
+    "claude_review": "docs/reviews/claude_phoenix_v3_contact_manifold_broadphase_boundary_review_2026-06-21.md",
+    "codex_consensus": "docs/reviews/codex_phoenix_v3_contact_manifold_broadphase_boundary_2ai_consensus_2026-06-21.md",
+    "required_before_m7": true
+  }
+}

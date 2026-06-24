@@ -1,0 +1,222 @@
+{
+  "candidate_rows": [
+    {
+      "blockers": [
+        "public_prepared_query_tutorial_not_written",
+        "final_public_row_wording_review_required",
+        "m7_promotion_authorized_false",
+        "repeat_1_end_to_end_not_optix_win",
+        "count_mode_requires_double_digit_repeat_amortization",
+        "count_mode_high_breakeven_blocks_public_claim"
+      ],
+      "break_even_repeat_count_ceiling": 14,
+      "generated_groups": 1024,
+      "generated_rows": 262144,
+      "hot_query_speedup_embree_over_optix": 9.537507025291047,
+      "m7_promoted": false,
+      "mode": "count",
+      "operation": "group_count",
+      "promotion_status": "candidate_needs_public_row_review_not_m7",
+      "recommended_public_repeat_count_if_promoted": null,
+      "repeat_100_end_to_end_speedup": 2.452212724904239,
+      "repeat_1_end_to_end_speedup": 0.7361391020968227,
+      "repeat_profile": {
+        "1": 0.7361391020968227,
+        "10": 0.9257558995033951,
+        "100": 2.452212724904239,
+        "2": 0.7576189798494907,
+        "25": 1.2242571899786607,
+        "5": 0.8214341215714467,
+        "50": 1.6782855880882526
+      },
+      "repeat_profile_basis": "formula_projection_from_measured_cold_prepare_and_hot_query_median",
+      "row_id": "grouped_reduction_count_repeat100_262144"
+    },
+    {
+      "blockers": [
+        "public_prepared_query_tutorial_not_written",
+        "final_public_row_wording_review_required",
+        "m7_promotion_authorized_false",
+        "repeat_1_end_to_end_not_optix_win"
+      ],
+      "break_even_repeat_count_ceiling": 2,
+      "generated_groups": 1024,
+      "generated_rows": 262144,
+      "hot_query_speedup_embree_over_optix": 224.26932560241394,
+      "m7_promoted": false,
+      "mode": "sum",
+      "operation": "group_sum_i64",
+      "promotion_status": "candidate_needs_public_row_review_not_m7",
+      "recommended_public_repeat_count_if_promoted": 100,
+      "repeat_100_end_to_end_speedup": 32.39486383442566,
+      "repeat_1_end_to_end_speedup": 0.9987679860908499,
+      "repeat_profile": {
+        "1": 0.9987679860908499,
+        "10": 4.271304944688211,
+        "100": 32.39486383442566,
+        "2": 1.3671831690410825,
+        "25": 9.517432589961876,
+        "5": 2.4651696599124313,
+        "50": 17.726229522510877
+      },
+      "repeat_profile_basis": "formula_projection_from_measured_cold_prepare_and_hot_query_median",
+      "row_id": "grouped_reduction_sum_repeat100_262144"
+    },
+    {
+      "blockers": [
+        "public_prepared_query_tutorial_not_written",
+        "final_public_row_wording_review_required",
+        "m7_promotion_authorized_false",
+        "repeat_1_end_to_end_not_optix_win",
+        "count_mode_requires_double_digit_repeat_amortization",
+        "count_mode_high_breakeven_blocks_public_claim"
+      ],
+      "break_even_repeat_count_ceiling": 14,
+      "generated_groups": 2048,
+      "generated_rows": 524288,
+      "hot_query_speedup_embree_over_optix": 8.818523960340006,
+      "m7_promoted": false,
+      "mode": "count",
+      "operation": "group_count",
+      "promotion_status": "candidate_needs_public_row_review_not_m7",
+      "recommended_public_repeat_count_if_promoted": null,
+      "repeat_100_end_to_end_speedup": 2.633207352645078,
+      "repeat_1_end_to_end_speedup": 0.6828966403162261,
+      "repeat_profile": {
+        "1": 0.6828966403162261,
+        "10": 0.9096043794218395,
+        "100": 2.633207352645078,
+        "2": 0.7087261820984597,
+        "25": 1.2606192082564964,
+        "5": 0.7852400272524285,
+        "50": 1.7811737254047104
+      },
+      "repeat_profile_basis": "formula_projection_from_measured_cold_prepare_and_hot_query_median",
+      "row_id": "grouped_reduction_count_repeat100_524288"
+    },
+    {
+      "blockers": [
+        "public_prepared_query_tutorial_not_written",
+        "final_public_row_wording_review_required",
+        "m7_promotion_authorized_false",
+        "repeat_1_end_to_end_margin_too_small_for_public_claim"
+      ],
+      "break_even_repeat_count_ceiling": 1,
+      "generated_groups": 2048,
+      "generated_rows": 524288,
+      "hot_query_speedup_embree_over_optix": 180.5090766992328,
+      "m7_promoted": false,
+      "mode": "sum",
+      "operation": "group_sum_i64",
+      "promotion_status": "candidate_needs_public_row_review_not_m7",
+      "recommended_public_repeat_count_if_promoted": 100,
+      "repeat_100_end_to_end_speedup": 33.60842411097631,
+      "repeat_1_end_to_end_speedup": 1.0158631485328071,
+      "repeat_profile": {
+        "1": 1.0158631485328071,
+        "10": 4.564631380068768,
+        "100": 33.60842411097631,
+        "2": 1.4172243565914042,
+        "25": 10.177357905316368,
+        "5": 2.610610035295768,
+        "50": 18.77630168622342
+      },
+      "repeat_profile_basis": "formula_projection_from_measured_cold_prepare_and_hot_query_median",
+      "row_id": "grouped_reduction_sum_repeat100_524288"
+    }
+  ],
+  "contract_name": "RTDL grouped_reduction prepared-query contract",
+  "current_candidate_wording_uses_actual_repeat100": true,
+  "draft_candidate_wording_not_publishable": [
+    "Draft only: on the RTX 4000 Ada pod, the fixed-schema prepared grouped sum row with 262144 rows and 1024 groups showed 224.269x hot prepared-query OptiX-over-Embree speedup and 32.395x modeled repeat 100 end-to-end speedup after counting cold prepare once (modeled from measured cold prepare plus 100 times the measured hot-query median, not from an independently measured 100-query loop). This wording is not publishable until external public-row review closes.",
+    "Draft only: on the RTX 4000 Ada pod, the fixed-schema prepared grouped sum row with 524288 rows and 2048 groups showed 180.509x hot prepared-query OptiX-over-Embree speedup and 33.608x modeled repeat 100 end-to-end speedup after counting cold prepare once (modeled from measured cold prepare plus 100 times the measured hot-query median, not from an independently measured 100-query loop). This wording is not publishable until external public-row review closes."
+  ],
+  "forbidden_claims": [
+    "V3 is 224x faster end to end",
+    "RayDB is 224x faster end to end",
+    "RTDL is a DBMS or SQL engine",
+    "grouped_reduction proves broad V3 speedup over V2.x",
+    "whole-app or whole-database speedup is authorized",
+    "hot prepared-query speedup can be quoted without cold cost and repeat count"
+  ],
+  "generic_capability": "grouped_reduction",
+  "goal_level_decision_audit": {
+    "decision": "write a public prepared-query contract before any grouped_reduction M7 promotion",
+    "different_path_now": "Make the user contract executable and reviewed before changing public tutorials or wording.",
+    "foolish_actions": "It would be foolish to publish the hot-query speedups without a fixed-schema, cold-cost, and repeat-count user contract.",
+    "other_path": "Move to another candidate immediately. That remains available, but grouped_reduction is closest to a reusable M7 row.",
+    "was_i_foolish": "No. The contract closes the exact blocker found by the fresh evidence review."
+  },
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows": 0,
+  "next_actions": [
+    "Seek external review of this contract packet.",
+    "If accepted, choose whether M7 promotes sum-only repeat-100 grouped_sum prepared-query wording or keeps grouped_reduction internal.",
+    "If promotion is attempted, write final public row wording and run another review before editing tutorials."
+  ],
+  "promotion_gates": [
+    "fresh_pod_artifacts_copied_back",
+    "cpu_reference_match_for_every_promoted_backend_row",
+    "same_contract_embree_and_optix_rows",
+    "warmup_at_least_3_for_every_promoted_row",
+    "cold_prepare_total_sec_reported",
+    "hot_query_elapsed_median_sec_reported",
+    "repeat_1_end_to_end_reported",
+    "break_even_repeat_count_reported",
+    "chosen_public_repeat_count_named_in_wording",
+    "whole_app_speedup_claim_authorized_false",
+    "final_external_public_row_review_required"
+  ],
+  "public_contract": {
+    "fixed_before_prepare": "row count, group-key column, number of distinct groups, integer value column for sum, query/filter shape, backend, operation, and group capacity",
+    "native_engine_customization_allowed": false,
+    "output_contract": "one output row per group key must match the CPU reference exactly for count and integer sum on the stated table dimensions",
+    "overflow_policy": "fail_closed",
+    "partner_continuation_required": false,
+    "scope": "prepared repeated grouped reductions over a fixed schema",
+    "supported_backends_for_this_packet": [
+      "embree",
+      "optix"
+    ],
+    "supported_operations_for_this_packet": [
+      "group_count",
+      "group_sum_i64"
+    ]
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "source_intake": "docs\\rebuild\\v3\\evidence\\phoenix_v3_grouped_reduction_m7_20260620\\m7_grouped_reduction_post_run_intake.json",
+  "source_intake_status": "grouped_reduction_m7_post_run_intake_not_promoted",
+  "status": "prepared_query_contract_draft_not_release",
+  "sum_repeat100_actual_evidence": "docs/rebuild/v3/phoenix_v3_grouped_reduction_sum_repeat100_actual_pod_evidence_2026-06-20.md",
+  "sum_repeat100_actual_evidence_supersedes_formula_candidates": true,
+  "timing_contract": {
+    "break_even_required": true,
+    "cold_cost_must_be_reported_next_to_hot_speedup": true,
+    "hot_query_field": "elapsed_median_sec",
+    "minimum_warmup_for_m7": 3,
+    "repeat_end_to_end_formula": "cold_prepare_total_sec + repeat_count * elapsed_median_sec",
+    "repeat_end_to_end_formula_note": "Repeat-scenario values are computed from measured cold prepare and the measured hot-query median. They are not independent multi-query end-to-end runs.",
+    "repeat_scenario_values_are_formula_projections": true,
+    "required_fields": [
+      "workload_build_sec",
+      "cold_prepare_total_sec",
+      "elapsed_median_sec",
+      "prepared_iteration_count",
+      "repeat",
+      "warmup"
+    ],
+    "required_repeat_counts_for_reporting": [
+      1,
+      2,
+      5,
+      10,
+      25,
+      50,
+      100
+    ],
+    "single_query_required": true
+  },
+  "user_problem": "Run repeated grouped count/sum queries over a fixed-schema table with known row and group-key counts, without writing custom native code for that application.",
+  "whole_app_speedup_claim_authorized": false
+}

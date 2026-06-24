@@ -66,6 +66,8 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "policy_version": rt.V2_5_EXECUTION_PATH_POLICY_VERSION,
         "operation": "fixed_radius_ranked_summary_aggregate_3d",
         "graph_query_count_cap": rt.V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_CAP,
+        "graph_query_count_boundary": rt.V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_BOUNDARY,
+        "large_direct_query_count_floor": rt.V2_5_FIXED_RADIUS_AGGREGATE_LARGE_DIRECT_QUERY_COUNT_FLOOR,
         "result_modes": {
             "direct_graph": rt.V2_5_FIXED_RADIUS_AGGREGATE_DIRECT_GRAPH_MODE,
             "full_batch_direct": rt.V2_5_FIXED_RADIUS_AGGREGATE_FULL_BATCH_DIRECT_MODE,
@@ -91,10 +93,11 @@ def build_packet(root: Path = Path(".")) -> dict[str, Any]:
         "conclusion": (
             "The fixed-radius aggregate execution-path policy is now size-aware. "
             "Unknown or small aggregate-only OptiX work keeps the Goal2841 direct graph "
-            "recommendation; explicit large aggregate-only work above 65,536 queries uses "
-            "the Goal4502 full-batch prepared direct aggregate recommendation; partner "
-            "continuations keep the same-stream graph/device-partial route with an explicit "
-            "large-workload chunking warning."
+            "recommendation; Phoenix removes the fixed 65,536-query native graph cap, "
+            "but explicit large aggregate-only work still uses the measured Goal4502/Phoenix "
+            "full-batch prepared direct aggregate recommendation until graph replay has "
+            "material large-workload evidence; partner continuations keep the same-stream "
+            "graph/device-partial route with an explicit large-workload evidence warning."
         ),
     }
 

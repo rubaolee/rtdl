@@ -1,0 +1,110 @@
+{
+  "comparison": {
+    "rayjoin_rt_speedup_vs_rtdl_embree": null,
+    "rayjoin_rt_speedup_vs_rtdl_optix": null,
+    "rtdl_embree_relative_speed_vs_rtdl_optix": 0.5346819613002409,
+    "rtdl_optix_native_traversal_speedup_vs_rtdl_embree": 2.7640529296484377,
+    "rtdl_optix_speedup_vs_rtdl_embree": 1.8702706887066052
+  },
+  "correctness_sample": {
+    "embree_rows": 100000,
+    "first_mismatches": [],
+    "mismatch_count_first_10_materialized": 0,
+    "optix_rows": 100000,
+    "sample_count": 100000
+  },
+  "generated_at_utc": "2026-06-20T17:53:17.236205+00:00",
+  "input_shape": {
+    "base_cdb_segments": 326193,
+    "base_chains": 16545,
+    "query_points": 100000
+  },
+  "parity_filter": {
+    "accepted_count": 100000,
+    "evaluated_candidates": 100001,
+    "first_rejected": [
+      {
+        "embree": {
+          "face_id": 2197,
+          "hit_t": 0.15625762939453125,
+          "point_id": 43909,
+          "segment_id": 103091
+        },
+        "optix": {
+          "face_id": 1915,
+          "hit_t": 0.15625762939453125,
+          "point_id": 43909,
+          "segment_id": 103075
+        },
+        "point": {
+          "id": 43909,
+          "x": -41.903076792947864,
+          "y": -9.854639674627247
+        }
+      }
+    ],
+    "max_rounds": 5,
+    "oversample": 2048,
+    "rejected_count": 1,
+    "status": "pass",
+    "target_count": 100000,
+    "total_candidates": 102048
+  },
+  "protocol": {
+    "base_cdb": "data/rayjoin_public_cdb/br_county.cdb",
+    "contract": "vertical-ray closest CDB boundary segment, then directed left/right face-id lookup",
+    "embree_repeats": 1000,
+    "embree_threads_env": "auto",
+    "optix_repeats": 1000,
+    "parity_filter_requested": true,
+    "point_count": 100000,
+    "artifact_methodology_label": "parity_filtered_100k",
+    "legacy_safe100k_name_retired": true,
+    "legacy_safe100k_name_retired_reason": "The accepted stream is backend-parity filtered; the old safe100k label was misleading for unfiltered random bbox candidates.",
+    "query_cdb": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_m5_topology_20260620/goal4373_query_points_parity_filtered_100k.cdb",
+    "query_generation": "backend_parity_filtered_random_bbox",
+    "rayjoin_repeats": 200,
+    "rayjoin_warmups": 3,
+    "row_contract": [
+      "point_id",
+      "face_id",
+      "segment_id",
+      "hit_t"
+    ],
+    "row_materialization_in_timed_path": false,
+    "rtdl_repeats_default": 1000,
+    "rtdl_warmups": 3,
+    "seed": 4373,
+    "timed_output": "scalar positive-face count for RTDL; RayJoin author Query timer for PIP"
+  },
+  "rayjoin_rt": null,
+  "rtdl": {
+    "embree": {
+      "backend": "embree",
+      "counts_stable": true,
+      "hot_max_sec": 0.04927213490009308,
+      "hot_median_sec": 0.0050402432680130005,
+      "hot_min_sec": 0.00381295382976532,
+      "hot_total_sec": 7.750020258128643,
+      "native_traversal_median_sec": 0.005016792,
+      "positive_face_count": 43738,
+      "repeats": 1000,
+      "run_count": 1003,
+      "warmups": 3
+    },
+    "optix": {
+      "backend": "optix",
+      "counts_stable": true,
+      "hot_max_sec": 0.03436665236949921,
+      "hot_median_sec": 0.002694927155971527,
+      "hot_min_sec": 0.002600438892841339,
+      "hot_total_sec": 2.7883087769150734,
+      "native_traversal_median_sec": 0.001815013,
+      "positive_face_count": 43738,
+      "repeats": 1000,
+      "run_count": 1003,
+      "warmups": 3
+    }
+  },
+  "schema": "rtdl.goal4373.rayjoin_cdb_point_location_compare.v1"
+}

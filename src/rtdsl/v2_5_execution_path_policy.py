@@ -17,7 +17,11 @@ V2_5_FIXED_RADIUS_AGGREGATE_SAME_STREAM_CUPY_MODE = (
     "ranked-summary-aggregate-prepared-query-batch-graph-same-stream-cupy-float32"
 )
 V2_5_FIXED_RADIUS_AGGREGATE_OPERATION = "fixed_radius_ranked_summary_aggregate_3d"
-V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_CAP = 65_536
+V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_CAP: int | None = None
+V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_BOUNDARY = (
+    "no_fixed_65536_cap; native graph query_count is bounded by uint32"
+)
+V2_5_FIXED_RADIUS_AGGREGATE_LARGE_DIRECT_QUERY_COUNT_FLOOR = 1_000_000
 V2_5_EXECUTION_PATH_POLICY_CLAIM_BOUNDARY = (
     "v2.5 execution-path policy is explain-only guidance. It does not hide "
     "dispatch, force a partner, authorize public speedup wording, authorize "
@@ -144,10 +148,10 @@ def plan_v2_5_fixed_radius_aggregate_execution_path(
 
     Goal2841 showed that the same-stream CuPy consumer is correct and traceable,
     but slower than direct native graph replay when the app only needs the final
-    native aggregate on the 65K graph fixture. Goal4502 later showed that the
-    aggregate-only KITTI-1M route is faster as one full-batch prepared direct
-    aggregate than as the older direct graph row. This helper keeps both rules
-    explicit instead of burying them in a hidden dispatcher.
+    native aggregate on the 65K graph fixture. Phoenix later removed the fixed
+    65K native graph query-count cap, but the large aggregate-only guidance still
+    follows measured evidence rather than assuming graph replay is faster. This
+    helper keeps both rules explicit instead of burying them in a hidden dispatcher.
     """
 
     normalized_backend = str(backend).strip().lower()
@@ -167,7 +171,7 @@ def plan_v2_5_fixed_radius_aggregate_execution_path(
         normalized_backend == "optix"
         and not continuation_required
         and normalized_query_count is not None
-        and normalized_query_count > V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_CAP
+        and normalized_query_count >= V2_5_FIXED_RADIUS_AGGREGATE_LARGE_DIRECT_QUERY_COUNT_FLOOR
     )
 
     if normalized_backend != "optix":
@@ -182,19 +186,20 @@ def plan_v2_5_fixed_radius_aggregate_execution_path(
         reasons.append("Goal2841 proves this path is traceable but slower than direct native graph replay.")
         if (
             normalized_query_count is not None
-            and normalized_query_count > V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_CAP
+            and normalized_query_count >= V2_5_FIXED_RADIUS_AGGREGATE_LARGE_DIRECT_QUERY_COUNT_FLOOR
         ):
             warnings.append(
-                "The current graph/device-partial partner-continuation path is sized around the "
-                "65,536-query graph cap; large partner-continuation workloads need explicit chunking "
-                "or future large-partial evidence."
+                "The graph/device-partial partner-continuation path no longer has a fixed "
+                "65,536-query native cap, but large partner-continuation workloads still need "
+                "explicit chunking or fresh large-partial evidence before recommendation."
             )
     elif large_aggregate_only:
         recommended_mode = V2_5_FIXED_RADIUS_AGGREGATE_FULL_BATCH_DIRECT_MODE
         selected_path = "prepared_full_batch_direct_aggregate"
         reasons.append(
-            "No partner continuation is required and the query_count is above the graph fixture cap, "
-            "so the Goal4502 full-batch prepared direct aggregate is the current measured route."
+            "No partner continuation is required and the query_count is in the large aggregate-only "
+            "evidence band, so the Goal4502/Phoenix full-batch prepared direct aggregate remains the "
+            "current measured route."
         )
         reasons.append(
             "Goal4502 measured the KITTI-1M full-batch direct aggregate at 1.68x faster than the "
@@ -232,6 +237,8 @@ def plan_v2_5_fixed_radius_aggregate_execution_path(
         "full_batch_direct_result_mode": V2_5_FIXED_RADIUS_AGGREGATE_FULL_BATCH_DIRECT_MODE,
         "same_stream_partner_result_mode": V2_5_FIXED_RADIUS_AGGREGATE_SAME_STREAM_CUPY_MODE,
         "graph_query_count_cap": V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_CAP,
+        "graph_query_count_boundary": V2_5_FIXED_RADIUS_AGGREGATE_GRAPH_QUERY_COUNT_BOUNDARY,
+        "large_direct_query_count_floor": V2_5_FIXED_RADIUS_AGGREGATE_LARGE_DIRECT_QUERY_COUNT_FLOOR,
         "large_aggregate_only_full_batch_direct_preferred": large_aggregate_only,
         "direct_native_graph_preferred_when_no_partner_continuation": normalized_backend == "optix"
         and not continuation_required

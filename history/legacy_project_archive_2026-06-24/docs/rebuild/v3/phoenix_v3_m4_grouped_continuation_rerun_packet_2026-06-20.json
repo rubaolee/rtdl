@@ -1,0 +1,219 @@
+{
+  "version": "phoenix_v3_m4_grouped_continuation_rerun_packet_2026_06_20",
+  "status": "ready_for_pod_after_external_review_not_executed",
+  "goal": "Phoenix V3 M4 grouped/fused-continuation rerun packet",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "phoenix_m7_qualified_release_rows": 0,
+  "goal4392_gate": "M4",
+  "primary_generic_capabilities": [
+    "component_union",
+    "grouped_reduction"
+  ],
+  "secondary_evidence_capabilities": [
+    "device_ray_hit_stream"
+  ],
+  "source_route_map": "docs/rebuild/v3/phoenix_v3_p0_route_capability_map_2026-06-20.json",
+  "remote": {
+    "ssh": "ssh root@213.173.108.14 -p 11592 -i C:\\Users\\Lestat\\.ssh\\id_ed25519_rtdl_codex_current_pod",
+    "workdir": "/root/rtdl_v3_rebuild_20260620/current",
+    "artifact_dir": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_m4_grouped_continuation_20260620",
+    "python": "/root/rtdl_v3_rebuild_20260620/.venv/bin/python"
+  },
+  "local_artifact_dir": "docs/rebuild/v3/evidence/phoenix_v3_m4_grouped_continuation_20260620",
+  "must_not_downshift_scale_without_supersession": true,
+  "external_use_policy": {
+    "public_or_partner_facing_citation_allowed": false,
+    "requires_distinct_public_claim_authorization_step": true,
+    "statement": "None of the M9, M10, M11, M18, M23, or M28 results may be cited, quoted, paraphrased, or summarized in public-facing or partner-facing material until a separate authorization changes public_speedup_claim_authorized to true."
+  },
+  "source_identity_policy": {
+    "expected_source_version_when_no_git": "v3-rebuild-2026-06-20",
+    "git_commit_preferred": true,
+    "no_git_fallback_allowed": true,
+    "fallback_caveat": "If the pod tree has no .git directory, source identity for the run is VERSION-string plus file-hash based, not git-commit based. Reviewers must not treat source_version.txt as a verified commit.",
+    "required_no_git_artifacts": [
+      "source_version.txt",
+      "source_identity_check.txt",
+      "provenance_search.txt",
+      "source_manifest.sha256"
+    ],
+    "source_manifest_must_include": [
+      "VERSION",
+      "README.md",
+      "Makefile",
+      "build/librtdl_embree.so",
+      "build/librtdl_optix.so",
+      "src source files",
+      "scripts source files"
+    ]
+  },
+  "binding_execution_environment": {
+    "python": "/root/rtdl_v3_rebuild_20260620/.venv/bin/python",
+    "python_version": "3.12.3",
+    "required_package_versions": {
+      "cupy-cuda12x": "14.1.1",
+      "numba": "0.65.1",
+      "torch": "2.6.0+cu124",
+      "nvidia-cuda-nvcc-cu12": "12.4.131",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79"
+    },
+    "system_python3_preflight_status": "failed_gpu_partner_gate_missing_cupy_and_numba",
+    "system_python3_failure_note": "System python3 on the pod is missing CuPy and Numba. This is an environment/packaging gap, not evidence that the V3 M4 code path failed.",
+    "pod_reverification_required": true,
+    "plain_python_invocation_policy": {
+      "required_commands_must_not_use_plain_python3_for_tests_or_measurements": true,
+      "focused_tests_and_measurement_scripts_checked": true,
+      "internal_python_subprocess_policy": "M4 measurement scripts and focused tests use sys.executable for Python re-exec/subprocess paths; Makefile contains unrelated python3 targets, but the M4 packet calls only build-embree and build-optix."
+    }
+  },
+  "pre_run_gates": [
+    {
+      "id": "packet_claim_boundary_gate",
+      "purpose": "Read this packet on the runner before measurement and fail if claim-boundary flags drift.",
+      "required_assertions": {
+        "release_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "phoenix_m7_qualified_release_rows": 0
+      }
+    },
+    {
+      "id": "artifact_dir_preflight",
+      "purpose": "Create and verify the artifact directory before measurement.",
+      "required_checks": [
+        "artifact directory exists",
+        "artifact directory is writable",
+        "free space is recorded before M23 and M28 measurement"
+      ],
+      "minimum_free_bytes": 2147483648
+    }
+  ],
+  "broad_v2_v3_denominator_rule": {
+    "original_same_metric_comparison_rows": 46,
+    "original_v3_geomean_speedup_vs_v2_14": 1.012314056248152,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "subset_geomean_must_be_labeled_subset": true
+  },
+  "required_commands": [
+    {
+      "id": "env_probe",
+      "purpose": "Record GPU, driver, source identity, and Python partner environment before measurement.",
+      "command": "mkdir -p $ART && nvidia-smi > $ART/nvidia-smi.txt && PYTHONPATH=src:. python3 scripts/v3_gpu_python_env_gate.py --json-out $ART/system_python3_gpu_env_gate.json > $ART/system_python3_gpu_env_gate.stdout 2> $ART/system_python3_gpu_env_gate.stderr || true && if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then git rev-parse HEAD > $ART/current_commit.txt; else echo no_git_worktree > $ART/current_commit.txt; cat VERSION > $ART/source_version.txt; printf 'expected_source_version=v3-rebuild-2026-06-20\\nactual_source_version=' > $ART/source_identity_check.txt; cat VERSION >> $ART/source_identity_check.txt; printf '\\n' >> $ART/source_identity_check.txt; if grep -qx 'v3-rebuild-2026-06-20' VERSION; then echo source_version_match=pass >> $ART/source_identity_check.txt; else echo source_version_match=fail >> $ART/source_identity_check.txt; exit 1; fi; { echo searched_git_and_build_provenance; find /root/rtdl_v3_rebuild_20260620 /workspace/rtdl_v2_vs_v3_pod_20260620_024503 -maxdepth 4 -type d -name .git 2>/dev/null || true; ls -l /root/rtdl_v3_rebuild_20260620/*build*.log /root/rtdl_v3_rebuild_20260620/run_current*.log 2>/dev/null || true; } > $ART/provenance_search.txt; { sha256sum VERSION README.md Makefile build/librtdl_embree.so build/librtdl_optix.so; find src scripts -type f \\( -name '*.py' -o -name '*.cu' -o -name '*.cpp' -o -name '*.c' -o -name '*.hpp' -o -name '*.h' \\) -print0 | sort -z | xargs -0 sha256sum; } > $ART/source_manifest.sha256; fi && PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_gpu_python_env_gate.py --json-out $ART/gpu_env_gate.json",
+      "required": true
+    },
+    {
+      "id": "pre_run_packet_gate",
+      "purpose": "Read the Phoenix M4 packet on the pod runner and fail if release or public-claim flags drift.",
+      "command": "/root/rtdl_v3_rebuild_20260620/.venv/bin/python -c \"import json,pathlib; p=pathlib.Path('docs/rebuild/v3/phoenix_v3_m4_grouped_continuation_rerun_packet_2026-06-20.json'); d=json.loads(p.read_text()); assert d['release_authorized'] is False; assert d['public_speedup_claim_authorized'] is False; assert d['phoenix_m7_qualified_release_rows'] == 0; print('packet claim-boundary gate ok')\" > $ART/pre_run_packet_gate.txt",
+      "required": true,
+      "pre_run_gate": "packet_claim_boundary_gate"
+    },
+    {
+      "id": "artifact_dir_preflight",
+      "purpose": "Create the artifact target early, verify write permission, and record free space before large M23/M28 outputs.",
+      "command": "mkdir -p $ART && test -w $ART && df -h $ART > $ART/artifact_df_before.txt && /root/rtdl_v3_rebuild_20260620/.venv/bin/python -c \"import os,shutil; path=os.environ['ART']; free=shutil.disk_usage(path).free; assert free >= 2147483648, f'insufficient artifact free space: {free}'; print(f'artifact_dir={path} free_bytes={free}')\" > $ART/artifact_preflight.txt",
+      "required": true,
+      "pre_run_gate": "artifact_dir_preflight"
+    },
+    {
+      "id": "native_build",
+      "purpose": "Build native OptiX and Embree libraries used by the P0 rows.",
+      "command": "make build-embree build-optix OPTIX_PREFIX=/workspace/vendor/optix-dev-8.0.0",
+      "required": true
+    },
+    {
+      "id": "focused_tests",
+      "purpose": "Run the local capability tests before expensive measurement.",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python -m unittest tests.goal4396_v3_0_m4_component_union_pilot_test tests.goal4403_v3_0_m9_grouped_stream_partner_test tests.goal4406_v3_0_m10_same_stream_evidence_test tests.goal4407_v3_0_m11_no_hidden_copy_evidence_test tests.goal4415_v3_0_m18_device_side_grouped_contract_test tests.goal4420_v3_0_m23_dbscan_component_bridge_test tests.goal4425_v3_0_m28_raydb_prepared_grouped_refresh_test",
+      "required": true
+    },
+    {
+      "id": "m9_grouped_partner_65536",
+      "purpose": "Prove CuPy and Numba grouped-stream partner viability at serious scale.",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_0_m9_grouped_stream_partner_measure.py --point-count 65536 --component-threshold 7 --warmups 2 --repeats 5 --output $ART/m9_grouped_stream_partner_65536.json",
+      "required": true,
+      "generic_capability": "component_union"
+    },
+    {
+      "id": "m10_same_stream_65536",
+      "purpose": "Prove native OptiX producer to CuPy/Numba partner consumer same-stream handoff.",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_0_m10_same_stream_evidence_measure.py --point-count 65536 --component-threshold 7 --warmups 2 --repeats 5 --output $ART/m10_same_stream_65536.json",
+      "required": true,
+      "generic_capability": "component_union"
+    },
+    {
+      "id": "m11_no_hidden_copy_65536",
+      "purpose": "Prove measured-window no-hidden named-column movement for the grouped continuation.",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_0_m11_no_hidden_copy_measure.py --point-count 65536 --component-threshold 7 --warmups 2 --repeats 5 --output $ART/m11_no_hidden_copy_65536.json",
+      "required": true,
+      "generic_capability": "component_union"
+    },
+    {
+      "id": "m18_device_grouped_65536",
+      "purpose": "Exercise the device-side grouped input contract beyond the old 8192-ray evidence.",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_0_m18_device_side_grouped_contract_measure.py --ray-count 65536 --group-count 1024 --warmups 2 --repeats 5 --output $ART/m18_device_grouped_65536.json",
+      "required": true,
+      "generic_capability": "device_ray_hit_stream"
+    },
+    {
+      "id": "m23_dbscan_component_signature_524288",
+      "purpose": "Tie component_union to the RTDBSCAN app without Python row materialization.",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_0_m23_dbscan_component_bridge_measure.py --copies 65536 --warmups 2 --repeats 5 --app-call-warmups 1 --output-mode component_signature --output $ART/m23_dbscan_component_signature_524288.json",
+      "required": true,
+      "generic_capability": "component_union"
+    },
+    {
+      "id": "m28_raydb_grouped_reduction_262144",
+      "purpose": "Tie grouped_reduction to a non-DBSCAN app under same-contract OptiX/Embree rows.",
+      "command": "PYTHONPATH=src:. /root/rtdl_v3_rebuild_20260620/.venv/bin/python scripts/v3_0_m28_raydb_prepared_grouped_refresh.py --generated-rows 262144 --generated-groups 1024 --modes count,sum --backends embree,optix --warmup 1 --include-iteration-walls --output $ART/m28_raydb_grouped_reduction_262144.json",
+      "required": true,
+      "generic_capability": "grouped_reduction",
+      "required_independent_rows": [
+        {
+          "backend": "embree",
+          "mode": "count"
+        },
+        {
+          "backend": "embree",
+          "mode": "sum"
+        },
+        {
+          "backend": "optix",
+          "mode": "count"
+        },
+        {
+          "backend": "optix",
+          "mode": "sum"
+        }
+      ],
+      "merge_or_average_backend_rows_allowed": false
+    }
+  ],
+  "acceptance_checks": [
+    "The runner reads this packet before measurement and verifies release_authorized=false, public_speedup_claim_authorized=false, and phoenix_m7_qualified_release_rows=0.",
+    "The artifact target directory is created, writable, and has free space recorded before M23 and M28 run.",
+    "Source identity is recorded as a git commit when available; if the Phoenix pod tree is an expanded non-git worktree, VERSION must equal v3-rebuild-2026-06-20 and source_version.txt, source_identity_check.txt, provenance_search.txt, and source_manifest.sha256 must be preserved.",
+    "When the no-git fallback is used, source_manifest.sha256 includes built native libraries plus src/ and scripts/ source files, and the final report carries the file-hash caveat.",
+    "GPU partner, source identity, and claim-boundary gates are reverified on the pod using /root/rtdl_v3_rebuild_20260620/.venv/bin/python before measurement.",
+    "System python3 failure is recorded as a missing-CuPy/Numba packaging gap, not as a V3 M4 code-path failure.",
+    "No required focused test or measurement command uses plain python3/python instead of the binding venv interpreter.",
+    "All required commands finish with zero exit status or produce preserved failure artifacts.",
+    "CuPy and Numba partner rows are both present for component_union evidence.",
+    "M23 DBSCAN component-signature row and M28 RayDB grouped-reduction row both pass correctness checks.",
+    "M28 Embree/OptiX and count/sum results are recorded as independent labeled evidence rows, not merged or averaged.",
+    "At least one non-DBSCAN grouped/fused continuation row is present.",
+    "All claim-boundary fields keep public speedup, whole-app speedup, automatic partner/backend selection, and release authorization false.",
+    "The packet does not recompute the broad V2.14-vs-V3 geomean over a subset.",
+    "Any subset timing is labeled subset and cannot replace the 46-row broad denominator.",
+    "No result from this packet is cited, quoted, paraphrased, or summarized in public-facing or partner-facing material without a separate public-claim authorization."
+  ],
+  "failure_policy": {
+    "preserve_failed_artifacts": true,
+    "no_scale_down_without_new_packet": true,
+    "no_public_claim_from_partial_success": true,
+    "record_failed_rows_at_stated_scale": true,
+    "no_backfill_or_average_with_old_small_scale_rows": true,
+    "if_m18_65536_fails": "Record failure at 65536 rays and do not substitute, average, footnote, or backfill with the older 8192-ray evidence as serious-scale completion without a supersession review."
+  }
+}

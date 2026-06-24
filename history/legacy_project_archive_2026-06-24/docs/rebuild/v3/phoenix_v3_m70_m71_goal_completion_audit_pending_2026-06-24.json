@@ -1,0 +1,60 @@
+{
+  "all_app_authorized": false,
+  "automatic_partner_selection_authorized": false,
+  "benchmark_execution_authorized": false,
+  "broad_v3_over_v2_wording_authorized": false,
+  "c_abi_authorized": false,
+  "decision_audit": {
+    "different_path": "Use this builder after Claude reviews exist, then write final consensus if ready.",
+    "if_yes_actions": "Not applicable.",
+    "other_path": "Manual goal-completion drafting after Claude, but that is easier to misread.",
+    "was_i_foolish": "No. The audit is fail-closed and waits for Claude."
+  },
+  "embedding_authorized": false,
+  "focused_pod_spend_authorized": false,
+  "goal_completion_authorized": false,
+  "goal_completion_ready_for_final_3ai_consensus": false,
+  "intake_ready": false,
+  "intake_status": "pending_claude_backfill",
+  "missing_support": [],
+  "paid_pod_spend_authorized": false,
+  "paper_reproduction_wording_authorized": false,
+  "pod_spend_authorized": false,
+  "public_speedup_wording_authorized": false,
+  "release_authorized": false,
+  "route_specific_rtnn_app_tuning_authorized": false,
+  "rt_core_speedup_wording_authorized": false,
+  "runbook_execution_authorized": false,
+  "status": "m70_m71_goal_completion_pending_claude_backfill",
+  "support": {
+    "backfill_packet_antigravity": {
+      "exists": true,
+      "path": "docs\\reviews\\antigravity_phoenix_v3_m70_m71_backfill_packet_intake_review_2026-06-24.md"
+    },
+    "m70_antigravity": {
+      "exists": true,
+      "path": "docs\\reviews\\antigravity_phoenix_v3_m70_rtnn_focused_protocol_review_2026-06-23.md"
+    },
+    "m70_provisional_2ai": {
+      "exists": true,
+      "path": "docs\\reviews\\codex_antigravity_phoenix_v3_m70_provisional_2ai_consensus_pending_claude_2026-06-23.md"
+    },
+    "m71_antigravity": {
+      "exists": true,
+      "path": "docs\\reviews\\antigravity_phoenix_v3_m71_rtnn_local_harness_dry_run_gate_review_2026-06-23.md"
+    },
+    "m71_provisional_2ai": {
+      "exists": true,
+      "path": "docs\\reviews\\codex_antigravity_phoenix_v3_m71_local_dry_run_gate_provisional_2ai_consensus_pending_claude_2026-06-23.md"
+    },
+    "status_report": {
+      "exists": true,
+      "path": "docs\\reports\\phoenix_v3_m70_m71_backfill_packet_and_register_status_2026-06-24.md"
+    }
+  },
+  "tool": "v3_phoenix_m70_m71_goal_completion_audit",
+  "true_zero_copy_claim_authorized": false,
+  "v4_work_authorized": false,
+  "watch_row_closure_authorized": false,
+  "whole_app_speedup_wording_authorized": false
+}

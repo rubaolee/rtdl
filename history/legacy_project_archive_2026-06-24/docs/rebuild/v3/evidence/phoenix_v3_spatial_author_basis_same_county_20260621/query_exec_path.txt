@@ -1,0 +1,1 @@
+/workspace/RayJoin_fresh/release/bin/query_exec

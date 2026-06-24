@@ -1,0 +1,12 @@
+docs/reports/goal4407_v3_0_m11_no_hidden_copy_evidence_65536_2026-06-15.json
+docs/reports/goal4407_v3_0_m11_no_hidden_copy_evidence_2026-06-15.md
+docs/reports/goal4406_v3_0_m10_same_stream_evidence_8192_2026-06-15.json
+docs/reports/goal4406_v3_0_m10_same_stream_evidence_65536_2026-06-15.json
+docs/reports/goal4406_v3_0_m10_same_stream_evidence_2026-06-15.md
+docs/reports/goal4420_v3_0_m23_dbscan_component_bridge_65536_2026-06-15.json
+docs/reports/goal4420_v3_0_m23_dbscan_component_bridge_524288_2026-06-15.json
+docs/reports/goal4420_v3_0_m23_dbscan_component_bridge_2026-06-15.md
+docs/reports/goal4415_v3_0_m18_device_side_grouped_contract_evidence_8192_2026-06-15.json
+docs/reports/goal4415_v3_0_m18_device_side_grouped_contract_2026-06-15.md
+docs/reports/goal4425_v3_0_m28_raydb_prepared_grouped_refresh_262144_2026-06-16.json
+docs/reports/goal4425_v3_0_m28_raydb_prepared_grouped_refresh_2026-06-16.md

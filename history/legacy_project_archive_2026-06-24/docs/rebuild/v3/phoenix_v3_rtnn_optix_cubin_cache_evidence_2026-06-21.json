@@ -1,0 +1,133 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "cache_controls": {
+    "cache_bytes": 241952,
+    "cache_dir_env": "RTDL_OPTIX_CUBIN_CACHE_DIR",
+    "cache_files": [
+      "docs/rebuild/v3/evidence/rtnn_cubin_cache_20260621/cache/frn3d_grid_kernel.cu.sm_89.7dc0d93402fa3efd.cubin"
+    ],
+    "disable_env": "RTDL_OPTIX_DISABLE_CUBIN_CACHE"
+  },
+  "candidate_scope": "generic OptiX CUBIN content-addressed disk cache; RTNN ranked_summary is the serious evidence harness",
+  "checks": {
+    "cache_env_controls_in_source": true,
+    "cache_file_exists": true,
+    "cold_plus_query_reduced_at_least_1_5x": true,
+    "cold_summary_exists": true,
+    "hot_speedup_still_material": true,
+    "integer_signature_match": true,
+    "prelude_documents_cross_process_cache": true,
+    "prepare_reduced_at_least_2x": true,
+    "release_flags_false": true,
+    "repeat5": true,
+    "runner_wall_reduced_at_least_1_5x": true,
+    "serious_scale": true,
+    "warm_cold_plus_query_still_loses": true,
+    "warm_failed_checks_empty": true,
+    "warm_runner_below_material_floor": true,
+    "warm_runner_completed": true,
+    "warm_runner_positive_vs_cupy": true,
+    "warm_same_contract_signature_match": true,
+    "warm_summary_exists": true
+  },
+  "cold_optix": {
+    "cold_plus_query_wall_sec": 5.418484710156918,
+    "execution_prepare_sec": 3.3368102610111237,
+    "hot_query_median_sec": 0.010831683874130249,
+    "runner_wall_sec": 6.1218490824103355
+  },
+  "evidence": {
+    "cold_optix": "docs/rebuild/v3/evidence/rtnn_cubin_cache_20260621/cold_optix",
+    "cold_summary": "docs/rebuild/v3/evidence/rtnn_cubin_cache_20260621/cold_optix/summary.json",
+    "warm_compare": "docs/rebuild/v3/evidence/rtnn_cubin_cache_20260621/warm_compare_venv",
+    "warm_summary": "docs/rebuild/v3/evidence/rtnn_cubin_cache_20260621/warm_compare_venv/summary.json"
+  },
+  "failed_checks": [],
+  "forbidden_shortcuts": [
+    "Do not call 1.098x runner-wall speedup a Phoenix V3 performance win.",
+    "Do not quote the 7.740x hot-query speedup without the warm-cache and prepared-query boundary.",
+    "Do not claim CUBIN cache solves RTNN wall time.",
+    "Do not promote this row to M7 without external review and a material wall-speedup result."
+  ],
+  "generic_capability": "optix_cubin_cache_for_ranked_summary_prepare_path",
+  "goal_level_decision_audit": {
+    "decision": "Record the generic OptiX CUBIN cache as a real blocker reduction, but keep RTNN ranked_summary out of M7 because material wall speed is still missing.",
+    "different_path_now": "Use the cache result as a stepping stone and work on reusable input-pack or prepared-session amortization before asking for M7 review.",
+    "foolish_actions": "It would be foolish to treat the 7.740x hot-query result or the 1.098x runner-wall result as a V3 win while cold-plus-query still loses.",
+    "other_path": "I could have tuned RTNN-specific code or polished docs. That would not have attacked the measured generic OptiX startup blocker.",
+    "was_i_foolish": "No. The decision separates a reusable backend improvement from a release claim."
+  },
+  "hardware": {
+    "compute_cap": "8.9",
+    "driver_version": "550.127.05",
+    "name": "NVIDIA RTX 4000 Ada Generation"
+  },
+  "improvement_vs_cold_optix": {
+    "cold_plus_query_reduction": 2.056344039389671,
+    "execution_prepare_reduction": 5.913805444068651,
+    "runner_wall_reduction": 1.7843260378767332
+  },
+  "interpretation": "The content-addressed CUBIN cache is a real generic OptiX backend improvement: on the RTX 4000 Ada POD it reduced RTNN evidence-harness execution_prepare from 3.337s to 0.564s (5.914x), cold-plus-query from 5.418s to 2.635s (2.056x), and runner wall from 6.122s to 3.431s (1.785x). It does not make the RTNN row M7. Warm-cache OptiX still loses cold-plus-query to CuPy at 0.794x and clears runner wall by only 1.098x, below the material floor.",
+  "m7_promotion_authorized": false,
+  "m7_qualified_release_rows_added": 0,
+  "m7_reopen_candidate_pending_2ai_review": false,
+  "next_engine_action": "Keep RTNN ranked_summary open. The next reusable work is input-pack/device-column reuse or persistent prepared-session amortization; do not tune RTNN-specific logic or publish the hot-query win as an end-to-end result.",
+  "not_m7_blockers": [
+    "Warm-cache OptiX/CuPy runner-wall speedup is positive but only 1.098x, below the 2.0x material floor.",
+    "Warm-cache OptiX/CuPy cold-plus-query speedup is 0.794x, so cold-plus-query still loses.",
+    "Input load and OptiX input_pack remain large; the cache only addresses CUBIN compilation/module preparation.",
+    "No external Claude/Gemini review has accepted this candidate.",
+    "This does not authorize RTNN whole-app, V2 comparison, or broad V3 speedup wording."
+  ],
+  "parity": {
+    "cupy_grid_reference_summary": {
+      "bounded_neighbor_count": 37044632,
+      "kth_id_checksum": 549679635418,
+      "nearest_id_checksum": 549755289600,
+      "row_count": 1048576,
+      "sum_distance": 539061.8025638647
+    },
+    "delta_optix_minus_cupy_grid": {
+      "bounded_neighbor_count": 0,
+      "kth_id_checksum": 0,
+      "nearest_id_checksum": 0,
+      "row_count": 0,
+      "sum_distance": -6.508361548185349e-05
+    },
+    "integer_signature_match": true,
+    "optix_summary": {
+      "bounded_neighbor_count": 37044632,
+      "kth_id_checksum": 549679635418,
+      "nearest_id_checksum": 549755289600,
+      "row_count": 1048576,
+      "sum_distance": 539061.8024987811
+    },
+    "same_contract_signature_match": true,
+    "sum_distance_abs_error": 6.508361548185349e-05,
+    "sum_distance_relative_error": 1.20734979129119e-10,
+    "sum_distance_relative_tolerance": 0.0001
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "status": "rtnn_optix_cubin_cache_reduces_prepare_not_m7_wall_floor_not_met",
+  "tool": "v3_phoenix_rtnn_cubin_cache_evidence",
+  "warm_comparison_vs_cupy_grid": {
+    "rtdl_optix_over_cupy_grid_cold_plus_query_speedup": 0.7940706861044754,
+    "rtdl_optix_over_cupy_grid_hot_speedup": 7.740005839215484,
+    "rtdl_optix_over_cupy_grid_runner_wall_speedup": 1.0982908717463347
+  },
+  "warm_cupy_grid": {
+    "cold_plus_query_wall_sec": 2.092383272945881,
+    "grid_prepare_sec": 0.48139549791812897,
+    "hot_query_median_sec": 0.08394519239664078,
+    "runner_wall_sec": 3.7681291550397873
+  },
+  "warm_optix": {
+    "cold_plus_query_wall_sec": 2.6350088343024254,
+    "execution_prepare_sec": 0.5642407909035683,
+    "hot_query_median_sec": 0.010845623910427094,
+    "input_pack_sec": 0.5068753808736801,
+    "runner_wall_sec": 3.430902734398842
+  },
+  "whole_app_speedup_claim_authorized": false
+}

@@ -1,0 +1,526 @@
+{
+  "author_bar": {
+    "author_query_ms": 1.86566,
+    "author_result_count_parity_verified": false,
+    "author_result_count_printed": false,
+    "author_timer_basis": "query_exec -poly1 br_county.cdb -poly2 br_county.cdb -mode=rt -query=pip -warmup=5 -repeat=50 -check=false",
+    "data_sha256": {
+      "path": "data/rayjoin_public_cdb/br_county.cdb",
+      "sha256": "cee9f41da48c6f072b0692843cc23804517e8928f46c6c84675fc9a3b1e5a0e7"
+    },
+    "query_exec_sha256": {
+      "path": "/workspace/RayJoin_fresh/release/bin/query_exec",
+      "sha256": "6244ac5adb7c122cdc517307d2f61b444cca3aa8b6063d816e03a9403ce2e246"
+    }
+  },
+  "baseline_prefilter_zero": {
+    "best_ms": 1.8947422504425049,
+    "boundary_counts": [
+      47550
+    ],
+    "dropped_counts": [
+      308
+    ],
+    "emitted_counts": [
+      47262
+    ],
+    "m3_phase_sec_medians": {
+      "device_transfer_or_residency_sec": 0.0,
+      "host_return_or_scalar_materialization_sec": 0.0,
+      "query_stream_prepare_sec": 0.056685060262680054,
+      "rt_traversal_sec": 0.001850573,
+      "static_scene_prepare_sec": 0.1992153897881508,
+      "topology_continuation_sec": 0.0
+    },
+    "max_ms": 2.0290985703468323,
+    "median_ms": 1.8956884741783142,
+    "query_repeat": 50,
+    "query_stream_residency": "device_resident_prepared_point_probe_columns_with_reusable_relation_status_corrected_executor",
+    "raw_counts": [
+      47570
+    ],
+    "row_count": 47262,
+    "row_count_consistent": true,
+    "sample_repeat": 7,
+    "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_guarded_squared_boundary_20260621/baseline_prefilter_zero_repeat50_sample7.json",
+    "values_ms": [
+      2.0290985703468323,
+      1.8963515758514404,
+      1.894872635602951,
+      1.8957816064357758,
+      1.8952861428260803,
+      1.8956884741783142,
+      1.8947422504425049
+    ],
+    "warmup": 5
+  },
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_route": "relation_status_corrected_executor_validated",
+  "candidate_row_id": "point_location_topology_stream_relation_status_guarded_squared_boundary_prefilter_zero_county_repeat50_sample7",
+  "checks": {
+    "all_packet_claim_flags_false": true,
+    "author_basis_claim_flags_false": true,
+    "author_basis_exists": true,
+    "author_result_count_not_used_as_parity": true,
+    "baseline_evidence_exists": true,
+    "baseline_exact_count_47262": true,
+    "baseline_repeat50_sample7": true,
+    "boundary_counts_match": true,
+    "claude_default_path_review_exists": true,
+    "codex_default_path_consensus_exists": true,
+    "default_path_build_log_exists": true,
+    "default_path_clears_author_bar_by_stable_margin": true,
+    "default_path_counts_match_squared_candidate": true,
+    "default_path_evidence_exists": true,
+    "default_path_exact_count_47262": true,
+    "default_path_materially_faster_than_disable_control": true,
+    "default_path_median_clears_author_query_bar": true,
+    "default_path_repeat50_sample7": true,
+    "default_path_smoke_evidence_exists": true,
+    "default_path_smoke_exact_count_47262": true,
+    "default_path_smoke_repeat10_sample1": true,
+    "default_path_worst_sample_clears_author_query_bar": true,
+    "disable_control_evidence_exists": true,
+    "disable_control_exact_count_47262": true,
+    "disable_control_repeat10_sample1": true,
+    "disable_control_returns_old_candidate_volume": true,
+    "dropped_counts_match": true,
+    "emitted_counts_match": true,
+    "equivalence_packet_exists": true,
+    "guarded_equivalence_has_zero_mismatch": true,
+    "guarded_equivalence_packet_passes": true,
+    "native_source_default_enables_prefilter_zero": true,
+    "native_source_default_enables_squared_boundary": true,
+    "native_source_does_not_define_dead_exact_boundary_contact": true,
+    "native_source_does_not_keep_default_off_squared_boundary_gate": true,
+    "native_source_does_not_retain_count_only_no_diagnostics": true,
+    "native_source_exists": true,
+    "native_source_has_default_on_relation_status_helper": true,
+    "native_source_has_guarded_fallback": true,
+    "native_source_has_squared_boundary_flag": true,
+    "prefilter_zero_packet_exists": true,
+    "previous_claude_review_exists": true,
+    "previous_codex_consensus_exists": true,
+    "previous_prefilter_near_miss_confirmed": true,
+    "pure_squared_mismatch_risk_recorded": true,
+    "raw_candidate_counts_match": true,
+    "row_counts_consistent": true,
+    "same_count_mode": true,
+    "same_dataset": true,
+    "same_point_order": true,
+    "squared_clears_author_bar_by_stable_margin": true,
+    "squared_evidence_exists": true,
+    "squared_exact_count_47262": true,
+    "squared_materially_faster_than_current_prefilter": true,
+    "squared_median_clears_author_query_bar": true,
+    "squared_only_baseline_evidence_exists": true,
+    "squared_only_does_not_clear_author_bar": true,
+    "squared_only_evidence_exists": true,
+    "squared_only_exact_count_47262": true,
+    "squared_only_materially_faster_than_default_no_prefilter": true,
+    "squared_only_repeat50_sample3": true,
+    "squared_only_same_dataset": true,
+    "squared_repeat50_sample7": true,
+    "squared_worst_sample_clears_author_query_bar": true
+  },
+  "claim_boundary_note": "This packet can support external review of a row-scoped M7 candidate. It does not by itself authorize public release, broad V3-vs-V2 claims, RTDL-beats-RayJoin wording, paper reproduction wording, true zero-copy, or V4 embedding claims.",
+  "codex_consensus_status": "claude_codex_consensus_accept_default_path_m7_row",
+  "dataset": "data/rayjoin_public_cdb/br_county.cdb",
+  "default_path_candidate": {
+    "activation": "default_path_no_enabling_env_flags",
+    "best_ms": 1.079373061656952,
+    "boundary_counts": [
+      47550
+    ],
+    "command_contract": "env -u RTDL_OPTIX_RELATION_STATUS_CORRECTED_PREFILTER_ZERO -u RTDL_OPTIX_RELATION_STATUS_CORRECTED_EXACT_F64_SQUARED_BOUNDARY PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so RTDL_OPTIX_LIB=$PWD/build/librtdl_optix.so python3 scripts/v3_phoenix_spatial_rayjoin_topology_stream_m3_pod_runner.py --dataset data/rayjoin_public_cdb/br_county.cdb --count-mode relation_status_corrected_executor_validated --point-order-mode y_then_x --query-repeat 50 --warmup 5 --sample-repeat 7",
+    "dropped_counts": [
+      308
+    ],
+    "emitted_counts": [
+      47262
+    ],
+    "m3_phase_sec_medians": {
+      "device_transfer_or_residency_sec": 0.0,
+      "host_return_or_scalar_materialization_sec": 0.0,
+      "query_stream_prepare_sec": 0.05674245208501816,
+      "rt_traversal_sec": 0.001039159,
+      "static_scene_prepare_sec": 0.1984851434826851,
+      "topology_continuation_sec": 0.0
+    },
+    "max_ms": 1.083526760339737,
+    "median_ms": 1.0805986821651459,
+    "query_repeat": 50,
+    "query_stream_residency": "device_resident_prepared_point_probe_columns_with_reusable_relation_status_corrected_executor",
+    "raw_counts": [
+      47570
+    ],
+    "row_count": 47262,
+    "row_count_consistent": true,
+    "sample_repeat": 7,
+    "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_default_path_20260622/default_path_guarded_squared_repeat50_sample7.json",
+    "values_ms": [
+      1.083526760339737,
+      1.079373061656952,
+      1.0807514190673828,
+      1.0805986821651459,
+      1.0805688798427582,
+      1.0806843638420105,
+      1.0800324380397797
+    ],
+    "warmup": 5
+  },
+  "default_path_smoke": {
+    "activation": "default_path_no_enabling_env_flags",
+    "best_ms": 1.1279694736003876,
+    "boundary_counts": [
+      47550
+    ],
+    "dropped_counts": [
+      308
+    ],
+    "emitted_counts": [
+      47262
+    ],
+    "m3_phase_sec_medians": {
+      "device_transfer_or_residency_sec": 0.0,
+      "host_return_or_scalar_materialization_sec": 0.0,
+      "query_stream_prepare_sec": 1.1043872982263565,
+      "rt_traversal_sec": 0.0010512,
+      "static_scene_prepare_sec": 1.6007446944713593,
+      "topology_continuation_sec": 0.0
+    },
+    "max_ms": 1.1279694736003876,
+    "median_ms": 1.1279694736003876,
+    "query_repeat": 10,
+    "query_stream_residency": "device_resident_prepared_point_probe_columns_with_reusable_relation_status_corrected_executor",
+    "raw_counts": [
+      47570
+    ],
+    "row_count": 47262,
+    "row_count_consistent": true,
+    "sample_repeat": 1,
+    "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_default_path_20260622/default_path_smoke_repeat10_sample1.json",
+    "values_ms": [
+      1.1279694736003876
+    ],
+    "warmup": 2
+  },
+  "disable_control": {
+    "activation": "both_default_enabled_controls_set_to_zero",
+    "best_ms": 5.804896354675293,
+    "boundary_counts": [
+      47550
+    ],
+    "command_contract": "RTDL_OPTIX_RELATION_STATUS_CORRECTED_PREFILTER_ZERO=0 RTDL_OPTIX_RELATION_STATUS_CORRECTED_EXACT_F64_SQUARED_BOUNDARY=0 PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so RTDL_OPTIX_LIB=$PWD/build/librtdl_optix.so python3 scripts/v3_phoenix_spatial_rayjoin_topology_stream_m3_pod_runner.py --dataset data/rayjoin_public_cdb/br_county.cdb --count-mode relation_status_corrected_executor_validated --point-order-mode y_then_x --query-repeat 10 --warmup 2 --sample-repeat 1",
+    "dropped_counts": [
+      108293
+    ],
+    "emitted_counts": [
+      47262
+    ],
+    "m3_phase_sec_medians": {
+      "device_transfer_or_residency_sec": 0.0,
+      "host_return_or_scalar_materialization_sec": 0.0,
+      "query_stream_prepare_sec": 1.0958524495363235,
+      "rt_traversal_sec": 0.005733142,
+      "static_scene_prepare_sec": 1.5518632158637047,
+      "topology_continuation_sec": 0.0
+    },
+    "max_ms": 5.804896354675293,
+    "median_ms": 5.804896354675293,
+    "query_repeat": 10,
+    "query_stream_residency": "device_resident_prepared_point_probe_columns_with_reusable_relation_status_corrected_executor",
+    "raw_counts": [
+      155555
+    ],
+    "row_count": 47262,
+    "row_count_consistent": true,
+    "sample_repeat": 1,
+    "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_default_path_20260622/disable_control_both_zero_repeat10_sample1.json",
+    "values_ms": [
+      5.804896354675293
+    ],
+    "warmup": 2
+  },
+  "external_review_status": "claude_accept_with_boundary_default_path",
+  "failed_checks": [],
+  "generic_capability": "point_location_topology_stream",
+  "goal_level_decision_audit": {
+    "decision": "Accept the guarded squared-boundary evidence with Claude/Codex boundary, record the new default-path POD evidence, and promote it to one bounded M7 release-surface row after external review and consensus.",
+    "different_path_now": "Update the release-surface gates with one bounded row, then keep working on Phoenix V3 breadth without weakening claim boundaries.",
+    "foolish_actions": "The foolish action would be to call this a public RayJoin win, a whole-app win, or a released V3 capability because the default-path POD evidence clears the author Query timer. This packet only counts an internal M7 row and keeps public/broad claims disabled.",
+    "other_path": "I could have left Spatial as a future-research gap after the prefilter-zero near miss. That would avoid risk, but it would miss a real generic hot-path optimization visible in the exact f64 helper.",
+    "was_i_foolish": "No. The candidate is a generic predicate optimization with an explicit fallback for pure-squared edge cases, row count is stable at 47,262, the measured gain is material rather than a tiny 1.01x result, and I kept release promotion blocked after external review."
+  },
+  "guarded_squared_boundary_candidate": {
+    "best_ms": 1.0787248611450195,
+    "boundary_counts": [
+      47550
+    ],
+    "dropped_counts": [
+      308
+    ],
+    "emitted_counts": [
+      47262
+    ],
+    "m3_phase_sec_medians": {
+      "device_transfer_or_residency_sec": 0.0,
+      "host_return_or_scalar_materialization_sec": 0.0,
+      "query_stream_prepare_sec": 0.057191431522369385,
+      "rt_traversal_sec": 0.001037909,
+      "static_scene_prepare_sec": 0.2002830058336258,
+      "topology_continuation_sec": 0.0
+    },
+    "max_ms": 1.0819695889949799,
+    "median_ms": 1.0804496705532074,
+    "query_repeat": 50,
+    "query_stream_residency": "device_resident_prepared_point_probe_columns_with_reusable_relation_status_corrected_executor",
+    "raw_counts": [
+      47570
+    ],
+    "row_count": 47262,
+    "row_count_consistent": true,
+    "sample_repeat": 7,
+    "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_guarded_squared_boundary_20260621/guarded_squared_prefilter_zero_repeat50_sample7.json",
+    "values_ms": [
+      1.0804496705532074,
+      1.081567257642746,
+      1.0790489614009857,
+      1.0819695889949799,
+      1.0818131268024445,
+      1.0787248611450195,
+      1.0798163712024689
+    ],
+    "warmup": 5
+  },
+  "m7_candidate": true,
+  "m7_promotion_authorized": true,
+  "m7_qualified_release_rows_added": 1,
+  "optimization": {
+    "correctness_summary": "The equivalence packet records that pure squared comparison is not safe on endpoint-adjacent floating cases, while the guarded version matches the old predicate on the deterministic and seeded finite-double case set.",
+    "default_disable_values": [
+      "0",
+      "false",
+      "False",
+      "FALSE",
+      "off",
+      "Off",
+      "OFF",
+      "no",
+      "No",
+      "NO"
+    ],
+    "default_enabled": true,
+    "implementation_summary": "The candidate keeps the generic relation-status corrected scalar-count executor and replaces most full f64 membership boundary segment tests with squared fast-path comparisons while falling back to the old sqrt/along-epsilon predicate inside a small threshold guard band. The current source enables the prefilter and guarded squared-boundary path by default unless the corresponding env flag is explicitly set to a false-like value.",
+    "name": "exact_f64_guarded_squared_boundary_after_relation_status_zero_prefilter",
+    "native_flags": [
+      "RTDL_OPTIX_RELATION_STATUS_CORRECTED_PREFILTER_ZERO",
+      "RTDL_OPTIX_RELATION_STATUS_CORRECTED_EXACT_F64_SQUARED_BOUNDARY"
+    ],
+    "why_generic": "The changed predicate is inside the reusable closed-shape point-location topology stream. It does not special-case RayJoin, counties, CDB files, or the public benchmark dataset."
+  },
+  "p1_default_path_resolution_required": false,
+  "paper_reproduction_claim_authorized": false,
+  "pod": {
+    "driver": "550.127.05",
+    "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+    "host": "213.173.108.14:11592",
+    "remote_repo": "/root/rtdl_v3_rebuild_20260620/current"
+  },
+  "predicate_equivalence": {
+    "guard_tol": 1e-06,
+    "guarded_mismatch_count": 0,
+    "packet": "docs/rebuild/v3/phoenix_v3_spatial_squared_boundary_equivalence_2026-06-21.json",
+    "pure_squared_mismatch_count": 10,
+    "status": "spatial_guarded_squared_boundary_equivalence_pass_not_release"
+  },
+  "previous_codex_consensus_status": "claude_codex_consensus_accept_with_boundary_not_release",
+  "previous_external_review_status": "claude_accept_with_boundary",
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "required_next_actions": [
+    "Update the release-surface breadth gate so point_location_topology_stream contributes one bounded M7 row.",
+    "Carry the git_commit:null provenance gap forward to public-release readiness gates.",
+    "Keep all public release, V3-vs-V2, RTDL-beats-RayJoin, paper reproduction, zero-copy, and V4/embedding claims unauthorized."
+  ],
+  "row_scoped_public_speedup_claim_authorized": false,
+  "rtdl_beats_rayjoin_claim_authorized": false,
+  "source": {
+    "author_basis": "docs/rebuild/v3/phoenix_v3_spatial_rayjoin_author_basis_same_county_2026-06-21.json",
+    "baseline_evidence": "docs/rebuild/v3/evidence/phoenix_v3_spatial_guarded_squared_boundary_20260621/baseline_prefilter_zero_repeat50_sample7.json",
+    "codex_consensus": "docs/reviews/codex_phoenix_v3_spatial_default_path_promotion_2ai_consensus_2026-06-22.md",
+    "default_path_build_log": "docs/rebuild/v3/evidence/phoenix_v3_spatial_default_path_20260622/build_optix.log",
+    "default_path_evidence": "docs/rebuild/v3/evidence/phoenix_v3_spatial_default_path_20260622/default_path_guarded_squared_repeat50_sample7.json",
+    "default_path_smoke_evidence": "docs/rebuild/v3/evidence/phoenix_v3_spatial_default_path_20260622/default_path_smoke_repeat10_sample1.json",
+    "disable_control_evidence": "docs/rebuild/v3/evidence/phoenix_v3_spatial_default_path_20260622/disable_control_both_zero_repeat10_sample1.json",
+    "equivalence_packet": "docs/rebuild/v3/phoenix_v3_spatial_squared_boundary_equivalence_2026-06-21.json",
+    "external_review": "docs/reviews/claude_phoenix_v3_spatial_default_path_promotion_review_2026-06-22.md",
+    "native_file": "src/native/optix/rtdl_optix_workloads.cpp",
+    "native_file_sha256": "0921cc29c10b023d242005cd9f2d5d62188669136ce1a5e91340b21c11fb588a",
+    "pod_built_optix_library_sha256": "36500bba1bdd1bd7b517376b28ca23aeb51af82b97f908786bdb900ec1b40877",
+    "previous_codex_consensus": "docs/reviews/codex_phoenix_v3_spatial_squared_boundary_candidate_2ai_consensus_2026-06-22.md",
+    "previous_external_review": "docs/reviews/claude_phoenix_v3_spatial_squared_boundary_candidate_review_2026-06-21.md",
+    "previous_near_miss_packet": "docs/rebuild/v3/phoenix_v3_spatial_relation_status_prefilter_zero_experiment_2026-06-21.json",
+    "provenance_limitations": [
+      "The remote POD source copy is not a git checkout, so evidence records rely on local source SHA and copied JSON artifacts rather than a remote git commit.",
+      "RayJoin author query_exec does not print result count in this run; this packet uses RTDL exact count parity and treats the author Query timer only as a performance bar."
+    ],
+    "squared_evidence": "docs/rebuild/v3/evidence/phoenix_v3_spatial_guarded_squared_boundary_20260621/guarded_squared_prefilter_zero_repeat50_sample7.json",
+    "squared_only_baseline_evidence": "docs/rebuild/v3/evidence/phoenix_v3_spatial_guarded_squared_boundary_only_20260621/default_no_prefilter_repeat50_sample3.json",
+    "squared_only_evidence": "docs/rebuild/v3/evidence/phoenix_v3_spatial_guarded_squared_boundary_only_20260621/guarded_squared_only_no_prefilter_repeat50_sample3.json"
+  },
+  "squared_boundary_candidate": {
+    "best_ms": 1.0787248611450195,
+    "boundary_counts": [
+      47550
+    ],
+    "dropped_counts": [
+      308
+    ],
+    "emitted_counts": [
+      47262
+    ],
+    "m3_phase_sec_medians": {
+      "device_transfer_or_residency_sec": 0.0,
+      "host_return_or_scalar_materialization_sec": 0.0,
+      "query_stream_prepare_sec": 0.057191431522369385,
+      "rt_traversal_sec": 0.001037909,
+      "static_scene_prepare_sec": 0.2002830058336258,
+      "topology_continuation_sec": 0.0
+    },
+    "max_ms": 1.0819695889949799,
+    "median_ms": 1.0804496705532074,
+    "query_repeat": 50,
+    "query_stream_residency": "device_resident_prepared_point_probe_columns_with_reusable_relation_status_corrected_executor",
+    "raw_counts": [
+      47570
+    ],
+    "row_count": 47262,
+    "row_count_consistent": true,
+    "sample_repeat": 7,
+    "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_guarded_squared_boundary_20260621/guarded_squared_prefilter_zero_repeat50_sample7.json",
+    "values_ms": [
+      1.0804496705532074,
+      1.081567257642746,
+      1.0790489614009857,
+      1.0819695889949799,
+      1.0818131268024445,
+      1.0787248611450195,
+      1.0798163712024689
+    ],
+    "warmup": 5
+  },
+  "squared_boundary_only": {
+    "baseline_default_no_prefilter": {
+      "best_ms": 5.403846502304077,
+      "boundary_counts": [
+        47550
+      ],
+      "dropped_counts": [
+        108293
+      ],
+      "emitted_counts": [
+        47262
+      ],
+      "m3_phase_sec_medians": {
+        "device_transfer_or_residency_sec": 0.0,
+        "host_return_or_scalar_materialization_sec": 0.0,
+        "query_stream_prepare_sec": 0.08085383474826813,
+        "rt_traversal_sec": 0.005362902,
+        "static_scene_prepare_sec": 0.19790531694889069,
+        "topology_continuation_sec": 0.0
+      },
+      "max_ms": 5.773469805717468,
+      "median_ms": 5.404520779848099,
+      "query_repeat": 50,
+      "query_stream_residency": "device_resident_prepared_point_probe_columns_with_reusable_relation_status_corrected_executor",
+      "raw_counts": [
+        155555
+      ],
+      "row_count": 47262,
+      "row_count_consistent": true,
+      "sample_repeat": 3,
+      "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_guarded_squared_boundary_only_20260621/default_no_prefilter_repeat50_sample3.json",
+      "values_ms": [
+        5.773469805717468,
+        5.403846502304077,
+        5.404520779848099
+      ],
+      "warmup": 5
+    },
+    "clears_author_query_bar": false,
+    "interpretation": "The guarded squared-boundary predicate is a material generic optimization by itself, but the public-county author Query bar is cleared only when paired with relation-status zero prefiltering.",
+    "speedup_vs_default_no_prefilter": 1.8991258155389625,
+    "squared_only_no_prefilter": {
+      "best_ms": 2.8422363102436066,
+      "boundary_counts": [
+        47550
+      ],
+      "dropped_counts": [
+        108293
+      ],
+      "emitted_counts": [
+        47262
+      ],
+      "m3_phase_sec_medians": {
+        "device_transfer_or_residency_sec": 0.0,
+        "host_return_or_scalar_materialization_sec": 0.0,
+        "query_stream_prepare_sec": 0.08150604367256165,
+        "rt_traversal_sec": 0.002804809,
+        "static_scene_prepare_sec": 0.19700347632169724,
+        "topology_continuation_sec": 0.0
+      },
+      "max_ms": 3.0305758118629456,
+      "median_ms": 2.8457939624786377,
+      "query_repeat": 50,
+      "query_stream_residency": "device_resident_prepared_point_probe_columns_with_reusable_relation_status_corrected_executor",
+      "raw_counts": [
+        155555
+      ],
+      "row_count": 47262,
+      "row_count_consistent": true,
+      "sample_repeat": 3,
+      "source": "docs/rebuild/v3/evidence/phoenix_v3_spatial_guarded_squared_boundary_only_20260621/guarded_squared_only_no_prefilter_repeat50_sample3.json",
+      "values_ms": [
+        3.0305758118629456,
+        2.8457939624786377,
+        2.8422363102436066
+      ],
+      "warmup": 5
+    }
+  },
+  "status": "spatial_relation_status_squared_boundary_default_path_m7_row_accepted_with_boundary",
+  "summary": {
+    "author_bar_margin_ms": 0.7852103294467927,
+    "author_query_ms": 1.86566,
+    "baseline_prefilter_zero_median_ms": 1.8956884741783142,
+    "candidate_pending_external_review": false,
+    "default_path_author_bar_margin_ms": 0.7850613178348542,
+    "default_path_best_ms": 1.079373061656952,
+    "default_path_evidence_collected": true,
+    "default_path_median_ms": 1.0805986821651459,
+    "default_path_speedup_vs_author_query_timer": 1.7265058997313072,
+    "default_path_speedup_vs_disable_control": 5.371926183589535,
+    "default_path_worst_ms": 1.083526760339737,
+    "disable_control_median_ms": 5.804896354675293,
+    "external_review_accepted_with_boundary": true,
+    "m7_rows_added_now": 1,
+    "p1_default_path_resolution_required": false,
+    "previous_prefilter_near_miss_ms": 1.903492957353592,
+    "row_count": 47262,
+    "row_count_consistent": true,
+    "speedup_vs_author_query_timer": 1.726744013022608,
+    "speedup_vs_current_prefilter_zero": 1.7545365840203289,
+    "squared_boundary_best_ms": 1.0787248611450195,
+    "squared_boundary_median_ms": 1.0804496705532074,
+    "squared_boundary_worst_ms": 1.0819695889949799,
+    "squared_only_clears_author_query_bar": false,
+    "squared_only_no_prefilter_median_ms": 2.8457939624786377,
+    "squared_only_speedup_vs_default_no_prefilter": 1.8991258155389625,
+    "status": "default_path_m7_row_accepted_with_boundary_not_release"
+  },
+  "tool": "v3_phoenix_spatial_relation_status_squared_boundary_candidate",
+  "true_zero_copy_claim_authorized": false,
+  "v4_embedding_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}

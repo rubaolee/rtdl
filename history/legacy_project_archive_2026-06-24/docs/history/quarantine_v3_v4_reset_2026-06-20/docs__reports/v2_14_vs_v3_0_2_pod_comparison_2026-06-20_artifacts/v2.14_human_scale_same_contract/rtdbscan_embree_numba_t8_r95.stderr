@@ -1,0 +1,4 @@
+/workspace/rtdl_v2_vs_v3_pod_20260620_024503/v2.14/.venv_bench/lib/python3.12/site-packages/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 16 will likely result in GPU under-utilization due to low occupancy.
+  warn(NumbaPerformanceWarning(msg))
+/workspace/rtdl_v2_vs_v3_pod_20260620_024503/v2.14/.venv_bench/lib/python3.12/site-packages/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 16 will likely result in GPU under-utilization due to low occupancy.
+  warn(NumbaPerformanceWarning(msg))

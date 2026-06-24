@@ -1,0 +1,103 @@
+{
+  "tool": "phoenix_v3_m16_triangle_runner_wiring",
+  "date": "2026-06-22",
+  "status": "m16_local_triangle_runner_wiring_validated_not_pod",
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "true_zero_copy_claim_authorized": false,
+  "external_embedding_or_zero_copy_claim_authorized": false,
+  "focused_pod_spend_authorized_now": false,
+  "all_app_pod_spend_authorized": false,
+  "third_strict_set_a_material_probe_closed": false,
+  "source_verdict": {
+    "m15_consensus": "docs/reviews/codex_bernoulli_phoenix_v3_m15_third_strict_set_a_probe_2ai_consensus_2026-06-22.md",
+    "m15_verdict": "accept_m15_triangle_m16_local_runner_wiring_no_pod"
+  },
+  "m16_2ai_consensus": {
+    "consensus_file": "docs/reviews/codex_bernoulli_phoenix_v3_m16_triangle_runner_wiring_2ai_consensus_2026-06-22.md",
+    "codex_position": "accept_m16_prepare_m17_focused_pod_protocol_no_run",
+    "bernoulli_verdict": "accept_m16_prepare_m17_focused_pod_protocol_no_run",
+    "release_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "focused_pod_spend_authorized_now": false,
+    "all_app_pod_spend_authorized": false,
+    "m16_closes_local_runner_wiring": true,
+    "triangle_counts_as_third_strict_set_a_material_probe_now": false,
+    "next_step": "m17_focused_triangle_pod_protocol_review_no_run"
+  },
+  "implementation": {
+    "helper": "run_ray_triangle_weighted_summary_device_output_stream_prepared_session",
+    "helper_file": "src/rtdsl/prepared_execution.py",
+    "export_file": "src/rtdsl/__init__.py",
+    "test_file": "tests/v3_phoenix_prepared_execution_session_runner_test.py",
+    "primitive": "ray_triangle_weighted_summary_device_output_stream",
+    "workflow_name": "ray_triangle_weighted_summary_device_output_stream_prepared_session",
+    "output_contract": "generic_ray_triangle_weighted_any_hit_summary_device_output_stream_v1",
+    "productized_execution_path": "prepared_execution_session_runner",
+    "backend_scope": "optix",
+    "partner_scope": "explicit_user_chosen_partner_required"
+  },
+  "local_contract_result": {
+    "runtime_executed": true,
+    "runtime_trunk_executes_end_to_end": true,
+    "set_a_probe_candidate": true,
+    "repeat5_material_probe_candidate": true,
+    "productized_execution_path": "prepared_execution_session_runner",
+    "internal_device_residency_between_rtdl_phases": true,
+    "device_output_stream_validated": true,
+    "prepared_scene_reused": true,
+    "prepared_ray_batch_reused": true,
+    "ray_weights_device_resident": true,
+    "output_scalar_device_resident_until_finalize": true,
+    "hot_path_host_materialization": false,
+    "m113_graph_capture_claim_authorized": false,
+    "m113_cuda_graph_capture_validated": false,
+    "old_triangle_row_does_not_count_as_current_third_probe": true
+  },
+  "local_tests": [
+    {
+      "command": "$env:PYTHONPATH='src;.'; py -3 -m unittest tests.v3_phoenix_prepared_execution_session_runner_test",
+      "result": "33 tests OK"
+    },
+    {
+      "command": "$env:PYTHONPATH='src;.'; py -3 -m unittest tests.v3_phoenix_m15_third_strict_set_a_probe_audit_test tests.v3_release_wording_gate_test",
+      "result": "8 tests OK"
+    },
+    {
+      "command": "$env:PYTHONPATH='src;.'; py -3 -c \"import rtdsl as rt; print(hasattr(rt, 'run_ray_triangle_weighted_summary_device_output_stream_prepared_session'))\"",
+      "result": "True"
+    },
+    {
+      "command": "$env:PYTHONPATH='src;.'; py -3 -m unittest tests.v3_phoenix_prepared_execution_session_runner_test tests.v3_phoenix_m16_triangle_runner_wiring_test tests.v3_phoenix_m15_third_strict_set_a_probe_audit_test tests.v3_release_wording_gate_test",
+      "result": "46 tests OK before consensus record; 47 tests OK after adding consensus-record coverage"
+    }
+  ],
+  "what_this_closes": [
+    "A current Phoenix productized runner helper exists for the generic ray/triangle weighted-summary device-output stream pattern.",
+    "The helper can produce runtime_executed=true and productized_execution_path metadata under local contract tests.",
+    "The helper blocks automatic partner selection, app-specific native-engine claims, release claims, public speedup claims, V4/embedding claims, and true-zero-copy claims.",
+    "The helper keeps M113 CUDA graph capture unauthorized and marked blocked."
+  ],
+  "what_this_does_not_close": [
+    "No focused POD A/B has run.",
+    "No current Triangle performance number is authorized.",
+    "Triangle does not yet count as the third strict Set-A material probe.",
+    "No all-app protocol or all-app POD is authorized.",
+    "No RT-Graph paper reproduction, graph database acceleration, or full Triangle app speedup is authorized."
+  ],
+  "recommended_next_step": {
+    "id": "m17_focused_triangle_pod_protocol_review",
+    "pod_now": false,
+    "review_first": true,
+    "scope": "Prepare a focused POD protocol comparing the old Triangle route against the runner-backed generic device-output stream route on the 80,000-clique row, keeping Embree as a control and reporting hot-query and runner-inclusive wall metrics separately."
+  },
+  "decision_audit": {
+    "decision": "Implement local generic ray/triangle weighted-summary device-output stream runner wiring before any POD spend.",
+    "was_i_foolish": "No.",
+    "foolish_actions": "It would be foolish to run POD before the current Phoenix runner path can produce runtime_executed and residency metadata.",
+    "other_path": "Spend POD directly from old Triangle evidence. That would again over-count a strong but old row-scoped packet.",
+    "different_path_now": "Use the helper as the local productized path, request 2-AI review, and only then decide whether focused POD is authorized."
+  }
+}

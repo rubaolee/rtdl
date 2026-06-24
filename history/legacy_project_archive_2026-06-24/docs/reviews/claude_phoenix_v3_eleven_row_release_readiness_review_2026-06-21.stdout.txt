@@ -1,0 +1,5 @@
+Verdict: **`not-release-ready-fix-p0`**
+
+Output path: `docs/reviews/claude_phoenix_v3_eleven_row_release_readiness_review_2026-06-21.md`
+
+The review found the eleven-row surface and closed queue are genuine progress, but three concrete P0 blockers remain: (1) no general release installer — only a staged pod gate that requires project-history knowledge, (2) no secondary RT-core hardware confirmation — all evidence is from a single RTX 4000 Ada pod, and (3) the prior six-row Claude+Codex consensus has not been superseded for the eleven-row surface. No engine work remains on the critical path; the remaining blockers are packaging, hardware evidence, and process.

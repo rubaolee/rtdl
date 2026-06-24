@@ -1,59 +1,10 @@
-# Learn RTDL
+# Learn RTDL V3
 
-Use this door if you want to understand RTDL quickly and write programs.
+Use the short tutorial path first:
 
-## Path
+[../../tutorials/current/README.md](../../tutorials/current/README.md)
 
-1. [Project Front Page](../../README.md)
-2. [V4.0 Tutorial Track](../../tutorials/v4_0/README.md)
-3. [Current Claim Boundaries](current_claim_boundaries.md)
-4. [RTDL Programming Surfaces](programming_surfaces.md)
-5. [Versioning Glossary](../versioning.md)
-6. [Quick Tutorial](../quick_tutorial.md)
-7. [Source-Tree Doctor](source_tree_doctor.md)
-8. [Run From The Source Tree](../../tutorials/current/01_source_tree_first_run.md)
-9. [App And Example Quickstart](../app_example_quickstart.md)
-10. [RTDL V4.0.0 Release Package](../release_reports/v4_0_0/README.md)
-11. [V3.0 App-Author Implementation Strategy](v3_0_app_author_implementation_strategy.md)
-12. [Primitive Discovery Workflow](primitive_discovery_workflow.md)
-13. [Prepared Execution Pattern](prepared_execution_pattern.md)
-14. [Prepared Session Reuse](prepared_session_reuse.md)
-15. [Application Catalog](../application_catalog.md)
-16. [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
-17. [Benchmark Partner Reference Matrix](benchmark_partner_reference_matrix.md)
-18. [Benchmark Evidence Index](benchmark_evidence_index.md)
-19. [RT-Core Evidence Matrix](rt_core_evidence_matrix.md)
-20. [Feature Guide](../rtdl_feature_guide.md)
-21. [Programming Guide](../rtdl/programming_guide.md)
-22. [DSL Reference](../rtdl/dsl_reference.md)
+This directory contains compact reference notes for the current V3 surface:
 
-## Keep In Mind
-
-```text
-Python writes the application.
-RTDL expresses the RT-shaped kernel.
-Backends execute app-agnostic engine contracts.
-Partners handle tensor-side continuation when the app needs it.
-```
-
-The kernel DSL, primitive/prepared front doors, and partner continuations are
-related but distinct. Start with [RTDL Programming Surfaces](programming_surfaces.md)
-when deciding which surface your program should use.
-
-For backend and performance boundaries, read:
-
-- [Capability Boundaries](../capability_boundaries.md)
-- [Current Claim Boundaries](current_claim_boundaries.md)
-- [Backend Maturity](../backend_maturity.md)
-- [Performance Model](../performance_model.md)
-- [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md)
-- [Choosing A Partner For Custom Logic](partner_choice_for_custom_logic.md)
-- [RT-Core Evidence Matrix](rt_core_evidence_matrix.md)
-
-## History Boundary
-
-This learning path starts with V4.0.0. Historical release packets, V2
-snapshots, and preparatory embedding/C ABI material live behind the
-[History Index](../history/README.md) so they cannot override the current user
-surface. The V3 tutorial path remains linked because it teaches the broader
-Python+RTDL programming model.
+- [performance_wording.md](performance_wording.md)
+- [source_tree_doctor.md](source_tree_doctor.md)

@@ -1,0 +1,180 @@
+{
+  "artifact_dir": "/root/rtdl_v3_rebuild_20260620/artifacts/phoenix_v3_rtdbscan_component_signature_optimized_large_repeat5_20260621",
+  "claim_boundary": {
+    "large_scale_correctness_basis": "OptiX/Embree intra-run canonical component-signature agreement, not independent CPU reference validation",
+    "m7_promotion_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false
+  },
+  "generated_at": "2026-06-21T04:04:13+0000",
+  "pairs": [
+    {
+      "continuation_dominates_optix": true,
+      "embree_numba_component_continuation_sec": 1.7286085225641727,
+      "embree_sec": 2.698013737797737,
+      "measured_iterations": 4,
+      "optix_numba_component_continuation_sec": 1.7297388203442097,
+      "optix_rt_count_threshold_sec": 0.6455532237887383,
+      "optix_sec": 2.401328593492508,
+      "optix_speedup_vs_embree": 1.1235504150116034,
+      "point_count": 262144,
+      "repeat": 5,
+      "rt_threshold_speedup_vs_embree_compact_rows": 1.2621183454676224,
+      "same_canonical_component_signature": true,
+      "warmup": 1
+    },
+    {
+      "continuation_dominates_optix": true,
+      "embree_numba_component_continuation_sec": 6.906535252928734,
+      "embree_sec": 9.008331146091223,
+      "measured_iterations": 4,
+      "optix_numba_component_continuation_sec": 6.918347924947739,
+      "optix_rt_count_threshold_sec": 1.2056085169315338,
+      "optix_sec": 8.174566745758057,
+      "optix_speedup_vs_embree": 1.1019949345652873,
+      "point_count": 524288,
+      "repeat": 5,
+      "rt_threshold_speedup_vs_embree_compact_rows": 1.4801367849201907,
+      "same_canonical_component_signature": true,
+      "warmup": 1
+    }
+  ],
+  "rows": [
+    {
+      "backend": "embree",
+      "case_id": "rtdbscan_embree_optimized_large_repeat5_clustered3d_262144_r5",
+      "column_signature_materializes_core_flags": null,
+      "column_signature_materializes_point_ids": null,
+      "column_signature_strategy": null,
+      "column_signature_uses_numba_label_count_and_flag_count": null,
+      "elapsed_sec": 2.698013737797737,
+      "embree_threshold_compact_rows_sec": 0.814764566719532,
+      "matches_reference": null,
+      "measured_iterations": 4,
+      "median_elapsed_sec": 2.698013737797737,
+      "numba_component_continuation_sec": 1.7286085225641727,
+      "optix_rt_count_threshold_sec": null,
+      "point_count": 262144,
+      "reference_signature_present": false,
+      "repeat": 5,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536,
+          "2": 65536,
+          "3": 65536,
+          "4": 65536
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "signatures_stable": true,
+      "timing_breakdown_sec": {},
+      "warmup": 1
+    },
+    {
+      "backend": "embree",
+      "case_id": "rtdbscan_embree_optimized_large_repeat5_clustered3d_524288_r5",
+      "column_signature_materializes_core_flags": null,
+      "column_signature_materializes_point_ids": null,
+      "column_signature_strategy": null,
+      "column_signature_uses_numba_label_count_and_flag_count": null,
+      "elapsed_sec": 9.008331146091223,
+      "embree_threshold_compact_rows_sec": 1.7844655141234398,
+      "matches_reference": null,
+      "measured_iterations": 4,
+      "median_elapsed_sec": 9.008331146091223,
+      "numba_component_continuation_sec": 6.906535252928734,
+      "optix_rt_count_threshold_sec": null,
+      "point_count": 524288,
+      "reference_signature_present": false,
+      "repeat": 5,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072,
+          "2": 131072,
+          "3": 131072,
+          "4": 131072
+        },
+        "core_count": 524288,
+        "noise_count": 0
+      },
+      "signatures_stable": true,
+      "timing_breakdown_sec": {},
+      "warmup": 1
+    },
+    {
+      "backend": "optix",
+      "case_id": "rtdbscan_optix_optimized_large_repeat5_clustered3d_262144_r5",
+      "column_signature_materializes_core_flags": false,
+      "column_signature_materializes_point_ids": false,
+      "column_signature_strategy": "numba_label_count_and_flag_count_label_columns",
+      "column_signature_uses_numba_label_count_and_flag_count": true,
+      "elapsed_sec": 2.401328593492508,
+      "embree_threshold_compact_rows_sec": null,
+      "matches_reference": null,
+      "measured_iterations": 4,
+      "median_elapsed_sec": 2.401328593492508,
+      "numba_component_continuation_sec": 1.7297388203442097,
+      "optix_rt_count_threshold_sec": 0.6455532237887383,
+      "point_count": 262144,
+      "reference_signature_present": false,
+      "repeat": 5,
+      "signature": {
+        "cluster_sizes": {
+          "1": 65536,
+          "2": 65536,
+          "3": 65536,
+          "4": 65536
+        },
+        "core_count": 262144,
+        "noise_count": 0
+      },
+      "signatures_stable": true,
+      "timing_breakdown_sec": {},
+      "warmup": 1
+    },
+    {
+      "backend": "optix",
+      "case_id": "rtdbscan_optix_optimized_large_repeat5_clustered3d_524288_r5",
+      "column_signature_materializes_core_flags": false,
+      "column_signature_materializes_point_ids": false,
+      "column_signature_strategy": "numba_label_count_and_flag_count_label_columns",
+      "column_signature_uses_numba_label_count_and_flag_count": true,
+      "elapsed_sec": 8.174566745758057,
+      "embree_threshold_compact_rows_sec": null,
+      "matches_reference": null,
+      "measured_iterations": 4,
+      "median_elapsed_sec": 8.174566745758057,
+      "numba_component_continuation_sec": 6.918347924947739,
+      "optix_rt_count_threshold_sec": 1.2056085169315338,
+      "point_count": 524288,
+      "reference_signature_present": false,
+      "repeat": 5,
+      "signature": {
+        "cluster_sizes": {
+          "1": 131072,
+          "2": 131072,
+          "3": 131072,
+          "4": 131072
+        },
+        "core_count": 524288,
+        "noise_count": 0
+      },
+      "signatures_stable": true,
+      "timing_breakdown_sec": {},
+      "warmup": 1
+    }
+  ],
+  "status": "rtdbscan_component_signature_optimized_large_repeat5_evidence",
+  "summary": {
+    "all_large_signatures_match": true,
+    "all_pairs_repeat5_warmup1": true,
+    "m7_promotion_authorized": false,
+    "pair_count": 2,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "row_count": 4,
+    "strongest_optix_speedup_vs_embree": 1.1235504150116034,
+    "weakest_optix_speedup_vs_embree": 1.1019949345652873
+  }
+}

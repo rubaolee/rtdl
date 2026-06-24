@@ -1,0 +1,90 @@
+{
+  "app": "barnes_hut_force_app",
+  "app_boundary": "Node-coverage decision only; this is not Barnes-Hut opening-rule evaluation, not force-vector reduction, and not a fully native N-body solver.",
+  "backend": "optix",
+  "benchmark_metadata": {
+    "authors_code_comparison": false,
+    "benchmark": "barnes_hut_ppopp2025_style",
+    "benchmark_scope": "RT-BarnesHut-style reconstruction benchmark over generic RTDL spatial candidate, node-coverage, and partner force-reference contracts.",
+    "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+    "contract": "prepared_fixed_radius_node_coverage_threshold_decision_optix",
+    "mode": "optix_node_coverage_prepared",
+    "native_engine_app_specific": false,
+    "paper_reference": {
+      "authors": [
+        "Vani Nagarajan",
+        "Rohan Gangaraju",
+        "Kirshanthan Sundararajah",
+        "Artem Pelenitsyn",
+        "Milind Kulkarni"
+      ],
+      "authors_code_comparison": false,
+      "doi": "10.1145/3710848.3710885",
+      "paper_reproduction": false,
+      "title": "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+      "venue": "PPoPP 2025"
+    },
+    "paper_reproduction": false,
+    "public_speedup_claim_authorized": false,
+    "reconstruction_instrument": true,
+    "research_benchmark": true,
+    "rt_core_accelerated": true
+  },
+  "body_count": 131072,
+  "boundary": "Node-coverage decision only; this is not Barnes-Hut opening-rule evaluation, not force-vector reduction, and not a fully native N-body solver.",
+  "claim_boundary": "Research benchmark / reconstruction instrument only. This is not a full RT-BarnesHut paper reproduction, not an authors-code comparison, not a whole N-body solver speedup claim, and not public performance wording.",
+  "matches_oracle": null,
+  "node_count": 4,
+  "node_coverage": {
+    "all_bodies_have_node_candidate": true,
+    "backend": "optix",
+    "body_count": 131072,
+    "covered_body_count": 131072,
+    "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+    "identity_parity_available": true,
+    "query_points_prepacked_by_caller": true,
+    "query_points_prepared_once": true,
+    "query_repeat_protocol": {
+      "measured_run_count": 50,
+      "query_sec_median": 0.0007632337510585785,
+      "query_sec_total": 0.03825920820236206,
+      "repeat": 50,
+      "warmup": 5
+    },
+    "radius": 10.0,
+    "row_count": null,
+    "run_phases": {
+      "query_fixed_radius_threshold_reached_count_sec": 0.0007632337510585785,
+      "query_fixed_radius_threshold_reached_count_total_sec": 0.03825920820236206,
+      "query_points_prepare_sec": 0.48970765620470047,
+      "query_repeat": 50,
+      "query_warmup": 5,
+      "scene_prepare_sec": 2.4106948003172874
+    },
+    "summary_mode": "scalar_threshold_count",
+    "summary_primitive": "REDUCE_INT(COUNT)",
+    "uncovered_body_ids": []
+  },
+  "node_depth": 32,
+  "node_radius": 10.0,
+  "node_topology": "one_level",
+  "optix_performance": {
+    "class": "optix_traversal_prepared_summary",
+    "note": "Default candidate rows use fixed-radius candidate generation and native fixed-radius candidate-summary continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim."
+  },
+  "optix_summary_mode": "node_coverage_prepared",
+  "oracle_decision_matches": null,
+  "oracle_identity_matches": null,
+  "oracle_node_coverage": null,
+  "output_mode": "candidate_summary",
+  "repeat_protocol": {
+    "measured_query_total_sec": 0.03825920820236206,
+    "repeat": 50,
+    "reported_query_metric": "query_median",
+    "warmup": 5
+  },
+  "rt_core_accelerated": true,
+  "rtdl_role": "RTDL/optix uses prepared fixed-radius threshold traversal to answer the bounded Barnes-Hut node-coverage decision: every body has at least one quadtree node candidate within the discovery radius.",
+  "theta": 0.75,
+  "validation_skipped": true
+}

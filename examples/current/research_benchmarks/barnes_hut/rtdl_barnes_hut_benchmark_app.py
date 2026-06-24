@@ -68,6 +68,8 @@ MODES = (
     "fused_frontier_force_sum_bucketized_cpu",
     "fused_frontier_force_sum_bucketized_cpu_numba",
     "fused_frontier_force_sum_bucketized_numba_cuda",
+    "prepared_execution_fused_vector_sum_numba_cuda",
+    "native_fused_vector_sum_cuda_device",
     "prepared_aggregate_frontier_weighted_vector_optix",
     "grouped_vector_sum_typed_stream_plan",
     "v2_8_grouped_vector_sum_plan",
@@ -2444,6 +2446,720 @@ def _fused_frontier_force_sum_numba_cuda_payload(
     }
 
 
+def _prepared_execution_fused_vector_sum_numba_cuda_payload(
+    *,
+    body_count: int | None,
+    theta: float,
+    bucket_size: int,
+    max_depth: int,
+    skip_validation: bool,
+    query_repeat: int,
+    warmup: int,
+    force_output_mode: str,
+) -> dict[str, Any]:
+    if query_repeat < 1:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+    if force_output_mode not in {"full", "force_summary"}:
+        raise ValueError("force_output_mode must be 'full' or 'force_summary'")
+
+    total_start = time.perf_counter()
+    body_start = time.perf_counter()
+    bodies = _make_bodies(body_count)
+    body_generation_sec = time.perf_counter() - body_start
+
+    tree_start = time.perf_counter()
+    tree = rt.build_bucketized_aggregate_tree_2d(
+        bodies,
+        bucket_size=bucket_size,
+        max_depth=max_depth,
+    )
+    tree_nodes = tuple(tree["nodes"])
+    tree_build_sec = time.perf_counter() - tree_start
+
+    source_fingerprint = rt.make_prepared_input_fingerprint(bodies)
+    target_fingerprint = rt.make_prepared_input_fingerprint(bodies)
+    aggregate_tree_fingerprint = rt.make_prepared_input_fingerprint(tree_nodes)
+    cache = rt.ExplicitPreparedSessionCache(max_entries=1)
+
+    def prepare_session() -> Any:
+        return rt.prepare_aggregate_tree_fused_weighted_vectors_2d_numba_cuda(
+            bodies,
+            bodies,
+            tree_nodes,
+        )
+
+    def run_vector_sum(prepared: Any) -> dict[str, object]:
+        return prepared.sum(theta=theta, softening=app.SOFTENING, use_cuda_events=True)
+
+    runner_result = rt.run_aggregate_tree_fused_weighted_vector_sum_2d_prepared_session(
+        source_fingerprint=source_fingerprint,
+        target_fingerprint=target_fingerprint,
+        aggregate_tree_fingerprint=aggregate_tree_fingerprint,
+        source_count=len(bodies),
+        target_count=len(bodies),
+        tree_node_count=len(tree_nodes),
+        theta=theta,
+        softening=app.SOFTENING,
+        partner="numba_cuda",
+        cache=cache,
+        prepare_session=prepare_session,
+        run_vector_sum=run_vector_sum,
+        backend="partner",
+        output_contract=rt.AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CUDA_CONTRACT,
+        device="cuda",
+        warmup_count=max(0, int(warmup)),
+        measured_repeat_count=max(1, int(query_repeat)),
+        retain_repeat_outputs=True,
+        scorecard_binding={
+            "id": "set_a_barnes_hut_app_geomean_0_844x",
+            "set": "A",
+            "app": "barnes_hut",
+            "metric": "set_a_app_geomean_v3_vs_v2_14",
+            "current_value": 0.844,
+            "target": "move_toward_or_above_parity",
+            "source": "docs/rebuild/v3/phoenix_v3_set_a_set_b_scorecard_gate_2026-06-22.md",
+            "route_kind": "trunk_fix_candidate",
+            "role": "aggregate_tree_fused_vector_sum_front_door_probe",
+        },
+        win_source="partner_continuation",
+    )
+    runner_metadata = runner_result.to_metadata()
+    actual_outputs = (
+        tuple(runner_result.output)
+        if isinstance(runner_result.output, tuple)
+        else (runner_result.output,)
+    )
+    if not actual_outputs:
+        raise AssertionError("prepared execution runner returned no vector-sum output")
+    last_actual = actual_outputs[-1]
+    if not isinstance(last_actual, dict):
+        raise TypeError("prepared execution fused Numba CUDA output must be a mapping")
+
+    metadata_partner_seconds: list[float] = []
+    kernel_event_seconds: list[float] = []
+    for actual in actual_outputs:
+        if not isinstance(actual, dict):
+            continue
+        actual_metadata = actual.get("metadata")
+        if isinstance(actual_metadata, dict):
+            metadata_partner_seconds.append(float(actual_metadata["partner_seconds"]))
+            kernel_event_ms = actual_metadata.get("kernel_event_ms")
+            if kernel_event_ms is not None:
+                kernel_event_seconds.append(float(kernel_event_ms) / 1000.0)
+    repeat_seconds = tuple(float(value) for value in runner_metadata["measured_repeat_seconds"])
+
+    copy_start = time.perf_counter()
+    columns = last_actual["columns"]
+    if not isinstance(columns, dict):
+        raise TypeError("prepared execution fused Numba CUDA columns must be a mapping")
+    source_ids = _device_column_to_list(columns["source_ids"], value_type=int)
+    vector_x = _device_column_to_list(columns["vector_x"], value_type=float)
+    vector_y = _device_column_to_list(columns["vector_y"], value_type=float)
+    visited_counts = _device_column_to_list(columns["visited_counts"], value_type=int)
+    aggregate_counts = _device_column_to_list(columns["aggregate_counts"], value_type=int)
+    exact_counts = _device_column_to_list(columns["exact_counts"], value_type=int)
+    vector_copy_to_host_sec = time.perf_counter() - copy_start
+
+    force_rows = tuple(
+        {
+            "body_id": int(source_ids[index]),
+            "force_x": float(vector_x[index]),
+            "force_y": float(vector_y[index]),
+            "contribution_count": int(aggregate_counts[index] + exact_counts[index]),
+            "aggregate_contribution_count": int(aggregate_counts[index]),
+            "exact_contribution_count": int(exact_counts[index]),
+            "visited_node_count": int(visited_counts[index]),
+        }
+        for index in range(len(source_ids))
+    )
+    force_sample, force_truncated = _truncate_rows(force_rows)
+
+    metadata = last_actual["metadata"]
+    if not isinstance(metadata, dict):
+        raise TypeError("prepared execution fused Numba CUDA metadata must be a mapping")
+    aggregate_count = int(sum(aggregate_counts))
+    exact_count = int(sum(exact_counts))
+    contribution_count = aggregate_count + exact_count
+    if contribution_count != int(metadata["contribution_row_count"]):
+        raise AssertionError("per-source count columns do not match fused CUDA metadata")
+
+    validation: dict[str, object]
+    if skip_validation or len(bodies) > 2048:
+        validation = {
+            "skipped": True,
+            "reason": "user_skip_validation" if skip_validation else "body_count_above_2048",
+        }
+    else:
+        reference = rt.sum_aggregate_frontier_weighted_vectors_2d(
+            bodies,
+            bodies,
+            tree_nodes,
+            theta=theta,
+            softening=app.SOFTENING,
+        )
+        expected_by_id = {
+            int(row["source_id"]): (float(row["vector_x"]), float(row["vector_y"]))
+            for row in reference["vector_sum_rows"]
+        }
+        max_abs_diff_x = max(
+            abs(float(row["force_x"]) - expected_by_id[int(row["body_id"])][0])
+            for row in force_rows
+        )
+        max_abs_diff_y = max(
+            abs(float(row["force_y"]) - expected_by_id[int(row["body_id"])][1])
+            for row in force_rows
+        )
+        validation = {
+            "skipped": False,
+            "compared_against": "sum_aggregate_frontier_weighted_vectors_2d_cpu_reference",
+            "tolerance": 1.0e-7,
+            "max_abs_diff_x": max_abs_diff_x,
+            "max_abs_diff_y": max_abs_diff_y,
+            "passed": max_abs_diff_x <= 1.0e-7 and max_abs_diff_y <= 1.0e-7,
+            "reference_frontier_row_count": int(reference["summary"]["contribution_row_count"]),
+        }
+        if int(validation["reference_frontier_row_count"]) != contribution_count:
+            validation["passed"] = False
+            validation["count_mismatch"] = {
+                "actual": contribution_count,
+                "expected": int(validation["reference_frontier_row_count"]),
+            }
+        if not bool(validation["passed"]):
+            raise AssertionError("prepared execution fused Numba CUDA app mode failed validation")
+
+    partner_wall_median_sec = float(statistics.median(metadata_partner_seconds or repeat_seconds))
+    call_wall_median_sec = float(statistics.median(repeat_seconds))
+    kernel_event_median_sec = (
+        float(statistics.median(kernel_event_seconds))
+        if kernel_event_seconds
+        else None
+    )
+    vector_run_median_sec = (
+        float(kernel_event_median_sec)
+        if kernel_event_median_sec is not None
+        else partner_wall_median_sec
+    )
+    checksum_force_x = float(sum(vector_x))
+    checksum_force_y = float(sum(vector_y))
+    total_sec = time.perf_counter() - total_start
+
+    return {
+        "app": "barnes_hut_force_app",
+        "backend": "prepared_execution_runner_numba_cuda_fused_aggregate_tree_vector_sum",
+        "mode": "prepared_execution_fused_vector_sum_numba_cuda",
+        "body_count": len(bodies),
+        "theta": theta,
+        "softening": app.SOFTENING,
+        "bucket_size": bucket_size,
+        "max_depth": max_depth,
+        "tree_summary": tree["summary"],
+        "prepared_execution_session_runner": runner_metadata,
+        "phoenix_v3_m72": {
+            "target": "barnes_hut_aggregate_tree_set_a_blocker",
+            "scorecard_blocker_bound": bool(runner_metadata["scorecard_blocker_bound"]),
+            "scorecard_blocker_app": runner_metadata.get("scorecard_blocker_app"),
+            "scorecard_blocker_current_value": runner_metadata.get("scorecard_blocker_current_value"),
+            "scorecard_blocker_target": runner_metadata.get("scorecard_blocker_target"),
+            "scorecard_blocker_route_kind": runner_metadata.get("scorecard_blocker_route_kind"),
+            "win_source": runner_metadata.get("win_source"),
+            "m43_reuse_scope": runner_metadata.get("m43_reuse_scope"),
+            "release_path_candidate": bool(runner_metadata.get("release_path_candidate")),
+            "pod_authorized": False,
+            "release_authorized": False,
+            "all_app_authorized": False,
+        },
+        "run_phases": {
+            "body_generation_sec": body_generation_sec,
+            "tree_build_sec": tree_build_sec,
+            "runner_prepare_or_cache_sec": float(
+                runner_metadata["prepared_execution_report"]["summary_sec"]["setup"]
+            ),
+            "prepared_api_prepare_seconds": float(metadata["prepare_seconds"]),
+            "vector_run_median_sec": vector_run_median_sec,
+            "kernel_event_median_sec": kernel_event_median_sec,
+            "partner_wall_median_sec": partner_wall_median_sec,
+            "call_wall_median_sec": call_wall_median_sec,
+            "runner_measured_median_sec": float(runner_metadata["measured_median_sec"]),
+            "vector_copy_to_host_sec": vector_copy_to_host_sec,
+            "total_sec": total_sec,
+        },
+        "medians": {
+            "fused_numba_cuda_kernel_event_seconds": kernel_event_median_sec,
+            "fused_numba_cuda_partner_wall_seconds": partner_wall_median_sec,
+            "fused_numba_cuda_call_wall_seconds": call_wall_median_sec,
+            "prepared_execution_runner_measured_seconds": float(runner_metadata["measured_median_sec"]),
+        },
+        "vector_sum_summary": {
+            "contract": rt.AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CUDA_CONTRACT,
+            "logical_reference_contract": rt.AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT,
+            "source_count": len(bodies),
+            "target_count": len(bodies),
+            "tree_node_count": len(tree_nodes),
+            "visited_node_total": int(sum(visited_counts)),
+            "contribution_row_count": contribution_count,
+            "aggregate_contribution_row_count": aggregate_count,
+            "exact_contribution_row_count": exact_count,
+            "frontier_rows_emitted": False,
+            "materialized_frontier_rows": False,
+            "materialized_contribution_rows": False,
+            "frontier_rows_materialized_on_host": False,
+            "contribution_rows_materialized_on_host": False,
+            "numba_cuda_jit_used": True,
+            "numba_cuda_python_source_used": True,
+            "parallel_by_source": True,
+            "raw_c_or_cuda_kernel_required": False,
+            "prepared_lookup_columns_resident": True,
+            "aggregate_tree_columns_resident": True,
+            "source_columns_reused": True,
+            "target_columns_reused": True,
+            "output_columns_reused": True,
+            "internal_device_residency_between_rtdl_phases": bool(
+                runner_metadata["internal_device_residency_between_rtdl_phases"]
+            ),
+            "hot_path_host_materialization": bool(runner_metadata["hot_path_host_materialization"]),
+            "runtime_trunk_executes_end_to_end": bool(runner_metadata["runtime_trunk_executes_end_to_end"]),
+            "win_source": runner_metadata.get("win_source"),
+            "scorecard_blocker_bound": bool(runner_metadata["scorecard_blocker_bound"]),
+            "scorecard_blocker_app": runner_metadata.get("scorecard_blocker_app"),
+            "scorecard_blocker_current_value": runner_metadata.get("scorecard_blocker_current_value"),
+            "scorecard_blocker_target": runner_metadata.get("scorecard_blocker_target"),
+            "m43_reuse_scope": runner_metadata.get("m43_reuse_scope"),
+            "prepare_seconds": float(metadata["prepare_seconds"]),
+            "repeat_seconds": repeat_seconds,
+            "partner_wall_seconds": tuple(float(value) for value in metadata_partner_seconds),
+            "kernel_event_seconds": tuple(float(value) for value in kernel_event_seconds),
+            "run_median_seconds": vector_run_median_sec,
+            "kernel_event_median_seconds": kernel_event_median_sec,
+            "partner_wall_median_seconds": partner_wall_median_sec,
+            "call_wall_median_seconds": call_wall_median_sec,
+            "warmup": max(0, int(warmup)),
+            "repeat": max(1, int(query_repeat)),
+            "checksum_force_x": checksum_force_x,
+            "checksum_force_y": checksum_force_y,
+            "force_rows": force_sample if force_output_mode == "full" else [],
+            "force_rows_truncated": force_truncated if force_output_mode == "full" else True,
+            "force_output_mode": force_output_mode,
+        },
+        "validation": validation,
+        "claim_flags": {
+            "same_logical_frontier_contract": True,
+            "fused_aggregate_tree_contract": True,
+            "productized_execution_path": "prepared_execution_session_runner",
+            "runtime_trunk_executes_end_to_end": bool(runner_metadata["runtime_trunk_executes_end_to_end"]),
+            "scorecard_blocker_bound": bool(runner_metadata["scorecard_blocker_bound"]),
+            "scorecard_blocker_app": runner_metadata.get("scorecard_blocker_app"),
+            "scorecard_blocker_current_value": runner_metadata.get("scorecard_blocker_current_value"),
+            "scorecard_blocker_target": runner_metadata.get("scorecard_blocker_target"),
+            "scorecard_blocker_route_kind": runner_metadata.get("scorecard_blocker_route_kind"),
+            "win_source": runner_metadata.get("win_source"),
+            "m43_reuse_scope": runner_metadata.get("m43_reuse_scope"),
+            "same_device_resident_contract": True,
+            "frontier_rows_materialized_on_host": False,
+            "contribution_rows_materialized_on_host": False,
+            "hot_path_host_materialization": False,
+            "python_vector_sum_used": False,
+            "numba_cuda_jit_used": True,
+            "numba_cuda_python_source_used": True,
+            "raw_c_or_cuda_kernel_required": False,
+            "native_engine_app_specific": False,
+            "automatic_partner_selection_allowed": False,
+            "automatic_partner_selection_authorized": False,
+            "rt_cores_used": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "broad_v3_faster_than_v2_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "v4_embedding_or_external_zero_copy_authorized": False,
+            "full_all_app_rerun_authorized_by_this_packet": False,
+        },
+        "boundary": (
+            "Phoenix V3 prepared-execution runner route for the reusable no-C++ "
+            "Numba CUDA aggregate-tree fused weighted-vector partner API. It "
+            "avoids frontier and contribution-row materialization and keeps the "
+            "native engine app-agnostic, but it is not an RT-core primitive, not "
+            "automatic partner selection, not V4 external buffer interop, and "
+            "not public speedup wording."
+        ),
+    }
+
+
+def _native_fused_vector_sum_cuda_device_payload(
+    *,
+    body_count: int | None,
+    theta: float,
+    bucket_size: int,
+    max_depth: int,
+    skip_validation: bool,
+    query_repeat: int,
+    warmup: int,
+    force_output_mode: str,
+) -> dict[str, Any]:
+    if query_repeat < 1:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+    if force_output_mode not in {"full", "force_summary"}:
+        raise ValueError("force_output_mode must be 'full' or 'force_summary'")
+
+    total_start = time.perf_counter()
+    body_start = time.perf_counter()
+    bodies = _make_bodies(body_count)
+    body_generation_sec = time.perf_counter() - body_start
+
+    tree_start = time.perf_counter()
+    tree = rt.build_bucketized_aggregate_tree_2d(
+        bodies,
+        bucket_size=bucket_size,
+        max_depth=max_depth,
+    )
+    tree_nodes = tuple(tree["nodes"])
+    tree_build_sec = time.perf_counter() - tree_start
+
+    import cupy as cp  # type: ignore
+
+    source_ids_device = cp.asarray([int(point.id) for point in bodies], dtype=cp.int64)
+    source_x_device = cp.asarray([float(point.x) for point in bodies], dtype=cp.float64)
+    source_y_device = cp.asarray([float(point.y) for point in bodies], dtype=cp.float64)
+    source_weight_device = cp.asarray([float(point.mass) for point in bodies], dtype=cp.float64)
+    source_column_owners = (
+        source_ids_device,
+        source_x_device,
+        source_y_device,
+        source_weight_device,
+    )
+
+    source_fingerprint = rt.make_prepared_input_fingerprint(bodies)
+    target_fingerprint = rt.make_prepared_input_fingerprint(bodies)
+    aggregate_tree_fingerprint = rt.make_prepared_input_fingerprint(tree_nodes)
+    cache = rt.ExplicitPreparedSessionCache(max_entries=1)
+
+    def prepare_session() -> Any:
+        return rt.prepare_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_optix(
+            bodies,
+            tree_nodes,
+        )
+
+    def run_vector_sum(prepared: Any) -> dict[str, object]:
+        native_output = prepared.run_device_columns(
+            source_ids_device_ptr=int(source_ids_device.data.ptr),
+            source_x_device_ptr=int(source_x_device.data.ptr),
+            source_y_device_ptr=int(source_y_device.data.ptr),
+            source_weight_device_ptr=int(source_weight_device.data.ptr),
+            source_count=len(bodies),
+            theta=theta,
+            softening=app.SOFTENING,
+            source_column_owners=source_column_owners,
+        )
+        native_metadata = native_output.to_metadata()
+        native_metadata.update(
+            {
+                "partner": "native_cuda",
+                "source_count": len(bodies),
+                "target_count": len(bodies),
+                "tree_node_count": len(tree_nodes),
+                "prepared_lookup_columns_resident": True,
+                "aggregate_tree_columns_resident": True,
+                "source_columns_reused": True,
+                "target_columns_reused": True,
+                "output_columns_reused": False,
+                "device_resident": bool(native_output.device_resident),
+                "frontier_rows_emitted": False,
+                "materialized_frontier_rows": False,
+                "materialized_contribution_rows": False,
+                "frontier_rows_materialized_on_host": False,
+                "contribution_rows_materialized_on_host": False,
+                "hot_path_host_materialization": False,
+                "rt_cores_used": False,
+                "optix_trace_used": False,
+                "cuda_only_fused_device_accumulation": True,
+                "native_engine_app_specific": False,
+                "automatic_partner_selection_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "broad_v3_faster_than_v2_claim_authorized": False,
+                "true_zero_copy_claim_authorized": False,
+            }
+        )
+        native_columns = native_output.as_cupy_columns()
+        columns = {
+            "source_ids": native_columns["source_id"],
+            "vector_x": native_columns["vector_x"],
+            "vector_y": native_columns["vector_y"],
+            "visited_counts": native_columns["visited_count"],
+            "aggregate_counts": native_columns["aggregate_count"],
+            "exact_counts": native_columns["exact_count"],
+        }
+        return {
+            "columns": columns,
+            "metadata": native_metadata,
+        }
+
+    runner_result = rt.run_aggregate_tree_fused_weighted_vector_sum_2d_prepared_session(
+        source_fingerprint=source_fingerprint,
+        target_fingerprint=target_fingerprint,
+        aggregate_tree_fingerprint=aggregate_tree_fingerprint,
+        source_count=len(bodies),
+        target_count=len(bodies),
+        tree_node_count=len(tree_nodes),
+        theta=theta,
+        softening=app.SOFTENING,
+        partner="native_cuda",
+        cache=cache,
+        prepare_session=prepare_session,
+        run_vector_sum=run_vector_sum,
+        backend="optix",
+        output_contract=rt.AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_CONTRACT,
+        device="cuda",
+        warmup_count=max(0, int(warmup)),
+        measured_repeat_count=max(1, int(query_repeat)),
+        retain_repeat_outputs=True,
+        scorecard_binding={
+            "id": "set_a_barnes_hut_app_geomean_0_844x",
+            "set": "A",
+            "app": "barnes_hut",
+            "metric": "set_a_app_geomean_v3_vs_v2_14",
+            "current_value": 0.844,
+            "target": "move_toward_or_above_parity",
+            "source": "docs/rebuild/v3/phoenix_v3_set_a_set_b_scorecard_gate_2026-06-22.md",
+            "route_kind": "trunk_fix_candidate",
+            "role": "aggregate_tree_native_fused_vector_sum_front_door_probe",
+        },
+        win_source="kernel",
+    )
+    runner_metadata = runner_result.to_metadata()
+    actual_outputs = (
+        tuple(runner_result.output)
+        if isinstance(runner_result.output, tuple)
+        else (runner_result.output,)
+    )
+    if not actual_outputs:
+        raise AssertionError("native prepared execution runner returned no vector-sum output")
+    last_actual = actual_outputs[-1]
+    if not isinstance(last_actual, dict):
+        raise TypeError("native prepared execution output must be a mapping")
+    metadata = last_actual["metadata"]
+    if not isinstance(metadata, dict):
+        raise TypeError("native prepared execution metadata must be a mapping")
+
+    copy_start = time.perf_counter()
+    columns = last_actual["columns"]
+    if not isinstance(columns, dict):
+        raise TypeError("native prepared execution columns must be a mapping")
+    source_ids = _device_column_to_list(columns["source_ids"], value_type=int)
+    vector_x = _device_column_to_list(columns["vector_x"], value_type=float)
+    vector_y = _device_column_to_list(columns["vector_y"], value_type=float)
+    visited_counts = _device_column_to_list(columns["visited_counts"], value_type=int)
+    aggregate_counts = _device_column_to_list(columns["aggregate_counts"], value_type=int)
+    exact_counts = _device_column_to_list(columns["exact_counts"], value_type=int)
+    vector_copy_to_host_sec = time.perf_counter() - copy_start
+
+    force_rows = tuple(
+        {
+            "body_id": int(source_ids[index]),
+            "force_x": float(vector_x[index]),
+            "force_y": float(vector_y[index]),
+            "contribution_count": int(aggregate_counts[index] + exact_counts[index]),
+            "aggregate_contribution_count": int(aggregate_counts[index]),
+            "exact_contribution_count": int(exact_counts[index]),
+            "visited_node_count": int(visited_counts[index]),
+        }
+        for index in range(len(source_ids))
+    )
+    force_sample, force_truncated = _truncate_rows(force_rows)
+
+    aggregate_count = int(sum(aggregate_counts))
+    exact_count = int(sum(exact_counts))
+    contribution_count = aggregate_count + exact_count
+    validation: dict[str, object]
+    if skip_validation or len(bodies) > 2048:
+        validation = {
+            "skipped": True,
+            "reason": "user_skip_validation" if skip_validation else "body_count_above_2048",
+        }
+    else:
+        reference = rt.sum_aggregate_frontier_weighted_vectors_2d(
+            bodies,
+            bodies,
+            tree_nodes,
+            theta=theta,
+            softening=app.SOFTENING,
+        )
+        expected_by_id = {
+            int(row["source_id"]): (float(row["vector_x"]), float(row["vector_y"]))
+            for row in reference["vector_sum_rows"]
+        }
+        max_abs_diff_x = max(
+            abs(float(row["force_x"]) - expected_by_id[int(row["body_id"])][0])
+            for row in force_rows
+        )
+        max_abs_diff_y = max(
+            abs(float(row["force_y"]) - expected_by_id[int(row["body_id"])][1])
+            for row in force_rows
+        )
+        validation = {
+            "skipped": False,
+            "compared_against": "sum_aggregate_frontier_weighted_vectors_2d_cpu_reference",
+            "tolerance": 1.0e-7,
+            "max_abs_diff_x": max_abs_diff_x,
+            "max_abs_diff_y": max_abs_diff_y,
+            "passed": max_abs_diff_x <= 1.0e-7 and max_abs_diff_y <= 1.0e-7,
+            "reference_frontier_row_count": int(reference["summary"]["contribution_row_count"]),
+        }
+        if int(validation["reference_frontier_row_count"]) != contribution_count:
+            validation["passed"] = False
+            validation["count_mismatch"] = {
+                "actual": contribution_count,
+                "expected": int(validation["reference_frontier_row_count"]),
+            }
+        if not bool(validation["passed"]):
+            raise AssertionError("native fused CUDA device app mode failed validation")
+
+    repeat_seconds = tuple(float(value) for value in runner_metadata["measured_repeat_seconds"])
+    native_traversal_seconds = [
+        float(actual["metadata"]["traversal_seconds"])
+        for actual in actual_outputs
+        if isinstance(actual, dict) and isinstance(actual.get("metadata"), dict)
+    ]
+    native_traversal_median_sec = (
+        float(statistics.median(native_traversal_seconds))
+        if native_traversal_seconds
+        else float(runner_metadata["measured_median_sec"])
+    )
+    total_sec = time.perf_counter() - total_start
+
+    return {
+        "app": "barnes_hut_force_app",
+        "backend": "optix_native_cuda_device_fused_aggregate_tree_vector_sum",
+        "mode": "native_fused_vector_sum_cuda_device",
+        "body_count": len(bodies),
+        "theta": theta,
+        "softening": app.SOFTENING,
+        "bucket_size": bucket_size,
+        "max_depth": max_depth,
+        "tree_summary": tree["summary"],
+        "prepared_execution_session_runner": runner_metadata,
+        "phoenix_v3_m72": {
+            "target": "barnes_hut_aggregate_tree_set_a_blocker",
+            "scorecard_blocker_bound": bool(runner_metadata["scorecard_blocker_bound"]),
+            "scorecard_blocker_app": runner_metadata.get("scorecard_blocker_app"),
+            "scorecard_blocker_current_value": runner_metadata.get("scorecard_blocker_current_value"),
+            "scorecard_blocker_target": runner_metadata.get("scorecard_blocker_target"),
+            "scorecard_blocker_route_kind": runner_metadata.get("scorecard_blocker_route_kind"),
+            "win_source": runner_metadata.get("win_source"),
+            "release_path_candidate": bool(runner_metadata.get("release_path_candidate")),
+            "pod_authorized": False,
+            "release_authorized": False,
+            "all_app_authorized": False,
+        },
+        "run_phases": {
+            "body_generation_sec": body_generation_sec,
+            "tree_build_sec": tree_build_sec,
+            "runner_prepare_or_cache_sec": float(
+                runner_metadata["prepared_execution_report"]["summary_sec"]["setup"]
+            ),
+            "native_traversal_median_sec": native_traversal_median_sec,
+            "runner_measured_median_sec": float(runner_metadata["measured_median_sec"]),
+            "vector_copy_to_host_sec": vector_copy_to_host_sec,
+            "total_sec": total_sec,
+        },
+        "medians": {
+            "native_cuda_kernel_seconds": native_traversal_median_sec,
+            "prepared_execution_runner_measured_seconds": float(runner_metadata["measured_median_sec"]),
+        },
+        "vector_sum_summary": {
+            "contract": rt.AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_CONTRACT,
+            "logical_reference_contract": rt.AGGREGATE_FRONTIER_WEIGHTED_VECTOR_SUM_2D_CONTRACT,
+            "source_count": len(bodies),
+            "target_count": len(bodies),
+            "tree_node_count": len(tree_nodes),
+            "visited_node_total": int(sum(visited_counts)),
+            "contribution_row_count": contribution_count,
+            "aggregate_contribution_row_count": aggregate_count,
+            "exact_contribution_row_count": exact_count,
+            "frontier_rows_emitted": False,
+            "materialized_frontier_rows": False,
+            "materialized_contribution_rows": False,
+            "frontier_rows_materialized_on_host": False,
+            "contribution_rows_materialized_on_host": False,
+            "cuda_only_fused_device_accumulation": True,
+            "prepared_lookup_columns_resident": True,
+            "aggregate_tree_columns_resident": True,
+            "source_columns_reused": True,
+            "target_columns_reused": True,
+            "output_columns_reused": False,
+            "device_resident": bool(metadata.get("device_resident")),
+            "internal_device_residency_between_rtdl_phases": bool(
+                runner_metadata["internal_device_residency_between_rtdl_phases"]
+            ),
+            "hot_path_host_materialization": bool(runner_metadata["hot_path_host_materialization"]),
+            "runtime_trunk_executes_end_to_end": bool(runner_metadata["runtime_trunk_executes_end_to_end"]),
+            "win_source": runner_metadata.get("win_source"),
+            "scorecard_blocker_bound": bool(runner_metadata["scorecard_blocker_bound"]),
+            "scorecard_blocker_app": runner_metadata.get("scorecard_blocker_app"),
+            "scorecard_blocker_current_value": runner_metadata.get("scorecard_blocker_current_value"),
+            "scorecard_blocker_target": runner_metadata.get("scorecard_blocker_target"),
+            "m43_reuse_scope": runner_metadata.get("m43_reuse_scope"),
+            "native_traversal_seconds": tuple(native_traversal_seconds),
+            "repeat_seconds": repeat_seconds,
+            "run_median_seconds": native_traversal_median_sec,
+            "call_wall_median_seconds": float(runner_metadata["measured_median_sec"]),
+            "warmup": max(0, int(warmup)),
+            "repeat": max(1, int(query_repeat)),
+            "checksum_force_x": float(sum(vector_x)),
+            "checksum_force_y": float(sum(vector_y)),
+            "force_rows": force_sample if force_output_mode == "full" else [],
+            "force_rows_truncated": force_truncated if force_output_mode == "full" else True,
+            "force_output_mode": force_output_mode,
+        },
+        "validation": validation,
+        "claim_flags": {
+            "same_logical_frontier_contract": True,
+            "fused_aggregate_tree_contract": True,
+            "productized_execution_path": "prepared_execution_session_runner",
+            "runtime_trunk_executes_end_to_end": bool(runner_metadata["runtime_trunk_executes_end_to_end"]),
+            "scorecard_blocker_bound": bool(runner_metadata["scorecard_blocker_bound"]),
+            "scorecard_blocker_app": runner_metadata.get("scorecard_blocker_app"),
+            "scorecard_blocker_current_value": runner_metadata.get("scorecard_blocker_current_value"),
+            "scorecard_blocker_target": runner_metadata.get("scorecard_blocker_target"),
+            "scorecard_blocker_route_kind": runner_metadata.get("scorecard_blocker_route_kind"),
+            "win_source": runner_metadata.get("win_source"),
+            "same_device_resident_contract": True,
+            "frontier_rows_materialized_on_host": False,
+            "contribution_rows_materialized_on_host": False,
+            "hot_path_host_materialization": False,
+            "python_vector_sum_used": False,
+            "numba_cuda_jit_used": False,
+            "numba_cuda_python_source_used": False,
+            "raw_c_or_cuda_kernel_used": True,
+            "native_engine_app_specific": False,
+            "automatic_partner_selection_allowed": False,
+            "automatic_partner_selection_authorized": False,
+            "rt_cores_used": False,
+            "optix_trace_used": False,
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "broad_v3_faster_than_v2_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "v4_embedding_or_external_zero_copy_authorized": False,
+            "full_all_app_rerun_authorized_by_this_packet": False,
+        },
+        "boundary": (
+            "Phoenix V3 prepared-execution runner route for the reusable native "
+            "CUDA device-resident aggregate-tree fused weighted-vector primitive. "
+            "It avoids frontier and contribution-row materialization and keeps "
+            "the native engine app-agnostic. It is not an RT-core speedup claim "
+            "because this implementation does not launch an OptiX optixTrace "
+            "pipeline, not automatic partner selection, not V4 external buffer "
+            "interop, and not public speedup wording."
+        ),
+    }
+
+
 def _fused_frontier_force_sum_payload(
     *,
     body_count: int | None,
@@ -3141,6 +3857,52 @@ def run_benchmark(
                 f"{rt.AGGREGATE_BUCKETIZED_TREE_2D_CONTRACT}+"
                 f"{rt.AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CUDA_CONTRACT}+"
                 "explicit_numba_cuda_partner_force_interpretation"
+            ),
+            rt_core_accelerated=False,
+        )
+    if mode == "prepared_execution_fused_vector_sum_numba_cuda":
+        if require_rt_core:
+            raise ValueError("--require-rt-core requires prepared_aggregate_frontier_weighted_vector_optix")
+        return _annotate(
+            _prepared_execution_fused_vector_sum_numba_cuda_payload(
+                body_count=body_count,
+                theta=theta,
+                bucket_size=bucket_size,
+                max_depth=max_depth,
+                skip_validation=skip_validation,
+                query_repeat=query_repeat,
+                warmup=warmup,
+                force_output_mode=force_output_mode,
+            ),
+            mode=mode,
+            contract=(
+                f"{rt.AGGREGATE_BUCKETIZED_TREE_2D_CONTRACT}+"
+                f"{rt.AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_NUMBA_CUDA_CONTRACT}+"
+                "prepared_execution_session_runner+"
+                "explicit_numba_cuda_partner_force_interpretation"
+            ),
+            rt_core_accelerated=False,
+        )
+    if mode == "native_fused_vector_sum_cuda_device":
+        if require_rt_core:
+            raise ValueError("--require-rt-core is not valid for native_fused_vector_sum_cuda_device")
+        return _annotate(
+            _native_fused_vector_sum_cuda_device_payload(
+                body_count=body_count,
+                theta=theta,
+                bucket_size=bucket_size,
+                max_depth=max_depth,
+                skip_validation=skip_validation,
+                query_repeat=query_repeat,
+                warmup=warmup,
+                force_output_mode=force_output_mode,
+            ),
+            mode=mode,
+            contract=(
+                f"{rt.AGGREGATE_BUCKETIZED_TREE_2D_CONTRACT}+"
+                f"{rt.AGGREGATE_TREE_FUSED_WEIGHTED_VECTOR_SUM_2D_RT_NATIVE_CONTRACT}+"
+                "prepared_execution_session_runner+"
+                "native_cuda_device_resident_force_interpretation"
             ),
             rt_core_accelerated=False,
         )
