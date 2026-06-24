@@ -31,7 +31,6 @@ V4_X_DEFERRED_CAPABILITIES = (
 )
 
 V4_RELEASE_BLOCKING_REASONS = (
-    "external_release_review_not_obtained",
     "release_decision_record_not_obtained",
     "v4_review_debt_open",
 )
@@ -91,7 +90,7 @@ def v4_0_scope_gate() -> V4ScopeGate:
         release_authorized=False,
         blocking_reasons=V4_RELEASE_BLOCKING_REASONS,
         required_next_actions=(
-            "obtain external release review for the V4.0 release-candidate packet",
+            "validate required amendments from external release review",
             "obtain a release decision record",
             "close or explicitly waive V4 review debt before public release",
         ),

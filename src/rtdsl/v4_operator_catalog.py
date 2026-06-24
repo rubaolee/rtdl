@@ -69,6 +69,9 @@ class V4OperatorPlan:
     whole_app_speedup_claim_authorized: bool = False
     tier3_callback_claim_authorized: bool = False
     tier3_spike_authorized: bool = False
+    cupy_performance_claim_authorized: bool = False
+    embedding_c_abi_claim_authorized: bool = False
+    non_python_host_binding_claim_authorized: bool = False
     app_specific_native_kernel_authorized: bool = False
 
     def as_dict(self) -> dict[str, object]:
@@ -87,6 +90,9 @@ class V4OperatorPlan:
             "whole_app_speedup_claim_authorized": self.whole_app_speedup_claim_authorized,
             "tier3_callback_claim_authorized": self.tier3_callback_claim_authorized,
             "tier3_spike_authorized": self.tier3_spike_authorized,
+            "cupy_performance_claim_authorized": self.cupy_performance_claim_authorized,
+            "embedding_c_abi_claim_authorized": self.embedding_c_abi_claim_authorized,
+            "non_python_host_binding_claim_authorized": self.non_python_host_binding_claim_authorized,
             "app_specific_native_kernel_authorized": self.app_specific_native_kernel_authorized,
         }
 
@@ -125,13 +131,13 @@ def plan_v4_operator_request(
         guidance = (
             f"Use {surface['api_surface']} for this recognized fused operator."
             if measured
-            else f"{surface['api_surface']} is measured for Torch only; treat {partner} as unmeasured."
+            else f"This operator is measured for Torch only. No V4.0 API surface is exposed for {partner}; treat this partner as V4.x deferred."
         )
         return V4OperatorPlan(
             request=normalized,
             status=status,
             tier="tier2_fused_operator",
-            api_surface=str(surface["api_surface"]),
+            api_surface=str(surface["api_surface"]) if measured else None,
             generic_primitive=str(surface["generic_primitive"]),
             measured_partner=measured,
             partner=partner,
@@ -217,4 +223,3 @@ def measured_v4_tier2_operator_catalog() -> list[dict[str, object]]:
             }
         )
     return rows
-

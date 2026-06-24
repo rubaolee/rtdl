@@ -105,6 +105,12 @@ def _validate_payload(name: str, payload: dict[str, Any], mode: str) -> tuple[bo
         failures.append("tier3_callback_claim_authorized_not_false")
     if "whole_app_speedup_claim_authorized" in payload and payload.get("whole_app_speedup_claim_authorized") is not False:
         failures.append("whole_app_speedup_claim_authorized_not_false")
+    if "cupy_performance_claim_authorized" in payload and payload.get("cupy_performance_claim_authorized") is not False:
+        failures.append("cupy_performance_claim_authorized_not_false")
+    if "embedding_c_abi_claim_authorized" in payload and payload.get("embedding_c_abi_claim_authorized") is not False:
+        failures.append("embedding_c_abi_claim_authorized_not_false")
+    if "non_python_host_binding_claim_authorized" in payload and payload.get("non_python_host_binding_claim_authorized") is not False:
+        failures.append("non_python_host_binding_claim_authorized_not_false")
     if "app_specific_native_kernel_authorized" in payload and payload.get("app_specific_native_kernel_authorized") is not False:
         failures.append("app_specific_native_kernel_authorized_not_false")
     if name in {"fixed_radius", "closest_hit_grouped_argmin", "ray_triangle_any_hit_flags"}:

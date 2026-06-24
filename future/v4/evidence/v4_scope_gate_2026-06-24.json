@@ -2,7 +2,6 @@
   "gate": {
     "app_specific_native_kernel_authorized": false,
     "blocking_reasons": [
-      "external_release_review_not_obtained",
       "release_decision_record_not_obtained",
       "v4_review_debt_open"
     ],
@@ -35,7 +34,7 @@
     "raw_optix_callback_claim_authorized": false,
     "release_authorized": false,
     "required_next_actions": [
-      "obtain external release review for the V4.0 release-candidate packet",
+      "validate required amendments from external release review",
       "obtain a release decision record",
       "close or explicitly waive V4 review debt before public release"
     ],

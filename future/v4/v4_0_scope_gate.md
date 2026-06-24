@@ -25,7 +25,6 @@ Status: generated development gate, not a release authorization
 
 ## Blocking Reasons
 
-- `external_release_review_not_obtained`
 - `release_decision_record_not_obtained`
 - `v4_review_debt_open`
 

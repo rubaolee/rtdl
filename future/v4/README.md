@@ -28,6 +28,11 @@ The current measured Torch CUDA surfaces are:
 - closest-hit grouped argmin
 - ray/triangle any-hit flags
 
+All three are measured Torch CUDA device-array surfaces. The grouped-argmin
+surface is a no-host-hot-path direct device-output route, but it does not make a
+public true-zero-copy claim because its prepared grouped inputs use disclosed
+internal device-side staging.
+
 List them programmatically:
 
 ```python

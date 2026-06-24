@@ -11,8 +11,9 @@ operators. The current candidate includes one unified Python front door, three
 measured Torch CUDA device-array surfaces, an operator/callback planner, and
 machine gates that keep V4.x work out of the V4.0 claim surface.
 
-Release authorization remains `false` until external review and a release
-decision record are obtained.
+Release authorization remains `false` until the required amendments from
+external review are validated, review debt is closed or explicitly waived, and a
+release decision record is obtained.
 
 ## Included V4.0 Surfaces
 
@@ -54,6 +55,9 @@ Validation evidence:
 - final GPU catalog gate, serious size: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.json`
 - final GPU catalog gate, smoke size: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`
 - local V4 full test sweep: `future/v4/evidence/v4_local_full_test_sweep_2026-06-24.md`
+- clean-commit rerun protocol: `future/v4/release_rerun_protocol_2026-06-24.md`
+- Claude external review: `future/v4/reviews/claude_v4_0_release_candidate_recorded_review_2026-06-24.md`
+- review debt tracker: `future/v4/reviews/review_debt_v4_0_release_candidate_2026-06-24.md`
 
 The final GPU validation is tied to the runtime-code commit above. Later
 candidate-packet edits are documentation/evidence wording updates only and are
@@ -94,9 +98,8 @@ Evidence:
 
 ## Release Blockers
 
-- external release review not obtained
 - release decision record not obtained
-- open V4 review debt exists
+- V4 review debt must be closed or explicitly waived in the release decision record
 
 ## Non-Authorization
 

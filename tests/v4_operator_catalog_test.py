@@ -29,9 +29,12 @@ class V4OperatorCatalogTest(unittest.TestCase):
         plan = catalog.plan_v4_operator_request("grouped_argmin", partner="cupy")
 
         self.assertEqual("tier2_declared_unmeasured_partner", plan.status)
-        self.assertEqual("v4_closest_hit_grouped_argmin_3d_device_arrays", plan.api_surface)
+        self.assertIsNone(plan.api_surface)
         self.assertFalse(plan.measured_partner)
         self.assertIn("measured for Torch only", plan.guidance)
+        self.assertIn("No V4.0 API surface", plan.guidance)
+        self.assertFalse(plan.cupy_performance_claim_authorized)
+        self.assertFalse(plan.non_python_host_binding_claim_authorized)
         self.assertFalse(plan.broad_v4_speedup_claim_authorized)
 
     def test_numba_scalar_callback_is_spike_only_not_supported_surface(self) -> None:
@@ -84,4 +87,3 @@ class V4OperatorCatalogTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

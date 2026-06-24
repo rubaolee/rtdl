@@ -134,6 +134,12 @@ The evidence metadata records `native_direct_device_output_columns: true`,
 `grouped_result_device_to_device_export: false`, and
 `grouped_results_downloaded_to_host_in_hot_path: false`.
 
+Grouped argmin does not carry a public `true_zero_copy_authorized` claim in
+V4.0. It is still a measured device-array surface: inputs and grouped outputs
+stay in caller-owned Torch CUDA columns for the hot path, but the prepared
+grouped inputs and OptiX traversal use internal device-side staging that is
+disclosed in the evidence instead of hidden behind stronger zero-copy wording.
+
 Any-hit flags evidence is tracked separately:
 
 - `future/v4/evidence/v4_section8_any_hit_flags_device_frontdoor_result_2026-06-24.json`
