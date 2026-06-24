@@ -14,6 +14,8 @@ RAY_DOC = ROOT / "future" / "v4" / "ray_triangle_device_array_frontdoor.md"
 RAY_EXAMPLE = ROOT / "future" / "v4" / "examples" / "closest_hit_grouped_argmin_torch_device_arrays.py"
 ANY_HIT_EXAMPLE = ROOT / "future" / "v4" / "examples" / "ray_triangle_any_hit_flags_torch_device_arrays.py"
 CATALOG = ROOT / "future" / "v4" / "tier2_operator_catalog.md"
+CALLBACK_DOC = ROOT / "future" / "v4" / "callback_and_operator_planning.md"
+CALLBACK_EXAMPLE = ROOT / "future" / "v4" / "examples" / "operator_callback_planning.py"
 
 
 class V4FixedRadiusDocsAndExampleTest(unittest.TestCase):
@@ -45,6 +47,15 @@ class V4FixedRadiusDocsAndExampleTest(unittest.TestCase):
         self.assertIn("not a release announcement", text)
         self.assertIn("Not authorized by this catalog", text)
         self.assertIn("Tier-3 callback/PTX claims", text)
+        self.assertIn("operator/callback planner", text)
+
+    def test_callback_planning_doc_rejects_raw_callback_overclaim(self) -> None:
+        text = CALLBACK_DOC.read_text(encoding="utf-8")
+        self.assertIn("operator push-down", text)
+        self.assertIn("tier3_spike_only_not_v4_0_release_surface", text)
+        self.assertIn("rejected_action_shaped_callback_deferred", text)
+        self.assertIn("raw OptiX callback support", text)
+        self.assertIn("app-specific native engine kernels", text)
 
     def test_example_dry_run_is_executable_without_cuda(self) -> None:
         proc = subprocess.run(
@@ -77,6 +88,27 @@ class V4FixedRadiusDocsAndExampleTest(unittest.TestCase):
         self.assertFalse(payload["release_claim_authorized"])
         self.assertFalse(payload["whole_app_speedup_claim_authorized"])
         self.assertFalse(payload["tier3_callback_claim_authorized"])
+
+    def test_callback_planning_example_cases_are_executable_without_cuda(self) -> None:
+        cases = {
+            "tier2": "tier2_measured_ready",
+            "scalar-callback": "tier3_spike_only_not_v4_0_release_surface",
+            "complex-callback": "rejected_action_shaped_callback_deferred",
+        }
+        for case, expected_status in cases.items():
+            with self.subTest(case=case):
+                proc = subprocess.run(
+                    [sys.executable, str(CALLBACK_EXAMPLE), "--case", case],
+                    cwd=ROOT,
+                    check=True,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                )
+                payload = json.loads(proc.stdout)
+                self.assertEqual(expected_status, payload["status"])
+                self.assertFalse(payload["release_claim_authorized"])
+                self.assertFalse(payload["tier3_callback_claim_authorized"])
+                self.assertFalse(payload["app_specific_native_kernel_authorized"])
 
     def test_ray_triangle_example_dry_run_is_executable_without_cuda(self) -> None:
         proc = subprocess.run(

@@ -34,6 +34,15 @@ Before V4 can be called complete, this catalog still needs:
 
 - a release decision record after external review
 - a clear statement of which operators are V4.0 and which are V4.x
-- at least one explicit unsupported-complex-callback example routed to Tier 3 or rejected with guidance
+- external review of the operator/callback planner boundary in `future/v4/callback_and_operator_planning.md`
 - a regression gate that verifies each catalog example dry-runs locally and runs on the GPU evidence environment
 
+The complex-callback boundary is now represented by:
+
+- `src/rtdsl/v4_operator_catalog.py`
+- `future/v4/examples/operator_callback_planning.py`
+- `future/v4/callback_and_operator_planning.md`
+
+The boundary is intentionally conservative: scalar Numba device callbacks are
+only Tier-3 spike candidates, while action-shaped callbacks are rejected for
+V4.0 rather than exposed as raw OptiX hooks.
