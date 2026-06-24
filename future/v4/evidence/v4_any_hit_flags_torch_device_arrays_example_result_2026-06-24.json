@@ -1,0 +1,58 @@
+{
+  "correctness_passed": true,
+  "elapsed_s": 0.00041178613901138306,
+  "example": "v4_ray_triangle_any_hit_flags_torch_device_arrays",
+  "hit_count": 8192,
+  "input_contract": "caller_supplied_torch_device_triangle_aabb_and_ray_columns",
+  "metadata": {
+    "adapter": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+    "backend": "optix",
+    "broad_v4_speedup_claim_authorized": false,
+    "direct_device_handoff_authorized": true,
+    "direct_device_pointer_observed": true,
+    "generic_primitive": "RAY_TRIANGLE_ANY_HIT_FLAGS_2D",
+    "host_materialization_in_hot_path": false,
+    "input_contract": "caller_supplied_torch_device_ray_triangle_columns",
+    "measured_partner": true,
+    "measured_partners": [
+      "torch"
+    ],
+    "native_direct_device_output_columns": true,
+    "native_prepared_route": "write_device_any_hit_flags",
+    "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags",
+    "output_contract": "caller_supplied_or_allocated_torch_device_any_hit_flag_column",
+    "output_flags_true_zero_copy_authorized": true,
+    "partner": "torch",
+    "partner_claim_status": "measured_on_v4_section8_pod",
+    "partner_support_declared_unmeasured": [
+      "cupy"
+    ],
+    "partner_tensor_handoff_authorized": true,
+    "python_ray_object_boundary_in_hot_path": false,
+    "ray_columns_true_zero_copy_authorized": true,
+    "ray_count": 8192,
+    "ray_results_downloaded_to_host_in_hot_path": false,
+    "release_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "source_devices": [
+      "cuda:0"
+    ],
+    "source_protocols": [
+      "torch"
+    ],
+    "tier3_callback_claim_authorized": false,
+    "transfer_mode": "device_ray_triangle_columns_output_flags_zero_copy",
+    "triangle_scene_true_zero_copy_authorized": true,
+    "true_zero_copy_authorized": true,
+    "v2_0_release_authorized": false,
+    "v4_api_surface": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "output_contract": "caller_owned_torch_device_any_hit_flag_column",
+  "ray_count": 8192,
+  "release_claim_authorized": false,
+  "status": "measured",
+  "tier3_callback_claim_authorized": false,
+  "triangle_count": 8192,
+  "whole_app_speedup_claim_authorized": false
+}

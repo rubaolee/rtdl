@@ -12,6 +12,8 @@ DOC = ROOT / "future" / "v4" / "fixed_radius_device_array_frontdoor.md"
 EXAMPLE = ROOT / "future" / "v4" / "examples" / "fixed_radius_torch_device_arrays.py"
 RAY_DOC = ROOT / "future" / "v4" / "ray_triangle_device_array_frontdoor.md"
 RAY_EXAMPLE = ROOT / "future" / "v4" / "examples" / "closest_hit_grouped_argmin_torch_device_arrays.py"
+ANY_HIT_EXAMPLE = ROOT / "future" / "v4" / "examples" / "ray_triangle_any_hit_flags_torch_device_arrays.py"
+CATALOG = ROOT / "future" / "v4" / "tier2_operator_catalog.md"
 
 
 class V4FixedRadiusDocsAndExampleTest(unittest.TestCase):
@@ -31,8 +33,18 @@ class V4FixedRadiusDocsAndExampleTest(unittest.TestCase):
         self.assertIn("Torch", text)
         self.assertIn("CuPy is declared but unmeasured", text)
         self.assertIn("native_direct_device_output_columns", text)
+        self.assertIn("v4_ray_triangle_any_hit_flags_2d_device_arrays", text)
         self.assertIn("V4 release", text)
         self.assertIn("Tier-3 callback/PTX", text)
+
+    def test_tier2_operator_catalog_lists_measured_surfaces_without_release_claim(self) -> None:
+        text = CATALOG.read_text(encoding="utf-8")
+        self.assertIn("v4_fixed_radius_count_threshold_2d_device_arrays", text)
+        self.assertIn("v4_closest_hit_grouped_argmin_3d_device_arrays", text)
+        self.assertIn("v4_ray_triangle_any_hit_flags_2d_device_arrays", text)
+        self.assertIn("not a release announcement", text)
+        self.assertIn("Not authorized by this catalog", text)
+        self.assertIn("Tier-3 callback/PTX claims", text)
 
     def test_example_dry_run_is_executable_without_cuda(self) -> None:
         proc = subprocess.run(
@@ -46,6 +58,22 @@ class V4FixedRadiusDocsAndExampleTest(unittest.TestCase):
         self.assertEqual("dry_run", payload["status"])
         self.assertEqual("v4_fixed_radius_torch_device_arrays", payload["example"])
         self.assertEqual(16, payload["point_count"])
+        self.assertFalse(payload["release_claim_authorized"])
+        self.assertFalse(payload["whole_app_speedup_claim_authorized"])
+        self.assertFalse(payload["tier3_callback_claim_authorized"])
+
+    def test_any_hit_example_dry_run_is_executable_without_cuda(self) -> None:
+        proc = subprocess.run(
+            [sys.executable, str(ANY_HIT_EXAMPLE), "--dry-run", "--ray-count", "8192"],
+            cwd=ROOT,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+        )
+        payload = json.loads(proc.stdout)
+        self.assertEqual("dry_run", payload["status"])
+        self.assertEqual("v4_ray_triangle_any_hit_flags_torch_device_arrays", payload["example"])
+        self.assertEqual(8192, payload["ray_count"])
         self.assertFalse(payload["release_claim_authorized"])
         self.assertFalse(payload["whole_app_speedup_claim_authorized"])
         self.assertFalse(payload["tier3_callback_claim_authorized"])

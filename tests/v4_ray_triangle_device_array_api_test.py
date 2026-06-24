@@ -32,6 +32,19 @@ class V4RayTriangleDeviceArrayApiTest(unittest.TestCase):
         self.assertFalse(torch_boundary["broad_v4_speedup_claim_authorized"])
         self.assertFalse(torch_boundary["tier3_callback_claim_authorized"])
 
+    def test_any_hit_claim_boundary_distinguishes_measured_and_unmeasured_partners(self) -> None:
+        torch_boundary = rt_v4.ray_triangle_any_hit_flags_2d_device_array_claim_boundary_v4("torch")
+        cupy_boundary = rt_v4.ray_triangle_any_hit_flags_2d_device_array_claim_boundary_v4("cupy")
+
+        self.assertEqual("v4_ray_triangle_any_hit_flags_2d_device_arrays", torch_boundary["v4_api_surface"])
+        self.assertTrue(torch_boundary["measured_partner"])
+        self.assertEqual("measured_on_v4_section8_pod", torch_boundary["partner_claim_status"])
+        self.assertFalse(cupy_boundary["measured_partner"])
+        self.assertEqual("declared_unmeasured_not_performance_ready", cupy_boundary["partner_claim_status"])
+        self.assertFalse(torch_boundary["release_claim_authorized"])
+        self.assertFalse(torch_boundary["broad_v4_speedup_claim_authorized"])
+        self.assertFalse(torch_boundary["tier3_callback_claim_authorized"])
+
     def test_session_run_uses_device_hot_path_and_device_output_copy_metadata(self) -> None:
         output_columns = {
             "group_has_value": object(),
@@ -69,6 +82,30 @@ class V4RayTriangleDeviceArrayApiTest(unittest.TestCase):
         self.assertEqual(1, scene.prevalidated_handoff_calls)
         self.assertEqual(0, grouped.copy_calls)
 
+    def test_any_hit_session_run_uses_device_flags_hot_path(self) -> None:
+        output_flags = object()
+        scene = _FakeAnyHitScene()
+        session = rt_v4.V4RayTriangleAnyHitFlags2DDeviceArraySession(
+            prepared_scene=scene,
+            partner="torch",
+        )
+
+        result = session.run(
+            {"ids": _FakeShapeColumn(4), "ox": object(), "oy": object(), "dx": object(), "dy": object(), "tmax": object()},
+            output_flags=output_flags,
+        )
+
+        self.assertIs(result["columns"]["any_hit_flags"], output_flags)
+        metadata = result["metadata"]
+        self.assertEqual("v4_ray_triangle_any_hit_flags_2d_device_arrays", metadata["adapter"])
+        self.assertEqual("RAY_TRIANGLE_ANY_HIT_FLAGS_2D", metadata["generic_primitive"])
+        self.assertTrue(metadata["native_direct_device_output_columns"])
+        self.assertTrue(metadata["true_zero_copy_authorized"])
+        self.assertFalse(metadata["ray_results_downloaded_to_host_in_hot_path"])
+        self.assertFalse(metadata["host_materialization_in_hot_path"])
+        self.assertFalse(metadata["release_claim_authorized"])
+        self.assertEqual(1, scene.flag_calls)
+
     def test_prepare_closes_scene_when_ray_prepare_fails(self) -> None:
         original_prepare = rt_v4.prepare_optix_static_triangle_scene_3d_device_triangles
         fake_scene = _FailingPrepareScene()
@@ -85,6 +122,24 @@ class V4RayTriangleDeviceArrayApiTest(unittest.TestCase):
                 )
         finally:
             rt_v4.prepare_optix_static_triangle_scene_3d_device_triangles = original_prepare
+        self.assertTrue(fake_scene.closed)
+
+    def test_prepare_any_hit_wraps_zero_copy_triangle_scene(self) -> None:
+        original_prepare = rt_v4.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene
+        fake_scene = _FakeAnyHitScene()
+        try:
+            rt_v4.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene = (
+                lambda triangle_columns, triangle_aabbs: fake_scene
+            )
+            session = rt_v4.prepare_ray_triangle_any_hit_flags_2d_device_arrays_v4(
+                {"ids": object()},
+                object(),
+                partner="torch",
+            )
+        finally:
+            rt_v4.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene = original_prepare
+        self.assertIs(session.prepared_scene, fake_scene)
+        session.close()
         self.assertTrue(fake_scene.closed)
 
     def test_native_device_output_symbols_are_wired(self) -> None:
@@ -106,6 +161,22 @@ class V4RayTriangleDeviceArrayApiTest(unittest.TestCase):
         self.assertIn("cuMemcpyDtoD", workloads)
         self.assertIn("ray_closest_hit_prepared_grouped_argmin_device_outputs", runtime)
         self.assertIn("copy_grouped_results_to_device_outputs", runtime)
+
+    def test_any_hit_device_output_symbols_are_wired(self) -> None:
+        runtime = OPTIX_RUNTIME.read_text(encoding="utf-8")
+        prelude = OPTIX_PRELUDE.read_text(encoding="utf-8")
+        api = OPTIX_API.read_text(encoding="utf-8")
+        workloads = OPTIX_WORKLOADS.read_text(encoding="utf-8")
+
+        prepare_symbol = "rtdl_optix_prepare_ray_anyhit_2d_device_triangle_columns_aabbs"
+        flag_symbol = "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags"
+        self.assertIn(prepare_symbol, runtime)
+        self.assertIn(prepare_symbol, prelude)
+        self.assertIn(prepare_symbol, api)
+        self.assertIn(flag_symbol, runtime)
+        self.assertIn(flag_symbol, prelude)
+        self.assertIn(flag_symbol, api)
+        self.assertIn("write_prepared_ray_anyhit_2d_device_flags_optix", workloads)
 
 
 class _FakeRayBatch:
@@ -155,6 +226,34 @@ class _FakeScene:
                 "grouped_result_device_to_device_export": False,
                 "rows_materialized": False,
                 "grouped_results_materialized": False,
+            }
+        }
+
+    def close(self) -> None:
+        self.closed = True
+
+
+class _FakeShapeColumn:
+    def __init__(self, length: int) -> None:
+        self.shape = (length,)
+
+
+class _FakeAnyHitScene:
+    def __init__(self) -> None:
+        self.flag_calls = 0
+        self.closed = False
+
+    def write_device_any_hit_flags(self, ray_columns, output_flags):
+        self.flag_calls += 1
+        return {
+            "metadata": {
+                "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags",
+                "ray_count": ray_columns["ids"].shape[0],
+                "direct_device_handoff_authorized": True,
+                "ray_columns_true_zero_copy_authorized": True,
+                "output_flags_true_zero_copy_authorized": True,
+                "triangle_scene_true_zero_copy_authorized": True,
+                "true_zero_copy_authorized": True,
             }
         }
 

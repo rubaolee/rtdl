@@ -4,12 +4,14 @@ from dataclasses import dataclass
 from typing import Any
 
 from .optix_runtime import _validate_closest_hit_grouped_argmin_device_output_columns
+from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene
 from .optix_runtime import prepare_optix_static_triangle_scene_3d_device_triangles
 
 
 V4_CLOSEST_HIT_GROUPED_ARGMIN_DEVICE_ARRAY_SURFACE = (
     "v4_closest_hit_grouped_argmin_3d_device_arrays"
 )
+V4_RAY_TRIANGLE_ANY_HIT_FLAGS_DEVICE_ARRAY_SURFACE = "v4_ray_triangle_any_hit_flags_2d_device_arrays"
 V4_RAY_TRIANGLE_MEASURED_PARTNERS = ("torch",)
 V4_RAY_TRIANGLE_DECLARED_UNMEASURED_PARTNERS = ("cupy",)
 V4_RAY_TRIANGLE_ALLOWED_PARTNERS = (
@@ -57,6 +59,37 @@ def closest_hit_grouped_argmin_3d_device_array_claim_boundary_v4(
     }
 
 
+def ray_triangle_any_hit_flags_2d_device_array_claim_boundary_v4(
+    partner: str = "torch",
+) -> dict[str, object]:
+    """Return the V4 claim boundary for the ray/triangle any-hit flag surface."""
+
+    partner = _require_partner(partner)
+    measured = partner in V4_RAY_TRIANGLE_MEASURED_PARTNERS
+    return {
+        "v4_api_surface": V4_RAY_TRIANGLE_ANY_HIT_FLAGS_DEVICE_ARRAY_SURFACE,
+        "partner": partner,
+        "measured_partner": measured,
+        "measured_partners": V4_RAY_TRIANGLE_MEASURED_PARTNERS,
+        "partner_support_declared_unmeasured": tuple(
+            item
+            for item in V4_RAY_TRIANGLE_ALLOWED_PARTNERS
+            if item not in V4_RAY_TRIANGLE_MEASURED_PARTNERS
+        ),
+        "partner_claim_status": (
+            "measured_on_v4_section8_pod"
+            if measured
+            else "declared_unmeasured_not_performance_ready"
+        ),
+        "python_ray_object_boundary_in_hot_path": False,
+        "host_materialization_in_hot_path": False,
+        "release_claim_authorized": False,
+        "broad_v4_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "tier3_callback_claim_authorized": False,
+    }
+
+
 def allocate_closest_hit_grouped_argmin_3d_device_array_outputs_v4(
     group_count: int,
     *,
@@ -82,6 +115,29 @@ def allocate_closest_hit_grouped_argmin_3d_device_array_outputs_v4(
         "group_index": torch.empty((group_count,), dtype=torch.uint32, device=device),
         "group_value": torch.empty((group_count,), dtype=torch.float64, device=device),
     }
+
+
+def allocate_ray_triangle_any_hit_flags_2d_device_array_outputs_v4(
+    ray_count: int,
+    *,
+    partner: str = "torch",
+    device: object | None = None,
+):
+    """Allocate reusable device flag output columns for the V4 any-hit surface."""
+
+    partner = _require_partner(partner)
+    ray_count = int(ray_count)
+    if ray_count < 0:
+        raise ValueError("ray_count must be non-negative")
+    if partner != "torch":
+        raise RuntimeError("CuPy output allocation is declared but unmeasured for this V4 surface")
+    try:
+        import torch
+    except Exception as exc:  # pragma: no cover - optional dependency
+        raise RuntimeError("Torch is required for the measured V4 any-hit flag surface") from exc
+    if device is None:
+        device = torch.device("cuda")
+    return torch.zeros((ray_count,), dtype=torch.uint32, device=device)
 
 
 @dataclass
@@ -186,6 +242,78 @@ class V4ClosestHitGroupedArgmin3DDeviceArraySession:
         return output_columns
 
 
+@dataclass
+class V4RayTriangleAnyHitFlags2DDeviceArraySession:
+    """Prepared V4 2-D ray/triangle any-hit flags over caller device arrays."""
+
+    prepared_scene: Any
+    partner: str
+
+    def __post_init__(self) -> None:
+        self.partner = _require_partner(self.partner)
+        self._closed = False
+
+    @property
+    def claim_boundary(self) -> dict[str, object]:
+        return ray_triangle_any_hit_flags_2d_device_array_claim_boundary_v4(self.partner)
+
+    def __enter__(self) -> "V4RayTriangleAnyHitFlags2DDeviceArraySession":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        close = getattr(self.prepared_scene, "close", None)
+        if callable(close):
+            close()
+        self._closed = True
+
+    def allocate_outputs(self, ray_count: int, *, device: object | None = None):
+        return allocate_ray_triangle_any_hit_flags_2d_device_array_outputs_v4(
+            ray_count,
+            partner=self.partner,
+            device=device,
+        )
+
+    def run(
+        self,
+        ray_columns: dict[str, object],
+        *,
+        output_flags=None,
+        return_metadata: bool = True,
+    ):
+        if self._closed:
+            raise RuntimeError("V4 ray/triangle any-hit flag device-array session is closed")
+        if self.partner != "torch":
+            raise RuntimeError("CuPy is declared but unmeasured for this V4 surface")
+        if "ids" not in ray_columns:
+            raise ValueError("ray_columns must include 'ids'")
+        if output_flags is None:
+            device = None
+            ids = ray_columns["ids"]
+            if hasattr(ids, "device"):
+                device = ids.device
+            output_flags = self.allocate_outputs(int(ray_columns["ids"].shape[0]), device=device)
+        native_result = self.prepared_scene.write_device_any_hit_flags(ray_columns, output_flags)
+        metadata = {
+            **native_result["metadata"],
+            **self.claim_boundary,
+            "adapter": V4_RAY_TRIANGLE_ANY_HIT_FLAGS_DEVICE_ARRAY_SURFACE,
+            "generic_primitive": "RAY_TRIANGLE_ANY_HIT_FLAGS_2D",
+            "input_contract": f"caller_supplied_{self.partner}_device_ray_triangle_columns",
+            "output_contract": f"caller_supplied_or_allocated_{self.partner}_device_any_hit_flag_column",
+            "native_prepared_route": "write_device_any_hit_flags",
+            "native_direct_device_output_columns": True,
+            "ray_results_downloaded_to_host_in_hot_path": False,
+        }
+        if return_metadata:
+            return {"columns": {"any_hit_flags": output_flags}, "metadata": metadata}
+        return {"any_hit_flags": output_flags}
+
+
 def prepare_closest_hit_grouped_argmin_3d_device_arrays_v4(
     triangle_columns: dict[str, object],
     ray_columns: dict[str, object],
@@ -219,4 +347,25 @@ def prepare_closest_hit_grouped_argmin_3d_device_arrays_v4(
         grouped_inputs=grouped_inputs,
         partner=partner,
         group_count=int(group_count),
+    )
+
+
+def prepare_ray_triangle_any_hit_flags_2d_device_arrays_v4(
+    triangle_columns: dict[str, object],
+    triangle_aabbs,
+    *,
+    partner: str = "torch",
+) -> V4RayTriangleAnyHitFlags2DDeviceArraySession:
+    """Prepare the V4 ray/triangle any-hit flag surface over device arrays."""
+
+    partner = _require_partner(partner)
+    if partner != "torch":
+        raise RuntimeError("CuPy is declared but unmeasured for this V4 surface")
+    prepared_scene = prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene(
+        triangle_columns,
+        triangle_aabbs,
+    )
+    return V4RayTriangleAnyHitFlags2DDeviceArraySession(
+        prepared_scene=prepared_scene,
+        partner=partner,
     )
