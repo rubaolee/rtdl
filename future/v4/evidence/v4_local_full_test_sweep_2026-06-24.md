@@ -6,17 +6,10 @@ Status: passed
 
 Latest rerun:
 
-- time: 2026-06-24 13:58 -04:00
-- base runtime commit under test: `7e38a8e8dee36a951f1f41bc33f367d468b9d1b5`
-- working-tree delta under test:
-  - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.json`
-  - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.md`
-  - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`
-  - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.md`
-  - `future/v4/v4_0_release_candidate_packet_2026-06-24.md`
-  - `future/v4/evidence/v4_local_full_test_sweep_2026-06-24.md`
-- reason: revalidated after internal multihead amendments and latest POD GPU
-  evidence refresh
+- time: 2026-06-24 14:07 -04:00
+- commit under test: `4948ae2af4340fbe398668fe9749b4365587ee07`
+- working-tree delta under test: none
+- reason: revalidated after Claude release-candidate amendments
 
 Command:
 
