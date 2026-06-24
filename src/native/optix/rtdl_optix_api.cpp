@@ -2473,6 +2473,30 @@ extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_prepare
             reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
             reinterpret_cast<PreparedRayBatch3D*>(ray_batch_handle),
             reinterpret_cast<PreparedClosestHitGroupedArgmin3D*>(grouped_inputs_handle),
+        traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_outputs(
+        void* scene_handle,
+        void* ray_batch_handle,
+        void* grouped_inputs_handle,
+        uint64_t group_has_value_out_device_ptr,
+        uint64_t group_index_out_device_ptr,
+        uint64_t group_value_out_device_ptr,
+        size_t output_group_count,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_outputs_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedRayBatch3D*>(ray_batch_handle),
+            reinterpret_cast<PreparedClosestHitGroupedArgmin3D*>(grouped_inputs_handle),
+            group_has_value_out_device_ptr,
+            group_index_out_device_ptr,
+            group_value_out_device_ptr,
+            output_group_count,
             traversal_seconds_out);
     }, error_out, error_size);
 }
@@ -2490,6 +2514,24 @@ extern "C" int rtdl_optix_closest_hit_grouped_argmin_inputs_3d_finalize(
             group_has_value_out,
             group_index_out,
             group_value_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_closest_hit_grouped_argmin_inputs_3d_copy_device_outputs(
+        void* grouped_inputs_handle,
+        uint64_t group_has_value_out_device_ptr,
+        uint64_t group_index_out_device_ptr,
+        uint64_t group_value_out_device_ptr,
+        size_t output_group_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        copy_prepared_closest_hit_grouped_argmin_3d_device_outputs_optix(
+            reinterpret_cast<PreparedClosestHitGroupedArgmin3D*>(grouped_inputs_handle),
+            group_has_value_out_device_ptr,
+            group_index_out_device_ptr,
+            group_value_out_device_ptr,
+            output_group_count);
     }, error_out, error_size);
 }
 

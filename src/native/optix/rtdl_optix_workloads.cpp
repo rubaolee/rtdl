@@ -20359,14 +20359,29 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_grouped_
     download(group_value_out, d_group_value.ptr, group_count);
 }
 
+static void clear_grouped_argmin_device_outputs(
+        CUdeviceptr group_has_value_ptr,
+        CUdeviceptr group_index_ptr,
+        CUdeviceptr group_value_ptr,
+        size_t group_count)
+{
+    if (group_count == 0)
+        return;
+    CU_CHECK(cuMemsetD8(group_has_value_ptr, 0, group_count * sizeof(uint8_t)));
+    CU_CHECK(cuMemsetD8(group_index_ptr, 0xff, group_count * sizeof(uint32_t)));
+    CU_CHECK(cuMemsetD8(group_value_ptr, 0, group_count * sizeof(double)));
+}
+
 static void clear_prepared_grouped_argmin_device_outputs(PreparedClosestHitGroupedArgmin3D* grouped_inputs)
 {
     const size_t group_count = grouped_inputs ? grouped_inputs->group_count : 0;
     if (group_count == 0)
         return;
-    CU_CHECK(cuMemsetD8(grouped_inputs->d_group_has_value.ptr, 0, group_count * sizeof(uint8_t)));
-    CU_CHECK(cuMemsetD8(grouped_inputs->d_group_index.ptr, 0xff, group_count * sizeof(uint32_t)));
-    CU_CHECK(cuMemsetD8(grouped_inputs->d_group_value.ptr, 0, group_count * sizeof(double)));
+    clear_grouped_argmin_device_outputs(
+        grouped_inputs->d_group_has_value.ptr,
+        grouped_inputs->d_group_index.ptr,
+        grouped_inputs->d_group_value.ptr,
+        group_count);
 }
 
 static void run_prepared_grouped_candidate_argmin_device_optix(
@@ -20468,10 +20483,44 @@ static void run_prepared_grouped_candidate_argmin_optix(
     download(group_value_out, grouped_inputs->d_group_value.ptr, group_count);
 }
 
-static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_optix(
+static void copy_prepared_closest_hit_grouped_argmin_3d_device_outputs_optix(
+        PreparedClosestHitGroupedArgmin3D* grouped_inputs,
+        uint64_t group_has_value_out_device_ptr,
+        uint64_t group_index_out_device_ptr,
+        uint64_t group_value_out_device_ptr,
+        size_t output_group_count)
+{
+    if (!grouped_inputs)
+        throw std::runtime_error("prepared closest-hit grouped argmin handle must not be null");
+    const size_t group_count = grouped_inputs->group_count;
+    if (output_group_count < group_count)
+        throw std::runtime_error("closest-hit grouped argmin output buffers are smaller than group_count");
+    if (group_count == 0)
+        return;
+    if (!group_has_value_out_device_ptr || !group_index_out_device_ptr || !group_value_out_device_ptr)
+        throw std::runtime_error("closest-hit grouped argmin device output pointers must not be null");
+
+    CU_CHECK(cuMemcpyDtoD(
+        static_cast<CUdeviceptr>(group_has_value_out_device_ptr),
+        grouped_inputs->d_group_has_value.ptr,
+        group_count * sizeof(uint8_t)));
+    CU_CHECK(cuMemcpyDtoD(
+        static_cast<CUdeviceptr>(group_index_out_device_ptr),
+        grouped_inputs->d_group_index.ptr,
+        group_count * sizeof(uint32_t)));
+    CU_CHECK(cuMemcpyDtoD(
+        static_cast<CUdeviceptr>(group_value_out_device_ptr),
+        grouped_inputs->d_group_value.ptr,
+        group_count * sizeof(double)));
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_into_outputs_optix(
         PreparedStaticTriangleScene3D* prepared,
         PreparedRayBatch3D* ray_batch,
         PreparedClosestHitGroupedArgmin3D* grouped_inputs,
+        CUdeviceptr group_has_value_device_ptr,
+        CUdeviceptr group_index_device_ptr,
+        CUdeviceptr group_value_device_ptr,
         double* traversal_seconds_out)
 {
     if (!prepared)
@@ -20492,7 +20541,11 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared
         return;
     }
     if (ray_count == 0 || candidate_count == 0 || prepared->triangle_count == 0) {
-        clear_prepared_grouped_argmin_device_outputs(grouped_inputs);
+        clear_grouped_argmin_device_outputs(
+            group_has_value_device_ptr,
+            group_index_device_ptr,
+            group_value_device_ptr,
+            group_count);
         if (traversal_seconds_out)
             *traversal_seconds_out = 0.0;
         return;
@@ -20537,9 +20590,9 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared
     const unsigned group_grid = (group_count_u + block - 1u) / block;
 
     ensure_ray_closest_hit_grouped_argmin_kernels();
-    CUdeviceptr d_has_ptr = grouped_inputs->d_group_has_value.ptr;
-    CUdeviceptr d_index_ptr = grouped_inputs->d_group_index.ptr;
-    CUdeviceptr d_value_ptr = grouped_inputs->d_group_value.ptr;
+    CUdeviceptr d_has_ptr = group_has_value_device_ptr;
+    CUdeviceptr d_index_ptr = group_index_device_ptr;
+    CUdeviceptr d_value_ptr = group_value_device_ptr;
     CUdeviceptr d_rows_ptr = ray_batch->d_closest_hit_output.ptr;
     CUdeviceptr d_ray_group_ids_ptr = grouped_inputs->ray_group_ids_device_ptr();
     CUdeviceptr d_candidate_values_ptr = grouped_inputs->candidate_values_device_ptr();
@@ -20596,7 +20649,11 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared
             block, 1, 1,
             0, nullptr, min_index_args, nullptr));
     } else if (ray_groups_are_unique) {
-        clear_prepared_grouped_argmin_device_outputs(grouped_inputs);
+        clear_grouped_argmin_device_outputs(
+            group_has_value_device_ptr,
+            group_index_device_ptr,
+            group_value_device_ptr,
+            group_count);
         void* scatter_args[] = {
             &d_rows_ptr,
             const_cast<uint32_t*>(&ray_count_u),
@@ -20667,6 +20724,51 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared
             0, nullptr, min_index_args, nullptr));
     }
     CU_CHECK(cuStreamSynchronize(nullptr));
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedRayBatch3D* ray_batch,
+        PreparedClosestHitGroupedArgmin3D* grouped_inputs,
+        double* traversal_seconds_out)
+{
+    if (!grouped_inputs)
+        throw std::runtime_error("prepared grouped argmin inputs handle must not be null");
+    run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_into_outputs_optix(
+        prepared,
+        ray_batch,
+        grouped_inputs,
+        grouped_inputs->d_group_has_value.ptr,
+        grouped_inputs->d_group_index.ptr,
+        grouped_inputs->d_group_value.ptr,
+        traversal_seconds_out);
+}
+
+static void run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_outputs_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedRayBatch3D* ray_batch,
+        PreparedClosestHitGroupedArgmin3D* grouped_inputs,
+        uint64_t group_has_value_out_device_ptr,
+        uint64_t group_index_out_device_ptr,
+        uint64_t group_value_out_device_ptr,
+        size_t output_group_count,
+        double* traversal_seconds_out)
+{
+    if (!grouped_inputs)
+        throw std::runtime_error("prepared grouped argmin inputs handle must not be null");
+    const size_t group_count = grouped_inputs->group_count;
+    if (output_group_count < group_count)
+        throw std::runtime_error("closest-hit grouped argmin output buffers are smaller than group_count");
+    if (group_count != 0 && (!group_has_value_out_device_ptr || !group_index_out_device_ptr || !group_value_out_device_ptr))
+        throw std::runtime_error("closest-hit grouped argmin device output pointers must not be null");
+    run_prepared_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_into_outputs_optix(
+        prepared,
+        ray_batch,
+        grouped_inputs,
+        static_cast<CUdeviceptr>(group_has_value_out_device_ptr),
+        static_cast<CUdeviceptr>(group_index_out_device_ptr),
+        static_cast<CUdeviceptr>(group_value_out_device_ptr),
+        traversal_seconds_out);
 }
 
 static void finalize_prepared_closest_hit_grouped_argmin_3d_optix(

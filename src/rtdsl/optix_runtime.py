@@ -478,8 +478,14 @@ OPTIX_CLOSEST_HIT_GROUPED_ARGMIN_INPUTS_3D_CREATE_DEVICE_PER_RAY_GROUPS_SYMBOL =
 OPTIX_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_CLOSEST_HIT_PREPARED_GROUPED_ARGMIN_DEVICE_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device"
 )
+OPTIX_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_CLOSEST_HIT_PREPARED_GROUPED_ARGMIN_DEVICE_OUTPUTS_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_outputs"
+)
 OPTIX_CLOSEST_HIT_GROUPED_ARGMIN_INPUTS_3D_FINALIZE_SYMBOL = (
     "rtdl_optix_closest_hit_grouped_argmin_inputs_3d_finalize"
+)
+OPTIX_CLOSEST_HIT_GROUPED_ARGMIN_INPUTS_3D_COPY_DEVICE_OUTPUTS_SYMBOL = (
+    "rtdl_optix_closest_hit_grouped_argmin_inputs_3d_copy_device_outputs"
 )
 OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction"
@@ -17596,6 +17602,44 @@ class PreparedOptixRayBatch3D:
             pass
 
 
+def _validate_closest_hit_grouped_argmin_device_output_columns(
+    output_columns: dict,
+    *,
+    group_count: int,
+) -> dict[str, object]:
+    required = {
+        "group_has_value": {"uint8"},
+        "group_index": {"uint32"},
+        "group_value": {"float64", "double"},
+    }
+    handoffs = {}
+    expected_device = None
+    for name, allowed_dtypes in required.items():
+        if name not in output_columns:
+            raise ValueError(f"grouped argmin output columns must include {name!r}")
+        handoff = _partner.prepare_direct_device_pointer_handoff(
+            output_columns[name],
+            access="write",
+        )
+        dtype = _partner_dtype_token(handoff.dtype)
+        if dtype not in allowed_dtypes:
+            raise ValueError(
+                f"grouped argmin output column {name!r} must use dtype "
+                f"{', '.join(sorted(allowed_dtypes))}"
+            )
+        if len(handoff.shape) != 1:
+            raise ValueError(f"grouped argmin output column {name!r} must be one-dimensional")
+        if int(handoff.shape[0]) < int(group_count):
+            raise ValueError(f"grouped argmin output column {name!r} is smaller than group_count")
+        device = (handoff.device_type, handoff.device_id)
+        if expected_device is None:
+            expected_device = device
+        elif device != expected_device:
+            raise ValueError("grouped argmin output columns must live on the same CUDA device")
+        handoffs[name] = handoff
+    return handoffs
+
+
 class PreparedOptixClosestHitGroupedArgmin3D:
     """Reusable device-resident grouped-argmin maps for closest-hit reductions."""
 
@@ -17805,6 +17849,65 @@ class PreparedOptixClosestHitGroupedArgmin3D:
                 "grouped_results_downloaded_to_host": True,
                 "materialization_window_only": True,
                 "materialize_seconds": float(materialize_seconds),
+                "public_speedup_claim_authorized": False,
+                "true_zero_copy_authorized": False,
+            },
+        }
+
+    def copy_grouped_results_to_device_outputs(self, output_columns: dict) -> dict[str, object]:
+        """Copy internal grouped-argmin device outputs into caller-owned columns."""
+
+        if self._closed:
+            raise RuntimeError("prepared grouped argmin inputs handle is closed")
+        group_count = int(self.group_count)
+        handoffs = _validate_closest_hit_grouped_argmin_device_output_columns(
+            output_columns,
+            group_count=group_count,
+        )
+
+        copy_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_CLOSEST_HIT_GROUPED_ARGMIN_INPUTS_3D_COPY_DEVICE_OUTPUTS_SYMBOL,
+        )
+        if copy_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_CLOSEST_HIT_GROUPED_ARGMIN_INPUTS_3D_COPY_DEVICE_OUTPUTS_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        copy_start = time.perf_counter()
+        status = copy_symbol(
+            self._handle,
+            ctypes.c_uint64(int(handoffs["group_has_value"].data_ptr)),
+            ctypes.c_uint64(int(handoffs["group_index"].data_ptr)),
+            ctypes.c_uint64(int(handoffs["group_value"].data_ptr)),
+            ctypes.c_size_t(group_count),
+            error,
+            len(error),
+        )
+        copy_seconds = time.perf_counter() - copy_start
+        _check_status(status, error)
+        return {
+            "metadata": {
+                "backend": "optix",
+                "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_GROUPED_ARGMIN_DEVICE_OUTPUT_COPY_V1",
+                "group_count": group_count,
+                "group_mapping_contract": getattr(self, "group_mapping_contract", "ray_id_map"),
+                "grouped_inputs_created_from": getattr(self, "grouped_inputs_created_from", "host_arrays"),
+                "device_outputs_copied_to_caller_columns": True,
+                "device_to_device_copy": True,
+                "grouped_results_downloaded_to_host": False,
+                "output_columns_partner_owned": True,
+                "source_devices": tuple(
+                    sorted(
+                        {
+                            f"{handoff.device_type}:{handoff.device_id}"
+                            for handoff in handoffs.values()
+                        }
+                    )
+                ),
+                "copy_seconds": float(copy_seconds),
                 "public_speedup_claim_authorized": False,
                 "true_zero_copy_authorized": False,
             },
@@ -20122,6 +20225,157 @@ class PreparedOptixStaticTriangleScene3D:
                 "python_dict_rows_materialized": False,
                 "native_host_grouped_argmin": False,
                 "native_device_grouped_argmin": True,
+                "true_zero_copy_authorized": False,
+            },
+            "claim_boundary": {
+                "native_app_api": False,
+                "public_speedup_claim": False,
+                "true_zero_copy": False,
+                "result_materialization_in_measured_window": False,
+            },
+        }
+        self.last_closest_hit_metadata = dict(metadata)
+        return {"metadata": metadata}
+
+    def ray_closest_hit_prepared_grouped_argmin_device_outputs(
+        self,
+        rays: PreparedOptixRayBatch3D,
+        grouped_inputs: PreparedOptixClosestHitGroupedArgmin3D,
+        output_columns: dict,
+        *,
+        prevalidated_handoffs: dict[str, object] | None = None,
+    ) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(rays, PreparedOptixRayBatch3D):
+            raise TypeError("ray_closest_hit_prepared_grouped_argmin_device_outputs requires PreparedOptixRayBatch3D")
+        if not isinstance(grouped_inputs, PreparedOptixClosestHitGroupedArgmin3D):
+            raise TypeError(
+                "ray_closest_hit_prepared_grouped_argmin_device_outputs requires "
+                "PreparedOptixClosestHitGroupedArgmin3D"
+            )
+        if rays._closed:
+            raise RuntimeError("prepared OptiX ray batch handle is closed")
+        if grouped_inputs._closed:
+            raise RuntimeError("prepared grouped argmin inputs handle is closed")
+        group_count = int(grouped_inputs.group_count)
+        handoffs = (
+            prevalidated_handoffs
+            if prevalidated_handoffs is not None
+            else _validate_closest_hit_grouped_argmin_device_output_columns(
+                output_columns,
+                group_count=group_count,
+            )
+        )
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_CLOSEST_HIT_PREPARED_GROUPED_ARGMIN_DEVICE_OUTPUTS_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_CLOSEST_HIT_PREPARED_GROUPED_ARGMIN_DEVICE_OUTPUTS_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        query_start = time.perf_counter()
+        status = run_symbol(
+            self._handle,
+            rays._handle,
+            grouped_inputs._handle,
+            ctypes.c_uint64(int(handoffs["group_has_value"].data_ptr)),
+            ctypes.c_uint64(int(handoffs["group_index"].data_ptr)),
+            ctypes.c_uint64(int(handoffs["group_value"].data_ptr)),
+            ctypes.c_size_t(group_count),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        device_execution_seconds = time.perf_counter() - query_start
+        _check_status(status, error)
+
+        self._run_count += 1
+        grouped_transfer_metadata = dict(getattr(grouped_inputs, "transfer_metadata", {}) or {})
+        metadata = {
+            "backend": "optix",
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_PREPARED_GROUPED_ARGMIN_DEVICE_OUTPUTS_V1",
+            "result_kind": "device_grouped_argmin_from_ray_triangle_closest_hit",
+            "ray_count": int(rays.ray_count),
+            "triangle_count": self.triangle_count,
+            "group_count": group_count,
+            "candidate_count": int(grouped_inputs.candidate_count),
+            "ray_group_id_count": int(grouped_inputs.ray_group_id_count),
+            "prepared_reused": True,
+            "prepared_scene_used": True,
+            "prepared_ray_batch_used": True,
+            "prepared_grouped_argmin_inputs_used": True,
+            "group_mapping_contract": getattr(grouped_inputs, "group_mapping_contract", "ray_id_map"),
+            "grouped_inputs_created_from": getattr(grouped_inputs, "grouped_inputs_created_from", "host_arrays"),
+            "prepared_ray_batch_seconds": float(rays.prepare_seconds),
+            "prepared_grouped_argmin_inputs_seconds": float(grouped_inputs.prepare_seconds),
+            "prepared_run_index": self._run_count,
+            "rows_materialized": False,
+            "row_arrays_materialized": False,
+            "grouped_results_materialized": False,
+            "native_grouped_argmin": True,
+            "native_direct_device_output_columns": True,
+            "grouped_result_device_to_device_export": False,
+            "output_columns_partner_owned": True,
+            "output_source_devices": tuple(
+                sorted(
+                    {
+                        f"{handoff.device_type}:{handoff.device_id}"
+                        for handoff in handoffs.values()
+                    }
+                )
+            ),
+            "phase_timing_seconds": {
+                "prepare_build": float(self.prepare_seconds),
+                "query_pack": 0.0,
+                "traversal_grouped_argmin_and_direct_device_output_write": float(traversal_seconds.value),
+                "device_execution_host_observed": float(device_execution_seconds),
+            },
+            "transfer_metadata": {
+                "static_scene_prepared_on_device": True,
+                "query_rays_uploaded_each_run": False,
+                "prepared_rays_resident_on_device": True,
+                "group_mapping_contract": getattr(grouped_inputs, "group_mapping_contract", "ray_id_map"),
+                "grouped_inputs_created_from": getattr(grouped_inputs, "grouped_inputs_created_from", "host_arrays"),
+                "grouped_input_columns_partner_owned": bool(
+                    grouped_transfer_metadata.get("grouped_input_columns_partner_owned", False)
+                ),
+                "per_ray_group_ids_partner_owned": bool(
+                    grouped_transfer_metadata.get("per_ray_group_ids_partner_owned", False)
+                ),
+                "candidate_values_partner_owned": bool(
+                    grouped_transfer_metadata.get("candidate_values_partner_owned", False)
+                ),
+                "candidate_indices_partner_owned": bool(
+                    grouped_transfer_metadata.get("candidate_indices_partner_owned", False)
+                ),
+                "group_ids_uploaded_during_prepare": bool(
+                    grouped_transfer_metadata.get("group_ids_uploaded_during_prepare", True)
+                ),
+                "candidate_values_uploaded_during_prepare": bool(
+                    grouped_transfer_metadata.get("candidate_values_uploaded_during_prepare", True)
+                ),
+                "candidate_indices_uploaded_during_prepare": bool(
+                    grouped_transfer_metadata.get("candidate_indices_uploaded_during_prepare", True)
+                ),
+                "group_ids_uploaded_each_run": bool(grouped_transfer_metadata.get("group_ids_uploaded_each_run", False)),
+                "candidate_values_uploaded_each_run": bool(
+                    grouped_transfer_metadata.get("candidate_values_uploaded_each_run", False)
+                ),
+                "candidate_indices_uploaded_each_run": bool(
+                    grouped_transfer_metadata.get("candidate_indices_uploaded_each_run", False)
+                ),
+                "closest_hit_rows_downloaded_to_host": False,
+                "per_group_results_downloaded_to_host": False,
+                "python_dict_rows_materialized": False,
+                "native_host_grouped_argmin": False,
+                "native_device_grouped_argmin": True,
+                "native_direct_device_output_columns": True,
                 "true_zero_copy_authorized": False,
             },
             "claim_boundary": {
@@ -26416,6 +26670,26 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_static_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device.restype = ctypes.c_int
+    optional_static_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_outputs = (
+        _find_optional_backend_symbol(
+            lib,
+            OPTIX_STATIC_TRIANGLE_SCENE_3D_RAY_BATCH_CLOSEST_HIT_PREPARED_GROUPED_ARGMIN_DEVICE_OUTPUTS_SYMBOL,
+        )
+    )
+    if optional_static_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_outputs is not None:
+        optional_static_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_outputs.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_outputs.restype = ctypes.c_int
     optional_closest_hit_grouped_argmin_inputs_3d_finalize = _find_optional_backend_symbol(
         lib,
         OPTIX_CLOSEST_HIT_GROUPED_ARGMIN_INPUTS_3D_FINALIZE_SYMBOL,
@@ -26430,6 +26704,21 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_closest_hit_grouped_argmin_inputs_3d_finalize.restype = ctypes.c_int
+    optional_closest_hit_grouped_argmin_inputs_3d_copy_device_outputs = _find_optional_backend_symbol(
+        lib,
+        OPTIX_CLOSEST_HIT_GROUPED_ARGMIN_INPUTS_3D_COPY_DEVICE_OUTPUTS_SYMBOL,
+    )
+    if optional_closest_hit_grouped_argmin_inputs_3d_copy_device_outputs is not None:
+        optional_closest_hit_grouped_argmin_inputs_3d_copy_device_outputs.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_closest_hit_grouped_argmin_inputs_3d_copy_device_outputs.restype = ctypes.c_int
     optional_static_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_static_triangle_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin",

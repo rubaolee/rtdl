@@ -98,5 +98,4 @@ This page does not authorize:
 - Tier-3 callback/PTX claims
 - app-specific native engine claims
 - claims that Python `Point` row app routes are now fast
-- moving to a second primitive before this fixed-radius surface is fully
-  documented, tested, and reviewed
+- treating this first primitive as sufficient for V4 release by itself

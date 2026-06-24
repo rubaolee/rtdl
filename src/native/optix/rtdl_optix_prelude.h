@@ -1432,11 +1432,28 @@ int rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_a
          void* grouped_inputs_handle,
          double* traversal_seconds_out,
          char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_batch_closest_hit_prepared_grouped_argmin_device_outputs(
+         void* scene_handle,
+         void* ray_batch_handle,
+         void* grouped_inputs_handle,
+         uint64_t group_has_value_out_device_ptr,
+         uint64_t group_index_out_device_ptr,
+         uint64_t group_value_out_device_ptr,
+         size_t output_group_count,
+         double* traversal_seconds_out,
+         char* error_out, size_t error_size);
 int rtdl_optix_closest_hit_grouped_argmin_inputs_3d_finalize(
          void* grouped_inputs_handle,
          uint8_t* group_has_value_out,
          uint32_t* group_index_out,
          double* group_value_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_closest_hit_grouped_argmin_inputs_3d_copy_device_outputs(
+         void* grouped_inputs_handle,
+         uint64_t group_has_value_out_device_ptr,
+         uint64_t group_index_out_device_ptr,
+         uint64_t group_value_out_device_ptr,
+         size_t output_group_count,
          char* error_out, size_t error_size);
 int rtdl_optix_static_triangle_scene_3d_two_ray_batches_closest_hit_prepared_grouped_argmin(
          void* scene_a_handle,
