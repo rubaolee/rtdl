@@ -19,14 +19,15 @@ was not treated as an available external reviewer for this release decision.
 
 | ID | Debt | Status | Close Or Waive Condition |
 | --- | --- | --- | --- |
-| D1 | External release-candidate review | `obtained_with_required_amendments` | Closed after required amendments from `future/v4/reviews/claude_v4_0_release_candidate_review_2026-06-24.raw.md` are implemented and validated. |
+| D1 | External release-candidate review | `closed` | Closed by `future/v4/reviews/claude_v4_0_release_candidate_recorded_review_2026-06-24.md` and follow-up closure review. |
 | D2 | Antigravity non-interactive reviewer unavailable | `tool_unavailable` | Waived only if the release decision record explicitly states that Antigravity CLI unavailability is not required for V4.0 because Claude review plus internal multihead review were obtained. |
-| D3 | Internal multihead amendments | `applied` | Closed by `future/v4/reviews/internal_multihead_v4_release_candidate_amendments_2026-06-24.md` plus passing local/POD gates. |
-| D4 | Claude C-1 review-debt enumeration | `applied` | Closed by this tracker. |
-| D5 | Claude C-2 clean-commit rerun protocol | `applied` | Closed by `future/v4/release_rerun_protocol_2026-06-24.md`. |
-| D6 | Claude M-1 grouped-argmin true-zero-copy explanation | `applied` | Closed by `future/v4/ray_triangle_device_array_frontdoor.md` and `future/v4/README.md`. |
-| D7 | Claude M-2 CuPy planner hardening | `applied` | Closed when `partner="cupy"` returns no V4.0 `api_surface` and tests pass. |
-| D8 | Claude L-1 per-example forbidden-claim gate checks | `applied` | Closed when `scripts/v4_catalog_regression_gate.py` checks the extra flags and tests pass. |
+| D3 | Internal multihead amendments | `closed` | Closed by `future/v4/reviews/internal_multihead_v4_release_candidate_amendments_2026-06-24.md`, `future/v4/reviews/internal_multihead_v4_release_candidate_amendment_closure_review_2026-06-24.md`, and passing local/POD gates. |
+| D4 | Claude C-1 review-debt enumeration | `closed` | Closed by this tracker. |
+| D5 | Claude C-2 clean-commit rerun protocol | `closed` | Closed by `future/v4/release_rerun_protocol_2026-06-24.md`. |
+| D6 | Claude M-1 grouped-argmin true-zero-copy explanation | `closed` | Closed by `future/v4/ray_triangle_device_array_frontdoor.md` and `future/v4/README.md`. |
+| D7 | Claude M-2 CuPy planner hardening | `closed` | Closed by `src/rtdsl/v4_operator_catalog.py` returning no V4.0 `api_surface` for `partner="cupy"` and by passing tests. |
+| D8 | Claude L-1 per-example forbidden-claim gate checks | `closed` | Closed by `scripts/v4_catalog_regression_gate.py` checking forbidden claim flags and by passing tests. |
+| D9 | Claude follow-up low-severity recursive claim-flag hardening | `applied_pending_final_gate_refresh` | Closed when recursive forbidden-claim checks and the negative regression test are committed and local/POD gates pass. |
 
 ## Waiver Definition
 
@@ -43,7 +44,9 @@ and preserve the non-authorization boundaries for V4.x items.
 - Candidate packet: `future/v4/v4_0_release_candidate_packet_2026-06-24.md`
 - Clean-commit rerun protocol: `future/v4/release_rerun_protocol_2026-06-24.md`
 - Claude review: `future/v4/reviews/claude_v4_0_release_candidate_review_2026-06-24.raw.md`
+- Claude amendment-closure review: `future/v4/reviews/claude_v4_0_release_candidate_amendment_closure_recorded_review_2026-06-24.md`
 - Internal multihead amendments: `future/v4/reviews/internal_multihead_v4_release_candidate_amendments_2026-06-24.md`
+- Internal amendment-closure review: `future/v4/reviews/internal_multihead_v4_release_candidate_amendment_closure_review_2026-06-24.md`
 - Scope gate: `future/v4/evidence/v4_scope_gate_2026-06-24.json`
 - Final GPU catalog gate, serious size: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.json`
 - Final GPU catalog gate, smoke size: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`

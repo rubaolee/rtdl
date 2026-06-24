@@ -11,6 +11,17 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 
+FORBIDDEN_CLAIM_FLAGS = (
+    "release_claim_authorized",
+    "broad_v4_speedup_claim_authorized",
+    "whole_app_speedup_claim_authorized",
+    "tier3_callback_claim_authorized",
+    "cupy_performance_claim_authorized",
+    "embedding_c_abi_claim_authorized",
+    "non_python_host_binding_claim_authorized",
+    "app_specific_native_kernel_authorized",
+)
+
 
 def _run_json(command: list[str]) -> dict[str, Any]:
     proc = subprocess.run(
@@ -39,6 +50,20 @@ def _git_value(*args: str) -> str | None:
     if proc.returncode != 0:
         return None
     return proc.stdout.strip() or None
+
+
+def _forbidden_claim_true_paths(value: Any, path: str = "payload") -> list[str]:
+    failures: list[str] = []
+    if isinstance(value, dict):
+        for key, item in value.items():
+            child_path = f"{path}.{key}"
+            if key in FORBIDDEN_CLAIM_FLAGS and item is not False:
+                failures.append(child_path)
+            failures.extend(_forbidden_claim_true_paths(item, child_path))
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            failures.extend(_forbidden_claim_true_paths(item, f"{path}[{index}]"))
+    return failures
 
 
 def _example_commands(mode: str, copies: int, ray_count: int) -> list[tuple[str, list[str]]]:
@@ -98,21 +123,11 @@ def _example_commands(mode: str, copies: int, ray_count: int) -> list[tuple[str,
 def _validate_payload(name: str, payload: dict[str, Any], mode: str) -> tuple[bool, list[str]]:
     failures: list[str] = []
     if payload.get("release_claim_authorized") is not False:
-        failures.append("release_claim_authorized_not_false")
-    if "broad_v4_speedup_claim_authorized" in payload and payload.get("broad_v4_speedup_claim_authorized") is not False:
-        failures.append("broad_v4_speedup_claim_authorized_not_false")
+        failures.append("release_claim_authorized_missing_or_not_false")
     if payload.get("tier3_callback_claim_authorized") is not False:
-        failures.append("tier3_callback_claim_authorized_not_false")
-    if "whole_app_speedup_claim_authorized" in payload and payload.get("whole_app_speedup_claim_authorized") is not False:
-        failures.append("whole_app_speedup_claim_authorized_not_false")
-    if "cupy_performance_claim_authorized" in payload and payload.get("cupy_performance_claim_authorized") is not False:
-        failures.append("cupy_performance_claim_authorized_not_false")
-    if "embedding_c_abi_claim_authorized" in payload and payload.get("embedding_c_abi_claim_authorized") is not False:
-        failures.append("embedding_c_abi_claim_authorized_not_false")
-    if "non_python_host_binding_claim_authorized" in payload and payload.get("non_python_host_binding_claim_authorized") is not False:
-        failures.append("non_python_host_binding_claim_authorized_not_false")
-    if "app_specific_native_kernel_authorized" in payload and payload.get("app_specific_native_kernel_authorized") is not False:
-        failures.append("app_specific_native_kernel_authorized_not_false")
+        failures.append("tier3_callback_claim_authorized_missing_or_not_false")
+    for path in _forbidden_claim_true_paths(payload):
+        failures.append(f"forbidden_claim_flag_true:{path}")
     if name in {"fixed_radius", "closest_hit_grouped_argmin", "ray_triangle_any_hit_flags"}:
         expected_status = "dry_run" if mode == "dry-run" else "measured"
         if payload.get("status") != expected_status:

@@ -11,6 +11,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "v4_catalog_regression_gate.py"
 
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
+
+from scripts.v4_catalog_regression_gate import _validate_payload
+
 
 class V4CatalogRegressionGateTest(unittest.TestCase):
     def test_dry_run_gate_executes_all_catalog_examples(self) -> None:
@@ -66,6 +72,30 @@ class V4CatalogRegressionGateTest(unittest.TestCase):
         )
         self.assertIsNone(rows_by_name["operator_callback_planning_complex_callback"]["payload"]["api_surface"])
         self.assertIn("Status: generated development gate", markdown)
+
+    def test_gate_rejects_forbidden_claim_flags_even_when_nested(self) -> None:
+        payload = {
+            "status": "measured",
+            "correctness_passed": True,
+            "release_claim_authorized": False,
+            "tier3_callback_claim_authorized": False,
+            "metadata": {
+                "cupy_performance_claim_authorized": True,
+                "nested": {"non_python_host_binding_claim_authorized": True},
+            },
+        }
+
+        passed, failures = _validate_payload("fixed_radius", payload, "gpu")
+
+        self.assertFalse(passed)
+        self.assertIn(
+            "forbidden_claim_flag_true:payload.metadata.cupy_performance_claim_authorized",
+            failures,
+        )
+        self.assertIn(
+            "forbidden_claim_flag_true:payload.metadata.nested.non_python_host_binding_claim_authorized",
+            failures,
+        )
 
 
 if __name__ == "__main__":
