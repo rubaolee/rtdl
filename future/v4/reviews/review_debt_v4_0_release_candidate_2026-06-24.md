@@ -10,6 +10,10 @@ The engineering candidate has fresh POD validation, but the user's release rule
 requires external review before any release decision. Claude was previously
 session-limited, and engineering continued without waiting.
 
+Antigravity CLI was checked in non-interactive `--print` mode on 2026-06-24. A
+minimal health-check prompt exited successfully but returned empty output, so it
+was not treated as an available external reviewer for this release decision.
+
 ## Required Review Packet
 
 - `future/v4/reviews/call_for_review_v4_0_release_candidate_2026-06-24.md`
