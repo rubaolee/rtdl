@@ -6,11 +6,17 @@ Status: passed
 
 Latest rerun:
 
-- time: 2026-06-24 13:44 -04:00
-- commit under test: `74dc9156f90a1db26d6a94b3213f83cd11e32358`
-- working-tree delta under test: none
-- reason: revalidated after tightening the catalog wording from
-  `front-door/planner examples` to `operator/callback planner examples`
+- time: 2026-06-24 13:58 -04:00
+- base runtime commit under test: `7e38a8e8dee36a951f1f41bc33f367d468b9d1b5`
+- working-tree delta under test:
+  - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.json`
+  - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.md`
+  - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`
+  - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.md`
+  - `future/v4/v4_0_release_candidate_packet_2026-06-24.md`
+  - `future/v4/evidence/v4_local_full_test_sweep_2026-06-24.md`
+- reason: revalidated after internal multihead amendments and latest POD GPU
+  evidence refresh
 
 Command:
 

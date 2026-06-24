@@ -1,6 +1,7 @@
 {
   "app_specific_native_kernel_authorized": false,
   "broad_v4_speedup_claim_authorized": false,
+  "cupy_performance_claim_authorized": false,
   "examples": [
     {
       "command": [
@@ -15,7 +16,7 @@
       "payload": {
         "copies": 32768,
         "correctness_passed": true,
-        "elapsed_s": 0.0008343532681465149,
+        "elapsed_s": 0.0008079856634140015,
         "example": "v4_fixed_radius_torch_device_arrays",
         "input_contract": "caller_supplied_torch_device_point_columns",
         "metadata": {
@@ -42,15 +43,15 @@
             "named_cuda_columns_no_host_stage_ready": true,
             "native_acceleration_structure_required": true,
             "native_call_device_pointer_echo": {
-              "output.neighbor_counts": 137732346085376,
-              "output.query_ids": 137732345036800,
-              "output.threshold_flags": 137732347133952,
-              "query.ids": 137732574152192,
-              "query.x": 137732393271296,
-              "query.y": 137732386979840,
-              "search.ids": 137732574152192,
-              "search.x": 137732393271296,
-              "search.y": 137732386979840
+              "output.neighbor_counts": 134199802593280,
+              "output.query_ids": 134199801544704,
+              "output.threshold_flags": 134199803641856,
+              "query.ids": 134200030660096,
+              "query.x": 134199849779200,
+              "query.y": 134199843487744,
+              "search.ids": 134200030660096,
+              "search.x": 134199849779200,
+              "search.y": 134199843487744
             },
             "native_call_device_pointer_echo_complete": true,
             "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns",
@@ -76,9 +77,7 @@
           "output_contract": "caller_supplied_or_allocated_torch_device_output_columns",
           "partner": "torch",
           "partner_claim_status": "measured_on_v4_section8_pod",
-          "partner_support_declared_unmeasured": [
-            "cupy"
-          ],
+          "partner_support_declared_unmeasured": [],
           "python_point_object_boundary_in_hot_path": false,
           "query_count": 262144,
           "radius": 0.35,
@@ -116,7 +115,7 @@
       "passed": true,
       "payload": {
         "correctness_passed": true,
-        "elapsed_s": 0.00015828758478164673,
+        "elapsed_s": 0.00015764683485031128,
         "example": "v4_closest_hit_grouped_argmin_torch_device_arrays",
         "group_count": 4096,
         "group_width": 8,
@@ -161,14 +160,14 @@
             "cupy"
           ],
           "phase_timing_seconds": {
-            "device_execution_host_observed": 9.491294622421265e-05,
-            "prepare_build": 0.08172933012247086,
+            "device_execution_host_observed": 9.42721962928772e-05,
+            "prepare_build": 0.08136244118213654,
             "query_pack": 0.0,
-            "traversal_grouped_argmin_and_direct_device_output_write": 4.7551e-05
+            "traversal_grouped_argmin_and_direct_device_output_write": 4.6681e-05
           },
-          "prepared_grouped_argmin_inputs_seconds": 3.5978853702545166e-05,
+          "prepared_grouped_argmin_inputs_seconds": 2.6524066925048828e-05,
           "prepared_grouped_argmin_inputs_used": true,
-          "prepared_ray_batch_seconds": 0.000980287790298462,
+          "prepared_ray_batch_seconds": 0.0009776204824447632,
           "prepared_ray_batch_used": true,
           "prepared_reused": true,
           "prepared_run_index": 2,
@@ -231,7 +230,7 @@
       "passed": true,
       "payload": {
         "correctness_passed": true,
-        "elapsed_s": 0.00045827776193618774,
+        "elapsed_s": 0.0004245489835739136,
         "example": "v4_ray_triangle_any_hit_flags_torch_device_arrays",
         "hit_count": 32768,
         "input_contract": "caller_supplied_torch_device_triangle_aabb_and_ray_columns",
@@ -301,8 +300,10 @@
         "app_specific_native_kernel_authorized": false,
         "catalog_operator_count": 3,
         "complex_callback_status": "rejected_action_shaped_callback_deferred",
+        "cupy_performance_claim_authorized": false,
         "front_door_status": "v4_development_front_door_not_release",
         "measured_surface_count": 3,
+        "non_python_host_binding_claim_authorized": false,
         "release_claim_authorized": false,
         "status": "ok",
         "tier2_plan_status": "tier2_measured_ready",
@@ -400,9 +401,10 @@
     }
   ],
   "git_branch": "HEAD",
-  "git_commit": "ae22afd90dbde1fde0d923e830e3ad0aa532f2ed",
+  "git_commit": "7e38a8e8dee36a951f1f41bc33f367d468b9d1b5",
   "mode": "gpu",
-  "native_library": "/root/rtdl_v4_section8/worktrees/v4_final_validation_20260624_1340/build/librtdl_optix.so",
+  "native_library": "/root/rtdl_v4_section8/worktrees/v4_final_validation_20260624_1354/build/librtdl_optix.so",
+  "non_python_host_binding_claim_authorized": false,
   "release_authorized": false,
   "schema": "rtdl.v4.catalog_regression_gate.v1",
   "status": "passed",

@@ -18,4 +18,4 @@ Status: generated development gate, not a release authorization
 
 ## Non-Authorization
 
-This gate does not authorize V4 release, broad speedup wording, Tier-3 callback/PTX support, raw OptiX callbacks, embedding/C-ABI, or app-specific native kernels.
+This gate does not authorize V4 release, broad speedup wording, Tier-3 callback/PTX support, raw OptiX callbacks, CuPy performance claims, embedding/C-ABI, non-Python host binding claims, or app-specific native kernels.
