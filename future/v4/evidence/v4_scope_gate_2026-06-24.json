@@ -4,7 +4,7 @@
     "blocking_reasons": [
       "external_release_review_not_obtained",
       "release_decision_record_not_obtained",
-      "tier2_operator_catalog_review_debt_open"
+      "v4_review_debt_open"
     ],
     "broad_v4_speedup_claim_authorized": false,
     "deferred_capabilities": [
@@ -33,9 +33,9 @@
     "raw_optix_callback_claim_authorized": false,
     "release_authorized": false,
     "required_next_actions": [
-      "backfill external reviews for open V4 review debt",
+      "obtain external release review for the V4.0 release-candidate packet",
       "obtain a release decision record",
-      "run final V4 release-scope validation on the GPU evidence environment"
+      "close or explicitly waive V4 review debt before public release"
     ],
     "status": "v4_0_development_scope_defined_not_release",
     "tier3_callback_claim_authorized": false,

@@ -27,7 +27,7 @@ Status: generated development gate, not a release authorization
 
 - `external_release_review_not_obtained`
 - `release_decision_record_not_obtained`
-- `tier2_operator_catalog_review_debt_open`
+- `v4_review_debt_open`
 
 ## Non-Authorization
 
