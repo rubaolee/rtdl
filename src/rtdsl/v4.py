@@ -19,6 +19,9 @@ from .v4_ray_triangle import closest_hit_grouped_argmin_3d_device_array_claim_bo
 from .v4_ray_triangle import prepare_closest_hit_grouped_argmin_3d_device_arrays_v4
 from .v4_ray_triangle import prepare_ray_triangle_any_hit_flags_2d_device_arrays_v4
 from .v4_ray_triangle import ray_triangle_any_hit_flags_2d_device_array_claim_boundary_v4
+from .v4_scope import V4ScopeGate
+from .v4_scope import v4_0_scope_gate
+from .v4_scope import validate_v4_0_scope_gate
 
 
 V4_FRONT_DOOR_STATUS = "v4_development_front_door_not_release"
@@ -66,6 +69,9 @@ __all__ = [
     "measured_operator_catalog_v4",
     "plan_operator_request_v4",
     "V4OperatorPlan",
+    "V4ScopeGate",
+    "v4_0_scope_gate",
+    "validate_v4_0_scope_gate",
     "V4FixedRadiusCountThreshold2DDeviceArraySession",
     "V4ClosestHitGroupedArgmin3DDeviceArraySession",
     "V4RayTriangleAnyHitFlags2DDeviceArraySession",
@@ -79,4 +85,3 @@ __all__ = [
     "prepare_ray_triangle_any_hit_flags_2d_device_arrays_v4",
     "allocate_ray_triangle_any_hit_flags_2d_device_array_outputs_v4",
 ]
-

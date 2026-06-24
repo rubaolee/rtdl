@@ -33,9 +33,11 @@ Not authorized by this catalog:
 Before V4 can be called complete, this catalog still needs:
 
 - a release decision record after external review
-- a clear statement of which operators are V4.0 and which are V4.x
 - external review of the operator/callback planner boundary in `future/v4/callback_and_operator_planning.md`
 - a regression gate that verifies each catalog example dry-runs locally and runs on the GPU evidence environment
+
+The V4.0 versus V4.x scope boundary is defined in
+`future/v4/v4_0_scope_gate.md` and checked by `scripts/v4_scope_gate.py`.
 
 The complex-callback boundary is now represented by:
 

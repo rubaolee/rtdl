@@ -59,6 +59,13 @@ python future/v4/examples/operator_callback_planning.py --case complex-callback
 - `future/v4/ray_triangle_device_array_frontdoor.md`
 - `future/v4/tier2_operator_catalog.md`
 - `future/v4/callback_and_operator_planning.md`
+- `future/v4/v4_0_scope_gate.md`
+
+## Scope Boundary
+
+V4.0 development scope is limited to the measured Torch CUDA Tier-2 surfaces and
+the conservative planner. Tier-3 Numba/PTX callbacks, raw OptiX callbacks, CuPy
+performance, embedding/C-ABI, and non-Python host bindings are V4.x or later.
 
 ## Non-Claims
 
@@ -71,4 +78,3 @@ This page does not authorize:
 - raw OptiX callback support
 - app-specific native engine kernels
 - embedding/C-ABI claims
-
