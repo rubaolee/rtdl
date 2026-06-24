@@ -49,6 +49,10 @@ v4_fixed_radius_count_threshold_2d_device_arrays
 
 For a scalar Numba device callback, V4 is honest: it is only a Tier-3 spike
 candidate until the Numba-to-PTX-to-OptiX path links, runs, and is measured.
+The 2026-06-24 evidence is deliberately narrow: Numba PTX generation passed,
+but direct `optixModuleCreate` on the bare helper PTX failed because there were
+no OptiX semantic entry functions. A future Tier-3 path therefore needs
+wrapper/direct-callable ABI evidence before any support claim.
 
 ```python
 plan = plan_v4_operator_request(
@@ -105,4 +109,3 @@ This page does not authorize:
 - Tier-3 callback/PTX support claims
 - raw OptiX callback support
 - app-specific native engine kernels
-
