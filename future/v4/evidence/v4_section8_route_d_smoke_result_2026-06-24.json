@@ -1,0 +1,76 @@
+{
+  "binary": "/root/rtdl_v4_section8/repo/build/route_d_fixed_radius_count_threshold_optix",
+  "build": {
+    "returncode": 0,
+    "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\n",
+    "stdout": ""
+  },
+  "claim_boundary": "Route D can support independent ceiling comparison only after external review; it does not authorize V4 release or broad speedup wording.",
+  "copies": [
+    1
+  ],
+  "correctness_passed": true,
+  "failures": [],
+  "independence_contract": {
+    "calls_rtdl_optix_symbols": false,
+    "imports_rtdsl": false,
+    "links_librtdl_optix": false,
+    "standalone_cuda_driver_optix": true,
+    "uses_rtdl_python_app_route": false
+  },
+  "near_handwritten_optix_claim_authorized": false,
+  "protocol": "v4_section8_route_d_handwritten_optix_reference",
+  "release_claim_authorized": false,
+  "repeat": 1,
+  "results": [
+    {
+      "copies": 1,
+      "correctness": {
+        "correctness_passed": true,
+        "expected_outlier_count": 2,
+        "expected_threshold_reached_count": 6,
+        "rows_outlier_count": 2,
+        "rows_threshold_reached_count": 6,
+        "scalar_threshold_reached_count": 6
+      },
+      "independence_contract": {
+        "calls_product_runtime_symbols": false,
+        "imports_product_runtime": false,
+        "links_product_runtime_library": false,
+        "standalone_cuda_driver_optix": true,
+        "uses_product_python_app_route": false
+      },
+      "pipeline_build_s": 0.399997761,
+      "point_count": 8,
+      "prepare_scene_s": 0.000170985,
+      "radius": 0.35,
+      "repeat": 1,
+      "route": "route_d_independent_handwritten_optix_fixed_radius_count_threshold_2d",
+      "routes": {
+        "route_d_count_rows": {
+          "max_s": 4.7331e-05,
+          "median_s": 4.7331e-05,
+          "min_s": 4.7331e-05,
+          "timings_s": [
+            4.7331e-05
+          ]
+        },
+        "route_d_scalar_threshold_count": {
+          "max_s": 5.0892e-05,
+          "median_s": 5.0892e-05,
+          "min_s": 5.0892e-05,
+          "timings_s": [
+            5.0892e-05
+          ]
+        }
+      },
+      "threshold": 3,
+      "timing_boundary": "prepared hot path; fixture/pipeline/GAS excluded; host query upload, launch, sync, result download included",
+      "warmup": 0
+    }
+  ],
+  "route_d_reference_available": true,
+  "source": "future/v4/reference/route_d_fixed_radius_count_threshold_optix.cpp",
+  "status": "measured",
+  "warmup": 0
+}

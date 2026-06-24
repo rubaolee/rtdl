@@ -1,0 +1,74 @@
+{
+  "correctness_passed": true,
+  "near_handwritten_optix_claim_authorized": false,
+  "protocol": "v4_section8_direct_rtdl_prepared_native_scalar_hot_path",
+  "release_claim_authorized": false,
+  "repeat": 7,
+  "timing_boundary": "direct RTDL prepared native scalar hot path; fixture and prepare excluded; Python point-object call boundary, native query packing/upload, launch, sync, and scalar result download included",
+  "results": [
+    {
+      "copies": 8192,
+      "correctness_passed": true,
+      "expected_threshold_reached_count": 49152,
+      "max_s": 0.10575789213180542,
+      "median_s": 0.100486621260643,
+      "min_s": 0.07527537643909454,
+      "point_count": 65536,
+      "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+      "summary_primitive": "REDUCE_INT(COUNT)",
+      "threshold_reached_count": 49152,
+      "timings_s": [
+        0.07746125757694244,
+        0.10291817039251328,
+        0.10575789213180542,
+        0.07527537643909454,
+        0.100486621260643,
+        0.10333915054798126,
+        0.07684168219566345
+      ]
+    },
+    {
+      "copies": 32768,
+      "correctness_passed": true,
+      "expected_threshold_reached_count": 196608,
+      "max_s": 0.5476329550147057,
+      "median_s": 0.48688531666994095,
+      "min_s": 0.40883466601371765,
+      "point_count": 262144,
+      "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+      "summary_primitive": "REDUCE_INT(COUNT)",
+      "threshold_reached_count": 196608,
+      "timings_s": [
+        0.48688531666994095,
+        0.4802858307957649,
+        0.4773290902376175,
+        0.5476329550147057,
+        0.4938431680202484,
+        0.40883466601371765,
+        0.5412350445985794
+      ]
+    },
+    {
+      "copies": 131072,
+      "correctness_passed": true,
+      "expected_threshold_reached_count": 786432,
+      "max_s": 2.20733080804348,
+      "median_s": 1.989422731101513,
+      "min_s": 1.936798445880413,
+      "point_count": 1048576,
+      "primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+      "summary_primitive": "REDUCE_INT(COUNT)",
+      "threshold_reached_count": 786432,
+      "timings_s": [
+        1.936798445880413,
+        2.188242994248867,
+        1.9791497737169266,
+        1.9495793133974075,
+        2.151804395020008,
+        2.20733080804348,
+        1.989422731101513
+      ]
+    }
+  ],
+  "warmup": 1
+}

@@ -1,0 +1,200 @@
+{
+  "binary": "/root/rtdl_v4_section8/repo/build/route_d_fixed_radius_count_threshold_optix",
+  "build": null,
+  "claim_boundary": "Route D can support independent ceiling comparison only after external review; it does not authorize V4 release or broad speedup wording.",
+  "copies": [
+    8192,
+    32768,
+    131072
+  ],
+  "correctness_passed": true,
+  "failures": [],
+  "independence_contract": {
+    "calls_rtdl_optix_symbols": false,
+    "imports_rtdsl": false,
+    "links_librtdl_optix": false,
+    "standalone_cuda_driver_optix": true,
+    "uses_rtdl_python_app_route": false
+  },
+  "near_handwritten_optix_claim_authorized": false,
+  "protocol": "v4_section8_route_d_handwritten_optix_reference",
+  "release_claim_authorized": false,
+  "repeat": 7,
+  "results": [
+    {
+      "copies": 8192,
+      "correctness": {
+        "correctness_passed": true,
+        "expected_outlier_count": 16384,
+        "expected_threshold_reached_count": 49152,
+        "rows_outlier_count": 16384,
+        "rows_threshold_reached_count": 49152,
+        "scalar_threshold_reached_count": 49152
+      },
+      "independence_contract": {
+        "calls_product_runtime_symbols": false,
+        "imports_product_runtime": false,
+        "links_product_runtime_library": false,
+        "standalone_cuda_driver_optix": true,
+        "uses_product_python_app_route": false
+      },
+      "pipeline_build_s": 0.351486963,
+      "point_count": 65536,
+      "prepare_scene_s": 0.002650236,
+      "radius": 0.35,
+      "repeat": 7,
+      "route": "route_d_independent_handwritten_optix_fixed_radius_count_threshold_2d",
+      "routes": {
+        "route_d_count_rows": {
+          "max_s": 0.000639608,
+          "median_s": 0.000628978,
+          "min_s": 0.000620138,
+          "timings_s": [
+            0.000639608,
+            0.000622728,
+            0.000636028,
+            0.000620138,
+            0.000622917,
+            0.000628978,
+            0.000632478
+          ]
+        },
+        "route_d_scalar_threshold_count": {
+          "max_s": 0.000528535,
+          "median_s": 0.000521635,
+          "min_s": 0.000512984,
+          "timings_s": [
+            0.000514675,
+            0.000521865,
+            0.000512984,
+            0.000522015,
+            0.000528535,
+            0.000520235,
+            0.000521635
+          ]
+        }
+      },
+      "threshold": 3,
+      "timing_boundary": "prepared hot path; fixture/pipeline/GAS excluded; host query upload, launch, sync, result download included",
+      "warmup": 1
+    },
+    {
+      "copies": 32768,
+      "correctness": {
+        "correctness_passed": true,
+        "expected_outlier_count": 65536,
+        "expected_threshold_reached_count": 196608,
+        "rows_outlier_count": 65536,
+        "rows_threshold_reached_count": 196608,
+        "scalar_threshold_reached_count": 196608
+      },
+      "independence_contract": {
+        "calls_product_runtime_symbols": false,
+        "imports_product_runtime": false,
+        "links_product_runtime_library": false,
+        "standalone_cuda_driver_optix": true,
+        "uses_product_python_app_route": false
+      },
+      "pipeline_build_s": 0.351861973,
+      "point_count": 262144,
+      "prepare_scene_s": 0.010498758,
+      "radius": 0.35,
+      "repeat": 7,
+      "route": "route_d_independent_handwritten_optix_fixed_radius_count_threshold_2d",
+      "routes": {
+        "route_d_count_rows": {
+          "max_s": 0.001545594,
+          "median_s": 0.001541824,
+          "min_s": 0.001530154,
+          "timings_s": [
+            0.001530154,
+            0.001543214,
+            0.001533633,
+            0.001541824,
+            0.001545594,
+            0.001543244,
+            0.001534043
+          ]
+        },
+        "route_d_scalar_threshold_count": {
+          "max_s": 0.000717881,
+          "median_s": 0.000715741,
+          "min_s": 0.0007101,
+          "timings_s": [
+            0.00071233,
+            0.00071322,
+            0.000715741,
+            0.00071654,
+            0.000717881,
+            0.0007101,
+            0.00071608
+          ]
+        }
+      },
+      "threshold": 3,
+      "timing_boundary": "prepared hot path; fixture/pipeline/GAS excluded; host query upload, launch, sync, result download included",
+      "warmup": 1
+    },
+    {
+      "copies": 131072,
+      "correctness": {
+        "correctness_passed": true,
+        "expected_outlier_count": 262144,
+        "expected_threshold_reached_count": 786432,
+        "rows_outlier_count": 262144,
+        "rows_threshold_reached_count": 786432,
+        "scalar_threshold_reached_count": 786432
+      },
+      "independence_contract": {
+        "calls_product_runtime_symbols": false,
+        "imports_product_runtime": false,
+        "links_product_runtime_library": false,
+        "standalone_cuda_driver_optix": true,
+        "uses_product_python_app_route": false
+      },
+      "pipeline_build_s": 0.351591835,
+      "point_count": 1048576,
+      "prepare_scene_s": 0.043098454,
+      "radius": 0.35,
+      "repeat": 7,
+      "route": "route_d_independent_handwritten_optix_fixed_radius_count_threshold_2d",
+      "routes": {
+        "route_d_count_rows": {
+          "max_s": 0.004664872,
+          "median_s": 0.004640702,
+          "min_s": 0.004631271,
+          "timings_s": [
+            0.004664872,
+            0.004637772,
+            0.004647072,
+            0.004644112,
+            0.004637572,
+            0.004631271,
+            0.004640702
+          ]
+        },
+        "route_d_scalar_threshold_count": {
+          "max_s": 0.00211779,
+          "median_s": 0.00208997,
+          "min_s": 0.002085149,
+          "timings_s": [
+            0.002099209,
+            0.00209797,
+            0.002087249,
+            0.00211779,
+            0.00208997,
+            0.002085229,
+            0.002085149
+          ]
+        }
+      },
+      "threshold": 3,
+      "timing_boundary": "prepared hot path; fixture/pipeline/GAS excluded; host query upload, launch, sync, result download included",
+      "warmup": 1
+    }
+  ],
+  "route_d_reference_available": true,
+  "source": "future/v4/reference/route_d_fixed_radius_count_threshold_optix.cpp",
+  "status": "measured",
+  "warmup": 1
+}

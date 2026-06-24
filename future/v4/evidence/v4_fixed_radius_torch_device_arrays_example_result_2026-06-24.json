@@ -1,0 +1,90 @@
+{
+  "copies": 8192,
+  "correctness_passed": true,
+  "elapsed_s": 0.0007142871618270874,
+  "example": "v4_fixed_radius_torch_device_arrays",
+  "input_contract": "caller_supplied_torch_device_point_columns",
+  "metadata": {
+    "adapter": "v4_fixed_radius_count_threshold_2d_device_arrays",
+    "app_count_host_materialization": false,
+    "app_count_materialization": "native_optix_prepared_device_columns",
+    "broad_v4_speedup_claim_authorized": false,
+    "direct_device_handoff_authorized": true,
+    "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+    "host_materialization_in_hot_path": false,
+    "input_contract": "caller_supplied_torch_device_point_columns",
+    "measured_partner": true,
+    "measured_partners": [
+      "torch"
+    ],
+    "native_engine_row_contract": "generic_fixed_radius_count_threshold_2d_device_columns",
+    "native_metadata": {
+      "backend": "optix",
+      "direct_device_handoff_authorized": true,
+      "direct_device_pointer_observed": true,
+      "internal_device_staging_disclosed": true,
+      "internal_device_staging_scope": "device-resident AABB/BVH staging may occur inside the native route",
+      "named_cuda_columns_no_host_stage_authorized": true,
+      "named_cuda_columns_no_host_stage_ready": true,
+      "native_acceleration_structure_required": true,
+      "native_call_device_pointer_echo": {
+        "output.neighbor_counts": 131100742387200,
+        "output.query_ids": 131100742125056,
+        "output.threshold_flags": 131100742649344,
+        "query.ids": 131100743239168,
+        "query.x": 131100565307392,
+        "query.y": 131100741600768,
+        "search.ids": 131100743239168,
+        "search.x": 131100565307392,
+        "search.y": 131100741600768
+      },
+      "native_call_device_pointer_echo_complete": true,
+      "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns",
+      "output_columns_true_zero_copy_authorized": true,
+      "query_count": 65536,
+      "query_point_columns_true_zero_copy_authorized": true,
+      "radius": 0.35,
+      "rt_core_speedup_claim_authorized": false,
+      "search_point_columns_true_zero_copy_authorized": true,
+      "source_devices": [
+        "cuda:0"
+      ],
+      "source_protocols": [
+        "torch"
+      ],
+      "threshold": 3,
+      "transfer_mode": "device_fixed_radius_point_columns_output_columns_zero_copy",
+      "true_zero_copy_authorized": true,
+      "v2_0_release_authorized": false
+    },
+    "native_prepared_route": "fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns",
+    "output_columns_reused": true,
+    "output_contract": "caller_supplied_or_allocated_torch_device_output_columns",
+    "partner": "torch",
+    "partner_claim_status": "measured_on_v4_section8_pod",
+    "partner_support_declared_unmeasured": [
+      "cupy"
+    ],
+    "python_point_object_boundary_in_hot_path": false,
+    "query_count": 65536,
+    "radius": 0.35,
+    "release_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "second_primitive_work_authorized": false,
+    "threshold": 3,
+    "tier3_callback_claim_authorized": false,
+    "true_zero_copy_authorized": true,
+    "v2_0_release_authorized": false,
+    "v4_api_surface": "v4_fixed_radius_count_threshold_2d_device_arrays",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "neighbor_count_sum": 163840,
+  "point_count": 65536,
+  "radius": 0.35,
+  "release_claim_authorized": false,
+  "status": "measured",
+  "threshold": 3,
+  "threshold_reached_count": 49152,
+  "tier3_callback_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}
