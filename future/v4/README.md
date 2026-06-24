@@ -51,6 +51,7 @@ Run the local no-CUDA boundary examples:
 ```bash
 python future/v4/examples/v4_frontdoor_quickstart.py
 python future/v4/examples/operator_callback_planning.py --case complex-callback
+python scripts/v4_catalog_regression_gate.py --mode dry-run
 ```
 
 ## Operator Docs
@@ -60,6 +61,8 @@ python future/v4/examples/operator_callback_planning.py --case complex-callback
 - `future/v4/tier2_operator_catalog.md`
 - `future/v4/callback_and_operator_planning.md`
 - `future/v4/v4_0_scope_gate.md`
+
+The catalog regression gate is `scripts/v4_catalog_regression_gate.py`.
 
 ## Scope Boundary
 

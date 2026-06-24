@@ -34,10 +34,11 @@ Before V4 can be called complete, this catalog still needs:
 
 - a release decision record after external review
 - external review of the operator/callback planner boundary in `future/v4/callback_and_operator_planning.md`
-- a regression gate that verifies each catalog example dry-runs locally and runs on the GPU evidence environment
+- a reviewed GPU run of `scripts/v4_catalog_regression_gate.py --mode gpu`
 
 The V4.0 versus V4.x scope boundary is defined in
 `future/v4/v4_0_scope_gate.md` and checked by `scripts/v4_scope_gate.py`.
+Catalog examples are checked by `scripts/v4_catalog_regression_gate.py`.
 
 The complex-callback boundary is now represented by:
 
