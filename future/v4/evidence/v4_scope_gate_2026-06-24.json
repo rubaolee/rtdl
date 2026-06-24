@@ -8,7 +8,9 @@
     ],
     "broad_v4_speedup_claim_authorized": false,
     "deferred_capabilities": [
-      "tier3_numba_ptx_optix_callback_support",
+      "tier3_numba_ptx_generation_spike_only",
+      "tier3_numba_bare_ptx_direct_optix_module_link_blocked",
+      "tier3_wrapper_direct_callable_abi",
       "raw_optix_callback_public_api",
       "cupy_measured_performance_claims",
       "embedding_c_abi",

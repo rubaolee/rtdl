@@ -20,7 +20,9 @@ V4_0_INCLUDED_CAPABILITIES = (
 )
 
 V4_X_DEFERRED_CAPABILITIES = (
-    "tier3_numba_ptx_optix_callback_support",
+    "tier3_numba_ptx_generation_spike_only",
+    "tier3_numba_bare_ptx_direct_optix_module_link_blocked",
+    "tier3_wrapper_direct_callable_abi",
     "raw_optix_callback_public_api",
     "cupy_measured_performance_claims",
     "embedding_c_abi",
@@ -107,8 +109,15 @@ def validate_v4_0_scope_gate(payload: V4ScopeGate | dict[str, object] | None = N
         missing.append("status")
     if tuple(payload_dict.get("included_surfaces", ())) != V4_0_INCLUDED_SURFACES:
         missing.append("included_surfaces")
-    if "tier3_numba_ptx_optix_callback_support" not in tuple(payload_dict.get("deferred_capabilities", ())):
-        missing.append("tier3_deferred_boundary")
+    deferred = tuple(payload_dict.get("deferred_capabilities", ()))
+    for required_deferred in (
+        "tier3_numba_ptx_generation_spike_only",
+        "tier3_numba_bare_ptx_direct_optix_module_link_blocked",
+        "tier3_wrapper_direct_callable_abi",
+    ):
+        if required_deferred not in deferred:
+            missing.append("tier3_deferred_boundary")
+            break
     forbidden_true = [
         key
         for key in (
@@ -130,4 +139,3 @@ def validate_v4_0_scope_gate(payload: V4ScopeGate | dict[str, object] | None = N
         "release_authorized": False,
         "checked_surfaces": V4_0_INCLUDED_SURFACES,
     }
-

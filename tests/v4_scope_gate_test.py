@@ -30,7 +30,9 @@ class V4ScopeGateTest(unittest.TestCase):
         self.assertEqual("v4_0_development_scope_defined_not_release", payload["status"])
         self.assertEqual(3, len(payload["included_surfaces"]))
         self.assertIn("tier2_fused_generic_rt_operators", payload["included_capabilities"])
-        self.assertIn("tier3_numba_ptx_optix_callback_support", payload["deferred_capabilities"])
+        self.assertIn("tier3_numba_ptx_generation_spike_only", payload["deferred_capabilities"])
+        self.assertIn("tier3_numba_bare_ptx_direct_optix_module_link_blocked", payload["deferred_capabilities"])
+        self.assertIn("tier3_wrapper_direct_callable_abi", payload["deferred_capabilities"])
         self.assertIn("embedding_c_abi", payload["deferred_capabilities"])
         self.assertFalse(payload["release_authorized"])
         self.assertFalse(payload["tier3_callback_claim_authorized"])
@@ -75,9 +77,10 @@ class V4ScopeGateTest(unittest.TestCase):
     def test_scope_doc_records_non_claims(self) -> None:
         text = DOC.read_text(encoding="utf-8")
         self.assertIn("Deferred To V4.x", text)
-        self.assertIn("Tier-3 Numba/PTX/OptiX callback support", text)
+        self.assertIn("tier3_numba_bare_ptx_direct_optix_module_link_blocked", text)
+        self.assertIn("Tier-3 callback/PTX support", text)
         self.assertIn("embedding/C-ABI", text)
-        self.assertIn("release_authorized: false", text)
+        self.assertIn("release authorized: `False`", text)
 
 
 if __name__ == "__main__":
