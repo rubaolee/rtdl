@@ -39,8 +39,8 @@ The serious-size final GPU catalog gate is:
 - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.json`
 
 That gate passed for all three measured Torch CUDA Tier-2 surfaces and the
-front-door/planner examples. Release authorization remains false until external
-review, release decision, and review-debt closure.
+operator/callback planner examples. Release authorization remains false until
+external review, release decision, and review-debt closure.
 
 The V4.0 versus V4.x scope boundary is defined in `future/v4/v4_0_scope_gate.md`
 and checked by `scripts/v4_scope_gate.py`. Catalog examples are checked by

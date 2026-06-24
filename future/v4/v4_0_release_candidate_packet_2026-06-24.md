@@ -62,7 +62,7 @@ Final GPU catalog gate result:
 - serious validation size: fixed-radius `copies=32768` / `262144` points; ray/triangle examples `32768` rays and triangles
 - release authorized: `false`
 - measured Tier-2 examples: 3/3 passed
-- front-door/planner examples: passed
+- operator/callback planner examples: passed
 - complex action-shaped callback: rejected/deferred
 
 ## Tier-3 Callback Boundary

@@ -4,6 +4,16 @@ Date: 2026-06-24
 
 Status: passed
 
+Latest rerun:
+
+- time: 2026-06-24 13:41 -04:00
+- base commit: `86dcfcb7370a4df8d0018b7523f5c26d41f877c9`
+- working-tree delta under test:
+  - `future/v4/tier2_operator_catalog.md`
+  - `future/v4/v4_0_release_candidate_packet_2026-06-24.md`
+- reason: revalidated after tightening the catalog wording from
+  `front-door/planner examples` to `operator/callback planner examples`
+
 Command:
 
 ```bash
