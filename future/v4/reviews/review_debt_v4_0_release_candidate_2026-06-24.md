@@ -22,7 +22,8 @@ was not treated as an available external reviewer for this release decision.
 
 - Candidate packet: `future/v4/v4_0_release_candidate_packet_2026-06-24.md`
 - Scope gate: `future/v4/evidence/v4_scope_gate_2026-06-24.json`
-- Final GPU catalog gate: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`
+- Final GPU catalog gate, serious size: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.json`
+- Final GPU catalog gate, smoke size: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`
 - Tier-3 PTX spike: `future/v4/evidence/v4_tier3_numba_ptx_probe_2026-06-24.json`
 - Tier-3 module-link blocked spike: `future/v4/evidence/v4_tier3_optix_module_link_probe_2026-06-24.json`
 

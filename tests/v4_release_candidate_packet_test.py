@@ -18,6 +18,8 @@ class V4ReleaseCandidatePacketTest(unittest.TestCase):
         self.assertIn("v4_closest_hit_grouped_argmin_3d_device_arrays", text)
         self.assertIn("v4_ray_triangle_any_hit_flags_2d_device_arrays", text)
         self.assertIn("final GPU catalog gate", text)
+        self.assertIn("v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.json", text)
+        self.assertIn("serious validation size", text)
         self.assertIn("status: `passed`", text)
         self.assertIn("release authorized: `false`", text)
         self.assertIn("No functions with semantic types found", text)

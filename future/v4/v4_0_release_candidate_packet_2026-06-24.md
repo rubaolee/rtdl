@@ -51,12 +51,14 @@ Fresh POD worktree:
 Validation evidence:
 
 - scope gate: `future/v4/evidence/v4_scope_gate_2026-06-24.json`
-- final GPU catalog gate: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`
+- final GPU catalog gate, serious size: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.json`
+- final GPU catalog gate, smoke size: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`
 
 Final GPU catalog gate result:
 
 - status: `passed`
 - mode: `gpu`
+- serious validation size: fixed-radius `copies=32768` / `262144` points; ray/triangle examples `32768` rays and triangles
 - release authorized: `false`
 - measured Tier-2 examples: 3/3 passed
 - front-door/planner examples: passed
