@@ -7,9 +7,13 @@ Status: passed
 Latest rerun:
 
 - time: 2026-06-24 14:07 -04:00
-- commit under test: `4948ae2af4340fbe398668fe9749b4365587ee07`
-- working-tree delta under test: none
-- reason: revalidated after Claude release-candidate amendments
+- base runtime commit under test: `c9586813b5769d9bff32d7974063b594c04a8997`
+- working-tree delta under test:
+  - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.json`
+  - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`
+  - `future/v4/v4_0_release_candidate_packet_2026-06-24.md`
+- reason: revalidated after Claude release-candidate amendments; targeted
+  packet/gate tests also passed after the latest POD evidence refresh
 
 Command:
 
