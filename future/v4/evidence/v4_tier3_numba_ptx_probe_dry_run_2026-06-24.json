@@ -1,0 +1,16 @@
+{
+  "app_specific_native_kernel_authorized": false,
+  "broad_v4_speedup_claim_authorized": false,
+  "optix_module_link_attempted": false,
+  "optix_module_link_succeeded": null,
+  "probe": "numba_device_scalar_reduce_to_ptx",
+  "ptx_generated": false,
+  "raw_optix_callback_claim_authorized": false,
+  "reason": "dry_run_does_not_import_numba_or_require_cuda",
+  "release_claim_authorized": false,
+  "schema": "rtdl.v4.tier3_numba_ptx_probe.v1",
+  "status": "dry_run",
+  "tier": "tier3_spike_only_not_v4_0_release_surface",
+  "tier3_callback_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false
+}

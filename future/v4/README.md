@@ -61,6 +61,7 @@ python scripts/v4_catalog_regression_gate.py --mode dry-run
 - `future/v4/tier2_operator_catalog.md`
 - `future/v4/callback_and_operator_planning.md`
 - `future/v4/v4_0_scope_gate.md`
+- `future/v4/tier3_numba_ptx_spike.md`
 
 The catalog regression gate is `scripts/v4_catalog_regression_gate.py`.
 
