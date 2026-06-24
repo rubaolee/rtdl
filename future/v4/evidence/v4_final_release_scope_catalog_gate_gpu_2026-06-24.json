@@ -1,0 +1,407 @@
+{
+  "app_specific_native_kernel_authorized": false,
+  "broad_v4_speedup_claim_authorized": false,
+  "examples": [
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "future/v4/examples/fixed_radius_torch_device_arrays.py",
+        "--copies",
+        "8192"
+      ],
+      "failures": [],
+      "name": "fixed_radius",
+      "passed": true,
+      "payload": {
+        "copies": 8192,
+        "correctness_passed": true,
+        "elapsed_s": 0.000754915177822113,
+        "example": "v4_fixed_radius_torch_device_arrays",
+        "input_contract": "caller_supplied_torch_device_point_columns",
+        "metadata": {
+          "adapter": "v4_fixed_radius_count_threshold_2d_device_arrays",
+          "app_count_host_materialization": false,
+          "app_count_materialization": "native_optix_prepared_device_columns",
+          "broad_v4_speedup_claim_authorized": false,
+          "direct_device_handoff_authorized": true,
+          "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+          "host_materialization_in_hot_path": false,
+          "input_contract": "caller_supplied_torch_device_point_columns",
+          "measured_partner": true,
+          "measured_partners": [
+            "torch"
+          ],
+          "native_engine_row_contract": "generic_fixed_radius_count_threshold_2d_device_columns",
+          "native_metadata": {
+            "backend": "optix",
+            "direct_device_handoff_authorized": true,
+            "direct_device_pointer_observed": true,
+            "internal_device_staging_disclosed": true,
+            "internal_device_staging_scope": "device-resident AABB/BVH staging may occur inside the native route",
+            "named_cuda_columns_no_host_stage_authorized": true,
+            "named_cuda_columns_no_host_stage_ready": true,
+            "native_acceleration_structure_required": true,
+            "native_call_device_pointer_echo": {
+              "output.neighbor_counts": 137070210057728,
+              "output.query_ids": 137070209795584,
+              "output.threshold_flags": 137070210319872,
+              "query.ids": 137070210909696,
+              "query.x": 137070032977920,
+              "query.y": 137070209271296,
+              "search.ids": 137070210909696,
+              "search.x": 137070032977920,
+              "search.y": 137070209271296
+            },
+            "native_call_device_pointer_echo_complete": true,
+            "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_2d_device_query_columns",
+            "output_columns_true_zero_copy_authorized": true,
+            "query_count": 65536,
+            "query_point_columns_true_zero_copy_authorized": true,
+            "radius": 0.35,
+            "rt_core_speedup_claim_authorized": false,
+            "search_point_columns_true_zero_copy_authorized": true,
+            "source_devices": [
+              "cuda:0"
+            ],
+            "source_protocols": [
+              "torch"
+            ],
+            "threshold": 3,
+            "transfer_mode": "device_fixed_radius_point_columns_output_columns_zero_copy",
+            "true_zero_copy_authorized": true,
+            "v2_0_release_authorized": false
+          },
+          "native_prepared_route": "fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns",
+          "output_columns_reused": true,
+          "output_contract": "caller_supplied_or_allocated_torch_device_output_columns",
+          "partner": "torch",
+          "partner_claim_status": "measured_on_v4_section8_pod",
+          "partner_support_declared_unmeasured": [
+            "cupy"
+          ],
+          "python_point_object_boundary_in_hot_path": false,
+          "query_count": 65536,
+          "radius": 0.35,
+          "release_claim_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "second_primitive_work_authorized": false,
+          "threshold": 3,
+          "tier3_callback_claim_authorized": false,
+          "true_zero_copy_authorized": true,
+          "v2_0_release_authorized": false,
+          "v4_api_surface": "v4_fixed_radius_count_threshold_2d_device_arrays",
+          "whole_app_speedup_claim_authorized": false
+        },
+        "neighbor_count_sum": 163840,
+        "point_count": 65536,
+        "radius": 0.35,
+        "release_claim_authorized": false,
+        "status": "measured",
+        "threshold": 3,
+        "threshold_reached_count": 49152,
+        "tier3_callback_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "measured"
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "future/v4/examples/closest_hit_grouped_argmin_torch_device_arrays.py",
+        "--ray-count",
+        "8192"
+      ],
+      "failures": [],
+      "name": "closest_hit_grouped_argmin",
+      "passed": true,
+      "payload": {
+        "correctness_passed": true,
+        "elapsed_s": 0.00015553832054138184,
+        "example": "v4_closest_hit_grouped_argmin_torch_device_arrays",
+        "group_count": 1024,
+        "group_width": 8,
+        "has_value_count": 1024,
+        "input_contract": "caller_supplied_torch_device_triangle_ray_and_group_columns",
+        "metadata": {
+          "adapter": "v4_closest_hit_grouped_argmin_3d_device_arrays",
+          "backend": "optix",
+          "broad_v4_speedup_claim_authorized": false,
+          "candidate_count": 8192,
+          "claim_boundary": {
+            "native_app_api": false,
+            "public_speedup_claim": false,
+            "result_materialization_in_measured_window": false,
+            "true_zero_copy": false
+          },
+          "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_PREPARED_GROUPED_ARGMIN_DEVICE_OUTPUTS_V1",
+          "generic_primitive": "CLOSEST_HIT_GROUPED_ARGMIN_3D",
+          "group_count": 1024,
+          "group_mapping_contract": "per_prepared_ray_ordinal",
+          "grouped_inputs_created_from": "partner_device_columns",
+          "grouped_result_device_to_device_export": false,
+          "grouped_results_downloaded_to_host_in_hot_path": false,
+          "grouped_results_materialized": false,
+          "host_materialization_in_hot_path": false,
+          "input_contract": "caller_supplied_torch_device_ray_triangle_and_group_columns",
+          "measured_partner": true,
+          "measured_partners": [
+            "torch"
+          ],
+          "native_direct_device_output_columns": true,
+          "native_grouped_argmin": true,
+          "native_prepared_route": "ray_closest_hit_prepared_grouped_argmin_device_outputs",
+          "output_columns_partner_owned": true,
+          "output_contract": "caller_supplied_or_allocated_torch_device_grouped_argmin_columns",
+          "output_source_devices": [
+            "cuda:0"
+          ],
+          "partner": "torch",
+          "partner_claim_status": "measured_on_v4_section8_pod",
+          "partner_support_declared_unmeasured": [
+            "cupy"
+          ],
+          "phase_timing_seconds": {
+            "device_execution_host_observed": 9.073317050933838e-05,
+            "prepare_build": 0.07940293103456497,
+            "query_pack": 0.0,
+            "traversal_grouped_argmin_and_direct_device_output_write": 3.4271e-05
+          },
+          "prepared_grouped_argmin_inputs_seconds": 1.852959394454956e-05,
+          "prepared_grouped_argmin_inputs_used": true,
+          "prepared_ray_batch_seconds": 0.0007557868957519531,
+          "prepared_ray_batch_used": true,
+          "prepared_reused": true,
+          "prepared_run_index": 2,
+          "prepared_scene_used": true,
+          "python_ray_object_boundary_in_hot_path": false,
+          "ray_count": 8192,
+          "ray_group_id_count": 8192,
+          "release_claim_authorized": false,
+          "result_kind": "device_grouped_argmin_from_ray_triangle_closest_hit",
+          "row_arrays_materialized": false,
+          "rows_materialized": false,
+          "tier3_callback_claim_authorized": false,
+          "transfer_metadata": {
+            "candidate_indices_partner_owned": true,
+            "candidate_indices_uploaded_during_prepare": false,
+            "candidate_indices_uploaded_each_run": false,
+            "candidate_values_partner_owned": true,
+            "candidate_values_uploaded_during_prepare": false,
+            "candidate_values_uploaded_each_run": false,
+            "closest_hit_rows_downloaded_to_host": false,
+            "group_ids_uploaded_during_prepare": false,
+            "group_ids_uploaded_each_run": false,
+            "group_mapping_contract": "per_prepared_ray_ordinal",
+            "grouped_input_columns_partner_owned": true,
+            "grouped_inputs_created_from": "partner_device_columns",
+            "native_device_grouped_argmin": true,
+            "native_direct_device_output_columns": true,
+            "native_host_grouped_argmin": false,
+            "per_group_results_downloaded_to_host": false,
+            "per_ray_group_ids_partner_owned": true,
+            "prepared_rays_resident_on_device": true,
+            "python_dict_rows_materialized": false,
+            "query_rays_uploaded_each_run": false,
+            "static_scene_prepared_on_device": true,
+            "true_zero_copy_authorized": false
+          },
+          "triangle_count": 8192,
+          "v4_api_surface": "v4_closest_hit_grouped_argmin_3d_device_arrays",
+          "whole_app_speedup_claim_authorized": false
+        },
+        "output_contract": "caller_owned_torch_device_grouped_argmin_columns",
+        "ray_count": 8192,
+        "release_claim_authorized": false,
+        "status": "measured",
+        "tier3_callback_claim_authorized": false,
+        "triangle_count": 8192,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "measured"
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "future/v4/examples/ray_triangle_any_hit_flags_torch_device_arrays.py",
+        "--ray-count",
+        "8192"
+      ],
+      "failures": [],
+      "name": "ray_triangle_any_hit_flags",
+      "passed": true,
+      "payload": {
+        "correctness_passed": true,
+        "elapsed_s": 0.0003891885280609131,
+        "example": "v4_ray_triangle_any_hit_flags_torch_device_arrays",
+        "hit_count": 8192,
+        "input_contract": "caller_supplied_torch_device_triangle_aabb_and_ray_columns",
+        "metadata": {
+          "adapter": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+          "backend": "optix",
+          "broad_v4_speedup_claim_authorized": false,
+          "direct_device_handoff_authorized": true,
+          "direct_device_pointer_observed": true,
+          "generic_primitive": "RAY_TRIANGLE_ANY_HIT_FLAGS_2D",
+          "host_materialization_in_hot_path": false,
+          "input_contract": "caller_supplied_torch_device_ray_triangle_columns",
+          "measured_partner": true,
+          "measured_partners": [
+            "torch"
+          ],
+          "native_direct_device_output_columns": true,
+          "native_prepared_route": "write_device_any_hit_flags",
+          "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags",
+          "output_contract": "caller_supplied_or_allocated_torch_device_any_hit_flag_column",
+          "output_flags_true_zero_copy_authorized": true,
+          "partner": "torch",
+          "partner_claim_status": "measured_on_v4_section8_pod",
+          "partner_support_declared_unmeasured": [
+            "cupy"
+          ],
+          "partner_tensor_handoff_authorized": true,
+          "python_ray_object_boundary_in_hot_path": false,
+          "ray_columns_true_zero_copy_authorized": true,
+          "ray_count": 8192,
+          "ray_results_downloaded_to_host_in_hot_path": false,
+          "release_claim_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "source_devices": [
+            "cuda:0"
+          ],
+          "source_protocols": [
+            "torch"
+          ],
+          "tier3_callback_claim_authorized": false,
+          "transfer_mode": "device_ray_triangle_columns_output_flags_zero_copy",
+          "triangle_scene_true_zero_copy_authorized": true,
+          "true_zero_copy_authorized": true,
+          "v2_0_release_authorized": false,
+          "v4_api_surface": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+          "whole_app_speedup_claim_authorized": false
+        },
+        "output_contract": "caller_owned_torch_device_any_hit_flag_column",
+        "ray_count": 8192,
+        "release_claim_authorized": false,
+        "status": "measured",
+        "tier3_callback_claim_authorized": false,
+        "triangle_count": 8192,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "measured"
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "future/v4/examples/v4_frontdoor_quickstart.py"
+      ],
+      "failures": [],
+      "name": "v4_frontdoor_quickstart",
+      "passed": true,
+      "payload": {
+        "app_specific_native_kernel_authorized": false,
+        "catalog_operator_count": 3,
+        "complex_callback_status": "rejected_action_shaped_callback_deferred",
+        "front_door_status": "v4_development_front_door_not_release",
+        "measured_surface_count": 3,
+        "release_claim_authorized": false,
+        "status": "ok",
+        "tier2_plan_status": "tier2_measured_ready",
+        "tier2_plan_surface": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+        "tier3_callback_claim_authorized": false
+      },
+      "payload_status": "ok"
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "future/v4/examples/operator_callback_planning.py",
+        "--case",
+        "tier2"
+      ],
+      "failures": [],
+      "name": "operator_callback_planning_tier2",
+      "passed": true,
+      "payload": {
+        "api_surface": "v4_fixed_radius_count_threshold_2d_device_arrays",
+        "app_specific_native_kernel_authorized": false,
+        "broad_v4_speedup_claim_authorized": false,
+        "continuation_class": "count_threshold",
+        "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+        "guidance": "Use v4_fixed_radius_count_threshold_2d_device_arrays for this recognized fused operator.",
+        "measured_partner": true,
+        "partner": "torch",
+        "release_claim_authorized": false,
+        "request": "fixed_radius_count_threshold",
+        "status": "tier2_measured_ready",
+        "tier": "tier2_fused_operator",
+        "tier3_callback_claim_authorized": false,
+        "tier3_spike_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "tier2_measured_ready"
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "future/v4/examples/operator_callback_planning.py",
+        "--case",
+        "scalar-callback"
+      ],
+      "failures": [],
+      "name": "operator_callback_planning_scalar_callback",
+      "passed": true,
+      "payload": {
+        "api_surface": null,
+        "app_specific_native_kernel_authorized": false,
+        "broad_v4_speedup_claim_authorized": false,
+        "continuation_class": "custom_scalar_reduce",
+        "generic_primitive": null,
+        "guidance": "This is a scalar per-hit reduce candidate for the Numba->PTX->OptiX spike. It is not a V4.0 measured surface and must not be documented as supported until the spike links, runs, and is measured.",
+        "measured_partner": false,
+        "partner": "torch",
+        "release_claim_authorized": false,
+        "request": "custom_force_score",
+        "status": "tier3_spike_only_not_v4_0_release_surface",
+        "tier": "tier3_numba_ptx_spike",
+        "tier3_callback_claim_authorized": false,
+        "tier3_spike_authorized": true,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "tier3_spike_only_not_v4_0_release_surface"
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "future/v4/examples/operator_callback_planning.py",
+        "--case",
+        "complex-callback"
+      ],
+      "failures": [],
+      "name": "operator_callback_planning_complex_callback",
+      "passed": true,
+      "payload": {
+        "api_surface": null,
+        "app_specific_native_kernel_authorized": false,
+        "broad_v4_speedup_claim_authorized": false,
+        "continuation_class": "custom_action",
+        "generic_primitive": null,
+        "guidance": "This callback is action-shaped (shared mutation, dynamic allocation, variable-length output). V4.0 does not expose raw OptiX callbacks or app-specific native kernels; rewrite as a recognized reduce/filter operator or defer to a future constrained Tier-3 design.",
+        "measured_partner": false,
+        "partner": "torch",
+        "release_claim_authorized": false,
+        "request": "custom_collision_response",
+        "status": "rejected_action_shaped_callback_deferred",
+        "tier": "unsupported_v4_0_deferred",
+        "tier3_callback_claim_authorized": false,
+        "tier3_spike_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "rejected_action_shaped_callback_deferred"
+    }
+  ],
+  "mode": "gpu",
+  "release_authorized": false,
+  "schema": "rtdl.v4.catalog_regression_gate.v1",
+  "status": "passed",
+  "tier3_callback_claim_authorized": false
+}
