@@ -55,6 +55,10 @@ Validation evidence:
 - final GPU catalog gate, smoke size: `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`
 - local V4 full test sweep: `future/v4/evidence/v4_local_full_test_sweep_2026-06-24.md`
 
+The final GPU validation is tied to the runtime-code commit above. Later
+candidate-packet edits are documentation/evidence wording updates only and are
+covered by the local V4 full test sweep.
+
 Final GPU catalog gate result:
 
 - status: `passed`
