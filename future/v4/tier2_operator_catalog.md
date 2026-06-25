@@ -35,7 +35,7 @@ There are currently no Tier-2 candidate surfaces in the V4 front door.
 - Weighted sum is a comparable-route route win, not a pure kernel-vs-kernel
   speedup.
 - CuPy performance is declared unmeasured for V4.
-- Public true-zero-copy wording is not authorized.
+- public true-zero-copy wording is not authorized.
 
 ## Planner Boundary
 

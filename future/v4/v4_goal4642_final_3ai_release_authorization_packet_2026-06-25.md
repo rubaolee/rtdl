@@ -151,9 +151,21 @@ After the Goal4641 commit, the clean worktree was rechecked at:
 
 `884aeda8084d4c84bae8ec858f4b7436461ee783`
 
-Final revalidation from that commit:
+Goal4641 revalidation from that commit:
 
 - full V4 tests: `168 tests OK`;
+- catalog dry-run: `status: passed`, `example_count: 11`, `failed_examples: []`;
+- quickstart: `status: ok`;
+- post-validation `git status --short`: empty.
+
+After this Goal4642 authorization packet was committed, the clean worktree was
+rechecked again at:
+
+`437b79a2a382082e269d0d0ee128528caf0ae112`
+
+Goal4642 packet revalidation from that commit:
+
+- full V4 tests: `171 tests OK`;
 - catalog dry-run: `status: passed`, `example_count: 11`, `failed_examples: []`;
 - quickstart: `status: ok`;
 - post-validation `git status --short`: empty.

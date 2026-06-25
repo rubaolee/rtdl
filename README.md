@@ -3,8 +3,9 @@
 RTDL V4 is the current high-performance RTDL user surface.
 
 Status: the frozen V4 scorecard has passed for documented generic RT-core
-operator surfaces. Final release authorization is still gated on public-doc
-cleanup, clean-tree reproducibility, and 3-AI release approval.
+operator surfaces. Public-doc cleanup and clean-tree reproducibility have
+passed; final publication remains gated on final release authorization and the
+publication step.
 
 ## What RTDL Is
 

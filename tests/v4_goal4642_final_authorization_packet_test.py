@@ -20,6 +20,7 @@ class V4Goal4642FinalAuthorizationPacketTest(unittest.TestCase):
         self.assertEqual(3, packet["required_reviewer_count"])
         self.assertTrue(packet["scorecard_passed"])
         self.assertTrue(packet["clean_tree_passed"])
+        self.assertTrue(packet["packet_clean_tree_revalidation_commit"].startswith("437b79a2"))
         self.assertTrue(packet["public_docs_cleaned"])
         self.assertFalse(packet["release_authorized"])
 
@@ -42,6 +43,12 @@ class V4Goal4642FinalAuthorizationPacketTest(unittest.TestCase):
             self.assertIn(heading, text)
         for forbidden in packet["forbidden_claims"]:
             self.assertIn(forbidden, text)
+        for forbidden in (
+            "Barnes-Hut covered by V4.0",
+            "Spatial RayJoin covered by V4.0",
+            "LibRTS paper reproduction",
+        ):
+            self.assertIn(forbidden, packet["forbidden_claims"])
 
     def test_call_for_review_requests_three_ai_verdict(self) -> None:
         packet = validate_v4_goal4642_final_authorization_packet(ROOT)

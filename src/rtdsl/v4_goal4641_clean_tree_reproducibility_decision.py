@@ -13,6 +13,7 @@ class V4Goal4641CleanTreeReproducibility:
     decision: str
     clean_worktree_path: str
     validated_commit: str
+    final_revalidation_commit: str
     clean_status_before: bool
     clean_status_after: bool
     full_v4_tests_passed: bool
@@ -27,6 +28,7 @@ class V4Goal4641CleanTreeReproducibility:
             "decision": self.decision,
             "clean_worktree_path": self.clean_worktree_path,
             "validated_commit": self.validated_commit,
+            "final_revalidation_commit": self.final_revalidation_commit,
             "clean_status_before": self.clean_status_before,
             "clean_status_after": self.clean_status_after,
             "full_v4_tests_passed": self.full_v4_tests_passed,
@@ -58,6 +60,7 @@ def v4_goal4641_clean_tree_reproducibility_decision(root: Path | None = None) ->
         decision=V4_GOAL4641_DECISION,
         clean_worktree_path="C:/Users/Lestat/Desktop/work/rtdl_v4_goal4641_clean_tree_check",
         validated_commit="35d04dbf0b1734e7c1fc323c366a046de51edee8",
+        final_revalidation_commit="884aeda8084d4c84bae8ec858f4b7436461ee783",
         clean_status_before=True,
         clean_status_after=True,
         full_v4_tests_passed=True,

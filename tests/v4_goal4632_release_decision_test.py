@@ -181,6 +181,9 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
             "Tier-3 callback support",
             "CuPy performance",
             "C ABI / embedding / non-Python host",
+            "Barnes-Hut covered by V4.0",
+            "Spatial RayJoin covered by V4.0",
+            "LibRTS paper reproduction",
         ):
             self.assertIn(claim, decision["forbidden_claims"])
 

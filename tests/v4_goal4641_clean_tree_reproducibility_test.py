@@ -25,6 +25,7 @@ class V4Goal4641CleanTreeReproducibilityTest(unittest.TestCase):
         self.assertTrue(decision["catalog_dry_run_passed"])
         self.assertTrue(decision["quickstart_passed"])
         self.assertTrue(decision["validated_commit"].startswith("35d04dbf"))
+        self.assertTrue(decision["final_revalidation_commit"].startswith("884aeda"))
         self.assertIn("tests.v4_goal4641_clean_tree_reproducibility_test", decision["tests"])
 
     def test_clean_tree_gate_has_committed_evidence(self) -> None:

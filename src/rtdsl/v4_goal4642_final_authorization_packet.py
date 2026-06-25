@@ -18,6 +18,7 @@ class V4Goal4642FinalAuthorizationPacket:
     call_for_review: str
     scorecard_passed: bool
     clean_tree_passed: bool
+    packet_clean_tree_revalidation_commit: str
     public_docs_cleaned: bool
     release_authorized: bool
     forbidden_claims: tuple[str, ...]
@@ -31,6 +32,7 @@ class V4Goal4642FinalAuthorizationPacket:
             "call_for_review": self.call_for_review,
             "scorecard_passed": self.scorecard_passed,
             "clean_tree_passed": self.clean_tree_passed,
+            "packet_clean_tree_revalidation_commit": self.packet_clean_tree_revalidation_commit,
             "public_docs_cleaned": self.public_docs_cleaned,
             "release_authorized": self.release_authorized,
             "forbidden_claims": self.forbidden_claims,
@@ -50,6 +52,7 @@ def v4_goal4642_final_authorization_packet(root: Path | None = None) -> dict[str
         call_for_review=call,
         scorecard_passed=(repo / "future/v4/v4_goal4639_serious_release_scorecard_pod_gate_decision_2026-06-25.md").exists(),
         clean_tree_passed=(repo / "future/v4/v4_goal4641_clean_tree_reproducibility_gate_2026-06-25.md").exists(),
+        packet_clean_tree_revalidation_commit="437b79a2a382082e269d0d0ee128528caf0ae112",
         public_docs_cleaned=(repo / "future/v4/v4_goal4640_public_docs_cleanup_decision_2026-06-25.md").exists(),
         release_authorized=False,
         forbidden_claims=(
@@ -62,6 +65,9 @@ def v4_goal4642_final_authorization_packet(root: Path | None = None) -> dict[str
             "CuPy performance",
             "C ABI / embedding / non-Python host",
             "app-specific native kernels",
+            "Barnes-Hut covered by V4.0",
+            "Spatial RayJoin covered by V4.0",
+            "LibRTS paper reproduction",
         ),
     ).as_dict()
 
@@ -79,6 +85,8 @@ def validate_v4_goal4642_final_authorization_packet(root: Path | None = None) ->
         raise ValueError("Goal4642 requires Goal4639 scorecard evidence")
     if not packet["clean_tree_passed"]:
         raise ValueError("Goal4642 requires Goal4641 clean-tree evidence")
+    if not str(packet["packet_clean_tree_revalidation_commit"]).startswith("437b79a2"):
+        raise ValueError("Goal4642 packet clean-tree revalidation commit drift")
     if not packet["public_docs_cleaned"]:
         raise ValueError("Goal4642 requires Goal4640 public docs cleanup")
     if packet["release_authorized"]:

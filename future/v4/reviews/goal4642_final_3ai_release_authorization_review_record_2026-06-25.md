@@ -1,6 +1,7 @@
 # Goal4642 Final 3-AI Release Authorization Review Record
 
-Status: final authorization packet ready; final release not authorized.
+Status: final authorization packet ready; Antigravity authorizes narrow release;
+final release not authorized until required 3-AI consensus is complete.
 
 ## Requested Review
 
@@ -42,6 +43,14 @@ Latest clean-tree evidence available before this packet:
 - quickstart from clean worktree: passed
 - clean worktree status after validation: empty
 
+Latest clean-tree evidence after this packet commit:
+
+- clean worktree packet commit: `437b79a2a382082e269d0d0ee128528caf0ae112`
+- full V4 tests from clean worktree: `171 tests OK`
+- catalog dry-run from clean worktree: passed
+- quickstart from clean worktree: passed
+- clean worktree status after validation: empty
+
 ## Claude Attempt
 
 Raw file:
@@ -58,38 +67,101 @@ Observed output:
 You've hit your session limit - resets 5am (America/New_York)
 ```
 
+Retry raw file:
+
+`future/v4/reviews/claude_v4_goal4642_final_3ai_release_authorization_review_retry_2026-06-25.raw.md`
+
+Retry result:
+
+`blocked_session_limit`
+
+Observed retry output:
+
+```text
+You've hit your session limit - resets 5am (America/New_York)
+```
+
 ## Antigravity Attempt
 
 Raw file:
 
 `future/v4/reviews/antigravity_v4_goal4642_final_3ai_release_authorization_review_2026-06-25.raw.md`
 
+Completed review:
+
+`future/v4/reviews/antigravity_v4_goal4642_final_3ai_release_authorization_review_2026-06-25.md`
+
+Amended clarification:
+
+`future/v4/reviews/antigravity_v4_goal4642_final_3ai_release_authorization_review_amended_2026-06-25.md`
+
 Result:
 
-`blocked_no_output`
+`authorize_formal_v4_0_high_performance_operator_release`
 
 Observed output:
 
 ```text
-Antigravity CLI returned without creating a review file after the 5 minute
-print timeout window.
+Initial stdout was empty, but Antigravity wrote the completed review to the
+requested workspace file when explicitly instructed. A clarification pass fixed
+ambiguous wording in the non-authorization block.
+
+Verdict:
+authorize_formal_v4_0_high_performance_operator_release
 ```
+
+Clarified authorization:
+
+```text
+This review DOES authorize the final release of RTDL v4.0.0 under the narrow
+label: "RTDL v4.0.0 formal high-performance generic RT-core operator release".
+Forbidden claims remain forbidden outside the authorized label.
+```
+
+Amendment recheck:
+
+`future/v4/reviews/antigravity_v4_goal4642_amendment_recheck_2026-06-25.md`
+
+Result:
+
+`amendments_satisfied_authorize_publication`
+
+## Independent Codex Review
+
+Review file:
+
+`future/v4/reviews/codex_independent_v4_goal4642_final_authorization_review_and_amendment_recheck_2026-06-25.md`
+
+Initial verdict:
+
+`authorize_with_amendments_before_publication`
+
+Final amendment recheck verdict:
+
+`amendments_satisfied_authorize_publication`
+
+Remaining blockers:
+
+`none`
 
 ## Debt
 
 Debt label:
 
-`final_3ai_release_authorization_blocked_external_review_unavailable`
+`claude_final_authorization_review_blocked_session_limit`
 
-This debt cannot be interpreted as release authorization. It only records that
-the packet is ready and the external reviewers did not return a final verdict in
-this run.
+This debt cannot be interpreted as a no-go. It records that Antigravity returned
+one valid final authorization verdict, independent Codex returned
+`authorize_with_amendments_before_publication` and then
+`amendments_satisfied_authorize_publication`, while Claude did not return a
+verdict in this run.
 
 ## Continuation Decision
 
 Do not publish V4 yet. Continue only with:
 
 - retrying final external review when Claude or Antigravity is available;
+- recording independent Codex/owner-side final audit if completed;
 - applying concrete amendments if an external reviewer returns
   `authorize_with_amendments_before_publication`;
 - no-go remediation if an external reviewer returns `no_go_do_not_release_v4_0`;
