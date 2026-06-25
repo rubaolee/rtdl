@@ -1,6 +1,6 @@
 # V4 Fixed-Radius Device-Array Front Door
 
-Status: measured V4 surface; final release authorization pending
+Status: measured V4.0.0 release surface
 
 This page documents the first measured V4 Tier-2 primitive surface:
 fixed-radius count-threshold over caller-owned Torch CUDA point columns.
@@ -92,10 +92,10 @@ measured partner and CuPy as declared but unmeasured.
 
 This page does not authorize:
 
-- final V4 release before Goal4642
 - broad V4 speedup wording
 - whole-application speedup wording
+- all-benchmark speedup wording
 - Tier-3 callback/PTX claims
 - app-specific native engine claims
 - claims that Python `Point` row app routes are now fast
-- treating this first primitive as sufficient for V4 release by itself
+- treating this first primitive as sufficient for broad V4 speedup claims by itself

@@ -1,6 +1,6 @@
 # V4 Operator And Callback Planning
 
-Status: current V4 planning guidance; final release authorization pending
+Status: current V4.0.0 release planning guidance
 
 V4 does not expose raw OptiX callbacks as the public programming model. The
 public model is operator push-down: a user asks for a generic continuation such
@@ -160,8 +160,8 @@ measurements.
 
 This page does not authorize:
 
-- final V4 release before Goal4642
 - broad V4 speedup wording
+- whole-application speedup wording
 - Tier-3 callback/PTX support claims
 - raw OptiX callback support
 - app-specific native engine kernels

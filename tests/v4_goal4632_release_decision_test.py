@@ -14,15 +14,20 @@ from rtdsl.v4_release_decision import v4_goal4632_release_decision
 
 
 class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
-    def test_final_decision_is_development_state_not_release(self) -> None:
+    def test_final_decision_is_formal_v4_release_after_goal4643(self) -> None:
         decision = validate_v4_goal4632_release_decision()
 
         self.assertEqual(V4_GOAL4632_DECISION, decision["decision"])
-        self.assertFalse(decision["release_authorized"])
+        self.assertTrue(decision["release_authorized"])
+        self.assertTrue(decision["formal_release_authorized"])
+        self.assertEqual(
+            "RTDL v4.0.0 formal high-performance generic RT-core operator release",
+            decision["authorized_release_label"],
+        )
         self.assertFalse(decision["release_candidate_authorized"])
         self.assertTrue(decision["performance_preview_authorized"])
-        self.assertTrue(decision["development_state_authorized"])
-        self.assertIn("scorecard passed", decision["public_wording"])
+        self.assertFalse(decision["development_state_authorized"])
+        self.assertIn("formal high-performance generic RT-core operator release", decision["public_wording"])
 
     def test_all_scorecard_gates_are_recorded(self) -> None:
         decision = v4_goal4632_release_decision()
@@ -45,7 +50,7 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
             },
         )
         self.assertTrue(gates["G1_fixed_radius_anchor"]["passed_for_release"])
-        self.assertFalse(gates["G2_operator_coverage_audit"]["passed_for_release"])
+        self.assertTrue(gates["G2_operator_coverage_audit"]["passed_for_release"])
         self.assertTrue(gates["G3_second_tier2_same_contract_gate"]["passed_for_release"])
         self.assertTrue(gates["G4_weighted_sum_candidate"]["passed_for_release"])
         self.assertTrue(gates["G5_pushdown_recognizer"]["passed_for_release"])
@@ -55,56 +60,17 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
         self.assertIn("formal release scorecard freeze", gates["G8_formal_release_scorecard_freeze"]["note"])
         self.assertTrue(gates["G9_serious_release_scorecard_pod_gate"]["passed_for_release"])
         self.assertTrue(gates["G10_clean_tree_reproducibility"]["passed_for_release"])
-        self.assertFalse(gates["G11_final_release_authorization"]["passed_for_release"])
+        self.assertTrue(gates["G11_final_release_authorization"]["passed_for_release"])
 
-    def test_release_blockers_include_candidate_coverage_review_debt_and_no_all_app(self) -> None:
+    def test_release_has_no_blockers_but_preserves_scope_limitations(self) -> None:
         decision = v4_goal4632_release_decision()
 
-        self.assertNotIn("operator_coverage_still_incomplete_not_broad_app_coverage", decision["release_blockers"])
-        self.assertNotIn("weighted_sum_remains_candidate_not_measured", decision["release_blockers"])
-        self.assertIn("tier3_deferred_not_supported", decision["release_blockers"])
-        self.assertIn(
-            "external_review_debt_remains_for_antigravity_goal4633_backfill",
-            decision["release_blockers"],
-        )
-        self.assertIn(
-            "external_review_debt_remains_for_goal4635_component_union_completion",
-            decision["release_blockers"],
-        )
-        self.assertNotIn(
-            "goal4636_threshold_summary_gate_failed_need_next_generic_coverage_target",
-            decision["release_blockers"],
-        )
-        self.assertNotIn(
-            "goal4636b_grouped_any_hit_gate_failed_need_next_generic_coverage_target",
-            decision["release_blockers"],
-        )
-        self.assertIn(
-            "external_review_debt_remains_for_goal4637_aabb_frontdoor_catalog_completion",
-            decision["release_blockers"],
-        )
-        self.assertIn(
-            "external_review_debt_antigravity_goal4638_formal_scorecard_freeze",
-            decision["release_blockers"],
-        )
-        self.assertIn(
-            "external_review_debt_antigravity_goal4639_serious_release_scorecard",
-            decision["release_blockers"],
-        )
-        self.assertIn(
-            "goal4642_final_3ai_release_authorization_not_done",
-            decision["release_blockers"],
-        )
-        self.assertIn("external_review_debt_goal4640_public_docs_cleanup", decision["release_blockers"])
-        self.assertIn("external_review_debt_goal4641_clean_tree_reproducibility", decision["release_blockers"])
-        self.assertNotIn("goal4640_user_docs_cleanup_not_done", decision["release_blockers"])
-        self.assertNotIn("goal4641_clean_tree_reproducibility_gate_not_done", decision["release_blockers"])
-        self.assertNotIn(
-            "goal4636c_aabb_index_gate_passed_pending_frontdoor_catalog_goal",
-            decision["release_blockers"],
-        )
-        self.assertIn("whole_app_speedup_wording_still_requires_final_3ai_authorization", decision["release_blockers"])
-        self.assertIn("cupy_performance_unmeasured", decision["release_blockers"])
+        self.assertEqual((), decision["release_blockers"])
+        self.assertIn("tier3_deferred_not_supported", decision["scope_limitations"])
+        self.assertIn("whole_app_speedup_wording_not_authorized", decision["scope_limitations"])
+        self.assertIn("cupy_performance_unmeasured", decision["scope_limitations"])
+        self.assertIn("no_true_zero_copy_public_claim_authorized", decision["scope_limitations"])
+        self.assertIn("no_c_abi_embedding_or_non_python_host_scope", decision["scope_limitations"])
 
     def test_surface_counts_and_coverage_summary_are_explicit(self) -> None:
         decision = v4_goal4632_release_decision()
@@ -175,7 +141,6 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
         decision = v4_goal4632_release_decision()
 
         for claim in (
-            "V4 release",
             "broad V4 speedup",
             "whole-application speedup",
             "Tier-3 callback support",
@@ -186,6 +151,8 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
             "LibRTS paper reproduction",
         ):
             self.assertIn(claim, decision["forbidden_claims"])
+
+        self.assertNotIn("V4 release", decision["forbidden_claims"])
 
         for flag in (
             "release_claim_authorized",

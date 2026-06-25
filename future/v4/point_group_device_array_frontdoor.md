@@ -1,6 +1,6 @@
 # V4 Point-Group Device-Array Front Door
 
-Status: measured V4 surface; final release authorization pending
+Status: measured V4.0.0 release surface
 
 This page documents the point-group nearest-witness measured surface:
 
@@ -110,9 +110,9 @@ search points and group bounds are RTDL-owned native data.
 
 This page does not authorize:
 
-- final V4 release before Goal4642
 - broad V4 speedup wording
 - whole-application speedup wording
+- all-benchmark speedup wording
 - true-zero-copy public wording
 - Tier-3 callback/PTX claims
 - raw OptiX callback support

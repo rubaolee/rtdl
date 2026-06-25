@@ -2,10 +2,8 @@
 
 RTDL V4 is the current high-performance RTDL user surface.
 
-Status: the frozen V4 scorecard has passed for documented generic RT-core
-operator surfaces. Public-doc cleanup and clean-tree reproducibility have
-passed; final publication remains gated on final release authorization and the
-publication step.
+Status: RTDL V4.0.0 is the formal high-performance generic RT-core operator
+release for the documented measured surfaces.
 
 ## What RTDL Is
 
@@ -36,6 +34,7 @@ generic RT-core operator lane:
 - a conservative callback/operator planner for complex user logic;
 - a serious Goal4639 scorecard pass: `8/8` measured surfaces and `4/4`
   strong benchmark families passed.
+- final 3-AI publication authorization for the narrow V4.0.0 operator release.
 
 The Goal4639 representative operator geomean is `5.185x` across the frozen
 measured scorecard surfaces. This is operator-level scorecard evidence, not a
@@ -78,11 +77,12 @@ surface count, partner list, and claim-boundary flags.
 
 ## Non-Claims
 
-This front page does not authorize:
+This front page authorizes the V4.0.0 operator release above. It does not
+authorize:
 
-- final V4 release before the 3-AI release decision;
 - broad "V4 is faster for everything" wording;
 - whole-application speedup wording;
+- all-benchmark speedup wording;
 - public true-zero-copy claims;
 - Tier-3 callback/PTX support claims;
 - raw OptiX callback support;

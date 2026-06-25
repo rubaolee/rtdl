@@ -71,7 +71,7 @@ def main() -> int:
     plan: dict[str, Any] = {
         "example": "v4_ray_triangle_any_hit_weighted_sum_torch_device_arrays",
         "surface": "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
-        "surface_status": "tier2_measured_pod_validated_not_release",
+        "surface_status": "tier2_measured_v4_0_0_release_surface",
         "ray_count": int(args.ray_count),
         "triangle_count": int(args.ray_count),
         "input_contract": "caller_supplied_torch_device_triangle_ray_and_weight_columns",

@@ -90,7 +90,7 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
         self.assertIn("4/4", text)
         self.assertIn("5.185x", text)
         self.assertIn("whole-application speedup claim", text)
-        self.assertIn("final release authorization pending", text)
+        self.assertIn("formal V4.0.0 release authorized", text)
 
     def test_machine_decision_records_docs_cleanup_without_release_authorization(self) -> None:
         decision = validate_v4_goal4640_public_docs_cleanup(ROOT)

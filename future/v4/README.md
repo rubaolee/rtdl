@@ -1,6 +1,6 @@
 # RTDL V4 Front Door
 
-Status: scorecard passed; final release authorization pending.
+Status: formal V4.0.0 release authorized.
 
 V4 is the Python GPU-array RT-core lane. If your program already owns Torch CUDA
 arrays, RTDL accepts those arrays for measured generic fused RT operators and
@@ -20,7 +20,7 @@ Current front-door status:
 - measured partners: `numba`, `rtdl_native`, `torch`
 - candidate Tier-2 surfaces: `0`
 - Goal4639 scorecard: `8/8` surfaces passed, `4/4` strong families passed
-- final release authorization: pending Goal4642
+- final release authorization: complete; Goal4643 published V4.0.0
 
 ## Measured V4 Tier-2 Operators
 
@@ -114,11 +114,11 @@ Operator details:
 
 ## Non-Claims
 
-This page does not authorize:
+This page authorizes the V4.0.0 operator release above. It does not authorize:
 
-- final V4 release before Goal4642;
 - broad V4 speedup wording;
 - whole-application speedup wording;
+- all-benchmark speedup wording;
 - public true-zero-copy claims;
 - Tier-3 callback/PTX support claims;
 - raw OptiX callback support;

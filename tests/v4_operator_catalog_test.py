@@ -145,7 +145,7 @@ class V4OperatorCatalogTest(unittest.TestCase):
         self.assertEqual(8, len(measured))
         self.assertEqual(0, len(candidates))
         self.assertTrue(
-            all(row["surface_status"] == "tier2_measured_pod_validated_not_release" for row in measured)
+            all(row["surface_status"] == "tier2_measured_v4_0_0_release_surface" for row in measured)
         )
 
     def test_grouped_i64_reduction_is_measured_tier2_surface(self) -> None:

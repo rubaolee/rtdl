@@ -169,7 +169,7 @@ def ray_triangle_any_hit_weighted_sum_3d_device_array_claim_boundary_v4(
             if measured
             else "declared_unmeasured_not_performance_ready"
         ),
-        "surface_status": "tier2_measured_pod_validated_not_release",
+        "surface_status": "tier2_measured_v4_0_0_release_surface",
         "validated_optix_abi": "8.0" if measured else None,
         "validated_gpu_family": "RTX A5000 / Ampere" if measured else None,
         "validated_driver": "570.195.03" if measured else None,

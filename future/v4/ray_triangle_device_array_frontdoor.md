@@ -1,6 +1,6 @@
 # V4 Ray/Triangle Device-Array Front Door
 
-Status: measured V4 surface; final release authorization pending
+Status: measured V4.0.0 release surface
 
 This page documents the measured V4 Tier-2 ray/triangle primitive surfaces:
 
@@ -173,7 +173,7 @@ Current boundary:
   caller-supplied scalar override is supported
 - metadata records `device_output_used: true`,
   `host_scalar_read_before_consumer: false`, and
-  `surface_status: tier2_measured_pod_validated_not_release`
+  `surface_status: tier2_measured_v4_0_0_release_surface`
 - Goal4633 promoted the surface after the RTX A5000 comparable-route gate
 
 ## Minimal Examples
@@ -310,9 +310,9 @@ partner for the ray/triangle V4 surfaces on the documented POD gates.
 
 This page does not authorize:
 
-- final V4 release before Goal4642
 - broad V4 speedup wording
 - whole-application speedup wording
+- all-benchmark speedup wording
 - Tier-3 callback/PTX claims
 - true-zero-copy public wording
 - app-specific native engine claims

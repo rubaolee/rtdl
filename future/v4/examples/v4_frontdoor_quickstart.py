@@ -37,6 +37,8 @@ def main() -> int:
                 "candidate_surface_count": len(boundary["candidate_surfaces"]),
                 "catalog_operator_count": len(catalog),
                 "candidate_operator_count": len(candidate_catalog),
+                "formal_release_authorized": boundary["formal_release_authorized"],
+                "authorized_release_label": boundary["authorized_release_label"],
                 "tier2_plan_status": tier2_plan.status,
                 "tier2_plan_surface": tier2_plan.api_surface,
                 "aabb_plan_status": aabb_plan.status,

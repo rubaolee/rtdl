@@ -3,7 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-V4_0_SCOPE_STATUS = "v4_0_scorecard_scope_defined_pending_final_authorization"
+V4_0_SCOPE_STATUS = "v4_0_0_formal_release_scope_authorized"
+V4_0_AUTHORIZED_RELEASE_LABEL = "RTDL v4.0.0 formal high-performance generic RT-core operator release"
 
 V4_0_INCLUDED_SURFACES = (
     "v4_fixed_radius_count_threshold_2d_device_arrays",
@@ -38,11 +39,7 @@ V4_X_DEFERRED_CAPABILITIES = (
     "app_specific_native_engine_kernels",
 )
 
-V4_RELEASE_BLOCKING_REASONS = (
-    "goal4640_public_docs_cleanup_in_progress",
-    "goal4641_clean_tree_reproducibility_gate_not_done",
-    "goal4642_final_3ai_release_authorization_not_done",
-)
+V4_RELEASE_BLOCKING_REASONS = ()
 
 
 @dataclass(frozen=True)
@@ -53,6 +50,7 @@ class V4ScopeGate:
     included_capabilities: tuple[str, ...]
     deferred_capabilities: tuple[str, ...]
     release_authorized: bool
+    authorized_release_label: str
     blocking_reasons: tuple[str, ...]
     required_next_actions: tuple[str, ...]
     broad_v4_speedup_claim_authorized: bool = False
@@ -72,6 +70,7 @@ class V4ScopeGate:
             "included_capabilities": self.included_capabilities,
             "deferred_capabilities": self.deferred_capabilities,
             "release_authorized": self.release_authorized,
+            "authorized_release_label": self.authorized_release_label,
             "blocking_reasons": self.blocking_reasons,
             "required_next_actions": self.required_next_actions,
             "broad_v4_speedup_claim_authorized": self.broad_v4_speedup_claim_authorized,
@@ -88,9 +87,9 @@ class V4ScopeGate:
 def v4_0_scope_gate() -> V4ScopeGate:
     """Return the current V4.0 scope gate.
 
-    This gate is intentionally conservative: it defines the engineering scope
-    already built and measured, while keeping release authorization false until
-    the required external release review and decision record exist.
+    This gate defines the narrow V4.0.0 release scope. The release is formal
+    for the included generic operator surfaces, while deferred V4.x
+    capabilities and broad speedup claims remain explicitly unauthorized.
     """
 
     return V4ScopeGate(
@@ -99,12 +98,13 @@ def v4_0_scope_gate() -> V4ScopeGate:
         candidate_surfaces=V4_0_CANDIDATE_SURFACES,
         included_capabilities=V4_0_INCLUDED_CAPABILITIES,
         deferred_capabilities=V4_X_DEFERRED_CAPABILITIES,
-        release_authorized=False,
+        release_authorized=True,
+        authorized_release_label=V4_0_AUTHORIZED_RELEASE_LABEL,
         blocking_reasons=V4_RELEASE_BLOCKING_REASONS,
         required_next_actions=(
-            "finish public V4 documentation cleanup",
-            "pass the clean-tree reproducibility gate",
-            "obtain final 3-AI release authorization",
+            "keep post-release guardrails passing",
+            "record deferred Claude review debt when available",
+            "treat Tier-3, CuPy performance, embedding, and whole-app speedups as V4.x work",
         ),
     )
 
@@ -134,7 +134,6 @@ def validate_v4_0_scope_gate(payload: V4ScopeGate | dict[str, object] | None = N
     forbidden_true = [
         key
         for key in (
-            "release_authorized",
             "broad_v4_speedup_claim_authorized",
             "whole_app_speedup_claim_authorized",
             "tier3_callback_claim_authorized",
@@ -148,10 +147,14 @@ def validate_v4_0_scope_gate(payload: V4ScopeGate | dict[str, object] | None = N
     ]
     if forbidden_true:
         missing.append("forbidden_claim_flags_false")
+    if payload_dict.get("release_authorized") is not True:
+        missing.append("release_authorized")
+    if payload_dict.get("authorized_release_label") != V4_0_AUTHORIZED_RELEASE_LABEL:
+        missing.append("authorized_release_label")
     return {
         "status": "passed" if not missing else "failed",
         "missing_or_invalid": tuple(missing),
-        "release_authorized": False,
+        "release_authorized": True,
         "checked_surfaces": V4_0_INCLUDED_SURFACES,
         "checked_candidate_surfaces": V4_0_CANDIDATE_SURFACES,
     }

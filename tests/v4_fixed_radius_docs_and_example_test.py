@@ -21,22 +21,22 @@ CALLBACK_EXAMPLE = ROOT / "future" / "v4" / "examples" / "operator_callback_plan
 class V4FixedRadiusDocsAndExampleTest(unittest.TestCase):
     def test_doc_keeps_claim_boundaries_visible(self) -> None:
         text = DOC.read_text(encoding="utf-8")
-        self.assertIn("final release authorization pending", text)
+        self.assertIn("measured V4.0.0 release surface", text)
         self.assertIn("Torch", text)
         self.assertIn("CuPy is not measured", text)
         self.assertIn("not a pure kernel-to-kernel comparison", text)
-        self.assertIn("V4 release", text)
+        self.assertIn("measured V4.0.0 release surface", text)
         self.assertIn("Tier-3 callback/PTX", text)
-        self.assertIn("sufficient for V4 release by itself", text)
+        self.assertIn("sufficient for broad V4 speedup claims by itself", text)
 
     def test_ray_triangle_doc_keeps_claim_boundaries_visible(self) -> None:
         text = RAY_DOC.read_text(encoding="utf-8")
-        self.assertIn("final release authorization pending", text)
+        self.assertIn("measured V4.0.0 release surface", text)
         self.assertIn("Torch", text)
         self.assertIn("CuPy is declared but unmeasured", text)
         self.assertIn("native_direct_device_output_columns", text)
         self.assertIn("v4_ray_triangle_any_hit_flags_2d_device_arrays", text)
-        self.assertIn("V4 release", text)
+        self.assertIn("measured V4.0.0 release surface", text)
         self.assertIn("Tier-3 callback/PTX", text)
 
     def test_tier2_operator_catalog_lists_measured_surfaces_without_release_claim(self) -> None:
@@ -44,7 +44,7 @@ class V4FixedRadiusDocsAndExampleTest(unittest.TestCase):
         self.assertIn("v4_fixed_radius_count_threshold_2d_device_arrays", text)
         self.assertIn("v4_closest_hit_grouped_argmin_3d_device_arrays", text)
         self.assertIn("v4_ray_triangle_any_hit_flags_2d_device_arrays", text)
-        self.assertIn("final release authorization pending", text)
+        self.assertIn("V4.0.0 release catalog", text)
         self.assertIn("Not authorized by this catalog", text)
         self.assertIn("Tier-3 callback/PTX claims", text)
         self.assertIn("operator/callback planner", text)

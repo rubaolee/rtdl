@@ -46,8 +46,9 @@ from .v4_scope import v4_0_scope_gate
 from .v4_scope import validate_v4_0_scope_gate
 
 
-V4_FRONT_DOOR_STATUS = "v4_scorecard_passed_front_door_pending_final_authorization"
+V4_FRONT_DOOR_STATUS = "v4_0_0_formal_release_front_door"
 V4_FRONT_DOOR_MEASURED_PARTNER = "mixed_torch_numba_and_rtdl_native"
+V4_AUTHORIZED_RELEASE_LABEL = "RTDL v4.0.0 formal high-performance generic RT-core operator release"
 
 
 def claim_boundary_v4() -> dict[str, object]:
@@ -65,6 +66,8 @@ def claim_boundary_v4() -> dict[str, object]:
         "measured_surfaces": measured_surfaces,
         "operator_catalog_status": V4_OPERATOR_CATALOG_STATUS,
         "candidate_surfaces": (),
+        "formal_release_authorized": True,
+        "authorized_release_label": V4_AUTHORIZED_RELEASE_LABEL,
         "release_claim_authorized": False,
         "broad_v4_speedup_claim_authorized": False,
         "whole_app_speedup_claim_authorized": False,
@@ -105,6 +108,7 @@ def recognize_pushdown_request_v4(*args, **kwargs) -> V4PushdownRecognition:
 __all__ = [
     "V4_FRONT_DOOR_STATUS",
     "V4_FRONT_DOOR_MEASURED_PARTNER",
+    "V4_AUTHORIZED_RELEASE_LABEL",
     "claim_boundary_v4",
     "measured_operator_catalog_v4",
     "candidate_operator_catalog_v4",

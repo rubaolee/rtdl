@@ -23,7 +23,7 @@ class V4FrontDoorTest(unittest.TestCase):
     def test_claim_boundary_lists_measured_surfaces_without_release_claims(self) -> None:
         boundary = v4.claim_boundary_v4()
 
-        self.assertEqual("v4_scorecard_passed_front_door_pending_final_authorization", boundary["status"])
+        self.assertEqual("v4_0_0_formal_release_front_door", boundary["status"])
         self.assertEqual("mixed_torch_numba_and_rtdl_native", boundary["measured_partner"])
         self.assertEqual(("numba", "rtdl_native", "torch"), boundary["measured_partners"])
         self.assertEqual(8, len(boundary["measured_surfaces"]))
@@ -51,6 +51,11 @@ class V4FrontDoorTest(unittest.TestCase):
             boundary["measured_surfaces"],
         )
         self.assertEqual(0, len(boundary["candidate_surfaces"]))
+        self.assertTrue(boundary["formal_release_authorized"])
+        self.assertEqual(
+            "RTDL v4.0.0 formal high-performance generic RT-core operator release",
+            boundary["authorized_release_label"],
+        )
         self.assertFalse(boundary["release_claim_authorized"])
         self.assertFalse(boundary["broad_v4_speedup_claim_authorized"])
         self.assertFalse(boundary["whole_app_speedup_claim_authorized"])
@@ -92,7 +97,7 @@ class V4FrontDoorTest(unittest.TestCase):
         text = README.read_text(encoding="utf-8")
         self.assertIn("import rtdsl.v4 as rtdl_v4", text)
         self.assertIn("V4.0 does not expose raw OptiX callbacks", text)
-        self.assertIn("final release authorization pending", text)
+        self.assertIn("formal V4.0.0 release authorized", text)
         self.assertIn("CuPy performance claims", text)
         self.assertIn("embedding/C-ABI claims", text)
         self.assertIn("non-Python host binding claims", text)
@@ -115,13 +120,18 @@ class V4FrontDoorTest(unittest.TestCase):
         )
         payload = json.loads(proc.stdout)
         self.assertEqual("ok", payload["status"])
-        self.assertEqual("v4_scorecard_passed_front_door_pending_final_authorization", payload["front_door_status"])
+        self.assertEqual("v4_0_0_formal_release_front_door", payload["front_door_status"])
         self.assertEqual(8, payload["measured_surface_count"])
         self.assertEqual(8, payload["catalog_operator_count"])
         self.assertEqual(["numba", "rtdl_native", "torch"], payload["measured_partners"])
         self.assertEqual(0, payload["candidate_surface_count"])
         self.assertEqual("tier2_measured_ready", payload["tier2_plan_status"])
         self.assertEqual("tier2_measured_ready", payload["aabb_plan_status"])
+        self.assertTrue(payload["formal_release_authorized"])
+        self.assertEqual(
+            "RTDL v4.0.0 formal high-performance generic RT-core operator release",
+            payload["authorized_release_label"],
+        )
         self.assertEqual(
             "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
             payload["aabb_plan_surface"],

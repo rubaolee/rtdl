@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 
-V4_OPERATOR_CATALOG_STATUS = "v4_scorecard_passed_catalog_pending_final_authorization"
+V4_OPERATOR_CATALOG_STATUS = "v4_0_0_formal_release_catalog"
 V4_GOAL4630_PUSHDOWN_RECOGNIZER_STATUS = "goal4630_minimum_pushdown_recognizer_not_release"
-V4_TIER2_MEASURED_SURFACE_STATUS = "tier2_measured_pod_validated_not_release"
+V4_TIER2_MEASURED_SURFACE_STATUS = "tier2_measured_v4_0_0_release_surface"
 V4_TIER2_DEFERRED_PARTNER_STATUS = "tier2_declared_unmeasured_partner"
 V4_TIER3_CALLBACK_SPIKE_PROTOCOL_STATUS = "tier3_protocol_goal4622_spike_only_not_support"
 V4_TIER3_CALLBACK_SPIKE_PROTOCOL_DOC = "future/v4/tier3_callback_spike_protocol_2026-06-24.md"

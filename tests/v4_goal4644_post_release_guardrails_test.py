@@ -45,7 +45,7 @@ class V4Goal4644PostReleaseGuardrailsTest(unittest.TestCase):
     def test_public_docs_keep_release_caveats_and_no_stale_goal4640_4641_gate(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("Public-doc cleanup and clean-tree reproducibility have", readme)
+        self.assertIn("formal high-performance generic RT-core operator", readme)
         self.assertNotIn("gated on public-doc\ncleanup, clean-tree reproducibility", readme)
 
         required_caveats = (

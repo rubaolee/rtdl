@@ -27,7 +27,7 @@ class V4ScopeGateTest(unittest.TestCase):
         gate = v4_0_scope_gate()
         payload = gate.as_dict()
 
-        self.assertEqual("v4_0_scorecard_scope_defined_pending_final_authorization", payload["status"])
+        self.assertEqual("v4_0_0_formal_release_scope_authorized", payload["status"])
         self.assertEqual(8, len(payload["included_surfaces"]))
         self.assertEqual(0, len(payload["candidate_surfaces"]))
         self.assertIn(
@@ -58,7 +58,11 @@ class V4ScopeGateTest(unittest.TestCase):
         self.assertIn("cupy_measured_performance_claims", payload["deferred_capabilities"])
         self.assertIn("embedding_c_abi", payload["deferred_capabilities"])
         self.assertIn("non_python_host_bindings", payload["deferred_capabilities"])
-        self.assertFalse(payload["release_authorized"])
+        self.assertTrue(payload["release_authorized"])
+        self.assertEqual(
+            "RTDL v4.0.0 formal high-performance generic RT-core operator release",
+            payload["authorized_release_label"],
+        )
         self.assertFalse(payload["tier3_callback_claim_authorized"])
         self.assertFalse(payload["raw_optix_callback_claim_authorized"])
         self.assertFalse(payload["cupy_performance_claim_authorized"])
@@ -70,14 +74,14 @@ class V4ScopeGateTest(unittest.TestCase):
 
         self.assertEqual("passed", result["status"])
         self.assertEqual((), result["missing_or_invalid"])
-        self.assertFalse(result["release_authorized"])
+        self.assertTrue(result["release_authorized"])
 
     def test_scope_gate_is_reachable_from_unified_frontdoor(self) -> None:
         gate = v4.v4_0_scope_gate()
         result = v4.validate_v4_0_scope_gate(gate)
 
         self.assertEqual("passed", result["status"])
-        self.assertFalse(gate.release_authorized)
+        self.assertTrue(gate.release_authorized)
 
     def test_scope_gate_script_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -97,8 +101,8 @@ class V4ScopeGateTest(unittest.TestCase):
 
         self.assertEqual("passed", payload["validation"]["status"])
         self.assertEqual("passed", stdout_payload["validation"]["status"])
-        self.assertFalse(payload["gate"]["release_authorized"])
-        self.assertIn("Status: generated scorecard-passed gate", markdown)
+        self.assertTrue(payload["gate"]["release_authorized"])
+        self.assertIn("Status: generated V4.0.0 formal release scope gate", markdown)
 
     def test_scope_doc_records_non_claims(self) -> None:
         text = DOC.read_text(encoding="utf-8")
@@ -114,7 +118,7 @@ class V4ScopeGateTest(unittest.TestCase):
         self.assertIn("CuPy performance claims", text)
         self.assertIn("embedding/C-ABI", text)
         self.assertIn("non-Python host binding claims", text)
-        self.assertIn("release authorized: `False`", text)
+        self.assertIn("release authorized: `True`", text)
 
 
 if __name__ == "__main__":

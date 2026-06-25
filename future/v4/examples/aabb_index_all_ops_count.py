@@ -40,7 +40,7 @@ def main() -> int:
     if args.dry_run:
         payload = {
             "status": "dry_run",
-            "surface_status": "tier2_measured_pod_validated_not_release",
+            "surface_status": "tier2_measured_v4_0_0_release_surface",
             "api_surface": boundary["v4_api_surface"],
             "generic_primitive": "AABB_INDEX_QUERY_2D",
             "backend": args.backend,
@@ -72,7 +72,7 @@ def main() -> int:
     correctness_passed = result["counts"] == expected_counts
     payload = {
         "status": "measured" if boundary["measured_backend"] else "correctness_only",
-        "surface_status": "tier2_measured_pod_validated_not_release",
+        "surface_status": "tier2_measured_v4_0_0_release_surface",
         "api_surface": boundary["v4_api_surface"],
         "generic_primitive": "AABB_INDEX_QUERY_2D",
         "backend": args.backend,

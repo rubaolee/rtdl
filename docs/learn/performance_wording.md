@@ -44,17 +44,18 @@ V4 has zero-copy support.
 
 ## Claim Boundaries
 
-Allowed before final release authorization:
+Allowed for V4.0.0:
 
+- "RTDL V4.0.0 is the formal high-performance generic RT-core operator release";
 - exact measured operator-surface results;
 - exact Goal4639 scorecard summary;
 - exact partner and hardware scope;
-- "final release authorization pending."
 
 Not allowed:
 
 - broad V4 speedup wording;
 - whole-application speedup wording;
+- all-benchmark speedup wording;
 - public true-zero-copy wording;
 - Tier-3 callback/PTX support wording;
 - raw OptiX callback support wording;

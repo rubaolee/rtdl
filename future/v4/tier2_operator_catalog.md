@@ -1,6 +1,6 @@
 # V4 Tier-2 Operator Catalog
 
-Status: scorecard passed; final release authorization pending.
+Status: V4.0.0 release catalog.
 
 V4's performance path is a catalog of generic fused RT operators. These are not
 application-identity kernels. They are reusable continuation operators exposed
@@ -65,9 +65,9 @@ rejected/deferred for V4.0.
 
 Not authorized by this catalog:
 
-- final V4 release before Goal4642;
 - broad V4 speedup wording;
 - whole-application speedup wording;
+- all-benchmark speedup wording;
 - Tier-3 callback/PTX claims;
 - raw OptiX callback claims;
 - CuPy performance claims;

@@ -79,7 +79,7 @@ class V4RayTriangleDeviceArrayApiTest(unittest.TestCase):
         self.assertTrue(torch_boundary["measured_partner"])
         self.assertEqual(("torch",), torch_boundary["measured_partners"])
         self.assertEqual((), torch_boundary["pod_candidate_partners"])
-        self.assertEqual("tier2_measured_pod_validated_not_release", torch_boundary["surface_status"])
+        self.assertEqual("tier2_measured_v4_0_0_release_surface", torch_boundary["surface_status"])
         self.assertEqual("measured_on_v4_goal4633_pod_optix8", torch_boundary["partner_claim_status"])
         self.assertEqual("same_operator_comparable_route", torch_boundary["comparison_class"])
         self.assertEqual("largest_shape_barely_clears_1_20x_floor_not_large_speedup", torch_boundary["performance_caveat"])
@@ -211,7 +211,7 @@ class V4RayTriangleDeviceArrayApiTest(unittest.TestCase):
         metadata = result["metadata"]
         self.assertEqual("v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays", metadata["adapter"])
         self.assertEqual("RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM_3D", metadata["generic_primitive"])
-        self.assertEqual("tier2_measured_pod_validated_not_release", metadata["surface_status"])
+        self.assertEqual("tier2_measured_v4_0_0_release_surface", metadata["surface_status"])
         self.assertTrue(metadata["device_output_used"])
         self.assertTrue(metadata["native_direct_device_output_scalar"])
         self.assertFalse(metadata["host_scalar_read_before_consumer"])

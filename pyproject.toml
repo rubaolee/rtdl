@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rtdl-source-tree"
-version = "3.0.0"
-description = "RTDL V3 Python-hosted ray-tracing DSL/runtime source-tree package"
+version = "4.0.0"
+description = "RTDL V4 Python-facing generic RT-core operator runtime source-tree package"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

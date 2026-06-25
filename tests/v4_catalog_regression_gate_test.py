@@ -50,7 +50,7 @@ class V4CatalogRegressionGateTest(unittest.TestCase):
 
         self.assertEqual("passed", payload["status"])
         self.assertEqual("passed", stdout_payload["status"])
-        self.assertFalse(payload["release_authorized"])
+        self.assertTrue(payload["release_authorized"])
         self.assertFalse(payload["tier3_callback_claim_authorized"])
         self.assertEqual(11, len(payload["examples"]))
         self.assertTrue(all(row["passed"] for row in payload["examples"]))
@@ -69,11 +69,11 @@ class V4CatalogRegressionGateTest(unittest.TestCase):
         self.assertEqual("dry_run", rows_by_name["ray_triangle_any_hit_weighted_sum"]["payload"]["status"])
         self.assertEqual("dry_run", rows_by_name["aabb_index_all_ops_count"]["payload"]["status"])
         self.assertEqual(
-            "tier2_measured_pod_validated_not_release",
+            "tier2_measured_v4_0_0_release_surface",
             rows_by_name["aabb_index_all_ops_count"]["payload"]["surface_status"],
         )
         self.assertEqual(
-            "tier2_measured_pod_validated_not_release",
+            "tier2_measured_v4_0_0_release_surface",
             rows_by_name["ray_triangle_any_hit_weighted_sum"]["payload"]["surface_status"],
         )
         self.assertEqual(
@@ -90,7 +90,7 @@ class V4CatalogRegressionGateTest(unittest.TestCase):
             rows_by_name["operator_callback_planning_complex_callback"]["payload"]["status"],
         )
         self.assertIsNone(rows_by_name["operator_callback_planning_complex_callback"]["payload"]["api_surface"])
-        self.assertIn("Status: generated V4 catalog gate", markdown)
+        self.assertIn("Status: generated V4.0.0 catalog gate", markdown)
 
     def test_include_candidates_is_backward_compatible_with_no_current_candidates(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -121,7 +121,7 @@ class V4CatalogRegressionGateTest(unittest.TestCase):
         rows_by_name = {row["name"]: row for row in payload["examples"]}
         weighted = rows_by_name["ray_triangle_any_hit_weighted_sum"]["payload"]
         self.assertEqual("dry_run", weighted["status"])
-        self.assertEqual("tier2_measured_pod_validated_not_release", weighted["surface_status"])
+        self.assertEqual("tier2_measured_v4_0_0_release_surface", weighted["surface_status"])
         self.assertFalse(weighted["release_claim_authorized"])
         self.assertFalse(weighted["true_zero_copy_authorized"])
 

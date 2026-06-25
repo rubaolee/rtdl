@@ -19,7 +19,7 @@ def _write_markdown(path: Path, payload: dict[str, object], validation: dict[str
     lines = [
         "# V4.0 Scope Gate",
         "",
-        "Status: generated scorecard-passed gate, final release authorization pending",
+        "Status: generated V4.0.0 formal release scope gate",
         "",
         f"- gate status: `{payload['status']}`",
         f"- validation status: `{validation['status']}`",
@@ -31,20 +31,26 @@ def _write_markdown(path: Path, payload: dict[str, object], validation: dict[str
     for surface in payload["included_surfaces"]:
         lines.append(f"- `{surface}`")
     lines.extend(["", "## Candidate Surfaces", ""])
-    for surface in payload["candidate_surfaces"]:
-        lines.append(f"- `{surface}`")
+    if payload["candidate_surfaces"]:
+        for surface in payload["candidate_surfaces"]:
+            lines.append(f"- `{surface}`")
+    else:
+        lines.append("- none")
     lines.extend(["", "## Deferred To V4.x", ""])
     for item in payload["deferred_capabilities"]:
         lines.append(f"- `{item}`")
     lines.extend(["", "## Blocking Reasons", ""])
-    for item in payload["blocking_reasons"]:
-        lines.append(f"- `{item}`")
+    if payload["blocking_reasons"]:
+        for item in payload["blocking_reasons"]:
+            lines.append(f"- `{item}`")
+    else:
+        lines.append("- none")
     lines.extend(
         [
             "",
             "## Non-Authorization",
             "",
-            "This gate does not authorize V4 release, broad V4 speedup wording, Tier-3 callback/PTX support, raw OptiX callbacks, CuPy performance claims, embedding/C-ABI, non-Python host binding claims, or app-specific native kernels.",
+            "This gate authorizes the narrow V4.0.0 generic operator release. It does not authorize broad V4 speedup wording, whole-application speedups, Tier-3 callback/PTX support, raw OptiX callbacks, CuPy performance claims, embedding/C-ABI, non-Python host binding claims, or app-specific native kernels.",
             "",
         ]
     )

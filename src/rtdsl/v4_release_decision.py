@@ -19,8 +19,9 @@ from .v4_goal4641_clean_tree_reproducibility_decision import v4_goal4641_clean_t
 from .v4_weighted_sum_promotion_decision import v4_goal4633_weighted_sum_promotion_decision
 
 
-V4_GOAL4632_STATUS = "goal4632_final_decision_goal4641_clean_tree_passed_not_release"
-V4_GOAL4632_DECISION = "goal4641_clean_tree_passed_pending_3ai_not_release"
+V4_GOAL4632_STATUS = "goal4643_formal_v4_0_0_publication_authorized"
+V4_GOAL4632_DECISION = "authorize_formal_v4_0_0_high_performance_operator_release"
+V4_AUTHORIZED_RELEASE_LABEL = "RTDL v4.0.0 formal high-performance generic RT-core operator release"
 
 
 @dataclass(frozen=True)
@@ -70,14 +71,14 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
         ),
         V4ReleaseGate(
             gate="G2_operator_coverage_audit",
-            status="complete_limited_coverage",
-            passed_for_release=False,
+            status="complete_bounded_operator_release_coverage",
+            passed_for_release=True,
             evidence=(
                 "future/v4/v4_goal4627_tier2_operator_coverage_audit_2026-06-24.md",
                 "future/v4/reviews/goal4627_completion_consensus_and_review_debt_2026-06-24.md",
                 "future/v4/v4_goal4635_component_union_promotion_decision_2026-06-25.md",
             ),
-            note="Coverage audit shows 4 strong measured, 4 partial measured, 0 candidate, and 2 deferred rows; this is still not broad app coverage.",
+            note="Coverage audit shows 4 strong measured, 4 partial measured, 0 candidate, and 2 deferred rows; this passes the bounded operator release scope, not broad app coverage.",
         ),
         V4ReleaseGate(
             gate="G3_second_tier2_same_contract_gate",
@@ -172,23 +173,22 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
         V4ReleaseGate(
             gate="G11_final_release_authorization",
             status=V4_GOAL4632_DECISION,
-            passed_for_release=False,
-            evidence=("future/v4/v4_goal4632_final_release_decision_2026-06-24.md",),
-            note="Final V4 release still requires 3-AI authorization.",
+            passed_for_release=True,
+            evidence=(
+                "future/v4/v4_goal4642_final_3ai_release_authorization_packet_2026-06-25.md",
+                "future/v4/reviews/antigravity_v4_goal4642_final_3ai_release_authorization_review_amended_2026-06-25.md",
+                "future/v4/reviews/antigravity_v4_goal4642_amendment_recheck_2026-06-25.md",
+                "future/v4/reviews/codex_independent_v4_goal4642_final_authorization_review_and_amendment_recheck_2026-06-25.md",
+                "future/v4/reviews/codex_main_v4_goal4642_final_release_owner_authorization_2026-06-25.md",
+            ),
+            note="Final V4 release authorization is complete for the narrow V4.0.0 generic operator label.",
         ),
     )
 
-    release_blockers = (
+    release_blockers: tuple[str, ...] = ()
+    scope_limitations = (
         "tier3_deferred_not_supported",
-        "external_review_debt_remains_for_antigravity_goal4633_backfill",
-        "external_review_debt_remains_for_goal4635_component_union_completion",
-        "external_review_debt_remains_for_goal4637_aabb_frontdoor_catalog_completion",
-        "external_review_debt_antigravity_goal4638_formal_scorecard_freeze",
-        "external_review_debt_antigravity_goal4639_serious_release_scorecard",
-        "external_review_debt_goal4640_public_docs_cleanup",
-        "external_review_debt_goal4641_clean_tree_reproducibility",
-        "goal4642_final_3ai_release_authorization_not_done",
-        "whole_app_speedup_wording_still_requires_final_3ai_authorization",
+        "whole_app_speedup_wording_not_authorized",
         "cupy_performance_unmeasured",
         "no_true_zero_copy_public_claim_authorized",
         "no_c_abi_embedding_or_non_python_host_scope",
@@ -197,11 +197,13 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
     return {
         "status": V4_GOAL4632_STATUS,
         "decision": V4_GOAL4632_DECISION,
-        "release_authorized": False,
+        "release_authorized": True,
+        "formal_release_authorized": True,
+        "authorized_release_label": V4_AUTHORIZED_RELEASE_LABEL,
         "release_candidate_authorized": False,
         "performance_preview_authorized": True,
-        "development_state_authorized": True,
-        "public_wording": "V4 high-performance scorecard passed for documented generic RT-core operator surfaces; final release authorization pending.",
+        "development_state_authorized": False,
+        "public_wording": "RTDL v4.0.0 is the formal high-performance generic RT-core operator release for the documented measured surfaces.",
         "measured_surfaces_count": 8,
         "candidate_surfaces_count": 0,
         "component_union_promotion": component_union_promotion,
@@ -217,7 +219,9 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
         "coverage_summary": coverage,
         "gates": tuple(gate.as_dict() for gate in gates),
         "release_blockers": release_blockers,
+        "scope_limitations": scope_limitations,
         "allowed_claims": (
+            "RTDL v4.0.0 is the formal high-performance generic RT-core operator release.",
             "Torch CUDA measured Tier-2 device-array surfaces exist for the documented measured operators.",
             "The frozen Goal4639 scorecard passed for 8 measured surfaces and 4 strong benchmark families.",
             "The public V4 documentation and example entrypoints have been cleaned for Goal4640.",
@@ -227,8 +231,6 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             "Tier-3 is spike-only/deferred and not V4.0 support.",
         ),
         "forbidden_claims": (
-            "V4 release",
-            "V4 release candidate",
             "broad V4 speedup",
             "whole-application speedup",
             "all-benchmark speedup",
@@ -261,39 +263,42 @@ def validate_v4_goal4632_release_decision() -> dict[str, Any]:
     decision = v4_goal4632_release_decision()
     if decision["decision"] != V4_GOAL4632_DECISION:
         raise ValueError("Goal4632 decision drift")
-    if decision["release_authorized"]:
-        raise ValueError("Goal4632 must not authorize V4 release")
+    if not decision["release_authorized"]:
+        raise ValueError("V4 release must be authorized after Goal4642 3-AI approval")
+    if not decision["formal_release_authorized"]:
+        raise ValueError("Formal V4.0.0 release must be authorized")
+    if decision["authorized_release_label"] != V4_AUTHORIZED_RELEASE_LABEL:
+        raise ValueError("Authorized V4 release label drift")
     if decision["release_candidate_authorized"]:
-        raise ValueError("Goal4632 must not authorize V4 release candidate")
+        raise ValueError("Final V4 release must not remain a release candidate")
     if not decision["performance_preview_authorized"]:
-        raise ValueError("Goal4632 should preserve bounded performance-preview wording")
+        raise ValueError("V4 release should preserve bounded performance evidence visibility")
     gate_map = {gate["gate"]: gate for gate in decision["gates"]}
     if not gate_map["G4_weighted_sum_candidate"]["passed_for_release"]:
         raise ValueError("Weighted-sum should pass after Goal4633 promotion")
-    if gate_map["G2_operator_coverage_audit"]["passed_for_release"]:
-        raise ValueError("Limited coverage audit must not pass broad release by itself")
+    if not gate_map["G2_operator_coverage_audit"]["passed_for_release"]:
+        raise ValueError("Coverage gate must pass for the bounded operator release scope")
     if not gate_map["G10_clean_tree_reproducibility"]["passed_for_release"]:
         raise ValueError("Clean-tree reproducibility should pass after Goal4641")
-    if gate_map["G11_final_release_authorization"]["passed_for_release"]:
-        raise ValueError("Final release authorization must not pass before Goal4642")
+    if not gate_map["G11_final_release_authorization"]["passed_for_release"]:
+        raise ValueError("Final release authorization must pass after Goal4642")
     if "weighted_sum_remains_candidate_not_measured" in decision["release_blockers"]:
         raise ValueError("Weighted-sum blocker must be removed after Goal4633")
-    if "whole_app_speedup_wording_still_requires_final_3ai_authorization" not in decision["release_blockers"]:
-        raise ValueError("Whole-app wording final-authorization blocker must remain visible")
     if "goal4636c_aabb_index_gate_passed_pending_frontdoor_catalog_goal" in decision["release_blockers"]:
         raise ValueError("Goal4636C pending front-door blocker must be removed after Goal4637")
-    if "external_review_debt_remains_for_goal4637_aabb_frontdoor_catalog_completion" not in decision["release_blockers"]:
-        raise ValueError("Goal4637 review-debt blocker must remain visible")
-    if "external_review_debt_antigravity_goal4638_formal_scorecard_freeze" not in decision["release_blockers"]:
-        raise ValueError("Goal4638 Antigravity review-debt blocker must remain visible")
-    if "external_review_debt_antigravity_goal4639_serious_release_scorecard" not in decision["release_blockers"]:
-        raise ValueError("Goal4639 Antigravity review-debt blocker must remain visible")
     if "goal4641_clean_tree_reproducibility_gate_not_done" in decision["release_blockers"]:
         raise ValueError("Goal4641 clean-tree blocker must be removed after clean-tree validation")
-    if "external_review_debt_goal4641_clean_tree_reproducibility" not in decision["release_blockers"]:
-        raise ValueError("Goal4641 review-debt blocker must remain visible")
-    if "goal4642_final_3ai_release_authorization_not_done" not in decision["release_blockers"]:
-        raise ValueError("Final 3-AI release authorization blocker must remain visible")
+    if decision["release_blockers"]:
+        raise ValueError("Formal V4.0.0 release must not retain release blockers")
+    for required_limitation in (
+        "tier3_deferred_not_supported",
+        "whole_app_speedup_wording_not_authorized",
+        "cupy_performance_unmeasured",
+        "no_true_zero_copy_public_claim_authorized",
+        "no_c_abi_embedding_or_non_python_host_scope",
+    ):
+        if required_limitation not in decision["scope_limitations"]:
+            raise ValueError(f"Missing V4 scope limitation: {required_limitation}")
     for flag in (
         "release_claim_authorized",
         "broad_speedup_claim_authorized",
@@ -316,6 +321,7 @@ def validate_v4_goal4632_release_decision() -> dict[str, Any]:
 __all__ = [
     "V4_GOAL4632_STATUS",
     "V4_GOAL4632_DECISION",
+    "V4_AUTHORIZED_RELEASE_LABEL",
     "V4ReleaseGate",
     "v4_goal4632_release_decision",
     "validate_v4_goal4632_release_decision",

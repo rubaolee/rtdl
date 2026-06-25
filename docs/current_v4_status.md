@@ -2,7 +2,7 @@
 
 V4 is the current RTDL user surface for generic RT-core operator work.
 
-Status: scorecard passed; final release authorization pending.
+Status: formal V4.0.0 release authorized.
 
 ## User Promise
 
@@ -65,15 +65,15 @@ PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
 
 Allowed wording:
 
+- RTDL V4.0.0 is the formal high-performance generic RT-core operator release.
 - V4 has eight measured generic Tier-2 operator surfaces.
 - The frozen Goal4639 scorecard passed for those documented surfaces.
-- The current public front door is pending final 3-AI release authorization.
 
-Not allowed yet:
+Not authorized:
 
-- final V4 release wording;
 - broad V4 speedup wording;
 - whole-application speedup wording;
+- all-benchmark speedup wording;
 - public true-zero-copy wording;
 - Tier-3 callback/PTX support wording;
 - raw OptiX callback support wording;

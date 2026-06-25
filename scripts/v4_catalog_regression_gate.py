@@ -192,10 +192,10 @@ def _validate_payload(name: str, payload: dict[str, Any], mode: str) -> tuple[bo
         if mode == "gpu" and payload.get("correctness_passed") is not True:
             failures.append("correctness_not_true")
         if name == "ray_triangle_any_hit_weighted_sum":
-            if payload.get("surface_status") != "tier2_measured_pod_validated_not_release":
+            if payload.get("surface_status") != "tier2_measured_v4_0_0_release_surface":
                 failures.append("weighted_sum_surface_status_not_measured")
         if name == "aabb_index_all_ops_count":
-            if payload.get("surface_status") != "tier2_measured_pod_validated_not_release":
+            if payload.get("surface_status") != "tier2_measured_v4_0_0_release_surface":
                 failures.append("aabb_surface_status_not_measured")
     elif name == "v4_frontdoor_quickstart":
         if payload.get("status") != "ok":
@@ -239,7 +239,7 @@ def _write_markdown(path: Path, result: dict[str, Any]) -> None:
     lines = [
         "# V4 Catalog Regression Gate",
         "",
-        "Status: generated V4 catalog gate, final release authorization pending",
+        "Status: generated V4.0.0 catalog gate",
         "",
         f"- mode: `{result['mode']}`",
         f"- status: `{result['status']}`",
@@ -255,7 +255,7 @@ def _write_markdown(path: Path, result: dict[str, Any]) -> None:
             "",
             "## Non-Authorization",
             "",
-            "This gate does not authorize V4 release, broad speedup wording, Tier-3 callback/PTX support, raw OptiX callbacks, CuPy performance claims, embedding/C-ABI, non-Python host binding claims, or app-specific native kernels.",
+            "This gate does not authorize broad speedup wording, whole-application speedups, Tier-3 callback/PTX support, raw OptiX callbacks, CuPy performance claims, embedding/C-ABI, non-Python host binding claims, or app-specific native kernels.",
             "",
         ]
     )
@@ -300,7 +300,8 @@ def main() -> int:
         "git_commit": _git_value("rev-parse", "HEAD"),
         "git_branch": _git_value("rev-parse", "--abbrev-ref", "HEAD"),
         "native_library": os.environ.get("RTDL_OPTIX_LIBRARY") or os.environ.get("RTDL_OPTIX_LIB"),
-        "release_authorized": False,
+        "release_authorized": True,
+        "authorized_release_label": "RTDL v4.0.0 formal high-performance generic RT-core operator release",
         "broad_v4_speedup_claim_authorized": False,
         "tier3_callback_claim_authorized": False,
         "cupy_performance_claim_authorized": False,

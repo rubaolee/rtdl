@@ -1,10 +1,10 @@
 # V4.0 Scope Gate
 
-Status: generated scorecard-passed gate, final release authorization pending
+Status: generated V4.0.0 formal release scope gate
 
-- gate status: `v4_0_scorecard_scope_defined_pending_final_authorization`
+- gate status: `v4_0_0_formal_release_scope_authorized`
 - validation status: `passed`
-- release authorized: `False`
+- release authorized: `True`
 
 ## Included Surfaces
 
@@ -19,6 +19,7 @@ Status: generated scorecard-passed gate, final release authorization pending
 
 ## Candidate Surfaces
 
+- none
 
 ## Deferred To V4.x
 
@@ -33,10 +34,8 @@ Status: generated scorecard-passed gate, final release authorization pending
 
 ## Blocking Reasons
 
-- `goal4640_public_docs_cleanup_in_progress`
-- `goal4641_clean_tree_reproducibility_gate_not_done`
-- `goal4642_final_3ai_release_authorization_not_done`
+- none
 
 ## Non-Authorization
 
-This gate does not authorize V4 release, broad V4 speedup wording, Tier-3 callback/PTX support, raw OptiX callbacks, CuPy performance claims, embedding/C-ABI, non-Python host binding claims, or app-specific native kernels.
+This gate authorizes the narrow V4.0.0 generic operator release. It does not authorize broad V4 speedup wording, whole-application speedups, Tier-3 callback/PTX support, raw OptiX callbacks, CuPy performance claims, embedding/C-ABI, non-Python host binding claims, or app-specific native kernels.
