@@ -12,6 +12,10 @@ measured Tier-2 fused operator. The intended path is:
 
 Only step 2 is probed here. The next spike, direct `optixModuleCreate` on the
 generated PTX, is recorded in `future/v4/tier3_optix_module_link_spike.md`.
+The full falsifiable protocol is
+`future/v4/tier3_callback_spike_protocol_2026-06-24.md`. This page is Stage 1
+evidence only. It does not prove OptiX wrapper/direct-callable linking,
+correctness parity, callback dispatch overhead, or support readiness.
 
 ## Probe
 

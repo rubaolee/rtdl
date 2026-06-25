@@ -3,18 +3,26 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-V4_0_SCOPE_STATUS = "v4_0_development_scope_defined_not_release"
+V4_0_SCOPE_STATUS = "v4_0_scorecard_scope_defined_pending_final_authorization"
 
 V4_0_INCLUDED_SURFACES = (
     "v4_fixed_radius_count_threshold_2d_device_arrays",
     "v4_closest_hit_grouped_argmin_3d_device_arrays",
     "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+    "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+    "v4_point_group_nearest_witness_2d_device_arrays",
+    "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+    "v4_fixed_radius_graph_component_union_3d_device_arrays",
+    "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
 )
+
+V4_0_CANDIDATE_SURFACES = ()
 
 V4_0_INCLUDED_CAPABILITIES = (
     "unified_python_frontdoor",
     "torch_cuda_device_array_input",
     "torch_cuda_device_array_output",
+    "rtdl_native_prepared_runner",
     "tier2_fused_generic_rt_operators",
     "operator_callback_planner",
 )
@@ -31,8 +39,9 @@ V4_X_DEFERRED_CAPABILITIES = (
 )
 
 V4_RELEASE_BLOCKING_REASONS = (
-    "release_decision_record_not_obtained",
-    "v4_review_debt_open",
+    "goal4640_public_docs_cleanup_in_progress",
+    "goal4641_clean_tree_reproducibility_gate_not_done",
+    "goal4642_final_3ai_release_authorization_not_done",
 )
 
 
@@ -40,6 +49,7 @@ V4_RELEASE_BLOCKING_REASONS = (
 class V4ScopeGate:
     status: str
     included_surfaces: tuple[str, ...]
+    candidate_surfaces: tuple[str, ...]
     included_capabilities: tuple[str, ...]
     deferred_capabilities: tuple[str, ...]
     release_authorized: bool
@@ -58,6 +68,7 @@ class V4ScopeGate:
         return {
             "status": self.status,
             "included_surfaces": self.included_surfaces,
+            "candidate_surfaces": self.candidate_surfaces,
             "included_capabilities": self.included_capabilities,
             "deferred_capabilities": self.deferred_capabilities,
             "release_authorized": self.release_authorized,
@@ -85,14 +96,15 @@ def v4_0_scope_gate() -> V4ScopeGate:
     return V4ScopeGate(
         status=V4_0_SCOPE_STATUS,
         included_surfaces=V4_0_INCLUDED_SURFACES,
+        candidate_surfaces=V4_0_CANDIDATE_SURFACES,
         included_capabilities=V4_0_INCLUDED_CAPABILITIES,
         deferred_capabilities=V4_X_DEFERRED_CAPABILITIES,
         release_authorized=False,
         blocking_reasons=V4_RELEASE_BLOCKING_REASONS,
         required_next_actions=(
-            "validate required amendments from external release review",
-            "obtain a release decision record",
-            "close or explicitly waive V4 review debt before public release",
+            "finish public V4 documentation cleanup",
+            "pass the clean-tree reproducibility gate",
+            "obtain final 3-AI release authorization",
         ),
     )
 
@@ -112,6 +124,8 @@ def validate_v4_0_scope_gate(payload: V4ScopeGate | dict[str, object] | None = N
         missing.append("status")
     if tuple(payload_dict.get("included_surfaces", ())) != V4_0_INCLUDED_SURFACES:
         missing.append("included_surfaces")
+    if tuple(payload_dict.get("candidate_surfaces", ())) != V4_0_CANDIDATE_SURFACES:
+        missing.append("candidate_surfaces")
     deferred = tuple(payload_dict.get("deferred_capabilities", ()))
     for required_deferred in V4_X_DEFERRED_CAPABILITIES:
         if required_deferred not in deferred:
@@ -139,4 +153,5 @@ def validate_v4_0_scope_gate(payload: V4ScopeGate | dict[str, object] | None = N
         "missing_or_invalid": tuple(missing),
         "release_authorized": False,
         "checked_surfaces": V4_0_INCLUDED_SURFACES,
+        "checked_candidate_surfaces": V4_0_CANDIDATE_SURFACES,
     }

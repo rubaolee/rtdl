@@ -1,13 +1,25 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any, Mapping
 
 
-V4_OPERATOR_CATALOG_STATUS = "v4_development_catalog_not_release"
+V4_OPERATOR_CATALOG_STATUS = "v4_scorecard_passed_catalog_pending_final_authorization"
+V4_GOAL4630_PUSHDOWN_RECOGNIZER_STATUS = "goal4630_minimum_pushdown_recognizer_not_release"
+V4_TIER2_MEASURED_SURFACE_STATUS = "tier2_measured_pod_validated_not_release"
+V4_TIER2_DEFERRED_PARTNER_STATUS = "tier2_declared_unmeasured_partner"
+V4_TIER3_CALLBACK_SPIKE_PROTOCOL_STATUS = "tier3_protocol_goal4622_spike_only_not_support"
+V4_TIER3_CALLBACK_SPIKE_PROTOCOL_DOC = "future/v4/tier3_callback_spike_protocol_2026-06-24.md"
+V4_TIER3_ACTION_CALLBACK_REJECTED_STATUS = "rejected_by_goal4622_action_shape_boundary"
 
 V4_TIER2_FIXED_RADIUS_COUNT_THRESHOLD = "fixed_radius_count_threshold"
 V4_TIER2_CLOSEST_HIT_GROUPED_ARGMIN = "closest_hit_grouped_argmin"
 V4_TIER2_RAY_TRIANGLE_ANY_HIT_FLAGS = "ray_triangle_any_hit_flags"
+V4_TIER2_PRIMITIVE_GROUPED_I64_REDUCTION = "primitive_grouped_i64_reduction"
+V4_TIER2_POINT_GROUP_NEAREST_WITNESS = "point_group_nearest_witness"
+V4_TIER2_RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM = "ray_triangle_any_hit_weighted_sum"
+V4_TIER2_FIXED_RADIUS_GRAPH_COMPONENT_UNION = "fixed_radius_graph_component_union_3d"
+V4_TIER2_AABB_INDEX_QUERY_2D_ALL_OPS_COUNT = "aabb_index_query_2d_all_ops_count"
 
 V4_TIER2_OPERATOR_SURFACES = {
     V4_TIER2_FIXED_RADIUS_COUNT_THRESHOLD: {
@@ -16,6 +28,12 @@ V4_TIER2_OPERATOR_SURFACES = {
         "measured_partners": ("torch",),
         "declared_unmeasured_partners": ("cupy",),
         "continuation_class": "count_threshold",
+        "surface_status": V4_TIER2_MEASURED_SURFACE_STATUS,
+        "partner_claim_status": "measured_on_v4_section8_pod",
+        "direct_device_input_columns": True,
+        "direct_device_output_columns": True,
+        "host_materialization_in_hot_path": False,
+        "true_zero_copy_authorized": False,
     },
     V4_TIER2_CLOSEST_HIT_GROUPED_ARGMIN: {
         "api_surface": "v4_closest_hit_grouped_argmin_3d_device_arrays",
@@ -23,6 +41,12 @@ V4_TIER2_OPERATOR_SURFACES = {
         "measured_partners": ("torch",),
         "declared_unmeasured_partners": ("cupy",),
         "continuation_class": "argmin",
+        "surface_status": V4_TIER2_MEASURED_SURFACE_STATUS,
+        "partner_claim_status": "measured_on_v4_section8_pod",
+        "direct_device_input_columns": True,
+        "direct_device_output_columns": True,
+        "host_materialization_in_hot_path": False,
+        "true_zero_copy_authorized": False,
     },
     V4_TIER2_RAY_TRIANGLE_ANY_HIT_FLAGS: {
         "api_surface": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
@@ -30,8 +54,123 @@ V4_TIER2_OPERATOR_SURFACES = {
         "measured_partners": ("torch",),
         "declared_unmeasured_partners": ("cupy",),
         "continuation_class": "any_hit_flag",
+        "surface_status": V4_TIER2_MEASURED_SURFACE_STATUS,
+        "partner_claim_status": "measured_on_v4_section8_pod",
+        "direct_device_input_columns": True,
+        "direct_device_output_columns": True,
+        "host_materialization_in_hot_path": False,
+        "true_zero_copy_authorized": False,
+    },
+    V4_TIER2_PRIMITIVE_GROUPED_I64_REDUCTION: {
+        "api_surface": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+        "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+        "measured_partners": ("torch",),
+        "declared_unmeasured_partners": ("cupy",),
+        "continuation_class": "grouped_i64_reduction",
+        "surface_status": V4_TIER2_MEASURED_SURFACE_STATUS,
+        "partner_claim_status": "measured_on_v4_goal4617_pod_optix8",
+        "direct_device_input_columns": True,
+        "direct_device_output_columns": True,
+        "host_materialization_in_hot_path": False,
+        "true_zero_copy_authorized": False,
+        "validated_optix_abi": "8.0",
+        "validated_gpu_family": "RTX A5000 / Ampere",
+        "validated_driver": "570.195.03",
+        "validated_partner_scope": "torch 2.8.0+cu128",
+        "optix_9_1_validated": False,
+    },
+    V4_TIER2_POINT_GROUP_NEAREST_WITNESS: {
+        "api_surface": "v4_point_group_nearest_witness_2d_device_arrays",
+        "generic_primitive": "POINT_GROUP_NEAREST_WITNESS_2D",
+        "measured_partners": ("torch",),
+        "declared_unmeasured_partners": ("cupy",),
+        "continuation_class": "nearest_witness",
+        "surface_status": V4_TIER2_MEASURED_SURFACE_STATUS,
+        "partner_claim_status": "measured_on_v4_goal4618_pod_optix8",
+        "direct_device_input_columns": True,
+        "direct_device_output_columns": True,
+        "host_materialization_in_hot_path": False,
+        "true_zero_copy_authorized": False,
+        "validated_optix_abi": "8.0",
+        "validated_gpu_family": "RTX A5000 / Ampere",
+        "validated_driver": "570.195.03",
+        "validated_partner_scope": "torch 2.8.0+cu128",
+        "distance_precision": "float32_computed_float64_output",
+        "prepared_search_groups": "rtdl_owned_native_scene",
+        "optix_9_1_validated": False,
+    },
+    V4_TIER2_RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM: {
+        "api_surface": "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+        "generic_primitive": "RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM_3D",
+        "measured_partners": ("torch",),
+        "declared_unmeasured_partners": ("cupy",),
+        "continuation_class": "any_hit_weighted_sum",
+        "surface_status": V4_TIER2_MEASURED_SURFACE_STATUS,
+        "partner_claim_status": "measured_on_v4_goal4633_pod_optix8",
+        "direct_device_input_columns": True,
+        "direct_device_output_columns": False,
+        "direct_device_output_scalar": True,
+        "host_materialization_in_hot_path": False,
+        "true_zero_copy_authorized": False,
+        "validated_optix_abi": "8.0",
+        "validated_gpu_family": "RTX A5000 / Ampere",
+        "validated_driver": "570.195.03",
+        "validated_partner_scope": "torch 2.8.0+cu128",
+        "optix_9_1_validated": False,
+        "comparison_class": "same_operator_comparable_route",
+        "comparable_route_ratio_range": "1.2011x-2.1459x",
+        "comparable_route_geomean": 1.5457333064727565,
+        "performance_caveat": "largest_shape_barely_clears_1_20x_floor_not_large_speedup",
+    },
+    V4_TIER2_FIXED_RADIUS_GRAPH_COMPONENT_UNION: {
+        "api_surface": "v4_fixed_radius_graph_component_union_3d_device_arrays",
+        "generic_primitive": "FIXED_RADIUS_GRAPH_COMPONENT_UNION_3D",
+        "measured_partners": ("numba",),
+        "declared_unmeasured_partners": ("torch", "cupy"),
+        "continuation_class": "component_union",
+        "surface_status": V4_TIER2_MEASURED_SURFACE_STATUS,
+        "partner_claim_status": "measured_on_v4_goal4635_pod_optix8_numba",
+        "direct_device_input_columns": True,
+        "direct_device_output_columns": True,
+        "host_materialization_in_hot_path": False,
+        "true_zero_copy_authorized": False,
+        "validated_optix_abi": "8.0",
+        "validated_gpu_family": "RTX A5000 / Ampere",
+        "validated_driver": "570.195.03",
+        "validated_partner_scope": "numba 0.65.1 / CUDA on RTX A5000",
+        "optix_9_1_validated": False,
+        "comparison_class": "same_contract_embree_control_and_legacy_optix_control",
+        "runner_vs_embree_hot_speedup": 1.3930791165731065,
+        "runner_vs_embree_wall_speedup": 1.6001250028719352,
+        "runner_vs_legacy_wall_speedup": 1.2080037787208602,
+        "performance_caveat": "component-union gate is Numba-scoped operator coverage, not whole-app RTDBSCAN speedup",
+    },
+    V4_TIER2_AABB_INDEX_QUERY_2D_ALL_OPS_COUNT: {
+        "api_surface": "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
+        "generic_primitive": "AABB_INDEX_QUERY_2D",
+        "measured_partners": ("rtdl_native",),
+        "declared_unmeasured_partners": ("torch", "cupy", "numba"),
+        "continuation_class": "aabb_index_all_ops_count",
+        "surface_status": V4_TIER2_MEASURED_SURFACE_STATUS,
+        "partner_claim_status": "measured_on_v4_goal4636c_pod_optix8_native",
+        "direct_device_input_columns": False,
+        "direct_device_output_columns": False,
+        "direct_device_output_scalar": True,
+        "host_materialization_in_hot_path": False,
+        "true_zero_copy_authorized": False,
+        "validated_optix_abi": "8.0",
+        "validated_gpu_family": "RTX A5000 / Ampere",
+        "validated_driver": "570.195.03",
+        "validated_partner_scope": "rtdl_native OptiX prepared query set / Embree control",
+        "optix_9_1_validated": False,
+        "comparison_class": "same_contract_family_embree_control",
+        "runner_vs_embree_hot_speedup": 264.8223871986397,
+        "runner_vs_embree_wall_speedup": 115.00724056766381,
+        "performance_caveat": "AABB gate is generic operator coverage, not LibRTS paper reproduction or whole-app speedup",
     },
 }
+
+V4_TIER2_CANDIDATE_OPERATOR_SURFACES = {}
 
 V4_OPERATOR_ALIASES = {
     "fixed_radius": V4_TIER2_FIXED_RADIUS_COUNT_THRESHOLD,
@@ -41,6 +180,29 @@ V4_OPERATOR_ALIASES = {
     "closest_hit_argmin": V4_TIER2_CLOSEST_HIT_GROUPED_ARGMIN,
     "any_hit": V4_TIER2_RAY_TRIANGLE_ANY_HIT_FLAGS,
     "any_hit_flags": V4_TIER2_RAY_TRIANGLE_ANY_HIT_FLAGS,
+    "grouped_i64": V4_TIER2_PRIMITIVE_GROUPED_I64_REDUCTION,
+    "grouped_i64_reduction": V4_TIER2_PRIMITIVE_GROUPED_I64_REDUCTION,
+    "primitive_grouped_i64": V4_TIER2_PRIMITIVE_GROUPED_I64_REDUCTION,
+    "primitive_grouped_reduction": V4_TIER2_PRIMITIVE_GROUPED_I64_REDUCTION,
+    "nearest_witness": V4_TIER2_POINT_GROUP_NEAREST_WITNESS,
+    "point_group_nearest": V4_TIER2_POINT_GROUP_NEAREST_WITNESS,
+    "point_group_nearest_witness": V4_TIER2_POINT_GROUP_NEAREST_WITNESS,
+    "point_group_witness": V4_TIER2_POINT_GROUP_NEAREST_WITNESS,
+    "weighted_sum": V4_TIER2_RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM,
+    "any_hit_weighted_sum": V4_TIER2_RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM,
+    "ray_triangle_weighted_sum": V4_TIER2_RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM,
+    "ray_triangle_any_hit_weighted_sum": V4_TIER2_RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM,
+    "component_union": V4_TIER2_FIXED_RADIUS_GRAPH_COMPONENT_UNION,
+    "radius_graph_component_union": V4_TIER2_FIXED_RADIUS_GRAPH_COMPONENT_UNION,
+    "fixed_radius_graph_component_union": V4_TIER2_FIXED_RADIUS_GRAPH_COMPONENT_UNION,
+    "fixed_radius_graph_component_union_3d": V4_TIER2_FIXED_RADIUS_GRAPH_COMPONENT_UNION,
+    "aabb": V4_TIER2_AABB_INDEX_QUERY_2D_ALL_OPS_COUNT,
+    "aabb_index": V4_TIER2_AABB_INDEX_QUERY_2D_ALL_OPS_COUNT,
+    "aabb_index_query": V4_TIER2_AABB_INDEX_QUERY_2D_ALL_OPS_COUNT,
+    "aabb_index_query_2d": V4_TIER2_AABB_INDEX_QUERY_2D_ALL_OPS_COUNT,
+    "aabb_index_all_ops": V4_TIER2_AABB_INDEX_QUERY_2D_ALL_OPS_COUNT,
+    "aabb_index_all_ops_count": V4_TIER2_AABB_INDEX_QUERY_2D_ALL_OPS_COUNT,
+    "aabb_index_query_2d_all_ops_count": V4_TIER2_AABB_INDEX_QUERY_2D_ALL_OPS_COUNT,
 }
 
 V4_SCALAR_TIER3_CANDIDATE_CONTINUATIONS = {
@@ -48,6 +210,18 @@ V4_SCALAR_TIER3_CANDIDATE_CONTINUATIONS = {
     "custom_score",
     "custom_threshold",
     "custom_minmax",
+}
+
+V4_APP_IDENTITY_KERNEL_NAMES = {
+    "barnes_hut",
+    "dbscan",
+    "rt_dbscan",
+    "rayjoin",
+    "spatial_rayjoin",
+    "triangle_counting",
+    "librts_spatial_index",
+    "contact_manifold",
+    "robot_collision",
 }
 
 
@@ -64,11 +238,15 @@ class V4OperatorPlan:
     partner: str
     continuation_class: str | None
     guidance: str
+    tier3_protocol_status: str | None = None
+    tier3_protocol_doc: str | None = None
     release_claim_authorized: bool = False
     broad_v4_speedup_claim_authorized: bool = False
     whole_app_speedup_claim_authorized: bool = False
+    true_zero_copy_authorized: bool = False
     tier3_callback_claim_authorized: bool = False
     tier3_spike_authorized: bool = False
+    raw_optix_callback_claim_authorized: bool = False
     cupy_performance_claim_authorized: bool = False
     embedding_c_abi_claim_authorized: bool = False
     non_python_host_binding_claim_authorized: bool = False
@@ -85,11 +263,68 @@ class V4OperatorPlan:
             "partner": self.partner,
             "continuation_class": self.continuation_class,
             "guidance": self.guidance,
+            "tier3_protocol_status": self.tier3_protocol_status,
+            "tier3_protocol_doc": self.tier3_protocol_doc,
             "release_claim_authorized": self.release_claim_authorized,
             "broad_v4_speedup_claim_authorized": self.broad_v4_speedup_claim_authorized,
             "whole_app_speedup_claim_authorized": self.whole_app_speedup_claim_authorized,
+            "true_zero_copy_authorized": self.true_zero_copy_authorized,
             "tier3_callback_claim_authorized": self.tier3_callback_claim_authorized,
             "tier3_spike_authorized": self.tier3_spike_authorized,
+            "raw_optix_callback_claim_authorized": self.raw_optix_callback_claim_authorized,
+            "cupy_performance_claim_authorized": self.cupy_performance_claim_authorized,
+            "embedding_c_abi_claim_authorized": self.embedding_c_abi_claim_authorized,
+            "non_python_host_binding_claim_authorized": self.non_python_host_binding_claim_authorized,
+            "app_specific_native_kernel_authorized": self.app_specific_native_kernel_authorized,
+        }
+
+
+@dataclass(frozen=True)
+class V4PushdownRecognition:
+    """Minimum Goal4630 recognizer result for one declarative request."""
+
+    expression: dict[str, object]
+    status: str
+    pushdown_recognized: bool
+    fail_closed: bool
+    operator_source: str | None
+    plan: V4OperatorPlan
+    guidance: str
+    recognizer_status: str = V4_GOAL4630_PUSHDOWN_RECOGNIZER_STATUS
+    release_claim_authorized: bool = False
+    broad_v4_speedup_claim_authorized: bool = False
+    whole_app_speedup_claim_authorized: bool = False
+    true_zero_copy_authorized: bool = False
+    measured_catalog_claim_authorized: bool = False
+    tier3_callback_claim_authorized: bool = False
+    raw_optix_callback_claim_authorized: bool = False
+    cupy_performance_claim_authorized: bool = False
+    embedding_c_abi_claim_authorized: bool = False
+    non_python_host_binding_claim_authorized: bool = False
+    app_specific_native_kernel_authorized: bool = False
+
+    def as_dict(self) -> dict[str, object]:
+        return {
+            "expression": self.expression,
+            "status": self.status,
+            "pushdown_recognized": self.pushdown_recognized,
+            "fail_closed": self.fail_closed,
+            "operator_source": self.operator_source,
+            "plan": self.plan.as_dict(),
+            "api_surface": self.plan.api_surface,
+            "generic_primitive": self.plan.generic_primitive,
+            "measured_partner": self.plan.measured_partner,
+            "partner": self.plan.partner,
+            "continuation_class": self.plan.continuation_class,
+            "guidance": self.guidance,
+            "recognizer_status": self.recognizer_status,
+            "release_claim_authorized": self.release_claim_authorized,
+            "broad_v4_speedup_claim_authorized": self.broad_v4_speedup_claim_authorized,
+            "whole_app_speedup_claim_authorized": self.whole_app_speedup_claim_authorized,
+            "true_zero_copy_authorized": self.true_zero_copy_authorized,
+            "measured_catalog_claim_authorized": self.measured_catalog_claim_authorized,
+            "tier3_callback_claim_authorized": self.tier3_callback_claim_authorized,
+            "raw_optix_callback_claim_authorized": self.raw_optix_callback_claim_authorized,
             "cupy_performance_claim_authorized": self.cupy_performance_claim_authorized,
             "embedding_c_abi_claim_authorized": self.embedding_c_abi_claim_authorized,
             "non_python_host_binding_claim_authorized": self.non_python_host_binding_claim_authorized,
@@ -100,6 +335,24 @@ class V4OperatorPlan:
 def _normalize_operator_name(operator: str) -> str:
     key = str(operator).strip().lower().replace("-", "_").replace(" ", "_")
     return V4_OPERATOR_ALIASES.get(key, key)
+
+
+def _bool_from_expression(expression: Mapping[str, object], key: str) -> bool:
+    value = expression.get(key, False)
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "y"}
+    return bool(value)
+
+
+def _first_text_value(expression: Mapping[str, object], keys: tuple[str, ...]) -> tuple[str | None, str | None]:
+    for key in keys:
+        value = expression.get(key)
+        if value is None:
+            continue
+        text = str(value).strip()
+        if text:
+            return text, key
+    return None, None
 
 
 def plan_v4_operator_request(
@@ -121,17 +374,18 @@ def plan_v4_operator_request(
 
     partner = str(partner)
     normalized = _normalize_operator_name(operator)
-    if partner not in {"torch", "cupy"}:
-        raise ValueError("partner must be one of: torch, cupy")
+    if partner not in {"torch", "cupy", "numba", "rtdl_native"}:
+        raise ValueError("partner must be one of: torch, cupy, numba, rtdl_native")
 
     if normalized in V4_TIER2_OPERATOR_SURFACES and callback_shape in (None, "", "builtin"):
         surface = V4_TIER2_OPERATOR_SURFACES[normalized]
         measured = partner in surface["measured_partners"]
         status = "tier2_measured_ready" if measured else "tier2_declared_unmeasured_partner"
+        measured_partners = ", ".join(str(item) for item in surface["measured_partners"])
         guidance = (
             f"Use {surface['api_surface']} for this recognized fused operator."
             if measured
-            else f"This operator is measured for Torch only. No V4.0 API surface is exposed for {partner}; treat this partner as V4.x deferred."
+            else f"This operator is measured for {measured_partners} only. No V4.0 API surface is exposed for {partner}; treat this partner as V4.x deferred."
         )
         return V4OperatorPlan(
             request=normalized,
@@ -143,6 +397,27 @@ def plan_v4_operator_request(
             partner=partner,
             continuation_class=str(surface["continuation_class"]),
             guidance=guidance,
+        )
+
+    if normalized in V4_TIER2_CANDIDATE_OPERATOR_SURFACES and callback_shape in (None, "", "builtin"):
+        surface = V4_TIER2_CANDIDATE_OPERATOR_SURFACES[normalized]
+        continuation = str(surface["continuation_class"])
+        return V4OperatorPlan(
+            request=normalized,
+            status=str(surface["status"]),
+            tier="tier2_fused_operator_candidate",
+            api_surface=str(surface["api_surface"]) if partner == "torch" else None,
+            generic_primitive=str(surface["generic_primitive"]),
+            measured_partner=False,
+            partner=partner,
+            continuation_class=continuation,
+            guidance=(
+                f"{surface['api_surface']} is implemented as a V4 candidate surface, "
+                "but it is not a measured V4.0 release surface until external review "
+                "and a release decision promote it."
+                if partner == "torch"
+                else f"This {continuation} candidate is not exposed for CuPy performance claims."
+            ),
         )
 
     if mutates_shared_state or dynamic_allocation or variable_length_output:
@@ -166,8 +441,10 @@ def plan_v4_operator_request(
                 "This callback is action-shaped ("
                 + ", ".join(reasons)
                 + "). V4.0 does not expose raw OptiX callbacks or app-specific native kernels; "
-                "rewrite as a recognized reduce/filter operator or defer to a future constrained Tier-3 design."
+                "rewrite as a recognized reduce/filter operator or defer to the constrained Tier-3 spike protocol."
             ),
+            tier3_protocol_status=V4_TIER3_ACTION_CALLBACK_REJECTED_STATUS,
+            tier3_protocol_doc=V4_TIER3_CALLBACK_SPIKE_PROTOCOL_DOC,
         )
 
     callback_key = str(callback_shape or normalized).strip().lower().replace("-", "_").replace(" ", "_")
@@ -183,8 +460,12 @@ def plan_v4_operator_request(
             continuation_class=callback_key,
             guidance=(
                 "This is a scalar per-hit reduce candidate for the Numba->PTX->OptiX spike. "
-                "It is not a V4.0 measured surface and must not be documented as supported until the spike links, runs, and is measured."
+                "It is not a V4.0 measured surface and must not be documented as supported until "
+                "the goal4622 spike protocol links, runs, meets correctness parity, meets compile reliability, "
+                "and stays under the fixed overhead ceiling."
             ),
+            tier3_protocol_status=V4_TIER3_CALLBACK_SPIKE_PROTOCOL_STATUS,
+            tier3_protocol_doc=V4_TIER3_CALLBACK_SPIKE_PROTOCOL_DOC,
             tier3_spike_authorized=True,
         )
 
@@ -204,6 +485,159 @@ def plan_v4_operator_request(
     )
 
 
+def recognize_v4_pushdown_request(
+    expression: Mapping[str, object],
+    *,
+    partner: str = "torch",
+) -> V4PushdownRecognition:
+    """Recognize a minimal declarative V4 push-down request.
+
+    The recognizer is intentionally a thin Goal4630 slice. It recognizes one
+    generic operator at a time, delegates claim boundaries to
+    :func:`plan_v4_operator_request`, and fails closed for app-identity kernels,
+    action-shaped callbacks, unsupported custom logic, and unmeasured partners.
+    """
+
+    if not isinstance(expression, Mapping):
+        raise TypeError("expression must be a mapping")
+
+    expr = dict(expression)
+    operator_text, operator_source = _first_text_value(
+        expr,
+        (
+            "operator",
+            "op",
+            "reduce",
+            "reduction",
+            "continuation",
+            "relation",
+            "pattern",
+            "callback",
+        ),
+    )
+    operator = operator_text or "unsupported"
+    normalized = _normalize_operator_name(operator)
+    callback_shape = expr.get("callback_shape")
+    if callback_shape is not None:
+        callback_shape = str(callback_shape)
+
+    kernel_text, _kernel_source = _first_text_value(expr, ("kernel", "native_kernel", "app_kernel"))
+    app_identity_probe = _normalize_operator_name(kernel_text or normalized)
+    if app_identity_probe in V4_APP_IDENTITY_KERNEL_NAMES:
+        plan = V4OperatorPlan(
+            request=app_identity_probe,
+            status="rejected_app_identity_kernel_deferred",
+            tier="unsupported_v4_0_deferred",
+            api_surface=None,
+            generic_primitive=None,
+            measured_partner=False,
+            partner=str(partner),
+            continuation_class=callback_shape,
+            guidance=(
+                "This request names an application-identity kernel. V4.0 push-down "
+                "recognizes generic continuation operators only; rewrite it as a "
+                "count/threshold/argmin/any-hit/grouped-reduction request or defer it."
+            ),
+        )
+        return V4PushdownRecognition(
+            expression=expr,
+            status="pushdown_fail_closed_app_identity_kernel",
+            pushdown_recognized=False,
+            fail_closed=True,
+            operator_source=operator_source,
+            plan=plan,
+            guidance=plan.guidance,
+        )
+
+    plan = plan_v4_operator_request(
+        normalized,
+        partner=str(partner),
+        callback_shape=callback_shape,
+        numba_device_function=_bool_from_expression(expr, "numba_device_function"),
+        mutates_shared_state=_bool_from_expression(expr, "mutates_shared_state"),
+        variable_length_output=_bool_from_expression(expr, "variable_length_output"),
+        dynamic_allocation=_bool_from_expression(expr, "dynamic_allocation"),
+    )
+
+    if plan.status == "tier2_measured_ready":
+        return V4PushdownRecognition(
+            expression=expr,
+            status="pushdown_recognized_measured_tier2",
+            pushdown_recognized=True,
+            fail_closed=False,
+            operator_source=operator_source,
+            plan=plan,
+            guidance=f"Recognized generic operator; route to {plan.api_surface}.",
+        )
+
+    if plan.status == "tier2_candidate_goal4620_not_measured":
+        if plan.api_surface is None:
+            return V4PushdownRecognition(
+                expression=expr,
+                status="pushdown_fail_closed_unmeasured_partner",
+                pushdown_recognized=False,
+                fail_closed=True,
+                operator_source=operator_source,
+                plan=plan,
+                guidance=plan.guidance,
+            )
+        return V4PushdownRecognition(
+            expression=expr,
+            status="pushdown_recognized_candidate_tier2_not_measured",
+            pushdown_recognized=True,
+            fail_closed=False,
+            operator_source=operator_source,
+            plan=plan,
+            guidance=(
+                "Recognized generic candidate operator, but it is not a measured "
+                "release surface and must not be counted as one."
+            ),
+        )
+
+    if plan.status == "tier2_declared_unmeasured_partner":
+        return V4PushdownRecognition(
+            expression=expr,
+            status="pushdown_fail_closed_unmeasured_partner",
+            pushdown_recognized=False,
+            fail_closed=True,
+            operator_source=operator_source,
+            plan=plan,
+            guidance=plan.guidance,
+        )
+
+    if plan.status == "tier3_spike_only_not_v4_0_release_surface":
+        return V4PushdownRecognition(
+            expression=expr,
+            status="pushdown_fail_closed_tier3_spike_only",
+            pushdown_recognized=False,
+            fail_closed=True,
+            operator_source=operator_source,
+            plan=plan,
+            guidance=plan.guidance,
+        )
+
+    if plan.status == "rejected_action_shaped_callback_deferred":
+        return V4PushdownRecognition(
+            expression=expr,
+            status="pushdown_fail_closed_action_shape",
+            pushdown_recognized=False,
+            fail_closed=True,
+            operator_source=operator_source,
+            plan=plan,
+            guidance=plan.guidance,
+        )
+
+    return V4PushdownRecognition(
+        expression=expr,
+        status="pushdown_fail_closed_unsupported",
+        pushdown_recognized=False,
+        fail_closed=True,
+        operator_source=operator_source,
+        plan=plan,
+        guidance=plan.guidance,
+    )
+
+
 def measured_v4_tier2_operator_catalog() -> list[dict[str, object]]:
     """Return the current measured V4 Tier-2 operator catalog."""
 
@@ -212,13 +646,79 @@ def measured_v4_tier2_operator_catalog() -> list[dict[str, object]]:
         rows.append(
             {
                 "operator": name,
+                "catalog_class": "measured",
+                "surface_status": surface["surface_status"],
                 "api_surface": surface["api_surface"],
                 "generic_primitive": surface["generic_primitive"],
                 "measured_partners": surface["measured_partners"],
                 "declared_unmeasured_partners": surface["declared_unmeasured_partners"],
+                "pod_candidate_partners": (),
+                "partner_claim_status": surface["partner_claim_status"],
                 "continuation_class": surface["continuation_class"],
+                "direct_device_input_columns": surface["direct_device_input_columns"],
+                "direct_device_output_columns": surface.get("direct_device_output_columns", True),
+                "direct_device_output_scalar": surface.get("direct_device_output_scalar", False),
+                "host_materialization_in_hot_path": surface["host_materialization_in_hot_path"],
+                "true_zero_copy_authorized": surface["true_zero_copy_authorized"],
+                "validated_optix_abi": surface.get("validated_optix_abi"),
+                "validated_gpu_family": surface.get("validated_gpu_family"),
+                "validated_driver": surface.get("validated_driver"),
+                "validated_partner_scope": surface.get("validated_partner_scope"),
+                "optix_9_1_validated": surface.get("optix_9_1_validated"),
+                "distance_precision": surface.get("distance_precision"),
+                "prepared_search_groups": surface.get("prepared_search_groups"),
+                "comparison_class": surface.get("comparison_class"),
+                "comparable_route_ratio_range": surface.get("comparable_route_ratio_range"),
+                "comparable_route_geomean": surface.get("comparable_route_geomean"),
+                "runner_vs_embree_hot_speedup": surface.get("runner_vs_embree_hot_speedup"),
+                "runner_vs_embree_wall_speedup": surface.get("runner_vs_embree_wall_speedup"),
+                "runner_vs_legacy_wall_speedup": surface.get("runner_vs_legacy_wall_speedup"),
+                "performance_caveat": surface.get("performance_caveat"),
                 "release_claim_authorized": False,
+                "broad_v4_speedup_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
                 "tier3_callback_claim_authorized": False,
+                "raw_optix_callback_claim_authorized": False,
+                "cupy_performance_claim_authorized": False,
+                "embedding_c_abi_claim_authorized": False,
+                "non_python_host_binding_claim_authorized": False,
+                "app_specific_native_kernel_authorized": False,
+            }
+        )
+    return rows
+
+
+def candidate_v4_tier2_operator_catalog() -> list[dict[str, object]]:
+    """Return current non-release V4 Tier-2 candidate operators."""
+
+    rows: list[dict[str, object]] = []
+    for name, surface in V4_TIER2_CANDIDATE_OPERATOR_SURFACES.items():
+        rows.append(
+            {
+                "operator": name,
+                "catalog_class": "candidate",
+                "surface_status": surface["status"],
+                "api_surface": surface["api_surface"],
+                "generic_primitive": surface["generic_primitive"],
+                "measured_partners": surface["measured_partners"],
+                "pod_candidate_partners": surface["pod_candidate_partners"],
+                "declared_unmeasured_partners": surface["declared_unmeasured_partners"],
+                "partner_claim_status": surface["partner_claim_status"],
+                "continuation_class": surface["continuation_class"],
+                "status": surface["status"],
+                "direct_device_input_columns": surface["direct_device_input_columns"],
+                "direct_device_output_columns": False,
+                "direct_device_output_scalar": surface["direct_device_output_scalar"],
+                "host_materialization_in_hot_path": surface["host_materialization_in_hot_path"],
+                "true_zero_copy_authorized": surface["true_zero_copy_authorized"],
+                "release_claim_authorized": False,
+                "broad_v4_speedup_claim_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+                "tier3_callback_claim_authorized": False,
+                "raw_optix_callback_claim_authorized": False,
+                "cupy_performance_claim_authorized": False,
+                "embedding_c_abi_claim_authorized": False,
+                "non_python_host_binding_claim_authorized": False,
                 "app_specific_native_kernel_authorized": False,
             }
         )

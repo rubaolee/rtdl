@@ -1,0 +1,320 @@
+{
+  "app_specific_native_kernel_authorized": false,
+  "broad_v4_speedup_claim_authorized": false,
+  "cupy_performance_claim_authorized": false,
+  "examples": [
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "future/v4/examples/fixed_radius_torch_device_arrays.py",
+        "--copies",
+        "16",
+        "--dry-run"
+      ],
+      "failures": [],
+      "name": "fixed_radius",
+      "passed": true,
+      "payload": {
+        "copies": 16,
+        "example": "v4_fixed_radius_torch_device_arrays",
+        "input_contract": "caller_supplied_torch_device_point_columns",
+        "point_count": 128,
+        "radius": 0.35,
+        "release_claim_authorized": false,
+        "status": "dry_run",
+        "threshold": 3,
+        "tier3_callback_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "dry_run"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "future/v4/examples/closest_hit_grouped_argmin_torch_device_arrays.py",
+        "--ray-count",
+        "16",
+        "--dry-run"
+      ],
+      "failures": [],
+      "name": "closest_hit_grouped_argmin",
+      "passed": true,
+      "payload": {
+        "example": "v4_closest_hit_grouped_argmin_torch_device_arrays",
+        "group_count": 2,
+        "group_width": 8,
+        "input_contract": "caller_supplied_torch_device_triangle_ray_and_group_columns",
+        "output_contract": "caller_owned_torch_device_grouped_argmin_columns",
+        "ray_count": 16,
+        "release_claim_authorized": false,
+        "status": "dry_run",
+        "tier3_callback_claim_authorized": false,
+        "triangle_count": 16,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "dry_run"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "future/v4/examples/ray_triangle_any_hit_flags_torch_device_arrays.py",
+        "--ray-count",
+        "16",
+        "--dry-run"
+      ],
+      "failures": [],
+      "name": "ray_triangle_any_hit_flags",
+      "passed": true,
+      "payload": {
+        "example": "v4_ray_triangle_any_hit_flags_torch_device_arrays",
+        "input_contract": "caller_supplied_torch_device_triangle_aabb_and_ray_columns",
+        "output_contract": "caller_owned_torch_device_any_hit_flag_column",
+        "ray_count": 16,
+        "release_claim_authorized": false,
+        "status": "dry_run",
+        "tier3_callback_claim_authorized": false,
+        "triangle_count": 16,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "dry_run"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "future/v4/examples/primitive_grouped_i64_reduction_torch_device_arrays.py",
+        "--ray-count",
+        "16",
+        "--dry-run"
+      ],
+      "failures": [],
+      "name": "primitive_grouped_i64_reduction",
+      "passed": true,
+      "payload": {
+        "broad_v4_speedup_claim_authorized": false,
+        "example": "v4_primitive_grouped_i64_reduction_torch_device_arrays",
+        "group_count": 1,
+        "group_width": 16,
+        "input_contract": "caller_supplied_torch_device_triangle_and_ray_columns_prepared_primitive_payload",
+        "optix_9_1_validated": false,
+        "output_contract": "caller_owned_torch_device_grouped_i64_columns",
+        "ray_count": 16,
+        "release_claim_authorized": false,
+        "status": "dry_run",
+        "surface": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+        "tier3_callback_claim_authorized": false,
+        "triangle_count": 16,
+        "validated_gpu_family": "RTX A5000 / Ampere",
+        "validated_optix_abi": "8.0",
+        "validated_partner_scope": "torch 2.8.0+cu128",
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "dry_run"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "future/v4/examples/point_group_nearest_witness_torch_device_arrays.py",
+        "--query-count",
+        "16",
+        "--dry-run"
+      ],
+      "failures": [],
+      "name": "point_group_nearest_witness",
+      "passed": true,
+      "payload": {
+        "broad_v4_speedup_claim_authorized": false,
+        "distance_precision": "float32_computed_float64_output",
+        "example": "v4_point_group_nearest_witness_torch_device_arrays",
+        "group_count": 16,
+        "input_contract": "native_prepared_point_groups_plus_torch_device_query_columns",
+        "optix_9_1_validated": false,
+        "output_contract": "caller_owned_torch_device_nearest_witness_columns",
+        "query_count": 16,
+        "radius": 0.5,
+        "release_claim_authorized": false,
+        "search_count": 16,
+        "status": "dry_run",
+        "surface": "v4_point_group_nearest_witness_2d_device_arrays",
+        "tier3_callback_claim_authorized": false,
+        "true_zero_copy_authorized": false,
+        "validated_gpu_family": "RTX A5000 / Ampere",
+        "validated_optix_abi": "8.0",
+        "validated_partner_scope": "torch 2.8.0+cu128",
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "dry_run"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "future/v4/examples/v4_frontdoor_quickstart.py"
+      ],
+      "failures": [],
+      "name": "v4_frontdoor_quickstart",
+      "passed": true,
+      "payload": {
+        "app_specific_native_kernel_authorized": false,
+        "broad_v4_speedup_claim_authorized": false,
+        "candidate_operator_count": 1,
+        "candidate_surface_count": 1,
+        "catalog_operator_count": 5,
+        "complex_callback_status": "rejected_action_shaped_callback_deferred",
+        "cupy_performance_claim_authorized": false,
+        "embedding_c_abi_claim_authorized": false,
+        "front_door_status": "v4_development_front_door_not_release",
+        "measured_surface_count": 5,
+        "non_python_host_binding_claim_authorized": false,
+        "raw_optix_callback_claim_authorized": false,
+        "release_claim_authorized": false,
+        "status": "ok",
+        "tier2_plan_status": "tier2_measured_ready",
+        "tier2_plan_surface": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+        "tier3_callback_claim_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "ok"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "future/v4/examples/operator_callback_planning.py",
+        "--case",
+        "tier2"
+      ],
+      "failures": [],
+      "name": "operator_callback_planning_tier2",
+      "passed": true,
+      "payload": {
+        "api_surface": "v4_fixed_radius_count_threshold_2d_device_arrays",
+        "app_specific_native_kernel_authorized": false,
+        "broad_v4_speedup_claim_authorized": false,
+        "continuation_class": "count_threshold",
+        "cupy_performance_claim_authorized": false,
+        "embedding_c_abi_claim_authorized": false,
+        "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+        "guidance": "Use v4_fixed_radius_count_threshold_2d_device_arrays for this recognized fused operator.",
+        "measured_partner": true,
+        "non_python_host_binding_claim_authorized": false,
+        "partner": "torch",
+        "raw_optix_callback_claim_authorized": false,
+        "release_claim_authorized": false,
+        "request": "fixed_radius_count_threshold",
+        "status": "tier2_measured_ready",
+        "tier": "tier2_fused_operator",
+        "tier3_callback_claim_authorized": false,
+        "tier3_spike_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "tier2_measured_ready"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "future/v4/examples/operator_callback_planning.py",
+        "--case",
+        "scalar-callback"
+      ],
+      "failures": [],
+      "name": "operator_callback_planning_scalar_callback",
+      "passed": true,
+      "payload": {
+        "api_surface": null,
+        "app_specific_native_kernel_authorized": false,
+        "broad_v4_speedup_claim_authorized": false,
+        "continuation_class": "custom_scalar_reduce",
+        "cupy_performance_claim_authorized": false,
+        "embedding_c_abi_claim_authorized": false,
+        "generic_primitive": null,
+        "guidance": "This is a scalar per-hit reduce candidate for the Numba->PTX->OptiX spike. It is not a V4.0 measured surface and must not be documented as supported until the spike links, runs, and is measured.",
+        "measured_partner": false,
+        "non_python_host_binding_claim_authorized": false,
+        "partner": "torch",
+        "raw_optix_callback_claim_authorized": false,
+        "release_claim_authorized": false,
+        "request": "custom_force_score",
+        "status": "tier3_spike_only_not_v4_0_release_surface",
+        "tier": "tier3_numba_ptx_spike",
+        "tier3_callback_claim_authorized": false,
+        "tier3_spike_authorized": true,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "tier3_spike_only_not_v4_0_release_surface"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "future/v4/examples/operator_callback_planning.py",
+        "--case",
+        "complex-callback"
+      ],
+      "failures": [],
+      "name": "operator_callback_planning_complex_callback",
+      "passed": true,
+      "payload": {
+        "api_surface": null,
+        "app_specific_native_kernel_authorized": false,
+        "broad_v4_speedup_claim_authorized": false,
+        "continuation_class": "custom_action",
+        "cupy_performance_claim_authorized": false,
+        "embedding_c_abi_claim_authorized": false,
+        "generic_primitive": null,
+        "guidance": "This callback is action-shaped (shared mutation, dynamic allocation, variable-length output). V4.0 does not expose raw OptiX callbacks or app-specific native kernels; rewrite as a recognized reduce/filter operator or defer to a future constrained Tier-3 design.",
+        "measured_partner": false,
+        "non_python_host_binding_claim_authorized": false,
+        "partner": "torch",
+        "raw_optix_callback_claim_authorized": false,
+        "release_claim_authorized": false,
+        "request": "custom_collision_response",
+        "status": "rejected_action_shaped_callback_deferred",
+        "tier": "unsupported_v4_0_deferred",
+        "tier3_callback_claim_authorized": false,
+        "tier3_spike_authorized": false,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "rejected_action_shaped_callback_deferred"
+    },
+    {
+      "command": [
+        "C:\\Python311\\python.exe",
+        "future/v4/examples/ray_triangle_any_hit_weighted_sum_torch_device_arrays.py",
+        "--ray-count",
+        "16",
+        "--dry-run"
+      ],
+      "failures": [],
+      "name": "ray_triangle_any_hit_weighted_sum_candidate",
+      "passed": true,
+      "payload": {
+        "broad_v4_speedup_claim_authorized": false,
+        "example": "v4_ray_triangle_any_hit_weighted_sum_torch_device_arrays",
+        "input_contract": "caller_supplied_torch_device_triangle_ray_and_weight_columns",
+        "output_contract": "rtdl_allocated_or_caller_owned_torch_device_uint64_scalar",
+        "output_scalar_primary_allocation": "rtdl_allocated_uint64_device_scalar",
+        "ray_count": 16,
+        "release_claim_authorized": false,
+        "status": "dry_run",
+        "surface": "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+        "surface_status": "tier2_candidate_goal4620_not_measured",
+        "tier3_callback_claim_authorized": false,
+        "triangle_count": 16,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "payload_status": "dry_run"
+    }
+  ],
+  "git_branch": "codex/v4-tier2-section8",
+  "git_commit": "66e41f5377b23ab1e0b158dc4fdde5316f0662f8",
+  "include_candidates": true,
+  "mode": "dry-run",
+  "native_library": null,
+  "non_python_host_binding_claim_authorized": false,
+  "release_authorized": false,
+  "schema": "rtdl.v4.catalog_regression_gate.v1",
+  "status": "passed",
+  "tier3_callback_claim_authorized": false
+}

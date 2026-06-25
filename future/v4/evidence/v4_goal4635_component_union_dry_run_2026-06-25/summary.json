@@ -1,0 +1,105 @@
+{
+  "args": {
+    "dataset": "clustered3d",
+    "dry_run": true,
+    "hard_cap_sec": 7200.0,
+    "min_neighbors": 4,
+    "point_count": 262144,
+    "radius": 3.0,
+    "repeat": 5,
+    "require_rt_hardware": true,
+    "seed": 20260623,
+    "variant": "all",
+    "warmup": 1
+  },
+  "claim_boundary": {
+    "all_app_pod_spend_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "c_abi_work_authorized": false,
+    "embedding_work_authorized": false,
+    "external_embedding_or_zero_copy_claim_authorized": false,
+    "focused_pod_spend_authorized_now": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v4_work_authorized": false
+  },
+  "comparisons": {
+    "status": "missing_variants_no_performance_interpretation"
+  },
+  "date": "2026-06-23",
+  "environment": {
+    "hardware_gate": {
+      "checks": {
+        "has_nvidia_gpu": false,
+        "nvidia_smi_query": false,
+        "optix_capable_gpu_present": false,
+        "rt_hardware_name_present": false
+      },
+      "fail_closed_reason": "No NVIDIA GPU satisfying the V3 OptiX/RT hardware precondition was detected.",
+      "gpus": [],
+      "query_error": "FileNotFoundError(2, 'The system cannot find the file specified', None, 2, None)",
+      "require_rt_hardware": true,
+      "status": "fail",
+      "tool": "v3_optix_hardware_gate"
+    },
+    "platform": "win32",
+    "python": "3.11.9"
+  },
+  "failed_checks": [
+    "variant_run_errors_present",
+    "missing_variants:embree_same_contract_component_union_control,legacy_optix_grouped_stream_component_labels,productized_prepared_execution_runner"
+  ],
+  "goal_level_decision_audit": {
+    "decision": "implement M39 local harness before spending the focused POD budget",
+    "different_path_now": "Use this harness to gate local correctness and only then run the single focused POD allowed by M38 consensus.",
+    "foolish_actions": "It would be foolish to treat the M38 protocol as data or to run the pod before the local harness proves same input, label outputs, metadata, and cap handling.",
+    "other_path": "Run the focused POD immediately from the fresh M37 helper. That could repeat the old unreviewed-harness failure.",
+    "was_i_foolish": "No."
+  },
+  "point_set": {
+    "dataset": "clustered3d",
+    "generated_once_in_process": false,
+    "min_neighbors": 4,
+    "point_count": 262144,
+    "point_rows_fingerprint": null,
+    "radius": 3.0,
+    "same_generated_point_set_required": true,
+    "seed": 20260623
+  },
+  "run_errors": {
+    "optix_hardware_gate": "No NVIDIA GPU satisfying the V3 OptiX/RT hardware precondition was detected."
+  },
+  "schema": "rtdl.phoenix_v3.component_union_m38_pod_ab.v1",
+  "status": "component_union_m39_harness_ready_not_pod_run",
+  "summary": {
+    "all_app_pod_spend_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "comparisons": {
+      "status": "missing_variants_no_performance_interpretation"
+    },
+    "component_labels_contract": true,
+    "component_signature_shortcut_blocked": true,
+    "component_union_m39_harness_exists": true,
+    "dry_run": true,
+    "external_embedding_or_zero_copy_claim_authorized": false,
+    "failed_check_count": 2,
+    "focused_pod_spend_authorized_now": false,
+    "legacy_no_regression": false,
+    "material_set_a_candidate": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "same_generated_point_set_enforced": true,
+    "schema": "rtdl.phoenix_v3.component_union_m38_pod_ab.v1",
+    "selected_variants": [
+      "embree_same_contract_component_union_control",
+      "legacy_optix_grouped_stream_component_labels",
+      "productized_prepared_execution_runner"
+    ],
+    "status": "component_union_m39_harness_ready_not_pod_run",
+    "true_zero_copy_claim_authorized": false,
+    "variant_count": 0
+  },
+  "tool": "v3_phoenix_component_union_m38_pod_ab",
+  "variants": {}
+}

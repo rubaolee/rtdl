@@ -1,0 +1,1201 @@
+{
+  "authorization": {
+    "broad_v4_speedup_claim_authorized": false,
+    "release_claim_authorized": false,
+    "rt_core_pod_performance_claim_authorized": false,
+    "tier3_callback_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "candidate_status": "candidate_requires_rt_pod_measurement_before_release_scope",
+  "completed_utc": "2026-06-24T19:24:37Z",
+  "gate": "v4_primitive_grouped_i64_device_outputs_candidate_gate",
+  "parameters": {
+    "group_width": 16,
+    "ray_counts": [
+      8192,
+      32768
+    ],
+    "repeat": 5,
+    "warmup": 2
+  },
+  "passed": true,
+  "platform": {
+    "cuda_available": true,
+    "cuda_device_name": "NVIDIA GeForce GTX 1070",
+    "hostname": "lx1",
+    "python": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]",
+    "torch": "2.12.1+cu126"
+  },
+  "results": [
+    {
+      "comparison": {
+        "interpretation": "candidate local gate only; GTX/local results do not authorize V4 public performance claims or RT-core POD claims",
+        "legacy_host_output_over_device_output_median_speedup": 2.73719772340634,
+        "speedup_claim_authorized": false
+      },
+      "group_count": 512,
+      "group_width": 16,
+      "parity_by_reduction": {
+        "max": {
+          "device_hit_event_count_before_dedup": 8192,
+          "fields": {
+            "maxs": {
+              "device_matches_analytic_fixture": true,
+              "device_matches_legacy_host_output": true
+            }
+          },
+          "legacy_hit_event_count_before_dedup": 8192,
+          "metadata": {
+            "adapter": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "backend": "optix",
+            "broad_v4_speedup_claim_authorized": false,
+            "claim_boundary": {
+              "native_app_api": false,
+              "public_speedup_claim": false,
+              "result_materialization_in_measured_window": false,
+              "row_witnesses": false,
+              "true_zero_copy": false
+            },
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_DEVICE_OUTPUTS_V1",
+            "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "group_count": 512,
+            "group_rows_downloaded_to_host": false,
+            "group_rows_downloaded_to_host_in_hot_path": false,
+            "hit_event_count_before_dedup": 8192,
+            "host_materialization_in_hot_path": false,
+            "input_contract": "caller_supplied_torch_device_ray_triangle_columns_prepared_primitive_payload",
+            "measured_partner": false,
+            "measured_partners": [],
+            "native_direct_device_output_columns": true,
+            "native_prepared_route": "ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "output_columns_partner_owned": true,
+            "output_contract": "caller_supplied_or_allocated_torch_device_grouped_i64_columns",
+            "output_source_devices": [
+              "cuda:0"
+            ],
+            "partner": "torch",
+            "partner_claim_status": "requires_pod_measurement_after_native_rebuild",
+            "partner_support_declared_unmeasured": [
+              "torch",
+              "cupy"
+            ],
+            "phase_timing_seconds": {
+              "device_execution_host_observed": 9.54249408096075e-05,
+              "prepare_build": 0.08442776021547616,
+              "prepared_ray_batch_prepare": 0.0004114820621907711,
+              "primitive_payload_prepare": 5.411216989159584e-05,
+              "query_pack": 0.0,
+              "traversal_grouped_i64_reduction_and_direct_device_output_write": 5.1439e-05
+            },
+            "prepared_primitive_payload_used": true,
+            "prepared_ray_batch_used": true,
+            "prepared_reused": true,
+            "prepared_run_index": 20,
+            "prepared_scene_used": true,
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "primitive_payload_prepare_is_hot_path": false,
+            "python_ray_object_boundary_in_hot_path": false,
+            "ray_count": 8192,
+            "reduction": "max",
+            "release_claim_authorized": false,
+            "row_arrays_materialized": false,
+            "rows_materialized": false,
+            "rt_core_accelerated": true,
+            "tier3_callback_claim_authorized": false,
+            "transfer_metadata": {
+              "backend": "optix",
+              "direct_device_handoff_authorized": true,
+              "direct_device_pointer_observed": true,
+              "group_rows_downloaded_to_host": false,
+              "grouped_host_ray_id_contract_available": false,
+              "host_ray_ids_available": false,
+              "native_direct_device_output_columns": true,
+              "partner_phase_timings_s": {
+                "descriptor_validation_s": 0.0002332709264010191
+              },
+              "partner_tensor_handoff_authorized": true,
+              "per_ray_records_downloaded_to_host": false,
+              "prepared_primitive_payload_on_device": true,
+              "prepared_rays_resident_on_device": true,
+              "primitive_group_ids_uploaded_each_run": false,
+              "primitive_values_uploaded_each_run": false,
+              "query_rays_packed_on_device_once": true,
+              "query_rays_uploaded_each_run": false,
+              "ray_batch_created_from": "partner_device_columns",
+              "ray_columns_partner_owned": true,
+              "ray_columns_true_zero_copy_authorized": false,
+              "ray_count": 8192,
+              "ray_id_host_bookkeeping_downloaded": false,
+              "rt_core_speedup_claim_authorized": false,
+              "source_devices": [
+                "cuda:0"
+              ],
+              "source_protocols": [
+                "torch"
+              ],
+              "static_scene_prepared_on_device": true,
+              "transfer_mode": "device_ray3d_columns_gpu_pack",
+              "true_zero_copy_authorized": false
+            },
+            "triangle_count": 8192,
+            "v4_api_surface": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "whole_app_speedup_claim_authorized": false
+          },
+          "mismatch_samples": {},
+          "parity_passed": true
+        },
+        "min": {
+          "device_hit_event_count_before_dedup": 8192,
+          "fields": {
+            "mins": {
+              "device_matches_analytic_fixture": true,
+              "device_matches_legacy_host_output": true
+            }
+          },
+          "legacy_hit_event_count_before_dedup": 8192,
+          "metadata": {
+            "adapter": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "backend": "optix",
+            "broad_v4_speedup_claim_authorized": false,
+            "claim_boundary": {
+              "native_app_api": false,
+              "public_speedup_claim": false,
+              "result_materialization_in_measured_window": false,
+              "row_witnesses": false,
+              "true_zero_copy": false
+            },
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_DEVICE_OUTPUTS_V1",
+            "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "group_count": 512,
+            "group_rows_downloaded_to_host": false,
+            "group_rows_downloaded_to_host_in_hot_path": false,
+            "hit_event_count_before_dedup": 8192,
+            "host_materialization_in_hot_path": false,
+            "input_contract": "caller_supplied_torch_device_ray_triangle_columns_prepared_primitive_payload",
+            "measured_partner": false,
+            "measured_partners": [],
+            "native_direct_device_output_columns": true,
+            "native_prepared_route": "ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "output_columns_partner_owned": true,
+            "output_contract": "caller_supplied_or_allocated_torch_device_grouped_i64_columns",
+            "output_source_devices": [
+              "cuda:0"
+            ],
+            "partner": "torch",
+            "partner_claim_status": "requires_pod_measurement_after_native_rebuild",
+            "partner_support_declared_unmeasured": [
+              "torch",
+              "cupy"
+            ],
+            "phase_timing_seconds": {
+              "device_execution_host_observed": 0.00010448088869452477,
+              "prepare_build": 0.08442776021547616,
+              "prepared_ray_batch_prepare": 0.0004114820621907711,
+              "primitive_payload_prepare": 5.411216989159584e-05,
+              "query_pack": 0.0,
+              "traversal_grouped_i64_reduction_and_direct_device_output_write": 5.8829e-05
+            },
+            "prepared_primitive_payload_used": true,
+            "prepared_ray_batch_used": true,
+            "prepared_reused": true,
+            "prepared_run_index": 18,
+            "prepared_scene_used": true,
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "primitive_payload_prepare_is_hot_path": false,
+            "python_ray_object_boundary_in_hot_path": false,
+            "ray_count": 8192,
+            "reduction": "min",
+            "release_claim_authorized": false,
+            "row_arrays_materialized": false,
+            "rows_materialized": false,
+            "rt_core_accelerated": true,
+            "tier3_callback_claim_authorized": false,
+            "transfer_metadata": {
+              "backend": "optix",
+              "direct_device_handoff_authorized": true,
+              "direct_device_pointer_observed": true,
+              "group_rows_downloaded_to_host": false,
+              "grouped_host_ray_id_contract_available": false,
+              "host_ray_ids_available": false,
+              "native_direct_device_output_columns": true,
+              "partner_phase_timings_s": {
+                "descriptor_validation_s": 0.0002332709264010191
+              },
+              "partner_tensor_handoff_authorized": true,
+              "per_ray_records_downloaded_to_host": false,
+              "prepared_primitive_payload_on_device": true,
+              "prepared_rays_resident_on_device": true,
+              "primitive_group_ids_uploaded_each_run": false,
+              "primitive_values_uploaded_each_run": false,
+              "query_rays_packed_on_device_once": true,
+              "query_rays_uploaded_each_run": false,
+              "ray_batch_created_from": "partner_device_columns",
+              "ray_columns_partner_owned": true,
+              "ray_columns_true_zero_copy_authorized": false,
+              "ray_count": 8192,
+              "ray_id_host_bookkeeping_downloaded": false,
+              "rt_core_speedup_claim_authorized": false,
+              "source_devices": [
+                "cuda:0"
+              ],
+              "source_protocols": [
+                "torch"
+              ],
+              "static_scene_prepared_on_device": true,
+              "transfer_mode": "device_ray3d_columns_gpu_pack",
+              "true_zero_copy_authorized": false
+            },
+            "triangle_count": 8192,
+            "v4_api_surface": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "whole_app_speedup_claim_authorized": false
+          },
+          "mismatch_samples": {},
+          "parity_passed": true
+        },
+        "sum_count": {
+          "device_hit_event_count_before_dedup": 8192,
+          "fields": {
+            "counts": {
+              "device_matches_analytic_fixture": true,
+              "device_matches_legacy_host_output": true
+            },
+            "sums": {
+              "device_matches_analytic_fixture": true,
+              "device_matches_legacy_host_output": true
+            }
+          },
+          "legacy_hit_event_count_before_dedup": 8192,
+          "metadata": {
+            "adapter": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "backend": "optix",
+            "broad_v4_speedup_claim_authorized": false,
+            "claim_boundary": {
+              "native_app_api": false,
+              "public_speedup_claim": false,
+              "result_materialization_in_measured_window": false,
+              "row_witnesses": false,
+              "true_zero_copy": false
+            },
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_DEVICE_OUTPUTS_V1",
+            "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "group_count": 512,
+            "group_rows_downloaded_to_host": false,
+            "group_rows_downloaded_to_host_in_hot_path": false,
+            "hit_event_count_before_dedup": 8192,
+            "host_materialization_in_hot_path": false,
+            "input_contract": "caller_supplied_torch_device_ray_triangle_columns_prepared_primitive_payload",
+            "measured_partner": false,
+            "measured_partners": [],
+            "native_direct_device_output_columns": true,
+            "native_prepared_route": "ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "output_columns_partner_owned": true,
+            "output_contract": "caller_supplied_or_allocated_torch_device_grouped_i64_columns",
+            "output_source_devices": [
+              "cuda:0"
+            ],
+            "partner": "torch",
+            "partner_claim_status": "requires_pod_measurement_after_native_rebuild",
+            "partner_support_declared_unmeasured": [
+              "torch",
+              "cupy"
+            ],
+            "phase_timing_seconds": {
+              "device_execution_host_observed": 0.00010471115820109844,
+              "prepare_build": 0.08442776021547616,
+              "prepared_ray_batch_prepare": 0.0004114820621907711,
+              "primitive_payload_prepare": 5.411216989159584e-05,
+              "query_pack": 0.0,
+              "traversal_grouped_i64_reduction_and_direct_device_output_write": 5.9005e-05
+            },
+            "prepared_primitive_payload_used": true,
+            "prepared_ray_batch_used": true,
+            "prepared_reused": true,
+            "prepared_run_index": 16,
+            "prepared_scene_used": true,
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "primitive_payload_prepare_is_hot_path": false,
+            "python_ray_object_boundary_in_hot_path": false,
+            "ray_count": 8192,
+            "reduction": "sum_count",
+            "release_claim_authorized": false,
+            "row_arrays_materialized": false,
+            "rows_materialized": false,
+            "rt_core_accelerated": true,
+            "tier3_callback_claim_authorized": false,
+            "transfer_metadata": {
+              "backend": "optix",
+              "direct_device_handoff_authorized": true,
+              "direct_device_pointer_observed": true,
+              "group_rows_downloaded_to_host": false,
+              "grouped_host_ray_id_contract_available": false,
+              "host_ray_ids_available": false,
+              "native_direct_device_output_columns": true,
+              "partner_phase_timings_s": {
+                "descriptor_validation_s": 0.0002332709264010191
+              },
+              "partner_tensor_handoff_authorized": true,
+              "per_ray_records_downloaded_to_host": false,
+              "prepared_primitive_payload_on_device": true,
+              "prepared_rays_resident_on_device": true,
+              "primitive_group_ids_uploaded_each_run": false,
+              "primitive_values_uploaded_each_run": false,
+              "query_rays_packed_on_device_once": true,
+              "query_rays_uploaded_each_run": false,
+              "ray_batch_created_from": "partner_device_columns",
+              "ray_columns_partner_owned": true,
+              "ray_columns_true_zero_copy_authorized": false,
+              "ray_count": 8192,
+              "ray_id_host_bookkeeping_downloaded": false,
+              "rt_core_speedup_claim_authorized": false,
+              "source_devices": [
+                "cuda:0"
+              ],
+              "source_protocols": [
+                "torch"
+              ],
+              "static_scene_prepared_on_device": true,
+              "transfer_mode": "device_ray3d_columns_gpu_pack",
+              "true_zero_copy_authorized": false
+            },
+            "triangle_count": 8192,
+            "v4_api_surface": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "whole_app_speedup_claim_authorized": false
+          },
+          "mismatch_samples": {},
+          "parity_passed": true
+        }
+      },
+      "parity_passed": true,
+      "prepare_seconds": 0.09212801698595285,
+      "ray_count": 8192,
+      "routes": {
+        "device_output_frontdoor": {
+          "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+          "group_rows_downloaded_to_host_in_hot_path": false,
+          "host_materialization_in_hot_path": false,
+          "input_contract": "caller_supplied_torch_device_triangle_and_ray_columns_prepared_primitive_payload",
+          "max_s": 0.00013920897617936134,
+          "median_s": 0.00013070297427475452,
+          "metadata": {
+            "adapter": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "backend": "optix",
+            "broad_v4_speedup_claim_authorized": false,
+            "claim_boundary": {
+              "native_app_api": false,
+              "public_speedup_claim": false,
+              "result_materialization_in_measured_window": false,
+              "row_witnesses": false,
+              "true_zero_copy": false
+            },
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_DEVICE_OUTPUTS_V1",
+            "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "group_count": 512,
+            "group_rows_downloaded_to_host": false,
+            "group_rows_downloaded_to_host_in_hot_path": false,
+            "hit_event_count_before_dedup": 8192,
+            "host_materialization_in_hot_path": false,
+            "input_contract": "caller_supplied_torch_device_ray_triangle_columns_prepared_primitive_payload",
+            "measured_partner": false,
+            "measured_partners": [],
+            "native_direct_device_output_columns": true,
+            "native_prepared_route": "ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "output_columns_partner_owned": true,
+            "output_contract": "caller_supplied_or_allocated_torch_device_grouped_i64_columns",
+            "output_source_devices": [
+              "cuda:0"
+            ],
+            "partner": "torch",
+            "partner_claim_status": "requires_pod_measurement_after_native_rebuild",
+            "partner_support_declared_unmeasured": [
+              "torch",
+              "cupy"
+            ],
+            "phase_timing_seconds": {
+              "device_execution_host_observed": 9.076297283172607e-05,
+              "prepare_build": 0.08442776021547616,
+              "prepared_ray_batch_prepare": 0.0004114820621907711,
+              "primitive_payload_prepare": 5.411216989159584e-05,
+              "query_pack": 0.0,
+              "traversal_grouped_i64_reduction_and_direct_device_output_write": 5.5378e-05
+            },
+            "prepared_primitive_payload_used": true,
+            "prepared_ray_batch_used": true,
+            "prepared_reused": true,
+            "prepared_run_index": 7,
+            "prepared_scene_used": true,
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "primitive_payload_prepare_is_hot_path": false,
+            "python_ray_object_boundary_in_hot_path": false,
+            "ray_count": 8192,
+            "reduction": "sum_count",
+            "release_claim_authorized": false,
+            "row_arrays_materialized": false,
+            "rows_materialized": false,
+            "rt_core_accelerated": true,
+            "tier3_callback_claim_authorized": false,
+            "transfer_metadata": {
+              "backend": "optix",
+              "direct_device_handoff_authorized": true,
+              "direct_device_pointer_observed": true,
+              "group_rows_downloaded_to_host": false,
+              "grouped_host_ray_id_contract_available": false,
+              "host_ray_ids_available": false,
+              "native_direct_device_output_columns": true,
+              "partner_phase_timings_s": {
+                "descriptor_validation_s": 0.0002332709264010191
+              },
+              "partner_tensor_handoff_authorized": true,
+              "per_ray_records_downloaded_to_host": false,
+              "prepared_primitive_payload_on_device": true,
+              "prepared_rays_resident_on_device": true,
+              "primitive_group_ids_uploaded_each_run": false,
+              "primitive_values_uploaded_each_run": false,
+              "query_rays_packed_on_device_once": true,
+              "query_rays_uploaded_each_run": false,
+              "ray_batch_created_from": "partner_device_columns",
+              "ray_columns_partner_owned": true,
+              "ray_columns_true_zero_copy_authorized": false,
+              "ray_count": 8192,
+              "ray_id_host_bookkeeping_downloaded": false,
+              "rt_core_speedup_claim_authorized": false,
+              "source_devices": [
+                "cuda:0"
+              ],
+              "source_protocols": [
+                "torch"
+              ],
+              "static_scene_prepared_on_device": true,
+              "transfer_mode": "device_ray3d_columns_gpu_pack",
+              "true_zero_copy_authorized": false
+            },
+            "triangle_count": 8192,
+            "v4_api_surface": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "whole_app_speedup_claim_authorized": false
+          },
+          "min_s": 0.00012602098286151886,
+          "output_contract": "caller_owned_torch_device_grouped_i64_columns",
+          "tier": "tier2_generic_fused_rt_primitive_device_array_frontdoor_candidate",
+          "timings_s": [
+            0.00013449299149215221,
+            0.00013920897617936134,
+            0.00013070297427475452,
+            0.00012773089110851288,
+            0.00012602098286151886
+          ]
+        },
+        "legacy_host_output": {
+          "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+          "host_materialization_in_hot_path": true,
+          "max_s": 0.0004310410004109144,
+          "median_s": 0.0003577598836272955,
+          "metadata": {
+            "backend": "optix",
+            "claim_boundary": {
+              "native_app_api": false,
+              "public_speedup_claim": false,
+              "row_witnesses": false,
+              "true_zero_copy": false
+            },
+            "group_count": 512,
+            "hit_event_count_before_dedup": 8192,
+            "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction",
+            "phase_timing_seconds": {
+              "prepare_build": 0.08442776021547616,
+              "prepared_ray_batch_prepare": 0.0004114820621907711,
+              "primitive_payload_prepare": 5.411216989159584e-05,
+              "query_pack": 0.0,
+              "traversal": 8.0238e-05
+            },
+            "prepared_primitive_payload_used": true,
+            "prepared_ray_batch_used": true,
+            "prepared_reused": true,
+            "prepared_run_index": 14,
+            "prepared_scene_used": true,
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "ray_count": 8192,
+            "reduction": "sum_count",
+            "row_count": 512,
+            "row_sample": [
+              {
+                "count": 16,
+                "group_id": 0,
+                "sum": 136
+              },
+              {
+                "count": 16,
+                "group_id": 1,
+                "sum": 392
+              },
+              {
+                "count": 16,
+                "group_id": 2,
+                "sum": 648
+              },
+              {
+                "count": 16,
+                "group_id": 3,
+                "sum": 904
+              },
+              {
+                "count": 16,
+                "group_id": 4,
+                "sum": 1160
+              },
+              {
+                "count": 16,
+                "group_id": 5,
+                "sum": 1416
+              },
+              {
+                "count": 16,
+                "group_id": 6,
+                "sum": 1672
+              },
+              {
+                "count": 16,
+                "group_id": 7,
+                "sum": 1928
+              }
+            ],
+            "rt_core_accelerated": true,
+            "transfer_metadata": {
+              "backend": "optix",
+              "direct_device_handoff_authorized": true,
+              "direct_device_pointer_observed": true,
+              "group_rows_downloaded_to_host": true,
+              "grouped_host_ray_id_contract_available": false,
+              "host_ray_ids_available": false,
+              "partner_phase_timings_s": {
+                "descriptor_validation_s": 0.0002332709264010191
+              },
+              "partner_tensor_handoff_authorized": true,
+              "per_ray_records_downloaded_to_host": false,
+              "prepared_primitive_payload_on_device": true,
+              "prepared_rays_resident_on_device": true,
+              "primitive_group_ids_uploaded_each_run": false,
+              "primitive_values_uploaded_each_run": false,
+              "query_rays_packed_on_device_once": true,
+              "query_rays_uploaded_each_run": false,
+              "ray_batch_created_from": "partner_device_columns",
+              "ray_columns_partner_owned": true,
+              "ray_columns_true_zero_copy_authorized": false,
+              "ray_count": 8192,
+              "ray_id_host_bookkeeping_downloaded": false,
+              "rt_core_speedup_claim_authorized": false,
+              "source_devices": [
+                "cuda:0"
+              ],
+              "source_protocols": [
+                "torch"
+              ],
+              "static_scene_prepared_on_device": true,
+              "transfer_mode": "device_ray3d_columns_gpu_pack",
+              "true_zero_copy_authorized": false
+            },
+            "triangle_count": 8192
+          },
+          "min_s": 0.00033636693842709064,
+          "tier": "prepared_native_route_with_host_grouped_result_output",
+          "timings_s": [
+            0.00033636693842709064,
+            0.0004310410004109144,
+            0.00036220415495336056,
+            0.0003577598836272955,
+            0.00035305903293192387
+          ]
+        }
+      },
+      "triangle_count": 8192
+    },
+    {
+      "comparison": {
+        "interpretation": "candidate local gate only; GTX/local results do not authorize V4 public performance claims or RT-core POD claims",
+        "legacy_host_output_over_device_output_median_speedup": 5.390789090844313,
+        "speedup_claim_authorized": false
+      },
+      "group_count": 2048,
+      "group_width": 16,
+      "parity_by_reduction": {
+        "max": {
+          "device_hit_event_count_before_dedup": 32768,
+          "fields": {
+            "maxs": {
+              "device_matches_analytic_fixture": true,
+              "device_matches_legacy_host_output": true
+            }
+          },
+          "legacy_hit_event_count_before_dedup": 32768,
+          "metadata": {
+            "adapter": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "backend": "optix",
+            "broad_v4_speedup_claim_authorized": false,
+            "claim_boundary": {
+              "native_app_api": false,
+              "public_speedup_claim": false,
+              "result_materialization_in_measured_window": false,
+              "row_witnesses": false,
+              "true_zero_copy": false
+            },
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_DEVICE_OUTPUTS_V1",
+            "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "group_count": 2048,
+            "group_rows_downloaded_to_host": false,
+            "group_rows_downloaded_to_host_in_hot_path": false,
+            "hit_event_count_before_dedup": 32768,
+            "host_materialization_in_hot_path": false,
+            "input_contract": "caller_supplied_torch_device_ray_triangle_columns_prepared_primitive_payload",
+            "measured_partner": false,
+            "measured_partners": [],
+            "native_direct_device_output_columns": true,
+            "native_prepared_route": "ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "output_columns_partner_owned": true,
+            "output_contract": "caller_supplied_or_allocated_torch_device_grouped_i64_columns",
+            "output_source_devices": [
+              "cuda:0"
+            ],
+            "partner": "torch",
+            "partner_claim_status": "requires_pod_measurement_after_native_rebuild",
+            "partner_support_declared_unmeasured": [
+              "torch",
+              "cupy"
+            ],
+            "phase_timing_seconds": {
+              "device_execution_host_observed": 0.00017310399562120438,
+              "prepare_build": 0.0014742410276085138,
+              "prepared_ray_batch_prepare": 0.00017398898489773273,
+              "primitive_payload_prepare": 9.686104021966457e-05,
+              "query_pack": 0.0,
+              "traversal_grouped_i64_reduction_and_direct_device_output_write": 0.000126691
+            },
+            "prepared_primitive_payload_used": true,
+            "prepared_ray_batch_used": true,
+            "prepared_reused": true,
+            "prepared_run_index": 20,
+            "prepared_scene_used": true,
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "primitive_payload_prepare_is_hot_path": false,
+            "python_ray_object_boundary_in_hot_path": false,
+            "ray_count": 32768,
+            "reduction": "max",
+            "release_claim_authorized": false,
+            "row_arrays_materialized": false,
+            "rows_materialized": false,
+            "rt_core_accelerated": true,
+            "tier3_callback_claim_authorized": false,
+            "transfer_metadata": {
+              "backend": "optix",
+              "direct_device_handoff_authorized": true,
+              "direct_device_pointer_observed": true,
+              "group_rows_downloaded_to_host": false,
+              "grouped_host_ray_id_contract_available": false,
+              "host_ray_ids_available": false,
+              "native_direct_device_output_columns": true,
+              "partner_phase_timings_s": {
+                "descriptor_validation_s": 0.00018177693709731102
+              },
+              "partner_tensor_handoff_authorized": true,
+              "per_ray_records_downloaded_to_host": false,
+              "prepared_primitive_payload_on_device": true,
+              "prepared_rays_resident_on_device": true,
+              "primitive_group_ids_uploaded_each_run": false,
+              "primitive_values_uploaded_each_run": false,
+              "query_rays_packed_on_device_once": true,
+              "query_rays_uploaded_each_run": false,
+              "ray_batch_created_from": "partner_device_columns",
+              "ray_columns_partner_owned": true,
+              "ray_columns_true_zero_copy_authorized": false,
+              "ray_count": 32768,
+              "ray_id_host_bookkeeping_downloaded": false,
+              "rt_core_speedup_claim_authorized": false,
+              "source_devices": [
+                "cuda:0"
+              ],
+              "source_protocols": [
+                "torch"
+              ],
+              "static_scene_prepared_on_device": true,
+              "transfer_mode": "device_ray3d_columns_gpu_pack",
+              "true_zero_copy_authorized": false
+            },
+            "triangle_count": 32768,
+            "v4_api_surface": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "whole_app_speedup_claim_authorized": false
+          },
+          "mismatch_samples": {},
+          "parity_passed": true
+        },
+        "min": {
+          "device_hit_event_count_before_dedup": 32768,
+          "fields": {
+            "mins": {
+              "device_matches_analytic_fixture": true,
+              "device_matches_legacy_host_output": true
+            }
+          },
+          "legacy_hit_event_count_before_dedup": 32768,
+          "metadata": {
+            "adapter": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "backend": "optix",
+            "broad_v4_speedup_claim_authorized": false,
+            "claim_boundary": {
+              "native_app_api": false,
+              "public_speedup_claim": false,
+              "result_materialization_in_measured_window": false,
+              "row_witnesses": false,
+              "true_zero_copy": false
+            },
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_DEVICE_OUTPUTS_V1",
+            "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "group_count": 2048,
+            "group_rows_downloaded_to_host": false,
+            "group_rows_downloaded_to_host_in_hot_path": false,
+            "hit_event_count_before_dedup": 32768,
+            "host_materialization_in_hot_path": false,
+            "input_contract": "caller_supplied_torch_device_ray_triangle_columns_prepared_primitive_payload",
+            "measured_partner": false,
+            "measured_partners": [],
+            "native_direct_device_output_columns": true,
+            "native_prepared_route": "ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "output_columns_partner_owned": true,
+            "output_contract": "caller_supplied_or_allocated_torch_device_grouped_i64_columns",
+            "output_source_devices": [
+              "cuda:0"
+            ],
+            "partner": "torch",
+            "partner_claim_status": "requires_pod_measurement_after_native_rebuild",
+            "partner_support_declared_unmeasured": [
+              "torch",
+              "cupy"
+            ],
+            "phase_timing_seconds": {
+              "device_execution_host_observed": 0.0001741859596222639,
+              "prepare_build": 0.0014742410276085138,
+              "prepared_ray_batch_prepare": 0.00017398898489773273,
+              "primitive_payload_prepare": 9.686104021966457e-05,
+              "query_pack": 0.0,
+              "traversal_grouped_i64_reduction_and_direct_device_output_write": 0.00012684
+            },
+            "prepared_primitive_payload_used": true,
+            "prepared_ray_batch_used": true,
+            "prepared_reused": true,
+            "prepared_run_index": 18,
+            "prepared_scene_used": true,
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "primitive_payload_prepare_is_hot_path": false,
+            "python_ray_object_boundary_in_hot_path": false,
+            "ray_count": 32768,
+            "reduction": "min",
+            "release_claim_authorized": false,
+            "row_arrays_materialized": false,
+            "rows_materialized": false,
+            "rt_core_accelerated": true,
+            "tier3_callback_claim_authorized": false,
+            "transfer_metadata": {
+              "backend": "optix",
+              "direct_device_handoff_authorized": true,
+              "direct_device_pointer_observed": true,
+              "group_rows_downloaded_to_host": false,
+              "grouped_host_ray_id_contract_available": false,
+              "host_ray_ids_available": false,
+              "native_direct_device_output_columns": true,
+              "partner_phase_timings_s": {
+                "descriptor_validation_s": 0.00018177693709731102
+              },
+              "partner_tensor_handoff_authorized": true,
+              "per_ray_records_downloaded_to_host": false,
+              "prepared_primitive_payload_on_device": true,
+              "prepared_rays_resident_on_device": true,
+              "primitive_group_ids_uploaded_each_run": false,
+              "primitive_values_uploaded_each_run": false,
+              "query_rays_packed_on_device_once": true,
+              "query_rays_uploaded_each_run": false,
+              "ray_batch_created_from": "partner_device_columns",
+              "ray_columns_partner_owned": true,
+              "ray_columns_true_zero_copy_authorized": false,
+              "ray_count": 32768,
+              "ray_id_host_bookkeeping_downloaded": false,
+              "rt_core_speedup_claim_authorized": false,
+              "source_devices": [
+                "cuda:0"
+              ],
+              "source_protocols": [
+                "torch"
+              ],
+              "static_scene_prepared_on_device": true,
+              "transfer_mode": "device_ray3d_columns_gpu_pack",
+              "true_zero_copy_authorized": false
+            },
+            "triangle_count": 32768,
+            "v4_api_surface": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "whole_app_speedup_claim_authorized": false
+          },
+          "mismatch_samples": {},
+          "parity_passed": true
+        },
+        "sum_count": {
+          "device_hit_event_count_before_dedup": 32768,
+          "fields": {
+            "counts": {
+              "device_matches_analytic_fixture": true,
+              "device_matches_legacy_host_output": true
+            },
+            "sums": {
+              "device_matches_analytic_fixture": true,
+              "device_matches_legacy_host_output": true
+            }
+          },
+          "legacy_hit_event_count_before_dedup": 32768,
+          "metadata": {
+            "adapter": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "backend": "optix",
+            "broad_v4_speedup_claim_authorized": false,
+            "claim_boundary": {
+              "native_app_api": false,
+              "public_speedup_claim": false,
+              "result_materialization_in_measured_window": false,
+              "row_witnesses": false,
+              "true_zero_copy": false
+            },
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_DEVICE_OUTPUTS_V1",
+            "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "group_count": 2048,
+            "group_rows_downloaded_to_host": false,
+            "group_rows_downloaded_to_host_in_hot_path": false,
+            "hit_event_count_before_dedup": 32768,
+            "host_materialization_in_hot_path": false,
+            "input_contract": "caller_supplied_torch_device_ray_triangle_columns_prepared_primitive_payload",
+            "measured_partner": false,
+            "measured_partners": [],
+            "native_direct_device_output_columns": true,
+            "native_prepared_route": "ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "output_columns_partner_owned": true,
+            "output_contract": "caller_supplied_or_allocated_torch_device_grouped_i64_columns",
+            "output_source_devices": [
+              "cuda:0"
+            ],
+            "partner": "torch",
+            "partner_claim_status": "requires_pod_measurement_after_native_rebuild",
+            "partner_support_declared_unmeasured": [
+              "torch",
+              "cupy"
+            ],
+            "phase_timing_seconds": {
+              "device_execution_host_observed": 0.00017427816055715084,
+              "prepare_build": 0.0014742410276085138,
+              "prepared_ray_batch_prepare": 0.00017398898489773273,
+              "primitive_payload_prepare": 9.686104021966457e-05,
+              "query_pack": 0.0,
+              "traversal_grouped_i64_reduction_and_direct_device_output_write": 0.000126847
+            },
+            "prepared_primitive_payload_used": true,
+            "prepared_ray_batch_used": true,
+            "prepared_reused": true,
+            "prepared_run_index": 16,
+            "prepared_scene_used": true,
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "primitive_payload_prepare_is_hot_path": false,
+            "python_ray_object_boundary_in_hot_path": false,
+            "ray_count": 32768,
+            "reduction": "sum_count",
+            "release_claim_authorized": false,
+            "row_arrays_materialized": false,
+            "rows_materialized": false,
+            "rt_core_accelerated": true,
+            "tier3_callback_claim_authorized": false,
+            "transfer_metadata": {
+              "backend": "optix",
+              "direct_device_handoff_authorized": true,
+              "direct_device_pointer_observed": true,
+              "group_rows_downloaded_to_host": false,
+              "grouped_host_ray_id_contract_available": false,
+              "host_ray_ids_available": false,
+              "native_direct_device_output_columns": true,
+              "partner_phase_timings_s": {
+                "descriptor_validation_s": 0.00018177693709731102
+              },
+              "partner_tensor_handoff_authorized": true,
+              "per_ray_records_downloaded_to_host": false,
+              "prepared_primitive_payload_on_device": true,
+              "prepared_rays_resident_on_device": true,
+              "primitive_group_ids_uploaded_each_run": false,
+              "primitive_values_uploaded_each_run": false,
+              "query_rays_packed_on_device_once": true,
+              "query_rays_uploaded_each_run": false,
+              "ray_batch_created_from": "partner_device_columns",
+              "ray_columns_partner_owned": true,
+              "ray_columns_true_zero_copy_authorized": false,
+              "ray_count": 32768,
+              "ray_id_host_bookkeeping_downloaded": false,
+              "rt_core_speedup_claim_authorized": false,
+              "source_devices": [
+                "cuda:0"
+              ],
+              "source_protocols": [
+                "torch"
+              ],
+              "static_scene_prepared_on_device": true,
+              "transfer_mode": "device_ray3d_columns_gpu_pack",
+              "true_zero_copy_authorized": false
+            },
+            "triangle_count": 32768,
+            "v4_api_surface": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "whole_app_speedup_claim_authorized": false
+          },
+          "mismatch_samples": {},
+          "parity_passed": true
+        }
+      },
+      "parity_passed": true,
+      "prepare_seconds": 0.0022935920860618353,
+      "ray_count": 32768,
+      "routes": {
+        "device_output_frontdoor": {
+          "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+          "group_rows_downloaded_to_host_in_hot_path": false,
+          "host_materialization_in_hot_path": false,
+          "input_contract": "caller_supplied_torch_device_triangle_and_ray_columns_prepared_primitive_payload",
+          "max_s": 0.0001979588996618986,
+          "median_s": 0.00019605387933552265,
+          "metadata": {
+            "adapter": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "backend": "optix",
+            "broad_v4_speedup_claim_authorized": false,
+            "claim_boundary": {
+              "native_app_api": false,
+              "public_speedup_claim": false,
+              "result_materialization_in_measured_window": false,
+              "row_witnesses": false,
+              "true_zero_copy": false
+            },
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_DEVICE_OUTPUTS_V1",
+            "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "group_count": 2048,
+            "group_rows_downloaded_to_host": false,
+            "group_rows_downloaded_to_host_in_hot_path": false,
+            "hit_event_count_before_dedup": 32768,
+            "host_materialization_in_hot_path": false,
+            "input_contract": "caller_supplied_torch_device_ray_triangle_columns_prepared_primitive_payload",
+            "measured_partner": false,
+            "measured_partners": [],
+            "native_direct_device_output_columns": true,
+            "native_prepared_route": "ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs",
+            "output_columns_partner_owned": true,
+            "output_contract": "caller_supplied_or_allocated_torch_device_grouped_i64_columns",
+            "output_source_devices": [
+              "cuda:0"
+            ],
+            "partner": "torch",
+            "partner_claim_status": "requires_pod_measurement_after_native_rebuild",
+            "partner_support_declared_unmeasured": [
+              "torch",
+              "cupy"
+            ],
+            "phase_timing_seconds": {
+              "device_execution_host_observed": 0.00015951297245919704,
+              "prepare_build": 0.0014742410276085138,
+              "prepared_ray_batch_prepare": 0.00017398898489773273,
+              "primitive_payload_prepare": 9.686104021966457e-05,
+              "query_pack": 0.0,
+              "traversal_grouped_i64_reduction_and_direct_device_output_write": 0.000123815
+            },
+            "prepared_primitive_payload_used": true,
+            "prepared_ray_batch_used": true,
+            "prepared_reused": true,
+            "prepared_run_index": 7,
+            "prepared_scene_used": true,
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "primitive_payload_prepare_is_hot_path": false,
+            "python_ray_object_boundary_in_hot_path": false,
+            "ray_count": 32768,
+            "reduction": "sum_count",
+            "release_claim_authorized": false,
+            "row_arrays_materialized": false,
+            "rows_materialized": false,
+            "rt_core_accelerated": true,
+            "tier3_callback_claim_authorized": false,
+            "transfer_metadata": {
+              "backend": "optix",
+              "direct_device_handoff_authorized": true,
+              "direct_device_pointer_observed": true,
+              "group_rows_downloaded_to_host": false,
+              "grouped_host_ray_id_contract_available": false,
+              "host_ray_ids_available": false,
+              "native_direct_device_output_columns": true,
+              "partner_phase_timings_s": {
+                "descriptor_validation_s": 0.00018177693709731102
+              },
+              "partner_tensor_handoff_authorized": true,
+              "per_ray_records_downloaded_to_host": false,
+              "prepared_primitive_payload_on_device": true,
+              "prepared_rays_resident_on_device": true,
+              "primitive_group_ids_uploaded_each_run": false,
+              "primitive_values_uploaded_each_run": false,
+              "query_rays_packed_on_device_once": true,
+              "query_rays_uploaded_each_run": false,
+              "ray_batch_created_from": "partner_device_columns",
+              "ray_columns_partner_owned": true,
+              "ray_columns_true_zero_copy_authorized": false,
+              "ray_count": 32768,
+              "ray_id_host_bookkeeping_downloaded": false,
+              "rt_core_speedup_claim_authorized": false,
+              "source_devices": [
+                "cuda:0"
+              ],
+              "source_protocols": [
+                "torch"
+              ],
+              "static_scene_prepared_on_device": true,
+              "transfer_mode": "device_ray3d_columns_gpu_pack",
+              "true_zero_copy_authorized": false
+            },
+            "triangle_count": 32768,
+            "v4_api_surface": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "whole_app_speedup_claim_authorized": false
+          },
+          "min_s": 0.00019280100241303444,
+          "output_contract": "caller_owned_torch_device_grouped_i64_columns",
+          "tier": "tier2_generic_fused_rt_primitive_device_array_frontdoor_candidate",
+          "timings_s": [
+            0.0001979588996618986,
+            0.00019756797701120377,
+            0.00019605387933552265,
+            0.00019409600645303726,
+            0.00019280100241303444
+          ]
+        },
+        "legacy_host_output": {
+          "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+          "host_materialization_in_hot_path": true,
+          "max_s": 0.0012549140956252813,
+          "median_s": 0.001056885113939643,
+          "metadata": {
+            "backend": "optix",
+            "claim_boundary": {
+              "native_app_api": false,
+              "public_speedup_claim": false,
+              "row_witnesses": false,
+              "true_zero_copy": false
+            },
+            "group_count": 2048,
+            "hit_event_count_before_dedup": 32768,
+            "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction",
+            "phase_timing_seconds": {
+              "prepare_build": 0.0014742410276085138,
+              "prepared_ray_batch_prepare": 0.00017398898489773273,
+              "primitive_payload_prepare": 9.686104021966457e-05,
+              "query_pack": 0.0,
+              "traversal": 0.000168153
+            },
+            "prepared_primitive_payload_used": true,
+            "prepared_ray_batch_used": true,
+            "prepared_reused": true,
+            "prepared_run_index": 14,
+            "prepared_scene_used": true,
+            "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "ray_count": 32768,
+            "reduction": "sum_count",
+            "row_count": 2048,
+            "row_sample": [
+              {
+                "count": 16,
+                "group_id": 0,
+                "sum": 136
+              },
+              {
+                "count": 16,
+                "group_id": 1,
+                "sum": 392
+              },
+              {
+                "count": 16,
+                "group_id": 2,
+                "sum": 648
+              },
+              {
+                "count": 16,
+                "group_id": 3,
+                "sum": 904
+              },
+              {
+                "count": 16,
+                "group_id": 4,
+                "sum": 1160
+              },
+              {
+                "count": 16,
+                "group_id": 5,
+                "sum": 1416
+              },
+              {
+                "count": 16,
+                "group_id": 6,
+                "sum": 1672
+              },
+              {
+                "count": 16,
+                "group_id": 7,
+                "sum": 1928
+              }
+            ],
+            "rt_core_accelerated": true,
+            "transfer_metadata": {
+              "backend": "optix",
+              "direct_device_handoff_authorized": true,
+              "direct_device_pointer_observed": true,
+              "group_rows_downloaded_to_host": true,
+              "grouped_host_ray_id_contract_available": false,
+              "host_ray_ids_available": false,
+              "partner_phase_timings_s": {
+                "descriptor_validation_s": 0.00018177693709731102
+              },
+              "partner_tensor_handoff_authorized": true,
+              "per_ray_records_downloaded_to_host": false,
+              "prepared_primitive_payload_on_device": true,
+              "prepared_rays_resident_on_device": true,
+              "primitive_group_ids_uploaded_each_run": false,
+              "primitive_values_uploaded_each_run": false,
+              "query_rays_packed_on_device_once": true,
+              "query_rays_uploaded_each_run": false,
+              "ray_batch_created_from": "partner_device_columns",
+              "ray_columns_partner_owned": true,
+              "ray_columns_true_zero_copy_authorized": false,
+              "ray_count": 32768,
+              "ray_id_host_bookkeeping_downloaded": false,
+              "rt_core_speedup_claim_authorized": false,
+              "source_devices": [
+                "cuda:0"
+              ],
+              "source_protocols": [
+                "torch"
+              ],
+              "static_scene_prepared_on_device": true,
+              "transfer_mode": "device_ray3d_columns_gpu_pack",
+              "true_zero_copy_authorized": false
+            },
+            "triangle_count": 32768
+          },
+          "min_s": 0.000959764001891017,
+          "tier": "prepared_native_route_with_host_grouped_result_output",
+          "timings_s": [
+            0.000959764001891017,
+            0.0012549140956252813,
+            0.0010756440460681915,
+            0.001056885113939643,
+            0.001051770057529211
+          ]
+        }
+      },
+      "triangle_count": 32768
+    }
+  ],
+  "started_utc": "2026-06-24T19:24:36Z",
+  "surface": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays"
+}

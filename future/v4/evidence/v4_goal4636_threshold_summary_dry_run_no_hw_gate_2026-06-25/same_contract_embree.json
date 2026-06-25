@@ -1,0 +1,23 @@
+{
+  "all_app_rerun_authorized": false,
+  "command": [
+    "C:\\Python311\\python.exe",
+    "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\hausdorff_xhd\\rtdl_hausdorff_distance_app.py",
+    "--backend",
+    "embree",
+    "--optix-summary-mode",
+    "directed_threshold_prepared",
+    "--hausdorff-threshold",
+    "0.4",
+    "--copies",
+    "262144",
+    "--repeat",
+    "5",
+    "--warmup",
+    "1"
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "status": "dry_run",
+  "variant": "same_contract_embree"
+}

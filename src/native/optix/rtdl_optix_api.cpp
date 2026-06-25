@@ -2105,6 +2105,36 @@ extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs(
+        void* scene_handle,
+        void* payload_handle,
+        void* ray_batch_handle,
+        uint32_t reduction,
+        uint64_t group_counts_out_device_ptr,
+        uint64_t group_sums_out_device_ptr,
+        uint64_t group_mins_out_device_ptr,
+        uint64_t group_maxs_out_device_ptr,
+        size_t output_group_count,
+        uint64_t* hit_event_count_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedPrimitiveGroupedI64Payload3D*>(payload_handle),
+            reinterpret_cast<PreparedRayBatch3D*>(ray_batch_handle),
+            reduction,
+            group_counts_out_device_ptr,
+            group_sums_out_device_ptr,
+            group_mins_out_device_ptr,
+            group_maxs_out_device_ptr,
+            output_group_count,
+            hit_event_count_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights(
         void* scene_handle,
         void* ray_batch_handle,

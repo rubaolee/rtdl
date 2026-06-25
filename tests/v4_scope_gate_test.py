@@ -27,8 +27,30 @@ class V4ScopeGateTest(unittest.TestCase):
         gate = v4_0_scope_gate()
         payload = gate.as_dict()
 
-        self.assertEqual("v4_0_development_scope_defined_not_release", payload["status"])
-        self.assertEqual(3, len(payload["included_surfaces"]))
+        self.assertEqual("v4_0_scorecard_scope_defined_pending_final_authorization", payload["status"])
+        self.assertEqual(8, len(payload["included_surfaces"]))
+        self.assertEqual(0, len(payload["candidate_surfaces"]))
+        self.assertIn(
+            "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            payload["included_surfaces"],
+        )
+        self.assertIn(
+            "v4_point_group_nearest_witness_2d_device_arrays",
+            payload["included_surfaces"],
+        )
+        self.assertIn(
+            "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+            payload["included_surfaces"],
+        )
+        self.assertIn(
+            "v4_fixed_radius_graph_component_union_3d_device_arrays",
+            payload["included_surfaces"],
+        )
+        self.assertIn(
+            "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
+            payload["included_surfaces"],
+        )
+        self.assertIn("rtdl_native_prepared_runner", payload["included_capabilities"])
         self.assertIn("tier2_fused_generic_rt_operators", payload["included_capabilities"])
         self.assertIn("tier3_numba_ptx_generation_spike_only", payload["deferred_capabilities"])
         self.assertIn("tier3_numba_bare_ptx_direct_optix_module_link_blocked", payload["deferred_capabilities"])
@@ -76,11 +98,17 @@ class V4ScopeGateTest(unittest.TestCase):
         self.assertEqual("passed", payload["validation"]["status"])
         self.assertEqual("passed", stdout_payload["validation"]["status"])
         self.assertFalse(payload["gate"]["release_authorized"])
-        self.assertIn("Status: generated development gate", markdown)
+        self.assertIn("Status: generated scorecard-passed gate", markdown)
 
     def test_scope_doc_records_non_claims(self) -> None:
         text = DOC.read_text(encoding="utf-8")
         self.assertIn("Deferred To V4.x", text)
+        self.assertIn("Candidate Surfaces", text)
+        self.assertIn("v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays", text)
+        self.assertIn("v4_point_group_nearest_witness_2d_device_arrays", text)
+        self.assertIn("v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays", text)
+        self.assertIn("v4_fixed_radius_graph_component_union_3d_device_arrays", text)
+        self.assertIn("v4_aabb_index_query_2d_all_ops_count_prepared_runner", text)
         self.assertIn("tier3_numba_bare_ptx_direct_optix_module_link_blocked", text)
         self.assertIn("Tier-3 callback/PTX support", text)
         self.assertIn("CuPy performance claims", text)

@@ -1,6 +1,6 @@
 # V4 Fixed-Radius Device-Array Front Door
 
-Status: V4 development surface, not a release announcement
+Status: measured V4 surface; final release authorization pending
 
 This page documents the first measured V4 Tier-2 primitive surface:
 fixed-radius count-threshold over caller-owned Torch CUDA point columns.
@@ -51,13 +51,13 @@ Run the example on a CUDA/OptiX machine:
 ```bash
 export PYTHONPATH=src:.
 export RTDL_OPTIX_LIBRARY=/path/to/librtdl_optix.so
-python future/v4/examples/fixed_radius_torch_device_arrays.py --copies 8192
+python examples/v4/fixed_radius_torch_device_arrays.py --copies 8192
 ```
 
 Dry-run locally without CUDA:
 
 ```bash
-python future/v4/examples/fixed_radius_torch_device_arrays.py --dry-run
+python examples/v4/fixed_radius_torch_device_arrays.py --dry-run
 ```
 
 ## Evidence
@@ -92,7 +92,7 @@ measured partner and CuPy as declared but unmeasured.
 
 This page does not authorize:
 
-- V4 release
+- final V4 release before Goal4642
 - broad V4 speedup wording
 - whole-application speedup wording
 - Tier-3 callback/PTX claims

@@ -19,7 +19,7 @@ def _write_markdown(path: Path, payload: dict[str, object], validation: dict[str
     lines = [
         "# V4.0 Scope Gate",
         "",
-        "Status: generated development gate, not a release authorization",
+        "Status: generated scorecard-passed gate, final release authorization pending",
         "",
         f"- gate status: `{payload['status']}`",
         f"- validation status: `{validation['status']}`",
@@ -29,6 +29,9 @@ def _write_markdown(path: Path, payload: dict[str, object], validation: dict[str
         "",
     ]
     for surface in payload["included_surfaces"]:
+        lines.append(f"- `{surface}`")
+    lines.extend(["", "## Candidate Surfaces", ""])
+    for surface in payload["candidate_surfaces"]:
         lines.append(f"- `{surface}`")
     lines.extend(["", "## Deferred To V4.x", ""])
     for item in payload["deferred_capabilities"]:

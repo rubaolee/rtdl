@@ -15,7 +15,10 @@ FORBIDDEN_CLAIM_FLAGS = (
     "release_claim_authorized",
     "broad_v4_speedup_claim_authorized",
     "whole_app_speedup_claim_authorized",
+    "all_benchmark_speedup_claim_authorized",
+    "true_zero_copy_authorized",
     "tier3_callback_claim_authorized",
+    "raw_optix_callback_claim_authorized",
     "cupy_performance_claim_authorized",
     "embedding_c_abi_claim_authorized",
     "non_python_host_binding_claim_authorized",
@@ -66,7 +69,13 @@ def _forbidden_claim_true_paths(value: Any, path: str = "payload") -> list[str]:
     return failures
 
 
-def _example_commands(mode: str, copies: int, ray_count: int) -> list[tuple[str, list[str]]]:
+def _example_commands(
+    mode: str,
+    copies: int,
+    ray_count: int,
+    *,
+    include_candidates: bool = False,
+) -> list[tuple[str, list[str]]]:
     python = sys.executable
     dry = mode == "dry-run"
     commands: list[tuple[str, list[str]]] = [
@@ -98,6 +107,40 @@ def _example_commands(mode: str, copies: int, ray_count: int) -> list[tuple[str,
             ],
         ),
         (
+            "primitive_grouped_i64_reduction",
+            [
+                python,
+                "future/v4/examples/primitive_grouped_i64_reduction_torch_device_arrays.py",
+                "--ray-count",
+                str(ray_count),
+            ],
+        ),
+        (
+            "point_group_nearest_witness",
+            [
+                python,
+                "future/v4/examples/point_group_nearest_witness_torch_device_arrays.py",
+                "--query-count",
+                str(ray_count),
+            ],
+        ),
+        (
+            "ray_triangle_any_hit_weighted_sum",
+            [
+                python,
+                "future/v4/examples/ray_triangle_any_hit_weighted_sum_torch_device_arrays.py",
+                "--ray-count",
+                str(ray_count),
+            ],
+        ),
+        (
+            "aabb_index_all_ops_count",
+            [
+                python,
+                "future/v4/examples/aabb_index_all_ops_count.py",
+            ],
+        ),
+        (
             "v4_frontdoor_quickstart",
             [python, "future/v4/examples/v4_frontdoor_quickstart.py"],
         ),
@@ -115,8 +158,14 @@ def _example_commands(mode: str, copies: int, ray_count: int) -> list[tuple[str,
         ),
     ]
     if dry:
-        for _, command in commands[:3]:
+        for _, command in commands[:7]:
             command.append("--dry-run")
+    else:
+        for name, command in commands:
+            if name == "aabb_index_all_ops_count":
+                command.extend(["--backend", "optix"])
+    if include_candidates:
+        pass
     return commands
 
 
@@ -128,17 +177,33 @@ def _validate_payload(name: str, payload: dict[str, Any], mode: str) -> tuple[bo
         failures.append("tier3_callback_claim_authorized_missing_or_not_false")
     for path in _forbidden_claim_true_paths(payload):
         failures.append(f"forbidden_claim_flag_true:{path}")
-    if name in {"fixed_radius", "closest_hit_grouped_argmin", "ray_triangle_any_hit_flags"}:
+    if name in {
+        "fixed_radius",
+        "closest_hit_grouped_argmin",
+        "ray_triangle_any_hit_flags",
+        "primitive_grouped_i64_reduction",
+        "point_group_nearest_witness",
+        "ray_triangle_any_hit_weighted_sum",
+        "aabb_index_all_ops_count",
+    }:
         expected_status = "dry_run" if mode == "dry-run" else "measured"
         if payload.get("status") != expected_status:
             failures.append(f"status_not_{expected_status}")
         if mode == "gpu" and payload.get("correctness_passed") is not True:
             failures.append("correctness_not_true")
+        if name == "ray_triangle_any_hit_weighted_sum":
+            if payload.get("surface_status") != "tier2_measured_pod_validated_not_release":
+                failures.append("weighted_sum_surface_status_not_measured")
+        if name == "aabb_index_all_ops_count":
+            if payload.get("surface_status") != "tier2_measured_pod_validated_not_release":
+                failures.append("aabb_surface_status_not_measured")
     elif name == "v4_frontdoor_quickstart":
         if payload.get("status") != "ok":
             failures.append("quickstart_status_not_ok")
-        if payload.get("measured_surface_count") != 3:
-            failures.append("quickstart_surface_count_not_3")
+        if payload.get("measured_surface_count") != 8:
+            failures.append("quickstart_surface_count_not_8")
+        if payload.get("candidate_surface_count") != 0:
+            failures.append("quickstart_candidate_surface_count_not_0")
     elif name == "operator_callback_planning_tier2":
         if payload.get("status") != "tier2_measured_ready":
             failures.append("tier2_planner_not_ready")
@@ -146,6 +211,11 @@ def _validate_payload(name: str, payload: dict[str, Any], mode: str) -> tuple[bo
             "v4_fixed_radius_count_threshold_2d_device_arrays",
             "v4_closest_hit_grouped_argmin_3d_device_arrays",
             "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+            "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+            "v4_point_group_nearest_witness_2d_device_arrays",
+            "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+            "v4_fixed_radius_graph_component_union_3d_device_arrays",
+            "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
         }:
             failures.append("tier2_planner_surface_not_measured")
         if payload.get("measured_partner") is not True:
@@ -169,7 +239,7 @@ def _write_markdown(path: Path, result: dict[str, Any]) -> None:
     lines = [
         "# V4 Catalog Regression Gate",
         "",
-        "Status: generated development gate, not a release authorization",
+        "Status: generated V4 catalog gate, final release authorization pending",
         "",
         f"- mode: `{result['mode']}`",
         f"- status: `{result['status']}`",
@@ -197,12 +267,18 @@ def main() -> int:
     parser.add_argument("--mode", choices=("dry-run", "gpu"), default="dry-run")
     parser.add_argument("--copies", type=int, default=8192)
     parser.add_argument("--ray-count", type=int, default=8192)
+    parser.add_argument("--include-candidates", action="store_true")
     parser.add_argument("--json-out", type=Path)
     parser.add_argument("--md-out", type=Path)
     args = parser.parse_args()
 
     rows: list[dict[str, Any]] = []
-    for name, command in _example_commands(args.mode, int(args.copies), int(args.ray_count)):
+    for name, command in _example_commands(
+        args.mode,
+        int(args.copies),
+        int(args.ray_count),
+        include_candidates=bool(args.include_candidates),
+    ):
         payload = _run_json(command)
         passed, failures = _validate_payload(name, payload, args.mode)
         rows.append(
@@ -219,6 +295,7 @@ def main() -> int:
     result = {
         "schema": "rtdl.v4.catalog_regression_gate.v1",
         "mode": args.mode,
+        "include_candidates": bool(args.include_candidates),
         "status": "passed" if all_passed else "failed",
         "git_commit": _git_value("rev-parse", "HEAD"),
         "git_branch": _git_value("rev-parse", "--abbrev-ref", "HEAD"),

@@ -19719,6 +19719,115 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_prepared_primitive_g
         *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
 }
 
+static void run_prepared_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs_optix(
+        PreparedStaticTriangleScene3D* prepared,
+        PreparedPrimitiveGroupedI64Payload3D* payload,
+        PreparedRayBatch3D* ray_batch,
+        uint32_t reduction,
+        uint64_t group_counts_out_device_ptr,
+        uint64_t group_sums_out_device_ptr,
+        uint64_t group_mins_out_device_ptr,
+        uint64_t group_maxs_out_device_ptr,
+        size_t output_group_count,
+        uint64_t* hit_event_count_out,
+        double* traversal_seconds_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared scene handle must not be null");
+    if (!payload)
+        throw std::runtime_error("prepared primitive grouped payload handle must not be null");
+    if (!ray_batch)
+        throw std::runtime_error("prepared ray batch handle must not be null");
+    if (payload->primitive_count != prepared->triangle_count)
+        throw std::runtime_error("prepared primitive payload length must match prepared triangle count");
+    if (payload->group_count > output_group_count)
+        throw std::runtime_error("grouped i64 reduction device output buffers are smaller than group_count");
+    if (payload->group_count != 0 &&
+            (!group_counts_out_device_ptr ||
+             !group_sums_out_device_ptr ||
+             !group_mins_out_device_ptr ||
+             !group_maxs_out_device_ptr))
+        throw std::runtime_error("grouped i64 reduction device output pointers must not be null");
+    if (!hit_event_count_out)
+        throw std::runtime_error("hit_event_count_out must not be null");
+    if (ray_batch->ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("ray_count exceeds uint32 launch limit");
+    if (prepared->triangle_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("triangle_count exceeds uint32 primitive limit");
+    if (payload->group_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("group_count exceeds uint32 limit");
+    if (reduction != kDeviceColumnGroupedOpCount &&
+            reduction != kDeviceColumnGroupedOpSum &&
+            reduction != kDeviceColumnGroupedOpMin &&
+            reduction != kDeviceColumnGroupedOpMax &&
+            reduction != kDeviceColumnGroupedOpSumCount) {
+        throw std::runtime_error("unsupported primitive grouped i64 reduction operation");
+    }
+
+    *hit_event_count_out = 0u;
+    if (traversal_seconds_out)
+        *traversal_seconds_out = 0.0;
+    if (payload->group_count == 0)
+        return;
+
+    CUdeviceptr d_counts = static_cast<CUdeviceptr>(group_counts_out_device_ptr);
+    CUdeviceptr d_sums = static_cast<CUdeviceptr>(group_sums_out_device_ptr);
+    CUdeviceptr d_mins = static_cast<CUdeviceptr>(group_mins_out_device_ptr);
+    CUdeviceptr d_maxs = static_cast<CUdeviceptr>(group_maxs_out_device_ptr);
+    CU_CHECK(cuMemsetD32(d_counts, 0u, payload->group_count * 2u));
+    CU_CHECK(cuMemsetD32(d_sums, 0u, payload->group_count * 2u));
+    CU_CHECK(cuMemsetD8(d_mins, 0xffu, payload->group_count * sizeof(unsigned long long)));
+    CU_CHECK(cuMemsetD32(d_maxs, 0u, payload->group_count * 2u));
+
+    if (ray_batch->ray_count == 0 || prepared->triangle_count == 0)
+        return;
+
+    ensure_ray_primitive_grouped_i64_reduction_3d_pipeline();
+
+    const size_t flag_word_count = (prepared->triangle_count + 31u) / 32u;
+    DevPtr d_flags(sizeof(uint32_t) * flag_word_count);
+    DevPtr d_hit_events(sizeof(unsigned long long));
+
+    CU_CHECK(cuMemsetD32(d_flags.ptr, 0u, flag_word_count));
+    unsigned long long zero = 0ull;
+    upload(d_hit_events.ptr, &zero, 1);
+
+    RayPrimitiveGroupedI64Reduction3DLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay3DHost*>(ray_batch->d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle3DHost*>(prepared->d_triangles.ptr);
+    lp.primitive_group_ids = reinterpret_cast<const uint32_t*>(payload->d_groups.ptr);
+    lp.primitive_values = reinterpret_cast<const unsigned long long*>(payload->d_values.ptr);
+    lp.primitive_flags = reinterpret_cast<uint32_t*>(d_flags.ptr);
+    lp.group_counts = reinterpret_cast<unsigned long long*>(d_counts);
+    lp.group_sums = reinterpret_cast<unsigned long long*>(d_sums);
+    lp.group_mins = reinterpret_cast<unsigned long long*>(d_mins);
+    lp.group_maxs = reinterpret_cast<unsigned long long*>(d_maxs);
+    lp.hit_event_count = reinterpret_cast<unsigned long long*>(d_hit_events.ptr);
+    lp.ray_count = static_cast<uint32_t>(ray_batch->ray_count);
+    lp.triangle_count = static_cast<uint32_t>(prepared->triangle_count);
+    lp.group_count = static_cast<uint32_t>(payload->group_count);
+    lp.reduction = reduction;
+
+    DevPtr d_params(sizeof(RayPrimitiveGroupedI64Reduction3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayprimitive_grouped_i64_reduction3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayPrimitiveGroupedI64Reduction3DLaunchParams),
+                             &g_rayprimitive_grouped_i64_reduction3d.pipe->sbt,
+                             static_cast<unsigned>(ray_batch->ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    unsigned long long hit_events = 0ull;
+    download(&hit_events, d_hit_events.ptr, 1);
+    *hit_event_count_out = static_cast<uint64_t>(hit_events);
+    const auto traversal_end = std::chrono::steady_clock::now();
+    if (traversal_seconds_out)
+        *traversal_seconds_out = std::chrono::duration<double>(traversal_end - traversal_start).count();
+}
+
 static void run_prepared_static_triangle_scene_3d_ray_hit_count_sum_optix(
         PreparedStaticTriangleScene3D* prepared,
         const RtdlRay3D* rays,

@@ -1,0 +1,25 @@
+{
+  "cwd": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
+  "env": {
+    "PYTHONPATH": null,
+    "RTDL_OPTIX_LIBRARY": null
+  },
+  "git_head": "66e41f5377b23ab1e0b158dc4fdde5316f0662f8",
+  "hardware_gate": {
+    "checks": {
+      "has_nvidia_gpu": false,
+      "nvidia_smi_query": false,
+      "optix_capable_gpu_present": false,
+      "rt_hardware_name_present": false
+    },
+    "fail_closed_reason": "No NVIDIA GPU satisfying the V3 OptiX/RT hardware precondition was detected.",
+    "gpus": [],
+    "query_error": "FileNotFoundError(2, 'The system cannot find the file specified', None, 2, None)",
+    "require_rt_hardware": true,
+    "status": "fail",
+    "tool": "v3_optix_hardware_gate"
+  },
+  "nvidia_smi": "ERROR: FileNotFoundError(2, 'The system cannot find the file specified', None, 2, None)",
+  "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "tool": "v3_phoenix_rtnn_full_batch_float32_same_contract_environment"
+}

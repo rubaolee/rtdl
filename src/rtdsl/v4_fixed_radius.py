@@ -21,6 +21,20 @@ def _require_partner(partner: str) -> str:
     return partner
 
 
+def _clear_public_true_zero_copy_authorizations(value):
+    if isinstance(value, dict):
+        cleared = {}
+        for key, item in value.items():
+            if key == "true_zero_copy" or key.endswith("true_zero_copy_authorized"):
+                cleared[key] = False
+            else:
+                cleared[key] = _clear_public_true_zero_copy_authorizations(item)
+        return cleared
+    if isinstance(value, list):
+        return [_clear_public_true_zero_copy_authorizations(item) for item in value]
+    return value
+
+
 def fixed_radius_count_threshold_2d_device_array_claim_boundary_v4(partner: str = "torch") -> dict[str, object]:
     """Return the V4 claim boundary for the fixed-radius device-array surface."""
 
@@ -131,6 +145,7 @@ class V4FixedRadiusCountThreshold2DDeviceArraySession:
             "output_contract": f"caller_supplied_or_allocated_{self.partner}_device_output_columns",
             "native_prepared_route": "fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns",
         }
+        metadata = _clear_public_true_zero_copy_authorizations(metadata)
         if return_metadata:
             return {"columns": native_result["columns"], "metadata": metadata}
         return native_result["columns"]

@@ -1,0 +1,375 @@
+{
+  "authorization": {
+    "broad_v4_speedup_claim_authorized": false,
+    "release_claim_authorized": false,
+    "rt_core_pod_performance_claim_authorized": false,
+    "tier3_callback_claim_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "completed_utc": "2026-06-25T00:06:37Z",
+  "gate": "v4_ray_triangle_any_hit_weighted_sum_device_output_candidate_gate",
+  "optix_9_1_validated": false,
+  "parameters": {
+    "ray_counts": [
+      32768,
+      131072
+    ],
+    "repeat": 5,
+    "warmup": 2
+  },
+  "passed": true,
+  "platform": {
+    "cuda_available": true,
+    "cuda_device_name": "NVIDIA RTX A5000",
+    "hostname": "0256b71980f1",
+    "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+    "torch": "2.8.0+cu128"
+  },
+  "results": [
+    {
+      "comparison": {
+        "host_scalar_over_device_output_median_speedup": 2.047024689330487,
+        "interpretation": "candidate gate only; this same-contract comparison does not authorize V4 public performance claims, whole-app claims, or measured-catalog promotion",
+        "speedup_claim_authorized": false
+      },
+      "device_output_weighted_sum": 536887296,
+      "expected_weighted_sum": 536887296,
+      "host_scalar_weighted_sum": 536887296,
+      "parity_passed": true,
+      "prepare_seconds": 0.1360761821269989,
+      "ray_count": 32768,
+      "routes": {
+        "device_output_frontdoor": {
+          "generic_primitive": "RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM_3D",
+          "host_materialization_in_hot_path": false,
+          "host_scalar_read_before_consumer": false,
+          "input_contract": "caller_supplied_torch_device_triangle_ray_and_weight_columns",
+          "max_s": 6.999820470809937e-05,
+          "median_s": 6.804987788200378e-05,
+          "metadata": {
+            "adapter": "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+            "backend": "optix",
+            "broad_v4_speedup_claim_authorized": false,
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_WEIGHTED_SUM_DEVICE_OUTPUT_GRAPH_EXECUTOR_V1",
+            "cuda_stream_ptr_nonzero": true,
+            "device_output_used": true,
+            "executor_prepare_seconds": 0.0842803344130516,
+            "generic_primitive": "RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM_3D",
+            "host_materialization_in_hot_path": false,
+            "host_row_materialization_before_consumer": false,
+            "host_scalar_read_before_consumer": false,
+            "input_contract": "caller_supplied_torch_device_ray_triangle_and_weight_columns",
+            "launch_count": 7,
+            "measured_partner": false,
+            "measured_partners": [],
+            "native_direct_device_output_scalar": true,
+            "native_prepared_route": "prepare_ray_batch_any_hit_weighted_sum_device_output_graph_executor",
+            "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_launch_graph_executor_on_stream",
+            "optix_9_1_validated": false,
+            "output_contract": "caller_supplied_or_allocated_torch_device_uint64_weighted_sum_scalar",
+            "output_scalar_allocation": "caller_supplied_override",
+            "output_scalar_caller_override_supported": true,
+            "output_scalar_primary_allocation": "rtdl_allocated_uint64_device_scalar",
+            "output_source_protocol": "torch",
+            "partner": "torch",
+            "partner_claim_status": "candidate_goal4620_pod_gate_required_not_measured",
+            "partner_support_declared_unmeasured": [
+              "cupy"
+            ],
+            "phase_timing_seconds": {
+              "executor_prepare": 0.0842803344130516,
+              "native_stream_launch_enqueue": 1.70096755027771e-05
+            },
+            "pod_candidate_partners": [
+              "torch"
+            ],
+            "prepared_ray_batch_seconds": 0.005218524485826492,
+            "prepared_ray_batch_used": true,
+            "prepared_scene_used": true,
+            "public_speedup_claim_authorized": false,
+            "python_ray_object_boundary_in_hot_path": false,
+            "query_rays_uploaded_each_run": false,
+            "ray_count": 32768,
+            "ray_weights_source_protocol": "torch",
+            "ray_weights_uploaded_each_run": false,
+            "release_claim_authorized": false,
+            "scene_data_residency": "rtdl_owned_prepared_optix_scene_from_caller_device_triangle_columns",
+            "scene_preparation_ownership": "caller_initiated_v4_prepare_static_triangle_scene_from_device_triangle_columns",
+            "surface_status": "tier2_candidate_goal4620_not_measured",
+            "tier3_callback_claim_authorized": false,
+            "true_zero_copy_authorized": false,
+            "v4_api_surface": "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+            "validated_driver": null,
+            "validated_gpu_family": null,
+            "validated_optix_abi": null,
+            "validated_partner_scope": null,
+            "weighted_sum_downloaded_to_host_in_hot_path": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "min_s": 6.139278411865234e-05,
+          "output_contract": "caller_supplied_or_allocated_torch_device_uint64_scalar",
+          "tier": "tier2_generic_fused_rt_primitive_device_array_candidate",
+          "timings_s": [
+            6.999820470809937e-05,
+            6.139278411865234e-05,
+            6.842240691184998e-05,
+            6.804987788200378e-05,
+            6.632879376411438e-05
+          ]
+        },
+        "host_scalar_route": {
+          "generic_primitive": "RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM_3D",
+          "host_scalar_read_before_consumer": true,
+          "max_s": 0.00014343857765197754,
+          "median_s": 0.00013929978013038635,
+          "metadata": {
+            "backend": "optix",
+            "claim_boundary": {
+              "native_app_api": false,
+              "public_speedup_claim": false,
+              "row_witnesses": false,
+              "true_zero_copy": false
+            },
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_ANY_HIT_WEIGHTED_SUM_DEVICE_WEIGHTS_V1",
+            "phase_timing_seconds": {
+              "prepare_build": 0.12167692929506302,
+              "prepared_ray_batch_prepare": 0.005218524485826492,
+              "query_pack": 3.240257501602173e-05,
+              "traversal": 6.4239e-05
+            },
+            "prepared_ray_batch_used": true,
+            "prepared_reused": true,
+            "prepared_run_index": 7,
+            "prepared_scene_used": true,
+            "ray_count": 32768,
+            "result_kind": "uint64_weighted_any_hit_sum",
+            "rows_materialized": false,
+            "transfer_metadata": {
+              "backend": "optix",
+              "direct_device_handoff_authorized": true,
+              "direct_device_pointer_observed": true,
+              "grouped_host_ray_id_contract_available": false,
+              "host_ray_ids_available": false,
+              "partner_phase_timings_s": {
+                "descriptor_validation_s": 0.0002812780439853668
+              },
+              "partner_tensor_handoff_authorized": true,
+              "per_ray_records_downloaded_to_host": false,
+              "prepared_rays_resident_on_device": true,
+              "query_rays_packed_on_device_once": true,
+              "query_rays_uploaded_each_run": false,
+              "ray_batch_created_from": "partner_device_columns",
+              "ray_columns_partner_owned": true,
+              "ray_columns_true_zero_copy_authorized": false,
+              "ray_count": 32768,
+              "ray_id_host_bookkeeping_downloaded": false,
+              "ray_weights_device_resident": true,
+              "ray_weights_source_device": "cuda:0",
+              "ray_weights_source_protocol": "torch",
+              "ray_weights_uploaded_each_run": false,
+              "rt_core_speedup_claim_authorized": false,
+              "scalar_sum_returned_to_python": true,
+              "source_devices": [
+                "cuda:0"
+              ],
+              "source_protocols": [
+                "torch"
+              ],
+              "static_scene_prepared_on_device": true,
+              "transfer_mode": "device_ray3d_columns_gpu_pack",
+              "true_zero_copy_authorized": false
+            },
+            "triangle_count": 32768,
+            "weighted_hit_sum": 536887296
+          },
+          "min_s": 0.00013434886932373047,
+          "tier": "prepared_native_route_with_python_scalar_output",
+          "timings_s": [
+            0.00014343857765197754,
+            0.00013929978013038635,
+            0.0001368597149848938,
+            0.00013434886932373047,
+            0.00013971328735351562
+          ]
+        }
+      },
+      "triangle_count": 32768
+    },
+    {
+      "comparison": {
+        "host_scalar_over_device_output_median_speedup": 1.5566622624250432,
+        "interpretation": "candidate gate only; this same-contract comparison does not authorize V4 public performance claims, whole-app claims, or measured-catalog promotion",
+        "speedup_claim_authorized": false
+      },
+      "device_output_weighted_sum": 8590000128,
+      "expected_weighted_sum": 8590000128,
+      "host_scalar_weighted_sum": 8590000128,
+      "parity_passed": true,
+      "prepare_seconds": 0.0025493986904621124,
+      "ray_count": 131072,
+      "routes": {
+        "device_output_frontdoor": {
+          "generic_primitive": "RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM_3D",
+          "host_materialization_in_hot_path": false,
+          "host_scalar_read_before_consumer": false,
+          "input_contract": "caller_supplied_torch_device_triangle_ray_and_weight_columns",
+          "max_s": 0.00014885887503623962,
+          "median_s": 0.0001466125249862671,
+          "metadata": {
+            "adapter": "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+            "backend": "optix",
+            "broad_v4_speedup_claim_authorized": false,
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_WEIGHTED_SUM_DEVICE_OUTPUT_GRAPH_EXECUTOR_V1",
+            "cuda_stream_ptr_nonzero": true,
+            "device_output_used": true,
+            "executor_prepare_seconds": 3.2514333724975586e-05,
+            "generic_primitive": "RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM_3D",
+            "host_materialization_in_hot_path": false,
+            "host_row_materialization_before_consumer": false,
+            "host_scalar_read_before_consumer": false,
+            "input_contract": "caller_supplied_torch_device_ray_triangle_and_weight_columns",
+            "launch_count": 7,
+            "measured_partner": false,
+            "measured_partners": [],
+            "native_direct_device_output_scalar": true,
+            "native_prepared_route": "prepare_ray_batch_any_hit_weighted_sum_device_output_graph_executor",
+            "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_any_hit_weighted_sum_device_weights_launch_graph_executor_on_stream",
+            "optix_9_1_validated": false,
+            "output_contract": "caller_supplied_or_allocated_torch_device_uint64_weighted_sum_scalar",
+            "output_scalar_allocation": "caller_supplied_override",
+            "output_scalar_caller_override_supported": true,
+            "output_scalar_primary_allocation": "rtdl_allocated_uint64_device_scalar",
+            "output_source_protocol": "torch",
+            "partner": "torch",
+            "partner_claim_status": "candidate_goal4620_pod_gate_required_not_measured",
+            "partner_support_declared_unmeasured": [
+              "cupy"
+            ],
+            "phase_timing_seconds": {
+              "executor_prepare": 3.2514333724975586e-05,
+              "native_stream_launch_enqueue": 1.93864107131958e-05
+            },
+            "pod_candidate_partners": [
+              "torch"
+            ],
+            "prepared_ray_batch_seconds": 0.000346306711435318,
+            "prepared_ray_batch_used": true,
+            "prepared_scene_used": true,
+            "public_speedup_claim_authorized": false,
+            "python_ray_object_boundary_in_hot_path": false,
+            "query_rays_uploaded_each_run": false,
+            "ray_count": 131072,
+            "ray_weights_source_protocol": "torch",
+            "ray_weights_uploaded_each_run": false,
+            "release_claim_authorized": false,
+            "scene_data_residency": "rtdl_owned_prepared_optix_scene_from_caller_device_triangle_columns",
+            "scene_preparation_ownership": "caller_initiated_v4_prepare_static_triangle_scene_from_device_triangle_columns",
+            "surface_status": "tier2_candidate_goal4620_not_measured",
+            "tier3_callback_claim_authorized": false,
+            "true_zero_copy_authorized": false,
+            "v4_api_surface": "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+            "validated_driver": null,
+            "validated_gpu_family": null,
+            "validated_optix_abi": null,
+            "validated_partner_scope": null,
+            "weighted_sum_downloaded_to_host_in_hot_path": false,
+            "whole_app_speedup_claim_authorized": false
+          },
+          "min_s": 0.0001372508704662323,
+          "output_contract": "caller_supplied_or_allocated_torch_device_uint64_scalar",
+          "tier": "tier2_generic_fused_rt_primitive_device_array_candidate",
+          "timings_s": [
+            0.00014863908290863037,
+            0.00014885887503623962,
+            0.0001466125249862671,
+            0.0001372508704662323,
+            0.00014479830861091614
+          ]
+        },
+        "host_scalar_route": {
+          "generic_primitive": "RAY_TRIANGLE_ANY_HIT_WEIGHTED_SUM_3D",
+          "host_scalar_read_before_consumer": true,
+          "max_s": 0.00023400411009788513,
+          "median_s": 0.0002282261848449707,
+          "metadata": {
+            "backend": "optix",
+            "claim_boundary": {
+              "native_app_api": false,
+              "public_speedup_claim": false,
+              "row_witnesses": false,
+              "true_zero_copy": false
+            },
+            "contract": "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_ANY_HIT_WEIGHTED_SUM_DEVICE_WEIGHTS_V1",
+            "phase_timing_seconds": {
+              "prepare_build": 0.0015830695629119873,
+              "prepared_ray_batch_prepare": 0.000346306711435318,
+              "query_pack": 3.342330455780029e-05,
+              "traversal": 0.000144147
+            },
+            "prepared_ray_batch_used": true,
+            "prepared_reused": true,
+            "prepared_run_index": 7,
+            "prepared_scene_used": true,
+            "ray_count": 131072,
+            "result_kind": "uint64_weighted_any_hit_sum",
+            "rows_materialized": false,
+            "transfer_metadata": {
+              "backend": "optix",
+              "direct_device_handoff_authorized": true,
+              "direct_device_pointer_observed": true,
+              "grouped_host_ray_id_contract_available": false,
+              "host_ray_ids_available": false,
+              "partner_phase_timings_s": {
+                "descriptor_validation_s": 0.00020976364612579346
+              },
+              "partner_tensor_handoff_authorized": true,
+              "per_ray_records_downloaded_to_host": false,
+              "prepared_rays_resident_on_device": true,
+              "query_rays_packed_on_device_once": true,
+              "query_rays_uploaded_each_run": false,
+              "ray_batch_created_from": "partner_device_columns",
+              "ray_columns_partner_owned": true,
+              "ray_columns_true_zero_copy_authorized": false,
+              "ray_count": 131072,
+              "ray_id_host_bookkeeping_downloaded": false,
+              "ray_weights_device_resident": true,
+              "ray_weights_source_device": "cuda:0",
+              "ray_weights_source_protocol": "torch",
+              "ray_weights_uploaded_each_run": false,
+              "rt_core_speedup_claim_authorized": false,
+              "scalar_sum_returned_to_python": true,
+              "source_devices": [
+                "cuda:0"
+              ],
+              "source_protocols": [
+                "torch"
+              ],
+              "static_scene_prepared_on_device": true,
+              "transfer_mode": "device_ray3d_columns_gpu_pack",
+              "true_zero_copy_authorized": false
+            },
+            "triangle_count": 131072,
+            "weighted_hit_sum": 8590000128
+          },
+          "min_s": 0.00021668151021003723,
+          "tier": "prepared_native_route_with_python_scalar_output",
+          "timings_s": [
+            0.00023286417126655579,
+            0.00023400411009788513,
+            0.0002282261848449707,
+            0.00021668151021003723,
+            0.0002241171896457672
+          ]
+        }
+      },
+      "triangle_count": 131072
+    }
+  ],
+  "started_utc": "2026-06-25T00:06:35Z",
+  "surface": "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+  "surface_status": "tier2_candidate_goal4620_not_measured",
+  "validated_gpu_family": "RTX A5000 / Ampere",
+  "validated_optix_abi": "8.0",
+  "validated_partner_scope": "torch"
+}

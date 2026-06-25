@@ -1,0 +1,24 @@
+{
+  "all_app_rerun_authorized": false,
+  "command": [
+    "C:\\Python311\\python.exe",
+    "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\current\\research_benchmarks\\hausdorff_xhd\\rtdl_hausdorff_distance_app.py",
+    "--backend",
+    "optix",
+    "--optix-summary-mode",
+    "directed_threshold_prepared_runner",
+    "--hausdorff-threshold",
+    "0.4",
+    "--copies",
+    "262144",
+    "--repeat",
+    "5",
+    "--warmup",
+    "1",
+    "--require-rt-core"
+  ],
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "status": "dry_run",
+  "variant": "productized_prepared_execution_runner"
+}

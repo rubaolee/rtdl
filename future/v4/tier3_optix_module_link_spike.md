@@ -33,6 +33,11 @@ expects semantic entry functions such as raygen, miss, hitgroup, or callable
 entry points. A future Tier-3 path therefore needs a real wrapper/direct-callable
 ABI spike, not a public callback API.
 
+The full falsifiable callback spike protocol is
+`future/v4/tier3_callback_spike_protocol_2026-06-24.md`. This page records a
+failed Stage 2 bare-helper attempt. It does not authorize Tier-3 callback
+support, raw OptiX callbacks, or V4 release wording.
+
 ## Current Boundary
 
 This spike does not attempt:

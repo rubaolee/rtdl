@@ -1,29 +1,32 @@
-# Source-Tree Doctor
+# Checkout Sanity Checks
 
-The source-tree doctor is the quickest way to check that the current V3 checkout
-has the expected front doors and can run the portable hello-world example.
+For V4, the quickest portable check is the V4 front-door quickstart plus the
+catalog regression dry-run gate.
 
 PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-py -3 scripts\rtdl_source_tree_doctor.py --run-smoke
+py -3 examples\v4\v4_frontdoor_quickstart.py
+py -3 scripts\v4_catalog_regression_gate.py --mode dry-run
 ```
 
 Linux or macOS:
 
 ```bash
-PYTHONPATH=src:. python scripts/rtdl_source_tree_doctor.py --run-smoke
+PYTHONPATH=src:. python examples/v4/v4_frontdoor_quickstart.py
+PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
 ```
 
-The doctor is a checkout sanity check. It checks the clean V3 source-tree
-surface, important docs, importability, optional native/partner dependencies,
-and the hello-world smoke path.
+These checks run without CUDA by using dry-run paths for GPU examples. They
+verify that the V4 front door, operator catalog, callback planner, and example
+commands are reachable from a clean checkout.
 
-For the broader developer test group:
+For reviewer or maintainer work, use the broader V4 tests:
 
 ```bash
-PYTHONPATH=src:. python scripts/run_test_matrix.py --group v3_current_surface
+PYTHONPATH=src:. python -m unittest tests.v4_frontdoor_test tests.v4_catalog_regression_gate_test
 ```
 
-That matrix is a development gate for the current V3 source tree.
+The older `scripts/rtdl_source_tree_doctor.py` remains a V3 compatibility
+doctor. It is not the V4 public readiness gate.

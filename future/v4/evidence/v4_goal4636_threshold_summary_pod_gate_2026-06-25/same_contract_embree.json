@@ -1,0 +1,147 @@
+{
+  "all_app_rerun_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "claim_boundary": {
+    "all_app_rerun_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "broad_rt_core_speedup_claim_authorized": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "full_paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v4_external_buffer_claim_authorized": false,
+    "whole_hausdorff_speedup_claim_authorized": false
+  },
+  "command": [
+    "/usr/bin/python3",
+    "/root/rtdl_v4_candidate_pod/examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+    "--backend",
+    "embree",
+    "--optix-summary-mode",
+    "directed_threshold_prepared",
+    "--hausdorff-threshold",
+    "0.4",
+    "--copies",
+    "262144",
+    "--repeat",
+    "5",
+    "--warmup",
+    "1"
+  ],
+  "matches_oracle": true,
+  "native_continuation_backend": "embree_threshold_count",
+  "oracle_decision_matches": true,
+  "oracle_identity_matches": true,
+  "oracle_within_threshold": true,
+  "phase_total_sec": 19.07229894772172,
+  "point_count_a": 1048576,
+  "point_count_b": 1048576,
+  "prepared_execution_session_runner": {
+    "all_app_rerun_authorized": false,
+    "app_specific_native_engine_logic_allowed": false,
+    "automatic_partner_selection_authorized": false,
+    "both_directed_legs_internal_device_residency_between_rtdl_phases": false,
+    "both_directed_legs_no_threshold_rows_materialized_on_host": false,
+    "both_directed_legs_runtime_executed": false,
+    "both_directed_legs_runtime_trunk_end_to_end": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "cache_hit_count": 0,
+    "directed_a_to_b": null,
+    "directed_b_to_a": null,
+    "productized_execution_path": null,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "runtime_executed_count": 0,
+    "true_zero_copy_claim_authorized": false,
+    "used": false,
+    "v4_external_buffer_claim_authorized": false,
+    "whole_hausdorff_speedup_claim_authorized": false
+  },
+  "public_speedup_claim_authorized": false,
+  "query_sec": 9.507186137139797,
+  "query_total_sec": 46.80051800981164,
+  "release_authorized": false,
+  "repeat_protocol": {
+    "measured_query_total_sec": 46.80051800981164,
+    "repeat": 5,
+    "reported_query_metric": "sum_of_directed_query_medians",
+    "warmup": 1
+  },
+  "returncode": 0,
+  "rt_core_accelerated": false,
+  "run_phases": {
+    "embree_prepare_sec": 5.373386960476637,
+    "embree_query_sec": 9.507186137139797,
+    "input_construction_sec": 4.191457588225603,
+    "python_postprocess_sec": 5.252659320831299e-07,
+    "query_fixed_radius_threshold_reached_count_sec": 9.507186137139797,
+    "scene_prepare_sec": 5.373386960476637,
+    "validation_sec": 0.00026773661375045776
+  },
+  "runner_native_prepare_sec": null,
+  "runner_outer_cache_load_sec": null,
+  "runner_outer_prepare_sec": null,
+  "runner_outer_query_sec": null,
+  "runner_outer_query_total_sec": null,
+  "scene_prepare_sec": 5.373386960476637,
+  "status": "ok",
+  "stderr_path": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4636_threshold_summary_pod_gate_2026-06-25/same_contract_embree.stderr.txt",
+  "stdout_json_parse_error": null,
+  "stdout_path": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4636_threshold_summary_pod_gate_2026-06-25/same_contract_embree.stdout.json",
+  "step3_audit": {
+    "all_app_rerun_authorized": false,
+    "all_directed_legs_step3_ready": false,
+    "broad_v3_faster_than_v2_claim_authorized": false,
+    "directed_a_to_b": {
+      "all_app_rerun_authorized": false,
+      "broad_v3_faster_than_v2_claim_authorized": false,
+      "missing_step3_fields": [
+        "directed_runner_metadata"
+      ],
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "status": "incomplete_step3_audit",
+      "step3_residency_default_ready": false
+    },
+    "directed_b_to_a": {
+      "all_app_rerun_authorized": false,
+      "broad_v3_faster_than_v2_claim_authorized": false,
+      "missing_step3_fields": [
+        "directed_runner_metadata"
+      ],
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "status": "incomplete_step3_audit",
+      "step3_residency_default_ready": false
+    },
+    "missing_step3_fields_by_leg": {
+      "directed_a_to_b": [
+        "directed_runner_metadata"
+      ],
+      "directed_b_to_a": [
+        "directed_runner_metadata"
+      ]
+    },
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "status": "incomplete_step3_audit"
+  },
+  "step3_audit_missing_fields": {
+    "directed_a_to_b": [
+      "directed_runner_metadata"
+    ],
+    "directed_b_to_a": [
+      "directed_runner_metadata"
+    ]
+  },
+  "step3_audit_status": "incomplete_step3_audit",
+  "step3_residency_default_ready": false,
+  "timed_out": false,
+  "true_zero_copy_claim_authorized": false,
+  "v4_external_buffer_claim_authorized": false,
+  "variant": "same_contract_embree",
+  "whole_hausdorff_speedup_claim_authorized": false,
+  "within_threshold": true,
+  "wrapper_wall_sec": 68.50414350256324
+}

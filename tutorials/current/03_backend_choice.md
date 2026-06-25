@@ -1,19 +1,31 @@
-# Backend Choice
+# Operator Choice
 
-V3 keeps backend choice explicit.
+V4 keeps partner choice explicit. A partner is measured only inside its recorded
+scope.
 
-Start with the CPU reference path when learning or checking correctness. Move
-to native or partner-backed paths only when the example, backend dependency, and
-measurement scope are clear.
+Current measured partner scopes:
 
-Do not infer performance from a backend name. A backend can be correct for one
-row, slower for another row, and unsupported for a third row.
+- Torch CUDA for the device-array surfaces;
+- Numba for fixed-radius graph component union;
+- RTDL native prepared runner for AABB all-ops count.
 
-Useful first examples:
+Plan an operator request before building a route:
 
-```powershell
-py -3 examples\current\getting_started\rtdl_hello_world.py
-py -3 examples\current\getting_started\rtdl_hello_world_backends.py
+```python
+import rtdsl.v4 as rtdl_v4
+
+plan = rtdl_v4.plan_operator_request_v4("any-hit", partner="torch")
+print(plan.status)
+print(plan.api_surface)
 ```
 
-Next: [Prepared Runtime](04_prepared_runtime.md)
+Unsupported requests fail closed:
+
+```powershell
+py -3 examples\v4\operator_callback_planning.py --case complex-callback
+```
+
+Do not infer performance from a partner name. Use only the measured operator
+surface, partner, hardware, and metric you can point to.
+
+Next: [Measured Runtime Surfaces](04_prepared_runtime.md)

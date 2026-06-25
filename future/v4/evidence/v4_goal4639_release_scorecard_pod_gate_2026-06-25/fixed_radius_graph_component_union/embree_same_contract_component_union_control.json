@@ -1,0 +1,77 @@
+{
+  "all_app_pod_spend_authorized": false,
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "canonical_component_signature": {
+    "cluster_sizes": [
+      262144
+    ],
+    "core_count": 262144,
+    "noise_count": 0
+  },
+  "canonical_component_signature_stable": true,
+  "component_label_outputs_present": true,
+  "component_labels_contract": true,
+  "component_signature_substituted_for_labels": false,
+  "dataset": "clustered3d",
+  "external_embedding_or_zero_copy_claim_authorized": false,
+  "extra_metadata": {
+    "component_union_control_backend": "embree",
+    "expected_route": "embree prepared fixed-radius core flags plus generic numba component-label continuation"
+  },
+  "focused_pod_spend_authorized_now": false,
+  "hot_query_median_sec": 2.2654257267713547,
+  "metadata_sample": {
+    "adapter": "PreparedNumbaRadiusGraphComponents3DGrid.run",
+    "caller_supplied_core_flags": true,
+    "candidate_edge_count": null,
+    "candidate_edge_count_policy": "not_reported_for_caller_supplied_threshold_capped_counts",
+    "cell_count": 1,
+    "component_label_policy": "positive_root_index_labels_noise_minus_one",
+    "component_union_policy": "monotonic_atomic_min_core_edge_union",
+    "core_flag_source": "embree_prepared_fixed_radius_count_threshold_3d_compact_rows",
+    "device_grid_labeling_used": true,
+    "direct_device_handoff_authorized": false,
+    "grid_dimensions": [
+      1,
+      1,
+      1
+    ],
+    "host_prepared_grid_index_used": true,
+    "input_contract": "prepared_partner_device_point_columns_3d",
+    "min_neighbors": 4,
+    "native_engine_row_contract": "not_called_partner_reference_only",
+    "numba_cuda_jit_used": true,
+    "output_workspace_reused": true,
+    "partner": "numba",
+    "partner_reference_contract": "generic_prepared_numba_grid_radius_graph_component_labels_3d",
+    "point_count": 262144,
+    "prepared_grid_reused": true,
+    "prepared_run_count": 6,
+    "radius": 3.0,
+    "raw_cuda_kernel_required": false,
+    "rt_core_speedup_claim_authorized": false,
+    "v2_9_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "min_neighbors": 4,
+  "point_count": 262144,
+  "public_speedup_claim_authorized": false,
+  "radius": 3.0,
+  "release_authorized": false,
+  "repeat": 5,
+  "runner_inclusive_wall_median_sec": 16.418615002185106,
+  "schema": "rtdl.phoenix_v3.component_union_m38_pod_ab.v1",
+  "seed": 20260625,
+  "status": "ok",
+  "timing_breakdown_sec": {
+    "canonical_signature_from_labels_sec": 0.029884736984968185,
+    "embree_native_traversal_sec": 0.025931476,
+    "embree_threshold_columns_upload_sec": 0.0020231418311595917,
+    "embree_threshold_compact_rows_sec": 0.9562236405909061,
+    "numba_component_label_continuation_sec": 1.261775691062212,
+    "prepare_sec": 2.1705506071448326
+  },
+  "true_zero_copy_claim_authorized": false,
+  "variant": "embree_same_contract_component_union_control",
+  "warmup": 1
+}

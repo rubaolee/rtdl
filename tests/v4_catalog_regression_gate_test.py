@@ -52,11 +52,30 @@ class V4CatalogRegressionGateTest(unittest.TestCase):
         self.assertEqual("passed", stdout_payload["status"])
         self.assertFalse(payload["release_authorized"])
         self.assertFalse(payload["tier3_callback_claim_authorized"])
-        self.assertEqual(7, len(payload["examples"]))
+        self.assertEqual(11, len(payload["examples"]))
         self.assertTrue(all(row["passed"] for row in payload["examples"]))
         rows_by_name = {row["name"]: row for row in payload["examples"]}
         self.assertIn("fixed_radius", rows_by_name)
+        self.assertIn("primitive_grouped_i64_reduction", rows_by_name)
+        self.assertIn("point_group_nearest_witness", rows_by_name)
+        self.assertIn("ray_triangle_any_hit_weighted_sum", rows_by_name)
+        self.assertIn("aabb_index_all_ops_count", rows_by_name)
         self.assertIn("v4_frontdoor_quickstart", rows_by_name)
+        self.assertEqual(
+            "dry_run",
+            rows_by_name["primitive_grouped_i64_reduction"]["payload"]["status"],
+        )
+        self.assertEqual("dry_run", rows_by_name["point_group_nearest_witness"]["payload"]["status"])
+        self.assertEqual("dry_run", rows_by_name["ray_triangle_any_hit_weighted_sum"]["payload"]["status"])
+        self.assertEqual("dry_run", rows_by_name["aabb_index_all_ops_count"]["payload"]["status"])
+        self.assertEqual(
+            "tier2_measured_pod_validated_not_release",
+            rows_by_name["aabb_index_all_ops_count"]["payload"]["surface_status"],
+        )
+        self.assertEqual(
+            "tier2_measured_pod_validated_not_release",
+            rows_by_name["ray_triangle_any_hit_weighted_sum"]["payload"]["surface_status"],
+        )
         self.assertEqual(
             "tier2_measured_ready",
             rows_by_name["operator_callback_planning_tier2"]["payload"]["status"],
@@ -71,7 +90,40 @@ class V4CatalogRegressionGateTest(unittest.TestCase):
             rows_by_name["operator_callback_planning_complex_callback"]["payload"]["status"],
         )
         self.assertIsNone(rows_by_name["operator_callback_planning_complex_callback"]["payload"]["api_surface"])
-        self.assertIn("Status: generated development gate", markdown)
+        self.assertIn("Status: generated V4 catalog gate", markdown)
+
+    def test_include_candidates_is_backward_compatible_with_no_current_candidates(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            json_out = Path(tmp) / "catalog_candidates.json"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "dry-run",
+                    "--copies",
+                    "16",
+                    "--ray-count",
+                    "16",
+                    "--include-candidates",
+                    "--json-out",
+                    str(json_out),
+                ],
+                cwd=ROOT,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+            )
+            payload = json.loads(json_out.read_text(encoding="utf-8"))
+
+        self.assertEqual("passed", payload["status"])
+        self.assertEqual(11, len(payload["examples"]))
+        rows_by_name = {row["name"]: row for row in payload["examples"]}
+        weighted = rows_by_name["ray_triangle_any_hit_weighted_sum"]["payload"]
+        self.assertEqual("dry_run", weighted["status"])
+        self.assertEqual("tier2_measured_pod_validated_not_release", weighted["surface_status"])
+        self.assertFalse(weighted["release_claim_authorized"])
+        self.assertFalse(weighted["true_zero_copy_authorized"])
 
     def test_gate_rejects_forbidden_claim_flags_even_when_nested(self) -> None:
         payload = {

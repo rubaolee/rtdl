@@ -490,6 +490,9 @@ OPTIX_CLOSEST_HIT_GROUPED_ARGMIN_INPUTS_3D_COPY_DEVICE_OUTPUTS_SYMBOL = (
 OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction"
 )
+OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_DEVICE_OUTPUTS_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs"
+)
 OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTIONS = (
     "count",
     "sum",
@@ -7789,7 +7792,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                     "rt_core_accelerated": True,
                     "materializes_neighbor_rows": False,
                     "direct_device_handoff_authorized": True,
-                    "output_columns_true_zero_copy_authorized": True,
+                    "output_columns_direct_device_write_confirmed": True,
                     "true_zero_copy_authorized": False,
                 }
             }
@@ -9578,7 +9581,7 @@ class PreparedOptixPointGroupNearestWitness2D:
                     "rt_core_accelerated": True,
                     "materializes_neighbor_rows": False,
                     "direct_device_handoff_authorized": True,
-                    "output_columns_true_zero_copy_authorized": True,
+                    "output_columns_direct_device_write_confirmed": True,
                     "true_zero_copy_authorized": False,
                     "v2_8_release_authorized": False,
                     "typed_result_stream": typed_stream,
@@ -9642,7 +9645,7 @@ class PreparedOptixPointGroupNearestWitness2D:
                 "rt_core_accelerated": True,
                 "materializes_neighbor_rows": False,
                 "direct_device_handoff_authorized": True,
-                "output_columns_true_zero_copy_authorized": True,
+                "output_columns_direct_device_write_confirmed": True,
                 "true_zero_copy_authorized": False,
                 "rt_core_speedup_claim_authorized": False,
                 "v2_6_release_authorized": False,
@@ -9747,8 +9750,8 @@ class PreparedOptixPointGroupNearestWitness2D:
                     "rt_core_accelerated": True,
                     "materializes_neighbor_rows": False,
                     "direct_device_handoff_authorized": True,
-                    "query_point_columns_true_zero_copy_authorized": True,
-                    "output_columns_true_zero_copy_authorized": True,
+                    "query_point_columns_direct_device_read_confirmed": True,
+                    "output_columns_direct_device_write_confirmed": True,
                     "true_zero_copy_authorized": False,
                     "rt_core_speedup_claim_authorized": False,
                     "public_speedup_claim_authorized": False,
@@ -9815,8 +9818,8 @@ class PreparedOptixPointGroupNearestWitness2D:
                 "rt_core_accelerated": True,
                 "materializes_neighbor_rows": False,
                 "direct_device_handoff_authorized": True,
-                "query_point_columns_true_zero_copy_authorized": True,
-                "output_columns_true_zero_copy_authorized": True,
+                "query_point_columns_direct_device_read_confirmed": True,
+                "output_columns_direct_device_write_confirmed": True,
                 "true_zero_copy_authorized": False,
                 "rt_core_speedup_claim_authorized": False,
                 "public_speedup_claim_authorized": False,
@@ -17640,6 +17643,47 @@ def _validate_closest_hit_grouped_argmin_device_output_columns(
     return handoffs
 
 
+def _validate_primitive_grouped_i64_reduction_device_output_columns(
+    output_columns: dict,
+    *,
+    group_count: int,
+) -> dict[str, object]:
+    required = (
+        "group_counts",
+        "group_sums",
+        "group_mins",
+        "group_maxs",
+    )
+    handoffs = {}
+    expected_device = None
+    for name in required:
+        if name not in output_columns:
+            raise ValueError(f"grouped i64 reduction output columns must include {name!r}")
+        handoff = _partner.prepare_direct_device_pointer_handoff(
+            output_columns[name],
+            access="write",
+        )
+        dtype = _partner_dtype_token(handoff.dtype)
+        if dtype != "uint64":
+            raise ValueError(f"grouped i64 reduction output column {name!r} must use dtype uint64")
+        if len(handoff.shape) != 1:
+            raise ValueError(f"grouped i64 reduction output column {name!r} must be one-dimensional")
+        if int(handoff.shape[0]) < int(group_count):
+            raise ValueError(f"grouped i64 reduction output column {name!r} is smaller than group_count")
+        if not _partner_contiguous_column_strides(
+            handoff.strides,
+            itemsize=_partner_dtype_itemsize(dtype),
+        ):
+            raise ValueError(f"grouped i64 reduction output column {name!r} must be contiguous")
+        device = (handoff.device_type, handoff.device_id)
+        if expected_device is None:
+            expected_device = device
+        elif device != expected_device:
+            raise ValueError("grouped i64 reduction output columns must live on the same CUDA device")
+        handoffs[name] = handoff
+    return handoffs
+
+
 class PreparedOptixClosestHitGroupedArgmin3D:
     """Reusable device-resident grouped-argmin maps for closest-hit reductions."""
 
@@ -23254,6 +23298,147 @@ class PreparedOptixStaticTriangleScene3D:
             },
         }
 
+    def ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs(
+        self,
+        rays: PreparedOptixRayBatch3D,
+        payload: PreparedOptixPrimitiveGroupedI64Payload3D,
+        output_columns: dict,
+        *,
+        reduction: str,
+        prevalidated_handoffs: dict[str, object] | None = None,
+    ) -> dict[str, object]:
+        """Run grouped i64 reduction and write results to caller-owned device columns."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        if not isinstance(rays, PreparedOptixRayBatch3D):
+            raise TypeError(
+                "ray_batch_prepared_primitive_grouped_i64_reduction_device_outputs "
+                "requires PreparedOptixRayBatch3D"
+            )
+        if rays._closed:
+            raise RuntimeError("prepared OptiX ray batch handle is closed")
+        if payload._closed:
+            raise RuntimeError("prepared OptiX primitive grouped payload handle is closed")
+        if payload.primitive_count != self.triangle_count:
+            raise ValueError("prepared primitive payload count must match prepared triangle count")
+        if reduction not in {"count", "sum", "min", "max", "sum_count"}:
+            raise ValueError("reduction must be one of: count, sum, min, max, sum_count")
+        group_count = int(payload.group_count)
+        handoffs = (
+            prevalidated_handoffs
+            if prevalidated_handoffs is not None
+            else _validate_primitive_grouped_i64_reduction_device_output_columns(
+                output_columns,
+                group_count=group_count,
+            )
+        )
+        run_symbol = _find_optional_backend_symbol(
+            self._lib,
+            OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_DEVICE_OUTPUTS_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_DEVICE_OUTPUTS_SYMBOL}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+
+        hit_event_count = ctypes.c_uint64()
+        traversal_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        operation = {
+            "count": 1,
+            "sum": 2,
+            "min": 3,
+            "max": 4,
+            "sum_count": 5,
+        }[reduction]
+        query_start = time.perf_counter()
+        status = run_symbol(
+            self._handle,
+            payload._handle,
+            rays._handle,
+            ctypes.c_uint32(operation),
+            ctypes.c_uint64(int(handoffs["group_counts"].data_ptr)),
+            ctypes.c_uint64(int(handoffs["group_sums"].data_ptr)),
+            ctypes.c_uint64(int(handoffs["group_mins"].data_ptr)),
+            ctypes.c_uint64(int(handoffs["group_maxs"].data_ptr)),
+            ctypes.c_size_t(group_count),
+            ctypes.byref(hit_event_count),
+            ctypes.byref(traversal_seconds),
+            error,
+            len(error),
+        )
+        device_execution_seconds = time.perf_counter() - query_start
+        _check_status(status, error)
+
+        self._run_count += 1
+        return {
+            "metadata": {
+                "backend": "optix",
+                "contract": (
+                    "PREPARED_TRIANGLE_SCENE_3D_PREPARED_RAY_BATCH_PREPARED_"
+                    "PRIMITIVE_GROUPED_I64_REDUCTION_DEVICE_OUTPUTS_V1"
+                ),
+                "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+                "native_symbol": (
+                    OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_DEVICE_OUTPUTS_SYMBOL
+                ),
+                "reduction": reduction,
+                "ray_count": int(rays.ray_count),
+                "triangle_count": self.triangle_count,
+                "group_count": group_count,
+                "hit_event_count_before_dedup": int(hit_event_count.value),
+                "rt_core_accelerated": True,
+                "prepared_reused": True,
+                "prepared_scene_used": True,
+                "prepared_ray_batch_used": True,
+                "prepared_primitive_payload_used": True,
+                "prepared_run_index": self._run_count,
+                "rows_materialized": False,
+                "row_arrays_materialized": False,
+                "group_rows_downloaded_to_host": False,
+                "native_direct_device_output_columns": True,
+                "output_columns_partner_owned": True,
+                "output_source_devices": tuple(
+                    sorted(
+                        {
+                            f"{handoff.device_type}:{handoff.device_id}"
+                            for handoff in handoffs.values()
+                        }
+                    )
+                ),
+                "phase_timing_seconds": {
+                    "prepare_build": float(self.prepare_seconds),
+                    "prepared_ray_batch_prepare": float(rays.prepare_seconds),
+                    "primitive_payload_prepare": float(payload.prepare_seconds),
+                    "query_pack": 0.0,
+                    "traversal_grouped_i64_reduction_and_direct_device_output_write": float(
+                        traversal_seconds.value
+                    ),
+                    "device_execution_host_observed": float(device_execution_seconds),
+                },
+                "transfer_metadata": {
+                    "static_scene_prepared_on_device": True,
+                    **getattr(rays, "transfer_metadata", {}),
+                    "primitive_group_ids_uploaded_each_run": False,
+                    "primitive_values_uploaded_each_run": False,
+                    "prepared_primitive_payload_on_device": True,
+                    "per_ray_records_downloaded_to_host": False,
+                    "group_rows_downloaded_to_host": False,
+                    "native_direct_device_output_columns": True,
+                    "true_zero_copy_authorized": False,
+                },
+                "claim_boundary": {
+                    "native_app_api": False,
+                    "row_witnesses": False,
+                    "public_speedup_claim": False,
+                    "true_zero_copy": False,
+                    "result_materialization_in_measured_window": False,
+                },
+            },
+        }
+
     def ray_hit_count_sum(self, rays) -> dict[str, object]:
         """Return the scalar sum of per-ray 3-D triangle hit counts."""
         if self._closed:
@@ -26277,6 +26462,27 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_ray_batch_prepared_primitive_grouped.restype = ctypes.c_int
+    optional_ray_batch_prepared_primitive_grouped_device_outputs = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_DEVICE_OUTPUTS_SYMBOL,
+    )
+    if optional_ray_batch_prepared_primitive_grouped_device_outputs is not None:
+        optional_ray_batch_prepared_primitive_grouped_device_outputs.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_ray_batch_prepared_primitive_grouped_device_outputs.restype = ctypes.c_int
     optional_primitive_grouped_payload_3d_destroy = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_primitive_grouped_i64_payload_3d_destroy",

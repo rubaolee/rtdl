@@ -1,19 +1,33 @@
-# Prepared Runtime
+# Measured Runtime Surfaces
 
-V3's important runtime idea is prepared execution.
+V4's important runtime idea is measured generic fused operators.
 
-Instead of treating every call as a fresh one-off operation, V3 can prepare
-kernel state and reuse the prepared route when the workload shape allows it.
-This is the trunk that current examples and benchmark code are expected to use.
+Instead of exposing app-specific kernels, V4 exposes operator surfaces such as:
 
-For a small local walkthrough:
+- fixed-radius count-threshold;
+- closest-hit grouped argmin;
+- ray/triangle any-hit flags;
+- primitive grouped-i64 reduction;
+- point-group nearest witness;
+- ray/triangle any-hit weighted sum;
+- fixed-radius graph component union;
+- AABB all-ops count.
+
+Run the portable catalog check:
 
 ```powershell
-py -3 examples\current\getting_started\rtdl_prepared_measurement_demo.py
+py -3 scripts\v4_catalog_regression_gate.py --mode dry-run
 ```
 
-Prepared execution is a capability. It is not, by itself, a public speedup
-statement. Performance wording should name the exact row, metric, hardware, and
-measurement context.
+Try dry-run examples without CUDA:
+
+```powershell
+py -3 examples\v4\fixed_radius_torch_device_arrays.py --dry-run
+py -3 examples\v4\ray_triangle_any_hit_weighted_sum_torch_device_arrays.py --dry-run
+py -3 examples\v4\aabb_index_all_ops_count.py --dry-run
+```
+
+Dry runs prove API reachability and claim-boundary flags. GPU performance
+requires the recorded hardware path and exact benchmark command.
 
 Next: [Measurement Boundaries](05_measurement_boundaries.md)

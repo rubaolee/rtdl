@@ -41,7 +41,8 @@ and preserve the non-authorization boundaries for V4.x items.
 
 ## Current Candidate Evidence
 
-- Candidate packet: `future/v4/v4_0_release_candidate_packet_2026-06-24.md`
+- Development-state decision packet:
+  `future/v4/v4_0_development_state_decision_packet_2026-06-24.md`
 - Clean-commit rerun protocol: `future/v4/release_rerun_protocol_2026-06-24.md`
 - Claude review: `future/v4/reviews/claude_v4_0_release_candidate_review_2026-06-24.raw.md`
 - Claude amendment-closure review: `future/v4/reviews/claude_v4_0_release_candidate_amendment_closure_recorded_review_2026-06-24.md`

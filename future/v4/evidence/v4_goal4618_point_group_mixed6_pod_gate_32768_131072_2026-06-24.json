@@ -1,0 +1,1038 @@
+{
+  "broad_v4_speedup_claim_authorized": false,
+  "candidate_status": "candidate_pod_repeat_gate_passed_requires_external_review_before_release_scope",
+  "fixture_variant": "mixed6",
+  "platform": {
+    "machine": "x86_64",
+    "python": "3.12.3",
+    "release": "5.15.0-94-generic",
+    "system": "Linux"
+  },
+  "query_counts": [
+    32768,
+    131072
+  ],
+  "release_claim_authorized": false,
+  "repeat": 7,
+  "results": [
+    {
+      "direct_device_output": {
+        "max_s": 0.0006563961505889893,
+        "median_s": 0.0005751959979534149,
+        "metadata": {
+          "adapter": "v4_point_group_nearest_witness_2d_device_arrays",
+          "backend": "optix",
+          "broad_v4_speedup_claim_authorized": false,
+          "direct_device_handoff_authorized": true,
+          "generic_primitive": "POINT_GROUP_NEAREST_WITNESS_2D",
+          "group_count": 32768,
+          "host_materialization_in_hot_path": false,
+          "host_query_upload_in_hot_path": false,
+          "input_contract": "native_prepared_point_groups_plus_torch_device_query_columns",
+          "materializes_neighbor_rows": false,
+          "measured_partner": false,
+          "measured_partners": [],
+          "native_direct_device_output_columns": true,
+          "native_elapsed_sec": 0.00011081621050834656,
+          "native_engine_row_contract": "generic_point_group_nearest_witness_2d_device_columns",
+          "native_execution_path": "prepared_rt_core_point_group_nearest_witness_2d_device_query_columns",
+          "native_prepared_route": "write_device_nearest_witness_columns_from_device_query_columns",
+          "native_prepared_search_groups_owned_by_rtdl": true,
+          "native_symbol": "rtdl_optix_write_prepared_point_group_nearest_witness_2d_device_query_columns",
+          "neighbor_rows_downloaded_to_host_in_hot_path": false,
+          "output_columns_direct_device_write_confirmed": true,
+          "output_columns_partner_owned": true,
+          "output_contract": "caller_supplied_or_allocated_torch_device_nearest_witness_columns",
+          "partner": "torch",
+          "partner_claim_status": "candidate_pod_repeat_gate_passed_requires_external_review_before_release_scope",
+          "partner_support_declared_unmeasured": [
+            "cupy"
+          ],
+          "pod_candidate_partners": [
+            "torch"
+          ],
+          "public_speedup_claim_authorized": false,
+          "python_point_object_boundary_in_hot_path": false,
+          "query_count": 32768,
+          "query_point_columns_direct_device_read_confirmed": true,
+          "query_point_columns_partner_owned": true,
+          "radius": 0.5,
+          "release_claim_authorized": false,
+          "rows_materialized": false,
+          "rt_core_accelerated": true,
+          "rt_core_speedup_claim_authorized": false,
+          "search_count": 32768,
+          "source_devices": [
+            "cuda:0"
+          ],
+          "source_protocols": [
+            "torch"
+          ],
+          "tier3_callback_claim_authorized": false,
+          "transfer_mode": "device_query_columns_to_device_witness_columns",
+          "true_zero_copy_authorized": false,
+          "typed_result_stream": {
+            "app_specific_engine_logic_allowed": false,
+            "automatic_partner_selection_allowed": false,
+            "claim_boundary": "v2.8 typed result streams are an internal generic contract for RTDL runtime development. They do not authorize release, public speedup wording, broad RT-core wording, true-zero-copy wording, hidden dispatch, hidden partner selection, app-specific native-engine behavior, or user-defined shader injection.",
+            "column_names": [
+              "query_id",
+              "neighbor_id",
+              "distance"
+            ],
+            "columns": [
+              {
+                "buffer": {
+                  "access_mode": "write",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 32768,
+                  "data_ptr_observed": true,
+                  "device": "cuda:0",
+                  "dtype": "uint32",
+                  "element_count": 32768,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "immutable",
+                  "name": "query_id",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    32768
+                  ],
+                  "source_protocol": "torch",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": true,
+                "dtype": "uint32",
+                "name": "query_id",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "group_key",
+                "shape": [
+                  32768
+                ]
+              },
+              {
+                "buffer": {
+                  "access_mode": "write",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 32768,
+                  "data_ptr_observed": true,
+                  "device": "cuda:0",
+                  "dtype": "uint32",
+                  "element_count": 32768,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "immutable",
+                  "name": "neighbor_id",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    32768
+                  ],
+                  "source_protocol": "torch",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": true,
+                "dtype": "uint32",
+                "name": "neighbor_id",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "witness",
+                "shape": [
+                  32768
+                ]
+              },
+              {
+                "buffer": {
+                  "access_mode": "write",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 32768,
+                  "data_ptr_observed": true,
+                  "device": "cuda:0",
+                  "dtype": "float64",
+                  "element_count": 32768,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "immutable",
+                  "name": "distance",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    32768
+                  ],
+                  "source_protocol": "torch",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": true,
+                "dtype": "float64",
+                "name": "distance",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "score",
+                "shape": [
+                  32768
+                ]
+              }
+            ],
+            "contract_version": "rtdl.v2_8.typed_result_stream.v1",
+            "device_resident_column_count": 3,
+            "event_or_group_ordering_required": true,
+            "grouped_continuation_ready": true,
+            "hidden_dispatch_allowed": false,
+            "ordering": "stable_row_order",
+            "page_capacity": 32768,
+            "producer_primitive": "point_group_nearest_witness_2d",
+            "public_speedup_claim_authorized": false,
+            "release_authorized": false,
+            "rt_core_speedup_claim_authorized": false,
+            "segmented_page_failure_mode": "fail_closed_overflow",
+            "status": "internal_contract_no_native_promotion",
+            "status_column_names": [
+              "row_count",
+              "capacity",
+              "overflow",
+              "complete_candidate_coverage"
+            ],
+            "status_columns": [
+              {
+                "buffer": {
+                  "access_mode": "read",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 1,
+                  "data_ptr_observed": false,
+                  "device": "cpu:0",
+                  "dtype": "uint64",
+                  "element_count": 1,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "mutable",
+                  "name": "row_count",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    1
+                  ],
+                  "source_protocol": "metadata_status_columns_no_device_status_buffer",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": false,
+                "dtype": "uint64",
+                "name": "row_count",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "status",
+                "shape": [
+                  1
+                ]
+              },
+              {
+                "buffer": {
+                  "access_mode": "read",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 1,
+                  "data_ptr_observed": false,
+                  "device": "cpu:0",
+                  "dtype": "uint64",
+                  "element_count": 1,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "mutable",
+                  "name": "capacity",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    1
+                  ],
+                  "source_protocol": "metadata_status_columns_no_device_status_buffer",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": false,
+                "dtype": "uint64",
+                "name": "capacity",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "status",
+                "shape": [
+                  1
+                ]
+              },
+              {
+                "buffer": {
+                  "access_mode": "read",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 1,
+                  "data_ptr_observed": false,
+                  "device": "cpu:0",
+                  "dtype": "uint32",
+                  "element_count": 1,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "mutable",
+                  "name": "overflow",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    1
+                  ],
+                  "source_protocol": "metadata_status_columns_no_device_status_buffer",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": false,
+                "dtype": "uint32",
+                "name": "overflow",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "status",
+                "shape": [
+                  1
+                ]
+              },
+              {
+                "buffer": {
+                  "access_mode": "read",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 1,
+                  "data_ptr_observed": false,
+                  "device": "cpu:0",
+                  "dtype": "uint32",
+                  "element_count": 1,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "mutable",
+                  "name": "complete_candidate_coverage",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    1
+                  ],
+                  "source_protocol": "metadata_status_columns_no_device_status_buffer",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": false,
+                "dtype": "uint32",
+                "name": "complete_candidate_coverage",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "status",
+                "shape": [
+                  1
+                ]
+              }
+            ],
+            "stream_id": "optix_point_group_nearest_witness_2d_device_query_to_device_columns",
+            "stream_kind": "candidate_stream",
+            "target": "typed_device_resident_result_streams_and_grouped_continuation",
+            "true_zero_copy_claim_authorized": false
+          },
+          "v2_8_typed_producer_metadata": {
+            "backend": "optix",
+            "claim_boundary": "This is generic typed producer metadata for point/group nearest-witness columns. It can record partner-owned CUDA output columns without host row materialization, but it does not authorize a release, public speedup wording, broad RT-core wording, true-zero-copy wording, hidden dispatch, hidden partner selection, or app-specific native-engine behavior.",
+            "column_names": [
+              "query_id",
+              "neighbor_id",
+              "distance"
+            ],
+            "device_resident_output_columns_proven": true,
+            "device_resident_output_stream_proven": true,
+            "end_to_end_true_zero_copy_proven": false,
+            "group_count": 32768,
+            "host_row_materialization_used": false,
+            "native_execution_path": "prepared_rt_core_point_group_nearest_witness_2d_device_query_columns",
+            "native_symbol": "rtdl_optix_write_prepared_point_group_nearest_witness_2d_device_query_columns",
+            "native_typed_producer_metadata_present": true,
+            "output_column_count": 3,
+            "producer_output_residency": "partner_owned_cuda_output_columns",
+            "producer_primitive": "point_group_nearest_witness_2d",
+            "public_speedup_claim_authorized": false,
+            "query_count": 32768,
+            "radius": 0.5,
+            "release_authorized": false,
+            "row_count": 32768,
+            "rt_core_speedup_claim_authorized": false,
+            "search_count": 32768,
+            "source_devices": [
+              "cuda:0"
+            ],
+            "source_protocols": [
+              "torch"
+            ],
+            "transfer_mode": "device_query_columns_to_device_witness_columns",
+            "true_zero_copy_claim_authorized": false,
+            "v2_8_release_authorized": false,
+            "version": "rtdl.v2_8.point_group_nearest_witness_typed_producer.v1"
+          },
+          "v4_api_surface": "v4_point_group_nearest_witness_2d_device_arrays",
+          "whole_app_speedup_claim_authorized": false
+        },
+        "min_s": 0.0005612596869468689,
+        "native_elapsed_sec_last": 0.00011081621050834656,
+        "timings_s": [
+          0.0006563961505889893,
+          0.0006187371909618378,
+          0.0005940645933151245,
+          0.0005612596869468689,
+          0.000563502311706543,
+          0.0005616247653961182,
+          0.0005751959979534149
+        ]
+      },
+      "fixture_shape": {
+        "diagonal_hit_count": 5461,
+        "diagonal_no_hit_count": 5461,
+        "exact_match_count": 5462,
+        "negative_offset_count": 5461,
+        "no_hit_count": 10922,
+        "no_hit_distance": 3.4028234663852886e+38,
+        "no_hit_neighbor_id": 4294967295,
+        "pattern": "exact_match/x_positive_hit/y_axis_no_hit/x_negative_hit/diagonal_hit/diagonal_no_hit",
+        "positive_offset_count": 5462,
+        "variant": "mixed6",
+        "y_axis_no_hit_count": 5461
+      },
+      "group_count": 32768,
+      "legacy_host_rows": {
+        "max_s": 0.3038701005280018,
+        "median_s": 0.29299942404031754,
+        "min_s": 0.2913157045841217,
+        "row_count": 32768,
+        "row_sample": [
+          {
+            "distance": 0.0,
+            "neighbor_id": 0,
+            "query_id": 0
+          },
+          {
+            "distance": 0.2999999523162842,
+            "neighbor_id": 1,
+            "query_id": 1
+          },
+          {
+            "distance": 3.4028234663852886e+38,
+            "neighbor_id": 4294967295,
+            "query_id": 2
+          },
+          {
+            "distance": 0.25,
+            "neighbor_id": 3,
+            "query_id": 3
+          },
+          {
+            "distance": 0.3605552911758423,
+            "neighbor_id": 4,
+            "query_id": 4
+          },
+          {
+            "distance": 3.4028234663852886e+38,
+            "neighbor_id": 4294967295,
+            "query_id": 5
+          },
+          {
+            "distance": 0.0,
+            "neighbor_id": 6,
+            "query_id": 6
+          },
+          {
+            "distance": 0.3000001907348633,
+            "neighbor_id": 7,
+            "query_id": 7
+          }
+        ],
+        "timings_s": [
+          0.30356088653206825,
+          0.3038701005280018,
+          0.29299942404031754,
+          0.2918757125735283,
+          0.2917569689452648,
+          0.2913157045841217,
+          0.2950170002877712
+        ]
+      },
+      "parity": {
+        "device_outputs": {
+          "distances_match": true,
+          "neighbor_ids_match": true,
+          "passed": true,
+          "query_ids_match": true
+        },
+        "legacy_rows": {
+          "distances_match": true,
+          "neighbor_ids_match": true,
+          "passed": true,
+          "query_ids_match": true,
+          "row_count": 32768,
+          "row_count_match": true,
+          "sample": [
+            {
+              "distance": 0.0,
+              "neighbor_id": 0,
+              "query_id": 0
+            },
+            {
+              "distance": 0.2999999523162842,
+              "neighbor_id": 1,
+              "query_id": 1
+            },
+            {
+              "distance": 3.4028234663852886e+38,
+              "neighbor_id": 4294967295,
+              "query_id": 2
+            },
+            {
+              "distance": 0.25,
+              "neighbor_id": 3,
+              "query_id": 3
+            },
+            {
+              "distance": 0.3605552911758423,
+              "neighbor_id": 4,
+              "query_id": 4
+            },
+            {
+              "distance": 3.4028234663852886e+38,
+              "neighbor_id": 4294967295,
+              "query_id": 5
+            },
+            {
+              "distance": 0.0,
+              "neighbor_id": 6,
+              "query_id": 6
+            },
+            {
+              "distance": 0.3000001907348633,
+              "neighbor_id": 7,
+              "query_id": 7
+            }
+          ]
+        },
+        "passed": true
+      },
+      "prepare_seconds": 0.4409612752497196,
+      "query_count": 32768,
+      "repeat": 7,
+      "same_contract_ratio_legacy_host_rows_over_direct_device_output": 509.39058178921397,
+      "search_count": 32768,
+      "warmup": 2
+    },
+    {
+      "direct_device_output": {
+        "max_s": 0.0004941821098327637,
+        "median_s": 0.0004759170114994049,
+        "metadata": {
+          "adapter": "v4_point_group_nearest_witness_2d_device_arrays",
+          "backend": "optix",
+          "broad_v4_speedup_claim_authorized": false,
+          "direct_device_handoff_authorized": true,
+          "generic_primitive": "POINT_GROUP_NEAREST_WITNESS_2D",
+          "group_count": 131072,
+          "host_materialization_in_hot_path": false,
+          "host_query_upload_in_hot_path": false,
+          "input_contract": "native_prepared_point_groups_plus_torch_device_query_columns",
+          "materializes_neighbor_rows": false,
+          "measured_partner": false,
+          "measured_partners": [],
+          "native_direct_device_output_columns": true,
+          "native_elapsed_sec": 0.00012197345495223999,
+          "native_engine_row_contract": "generic_point_group_nearest_witness_2d_device_columns",
+          "native_execution_path": "prepared_rt_core_point_group_nearest_witness_2d_device_query_columns",
+          "native_prepared_route": "write_device_nearest_witness_columns_from_device_query_columns",
+          "native_prepared_search_groups_owned_by_rtdl": true,
+          "native_symbol": "rtdl_optix_write_prepared_point_group_nearest_witness_2d_device_query_columns",
+          "neighbor_rows_downloaded_to_host_in_hot_path": false,
+          "output_columns_direct_device_write_confirmed": true,
+          "output_columns_partner_owned": true,
+          "output_contract": "caller_supplied_or_allocated_torch_device_nearest_witness_columns",
+          "partner": "torch",
+          "partner_claim_status": "candidate_pod_repeat_gate_passed_requires_external_review_before_release_scope",
+          "partner_support_declared_unmeasured": [
+            "cupy"
+          ],
+          "pod_candidate_partners": [
+            "torch"
+          ],
+          "public_speedup_claim_authorized": false,
+          "python_point_object_boundary_in_hot_path": false,
+          "query_count": 131072,
+          "query_point_columns_direct_device_read_confirmed": true,
+          "query_point_columns_partner_owned": true,
+          "radius": 0.5,
+          "release_claim_authorized": false,
+          "rows_materialized": false,
+          "rt_core_accelerated": true,
+          "rt_core_speedup_claim_authorized": false,
+          "search_count": 131072,
+          "source_devices": [
+            "cuda:0"
+          ],
+          "source_protocols": [
+            "torch"
+          ],
+          "tier3_callback_claim_authorized": false,
+          "transfer_mode": "device_query_columns_to_device_witness_columns",
+          "true_zero_copy_authorized": false,
+          "typed_result_stream": {
+            "app_specific_engine_logic_allowed": false,
+            "automatic_partner_selection_allowed": false,
+            "claim_boundary": "v2.8 typed result streams are an internal generic contract for RTDL runtime development. They do not authorize release, public speedup wording, broad RT-core wording, true-zero-copy wording, hidden dispatch, hidden partner selection, app-specific native-engine behavior, or user-defined shader injection.",
+            "column_names": [
+              "query_id",
+              "neighbor_id",
+              "distance"
+            ],
+            "columns": [
+              {
+                "buffer": {
+                  "access_mode": "write",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 131072,
+                  "data_ptr_observed": true,
+                  "device": "cuda:0",
+                  "dtype": "uint32",
+                  "element_count": 131072,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "immutable",
+                  "name": "query_id",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    131072
+                  ],
+                  "source_protocol": "torch",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": true,
+                "dtype": "uint32",
+                "name": "query_id",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "group_key",
+                "shape": [
+                  131072
+                ]
+              },
+              {
+                "buffer": {
+                  "access_mode": "write",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 131072,
+                  "data_ptr_observed": true,
+                  "device": "cuda:0",
+                  "dtype": "uint32",
+                  "element_count": 131072,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "immutable",
+                  "name": "neighbor_id",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    131072
+                  ],
+                  "source_protocol": "torch",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": true,
+                "dtype": "uint32",
+                "name": "neighbor_id",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "witness",
+                "shape": [
+                  131072
+                ]
+              },
+              {
+                "buffer": {
+                  "access_mode": "write",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 131072,
+                  "data_ptr_observed": true,
+                  "device": "cuda:0",
+                  "dtype": "float64",
+                  "element_count": 131072,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "immutable",
+                  "name": "distance",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    131072
+                  ],
+                  "source_protocol": "torch",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": true,
+                "dtype": "float64",
+                "name": "distance",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "score",
+                "shape": [
+                  131072
+                ]
+              }
+            ],
+            "contract_version": "rtdl.v2_8.typed_result_stream.v1",
+            "device_resident_column_count": 3,
+            "event_or_group_ordering_required": true,
+            "grouped_continuation_ready": true,
+            "hidden_dispatch_allowed": false,
+            "ordering": "stable_row_order",
+            "page_capacity": 131072,
+            "producer_primitive": "point_group_nearest_witness_2d",
+            "public_speedup_claim_authorized": false,
+            "release_authorized": false,
+            "rt_core_speedup_claim_authorized": false,
+            "segmented_page_failure_mode": "fail_closed_overflow",
+            "status": "internal_contract_no_native_promotion",
+            "status_column_names": [
+              "row_count",
+              "capacity",
+              "overflow",
+              "complete_candidate_coverage"
+            ],
+            "status_columns": [
+              {
+                "buffer": {
+                  "access_mode": "read",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 1,
+                  "data_ptr_observed": false,
+                  "device": "cpu:0",
+                  "dtype": "uint64",
+                  "element_count": 1,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "mutable",
+                  "name": "row_count",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    1
+                  ],
+                  "source_protocol": "metadata_status_columns_no_device_status_buffer",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": false,
+                "dtype": "uint64",
+                "name": "row_count",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "status",
+                "shape": [
+                  1
+                ]
+              },
+              {
+                "buffer": {
+                  "access_mode": "read",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 1,
+                  "data_ptr_observed": false,
+                  "device": "cpu:0",
+                  "dtype": "uint64",
+                  "element_count": 1,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "mutable",
+                  "name": "capacity",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    1
+                  ],
+                  "source_protocol": "metadata_status_columns_no_device_status_buffer",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": false,
+                "dtype": "uint64",
+                "name": "capacity",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "status",
+                "shape": [
+                  1
+                ]
+              },
+              {
+                "buffer": {
+                  "access_mode": "read",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 1,
+                  "data_ptr_observed": false,
+                  "device": "cpu:0",
+                  "dtype": "uint32",
+                  "element_count": 1,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "mutable",
+                  "name": "overflow",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    1
+                  ],
+                  "source_protocol": "metadata_status_columns_no_device_status_buffer",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": false,
+                "dtype": "uint32",
+                "name": "overflow",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "status",
+                "shape": [
+                  1
+                ]
+              },
+              {
+                "buffer": {
+                  "access_mode": "read",
+                  "alignment_bytes": 1,
+                  "byte_offset": 0,
+                  "capacity_elements": 1,
+                  "data_ptr_observed": false,
+                  "device": "cpu:0",
+                  "dtype": "uint32",
+                  "element_count": 1,
+                  "lifetime": "caller_retained",
+                  "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+                  "mutability": "mutable",
+                  "name": "complete_candidate_coverage",
+                  "scope": "rtdl_primitive_handoff_only",
+                  "shape": [
+                    1
+                  ],
+                  "source_protocol": "metadata_status_columns_no_device_status_buffer",
+                  "stream_handle": 0,
+                  "strides_bytes": null
+                },
+                "device_resident": false,
+                "dtype": "uint32",
+                "name": "complete_candidate_coverage",
+                "nullable": false,
+                "required_for_continuation": true,
+                "role": "status",
+                "shape": [
+                  1
+                ]
+              }
+            ],
+            "stream_id": "optix_point_group_nearest_witness_2d_device_query_to_device_columns",
+            "stream_kind": "candidate_stream",
+            "target": "typed_device_resident_result_streams_and_grouped_continuation",
+            "true_zero_copy_claim_authorized": false
+          },
+          "v2_8_typed_producer_metadata": {
+            "backend": "optix",
+            "claim_boundary": "This is generic typed producer metadata for point/group nearest-witness columns. It can record partner-owned CUDA output columns without host row materialization, but it does not authorize a release, public speedup wording, broad RT-core wording, true-zero-copy wording, hidden dispatch, hidden partner selection, or app-specific native-engine behavior.",
+            "column_names": [
+              "query_id",
+              "neighbor_id",
+              "distance"
+            ],
+            "device_resident_output_columns_proven": true,
+            "device_resident_output_stream_proven": true,
+            "end_to_end_true_zero_copy_proven": false,
+            "group_count": 131072,
+            "host_row_materialization_used": false,
+            "native_execution_path": "prepared_rt_core_point_group_nearest_witness_2d_device_query_columns",
+            "native_symbol": "rtdl_optix_write_prepared_point_group_nearest_witness_2d_device_query_columns",
+            "native_typed_producer_metadata_present": true,
+            "output_column_count": 3,
+            "producer_output_residency": "partner_owned_cuda_output_columns",
+            "producer_primitive": "point_group_nearest_witness_2d",
+            "public_speedup_claim_authorized": false,
+            "query_count": 131072,
+            "radius": 0.5,
+            "release_authorized": false,
+            "row_count": 131072,
+            "rt_core_speedup_claim_authorized": false,
+            "search_count": 131072,
+            "source_devices": [
+              "cuda:0"
+            ],
+            "source_protocols": [
+              "torch"
+            ],
+            "transfer_mode": "device_query_columns_to_device_witness_columns",
+            "true_zero_copy_claim_authorized": false,
+            "v2_8_release_authorized": false,
+            "version": "rtdl.v2_8.point_group_nearest_witness_typed_producer.v1"
+          },
+          "v4_api_surface": "v4_point_group_nearest_witness_2d_device_arrays",
+          "whole_app_speedup_claim_authorized": false
+        },
+        "min_s": 0.0004566609859466553,
+        "native_elapsed_sec_last": 0.00012197345495223999,
+        "timings_s": [
+          0.000491853803396225,
+          0.0004941821098327637,
+          0.0004759170114994049,
+          0.0004917308688163757,
+          0.00046949461102485657,
+          0.00045675039291381836,
+          0.0004566609859466553
+        ]
+      },
+      "fixture_shape": {
+        "diagonal_hit_count": 21845,
+        "diagonal_no_hit_count": 21845,
+        "exact_match_count": 21846,
+        "negative_offset_count": 21845,
+        "no_hit_count": 43690,
+        "no_hit_distance": 3.4028234663852886e+38,
+        "no_hit_neighbor_id": 4294967295,
+        "pattern": "exact_match/x_positive_hit/y_axis_no_hit/x_negative_hit/diagonal_hit/diagonal_no_hit",
+        "positive_offset_count": 21846,
+        "variant": "mixed6",
+        "y_axis_no_hit_count": 21845
+      },
+      "group_count": 131072,
+      "legacy_host_rows": {
+        "max_s": 0.9801415130496025,
+        "median_s": 0.886679396033287,
+        "min_s": 0.8490472808480263,
+        "row_count": 131072,
+        "row_sample": [
+          {
+            "distance": 0.0,
+            "neighbor_id": 0,
+            "query_id": 0
+          },
+          {
+            "distance": 0.2999999523162842,
+            "neighbor_id": 1,
+            "query_id": 1
+          },
+          {
+            "distance": 3.4028234663852886e+38,
+            "neighbor_id": 4294967295,
+            "query_id": 2
+          },
+          {
+            "distance": 0.25,
+            "neighbor_id": 3,
+            "query_id": 3
+          },
+          {
+            "distance": 0.3605552911758423,
+            "neighbor_id": 4,
+            "query_id": 4
+          },
+          {
+            "distance": 3.4028234663852886e+38,
+            "neighbor_id": 4294967295,
+            "query_id": 5
+          },
+          {
+            "distance": 0.0,
+            "neighbor_id": 6,
+            "query_id": 6
+          },
+          {
+            "distance": 0.3000001907348633,
+            "neighbor_id": 7,
+            "query_id": 7
+          }
+        ],
+        "timings_s": [
+          0.8953914493322372,
+          0.8490472808480263,
+          0.886679396033287,
+          0.8845566622912884,
+          0.9801415130496025,
+          0.9269548654556274,
+          0.8865354359149933
+        ]
+      },
+      "parity": {
+        "device_outputs": {
+          "distances_match": true,
+          "neighbor_ids_match": true,
+          "passed": true,
+          "query_ids_match": true
+        },
+        "legacy_rows": {
+          "distances_match": true,
+          "neighbor_ids_match": true,
+          "passed": true,
+          "query_ids_match": true,
+          "row_count": 131072,
+          "row_count_match": true,
+          "sample": [
+            {
+              "distance": 0.0,
+              "neighbor_id": 0,
+              "query_id": 0
+            },
+            {
+              "distance": 0.2999999523162842,
+              "neighbor_id": 1,
+              "query_id": 1
+            },
+            {
+              "distance": 3.4028234663852886e+38,
+              "neighbor_id": 4294967295,
+              "query_id": 2
+            },
+            {
+              "distance": 0.25,
+              "neighbor_id": 3,
+              "query_id": 3
+            },
+            {
+              "distance": 0.3605552911758423,
+              "neighbor_id": 4,
+              "query_id": 4
+            },
+            {
+              "distance": 3.4028234663852886e+38,
+              "neighbor_id": 4294967295,
+              "query_id": 5
+            },
+            {
+              "distance": 0.0,
+              "neighbor_id": 6,
+              "query_id": 6
+            },
+            {
+              "distance": 0.3000001907348633,
+              "neighbor_id": 7,
+              "query_id": 7
+            }
+          ]
+        },
+        "passed": true
+      },
+      "prepare_seconds": 1.468085877597332,
+      "query_count": 131072,
+      "repeat": 7,
+      "same_contract_ratio_legacy_host_rows_over_direct_device_output": 1863.0966630920605,
+      "search_count": 131072,
+      "warmup": 2
+    }
+  ],
+  "schema": "rtdl.v4.point_group_nearest_witness_device_outputs_gate.v1",
+  "status": "passed",
+  "surface": "v4_point_group_nearest_witness_2d_device_arrays",
+  "tier3_callback_claim_authorized": false,
+  "true_zero_copy_authorized": false,
+  "warmup": 2,
+  "whole_app_speedup_claim_authorized": false
+}

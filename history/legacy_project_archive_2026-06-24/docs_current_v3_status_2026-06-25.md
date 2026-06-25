@@ -1,6 +1,6 @@
-# Current V3.0.0 Status
+# Archived V3.0.0 Status
 
-V3.0.0 is the current RTDL user line.
+This file is archived historical context. It is not the current RTDL user line.
 
 The current tree is suitable for learning the Python-hosted RTDL programming
 model, running the portable examples, and developing against explicit backend

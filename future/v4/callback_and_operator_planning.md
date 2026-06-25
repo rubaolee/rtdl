@@ -1,6 +1,6 @@
 # V4 Operator And Callback Planning
 
-Status: V4 development guidance, not a release announcement
+Status: current V4 planning guidance; final release authorization pending
 
 V4 does not expose raw OptiX callbacks as the public programming model. The
 public model is operator push-down: a user asks for a generic continuation such
@@ -17,7 +17,7 @@ Allowed examples:
 - count / threshold
 - any-hit flag
 - grouped argmin
-- scalar min/max or reduce candidates after review
+- scalar min/max or reduce operators after measurement and review
 
 Not allowed as V4.0 public surfaces:
 
@@ -48,11 +48,23 @@ v4_fixed_radius_count_threshold_2d_device_arrays
 ```
 
 For a scalar Numba device callback, V4 is honest: it is only a Tier-3 spike
-candidate until the Numba-to-PTX-to-OptiX path links, runs, and is measured.
+item until the falsifiable `goal4622` protocol passes. The protocol is
+`future/v4/tier3_callback_spike_protocol_2026-06-24.md`. Its current status is
+`tier3_protocol_goal4622_spike_only_not_support`.
+
 The 2026-06-24 evidence is deliberately narrow: Numba PTX generation passed,
 but direct `optixModuleCreate` on the bare helper PTX failed because there were
 no OptiX semantic entry functions. A future Tier-3 path therefore needs
 wrapper/direct-callable ABI evidence before any support claim.
+
+The spike gates are fixed before implementation:
+
+- compile reliability `>= 95%` across at least 20 attempts and 4 accepted scalar
+  callback variants
+- OptiX wrapper/direct-callable link/run reliability `>= 95%`
+- correctness parity `100%`
+- median callback route overhead `<= 1.50x` versus a matching hand-written
+  Tier-2 fused route, with no tested size over `2.00x`
 
 ```python
 plan = plan_v4_operator_request(
@@ -67,6 +79,12 @@ Expected status:
 
 ```text
 tier3_spike_only_not_v4_0_release_surface
+```
+
+Expected protocol status:
+
+```text
+tier3_protocol_goal4622_spike_only_not_support
 ```
 
 For complex action-shaped callbacks, V4.0 rejects rather than pretending that
@@ -89,12 +107,50 @@ Expected status:
 rejected_action_shaped_callback_deferred
 ```
 
+## Minimum Push-Down Recognizer
+
+Goal4630 adds a thin declarative recognizer on top of the planner. It accepts a
+single generic operator request and either routes it to a measured
+Tier-2 surface or fails closed:
+
+```python
+from rtdsl.v4_operator_catalog import recognize_v4_pushdown_request
+
+recognition = recognize_v4_pushdown_request(
+    {
+        "kind": "itre_relation_reduce",
+        "relation": "fixed_radius",
+        "reduction": "count_threshold",
+    },
+    partner="torch",
+)
+print(recognition.status)
+print(recognition.plan.api_surface)
+```
+
+Expected status:
+
+```text
+pushdown_recognized_measured_tier2
+```
+
+The recognizer is deliberately small. It recognizes one operator at a time and
+does not claim to be a full ITRE compiler. It fails closed for:
+
+- unmeasured partners such as CuPy performance routes in V4.0;
+- unmeasured operators when someone tries to count them as measured release
+  surfaces;
+- application-identity kernels such as Barnes-Hut or DBSCAN;
+- action-shaped callbacks;
+- Tier-3 scalar callback spikes;
+- unsupported custom logic.
+
 ## Runnable Example
 
 ```bash
-python future/v4/examples/operator_callback_planning.py --case tier2
-python future/v4/examples/operator_callback_planning.py --case scalar-callback
-python future/v4/examples/operator_callback_planning.py --case complex-callback
+python examples/v4/operator_callback_planning.py --case tier2
+python examples/v4/operator_callback_planning.py --case scalar-callback
+python examples/v4/operator_callback_planning.py --case complex-callback
 ```
 
 These commands do not need CUDA. They are boundary checks, not performance
@@ -104,7 +160,7 @@ measurements.
 
 This page does not authorize:
 
-- V4 release
+- final V4 release before Goal4642
 - broad V4 speedup wording
 - Tier-3 callback/PTX support claims
 - raw OptiX callback support

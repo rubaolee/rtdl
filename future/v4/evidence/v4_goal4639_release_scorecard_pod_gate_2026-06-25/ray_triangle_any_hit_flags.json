@@ -1,0 +1,276 @@
+{
+  "claim_boundary": {
+    "broad_v4_speedup_claim_authorized": false,
+    "measured_surface": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+    "release_claim_authorized": false,
+    "tier3_callback_claim_authorized": false,
+    "true_zero_copy_public_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "parameters": {
+    "max_torch_reference_count": 8192,
+    "partner": "torch",
+    "ray_counts": [
+      8192,
+      32768,
+      131072
+    ],
+    "repeat": 5,
+    "warmup": 1
+  },
+  "results": [
+    {
+      "comparison": {
+        "claim_scope": "This is a third V4 Tier-2 device-array surface validation, not a broad V4 speedup, whole-app result, or release claim.",
+        "device_frontdoor_faster_than_torch_reference": true,
+        "torch_reference_contract": "fixture-analytic same-data device reference for separated one-hit triangles; not a general ray/triangle implementation or handwritten OptiX ceiling",
+        "torch_reference_match": true,
+        "torch_reference_measured": true,
+        "torch_reference_reason": null,
+        "torch_reference_to_device_frontdoor_ratio": 5.670550985768377
+      },
+      "correctness_passed": true,
+      "prepare_seconds": 0.2378651723265648,
+      "ray_count": 8192,
+      "routes": {
+        "device_array_frontdoor": {
+          "generic_primitive": "RAY_TRIANGLE_ANY_HIT_FLAGS_2D",
+          "host_materialization_in_hot_path": false,
+          "input_contract": "caller_supplied_torch_device_triangle_aabb_and_ray_columns",
+          "max_s": 0.0005773454904556274,
+          "median_s": 0.0003423839807510376,
+          "metadata": {
+            "adapter": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+            "backend": "optix",
+            "broad_v4_speedup_claim_authorized": false,
+            "direct_device_handoff_authorized": true,
+            "direct_device_pointer_observed": true,
+            "generic_primitive": "RAY_TRIANGLE_ANY_HIT_FLAGS_2D",
+            "host_materialization_in_hot_path": false,
+            "input_contract": "caller_supplied_torch_device_ray_triangle_columns",
+            "measured_partner": true,
+            "measured_partners": [
+              "torch"
+            ],
+            "native_direct_device_output_columns": true,
+            "native_prepared_route": "write_device_any_hit_flags",
+            "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags",
+            "output_contract": "caller_supplied_or_allocated_torch_device_any_hit_flag_column",
+            "output_flags_true_zero_copy_authorized": false,
+            "partner": "torch",
+            "partner_claim_status": "measured_on_v4_section8_pod",
+            "partner_support_declared_unmeasured": [
+              "cupy"
+            ],
+            "partner_tensor_handoff_authorized": true,
+            "python_ray_object_boundary_in_hot_path": false,
+            "ray_columns_true_zero_copy_authorized": false,
+            "ray_count": 8192,
+            "ray_results_downloaded_to_host_in_hot_path": false,
+            "release_claim_authorized": false,
+            "rt_core_speedup_claim_authorized": false,
+            "source_devices": [
+              "cuda:0"
+            ],
+            "source_protocols": [
+              "torch"
+            ],
+            "tier3_callback_claim_authorized": false,
+            "transfer_mode": "device_ray_triangle_columns_output_flags_zero_copy",
+            "triangle_scene_true_zero_copy_authorized": false,
+            "true_zero_copy_authorized": false,
+            "v2_0_release_authorized": false,
+            "v4_api_surface": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+            "whole_app_speedup_claim_authorized": false
+          },
+          "min_s": 0.00031007081270217896,
+          "output_contract": "caller_owned_torch_device_any_hit_flag_column",
+          "tier": "tier2_generic_fused_rt_primitive_device_array_frontdoor",
+          "timings_s": [
+            0.0005773454904556274,
+            0.00037525221705436707,
+            0.0003423839807510376,
+            0.0003293938934803009,
+            0.00031007081270217896
+          ]
+        },
+        "torch_fixture_analytic_reference": {
+          "max_s": 0.001985713839530945,
+          "median_s": 0.0019415058195590973,
+          "min_s": 0.0019394643604755402,
+          "timings_s": [
+            0.001985713839530945,
+            0.001964990049600601,
+            0.0019402988255023956,
+            0.0019394643604755402,
+            0.0019415058195590973
+          ]
+        }
+      },
+      "triangle_count": 8192
+    },
+    {
+      "comparison": {
+        "claim_scope": "This is a third V4 Tier-2 device-array surface validation, not a broad V4 speedup, whole-app result, or release claim.",
+        "device_frontdoor_faster_than_torch_reference": null,
+        "torch_reference_measured": false,
+        "torch_reference_reason": "skipped_above_max_torch_reference_count",
+        "torch_reference_to_device_frontdoor_ratio": null
+      },
+      "correctness_passed": true,
+      "prepare_seconds": 0.0013579390943050385,
+      "ray_count": 32768,
+      "routes": {
+        "device_array_frontdoor": {
+          "generic_primitive": "RAY_TRIANGLE_ANY_HIT_FLAGS_2D",
+          "host_materialization_in_hot_path": false,
+          "input_contract": "caller_supplied_torch_device_triangle_aabb_and_ray_columns",
+          "max_s": 0.00037948042154312134,
+          "median_s": 0.0003640986979007721,
+          "metadata": {
+            "adapter": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+            "backend": "optix",
+            "broad_v4_speedup_claim_authorized": false,
+            "direct_device_handoff_authorized": true,
+            "direct_device_pointer_observed": true,
+            "generic_primitive": "RAY_TRIANGLE_ANY_HIT_FLAGS_2D",
+            "host_materialization_in_hot_path": false,
+            "input_contract": "caller_supplied_torch_device_ray_triangle_columns",
+            "measured_partner": true,
+            "measured_partners": [
+              "torch"
+            ],
+            "native_direct_device_output_columns": true,
+            "native_prepared_route": "write_device_any_hit_flags",
+            "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags",
+            "output_contract": "caller_supplied_or_allocated_torch_device_any_hit_flag_column",
+            "output_flags_true_zero_copy_authorized": false,
+            "partner": "torch",
+            "partner_claim_status": "measured_on_v4_section8_pod",
+            "partner_support_declared_unmeasured": [
+              "cupy"
+            ],
+            "partner_tensor_handoff_authorized": true,
+            "python_ray_object_boundary_in_hot_path": false,
+            "ray_columns_true_zero_copy_authorized": false,
+            "ray_count": 32768,
+            "ray_results_downloaded_to_host_in_hot_path": false,
+            "release_claim_authorized": false,
+            "rt_core_speedup_claim_authorized": false,
+            "source_devices": [
+              "cuda:0"
+            ],
+            "source_protocols": [
+              "torch"
+            ],
+            "tier3_callback_claim_authorized": false,
+            "transfer_mode": "device_ray_triangle_columns_output_flags_zero_copy",
+            "triangle_scene_true_zero_copy_authorized": false,
+            "true_zero_copy_authorized": false,
+            "v2_0_release_authorized": false,
+            "v4_api_surface": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+            "whole_app_speedup_claim_authorized": false
+          },
+          "min_s": 0.00034227967262268066,
+          "output_contract": "caller_owned_torch_device_any_hit_flag_column",
+          "tier": "tier2_generic_fused_rt_primitive_device_array_frontdoor",
+          "timings_s": [
+            0.00037948042154312134,
+            0.0003640986979007721,
+            0.0003720410168170929,
+            0.0003523416817188263,
+            0.00034227967262268066
+          ]
+        },
+        "torch_fixture_analytic_reference": null
+      },
+      "triangle_count": 32768
+    },
+    {
+      "comparison": {
+        "claim_scope": "This is a third V4 Tier-2 device-array surface validation, not a broad V4 speedup, whole-app result, or release claim.",
+        "device_frontdoor_faster_than_torch_reference": null,
+        "torch_reference_measured": false,
+        "torch_reference_reason": "skipped_above_max_torch_reference_count",
+        "torch_reference_to_device_frontdoor_ratio": null
+      },
+      "correctness_passed": true,
+      "prepare_seconds": 0.0014527924358844757,
+      "ray_count": 131072,
+      "routes": {
+        "device_array_frontdoor": {
+          "generic_primitive": "RAY_TRIANGLE_ANY_HIT_FLAGS_2D",
+          "host_materialization_in_hot_path": false,
+          "input_contract": "caller_supplied_torch_device_triangle_aabb_and_ray_columns",
+          "max_s": 0.00040354207158088684,
+          "median_s": 0.00038381293416023254,
+          "metadata": {
+            "adapter": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+            "backend": "optix",
+            "broad_v4_speedup_claim_authorized": false,
+            "direct_device_handoff_authorized": true,
+            "direct_device_pointer_observed": true,
+            "generic_primitive": "RAY_TRIANGLE_ANY_HIT_FLAGS_2D",
+            "host_materialization_in_hot_path": false,
+            "input_contract": "caller_supplied_torch_device_ray_triangle_columns",
+            "measured_partner": true,
+            "measured_partners": [
+              "torch"
+            ],
+            "native_direct_device_output_columns": true,
+            "native_prepared_route": "write_device_any_hit_flags",
+            "native_symbol": "rtdl_optix_write_prepared_ray_anyhit_2d_device_flags",
+            "output_contract": "caller_supplied_or_allocated_torch_device_any_hit_flag_column",
+            "output_flags_true_zero_copy_authorized": false,
+            "partner": "torch",
+            "partner_claim_status": "measured_on_v4_section8_pod",
+            "partner_support_declared_unmeasured": [
+              "cupy"
+            ],
+            "partner_tensor_handoff_authorized": true,
+            "python_ray_object_boundary_in_hot_path": false,
+            "ray_columns_true_zero_copy_authorized": false,
+            "ray_count": 131072,
+            "ray_results_downloaded_to_host_in_hot_path": false,
+            "release_claim_authorized": false,
+            "rt_core_speedup_claim_authorized": false,
+            "source_devices": [
+              "cuda:0"
+            ],
+            "source_protocols": [
+              "torch"
+            ],
+            "tier3_callback_claim_authorized": false,
+            "transfer_mode": "device_ray_triangle_columns_output_flags_zero_copy",
+            "triangle_scene_true_zero_copy_authorized": false,
+            "true_zero_copy_authorized": false,
+            "v2_0_release_authorized": false,
+            "v4_api_surface": "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+            "whole_app_speedup_claim_authorized": false
+          },
+          "min_s": 0.00037088245153427124,
+          "output_contract": "caller_owned_torch_device_any_hit_flag_column",
+          "tier": "tier2_generic_fused_rt_primitive_device_array_frontdoor",
+          "timings_s": [
+            0.00040354207158088684,
+            0.00039114058017730713,
+            0.00038381293416023254,
+            0.0003736652433872223,
+            0.00037088245153427124
+          ]
+        },
+        "torch_fixture_analytic_reference": null
+      },
+      "triangle_count": 131072
+    }
+  ],
+  "schema": "rtdl.v4.section8.ray_triangle_any_hit_flags_device_frontdoor.v1",
+  "status": "measured",
+  "summary": {
+    "all_correct": true,
+    "measured_ray_count_count": 3,
+    "median_torch_reference_to_device_frontdoor_ratio": 5.670550985768377,
+    "torch_reference_measured_count": 1
+  },
+  "timing_boundary": "fixture construction and prepare excluded; hot route includes prepared native any-hit flag output into caller-owned device columns; correctness host reads are outside timed repeats"
+}

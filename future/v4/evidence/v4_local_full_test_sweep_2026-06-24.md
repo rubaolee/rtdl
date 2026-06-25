@@ -11,7 +11,7 @@ Latest rerun:
 - working-tree delta under test:
   - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_32768_2026-06-24.json`
   - `future/v4/evidence/v4_final_release_scope_catalog_gate_gpu_2026-06-24.json`
-  - `future/v4/v4_0_release_candidate_packet_2026-06-24.md`
+  - `future/v4/v4_0_development_state_decision_packet_2026-06-24.md`
   - `future/v4/reviews/review_debt_v4_0_release_candidate_2026-06-24.md`
 - reason: revalidated after recursive catalog-gate hardening; targeted
   packet/gate tests also passed after the final POD evidence refresh

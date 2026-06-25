@@ -1,8 +1,8 @@
 # V4.0 Scope Gate
 
-Status: generated development gate, not a release authorization
+Status: generated scorecard-passed gate, final release authorization pending
 
-- gate status: `v4_0_development_scope_defined_not_release`
+- gate status: `v4_0_scorecard_scope_defined_pending_final_authorization`
 - validation status: `passed`
 - release authorized: `False`
 
@@ -11,6 +11,14 @@ Status: generated development gate, not a release authorization
 - `v4_fixed_radius_count_threshold_2d_device_arrays`
 - `v4_closest_hit_grouped_argmin_3d_device_arrays`
 - `v4_ray_triangle_any_hit_flags_2d_device_arrays`
+- `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays`
+- `v4_point_group_nearest_witness_2d_device_arrays`
+- `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays`
+- `v4_fixed_radius_graph_component_union_3d_device_arrays`
+- `v4_aabb_index_query_2d_all_ops_count_prepared_runner`
+
+## Candidate Surfaces
+
 
 ## Deferred To V4.x
 
@@ -25,8 +33,9 @@ Status: generated development gate, not a release authorization
 
 ## Blocking Reasons
 
-- `release_decision_record_not_obtained`
-- `v4_review_debt_open`
+- `goal4640_public_docs_cleanup_in_progress`
+- `goal4641_clean_tree_reproducibility_gate_not_done`
+- `goal4642_final_3ai_release_authorization_not_done`
 
 ## Non-Authorization
 

@@ -1,0 +1,117 @@
+{
+  "broad_v3_faster_than_v2_claim_authorized": false,
+  "candidate_scope": "generic fixed_radius_neighbors_3d ranked_summary full-batch float32 aggregate; RTNN is only the evidence harness",
+  "checks": {
+    "all_routes_ok": false,
+    "cupy_grid_reference_route_present": false,
+    "material_rtdl_over_reference_speedup": false,
+    "optix_rt_hardware_gate_passed_if_required": false,
+    "phase_table_has_load_prepare_query_wall": false,
+    "point_column_source_recorded": true,
+    "rtdl_optix_route_present": false,
+    "runner_completed_without_route_errors": false,
+    "same_contract_signature_match": false,
+    "serious_fixture_scale": true
+  },
+  "comparisons": {},
+  "environment": {
+    "cwd": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review",
+    "env": {
+      "PYTHONPATH": null,
+      "RTDL_OPTIX_LIBRARY": null
+    },
+    "git_head": "66e41f5377b23ab1e0b158dc4fdde5316f0662f8",
+    "hardware_gate": {
+      "checks": {
+        "has_nvidia_gpu": false,
+        "nvidia_smi_query": false,
+        "optix_capable_gpu_present": false,
+        "rt_hardware_name_present": false
+      },
+      "fail_closed_reason": "No NVIDIA GPU satisfying the V3 OptiX/RT hardware precondition was detected.",
+      "gpus": [],
+      "query_error": "FileNotFoundError(2, 'The system cannot find the file specified', None, 2, None)",
+      "require_rt_hardware": true,
+      "status": "fail",
+      "tool": "v3_optix_hardware_gate"
+    },
+    "nvidia_smi": "ERROR: FileNotFoundError(2, 'The system cannot find the file specified', None, 2, None)",
+    "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "tool": "v3_phoenix_rtnn_full_batch_float32_same_contract_environment"
+  },
+  "failed_checks": [
+    "runner_completed_without_route_errors",
+    "rtdl_optix_route_present",
+    "cupy_grid_reference_route_present",
+    "all_routes_ok",
+    "same_contract_signature_match",
+    "phase_table_has_load_prepare_query_wall",
+    "optix_rt_hardware_gate_passed_if_required",
+    "material_rtdl_over_reference_speedup"
+  ],
+  "forbidden_public_wording": [
+    "RTNN is solved",
+    "V3 proves universal nearest-neighbor acceleration",
+    "M106 787x is a public RTNN row",
+    "float32 same-contract runner is M7 without 2-AI review",
+    "RTDL beats the RTNN paper implementation for the whole app"
+  ],
+  "generic_capability": "ranked_summary",
+  "goal_level_decision_audit": {
+    "decision": "Stage RTNN full-batch float32 same-contract evidence through a reusable runner instead of promoting M106 directly.",
+    "different_path_now": "Run this checked-in runner on an RTX pod with OptiX plus CuPy grid reference, then seek 2-AI review before reopening any RTNN M7 row.",
+    "foolish_actions": "It would be foolish to quote the M106 787.53x-vs-Embree or 2.26x-vs-author figures as a public RTNN win without same-contract reference parity.",
+    "other_path": "Repair the exact float64 tie policy first. That remains valid, but it is a semantic review path rather than the fastest route to fresh full-batch evidence.",
+    "was_i_foolish": "No. This follows the M112-approved rerun path and keeps all release flags false."
+  },
+  "m7_promotion_authorized": false,
+  "m7_reopen_candidate_pending_2ai_review": false,
+  "material_speedup_floor": 2.0,
+  "parameters": {
+    "distribution": "uniform",
+    "dry_run": true,
+    "k_max": 50,
+    "point_column_source": "npz",
+    "point_count": 262144,
+    "query_batch_size": 262144,
+    "radius": 0.02,
+    "repeat": 5,
+    "result_mode": "ranked-summary-aggregate-prepared-query-batch-float32",
+    "routes": [
+      "optix",
+      "cupy_grid"
+    ],
+    "seed": 4502
+  },
+  "parity": {
+    "reason": "optix and cupy_grid payloads are both required",
+    "same_contract_signature_match": false
+  },
+  "phase_rows": {},
+  "point_manifest": {
+    "column_source_path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\future\\v4\\evidence\\v4_goal4636_rtnn_ranked_summary_dry_run_2026-06-25\\rtnn_full_batch_points.csv.npz",
+    "dimension": 3,
+    "distribution": "uniform",
+    "format": "rtnn_csv_xyz",
+    "generated_by_runner": true,
+    "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\future\\v4\\evidence\\v4_goal4636_rtnn_ranked_summary_dry_run_2026-06-25\\rtnn_full_batch_points.csv",
+    "point_column_source": "npz",
+    "point_count": 262144,
+    "runtime_materialized": false,
+    "seed": 4502
+  },
+  "public_speedup_claim_authorized": false,
+  "release_authorized": false,
+  "required_future_review": [
+    "Save the full route payloads, environment, and point manifest from a real RTX run.",
+    "Verify same-contract summary parity against the CuPy grid reference.",
+    "Report load, pack/grid prepare, execution prepare, query wall, and cold-plus-query wall.",
+    "Send the packet to Claude or Gemini and record Codex consensus before any M7 promotion."
+  ],
+  "run_errors": {},
+  "runner_completed": false,
+  "serious_point_count_floor": 262144,
+  "status": "rtnn_full_batch_float32_same_contract_runner_plan_not_m7",
+  "tool": "v3_phoenix_rtnn_full_batch_float32_same_contract_runner",
+  "whole_app_speedup_claim_authorized": false
+}

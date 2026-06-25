@@ -1,22 +1,9 @@
-# Current V3 Examples
+# Maintainer Example Inventory
 
-Start here:
+The current user-facing V4 examples are in [../v4/README.md](../v4/README.md).
 
-```powershell
-py -3 examples\current\getting_started\rtdl_hello_world.py
-py -3 examples\current\getting_started\rtdl_hello_world_backends.py
-py -3 examples\current\getting_started\rtdl_prepared_measurement_demo.py
-```
+This directory is retained as a maintainer inventory of older feature, app,
+partner, and research benchmark examples. It is not the first-time user path.
 
-Directory guide:
-
-| Directory | Meaning |
-| --- | --- |
-| `getting_started/` | First user examples. |
-| `features/` | Small examples organized by RTDL feature. |
-| `apps/` | Application-shaped examples for developers. |
-| `partners/` | Explicit partner integration examples. |
-| `research_benchmarks/` | Serious benchmark code inventory for developers. |
-
-Use [../../docs/learn/performance_wording.md](../../docs/learn/performance_wording.md)
-before making any performance statement.
+Before making any public performance statement, use
+[../../docs/learn/performance_wording.md](../../docs/learn/performance_wording.md).

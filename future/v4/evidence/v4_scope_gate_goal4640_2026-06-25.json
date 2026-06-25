@@ -1,0 +1,69 @@
+{
+  "gate": {
+    "app_specific_native_kernel_authorized": false,
+    "blocking_reasons": [
+      "goal4640_public_docs_cleanup_in_progress",
+      "goal4641_clean_tree_reproducibility_gate_not_done",
+      "goal4642_final_3ai_release_authorization_not_done"
+    ],
+    "broad_v4_speedup_claim_authorized": false,
+    "candidate_surfaces": [],
+    "cupy_performance_claim_authorized": false,
+    "deferred_capabilities": [
+      "tier3_numba_ptx_generation_spike_only",
+      "tier3_numba_bare_ptx_direct_optix_module_link_blocked",
+      "tier3_wrapper_direct_callable_abi",
+      "raw_optix_callback_public_api",
+      "cupy_measured_performance_claims",
+      "embedding_c_abi",
+      "non_python_host_bindings",
+      "app_specific_native_engine_kernels"
+    ],
+    "embedding_c_abi_claim_authorized": false,
+    "included_capabilities": [
+      "unified_python_frontdoor",
+      "torch_cuda_device_array_input",
+      "torch_cuda_device_array_output",
+      "rtdl_native_prepared_runner",
+      "tier2_fused_generic_rt_operators",
+      "operator_callback_planner"
+    ],
+    "included_surfaces": [
+      "v4_fixed_radius_count_threshold_2d_device_arrays",
+      "v4_closest_hit_grouped_argmin_3d_device_arrays",
+      "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+      "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+      "v4_point_group_nearest_witness_2d_device_arrays",
+      "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+      "v4_fixed_radius_graph_component_union_3d_device_arrays",
+      "v4_aabb_index_query_2d_all_ops_count_prepared_runner"
+    ],
+    "non_python_host_binding_claim_authorized": false,
+    "raw_optix_callback_claim_authorized": false,
+    "release_authorized": false,
+    "required_next_actions": [
+      "finish public V4 documentation cleanup",
+      "pass the clean-tree reproducibility gate",
+      "obtain final 3-AI release authorization"
+    ],
+    "status": "v4_0_scorecard_scope_defined_pending_final_authorization",
+    "tier3_callback_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "validation": {
+    "checked_candidate_surfaces": [],
+    "checked_surfaces": [
+      "v4_fixed_radius_count_threshold_2d_device_arrays",
+      "v4_closest_hit_grouped_argmin_3d_device_arrays",
+      "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+      "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+      "v4_point_group_nearest_witness_2d_device_arrays",
+      "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+      "v4_fixed_radius_graph_component_union_3d_device_arrays",
+      "v4_aabb_index_query_2d_all_ops_count_prepared_runner"
+    ],
+    "missing_or_invalid": [],
+    "release_authorized": false,
+    "status": "passed"
+  }
+}

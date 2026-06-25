@@ -1,0 +1,24 @@
+{
+  "broad_v4_speedup_claim_authorized": false,
+  "candidate_status": "candidate_dry_run_requires_pod_repeat_gate_and_external_review",
+  "platform": {
+    "machine": "AMD64",
+    "python": "3.11.9",
+    "release": "10",
+    "system": "Windows"
+  },
+  "query_counts": [
+    16,
+    32
+  ],
+  "release_claim_authorized": false,
+  "repeat": 7,
+  "results": [],
+  "schema": "rtdl.v4.point_group_nearest_witness_device_outputs_gate.v1",
+  "status": "dry_run",
+  "surface": "v4_point_group_nearest_witness_2d_device_arrays",
+  "tier3_callback_claim_authorized": false,
+  "true_zero_copy_authorized": false,
+  "warmup": 2,
+  "whole_app_speedup_claim_authorized": false
+}

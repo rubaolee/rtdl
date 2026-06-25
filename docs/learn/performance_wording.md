@@ -7,28 +7,56 @@ performance examples. Use wording that matches the evidence you are showing.
 
 When discussing performance, include:
 
-- the command or benchmark row;
-- the compared backend or baseline;
+- the exact operator surface or benchmark row;
+- the compared baseline;
 - the measured metric;
-- the hardware;
-- whether the timing is setup, warmup, hot loop, phase total, or wall time.
+- the hardware and driver scope;
+- whether timing is setup, warmup, hot loop, phase total, or wall time;
+- the partner scope, such as Torch CUDA, Numba, or RTDL native.
 
-## Prefer Scoped Sentences
+## Current V4 Wording
 
 Good:
 
 ```text
-On this measured row, backend A completed the hot loop faster than backend B.
+On the frozen Goal4639 scorecard, the measured operator surface passed its
+stated floor on the RTX A5000 POD.
+```
+
+Good:
+
+```text
+The V4 fixed-radius count-threshold Torch CUDA surface recorded a 1.697x
+representative scorecard ratio in the Goal4639 run.
 ```
 
 Too broad:
 
 ```text
-The whole system is faster for every workload.
+V4 makes every application faster.
 ```
 
-## Backend And Partner Choice
+Too broad:
 
-Backends and partners are explicit choices. Choose them because they match the
-workload and dependency environment, then measure the exact route you plan to
-describe.
+```text
+V4 has zero-copy support.
+```
+
+## Claim Boundaries
+
+Allowed before final release authorization:
+
+- exact measured operator-surface results;
+- exact Goal4639 scorecard summary;
+- exact partner and hardware scope;
+- "final release authorization pending."
+
+Not allowed:
+
+- broad V4 speedup wording;
+- whole-application speedup wording;
+- public true-zero-copy wording;
+- Tier-3 callback/PTX support wording;
+- raw OptiX callback support wording;
+- CuPy performance wording;
+- embedding, C ABI, or non-Python host binding wording.

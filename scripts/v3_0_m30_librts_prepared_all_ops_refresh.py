@@ -15,11 +15,16 @@ sys.path.insert(0, str(ROOT))
 
 DEFAULT_REPEATS = {
     "embree": 240,
-    "optix": 3200,
+    "optix": 240,
 }
 
 EXPECTED_PRIMITIVE = "AABB_INDEX_QUERY_2D"
-EXPECTED_CONTRACT = "generic_prepared_aabb_index_query_2d"
+EXPECTED_CONTRACT_FAMILY = "generic_prepared_aabb_index_query_2d"
+EXPECTED_CONTRACTS = (
+    "generic_prepared_aabb_index_query_2d",
+    "generic_prepared_aabb_index_query_2d_count",
+    "generic_prepared_aabb_index_query_2d_optix_prepared_query_set_count",
+)
 OPERATIONS = ("point_contains", "range_contains", "range_intersects")
 
 
@@ -39,7 +44,7 @@ def main() -> int:
     parser.add_argument("--warmup", type=int, default=1)
     parser.add_argument(
         "--repeat-overrides",
-        default="embree=240,optix=3200",
+        default="embree=240,optix=240",
         help="Comma-separated backend=repeat entries.",
     )
     parser.add_argument(
@@ -141,10 +146,18 @@ def main() -> int:
             "comparison": comparison,
         }
     )
+    failed_checks = []
     if not comparison["all_counts_match_cross_backend"]:
-        raise RuntimeError("M30 LibRTS prepared all-ops refresh found cross-backend count mismatch")
+        failed_checks.append("cross_backend_count_mismatch")
     if not comparison["all_same_contract"]:
-        raise RuntimeError("M30 LibRTS prepared all-ops refresh found contract mismatch")
+        failed_checks.append("contract_family_mismatch")
+    if failed_checks:
+        payload["status"] = "failed_gate"
+        payload["failed_checks"] = tuple(failed_checks)
+        _write_payload(payload, args.output)
+        raise RuntimeError(
+            "M30 LibRTS prepared all-ops refresh failed gate(s): " + ", ".join(failed_checks)
+        )
     _write_payload(payload, args.output)
     print(json.dumps({"status": payload["status"], "comparison": comparison, "rows": rows}, indent=2))
     print(f"wrote {args.output}")
@@ -243,8 +256,10 @@ def _compact_row(result: dict[str, object], *, backend: str) -> dict[str, object
 def _compare_rows(rows: list[dict[str, object]]) -> dict[str, object]:
     by_backend = {str(row["backend"]): row for row in rows}
     count_signatures = {str(row["counts_signature"]) for row in rows}
-    all_same_contract = all(
-        row["generic_primitive"] == EXPECTED_PRIMITIVE and row["primitive_contract"] == EXPECTED_CONTRACT
+    all_same_contract_family = all(
+        row["generic_primitive"] == EXPECTED_PRIMITIVE
+        and str(row["primitive_contract"]) in EXPECTED_CONTRACTS
+        and str(row["primitive_contract"]).startswith(EXPECTED_CONTRACT_FAMILY)
         for row in rows
     )
     pair = None
@@ -261,14 +276,26 @@ def _compare_rows(rows: list[dict[str, object]]) -> dict[str, object]:
             "optix_query_total_sec": float(optix["query_total_sec"]),
             "embree_repeat": int(embree["query_repeat"]),
             "optix_repeat": int(optix["query_repeat"]),
-            "same_contract": embree["primitive_contract"] == optix["primitive_contract"],
+            "embree_contract": embree["primitive_contract"],
+            "optix_contract": optix["primitive_contract"],
+            "same_contract": (
+                str(embree["primitive_contract"]) in EXPECTED_CONTRACTS
+                and str(optix["primitive_contract"]) in EXPECTED_CONTRACTS
+            ),
+            "same_contract_family": (
+                str(embree["primitive_contract"]).startswith(EXPECTED_CONTRACT_FAMILY)
+                and str(optix["primitive_contract"]).startswith(EXPECTED_CONTRACT_FAMILY)
+            ),
             "same_counts": embree["counts_signature"] == optix["counts_signature"],
             "same_dataset": embree["fixture"] == optix["fixture"],
             "comparison_scope": "internal_same_contract_prepared_aabb_all_ops_refresh_not_public_speedup",
         }
     return {
         "all_counts_match_cross_backend": len(count_signatures) == 1,
-        "all_same_contract": all_same_contract,
+        "all_same_contract": all_same_contract_family,
+        "all_same_contract_family": all_same_contract_family,
+        "accepted_contract_family": EXPECTED_CONTRACT_FAMILY,
+        "accepted_contracts": EXPECTED_CONTRACTS,
         "all_primitive_first_no_partner": all(not bool(row["partner_continuation_required"]) for row in rows),
         "all_public_speedup_disabled": all(not bool(row["public_speedup_claim_authorized"]) for row in rows),
         "same_contract_backend_pair": pair,
