@@ -2,16 +2,20 @@
 
 Date: 2026-06-25
 
-Status: `owner_review_required_before_remaining_execution`
+Status: `superseded_by_goal4633_4644_completion_audit`
 
-Current valid public state:
+Current valid public state after completion:
 
-- `development_state_performance_preview_not_release`
+- `RTDL v4.0.0 formal high-performance generic RT-core operator release`
 
-Target:
+Completion record:
 
-- a formal high-performance V4 release only if the release-hardening gates
-  below pass and final 3-AI authorization explicitly approves it.
+- `future/v4/v4_goal4633_4644_completion_audit_2026-06-25.md`
+
+Original target:
+
+- a formal high-performance V4 release only if the release-hardening gates below
+  pass and final 3-AI authorization explicitly approves it.
 
 This file turns the owner's mandatory route into an auditable goal list:
 

@@ -1,6 +1,15 @@
 # V4 Goal4642 Final 3-AI Release Authorization Packet
 
-Status: packet ready; final release not authorized yet.
+Status: packet ready at Goal4642 time; final release later authorized and
+published by Goal4643.
+
+Post-publication update:
+
+- Goal4642 final authorization was completed by three independent review seats.
+- Goal4643 published V4.0.0 under the bounded label below.
+- Current release state is tracked by
+  `future/v4/v4_goal4643_publication_decision_2026-06-25.md` and
+  `future/v4/v4_goal4633_4644_completion_audit_2026-06-25.md`.
 
 Packet status:
 

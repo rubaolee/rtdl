@@ -1,7 +1,16 @@
 # Goal4642 Final 3-AI Release Authorization Review Record
 
-Status: final authorization packet ready; Antigravity authorizes narrow release;
-final release not authorized until required 3-AI consensus is complete.
+Status: final 3-AI authorization complete; V4.0.0 was later published by
+Goal4643 under the bounded formal operator-release label.
+
+Post-publication update:
+
+- Antigravity authorized the narrow release.
+- Independent Codex accepted the final authorization after amendment closure.
+- Main Codex release-owner audit authorized the same bounded label.
+- Goal4643 then published V4.0.0.
+- Current completion proof is recorded in
+  `future/v4/v4_goal4633_4644_completion_audit_2026-06-25.md`.
 
 ## Requested Review
 
