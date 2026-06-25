@@ -10,21 +10,28 @@ Recommendation: `release_candidate_possible_pending_3ai`
 - measured surfaces passed: `8/8`
 - partial controls passed: `4/4`
 - deferred/excluded rows: `2`
-- strong representative ratio geomean: `5.1848067367961095`
+- public ratio distribution: most measured operators are 1.2-1.7x against
+  stated brute-force partner/CPU baselines; any-hit flags is 5.671x;
+  point-nearest and AABB are large scale-dependent algorithmic-complexity wins.
+- internal strong representative ratio geomean: `5.1848067367961095`
 - failed surfaces: `none`
+
+The raw geomean above is retained as scorecard math, not as public headline
+wording. It is dominated by two algorithmic-complexity outliers and must be
+presented with the denominator/scale metadata below.
 
 ## Surface Results
 
-| Surface | Status | Representative ratio | Failure |
-| --- | --- | ---: | --- |
-| `v4_fixed_radius_count_threshold_2d_device_arrays` | `pass` | 1.69721x |  |
-| `v4_closest_hit_grouped_argmin_3d_device_arrays` | `pass` | 1.25677x |  |
-| `v4_ray_triangle_any_hit_flags_2d_device_arrays` | `pass` | 5.67055x |  |
-| `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` | `pass` | 1.38362x |  |
-| `v4_point_group_nearest_witness_2d_device_arrays` | `pass` | 389.707x |  |
-| `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` | `pass` | 1.48181x |  |
-| `v4_fixed_radius_graph_component_union_3d_device_arrays` | `pass` | 1.20294x |  |
-| `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | `pass` | 164.716x |  |
+| Surface | Status | Representative ratio | Baseline / denominator | Scale | Presentation |
+| --- | --- | ---: | --- | --- | --- |
+| `v4_fixed_radius_count_threshold_2d_device_arrays` | `pass` | 1.69721x | Torch brute-force/reference | script default fixture; repeat=7 warmup=1 | core 1.2-1.7x |
+| `v4_closest_hit_grouped_argmin_3d_device_arrays` | `pass` | 1.25677x | Torch brute-force/reference | script default grouped-argmin fixtures; repeat=7 warmup=1 | core 1.2-1.7x |
+| `v4_ray_triangle_any_hit_flags_2d_device_arrays` | `pass` | 5.67055x | Torch brute-force/reference | max_torch_reference_count=8192; repeat=5 warmup=1 | larger operator win |
+| `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` | `pass` | 1.38362x | Torch brute-force/reference | ray_counts=32768,131072; group_widths=1,16,256; repeat=7 warmup=2 | core 1.2-1.7x |
+| `v4_point_group_nearest_witness_2d_device_arrays` | `pass` | 389.707x | Torch/CPU-style brute-force nearest-witness reference | query_counts=32768,131072; fixture_variants=mixed4,mixed6; repeat=7 warmup=2 | algorithmic-complexity outlier |
+| `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` | `pass` | 1.48181x | Torch brute-force/reference comparable route | Goal4633 shapes=32768,131072,262144,524288 | core 1.2-1.7x |
+| `v4_fixed_radius_graph_component_union_3d_device_arrays` | `pass` | 1.20294x | legacy prepared-runner wall route with Embree same-contract controls | clustered3d point_count=262144; repeat=5 warmup=1 | core 1.2-1.7x |
+| `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | `pass` | 164.716x | Embree same-contract prepared AABB query control | box_count=1000000; query_count=1000; operation=all; repeats=240 | algorithmic-complexity/indexed-control outlier |
 
 ## Benchmark Family Rows
 

@@ -20,6 +20,57 @@ V4_GOAL4639_SURFACE_RATIOS = {
     "v4_fixed_radius_graph_component_union_3d_device_arrays": 1.20294,
     "v4_aabb_index_query_2d_all_ops_count_prepared_runner": 164.716,
 }
+V4_GOAL4639_SURFACE_DENOMINATORS = {
+    "v4_fixed_radius_count_threshold_2d_device_arrays": {
+        "baseline": "torch brute-force/reference",
+        "scale": "script default fixture; repeat=7 warmup=1",
+        "presentation_class": "core_cluster_1_2_to_1_7x",
+    },
+    "v4_closest_hit_grouped_argmin_3d_device_arrays": {
+        "baseline": "torch brute-force/reference",
+        "scale": "script default grouped-argmin fixtures; repeat=7 warmup=1",
+        "presentation_class": "core_cluster_1_2_to_1_7x",
+    },
+    "v4_ray_triangle_any_hit_flags_2d_device_arrays": {
+        "baseline": "torch brute-force/reference",
+        "scale": "max_torch_reference_count=8192; repeat=5 warmup=1",
+        "presentation_class": "mid_large_operator_win",
+    },
+    "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays": {
+        "baseline": "torch brute-force/reference",
+        "scale": "ray_counts=32768,131072; group_widths=1,16,256; repeat=7 warmup=2",
+        "presentation_class": "core_cluster_1_2_to_1_7x",
+    },
+    "v4_point_group_nearest_witness_2d_device_arrays": {
+        "baseline": "torch/cpu-style brute-force nearest witness reference",
+        "scale": "query_counts=32768,131072; fixture_variants=mixed4,mixed6; repeat=7 warmup=2",
+        "presentation_class": "algorithmic_complexity_outlier_o_n2_vs_bvh",
+    },
+    "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays": {
+        "baseline": "torch brute-force/reference comparable route",
+        "scale": "Goal4633 promotion gate shapes=32768,131072,262144,524288",
+        "presentation_class": "core_cluster_1_2_to_1_7x",
+    },
+    "v4_fixed_radius_graph_component_union_3d_device_arrays": {
+        "baseline": "legacy prepared-runner wall route with Embree same-contract controls",
+        "scale": "clustered3d point_count=262144; repeat=5 warmup=1",
+        "presentation_class": "core_cluster_1_2_to_1_7x",
+    },
+    "v4_aabb_index_query_2d_all_ops_count_prepared_runner": {
+        "baseline": "Embree same-contract prepared AABB query control",
+        "scale": "box_count=1000000; query_count=1000; operation=all; embree/optix repeats=240",
+        "presentation_class": "algorithmic_complexity_outlier_indexed_bvh_vs_slower_control",
+    },
+}
+V4_GOAL4639_PUBLIC_RATIO_DISTRIBUTION = {
+    "core_operator_cluster": "Most release surfaces are 1.2-1.7x against their stated brute-force partner/CPU baselines.",
+    "mid_large_operator_win": "Any-hit flags is a larger 5.671x operator win against its stated Torch reference baseline.",
+    "complexity_outliers": (
+        "Point-group nearest witness and AABB all-ops are large scale-dependent "
+        "wins where the alternative is brute-force or a slower same-contract index control."
+    ),
+    "headline_rule": "Do not headline the 5.185x geomean; show the distribution and denominators.",
+}
 
 
 def v4_goal4639_release_scorecard_decision() -> dict[str, Any]:
@@ -37,6 +88,8 @@ def v4_goal4639_release_scorecard_decision() -> dict[str, Any]:
         "failed_surfaces": (),
         "strong_representative_ratio_geomean": 5.1848067367961095,
         "surface_representative_ratios": V4_GOAL4639_SURFACE_RATIOS,
+        "surface_denominators": V4_GOAL4639_SURFACE_DENOMINATORS,
+        "public_ratio_distribution": V4_GOAL4639_PUBLIC_RATIO_DISTRIBUTION,
         "evidence": V4_GOAL4639_EVIDENCE,
         "release_authorized": False,
         "release_candidate_authorized": False,
@@ -71,6 +124,12 @@ def validate_v4_goal4639_release_scorecard_decision() -> dict[str, Any]:
     ):
         if decision["surface_representative_ratios"][surface] <= 1.20:
             raise ValueError(f"Goal4639 {surface} must preserve a material ratio above 1.20x")
+    for surface in decision["surface_representative_ratios"]:
+        denominator = decision["surface_denominators"].get(surface)
+        if not denominator:
+            raise ValueError(f"Goal4639 missing denominator metadata for {surface}")
+        if not denominator["baseline"] or not denominator["scale"]:
+            raise ValueError(f"Goal4639 incomplete denominator metadata for {surface}")
     for flag in (
         "release_authorized",
         "release_candidate_authorized",
@@ -95,6 +154,8 @@ __all__ = [
     "V4_GOAL4639_DECISION",
     "V4_GOAL4639_EVIDENCE",
     "V4_GOAL4639_SURFACE_RATIOS",
+    "V4_GOAL4639_SURFACE_DENOMINATORS",
+    "V4_GOAL4639_PUBLIC_RATIO_DISTRIBUTION",
     "v4_goal4639_release_scorecard_decision",
     "validate_v4_goal4639_release_scorecard_decision",
 ]

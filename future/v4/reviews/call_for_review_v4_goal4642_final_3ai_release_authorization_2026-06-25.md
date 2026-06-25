@@ -8,13 +8,13 @@ amendments, or no-go release.
 
 ## Requested Publication Label
 
-`RTDL v4.0.0 formal high-performance generic RT-core operator release`
+`RTDL v4.0.0 bounded operator release: 8 generic RT-core operators faster than brute-force partner/CPU baselines`
 
 ## Required Verdict Labels
 
 Choose exactly one:
 
-- `authorize_formal_v4_0_high_performance_operator_release`
+- `authorize_formal_v4_0_bounded_operator_release`
 - `authorize_with_amendments_before_publication`
 - `no_go_do_not_release_v4_0`
 

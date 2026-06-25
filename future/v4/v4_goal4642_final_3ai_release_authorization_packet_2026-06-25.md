@@ -19,11 +19,12 @@ Packet status:
 
 Requested label:
 
-`RTDL v4.0.0 formal high-performance generic RT-core operator release`
+`RTDL v4.0.0 bounded operator release: 8 generic RT-core operators faster than brute-force partner/CPU baselines`
 
 This label is intentionally narrow. It asks for formal release authorization for
-the measured V4 generic RT-core operator surface. It does not ask for broad
-whole-application speedup wording, all-benchmark speedup wording, public
+the measured V4 generic RT-core operator surface against stated brute-force
+partner/CPU baselines. It does not ask for broad whole-application speedup
+wording, all-benchmark speedup wording, near-handwritten-OptiX wording, public
 true-zero-copy support, Tier-3 callback support, CuPy performance, C ABI,
 embedding, non-Python host bindings, or app-specific native kernels.
 
@@ -56,16 +57,16 @@ Out of scope:
 
 The Goal4639 frozen scorecard passed with eight measured surfaces:
 
-| Surface | Representative ratio |
-| --- | ---: |
-| `v4_fixed_radius_count_threshold_2d_device_arrays` | `1.69721x` |
-| `v4_closest_hit_grouped_argmin_3d_device_arrays` | `1.25677x` |
-| `v4_ray_triangle_any_hit_flags_2d_device_arrays` | `5.67055x` |
-| `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` | `1.38362x` |
-| `v4_point_group_nearest_witness_2d_device_arrays` | `389.707x` |
-| `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` | `1.48181x` |
-| `v4_fixed_radius_graph_component_union_3d_device_arrays` | `1.20294x` |
-| `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | `164.716x` |
+| Surface | Representative ratio | Baseline / denominator | Scale |
+| --- | ---: | --- | --- |
+| `v4_fixed_radius_count_threshold_2d_device_arrays` | `1.69721x` | Torch brute-force/reference | script default fixture; repeat=7 warmup=1 |
+| `v4_closest_hit_grouped_argmin_3d_device_arrays` | `1.25677x` | Torch brute-force/reference | script default grouped-argmin fixtures; repeat=7 warmup=1 |
+| `v4_ray_triangle_any_hit_flags_2d_device_arrays` | `5.67055x` | Torch brute-force/reference | max_torch_reference_count=8192; repeat=5 warmup=1 |
+| `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` | `1.38362x` | Torch brute-force/reference | ray_counts=32768,131072; group_widths=1,16,256; repeat=7 warmup=2 |
+| `v4_point_group_nearest_witness_2d_device_arrays` | `389.707x` | Torch/CPU-style brute-force nearest-witness reference | query_counts=32768,131072; fixture_variants=mixed4,mixed6; repeat=7 warmup=2 |
+| `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` | `1.48181x` | Torch brute-force/reference comparable route | Goal4633 shapes=32768,131072,262144,524288 |
+| `v4_fixed_radius_graph_component_union_3d_device_arrays` | `1.20294x` | legacy prepared-runner wall route with Embree same-contract controls | clustered3d point_count=262144; repeat=5 warmup=1 |
+| `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | `164.716x` | Embree same-contract prepared AABB query control | box_count=1000000; query_count=1000; operation=all; repeats=240 |
 
 Measured partner scopes:
 
@@ -87,7 +88,14 @@ Result:
 - partial controls passed: `4/4`;
 - deferred/excluded rows recorded: `2`;
 - failed surfaces: `0`;
-- strong representative ratio geomean: `5.1848067367961095x`.
+- public ratio distribution: most measured operators are 1.2-1.7x against
+  stated brute-force partner/CPU baselines; any-hit flags is 5.671x; point-group
+  nearest witness and AABB are large scale-dependent algorithmic-complexity wins
+  against brute-force or slower same-contract index controls.
+
+The raw strong representative geomean (`5.1848067367961095x`) remains internal
+scorecard math. It must not be used as the public headline because it is
+dominated by two algorithmic-complexity outliers.
 
 Strong release-in-scope families:
 
@@ -230,9 +238,11 @@ Proposed release-note wording if Goal4642 is authorized:
 RTDL v4.0.0 is the first formal V4 release of the Python-facing generic RT-core
 operator layer. It ships a measured V4 front door and catalog for eight generic
 operator surfaces, backed by a frozen scorecard on RTX A5000 / OptiX 8.0 class
-hardware. The release supports high-performance operator-level claims for the
-documented measured surfaces only. It does not claim broad whole-application
-speedup, public true-zero-copy, Tier-3 callbacks, raw OptiX callbacks, CuPy
+hardware. The release claim is bounded: the documented operators beat their
+stated brute-force partner/CPU baselines. Most measured operators are 1.2-1.7x;
+point-nearest and AABB are large scale-dependent algorithmic-complexity wins.
+It does not claim broad whole-application speedup, near-handwritten-OptiX
+performance, public true-zero-copy, Tier-3 callbacks, raw OptiX callbacks, CuPy
 performance, C ABI, embedding, non-Python host bindings, or app-specific native
 kernels.
 
@@ -240,7 +250,7 @@ kernels.
 
 Each reviewer must choose one:
 
-- `authorize_formal_v4_0_high_performance_operator_release`
+- `authorize_formal_v4_0_bounded_operator_release`
 - `authorize_with_amendments_before_publication`
 - `no_go_do_not_release_v4_0`
 

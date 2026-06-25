@@ -10,7 +10,7 @@ Publication commit:
 
 Published label:
 
-`RTDL v4.0.0 formal high-performance generic RT-core operator release`
+`RTDL v4.0.0 bounded operator release: 8 generic RT-core operators faster than brute-force partner/CPU baselines`
 
 This audit proves the requested Goal4633-4644 chain from the current worktree
 state. It does not expand V4.0 scope beyond the authorized label.
@@ -168,8 +168,10 @@ scope.
 
 ## Completion Decision
 
-Goal4633-4644 is complete for the bounded V4.0.0 formal high-performance
-generic RT-core operator release.
+Goal4633-4644 is complete for the bounded V4.0.0 generic RT-core operator
+release: eight documented operators beat stated brute-force partner/CPU
+baselines. The public headline must use the ratio distribution and denominators,
+not the raw 5.185x geomean.
 
 This audit does not authorize any additional V4.0 capability beyond the
 published label and the measured surfaces already recorded by Goal4642/4643.

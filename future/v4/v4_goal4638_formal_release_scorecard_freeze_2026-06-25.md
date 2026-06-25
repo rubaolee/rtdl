@@ -145,9 +145,10 @@ wording is authorized by this scorecard.
 
 Allowed if the scorecard passes:
 
-- "V4 has measured high-performance generic RT-core operator surfaces for the
-  documented measured scopes."
-- "Measured surfaces are bounded by partner/hardware/surface-specific evidence."
+- "V4 has measured generic RT-core operator surfaces that beat stated
+  brute-force partner/CPU baselines for the documented measured scopes."
+- "Measured surfaces are bounded by partner/hardware/surface-specific evidence
+  and per-surface denominator metadata."
 
 Forbidden regardless of Goal4639 result unless a later final 3-AI release
 authorization explicitly changes it:
@@ -155,6 +156,7 @@ authorization explicitly changes it:
 - "all benchmark apps are faster"
 - "whole-application speedup"
 - "broad V4 speedup"
+- "near-handwritten OptiX performance"
 - "public true zero copy"
 - "CuPy performance"
 - "Tier-3 callbacks are supported"

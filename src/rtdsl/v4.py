@@ -48,7 +48,10 @@ from .v4_scope import validate_v4_0_scope_gate
 
 V4_FRONT_DOOR_STATUS = "v4_0_0_formal_release_front_door"
 V4_FRONT_DOOR_MEASURED_PARTNER = "mixed_torch_numba_and_rtdl_native"
-V4_AUTHORIZED_RELEASE_LABEL = "RTDL v4.0.0 formal high-performance generic RT-core operator release"
+V4_AUTHORIZED_RELEASE_LABEL = (
+    "RTDL v4.0.0 bounded operator release: 8 generic RT-core operators "
+    "faster than brute-force partner/CPU baselines"
+)
 
 
 def claim_boundary_v4() -> dict[str, object]:

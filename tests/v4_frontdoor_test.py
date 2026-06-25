@@ -53,7 +53,7 @@ class V4FrontDoorTest(unittest.TestCase):
         self.assertEqual(0, len(boundary["candidate_surfaces"]))
         self.assertTrue(boundary["formal_release_authorized"])
         self.assertEqual(
-            "RTDL v4.0.0 formal high-performance generic RT-core operator release",
+            v4.V4_AUTHORIZED_RELEASE_LABEL,
             boundary["authorized_release_label"],
         )
         self.assertFalse(boundary["release_claim_authorized"])
@@ -97,7 +97,7 @@ class V4FrontDoorTest(unittest.TestCase):
         text = README.read_text(encoding="utf-8")
         self.assertIn("import rtdsl.v4 as rtdl_v4", text)
         self.assertIn("V4.0 does not expose raw OptiX callbacks", text)
-        self.assertIn("formal V4.0.0 release authorized", text)
+        self.assertIn("formal V4.0.0 bounded operator release authorized", text)
         self.assertIn("CuPy performance claims", text)
         self.assertIn("embedding/C-ABI claims", text)
         self.assertIn("non-Python host binding claims", text)
@@ -129,7 +129,7 @@ class V4FrontDoorTest(unittest.TestCase):
         self.assertEqual("tier2_measured_ready", payload["aabb_plan_status"])
         self.assertTrue(payload["formal_release_authorized"])
         self.assertEqual(
-            "RTDL v4.0.0 formal high-performance generic RT-core operator release",
+            v4.V4_AUTHORIZED_RELEASE_LABEL,
             payload["authorized_release_label"],
         )
         self.assertEqual(

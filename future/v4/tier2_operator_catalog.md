@@ -4,27 +4,30 @@ Status: V4.0.0 release catalog.
 
 V4's performance path is a catalog of generic fused RT operators. These are not
 application-identity kernels. They are reusable continuation operators exposed
-through Python front doors with explicit partner scope.
+through Python front doors with explicit partner scope and explicit baselines.
 
 ## Measured Tier-2 Surfaces
 
-| Operator | API surface | Inputs | Outputs | Partner scope | Representative Goal4639 ratio |
-| --- | --- | --- | --- | --- | --- |
-| Fixed-radius count threshold | `v4_fixed_radius_count_threshold_2d_device_arrays` | Torch device point columns | Torch device `query_ids`, `neighbor_counts`, `threshold_flags` | Torch CUDA | `1.697x` |
-| Closest-hit grouped argmin | `v4_closest_hit_grouped_argmin_3d_device_arrays` | Torch device triangle, ray, group, value, and index columns | Torch device `group_has_value`, `group_index`, `group_value` | Torch CUDA | `1.257x` |
-| Ray/triangle any-hit flags | `v4_ray_triangle_any_hit_flags_2d_device_arrays` | Torch device triangle columns, triangle AABBs, and ray columns | Torch device `any_hit_flags` | Torch CUDA | `5.671x` |
-| Primitive grouped-i64 reduction | `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` | Torch device triangle/ray columns plus prepared primitive group/value payload | Torch device `group_counts`, `group_sums`, `group_mins`, `group_maxs` | Torch CUDA | `1.384x` |
-| Point-group nearest witness | `v4_point_group_nearest_witness_2d_device_arrays` | RTDL-owned prepared search/groups plus Torch device query columns | Torch device `query_ids`, `neighbor_ids`, `distances` | Torch CUDA | `389.707x` |
-| Ray/triangle any-hit weighted sum | `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` | Torch device triangle/ray columns plus Torch device `uint64` ray weights | Torch device `uint64[1]` weighted-hit sum scalar | Torch CUDA | `1.482x` |
-| Fixed-radius graph component union | `v4_fixed_radius_graph_component_union_3d_device_arrays` | Numba-scoped prepared 3D clustered point route | Component label columns with canonical component signature | Numba | `1.203x` |
-| AABB all-ops count | `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | RTDL native prepared AABB boxes and point/box queries | Count scalars for all AABB query operations | RTDL native | `164.716x` |
+| Operator | API surface | Inputs | Outputs | Partner scope | Representative Goal4639 ratio | Baseline / denominator | Scale |
+| --- | --- | --- | --- | --- | ---: | --- | --- |
+| Fixed-radius count threshold | `v4_fixed_radius_count_threshold_2d_device_arrays` | Torch device point columns | Torch device `query_ids`, `neighbor_counts`, `threshold_flags` | Torch CUDA | `1.697x` | Torch brute-force/reference | script default fixture; repeat `7`, warmup `1` |
+| Closest-hit grouped argmin | `v4_closest_hit_grouped_argmin_3d_device_arrays` | Torch device triangle, ray, group, value, and index columns | Torch device `group_has_value`, `group_index`, `group_value` | Torch CUDA | `1.257x` | Torch brute-force/reference | script default grouped-argmin fixtures; repeat `7`, warmup `1` |
+| Ray/triangle any-hit flags | `v4_ray_triangle_any_hit_flags_2d_device_arrays` | Torch device triangle columns, triangle AABBs, and ray columns | Torch device `any_hit_flags` | Torch CUDA | `5.671x` | Torch brute-force/reference | `max_torch_reference_count=8192`; repeat `5`, warmup `1` |
+| Primitive grouped-i64 reduction | `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` | Torch device triangle/ray columns plus prepared primitive group/value payload | Torch device `group_counts`, `group_sums`, `group_mins`, `group_maxs` | Torch CUDA | `1.384x` | Torch brute-force/reference | ray counts `32768,131072`; group widths `1,16,256`; repeat `7`, warmup `2` |
+| Point-group nearest witness | `v4_point_group_nearest_witness_2d_device_arrays` | RTDL-owned prepared search/groups plus Torch device query columns | Torch device `query_ids`, `neighbor_ids`, `distances` | Torch CUDA | `389.707x` | brute-force nearest-witness reference | query counts `32768,131072`; fixtures `mixed4,mixed6`; repeat `7`, warmup `2`; scale-dependent O(n²)-vs-BVH win |
+| Ray/triangle any-hit weighted sum | `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` | Torch device triangle/ray columns plus Torch device `uint64` ray weights | Torch device `uint64[1]` weighted-hit sum scalar | Torch CUDA | `1.482x` | Torch brute-force/reference comparable route | Goal4633 shapes `32768,131072,262144,524288` |
+| Fixed-radius graph component union | `v4_fixed_radius_graph_component_union_3d_device_arrays` | Numba-scoped prepared 3D clustered point route | Component label columns with canonical component signature | Numba | `1.203x` | legacy prepared-runner wall route; Embree controls recorded | clustered3d `262144` points; repeat `5`, warmup `1` |
+| AABB all-ops count | `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | RTDL native prepared AABB boxes and point/box queries | Count scalars for all AABB query operations | RTDL native | `164.716x` | Embree same-contract prepared AABB query control | `1000000` boxes, `1000` queries, all ops, `240` repeats; scale-dependent indexed-control win |
 
 There are currently no Tier-2 candidate surfaces in the V4 front door.
 
 ## Important Caveats
 
-- The ratios above are representative frozen scorecard ratios, not
-  whole-application speedup claims.
+- The ratios above are representative frozen scorecard ratios against the
+  named denominators, not whole-application speedup claims.
+- Most surfaces sit in the `1.2x-1.7x` core cluster. Point-group nearest
+  witness and AABB all-ops are large scale-dependent algorithmic-complexity
+  wins, not evidence of near-hand-written-OptiX kernel quality.
 - Torch CUDA measurements are scoped to the validated RTX A5000 / OptiX 8.0 /
   driver 570.195.03 path unless a surface says otherwise.
 - Component union is Numba-scoped operator coverage, not whole-app RTDBSCAN

@@ -16,6 +16,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from scripts.v4_catalog_regression_gate import _validate_payload
+from rtdsl.v4 import V4_AUTHORIZED_RELEASE_LABEL
 
 
 class V4CatalogRegressionGateTest(unittest.TestCase):
@@ -51,6 +52,8 @@ class V4CatalogRegressionGateTest(unittest.TestCase):
         self.assertEqual("passed", payload["status"])
         self.assertEqual("passed", stdout_payload["status"])
         self.assertTrue(payload["release_authorized"])
+        self.assertEqual(V4_AUTHORIZED_RELEASE_LABEL, payload["authorized_release_label"])
+        self.assertIn("brute-force partner/CPU baselines", payload["authorized_release_label"])
         self.assertFalse(payload["tier3_callback_claim_authorized"])
         self.assertEqual(11, len(payload["examples"]))
         self.assertTrue(all(row["passed"] for row in payload["examples"]))

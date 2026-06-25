@@ -21,7 +21,7 @@ changes that scope.
 ## Current Release State
 
 - Release label:
-  `RTDL v4.0.0 formal high-performance generic RT-core operator release`
+  `RTDL v4.0.0 bounded operator release: 8 generic RT-core operators faster than brute-force partner/CPU baselines`
 - Publication commit:
   `c58642326f57f6326274b448caa8d75b3c7ef9de`
 - Measured V4.0 operator surfaces: `8`
@@ -47,10 +47,11 @@ The following claims remain forbidden after publication:
 
 The important distinction is:
 
-- allowed: formal V4.0.0 release wording for the documented measured generic
-  RT-core operator surfaces and the frozen Goal4639 scorecard result;
+- allowed: bounded V4.0.0 release wording for the documented measured generic
+  RT-core operator surfaces beating stated brute-force partner/CPU baselines
+  on the frozen Goal4639 scorecard;
 - forbidden: expanding that wording into whole-application, all-benchmark,
-  callback, partner, or host-language claims.
+  near-handwritten-OptiX, callback, partner, or host-language claims.
 
 ## Required Records
 

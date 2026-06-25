@@ -60,7 +60,7 @@ class V4ScopeGateTest(unittest.TestCase):
         self.assertIn("non_python_host_bindings", payload["deferred_capabilities"])
         self.assertTrue(payload["release_authorized"])
         self.assertEqual(
-            "RTDL v4.0.0 formal high-performance generic RT-core operator release",
+            v4.V4_AUTHORIZED_RELEASE_LABEL,
             payload["authorized_release_label"],
         )
         self.assertFalse(payload["tier3_callback_claim_authorized"])

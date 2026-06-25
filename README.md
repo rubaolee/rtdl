@@ -1,9 +1,11 @@
 # RTDL V4
 
-RTDL V4 is the current high-performance RTDL user surface.
+RTDL V4 is the current RTDL user surface for measured generic RT-core
+operators.
 
-Status: RTDL V4.0.0 is the formal high-performance generic RT-core operator
-release for the documented measured surfaces.
+Status: RTDL V4.0.0 is a bounded operator release: 8 documented generic RT-core
+operators are faster than their stated brute-force partner/CPU baselines on the
+frozen Goal4639 scorecard.
 
 ## What RTDL Is
 
@@ -36,9 +38,19 @@ generic RT-core operator lane:
   strong benchmark families passed.
 - final 3-AI publication authorization for the narrow V4.0.0 operator release.
 
-The Goal4639 representative operator geomean is `5.185x` across the frozen
-measured scorecard surfaces. This is operator-level scorecard evidence, not a
-whole-application speedup claim.
+The honest Goal4639 distribution is:
+
+- most measured operators are 1.2x-1.7x faster than their stated
+  brute-force partner/CPU baselines;
+- ray/triangle any-hit flags is a larger `5.671x` operator win against its
+  Torch reference baseline;
+- point-group nearest witness (`389.707x`) and AABB all-ops (`164.716x`) are
+  large scale-dependent algorithmic-complexity wins where the alternative is
+  brute force or a slower same-contract index control.
+
+Do not use the raw geomean as a headline. These are operator-scorecard rows
+with explicit denominators, not whole-application speedup claims and not
+near-hand-written-OptiX claims.
 
 ## Start Here
 

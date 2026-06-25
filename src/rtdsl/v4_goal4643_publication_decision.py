@@ -11,7 +11,7 @@ from .v4_scope import validate_v4_0_scope_gate
 from .v4_scope import v4_0_scope_gate
 
 
-V4_GOAL4643_DECISION = "publish_v4_0_0_formal_high_performance_operator_release"
+V4_GOAL4643_DECISION = "publish_v4_0_0_bounded_operator_release"
 V4_GOAL4643_STATUS = "v4_0_0_published_with_bounded_operator_claims"
 
 

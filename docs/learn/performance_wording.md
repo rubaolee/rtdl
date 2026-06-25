@@ -20,14 +20,25 @@ Good:
 
 ```text
 On the frozen Goal4639 scorecard, the measured operator surface passed its
-stated floor on the RTX A5000 POD.
+stated floor against its stated brute-force partner/CPU baseline on the RTX
+A5000 POD.
 ```
 
 Good:
 
 ```text
 The V4 fixed-radius count-threshold Torch CUDA surface recorded a 1.697x
-representative scorecard ratio in the Goal4639 run.
+representative scorecard ratio against the Torch brute-force/reference baseline
+in the Goal4639 run.
+```
+
+Good:
+
+```text
+Most V4.0 measured operators are 1.2x-1.7x against their stated brute-force
+partner/CPU baselines; point-group nearest witness and AABB all-ops are large
+scale-dependent wins where the alternative is brute force or a slower
+same-contract index control.
 ```
 
 Too broad:
@@ -46,10 +57,12 @@ V4 has zero-copy support.
 
 Allowed for V4.0.0:
 
-- "RTDL V4.0.0 is the formal high-performance generic RT-core operator release";
+- "RTDL V4.0.0 is a bounded operator release for 8 documented generic RT-core
+  operators that beat their stated brute-force partner/CPU baselines";
 - exact measured operator-surface results;
 - exact Goal4639 scorecard summary;
 - exact partner and hardware scope;
+- exact denominator and scale for every representative ratio;
 
 Not allowed:
 
@@ -61,3 +74,4 @@ Not allowed:
 - raw OptiX callback support wording;
 - CuPy performance wording;
 - embedding, C ABI, or non-Python host binding wording.
+- unqualified "high-performance" or "near-OptiX" wording.

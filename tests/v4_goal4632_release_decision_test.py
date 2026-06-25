@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from rtdsl.v4_release_decision import V4_GOAL4632_DECISION
+from rtdsl.v4_release_decision import V4_AUTHORIZED_RELEASE_LABEL
 from rtdsl.v4_release_decision import validate_v4_goal4632_release_decision
 from rtdsl.v4_release_decision import v4_goal4632_release_decision
 
@@ -21,13 +22,14 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
         self.assertTrue(decision["release_authorized"])
         self.assertTrue(decision["formal_release_authorized"])
         self.assertEqual(
-            "RTDL v4.0.0 formal high-performance generic RT-core operator release",
+            V4_AUTHORIZED_RELEASE_LABEL,
             decision["authorized_release_label"],
         )
         self.assertFalse(decision["release_candidate_authorized"])
         self.assertTrue(decision["performance_preview_authorized"])
         self.assertFalse(decision["development_state_authorized"])
-        self.assertIn("formal high-performance generic RT-core operator release", decision["public_wording"])
+        self.assertIn("bounded operator release", decision["public_wording"])
+        self.assertIn("brute-force partner/CPU baselines", decision["public_wording"])
 
     def test_all_scorecard_gates_are_recorded(self) -> None:
         decision = v4_goal4632_release_decision()

@@ -6,7 +6,10 @@ from typing import Any
 
 
 V4_GOAL4642_PACKET_STATUS = "goal4642_final_authorization_packet_ready_not_authorized"
-V4_GOAL4642_REQUESTED_LABEL = "RTDL v4.0.0 formal high-performance generic RT-core operator release"
+V4_GOAL4642_REQUESTED_LABEL = (
+    "RTDL v4.0.0 bounded operator release: 8 generic RT-core operators "
+    "faster than brute-force partner/CPU baselines"
+)
 
 
 @dataclass(frozen=True)

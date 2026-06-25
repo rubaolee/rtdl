@@ -10,6 +10,11 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
+
+from rtdsl.v4 import V4_AUTHORIZED_RELEASE_LABEL
 
 FORBIDDEN_CLAIM_FLAGS = (
     "release_claim_authorized",
@@ -301,7 +306,7 @@ def main() -> int:
         "git_branch": _git_value("rev-parse", "--abbrev-ref", "HEAD"),
         "native_library": os.environ.get("RTDL_OPTIX_LIBRARY") or os.environ.get("RTDL_OPTIX_LIB"),
         "release_authorized": True,
-        "authorized_release_label": "RTDL v4.0.0 formal high-performance generic RT-core operator release",
+        "authorized_release_label": V4_AUTHORIZED_RELEASE_LABEL,
         "broad_v4_speedup_claim_authorized": False,
         "tier3_callback_claim_authorized": False,
         "cupy_performance_claim_authorized": False,

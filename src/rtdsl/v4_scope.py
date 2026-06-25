@@ -4,7 +4,10 @@ from dataclasses import dataclass
 
 
 V4_0_SCOPE_STATUS = "v4_0_0_formal_release_scope_authorized"
-V4_0_AUTHORIZED_RELEASE_LABEL = "RTDL v4.0.0 formal high-performance generic RT-core operator release"
+V4_0_AUTHORIZED_RELEASE_LABEL = (
+    "RTDL v4.0.0 bounded operator release: 8 generic RT-core operators "
+    "faster than brute-force partner/CPU baselines"
+)
 
 V4_0_INCLUDED_SURFACES = (
     "v4_fixed_radius_count_threshold_2d_device_arrays",

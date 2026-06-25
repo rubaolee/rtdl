@@ -39,6 +39,20 @@ class V4Goal4639ReleaseScorecardDecisionTest(unittest.TestCase):
         self.assertGreater(ratios["v4_fixed_radius_graph_component_union_3d_device_arrays"], 1.20)
         self.assertGreater(decision["strong_representative_ratio_geomean"], 1.0)
 
+    def test_goal4639_records_public_distribution_and_denominators(self) -> None:
+        decision = validate_v4_goal4639_release_scorecard_decision()
+        denominators = decision["surface_denominators"]
+        distribution = decision["public_ratio_distribution"]
+
+        self.assertEqual(set(decision["surface_representative_ratios"]), set(denominators))
+        for surface, metadata in denominators.items():
+            with self.subTest(surface=surface):
+                self.assertTrue(metadata["baseline"])
+                self.assertTrue(metadata["scale"])
+                self.assertTrue(metadata["presentation_class"])
+        self.assertIn("1.2-1.7x", distribution["core_operator_cluster"])
+        self.assertIn("Do not headline the 5.185x geomean", distribution["headline_rule"])
+
     def test_goal4639_forbidden_claims_stay_false(self) -> None:
         decision = validate_v4_goal4639_release_scorecard_decision()
 

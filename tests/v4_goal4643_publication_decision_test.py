@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from rtdsl.v4 import V4_AUTHORIZED_RELEASE_LABEL
 from rtdsl.v4_goal4643_publication_decision import V4_GOAL4643_DECISION
 from rtdsl.v4_goal4643_publication_decision import validate_v4_goal4643_publication_decision
 
@@ -24,7 +25,7 @@ class V4Goal4643PublicationDecisionTest(unittest.TestCase):
         self.assertTrue(decision["release_authorized"])
         self.assertTrue(decision["formal_release_authorized"])
         self.assertEqual(
-            "RTDL v4.0.0 formal high-performance generic RT-core operator release",
+            V4_AUTHORIZED_RELEASE_LABEL,
             decision["authorized_release_label"],
         )
         self.assertEqual(8, decision["measured_surfaces_count"])
@@ -77,7 +78,7 @@ class V4Goal4643PublicationDecisionTest(unittest.TestCase):
         self.assertEqual("ok", payload["status"])
         self.assertTrue(payload["formal_release_authorized"])
         self.assertEqual(
-            "RTDL v4.0.0 formal high-performance generic RT-core operator release",
+            V4_AUTHORIZED_RELEASE_LABEL,
             payload["authorized_release_label"],
         )
         self.assertFalse(payload["release_claim_authorized"])

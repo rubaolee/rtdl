@@ -54,7 +54,7 @@ class V4Goal4642FinalAuthorizationPacketTest(unittest.TestCase):
         packet = validate_v4_goal4642_final_authorization_packet(ROOT)
         text = (ROOT / packet["call_for_review"]).read_text(encoding="utf-8")
 
-        self.assertIn("authorize_formal_v4_0_high_performance_operator_release", text)
+        self.assertIn("authorize_formal_v4_0_bounded_operator_release", text)
         self.assertIn("no_go_do_not_release_v4_0", text)
         self.assertIn("3-AI", text)
         self.assertIn("Do not authorize", text)

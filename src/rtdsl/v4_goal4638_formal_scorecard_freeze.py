@@ -126,8 +126,8 @@ def v4_goal4638_formal_scorecard_freeze() -> dict[str, Any]:
             "geomean_must_exclude_partial_and_deferred": True,
         },
         "allowed_if_passes": (
-            "measured high-performance generic RT-core operator surfaces for documented measured scopes",
-            "bounded by partner/hardware/surface-specific evidence",
+            "measured generic RT-core operator surfaces beat their stated brute-force partner/CPU baselines for documented measured scopes",
+            "bounded by partner/hardware/surface-specific evidence and per-surface denominator metadata",
         ),
         "forbidden_wording": (
             "all benchmark apps are faster",

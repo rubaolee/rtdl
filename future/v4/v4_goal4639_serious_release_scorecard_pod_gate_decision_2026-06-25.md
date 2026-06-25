@@ -50,7 +50,8 @@ Tests:
 | Partial controls passed | `4/4` |
 | Deferred/excluded rows recorded | `2` |
 | Failed surfaces | `0` |
-| Strong representative ratio geomean | `5.1848067367961095x` |
+| Public ratio distribution | most measured operators 1.2-1.7x vs stated baselines; any-hit flags 5.671x; point-nearest and AABB are large scale-dependent algorithmic-complexity wins |
+| Internal strong representative ratio geomean | `5.1848067367961095x` |
 
 Deferred/excluded rows remain:
 
@@ -62,16 +63,16 @@ contribute to release geomean or V4.0 coverage claims.
 
 ## Surface Results
 
-| Surface | Status | Representative ratio |
-| --- | --- | ---: |
-| `v4_fixed_radius_count_threshold_2d_device_arrays` | pass | `1.69721x` |
-| `v4_closest_hit_grouped_argmin_3d_device_arrays` | pass | `1.25677x` |
-| `v4_ray_triangle_any_hit_flags_2d_device_arrays` | pass | `5.67055x` |
-| `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` | pass | `1.38362x` |
-| `v4_point_group_nearest_witness_2d_device_arrays` | pass | `389.707x` |
-| `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` | pass | `1.48181x` |
-| `v4_fixed_radius_graph_component_union_3d_device_arrays` | pass | `1.20294x` |
-| `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | pass | `164.716x` |
+| Surface | Status | Representative ratio | Baseline / denominator | Scale |
+| --- | --- | ---: | --- | --- |
+| `v4_fixed_radius_count_threshold_2d_device_arrays` | pass | `1.69721x` | Torch brute-force/reference | script default fixture; repeat=7 warmup=1 |
+| `v4_closest_hit_grouped_argmin_3d_device_arrays` | pass | `1.25677x` | Torch brute-force/reference | script default grouped-argmin fixtures; repeat=7 warmup=1 |
+| `v4_ray_triangle_any_hit_flags_2d_device_arrays` | pass | `5.67055x` | Torch brute-force/reference | max_torch_reference_count=8192; repeat=5 warmup=1 |
+| `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` | pass | `1.38362x` | Torch brute-force/reference | ray_counts=32768,131072; group_widths=1,16,256; repeat=7 warmup=2 |
+| `v4_point_group_nearest_witness_2d_device_arrays` | pass | `389.707x` | Torch/CPU-style brute-force nearest-witness reference | query_counts=32768,131072; fixture_variants=mixed4,mixed6; repeat=7 warmup=2 |
+| `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` | pass | `1.48181x` | Torch brute-force/reference comparable route | Goal4633 shapes=32768,131072,262144,524288 |
+| `v4_fixed_radius_graph_component_union_3d_device_arrays` | pass | `1.20294x` | legacy prepared-runner wall route with Embree same-contract controls | clustered3d point_count=262144; repeat=5 warmup=1 |
+| `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | pass | `164.716x` | Embree same-contract prepared AABB query control | box_count=1000000; query_count=1000; operation=all; repeats=240 |
 
 ## Family Results
 
@@ -106,12 +107,12 @@ scorecard:
 
 The wording must remain precise:
 
-- allowed: V4 has measured high-performance generic RT-core operator surfaces
-  for the documented measured scopes;
+- allowed: V4 has measured generic RT-core operator surfaces that beat stated
+  brute-force partner/CPU baselines for the documented measured scopes;
 - not allowed yet: V4 release, release candidate, broad V4 speedup, whole-app
-  speedup, all-benchmark speedup, public true-zero-copy, CuPy performance,
-  Tier-3 callback support, C ABI, embedding, non-Python host support, or
-  app-specific native kernels.
+  speedup, all-benchmark speedup, near-handwritten-OptiX wording, public
+  true-zero-copy, CuPy performance, Tier-3 callback support, C ABI, embedding,
+  non-Python host support, or app-specific native kernels.
 
 ## Next Required Goals
 

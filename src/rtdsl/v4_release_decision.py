@@ -20,8 +20,11 @@ from .v4_weighted_sum_promotion_decision import v4_goal4633_weighted_sum_promoti
 
 
 V4_GOAL4632_STATUS = "goal4643_formal_v4_0_0_publication_authorized"
-V4_GOAL4632_DECISION = "authorize_formal_v4_0_0_high_performance_operator_release"
-V4_AUTHORIZED_RELEASE_LABEL = "RTDL v4.0.0 formal high-performance generic RT-core operator release"
+V4_GOAL4632_DECISION = "authorize_formal_v4_0_0_bounded_operator_release"
+V4_AUTHORIZED_RELEASE_LABEL = (
+    "RTDL v4.0.0 bounded operator release: 8 generic RT-core operators "
+    "faster than brute-force partner/CPU baselines"
+)
 
 
 @dataclass(frozen=True)
@@ -203,7 +206,11 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
         "release_candidate_authorized": False,
         "performance_preview_authorized": True,
         "development_state_authorized": False,
-        "public_wording": "RTDL v4.0.0 is the formal high-performance generic RT-core operator release for the documented measured surfaces.",
+        "public_wording": (
+            "RTDL v4.0.0 is a bounded operator release: the 8 documented "
+            "generic RT-core operators beat their stated brute-force "
+            "partner/CPU baselines on the frozen Goal4639 scorecard."
+        ),
         "measured_surfaces_count": 8,
         "candidate_surfaces_count": 0,
         "component_union_promotion": component_union_promotion,
@@ -221,7 +228,8 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
         "release_blockers": release_blockers,
         "scope_limitations": scope_limitations,
         "allowed_claims": (
-            "RTDL v4.0.0 is the formal high-performance generic RT-core operator release.",
+            "RTDL v4.0.0 is a bounded operator release for 8 generic RT-core operators.",
+            "The documented operators beat their stated brute-force partner/CPU baselines on the frozen Goal4639 scorecard.",
             "Torch CUDA measured Tier-2 device-array surfaces exist for the documented measured operators.",
             "The frozen Goal4639 scorecard passed for 8 measured surfaces and 4 strong benchmark families.",
             "The public V4 documentation and example entrypoints have been cleaned for Goal4640.",

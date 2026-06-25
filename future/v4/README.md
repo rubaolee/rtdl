@@ -1,6 +1,6 @@
 # RTDL V4 Front Door
 
-Status: formal V4.0.0 release authorized.
+Status: formal V4.0.0 bounded operator release authorized.
 
 V4 is the Python GPU-array RT-core lane. If your program already owns Torch CUDA
 arrays, RTDL accepts those arrays for measured generic fused RT operators and
@@ -21,21 +21,25 @@ Current front-door status:
 - candidate Tier-2 surfaces: `0`
 - Goal4639 scorecard: `8/8` surfaces passed, `4/4` strong families passed
 - final release authorization: complete; Goal4643 published V4.0.0
+- public performance wording: distribution plus denominator, not a raw geomean
+  headline
 
 ## Measured V4 Tier-2 Operators
 
-| Operator | API surface | Partner scope | Representative Goal4639 ratio |
-| --- | --- | --- | --- |
-| Fixed-radius count-threshold | `v4_fixed_radius_count_threshold_2d_device_arrays` | Torch CUDA | `1.697x` |
-| Closest-hit grouped argmin | `v4_closest_hit_grouped_argmin_3d_device_arrays` | Torch CUDA | `1.257x` |
-| Ray/triangle any-hit flags | `v4_ray_triangle_any_hit_flags_2d_device_arrays` | Torch CUDA | `5.671x` |
-| Primitive grouped-i64 reduction | `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` | Torch CUDA | `1.384x` |
-| Point-group nearest witness | `v4_point_group_nearest_witness_2d_device_arrays` | Torch CUDA | `389.707x` |
-| Ray/triangle any-hit weighted sum | `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` | Torch CUDA | `1.482x` |
-| Fixed-radius graph component union | `v4_fixed_radius_graph_component_union_3d_device_arrays` | Numba | `1.203x` |
-| AABB all-ops count | `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | RTDL native | `164.716x` |
+| Operator | API surface | Partner scope | Representative Goal4639 ratio | Baseline / denominator | Scale |
+| --- | --- | --- | ---: | --- | --- |
+| Fixed-radius count-threshold | `v4_fixed_radius_count_threshold_2d_device_arrays` | Torch CUDA | `1.697x` | Torch brute-force/reference | script default fixture; repeat `7`, warmup `1` |
+| Closest-hit grouped argmin | `v4_closest_hit_grouped_argmin_3d_device_arrays` | Torch CUDA | `1.257x` | Torch brute-force/reference | script default grouped-argmin fixtures; repeat `7`, warmup `1` |
+| Ray/triangle any-hit flags | `v4_ray_triangle_any_hit_flags_2d_device_arrays` | Torch CUDA | `5.671x` | Torch brute-force/reference | `max_torch_reference_count=8192`; repeat `5`, warmup `1` |
+| Primitive grouped-i64 reduction | `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` | Torch CUDA | `1.384x` | Torch brute-force/reference | ray counts `32768,131072`; group widths `1,16,256`; repeat `7`, warmup `2` |
+| Point-group nearest witness | `v4_point_group_nearest_witness_2d_device_arrays` | Torch CUDA | `389.707x` | brute-force nearest-witness reference | query counts `32768,131072`; fixtures `mixed4,mixed6`; repeat `7`, warmup `2`; scale-dependent O(n²)-vs-BVH win |
+| Ray/triangle any-hit weighted sum | `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` | Torch CUDA | `1.482x` | Torch brute-force/reference comparable route | Goal4633 shapes `32768,131072,262144,524288` |
+| Fixed-radius graph component union | `v4_fixed_radius_graph_component_union_3d_device_arrays` | Numba | `1.203x` | legacy prepared-runner wall route; Embree controls recorded | clustered3d `262144` points; repeat `5`, warmup `1` |
+| AABB all-ops count | `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | RTDL native | `164.716x` | Embree same-contract prepared AABB query control | `1000000` boxes, `1000` queries, all ops, `240` repeats; scale-dependent indexed-control win |
 
-These are operator-scorecard rows, not whole-application speedup claims.
+most measured operators are 1.2x-1.7x faster than their stated brute-force partner/CPU baselines. Point-group nearest witness and AABB all-ops are large
+scale-dependent algorithmic-complexity wins. These are operator-scorecard rows,
+not whole-application speedup claims and not near-hand-written-OptiX claims.
 
 List them programmatically:
 

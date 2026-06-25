@@ -2,16 +2,18 @@
 
 Status: `v4_0_0_published_with_bounded_operator_claims`
 
-Decision: `publish_v4_0_0_formal_high_performance_operator_release`
+Decision: `publish_v4_0_0_bounded_operator_release`
 
 Authorized publication label:
 
-`RTDL v4.0.0 formal high-performance generic RT-core operator release`
+`RTDL v4.0.0 bounded operator release: 8 generic RT-core operators faster than brute-force partner/CPU baselines`
 
 ## What Is Published
 
-RTDL V4.0.0 is now the formal high-performance generic RT-core operator
-release for the documented measured surfaces.
+RTDL V4.0.0 is now a bounded generic RT-core operator release for the
+documented measured surfaces. Its public performance claim is limited to the
+eight documented operators beating their stated brute-force partner/CPU
+baselines on the frozen Goal4639 scorecard.
 
 The released surface contains:
 
@@ -22,10 +24,15 @@ The released surface contains:
   operators and fails closed for unsupported logic;
 - the frozen Goal4639 scorecard result: 8/8 measured surfaces and 4/4 strong
   families passed;
-- representative operator-scorecard geomean: 5.185x.
+- public ratio distribution: most measured operators are 1.2-1.7x against
+  their stated brute-force partner/CPU baselines; any-hit flags is 5.671x;
+  point-nearest and AABB are large scale-dependent algorithmic-complexity wins
+  against brute-force or slower same-contract index controls.
 
-The geomean is an operator-scorecard result. It is not a whole-application
-speedup claim.
+The raw 5.185x operator-scorecard geomean is retained as internal scorecard
+math, but it must not be used as the public headline because it is dominated by
+two algorithmic-complexity outliers. It is not a whole-application speedup claim
+and it is not a near-handwritten-OptiX claim.
 
 ## Required Release Evidence
 
