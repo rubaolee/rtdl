@@ -15,11 +15,12 @@ from .v4_goal4638_catalog_regression_decision import v4_goal4638_catalog_regress
 from .v4_goal4638_formal_scorecard_freeze import v4_goal4638_formal_scorecard_freeze
 from .v4_goal4639_release_scorecard_decision import v4_goal4639_release_scorecard_decision
 from .v4_goal4640_public_docs_cleanup_decision import v4_goal4640_public_docs_cleanup_decision
+from .v4_goal4641_clean_tree_reproducibility_decision import v4_goal4641_clean_tree_reproducibility_decision
 from .v4_weighted_sum_promotion_decision import v4_goal4633_weighted_sum_promotion_decision
 
 
-V4_GOAL4632_STATUS = "goal4632_final_decision_goal4640_docs_cleaned_not_release"
-V4_GOAL4632_DECISION = "goal4640_docs_cleaned_pending_clean_tree_and_3ai_not_release"
+V4_GOAL4632_STATUS = "goal4632_final_decision_goal4641_clean_tree_passed_not_release"
+V4_GOAL4632_DECISION = "goal4641_clean_tree_passed_pending_3ai_not_release"
 
 
 @dataclass(frozen=True)
@@ -53,6 +54,7 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
     formal_scorecard_freeze = v4_goal4638_formal_scorecard_freeze()
     release_scorecard_decision = v4_goal4639_release_scorecard_decision()
     docs_cleanup_decision = v4_goal4640_public_docs_cleanup_decision()
+    clean_tree_decision = v4_goal4641_clean_tree_reproducibility_decision()
     tier3 = v4_goal4631_tier3_spike_decision()
 
     gates = (
@@ -158,11 +160,21 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             ),
         ),
         V4ReleaseGate(
-            gate="G10_final_release_authorization",
+            gate="G10_clean_tree_reproducibility",
+            status=clean_tree_decision["decision"],
+            passed_for_release=True,
+            evidence=tuple(clean_tree_decision["evidence"]),
+            note=(
+                "Goal4641 validated committed-only V4 tests, catalog dry-run, and quickstart "
+                "from a clean worktree with clean status before and after."
+            ),
+        ),
+        V4ReleaseGate(
+            gate="G11_final_release_authorization",
             status=V4_GOAL4632_DECISION,
             passed_for_release=False,
             evidence=("future/v4/v4_goal4632_final_release_decision_2026-06-24.md",),
-            note="Final V4 release still requires clean-tree reproducibility and 3-AI authorization.",
+            note="Final V4 release still requires 3-AI authorization.",
         ),
     )
 
@@ -174,7 +186,7 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
         "external_review_debt_antigravity_goal4638_formal_scorecard_freeze",
         "external_review_debt_antigravity_goal4639_serious_release_scorecard",
         "external_review_debt_goal4640_public_docs_cleanup",
-        "goal4641_clean_tree_reproducibility_gate_not_done",
+        "external_review_debt_goal4641_clean_tree_reproducibility",
         "goal4642_final_3ai_release_authorization_not_done",
         "whole_app_speedup_wording_still_requires_final_3ai_authorization",
         "cupy_performance_unmeasured",
@@ -201,6 +213,7 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
         "formal_scorecard_freeze": formal_scorecard_freeze,
         "release_scorecard_decision": release_scorecard_decision,
         "public_docs_cleanup_decision": docs_cleanup_decision,
+        "clean_tree_reproducibility_decision": clean_tree_decision,
         "coverage_summary": coverage,
         "gates": tuple(gate.as_dict() for gate in gates),
         "release_blockers": release_blockers,
@@ -208,6 +221,7 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             "Torch CUDA measured Tier-2 device-array surfaces exist for the documented measured operators.",
             "The frozen Goal4639 scorecard passed for 8 measured surfaces and 4 strong benchmark families.",
             "The public V4 documentation and example entrypoints have been cleaned for Goal4640.",
+            "The Goal4641 clean-tree reproducibility gate passed from a committed-only clean worktree.",
             "Fixed-radius, grouped-i64, weighted-sum, component-union, and AABB have bounded operator-level performance evidence.",
             "A minimum push-down recognizer routes known generic operators and fails closed otherwise.",
             "Tier-3 is spike-only/deferred and not V4.0 support.",
@@ -255,6 +269,10 @@ def validate_v4_goal4632_release_decision() -> dict[str, Any]:
         raise ValueError("Weighted-sum should pass after Goal4633 promotion")
     if gate_map["G2_operator_coverage_audit"]["passed_for_release"]:
         raise ValueError("Limited coverage audit must not pass broad release by itself")
+    if not gate_map["G10_clean_tree_reproducibility"]["passed_for_release"]:
+        raise ValueError("Clean-tree reproducibility should pass after Goal4641")
+    if gate_map["G11_final_release_authorization"]["passed_for_release"]:
+        raise ValueError("Final release authorization must not pass before Goal4642")
     if "weighted_sum_remains_candidate_not_measured" in decision["release_blockers"]:
         raise ValueError("Weighted-sum blocker must be removed after Goal4633")
     if "whole_app_speedup_wording_still_requires_final_3ai_authorization" not in decision["release_blockers"]:
@@ -267,6 +285,10 @@ def validate_v4_goal4632_release_decision() -> dict[str, Any]:
         raise ValueError("Goal4638 Antigravity review-debt blocker must remain visible")
     if "external_review_debt_antigravity_goal4639_serious_release_scorecard" not in decision["release_blockers"]:
         raise ValueError("Goal4639 Antigravity review-debt blocker must remain visible")
+    if "goal4641_clean_tree_reproducibility_gate_not_done" in decision["release_blockers"]:
+        raise ValueError("Goal4641 clean-tree blocker must be removed after clean-tree validation")
+    if "external_review_debt_goal4641_clean_tree_reproducibility" not in decision["release_blockers"]:
+        raise ValueError("Goal4641 review-debt blocker must remain visible")
     if "goal4642_final_3ai_release_authorization_not_done" not in decision["release_blockers"]:
         raise ValueError("Final 3-AI release authorization blocker must remain visible")
     for flag in (

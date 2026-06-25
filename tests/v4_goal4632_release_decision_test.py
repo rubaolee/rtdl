@@ -40,7 +40,8 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
                 "G7_aabb_index_frontdoor_catalog",
                 "G8_formal_release_scorecard_freeze",
                 "G9_serious_release_scorecard_pod_gate",
-                "G10_final_release_authorization",
+                "G10_clean_tree_reproducibility",
+                "G11_final_release_authorization",
             },
         )
         self.assertTrue(gates["G1_fixed_radius_anchor"]["passed_for_release"])
@@ -53,7 +54,8 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
         self.assertTrue(gates["G8_formal_release_scorecard_freeze"]["passed_for_release"])
         self.assertIn("formal release scorecard freeze", gates["G8_formal_release_scorecard_freeze"]["note"])
         self.assertTrue(gates["G9_serious_release_scorecard_pod_gate"]["passed_for_release"])
-        self.assertFalse(gates["G10_final_release_authorization"]["passed_for_release"])
+        self.assertTrue(gates["G10_clean_tree_reproducibility"]["passed_for_release"])
+        self.assertFalse(gates["G11_final_release_authorization"]["passed_for_release"])
 
     def test_release_blockers_include_candidate_coverage_review_debt_and_no_all_app(self) -> None:
         decision = v4_goal4632_release_decision()
@@ -94,7 +96,9 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
             decision["release_blockers"],
         )
         self.assertIn("external_review_debt_goal4640_public_docs_cleanup", decision["release_blockers"])
+        self.assertIn("external_review_debt_goal4641_clean_tree_reproducibility", decision["release_blockers"])
         self.assertNotIn("goal4640_user_docs_cleanup_not_done", decision["release_blockers"])
+        self.assertNotIn("goal4641_clean_tree_reproducibility_gate_not_done", decision["release_blockers"])
         self.assertNotIn(
             "goal4636c_aabb_index_gate_passed_pending_frontdoor_catalog_goal",
             decision["release_blockers"],
@@ -153,6 +157,13 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
         )
         self.assertTrue(decision["public_docs_cleanup_decision"]["public_docs_current"])
         self.assertTrue(decision["public_docs_cleanup_decision"]["v3_current_doc_archived"])
+        self.assertEqual(
+            "complete_clean_tree_reproducibility_gate_pending_external_review",
+            decision["clean_tree_reproducibility_decision"]["decision"],
+        )
+        self.assertTrue(decision["clean_tree_reproducibility_decision"]["full_v4_tests_passed"])
+        self.assertTrue(decision["clean_tree_reproducibility_decision"]["catalog_dry_run_passed"])
+        self.assertTrue(decision["clean_tree_reproducibility_decision"]["quickstart_passed"])
         self.assertEqual("partial_measured_operator_coverage", decision["grouped_any_hit_decision"]["coverage_effect"]["to"])
         self.assertEqual(10, coverage["row_count"])
         self.assertEqual(4, coverage["by_status"]["strong_measured_operator_coverage"])
