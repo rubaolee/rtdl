@@ -454,3 +454,9 @@ PUBLIC_API_SYMBOLS_V4 = (
 
 
 __all__ = list(PUBLIC_API_SYMBOLS_V4)
+
+
+def __dir__() -> list[str]:
+    """Return the clean V4 public API for interactive users."""
+
+    return sorted(PUBLIC_API_SYMBOLS_V4)

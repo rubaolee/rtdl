@@ -150,8 +150,9 @@ the large harness source files remain compatibility and measurement backends.
 The `rtdsl.v4` star-import surface is now constrained by
 `PUBLIC_API_SYMBOLS_V4`. Maintainer goal/protocol symbols remain reachable by
 direct name for existing internal gates, but they are no longer exported through
-`rtdsl.v4.__all__`. The public cleanup gate rejects any future
-`goal####`/audit/review symbol that re-enters the public star-import API.
+`rtdsl.v4.__all__` or shown by `dir(rtdsl.v4)`. The public cleanup gate rejects
+any future `goal####`/audit/review symbol that re-enters the public star-import
+or interactive API.
 
 Full V4 discovery gate:
 
@@ -163,7 +164,7 @@ py -3 -m unittest discover -s tests -p "v4*_test.py"
 Result:
 
 ```text
-Ran 650 tests in 98.582s
+Ran 651 tests in 98.397s
 OK (skipped=1)
 ```
 

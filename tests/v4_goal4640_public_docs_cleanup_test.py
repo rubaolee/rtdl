@@ -115,6 +115,16 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
         self.assertIn("prepare_ray_triangle_any_hit_weighted_sum_3d_device_arrays_v4", v4.__all__)
         self.assertNotIn("v4_goal4686_tier3_wrapper_abi_scaffold", v4.__all__)
 
+    def test_public_v4_interactive_dir_hides_maintainer_goal_symbols(self) -> None:
+        public_names = dir(v4)
+
+        self.assertEqual(public_names, sorted(v4.PUBLIC_API_SYMBOLS_V4))
+        for symbol in public_names:
+            with self.subTest(symbol=symbol):
+                self.assertIsNone(re.search(r"goal\d+", symbol, flags=re.IGNORECASE))
+                self.assertNotIn("AUDIT", symbol.upper())
+                self.assertNotIn("REVIEW", symbol.upper())
+
     def test_legacy_current_v3_status_is_not_in_public_docs(self) -> None:
         self.assertFalse((ROOT / "docs" / "current_v3_status.md").exists())
         self.assertTrue((ROOT / "docs" / "current_v4_status.md").exists())
