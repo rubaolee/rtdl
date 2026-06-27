@@ -142,7 +142,8 @@ reduction, point-group nearest witness, ray/triangle weighted sum, AABB
 all-ops count, callback planning, and the custom predicate early-exit planner.
 It also executes every Python snippet in `tutorials/current/` as a standalone
 copy-paste block and verifies that the benchmark-app tutorial plus recipe
-planner cover all 10 promoted apps.
+planner cover all 10 promoted apps. It also checks that every relative link in
+the public documentation surface resolves to an existing file.
 
 The complete benchmark-app harness under `examples/current/research_benchmarks/`
 is now presented as a maintainer matrix harness, not the first teaching surface.
@@ -167,7 +168,7 @@ py -3 -m unittest discover -s tests -p "v4*_test.py"
 Result:
 
 ```text
-Ran 653 tests in 120.864s
+Ran 654 tests in 121.429s
 OK (skipped=1)
 ```
 

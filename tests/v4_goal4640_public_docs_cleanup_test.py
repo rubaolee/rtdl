@@ -109,6 +109,19 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                 for pattern in PUBLIC_SURFACE_FORBIDDEN:
                     self.assertIsNone(pattern.search(text), pattern.pattern)
 
+    def test_public_docs_relative_links_resolve(self) -> None:
+        link_pattern = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+        for path in PUBLIC_DOCS:
+            text = path.read_text(encoding="utf-8")
+            for label, target in link_pattern.findall(text):
+                if "://" in target or target.startswith("#") or target.startswith("mailto:"):
+                    continue
+                clean_target = target.split("#", 1)[0]
+                if not clean_target:
+                    continue
+                with self.subTest(path=path.relative_to(ROOT).as_posix(), label=label, target=target):
+                    self.assertTrue((path.parent / clean_target).resolve().exists(), target)
+
     def test_public_v4_example_sources_do_not_leak_goal_labels(self) -> None:
         for path in PUBLIC_EXAMPLE_SOURCES:
             with self.subTest(path=path.relative_to(ROOT).as_posix()):
