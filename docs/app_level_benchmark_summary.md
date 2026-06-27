@@ -20,7 +20,7 @@ Decision label:
 complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim
 ```
 
-V4.0 is a Python eDSL/operator-pushdown release candidate and a V2/V3 superset.
+V4.0.0 is a published Python eDSL/operator-pushdown release and a V2/V3 superset.
 The complete app matrix supports bounded claims: two material hot-path candidate
 rows over V2.14, broad parity/control elsewhere, and no hot-path regressions in
 the Goal4756 run. It does not authorize "all benchmark apps are faster" wording.
@@ -85,7 +85,7 @@ matrix. It is the clearest V4-specific eDSL/operator-pushdown workflow win:
 Use:
 
 ```text
-RTDL V4.0 is a Python eDSL/operator-pushdown release candidate and V2/V3
+RTDL V4.0.0 is a published Python eDSL/operator-pushdown release and V2/V3
 superset. On the current NVIDIA RT-core 10-app matrix, all apps have V2.14,
 V3.0.2, and V4.0 rows; V4.0 has two material hot-path candidate wins over
 V2.14 and parity/control elsewhere. Separate V4 operator surfaces and the

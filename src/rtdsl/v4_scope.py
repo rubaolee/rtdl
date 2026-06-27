@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 V4_0_SCOPE_STATUS = "v4_python_edsl_operator_pushdown_scope_goal4756_complete_rt_core_matrix"
 V4_0_AUTHORIZED_RELEASE_LABEL = (
-    "RTDL V4.0 Python eDSL/operator-pushdown release candidate and V2/V3 "
+    "RTDL V4.0.0 published Python eDSL/operator-pushdown release and V2/V3 "
     "superset: complete 10-app NVIDIA RT-core V2.14/V3.0.2/V4.0 matrix, "
     "bounded material wins, and measured generic operator surfaces; broad "
     "all-benchmark speedup remains unauthorized"

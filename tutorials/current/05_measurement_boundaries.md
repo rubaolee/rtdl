@@ -22,7 +22,7 @@ V2.14/V3.0.2 materialized-device fallback.
 The Goal4756 current app-level V2.14/V3.0.2/V4 comparison is complete for the
 10 promoted benchmark apps on NVIDIA RT-core rows. It supports bounded wording:
 two material hot-path candidate wins over V2.14 and parity/control elsewhere.
-Treat V4 as an eDSL/operator-pushdown release candidate and V2/V3 superset, not
+Treat V4.0.0 as a published eDSL/operator-pushdown release and V2/V3 superset, not
 as a claim that every old benchmark app is faster.
 
 Do not say:

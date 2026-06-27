@@ -12,7 +12,7 @@ predicate pushdown.
 Status:
 
 ```text
-V4.0 tag target ready, complete 10-app RT-core matrix, external public-tag review approved under bounded framing, clean wheel smoke passed
+V4.0.0 published, complete 10-app RT-core matrix, external public-tag review approved under bounded framing, clean wheel smoke passed
 ```
 
 Goal4756 completed the serious NVIDIA RTX A5000 POD matrix:
@@ -34,9 +34,9 @@ Final release-review evidence is indexed in
 [future/v4/v4_goal4759_final_review_evidence_manifest_2026-06-26.md](future/v4/v4_goal4759_final_review_evidence_manifest_2026-06-26.md).
 The consolidated Antigravity review
 [future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md](future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md)
-authorizes the bounded public V4.0 tag. The tag target must be a clean release
-commit verified by clean checkout and installed-wheel smoke, not an uncommitted
-worktree.
+authorized the bounded public V4.0 tag. The published tag is `v4.0.0` on
+commit `1c8f63cbadbb1edfc994c1c2477a94a7f00a8639`, verified by clean checkout
+and installed-wheel smoke.
 
 Supplemental Barnes-Hut evidence: RTDL V4 has a checksum-valid native
 RT-BarnesHut author-semantics route at 10M and an apples-to-apples
@@ -135,7 +135,7 @@ This front page does not authorize:
 | --- | --- |
 | `src/rtdsl/` | RTDL Python DSL/runtime source. |
 | `examples/v4/` | Current runnable V4 user examples. |
-| `future/v4/` | V4 operator docs, evidence, and release-hardening records. |
+| `future/v4/` | Reviewer evidence and V4 operator catalog; not the first-time learning path. |
 | `tutorials/current/` | Current V4 tutorial path. |
 | `docs/` | Current V4 public documentation. |
 | `scripts/` | Developer and verification tools. |

@@ -2,7 +2,7 @@
 
 Date: 2026-06-27
 
-Status: `external_review_approved_public_tag_under_bounded_framing__clean_wheel_smoke_passed__tag_target_ready`
+Status: `external_review_approved_public_tag_under_bounded_framing__clean_wheel_smoke_passed__v4_0_0_tag_created_and_pushed`
 
 ## Purpose
 
@@ -184,8 +184,14 @@ measured_partners: cupy, numba, rtdl_native, torch
 venv_removed: true
 ```
 
-After this record is amended into the release target, the final tag target must
-be clean-smoke checked again before creating `v4.0.0`.
+The final release target was then clean-smoke checked again and the public
+annotated tag `v4.0.0` was created and pushed.
+
+Published tag:
+
+```text
+v4.0.0 -> 1c8f63cbadbb1edfc994c1c2477a94a7f00a8639
+```
 
 ## What Is Now Closed
 
@@ -209,12 +215,12 @@ boundaries:
 - broad V4-over-V2.14 or V4-over-V3 speedup wording;
 - "all benchmark apps are faster" wording.
 
-The remaining practical release work is:
+The remaining practical release work is public-surface maintenance only:
 
-1. rerun clean-checkout/wheel smoke on the final tag target after this record is
-   committed;
-2. create the public V4.0 tag on that clean-smoked commit;
-3. preserve the bounded wording exactly.
+1. keep the public docs/tutorials/examples aligned with the published V4.0.0
+   tag;
+2. preserve the bounded wording exactly;
+3. route V4.1 callback/Tier-3 work through new scoped goals.
 
 ## Goal-Level Decision Audit
 

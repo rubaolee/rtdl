@@ -15,6 +15,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from rtdsl.v4 import V4_AUTHORIZED_RELEASE_LABEL
+from rtdsl.v4 import V4_PUBLIC_RELEASE_TAG
 
 FORBIDDEN_CLAIM_FLAGS = (
     "release_claim_authorized",
@@ -325,6 +326,9 @@ def main() -> int:
         "git_branch": _git_value("rev-parse", "--abbrev-ref", "HEAD"),
         "native_library": os.environ.get("RTDL_OPTIX_LIBRARY") or os.environ.get("RTDL_OPTIX_LIB"),
         "release_authorized": False,
+        "public_release_status": "published",
+        "public_release_tag": V4_PUBLIC_RELEASE_TAG,
+        "bounded_public_release_authorized": True,
         "authorized_release_label": V4_AUTHORIZED_RELEASE_LABEL,
         "broad_v4_speedup_claim_authorized": False,
         "whole_app_speedup_claim_authorized": False,

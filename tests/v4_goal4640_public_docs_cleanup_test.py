@@ -92,7 +92,7 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
         self.assertIn("most measured operators are 1.2x-1.7x", text)
         self.assertIn("Baseline / denominator", text)
         self.assertIn("whole-application speedup claim", text)
-        self.assertIn("V4 Python eDSL/operator-pushdown release candidate surface available", text)
+        self.assertIn("V4.0.0 Python eDSL/operator-pushdown release surface available", text)
         self.assertIn("current V4 measured operator/workflow surface count is\n`10`", text)
         self.assertIn("Custom predicate early-exit", text)
         self.assertIn("broad all-app", text)

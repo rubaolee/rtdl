@@ -67,7 +67,14 @@ class V4FrontDoorTest(unittest.TestCase):
         )
         self.assertGreaterEqual(boundary["custom_predicate_early_exit_serious_scale_v3_geomean"], 1.50)
         self.assertEqual(0, len(boundary["candidate_surfaces"]))
-        self.assertFalse(boundary["formal_release_authorized"])
+        self.assertEqual("published", boundary["public_release_status"])
+        self.assertEqual("v4.0.0", boundary["public_release_tag"])
+        self.assertEqual(
+            "1c8f63cbadbb1edfc994c1c2477a94a7f00a8639",
+            boundary["public_release_commit"],
+        )
+        self.assertTrue(boundary["v4_0_0_public_tag_created"])
+        self.assertTrue(boundary["bounded_public_release_authorized"])
         self.assertEqual(
             v4.V4_AUTHORIZED_RELEASE_LABEL,
             boundary["authorized_release_label"],
@@ -167,7 +174,14 @@ class V4FrontDoorTest(unittest.TestCase):
         self.assertEqual(0, payload["candidate_surface_count"])
         self.assertEqual("tier2_measured_ready", payload["tier2_plan_status"])
         self.assertEqual("tier2_measured_ready", payload["aabb_plan_status"])
-        self.assertFalse(payload["formal_release_authorized"])
+        self.assertEqual("published", payload["public_release_status"])
+        self.assertEqual("v4.0.0", payload["public_release_tag"])
+        self.assertEqual(
+            "1c8f63cbadbb1edfc994c1c2477a94a7f00a8639",
+            payload["public_release_commit"],
+        )
+        self.assertTrue(payload["v4_0_0_public_tag_created"])
+        self.assertTrue(payload["bounded_public_release_authorized"])
         self.assertEqual(
             v4.V4_AUTHORIZED_RELEASE_LABEL,
             payload["authorized_release_label"],

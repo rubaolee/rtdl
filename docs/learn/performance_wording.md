@@ -19,7 +19,7 @@ When discussing performance, include:
 Good:
 
 ```text
-RTDL V4 is a Python eDSL/operator-pushdown release candidate with 10 measured
+RTDL V4.0.0 is a published Python eDSL/operator-pushdown release with 10 measured
 generic operator/workflow surfaces, a complete 10-app V2.14/V3.0.2/V4.0
 NVIDIA RT-core matrix, and a constrained custom predicate early-exit workflow.
 It does not claim that all historical benchmark apps are faster than V2.14.
@@ -89,7 +89,7 @@ V4 has zero-copy support.
 
 Allowed for V4.0.0:
 
-- "RTDL V4 is a Python eDSL/operator-pushdown release candidate with 10
+- "RTDL V4.0.0 is a published Python eDSL/operator-pushdown release with 10
   measured generic operator/workflow surfaces";
 - exact measured operator-surface results;
 - exact constrained custom predicate early-exit workflow results;

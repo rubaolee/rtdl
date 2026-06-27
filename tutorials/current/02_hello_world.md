@@ -24,7 +24,7 @@ Expected shape:
 ```json
 {
   "status": "ok",
-  "measured_surface_count": 8,
+  "measured_surface_count": 10,
   "candidate_surface_count": 0
 }
 ```

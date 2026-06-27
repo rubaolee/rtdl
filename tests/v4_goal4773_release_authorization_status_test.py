@@ -25,13 +25,19 @@ class V4Goal4773ReleaseAuthorizationStatusTest(unittest.TestCase):
         self.assertEqual(V4_GOAL4773_VERDICT, status["verdict"])
         self.assertTrue(status["public_tag_externally_authorized"])
 
-    def test_git_tag_is_not_claimed_before_clean_release_commit(self) -> None:
+    def test_git_tag_is_claimed_only_after_clean_release_commit_and_smoke(self) -> None:
         status = validate_v4_goal4773_release_authorization_status(ROOT)
 
-        self.assertFalse(status["git_tag_created"])
+        self.assertTrue(status["git_tag_created"])
         self.assertTrue(status["clean_release_commit_required"])
         self.assertTrue(status["clean_wheel_smoke_passed"])
         self.assertTrue(status["tag_target_ready"])
+        self.assertTrue(status["git_tag_pushed"])
+        self.assertEqual("v4.0.0", status["public_release_tag"])
+        self.assertEqual(
+            "1c8f63cbadbb1edfc994c1c2477a94a7f00a8639",
+            status["public_release_commit"],
+        )
 
     def test_forbidden_claims_remain_blocked(self) -> None:
         status = validate_v4_goal4773_release_authorization_status(ROOT)

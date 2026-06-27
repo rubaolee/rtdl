@@ -83,7 +83,10 @@ class V4Goal4643PublicationDecisionTest(unittest.TestCase):
         payload = json.loads(proc.stdout)
 
         self.assertEqual("ok", payload["status"])
-        self.assertFalse(payload["formal_release_authorized"])
+        self.assertEqual("published", payload["public_release_status"])
+        self.assertEqual("v4.0.0", payload["public_release_tag"])
+        self.assertTrue(payload["v4_0_0_public_tag_created"])
+        self.assertTrue(payload["bounded_public_release_authorized"])
         self.assertEqual(
             V4_AUTHORIZED_RELEASE_LABEL,
             payload["authorized_release_label"],

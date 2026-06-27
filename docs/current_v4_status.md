@@ -7,7 +7,7 @@ user predicates.
 Status:
 
 ```text
-complete_rt_core_app_matrix__bounded_material_wins__antigravity_public_tag_approved__clean_wheel_smoke_passed__tag_target_ready
+v4_0_0_published__complete_rt_core_app_matrix__bounded_material_wins__antigravity_public_tag_approved__clean_wheel_smoke_passed
 ```
 
 ## User Promise
@@ -79,7 +79,7 @@ partner scope, scale, and claim boundary.
 
 Allowed:
 
-- "V4.0 is a Python eDSL/operator-pushdown release candidate and V2/V3
+- "V4.0.0 is a published Python eDSL/operator-pushdown release and V2/V3
   superset."
 - "The 10-app RT-core matrix is complete for V2.14, V3.0.2, and V4.0."
 - "V4.0 has two material hot-path candidate wins over V2.14 and parity/control
@@ -101,7 +101,7 @@ Not authorized:
 - app-specific native engine/kernel claims;
 - embedding, C ABI, or non-Python host binding claims.
 
-V4 Python eDSL/operator-pushdown release candidate surface available; the
+V4.0.0 Python eDSL/operator-pushdown release surface available; the
 current V4 measured operator/workflow surface count is
 `10`.
 
@@ -119,8 +119,9 @@ Review path:
 - `future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md`
 
 The bounded V4.0 public tag is externally authorized under the framing above.
-The release target must be a clean committed tree with clean-checkout and
-installed-wheel smoke validation. Do not tag a dirty or stale `HEAD`.
+The published tag is `v4.0.0` on commit
+`1c8f63cbadbb1edfc994c1c2477a94a7f00a8639`, after clean-checkout and
+installed-wheel smoke validation.
 
 Packaging progress:
 
@@ -129,8 +130,7 @@ Packaging progress:
   V4 release commit.
 - Goal4776 clean-checkout installed-wheel smoke passed on the release-candidate
   commit before tag creation.
-- Current machine status: clean release commit target ready for bounded V4.0
-  public tag creation.
+- Current machine status: bounded V4.0.0 public tag created and pushed.
 - Post-Goal4775 full V4 local discovery: `Ran 645 tests in 94.691s`,
   `OK (skipped=1)`.
 

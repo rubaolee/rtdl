@@ -273,8 +273,9 @@ V4_FRONT_DOOR_MEASURED_PARTNER = "mixed_torch_numba_cupy_and_rtdl_native"
 V4_GOAL4756_DECISION_LABEL = (
     "complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim"
 )
+V4_PUBLIC_RELEASE_TAG = "v4.0.0"
 V4_AUTHORIZED_RELEASE_LABEL = (
-    "RTDL V4.0 Python eDSL/operator-pushdown release candidate and V2/V3 "
+    "RTDL V4.0.0 published Python eDSL/operator-pushdown release and V2/V3 "
     "superset: complete 10-app NVIDIA RT-core V2.14/V3.0.2/V4.0 matrix, "
     "bounded material wins, and measured generic operator surfaces; broad "
     "all-benchmark speedup remains unauthorized"
@@ -319,6 +320,11 @@ def claim_boundary_v4() -> dict[str, object]:
         "goal4756_hot_path_regression_count": 0,
         "goal4756_material_hot_path_candidate_apps": ("triangle_counting", "barnes_hut"),
         "goal4756_v4_over_v2_14_hot_geomean": 2.10069,
+        "public_release_status": "published",
+        "public_release_tag": V4_PUBLIC_RELEASE_TAG,
+        "public_release_commit": "1c8f63cbadbb1edfc994c1c2477a94a7f00a8639",
+        "v4_0_0_public_tag_created": True,
+        "bounded_public_release_authorized": True,
         "v4_python_edsl_release_candidate_supported": True,
         "operator_pushdown_workflow_high_performance_supported": True,
         "custom_predicate_early_exit_surface": V4_RAY_TRIANGLE_CUSTOM_PREDICATE_EARLY_EXIT_SURFACE,
@@ -379,6 +385,7 @@ def recognize_pushdown_request_v4(*args, **kwargs) -> V4PushdownRecognition:
 __all__ = [
     "V4_FRONT_DOOR_STATUS",
     "V4_FRONT_DOOR_MEASURED_PARTNER",
+    "V4_PUBLIC_RELEASE_TAG",
     "V4_AUTHORIZED_RELEASE_LABEL",
     "claim_boundary_v4",
     "measured_operator_catalog_v4",

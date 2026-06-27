@@ -6,7 +6,7 @@ from typing import Any
 
 
 V4_GOAL4773_STATUS = (
-    "external_review_approved_public_tag_under_bounded_framing__clean_wheel_smoke_passed__tag_target_ready"
+    "external_review_approved_public_tag_under_bounded_framing__clean_wheel_smoke_passed__v4_0_0_tag_created_and_pushed"
 )
 V4_GOAL4773_VERDICT = "approve_close_gemini_debt_and_allow_v4_0_public_tag"
 
@@ -26,6 +26,9 @@ class V4Goal4773AuthorizationStatus:
     clean_release_commit_required: bool
     clean_wheel_smoke_passed: bool
     tag_target_ready: bool
+    git_tag_pushed: bool
+    public_release_tag: str
+    public_release_commit: str
     broad_speedup_authorized: bool
     paper_reproduction_authorized: bool
     tier3_callback_authorized: bool
@@ -45,6 +48,9 @@ class V4Goal4773AuthorizationStatus:
             "clean_release_commit_required": self.clean_release_commit_required,
             "clean_wheel_smoke_passed": self.clean_wheel_smoke_passed,
             "tag_target_ready": self.tag_target_ready,
+            "git_tag_pushed": self.git_tag_pushed,
+            "public_release_tag": self.public_release_tag,
+            "public_release_commit": self.public_release_commit,
             "broad_speedup_authorized": self.broad_speedup_authorized,
             "paper_reproduction_authorized": self.paper_reproduction_authorized,
             "tier3_callback_authorized": self.tier3_callback_authorized,
@@ -75,10 +81,13 @@ def v4_goal4773_release_authorization_status(root: Path | None = None) -> dict[s
         public_readme="README.md",
         future_v4_readme="future/v4/README.md",
         public_tag_externally_authorized=True,
-        git_tag_created=False,
+        git_tag_created=True,
         clean_release_commit_required=True,
         clean_wheel_smoke_passed=True,
         tag_target_ready=True,
+        git_tag_pushed=True,
+        public_release_tag="v4.0.0",
+        public_release_commit="1c8f63cbadbb1edfc994c1c2477a94a7f00a8639",
         broad_speedup_authorized=False,
         paper_reproduction_authorized=False,
         tier3_callback_authorized=False,
@@ -120,14 +129,14 @@ def validate_v4_goal4773_release_authorization_status(
         raise ValueError("Goal4773 packet must be the Gemini review-debt packet")
     if "Clean smoke summary" not in owner or "status: passed" not in owner:
         raise ValueError("Goal4773 owner record must record clean-smoke success")
-    if "final tag target must" not in owner:
-        raise ValueError("Goal4773 owner record must require final tag-target smoke")
-    if "Do not tag a dirty or stale" not in public_docs:
-        raise ValueError("Goal4773 current docs must warn against dirty/stale tagging")
+    if "v4.0.0 -> 1c8f63cbadbb1edfc994c1c2477a94a7f00a8639" not in owner:
+        raise ValueError("Goal4773 owner record must record the published tag target")
+    if "published tag is `v4.0.0`" not in public_docs:
+        raise ValueError("Goal4773 current docs must expose the published V4.0.0 tag")
     if "external public-tag review approved under bounded framing" not in public_docs:
         raise ValueError("Goal4773 public README must expose current review state")
-    if "clean wheel smoke passed" not in public_docs or "tag target ready" not in public_docs:
-        raise ValueError("Goal4773 public docs must expose clean-smoked tag-target readiness")
+    if "clean wheel smoke passed" not in public_docs:
+        raise ValueError("Goal4773 public docs must expose clean wheel smoke success")
     if "Public V4.0 tagging still requires external release authorization" in public_docs:
         raise ValueError("Goal4773 public docs retain stale external-review blocker")
     if "That manifest is not a public tag authorization" in public_docs:
@@ -144,14 +153,20 @@ def validate_v4_goal4773_release_authorization_status(
 
     if not status["public_tag_externally_authorized"]:
         raise ValueError("Goal4773 must record external public-tag authorization")
-    if status["git_tag_created"]:
-        raise ValueError("Goal4773 must not claim git tag creation")
+    if not status["git_tag_created"]:
+        raise ValueError("Goal4773 must record git tag creation after V4.0.0 publication")
     if not status["clean_release_commit_required"]:
         raise ValueError("Goal4773 must require clean release packaging before tag")
     if not status["clean_wheel_smoke_passed"]:
         raise ValueError("Goal4773 must record clean wheel smoke success")
     if not status["tag_target_ready"]:
         raise ValueError("Goal4773 must record tag-target readiness")
+    if not status["git_tag_pushed"]:
+        raise ValueError("Goal4773 must record pushed public tag state")
+    if status["public_release_tag"] != "v4.0.0":
+        raise ValueError("Goal4773 public release tag drift")
+    if status["public_release_commit"] != "1c8f63cbadbb1edfc994c1c2477a94a7f00a8639":
+        raise ValueError("Goal4773 public release commit drift")
     for flag in (
         "broad_speedup_authorized",
         "paper_reproduction_authorized",

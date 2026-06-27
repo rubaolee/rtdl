@@ -1,6 +1,6 @@
 # Goal4776 - Clean Checkout And Wheel Smoke
 
-Status: `clean_checkout_wheel_smoke_passed_for_release_candidate__final_tag_target_rerun_required`
+Status: `clean_checkout_wheel_smoke_passed_for_release_candidate_and_final_v4_0_0_tag_target`
 
 Date: 2026-06-27
 
@@ -80,9 +80,33 @@ venv_removed: true
 ## Boundary
 
 This closes the packaging hygiene question for the candidate commit checked
-above. Because this record itself is added after that first clean-smoke run, the
-final `v4.0.0` tag target must be clean-checkout and installed-wheel smoked
-again after this record is committed or amended into the release target.
+above. Because this record itself was added after that first clean-smoke run,
+the amended final tag target was clean-checkout and installed-wheel smoked
+again before creating `v4.0.0`.
+
+Final tag target:
+
+```text
+1c8f63cbadbb1edfc994c1c2477a94a7f00a8639
+```
+
+Final wheel:
+
+```text
+rtdl_source_tree-4.0.0-py3-none-any.whl
+sha256: 30257f006e8508542b6eb46c3076ca2e5fca3c31620d2bc048f503cfd4d29f58
+```
+
+Final installed-wheel smoke:
+
+```text
+status: passed
+install_status: passed
+smoke_status: passed
+matrix_apps: 10
+matrix_rows: 30
+measured_partners: cupy, numba, rtdl_native, torch
+```
 
 This goal does not authorize:
 

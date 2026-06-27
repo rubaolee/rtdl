@@ -3,7 +3,7 @@
 Status:
 
 ```text
-V4.0 tag target ready, complete Goal4756 RT-core app matrix, bounded public-tag review approved, clean wheel smoke passed
+V4.0.0 published, complete Goal4756 RT-core app matrix, bounded public-tag review approved, clean wheel smoke passed
 ```
 
 V4 is the Python GPU-array RT-core lane and a V2/V3 superset. Users can keep
@@ -114,8 +114,9 @@ approve_close_gemini_debt_and_allow_v4_0_public_tag
 
 This authorizes the bounded V4.0 public tag under the current framing. It does
 not authorize broader speedup, paper-reproduction, Tier-3 callback, raw OptiX
-callback, or no-copy tree-build claims. The git tag target must be a clean
-committed release tree verified by clean checkout and installed-wheel smoke.
+callback, or no-copy tree-build claims. The published tag is `v4.0.0` on
+commit `1c8f63cbadbb1edfc994c1c2477a94a7f00a8639`, verified by clean checkout
+and installed-wheel smoke.
 
 This page does not authorize:
 
