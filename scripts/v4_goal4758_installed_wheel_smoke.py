@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -38,7 +39,14 @@ print(json.dumps(payload, sort_keys=True))
 """
 
 
-def _run(command: list[str], *, cwd: Path, stdout: Path, stderr: Path) -> int:
+def _run(
+    command: list[str],
+    *,
+    cwd: Path,
+    stdout: Path,
+    stderr: Path,
+    env: dict[str, str] | None = None,
+) -> int:
     proc = subprocess.run(
         command,
         cwd=cwd,
@@ -46,6 +54,7 @@ def _run(command: list[str], *, cwd: Path, stdout: Path, stderr: Path) -> int:
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         check=False,
+        env=env,
     )
     stdout.write_text(proc.stdout, encoding="utf-8")
     stderr.write_text(proc.stderr, encoding="utf-8")
@@ -65,9 +74,12 @@ def _render_report(summary: dict[str, Any]) -> str:
         "## Result",
         "",
         f"- wheel: `{summary['wheel']}`",
-        f"- install status: `{summary['install_status']}`",
-        f"- smoke status: `{summary['smoke_status']}`",
+        f"- install method: `{summary.get('install_method', 'not_attempted')}`",
+        f"- install status: `{summary.get('install_status', 'not_attempted')}`",
+        f"- smoke status: `{summary.get('smoke_status', 'not_attempted')}`",
+        f"- venv create status: `{summary.get('venv_create_status', 'not_attempted')}`",
         f"- venv removed: `{summary['venv_removed']}`",
+        f"- target install removed: `{summary.get('target_install_removed')}`",
         f"- matrix apps: `{summary.get('matrix_apps')}`",
         f"- matrix rows: `{summary.get('matrix_rows')}`",
         f"- measured partners: `{', '.join(summary.get('measured_partners', []))}`",
@@ -93,11 +105,14 @@ def main() -> int:
     wheel = args.wheel.resolve()
     out_dir = args.out_dir.resolve()
     venv_dir = out_dir / ".venv"
+    target_dir = out_dir / "target_site"
     out_dir.mkdir(parents=True, exist_ok=True)
     if not wheel.exists():
         raise FileNotFoundError(wheel)
     if venv_dir.exists():
         shutil.rmtree(venv_dir)
+    if target_dir.exists():
+        shutil.rmtree(target_dir)
 
     summary: dict[str, Any] = {
         "schema": "rtdl.v4.goal4758.installed_wheel_smoke.v1",
@@ -108,6 +123,10 @@ def main() -> int:
         "release_authorized": False,
         "public_tag_authorized": False,
         "broad_speedup_claim_authorized": False,
+        "install_status": "not_attempted",
+        "smoke_status": "not_attempted",
+        "install_method": "not_attempted",
+        "venv_create_status": "not_attempted",
     }
 
     create_rc = _run(
@@ -117,8 +136,50 @@ def main() -> int:
         stderr=out_dir / "venv_create.stderr.txt",
     )
     summary["venv_create_returncode"] = create_rc
+    summary["venv_create_status"] = "passed" if create_rc == 0 else "failed"
     if create_rc != 0:
-        summary["status"] = "failed_venv_create"
+        install_rc = _run(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "--force-reinstall",
+                "--target",
+                str(target_dir),
+                str(wheel),
+            ],
+            cwd=ROOT,
+            stdout=out_dir / "wheel_install_with_deps.log",
+            stderr=out_dir / "wheel_install_with_deps.stderr.txt",
+        )
+        summary["install_method"] = "pip_target_fallback"
+        summary["install_returncode"] = install_rc
+        summary["install_status"] = "passed" if install_rc == 0 else "failed"
+        smoke_rc = 1
+        smoke_payload: dict[str, Any] = {}
+        if install_rc == 0:
+            env = dict(os.environ)
+            current_pythonpath = env.get("PYTHONPATH")
+            env["PYTHONPATH"] = (
+                str(target_dir)
+                if not current_pythonpath
+                else str(target_dir) + os.pathsep + current_pythonpath
+            )
+            smoke_rc = _run(
+                [sys.executable, "-c", SMOKE_CODE],
+                cwd=ROOT,
+                stdout=out_dir / "import_claim_boundary_after_install.log",
+                stderr=out_dir / "import_claim_boundary_after_install.stderr.txt",
+                env=env,
+            )
+            summary["smoke_returncode"] = smoke_rc
+            smoke_text = (out_dir / "import_claim_boundary_after_install.log").read_text(encoding="utf-8").strip()
+            if smoke_text:
+                smoke_payload = json.loads(smoke_text.splitlines()[-1])
+                summary.update(smoke_payload)
+        summary["smoke_status"] = "passed" if smoke_rc == 0 and smoke_payload.get("status") == "ok" else "failed"
+        summary["status"] = "passed" if summary["install_status"] == "passed" and summary["smoke_status"] == "passed" else "failed"
     else:
         python = venv_dir / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
         install_rc = _run(
@@ -127,6 +188,7 @@ def main() -> int:
             stdout=out_dir / "wheel_install_with_deps.log",
             stderr=out_dir / "wheel_install_with_deps.stderr.txt",
         )
+        summary["install_method"] = "venv"
         summary["install_returncode"] = install_rc
         summary["install_status"] = "passed" if install_rc == 0 else "failed"
         smoke_rc = 1
@@ -153,6 +215,13 @@ def main() -> int:
         summary["venv_removed"] = not venv_dir.exists()
     else:
         summary["venv_removed"] = True
+    if args.keep_venv:
+        summary["target_install_removed"] = False
+    elif target_dir.exists():
+        shutil.rmtree(target_dir)
+        summary["target_install_removed"] = not target_dir.exists()
+    else:
+        summary["target_install_removed"] = True
 
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     (out_dir / "summary.md").write_text(_render_report(summary), encoding="utf-8")
