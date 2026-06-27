@@ -8,9 +8,6 @@ This directory has three current entrypoints.
 | `benchmark_apps/` | The 10 benchmark apps used to evaluate RTDL. |
 | `paper_reproduction/` | Paper-oriented app entrypoints and notes. |
 
-Everything else from older layouts is archived under
-`../history/examples_legacy_2026-06-27/`.
-
 ## Start Here
 
 PowerShell:

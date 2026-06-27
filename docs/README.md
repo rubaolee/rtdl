@@ -24,6 +24,3 @@ internal project history to learn the current system.
 | [learn/source_tree_doctor.md](learn/source_tree_doctor.md) | Quick checkout checks. |
 | [v4_engineering_summary.md](v4_engineering_summary.md) | Compact maintainer summary of the current release shape. |
 | [public_documentation_map.md](public_documentation_map.md) | Map of the current public documentation path. |
-
-Historical material is archived under [../history](../history). It is kept for
-project memory, not as the starting point for V4 users.

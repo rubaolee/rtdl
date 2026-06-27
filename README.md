@@ -91,6 +91,5 @@ Read the full table before summarizing performance:
 | `examples/paper_reproduction/` | Paper-oriented app entrypoints. |
 | `tutorials/current/` | Current V4 tutorial path. |
 | `docs/` | Current V4 documentation. |
-| `history/` | Archived old layouts and historical material. |
 | `scripts/` | Developer and verification tools. |
 | `tests/` | Regression and release gate tests. |

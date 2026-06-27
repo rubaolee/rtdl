@@ -32,8 +32,3 @@ PYTHONPATH=src:. python examples/simple/v4_frontdoor_quickstart.py
 PYTHONPATH=src:. python examples/simple/benchmark_app_recipes.py
 PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
 ```
-
-## Archive
-
-Old layouts and historical material are kept under [../history](../history).
-They are not part of the first-time V4 learning path.

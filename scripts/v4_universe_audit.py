@@ -7,6 +7,7 @@ import subprocess
 from collections import Counter
 from pathlib import Path
 from typing import Any
+from urllib.parse import unquote
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -87,7 +88,11 @@ PUBLIC_FORBIDDEN_PATTERNS = (
     re.compile(r"future/v4/reviews", re.IGNORECASE),
     re.compile(r"external review", re.IGNORECASE),
     re.compile(r"bounded framing", re.IGNORECASE),
+    re.compile(r"(?<![\w/])history[\\/]", re.IGNORECASE),
+    re.compile(r"(?<![\w/])future[\\/]", re.IGNORECASE),
 )
+
+MARKDOWN_LINK_PATTERN = re.compile(r"!?\[([^\]]*)\]\(([^)]+)\)")
 
 PUBLIC_CONFUSING_OLD_PATH_PATTERNS = (
     re.compile(r"choose V2", re.IGNORECASE),
@@ -207,6 +212,75 @@ def _scan_public(paths: list[str]) -> list[dict[str, str]]:
     return findings
 
 
+def _scan_public_links(paths: list[str]) -> list[dict[str, str]]:
+    findings: list[dict[str, str]] = []
+    root_resolved = ROOT.resolve()
+    for path in paths:
+        if path not in PUBLIC_DOCS:
+            continue
+        full = ROOT / path
+        if not full.exists() or not full.is_file():
+            continue
+        text = _read(path)
+        for label, raw_target in MARKDOWN_LINK_PATTERN.findall(text):
+            target = raw_target.strip()
+            lower = target.lower()
+            if (
+                "://" in lower
+                or lower.startswith("#")
+                or lower.startswith("mailto:")
+                or lower.startswith("tel:")
+            ):
+                continue
+            clean_target = unquote(target.split("#", 1)[0].split("?", 1)[0])
+            if not clean_target:
+                continue
+            clean_lower = clean_target.replace("\\", "/").lower()
+            if clean_lower.startswith(("history/", "../history/", "future/", "../future/")):
+                findings.append(
+                    {
+                        "path": path,
+                        "label": label,
+                        "target": target,
+                        "problem": "public_doc_links_to_non_current_material",
+                    }
+                )
+                continue
+            if clean_target.startswith(("/", "\\")):
+                findings.append(
+                    {
+                        "path": path,
+                        "label": label,
+                        "target": target,
+                        "problem": "absolute_local_link_not_portable",
+                    }
+                )
+                continue
+            resolved = (full.parent / clean_target).resolve()
+            try:
+                resolved.relative_to(root_resolved)
+            except ValueError:
+                findings.append(
+                    {
+                        "path": path,
+                        "label": label,
+                        "target": target,
+                        "problem": "local_link_escapes_repository",
+                    }
+                )
+                continue
+            if not resolved.exists():
+                findings.append(
+                    {
+                        "path": path,
+                        "label": label,
+                        "target": target,
+                        "problem": "local_link_target_missing",
+                    }
+                )
+    return findings
+
+
 def run_audit(*, strict_release: bool = False) -> dict[str, Any]:
     tracked = _git_lines("ls-files")
     untracked = _git_lines("ls-files", "--others", "--exclude-standard")
@@ -224,6 +298,7 @@ def run_audit(*, strict_release: bool = False) -> dict[str, Any]:
 
     tracked_public = [path for path in tracked if _is_public_path(path)]
     public_findings = _scan_public(tracked_public)
+    public_link_findings = _scan_public_links(tracked_public)
     tracked_docs_reviews = [path for path in tracked if path.startswith("docs/reviews/")]
 
     required_public_files = [path for path in PUBLIC_DOCS if not (ROOT / path).exists()]
@@ -236,7 +311,7 @@ def run_audit(*, strict_release: bool = False) -> dict[str, Any]:
     unknown_untracked = [path for path in untracked if _untracked_bucket(path) == "unknown_untracked"]
 
     status = "pass"
-    if public_findings or tracked_docs_reviews or required_public_files or required_history_dirs:
+    if public_findings or public_link_findings or tracked_docs_reviews or required_public_files or required_history_dirs:
         status = "fail_public_surface"
     elif strict_release and untracked:
         status = "fail_local_debris"
@@ -257,6 +332,7 @@ def run_audit(*, strict_release: bool = False) -> dict[str, Any]:
         "untracked_samples": dict(sorted(untracked_samples.items())),
         "public_file_count": len(tracked_public),
         "public_findings": public_findings,
+        "public_link_findings": public_link_findings,
         "tracked_docs_reviews": tracked_docs_reviews,
         "missing_required_public_files": required_public_files,
         "missing_required_history_dirs": required_history_dirs,
@@ -302,6 +378,14 @@ def _to_markdown(result: dict[str, Any]) -> str:
         for finding in result["public_findings"]:
             lines.append(
                 f"- `{finding['path']}` matched `{finding['pattern']}` as `{finding['match']}`"
+            )
+    else:
+        lines.append("- none")
+    lines.extend(["", "## Public Link Findings", ""])
+    if result["public_link_findings"]:
+        for finding in result["public_link_findings"]:
+            lines.append(
+                f"- `{finding['path']}` link `{finding['target']}`: `{finding['problem']}`"
             )
     else:
         lines.append("- none")

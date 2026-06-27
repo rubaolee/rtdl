@@ -72,6 +72,8 @@ PUBLIC_SURFACE_FORBIDDEN = (
     re.compile(r"release candidate", re.IGNORECASE),
     re.compile(r"docs/reviews", re.IGNORECASE),
     re.compile(r"future/v4", re.IGNORECASE),
+    re.compile(r"(?<![\w/])history[\\/]", re.IGNORECASE),
+    re.compile(r"(?<![\w/])future[\\/]", re.IGNORECASE),
 )
 
 
@@ -124,6 +126,10 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                 if not clean_target:
                     continue
                 with self.subTest(path=path.relative_to(ROOT).as_posix(), label=label, target=target):
+                    self.assertFalse(
+                        clean_target.replace("\\", "/").lower().startswith(("history/", "../history/", "future/", "../future/")),
+                        target,
+                    )
                     self.assertTrue((path.parent / clean_target).resolve().exists(), target)
 
     def test_public_v4_example_sources_do_not_leak_goal_labels(self) -> None:
