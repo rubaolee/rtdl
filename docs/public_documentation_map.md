@@ -19,6 +19,7 @@ PowerShell:
 ```powershell
 $env:PYTHONPATH = "src;."
 py -3 examples\v4\v4_frontdoor_quickstart.py
+py -3 examples\v4\benchmark_app_recipes.py
 py -3 examples\v4\operator_callback_planning.py --case complex-callback
 py -3 scripts\v4_catalog_regression_gate.py --mode dry-run
 ```
@@ -27,6 +28,7 @@ Linux or macOS:
 
 ```bash
 PYTHONPATH=src:. python examples/v4/v4_frontdoor_quickstart.py
+PYTHONPATH=src:. python examples/v4/benchmark_app_recipes.py
 PYTHONPATH=src:. python examples/v4/operator_callback_planning.py --case complex-callback
 PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
 ```
