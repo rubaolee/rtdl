@@ -144,6 +144,9 @@ It also executes every Python snippet in `tutorials/current/` as a standalone
 copy-paste block and verifies that the benchmark-app tutorial plus recipe
 planner cover all 10 promoted apps. It also checks that every relative link in
 the public documentation surface resolves to an existing file.
+The packaging gate checks existing V4 wheel candidates to ensure they do not
+package docs, history, future provenance, examples, tutorials, or Phoenix/V3
+debris, and that wheel metadata reports `rtdl-source-tree` version `4.0.0`.
 
 The complete benchmark-app harness under `examples/current/research_benchmarks/`
 is now presented as a maintainer matrix harness, not the first teaching surface.
@@ -168,7 +171,7 @@ py -3 -m unittest discover -s tests -p "v4*_test.py"
 Result:
 
 ```text
-Ran 654 tests in 121.429s
+Ran 655 tests in 120.731s
 OK (skipped=1)
 ```
 
