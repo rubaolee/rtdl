@@ -20,11 +20,13 @@ PYTHONPATH=src:. python examples/v4/v4_frontdoor_quickstart.py
 | Path | Use |
 | --- | --- |
 | `v4/` | Current V4 user examples and dry-run checks. |
-| `current/research_benchmarks/` | Source code for the 10 promoted benchmark apps. |
+| `current/research_benchmarks/` | Maintainer benchmark harness for the 10 promoted apps. |
 | `reference/` | Small correctness references for maintainers. |
 
-The default learning path starts in `v4/`, then moves to
-`current/research_benchmarks/` when the user wants to study complete apps.
+The default learning path starts in `v4/`, especially
+`benchmark_app_recipes.py`. Move to `current/research_benchmarks/` only when
+you want the full matrix harness that preserves compatibility routes and
+measurement machinery.
 
 These examples demonstrate the current V4 Python eDSL/operator-pushdown surface,
 including measured generic operators, inherited V2/V3 routes, and the

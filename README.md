@@ -89,7 +89,7 @@ public claim that RTDL fully reproduces the paper implementation.
 | [docs/learn/operator_catalog.md](docs/learn/operator_catalog.md) | Current V4 operator/workflow catalog. |
 | [docs/app_level_benchmark_summary.md](docs/app_level_benchmark_summary.md) | Complete V2.14/V3.0.2/V4.0 app matrix summary. |
 | [tutorials/current/README.md](tutorials/current/README.md) | V4 learning path, including benchmark-app recipes. |
-| [examples/README.md](examples/README.md) | Runnable V4 examples and benchmark-app source map. |
+| [examples/README.md](examples/README.md) | Runnable V4 examples and benchmark-app learning path. |
 | [docs/learn/performance_wording.md](docs/learn/performance_wording.md) | Performance wording guide. |
 
 ## Start Here
@@ -134,7 +134,7 @@ This front page does not authorize:
 | --- | --- |
 | `src/rtdsl/` | RTDL Python DSL/runtime source. |
 | `examples/v4/` | Current runnable V4 user examples. |
-| `examples/current/research_benchmarks/` | Source code for the 10 promoted benchmark apps. |
+| `examples/current/research_benchmarks/` | Maintainer benchmark harness for the 10 promoted apps; learn from `examples/v4/benchmark_app_recipes.py` first. |
 | `tutorials/current/` | Current V4 tutorial path. |
 | `docs/` | Current V4 public documentation. |
 | `history/` | Archived history and maintainer provenance. |

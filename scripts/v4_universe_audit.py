@@ -30,6 +30,7 @@ PUBLIC_DOCS = (
     "tutorials/current/05_measurement_boundaries.md",
     "tutorials/current/06_benchmark_apps.md",
     "examples/README.md",
+    "examples/current/research_benchmarks/README.md",
     "examples/v4/README.md",
 )
 

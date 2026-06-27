@@ -8,23 +8,23 @@ Status: `pass`
 
 - tracked files: `28344`
 - untracked files: `0`
-- public current files scanned: `32`
+- public current files scanned: `33`
 
 ## Tracked Buckets
 
-- `current_code_or_gate`: `4356`
+- `current_code_or_gate`: `4355`
 - `history_archive`: `22046`
 - `maintainer_provenance`: `1839`
 - `other_tracked`: `71`
-- `public_current`: `32`
+- `public_current`: `33`
 
 ## Tracked Documentation Buckets
 
-- `current_code_or_gate`: `4`
+- `current_code_or_gate`: `3`
 - `history_archive`: `14343`
 - `maintainer_provenance`: `1201`
 - `other_tracked`: `7`
-- `public_current`: `19`
+- `public_current`: `20`
 
 ## Tracked Code Buckets
 

@@ -9,8 +9,8 @@ Status: `public_surface_clean__tracked_v4_code_gates_pass__strict_release_gate_p
 This pass treats V4.0.0 as the current user-facing release. The release tree is
 partitioned as:
 
-- `public_current`: root README, `docs/`, `tutorials/current/`, and
-  `examples/v4/`;
+- `public_current`: root README, `docs/`, `tutorials/current/`, `examples/v4/`,
+  and the benchmark-harness README;
 - `current_code_or_gate`: `src/rtdsl/`, V4 scripts, tests, and benchmark-app
   source;
 - `maintainer_provenance`: `future/`;
@@ -55,7 +55,7 @@ debris archive sweep.
 
 Public surface:
 
-- public current files scanned: `32`;
+- public current files scanned: `33`;
 - public findings: `0`;
 - tracked files still under `docs/reviews/`: `0`;
 - missing required public files: `0`;
@@ -66,8 +66,8 @@ Tracked repository:
 - tracked files: `28344`;
 - history archive files: `22046`;
 - maintainer provenance files: `1839`;
-- current code/gate files: `4356`;
-- public current files: `32`.
+- current code/gate files: `4355`;
+- public current files: `33`.
 
 Local workspace debris:
 
@@ -140,6 +140,12 @@ planner mode, including the 10-app benchmark recipe planner, fixed-radius,
 closest-hit grouped argmin, ray/triangle any-hit flags, primitive grouped-i64
 reduction, point-group nearest witness, ray/triangle weighted sum, AABB
 all-ops count, callback planning, and the custom predicate early-exit planner.
+
+The complete benchmark-app harness under `examples/current/research_benchmarks/`
+is now presented as a maintainer matrix harness, not the first teaching surface.
+The clean user learning path is `examples/v4/benchmark_app_recipes.py` plus the
+current tutorial. The harness README is scanned as public current documentation;
+the large harness source files remain compatibility and measurement backends.
 
 Full V4 discovery gate:
 

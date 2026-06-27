@@ -34,6 +34,7 @@ PUBLIC_DOCS = (
     ROOT / "tutorials" / "current" / "05_measurement_boundaries.md",
     ROOT / "tutorials" / "current" / "06_benchmark_apps.md",
     ROOT / "examples" / "README.md",
+    ROOT / "examples" / "current" / "research_benchmarks" / "README.md",
     ROOT / "examples" / "v4" / "README.md",
 )
 

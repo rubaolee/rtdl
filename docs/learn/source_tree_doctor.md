@@ -8,6 +8,7 @@ PowerShell:
 ```powershell
 $env:PYTHONPATH = "src;."
 py -3 examples\v4\v4_frontdoor_quickstart.py
+py -3 examples\v4\benchmark_app_recipes.py
 py -3 scripts\v4_catalog_regression_gate.py --mode dry-run
 ```
 
@@ -15,12 +16,13 @@ Linux or macOS:
 
 ```bash
 PYTHONPATH=src:. python examples/v4/v4_frontdoor_quickstart.py
+PYTHONPATH=src:. python examples/v4/benchmark_app_recipes.py
 PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
 ```
 
 These checks run without CUDA by using dry-run paths for GPU examples. They
-verify that the V4 front door, operator catalog, callback planner, and example
-commands are reachable from a clean checkout.
+verify that the V4 front door, benchmark-app recipe planner, operator catalog,
+callback planner, and example commands are reachable from a clean checkout.
 
 For deeper maintainer checks, use the broader V4 tests:
 

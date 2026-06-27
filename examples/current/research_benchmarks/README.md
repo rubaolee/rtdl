@@ -1,11 +1,29 @@
-# Research Benchmark Apps
+# Research Benchmark Harness
 
-This directory contains the 10 promoted benchmark apps used to validate RTDL as
-a language/runtime, not just as a primitive library.
+This directory contains the maintainer benchmark harness for the 10 promoted
+apps used to validate RTDL as a language/runtime, not just as a primitive
+library.
 
 Start with [../../../tutorials/current/06_benchmark_apps.md](../../../tutorials/current/06_benchmark_apps.md).
 That tutorial explains how each app is built from the current V4 front door,
 generic operators, inherited prepared routes, and explicit partners.
+
+For the clean first code path, run:
+
+```powershell
+$env:PYTHONPATH = "src;."
+py -3 examples\v4\benchmark_app_recipes.py
+```
+
+Linux or macOS:
+
+```bash
+PYTHONPATH=src:. python examples/v4/benchmark_app_recipes.py
+```
+
+The files below are the full matrix harness. They keep compatibility route
+machinery needed for fair V2.14/V3.0.2/V4.0 comparisons; they are not the first
+teaching surface.
 
 ## Apps
 
