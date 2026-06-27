@@ -3,6 +3,9 @@
 RTDL V4.0.0 is the current Python eDSL/operator-pushdown surface for generic
 RT-core work on NVIDIA GPUs.
 
+Release: the published tag is `v4.0.0`; clean wheel smoke passed; the release
+claim boundary is locked to the measured V4.0 surfaces and app-level table.
+
 ## What V4 Gives Users
 
 - One current import: `import rtdsl.v4 as rtdl_v4`.
