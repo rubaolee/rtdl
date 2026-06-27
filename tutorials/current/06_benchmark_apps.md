@@ -27,6 +27,19 @@ def show(name, plan):
 show("ray/triangle any-hit", rt.plan_operator_request_v4("any_hit", partner="torch"))
 ```
 
+You can run the full recipe list as one command:
+
+```powershell
+$env:PYTHONPATH = "src;."
+py -3 examples\v4\benchmark_app_recipes.py
+```
+
+Linux or macOS:
+
+```bash
+PYTHONPATH=src:. python examples/v4/benchmark_app_recipes.py
+```
+
 ## 1. Neighborhood Apps
 
 RTDBSCAN and RTNN both start with "which points are near this point?" The app

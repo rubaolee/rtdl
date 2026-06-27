@@ -108,6 +108,7 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
     def test_clean_v4_example_entrypoints_run_without_cuda(self) -> None:
         commands = (
             ["examples/v4/v4_frontdoor_quickstart.py"],
+            ["examples/v4/benchmark_app_recipes.py"],
             ["examples/v4/operator_callback_planning.py", "--case", "complex-callback"],
             ["examples/v4/custom_predicate_early_exit_planning.py"],
             ["examples/v4/fixed_radius_torch_device_arrays.py", "--dry-run", "--copies", "2"],

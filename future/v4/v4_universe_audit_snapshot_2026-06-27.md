@@ -6,9 +6,9 @@ Status: `pass`
 
 ## Counts
 
-- tracked files: `28343`
+- tracked files: `28344`
 - untracked files: `0`
-- public current files scanned: `31`
+- public current files scanned: `32`
 
 ## Tracked Buckets
 
@@ -16,7 +16,7 @@ Status: `pass`
 - `history_archive`: `22046`
 - `maintainer_provenance`: `1839`
 - `other_tracked`: `71`
-- `public_current`: `31`
+- `public_current`: `32`
 
 ## Tracked Documentation Buckets
 
@@ -32,7 +32,7 @@ Status: `pass`
 - `history_archive`: `328`
 - `maintainer_provenance`: `13`
 - `other_tracked`: `62`
-- `public_current`: `12`
+- `public_current`: `13`
 
 ## Public Surface Findings
 

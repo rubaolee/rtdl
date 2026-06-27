@@ -55,7 +55,7 @@ debris archive sweep.
 
 Public surface:
 
-- public current files scanned: `31`;
+- public current files scanned: `32`;
 - public findings: `0`;
 - tracked files still under `docs/reviews/`: `0`;
 - missing required public files: `0`;
@@ -63,11 +63,11 @@ Public surface:
 
 Tracked repository:
 
-- tracked files: `28343`;
+- tracked files: `28344`;
 - history archive files: `22046`;
 - maintainer provenance files: `1839`;
 - current code/gate files: `4356`;
-- public current files: `31`.
+- public current files: `32`.
 
 Local workspace debris:
 
@@ -136,10 +136,10 @@ OK
 ```
 
 This gate now executes every public `examples/v4` command in dry-run or
-planner mode, including fixed-radius, closest-hit grouped argmin,
-ray/triangle any-hit flags, primitive grouped-i64 reduction, point-group
-nearest witness, ray/triangle weighted sum, AABB all-ops count, callback
-planning, and the custom predicate early-exit planner.
+planner mode, including the 10-app benchmark recipe planner, fixed-radius,
+closest-hit grouped argmin, ray/triangle any-hit flags, primitive grouped-i64
+reduction, point-group nearest witness, ray/triangle weighted sum, AABB
+all-ops count, callback planning, and the custom predicate early-exit planner.
 
 Full V4 discovery gate:
 
@@ -151,7 +151,7 @@ py -3 -m unittest discover -s tests -p "v4*_test.py"
 Result:
 
 ```text
-Ran 649 tests in 98.667s
+Ran 649 tests in 98.423s
 OK (skipped=1)
 ```
 

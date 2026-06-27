@@ -39,6 +39,7 @@ PowerShell:
 
 ```powershell
 py -3 examples\v4\v4_frontdoor_quickstart.py
+py -3 examples\v4\benchmark_app_recipes.py
 py -3 examples\v4\operator_callback_planning.py --case complex-callback
 py -3 examples\v4\fixed_radius_torch_device_arrays.py --dry-run
 py -3 examples\v4\closest_hit_grouped_argmin_torch_device_arrays.py --dry-run
@@ -54,6 +55,7 @@ Linux or macOS:
 
 ```bash
 PYTHONPATH=src:. python examples/v4/v4_frontdoor_quickstart.py
+PYTHONPATH=src:. python examples/v4/benchmark_app_recipes.py
 PYTHONPATH=src:. python examples/v4/operator_callback_planning.py --case complex-callback
 PYTHONPATH=src:. python examples/v4/fixed_radius_torch_device_arrays.py --dry-run
 PYTHONPATH=src:. python examples/v4/closest_hit_grouped_argmin_torch_device_arrays.py --dry-run
@@ -69,6 +71,8 @@ PYTHONPATH=src:. python examples/v4/aabb_index_all_ops_count.py --dry-run
 
 The benchmark app tutorial is
 [../tutorials/current/06_benchmark_apps.md](../tutorials/current/06_benchmark_apps.md).
+Start with `examples/v4/benchmark_app_recipes.py` before reading the full
+benchmark harness source.
 
 Use [../docs/learn/performance_wording.md](../docs/learn/performance_wording.md)
 before making any performance statement.
