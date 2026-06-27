@@ -189,6 +189,12 @@ def run_audit() -> dict[str, Any]:
     untracked_buckets = Counter(_untracked_bucket(path) for path in untracked)
     doc_buckets = Counter(_tracked_bucket(path) for path in tracked if _is_doc(path))
     code_buckets = Counter(_tracked_bucket(path) for path in tracked if _is_code(path))
+    untracked_samples: dict[str, list[str]] = {}
+    for path in untracked:
+        bucket = _untracked_bucket(path)
+        untracked_samples.setdefault(bucket, [])
+        if len(untracked_samples[bucket]) < 12:
+            untracked_samples[bucket].append(path)
 
     tracked_public = [path for path in tracked if _is_public_path(path)]
     public_findings = _scan_public(tracked_public)
@@ -219,6 +225,7 @@ def run_audit() -> dict[str, Any]:
         "tracked_doc_bucket_counts": dict(sorted(doc_buckets.items())),
         "tracked_code_bucket_counts": dict(sorted(code_buckets.items())),
         "untracked_bucket_counts": dict(sorted(untracked_buckets.items())),
+        "untracked_samples": dict(sorted(untracked_samples.items())),
         "public_file_count": len(tracked_public),
         "public_findings": public_findings,
         "tracked_docs_reviews": tracked_docs_reviews,
@@ -253,6 +260,12 @@ def _to_markdown(result: dict[str, Any]) -> str:
     ]
     for key, value in result["tracked_bucket_counts"].items():
         lines.append(f"- `{key}`: `{value}`")
+    lines.extend(["", "## Tracked Documentation Buckets", ""])
+    for key, value in result["tracked_doc_bucket_counts"].items():
+        lines.append(f"- `{key}`: `{value}`")
+    lines.extend(["", "## Tracked Code Buckets", ""])
+    for key, value in result["tracked_code_bucket_counts"].items():
+        lines.append(f"- `{key}`: `{value}`")
     lines.extend(["", "## Public Surface Findings", ""])
     if result["public_findings"]:
         for finding in result["public_findings"]:
@@ -264,6 +277,11 @@ def _to_markdown(result: dict[str, Any]) -> str:
     lines.extend(["", "## Untracked Buckets", ""])
     for key, value in result["untracked_bucket_counts"].items():
         lines.append(f"- `{key}`: `{value}`")
+    lines.extend(["", "## Untracked Samples", ""])
+    for key, values in result["untracked_samples"].items():
+        lines.append(f"### `{key}`")
+        for value in values:
+            lines.append(f"- `{value}`")
     lines.extend(["", "## Interpretation", "", result["interpretation"]])
     return "\n".join(lines)
 
