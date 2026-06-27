@@ -46,6 +46,19 @@ PUBLIC_DOCS = (
 )
 
 PUBLIC_EXAMPLE_SOURCES = tuple(sorted((ROOT / "examples" / "simple").glob("*.py")))
+PUBLIC_BENCHMARK_ENTRYPOINTS = (
+    ROOT / "examples" / "benchmark_apps" / "_support" / "v4_public_entry.py",
+    ROOT / "examples" / "benchmark_apps" / "rt_dbscan" / "v4_app.py",
+    ROOT / "examples" / "benchmark_apps" / "rtnn" / "v4_app.py",
+    ROOT / "examples" / "benchmark_apps" / "triangle_counting" / "v4_app.py",
+    ROOT / "examples" / "benchmark_apps" / "robot_collision" / "v4_app.py",
+    ROOT / "examples" / "benchmark_apps" / "raydb_style" / "v4_app.py",
+    ROOT / "examples" / "benchmark_apps" / "librts_spatial_index" / "v4_app.py",
+    ROOT / "examples" / "benchmark_apps" / "contact_manifold" / "v4_app.py",
+    ROOT / "examples" / "benchmark_apps" / "spatial_rayjoin" / "v4_app.py",
+    ROOT / "examples" / "benchmark_apps" / "barnes_hut" / "v4_app.py",
+    ROOT / "examples" / "benchmark_apps" / "hausdorff_xhd" / "v4_app.py",
+)
 
 BENCHMARK_APP_NAMES = (
     "RTDBSCAN",
@@ -133,7 +146,7 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                     self.assertTrue((path.parent / clean_target).resolve().exists(), target)
 
     def test_public_v4_example_sources_do_not_leak_goal_labels(self) -> None:
-        for path in PUBLIC_EXAMPLE_SOURCES:
+        for path in PUBLIC_EXAMPLE_SOURCES + PUBLIC_BENCHMARK_ENTRYPOINTS:
             with self.subTest(path=path.relative_to(ROOT).as_posix()):
                 text = path.read_text(encoding="utf-8")
                 for pattern in PUBLIC_SURFACE_FORBIDDEN[:3]:
@@ -249,10 +262,44 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
 
     def test_benchmark_app_tutorial_covers_all_promoted_apps(self) -> None:
         tutorial = (ROOT / "tutorials" / "current" / "06_benchmark_apps.md").read_text(encoding="utf-8")
+        readme = (ROOT / "examples" / "benchmark_apps" / "README.md").read_text(encoding="utf-8")
 
         for app_name in BENCHMARK_APP_NAMES:
             with self.subTest(app=app_name):
                 self.assertIn(app_name, tutorial)
+        self.assertIn("v4_app.py", readme)
+        self.assertNotIn("rtdl_rayjoin_v2_spatial_join_app.py", readme)
+        self.assertNotIn("rtdl_rt_dbscan_benchmark_app.py", tutorial)
+
+    def test_clean_benchmark_app_entrypoints_run_without_cuda(self) -> None:
+        commands = (
+            "examples/benchmark_apps/rt_dbscan/v4_app.py",
+            "examples/benchmark_apps/rtnn/v4_app.py",
+            "examples/benchmark_apps/triangle_counting/v4_app.py",
+            "examples/benchmark_apps/robot_collision/v4_app.py",
+            "examples/benchmark_apps/raydb_style/v4_app.py",
+            "examples/benchmark_apps/librts_spatial_index/v4_app.py",
+            "examples/benchmark_apps/contact_manifold/v4_app.py",
+            "examples/benchmark_apps/spatial_rayjoin/v4_app.py",
+            "examples/benchmark_apps/barnes_hut/v4_app.py",
+            "examples/benchmark_apps/hausdorff_xhd/v4_app.py",
+        )
+        for command in commands:
+            with self.subTest(command=command):
+                proc = subprocess.run(
+                    [sys.executable, command, "--json"],
+                    cwd=ROOT,
+                    check=True,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                )
+                payload = json.loads(proc.stdout)
+                self.assertIn("app", payload)
+                self.assertIn("operators", payload)
+                self.assertIn("partners", payload)
+                self.assertIn("current_entry", payload)
+                self.assertTrue(payload["current_entry"].endswith("v4_app.py"))
+                self.assertFalse(_json_contains_forbidden_goal(payload))
 
     def test_operator_catalog_is_visible_without_overclaim(self) -> None:
         text = (ROOT / "docs" / "current_v4_status.md").read_text(encoding="utf-8")

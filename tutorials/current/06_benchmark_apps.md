@@ -61,8 +61,8 @@ App structure:
 - continuation: component union;
 - validation: cluster labels match the reference.
 
-Full harness:
-`examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py`
+Current V4 entry:
+`examples/benchmark_apps/rt_dbscan/v4_app.py`
 
 ## 2. RTNN
 
@@ -86,8 +86,8 @@ App structure:
 - continuation: ranked summary;
 - validation: nearest IDs and distances match the reference.
 
-Full harness:
-`examples/benchmark_apps/rtnn/rtdl_rtnn_benchmark_app.py`
+Current V4 entry:
+`examples/benchmark_apps/rtnn/v4_app.py`
 
 ## 3. Triangle Counting
 
@@ -112,8 +112,8 @@ App structure:
 - continuation: grouped integer counts;
 - validation: triangle counts match the graph reference.
 
-Full harness:
-`examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py`
+Current V4 entry:
+`examples/benchmark_apps/triangle_counting/v4_app.py`
 
 ## 4. Robot Collision
 
@@ -136,8 +136,8 @@ App structure:
 - continuation: one collision flag per motion query;
 - validation: collision flags match the reference.
 
-Full harness:
-`examples/benchmark_apps/robot_collision/rtdl_robot_collision_benchmark_app.py`
+Current V4 entry:
+`examples/benchmark_apps/robot_collision/v4_app.py`
 
 ## 5. RayDB-Style Query
 
@@ -163,8 +163,8 @@ App structure:
 - continuation: weighted or grouped summary;
 - validation: query result matches the relational reference.
 
-Full harness:
-`examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py`
+Current V4 entry:
+`examples/benchmark_apps/raydb_style/v4_app.py`
 
 ## 6. LibRTS Spatial Index
 
@@ -187,8 +187,8 @@ App structure:
 - continuation: compact count or row summary;
 - validation: index answers match the reference.
 
-Full harness:
-`examples/benchmark_apps/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py`
+Current V4 entry:
+`examples/benchmark_apps/librts_spatial_index/v4_app.py`
 
 ## 7. Contact Manifold
 
@@ -212,8 +212,8 @@ App structure:
 - continuation: contact-specific refinement;
 - validation: contact candidates match the reference.
 
-Full harness:
-`examples/benchmark_apps/contact_manifold/rtdl_contact_manifold_benchmark_app.py`
+Current V4 entry:
+`examples/benchmark_apps/contact_manifold/v4_app.py`
 
 ## 8. Spatial RayJoin
 
@@ -237,8 +237,8 @@ App structure:
 - continuation: join refinement;
 - validation: joined rows match the reference.
 
-Full harness:
-`examples/benchmark_apps/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py`
+Current V4 entry:
+`examples/benchmark_apps/spatial_rayjoin/v4_app.py`
 
 ## 9. Barnes-Hut
 
@@ -262,8 +262,8 @@ App structure:
 - continuation: weighted vector sum;
 - validation: force or contribution vectors match the reference tolerance.
 
-Full harness:
-`examples/benchmark_apps/barnes_hut/rtdl_barnes_hut_benchmark_app.py`
+Current V4 entry:
+`examples/benchmark_apps/barnes_hut/v4_app.py`
 
 ## 10. Hausdorff XHD
 
@@ -287,8 +287,8 @@ App structure:
 - continuation: max/min distance summary;
 - validation: distance result matches the reference.
 
-Full harness:
-`examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py`
+Current V4 entry:
+`examples/benchmark_apps/hausdorff_xhd/v4_app.py`
 
 ## One-Page Map
 
@@ -306,3 +306,4 @@ Full harness:
 | Hausdorff XHD | threshold or witness | distance summary | Torch |
 
 Next: [Choose a Partner](07_partner_choice.md)
+

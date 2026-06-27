@@ -44,6 +44,20 @@ PUBLIC_CODE_PREFIXES = (
     "examples/simple/",
 )
 
+PUBLIC_CODE_FILES = (
+    "examples/benchmark_apps/_support/v4_public_entry.py",
+    "examples/benchmark_apps/rt_dbscan/v4_app.py",
+    "examples/benchmark_apps/rtnn/v4_app.py",
+    "examples/benchmark_apps/triangle_counting/v4_app.py",
+    "examples/benchmark_apps/robot_collision/v4_app.py",
+    "examples/benchmark_apps/raydb_style/v4_app.py",
+    "examples/benchmark_apps/librts_spatial_index/v4_app.py",
+    "examples/benchmark_apps/contact_manifold/v4_app.py",
+    "examples/benchmark_apps/spatial_rayjoin/v4_app.py",
+    "examples/benchmark_apps/barnes_hut/v4_app.py",
+    "examples/benchmark_apps/hausdorff_xhd/v4_app.py",
+)
+
 CURRENT_CODE_PREFIXES = (
     ".github/workflows/",
     "src/rtdsl/",
@@ -138,6 +152,8 @@ def _read(path: str) -> str:
 def _is_public_path(path: str) -> bool:
     if path in PUBLIC_DOCS:
         return True
+    if path in PUBLIC_CODE_FILES:
+        return True
     return any(path.startswith(prefix) for prefix in PUBLIC_CODE_PREFIXES)
 
 
@@ -150,7 +166,7 @@ def _is_doc(path: str) -> bool:
 
 
 def _tracked_bucket(path: str) -> str:
-    if path in PUBLIC_DOCS or any(path.startswith(prefix) for prefix in PUBLIC_CODE_PREFIXES):
+    if path in PUBLIC_DOCS or path in PUBLIC_CODE_FILES or any(path.startswith(prefix) for prefix in PUBLIC_CODE_PREFIXES):
         return "public_current"
     if any(path.startswith(prefix) for prefix in ARCHIVE_PREFIXES):
         return "history_archive"
