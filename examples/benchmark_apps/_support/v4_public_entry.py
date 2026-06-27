@@ -4,8 +4,9 @@ import argparse
 from dataclasses import dataclass
 import json
 from pathlib import Path
-import runpy
 import sys
+
+from examples.benchmark_apps._support.archived_harness_runner import run_archived_harness
 
 
 ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
@@ -19,7 +20,6 @@ class BenchmarkPublicEntry:
     operators: tuple[str, ...]
     partners: tuple[str, ...]
     current_entry: str
-    full_harness: str
 
 
 ENTRIES: dict[str, BenchmarkPublicEntry] = {
@@ -30,7 +30,6 @@ ENTRIES: dict[str, BenchmarkPublicEntry] = {
         operators=("fixed_radius", "component_union"),
         partners=("torch", "numba"),
         current_entry="examples/benchmark_apps/rt_dbscan/v4_app.py",
-        full_harness="examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
     ),
     "rtnn": BenchmarkPublicEntry(
         app="RTNN",
@@ -39,7 +38,6 @@ ENTRIES: dict[str, BenchmarkPublicEntry] = {
         operators=("point_group_nearest", "ranked_summary"),
         partners=("torch", "rtdl_native"),
         current_entry="examples/benchmark_apps/rtnn/v4_app.py",
-        full_harness="examples/benchmark_apps/rtnn/rtdl_rtnn_benchmark_app.py",
     ),
     "triangle_counting": BenchmarkPublicEntry(
         app="Triangle counting",
@@ -48,7 +46,6 @@ ENTRIES: dict[str, BenchmarkPublicEntry] = {
         operators=("any_hit", "grouped_i64"),
         partners=("torch", "cupy", "numba"),
         current_entry="examples/benchmark_apps/triangle_counting/v4_app.py",
-        full_harness="examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
     ),
     "robot_collision": BenchmarkPublicEntry(
         app="Robot collision",
@@ -57,7 +54,6 @@ ENTRIES: dict[str, BenchmarkPublicEntry] = {
         operators=("any_hit",),
         partners=("torch", "rtdl_native"),
         current_entry="examples/benchmark_apps/robot_collision/v4_app.py",
-        full_harness="examples/benchmark_apps/robot_collision/rtdl_robot_collision_benchmark_app.py",
     ),
     "raydb_style": BenchmarkPublicEntry(
         app="RayDB-style query",
@@ -66,7 +62,6 @@ ENTRIES: dict[str, BenchmarkPublicEntry] = {
         operators=("any_hit", "weighted_sum", "grouped_sum"),
         partners=("torch", "cupy"),
         current_entry="examples/benchmark_apps/raydb_style/v4_app.py",
-        full_harness="examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py",
     ),
     "librts_spatial_index": BenchmarkPublicEntry(
         app="LibRTS spatial index",
@@ -75,7 +70,6 @@ ENTRIES: dict[str, BenchmarkPublicEntry] = {
         operators=("aabb_index_query",),
         partners=("rtdl_native",),
         current_entry="examples/benchmark_apps/librts_spatial_index/v4_app.py",
-        full_harness="examples/benchmark_apps/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
     ),
     "contact_manifold": BenchmarkPublicEntry(
         app="Contact manifold",
@@ -84,7 +78,6 @@ ENTRIES: dict[str, BenchmarkPublicEntry] = {
         operators=("aabb_index_query", "closest_hit_argmin"),
         partners=("rtdl_native", "torch"),
         current_entry="examples/benchmark_apps/contact_manifold/v4_app.py",
-        full_harness="examples/benchmark_apps/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
     ),
     "spatial_rayjoin": BenchmarkPublicEntry(
         app="Spatial RayJoin",
@@ -93,7 +86,6 @@ ENTRIES: dict[str, BenchmarkPublicEntry] = {
         operators=("aabb_index_query", "any_hit"),
         partners=("rtdl_native", "torch"),
         current_entry="examples/benchmark_apps/spatial_rayjoin/v4_app.py",
-        full_harness="examples/benchmark_apps/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
     ),
     "barnes_hut": BenchmarkPublicEntry(
         app="Barnes-Hut",
@@ -102,7 +94,6 @@ ENTRIES: dict[str, BenchmarkPublicEntry] = {
         operators=("aggregate_frontier", "grouped_sum"),
         partners=("rtdl_native", "cupy"),
         current_entry="examples/benchmark_apps/barnes_hut/v4_app.py",
-        full_harness="examples/benchmark_apps/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
     ),
     "hausdorff_xhd": BenchmarkPublicEntry(
         app="Hausdorff XHD",
@@ -111,7 +102,6 @@ ENTRIES: dict[str, BenchmarkPublicEntry] = {
         operators=("fixed_radius", "point_group_nearest"),
         partners=("torch",),
         current_entry="examples/benchmark_apps/hausdorff_xhd/v4_app.py",
-        full_harness="examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
     ),
 }
 
@@ -149,14 +139,11 @@ def _render(entry: BenchmarkPublicEntry) -> str:
     return "\n".join(lines)
 
 
-def _run_harness(entry: BenchmarkPublicEntry, harness_args: list[str]) -> int:
-    target = ROOT / entry.full_harness
+def _run_harness(app_key: str, harness_args: list[str]) -> int:
     args = list(harness_args)
     if args and args[0] == "--":
         args = args[1:]
-    sys.argv = [str(target), *args]
-    runpy.run_path(str(target), run_name="__main__")
-    return 0
+    return run_archived_harness(app_key, args)
 
 
 def main(app_key: str) -> int:
@@ -172,7 +159,7 @@ def main(app_key: str) -> int:
     args = parser.parse_args()
 
     if args.run_harness:
-        return _run_harness(entry, args.harness_args)
+        return _run_harness(app_key, args.harness_args)
     if args.json:
         print(json.dumps(_payload(entry), indent=2, sort_keys=True))
     else:

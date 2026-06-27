@@ -1,0 +1,4568 @@
+from __future__ import annotations
+
+import argparse
+import json
+import statistics
+import sys
+import time
+from pathlib import Path
+from typing import Any
+
+
+ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
+sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
+
+from examples.benchmark_apps._support import rtdl_graph_triangle_count
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import (
+    build_rt_graph_triangle_contract,
+)
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import (
+    build_rt_graph_triangle_summary_contract_cupy_binary,
+)
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import (
+    build_rt_graph_triangle_summary_contract_numba_binary,
+)
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import fixture_edges
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import read_binary_edges
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import read_text_edges
+import rtdsl as rt
+
+
+BENCHMARK_NAME = "triangle_counting"
+V2_4_RT_GRAPH_2A1_PRIMITIVE = "ray_triangle_weighted_any_hit_sum_3d"
+V2_4_RT_GRAPH_1A2_PRIMITIVE = "ray_triangle_hit_count_sum_3d"
+TRIANGLE_COUNTING_V2_6_NUMBA_COMPACT_MASK_VERSION = (
+    "rtdl.triangle_counting.v2_6.numba_compact_mask_preview.v1"
+)
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def _generic_ray_triangle_hit_count_3d_kernel():
+    rays = rt.input("rays", rt.Rays3D, layout=rt.Ray3DLayout, role="probe")
+    triangles = rt.input("triangles", rt.Triangles3D, layout=rt.Triangle3DLayout, role="build")
+    candidates = rt.traverse(rays, triangles, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.ray_triangle_hit_count(exact=False))
+    return rt.emit(hits, fields=["ray_id", "hit_count"])
+
+
+CLAIM_BOUNDARY = {
+    "benchmark_app": True,
+    "paper_reproduction": False,
+    "paper_code_intake_complete": True,
+    "rt_graph_preprocessing_oracle": True,
+    "rt_graph_id_ascending_adapter": True,
+    "rt_graph_2a1_generic_rt_mapping": True,
+    "rt_graph_1a2_generic_rt_mapping": True,
+    "generic_ray_triangle_rt_core_subpath_authorized": True,
+    "native_engine_customization": False,
+    "bfs_in_benchmark": False,
+    "visibility_edges_in_benchmark": False,
+    "full_graph_database_claim": False,
+    "distributed_graph_claim": False,
+    "triangle_count_rt_core_claim_authorized": False,
+    "whole_app_speedup_claim_authorized": False,
+    "public_speedup_claim_authorized": False,
+    "true_zero_copy_claim_authorized": False,
+    "automatic_partner_selection_authorized": False,
+    "app_specific_native_engine_logic_allowed": False,
+}
+
+
+def scope_payload() -> dict[str, Any]:
+    return {
+        "app": BENCHMARK_NAME,
+        "status": "promoted_benchmark_with_boundary",
+        "benchmark_kind": "single_contract_graph_benchmark",
+        "paper_reference": {
+            "title": (
+                "A Case Study for Ray Tracing Cores: Performance Insights with "
+                "Breadth-First Search and Triangle Counting in Graphs"
+            ),
+            "venue": "SIGMETRICS 2025",
+            "code": "https://github.com/rubaolee/RT-Graph",
+            "paper_pdf": "https://rubaolee.github.io/paper_pdfs/2025-rtgraph.pdf",
+            "benchmark_scope": "triangle_counting_only",
+            "reproduction_status": "contract_oracle_only",
+        },
+        "why_benchmark": (
+            "Triangle counting is small enough to audit, has an unambiguous "
+            "correctness contract, and stresses graph row/witness output plus "
+            "compact summary continuation without mixing in BFS or visibility "
+            "semantics."
+        ),
+        "supported_contracts": (
+            {
+                "name": "triangle_count",
+                "contract": "triangle witness rows or compact triangle summary",
+                "rt_role": "generic graph-row production and summary continuation where supported",
+                "rt_graph_status": (
+                    "benchmark-owned Python preprocessing/oracle exists; the RT-2A1 "
+                    "and RT-1A2 modes lower to generic ray/triangle RT primitives"
+                ),
+            },
+        ),
+        "excluded_from_benchmark": (
+            "BFS, visibility_edges, shortest path, graph database behavior, "
+            "and distributed graph analytics remain learner/demo/example surfaces."
+        ),
+        "runtime_design_pressure": (
+            "raw row views, compact row summaries, and clear separation between "
+            "Python graph semantics and app-agnostic engine row contracts"
+        ),
+        "primary_reports": (
+            "docs/reports/goal2586_graph_analytics_benchmark_promotion_2026-05-24.md",
+            "docs/reports/goal2587_benchmark_apps_milestone_report_2026-05-24.md",
+            "docs/reports/goal2588_rt_graph_triangle_counting_paper_code_intake_2026-05-24.md",
+        ),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def run_payload(*, backend: str, copies: int, output_mode: str, optix_graph_mode: str) -> dict[str, Any]:
+    section = rtdl_graph_triangle_count.run_backend(
+        backend,
+        copies=copies,
+        output_mode=output_mode,
+        optix_graph_mode=optix_graph_mode,
+    )
+    return {
+        "benchmark_app": BENCHMARK_NAME,
+        "mode": "run",
+        "contract": "triangle_count_only",
+        "backend": backend,
+        "copies": copies,
+        "output_mode": output_mode,
+        "triangle_count": section["summary"]["triangle_count"],
+        "touched_vertex_count": section["summary"]["touched_vertex_count"],
+        "section": section,
+        "excluded_operations": ("bfs", "visibility_edges"),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def command_plan_payload() -> dict[str, Any]:
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "command_plan",
+        "local_correctness": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode run --backend cpu_python_reference --copies 2 --output-mode summary"
+        ),
+        "rt_graph_contract_oracle": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_contract --fixture degree_oriented_two_triangles"
+        ),
+        "rt_graph_rtdl_adapter_cpu": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_rtdl_adapter --fixture degree_oriented_two_triangles "
+            "--backend cpu_python_reference"
+        ),
+        "rt_graph_2a1_generic_rt_cpu": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_generic_rt --fixture degree_oriented_two_triangles "
+            "--backend cpu"
+        ),
+        "rt_graph_1a2_generic_rt_cpu": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_1a2_generic_rt --fixture degree_oriented_two_triangles "
+            "--backend cpu"
+        ),
+        "rt_graph_2a1_generic_rt_optix": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_generic_rt --fixture degree_oriented_two_triangles "
+            "--rt-graph-copies 2048 --backend optix --detail summary --warmup 1 --repeat 3"
+        ),
+        "rt_graph_2a1_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy"
+        ),
+        "rt_graph_2a1_segmented_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000"
+        ),
+        "rt_graph_2a1_segmented_unique_weighted_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
+            "--segment-ray-representation unique_weighted"
+        ),
+        "rt_graph_2a1_segmented_prepared_unique_weighted_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
+            "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay"
+        ),
+        "rt_graph_2a1_segmented_prepared_compact_constant_ray_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
+            "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay "
+            "--segment-ray-column-layout xz_constant_y_direction"
+        ),
+        "rt_graph_2a1_segmented_prepared_segment_build_telemetry": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
+            "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay "
+            "--segment-unique-key-builder numba_direct --segment-ray-build-telemetry sync_subphases"
+        ),
+        "rt_graph_2a1_segmented_prepared_sort_rle_unique_counts_candidate": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
+            "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay "
+            "--segment-unique-key-builder numba_direct_sort_rle"
+        ),
+        "rt_graph_2a1_segmented_prepared_fused_output_candidate": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
+            "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay "
+            "--segment-unique-key-builder numba_direct_sort_rle "
+            "--segment-ray-output-builder numba_fused_decode_project"
+        ),
+        "rt_graph_2a1_segmented_scene_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_scene_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --scene-max-directed-edges 2000000 "
+            "--segment-max-two-hop-rows 5000000"
+        ),
+        "rt_graph_2a1_segmented_scene_unique_weighted_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_scene_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --scene-max-directed-edges 2000000 "
+            "--segment-max-two-hop-rows 5000000 --segment-ray-representation unique_weighted"
+        ),
+        "rt_graph_2a1_segmented_scene_prepared_unique_weighted_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_segmented_scene_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy --scene-max-directed-edges 2000000 "
+            "--segment-max-two-hop-rows 5000000 --segment-ray-representation unique_weighted "
+            "--segment-query-schedule prepared_segment_replay"
+        ),
+        "rt_graph_1a2_generic_rt_optix": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_1a2_generic_rt --fixture degree_oriented_two_triangles "
+            "--rt-graph-copies 2048 --backend optix --detail summary --warmup 1 --repeat 3"
+        ),
+        "rt_graph_1a2_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_1a2_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy"
+        ),
+        "embree_contract_check": (
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode run --backend embree --copies 1000 --output-mode summary"
+        ),
+        "authors_code_env_probe": (
+            "cd scratch/external/RT-Graph/tc && git rev-parse HEAD && "
+            "nvidia-smi && /usr/local/cuda-12.8/bin/nvcc --version && "
+            "test -n \"$OptiX_INSTALL_DIR\" && test -d \"$OptiX_INSTALL_DIR\""
+        ),
+        "authors_code_build": (
+            "cd scratch/external/RT-Graph/tc && export PATH=/usr/local/cuda-12.8/bin:$PATH && "
+            "cmake -B build -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.8/bin/nvcc "
+            "-DBIN2C=/usr/local/cuda-12.8/bin/bin2c && cmake --build build -j"
+        ),
+        "authors_rt_tc_run_shape": (
+            "cd scratch/external/RT-Graph/tc && ./bin/rt_tc "
+            "dataset/com-dblp/com-dblp.ungraph.edge.pd 0"
+        ),
+        "authors_bs_tc_run_shape": (
+            "cd scratch/external/RT-Graph/tc && ./bin/bs_tc "
+            "dataset/com-dblp/com-dblp.ungraph.edge.pd 0"
+        ),
+        "future_harder_gate": (
+            "Before any performance wording, reproduce the RT-Graph triangle-counting "
+            "authors-code contract where possible, then compare same-input RTDL "
+            "triangle-counting outputs against RT-Graph bs_tc and rt_tc baselines."
+        ),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def v2_5_plan_payload() -> dict[str, Any]:
+    manifest = rt.v2_5_tiered_benchmark_manifest()
+    row = next(app for app in manifest["apps"] if app["app_id"] == BENCHMARK_NAME)
+    primitive_first_plan = {
+        "contract_version": "rtdl.triangle_counting.v2_5.primitive_first_plan.v1",
+        "selected_path": "prepared_fused_generic_rt_summary",
+        "selected_primitives": (V2_4_RT_GRAPH_2A1_PRIMITIVE, V2_4_RT_GRAPH_1A2_PRIMITIVE),
+        "selection_reason": (
+            "triangle counting's benchmark result is a scalar summary already covered "
+            "by app-agnostic fused RTDL ray/triangle summary primitives"
+        ),
+        "alternative_path": "row_stream_or_compact_mask_plus_triton_continuation",
+        "alternative_reserved_for": (
+            "triangle witness rows, filtered row streams, or post-summary tensor work "
+            "that cannot be expressed as a fused scalar summary"
+        ),
+        "typed_hit_stream_forced": False,
+        "partner_continuation_required": False,
+        "public_speedup_claim_authorized": False,
+        "true_zero_copy_authorized": False,
+    }
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "v2_5_plan",
+        "tier": row["tier"],
+        "benchmark_track": row["benchmark_track"],
+        "preferred_partner": "triton",
+        "status": "primitive_first_plan_recorded_native_summary_not_relabelled_as_triton",
+        "v2_5_primitive_first_plan": primitive_first_plan,
+        "current_fast_paths": {
+            "rt_graph_2a1": (
+                "generic OptiX/Embree ray-triangle weighted any-hit summary; "
+                "optional CuPy path builds device geometry but is not a v2.5 Triton continuation"
+            ),
+            "rt_graph_1a2": (
+                "generic OptiX/Embree ray-triangle hit-count summary; "
+                "optional CuPy path builds device geometry but is not a v2.5 Triton continuation"
+            ),
+        },
+        "v2_5_required_operations": row["required_partner_operations"],
+        "same_contract_opponent": row["same_contract_opponent"],
+        "canonical_harness_status": row["canonical_harness_status"],
+        "pod_evidence_status": row["pod_evidence_status"],
+        "next_action": row["next_action"],
+        "integration_decision": (
+            "Do not relabel the existing native scalar summary as Triton. The v2.5 "
+            "planner should select the fused generic RTDL summary when the user asks "
+            "for a scalar triangle count, and reserve Triton compact-mask/segmented "
+            "continuations for row streams or tensor post-processing that the fused "
+            "summary cannot express."
+        ),
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "v2_5_triton_benchmark_integrated": False,
+            "triton_speedup_claim_authorized": False,
+            "same_contract_parity_claim_authorized": False,
+        },
+    }
+
+
+def primitive_first_plan_payload() -> dict[str, Any]:
+    """Current alias for the legacy v2.5 primitive-first planning payload."""
+
+    payload = v2_5_plan_payload()
+    return {
+        **payload,
+        "mode": "primitive_first_plan",
+        "legacy_mode_alias": "v2_5_plan",
+    }
+
+
+def describe_triangle_counting_v2_6_numba_compact_mask_continuation() -> dict[str, Any]:
+    """Describe the triangle app's user-selected Numba compact-mask continuation.
+
+    Triangle candidate interpretation remains app-owned. The Numba continuation
+    receives only generic int64 row ids plus a boolean keep mask.
+    """
+
+    return {
+        "contract_version": TRIANGLE_COUNTING_V2_6_NUMBA_COMPACT_MASK_VERSION,
+        "app": BENCHMARK_NAME,
+        "mode": "v2_6_numba_compact_mask_plan",
+        "selected_partner": "numba",
+        "status": "preview_ready_not_promoted",
+        "operation": "compact_mask_i64",
+        "numba_descriptor": rt.describe_numba_compact_mask_i64(),
+        "requires_device_resident_columns": True,
+        "uses_v2_6_neutral_partner_handoff": True,
+        "uses_v2_8_segmented_typed_stream_front_door": True,
+        "uses_legacy_torch_carrier": False,
+        "uses_torch_conversion": False,
+        "input_columns": ("candidate_row_ids:int64", "valid_triangle_mask:bool"),
+        "output_columns": ("selected_candidate_row_ids:int64", "original_indices:int64"),
+        "fast_scalar_summary_path_unchanged": True,
+        "post_rt_continuation_only": True,
+        "replaces_rt_traversal": False,
+        "promoted_performance_path": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "app_owned_lowering": (
+            "Triangle candidate construction, duplicate filtering, and witness-row "
+            "meaning remain benchmark/app code. RTDL/Numba sees only generic "
+            "candidate row ids and a boolean keep mask."
+        ),
+        "integration_decision": (
+            "Keep the v2.5 primitive-first fused scalar summary as the recommended "
+            "triangle-count path. Use this v2.6 Numba compact-mask path only for "
+            "witness-row streams or tensor post-processing that cannot be expressed "
+            "as the fused generic RTDL summary."
+        ),
+    }
+
+
+def describe_triangle_counting_segmented_compact_mask_numba_continuation() -> dict[str, Any]:
+    """Current alias for the legacy v2.6 Numba compact-mask continuation."""
+
+    plan = describe_triangle_counting_v2_6_numba_compact_mask_continuation()
+    return {
+        **plan,
+        "mode": "segmented_compact_mask_numba_plan",
+        "legacy_mode_alias": "v2_6_numba_compact_mask_plan",
+        "legacy_helper_alias": "describe_triangle_counting_v2_6_numba_compact_mask_continuation",
+    }
+
+
+def v2_6_numba_compact_mask_plan_payload() -> dict[str, Any]:
+    plan = describe_triangle_counting_v2_6_numba_compact_mask_continuation()
+    return {
+        **plan,
+        "command_shape": (
+            "Use run_triangle_counting_v2_6_numba_compact_mask_preview(...) from "
+            "Python with Numba CUDA device arrays for candidate_row_ids:int64 and "
+            "valid_triangle_mask:bool. The legacy v2.6 app helper now routes "
+            "through the generic v2.8 segmented typed-stream partner front door."
+        ),
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "v2_6_numba_benchmark_app_integrated": True,
+            "numba_speedup_claim_authorized": False,
+            "same_contract_perf_claim_authorized": False,
+        },
+    }
+
+
+def segmented_compact_mask_numba_plan_payload() -> dict[str, Any]:
+    """Current alias for the legacy v2.6 Numba compact-mask plan payload."""
+
+    plan = describe_triangle_counting_segmented_compact_mask_numba_continuation()
+    return {
+        **v2_6_numba_compact_mask_plan_payload(),
+        "mode": "segmented_compact_mask_numba_plan",
+        "legacy_mode_alias": "v2_6_numba_compact_mask_plan",
+        "legacy_plan": plan,
+        "command_shape": (
+            "Use run_triangle_counting_segmented_compact_mask_numba_preview(...) "
+            "from Python with Numba CUDA device arrays for candidate_row_ids:int64 "
+            "and valid_triangle_mask:bool. The legacy v2.6 helper remains available "
+            "as a compatibility alias."
+        ),
+    }
+
+
+def run_triangle_counting_v2_6_numba_compact_mask_preview(
+    inputs: dict[str, Any],
+    *,
+    block_size: int = 256,
+) -> dict[str, Any]:
+    """Run the triangle witness-row compact-mask preview over CUDA arrays."""
+
+    plan = describe_triangle_counting_v2_6_numba_compact_mask_continuation()
+    candidate_row_ids = inputs["candidate_row_ids"]
+    valid_triangle_mask = inputs["valid_triangle_mask"]
+    handoff = rt.prepare_v2_6_neutral_partner_handoff(
+        {
+            "candidate_row_ids": candidate_row_ids,
+            "valid_triangle_mask": valid_triangle_mask,
+        },
+        partner="numba",
+        consumer="triangle_counting_v2_6_numba_compact_mask_continuation",
+        access_modes={"candidate_row_ids": "read", "valid_triangle_mask": "read"},
+    )
+    handoff_validation = rt.validate_v2_6_neutral_partner_handoff(handoff)
+    if handoff_validation["status"] != "accept":
+        raise RuntimeError(
+            "Triangle counting v2.6 Numba neutral handoff rejected: "
+            f"{handoff_validation['errors']}"
+        )
+
+    result = rt.execute_compact_mask_typed_stream_partner_columns(
+        values=candidate_row_ids,
+        mask=valid_triangle_mask,
+        partner="numba",
+        stream_id="triangle_counting_v2_8_compact_mask_schema",
+        producer_primitive="app_supplied_candidate_row_stream",
+        block_size=block_size,
+    )
+    partner_metadata = result["partner_metadata"]
+    outputs = {
+        "selected_candidate_row_ids": result["outputs"]["values"],
+        "original_indices": result["outputs"]["original_indices"],
+    }
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "v2_6_numba_compact_mask_preview",
+        "partner": "numba",
+        "status": "preview_not_promoted",
+        "operation": "compact_mask_i64",
+        "outputs": outputs,
+        "metadata": {
+            "v2_6_numba_compact_mask_plan": plan,
+            "v2_6_neutral_handoff_validation": handoff_validation,
+            "v2_8_typed_stream_front_door_request": {
+                "adapter_version": result["adapter_version"],
+                "operation": result["operation"],
+                "stream_id": result["stream_id"],
+                "input_column_mapping": result["input_column_mapping"],
+                "requires_caller_supplied_partner_columns": result[
+                    "requires_caller_supplied_partner_columns"
+                ],
+            },
+            "execution_path": "v2_8_segmented_typed_stream_compact_mask_front_door",
+            "legacy_execution_path_alias": "v2_6_numba_compact_mask_front_door",
+            "block_size": int(block_size),
+            "stable_input_order": bool(partner_metadata.get("stable_input_order")),
+            "host_prefix_sum_used": bool(partner_metadata.get("host_prefix_sum_used")),
+            "v2_8_segmented_typed_stream_front_door_used": True,
+            "v2_8_partner_consumer_promoted": bool(result["partner_consumer_promoted"]),
+            "v2_8_release_authorized": bool(result["release_authorized"]),
+            "post_rt_continuation_only": True,
+            "replaces_rt_traversal": False,
+            "promoted_performance_path": False,
+            "rt_core_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "uses_legacy_torch_carrier": False,
+            "uses_torch_conversion": False,
+            "phase_timing": {
+                "phases_sec": {
+                    "partner_continuation": float(
+                        partner_metadata.get("numba_partner_continuation_elapsed_seconds", 0.0)
+                    )
+                }
+            },
+        },
+    }
+
+
+def run_triangle_counting_segmented_compact_mask_numba_preview(
+    inputs: dict[str, Any],
+    *,
+    block_size: int = 256,
+) -> dict[str, Any]:
+    """Current alias for the legacy v2.6 compact-mask preview runner."""
+
+    payload = run_triangle_counting_v2_6_numba_compact_mask_preview(
+        inputs,
+        block_size=block_size,
+    )
+    return {
+        **payload,
+        "mode": "segmented_compact_mask_numba_preview",
+        "legacy_mode_alias": "v2_6_numba_compact_mask_preview",
+    }
+
+
+def describe_rt_graph_v2_4_prepared_session(
+    *,
+    backend: str,
+    paper_method: str,
+    primitive_count: int,
+    ray_count: int,
+    device_column_summary: bool,
+    partner: str,
+) -> dict[str, Any]:
+    """Describe the RT-Graph lowering with generic v2.4 buffer metadata."""
+
+    normalized_backend = backend.strip().lower().replace("-", "_")
+    if normalized_backend in {"cpu_python_reference", "python"}:
+        normalized_backend = "cpu"
+    if normalized_backend not in {"cpu", "embree", "optix"}:
+        raise ValueError("v2.4 RT-Graph descriptor supports cpu, embree, or optix")
+    method = paper_method.strip().upper()
+    if method not in {"RT-2A1", "RT-1A2"}:
+        raise ValueError("paper_method must be RT-2A1 or RT-1A2")
+
+    is_2a1 = method == "RT-2A1"
+    primitive = V2_4_RT_GRAPH_2A1_PRIMITIVE if is_2a1 else V2_4_RT_GRAPH_1A2_PRIMITIVE
+    partner_device_protocols = {
+        "cupy": "cupy_device_columns",
+        "numba": "numba_device_columns",
+    }
+    source_protocol = (
+        partner_device_protocols.get(partner, "cuda_array_interface_device_columns")
+        if device_column_summary
+        else "rtdl_packed_host_buffer"
+    )
+    geometry_device = "cuda" if device_column_summary else "cpu"
+    native_symbols: tuple[str, ...] = ()
+    if normalized_backend == "optix" and is_2a1:
+        native_symbols = (
+            "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum_device_rays"
+            if device_column_summary
+            else "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum",
+        )
+    elif normalized_backend == "embree" and is_2a1:
+        native_symbols = ("rtdl_embree_static_triangle_scene_3d_ray_any_hit_weighted_sum",)
+    elif normalized_backend == "optix":
+        native_symbols = (
+            "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum_device_rays"
+            if device_column_summary
+            else "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum",
+        )
+
+    input_buffers = [
+        rt.RtdlBufferDescriptor(
+            name="triangles",
+            dtype="rtdl_packed_triangle3d",
+            shape=(int(primitive_count),),
+            device_type=geometry_device,
+            source_protocol=source_protocol,
+            lifetime="session_retained",
+            access_mode="read",
+        ),
+        rt.RtdlBufferDescriptor(
+            name="rays",
+            dtype="rtdl_packed_ray3d",
+            shape=(int(ray_count),),
+            device_type=geometry_device,
+            source_protocol=source_protocol,
+            lifetime="session_retained",
+            access_mode="read",
+        ),
+    ]
+    if is_2a1:
+        input_buffers.append(
+            rt.RtdlBufferDescriptor(
+                name="ray_weights",
+                dtype="uint64",
+                shape=(int(ray_count),),
+                device_type=geometry_device,
+                source_protocol=source_protocol,
+                lifetime="session_retained",
+                access_mode="read",
+            )
+        )
+    output_name = "weighted_hit_sum" if is_2a1 else "hit_count_sum"
+    session = rt.RtdlPreparedSessionDescriptor(
+        session_id=(
+            f"generic_ray_triangle_summary_{method.lower().replace('-', '')}_"
+            f"{normalized_backend}_{int(primitive_count)}x{int(ray_count)}"
+        ),
+        backend=normalized_backend,
+        primitive=primitive,
+        input_buffers=tuple(input_buffers),
+        output_buffers=(
+            rt.RtdlBufferDescriptor(
+                name=output_name,
+                dtype="uint64",
+                shape=(1,),
+                device_type="cpu",
+                source_protocol="rtdl_scalar_summary",
+                lifetime="session_retained",
+                access_mode="write",
+                mutability="mutable",
+            ),
+        ),
+        reusable_scene=True,
+        reusable_query_buffers=True,
+        reusable_output_buffers=True,
+        phase_contract="prepared_ray_triangle_summary",
+        native_symbols=native_symbols,
+    )
+    return {
+        **session.to_metadata(),
+        "v2_4_protocol_version": rt.V2_4_PARTNER_PROTOCOL_VERSION,
+        "paper_method": method,
+        "partner": partner,
+        "device_column_lowering": bool(device_column_summary),
+        "app_owned_preprocessing": (
+            "Graph orientation, two-hop relation construction, and RT-Graph interpretation "
+            "remain benchmark/app code. RTDL sees generic rays, triangles, optional weights, "
+            "and a scalar summary."
+        ),
+        "same_phase_contract_as_basis_required": True,
+        "descriptor_only": True,
+    }
+
+
+def rt_graph_contract_payload(
+    *,
+    fixture: str,
+    edge_file: str | None,
+    edge_format: str,
+    detail: str,
+    rt_graph_copies: int = 1,
+) -> dict[str, Any]:
+    started = time.perf_counter()
+    edges, input_source = _load_rt_graph_edges(
+        fixture=fixture,
+        edge_file=edge_file,
+        edge_format=edge_format,
+        fixture_copies=rt_graph_copies,
+    )
+    loaded = time.perf_counter()
+    contract = build_rt_graph_triangle_contract(edges)
+    built = time.perf_counter()
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "rt_graph_contract",
+        "input_source": input_source,
+        "contract": "rt_graph_style_degree_oriented_triangle_count",
+        "status": "python_preprocessing_oracle_only",
+        "authors_code_reproduction": False,
+        "same_contract_rtdl_backend_rows": False,
+        "rtdl_feature_gap": (
+            "RT-Graph orients edges by degree/id. The benchmark now has an "
+            "id-ascending relabeling adapter for RTDL's current triangle_match "
+            "contract, but native same-contract timing is still pending."
+        ),
+        "timing_ms": {
+            "load_edges": _elapsed_ms(started, loaded),
+            "build_contract": _elapsed_ms(loaded, built),
+            "total": _elapsed_ms(started, built),
+        },
+        "rt_graph_contract": _contract_payload(contract, detail=detail),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def rt_graph_rtdl_adapter_payload(
+    *,
+    fixture: str,
+    edge_file: str | None,
+    edge_format: str,
+    backend: str,
+    detail: str,
+    rt_graph_copies: int = 1,
+) -> dict[str, Any]:
+    started = time.perf_counter()
+    edges, input_source = _load_rt_graph_edges(
+        fixture=fixture,
+        edge_file=edge_file,
+        edge_format=edge_format,
+        fixture_copies=rt_graph_copies,
+    )
+    loaded = time.perf_counter()
+    contract = build_rt_graph_triangle_contract(edges)
+    built = time.perf_counter()
+    graph = rt.csr_graph(
+        row_offsets=contract.id_ascending_row_offsets,
+        column_indices=contract.id_ascending_column_indices,
+    )
+    seeds = tuple(contract.id_ascending_edges)
+    inputs = {"seeds": seeds, "graph": graph}
+    if backend == "cpu_python_reference":
+        rows = rt.run_cpu_python_reference(rtdl_graph_triangle_count.triangle_probe_kernel, **inputs)
+    elif backend == "cpu":
+        rows = rt.run_cpu(rtdl_graph_triangle_count.triangle_probe_kernel, **inputs)
+    else:
+        raise ValueError("rt_graph_rtdl_adapter currently supports backend cpu_python_reference or cpu")
+    ran = time.perf_counter()
+    summary = rt.summarize_triangle_rows(rows)
+    reduced = time.perf_counter()
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "rt_graph_rtdl_adapter",
+        "input_source": input_source,
+        "backend": backend,
+        "contract": "rt_graph_contract_via_id_ascending_adapter",
+        "authors_code_reproduction": False,
+        "same_contract_native_timing": False,
+        "oracle_triangle_count": contract.triangle_count,
+        "rtdl_triangle_count": summary["triangle_count"],
+        "triangle_count_matches_oracle": summary["triangle_count"] == contract.triangle_count,
+        "timing_ms": {
+            "load_edges": _elapsed_ms(started, loaded),
+            "build_contract": _elapsed_ms(loaded, built),
+            "run_backend": _elapsed_ms(built, ran),
+            "reduce_rows": _elapsed_ms(ran, reduced),
+            "total": _elapsed_ms(started, reduced),
+        },
+        "rtdl_rows": rows if detail == "full" else {"row_count": len(rows)},
+        "rt_graph_contract": _contract_payload(contract, detail=detail),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def rt_graph_2a1_generic_rt_payload(
+    *,
+    fixture: str,
+    edge_file: str | None,
+    edge_format: str,
+    backend: str,
+    detail: str,
+    partner: str,
+    warmup: int,
+    repeat: int,
+    rt_graph_copies: int = 1,
+) -> dict[str, Any]:
+    _validate_repetition(warmup=warmup, repeat=repeat)
+    started = time.perf_counter()
+    use_partner_summary = _use_summary_partner(
+        partner=partner,
+        backend=backend,
+        detail=detail,
+        edge_file=edge_file,
+        edge_format=edge_format,
+    )
+    if use_partner_summary:
+        if rt_graph_copies != 1:
+            raise ValueError("--rt-graph-copies applies only to fixture inputs")
+        edges = None
+        input_source = {"kind": "edge_file", "format": "binary", "path": edge_file}
+    else:
+        edges, input_source = _load_rt_graph_edges(
+            fixture=fixture,
+            edge_file=edge_file,
+            edge_format=edge_format,
+            fixture_copies=rt_graph_copies,
+        )
+    loaded = time.perf_counter()
+    if use_partner_summary:
+        contract = _build_rt_graph_triangle_summary_contract_binary(edge_file, partner=partner)
+    else:
+        contract = build_rt_graph_triangle_contract(edges, include_id_ascending_adapter=detail == "full")
+    built = time.perf_counter()
+    normalized_backend = backend.lower().replace("-", "_")
+    device_column_summary = use_partner_summary and normalized_backend == "optix" and detail == "summary"
+    if device_column_summary:
+        triangles, rays, ray_weights = _build_rt_graph_2a1_device_geometry(contract, partner=partner)
+    elif normalized_backend == "optix" and detail == "summary":
+        triangles, rays, ray_weights = _build_rt_graph_2a1_packed_geometry(contract)
+    else:
+        triangles, rays, ray_weights = _build_rt_graph_2a1_geometry(contract)
+    lowered = time.perf_counter()
+    summary_result = None
+    query_timings_ms: list[float] = []
+    prepare_scene_ms: float | None = None
+    if device_column_summary:
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
+        rows = None
+        hit_weight_sum = int(summary_result["weighted_hit_sum"])
+    elif normalized_backend == "optix" and detail == "summary":
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_optix_static_triangle_scene_3d(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_any_hit_weighted_sum(rays, ray_weights)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
+        rows = None
+        hit_weight_sum = int(summary_result["weighted_hit_sum"])
+    elif normalized_backend == "embree" and detail == "summary":
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_embree_static_triangle_scene_3d(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_any_hit_weighted_sum(rays, ray_weights)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
+        rows = None
+        hit_weight_sum = int(summary_result["weighted_hit_sum"])
+    else:
+        rows = ()
+        for index in range(warmup + repeat):
+            query_started = time.perf_counter()
+            rows = rt.run_generic_ray_triangle_any_hit(rays, triangles, backend=backend)
+            elapsed = _elapsed_ms(query_started, time.perf_counter())
+            if index >= warmup:
+                query_timings_ms.append(elapsed)
+        hit_weight_sum = sum(ray_weights[int(row["ray_id"])] for row in rows if int(row["any_hit"]))
+    ran = time.perf_counter()
+    reduced = time.perf_counter()
+    ray_tracing_accelerated = normalized_backend in {"embree", "optix"}
+    rt_core_accelerated = normalized_backend == "optix"
+    primitive_count = _record_count(triangles)
+    ray_count = _record_count(rays)
+    v2_4_session = describe_rt_graph_v2_4_prepared_session(
+        backend=backend,
+        paper_method="RT-2A1",
+        primitive_count=primitive_count,
+        ray_count=ray_count,
+        device_column_summary=device_column_summary,
+        partner=partner,
+    )
+    v2_4_phase_timing = rt.v2_4_phase_timing_metadata(
+        {
+            "query_preparation": lowered - built,
+            "scene_build": 0.0 if prepare_scene_ms is None else prepare_scene_ms / 1000.0,
+            "rt_traversal": _median(query_timings_ms) / 1000.0,
+            "materialization": reduced - ran,
+        },
+        promoted_performance_path=normalized_backend in {"embree", "optix"},
+        same_phase_contract_as_basis=True,
+        source="triangle_counting.rt_graph_2a1_generic_rt",
+    )
+    session_key = rt.make_prepared_session_cache_key(
+        primitive="ray_triangle_weighted_any_hit_sum_3d",
+        backend=normalized_backend,
+        input_fingerprints={
+            "triangles": {"count": primitive_count, "fixture": fixture, "copies": rt_graph_copies},
+            "rays": {"count": ray_count, "fixture": fixture, "copies": rt_graph_copies},
+        },
+        parameters={"detail": detail, "summary": summary_result is not None},
+        partner="none",
+        device="cuda:0" if normalized_backend == "optix" else "cpu",
+    )
+    session_policy = rt.RtdlPreparedSessionResidencyPolicy(
+        cache_key=session_key,
+        cache_enabled=False,
+        lifetime_state="session_retained",
+        reuse_scope="explicit_user_session",
+        invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
+    )
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "rt_graph_2a1_generic_rt",
+        "input_source": input_source,
+        "backend": backend,
+        "contract": "rt_graph_2a1_mapped_to_generic_ray_triangle_any_hit",
+        "authors_code_reproduction": False,
+        "same_contract_native_timing": backend in {"embree", "optix"},
+        "ray_tracing_accelerated": ray_tracing_accelerated,
+        "rt_core_accelerated": rt_core_accelerated,
+        "rt_core_path": (
+            "generic_prepared_triangle_scene_3d_any_hit_weighted_sum"
+            if summary_result is not None and normalized_backend == "optix"
+            else (
+                "generic_prepared_triangle_scene_3d_any_hit_weighted_sum_embree"
+                if summary_result is not None and normalized_backend == "embree"
+                else ("generic_ray_triangle_any_hit_rows" if normalized_backend == "optix" else None)
+            )
+        ),
+        "partner": partner,
+        "partner_summary_contract_used": use_partner_summary,
+        "partner_timing_ms": getattr(contract, "partner_timing_ms", None),
+        "primitive_layout": {
+            "paper_method": "RT-2A1",
+            "primitive_side": "directed 1-hop edges as Triangle3D primitives",
+            "ray_side": "compacted 2-hop relations as Ray3D probes with add-value weights",
+            "axis_offset": [contract.vertex_count / 2.0, 0.0, contract.vertex_count / 2.0],
+            "triangle_eps": 0.2,
+            "ray_tmax": 0.2,
+            "device_column_lowering": device_column_summary,
+        },
+        "primitive_count": primitive_count,
+        "ray_count": ray_count,
+        "rt_graph_fixture_copies": rt_graph_copies,
+        "oracle_triangle_count": contract.triangle_count,
+        "generic_rt_weighted_triangle_count": int(hit_weight_sum),
+        "triangle_count_matches_oracle": int(hit_weight_sum) == contract.triangle_count,
+        "timing_ms": {
+            "load_edges": _elapsed_ms(started, loaded),
+            "build_contract": _elapsed_ms(loaded, built),
+            "build_geometry": _elapsed_ms(built, lowered),
+            "run_backend": _elapsed_ms(lowered, ran),
+            "prepare_scene_ms": prepare_scene_ms,
+            "query_median_ms": _median(query_timings_ms),
+            "query_total_ms": float(sum(query_timings_ms)),
+            "query_mean_ms": float(sum(query_timings_ms) / len(query_timings_ms)),
+            "query_min_ms": min(query_timings_ms),
+            "query_max_ms": max(query_timings_ms),
+            "query_repeat": repeat,
+            "query_warmup": warmup,
+            "query_measured_runs": len(query_timings_ms),
+            "reduce_hits": _elapsed_ms(ran, reduced),
+            "total": _elapsed_ms(started, reduced),
+        },
+        "hit_rows": (
+            rows
+            if detail == "full"
+            else {
+                "row_count": _record_count(rays) if rows is None else len(rows),
+                "materialized": rows is not None,
+                "summary_primitive": None if summary_result is None else summary_result["contract"],
+            }
+        ),
+        "ray_weights": _ray_weight_payload(ray_weights, detail=detail),
+        "generic_rt_summary": summary_result,
+        "v2_4_prepared_session": v2_4_session,
+        "prepared_session_residency": {
+            "cache_key": session_key.to_metadata(),
+            "policy": session_policy.to_metadata(),
+            "explicit_reuse_helper": "get_or_prepare_explicit_session",
+            "cache_enabled_by_default": False,
+            "cold_hot_phase_split_required": True,
+            "prepare_once_query_many_pattern": True,
+            "automatic_partner_selection_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
+        "v2_4_phase_timing": v2_4_phase_timing,
+        "rt_graph_contract": _contract_payload(contract, detail=detail),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def rt_graph_2a1_segmented_generic_rt_payload(
+    *,
+    edge_file: str | None,
+    edge_format: str,
+    backend: str,
+    detail: str,
+    partner: str,
+    warmup: int,
+    repeat: int,
+    segment_max_two_hop_rows: int,
+    segment_ray_representation: str,
+    segment_query_schedule: str,
+    segment_unique_key_builder: str,
+    segment_ray_column_layout: str,
+    segment_ray_output_builder: str,
+    segment_ray_build_telemetry: str,
+    validate_oracle: bool = False,
+) -> dict[str, Any]:
+    _validate_repetition(warmup=warmup, repeat=repeat)
+    _validate_segment_ray_representation(segment_ray_representation)
+    _validate_segment_query_schedule(segment_query_schedule)
+    _validate_segment_unique_key_builder(segment_unique_key_builder)
+    _validate_segment_ray_column_layout(segment_ray_column_layout)
+    _validate_segment_ray_output_builder(segment_ray_output_builder)
+    _validate_segment_ray_build_telemetry(segment_ray_build_telemetry)
+    normalized_backend = backend.lower().replace("-", "_")
+    if normalized_backend != "optix" or detail != "summary" or partner != "cupy":
+        raise ValueError(
+            "rt_graph_2a1_segmented_generic_rt currently requires "
+            "--backend optix --detail summary --partner cupy"
+        )
+    if segment_ray_column_layout == "xz_constant_y_direction" and segment_query_schedule != "prepared_segment_replay":
+        raise ValueError(
+            "segment_ray_column_layout xz_constant_y_direction requires "
+            "segment_query_schedule prepared_segment_replay"
+        )
+    if segment_ray_output_builder == "numba_fused_decode_project" and (
+        segment_ray_representation != "unique_weighted" or segment_ray_column_layout != "full"
+    ):
+        raise ValueError(
+            "segment_ray_output_builder numba_fused_decode_project requires "
+            "unique_weighted rays and full ray columns"
+        )
+    if edge_file is None or edge_format != "binary":
+        raise ValueError("rt_graph_2a1_segmented_generic_rt requires --edge-file with --edge-format binary")
+    if segment_max_two_hop_rows <= 0:
+        raise ValueError("segment_max_two_hop_rows must be positive")
+
+    started = time.perf_counter()
+    input_source = {"kind": "edge_file", "format": "binary", "path": edge_file}
+    loaded = time.perf_counter()
+    oracle_triangle_count: int | None = None
+    if validate_oracle:
+        oracle_contract = build_rt_graph_triangle_contract(read_binary_edges(edge_file), include_id_ascending_adapter=False)
+        oracle_triangle_count = int(oracle_contract.triangle_count)
+    oracle_checked = time.perf_counter()
+    contract = build_rt_graph_triangle_summary_contract_cupy_binary(
+        edge_file,
+        materialize_host_columns=False,
+        materialize_two_hop_summary=False,
+    )
+    built = time.perf_counter()
+    segment_plan = _plan_rt_graph_2a1_cupy_segments(
+        contract,
+        max_two_hop_rows=segment_max_two_hop_rows,
+    )
+    triangles = _build_rt_graph_2a1_cupy_directed_edge_triangles(contract)
+    lowered = time.perf_counter()
+
+    summary_result = None
+    query_timings_ms: list[float] = []
+    query_phase_samples_ms: list[dict[str, float]] = []
+    warmup_query_timings_ms: list[float] = []
+    segment_ray_build_timings_ms: list[float] = []
+    segment_ray_build_phase_samples_ms: list[dict[str, float]] = []
+    prepared_ray_batch_build_timings_ms: list[float] = []
+    lowered_ray_count_runs: list[int] = []
+    lowered_ray_weight_sum_runs: list[int] = []
+    prepare_started = time.perf_counter()
+    scene = rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangles)
+    prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+    hit_weight_sum = 0
+    with scene:
+        if segment_query_schedule == "prepared_segment_replay":
+            replay_query_ms = [0.0 for _ in range(warmup + repeat)]
+            replay_query_phase_ms = [dict() for _ in range(warmup + repeat)]
+            replay_hit_weight_sums = [0 for _ in range(warmup + repeat)]
+            replay_segment_build_ms = 0.0
+            replay_prepared_ray_batch_build_ms = 0.0
+            replay_lowered_ray_count = 0
+            replay_lowered_ray_weight_sum = 0
+            replay_segment_ray_build_phase_ms: dict[str, float] = {}
+            for start_edge, end_edge, _two_hop_rows in segment_plan["ranges"]:
+                if int(_two_hop_rows) <= 0:
+                    continue
+                segment_build_started = time.perf_counter()
+                rays, ray_weights = _build_rt_graph_2a1_cupy_segment_rays(
+                    contract,
+                    start_edge=int(start_edge),
+                    end_edge=int(end_edge),
+                    ray_representation=segment_ray_representation,
+                    unique_key_builder=segment_unique_key_builder,
+                    ray_column_layout=segment_ray_column_layout,
+                    ray_output_builder=segment_ray_output_builder,
+                    segment_ray_build_telemetry=segment_ray_build_telemetry,
+                    phase_timing_ms=replay_segment_ray_build_phase_ms
+                    if segment_ray_build_telemetry != "none"
+                    else None,
+                )
+                replay_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
+                replay_lowered_ray_count += _record_count(rays)
+                replay_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
+                ray_batch_prepare_started = time.perf_counter()
+                with _prepare_rt_graph_2a1_segment_ray_batch(
+                    scene,
+                    rays,
+                    ray_column_layout=segment_ray_column_layout,
+                ) as ray_batch:
+                    replay_prepared_ray_batch_build_ms += _elapsed_ms(
+                        ray_batch_prepare_started,
+                        time.perf_counter(),
+                    )
+                    for index in range(warmup + repeat):
+                        query_started = time.perf_counter()
+                        summary_result = scene.ray_batch_any_hit_weighted_sum_device_weights(
+                            ray_batch,
+                            ray_weights,
+                        )
+                        replay_query_ms[index] += _elapsed_ms(query_started, time.perf_counter())
+                        _accumulate_backend_query_phase_ms(replay_query_phase_ms[index], summary_result)
+                        replay_hit_weight_sums[index] += int(summary_result["weighted_hit_sum"])
+                if segment_ray_representation == "unique_weighted":
+                    del rays, ray_weights
+                    _release_cupy_cached_blocks()
+            for index in range(0, warmup):
+                warmup_query_timings_ms.append(float(replay_query_ms[index]))
+            for index in range(warmup, warmup + repeat):
+                query_timings_ms.append(float(replay_query_ms[index]))
+                query_phase_samples_ms.append(dict(replay_query_phase_ms[index]))
+                segment_ray_build_timings_ms.append(float(replay_segment_build_ms))
+                if segment_ray_build_telemetry != "none":
+                    segment_ray_build_phase_samples_ms.append(dict(replay_segment_ray_build_phase_ms))
+                prepared_ray_batch_build_timings_ms.append(float(replay_prepared_ray_batch_build_ms))
+                lowered_ray_count_runs.append(int(replay_lowered_ray_count))
+                lowered_ray_weight_sum_runs.append(int(replay_lowered_ray_weight_sum))
+                hit_weight_sum = int(replay_hit_weight_sums[index])
+        else:
+            for index in range(warmup + repeat):
+                run_segment_build_ms = 0.0
+                run_query_ms = 0.0
+                run_query_phase_ms: dict[str, float] = {}
+                run_hit_weight_sum = 0
+                run_lowered_ray_count = 0
+                run_lowered_ray_weight_sum = 0
+                run_segment_ray_build_phase_ms: dict[str, float] = {}
+                for start_edge, end_edge, _two_hop_rows in segment_plan["ranges"]:
+                    if int(_two_hop_rows) <= 0:
+                        continue
+                    segment_build_started = time.perf_counter()
+                    rays, ray_weights = _build_rt_graph_2a1_cupy_segment_rays(
+                        contract,
+                        start_edge=int(start_edge),
+                        end_edge=int(end_edge),
+                        ray_representation=segment_ray_representation,
+                        unique_key_builder=segment_unique_key_builder,
+                        ray_column_layout=segment_ray_column_layout,
+                        ray_output_builder=segment_ray_output_builder,
+                        segment_ray_build_telemetry=segment_ray_build_telemetry,
+                        phase_timing_ms=run_segment_ray_build_phase_ms
+                        if segment_ray_build_telemetry != "none"
+                        else None,
+                    )
+                    run_segment_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
+                    run_lowered_ray_count += _record_count(rays)
+                    run_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
+                    query_started = time.perf_counter()
+                    summary_result = scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
+                    run_query_ms += _elapsed_ms(query_started, time.perf_counter())
+                    _accumulate_backend_query_phase_ms(run_query_phase_ms, summary_result)
+                    run_hit_weight_sum += int(summary_result["weighted_hit_sum"])
+                if index >= warmup:
+                    query_timings_ms.append(run_query_ms)
+                    query_phase_samples_ms.append(dict(run_query_phase_ms))
+                    segment_ray_build_timings_ms.append(run_segment_build_ms)
+                    if segment_ray_build_telemetry != "none":
+                        segment_ray_build_phase_samples_ms.append(dict(run_segment_ray_build_phase_ms))
+                    lowered_ray_count_runs.append(int(run_lowered_ray_count))
+                    lowered_ray_weight_sum_runs.append(int(run_lowered_ray_weight_sum))
+                    hit_weight_sum = int(run_hit_weight_sum)
+                else:
+                    warmup_query_timings_ms.append(run_query_ms)
+                if segment_ray_representation == "unique_weighted":
+                    _release_cupy_cached_blocks()
+                _release_cupy_cached_blocks()
+    ran = time.perf_counter()
+    reduced = time.perf_counter()
+    run_backend_ms = _elapsed_ms(lowered, ran)
+    phase_split_ms = _segmented_phase_split_ms(
+        segment_query_schedule=segment_query_schedule,
+        warmup=warmup,
+        repeat=repeat,
+        measured_query_timings_ms=query_timings_ms,
+        warmup_query_timings_ms=warmup_query_timings_ms,
+        build_once_ms={"prepare_scene": float(prepare_scene_ms)}
+        if segment_query_schedule != "prepared_segment_replay"
+        else {
+            "prepare_scene": float(prepare_scene_ms),
+            "segment_ray_build": _median(segment_ray_build_timings_ms),
+            "prepared_ray_batch_build": _median(prepared_ray_batch_build_timings_ms),
+        },
+        per_run_build_timings_ms={}
+        if segment_query_schedule == "prepared_segment_replay"
+        else {"segment_ray_build": segment_ray_build_timings_ms},
+        run_backend_ms=run_backend_ms,
+    )
+
+    primitive_count = _record_count(triangles)
+    logical_ray_count = int(segment_plan["total_two_hop_rows"])
+    lowered_ray_count = lowered_ray_count_runs[-1] if lowered_ray_count_runs else 0
+    lowered_ray_weight_sum = lowered_ray_weight_sum_runs[-1] if lowered_ray_weight_sum_runs else 0
+    ray_compression_ratio = (
+        float(logical_ray_count) / float(lowered_ray_count) if lowered_ray_count > 0 else None
+    )
+    v2_4_session = describe_rt_graph_v2_4_prepared_session(
+        backend=backend,
+        paper_method="RT-2A1",
+        primitive_count=primitive_count,
+        ray_count=lowered_ray_count,
+        device_column_summary=True,
+        partner=partner,
+    )
+    v2_4_phase_timing = rt.v2_4_phase_timing_metadata(
+        {
+            "query_preparation": lowered - built,
+            "scene_build": prepare_scene_ms / 1000.0,
+            "rt_traversal": _median(query_timings_ms) / 1000.0,
+            "materialization": _median(segment_ray_build_timings_ms) / 1000.0,
+        },
+        promoted_performance_path=True,
+        same_phase_contract_as_basis=True,
+        source="triangle_counting.rt_graph_2a1_segmented_generic_rt",
+    )
+    session_key = rt.make_prepared_session_cache_key(
+        primitive="ray_triangle_weighted_any_hit_sum_3d",
+        backend=normalized_backend,
+        input_fingerprints={
+            "triangles": {"count": primitive_count, "edge_file": edge_file},
+            "rays": {
+                "count": lowered_ray_count,
+                "logical_two_hop_count": logical_ray_count,
+                "edge_file": edge_file,
+                "segmented": True,
+                "segment_max_two_hop_rows": int(segment_max_two_hop_rows),
+                "segment_ray_representation": segment_ray_representation,
+                "segment_query_schedule": segment_query_schedule,
+                "segment_unique_key_builder": segment_unique_key_builder,
+                "segment_ray_column_layout": segment_ray_column_layout,
+                "segment_ray_build_telemetry": segment_ray_build_telemetry,
+            },
+        },
+        parameters={
+            "detail": detail,
+            "summary": True,
+            "segmented": True,
+            "segment_ray_representation": segment_ray_representation,
+            "segment_query_schedule": segment_query_schedule,
+            "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
+        },
+        partner=partner,
+        device="cuda:0",
+    )
+    session_policy = rt.RtdlPreparedSessionResidencyPolicy(
+        cache_key=session_key,
+        cache_enabled=False,
+        lifetime_state="session_retained",
+        reuse_scope="explicit_user_session",
+        invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
+    )
+    segment_ranges = tuple(
+        {
+            "start_edge": int(start_edge),
+            "end_edge": int(end_edge),
+            "two_hop_rows": int(two_hop_rows),
+        }
+        for start_edge, end_edge, two_hop_rows in segment_plan["ranges"][:8]
+    )
+    triangle_count_matches_oracle = (
+        None if oracle_triangle_count is None else int(hit_weight_sum) == int(oracle_triangle_count)
+    )
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "rt_graph_2a1_segmented_generic_rt",
+        "input_source": input_source,
+        "backend": backend,
+        "contract": "rt_graph_2a1_segmented_to_generic_ray_triangle_any_hit",
+        "authors_code_reproduction": False,
+        "same_contract_native_timing": True,
+        "ray_tracing_accelerated": True,
+        "rt_core_accelerated": True,
+        "rt_core_path": "segmented_generic_prepared_triangle_scene_3d_any_hit_weighted_sum",
+        "partner": partner,
+        "partner_summary_contract_used": True,
+        "partner_timing_ms": getattr(contract, "partner_timing_ms", None),
+        "primitive_layout": {
+            "paper_method": "RT-2A1",
+            "primitive_side": "directed 1-hop edges as Triangle3D primitives",
+            "ray_side": (
+                "segmented unique weighted 2-hop relation rays"
+                if segment_ray_representation == "unique_weighted"
+                else "segmented duplicate 2-hop relation rays with unit weights"
+            ),
+            "segment_ray_representation": segment_ray_representation,
+            "segment_query_schedule": segment_query_schedule,
+            "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
+            "triangle_eps": 0.2,
+            "ray_tmax": 0.2,
+            "ray_origin_y": -0.1,
+            "ray_direction": (0.0, 1.0, 0.0),
+            "device_column_lowering": True,
+            "compact_constant_ray_batch": segment_ray_column_layout == "xz_constant_y_direction",
+            "global_two_hop_summary_materialized": False,
+        },
+        "segmentation": {
+            "segment_count": int(segment_plan["segment_count"]),
+            "max_two_hop_rows": int(segment_plan["max_two_hop_rows"]),
+            "max_segment_two_hop_rows": int(segment_plan["max_segment_two_hop_rows"]),
+            "total_two_hop_rows": int(segment_plan["total_two_hop_rows"]),
+            "logical_ray_count": logical_ray_count,
+            "lowered_ray_count": int(lowered_ray_count),
+            "lowered_ray_weight_sum": int(lowered_ray_weight_sum),
+            "ray_compression_ratio": ray_compression_ratio,
+            "segment_ray_representation": segment_ray_representation,
+            "segment_query_schedule": segment_query_schedule,
+            "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
+            "count_column_rows": int(segment_plan["count_column_rows"]),
+            "counts_download_ms": float(segment_plan["counts_download_ms"]),
+            "ranges_preview": segment_ranges,
+            "ranges_truncated": len(segment_plan["ranges"]) > len(segment_ranges),
+        },
+        "primitive_count": primitive_count,
+        "ray_count": int(lowered_ray_count),
+        "logical_ray_count": logical_ray_count,
+        "oracle_triangle_count": oracle_triangle_count,
+        "generic_rt_weighted_triangle_count": int(hit_weight_sum),
+        "triangle_count_matches_oracle": triangle_count_matches_oracle,
+        "timing_ms": {
+            "load_edges": _elapsed_ms(started, loaded),
+            "validate_oracle": _elapsed_ms(loaded, oracle_checked),
+            "build_contract": _elapsed_ms(oracle_checked, built),
+            "build_geometry": _elapsed_ms(built, lowered),
+            "run_backend": run_backend_ms,
+            "prepare_scene_ms": prepare_scene_ms,
+            "segment_ray_build_median_ms": _median(segment_ray_build_timings_ms),
+            "segment_ray_build_total_ms": float(sum(segment_ray_build_timings_ms)),
+            "prepared_ray_batch_build_median_ms": (
+                _median(prepared_ray_batch_build_timings_ms)
+                if prepared_ray_batch_build_timings_ms
+                else 0.0
+            ),
+            "prepared_ray_batch_build_total_ms": float(sum(prepared_ray_batch_build_timings_ms)),
+            "segment_ray_build_phase_summary_ms": _segment_ray_build_phase_summary_ms(
+                segment_ray_build_phase_samples_ms
+            ),
+            "query_median_ms": _median(query_timings_ms),
+            "query_total_ms": float(sum(query_timings_ms)),
+            "query_mean_ms": float(sum(query_timings_ms) / len(query_timings_ms)),
+            "query_min_ms": min(query_timings_ms),
+            "query_max_ms": max(query_timings_ms),
+            "backend_query_phase_summary_ms": _backend_query_phase_summary_ms(query_phase_samples_ms),
+            "query_repeat": repeat,
+            "query_warmup": warmup,
+            "query_measured_runs": len(query_timings_ms),
+            "segment_query_schedule": segment_query_schedule,
+            "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
+            "reduce_hits": _elapsed_ms(ran, reduced),
+            "total": _elapsed_ms(started, reduced),
+        },
+        "phase_split_ms": phase_split_ms,
+        "hit_rows": {
+            "row_count": int(lowered_ray_count),
+            "logical_row_count": logical_ray_count,
+            "materialized": False,
+            "summary_primitive": "segmented_ray_triangle_weighted_any_hit_sum_3d",
+        },
+        "generic_rt_summary": (
+            None
+            if summary_result is None
+            else {
+                "contract": "segmented_ray_triangle_weighted_any_hit_sum_3d",
+                "last_segment_summary": summary_result,
+            }
+        ),
+        "v2_4_prepared_session": v2_4_session,
+        "prepared_session_residency": {
+            "cache_key": session_key.to_metadata(),
+            "policy": session_policy.to_metadata(),
+            "explicit_reuse_helper": "get_or_prepare_explicit_session",
+            "cache_enabled_by_default": False,
+            "prepare_once_query_many_pattern": True,
+            "automatic_partner_selection_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
+        "v2_4_phase_timing": v2_4_phase_timing,
+        "rt_graph_contract": _contract_payload(contract, detail=detail),
+        "claim_boundary": CLAIM_BOUNDARY
+        | {
+            "segmented_two_hop_lowering": True,
+            "global_two_hop_summary_materialized": False,
+            "triangle_count_rt_core_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
+    }
+
+
+def rt_graph_2a1_segmented_scene_generic_rt_payload(
+    *,
+    edge_file: str | None,
+    edge_format: str,
+    backend: str,
+    detail: str,
+    partner: str,
+    warmup: int,
+    repeat: int,
+    segment_max_two_hop_rows: int,
+    scene_max_directed_edges: int,
+    segment_ray_representation: str,
+    segment_query_schedule: str,
+    segment_unique_key_builder: str,
+    segment_ray_column_layout: str,
+    segment_ray_output_builder: str,
+    segment_ray_build_telemetry: str,
+) -> dict[str, Any]:
+    _validate_repetition(warmup=warmup, repeat=repeat)
+    _validate_segment_ray_representation(segment_ray_representation)
+    _validate_segment_query_schedule(segment_query_schedule)
+    _validate_segment_unique_key_builder(segment_unique_key_builder)
+    _validate_segment_ray_column_layout(segment_ray_column_layout)
+    _validate_segment_ray_output_builder(segment_ray_output_builder)
+    _validate_segment_ray_build_telemetry(segment_ray_build_telemetry)
+    normalized_backend = backend.lower().replace("-", "_")
+    if normalized_backend != "optix" or detail != "summary" or partner != "cupy":
+        raise ValueError(
+            "rt_graph_2a1_segmented_scene_generic_rt currently requires "
+            "--backend optix --detail summary --partner cupy"
+        )
+    if segment_ray_column_layout == "xz_constant_y_direction" and segment_query_schedule != "prepared_segment_replay":
+        raise ValueError(
+            "segment_ray_column_layout xz_constant_y_direction requires "
+            "segment_query_schedule prepared_segment_replay"
+        )
+    if segment_ray_output_builder == "numba_fused_decode_project" and (
+        segment_ray_representation != "unique_weighted" or segment_ray_column_layout != "full"
+    ):
+        raise ValueError(
+            "segment_ray_output_builder numba_fused_decode_project requires "
+            "unique_weighted rays and full ray columns"
+        )
+    if edge_file is None or edge_format != "binary":
+        raise ValueError("rt_graph_2a1_segmented_scene_generic_rt requires --edge-file with --edge-format binary")
+    if segment_max_two_hop_rows <= 0:
+        raise ValueError("segment_max_two_hop_rows must be positive")
+    if scene_max_directed_edges <= 0:
+        raise ValueError("scene_max_directed_edges must be positive")
+
+    started = time.perf_counter()
+    input_source = {"kind": "edge_file", "format": "binary", "path": edge_file}
+    loaded = time.perf_counter()
+    contract = build_rt_graph_triangle_summary_contract_cupy_binary(
+        edge_file,
+        materialize_host_columns=False,
+        materialize_two_hop_summary=False,
+    )
+    built = time.perf_counter()
+    scene_plan = _plan_rt_graph_2a1_cupy_source_scene_segments(
+        contract,
+        max_scene_directed_edges=scene_max_directed_edges,
+        max_two_hop_rows=segment_max_two_hop_rows,
+    )
+    planned = time.perf_counter()
+
+    query_timings_ms: list[float] = []
+    query_phase_samples_ms: list[dict[str, float]] = []
+    warmup_query_timings_ms: list[float] = []
+    segment_ray_build_timings_ms: list[float] = []
+    segment_ray_build_phase_samples_ms: list[dict[str, float]] = []
+    prepared_ray_batch_build_timings_ms: list[float] = []
+    triangle_build_timings_ms: list[float] = []
+    prepare_scene_timings_ms: list[float] = []
+    lowered_ray_count_runs: list[int] = []
+    lowered_ray_weight_sum_runs: list[int] = []
+    hit_weight_sum = 0
+    summary_result = None
+    if segment_query_schedule == "prepared_segment_replay":
+        replay_query_ms = [0.0 for _ in range(warmup + repeat)]
+        replay_query_phase_ms = [dict() for _ in range(warmup + repeat)]
+        replay_hit_weight_sums = [0 for _ in range(warmup + repeat)]
+        replay_segment_ray_build_ms = 0.0
+        replay_prepared_ray_batch_build_ms = 0.0
+        replay_triangle_build_ms = 0.0
+        replay_prepare_scene_ms = 0.0
+        replay_lowered_ray_count = 0
+        replay_lowered_ray_weight_sum = 0
+        replay_segment_ray_build_phase_ms: dict[str, float] = {}
+        for scene in scene_plan["scenes"]:
+            triangle_started = time.perf_counter()
+            triangles = _build_rt_graph_2a1_cupy_directed_edge_triangles(
+                contract,
+                start_edge=int(scene["edge_start"]),
+                end_edge=int(scene["edge_end"]),
+            )
+            replay_triangle_build_ms += _elapsed_ms(triangle_started, time.perf_counter())
+            prepare_started = time.perf_counter()
+            prepared_scene = rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangles)
+            replay_prepare_scene_ms += _elapsed_ms(prepare_started, time.perf_counter())
+            with prepared_scene:
+                for start_edge, end_edge, two_hop_rows in scene["ray_ranges"]:
+                    if int(two_hop_rows) <= 0:
+                        continue
+                    segment_build_started = time.perf_counter()
+                    rays, ray_weights = _build_rt_graph_2a1_cupy_segment_rays(
+                        contract,
+                        start_edge=int(start_edge),
+                        end_edge=int(end_edge),
+                        ray_representation=segment_ray_representation,
+                        unique_key_builder=segment_unique_key_builder,
+                        ray_column_layout=segment_ray_column_layout,
+                        ray_output_builder=segment_ray_output_builder,
+                        segment_ray_build_telemetry=segment_ray_build_telemetry,
+                        phase_timing_ms=replay_segment_ray_build_phase_ms
+                        if segment_ray_build_telemetry != "none"
+                        else None,
+                    )
+                    replay_segment_ray_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
+                    replay_lowered_ray_count += _record_count(rays)
+                    replay_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
+                    ray_batch_prepare_started = time.perf_counter()
+                    with _prepare_rt_graph_2a1_segment_ray_batch(
+                        prepared_scene,
+                        rays,
+                        ray_column_layout=segment_ray_column_layout,
+                    ) as ray_batch:
+                        replay_prepared_ray_batch_build_ms += _elapsed_ms(
+                            ray_batch_prepare_started,
+                            time.perf_counter(),
+                        )
+                        for index in range(warmup + repeat):
+                            query_started = time.perf_counter()
+                            summary_result = prepared_scene.ray_batch_any_hit_weighted_sum_device_weights(
+                                ray_batch,
+                                ray_weights,
+                            )
+                            replay_query_ms[index] += _elapsed_ms(query_started, time.perf_counter())
+                            _accumulate_backend_query_phase_ms(replay_query_phase_ms[index], summary_result)
+                            replay_hit_weight_sums[index] += int(summary_result["weighted_hit_sum"])
+                    if segment_ray_representation == "unique_weighted":
+                        del rays, ray_weights
+                        _release_cupy_cached_blocks()
+        for index in range(0, warmup):
+            warmup_query_timings_ms.append(float(replay_query_ms[index]))
+        for index in range(warmup, warmup + repeat):
+            query_timings_ms.append(float(replay_query_ms[index]))
+            query_phase_samples_ms.append(dict(replay_query_phase_ms[index]))
+            segment_ray_build_timings_ms.append(float(replay_segment_ray_build_ms))
+            if segment_ray_build_telemetry != "none":
+                segment_ray_build_phase_samples_ms.append(dict(replay_segment_ray_build_phase_ms))
+            prepared_ray_batch_build_timings_ms.append(float(replay_prepared_ray_batch_build_ms))
+            triangle_build_timings_ms.append(float(replay_triangle_build_ms))
+            prepare_scene_timings_ms.append(float(replay_prepare_scene_ms))
+            lowered_ray_count_runs.append(int(replay_lowered_ray_count))
+            lowered_ray_weight_sum_runs.append(int(replay_lowered_ray_weight_sum))
+            hit_weight_sum = int(replay_hit_weight_sums[index])
+    else:
+        for index in range(warmup + repeat):
+            run_query_ms = 0.0
+            run_query_phase_ms: dict[str, float] = {}
+            run_segment_ray_build_ms = 0.0
+            run_triangle_build_ms = 0.0
+            run_prepare_scene_ms = 0.0
+            run_hit_weight_sum = 0
+            run_lowered_ray_count = 0
+            run_lowered_ray_weight_sum = 0
+            run_segment_ray_build_phase_ms: dict[str, float] = {}
+            for scene in scene_plan["scenes"]:
+                triangle_started = time.perf_counter()
+                triangles = _build_rt_graph_2a1_cupy_directed_edge_triangles(
+                    contract,
+                    start_edge=int(scene["edge_start"]),
+                    end_edge=int(scene["edge_end"]),
+                )
+                run_triangle_build_ms += _elapsed_ms(triangle_started, time.perf_counter())
+                prepare_started = time.perf_counter()
+                prepared_scene = rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangles)
+                run_prepare_scene_ms += _elapsed_ms(prepare_started, time.perf_counter())
+                with prepared_scene:
+                    for start_edge, end_edge, two_hop_rows in scene["ray_ranges"]:
+                        if int(two_hop_rows) <= 0:
+                            continue
+                        segment_build_started = time.perf_counter()
+                        rays, ray_weights = _build_rt_graph_2a1_cupy_segment_rays(
+                            contract,
+                            start_edge=int(start_edge),
+                            end_edge=int(end_edge),
+                            ray_representation=segment_ray_representation,
+                            unique_key_builder=segment_unique_key_builder,
+                            ray_column_layout=segment_ray_column_layout,
+                            ray_output_builder=segment_ray_output_builder,
+                            segment_ray_build_telemetry=segment_ray_build_telemetry,
+                            phase_timing_ms=run_segment_ray_build_phase_ms
+                            if segment_ray_build_telemetry != "none"
+                            else None,
+                        )
+                        run_segment_ray_build_ms += _elapsed_ms(segment_build_started, time.perf_counter())
+                        run_lowered_ray_count += _record_count(rays)
+                        run_lowered_ray_weight_sum += _sum_uint64_like(ray_weights)
+                        query_started = time.perf_counter()
+                        summary_result = prepared_scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
+                        run_query_ms += _elapsed_ms(query_started, time.perf_counter())
+                        _accumulate_backend_query_phase_ms(run_query_phase_ms, summary_result)
+                        run_hit_weight_sum += int(summary_result["weighted_hit_sum"])
+            if index >= warmup:
+                query_timings_ms.append(run_query_ms)
+                query_phase_samples_ms.append(dict(run_query_phase_ms))
+                segment_ray_build_timings_ms.append(run_segment_ray_build_ms)
+                if segment_ray_build_telemetry != "none":
+                    segment_ray_build_phase_samples_ms.append(dict(run_segment_ray_build_phase_ms))
+                triangle_build_timings_ms.append(run_triangle_build_ms)
+                prepare_scene_timings_ms.append(run_prepare_scene_ms)
+                lowered_ray_count_runs.append(int(run_lowered_ray_count))
+                lowered_ray_weight_sum_runs.append(int(run_lowered_ray_weight_sum))
+                hit_weight_sum = int(run_hit_weight_sum)
+            else:
+                warmup_query_timings_ms.append(run_query_ms)
+            if segment_ray_representation == "unique_weighted":
+                _release_cupy_cached_blocks()
+    ran = time.perf_counter()
+    reduced = time.perf_counter()
+    run_backend_ms = _elapsed_ms(planned, ran)
+    if segment_query_schedule == "prepared_segment_replay":
+        phase_build_once_ms = {
+            "triangle_build": _median(triangle_build_timings_ms),
+            "prepare_scene": _median(prepare_scene_timings_ms),
+            "segment_ray_build": _median(segment_ray_build_timings_ms),
+            "prepared_ray_batch_build": _median(prepared_ray_batch_build_timings_ms),
+        }
+        phase_per_run_build_timings_ms: dict[str, list[float]] = {}
+    else:
+        phase_build_once_ms = {}
+        phase_per_run_build_timings_ms = {
+            "triangle_build": triangle_build_timings_ms,
+            "prepare_scene": prepare_scene_timings_ms,
+            "segment_ray_build": segment_ray_build_timings_ms,
+        }
+    phase_split_ms = _segmented_phase_split_ms(
+        segment_query_schedule=segment_query_schedule,
+        warmup=warmup,
+        repeat=repeat,
+        measured_query_timings_ms=query_timings_ms,
+        warmup_query_timings_ms=warmup_query_timings_ms,
+        build_once_ms=phase_build_once_ms,
+        per_run_build_timings_ms=phase_per_run_build_timings_ms,
+        run_backend_ms=run_backend_ms,
+    )
+
+    primitive_count = int(scene_plan["total_directed_edges"])
+    logical_ray_count = int(scene_plan["total_two_hop_rows"])
+    lowered_ray_count = lowered_ray_count_runs[-1] if lowered_ray_count_runs else 0
+    lowered_ray_weight_sum = lowered_ray_weight_sum_runs[-1] if lowered_ray_weight_sum_runs else 0
+    ray_compression_ratio = (
+        float(logical_ray_count) / float(lowered_ray_count) if lowered_ray_count > 0 else None
+    )
+    v2_4_session = describe_rt_graph_v2_4_prepared_session(
+        backend=backend,
+        paper_method="RT-2A1",
+        primitive_count=primitive_count,
+        ray_count=lowered_ray_count,
+        device_column_summary=True,
+        partner=partner,
+    )
+    v2_4_phase_timing = rt.v2_4_phase_timing_metadata(
+        {
+            "query_preparation": planned - built,
+            "scene_build": _median(prepare_scene_timings_ms) / 1000.0,
+            "rt_traversal": _median(query_timings_ms) / 1000.0,
+            "materialization": (
+                _median(segment_ray_build_timings_ms) + _median(triangle_build_timings_ms)
+            )
+            / 1000.0,
+        },
+        promoted_performance_path=True,
+        same_phase_contract_as_basis=True,
+        source="triangle_counting.rt_graph_2a1_segmented_scene_generic_rt",
+    )
+    session_key = rt.make_prepared_session_cache_key(
+        primitive="ray_triangle_weighted_any_hit_sum_3d",
+        backend=normalized_backend,
+        input_fingerprints={
+            "triangles": {
+                "count": primitive_count,
+                "edge_file": edge_file,
+                "segmented_scenes": True,
+                "scene_max_directed_edges": int(scene_max_directed_edges),
+            },
+            "rays": {
+                "count": lowered_ray_count,
+                "logical_two_hop_count": logical_ray_count,
+                "edge_file": edge_file,
+                "segmented": True,
+                "segment_max_two_hop_rows": int(segment_max_two_hop_rows),
+                "segment_ray_representation": segment_ray_representation,
+                "segment_query_schedule": segment_query_schedule,
+                "segment_unique_key_builder": segment_unique_key_builder,
+                "segment_ray_column_layout": segment_ray_column_layout,
+                "segment_ray_output_builder": segment_ray_output_builder,
+                "segment_ray_build_telemetry": segment_ray_build_telemetry,
+            },
+        },
+        parameters={
+            "detail": detail,
+            "summary": True,
+            "segmented_scenes": True,
+            "segment_ray_representation": segment_ray_representation,
+            "segment_query_schedule": segment_query_schedule,
+            "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_output_builder": segment_ray_output_builder,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
+        },
+        partner=partner,
+        device="cuda:0",
+    )
+    session_policy = rt.RtdlPreparedSessionResidencyPolicy(
+        cache_key=session_key,
+        cache_enabled=False,
+        lifetime_state="session_retained",
+        reuse_scope="explicit_user_session",
+        invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
+    )
+    scene_preview = tuple(
+        {
+            "source_start": int(scene["source_start"]),
+            "source_end": int(scene["source_end"]),
+            "edge_start": int(scene["edge_start"]),
+            "edge_end": int(scene["edge_end"]),
+            "directed_edge_count": int(scene["directed_edge_count"]),
+            "two_hop_rows": int(scene["two_hop_rows"]),
+            "ray_segment_count": int(scene["ray_segment_count"]),
+        }
+        for scene in scene_plan["scenes"][:8]
+    )
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "rt_graph_2a1_segmented_scene_generic_rt",
+        "input_source": input_source,
+        "backend": backend,
+        "contract": "rt_graph_2a1_source_range_segmented_scenes_to_generic_ray_triangle_any_hit",
+        "authors_code_reproduction": False,
+        "same_contract_native_timing": True,
+        "ray_tracing_accelerated": True,
+        "rt_core_accelerated": True,
+        "rt_core_path": "source_range_segmented_generic_prepared_triangle_scene_3d_any_hit_weighted_sum",
+        "partner": partner,
+        "partner_summary_contract_used": True,
+        "partner_timing_ms": getattr(contract, "partner_timing_ms", None),
+        "primitive_layout": {
+            "paper_method": "RT-2A1",
+            "primitive_side": "source-range segmented directed 1-hop edges as Triangle3D primitives",
+            "ray_side": (
+                "segmented unique weighted 2-hop relation rays"
+                if segment_ray_representation == "unique_weighted"
+                else "segmented duplicate 2-hop relation rays with unit weights"
+            ),
+            "segment_ray_representation": segment_ray_representation,
+            "segment_query_schedule": segment_query_schedule,
+            "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_output_builder": segment_ray_output_builder,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
+            "triangle_eps": 0.2,
+            "ray_tmax": 0.2,
+            "ray_origin_y": -0.1,
+            "ray_direction": (0.0, 1.0, 0.0),
+            "device_column_lowering": True,
+            "compact_constant_ray_batch": segment_ray_column_layout == "xz_constant_y_direction",
+            "global_two_hop_summary_materialized": False,
+            "global_triangle_scene_materialized": False,
+        },
+        "segmentation": {
+            "scene_count": int(scene_plan["scene_count"]),
+            "ray_segment_count": int(scene_plan["ray_segment_count"]),
+            "max_scene_directed_edges": int(scene_plan["max_scene_directed_edges"]),
+            "max_scene_directed_edge_count": int(scene_plan["max_scene_directed_edge_count"]),
+            "max_scene_two_hop_rows": int(scene_plan["max_scene_two_hop_rows"]),
+            "max_two_hop_rows": int(scene_plan["max_two_hop_rows"]),
+            "total_directed_edges": int(scene_plan["total_directed_edges"]),
+            "total_two_hop_rows": int(scene_plan["total_two_hop_rows"]),
+            "logical_ray_count": logical_ray_count,
+            "lowered_ray_count": int(lowered_ray_count),
+            "lowered_ray_weight_sum": int(lowered_ray_weight_sum),
+            "ray_compression_ratio": ray_compression_ratio,
+            "segment_ray_representation": segment_ray_representation,
+            "segment_query_schedule": segment_query_schedule,
+            "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_output_builder": segment_ray_output_builder,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
+            "counts_download_ms": float(scene_plan["counts_download_ms"]),
+            "scenes_preview": scene_preview,
+            "scenes_truncated": len(scene_plan["scenes"]) > len(scene_preview),
+        },
+        "primitive_count": primitive_count,
+        "ray_count": int(lowered_ray_count),
+        "logical_ray_count": logical_ray_count,
+        "oracle_triangle_count": None,
+        "generic_rt_weighted_triangle_count": int(hit_weight_sum),
+        "triangle_count_matches_oracle": None,
+        "timing_ms": {
+            "load_edges": _elapsed_ms(started, loaded),
+            "build_contract": _elapsed_ms(loaded, built),
+            "plan_segments": _elapsed_ms(built, planned),
+            "run_backend": run_backend_ms,
+            "prepare_scene_median_ms": _median(prepare_scene_timings_ms),
+            "prepare_scene_total_ms": float(sum(prepare_scene_timings_ms)),
+            "triangle_build_median_ms": _median(triangle_build_timings_ms),
+            "triangle_build_total_ms": float(sum(triangle_build_timings_ms)),
+            "segment_ray_build_median_ms": _median(segment_ray_build_timings_ms),
+            "segment_ray_build_total_ms": float(sum(segment_ray_build_timings_ms)),
+            "prepared_ray_batch_build_median_ms": (
+                _median(prepared_ray_batch_build_timings_ms)
+                if prepared_ray_batch_build_timings_ms
+                else 0.0
+            ),
+            "prepared_ray_batch_build_total_ms": float(sum(prepared_ray_batch_build_timings_ms)),
+            "segment_ray_build_phase_summary_ms": _segment_ray_build_phase_summary_ms(
+                segment_ray_build_phase_samples_ms
+            ),
+            "query_median_ms": _median(query_timings_ms),
+            "query_total_ms": float(sum(query_timings_ms)),
+            "query_mean_ms": float(sum(query_timings_ms) / len(query_timings_ms)),
+            "query_min_ms": min(query_timings_ms),
+            "query_max_ms": max(query_timings_ms),
+            "backend_query_phase_summary_ms": _backend_query_phase_summary_ms(query_phase_samples_ms),
+            "query_repeat": repeat,
+            "query_warmup": warmup,
+            "query_measured_runs": len(query_timings_ms),
+            "segment_query_schedule": segment_query_schedule,
+            "segment_unique_key_builder": segment_unique_key_builder,
+            "segment_ray_column_layout": segment_ray_column_layout,
+            "segment_ray_output_builder": segment_ray_output_builder,
+            "segment_ray_build_telemetry": segment_ray_build_telemetry,
+            "reduce_hits": _elapsed_ms(ran, reduced),
+            "total": _elapsed_ms(started, reduced),
+        },
+        "phase_split_ms": phase_split_ms,
+        "hit_rows": {
+            "row_count": int(lowered_ray_count),
+            "logical_row_count": logical_ray_count,
+            "materialized": False,
+            "summary_primitive": "source_range_segmented_ray_triangle_weighted_any_hit_sum_3d",
+        },
+        "generic_rt_summary": (
+            None
+            if summary_result is None
+            else {
+                "contract": "source_range_segmented_ray_triangle_weighted_any_hit_sum_3d",
+                "last_segment_summary": summary_result,
+            }
+        ),
+        "v2_4_prepared_session": v2_4_session,
+        "prepared_session_residency": {
+            "cache_key": session_key.to_metadata(),
+            "policy": session_policy.to_metadata(),
+            "explicit_reuse_helper": "get_or_prepare_explicit_session",
+            "cache_enabled_by_default": False,
+            "prepare_once_query_many_pattern": segment_query_schedule == "prepared_segment_replay",
+            "automatic_partner_selection_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
+        "v2_4_phase_timing": v2_4_phase_timing,
+        "rt_graph_contract": _contract_payload(contract, detail=detail),
+        "claim_boundary": CLAIM_BOUNDARY
+        | {
+            "segmented_two_hop_lowering": True,
+            "segmented_triangle_scene_lowering": True,
+            "global_two_hop_summary_materialized": False,
+            "global_triangle_scene_materialized": False,
+            "triangle_count_rt_core_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
+    }
+
+
+def rt_graph_1a2_generic_rt_payload(
+    *,
+    fixture: str,
+    edge_file: str | None,
+    edge_format: str,
+    backend: str,
+    detail: str,
+    partner: str,
+    warmup: int,
+    repeat: int,
+    rt_graph_copies: int = 1,
+) -> dict[str, Any]:
+    _validate_repetition(warmup=warmup, repeat=repeat)
+    started = time.perf_counter()
+    use_partner_summary = _use_summary_partner(
+        partner=partner,
+        backend=backend,
+        detail=detail,
+        edge_file=edge_file,
+        edge_format=edge_format,
+    )
+    if use_partner_summary:
+        if rt_graph_copies != 1:
+            raise ValueError("--rt-graph-copies applies only to fixture inputs")
+        edges = None
+        input_source = {"kind": "edge_file", "format": "binary", "path": edge_file}
+    else:
+        edges, input_source = _load_rt_graph_edges(
+            fixture=fixture,
+            edge_file=edge_file,
+            edge_format=edge_format,
+            fixture_copies=rt_graph_copies,
+        )
+    loaded = time.perf_counter()
+    if use_partner_summary:
+        contract = _build_rt_graph_triangle_summary_contract_binary(edge_file, partner=partner)
+    else:
+        contract = build_rt_graph_triangle_contract(edges, include_id_ascending_adapter=detail == "full")
+    built = time.perf_counter()
+    normalized_backend = backend.lower().replace("-", "_")
+    device_column_summary = use_partner_summary and normalized_backend == "optix" and detail == "summary"
+    if device_column_summary:
+        triangles, rays = _build_rt_graph_1a2_device_geometry(contract, partner=partner)
+    elif normalized_backend == "optix" and detail == "summary":
+        triangles, rays = _build_rt_graph_1a2_packed_geometry(contract)
+    else:
+        triangles, rays = _build_rt_graph_1a2_geometry(contract)
+    lowered = time.perf_counter()
+    summary_result = None
+    query_timings_ms: list[float] = []
+    prepare_scene_ms: float | None = None
+    if device_column_summary:
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_hit_count_sum_device_columns(rays)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
+        rows = None
+        hit_count_sum = int(summary_result["hit_count_sum"])
+    elif normalized_backend == "optix" and detail == "summary":
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_optix_static_triangle_scene_3d(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_hit_count_sum(rays)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
+        rows = None
+        hit_count_sum = int(summary_result["hit_count_sum"])
+    else:
+        rows = ()
+        for index in range(warmup + repeat):
+            query_started = time.perf_counter()
+            rows = _run_ray_triangle_hit_count_3d(rays, triangles, backend=backend)
+            elapsed = _elapsed_ms(query_started, time.perf_counter())
+            if index >= warmup:
+                query_timings_ms.append(elapsed)
+        hit_count_sum = sum(int(row["hit_count"]) for row in rows)
+    ran = time.perf_counter()
+    reduced = time.perf_counter()
+    max_adj_len = _max_out_degree(contract)
+    ray_tracing_accelerated = normalized_backend in {"embree", "optix"}
+    rt_core_accelerated = normalized_backend == "optix"
+    primitive_count = _record_count(triangles)
+    ray_count = _record_count(rays)
+    v2_4_session = describe_rt_graph_v2_4_prepared_session(
+        backend=backend,
+        paper_method="RT-1A2",
+        primitive_count=primitive_count,
+        ray_count=ray_count,
+        device_column_summary=device_column_summary,
+        partner=partner,
+    )
+    v2_4_phase_timing = rt.v2_4_phase_timing_metadata(
+        {
+            "query_preparation": lowered - built,
+            "scene_build": 0.0 if prepare_scene_ms is None else prepare_scene_ms / 1000.0,
+            "rt_traversal": _median(query_timings_ms) / 1000.0,
+            "materialization": reduced - ran,
+        },
+        promoted_performance_path=normalized_backend in {"embree", "optix"},
+        same_phase_contract_as_basis=True,
+        source="triangle_counting.rt_graph_1a2_generic_rt",
+    )
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "rt_graph_1a2_generic_rt",
+        "input_source": input_source,
+        "backend": backend,
+        "contract": "rt_graph_1a2_mapped_to_generic_ray_triangle_hit_count",
+        "authors_code_reproduction": False,
+        "same_contract_native_timing": backend in {"embree", "optix"},
+        "ray_tracing_accelerated": ray_tracing_accelerated,
+        "rt_core_accelerated": rt_core_accelerated,
+        "rt_core_path": (
+            "generic_prepared_triangle_scene_3d_hit_count_sum"
+            if summary_result is not None and normalized_backend == "optix"
+            else ("generic_ray_triangle_hit_count_rows" if normalized_backend == "optix" else None)
+        ),
+        "partner": partner,
+        "partner_summary_contract_used": use_partner_summary,
+        "partner_timing_ms": getattr(contract, "partner_timing_ms", None),
+        "primitive_layout": {
+            "paper_method": "RT-1A2",
+            "primitive_side": "2-hop relations as Triangle3D primitives",
+            "ray_side": "directed 1-hop edges as Ray3D probes",
+            "axis_offset": [max_adj_len / 2.0, contract.vertex_count / 2.0, contract.vertex_count / 2.0],
+            "triangle_eps": 0.2,
+            "device_column_lowering": device_column_summary,
+        },
+        "primitive_count": primitive_count,
+        "ray_count": ray_count,
+        "rt_graph_fixture_copies": rt_graph_copies,
+        "oracle_triangle_count": contract.triangle_count,
+        "generic_rt_triangle_count": int(hit_count_sum),
+        "triangle_count_matches_oracle": int(hit_count_sum) == contract.triangle_count,
+        "timing_ms": {
+            "load_edges": _elapsed_ms(started, loaded),
+            "build_contract": _elapsed_ms(loaded, built),
+            "build_geometry": _elapsed_ms(built, lowered),
+            "run_backend": _elapsed_ms(lowered, ran),
+            "prepare_scene_ms": prepare_scene_ms,
+            "query_median_ms": _median(query_timings_ms),
+            "query_min_ms": min(query_timings_ms),
+            "query_max_ms": max(query_timings_ms),
+            "query_repeat": repeat,
+            "query_warmup": warmup,
+            "reduce_hits": _elapsed_ms(ran, reduced),
+            "total": _elapsed_ms(started, reduced),
+        },
+        "hit_count_rows": (
+            rows
+            if detail == "full"
+            else {
+                "row_count": _record_count(rays) if rows is None else len(rows),
+                "materialized": rows is not None,
+                "summary_primitive": None if summary_result is None else summary_result["contract"],
+            }
+        ),
+        "generic_rt_summary": summary_result,
+        "v2_4_prepared_session": v2_4_session,
+        "v2_4_phase_timing": v2_4_phase_timing,
+        "rt_graph_contract": _contract_payload(contract, detail=detail),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def _run_optix_ray_triangle_any_hit_weighted_sum_3d(
+    rays: tuple[rt.Ray3D, ...],
+    triangles: tuple[rt.Triangle3D, ...],
+    ray_weights: tuple[int, ...],
+) -> dict[str, object]:
+    with rt.prepare_optix_static_triangle_scene_3d(triangles) as scene:
+        return scene.ray_any_hit_weighted_sum(rays, ray_weights)
+
+
+def _run_optix_ray_triangle_any_hit_weighted_sum_3d_device_columns(
+    ray_columns: dict[str, object],
+    triangle_columns: dict[str, object],
+    ray_weights,
+) -> dict[str, object]:
+    with rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangle_columns) as scene:
+        return scene.ray_any_hit_weighted_sum_device_columns(ray_columns, ray_weights)
+
+
+def _run_optix_ray_triangle_hit_count_sum_3d(
+    rays: tuple[rt.Ray3D, ...],
+    triangles: tuple[rt.Triangle3D, ...],
+) -> dict[str, object]:
+    with rt.prepare_optix_static_triangle_scene_3d(triangles) as scene:
+        return scene.ray_hit_count_sum(rays)
+
+
+def _run_optix_ray_triangle_hit_count_sum_3d_device_columns(
+    ray_columns: dict[str, object],
+    triangle_columns: dict[str, object],
+) -> dict[str, object]:
+    with rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangle_columns) as scene:
+        return scene.ray_hit_count_sum_device_columns(ray_columns)
+
+
+def _run_ray_triangle_hit_count_3d(
+    rays: tuple[rt.Ray3D, ...],
+    triangles: tuple[rt.Triangle3D, ...],
+    *,
+    backend: str,
+) -> tuple[dict[str, int], ...]:
+    normalized = backend.lower().replace("-", "_")
+    if normalized in {"cpu_python_reference", "cpu"}:
+        return tuple(
+            {"ray_id": int(row["ray_id"]), "hit_count": int(row["hit_count"])}
+            for row in rt.ray_triangle_hit_count_cpu(rays, triangles)
+        )
+    if normalized == "embree":
+        rows = rt.run_embree(_generic_ray_triangle_hit_count_3d_kernel, rays=rays, triangles=triangles)
+    elif normalized == "optix":
+        rows = rt.run_optix(_generic_ray_triangle_hit_count_3d_kernel, rays=rays, triangles=triangles)
+    else:
+        raise ValueError("rt_graph_1a2_generic_rt backend must be one of: cpu_python_reference, cpu, embree, optix")
+    return tuple({"ray_id": int(row["ray_id"]), "hit_count": int(row["hit_count"])} for row in rows)
+
+
+def _contract_payload(contract, *, detail: str) -> dict[str, object]:
+    if detail == "full":
+        return contract.to_payload()
+    return {
+        "original_edge_count": _contract_count(contract, "original_edge_count", "original_edges"),
+        "compacted_vertex_count": _contract_count(contract, "compacted_vertex_count", "compacted_vertex_ids"),
+        "directed_vertex_count": contract.vertex_count,
+        "directed_edge_count": contract.directed_edge_count,
+        "triangle_count": contract.triangle_count,
+        "two_hop_ray_count_2a1": len(contract.two_hop_rays_2a1),
+        "duplicate_two_hop_relation_count": contract.duplicate_two_hop_relation_count,
+        "id_ascending_adapter_materialized": contract.id_ascending_adapter_materialized,
+        "id_ascending_edge_count": len(contract.id_ascending_edges),
+        "id_ascending_triangle_count": len(contract.id_ascending_triangle_witnesses),
+        "removed_low_degree_vertex_count": contract.removed_low_degree_vertex_count,
+        "removed_low_degree_edge_count": contract.removed_low_degree_edge_count,
+        "removed_duplicate_or_self_edge_count": contract.removed_duplicate_or_self_edge_count,
+        "partner": getattr(contract, "partner", "python"),
+        "partner_timing_ms": getattr(contract, "partner_timing_ms", None),
+    }
+
+
+def _elapsed_ms(started: float, ended: float) -> float:
+    return (ended - started) * 1000.0
+
+
+def _median(values: list[float]) -> float:
+    return float(statistics.median(values))
+
+
+def _segmented_phase_split_ms(
+    *,
+    segment_query_schedule: str,
+    warmup: int,
+    repeat: int,
+    measured_query_timings_ms: list[float],
+    warmup_query_timings_ms: list[float],
+    build_once_ms: dict[str, float],
+    per_run_build_timings_ms: dict[str, list[float]],
+    run_backend_ms: float,
+) -> dict[str, Any]:
+    measured_query_total_ms = float(sum(measured_query_timings_ms))
+    measured_query_mean_ms = (
+        measured_query_total_ms / float(len(measured_query_timings_ms))
+        if measured_query_timings_ms
+        else 0.0
+    )
+    measured_query_median_ms = _median(measured_query_timings_ms) if measured_query_timings_ms else 0.0
+    build_once_total_ms = float(sum(build_once_ms.values()))
+    per_run_build_median_ms = {
+        name: (_median(values) if values else 0.0)
+        for name, values in per_run_build_timings_ms.items()
+    }
+    per_run_build_median_total_ms = float(sum(per_run_build_median_ms.values()))
+    one_shot_backend_estimate_ms = (
+        build_once_total_ms + per_run_build_median_total_ms + measured_query_median_ms
+    )
+    amortized_build_per_measured_query_ms = (
+        build_once_total_ms / float(repeat) + per_run_build_median_total_ms
+        if repeat > 0
+        else build_once_total_ms + per_run_build_median_total_ms
+    )
+    replay_queries_per_second = (
+        float(len(measured_query_timings_ms)) * 1000.0 / measured_query_total_ms
+        if measured_query_total_ms > 0.0
+        else 0.0
+    )
+    return {
+        "schema_version": "triangle_counting.segmented_phase_split.v1",
+        "segment_query_schedule": segment_query_schedule,
+        "phase_boundary": (
+            "backend phase split only: excludes edge-file load, oracle validation, "
+            "and graph-contract construction unless those costs are already inside "
+            "run_backend_ms"
+        ),
+        "build_once_ms": build_once_ms,
+        "build_once_total_ms": build_once_total_ms,
+        "per_run_build_median_ms": per_run_build_median_ms,
+        "per_run_build_median_total_ms": per_run_build_median_total_ms,
+        "warmup_query_total_ms": float(sum(warmup_query_timings_ms)),
+        "warmup_query_runs": int(warmup),
+        "measured_replay_query_total_ms": measured_query_total_ms,
+        "measured_replay_query_median_ms": measured_query_median_ms,
+        "measured_replay_query_mean_ms": measured_query_mean_ms,
+        "measured_replay_query_min_ms": min(measured_query_timings_ms) if measured_query_timings_ms else 0.0,
+        "measured_replay_query_max_ms": max(measured_query_timings_ms) if measured_query_timings_ms else 0.0,
+        "measured_replay_query_runs": int(len(measured_query_timings_ms)),
+        "configured_repeat": int(repeat),
+        "one_shot_backend_estimate_ms": one_shot_backend_estimate_ms,
+        "amortized_build_per_measured_query_ms": float(amortized_build_per_measured_query_ms),
+        "amortized_backend_per_measured_query_ms": float(
+            amortized_build_per_measured_query_ms + measured_query_mean_ms
+        ),
+        "replay_queries_per_second": replay_queries_per_second,
+        "run_backend_ms": float(run_backend_ms),
+        "legacy_timing_note": (
+            "For prepared_segment_replay, legacy timing_ms segment/scene build totals "
+            "may repeat a build-once value across measured runs. Use this phase_split_ms "
+            "object for actual build-once versus measured replay throughput wording."
+        ),
+    }
+
+
+def _accumulate_backend_query_phase_ms(target: dict[str, float], result: dict[str, object]) -> None:
+    phases = result.get("phase_timing_seconds")
+    if not isinstance(phases, dict):
+        return
+    for name in ("query_pack", "traversal"):
+        value = phases.get(name)
+        if value is not None:
+            target[name] = target.get(name, 0.0) + float(value) * 1000.0
+
+
+def _backend_query_phase_summary_ms(samples: list[dict[str, float]]) -> dict[str, object]:
+    return _phase_summary_ms(
+        samples,
+        schema_version="triangle_counting.backend_query_phase_summary.v1",
+    )
+
+
+def _segment_ray_build_phase_summary_ms(samples: list[dict[str, float]]) -> dict[str, object]:
+    return _phase_summary_ms(
+        samples,
+        schema_version="triangle_counting.segment_ray_build_phase_summary.v1",
+    )
+
+
+def _phase_summary_ms(samples: list[dict[str, float]], *, schema_version: str) -> dict[str, object]:
+    names = sorted({name for sample in samples for name in sample})
+    phases = {
+        name: {
+            "median_ms": _median([float(sample.get(name, 0.0)) for sample in samples]),
+            "total_ms": float(sum(float(sample.get(name, 0.0)) for sample in samples)),
+            "min_ms": min(float(sample.get(name, 0.0)) for sample in samples),
+            "max_ms": max(float(sample.get(name, 0.0)) for sample in samples),
+        }
+        for name in names
+    }
+    return {
+        "schema_version": schema_version,
+        "run_count": len(samples),
+        "phase_names": tuple(names),
+        "phases": phases,
+    }
+
+
+def _finish_segment_ray_build_phase_ms(
+    started: float,
+    phase_name: str,
+    *,
+    phase_timing_ms: dict[str, float] | None,
+    segment_ray_build_telemetry: str,
+    cupy_module,
+) -> float:
+    if segment_ray_build_telemetry == "sync_subphases":
+        cupy_module.cuda.Stream.null.synchronize()
+    ended = time.perf_counter()
+    if phase_timing_ms is not None:
+        phase_timing_ms[phase_name] = phase_timing_ms.get(phase_name, 0.0) + _elapsed_ms(started, ended)
+    return time.perf_counter()
+
+
+def _validate_repetition(*, warmup: int, repeat: int) -> None:
+    if warmup < 0:
+        raise ValueError("warmup must be nonnegative")
+    if repeat <= 0:
+        raise ValueError("repeat must be positive")
+
+
+def _validate_segment_ray_representation(value: str) -> None:
+    if value not in {"duplicate", "unique_weighted"}:
+        raise ValueError("segment_ray_representation must be duplicate or unique_weighted")
+
+
+def _validate_segment_query_schedule(value: str) -> None:
+    if value not in {"per_run", "prepared_segment_replay"}:
+        raise ValueError("segment_query_schedule must be per_run or prepared_segment_replay")
+
+
+def _validate_segment_unique_key_builder(value: str) -> None:
+    if value not in {
+        "cupy_repeat",
+        "numba_direct",
+        "numba_direct_sort_rle",
+        "numba_direct_sort_rle_local_hash_2048",
+    }:
+        raise ValueError(
+            "segment_unique_key_builder must be cupy_repeat, numba_direct, "
+            "numba_direct_sort_rle, or numba_direct_sort_rle_local_hash_2048"
+        )
+
+
+def _validate_segment_ray_column_layout(value: str) -> None:
+    if value not in {"full", "xz_constant_y_direction"}:
+        raise ValueError("segment_ray_column_layout must be full or xz_constant_y_direction")
+
+
+def _validate_segment_ray_output_builder(value: str) -> None:
+    if value not in {"cupy_vectorized", "numba_fused_decode_project"}:
+        raise ValueError(
+            "segment_ray_output_builder must be cupy_vectorized or numba_fused_decode_project"
+        )
+
+
+def _validate_segment_ray_build_telemetry(value: str) -> None:
+    if value not in {"none", "sync_subphases"}:
+        raise ValueError("segment_ray_build_telemetry must be none or sync_subphases")
+
+
+def _unique_counts_sort_rle_cupy(keys, *, cupy_module):
+    cp = cupy_module
+    keys.sort()
+    if int(keys.size) == 0:
+        return keys, cp.empty(0, dtype=cp.int64)
+    boundary = cp.empty(keys.shape, dtype=cp.bool_)
+    boundary[0] = True
+    boundary[1:] = keys[1:] != keys[:-1]
+    run_starts = cp.nonzero(boundary)[0]
+    unique_keys = keys[run_starts]
+    run_ends = cp.empty(int(run_starts.size) + 1, dtype=run_starts.dtype)
+    run_ends[:-1] = run_starts
+    run_ends[-1] = int(keys.size)
+    unique_counts = (run_ends[1:] - run_ends[:-1]).astype(cp.int64, copy=False)
+    return unique_keys, unique_counts
+
+
+def _segment_source_group_ranges_cupy(
+    *,
+    row_offsets,
+    column_indices,
+    directed_src,
+    start_edge: int,
+    end_edge: int,
+    cupy_module,
+):
+    cp = cupy_module
+    if end_edge <= start_edge:
+        empty = cp.empty(0, dtype=cp.int64)
+        return empty, empty, empty
+    edge_src = directed_src[start_edge:end_edge]
+    edge_mid = column_indices[start_edge:end_edge]
+    counts = (row_offsets[edge_mid + 1] - row_offsets[edge_mid]).astype(cp.int64, copy=False)
+    boundary = cp.empty(edge_src.shape, dtype=cp.bool_)
+    boundary[0] = True
+    boundary[1:] = edge_src[1:] != edge_src[:-1]
+    group_starts_local = cp.nonzero(boundary)[0].astype(cp.int64, copy=False)
+    group_ends_local = cp.empty_like(group_starts_local)
+    group_ends_local[:-1] = group_starts_local[1:]
+    group_ends_local[-1] = int(edge_src.size)
+    prefix = cp.empty(int(counts.size) + 1, dtype=cp.int64)
+    prefix[0] = 0
+    prefix[1:] = cp.cumsum(counts)
+    group_counts = prefix[group_ends_local] - prefix[group_starts_local]
+    nonempty = group_counts > 0
+    return (
+        group_starts_local[nonempty] + int(start_edge),
+        group_ends_local[nonempty] + int(start_edge),
+        group_counts[nonempty],
+    )
+
+
+def _unique_counts_hybrid_local_hash_2048_cupy(
+    contract,
+    *,
+    row_offsets,
+    column_indices,
+    directed_src,
+    start_edge: int,
+    end_edge: int,
+    phase_started: float,
+    phase_timing_ms: dict[str, float] | None,
+    segment_ray_build_telemetry: str,
+    cupy_module,
+):
+    cp = cupy_module
+    group_starts, group_ends, group_counts = _segment_source_group_ranges_cupy(
+        row_offsets=row_offsets,
+        column_indices=column_indices,
+        directed_src=directed_src,
+        start_edge=start_edge,
+        end_edge=end_edge,
+        cupy_module=cp,
+    )
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "hybrid_source_group_plan",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
+    if int(group_counts.size) == 0:
+        empty_i64 = cp.empty(0, dtype=cp.int64)
+        return empty_i64, empty_i64, phase_started
+
+    small_mask = group_counts <= _RT_GRAPH_2A1_LOCAL_HASH_BOUND
+    large_mask = ~small_mask
+    small_starts = group_starts[small_mask]
+    small_ends = group_ends[small_mask]
+    large_starts = group_starts[large_mask]
+    large_ends = group_ends[large_mask]
+    large_counts = group_counts[large_mask]
+
+    from numba import cuda
+
+    threads_per_block = 256
+    small_group_count = int(small_starts.size)
+    if small_group_count:
+        local_counts = cp.empty(small_group_count, dtype=cp.int64)
+        local_overflow = cp.zeros(small_group_count, dtype=cp.int32)
+        count_kernel = _get_rt_graph_2a1_local_hash_count_numba_kernel(cuda)
+        count_kernel[small_group_count, threads_per_block](
+            row_offsets,
+            column_indices,
+            directed_src,
+            small_starts,
+            small_ends,
+            local_counts,
+            local_overflow,
+        )
+        cuda.synchronize()
+        local_offsets = cp.empty(small_group_count + 1, dtype=cp.int64)
+        local_offsets[0] = 0
+        local_offsets[1:] = cp.cumsum(local_counts)
+        local_unique_total = int(local_offsets[-1].get())
+        local_keys = cp.empty(local_unique_total, dtype=cp.int64)
+        local_weights = cp.empty(local_unique_total, dtype=cp.int64)
+        emit_kernel = _get_rt_graph_2a1_local_hash_emit_numba_kernel(cuda)
+        emit_kernel[small_group_count, threads_per_block](
+            row_offsets,
+            column_indices,
+            directed_src,
+            small_starts,
+            small_ends,
+            local_offsets,
+            int(contract.vertex_count),
+            local_keys,
+            local_weights,
+            local_overflow,
+        )
+        cuda.synchronize()
+        if int(local_overflow.sum().get()):
+            raise RuntimeError("local hash overflow in numba_direct_sort_rle_local_hash_2048")
+    else:
+        local_keys = cp.empty(0, dtype=cp.int64)
+        local_weights = cp.empty(0, dtype=cp.int64)
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "hybrid_local_hash_counts",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
+
+    large_group_count = int(large_starts.size)
+    if large_group_count:
+        large_offsets = cp.empty(large_group_count + 1, dtype=cp.int64)
+        large_offsets[0] = 0
+        large_offsets[1:] = cp.cumsum(large_counts)
+        large_duplicate_count = int(large_offsets[-1].get())
+        large_keys = cp.empty(large_duplicate_count, dtype=cp.int64)
+        fill_kernel = _get_rt_graph_2a1_fill_source_group_keys_numba_kernel(cuda)
+        fill_kernel[large_group_count, threads_per_block](
+            row_offsets,
+            column_indices,
+            directed_src,
+            large_starts,
+            large_ends,
+            large_offsets,
+            int(contract.vertex_count),
+            large_keys,
+        )
+        cuda.synchronize()
+        large_unique_keys, large_unique_counts = _unique_counts_sort_rle_cupy(large_keys, cupy_module=cp)
+    else:
+        large_unique_keys = cp.empty(0, dtype=cp.int64)
+        large_unique_counts = cp.empty(0, dtype=cp.int64)
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "hybrid_large_sort_rle_counts",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
+
+    if int(local_keys.size) and int(large_unique_keys.size):
+        unique_keys = cp.concatenate((local_keys, large_unique_keys))
+        unique_counts = cp.concatenate((local_weights, large_unique_counts))
+    elif int(local_keys.size):
+        unique_keys = local_keys
+        unique_counts = local_weights
+    else:
+        unique_keys = large_unique_keys
+        unique_counts = large_unique_counts
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "hybrid_unique_concat",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
+    return unique_keys, unique_counts, phase_started
+
+
+def _record_count(records) -> int:
+    if isinstance(records, dict) and "ids" in records:
+        return int(records["ids"].size)
+    count = getattr(records, "count", None)
+    if count is not None and not callable(count):
+        return int(count)
+    return len(records)
+
+
+def _contract_count(contract, count_attr: str, records_attr: str) -> int:
+    if hasattr(contract, count_attr):
+        return int(getattr(contract, count_attr))
+    return len(getattr(contract, records_attr))
+
+
+def _sum_uint64_like(values) -> int:
+    size = getattr(values, "size", None)
+    if size is not None and int(size) == 0:
+        return 0
+    total = values.sum() if hasattr(values, "sum") else sum(values)
+    if hasattr(total, "get"):
+        return int(total.get())
+    if hasattr(total, "copy_to_host"):
+        return int(total.copy_to_host())
+    return int(total)
+
+
+def _release_cupy_cached_blocks() -> None:
+    try:
+        cp = __import__("cupy")
+        cp.cuda.Stream.null.synchronize()
+        cp.get_default_memory_pool().free_all_blocks()
+        cp.get_default_pinned_memory_pool().free_all_blocks()
+    except Exception:
+        return
+
+
+def _use_summary_partner(
+    *,
+    partner: str,
+    backend: str,
+    detail: str,
+    edge_file: str | None,
+    edge_format: str,
+) -> bool:
+    if partner == "none":
+        return False
+    if partner not in {"cupy", "numba"}:
+        raise ValueError(f"unsupported partner: {partner}")
+    normalized_backend = backend.lower().replace("-", "_")
+    if normalized_backend != "optix" or detail != "summary":
+        raise ValueError(f"--partner {partner} currently supports only --backend optix --detail summary")
+    if edge_file is None or edge_format != "binary":
+        raise ValueError(f"--partner {partner} currently requires --edge-file with --edge-format binary")
+    return True
+
+
+def _build_rt_graph_triangle_summary_contract_binary(edge_file: str, *, partner: str):
+    if partner == "cupy":
+        return build_rt_graph_triangle_summary_contract_cupy_binary(edge_file, materialize_host_columns=False)
+    if partner == "numba":
+        return build_rt_graph_triangle_summary_contract_numba_binary(edge_file)
+    raise ValueError(f"unsupported summary partner: {partner}")
+
+
+def _require_cupy_device_arrays(contract) -> dict[str, object]:
+    device_arrays = getattr(contract, "device_arrays", None)
+    if not isinstance(device_arrays, dict):
+        raise ValueError("CuPy summary contract is missing partner-resident device arrays")
+    required = {
+        "row_offsets",
+        "column_indices",
+        "directed_src",
+        "two_hop_src",
+        "two_hop_dst",
+        "two_hop_weights",
+    }
+    missing = sorted(required - set(device_arrays))
+    if missing:
+        raise ValueError(f"CuPy summary contract missing device arrays: {', '.join(missing)}")
+    return device_arrays
+
+
+def _require_summary_device_arrays(contract, *, partner: str) -> dict[str, object]:
+    if partner == "cupy":
+        return _require_cupy_device_arrays(contract)
+    device_arrays = getattr(contract, "device_arrays", None)
+    if not isinstance(device_arrays, dict):
+        raise ValueError(f"{partner} summary contract is missing partner-resident device arrays")
+    required = {
+        "row_offsets",
+        "column_indices",
+        "directed_src",
+        "two_hop_src",
+        "two_hop_dst",
+        "two_hop_weights",
+    }
+    missing = sorted(required - set(device_arrays))
+    if missing:
+        raise ValueError(f"{partner} summary contract missing device arrays: {', '.join(missing)}")
+    return device_arrays
+
+
+def _require_directed_csr_device_arrays(contract, *, partner: str) -> dict[str, object]:
+    device_arrays = getattr(contract, "device_arrays", None)
+    if not isinstance(device_arrays, dict):
+        raise ValueError(f"{partner} contract is missing partner-resident directed CSR arrays")
+    required = {
+        "row_offsets",
+        "column_indices",
+        "directed_src",
+    }
+    missing = sorted(required - set(device_arrays))
+    if missing:
+        raise ValueError(f"{partner} contract missing directed CSR arrays: {', '.join(missing)}")
+    return device_arrays
+
+
+def _build_rt_graph_1a2_device_geometry(contract, *, partner: str = "cupy"):
+    if partner == "numba":
+        return _build_rt_graph_1a2_numba_device_geometry(contract)
+    if partner != "cupy":
+        raise ValueError(f"unsupported summary partner: {partner}")
+    cp = __import__("cupy")
+
+    device_arrays = _require_summary_device_arrays(contract, partner=partner)
+    row_offsets = device_arrays["row_offsets"]
+    column_indices = device_arrays["column_indices"]
+    out_degrees = row_offsets[1:] - row_offsets[:-1]
+    max_adj_len = int(out_degrees.max().get()) if int(out_degrees.size) else 0
+    axis_offset_x = max_adj_len / 2.0
+    axis_offset_y = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+
+    edge_count = int(column_indices.size)
+    if edge_count:
+        edge_src = cp.repeat(cp.arange(contract.vertex_count, dtype=cp.int64), out_degrees)
+        edge_starts = cp.repeat(row_offsets[:-1], out_degrees)
+        edge_local_index = cp.arange(edge_count, dtype=cp.int64) - edge_starts
+        edge_mid = column_indices
+        two_hop_counts = out_degrees[edge_mid]
+        nonempty = two_hop_counts > 0
+        active_counts = two_hop_counts[nonempty]
+        primitive_count = int(active_counts.sum().get()) if int(active_counts.size) else 0
+        if primitive_count:
+            center_x = cp.repeat(edge_local_index[nonempty], active_counts).astype(cp.float64) - axis_offset_x
+            center_y = cp.repeat(edge_src[nonempty], active_counts).astype(cp.float64) - axis_offset_y
+            starts = row_offsets[edge_mid[nonempty]]
+            repeated_starts = cp.repeat(starts, active_counts)
+            repeated_prefix = cp.repeat(cp.cumsum(active_counts) - active_counts, active_counts)
+            dst_index = repeated_starts + (cp.arange(primitive_count, dtype=cp.int64) - repeated_prefix)
+            center_z = column_indices[dst_index].astype(cp.float64) - axis_offset_z
+        else:
+            center_x = cp.empty(0, dtype=cp.float64)
+            center_y = cp.empty(0, dtype=cp.float64)
+            center_z = cp.empty(0, dtype=cp.float64)
+    else:
+        primitive_count = 0
+        center_x = cp.empty(0, dtype=cp.float64)
+        center_y = cp.empty(0, dtype=cp.float64)
+        center_z = cp.empty(0, dtype=cp.float64)
+
+    triangles = {
+        "ids": cp.arange(primitive_count, dtype=cp.uint32),
+        "x0": center_x,
+        "y0": center_y,
+        "z0": center_z + eps,
+        "x1": center_x,
+        "y1": center_y - eps,
+        "z1": center_z - eps,
+        "x2": center_x,
+        "y2": center_y + eps,
+        "z2": center_z - eps,
+    }
+
+    ray_count = int(column_indices.size)
+    if ray_count:
+        ray_src = device_arrays["directed_src"]
+        ray_dst = column_indices
+        tmax = out_degrees[ray_src].astype(cp.float64)
+        oy = ray_src.astype(cp.float64) - axis_offset_y
+        oz = ray_dst.astype(cp.float64) - axis_offset_z
+    else:
+        tmax = cp.empty(0, dtype=cp.float64)
+        oy = cp.empty(0, dtype=cp.float64)
+        oz = cp.empty(0, dtype=cp.float64)
+    rays = {
+        "ids": cp.arange(ray_count, dtype=cp.uint32),
+        "ox": cp.full(ray_count, -0.5 - axis_offset_x, dtype=cp.float64),
+        "oy": oy,
+        "oz": oz,
+        "dx": cp.ones(ray_count, dtype=cp.float64),
+        "dy": cp.zeros(ray_count, dtype=cp.float64),
+        "dz": cp.zeros(ray_count, dtype=cp.float64),
+        "tmax": tmax,
+    }
+    return triangles, rays
+
+
+def _build_rt_graph_2a1_cupy_directed_edge_triangles(
+    contract,
+    *,
+    start_edge: int = 0,
+    end_edge: int | None = None,
+):
+    cp = __import__("cupy")
+
+    device_arrays = _require_directed_csr_device_arrays(contract, partner="cupy")
+    directed_src = device_arrays["directed_src"][start_edge:end_edge]
+    directed_dst = device_arrays["column_indices"][start_edge:end_edge]
+    axis_offset_x = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+
+    edge_count = int(directed_dst.size)
+    if edge_count:
+        center_x = directed_src.astype(cp.float64) - axis_offset_x
+        center_z = directed_dst.astype(cp.float64) - axis_offset_z
+    else:
+        center_x = cp.empty(0, dtype=cp.float64)
+        center_z = cp.empty(0, dtype=cp.float64)
+    zero = cp.zeros(edge_count, dtype=cp.float64)
+    return {
+        "ids": cp.arange(edge_count, dtype=cp.uint32),
+        "x0": center_x,
+        "y0": zero,
+        "z0": center_z + eps,
+        "x1": center_x - eps,
+        "y1": zero,
+        "z1": center_z - eps,
+        "x2": center_x + eps,
+        "y2": zero,
+        "z2": center_z - eps,
+    }
+
+
+def _segment_edge_ranges_from_counts(
+    counts: object,
+    *,
+    max_two_hop_rows: int,
+) -> tuple[tuple[int, int, int], ...]:
+    if max_two_hop_rows <= 0:
+        raise ValueError("max_two_hop_rows must be positive")
+    np = __import__("numpy")
+    counts_array = np.asarray(counts, dtype=np.int64)
+    if counts_array.ndim != 1:
+        counts_array = counts_array.reshape(-1)
+    if counts_array.size == 0:
+        return ()
+    if bool(np.any(counts_array < 0)):
+        raise ValueError("two-hop segment counts must be nonnegative")
+
+    counts_prefix = np.empty(counts_array.size + 1, dtype=np.int64)
+    counts_prefix[0] = 0
+    counts_prefix[1:] = np.cumsum(counts_array, dtype=np.int64)
+
+    ranges: list[tuple[int, int, int]] = []
+    start = 0
+    total_count = int(counts_array.size)
+    while start < total_count:
+        target = int(counts_prefix[start]) + int(max_two_hop_rows)
+        end = int(np.searchsorted(counts_prefix, target, side="right") - 1)
+        if end <= start:
+            end = start + 1
+        if end > total_count:
+            end = total_count
+        segment_rows = int(counts_prefix[end] - counts_prefix[start])
+        if segment_rows == 0 and end >= total_count:
+            break
+        ranges.append((start, end, segment_rows))
+        start = end
+    return tuple(ranges)
+
+
+def _plan_rt_graph_2a1_cupy_segments(contract, *, max_two_hop_rows: int) -> dict[str, object]:
+    cp = __import__("cupy")
+
+    device_arrays = _require_directed_csr_device_arrays(contract, partner="cupy")
+    row_offsets = device_arrays["row_offsets"]
+    column_indices = device_arrays["column_indices"]
+    counts_device = device_arrays.get("two_hop_counts_per_directed_edge")
+    if counts_device is None:
+        out_degrees = row_offsets[1:] - row_offsets[:-1]
+        counts_device = out_degrees[column_indices].astype(cp.int64, copy=False)
+
+    cp.cuda.Stream.null.synchronize()
+    started = time.perf_counter()
+    counts_host = cp.asnumpy(counts_device.astype(cp.int64, copy=False))
+    cp.cuda.Stream.null.synchronize()
+    counts_download_ms = _elapsed_ms(started, time.perf_counter())
+    ranges = _segment_edge_ranges_from_counts(counts_host, max_two_hop_rows=max_two_hop_rows)
+    total_two_hop_rows = int(counts_host.sum()) if counts_host.size else 0
+    max_segment_rows = max((two_hop_rows for _, _, two_hop_rows in ranges), default=0)
+    return {
+        "ranges": ranges,
+        "segment_count": len(ranges),
+        "max_two_hop_rows": int(max_two_hop_rows),
+        "total_two_hop_rows": total_two_hop_rows,
+        "max_segment_two_hop_rows": int(max_segment_rows),
+        "counts_download_ms": counts_download_ms,
+        "count_column_rows": int(counts_host.size),
+    }
+
+
+def _plan_rt_graph_2a1_cupy_source_scene_segments(
+    contract,
+    *,
+    max_scene_directed_edges: int,
+    max_two_hop_rows: int,
+) -> dict[str, object]:
+    if max_scene_directed_edges <= 0:
+        raise ValueError("max_scene_directed_edges must be positive")
+    if max_two_hop_rows <= 0:
+        raise ValueError("max_two_hop_rows must be positive")
+
+    cp = __import__("cupy")
+    np = __import__("numpy")
+
+    device_arrays = _require_directed_csr_device_arrays(contract, partner="cupy")
+    row_offsets = device_arrays["row_offsets"]
+    column_indices = device_arrays["column_indices"]
+    counts_device = device_arrays.get("two_hop_counts_per_directed_edge")
+    if counts_device is None:
+        out_degrees = row_offsets[1:] - row_offsets[:-1]
+        counts_device = out_degrees[column_indices].astype(cp.int64, copy=False)
+
+    cp.cuda.Stream.null.synchronize()
+    started = time.perf_counter()
+    row_offsets_host = cp.asnumpy(row_offsets.astype(cp.int64, copy=False))
+    counts_host = cp.asnumpy(counts_device.astype(cp.int64, copy=False))
+    cp.cuda.Stream.null.synchronize()
+    counts_download_ms = _elapsed_ms(started, time.perf_counter())
+
+    counts_prefix = np.empty(counts_host.size + 1, dtype=np.int64)
+    counts_prefix[0] = 0
+    if counts_host.size:
+        counts_prefix[1:] = np.cumsum(counts_host, dtype=np.int64)
+
+    scenes: list[dict[str, object]] = []
+    source_start = 0
+    edge_start = int(row_offsets_host[0]) if row_offsets_host.size else 0
+    running_edges = 0
+    running_two_hop = 0
+    for source in range(max(0, row_offsets_host.size - 1)):
+        source_edge_start = int(row_offsets_host[source])
+        source_edge_end = int(row_offsets_host[source + 1])
+        source_edges = source_edge_end - source_edge_start
+        source_two_hop = int(counts_prefix[source_edge_end] - counts_prefix[source_edge_start])
+        if source > source_start and running_edges + source_edges > max_scene_directed_edges:
+            scenes.append(
+                _make_rt_graph_2a1_scene_plan_row(
+                    source_start=source_start,
+                    source_end=source,
+                    edge_start=edge_start,
+                    edge_end=source_edge_start,
+                    two_hop_rows=running_two_hop,
+                    counts_host=counts_host,
+                    max_two_hop_rows=max_two_hop_rows,
+                )
+            )
+            source_start = source
+            edge_start = source_edge_start
+            running_edges = 0
+            running_two_hop = 0
+        running_edges += source_edges
+        running_two_hop += source_two_hop
+        if running_edges >= max_scene_directed_edges and running_edges > 0:
+            scenes.append(
+                _make_rt_graph_2a1_scene_plan_row(
+                    source_start=source_start,
+                    source_end=source + 1,
+                    edge_start=edge_start,
+                    edge_end=source_edge_end,
+                    two_hop_rows=running_two_hop,
+                    counts_host=counts_host,
+                    max_two_hop_rows=max_two_hop_rows,
+                )
+            )
+            source_start = source + 1
+            edge_start = source_edge_end
+            running_edges = 0
+            running_two_hop = 0
+    final_edge_end = int(row_offsets_host[-1]) if row_offsets_host.size else 0
+    if source_start < max(0, row_offsets_host.size - 1) and running_edges > 0:
+        scenes.append(
+            _make_rt_graph_2a1_scene_plan_row(
+                source_start=source_start,
+                source_end=row_offsets_host.size - 1,
+                edge_start=edge_start,
+                edge_end=final_edge_end,
+                two_hop_rows=running_two_hop,
+                counts_host=counts_host,
+                max_two_hop_rows=max_two_hop_rows,
+            )
+        )
+
+    return {
+        "scenes": tuple(scenes),
+        "scene_count": len(scenes),
+        "max_scene_directed_edges": int(max_scene_directed_edges),
+        "max_two_hop_rows": int(max_two_hop_rows),
+        "total_directed_edges": int(column_indices.size),
+        "total_two_hop_rows": int(counts_prefix[-1]) if counts_prefix.size else 0,
+        "max_scene_directed_edge_count": max((int(scene["directed_edge_count"]) for scene in scenes), default=0),
+        "max_scene_two_hop_rows": max((int(scene["two_hop_rows"]) for scene in scenes), default=0),
+        "ray_segment_count": sum(int(scene["ray_segment_count"]) for scene in scenes),
+        "counts_download_ms": counts_download_ms,
+    }
+
+
+def _make_rt_graph_2a1_scene_plan_row(
+    *,
+    source_start: int,
+    source_end: int,
+    edge_start: int,
+    edge_end: int,
+    two_hop_rows: int,
+    counts_host,
+    max_two_hop_rows: int,
+) -> dict[str, object]:
+    ray_ranges = tuple(
+        (edge_start + start, edge_start + end, two_hop_count)
+        for start, end, two_hop_count in _segment_edge_ranges_from_counts(
+            counts_host[edge_start:edge_end],
+            max_two_hop_rows=max_two_hop_rows,
+        )
+    )
+    return {
+        "source_start": int(source_start),
+        "source_end": int(source_end),
+        "edge_start": int(edge_start),
+        "edge_end": int(edge_end),
+        "directed_edge_count": int(edge_end - edge_start),
+        "two_hop_rows": int(two_hop_rows),
+        "ray_segment_count": len(ray_ranges),
+        "ray_ranges": ray_ranges,
+    }
+
+
+def _build_rt_graph_2a1_cupy_segment_rays(
+    contract,
+    *,
+    start_edge: int,
+    end_edge: int,
+    ray_representation: str = "duplicate",
+    unique_key_builder: str = "cupy_repeat",
+    ray_column_layout: str = "full",
+    ray_output_builder: str = "cupy_vectorized",
+    segment_ray_build_telemetry: str = "none",
+    phase_timing_ms: dict[str, float] | None = None,
+):
+    _validate_segment_ray_representation(ray_representation)
+    _validate_segment_unique_key_builder(unique_key_builder)
+    _validate_segment_ray_column_layout(ray_column_layout)
+    _validate_segment_ray_output_builder(ray_output_builder)
+    _validate_segment_ray_build_telemetry(segment_ray_build_telemetry)
+    if ray_output_builder == "numba_fused_decode_project" and (
+        ray_representation != "unique_weighted" or ray_column_layout != "full"
+    ):
+        raise ValueError(
+            "ray_output_builder numba_fused_decode_project requires unique_weighted rays and full ray columns"
+        )
+    cp = __import__("cupy")
+    if segment_ray_build_telemetry == "sync_subphases":
+        cp.cuda.Stream.null.synchronize()
+
+    phase_started = time.perf_counter()
+    device_arrays = _require_directed_csr_device_arrays(contract, partner="cupy")
+    row_offsets = device_arrays["row_offsets"]
+    column_indices = device_arrays["column_indices"]
+    directed_src = device_arrays["directed_src"]
+    out_degrees = row_offsets[1:] - row_offsets[:-1]
+    edge_mid = column_indices[start_edge:end_edge]
+    edge_src = directed_src[start_edge:end_edge]
+    counts = out_degrees[edge_mid].astype(cp.int64, copy=False)
+    nonempty = counts > 0
+    counts = counts[nonempty]
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "filter_nonempty_counts",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
+    if int(counts.size) == 0:
+        empty_f64 = cp.empty(0, dtype=cp.float64)
+        empty_u32 = cp.empty(0, dtype=cp.uint32)
+        if ray_column_layout == "xz_constant_y_direction":
+            rays = {"ids": empty_u32, "ox": empty_f64, "oz": empty_f64}
+        else:
+            rays = {
+                "ids": empty_u32,
+                "ox": empty_f64,
+                "oy": empty_f64,
+                "oz": empty_f64,
+                "dx": empty_f64,
+                "dy": empty_f64,
+                "dz": empty_f64,
+                "tmax": empty_f64,
+            }
+        _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "empty_ray_alloc",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
+        return rays, cp.empty(0, dtype=cp.uint64)
+
+    edge_mid = edge_mid[nonempty]
+    edge_src = edge_src[nonempty].astype(cp.int64, copy=False)
+    starts = row_offsets[edge_mid]
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "edge_slice_starts",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
+    ray_count = int(counts.sum().get())
+    phase_started = _finish_segment_ray_build_phase_ms(
+        phase_started,
+        "duplicate_ray_count_sum",
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
+    if (
+        ray_representation == "unique_weighted"
+        and unique_key_builder == "numba_direct_sort_rle_local_hash_2048"
+    ):
+        unique_keys, unique_counts, phase_started = _unique_counts_hybrid_local_hash_2048_cupy(
+            contract,
+            row_offsets=row_offsets,
+            column_indices=column_indices,
+            directed_src=directed_src,
+            start_edge=start_edge,
+            end_edge=end_edge,
+            phase_started=phase_started,
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
+        key_base = int(contract.vertex_count)
+        ray_src = (unique_keys // key_base).astype(cp.int64, copy=False)
+        ray_dst = (unique_keys - ray_src * key_base).astype(cp.int64, copy=False)
+        ray_weights = unique_counts.astype(cp.uint64, copy=False)
+        ray_count = int(unique_keys.size)
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "hybrid_unique_decode_weights",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
+    elif ray_representation == "unique_weighted" and unique_key_builder in {
+        "numba_direct",
+        "numba_direct_sort_rle",
+    }:
+        key_base = int(contract.vertex_count)
+        output_offsets = cp.cumsum(counts) - counts
+        two_hop_keys = cp.empty(ray_count, dtype=cp.int64)
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "numba_offsets_key_alloc",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
+        from numba import cuda
+
+        kernel = _get_rt_graph_2a1_fill_unique_keys_numba_kernel(cuda)
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "numba_kernel_lookup",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
+        threads_per_block = 128
+        blocks = (int(counts.size) + threads_per_block - 1) // threads_per_block
+        kernel[blocks, threads_per_block](
+            starts,
+            counts,
+            output_offsets,
+            edge_src,
+            column_indices,
+            key_base,
+            two_hop_keys,
+            int(counts.size),
+        )
+        cuda.synchronize()
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "numba_key_fill",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
+        if unique_key_builder == "numba_direct_sort_rle":
+            unique_keys, unique_counts = _unique_counts_sort_rle_cupy(two_hop_keys, cupy_module=cp)
+            unique_phase_name = "cupy_sort_rle_counts"
+        else:
+            unique_keys, unique_counts = cp.unique(two_hop_keys, return_counts=True)
+            unique_phase_name = "cupy_unique_counts"
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            unique_phase_name,
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
+        ray_src = (unique_keys // key_base).astype(cp.int64, copy=False)
+        ray_dst = (unique_keys - ray_src * key_base).astype(cp.int64, copy=False)
+        ray_weights = unique_counts.astype(cp.uint64, copy=False)
+        ray_count = int(unique_keys.size)
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "unique_decode_weights",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
+    else:
+        repeated_starts = cp.repeat(starts, counts)
+        repeated_prefix = cp.repeat(cp.cumsum(counts) - counts, counts)
+        dst_index = repeated_starts + (cp.arange(ray_count, dtype=cp.int64) - repeated_prefix)
+        ray_src = cp.repeat(edge_src, counts)
+        ray_dst = column_indices[dst_index]
+        phase_started = _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "cupy_repeat_expand",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
+        if ray_representation == "unique_weighted":
+            key_base = int(contract.vertex_count)
+            two_hop_keys = ray_src.astype(cp.int64, copy=False) * key_base + ray_dst.astype(cp.int64, copy=False)
+            unique_keys, unique_counts = cp.unique(two_hop_keys, return_counts=True)
+            phase_started = _finish_segment_ray_build_phase_ms(
+                phase_started,
+                "cupy_unique_counts",
+                phase_timing_ms=phase_timing_ms,
+                segment_ray_build_telemetry=segment_ray_build_telemetry,
+                cupy_module=cp,
+            )
+            ray_src = (unique_keys // key_base).astype(cp.int64, copy=False)
+            ray_dst = (unique_keys - ray_src * key_base).astype(cp.int64, copy=False)
+            ray_weights = unique_counts.astype(cp.uint64, copy=False)
+            ray_count = int(unique_keys.size)
+            phase_started = _finish_segment_ray_build_phase_ms(
+                phase_started,
+                "unique_decode_weights",
+                phase_timing_ms=phase_timing_ms,
+                segment_ray_build_telemetry=segment_ray_build_telemetry,
+                cupy_module=cp,
+            )
+        else:
+            ray_weights = cp.ones(ray_count, dtype=cp.uint64)
+            phase_started = _finish_segment_ray_build_phase_ms(
+                phase_started,
+                "unit_weights",
+                phase_timing_ms=phase_timing_ms,
+                segment_ray_build_telemetry=segment_ray_build_telemetry,
+                cupy_module=cp,
+            )
+    axis_offset_x = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+
+    if ray_output_builder == "numba_fused_decode_project":
+        ids = cp.empty(ray_count, dtype=cp.uint32)
+        ox = cp.empty(ray_count, dtype=cp.float64)
+        oy = cp.empty(ray_count, dtype=cp.float64)
+        oz = cp.empty(ray_count, dtype=cp.float64)
+        dx = cp.empty(ray_count, dtype=cp.float64)
+        dy = cp.empty(ray_count, dtype=cp.float64)
+        dz = cp.empty(ray_count, dtype=cp.float64)
+        tmax = cp.empty(ray_count, dtype=cp.float64)
+        ray_weights = cp.empty(ray_count, dtype=cp.uint64)
+        from numba import cuda
+
+        kernel = _get_rt_graph_2a1_fill_weighted_rays_numba_kernel(cuda)
+        threads_per_block = 128
+        blocks = (int(ray_count) + threads_per_block - 1) // threads_per_block
+        kernel[blocks, threads_per_block](
+            unique_keys,
+            unique_counts,
+            ids,
+            ox,
+            oy,
+            oz,
+            dx,
+            dy,
+            dz,
+            tmax,
+            ray_weights,
+            int(contract.vertex_count),
+            float(axis_offset_x),
+            float(axis_offset_z),
+            int(ray_count),
+        )
+        cuda.synchronize()
+        _finish_segment_ray_build_phase_ms(
+            phase_started,
+            "numba_fused_decode_project",
+            phase_timing_ms=phase_timing_ms,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            cupy_module=cp,
+        )
+        return {
+            "ids": ids,
+            "ox": ox,
+            "oy": oy,
+            "oz": oz,
+            "dx": dx,
+            "dy": dy,
+            "dz": dz,
+            "tmax": tmax,
+        }, ray_weights
+
+    if ray_column_layout == "xz_constant_y_direction":
+        rays = {
+            "ids": cp.arange(ray_count, dtype=cp.uint32),
+            "ox": ray_src.astype(cp.float64) - axis_offset_x,
+            "oz": ray_dst.astype(cp.float64) - axis_offset_z,
+        }
+        phase_name = "ray_column_projection_compact"
+    else:
+        rays = {
+            "ids": cp.arange(ray_count, dtype=cp.uint32),
+            "ox": ray_src.astype(cp.float64) - axis_offset_x,
+            "oy": cp.full(ray_count, -0.1, dtype=cp.float64),
+            "oz": ray_dst.astype(cp.float64) - axis_offset_z,
+            "dx": cp.zeros(ray_count, dtype=cp.float64),
+            "dy": cp.ones(ray_count, dtype=cp.float64),
+            "dz": cp.zeros(ray_count, dtype=cp.float64),
+            "tmax": cp.full(ray_count, 0.2, dtype=cp.float64),
+        }
+        phase_name = "ray_column_projection_full"
+    _finish_segment_ray_build_phase_ms(
+        phase_started,
+        phase_name,
+        phase_timing_ms=phase_timing_ms,
+        segment_ray_build_telemetry=segment_ray_build_telemetry,
+        cupy_module=cp,
+    )
+    return rays, ray_weights
+
+
+def _prepare_rt_graph_2a1_segment_ray_batch(scene, rays, *, ray_column_layout: str):
+    _validate_segment_ray_column_layout(ray_column_layout)
+    if ray_column_layout == "xz_constant_y_direction":
+        return scene.prepare_ray_batch_device_xz_constant_y_direction(
+            rays,
+            origin_y=-0.1,
+            direction=(0.0, 1.0, 0.0),
+            tmax=0.2,
+        )
+    return scene.prepare_ray_batch_device_columns(rays)
+
+
+_RT_GRAPH_1A2_FILL_TRIANGLES_NUMBA_KERNEL = None
+_RT_GRAPH_1A2_FILL_RAYS_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_FILL_TRIANGLES_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_FILL_RAYS_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_FILL_UNIQUE_KEYS_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_FILL_WEIGHTED_RAYS_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_LOCAL_HASH_COUNT_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_LOCAL_HASH_EMIT_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_FILL_SOURCE_GROUP_KEYS_NUMBA_KERNEL = None
+_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY = 4096
+_RT_GRAPH_2A1_LOCAL_HASH_BOUND = 2048
+
+
+def _get_rt_graph_1a2_fill_triangles_numba_kernel(cuda):
+    global _RT_GRAPH_1A2_FILL_TRIANGLES_NUMBA_KERNEL
+    if _RT_GRAPH_1A2_FILL_TRIANGLES_NUMBA_KERNEL is None:
+
+        @cuda.jit
+        def _fill(
+            row_offsets,
+            column_indices,
+            directed_src,
+            primitive_offsets,
+            ids,
+            x0,
+            y0,
+            z0,
+            x1,
+            y1,
+            z1,
+            x2,
+            y2,
+            z2,
+            axis_offset_x,
+            axis_offset_y,
+            axis_offset_z,
+            eps,
+            edge_count,
+        ):
+            edge_idx = cuda.grid(1)
+            if edge_idx >= edge_count:
+                return
+            src = directed_src[edge_idx]
+            mid = column_indices[edge_idx]
+            start = row_offsets[mid]
+            end = row_offsets[mid + 1]
+            base = primitive_offsets[edge_idx]
+            local_edge_index = edge_idx - row_offsets[src]
+            for neighbor_index in range(start, end):
+                out = base + (neighbor_index - start)
+                dst = column_indices[neighbor_index]
+                center_x = float(local_edge_index) - axis_offset_x
+                center_y = float(src) - axis_offset_y
+                center_z = float(dst) - axis_offset_z
+                ids[out] = out
+                x0[out] = center_x
+                y0[out] = center_y
+                z0[out] = center_z + eps
+                x1[out] = center_x
+                y1[out] = center_y - eps
+                z1[out] = center_z - eps
+                x2[out] = center_x
+                y2[out] = center_y + eps
+                z2[out] = center_z - eps
+
+        _RT_GRAPH_1A2_FILL_TRIANGLES_NUMBA_KERNEL = _fill
+    return _RT_GRAPH_1A2_FILL_TRIANGLES_NUMBA_KERNEL
+
+
+def _get_rt_graph_2a1_fill_unique_keys_numba_kernel(cuda):
+    global _RT_GRAPH_2A1_FILL_UNIQUE_KEYS_NUMBA_KERNEL
+    if _RT_GRAPH_2A1_FILL_UNIQUE_KEYS_NUMBA_KERNEL is None:
+
+        @cuda.jit
+        def _fill(starts, counts, output_offsets, edge_src, column_indices, key_base, keys, edge_count):
+            edge_idx = cuda.grid(1)
+            if edge_idx >= edge_count:
+                return
+            src = edge_src[edge_idx]
+            start = starts[edge_idx]
+            count = counts[edge_idx]
+            out = output_offsets[edge_idx]
+            for local_idx in range(count):
+                dst = column_indices[start + local_idx]
+                keys[out + local_idx] = src * key_base + dst
+
+        _RT_GRAPH_2A1_FILL_UNIQUE_KEYS_NUMBA_KERNEL = _fill
+    return _RT_GRAPH_2A1_FILL_UNIQUE_KEYS_NUMBA_KERNEL
+
+
+def _get_rt_graph_2a1_local_hash_count_numba_kernel(cuda):
+    global _RT_GRAPH_2A1_LOCAL_HASH_COUNT_NUMBA_KERNEL
+    if _RT_GRAPH_2A1_LOCAL_HASH_COUNT_NUMBA_KERNEL is None:
+        from numba import int32
+
+        @cuda.jit
+        def _count(row_offsets, column_indices, directed_src, group_starts, group_ends, unique_counts, overflow):
+            keys = cuda.shared.array(_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, int32)
+            counts = cuda.shared.array(_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, int32)
+            total = cuda.shared.array(1, int32)
+            tid = cuda.threadIdx.x
+            group_id = cuda.blockIdx.x
+            for idx in range(tid, _RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, cuda.blockDim.x):
+                keys[idx] = -1
+                counts[idx] = 0
+            if tid == 0:
+                total[0] = 0
+            cuda.syncthreads()
+
+            start_edge = group_starts[group_id]
+            end_edge = group_ends[group_id]
+            for edge_idx in range(start_edge, end_edge):
+                mid = column_indices[edge_idx]
+                dst_start = row_offsets[mid]
+                dst_end = row_offsets[mid + 1]
+                for pos in range(dst_start + tid, dst_end, cuda.blockDim.x):
+                    dst = int32(column_indices[pos])
+                    slot = (dst * 1103515245 + 12345) & (_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY - 1)
+                    guard = 0
+                    while True:
+                        old = cuda.atomic.cas(keys, slot, -1, dst)
+                        if old == -1 or old == dst:
+                            cuda.atomic.add(counts, slot, 1)
+                            break
+                        slot = (slot + 1) & (_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY - 1)
+                        guard += 1
+                        if guard >= _RT_GRAPH_2A1_LOCAL_HASH_CAPACITY:
+                            overflow[group_id] = 1
+                            break
+
+            cuda.syncthreads()
+            for idx in range(tid, _RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, cuda.blockDim.x):
+                if keys[idx] != -1:
+                    cuda.atomic.add(total, 0, 1)
+            cuda.syncthreads()
+            if tid == 0:
+                unique_counts[group_id] = total[0]
+
+        _RT_GRAPH_2A1_LOCAL_HASH_COUNT_NUMBA_KERNEL = _count
+    return _RT_GRAPH_2A1_LOCAL_HASH_COUNT_NUMBA_KERNEL
+
+
+def _get_rt_graph_2a1_local_hash_emit_numba_kernel(cuda):
+    global _RT_GRAPH_2A1_LOCAL_HASH_EMIT_NUMBA_KERNEL
+    if _RT_GRAPH_2A1_LOCAL_HASH_EMIT_NUMBA_KERNEL is None:
+        from numba import int32
+
+        @cuda.jit
+        def _emit(
+            row_offsets,
+            column_indices,
+            directed_src,
+            group_starts,
+            group_ends,
+            out_offsets,
+            key_base,
+            unique_keys,
+            unique_weights,
+            overflow,
+        ):
+            keys = cuda.shared.array(_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, int32)
+            counts = cuda.shared.array(_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, int32)
+            write = cuda.shared.array(1, int32)
+            tid = cuda.threadIdx.x
+            group_id = cuda.blockIdx.x
+            for idx in range(tid, _RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, cuda.blockDim.x):
+                keys[idx] = -1
+                counts[idx] = 0
+            if tid == 0:
+                write[0] = 0
+            cuda.syncthreads()
+
+            start_edge = group_starts[group_id]
+            end_edge = group_ends[group_id]
+            src = directed_src[start_edge]
+            for edge_idx in range(start_edge, end_edge):
+                mid = column_indices[edge_idx]
+                dst_start = row_offsets[mid]
+                dst_end = row_offsets[mid + 1]
+                for pos in range(dst_start + tid, dst_end, cuda.blockDim.x):
+                    dst = int32(column_indices[pos])
+                    slot = (dst * 1103515245 + 12345) & (_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY - 1)
+                    guard = 0
+                    while True:
+                        old = cuda.atomic.cas(keys, slot, -1, dst)
+                        if old == -1 or old == dst:
+                            cuda.atomic.add(counts, slot, 1)
+                            break
+                        slot = (slot + 1) & (_RT_GRAPH_2A1_LOCAL_HASH_CAPACITY - 1)
+                        guard += 1
+                        if guard >= _RT_GRAPH_2A1_LOCAL_HASH_CAPACITY:
+                            overflow[group_id] = 1
+                            break
+
+            cuda.syncthreads()
+            base = out_offsets[group_id]
+            for idx in range(tid, _RT_GRAPH_2A1_LOCAL_HASH_CAPACITY, cuda.blockDim.x):
+                if keys[idx] != -1:
+                    pos = cuda.atomic.add(write, 0, 1)
+                    unique_keys[base + pos] = src * key_base + keys[idx]
+                    unique_weights[base + pos] = counts[idx]
+
+        _RT_GRAPH_2A1_LOCAL_HASH_EMIT_NUMBA_KERNEL = _emit
+    return _RT_GRAPH_2A1_LOCAL_HASH_EMIT_NUMBA_KERNEL
+
+
+def _get_rt_graph_2a1_fill_source_group_keys_numba_kernel(cuda):
+    global _RT_GRAPH_2A1_FILL_SOURCE_GROUP_KEYS_NUMBA_KERNEL
+    if _RT_GRAPH_2A1_FILL_SOURCE_GROUP_KEYS_NUMBA_KERNEL is None:
+
+        @cuda.jit
+        def _fill(row_offsets, column_indices, directed_src, group_starts, group_ends, row_offsets_out, key_base, out_keys):
+            tid = cuda.threadIdx.x
+            group_id = cuda.blockIdx.x
+            start_edge = group_starts[group_id]
+            end_edge = group_ends[group_id]
+            src = directed_src[start_edge]
+            out_base = row_offsets_out[group_id]
+            local_base = 0
+            for edge_idx in range(start_edge, end_edge):
+                mid = column_indices[edge_idx]
+                dst_start = row_offsets[mid]
+                dst_end = row_offsets[mid + 1]
+                for pos in range(dst_start + tid, dst_end, cuda.blockDim.x):
+                    out_keys[out_base + local_base + (pos - dst_start)] = src * key_base + column_indices[pos]
+                local_base += dst_end - dst_start
+
+        _RT_GRAPH_2A1_FILL_SOURCE_GROUP_KEYS_NUMBA_KERNEL = _fill
+    return _RT_GRAPH_2A1_FILL_SOURCE_GROUP_KEYS_NUMBA_KERNEL
+
+
+def _get_rt_graph_2a1_fill_weighted_rays_numba_kernel(cuda):
+    global _RT_GRAPH_2A1_FILL_WEIGHTED_RAYS_NUMBA_KERNEL
+    if _RT_GRAPH_2A1_FILL_WEIGHTED_RAYS_NUMBA_KERNEL is None:
+
+        @cuda.jit
+        def _fill(
+            unique_keys,
+            unique_counts,
+            ids,
+            ox,
+            oy,
+            oz,
+            dx,
+            dy,
+            dz,
+            tmax,
+            ray_weights,
+            key_base,
+            axis_offset_x,
+            axis_offset_z,
+            ray_count,
+        ):
+            ray_idx = cuda.grid(1)
+            if ray_idx >= ray_count:
+                return
+            key = unique_keys[ray_idx]
+            src = key // key_base
+            dst = key - src * key_base
+            ids[ray_idx] = ray_idx
+            ox[ray_idx] = float(src) - axis_offset_x
+            oy[ray_idx] = -0.1
+            oz[ray_idx] = float(dst) - axis_offset_z
+            dx[ray_idx] = 0.0
+            dy[ray_idx] = 1.0
+            dz[ray_idx] = 0.0
+            tmax[ray_idx] = 0.2
+            ray_weights[ray_idx] = unique_counts[ray_idx]
+
+        _RT_GRAPH_2A1_FILL_WEIGHTED_RAYS_NUMBA_KERNEL = _fill
+    return _RT_GRAPH_2A1_FILL_WEIGHTED_RAYS_NUMBA_KERNEL
+
+
+def _get_rt_graph_1a2_fill_rays_numba_kernel(cuda):
+    global _RT_GRAPH_1A2_FILL_RAYS_NUMBA_KERNEL
+    if _RT_GRAPH_1A2_FILL_RAYS_NUMBA_KERNEL is None:
+
+        @cuda.jit
+        def _fill(
+            row_offsets,
+            column_indices,
+            directed_src,
+            ids,
+            ox,
+            oy,
+            oz,
+            dx,
+            dy,
+            dz,
+            tmax,
+            axis_offset_x,
+            axis_offset_y,
+            axis_offset_z,
+            ray_origin_x,
+            edge_count,
+        ):
+            edge_idx = cuda.grid(1)
+            if edge_idx >= edge_count:
+                return
+            src = directed_src[edge_idx]
+            dst = column_indices[edge_idx]
+            ids[edge_idx] = edge_idx
+            ox[edge_idx] = ray_origin_x
+            oy[edge_idx] = float(src) - axis_offset_y
+            oz[edge_idx] = float(dst) - axis_offset_z
+            dx[edge_idx] = 1.0
+            dy[edge_idx] = 0.0
+            dz[edge_idx] = 0.0
+            tmax[edge_idx] = float(row_offsets[src + 1] - row_offsets[src])
+
+        _RT_GRAPH_1A2_FILL_RAYS_NUMBA_KERNEL = _fill
+    return _RT_GRAPH_1A2_FILL_RAYS_NUMBA_KERNEL
+
+
+def _get_rt_graph_2a1_fill_triangles_numba_kernel(cuda):
+    global _RT_GRAPH_2A1_FILL_TRIANGLES_NUMBA_KERNEL
+    if _RT_GRAPH_2A1_FILL_TRIANGLES_NUMBA_KERNEL is None:
+
+        @cuda.jit
+        def _fill(
+            directed_src,
+            directed_dst,
+            ids,
+            x0,
+            y0,
+            z0,
+            x1,
+            y1,
+            z1,
+            x2,
+            y2,
+            z2,
+            axis_offset_x,
+            axis_offset_z,
+            eps,
+            edge_count,
+        ):
+            edge_idx = cuda.grid(1)
+            if edge_idx >= edge_count:
+                return
+            center_x = float(directed_src[edge_idx]) - axis_offset_x
+            center_z = float(directed_dst[edge_idx]) - axis_offset_z
+            ids[edge_idx] = edge_idx
+            x0[edge_idx] = center_x
+            y0[edge_idx] = 0.0
+            z0[edge_idx] = center_z + eps
+            x1[edge_idx] = center_x - eps
+            y1[edge_idx] = 0.0
+            z1[edge_idx] = center_z - eps
+            x2[edge_idx] = center_x + eps
+            y2[edge_idx] = 0.0
+            z2[edge_idx] = center_z - eps
+
+        _RT_GRAPH_2A1_FILL_TRIANGLES_NUMBA_KERNEL = _fill
+    return _RT_GRAPH_2A1_FILL_TRIANGLES_NUMBA_KERNEL
+
+
+def _get_rt_graph_2a1_fill_rays_numba_kernel(cuda):
+    global _RT_GRAPH_2A1_FILL_RAYS_NUMBA_KERNEL
+    if _RT_GRAPH_2A1_FILL_RAYS_NUMBA_KERNEL is None:
+
+        @cuda.jit
+        def _fill(
+            two_hop_src,
+            two_hop_dst,
+            ids,
+            ox,
+            oy,
+            oz,
+            dx,
+            dy,
+            dz,
+            tmax,
+            axis_offset_x,
+            axis_offset_z,
+            ray_count,
+        ):
+            ray_idx = cuda.grid(1)
+            if ray_idx >= ray_count:
+                return
+            ids[ray_idx] = ray_idx
+            ox[ray_idx] = float(two_hop_src[ray_idx]) - axis_offset_x
+            oy[ray_idx] = -0.1
+            oz[ray_idx] = float(two_hop_dst[ray_idx]) - axis_offset_z
+            dx[ray_idx] = 0.0
+            dy[ray_idx] = 1.0
+            dz[ray_idx] = 0.0
+            tmax[ray_idx] = 0.2
+
+        _RT_GRAPH_2A1_FILL_RAYS_NUMBA_KERNEL = _fill
+    return _RT_GRAPH_2A1_FILL_RAYS_NUMBA_KERNEL
+
+
+def _launch_1d_numba_kernel(kernel, item_count: int, *args) -> None:
+    if item_count <= 0:
+        return
+    threads = 256
+    blocks = (int(item_count) + threads - 1) // threads
+    kernel[blocks, threads](*args)
+
+
+def _build_rt_graph_1a2_numba_device_geometry(contract):
+    import numpy as np
+    from numba import cuda
+
+    row_offsets = np.asarray(contract.row_offsets, dtype=np.int64)
+    column_indices = np.asarray(contract.column_indices, dtype=np.int64)
+    out_degrees = row_offsets[1:] - row_offsets[:-1]
+    max_adj_len = int(out_degrees.max()) if out_degrees.size else 0
+    axis_offset_x = max_adj_len / 2.0
+    axis_offset_y = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+    device_arrays = _require_summary_device_arrays(contract, partner="numba")
+    row_offsets_device = device_arrays["row_offsets"]
+    column_indices_device = device_arrays["column_indices"]
+    directed_src_device = device_arrays["directed_src"]
+
+    edge_count = int(column_indices.size)
+    if edge_count:
+        two_hop_counts = out_degrees[column_indices]
+        primitive_offsets_host = np.empty(edge_count, dtype=np.int64)
+        primitive_offsets_host[0] = 0
+        if edge_count > 1:
+            primitive_offsets_host[1:] = np.cumsum(two_hop_counts[:-1], dtype=np.int64)
+        primitive_count = int(two_hop_counts.sum(dtype=np.int64))
+        primitive_offsets = cuda.to_device(primitive_offsets_host)
+    else:
+        primitive_count = 0
+        primitive_offsets = cuda.to_device(np.empty(0, dtype=np.int64))
+
+    triangles = {
+        "ids": cuda.device_array(primitive_count, dtype=np.uint32),
+        "x0": cuda.device_array(primitive_count, dtype=np.float64),
+        "y0": cuda.device_array(primitive_count, dtype=np.float64),
+        "z0": cuda.device_array(primitive_count, dtype=np.float64),
+        "x1": cuda.device_array(primitive_count, dtype=np.float64),
+        "y1": cuda.device_array(primitive_count, dtype=np.float64),
+        "z1": cuda.device_array(primitive_count, dtype=np.float64),
+        "x2": cuda.device_array(primitive_count, dtype=np.float64),
+        "y2": cuda.device_array(primitive_count, dtype=np.float64),
+        "z2": cuda.device_array(primitive_count, dtype=np.float64),
+    }
+    _launch_1d_numba_kernel(
+        _get_rt_graph_1a2_fill_triangles_numba_kernel(cuda),
+        edge_count,
+        row_offsets_device,
+        column_indices_device,
+        directed_src_device,
+        primitive_offsets,
+        triangles["ids"],
+        triangles["x0"],
+        triangles["y0"],
+        triangles["z0"],
+        triangles["x1"],
+        triangles["y1"],
+        triangles["z1"],
+        triangles["x2"],
+        triangles["y2"],
+        triangles["z2"],
+        float(axis_offset_x),
+        float(axis_offset_y),
+        float(axis_offset_z),
+        float(eps),
+        edge_count,
+    )
+
+    ray_count = edge_count
+    rays = {
+        "ids": cuda.device_array(ray_count, dtype=np.uint32),
+        "ox": cuda.device_array(ray_count, dtype=np.float64),
+        "oy": cuda.device_array(ray_count, dtype=np.float64),
+        "oz": cuda.device_array(ray_count, dtype=np.float64),
+        "dx": cuda.device_array(ray_count, dtype=np.float64),
+        "dy": cuda.device_array(ray_count, dtype=np.float64),
+        "dz": cuda.device_array(ray_count, dtype=np.float64),
+        "tmax": cuda.device_array(ray_count, dtype=np.float64),
+    }
+    _launch_1d_numba_kernel(
+        _get_rt_graph_1a2_fill_rays_numba_kernel(cuda),
+        ray_count,
+        row_offsets_device,
+        column_indices_device,
+        directed_src_device,
+        rays["ids"],
+        rays["ox"],
+        rays["oy"],
+        rays["oz"],
+        rays["dx"],
+        rays["dy"],
+        rays["dz"],
+        rays["tmax"],
+        float(axis_offset_x),
+        float(axis_offset_y),
+        float(axis_offset_z),
+        float(-0.5 - axis_offset_x),
+        ray_count,
+    )
+    cuda.synchronize()
+    return triangles, rays
+
+
+def _build_rt_graph_1a2_geometry(contract) -> tuple[tuple[rt.Triangle3D, ...], tuple[rt.Ray3D, ...]]:
+    max_adj_len = _max_out_degree(contract)
+    axis_offset_x = max_adj_len / 2.0
+    axis_offset_y = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+    triangles: list[rt.Triangle3D] = []
+    primitive_id = 0
+    for src in range(contract.vertex_count):
+        neighbors = _contract_neighbors(contract, src)
+        for local_index, mid in enumerate(neighbors):
+            for dst in _contract_neighbors(contract, mid):
+                center_x = float(local_index) - axis_offset_x
+                center_y = float(src) - axis_offset_y
+                center_z = float(dst) - axis_offset_z
+                triangles.append(
+                    rt.Triangle3D(
+                        id=primitive_id,
+                        x0=center_x,
+                        y0=center_y,
+                        z0=center_z + eps,
+                        x1=center_x,
+                        y1=center_y - eps,
+                        z1=center_z - eps,
+                        x2=center_x,
+                        y2=center_y + eps,
+                        z2=center_z - eps,
+                    )
+                )
+                primitive_id += 1
+
+    rays: list[rt.Ray3D] = []
+    for ray_id, (src, dst) in enumerate(contract.directed_edges):
+        rays.append(
+            rt.Ray3D(
+                id=ray_id,
+                ox=-0.5 - axis_offset_x,
+                oy=float(src) - axis_offset_y,
+                oz=float(dst) - axis_offset_z,
+                dx=1.0,
+                dy=0.0,
+                dz=0.0,
+                tmax=float(len(_contract_neighbors(contract, src))),
+            )
+        )
+    return tuple(triangles), tuple(rays)
+
+
+def _build_rt_graph_1a2_packed_geometry(contract):
+    import numpy as np
+
+    row_offsets = np.asarray(contract.row_offsets, dtype=np.int64)
+    column_indices = np.asarray(contract.column_indices, dtype=np.int64)
+    out_degrees = np.diff(row_offsets)
+    max_adj_len = int(out_degrees.max()) if out_degrees.size else 0
+    axis_offset_x = max_adj_len / 2.0
+    axis_offset_y = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+
+    edge_count = len(column_indices)
+    if edge_count:
+        edge_src = np.repeat(np.arange(contract.vertex_count, dtype=np.int64), out_degrees)
+        edge_starts = np.repeat(row_offsets[:-1], out_degrees)
+        edge_local_index = np.arange(edge_count, dtype=np.int64) - edge_starts
+        edge_mid = column_indices
+        two_hop_counts = out_degrees[edge_mid]
+        nonempty = two_hop_counts > 0
+        two_hop_counts = two_hop_counts[nonempty]
+        if two_hop_counts.size:
+            primitive_count = int(two_hop_counts.sum())
+            center_x = np.repeat(edge_local_index[nonempty], two_hop_counts).astype(np.float64) - axis_offset_x
+            center_y = np.repeat(edge_src[nonempty], two_hop_counts).astype(np.float64) - axis_offset_y
+            starts = row_offsets[edge_mid[nonempty]]
+            repeated_starts = np.repeat(starts, two_hop_counts)
+            repeated_prefix = np.repeat(np.cumsum(two_hop_counts) - two_hop_counts, two_hop_counts)
+            dst_index = repeated_starts + (np.arange(primitive_count, dtype=np.int64) - repeated_prefix)
+            center_z = column_indices[dst_index].astype(np.float64) - axis_offset_z
+        else:
+            primitive_count = 0
+            center_x = np.empty(0, dtype=np.float64)
+            center_y = np.empty(0, dtype=np.float64)
+            center_z = np.empty(0, dtype=np.float64)
+    else:
+        primitive_count = 0
+        center_x = np.empty(0, dtype=np.float64)
+        center_y = np.empty(0, dtype=np.float64)
+        center_z = np.empty(0, dtype=np.float64)
+
+    triangles = rt.pack_triangles_3d_from_arrays(
+        ids=np.arange(primitive_count, dtype=np.uint32),
+        x0=center_x,
+        y0=center_y,
+        z0=center_z + eps,
+        x1=center_x,
+        y1=center_y - eps,
+        z1=center_z - eps,
+        x2=center_x,
+        y2=center_y + eps,
+        z2=center_z - eps,
+    )
+
+    edge_count = len(contract.directed_edges)
+    ray_ids = np.arange(edge_count, dtype=np.uint32)
+    if edge_count:
+        edges = np.asarray(contract.directed_edges, dtype=np.int64)
+        src_i = edges[:, 0]
+        dst_i = edges[:, 1]
+        tmax = out_degrees[src_i].astype(np.float64)
+        src = src_i.astype(np.float64)
+        dst = dst_i.astype(np.float64)
+        oy = src - axis_offset_y
+        oz = dst - axis_offset_z
+    else:
+        oy = np.empty(0, dtype=np.float64)
+        oz = np.empty(0, dtype=np.float64)
+        tmax = np.empty(0, dtype=np.float64)
+    rays = rt.pack_rays_3d_from_arrays(
+        ids=ray_ids,
+        ox=np.full(edge_count, -0.5 - axis_offset_x, dtype=np.float64),
+        oy=oy,
+        oz=oz,
+        dx=np.ones(edge_count, dtype=np.float64),
+        dy=np.zeros(edge_count, dtype=np.float64),
+        dz=np.zeros(edge_count, dtype=np.float64),
+        tmax=tmax,
+    )
+    return triangles, rays
+
+
+def _build_rt_graph_2a1_device_geometry(contract, *, partner: str = "cupy"):
+    if partner == "numba":
+        return _build_rt_graph_2a1_numba_device_geometry(contract)
+    if partner != "cupy":
+        raise ValueError(f"unsupported summary partner: {partner}")
+    cp = __import__("cupy")
+
+    device_arrays = _require_summary_device_arrays(contract, partner=partner)
+    directed_src = device_arrays["directed_src"]
+    directed_dst = device_arrays["column_indices"]
+    axis_offset_x = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+
+    edge_count = int(directed_dst.size)
+    if edge_count:
+        center_x = directed_src.astype(cp.float64) - axis_offset_x
+        center_z = directed_dst.astype(cp.float64) - axis_offset_z
+    else:
+        center_x = cp.empty(0, dtype=cp.float64)
+        center_z = cp.empty(0, dtype=cp.float64)
+    zero = cp.zeros(edge_count, dtype=cp.float64)
+    triangles = {
+        "ids": cp.arange(edge_count, dtype=cp.uint32),
+        "x0": center_x,
+        "y0": zero,
+        "z0": center_z + eps,
+        "x1": center_x - eps,
+        "y1": zero,
+        "z1": center_z - eps,
+        "x2": center_x + eps,
+        "y2": zero,
+        "z2": center_z - eps,
+    }
+
+    ray_src = device_arrays["two_hop_src"]
+    ray_dst = device_arrays["two_hop_dst"]
+    ray_count = int(ray_src.size)
+    if ray_count:
+        ox = ray_src.astype(cp.float64) - axis_offset_x
+        oz = ray_dst.astype(cp.float64) - axis_offset_z
+    else:
+        ox = cp.empty(0, dtype=cp.float64)
+        oz = cp.empty(0, dtype=cp.float64)
+    rays = {
+        "ids": cp.arange(ray_count, dtype=cp.uint32),
+        "ox": ox,
+        "oy": cp.full(ray_count, -0.1, dtype=cp.float64),
+        "oz": oz,
+        "dx": cp.zeros(ray_count, dtype=cp.float64),
+        "dy": cp.ones(ray_count, dtype=cp.float64),
+        "dz": cp.zeros(ray_count, dtype=cp.float64),
+        "tmax": cp.full(ray_count, 0.2, dtype=cp.float64),
+    }
+    ray_weights = device_arrays["two_hop_weights"].astype(cp.uint64, copy=False)
+    return triangles, rays, ray_weights
+
+
+def _build_rt_graph_2a1_numba_device_geometry(contract):
+    import numpy as np
+    from numba import cuda
+
+    device_arrays = _require_summary_device_arrays(contract, partner="numba")
+    directed_src_device = device_arrays["directed_src"]
+    directed_dst_device = device_arrays["column_indices"]
+    two_hop_src_device = device_arrays["two_hop_src"]
+    two_hop_dst_device = device_arrays["two_hop_dst"]
+    axis_offset_x = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+
+    edge_count = int(directed_dst_device.size)
+    triangles = {
+        "ids": cuda.device_array(edge_count, dtype=np.uint32),
+        "x0": cuda.device_array(edge_count, dtype=np.float64),
+        "y0": cuda.device_array(edge_count, dtype=np.float64),
+        "z0": cuda.device_array(edge_count, dtype=np.float64),
+        "x1": cuda.device_array(edge_count, dtype=np.float64),
+        "y1": cuda.device_array(edge_count, dtype=np.float64),
+        "z1": cuda.device_array(edge_count, dtype=np.float64),
+        "x2": cuda.device_array(edge_count, dtype=np.float64),
+        "y2": cuda.device_array(edge_count, dtype=np.float64),
+        "z2": cuda.device_array(edge_count, dtype=np.float64),
+    }
+    _launch_1d_numba_kernel(
+        _get_rt_graph_2a1_fill_triangles_numba_kernel(cuda),
+        edge_count,
+        directed_src_device,
+        directed_dst_device,
+        triangles["ids"],
+        triangles["x0"],
+        triangles["y0"],
+        triangles["z0"],
+        triangles["x1"],
+        triangles["y1"],
+        triangles["z1"],
+        triangles["x2"],
+        triangles["y2"],
+        triangles["z2"],
+        float(axis_offset_x),
+        float(axis_offset_z),
+        float(eps),
+        edge_count,
+    )
+
+    ray_count = int(two_hop_src_device.size)
+    rays = {
+        "ids": cuda.device_array(ray_count, dtype=np.uint32),
+        "ox": cuda.device_array(ray_count, dtype=np.float64),
+        "oy": cuda.device_array(ray_count, dtype=np.float64),
+        "oz": cuda.device_array(ray_count, dtype=np.float64),
+        "dx": cuda.device_array(ray_count, dtype=np.float64),
+        "dy": cuda.device_array(ray_count, dtype=np.float64),
+        "dz": cuda.device_array(ray_count, dtype=np.float64),
+        "tmax": cuda.device_array(ray_count, dtype=np.float64),
+    }
+    _launch_1d_numba_kernel(
+        _get_rt_graph_2a1_fill_rays_numba_kernel(cuda),
+        ray_count,
+        two_hop_src_device,
+        two_hop_dst_device,
+        rays["ids"],
+        rays["ox"],
+        rays["oy"],
+        rays["oz"],
+        rays["dx"],
+        rays["dy"],
+        rays["dz"],
+        rays["tmax"],
+        float(axis_offset_x),
+        float(axis_offset_z),
+        ray_count,
+    )
+    ray_weights = device_arrays["two_hop_weights"]
+    cuda.synchronize()
+    return triangles, rays, ray_weights
+
+
+def _build_rt_graph_2a1_geometry(contract) -> tuple[tuple[rt.Triangle3D, ...], tuple[rt.Ray3D, ...], tuple[int, ...]]:
+    axis_offset_x = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+    triangles: list[rt.Triangle3D] = []
+    for primitive_id, (src, dst) in enumerate(contract.directed_edges):
+        center_x = float(src) - axis_offset_x
+        center_y = 0.0
+        center_z = float(dst) - axis_offset_z
+        triangles.append(
+            rt.Triangle3D(
+                id=primitive_id,
+                x0=center_x,
+                y0=center_y,
+                z0=center_z + eps,
+                x1=center_x - eps,
+                y1=center_y,
+                z1=center_z - eps,
+                x2=center_x + eps,
+                y2=center_y,
+                z2=center_z - eps,
+            )
+        )
+
+    rays: list[rt.Ray3D] = []
+    ray_weights: list[int] = []
+    for ray_id, (src, dst, weight) in enumerate(contract.two_hop_rays_2a1):
+        rays.append(
+            rt.Ray3D(
+                id=ray_id,
+                ox=float(src) - axis_offset_x,
+                oy=-0.1,
+                oz=float(dst) - axis_offset_z,
+                dx=0.0,
+                dy=1.0,
+                dz=0.0,
+                tmax=0.2,
+            )
+        )
+        ray_weights.append(int(weight))
+    return tuple(triangles), tuple(rays), tuple(ray_weights)
+
+
+def _build_rt_graph_2a1_packed_geometry(contract):
+    import numpy as np
+
+    axis_offset_x = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+
+    edge_count = len(contract.directed_edges)
+    primitive_ids = np.arange(edge_count, dtype=np.uint32)
+    if edge_count:
+        edges = np.asarray(contract.directed_edges, dtype=np.int64)
+        src = edges[:, 0].astype(np.float64)
+        dst = edges[:, 1].astype(np.float64)
+        center_x = src - axis_offset_x
+        center_z = dst - axis_offset_z
+    else:
+        center_x = np.empty(0, dtype=np.float64)
+        center_z = np.empty(0, dtype=np.float64)
+    zero = np.zeros(edge_count, dtype=np.float64)
+    triangles = rt.pack_triangles_3d_from_arrays(
+        ids=primitive_ids,
+        x0=center_x,
+        y0=zero,
+        z0=center_z + eps,
+        x1=center_x - eps,
+        y1=zero,
+        z1=center_z - eps,
+        x2=center_x + eps,
+        y2=zero,
+        z2=center_z - eps,
+    )
+
+    ray_count = len(contract.two_hop_rays_2a1)
+    ray_ids = np.arange(ray_count, dtype=np.uint32)
+    if ray_count:
+        two_hop = np.asarray(contract.two_hop_rays_2a1, dtype=np.int64)
+        ray_src = two_hop[:, 0].astype(np.float64)
+        ray_dst = two_hop[:, 1].astype(np.float64)
+        ray_weights = np.ascontiguousarray(two_hop[:, 2], dtype=np.uint64)
+        ox = ray_src - axis_offset_x
+        oz = ray_dst - axis_offset_z
+    else:
+        ray_weights = np.empty(0, dtype=np.uint64)
+        ox = np.empty(0, dtype=np.float64)
+        oz = np.empty(0, dtype=np.float64)
+    rays = rt.pack_rays_3d_from_arrays(
+        ids=ray_ids,
+        ox=ox,
+        oy=np.full(ray_count, -0.1, dtype=np.float64),
+        oz=oz,
+        dx=np.zeros(ray_count, dtype=np.float64),
+        dy=np.ones(ray_count, dtype=np.float64),
+        dz=np.zeros(ray_count, dtype=np.float64),
+        tmax=np.full(ray_count, 0.2, dtype=np.float64),
+    )
+    return triangles, rays, ray_weights
+
+
+def _ray_weight_payload(ray_weights, *, detail: str) -> object:
+    try:
+        import numpy as np
+    except ImportError:  # pragma: no cover
+        np = None
+    if np is not None and isinstance(ray_weights, np.ndarray):
+        if detail == "full":
+            return [int(weight) for weight in ray_weights.tolist()]
+        return {"sum": int(ray_weights.sum(dtype=np.uint64)), "count": int(ray_weights.size)}
+    if hasattr(ray_weights, "get") and hasattr(ray_weights, "sum") and hasattr(ray_weights, "size"):
+        if detail == "full":
+            return [int(weight) for weight in ray_weights.get().tolist()]
+        return {"sum": int(ray_weights.sum().get()), "count": int(ray_weights.size), "device_resident": True}
+    if detail == "full":
+        return [int(weight) for weight in ray_weights]
+    return {"sum": int(sum(ray_weights)), "count": len(ray_weights)}
+
+
+def _contract_neighbors(contract, vertex: int) -> tuple[int, ...]:
+    start = contract.row_offsets[vertex]
+    end = contract.row_offsets[vertex + 1]
+    return contract.column_indices[start:end]
+
+
+def _max_out_degree(contract) -> int:
+    if contract.vertex_count == 0:
+        return 0
+    device_arrays = getattr(contract, "device_arrays", None)
+    if isinstance(device_arrays, dict) and "row_offsets" in device_arrays:
+        row_offsets = device_arrays["row_offsets"]
+        try:
+            if int(row_offsets.size) <= 1:
+                return 0
+            degrees = row_offsets[1:] - row_offsets[:-1]
+            if int(degrees.size) == 0:
+                return 0
+            max_degree = degrees.max()
+            if hasattr(max_degree, "get"):
+                return int(max_degree.get())
+            if hasattr(max_degree, "copy_to_host"):
+                return int(max_degree.copy_to_host())
+            return int(max_degree)
+        except Exception:
+            pass
+    return max(len(_contract_neighbors(contract, vertex)) for vertex in range(contract.vertex_count))
+
+
+def _load_rt_graph_edges(
+    *,
+    fixture: str,
+    edge_file: str | None,
+    edge_format: str,
+    fixture_copies: int = 1,
+) -> tuple[tuple[tuple[int, int], ...], dict[str, str]]:
+    if fixture_copies <= 0:
+        raise ValueError("rt_graph_copies must be positive")
+    if edge_file is None:
+        edges = _repeat_fixture_edges(fixture_edges(fixture), fixture_copies)
+        input_source = {
+            "kind": "fixture",
+            "name": fixture,
+            "rt_graph_copies": str(fixture_copies),
+        }
+    elif edge_format == "text":
+        if fixture_copies != 1:
+            raise ValueError("--rt-graph-copies applies only when --edge-file is omitted")
+        edges = read_text_edges(edge_file)
+        input_source = {"kind": "edge_file", "format": "text", "path": edge_file}
+    elif edge_format == "binary":
+        if fixture_copies != 1:
+            raise ValueError("--rt-graph-copies applies only when --edge-file is omitted")
+        edges = read_binary_edges(edge_file)
+        input_source = {"kind": "edge_file", "format": "binary", "path": edge_file}
+    else:
+        raise ValueError(f"unsupported edge format: {edge_format}")
+    return edges, input_source
+
+
+def _repeat_fixture_edges(edges: tuple[tuple[int, int], ...], copies: int) -> tuple[tuple[int, int], ...]:
+    if copies == 1:
+        return edges
+    if not edges:
+        return ()
+    vertex_span = max(max(src, dst) for src, dst in edges) + 1
+    repeated: list[tuple[int, int]] = []
+    for copy_index in range(copies):
+        offset = copy_index * vertex_span
+        repeated.extend((src + offset, dst + offset) for src, dst in edges)
+    return tuple(repeated)
+
+
+def run_app(
+    mode: str = "scope",
+    *,
+    backend: str = "cpu_python_reference",
+    copies: int = 2,
+    output_mode: str = "summary",
+    optix_graph_mode: str = "auto",
+    fixture: str = "single_triangle",
+    edge_file: str | None = None,
+    edge_format: str = "text",
+    detail: str = "full",
+    partner: str = "none",
+    warmup: int = 0,
+    repeat: int = 1,
+    rt_graph_copies: int = 1,
+    segment_max_two_hop_rows: int = 1_000_000,
+    scene_max_directed_edges: int = 2_000_000,
+    segment_ray_representation: str = "duplicate",
+    segment_query_schedule: str = "per_run",
+    segment_unique_key_builder: str = "cupy_repeat",
+    segment_ray_column_layout: str = "full",
+    segment_ray_output_builder: str = "cupy_vectorized",
+    segment_ray_build_telemetry: str = "none",
+    validate_oracle: bool = False,
+) -> dict[str, Any]:
+    if mode == "scope":
+        return scope_payload()
+    if mode == "run":
+        return run_payload(
+            backend=backend,
+            copies=copies,
+            output_mode=output_mode,
+            optix_graph_mode=optix_graph_mode,
+        )
+    if mode == "command_plan":
+        return command_plan_payload()
+    if mode in {"primitive_first_plan", "v2_5_plan"}:
+        return primitive_first_plan_payload() if mode == "primitive_first_plan" else v2_5_plan_payload()
+    if mode in {"segmented_compact_mask_numba_plan", "v2_6_numba_compact_mask_plan"}:
+        return (
+            segmented_compact_mask_numba_plan_payload()
+            if mode == "segmented_compact_mask_numba_plan"
+            else v2_6_numba_compact_mask_plan_payload()
+        )
+    if mode == "rt_graph_contract":
+        return rt_graph_contract_payload(
+            fixture=fixture,
+            edge_file=edge_file,
+            edge_format=edge_format,
+            detail=detail,
+            rt_graph_copies=rt_graph_copies,
+        )
+    if mode == "rt_graph_rtdl_adapter":
+        return rt_graph_rtdl_adapter_payload(
+            fixture=fixture,
+            edge_file=edge_file,
+            edge_format=edge_format,
+            backend=backend,
+            detail=detail,
+            rt_graph_copies=rt_graph_copies,
+        )
+    if mode == "rt_graph_2a1_generic_rt":
+        return rt_graph_2a1_generic_rt_payload(
+            fixture=fixture,
+            edge_file=edge_file,
+            edge_format=edge_format,
+            backend=backend,
+            detail=detail,
+            partner=partner,
+            warmup=warmup,
+            repeat=repeat,
+            rt_graph_copies=rt_graph_copies,
+        )
+    if mode == "rt_graph_2a1_segmented_generic_rt":
+        return rt_graph_2a1_segmented_generic_rt_payload(
+            edge_file=edge_file,
+            edge_format=edge_format,
+            backend=backend,
+            detail=detail,
+            partner=partner,
+            warmup=warmup,
+            repeat=repeat,
+            segment_max_two_hop_rows=segment_max_two_hop_rows,
+            segment_ray_representation=segment_ray_representation,
+            segment_query_schedule=segment_query_schedule,
+            segment_unique_key_builder=segment_unique_key_builder,
+            segment_ray_column_layout=segment_ray_column_layout,
+            segment_ray_output_builder=segment_ray_output_builder,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+            validate_oracle=validate_oracle,
+        )
+    if mode == "rt_graph_2a1_segmented_scene_generic_rt":
+        return rt_graph_2a1_segmented_scene_generic_rt_payload(
+            edge_file=edge_file,
+            edge_format=edge_format,
+            backend=backend,
+            detail=detail,
+            partner=partner,
+            warmup=warmup,
+            repeat=repeat,
+            segment_max_two_hop_rows=segment_max_two_hop_rows,
+            scene_max_directed_edges=scene_max_directed_edges,
+            segment_ray_representation=segment_ray_representation,
+            segment_query_schedule=segment_query_schedule,
+            segment_unique_key_builder=segment_unique_key_builder,
+            segment_ray_column_layout=segment_ray_column_layout,
+            segment_ray_output_builder=segment_ray_output_builder,
+            segment_ray_build_telemetry=segment_ray_build_telemetry,
+        )
+    if mode == "rt_graph_1a2_generic_rt":
+        return rt_graph_1a2_generic_rt_payload(
+            fixture=fixture,
+            edge_file=edge_file,
+            edge_format=edge_format,
+            backend=backend,
+            detail=detail,
+            partner=partner,
+            warmup=warmup,
+            repeat=repeat,
+            rt_graph_copies=rt_graph_copies,
+        )
+    raise ValueError(f"unsupported mode: {mode}")
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Bounded triangle-counting research benchmark wrapper."
+    )
+    parser.add_argument(
+        "--mode",
+        choices=(
+            "scope",
+            "run",
+            "command_plan",
+            "primitive_first_plan",
+            "v2_5_plan",
+            "segmented_compact_mask_numba_plan",
+            "v2_6_numba_compact_mask_plan",
+            "rt_graph_contract",
+            "rt_graph_rtdl_adapter",
+            "rt_graph_2a1_generic_rt",
+            "rt_graph_2a1_segmented_generic_rt",
+            "rt_graph_2a1_segmented_scene_generic_rt",
+            "rt_graph_1a2_generic_rt",
+        ),
+        default="scope",
+    )
+    parser.add_argument(
+        "--backend",
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan"),
+        default="cpu_python_reference",
+    )
+    parser.add_argument("--copies", type=int, default=2)
+    parser.add_argument("--output-mode", choices=("rows", "summary"), default="summary")
+    parser.add_argument("--optix-graph-mode", choices=("auto", "host_indexed", "native"), default="auto")
+    parser.add_argument(
+        "--fixture",
+        choices=("single_triangle", "degree_oriented_two_triangles", "duplicates_self_and_leaf"),
+        default="single_triangle",
+    )
+    parser.add_argument("--edge-file")
+    parser.add_argument("--edge-format", choices=("text", "binary"), default="text")
+    parser.add_argument("--detail", choices=("full", "summary"), default="full")
+    parser.add_argument("--partner", choices=("none", "cupy", "numba"), default="none")
+    parser.add_argument("--warmup", type=int, default=0)
+    parser.add_argument("--repeat", type=int, default=1)
+    parser.add_argument(
+        "--segment-max-two-hop-rows",
+        type=int,
+        default=1_000_000,
+        help="Maximum duplicate two-hop rays to lower per segmented RT-2A1 primitive call.",
+    )
+    parser.add_argument(
+        "--scene-max-directed-edges",
+        type=int,
+        default=2_000_000,
+        help="Maximum directed-edge triangles to lower per source-range segmented RT-2A1 scene.",
+    )
+    parser.add_argument(
+        "--segment-ray-representation",
+        choices=("duplicate", "unique_weighted"),
+        default="duplicate",
+        help=(
+            "Ray representation for segmented RT-2A1 lowering: duplicate physical "
+            "two-hop rays or unique rays with uint64 weights."
+        ),
+    )
+    parser.add_argument(
+        "--segment-query-schedule",
+        choices=("per_run", "prepared_segment_replay"),
+        default="per_run",
+        help=(
+            "Segmented RT-2A1 schedule: rebuild segment rays for each measured run "
+            "or build each segment once and replay warmup/repeat queries before release."
+        ),
+    )
+    parser.add_argument(
+        "--segment-unique-key-builder",
+        choices=(
+            "cupy_repeat",
+            "numba_direct",
+            "numba_direct_sort_rle",
+            "numba_direct_sort_rle_local_hash_2048",
+        ),
+        default="cupy_repeat",
+        help=(
+            "Unique-weighted segment key builder: existing CuPy repeat/gather path "
+            "or no-C++ Numba direct packed-key fill before CuPy unique/count reduction "
+            "or explicit sort/RLE unique-count candidate, with an optional local-hash "
+            "small source-group branch."
+        ),
+    )
+    parser.add_argument(
+        "--segment-ray-column-layout",
+        choices=("full", "xz_constant_y_direction"),
+        default="full",
+        help=(
+            "Segment ray column layout for prepared replay: full 3-D ray columns or "
+            "compact x/z-varying columns with constant y-origin, direction, and tmax."
+        ),
+    )
+    parser.add_argument(
+        "--segment-ray-output-builder",
+        choices=("cupy_vectorized", "numba_fused_decode_project"),
+        default="cupy_vectorized",
+        help=(
+            "Segment ray output builder: existing CuPy vectorized decode/projection "
+            "or explicit no-C++ Numba fused decode/project candidate for unique "
+            "weighted full-column rays."
+        ),
+    )
+    parser.add_argument(
+        "--segment-ray-build-telemetry",
+        choices=("none", "sync_subphases"),
+        default="none",
+        help=(
+            "Optional segmented RT-2A1 ray-construction telemetry. sync_subphases "
+            "adds CUDA stream synchronizations between build subphases and is for "
+            "profiling, not promoted performance timing."
+        ),
+    )
+    parser.add_argument(
+        "--validate-oracle",
+        action="store_true",
+        help="Build the Python oracle for small binary edge files and compare the segmented result.",
+    )
+    parser.add_argument(
+        "--rt-graph-copies",
+        type=int,
+        default=1,
+        help="Repeat a fixture as disjoint graph copies for RT-Graph generic modes.",
+    )
+    args = parser.parse_args(argv)
+    print(
+        json.dumps(
+            run_app(
+                args.mode,
+                backend=args.backend,
+                copies=args.copies,
+                output_mode=args.output_mode,
+                optix_graph_mode=args.optix_graph_mode,
+                fixture=args.fixture,
+                edge_file=args.edge_file,
+                edge_format=args.edge_format,
+                detail=args.detail,
+                partner=args.partner,
+                warmup=args.warmup,
+                repeat=args.repeat,
+                rt_graph_copies=args.rt_graph_copies,
+                segment_max_two_hop_rows=args.segment_max_two_hop_rows,
+                scene_max_directed_edges=args.scene_max_directed_edges,
+                segment_ray_representation=args.segment_ray_representation,
+                segment_query_schedule=args.segment_query_schedule,
+                segment_unique_key_builder=args.segment_unique_key_builder,
+                segment_ray_column_layout=args.segment_ray_column_layout,
+                segment_ray_output_builder=args.segment_ray_output_builder,
+                segment_ray_build_telemetry=args.segment_ray_build_telemetry,
+                validate_oracle=args.validate_oracle,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

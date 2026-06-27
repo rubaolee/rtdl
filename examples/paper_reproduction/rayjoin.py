@@ -1,18 +1,10 @@
 from __future__ import annotations
 
-from pathlib import Path
-import runpy
-import sys
-
-
-ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
-TARGET = ROOT / "examples" / "benchmark_apps" / "spatial_rayjoin" / "rtdl_rayjoin_v2_spatial_join_app.py"
+from examples.benchmark_apps._support.archived_harness_runner import run_archived_harness
 
 
 def main() -> int:
-    sys.argv[0] = str(TARGET)
-    runpy.run_path(str(TARGET), run_name="__main__")
-    return 0
+    return run_archived_harness("spatial_rayjoin")
 
 
 if __name__ == "__main__":

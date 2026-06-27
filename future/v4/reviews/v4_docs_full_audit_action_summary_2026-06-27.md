@@ -48,10 +48,16 @@ Results:
 - `v4_universe_audit.py`: `status = pass`, `public_findings = []`, `unknown_untracked_count = 0`.
 - Target public docs/frontdoor/wording tests: `29 tests OK`.
 
-## Remaining Note
+## Follow-Up Benchmark Source Cleanup
 
-This pass covers root `README.md` and every Markdown file under `docs/`.
-Benchmark app source files still contain historical variable names and internal
-metadata in code paths. They are not part of this docs pass, but they are a
-separate candidate for a later code-facing cleanup if the project wants the
-GitHub source view of benchmark harnesses to be as clean as the docs surface.
+The later benchmark-source cleanup removed the remaining source-browsing
+problem called out above. The complete legacy benchmark harness bodies now live
+under the release history archive, while each benchmark app directory keeps:
+
+- `v4_app.py` as the clean current user entrypoint.
+- A small compatibility bridge at the historical harness filename so old
+  reproduction commands, tests, and internal runners keep working.
+
+The public code scan now includes those compatibility bridges and the paper
+reproduction entry scripts, so they are checked for leaked goal labels, review
+language, and direct history/future links.
