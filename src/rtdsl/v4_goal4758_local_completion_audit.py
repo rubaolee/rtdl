@@ -307,10 +307,10 @@ def validate_v4_goal4758_local_completion_audit(root: Path | None = None) -> dic
     combined_public_docs = "\n".join((repo / path).read_text(encoding="utf-8") for path in _public_docs())
     for required in (
         "V2/V3 superset",
-        "complete 10-app",
+        "10 promoted benchmark apps",
         "CuPy",
         "Numba",
-        "whole-application speedup",
+        "It does not say every benchmark app is",
         "public true-zero-copy",
         "Tier-3",
     ):

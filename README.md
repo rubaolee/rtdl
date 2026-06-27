@@ -1,7 +1,7 @@
 # RTDL V4
 
-RTDL V4.0.0 is the current Python eDSL for writing reusable RT-core GPU
-operators from Python.
+RTDL V4.0.0 is the current Python eDSL/operator-pushdown surface for writing
+reusable RT-core GPU operators from Python.
 
 Use one import:
 

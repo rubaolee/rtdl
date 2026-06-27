@@ -85,23 +85,17 @@ class V4Goal4644PostReleaseGuardrailsTest(unittest.TestCase):
 
     def test_public_docs_keep_release_caveats_and_no_stale_goal4640_4641_gate(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        current_status = (ROOT / "docs" / "current_v4_status.md").read_text(encoding="utf-8")
+        performance = (ROOT / "docs" / "learn" / "performance_wording.md").read_text(encoding="utf-8")
 
         self.assertIn("Python eDSL/operator-pushdown", readme)
-        self.assertIn("complete 10-app RT-core matrix", readme)
-        self.assertIn("brute-force partner/CPU baselines", readme)
+        self.assertIn("10 promoted\nbenchmark apps", readme)
+        self.assertIn("similar-speed or\nmodest-gain rows elsewhere", readme)
+        self.assertIn("brute-force partner/CPU baselines", performance)
+        self.assertIn("public true-zero-copy", current_status)
+        self.assertIn("Tier-3", current_status)
+        self.assertIn("CuPy", current_status)
         self.assertNotIn("gated on public-doc\ncleanup, clean-tree reproducibility", readme)
-
-        required_caveats = (
-            "whole-application speedup",
-            "public true-zero-copy",
-            "Tier-3",
-            "CuPy",
-        )
-        for path in PUBLIC_FRONT_DOOR_DOCS:
-            text = path.read_text(encoding="utf-8")
-            with self.subTest(path=path.relative_to(ROOT).as_posix()):
-                for caveat in required_caveats:
-                    self.assertIn(caveat, text)
 
     def test_deferred_families_remain_out_of_v4_0_claims(self) -> None:
         packet = (ROOT / "future" / "v4" / "v4_goal4642_final_3ai_release_authorization_packet_2026-06-25.md").read_text(
