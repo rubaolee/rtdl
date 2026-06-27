@@ -301,7 +301,7 @@ PYTHONPATH=src:. python examples/v4/aabb_index_all_ops_count.py --dry-run
 
 Use V4 as the current system. The V4 front door selects inherited routes when
 they are the right implementation for a task.
-V4 includes the mature routes from those versions and adds the current operator
-front door. When a route is inherited, the app source can still use it through
-the current benchmark entrypoint. When a route is a V4 operator surface, name
-the surface, partner, denominator, and scale when discussing performance.
+V4 includes the mature routes from V2.14 and V3.0.2 and adds the current
+operator front door. When a route is inherited, the app source can still use it
+through the current benchmark entrypoint. When a route is a V4 operator surface,
+name the surface, partner, denominator, and scale when discussing performance.

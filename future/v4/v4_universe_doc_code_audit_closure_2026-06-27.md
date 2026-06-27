@@ -141,7 +141,8 @@ closest-hit grouped argmin, ray/triangle any-hit flags, primitive grouped-i64
 reduction, point-group nearest witness, ray/triangle weighted sum, AABB
 all-ops count, callback planning, and the custom predicate early-exit planner.
 It also executes every Python snippet in `tutorials/current/` as a standalone
-copy-paste block.
+copy-paste block and verifies that the benchmark-app tutorial plus recipe
+planner cover all 10 promoted apps.
 
 The complete benchmark-app harness under `examples/current/research_benchmarks/`
 is now presented as a maintainer matrix harness, not the first teaching surface.
@@ -166,7 +167,7 @@ py -3 -m unittest discover -s tests -p "v4*_test.py"
 Result:
 
 ```text
-Ran 652 tests in 120.321s
+Ran 653 tests in 120.864s
 OK (skipped=1)
 ```
 

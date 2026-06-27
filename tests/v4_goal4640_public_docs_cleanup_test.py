@@ -43,6 +43,19 @@ PUBLIC_EXAMPLE_SOURCES = tuple(sorted((ROOT / "examples" / "v4").glob("*.py"))) 
     ROOT / "future" / "v4" / "examples" / "v4_frontdoor_quickstart.py",
 )
 
+BENCHMARK_APP_NAMES = (
+    "RTDBSCAN",
+    "RTNN",
+    "Triangle counting",
+    "Robot collision",
+    "RayDB-style",
+    "LibRTS spatial index",
+    "Contact manifold",
+    "Spatial RayJoin",
+    "Barnes-Hut",
+    "Hausdorff XHD",
+)
+
 PUBLIC_SURFACE_FORBIDDEN = (
     re.compile(r"\bGoal\d+\b", re.IGNORECASE),
     re.compile(r"\bgoal\d+\b", re.IGNORECASE),
@@ -158,6 +171,9 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                     self.assertEqual("rejected_action_shaped_callback_deferred", payload["status"])
                 if command[0].endswith("fixed_radius_torch_device_arrays.py"):
                     self.assertEqual(2, payload["copies"])
+                if command[0].endswith("benchmark_app_recipes.py"):
+                    self.assertEqual(10, payload["app_count"])
+                    self.assertEqual(BENCHMARK_APP_NAMES, tuple(row["app"] for row in payload["recipes"]))
                 self.assertFalse(_json_contains_forbidden_goal(payload))
                 self.assertFalse(payload["release_claim_authorized"])
                 self.assertFalse(payload["tier3_callback_claim_authorized"])
@@ -180,6 +196,13 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                     self.assertEqual(proc.returncode, 0, proc.stderr)
 
         self.assertGreaterEqual(snippet_count, 10)
+
+    def test_benchmark_app_tutorial_covers_all_promoted_apps(self) -> None:
+        tutorial = (ROOT / "tutorials" / "current" / "06_benchmark_apps.md").read_text(encoding="utf-8")
+
+        for app_name in BENCHMARK_APP_NAMES:
+            with self.subTest(app=app_name):
+                self.assertIn(app_name, tutorial)
 
     def test_operator_catalog_is_visible_without_overclaim(self) -> None:
         text = (ROOT / "docs" / "current_v4_status.md").read_text(encoding="utf-8")
