@@ -50,8 +50,8 @@ def main() -> int:
                 "complete_rt_core_app_matrix_app_count": boundary["complete_rt_core_app_matrix_app_count"],
                 "complete_rt_core_app_matrix_row_count": boundary["complete_rt_core_app_matrix_row_count"],
                 "app_matrix_hot_path_regression_count": boundary["app_matrix_hot_path_regression_count"],
-                "app_matrix_material_hot_path_candidate_apps": list(
-                    boundary["app_matrix_material_hot_path_candidate_apps"]
+                "app_matrix_material_hot_path_apps": list(
+                    boundary["app_matrix_material_hot_path_apps"]
                 ),
                 "app_matrix_v4_over_v2_14_hot_geomean": boundary["app_matrix_v4_over_v2_14_hot_geomean"],
                 "tier2_plan_status": tier2_plan.status,

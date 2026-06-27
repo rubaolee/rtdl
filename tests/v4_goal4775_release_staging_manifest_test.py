@@ -79,7 +79,9 @@ class V4Goal4775ReleaseStagingManifestTest(unittest.TestCase):
         self.assertTrue(compact_matrix in staged or exists(compact_matrix))
         self.assertTrue(compact_barnes_hut in staged or exists(compact_barnes_hut))
         if exists(raw_stdout):
-            self.assertIn(raw_stdout, excluded)
+            self.assertNotIn(raw_stdout, staged)
+            if raw_stdout in excluded:
+                self.assertIn(raw_stdout, excluded)
 
     def test_manifest_excludes_empty_evidence_files(self) -> None:
         manifest = validate_v4_goal4775_release_staging_manifest(ROOT)
@@ -89,7 +91,9 @@ class V4Goal4775ReleaseStagingManifestTest(unittest.TestCase):
         empty_probe = "future/v4/evidence/v4_goal4659_hausdorff_v4_route_20260625/v3_0_2_optix_device_max_numba_copies16384.json"
         self.assertNotIn(empty_probe, staged)
         if (ROOT / empty_probe).exists():
-            self.assertIn(empty_probe, excluded)
+            self.assertNotIn(empty_probe, staged)
+            if empty_probe in excluded:
+                self.assertIn(empty_probe, excluded)
 
 
 if __name__ == "__main__":

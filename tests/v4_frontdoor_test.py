@@ -192,6 +192,7 @@ class V4FrontDoorTest(unittest.TestCase):
         self.assertEqual(10, payload["complete_rt_core_app_matrix_app_count"])
         self.assertEqual(30, payload["complete_rt_core_app_matrix_row_count"])
         self.assertEqual(0, payload["app_matrix_hot_path_regression_count"])
+        self.assertEqual(["triangle_counting", "barnes_hut"], payload["app_matrix_material_hot_path_apps"])
         self.assertFalse(payload["all_historical_benchmark_apps_faster_claim_authorized"])
         self.assertFalse(payload["broad_v4_over_v2_14_speedup_claim_authorized"])
         self.assertEqual(

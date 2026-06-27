@@ -62,7 +62,7 @@ ARCHIVE_PREFIXES = (
     "history/",
 )
 
-AUDIT_PREFIXES = (
+PROVENANCE_PREFIXES = (
     "future/",
 )
 
@@ -71,6 +71,9 @@ PUBLIC_FORBIDDEN_PATTERNS = (
     re.compile(r"\bgoal\d+\b", re.IGNORECASE),
     re.compile(r"\bv4_goal\b", re.IGNORECASE),
     re.compile(r"review debt", re.IGNORECASE),
+    re.compile(r"\baudit\b", re.IGNORECASE),
+    re.compile(r"\breviewer\b", re.IGNORECASE),
+    re.compile(r"release-review", re.IGNORECASE),
     re.compile(r"\bClaude\b|\bGemini\b|\bAntigravity\b"),
     re.compile(r"release candidate", re.IGNORECASE),
     re.compile(r"parity/control", re.IGNORECASE),
@@ -140,8 +143,8 @@ def _tracked_bucket(path: str) -> str:
         return "public_current"
     if any(path.startswith(prefix) for prefix in ARCHIVE_PREFIXES):
         return "history_archive"
-    if any(path.startswith(prefix) for prefix in AUDIT_PREFIXES):
-        return "audit_provenance"
+    if any(path.startswith(prefix) for prefix in PROVENANCE_PREFIXES):
+        return "maintainer_provenance"
     if path in ROOT_RELEASE_FILES:
         return "current_code_or_gate"
     if any(path.startswith(prefix) for prefix in CURRENT_CODE_PREFIXES):
@@ -255,7 +258,7 @@ def run_audit(*, strict_release: bool = False) -> dict[str, Any]:
         "unknown_untracked_count": len(unknown_untracked),
         "interpretation": (
             "Public V4 current surface must be clean. history/ is archival. "
-            "future/ is audit provenance. Known untracked raw evidence, review "
+            "future/ is maintainer provenance. Known untracked raw evidence, "
             "working records, and local debris are not public V4 files. Use "
             "--strict-release before a final tag/package gate to require a "
             "debris-free local tree."

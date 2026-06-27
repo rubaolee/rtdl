@@ -39,7 +39,7 @@ rows as the primary denominator.
 | Primary denominator | NVIDIA OptiX/RT-core only |
 | Embree primary denominator | `false` |
 | Hot-path regressions in the release table | `0` |
-| Material hot-path candidates over V2.14 | `triangle_counting`, `barnes_hut` |
+| Material hot-path rows over V2.14 | `triangle_counting`, `barnes_hut` |
 | V4/V2.14 hot geomean | `2.10069x`, not a headline |
 
 The current app-level table is in
@@ -77,7 +77,7 @@ Allowed:
 - "V4.0.0 is a published Python eDSL/operator-pushdown release and V2/V3
   superset."
 - "The 10-app RT-core matrix is complete for V2.14, V3.0.2, and V4.0."
-- "V4.0 has two material hot-path candidate wins over V2.14 and similar-speed
+- "V4.0 has two material hot-path rows over V2.14 and similar-speed
   control rows elsewhere in the release matrix."
 - "The custom predicate early-exit workflow is a V4-specific bounded workflow
   win."

@@ -1,4 +1,4 @@
-# V4 Universe Documentation And Code Audit Closure
+# V4 Universe Documentation And Code Closure
 
 Date: 2026-06-27
 
@@ -6,17 +6,17 @@ Status: `public_surface_clean__tracked_v4_code_gates_pass__strict_release_gate_p
 
 ## Scope
 
-This audit treats V4.0.0 as the current user-facing release. The release tree is
+This pass treats V4.0.0 as the current user-facing release. The release tree is
 partitioned as:
 
 - `public_current`: root README, `docs/`, `tutorials/current/`, and
   `examples/v4/`;
 - `current_code_or_gate`: `src/rtdsl/`, V4 scripts, tests, and benchmark-app
   source;
-- `audit_provenance`: `future/`;
+- `maintainer_provenance`: `future/`;
 - `history_archive`: `history/`;
 - local untracked debris: build output, raw evidence, local external checkout,
-  and working review records.
+  and maintainer working records.
 
 After this cleanup pass, old V3/Phoenix helpers, old local tests, external
 checkouts, paper-reproduction patches, and local helper scripts were moved out
@@ -27,7 +27,7 @@ why it is not part of the V4 user path.
 The first sweep also revealed a real clean-checkout issue: the V4 verification
 suite depended on review/evidence/package artifacts that had only existed as
 untracked local files. Those artifacts were restored to their original
-`future/v4/` and `dist/` locations and staged as release provenance so a clean
+  `future/v4/` and `dist/` locations and staged as release provenance so a clean
 checkout can run the same gates without relying on local-only files.
 
 ## Files And Gates Added
@@ -37,7 +37,8 @@ checkout can run the same gates without relying on local-only files.
 - `future/v4/v4_universe_audit_snapshot_2026-06-27.md`
 
 The gate scans the current public surface for internal process leakage, old
-current-version wording, and misleading user-path language. It also records the
+current-version wording, reviewer/audit wording, and misleading user-path
+language. It also records the
 tracked file buckets, classifies untracked workspace debris, and now supports a
 strict release mode:
 
@@ -62,9 +63,9 @@ Public surface:
 
 Tracked repository:
 
-- tracked files: `27673`;
+- tracked files: `28343`;
 - history archive files: `22046`;
-- audit provenance files: `1171`;
+- maintainer provenance files: `1839`;
 - current code/gate files: `4356`;
 - public current files: `31`.
 
@@ -72,14 +73,15 @@ Local workspace debris:
 
 - untracked files: `0`;
 - unknown untracked files: `0`;
-- all Git-visible local debris has either been staged as release/audit
+- all Git-visible local debris has either been staged as release
   provenance or moved to ignored history payload storage.
 
 This means the tracked V4 public release surface is clean, and strict release
 mode also passes because no untracked local debris remains in the Git-visible
 workspace. The ignored history payload remains available locally for forensic
 recovery, but it is outside the release commit surface; test-contract
-review/evidence/package artifacts remain visible and staged as provenance.
+  evidence/package artifacts required by tests remain visible and staged as
+  provenance.
 
 ## Verification Commands
 
@@ -114,7 +116,7 @@ unknown untracked files: 0
 Public-current stale/process leakage scan:
 
 ```powershell
-rg -n "Goal[0-9]+|goal[0-9]+|v4_goal|review debt|Claude|Gemini|Antigravity|release candidate|parity/control|docs/reviews|future/v4/reviews|external review|bounded framing|choose V2|choose V3|current V3|V4/V3/V2" README.md docs tutorials examples\v4 future\v4\README.md future\v4\tier2_operator_catalog.md future\v4\examples\v4_frontdoor_quickstart.py future\v4\examples\operator_callback_planning.py
+rg -n "Goal[0-9]+|goal[0-9]+|v4_goal|review debt|Claude|Gemini|Antigravity|release candidate|parity/control|docs/reviews|future/v4/reviews|external review|bounded framing|choose V2|choose V3|current V3|V4/V3/V2|\baudit\b|\breviewer\b|release-review" README.md docs tutorials examples\v4 future\v4\README.md future\v4\tier2_operator_catalog.md future\v4\examples\v4_frontdoor_quickstart.py future\v4\examples\operator_callback_planning.py
 ```
 
 Result: no matches.
@@ -122,16 +124,22 @@ Result: no matches.
 Focused public cleanup gate:
 
 ```powershell
-$env:PYTHONPATH='src;.;scripts'
-py -3 -m unittest tests.v4_universe_audit_test tests.v4_goal4640_public_docs_cleanup_test
+$env:PYTHONPATH='src;.'
+py -3 -m unittest tests.v4_universe_audit_test tests.v4_goal4640_public_docs_cleanup_test tests.v4_frontdoor_test tests.v4_goal4775_release_staging_manifest_test
 ```
 
 Result:
 
 ```text
-Ran 9 tests in 9.401s
+Ran 19 tests in 12.500s
 OK
 ```
+
+This gate now executes every public `examples/v4` command in dry-run or
+planner mode, including fixed-radius, closest-hit grouped argmin,
+ray/triangle any-hit flags, primitive grouped-i64 reduction, point-group
+nearest witness, ray/triangle weighted sum, AABB all-ops count, callback
+planning, and the custom predicate early-exit planner.
 
 Full V4 discovery gate:
 
@@ -143,7 +151,7 @@ py -3 -m unittest discover -s tests -p "v4*_test.py"
 Result:
 
 ```text
-Ran 649 tests in 95.481s
+Ran 649 tests in 98.667s
 OK (skipped=1)
 ```
 

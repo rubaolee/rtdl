@@ -22,7 +22,7 @@ These checks run without CUDA by using dry-run paths for GPU examples. They
 verify that the V4 front door, operator catalog, callback planner, and example
 commands are reachable from a clean checkout.
 
-For reviewer or maintainer work, use the broader V4 tests:
+For deeper maintainer checks, use the broader V4 tests:
 
 ```bash
 PYTHONPATH=src:. python -m unittest tests.v4_frontdoor_test tests.v4_catalog_regression_gate_test

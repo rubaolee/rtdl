@@ -22,7 +22,7 @@ complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_cla
 
 V4.0.0 is a published Python eDSL/operator-pushdown release and a V2/V3
 superset. The complete app matrix supports bounded claims: two material hot-path
-candidate rows over V2.14, similar-speed control rows elsewhere, and no hot-path
+rows over V2.14, similar-speed control rows elsewhere, and no hot-path
 regressions in this run. It does not authorize "all benchmark apps are faster"
 wording.
 
@@ -32,14 +32,14 @@ wording.
 | --- | ---: | ---: | --- |
 | RTDBSCAN | `0.998x` | `0.993x` | Similar-speed control row. |
 | RayDB-style | `1.113x` | `1.111x` | Modest RT-core hot gain; below broad-app headline bar. |
-| Triangle counting | `4.360x` | `1.021x` | Material hot-path candidate. |
+| Triangle counting | `4.360x` | `1.021x` | Material hot-path row. |
 | LibRTS spatial index | `0.999x` | `1.002x` | Similar-speed control row. |
 | Hausdorff XHD threshold route | `1.032x` | `0.983x` | Same-primitive threshold row with similar speed. |
 | Robot collision | `1.020x` | `1.000x` | Similar-speed row; inherited OptiX primitive remains usable in V4. |
 | Contact manifold | `1.116x` | `1.477x` | Similar-speed to modest gain on the measured hot subpipeline. |
 | RTNN | `1.029x` | `1.024x` | Similar-speed control row. |
 | Spatial RayJoin shape-pair | `1.000x` | `1.004x` | Serious generated-input row with similar speed. |
-| Barnes-Hut aggregate frontier | `286.142x` | `0.993x` | Material V3/V4-over-V2.14 candidate; not a new V4-over-V3 speed claim. |
+| Barnes-Hut aggregate frontier | `286.142x` | `0.993x` | Material V3/V4-over-V2.14 row; not a new V4-over-V3 speed claim. |
 
 Hot-path geomean V4/V2.14: `2.10069x`.
 
@@ -83,7 +83,7 @@ Use:
 ```text
 RTDL V4.0.0 is a published Python eDSL/operator-pushdown release and V2/V3
 superset. On the current NVIDIA RT-core 10-app matrix, all apps have V2.14,
-V3.0.2, and V4.0 rows; V4.0 has two material hot-path candidate wins over
+V3.0.2, and V4.0 rows; V4.0 has two material hot-path rows over
 V2.14 and similar-speed control rows elsewhere. Separate V4 operator surfaces and the
 custom predicate early-exit workflow show additional bounded V4 value.
 ```
@@ -100,8 +100,8 @@ Do not use:
 V4 is broadly faster than V2.14 or V3 across every app.
 ```
 
-## Audit Evidence
+## Maintainer Evidence
 
-Raw benchmark JSON, logs, and audit records are retained for
-maintainers under audit-only evidence directories and `history/`. They are not
-part of the first-time user learning path.
+Raw benchmark JSON, logs, and provenance records are retained for maintainers
+under evidence directories and `history/`. They are not part of the first-time
+user learning path.

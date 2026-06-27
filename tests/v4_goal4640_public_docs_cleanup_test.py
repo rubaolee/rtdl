@@ -46,6 +46,9 @@ PUBLIC_SURFACE_FORBIDDEN = (
     re.compile(r"\bgoal\d+\b", re.IGNORECASE),
     re.compile(r"parity/control", re.IGNORECASE),
     re.compile(r"review debt", re.IGNORECASE),
+    re.compile(r"\baudit\b", re.IGNORECASE),
+    re.compile(r"\breviewer\b", re.IGNORECASE),
+    re.compile(r"release-review", re.IGNORECASE),
     re.compile(r"\bClaude\b|\bGemini\b|\bAntigravity\b"),
     re.compile(r"release candidate", re.IGNORECASE),
     re.compile(r"docs/reviews", re.IGNORECASE),
@@ -108,6 +111,10 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
             ["examples/v4/operator_callback_planning.py", "--case", "complex-callback"],
             ["examples/v4/custom_predicate_early_exit_planning.py"],
             ["examples/v4/fixed_radius_torch_device_arrays.py", "--dry-run", "--copies", "2"],
+            ["examples/v4/closest_hit_grouped_argmin_torch_device_arrays.py", "--dry-run"],
+            ["examples/v4/ray_triangle_any_hit_flags_torch_device_arrays.py", "--dry-run", "--ray-count", "16"],
+            ["examples/v4/primitive_grouped_i64_reduction_torch_device_arrays.py", "--dry-run"],
+            ["examples/v4/point_group_nearest_witness_torch_device_arrays.py", "--dry-run"],
             ["examples/v4/ray_triangle_any_hit_weighted_sum_torch_device_arrays.py", "--dry-run", "--ray-count", "16"],
             ["examples/v4/aabb_index_all_ops_count.py", "--dry-run"],
         )
@@ -122,6 +129,10 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                 )
                 payload = json.loads(proc.stdout)
                 self.assertIn(payload["status"], {"ok", "dry_run", "rejected_action_shaped_callback_deferred"})
+                if command[0].endswith("operator_callback_planning.py"):
+                    self.assertEqual("rejected_action_shaped_callback_deferred", payload["status"])
+                if command[0].endswith("fixed_radius_torch_device_arrays.py"):
+                    self.assertEqual(2, payload["copies"])
                 self.assertFalse(_json_contains_forbidden_goal(payload))
                 self.assertFalse(payload["release_claim_authorized"])
                 self.assertFalse(payload["tier3_callback_claim_authorized"])

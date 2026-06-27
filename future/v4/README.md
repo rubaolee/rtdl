@@ -1,7 +1,7 @@
-# V4 Audit Evidence
+# V4 Maintainer Evidence
 
-This directory is audit-only. It preserves V4 design notes, evidence, release
-packets, review records, and raw benchmark material for maintainers.
+This directory preserves V4 design notes, evidence, release packets, and raw
+benchmark material for maintainers.
 
 New users should not start here. The current public V4 path is:
 

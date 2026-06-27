@@ -28,7 +28,7 @@ It does not claim that all historical benchmark apps are faster than V2.14.
 Good:
 
 ```text
-The current app matrix has two material hot-path candidate wins over V2.14 and
+The current app matrix has two material hot-path rows over V2.14 and
 similar-speed control rows elsewhere; it does not claim that all historical
 benchmark apps are faster than V2.14.
 ```

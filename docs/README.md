@@ -18,5 +18,5 @@ handoffs, historical design debates, or benchmark working notes.
 Tutorials live in [../tutorials/current/README.md](../tutorials/current/README.md).
 Runnable examples live in [../examples/README.md](../examples/README.md).
 
-Historical planning, audit records, and raw evidence are retained outside the
-public learning path under `history/` and audit-only evidence directories.
+Historical planning and raw evidence are retained outside the public learning
+path under `history/` and maintainer evidence directories.

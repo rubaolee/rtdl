@@ -317,6 +317,7 @@ def claim_boundary_v4() -> dict[str, object]:
         "complete_rt_core_app_matrix_app_count": 10,
         "complete_rt_core_app_matrix_row_count": 30,
         "app_matrix_hot_path_regression_count": 0,
+        "app_matrix_material_hot_path_apps": ("triangle_counting", "barnes_hut"),
         "app_matrix_material_hot_path_candidate_apps": ("triangle_counting", "barnes_hut"),
         "app_matrix_v4_over_v2_14_hot_geomean": 2.10069,
         "public_release_status": "published",

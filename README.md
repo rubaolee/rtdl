@@ -33,7 +33,7 @@ The V4.0.0 NVIDIA RTX A5000 release matrix:
 - Embree is not used as a primary denominator;
 - no `n/a` rows;
 - no hot-path regressions in the release table;
-- material hot-path candidates over V2.14: `triangle_counting`,
+- material hot-path rows over V2.14: `triangle_counting`,
   `barnes_hut`;
 - V4/V2.14 hot geomean: `2.10069x`, not a headline.
 
@@ -137,7 +137,7 @@ This front page does not authorize:
 | `examples/current/research_benchmarks/` | Source code for the 10 promoted benchmark apps. |
 | `tutorials/current/` | Current V4 tutorial path. |
 | `docs/` | Current V4 public documentation. |
-| `history/` | Archived history and release-review provenance. |
-| `future/` | Audit-only evidence and maintainer working material, not the user learning path. |
+| `history/` | Archived history and maintainer provenance. |
+| `future/` | Maintainer evidence and working material, not the user learning path. |
 | `scripts/` | Developer and verification tools. |
 | `tests/` | Regression and gate tests. |

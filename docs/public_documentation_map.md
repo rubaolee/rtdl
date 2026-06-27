@@ -31,9 +31,9 @@ PYTHONPATH=src:. python examples/v4/operator_callback_planning.py --case complex
 PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
 ```
 
-## Audit Path
+## Maintainer Evidence Path
 
 The public learning path does not require old planning notes or internal
 packets.
-Maintainer audit material is retained under `history/` and evidence-only
+Maintainer evidence is retained under `history/` and evidence-only
 directories. Treat those files as provenance, not current user guidance.
