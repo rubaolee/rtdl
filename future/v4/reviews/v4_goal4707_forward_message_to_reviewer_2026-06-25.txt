@@ -1,0 +1,12 @@
+Please critically review this consolidated V4 specialized Tier-3 candidate packet:
+
+future/v4/v4_goal4707_specialized_tier3_external_review_packet_2026-06-25.md
+
+I need a strict verdict using one of:
+
+- accept_candidate_continue_public_support_hardening
+- accept_candidate_with_required_amendments
+- reject_candidate_keep_spike_only
+
+Please focus on whether Goals4696-4706 justify keeping `specialized_numba_scalar_callback_support_candidate` as a constrained support candidate. Do not authorize V4 release, public Tier-3 support, arbitrary callbacks, raw OptiX callbacks, app-level speed claims, or high-performance V4 wording. If you approve continuing, list the exact remaining gates before public support can be considered.
+

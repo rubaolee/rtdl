@@ -46,6 +46,7 @@ V3_HISTORY_MARKERS = (
 )
 
 STAGE_PREFIXES = (
+    ".gitattributes",
     ".gitignore",
     "README.md",
     "docs/README.md",

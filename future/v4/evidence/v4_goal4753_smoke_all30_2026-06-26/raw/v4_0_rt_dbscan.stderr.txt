@@ -1,0 +1,107 @@
+/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 8 will likely result in GPU under-utilization due to low occupancy.
+  warn(NumbaPerformanceWarning(msg))
+Traceback (most recent call last):
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/cuda/cudadrv/nvvm.py", line 139, in __new__
+    inst.driver = open_cudalib('nvvm')
+                  ^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/cuda/cudadrv/libs.py", line 65, in open_cudalib
+    return ctypes.CDLL(path)
+           ^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/ctypes/__init__.py", line 379, in __init__
+    self._handle = _dlopen(self._name, mode)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: libnvvm.so: cannot open shared object file: No such file or directory
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/rtdl_v4_candidate_pod/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 3504, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_v4_candidate_pod/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 3473, in main
+    run_rt_dbscan_benchmark(
+  File "/root/rtdl_v4_candidate_pod/examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py", line 2859, in run_rt_dbscan_benchmark
+    runner_result = rt.run_radius_graph_component_signature_3d_prepared_session(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_candidate_pod/src/rtdsl/prepared_execution.py", line 1724, in run_radius_graph_component_signature_3d_prepared_session
+    run_repeated_prepared_execution_session(
+  File "/root/rtdl_v4_candidate_pod/src/rtdsl/prepared_execution.py", line 286, in run_repeated_prepared_execution_session
+    return _execute_prepared_execution_session(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_candidate_pod/src/rtdsl/prepared_execution.py", line 348, in _execute_prepared_execution_session
+    measured_output = measured_runner(reuse.value)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_candidate_pod/src/rtdsl/prepared_execution.py", line 1690, in run_component_signature
+    return radius_graph_component_signature_3d_optix_numba_prepared_grouped_stream_partner_columns(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_candidate_pod/src/rtdsl/partner_adapters.py", line 9190, in radius_graph_component_signature_3d_optix_numba_prepared_grouped_stream_partner_columns
+    return prepared.run_component_signature(min_neighbors=min_neighbors, return_metadata=return_metadata)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_candidate_pod/src/rtdsl/partner_adapters.py", line 8916, in run_component_signature
+    self.parent_border_init_kernel[self.label_blocks, self.threads](
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/cuda/dispatcher.py", line 539, in __call__
+    return self.dispatcher.call(args, self.griddim, self.blockdim,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/cuda/dispatcher.py", line 681, in call
+    kernel = _dispatcher.Dispatcher._cuda_call(self, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/cuda/dispatcher.py", line 689, in _compile_for_args
+    return self.compile(tuple(argtypes))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/cuda/dispatcher.py", line 932, in compile
+    kernel = _Kernel(self.py_func, argtypes, **self.targetoptions)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/compiler_lock.py", line 35, in _acquire_compile_lock
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/cuda/dispatcher.py", line 83, in __init__
+    cres = compile_cuda(self.py_func, types.void, self.argtypes,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/compiler_lock.py", line 35, in _acquire_compile_lock
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/cuda/compiler.py", line 196, in compile_cuda
+    cres = compiler.compile_extra(typingctx=typingctx,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/compiler.py", line 739, in compile_extra
+    return pipeline.compile_extra(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/compiler.py", line 439, in compile_extra
+    return self._compile_bytecode()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/compiler.py", line 505, in _compile_bytecode
+    return self._compile_core()
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/compiler.py", line 481, in _compile_core
+    raise e
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/compiler.py", line 473, in _compile_core
+    pm.run(self.state)
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/compiler_machinery.py", line 363, in run
+    raise e
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/compiler_machinery.py", line 356, in run
+    self._runPass(idx, pass_inst, state)
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/compiler_lock.py", line 35, in _acquire_compile_lock
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/compiler_machinery.py", line 311, in _runPass
+    mutated |= check(pss.run_pass, internal_state)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/compiler_machinery.py", line 272, in check
+    mangled = func(compiler_state)
+              ^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/typed_passes.py", line 470, in run_pass
+    lower = self.lowering_class(targetctx, library, fndesc, interp,
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/lowering.py", line 40, in __init__
+    self.module = self.library.create_ir_module(self.fndesc.unique_name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/core/codegen.py", line 576, in create_ir_module
+    ir_module = self._codegen._create_empty_module(name)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/cuda/codegen.py", line 365, in _create_empty_module
+    ir_module.data_layout = nvvm.NVVM().data_layout
+                            ^^^^^^^^^^^
+  File "/root/rtdl_v4_venv/lib/python3.12/site-packages/numba/cuda/cudadrv/nvvm.py", line 144, in __new__
+    raise NvvmSupportError(errmsg % e)
+numba.cuda.cudadrv.error.NvvmSupportError: libNVVM cannot be found. Do `conda install cudatoolkit`:
+libnvvm.so: cannot open shared object file: No such file or directory

@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/root/rtdl_v4_candidate_pod/scripts/v4_goal4676_aggregate_frontier_pod_benchmark.py", line 812, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_v4_candidate_pod/scripts/v4_goal4676_aggregate_frontier_pod_benchmark.py", line 750, in main
+    return _run_worker(args)
+           ^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_candidate_pod/scripts/v4_goal4676_aggregate_frontier_pod_benchmark.py", line 507, in _run_worker
+    payload = _run_v2_14_optix_host_numba(args)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_candidate_pod/scripts/v4_goal4676_aggregate_frontier_pod_benchmark.py", line 240, in _run_v2_14_optix_host_numba
+    force_rows, vector_summary = bh._host_numba_cpu_weighted_vector_sum_from_frontier_i64_rows(
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'examples.current.research_benchmarks.barnes_hut.rtdl_barnes_hut_benchmark_app' has no attribute '_host_numba_cpu_weighted_vector_sum_from_frontier_i64_rows'

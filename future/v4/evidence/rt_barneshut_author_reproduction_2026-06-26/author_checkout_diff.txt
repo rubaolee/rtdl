@@ -1,0 +1,22 @@
+2a3c60da0bbbd00ff1777cb57ec2089cb0029cf7
+diff --git a/samples/cmdline/s01-rtbarneshut/hostCode.cu b/samples/cmdline/s01-rtbarneshut/hostCode.cu
+index c7a544e..3a98009 100644
+--- a/samples/cmdline/s01-rtbarneshut/hostCode.cu
++++ b/samples/cmdline/s01-rtbarneshut/hostCode.cu
+@@ -31,6 +31,7 @@
+ #include "stb/stb_image_write.h"
+ #include <vector>
+ #include<iostream>
++#include <array>
+ #include <cmath>
+ #include<fstream>
+ #include <queue>
+@@ -88,7 +89,7 @@ vector<Point> points;
+ vector<Node*> dfsBHNodes;
+ float totalMemoryNeeded = 0.0f;
+ 
+-int gpuDeviceID = 1;
++int gpuDeviceID = 0;
+ OWLContext context = owlContextCreate(&gpuDeviceID, 1);
+ OWLModule module = owlModuleCreate(context, deviceCode_ptx);
+ 

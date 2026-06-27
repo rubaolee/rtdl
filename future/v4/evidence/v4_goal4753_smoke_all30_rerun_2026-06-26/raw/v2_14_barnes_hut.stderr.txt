@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/root/rtdl_v4_candidate_pod/scripts/v4_goal4676_aggregate_frontier_pod_benchmark.py", line 836, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/rtdl_v4_candidate_pod/scripts/v4_goal4676_aggregate_frontier_pod_benchmark.py", line 774, in main
+    return _run_worker(args)
+           ^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_candidate_pod/scripts/v4_goal4676_aggregate_frontier_pod_benchmark.py", line 531, in _run_worker
+    payload = _run_v2_14_optix_host_numba(args)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/rtdl_v4_candidate_pod/scripts/v4_goal4676_aggregate_frontier_pod_benchmark.py", line 257, in _run_v2_14_optix_host_numba
+    raise RuntimeError(
+RuntimeError: V2.14 Barnes-Hut denominator needs either the host Numba frontier helper or the generic host weighted-vector helper

@@ -1,0 +1,36 @@
+Please critically review the final RTDL V4.0 release candidate packet:
+
+future/v4/v4_goal4757_final_v4_0_release_packet_after_goal4756_2026-06-26.md
+
+Compact evidence index:
+
+future/v4/v4_goal4759_final_review_evidence_manifest_2026-06-26.md
+
+Core claim to review:
+
+RTDL V4.0 is a Python eDSL/operator-pushdown release candidate and V2/V3
+superset. On the current NVIDIA RTX A5000 RT-core 10-app matrix, every promoted
+benchmark app has V2.14, V3.0.2, and V4.0 rows. V4.0 has two material hot-path
+candidate wins over V2.14 and parity/control elsewhere. Separate V4 operator
+surfaces and the constrained Numba custom predicate early-exit workflow show
+additional bounded V4 value.
+
+Please choose exactly one verdict:
+
+- approve_v4_0_release_candidate_for_public_tag
+- approve_with_required_wording_or_evidence_amendments
+- block_release_pending_specific_fixes
+- reject_release_reframe_required
+
+Please specifically check:
+
+1. V4 is treated as a V2/V3 superset, not a replacement that disables old routes.
+2. The Goal4756 matrix is complete and fair enough for V4.0 wording.
+3. Barnes-Hut is not described as a new V4-over-V3 speedup.
+4. Spatial RayJoin is described as serious generated-input parity, not speedup.
+5. App-level claims are clearly separated from operator/workflow claims.
+6. Public wording avoids broad all-app speedup, zero-copy, Tier-3 callback,
+   raw OptiX callback, embedding/C-ABI, and app-specific native-kernel claims.
+
+This request does not authorize release by itself. If you do not approve, list
+the exact blocking file, claim, or evidence row to fix.

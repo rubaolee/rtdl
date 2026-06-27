@@ -2,7 +2,7 @@
 
 Date: 2026-06-27
 
-Status: `public_surface_clean__tracked_v4_code_gates_pass__strict_release_blocked_by_local_debris`
+Status: `public_surface_clean__tracked_v4_code_gates_pass__strict_release_gate_passes`
 
 ## Scope
 
@@ -18,12 +18,17 @@ partitioned as:
 - local untracked debris: build output, raw evidence, local external checkout,
   and working review records.
 
-After this cleanup pass, untracked V3/Phoenix helper scripts, old local tests,
-paper-reproduction patches, and the local review helper were moved out of the
-current `scripts/`, `tests/`, and `tools/` front door into
-`history/local_workspace_debris_2026-06-27/payload/`. The payload is ignored by
-Git; the tracked README documents why it exists and why it is not part of the
-V4 user path.
+After this cleanup pass, old V3/Phoenix helpers, old local tests, external
+checkouts, paper-reproduction patches, and local helper scripts were moved out
+of the current tree into `history/local_workspace_debris_2026-06-27/payload/`.
+The payload is ignored by Git; the tracked README documents why it exists and
+why it is not part of the V4 user path.
+
+The first sweep also revealed a real clean-checkout issue: the V4 verification
+suite depended on review/evidence/package artifacts that had only existed as
+untracked local files. Those artifacts were restored to their original
+`future/v4/` and `dist/` locations and staged as release provenance so a clean
+checkout can run the same gates without relying on local-only files.
 
 ## Files And Gates Added
 
@@ -42,7 +47,8 @@ py -3 scripts\v4_universe_audit.py --format json --strict-release
 
 Strict mode fails if any local untracked debris remains. This prevents a future
 agent from saying "public clean" when the intended operation is actually
-"release from a clean tree."
+"release from a clean tree." It now passes on this workspace after the local
+debris archive sweep.
 
 ## Findings
 
@@ -64,17 +70,16 @@ Tracked repository:
 
 Local workspace debris:
 
-- untracked files: `671`;
+- untracked files: `0`;
 - unknown untracked files: `0`;
-- all untracked files are classified as known local debris: raw V4 evidence,
-  local V4 review working records, local build output, and an external
-  author-code checkout.
+- all Git-visible local debris has either been staged as release/audit
+  provenance or moved to ignored history payload storage.
 
-This means the tracked V4 public release surface is clean, but the local
-workspace is still intentionally not a clean-room checkout. Normal audit mode
-passes for public-surface truth; strict release mode fails until these 671
-remaining local files are removed, archived, or intentionally excluded by a
-separate release-packaging decision.
+This means the tracked V4 public release surface is clean, and strict release
+mode also passes because no untracked local debris remains in the Git-visible
+workspace. The ignored history payload remains available locally for forensic
+recovery, but it is outside the release commit surface; test-contract
+review/evidence/package artifacts remain visible and staged as provenance.
 
 ## Verification Commands
 
@@ -101,8 +106,8 @@ py -3 scripts\v4_universe_audit.py --format json --strict-release
 Result:
 
 ```text
-status: fail_local_debris
-untracked files: 671
+status: pass
+untracked files: 0
 unknown untracked files: 0
 ```
 
@@ -162,23 +167,28 @@ Result: exit code `0`.
 
 ## Remaining Work
 
-The remaining issue is local workspace hygiene, not tracked V4 public-surface
-truth:
+The remaining issue is release discipline, not local workspace hygiene:
 
-- raw evidence and local review records should stay out of the user path;
-- V3/Phoenix local scripts/tests have been moved under
-  `history/local_workspace_debris_2026-06-27/payload/`;
-- `dist/` and `external/` should not be included in V4 release commits.
+- ignored history payload must stay out of V4 release commits;
+- future evidence, review records, and package artifacts that tests or release
+  ledgers require must be tracked as provenance, not left as local ghosts;
+- future raw evidence, build outputs, external checkouts, and working review
+  records that are not part of any test/release contract should be moved to
+  payload or intentionally summarized into compact tracked provenance before
+  final tagging;
+- user-facing V4 docs and examples must continue to pass the public-surface
+  leakage scan.
 
 ## Goal-Level Decision Audit
 
 1. Was I foolish?
    - The earlier foolish path would be to claim "everything is clean" while
-     ignoring hundreds of untracked local files.
+     ignoring hundreds of untracked local files. That path is now closed by
+     strict release mode.
 
 2. What action would make this foolish?
-   - Staging raw evidence, external checkouts, V3/Phoenix local debris, or
-     review working files into the V4 user-facing release.
+   - Staging raw evidence, external checkouts, V3/Phoenix local debris, review
+     working files, or ignored history payload into the V4 user-facing release.
 
 3. Is there another path?
    - Yes: classify current public files, audit/history files, current code
@@ -187,6 +197,5 @@ truth:
 
 4. Can I now take the path that solves the problem?
    - Yes. The tracked V4 public surface is clean and gated. Strict release mode
-     now blocks a final clean-tree release while local debris remains, so the
-     next cleanup is a deliberate local-debris/archive decision, not a
-     release-claim shortcut.
+     now also passes, so future work must preserve this boundary rather than
+     reintroducing local debris into the current user path.

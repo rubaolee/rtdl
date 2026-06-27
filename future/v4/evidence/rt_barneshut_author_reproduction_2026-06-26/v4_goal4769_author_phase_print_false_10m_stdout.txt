@@ -1,0 +1,33 @@
+[0;34m#owl.sample(main): Starting run!
+[0mRead 10000000.000000
+Read 1.000000
+Read 0.025000
+Read 0.050000
+Read 0.500000
+Number of points: 10000000
+Maximum x: 1
+Maximum y: 1
+Maximum z: 1
+Grid Size: 2
+[0;34m#owl.sample(main): Bulding Non Bucket Tree with # Of Bodies = 10000000
+[0mNumber of leaves: 312500
+Max depth of Bucket Tree: 13
+Number of dfsNodes 414192
+Max stack size: 43
+Iterations: 414192
+Accel size: 0.013931 gb
+Minimum node-s value 0.000488
+Total memory needed: 2.71 gb
+--------------------------------------------------------------
+Sort Time: 6.87096 seconds.
+Tree build time: 1.71362 seconds.
+Tree to DFS time: 0.043701 seconds.
+Install AutoRopes time: 0.015301 seconds.
+Intersections setup time: 0.484204 seconds.
+RT Cores Force Calculations time: 1.12905 seconds.
+CPU Force Calculations time: 0 seconds.
+Iterative Step time: 1.76213 seconds.
+Total Program time: 10.4391 seconds.
+--------------------------------------------------------------
+[0;34m#owl.sample(main): destroying devicegroup ...
+[0m

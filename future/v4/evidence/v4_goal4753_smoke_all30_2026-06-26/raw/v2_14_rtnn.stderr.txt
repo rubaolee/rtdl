@@ -1,0 +1,12 @@
+usage: rtdl_rtnn_benchmark_app.py [-h]
+                                  [--mode {scope,ann_cpu_quality,ann_partner_quality,ann_embree_quality,rtnn_known_results,rtnn_command_plan,prepared_optix_ranked_summary,prepared_ranked_summary_raw,prepared_session_reuse_idiom,ranked_summary_typed_stream_plan,rtnn_v2_8_ranked_summary_plan}]
+                                  [--copies COPIES]
+                                  [--point-count POINT_COUNT]
+                                  [--radius RADIUS] [--repeat REPEAT]
+                                  [--query-batch-size QUERY_BATCH_SIZE]
+                                  [--distribution {uniform,clustered,shell}]
+                                  [--seed SEED] [--backend {optix,embree}]
+                                  [--partner {torch,cupy,numba,triton}]
+                                  [--operation {grouped_argmin_f64,grouped_argmax_f64,grouped_topk_f64}]
+                                  [--k K]
+rtdl_rtnn_benchmark_app.py: error: unrecognized arguments: --warmups 0
