@@ -32,7 +32,7 @@ class V4Goal4641CleanTreeReproducibilityTest(unittest.TestCase):
         decision = validate_v4_goal4641_clean_tree_reproducibility(ROOT)
 
         evidence = set(decision["evidence"])
-        self.assertIn("future/v4/v4_goal4641_clean_tree_reproducibility_gate_2026-06-25.md", evidence)
+        self.assertIn("tools/_archive/future/v4/v4_goal4641_clean_tree_reproducibility_gate_2026-06-25.md", evidence)
         self.assertIn("tests/v4_goal4641_clean_tree_reproducibility_test.py", evidence)
         for relative in evidence:
             with self.subTest(relative=relative):

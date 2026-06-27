@@ -51,7 +51,7 @@ class V4Goal4641CleanTreeReproducibility:
 def v4_goal4641_clean_tree_reproducibility_decision(root: Path | None = None) -> dict[str, Any]:
     repo = root or Path(__file__).resolve().parents[2]
     evidence = (
-        "future/v4/v4_goal4641_clean_tree_reproducibility_gate_2026-06-25.md",
+        "tools/_archive/future/v4/v4_goal4641_clean_tree_reproducibility_gate_2026-06-25.md",
         "tests/v4_goal4641_clean_tree_reproducibility_test.py",
     )
     evidence_exists = all((repo / path).exists() for path in evidence)

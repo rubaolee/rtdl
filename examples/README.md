@@ -15,6 +15,7 @@ PowerShell:
 ```powershell
 $env:PYTHONPATH = "src;."
 py -3 examples\simple\v4_frontdoor_quickstart.py
+py -3 examples\simple\sorting_rows.py
 py -3 examples\simple\benchmark_app_recipes.py
 ```
 
@@ -22,12 +23,13 @@ Linux or macOS:
 
 ```bash
 PYTHONPATH=src:. python examples/simple/v4_frontdoor_quickstart.py
+PYTHONPATH=src:. python examples/simple/sorting_rows.py
 PYTHONPATH=src:. python examples/simple/benchmark_app_recipes.py
 ```
 
 ## Learn the Benchmark Apps
 
-The tutorial is [../tutorials/current/06_benchmark_apps.md](../tutorials/current/06_benchmark_apps.md).
+The tutorial is [../tutorials/current/07_benchmark_apps.md](../tutorials/current/07_benchmark_apps.md).
 It explains how each app is built from V4 relations, operators, partners, and
 continuations before you open the full app source.
 

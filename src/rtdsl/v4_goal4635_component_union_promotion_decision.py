@@ -6,9 +6,9 @@ from typing import Any
 V4_GOAL4635_STATUS = "goal4635_component_union_measured_pod_gate_pass_not_release"
 V4_GOAL4635_DECISION = "promote_component_union_to_measured_tier2_operator_coverage_not_release"
 V4_GOAL4635_EVIDENCE = (
-    "future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/summary.json",
-    "future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/README.md",
-    "future/v4/reviews/claude_v4_goal4635_component_union_target_protocol_review_2026-06-25.md",
+    "tools/_archive/future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/summary.json",
+    "tools/_archive/future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/README.md",
+    "tools/_archive/future/v4/reviews/claude_v4_goal4635_component_union_target_protocol_review_2026-06-25.md",
 )
 
 

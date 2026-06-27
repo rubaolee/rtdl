@@ -87,7 +87,7 @@ def build_goal4716_productization_evidence() -> dict[str, object]:
             "primary_v2_speedup_geomean": 3.608025018751732,
             "primary_v3_speedup_geomean": 3.608025018751732,
             "min_primary_v3_speedup": 1.9761904761904763,
-            "source": "future/v4/evidence/v4_goal4715_custom_predicate_early_exit_timing_pod_2026-06-26.json",
+            "source": "tools/_archive/future/v4/evidence/v4_goal4715_custom_predicate_early_exit_timing_pod_2026-06-26.json",
         },
         "release_authorized": False,
         "formal_high_performance_authorized": False,

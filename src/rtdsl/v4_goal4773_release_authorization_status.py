@@ -69,19 +69,19 @@ def v4_goal4773_release_authorization_status(root: Path | None = None) -> dict[s
         status=V4_GOAL4773_STATUS,
         verdict=V4_GOAL4773_VERDICT,
         antigravity_review=(
-            "future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md"
+            "tools/_archive/future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md"
         ),
         review_packet=(
-            "future/v4/reviews/"
+            "tools/_archive/future/v4/reviews/"
             "v4_gemini_full_coverage_review_debt_for_antigravity_2026-06-27.md"
         ),
         release_owner_record=(
-            "future/v4/"
+            "tools/_archive/future/v4/"
             "v4_goal4773_antigravity_review_intake_and_release_owner_status_2026-06-27.md"
         ),
         current_status_doc="docs/current_v4_status.md",
         public_readme="README.md",
-        future_v4_readme="future/v4/README.md",
+        future_v4_readme="tools/_archive/future/v4/README.md",
         public_tag_externally_authorized=True,
         git_tag_created=True,
         clean_release_commit_required=True,

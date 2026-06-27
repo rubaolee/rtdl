@@ -35,4 +35,5 @@ docs/reports/**/*_r[0-9]*.json
 # Local archive payloads are intentionally kept out of release commits. Keep a
 # tracked README/manifest next to each payload when a cleanup sweep moves files
 # here.
-/history/local_workspace_debris_2026-06-27/payload/**
+/tools/_archive/history/local_workspace_debris_2026-06-27/payload/external/RT-BarnesHut-author/
+/tools/_archive/history/local_workspace_debris_2026-06-27/payload/**

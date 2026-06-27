@@ -118,7 +118,7 @@ def _payload(entry: BenchmarkPublicEntry) -> dict[str, object]:
         "operators": list(entry.operators),
         "partners": list(entry.partners),
         "current_entry": entry.current_entry,
-        "learn_more": "tutorials/current/06_benchmark_apps.md",
+        "learn_more": "tutorials/current/07_benchmark_apps.md",
         "full_harness_policy": (
             "The full harness is available for benchmark reproduction. Start with "
             "this V4 entrypoint when learning or browsing the app."

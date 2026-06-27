@@ -2,7 +2,7 @@
 
 These are the 10 RTDL V4 benchmark apps.
 
-Read [../../tutorials/current/06_benchmark_apps.md](../../tutorials/current/06_benchmark_apps.md)
+Read [../../tutorials/current/07_benchmark_apps.md](../../tutorials/current/07_benchmark_apps.md)
 first. It teaches the relation, operator, partner, and continuation used by
 each app.
 

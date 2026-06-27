@@ -87,8 +87,8 @@ _COVERAGE_ROWS = (
         ),
         continuation_classes=("nearest_witness", "count_threshold"),
         evidence_refs=(
-            "future/v4/reviews/goal4618_completion_consensus_and_review_debt_2026-06-24.md",
-            "future/v4/reviews/claude_v4_section8_fixed_radius_wrapper_surface_review_2026-06-24.md",
+            "tools/_archive/future/v4/reviews/goal4618_completion_consensus_and_review_debt_2026-06-24.md",
+            "tools/_archive/future/v4/reviews/claude_v4_section8_fixed_radius_wrapper_surface_review_2026-06-24.md",
         ),
         release_gap="Hausdorff app-level directed distance/threshold workflows are not yet a reviewed V4 release scorecard row.",
         next_action="Keep as partial coverage; do not use as the second release gate before a clearer same-contract operator target.",
@@ -98,7 +98,7 @@ _COVERAGE_ROWS = (
         coverage_status=V4_COVERAGE_DEFERRED,
         mapped_v4_operators=(),
         continuation_classes=("relation_topology", "aabb_prefilter"),
-        evidence_refs=("future/v4/v2_primitives_to_v4_tier2_inventory_2026-06-24.md",),
+        evidence_refs=("tools/_archive/future/v4/v2_primitives_to_v4_tier2_inventory_2026-06-24.md",),
         release_gap="Spatial relation/topology and repeated PIP routes are not current V4 GPU-array Tier-2 surfaces.",
         next_action="Defer to a future generic relation/AABB operator audit; do not use as the second V4 gate.",
     ),
@@ -111,8 +111,8 @@ _COVERAGE_ROWS = (
         ),
         continuation_classes=("count_threshold", "component_union"),
         evidence_refs=(
-            "future/v4/reviews/claude_v4_section8_fixed_radius_wrapper_surface_review_2026-06-24.md",
-            "future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/README.md",
+            "tools/_archive/future/v4/reviews/claude_v4_section8_fixed_radius_wrapper_surface_review_2026-06-24.md",
+            "tools/_archive/future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/README.md",
         ),
         release_gap=(
             "RTDBSCAN's count-threshold and component-union continuation classes now have measured "
@@ -129,7 +129,7 @@ _COVERAGE_ROWS = (
         coverage_status=V4_COVERAGE_PARTIAL_MEASURED,
         mapped_v4_operators=("v4_ray_triangle_any_hit_flags_2d_device_arrays",),
         continuation_classes=("any_hit_flag",),
-        evidence_refs=("future/v4/evidence/v4_section8_any_hit_flags_device_frontdoor_report_2026-06-24.md",),
+        evidence_refs=("tools/_archive/future/v4/evidence/v4_section8_any_hit_flags_device_frontdoor_report_2026-06-24.md",),
         release_gap="Collision app planning/setup and grouped segment lowering are not a full V4 release benchmark row.",
         next_action="Treat any-hit flags as partial generic coverage; do not claim whole-app collision acceleration.",
     ),
@@ -138,7 +138,7 @@ _COVERAGE_ROWS = (
         coverage_status=V4_COVERAGE_PARTIAL_MEASURED,
         mapped_v4_operators=("v4_point_group_nearest_witness_2d_device_arrays",),
         continuation_classes=("nearest_witness",),
-        evidence_refs=("future/v4/reviews/goal4618_completion_consensus_and_review_debt_2026-06-24.md",),
+        evidence_refs=("tools/_archive/future/v4/reviews/goal4618_completion_consensus_and_review_debt_2026-06-24.md",),
         release_gap="Bounded witness collection is adjacent to nearest-witness coverage but not a reviewed contact-manifold V4 gate.",
         next_action="Keep as partial nearest-witness coverage.",
     ),
@@ -152,8 +152,8 @@ _COVERAGE_ROWS = (
         ),
         continuation_classes=("grouped_i64_reduction", "argmin", "any_hit_flag"),
         evidence_refs=(
-            "future/v4/evidence/v4_primitive_grouped_i64_device_outputs_pod_gate_32768_131072_2026-06-24.md",
-            "future/v4/reviews/claude_v4_goal4617_grouped_i64_promotion_decision_review_2026-06-24.raw.md",
+            "tools/_archive/future/v4/evidence/v4_primitive_grouped_i64_device_outputs_pod_gate_32768_131072_2026-06-24.md",
+            "tools/_archive/future/v4/reviews/claude_v4_goal4617_grouped_i64_promotion_decision_review_2026-06-24.raw.md",
         ),
         release_gap="Needs Goal4628 scorecard reconciliation as the second non-fixed-radius same-contract gate.",
         next_action="Use grouped-i64 as the recommended Goal4628 second Tier-2 same-contract gate.",
@@ -164,7 +164,7 @@ _COVERAGE_ROWS = (
         coverage_status=V4_COVERAGE_DEFERRED,
         mapped_v4_operators=(),
         continuation_classes=("aggregate_tree_weighted_vector_sum",),
-        evidence_refs=("future/v4/v2_primitives_to_v4_tier2_inventory_2026-06-24.md",),
+        evidence_refs=("tools/_archive/future/v4/v2_primitives_to_v4_tier2_inventory_2026-06-24.md",),
         release_gap="Aggregate-tree weighted vector sum was rejected for V4.0 because it is Barnes-Hut/N-body specific rather than a generic RT-core operator.",
         next_action="Keep deferred; do not use Barnes-Hut as a V4.0 Tier-2 release gate.",
     ),
@@ -174,8 +174,8 @@ _COVERAGE_ROWS = (
         mapped_v4_operators=("v4_aabb_index_query_2d_all_ops_count_prepared_runner",),
         continuation_classes=("aabb_index_query",),
         evidence_refs=(
-            "future/v4/evidence/v4_goal4636c_aabb_index_all_ops_pod_gate_2026-06-25/m30_all_ops.json",
-            "future/v4/v4_goal4636c_aabb_index_pod_gate_decision_2026-06-25.md",
+            "tools/_archive/future/v4/evidence/v4_goal4636c_aabb_index_all_ops_pod_gate_2026-06-25/m30_all_ops.json",
+            "tools/_archive/future/v4/v4_goal4636c_aabb_index_pod_gate_decision_2026-06-25.md",
         ),
         release_gap=(
             "LibRTS spatial-index now maps to measured generic AABB all-ops operator coverage. "
@@ -191,7 +191,7 @@ _COVERAGE_ROWS = (
         coverage_status=V4_COVERAGE_PARTIAL_MEASURED,
         mapped_v4_operators=("v4_point_group_nearest_witness_2d_device_arrays",),
         continuation_classes=("nearest_witness", "ranked_summary_topk"),
-        evidence_refs=("future/v4/reviews/goal4618_completion_consensus_and_review_debt_2026-06-24.md",),
+        evidence_refs=("tools/_archive/future/v4/reviews/goal4618_completion_consensus_and_review_debt_2026-06-24.md",),
         release_gap="RTNN ranked fixed-radius/top-k 3D summaries are not current V4 measured surfaces.",
         next_action="Keep nearest-witness as partial coverage; ranked/top-k remains deferred.",
     ),
@@ -204,9 +204,9 @@ _COVERAGE_ROWS = (
         ),
         continuation_classes=("any_hit_weighted_sum", "grouped_i64_reduction"),
         evidence_refs=(
-            "future/v4/reviews/goal4620_completion_consensus_and_review_debt_2026-06-24.md",
-            "future/v4/evidence/v4_goal4633_weighted_sum_promotion_gate_2026-06-25.md",
-            "future/v4/reviews/goal4633_completion_consensus_and_review_debt_2026-06-25.md",
+            "tools/_archive/future/v4/reviews/goal4620_completion_consensus_and_review_debt_2026-06-24.md",
+            "tools/_archive/future/v4/evidence/v4_goal4633_weighted_sum_promotion_gate_2026-06-25.md",
+            "tools/_archive/future/v4/reviews/goal4633_completion_consensus_and_review_debt_2026-06-25.md",
         ),
         release_gap=(
             "Triangle counting's dominant any-hit weighted/count continuation path now has a measured "

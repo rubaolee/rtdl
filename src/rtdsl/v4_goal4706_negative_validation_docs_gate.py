@@ -109,7 +109,7 @@ def v4_goal4706_negative_validation_docs_gate() -> V4Goal4706Gate:
         status=V4_GOAL4706_NEGATIVE_VALIDATION_DOCS_STATUS,
         accepted_example_status=str(accepted["stage"]),
         negative_rows=tuple(rows),
-        example_path="future/v4/examples/simple_specialized_tier3_scalar_callback_candidate_example.py",
+        example_path="tools/_archive/future/v4/examples/simple_specialized_tier3_scalar_callback_candidate_example.py",
         next_goal=V4_GOAL4706_NEXT_GOAL,
     )
 

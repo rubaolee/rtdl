@@ -68,12 +68,12 @@ V4_GOAL4633_WEIGHTED_SUM_RATIOS = (
 
 
 V4_GOAL4633_EVIDENCE_FILES = (
-    "future/v4/evidence/v4_goal4633_weighted_sum_promotion_gate_2026-06-25.json",
-    "future/v4/evidence/v4_goal4633_weighted_sum_promotion_gate_2026-06-25.md",
-    "future/v4/v4_goal4633_weighted_sum_promotion_decision_2026-06-25.md",
-    "future/v4/reviews/claude_v4_goal4633_weighted_sum_promotion_gate_protocol_review_2026-06-24.md",
-    "future/v4/reviews/claude_v4_goal4633_weighted_sum_promotion_completion_review_2026-06-25.md",
-    "future/v4/reviews/antigravity_v4_goal4633_weighted_sum_promotion_completion_review_blocked_2026-06-25.md",
+    "tools/_archive/future/v4/evidence/v4_goal4633_weighted_sum_promotion_gate_2026-06-25.json",
+    "tools/_archive/future/v4/evidence/v4_goal4633_weighted_sum_promotion_gate_2026-06-25.md",
+    "tools/_archive/future/v4/v4_goal4633_weighted_sum_promotion_decision_2026-06-25.md",
+    "tools/_archive/future/v4/reviews/claude_v4_goal4633_weighted_sum_promotion_gate_protocol_review_2026-06-24.md",
+    "tools/_archive/future/v4/reviews/claude_v4_goal4633_weighted_sum_promotion_completion_review_2026-06-25.md",
+    "tools/_archive/future/v4/reviews/antigravity_v4_goal4633_weighted_sum_promotion_completion_review_blocked_2026-06-25.md",
 )
 
 

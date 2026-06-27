@@ -46,10 +46,10 @@ class V4Goal4631Tier3SpikeDecisionTest(unittest.TestCase):
 
     def test_decision_matches_existing_pod_evidence_files(self) -> None:
         ptx_payload = json.loads(
-            (ROOT / "future/v4/evidence/v4_tier3_numba_ptx_probe_2026-06-24.json").read_text(encoding="utf-8")
+            (ROOT / "tools/_archive/future/v4/evidence/v4_tier3_numba_ptx_probe_2026-06-24.json").read_text(encoding="utf-8")
         )
         link_payload = json.loads(
-            (ROOT / "future/v4/evidence/v4_tier3_optix_module_link_probe_2026-06-24.json").read_text(encoding="utf-8")
+            (ROOT / "tools/_archive/future/v4/evidence/v4_tier3_optix_module_link_probe_2026-06-24.json").read_text(encoding="utf-8")
         )
 
         self.assertTrue(ptx_payload["ptx_generated"])

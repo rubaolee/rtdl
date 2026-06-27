@@ -44,8 +44,8 @@ class V4Goal4642FinalAuthorizationPacket:
 
 def v4_goal4642_final_authorization_packet(root: Path | None = None) -> dict[str, Any]:
     repo = root or Path(__file__).resolve().parents[2]
-    packet = "future/v4/v4_goal4642_final_3ai_release_authorization_packet_2026-06-25.md"
-    call = "future/v4/reviews/call_for_review_v4_goal4642_final_3ai_release_authorization_2026-06-25.md"
+    packet = "tools/_archive/future/v4/v4_goal4642_final_3ai_release_authorization_packet_2026-06-25.md"
+    call = "tools/_archive/future/v4/reviews/call_for_review_v4_goal4642_final_3ai_release_authorization_2026-06-25.md"
 
     return V4Goal4642FinalAuthorizationPacket(
         status=V4_GOAL4642_PACKET_STATUS,
@@ -53,10 +53,10 @@ def v4_goal4642_final_authorization_packet(root: Path | None = None) -> dict[str
         required_reviewer_count=3,
         packet=packet,
         call_for_review=call,
-        scorecard_passed=(repo / "future/v4/v4_goal4639_serious_release_scorecard_pod_gate_decision_2026-06-25.md").exists(),
-        clean_tree_passed=(repo / "future/v4/v4_goal4641_clean_tree_reproducibility_gate_2026-06-25.md").exists(),
+        scorecard_passed=(repo / "tools/_archive/future/v4/v4_goal4639_serious_release_scorecard_pod_gate_decision_2026-06-25.md").exists(),
+        clean_tree_passed=(repo / "tools/_archive/future/v4/v4_goal4641_clean_tree_reproducibility_gate_2026-06-25.md").exists(),
         packet_clean_tree_revalidation_commit="437b79a2a382082e269d0d0ee128528caf0ae112",
-        public_docs_cleaned=(repo / "future/v4/v4_goal4640_public_docs_cleanup_decision_2026-06-25.md").exists(),
+        public_docs_cleaned=(repo / "tools/_archive/future/v4/v4_goal4640_public_docs_cleanup_decision_2026-06-25.md").exists(),
         release_authorized=False,
         forbidden_claims=(
             "broad V4 speedup",

@@ -17,9 +17,9 @@ from rtdsl.v4_goal4775_release_staging_manifest import (  # noqa: E402
 )
 
 
-DEFAULT_JSON = ROOT / "future/v4/evidence/v4_goal4775_release_staging_manifest_2026-06-27.json"
-DEFAULT_MD = ROOT / "future/v4/v4_goal4775_release_staging_manifest_2026-06-27.md"
-DEFAULT_PATHSPEC = ROOT / "future/v4/v4_goal4775_release_stage_pathspec_2026-06-27.txt"
+DEFAULT_JSON = ROOT / "tools/_archive/future/v4/evidence/v4_goal4775_release_staging_manifest_2026-06-27.json"
+DEFAULT_MD = ROOT / "tools/_archive/future/v4/v4_goal4775_release_staging_manifest_2026-06-27.md"
+DEFAULT_PATHSPEC = ROOT / "tools/_archive/future/v4/v4_goal4775_release_stage_pathspec_2026-06-27.txt"
 
 
 def _write_markdown(payload: dict, path: Path, pathspec_path: Path) -> None:

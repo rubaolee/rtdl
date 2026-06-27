@@ -33,16 +33,16 @@ def v4_goal4643_publication_decision(root: Path | None = None) -> dict[str, Any]
     pyproject_version = _project_version((repo / "pyproject.toml").read_text(encoding="utf-8"))
     version_file = (repo / "VERSION").read_text(encoding="utf-8").strip()
     required_reviews = (
-        "future/v4/reviews/v4_goal4717_custom_predicate_early_exit_serious_scale_validation_review_debt_2026-06-26.md",
-        "future/v4/reviews/v4_goal4718_release_matrix_after_custom_predicate_review_debt_2026-06-26.md",
-        "future/v4/reviews/v4_goal4719_public_docs_examples_release_candidate_cleanup_review_debt_2026-06-26.md",
+        "tools/_archive/future/v4/reviews/v4_goal4717_custom_predicate_early_exit_serious_scale_validation_review_debt_2026-06-26.md",
+        "tools/_archive/future/v4/reviews/v4_goal4718_release_matrix_after_custom_predicate_review_debt_2026-06-26.md",
+        "tools/_archive/future/v4/reviews/v4_goal4719_public_docs_examples_release_candidate_cleanup_review_debt_2026-06-26.md",
     )
     required_docs = (
         "README.md",
         "docs/current_v4_status.md",
-        "future/v4/README.md",
-        "future/v4/tier2_operator_catalog.md",
-        "future/v4/v4_0_scope_gate.md",
+        "tools/_archive/future/v4/README.md",
+        "tools/_archive/future/v4/tier2_operator_catalog.md",
+        "tools/_archive/future/v4/v4_0_scope_gate.md",
     )
 
     return {

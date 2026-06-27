@@ -135,9 +135,9 @@ def ray_triangle_custom_predicate_early_exit_claim_boundary_v4(
             "or arbitrary callback speed claim"
         ),
         "source_evidence": (
-            "future/v4/evidence/v4_goal4715_custom_predicate_early_exit_timing_pod_2026-06-26.json",
-            "future/v4/v4_goal4715_custom_predicate_early_exit_timing_pod_2026-06-26.md",
-            "future/v4/evidence/v4_goal4717_custom_predicate_early_exit_serious_scale_pod_2026-06-26.json",
+            "tools/_archive/future/v4/evidence/v4_goal4715_custom_predicate_early_exit_timing_pod_2026-06-26.json",
+            "tools/_archive/future/v4/v4_goal4715_custom_predicate_early_exit_timing_pod_2026-06-26.md",
+            "tools/_archive/future/v4/evidence/v4_goal4717_custom_predicate_early_exit_serious_scale_pod_2026-06-26.json",
         ),
         "release_claim_authorized": False,
         "broad_v4_speedup_claim_authorized": False,

@@ -119,7 +119,7 @@ def _run_command(command: tuple[str, ...], *, env: dict[str, str]) -> tuple[int,
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the V4 Goal4639 serious release scorecard POD gate.")
-    parser.add_argument("--output-dir", type=Path, default=Path("future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25"))
+    parser.add_argument("--output-dir", type=Path, default=Path("tools/_archive/future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25"))
     parser.add_argument("--json-out", type=Path)
     parser.add_argument("--md-out", type=Path)
     parser.add_argument("--plan-only", action="store_true")

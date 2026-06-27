@@ -1,0 +1,19 @@
+Command:
+
+py -m unittest discover -s tests -p "v4*_test.py"
+
+Result:
+
+Ran 632 tests in 83.046s
+
+OK (skipped=1)
+
+Notes:
+
+- The local Python emitted repeated "Could not find platform independent
+  libraries <prefix>" warnings. These warnings were also present in earlier
+  successful Goal4759 full gates and did not indicate test failure.
+- Goal4771 was run after Goal4770 updated the Barnes-Hut release-packet delta,
+  public docs, final evidence manifest hashes, and Goal4758 manifest artifact
+  count expectations.
+

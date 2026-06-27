@@ -14,7 +14,7 @@ if str(SRC) not in sys.path:
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-_ARCHIVE_ROOT = ROOT / "history" / "v4_0_benchmark_harness_archive_2026-06-27"
+_ARCHIVE_ROOT = ROOT / "tools" / "_archive" / "history" / "v4_0_benchmark_harness_archive_2026-06-27"
 
 _ARCHIVED_HARNESSES = {
     "rt_dbscan": "examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",

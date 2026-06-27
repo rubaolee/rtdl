@@ -6,8 +6,8 @@ from typing import Any
 V4_GOAL4636B_DECISION_STATUS = "goal4636b_grouped_any_hit_pod_gate_failed_no_promotion_not_release"
 V4_GOAL4636B_DECISION = "reject_grouped_any_hit_promotion_keep_robot_collision_partial"
 V4_GOAL4636B_EVIDENCE = (
-    "future/v4/evidence/v4_goal4636b_grouped_any_hit_pod_gate_2026-06-25/summary.json",
-    "future/v4/reviews/goal4636b_grouped_any_hit_target_protocol_review_record_2026-06-25.md",
+    "tools/_archive/future/v4/evidence/v4_goal4636b_grouped_any_hit_pod_gate_2026-06-25/summary.json",
+    "tools/_archive/future/v4/reviews/goal4636b_grouped_any_hit_target_protocol_review_record_2026-06-25.md",
 )
 
 

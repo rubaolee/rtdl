@@ -45,6 +45,12 @@ V3_HISTORY_MARKERS = (
     "PHOENIX_V3",
 )
 
+OLD_TOPLEVEL_RELOCATION_PREFIXES = (
+    "dist/",
+    "future/",
+    "history/",
+)
+
 STAGE_PREFIXES = (
     ".gitattributes",
     ".gitignore",
@@ -62,11 +68,11 @@ STAGE_PREFIXES = (
     "examples/current/",
     "examples/paper_reproduction/",
     "examples/simple/",
-    "future/README.md",
-    "future/v4/",
-    "history/v4_0_benchmark_harness_archive_2026-06-27/",
-    "history/v4_0_release_audit_2026-06-27/",
-    "history/local_workspace_debris_2026-06-27/README.md",
+    "tools/_archive/future/README.md",
+    "tools/_archive/future/v4/",
+    "tools/_archive/history/v4_0_benchmark_harness_archive_2026-06-27/",
+    "tools/_archive/history/v4_0_release_audit_2026-06-27/",
+    "tools/_archive/history/local_workspace_debris_2026-06-27/README.md",
     "scripts/v4_",
     "scripts/rt_barneshut_author_contract_probe.py",
     "scripts/run_claude_v4_0_release_candidate_review_2026_06_24.ps1",
@@ -89,15 +95,15 @@ FUTURE_V4_EVIDENCE_STAGE_SUFFIXES = (
 )
 
 FUTURE_V4_REVIEW_STAGE_EXACT = (
-    "future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md",
-    "future/v4/reviews/antigravity_v4_goal4757_final_v4_0_release_review_2026-06-26.md",
-    "future/v4/reviews/antigravity_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
-    "future/v4/reviews/call_for_review_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
-    "future/v4/reviews/forward_message_v4_pre_release_items_1_to_5_completion_2026-06-27.txt",
-    "future/v4/reviews/claude_v4_0_0_release_review_2026-06-25.md",
-    "future/v4/reviews/v4_gemini_full_coverage_review_debt_for_antigravity_2026-06-27.md",
-    "future/v4/reviews/v4_goal4757_final_release_external_review_debt_2026-06-26.md",
-    "future/v4/reviews/v4_benchmark_harness_public_entry_cleanup_2026-06-27.md",
+    "tools/_archive/future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md",
+    "tools/_archive/future/v4/reviews/antigravity_v4_goal4757_final_v4_0_release_review_2026-06-26.md",
+    "tools/_archive/future/v4/reviews/antigravity_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
+    "tools/_archive/future/v4/reviews/call_for_review_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
+    "tools/_archive/future/v4/reviews/forward_message_v4_pre_release_items_1_to_5_completion_2026-06-27.txt",
+    "tools/_archive/future/v4/reviews/claude_v4_0_0_release_review_2026-06-25.md",
+    "tools/_archive/future/v4/reviews/v4_gemini_full_coverage_review_debt_for_antigravity_2026-06-27.md",
+    "tools/_archive/future/v4/reviews/v4_goal4757_final_release_external_review_debt_2026-06-26.md",
+    "tools/_archive/future/v4/reviews/v4_benchmark_harness_public_entry_cleanup_2026-06-27.md",
 )
 
 REQUIRED_STAGE_PATHS = (
@@ -112,6 +118,7 @@ REQUIRED_STAGE_PATHS = (
     "docs/public_documentation_map.md",
     "examples/README.md",
     "examples/benchmark_apps/README.md",
+    "examples/simple/sorting_rows.py",
     "examples/benchmark_apps/_support/_repo_bootstrap.py",
     "examples/benchmark_apps/_support/v4_public_entry.py",
     "examples/benchmark_apps/_support/rtdl_ann_candidate_app.py",
@@ -120,25 +127,26 @@ REQUIRED_STAGE_PATHS = (
     "examples/benchmark_apps/_support/rtdl_language_reference.py",
     "examples/benchmark_apps/rt_dbscan/v4_app.py",
     "src/rtdsl/_example_support/benchmark_harness_compat.py",
-    "future/README.md",
-    "future/v4/README.md",
-    "history/v4_0_benchmark_harness_archive_2026-06-27/examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
-    "history/v4_0_release_audit_2026-06-27/README.md",
-    "tutorials/current/06_benchmark_apps.md",
-    "tutorials/current/07_partner_choice.md",
-    "future/v4/V4_CURRENT_AGENT_REFRESH_RUNBOOK_2026-06-25.md",
-    "future/v4/reviews/v4_gemini_full_coverage_review_debt_for_antigravity_2026-06-27.md",
-    "future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md",
-    "future/v4/v4_goal4773_antigravity_review_intake_and_release_owner_status_2026-06-27.md",
-    "future/v4/v4_goal4779_pre_release_items_1_to_5_completion_2026-06-27.md",
-    "future/v4/reviews/antigravity_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
-    "future/v4/reviews/call_for_review_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
-    "future/v4/reviews/forward_message_v4_pre_release_items_1_to_5_completion_2026-06-27.txt",
-    "future/v4/evidence/v4_goal4774_release_packaging_audit_2026-06-27.json",
-    "future/v4/v4_goal4774_release_packaging_audit_2026-06-27.md",
-    "future/v4/evidence/v4_goal4775_release_staging_manifest_2026-06-27.json",
-    "future/v4/v4_goal4775_release_staging_manifest_2026-06-27.md",
-    "future/v4/v4_goal4775_release_stage_pathspec_2026-06-27.txt",
+    "tools/_archive/future/README.md",
+    "tools/_archive/future/v4/README.md",
+    "tools/_archive/history/v4_0_benchmark_harness_archive_2026-06-27/examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+    "tools/_archive/history/v4_0_release_audit_2026-06-27/README.md",
+    "tutorials/current/03_sorting_rows.md",
+    "tutorials/current/07_benchmark_apps.md",
+    "tutorials/current/08_choose_a_partner.md",
+    "tools/_archive/future/v4/V4_CURRENT_AGENT_REFRESH_RUNBOOK_2026-06-25.md",
+    "tools/_archive/future/v4/reviews/v4_gemini_full_coverage_review_debt_for_antigravity_2026-06-27.md",
+    "tools/_archive/future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md",
+    "tools/_archive/future/v4/v4_goal4773_antigravity_review_intake_and_release_owner_status_2026-06-27.md",
+    "tools/_archive/future/v4/v4_goal4779_pre_release_items_1_to_5_completion_2026-06-27.md",
+    "tools/_archive/future/v4/reviews/antigravity_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
+    "tools/_archive/future/v4/reviews/call_for_review_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
+    "tools/_archive/future/v4/reviews/forward_message_v4_pre_release_items_1_to_5_completion_2026-06-27.txt",
+    "tools/_archive/future/v4/evidence/v4_goal4774_release_packaging_audit_2026-06-27.json",
+    "tools/_archive/future/v4/v4_goal4774_release_packaging_audit_2026-06-27.md",
+    "tools/_archive/future/v4/evidence/v4_goal4775_release_staging_manifest_2026-06-27.json",
+    "tools/_archive/future/v4/v4_goal4775_release_staging_manifest_2026-06-27.md",
+    "tools/_archive/future/v4/v4_goal4775_release_stage_pathspec_2026-06-27.txt",
     "src/rtdsl/v4_goal4773_release_authorization_status.py",
     "src/rtdsl/v4_goal4774_release_packaging_audit.py",
     "src/rtdsl/v4_goal4775_release_staging_manifest.py",
@@ -183,7 +191,7 @@ def _git_status_uall(repo: Path) -> list[tuple[str, str]]:
 
 
 def _is_future_v4_evidence_stage_file(path: str) -> bool:
-    return path.startswith("future/v4/evidence/") and path.endswith(FUTURE_V4_EVIDENCE_STAGE_SUFFIXES)
+    return path.startswith("tools/_archive/future/v4/evidence/") and path.endswith(FUTURE_V4_EVIDENCE_STAGE_SUFFIXES)
 
 
 def _is_future_v4_review_stage_file(path: str) -> bool:
@@ -191,6 +199,8 @@ def _is_future_v4_review_stage_file(path: str) -> bool:
 
 
 def _classify(path: str) -> tuple[str, str]:
+    if path.startswith(OLD_TOPLEVEL_RELOCATION_PREFIXES):
+        return "exclude_from_v4_release_commit", "old_top_level_path_relocated_under_tools_archive"
     if path in EXCLUDE_EXACT:
         return "exclude_from_v4_release_commit", "ad_hoc_review_helper_not_release_surface"
     if path.startswith(EXCLUDE_PREFIXES):
@@ -201,9 +211,9 @@ def _classify(path: str) -> tuple[str, str]:
         return "exclude_from_v4_release_commit", "tool_output_or_cache_artifact"
     if path.startswith(V3_HISTORY_PREFIXES) or any(marker in path for marker in V3_HISTORY_MARKERS):
         return "hold_v3_history_not_v4_tag", "phoenix_v3_history_not_part_of_v4_public_tag"
-    if path.startswith("future/v4/evidence/") and not _is_future_v4_evidence_stage_file(path):
+    if path.startswith("tools/_archive/future/v4/evidence/") and not _is_future_v4_evidence_stage_file(path):
         return "exclude_from_v4_release_commit", "raw_or_noncompact_evidence_not_for_tag"
-    if path.startswith("future/v4/reviews/") and not _is_future_v4_review_stage_file(path):
+    if path.startswith("tools/_archive/future/v4/reviews/") and not _is_future_v4_review_stage_file(path):
         return "hold_review_debt_not_v4_tag", "older_review_debt_or_prompt_not_needed_for_public_tag"
     if path.startswith(STAGE_PREFIXES):
         return "stage_for_v4_release_commit", "current_v4_source_docs_tests_or_compact_evidence"
@@ -292,7 +302,7 @@ def validate_v4_goal4775_release_staging_manifest(root: Path | None = None) -> d
             raise ValueError(f"Goal4775 stage list includes V3 history path: {path}")
         if any(marker in path for marker in forbidden_markers):
             raise ValueError(f"Goal4775 stage list includes raw/generated artifact: {path}")
-        if path.startswith("future/v4/evidence/") and not _is_future_v4_evidence_stage_file(path):
+        if path.startswith("tools/_archive/future/v4/evidence/") and not _is_future_v4_evidence_stage_file(path):
             raise ValueError(f"Goal4775 stage list includes noncompact evidence: {path}")
         full_path = (root or Path(__file__).resolve().parents[2]) / path
         if full_path.is_file() and full_path.stat().st_size == 0:

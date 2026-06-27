@@ -6,9 +6,9 @@ from typing import Any
 V4_GOAL4636_STATUS = "goal4636_threshold_summary_pod_gate_failed_no_promotion_not_release"
 V4_GOAL4636_DECISION = "reject_threshold_summary_promotion_keep_hausdorff_partial"
 V4_GOAL4636_EVIDENCE = (
-    "future/v4/evidence/v4_goal4636_threshold_summary_pod_gate_2026-06-25/summary.json",
-    "future/v4/evidence/v4_goal4636_threshold_summary_pod_gate_2026-06-25/README.md",
-    "future/v4/reviews/goal4636_threshold_summary_target_protocol_review_record_2026-06-25.md",
+    "tools/_archive/future/v4/evidence/v4_goal4636_threshold_summary_pod_gate_2026-06-25/summary.json",
+    "tools/_archive/future/v4/evidence/v4_goal4636_threshold_summary_pod_gate_2026-06-25/README.md",
+    "tools/_archive/future/v4/reviews/goal4636_threshold_summary_target_protocol_review_record_2026-06-25.md",
 )
 
 

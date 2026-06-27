@@ -26,9 +26,9 @@ V4_PROTOCOL_ROW_TYPES = (
 )
 
 V4_GOAL4653_PROTOCOL_SOURCE_INPUTS = (
-    "future/v4/evidence/v4_goal4652_app_route_binding_matrix_2026-06-25.json",
-    "future/v4/evidence/v4_goal4662_app_route_binding_after_hausdorff_rtnn_2026-06-25.json",
-    "future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.json",
+    "tools/_archive/future/v4/evidence/v4_goal4652_app_route_binding_matrix_2026-06-25.json",
+    "tools/_archive/future/v4/evidence/v4_goal4662_app_route_binding_after_hausdorff_rtnn_2026-06-25.json",
+    "tools/_archive/future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.json",
     "scripts/phoenix_v3_serious_paired_v2x_runner.sh",
 )
 

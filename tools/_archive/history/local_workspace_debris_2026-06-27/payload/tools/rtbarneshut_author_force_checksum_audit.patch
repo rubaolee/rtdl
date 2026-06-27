@@ -1,0 +1,26 @@
+diff --git a/samples/cmdline/s01-rtbarneshut/hostCode.cu b/samples/cmdline/s01-rtbarneshut/hostCode.cu
+index c7a544e..a4310bb 100644
+--- a/samples/cmdline/s01-rtbarneshut/hostCode.cu
++++ b/samples/cmdline/s01-rtbarneshut/hostCode.cu
+@@ -634,6 +634,12 @@ int main(int ac, char **av) {
+   profileStats->forceCalculationTime = std::chrono::duration_cast<std::chrono::microseconds>(end1 - start1);
+ 
+   auto iterative_step_time_end = chrono::steady_clock::now();
++  double rtForceChecksum = 0.0;
++  double rtForceAbsChecksum = 0.0;
++  for(size_t i = 0; i < points.size(); i++) {
++    rtForceChecksum += static_cast<double>(rtComputedForces[i]);
++    rtForceAbsChecksum += std::abs(static_cast<double>(rtComputedForces[i]));
++  }
+   profileStats->iterativeStepTime += chrono::duration_cast<chrono::microseconds>(iterative_step_time_end - iterative_step_time_start);
+ 
+   // ##################################################################
+@@ -655,6 +661,8 @@ int main(int ac, char **av) {
+     std::cout << "Preprocessing Time: " << preproccesing << " seconds." << std::endl;
+     std::cout << "RT Cores Force Calculations time: " << profileStats->forceCalculationTime.count() / 1000000.0 << " seconds." << std::endl;
+     std::cout << "Execution time: " << profileStats->iterativeStepTime.count() / 1000000.0 << " seconds." << std::endl;
++    std::cout << "RT Force checksum: " << rtForceChecksum << std::endl;
++    std::cout << "RT Force abs checksum: " << rtForceAbsChecksum << std::endl;
+     printf("--------------------------------------------------------------\n");
+   } else {
+     // Print Statistics

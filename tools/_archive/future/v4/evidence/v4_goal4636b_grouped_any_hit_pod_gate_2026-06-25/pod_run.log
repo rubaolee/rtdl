@@ -1,0 +1,69 @@
+[robot-collision] start validation_embree repeats=5 warmup=1
+[robot-collision] heartbeat validation_embree elapsed=30.0s
+[robot-collision] heartbeat validation_embree elapsed=60.0s
+[robot-collision] heartbeat validation_embree elapsed=90.1s
+[robot-collision] heartbeat validation_embree elapsed=120.1s
+[robot-collision] heartbeat validation_embree elapsed=150.1s
+[robot-collision] heartbeat validation_embree elapsed=180.1s
+[robot-collision] heartbeat validation_embree elapsed=210.1s
+[robot-collision] heartbeat validation_embree elapsed=240.1s
+[robot-collision] heartbeat validation_embree elapsed=270.1s
+[robot-collision] heartbeat validation_embree elapsed=300.1s
+[robot-collision] heartbeat validation_embree elapsed=330.2s
+[robot-collision] heartbeat validation_embree elapsed=360.2s
+[robot-collision] heartbeat validation_embree elapsed=390.2s
+[robot-collision] heartbeat validation_embree elapsed=420.2s
+[robot-collision] heartbeat validation_embree elapsed=450.2s
+[robot-collision] heartbeat validation_embree elapsed=480.2s
+[robot-collision] heartbeat validation_embree elapsed=510.2s
+[robot-collision] heartbeat validation_embree elapsed=540.2s
+[robot-collision] heartbeat validation_embree elapsed=570.3s
+[robot-collision] done validation_embree rc=0 elapsed=571.010s
+[robot-collision] start validation_optix repeats=5 warmup=1
+[robot-collision] heartbeat validation_optix elapsed=30.0s
+[robot-collision] heartbeat validation_optix elapsed=60.0s
+[robot-collision] heartbeat validation_optix elapsed=90.0s
+[robot-collision] heartbeat validation_optix elapsed=120.1s
+[robot-collision] heartbeat validation_optix elapsed=150.1s
+[robot-collision] heartbeat validation_optix elapsed=180.1s
+[robot-collision] heartbeat validation_optix elapsed=210.1s
+[robot-collision] heartbeat validation_optix elapsed=240.1s
+[robot-collision] heartbeat validation_optix elapsed=270.1s
+[robot-collision] heartbeat validation_optix elapsed=300.1s
+[robot-collision] heartbeat validation_optix elapsed=330.2s
+[robot-collision] heartbeat validation_optix elapsed=360.2s
+[robot-collision] heartbeat validation_optix elapsed=390.2s
+[robot-collision] heartbeat validation_optix elapsed=420.2s
+[robot-collision] heartbeat validation_optix elapsed=450.2s
+[robot-collision] heartbeat validation_optix elapsed=480.2s
+[robot-collision] heartbeat validation_optix elapsed=510.3s
+[robot-collision] heartbeat validation_optix elapsed=540.3s
+[robot-collision] done validation_optix rc=0 elapsed=557.277s
+[robot-collision] start timed_sample01_embree repeats=101 warmup=5
+[robot-collision] done timed_sample01_embree rc=0 elapsed=3.753s
+[robot-collision] start timed_sample01_optix repeats=101 warmup=5
+[robot-collision] done timed_sample01_optix rc=0 elapsed=4.004s
+[robot-collision] start timed_sample02_embree repeats=101 warmup=5
+[robot-collision] done timed_sample02_embree rc=0 elapsed=3.503s
+[robot-collision] start timed_sample02_optix repeats=101 warmup=5
+[robot-collision] done timed_sample02_optix rc=0 elapsed=4.254s
+[robot-collision] start timed_sample03_embree repeats=101 warmup=5
+[robot-collision] done timed_sample03_embree rc=0 elapsed=3.503s
+[robot-collision] start timed_sample03_optix repeats=101 warmup=5
+[robot-collision] done timed_sample03_optix rc=0 elapsed=4.003s
+[robot-collision] start timed_sample04_embree repeats=101 warmup=5
+[robot-collision] done timed_sample04_embree rc=0 elapsed=3.503s
+[robot-collision] start timed_sample04_optix repeats=101 warmup=5
+[robot-collision] done timed_sample04_optix rc=0 elapsed=4.254s
+[robot-collision] start timed_sample05_embree repeats=101 warmup=5
+[robot-collision] done timed_sample05_embree rc=0 elapsed=3.503s
+[robot-collision] start timed_sample05_optix repeats=101 warmup=5
+[robot-collision] done timed_sample05_optix rc=0 elapsed=4.254s
+{
+  "mean_tail_embree_over_optix_no_probe": 4.127811276781783,
+  "mean_wrapper_embree_over_optix_no_probe": 0.8566591773370428,
+  "output_dir": "future/v4/evidence/v4_goal4636b_grouped_any_hit_pod_gate_2026-06-25",
+  "status": "ok",
+  "timed_status": "pass",
+  "validation_status": "pass"
+}

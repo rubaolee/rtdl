@@ -39,7 +39,7 @@ class V4Goal4650FixedNumbaContinuationCertificationTest(unittest.TestCase):
         self.assertEqual("rt_dbscan", record["target_coverage_row"])
         self.assertEqual("component_union", record["continuation_class"])
         self.assertIn(
-            "future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/summary.json",
+            "tools/_archive/future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/summary.json",
             record["evidence"],
         )
 

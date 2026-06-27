@@ -6,9 +6,9 @@ from typing import Any
 V4_GOAL4639_STATUS = "goal4639_serious_release_scorecard_pod_gate_passed_not_release"
 V4_GOAL4639_DECISION = "accept_release_scorecard_continue_to_docs_clean_tree_and_3ai"
 V4_GOAL4639_EVIDENCE = (
-    "future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.json",
-    "future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.md",
-    "future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/run.log",
+    "tools/_archive/future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.json",
+    "tools/_archive/future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.md",
+    "tools/_archive/future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/run.log",
 )
 V4_GOAL4639_SURFACE_RATIOS = {
     "v4_fixed_radius_count_threshold_2d_device_arrays": 1.69721,

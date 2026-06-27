@@ -209,9 +209,9 @@ V4_TIER2_OPERATOR_SURFACES = {
             "V4 is parity with V3.0.2 because V3.0.2 already contains the same device-column primitive family"
         ),
         "source_evidence": (
-            "future/v4/evidence/v4_goal4676_aggregate_frontier_pod_benchmark_2026-06-25.json",
-            "future/v4/evidence/v4_goal4676_serious_2026-06-25/summary.json",
-            "future/v4/v4_goal4676_aggregate_frontier_pod_benchmark_2026-06-25.md",
+            "tools/_archive/future/v4/evidence/v4_goal4676_aggregate_frontier_pod_benchmark_2026-06-25.json",
+            "tools/_archive/future/v4/evidence/v4_goal4676_serious_2026-06-25/summary.json",
+            "tools/_archive/future/v4/v4_goal4676_aggregate_frontier_pod_benchmark_2026-06-25.md",
         ),
     },
     V4_TIER2_RAY_TRIANGLE_CUSTOM_PREDICATE_EARLY_EXIT: {
@@ -257,9 +257,9 @@ V4_TIER2_OPERATOR_SURFACES = {
             "not arbitrary callback support and not an all-app speed claim"
         ),
         "source_evidence": (
-            "future/v4/evidence/v4_goal4715_custom_predicate_early_exit_timing_pod_2026-06-26.json",
-            "future/v4/v4_goal4715_custom_predicate_early_exit_timing_pod_2026-06-26.md",
-            "future/v4/evidence/v4_goal4717_custom_predicate_early_exit_serious_scale_pod_2026-06-26.json",
+            "tools/_archive/future/v4/evidence/v4_goal4715_custom_predicate_early_exit_timing_pod_2026-06-26.json",
+            "tools/_archive/future/v4/v4_goal4715_custom_predicate_early_exit_timing_pod_2026-06-26.md",
+            "tools/_archive/future/v4/evidence/v4_goal4717_custom_predicate_early_exit_serious_scale_pod_2026-06-26.json",
         ),
     },
 }
@@ -287,8 +287,8 @@ V4_TIER2_DEFERRED_OPERATOR_SURFACES = {
             "262144 and 1048576 point rows did not produce material speedup"
         ),
         "source_evidence": (
-            "future/v4/evidence/v4_goal4660_rtnn_ranked_summary_20260625/summary.json",
-            "future/v4/v4_goal4660_4661_rtnn_ranked_summary_candidate_evidence_2026-06-25.md",
+            "tools/_archive/future/v4/evidence/v4_goal4660_rtnn_ranked_summary_20260625/summary.json",
+            "tools/_archive/future/v4/v4_goal4660_4661_rtnn_ranked_summary_candidate_evidence_2026-06-25.md",
         ),
     },
 }
@@ -320,9 +320,9 @@ V4_CERTIFIED_PARTNER_OPERATOR_SURFACES = {
         "claim_class": "partner_certified_surface_not_formal_v4_speed_win",
         "rt_core_operator_surface": False,
         "source_evidence": (
-            "future/v4/evidence/v4_goal4649_cupy_grouped_reduction_gate_2026-06-25/pod_live_summary.json",
-            "future/v4/v4_goal4649_cupy_frontdoor_certification_gate_2026-06-25.md",
-            "future/v4/reviews/goal4649_completion_consensus_2026-06-25.md",
+            "tools/_archive/future/v4/evidence/v4_goal4649_cupy_grouped_reduction_gate_2026-06-25/pod_live_summary.json",
+            "tools/_archive/future/v4/v4_goal4649_cupy_frontdoor_certification_gate_2026-06-25.md",
+            "tools/_archive/future/v4/reviews/goal4649_completion_consensus_2026-06-25.md",
         ),
         "partner_migration_counts_as_v4_speed_win": False,
         "partner_parity_counts_as_v4_speed_win": False,
@@ -354,9 +354,9 @@ V4_CERTIFIED_PARTNER_OPERATOR_SURFACES = {
         "claim_class": "fixed_numba_certified_tier2_operator_surface_not_whole_app_speed_win",
         "rt_core_operator_surface": True,
         "source_evidence": (
-            "future/v4/evidence/v4_goal4650_fixed_numba_continuation_certification_2026-06-25.json",
-            "future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/summary.json",
-            "future/v4/reviews/goal4650_completion_consensus_2026-06-25.md",
+            "tools/_archive/future/v4/evidence/v4_goal4650_fixed_numba_continuation_certification_2026-06-25.json",
+            "tools/_archive/future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/summary.json",
+            "tools/_archive/future/v4/reviews/goal4650_completion_consensus_2026-06-25.md",
         ),
         "partner_migration_counts_as_v4_speed_win": False,
         "partner_parity_counts_as_v4_speed_win": False,

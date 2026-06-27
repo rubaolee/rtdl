@@ -10,7 +10,7 @@ V4_GOAL4681_SHAPE_PAIR_RELATION_RESULT_STATUS = (
     "goal4681_correct_same_primitive_but_no_speed_credit_do_not_promote"
 )
 V4_GOAL4681_CANONICAL_EVIDENCE = (
-    "future/v4/evidence/v4_goal4681_shape_pair_serious_2026-06-25/summary.json"
+    "tools/_archive/future/v4/evidence/v4_goal4681_shape_pair_serious_2026-06-25/summary.json"
 )
 
 

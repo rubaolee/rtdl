@@ -1,0 +1,13 @@
+diff --git a/samples/cmdline/s01-rtbarneshut/hostCode.cu b/samples/cmdline/s01-rtbarneshut/hostCode.cu
+index 1bc3957..43098b9 100644
+--- a/samples/cmdline/s01-rtbarneshut/hostCode.cu
++++ b/samples/cmdline/s01-rtbarneshut/hostCode.cu
+@@ -89,7 +89,7 @@ vector<Point> points;
+ vector<Node*> dfsBHNodes;
+ float totalMemoryNeeded = 0.0f;
+ 
+-int gpuDeviceID = 1;
++int gpuDeviceID = 0;
+ OWLContext context = owlContextCreate(&gpuDeviceID, 1);
+ OWLModule module = owlModuleCreate(context, deviceCode_ptx);
+ 

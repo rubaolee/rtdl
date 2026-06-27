@@ -16,8 +16,8 @@ from rtdsl.v4_goal4774_release_packaging_audit import (  # noqa: E402
 )
 
 
-DEFAULT_JSON = ROOT / "future/v4/evidence/v4_goal4774_release_packaging_audit_2026-06-27.json"
-DEFAULT_MD = ROOT / "future/v4/v4_goal4774_release_packaging_audit_2026-06-27.md"
+DEFAULT_JSON = ROOT / "tools/_archive/future/v4/evidence/v4_goal4774_release_packaging_audit_2026-06-27.json"
+DEFAULT_MD = ROOT / "tools/_archive/future/v4/v4_goal4774_release_packaging_audit_2026-06-27.md"
 
 
 def _write_markdown(payload: dict, path: Path) -> None:

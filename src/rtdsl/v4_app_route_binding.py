@@ -153,7 +153,7 @@ _ROUTE_BINDINGS = (
         ),
         next_goal4653_protocol_action="Freeze RTDBSCAN as a V4 fused-operator-addressable row with correctness parity and app-level timing.",
         evidence_refs=(
-            "future/v4/evidence/v4_goal4650_fixed_numba_continuation_certification_2026-06-25.json",
+            "tools/_archive/future/v4/evidence/v4_goal4650_fixed_numba_continuation_certification_2026-06-25.json",
             "src/rtdsl/v4_coverage_audit.py",
         ),
     ),
@@ -176,7 +176,7 @@ _ROUTE_BINDINGS = (
         blocker_or_gap="Route is addressable, but app-level V4/V2/V3 result must be measured in the frozen protocol.",
         next_goal4653_protocol_action="Freeze RayDB-style route with grouped-i64, grouped-argmin, and any-hit operator timings.",
         evidence_refs=(
-            "future/v4/reviews/goal4617_grouped_i64_completion_review_2026-06-24.raw.md",
+            "tools/_archive/future/v4/reviews/goal4617_grouped_i64_completion_review_2026-06-24.raw.md",
             "src/rtdsl/v4_coverage_audit.py",
         ),
     ),
@@ -197,7 +197,7 @@ _ROUTE_BINDINGS = (
         blocker_or_gap="Route is addressable after weighted-sum promotion, but whole-app triangle-counting speedup is not authorized.",
         next_goal4653_protocol_action="Freeze triangle-counting route with weighted-sum and grouped-i64 correctness contracts.",
         evidence_refs=(
-            "future/v4/evidence/v4_goal4633_weighted_sum_promotion_gate_2026-06-25.md",
+            "tools/_archive/future/v4/evidence/v4_goal4633_weighted_sum_promotion_gate_2026-06-25.md",
             "src/rtdsl/v4_coverage_audit.py",
         ),
     ),
@@ -215,7 +215,7 @@ _ROUTE_BINDINGS = (
         ),
         next_goal4653_protocol_action="Freeze LibRTS spatial-index as generic AABB all-ops count row with explicit denominator.",
         evidence_refs=(
-            "future/v4/v4_goal4637_aabb_frontdoor_catalog_promotion_2026-06-25.md",
+            "tools/_archive/future/v4/v4_goal4637_aabb_frontdoor_catalog_promotion_2026-06-25.md",
             "src/rtdsl/v4_coverage_audit.py",
         ),
     ),
@@ -246,10 +246,10 @@ _ROUTE_BINDINGS = (
             "rerun and formal speed-row claims until a focused gate clears."
         ),
         evidence_refs=(
-            "future/v4/evidence/v4_goal4659_hausdorff_v4_route_20260625/summary.json",
-            "future/v4/v4_goal4659_hausdorff_official_v4_route_evidence_2026-06-25.md",
-            "future/v4/evidence/v4_goal4666_hausdorff_cupy_official_20260625/summary.json",
-            "future/v4/v4_goal4666_hausdorff_cupy_official_route_evidence_2026-06-25.md",
+            "tools/_archive/future/v4/evidence/v4_goal4659_hausdorff_v4_route_20260625/summary.json",
+            "tools/_archive/future/v4/v4_goal4659_hausdorff_official_v4_route_evidence_2026-06-25.md",
+            "tools/_archive/future/v4/evidence/v4_goal4666_hausdorff_cupy_official_20260625/summary.json",
+            "tools/_archive/future/v4/v4_goal4666_hausdorff_cupy_official_route_evidence_2026-06-25.md",
         ),
     ),
     V4AppRouteBinding(
@@ -305,8 +305,8 @@ _ROUTE_BINDINGS = (
             "formal high-performance V4 evidence without a new generic lever."
         ),
         evidence_refs=(
-            "future/v4/evidence/v4_goal4660_rtnn_ranked_summary_20260625/summary.json",
-            "future/v4/v4_goal4660_4661_rtnn_ranked_summary_candidate_evidence_2026-06-25.md",
+            "tools/_archive/future/v4/evidence/v4_goal4660_rtnn_ranked_summary_20260625/summary.json",
+            "tools/_archive/future/v4/v4_goal4660_4661_rtnn_ranked_summary_candidate_evidence_2026-06-25.md",
         ),
     ),
     V4AppRouteBinding(
@@ -333,7 +333,7 @@ _ROUTE_BINDINGS = (
         dry_run_possible=False,
         blocker_or_gap="Aggregate-tree weighted vector sum is Barnes-Hut/N-body specific and was rejected for V4.0 generic Tier-2.",
         next_goal4653_protocol_action="Freeze as deferred/excluded with reason; do not add a Barnes-Hut native kernel.",
-        evidence_refs=("future/v4/v2_primitives_to_v4_tier2_inventory_2026-06-24.md",),
+        evidence_refs=("tools/_archive/future/v4/v2_primitives_to_v4_tier2_inventory_2026-06-24.md",),
     ),
 )
 

@@ -53,12 +53,17 @@ def v4_goal4640_public_docs_cleanup_decision(root: Path | None = None) -> dict[s
         "tutorials/current/README.md",
         "examples/README.md",
         "examples/simple/README.md",
-        "future/v4/README.md",
-        "future/v4/tier2_operator_catalog.md",
+        "tools/_archive/future/v4/README.md",
+        "tools/_archive/future/v4/tier2_operator_catalog.md",
     )
     docs_current = all((repo / path).exists() for path in public_paths)
     v3_archived = not (repo / "docs" / "current_v3_status.md").exists() and (
-        repo / "history" / "legacy_project_archive_2026-06-24" / "docs_current_v3_status_2026-06-25.md"
+        repo
+        / "tools"
+        / "_archive"
+        / "history"
+        / "legacy_project_archive_2026-06-24"
+        / "docs_current_v3_status_2026-06-25.md"
     ).exists()
 
     return V4Goal4640PublicDocsCleanup(
@@ -76,7 +81,7 @@ def v4_goal4640_public_docs_cleanup_decision(root: Path | None = None) -> dict[s
         ),
         public_paths=public_paths,
         evidence=(
-            "future/v4/v4_goal4640_public_docs_cleanup_decision_2026-06-25.md",
+            "tools/_archive/future/v4/v4_goal4640_public_docs_cleanup_decision_2026-06-25.md",
             "tests/v4_goal4640_public_docs_cleanup_test.py",
         ),
         review_status="pending_claude_and_antigravity_review_or_debt",

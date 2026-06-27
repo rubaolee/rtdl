@@ -35,7 +35,7 @@ RELEASE_PREFIXES = (
     "README.md",
     "docs/",
     "examples/",
-    "future/v4/",
+    "tools/_archive/future/v4/",
     "scripts/",
     "src/",
     "tests/",
@@ -47,11 +47,11 @@ REQUIRED_CURRENT_FILES = (
     "README.md",
     "docs/current_v4_status.md",
     "docs/app_level_benchmark_summary.md",
-    "future/v4/README.md",
-    "future/v4/V4_CURRENT_AGENT_REFRESH_RUNBOOK_2026-06-25.md",
-    "future/v4/reviews/v4_gemini_full_coverage_review_debt_for_antigravity_2026-06-27.md",
-    "future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md",
-    "future/v4/v4_goal4773_antigravity_review_intake_and_release_owner_status_2026-06-27.md",
+    "tools/_archive/future/v4/README.md",
+    "tools/_archive/future/v4/V4_CURRENT_AGENT_REFRESH_RUNBOOK_2026-06-25.md",
+    "tools/_archive/future/v4/reviews/v4_gemini_full_coverage_review_debt_for_antigravity_2026-06-27.md",
+    "tools/_archive/future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md",
+    "tools/_archive/future/v4/v4_goal4773_antigravity_review_intake_and_release_owner_status_2026-06-27.md",
     "src/rtdsl/v4_goal4773_release_authorization_status.py",
     "tests/v4_goal4773_release_authorization_status_test.py",
 )
@@ -97,7 +97,7 @@ def _bucket(path: str) -> tuple[str, str]:
         return "exclude_from_release_commit", "temporary_binary_or_process_artifact"
     if any(marker in path for marker in EXCLUDE_CONTAINS):
         return "exclude_from_release_commit", "tool_output_or_cache_artifact"
-    if path.startswith("future/v4/evidence/") and path.endswith((".cdb", ".edgebin")):
+    if path.startswith("tools/_archive/future/v4/evidence/") and path.endswith((".cdb", ".edgebin")):
         return "manual_review_required", "large_raw_benchmark_payload"
     if path.startswith(RELEASE_PREFIXES):
         return "release_commit_candidate", "source_doc_test_or_compact_evidence"

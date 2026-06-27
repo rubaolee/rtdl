@@ -68,7 +68,7 @@ def _repo(root: Path | None) -> Path:
 
 def v4_goal4757_final_release_packet(root: Path | None = None) -> dict[str, Any]:
     repo = _repo(root)
-    matrix_analysis = "future/v4/evidence/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.json"
+    matrix_analysis = "tools/_archive/future/v4/evidence/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.json"
     analysis = json.loads((repo / matrix_analysis).read_text(encoding="utf-8"))
     summary = analysis["summary"]
 
@@ -76,15 +76,15 @@ def v4_goal4757_final_release_packet(root: Path | None = None) -> dict[str, Any]
         status=V4_GOAL4757_STATUS,
         decision=V4_GOAL4757_DECISION,
         current_decision_label=V4_GOAL4757_LABEL,
-        packet="future/v4/v4_goal4757_final_v4_0_release_packet_after_goal4756_2026-06-26.md",
+        packet="tools/_archive/future/v4/v4_goal4757_final_v4_0_release_packet_after_goal4756_2026-06-26.md",
         call_for_review=(
-            "future/v4/reviews/"
+            "tools/_archive/future/v4/reviews/"
             "call_for_review_v4_goal4757_final_v4_0_release_after_goal4756_2026-06-26.md"
         ),
-        review_debt="future/v4/reviews/v4_goal4757_final_release_external_review_debt_2026-06-26.md",
+        review_debt="tools/_archive/future/v4/reviews/v4_goal4757_final_release_external_review_debt_2026-06-26.md",
         matrix_analysis=matrix_analysis,
         full_v4_test_log=(
-            "future/v4/evidence/"
+            "tools/_archive/future/v4/evidence/"
             "v4_goal4759_full_v4_unittest_discover_with_review_manifest_2026-06-26.log"
         ),
         app_count=int(summary["app_count"]),

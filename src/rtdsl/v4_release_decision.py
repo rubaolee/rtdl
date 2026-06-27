@@ -74,8 +74,8 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             status="pass_bounded_one_primitive",
             passed_for_release=True,
             evidence=(
-                "future/v4/v4_goal4626_section8_release_scorecard_protocol_2026-06-24.md",
-                "future/v4/reviews/goal4626_completion_consensus_and_review_debt_2026-06-24.md",
+                "tools/_archive/future/v4/v4_goal4626_section8_release_scorecard_protocol_2026-06-24.md",
+                "tools/_archive/future/v4/reviews/goal4626_completion_consensus_and_review_debt_2026-06-24.md",
             ),
             note="Fixed-radius has bounded Torch CUDA device-array evidence, not broad release proof.",
         ),
@@ -84,9 +84,9 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             status="complete_bounded_operator_release_coverage",
             passed_for_release=True,
             evidence=(
-                "future/v4/v4_goal4627_tier2_operator_coverage_audit_2026-06-24.md",
-                "future/v4/reviews/goal4627_completion_consensus_and_review_debt_2026-06-24.md",
-                "future/v4/v4_goal4635_component_union_promotion_decision_2026-06-25.md",
+                "tools/_archive/future/v4/v4_goal4627_tier2_operator_coverage_audit_2026-06-24.md",
+                "tools/_archive/future/v4/reviews/goal4627_completion_consensus_and_review_debt_2026-06-24.md",
+                "tools/_archive/future/v4/v4_goal4635_component_union_promotion_decision_2026-06-25.md",
             ),
             note="Coverage audit shows 4 strong measured, 4 partial measured, 0 candidate, and 2 deferred rows; this passes the bounded operator release scope, not broad app coverage.",
         ),
@@ -95,8 +95,8 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             status="pass_grouped_i64_second_gate",
             passed_for_release=True,
             evidence=(
-                "future/v4/v4_goal4628_second_tier2_same_contract_gate_2026-06-24.md",
-                "future/v4/reviews/goal4628_completion_consensus_2026-06-24.md",
+                "tools/_archive/future/v4/v4_goal4628_second_tier2_same_contract_gate_2026-06-24.md",
+                "tools/_archive/future/v4/reviews/goal4628_completion_consensus_2026-06-24.md",
             ),
             note=f"Grouped-i64 passed the second gate with min same-contract ratio {second_gate['min_same_contract_ratio']:.3f}x.",
         ),
@@ -105,10 +105,10 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             status=weighted_sum_promotion["decision"],
             passed_for_release=True,
             evidence=(
-                "future/v4/v4_goal4629_weighted_sum_candidate_decision_2026-06-24.md",
-                "future/v4/reviews/goal4629_completion_consensus_and_review_debt_2026-06-24.md",
-                "future/v4/evidence/v4_goal4633_weighted_sum_promotion_gate_2026-06-25.md",
-                "future/v4/reviews/goal4633_completion_consensus_and_review_debt_2026-06-25.md",
+                "tools/_archive/future/v4/v4_goal4629_weighted_sum_candidate_decision_2026-06-24.md",
+                "tools/_archive/future/v4/reviews/goal4629_completion_consensus_and_review_debt_2026-06-24.md",
+                "tools/_archive/future/v4/evidence/v4_goal4633_weighted_sum_promotion_gate_2026-06-25.md",
+                "tools/_archive/future/v4/reviews/goal4633_completion_consensus_and_review_debt_2026-06-25.md",
             ),
             note=(
                 "Weighted-sum passed Goal4633 as measured Torch CUDA comparable-route surface; "
@@ -120,8 +120,8 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             status="pass_minimum_slice",
             passed_for_release=True,
             evidence=(
-                "future/v4/v4_goal4630_pushdown_recognizer_minimum_slice_2026-06-24.md",
-                "future/v4/reviews/goal4630_completion_consensus_and_review_debt_2026-06-24.md",
+                "tools/_archive/future/v4/v4_goal4630_pushdown_recognizer_minimum_slice_2026-06-24.md",
+                "tools/_archive/future/v4/reviews/goal4630_completion_consensus_and_review_debt_2026-06-24.md",
             ),
             note="Minimum recognizer routes measured/candidate generic operators and fails closed for unsupported logic.",
         ),
@@ -130,8 +130,8 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             status=tier3["decision"],
             passed_for_release=True,
             evidence=(
-                "future/v4/v4_goal4631_tier3_spike_execution_decision_2026-06-24.md",
-                "future/v4/reviews/goal4631_completion_consensus_and_review_debt_2026-06-24.md",
+                "tools/_archive/future/v4/v4_goal4631_tier3_spike_execution_decision_2026-06-24.md",
+                "tools/_archive/future/v4/reviews/goal4631_completion_consensus_and_review_debt_2026-06-24.md",
             ),
             note="Tier-3 is explicitly out of the V4.0 release dependency path.",
         ),
@@ -150,8 +150,8 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             status=formal_scorecard_freeze["decision"],
             passed_for_release=True,
             evidence=(
-                "future/v4/v4_goal4638_formal_release_scorecard_freeze_2026-06-25.md",
-                "future/v4/reviews/goal4638_formal_release_scorecard_freeze_review_record_2026-06-25.md",
+                "tools/_archive/future/v4/v4_goal4638_formal_release_scorecard_freeze_2026-06-25.md",
+                "tools/_archive/future/v4/reviews/goal4638_formal_release_scorecard_freeze_review_record_2026-06-25.md",
                 *tuple(catalog_regression_decision["evidence"]),
             ),
             note=(
@@ -185,11 +185,11 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             status=V4_GOAL4632_DECISION,
             passed_for_release=True,
             evidence=(
-                "future/v4/v4_goal4642_final_3ai_release_authorization_packet_2026-06-25.md",
-                "future/v4/reviews/antigravity_v4_goal4642_final_3ai_release_authorization_review_amended_2026-06-25.md",
-                "future/v4/reviews/antigravity_v4_goal4642_amendment_recheck_2026-06-25.md",
-                "future/v4/reviews/codex_independent_v4_goal4642_final_authorization_review_and_amendment_recheck_2026-06-25.md",
-                "future/v4/reviews/codex_main_v4_goal4642_final_release_owner_authorization_2026-06-25.md",
+                "tools/_archive/future/v4/v4_goal4642_final_3ai_release_authorization_packet_2026-06-25.md",
+                "tools/_archive/future/v4/reviews/antigravity_v4_goal4642_final_3ai_release_authorization_review_amended_2026-06-25.md",
+                "tools/_archive/future/v4/reviews/antigravity_v4_goal4642_amendment_recheck_2026-06-25.md",
+                "tools/_archive/future/v4/reviews/codex_independent_v4_goal4642_final_authorization_review_and_amendment_recheck_2026-06-25.md",
+                "tools/_archive/future/v4/reviews/codex_main_v4_goal4642_final_release_owner_authorization_2026-06-25.md",
             ),
             note=(
                 "The earlier bounded operator authorization is superseded for current "
@@ -203,9 +203,9 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             status=V4_CURRENT_APP_LEVEL_DECISION_LABEL,
             passed_for_release=True,
             evidence=(
-                "future/v4/v4_goal4717_custom_predicate_early_exit_serious_scale_validation_2026-06-26.md",
-                "future/v4/v4_goal4718_release_matrix_after_custom_predicate_2026-06-26.md",
-                "future/v4/evidence/v4_goal4718_release_matrix_after_custom_predicate_2026-06-26.json",
+                "tools/_archive/future/v4/v4_goal4717_custom_predicate_early_exit_serious_scale_validation_2026-06-26.md",
+                "tools/_archive/future/v4/v4_goal4718_release_matrix_after_custom_predicate_2026-06-26.md",
+                "tools/_archive/future/v4/evidence/v4_goal4718_release_matrix_after_custom_predicate_2026-06-26.json",
             ),
             note=(
                 "Custom predicate early-exit is the V4-only workflow win: 4.633x "
@@ -217,8 +217,8 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             status="public_v4_docs_examples_match_goal4742_current_boundary",
             passed_for_release=True,
             evidence=(
-                "future/v4/v4_goal4743_public_docs_current_framing_cleanup_2026-06-26.md",
-                "future/v4/evidence/v4_goal4743_public_docs_current_framing_cleanup_2026-06-26.json",
+                "tools/_archive/future/v4/v4_goal4743_public_docs_current_framing_cleanup_2026-06-26.md",
+                "tools/_archive/future/v4/evidence/v4_goal4743_public_docs_current_framing_cleanup_2026-06-26.json",
                 "examples/simple/custom_predicate_early_exit_planning.py",
                 "docs/current_v4_status.md",
             ),
@@ -233,8 +233,8 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             status="full_v4_local_gate_passes_after_goal4743_current_frontdoor_cleanup",
             passed_for_release=True,
             evidence=(
-                "future/v4/v4_goal4744_full_v4_local_gate_after_current_frontdoor_cleanup_2026-06-26.md",
-                "future/v4/evidence/v4_goal4744_full_v4_local_gate_after_current_frontdoor_cleanup_2026-06-26.json",
+                "tools/_archive/future/v4/v4_goal4744_full_v4_local_gate_after_current_frontdoor_cleanup_2026-06-26.md",
+                "tools/_archive/future/v4/evidence/v4_goal4744_full_v4_local_gate_after_current_frontdoor_cleanup_2026-06-26.json",
                 "tests/v4_goal4744_full_v4_local_gate_record_test.py",
             ),
             note=(

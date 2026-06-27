@@ -40,11 +40,11 @@ V4_GOAL4628_GROUPED_I64_RATIOS = (
 
 
 V4_GOAL4628_EVIDENCE_FILES = (
-    "future/v4/evidence/v4_goal4617_grouped_i64_width1_pod_gate_32768_131072_2026-06-24.json",
-    "future/v4/evidence/v4_goal4617_grouped_i64_width16_pod_gate_32768_131072_2026-06-24.json",
-    "future/v4/evidence/v4_goal4617_grouped_i64_width256_pod_gate_32768_131072_2026-06-24.json",
-    "future/v4/reviews/claude_v4_goal4617_grouped_i64_promotion_decision_review_2026-06-24.raw.md",
-    "future/v4/reviews/goal4627_completion_consensus_and_review_debt_2026-06-24.md",
+    "tools/_archive/future/v4/evidence/v4_goal4617_grouped_i64_width1_pod_gate_32768_131072_2026-06-24.json",
+    "tools/_archive/future/v4/evidence/v4_goal4617_grouped_i64_width16_pod_gate_32768_131072_2026-06-24.json",
+    "tools/_archive/future/v4/evidence/v4_goal4617_grouped_i64_width256_pod_gate_32768_131072_2026-06-24.json",
+    "tools/_archive/future/v4/reviews/claude_v4_goal4617_grouped_i64_promotion_decision_review_2026-06-24.raw.md",
+    "tools/_archive/future/v4/reviews/goal4627_completion_consensus_and_review_debt_2026-06-24.md",
 )
 
 
@@ -61,9 +61,9 @@ def v4_goal4628_second_gate_scorecard() -> dict[str, Any]:
         "fixed_radius_wrapper_prerequisite": V4_GOAL4628_FIXED_RADIUS_PREREQUISITE,
         "fixed_radius_wrapper_prerequisite_satisfied_by": (
             "src/rtdsl/v4_fixed_radius.py",
-            "future/v4/fixed_radius_device_array_frontdoor.md",
-            "future/v4/examples/fixed_radius_torch_device_arrays.py",
-            "future/v4/reviews/claude_v4_section8_device_array_frontdoor_amendment_closure_2026-06-24.md",
+            "tools/_archive/future/v4/fixed_radius_device_array_frontdoor.md",
+            "tools/_archive/future/v4/examples/fixed_radius_torch_device_arrays.py",
+            "tools/_archive/future/v4/reviews/claude_v4_section8_device_array_frontdoor_amendment_closure_2026-06-24.md",
             "tests/v4_fixed_radius_device_array_api_test.py",
             "tests/v4_fixed_radius_docs_and_example_test.py",
         ),

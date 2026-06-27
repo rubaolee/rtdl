@@ -10,7 +10,7 @@ V4_GOAL4678_RANKED_SUMMARY_DISPOSITION_STATUS = (
     "goal4678_defer_ranked_summary_no_open_candidate_no_release"
 )
 V4_GOAL4678_CANONICAL_EVIDENCE = (
-    "future/v4/evidence/v4_goal4660_rtnn_ranked_summary_20260625/summary.json"
+    "tools/_archive/future/v4/evidence/v4_goal4660_rtnn_ranked_summary_20260625/summary.json"
 )
 
 

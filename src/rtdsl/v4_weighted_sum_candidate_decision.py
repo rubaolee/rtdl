@@ -52,10 +52,10 @@ V4_GOAL4629_WEIGHTED_SUM_RATIOS = (
 
 
 V4_GOAL4629_EVIDENCE_FILES = (
-    "future/v4/evidence/v4_goal4620_ray_triangle_weighted_sum_pod_gate_32768_131072_2026-06-24.json",
-    "future/v4/evidence/v4_goal4620_ray_triangle_weighted_sum_pod_gate_32768_131072_2026-06-24.md",
-    "future/v4/reviews/claude_v4_goal4620_weighted_sum_completion_review_2026-06-24.raw.md",
-    "future/v4/reviews/goal4620_completion_consensus_and_review_debt_2026-06-24.md",
+    "tools/_archive/future/v4/evidence/v4_goal4620_ray_triangle_weighted_sum_pod_gate_32768_131072_2026-06-24.json",
+    "tools/_archive/future/v4/evidence/v4_goal4620_ray_triangle_weighted_sum_pod_gate_32768_131072_2026-06-24.md",
+    "tools/_archive/future/v4/reviews/claude_v4_goal4620_weighted_sum_completion_review_2026-06-24.raw.md",
+    "tools/_archive/future/v4/reviews/goal4620_completion_consensus_and_review_debt_2026-06-24.md",
 )
 
 

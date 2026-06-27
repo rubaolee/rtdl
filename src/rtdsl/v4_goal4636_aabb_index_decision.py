@@ -6,8 +6,8 @@ from typing import Any
 V4_GOAL4636C_DECISION_STATUS = "goal4636c_aabb_index_pod_gate_passed_pending_frontdoor_catalog_not_release"
 V4_GOAL4636C_DECISION = "accept_aabb_index_pod_gate_require_frontdoor_catalog_goal"
 V4_GOAL4636C_EVIDENCE = (
-    "future/v4/evidence/v4_goal4636c_aabb_index_all_ops_pod_gate_2026-06-25/m30_all_ops.json",
-    "future/v4/reviews/goal4636c_aabb_index_target_protocol_review_record_2026-06-25.md",
+    "tools/_archive/future/v4/evidence/v4_goal4636c_aabb_index_all_ops_pod_gate_2026-06-25/m30_all_ops.json",
+    "tools/_archive/future/v4/reviews/goal4636c_aabb_index_target_protocol_review_record_2026-06-25.md",
 )
 
 

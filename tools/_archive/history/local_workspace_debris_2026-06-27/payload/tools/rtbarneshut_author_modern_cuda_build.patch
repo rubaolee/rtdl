@@ -1,0 +1,12 @@
+diff --git a/samples/cmdline/s01-rtbarneshut/hostCode.cu b/samples/cmdline/s01-rtbarneshut/hostCode.cu
+index d4bbebc..1bc3957 100644
+--- a/samples/cmdline/s01-rtbarneshut/hostCode.cu
++++ b/samples/cmdline/s01-rtbarneshut/hostCode.cu
+@@ -28,6 +28,7 @@
+ #include "stb/stb_image_write.h"
+ #include <vector>
+ #include<iostream>
++#include <array>
+ #include <cmath>
+ #include<fstream>
+ #include <queue>

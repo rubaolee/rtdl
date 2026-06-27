@@ -65,14 +65,14 @@ class V4Goal4775ReleaseStagingManifestTest(unittest.TestCase):
         exists = lambda path: (ROOT / path).exists()
 
         compact_matrix = (
-            "future/v4/evidence/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.json"
+            "tools/_archive/future/v4/evidence/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.json"
         )
         compact_barnes_hut = (
-            "future/v4/evidence/rt_barneshut_author_reproduction_2026-06-26/"
+            "tools/_archive/future/v4/evidence/rt_barneshut_author_reproduction_2026-06-26/"
             "v4_goal4772_four_way_fair_compare_pod_2026-06-26.json"
         )
         raw_stdout = (
-            "future/v4/evidence/rt_barneshut_author_reproduction_2026-06-26/"
+            "tools/_archive/future/v4/evidence/rt_barneshut_author_reproduction_2026-06-26/"
             "author_1m_stdout.txt"
         )
 
@@ -88,7 +88,7 @@ class V4Goal4775ReleaseStagingManifestTest(unittest.TestCase):
         staged = set(manifest["stage_for_v4_release_commit"])
         excluded = set(manifest["exclude_from_v4_release_commit"])
 
-        empty_probe = "future/v4/evidence/v4_goal4659_hausdorff_v4_route_20260625/v3_0_2_optix_device_max_numba_copies16384.json"
+        empty_probe = "tools/_archive/future/v4/evidence/v4_goal4659_hausdorff_v4_route_20260625/v3_0_2_optix_device_max_numba_copies16384.json"
         self.assertNotIn(empty_probe, staged)
         if (ROOT / empty_probe).exists():
             self.assertNotIn(empty_probe, staged)

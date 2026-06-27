@@ -39,4 +39,4 @@ $env:PYTHONPATH = "src;."
 py -3 examples\simple\v4_frontdoor_quickstart.py
 ```
 
-Next: [Relations and Operators](03_backend_choice.md)
+Next: [Sorting Rows](03_sorting_rows.md)

@@ -51,7 +51,7 @@ class V4Goal4758LocalCompletionAuditTest(unittest.TestCase):
         audit = validate_v4_goal4758_local_completion_audit(ROOT)
 
         self.assertEqual(
-            "dist/goal4758_v4_release_candidate/rtdl_source_tree-4.0.0-py3-none-any.whl",
+            "tools/_archive/dist/goal4758_v4_release_candidate/rtdl_source_tree-4.0.0-py3-none-any.whl",
             audit["package_wheel"],
         )
         self.assertGreater(audit["package_wheel_size"], 0)
@@ -64,15 +64,15 @@ class V4Goal4758LocalCompletionAuditTest(unittest.TestCase):
         audit = validate_v4_goal4758_local_completion_audit(ROOT)
 
         self.assertEqual(
-            "future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/wheel_install_with_deps.log",
+            "tools/_archive/future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/wheel_install_with_deps.log",
             audit["wheel_install_log"],
         )
         self.assertEqual(
-            "future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/import_claim_boundary_after_install.log",
+            "tools/_archive/future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/import_claim_boundary_after_install.log",
             audit["wheel_import_log"],
         )
         self.assertEqual(
-            "future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/summary.json",
+            "tools/_archive/future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/summary.json",
             audit["wheel_smoke_summary"],
         )
 
@@ -80,7 +80,7 @@ class V4Goal4758LocalCompletionAuditTest(unittest.TestCase):
         audit = validate_v4_goal4758_local_completion_audit(ROOT)
 
         self.assertEqual(
-            "future/v4/evidence/v4_goal4759_final_review_evidence_manifest_2026-06-26.json",
+            "tools/_archive/future/v4/evidence/v4_goal4759_final_review_evidence_manifest_2026-06-26.json",
             audit["final_review_manifest"],
         )
 

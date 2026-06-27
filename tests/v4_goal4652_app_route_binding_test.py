@@ -80,11 +80,11 @@ class V4Goal4652AppRouteBindingTest(unittest.TestCase):
         self.assertIn("CuPy official route repairs the 262k hot/prepare failure", hausdorff["blocker_or_gap"])
         self.assertIn("65k row stays below bar", hausdorff["blocker_or_gap"])
         self.assertIn(
-            "future/v4/evidence/v4_goal4659_hausdorff_v4_route_20260625/summary.json",
+            "tools/_archive/future/v4/evidence/v4_goal4659_hausdorff_v4_route_20260625/summary.json",
             hausdorff["evidence_refs"],
         )
         self.assertIn(
-            "future/v4/evidence/v4_goal4666_hausdorff_cupy_official_20260625/summary.json",
+            "tools/_archive/future/v4/evidence/v4_goal4666_hausdorff_cupy_official_20260625/summary.json",
             hausdorff["evidence_refs"],
         )
         self.assertFalse(hausdorff["release_claim_authorized"])
@@ -121,7 +121,7 @@ class V4Goal4652AppRouteBindingTest(unittest.TestCase):
         self.assertIn("deferred/no-open-candidate", rtnn["next_goal4653_protocol_action"])
         self.assertIn("does not move the app-level bar", rtnn["blocker_or_gap"])
         self.assertIn(
-            "future/v4/evidence/v4_goal4660_rtnn_ranked_summary_20260625/summary.json",
+            "tools/_archive/future/v4/evidence/v4_goal4660_rtnn_ranked_summary_20260625/summary.json",
             rtnn["evidence_refs"],
         )
         dry_runs = {(row["operator"], row["partner"]): row for row in rtnn["planner_dry_runs"]}

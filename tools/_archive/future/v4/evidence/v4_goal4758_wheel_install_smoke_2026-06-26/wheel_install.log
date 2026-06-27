@@ -1,0 +1,6 @@
+Could not find platform independent libraries <prefix>
+Looking in links: dist/goal4758_v4_release_candidate
+Processing c:\users\lestat\desktop\work\rtdl_v0_4_release_prep_review\dist\goal4758_v4_release_candidate\rtdl_source_tree-4.0.0-py3-none-any.whl
+INFO: pip is looking at multiple versions of rtdl-source-tree to determine which version is compatible with other requirements. This could take a while.
+ERROR: Could not find a version that satisfies the requirement numpy>=1.26 (from rtdl-source-tree) (from versions: none)
+ERROR: No matching distribution found for numpy>=1.26

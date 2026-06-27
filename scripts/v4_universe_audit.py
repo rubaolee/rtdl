@@ -29,11 +29,12 @@ PUBLIC_DOCS = (
     "tutorials/current/README.md",
     "tutorials/current/01_first_run.md",
     "tutorials/current/02_hello_world.md",
-    "tutorials/current/03_backend_choice.md",
-    "tutorials/current/04_prepared_runtime.md",
-    "tutorials/current/05_measurement_boundaries.md",
-    "tutorials/current/06_benchmark_apps.md",
-    "tutorials/current/07_partner_choice.md",
+    "tutorials/current/03_sorting_rows.md",
+    "tutorials/current/04_relations_and_operators.md",
+    "tutorials/current/05_prepare_run_continue.md",
+    "tutorials/current/06_measure_a_program.md",
+    "tutorials/current/07_benchmark_apps.md",
+    "tutorials/current/08_choose_a_partner.md",
     "examples/README.md",
     "examples/benchmark_apps/README.md",
     "examples/paper_reproduction/README.md",
@@ -72,11 +73,12 @@ ROOT_RELEASE_FILES = {
 }
 
 ARCHIVE_PREFIXES = (
-    "history/",
+    "tools/_archive/dist/",
+    "tools/_archive/history/",
 )
 
 PROVENANCE_PREFIXES = (
-    "future/",
+    "tools/_archive/future/",
 )
 
 PUBLIC_FORBIDDEN_PATTERNS = (
@@ -91,7 +93,8 @@ PUBLIC_FORBIDDEN_PATTERNS = (
     re.compile(r"release candidate", re.IGNORECASE),
     re.compile(r"parity/control", re.IGNORECASE),
     re.compile(r"docs/reviews", re.IGNORECASE),
-    re.compile(r"future/v4/reviews", re.IGNORECASE),
+    re.compile(r"tools/_archive", re.IGNORECASE),
+    re.compile(r"tools/_archive/future/v4/reviews", re.IGNORECASE),
     re.compile(r"external review", re.IGNORECASE),
     re.compile(r"bounded framing", re.IGNORECASE),
     re.compile(r"(?<![\w/])history[\\/]", re.IGNORECASE),
@@ -172,15 +175,15 @@ def _tracked_bucket(path: str) -> str:
 
 
 def _untracked_bucket(path: str) -> str:
-    if path.startswith("history/local_workspace_debris_2026-06-27/"):
+    if path.startswith("tools/_archive/history/local_workspace_debris_2026-06-27/"):
         return "local_history_archive_payload"
     if path.startswith("dist/") or path.startswith("build/"):
         return "local_build_output"
     if path.startswith("external/"):
         return "local_external_checkout"
-    if path.startswith("future/v4/evidence/"):
+    if path.startswith("tools/_archive/future/v4/evidence/"):
         return "local_raw_v4_evidence"
-    if path.startswith("future/v4/reviews/"):
+    if path.startswith("tools/_archive/future/v4/reviews/"):
         return "local_v4_review_working_record"
     if path.startswith("scripts/v3_") or path.startswith("scripts/phoenix_v3_"):
         return "local_v3_phoenix_script_debris"
@@ -244,7 +247,18 @@ def _scan_public_links(paths: list[str]) -> list[dict[str, str]]:
             if not clean_target:
                 continue
             clean_lower = clean_target.replace("\\", "/").lower()
-            if clean_lower.startswith(("history/", "../history/", "future/", "../future/")):
+            if clean_lower.startswith(
+                (
+                    "history/",
+                    "../history/",
+                    "future/",
+                    "../future/",
+                    "tools/_archive/history/",
+                    "../tools/_archive/history/",
+                    "tools/_archive/future/",
+                    "../tools/_archive/future/",
+                )
+            ):
                 findings.append(
                     {
                         "path": path,
@@ -312,7 +326,7 @@ def run_audit(*, strict_release: bool = False) -> dict[str, Any]:
     required_public_files = [path for path in PUBLIC_DOCS if not (ROOT / path).exists()]
     required_history_dirs = [
         path
-        for path in ("history/", "history/v4_0_release_audit_2026-06-27/")
+        for path in ("tools/_archive/history/", "tools/_archive/history/v4_0_release_audit_2026-06-27/")
         if not (ROOT / path).exists()
     ]
 
@@ -347,8 +361,8 @@ def run_audit(*, strict_release: bool = False) -> dict[str, Any]:
         "unknown_untracked": unknown_untracked[:100],
         "unknown_untracked_count": len(unknown_untracked),
         "interpretation": (
-            "Public V4 current surface must be clean. history/ is archival. "
-            "future/ is maintainer provenance. Known untracked raw evidence, "
+            "Public V4 current surface must be clean. tools/_archive/history/ is archival. "
+            "tools/_archive/future/ is maintainer provenance. Known untracked raw evidence, "
             "working records, and local debris are not public V4 files. Use "
             "--strict-release before a final tag/package gate to require a "
             "debris-free local tree."

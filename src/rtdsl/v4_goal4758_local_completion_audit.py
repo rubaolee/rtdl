@@ -39,8 +39,8 @@ def _public_docs() -> tuple[str, ...]:
         "docs/current_v4_status.md",
         "docs/app_level_benchmark_summary.md",
         "docs/learn/performance_wording.md",
-        "future/v4/README.md",
-        "future/v4/v4_goal4757_final_v4_0_release_packet_after_goal4756_2026-06-26.md",
+        "tools/_archive/future/v4/README.md",
+        "tools/_archive/future/v4/v4_goal4757_final_v4_0_release_packet_after_goal4756_2026-06-26.md",
     )
 
 
@@ -58,21 +58,21 @@ def v4_goal4758_local_completion_audit(root: Path | None = None) -> dict[str, An
     numba_certified = tuple(row for row in certified_catalog if "numba" in row["measured_partners"])
     cupy_measured = tuple(row for row in measured_catalog if "cupy" in row["measured_partners"])
     numba_measured = tuple(row for row in measured_catalog if "numba" in row["measured_partners"])
-    package_wheel = "dist/goal4758_v4_release_candidate/rtdl_source_tree-4.0.0-py3-none-any.whl"
-    package_log = "future/v4/evidence/v4_goal4758_package_wheel_build_2026-06-26.log"
+    package_wheel = "tools/_archive/dist/goal4758_v4_release_candidate/rtdl_source_tree-4.0.0-py3-none-any.whl"
+    package_log = "tools/_archive/future/v4/evidence/v4_goal4758_package_wheel_build_2026-06-26.log"
     wheel_install_log = (
-        "future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/"
+        "tools/_archive/future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/"
         "wheel_install_with_deps.log"
     )
     wheel_import_log = (
-        "future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/"
+        "tools/_archive/future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/"
         "import_claim_boundary_after_install.log"
     )
     wheel_smoke_summary = (
-        "future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/"
+        "tools/_archive/future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/"
         "summary.json"
     )
-    review_manifest = "future/v4/evidence/v4_goal4759_final_review_evidence_manifest_2026-06-26.json"
+    review_manifest = "tools/_archive/future/v4/evidence/v4_goal4759_final_review_evidence_manifest_2026-06-26.json"
     wheel_path = repo / package_wheel
     wheel_sha256 = hashlib.sha256(wheel_path.read_bytes()).hexdigest() if wheel_path.exists() else ""
     wheel_size = wheel_path.stat().st_size if wheel_path.exists() else 0
@@ -84,16 +84,16 @@ def v4_goal4758_local_completion_audit(root: Path | None = None) -> dict[str, An
             evidence=(
                 "src/rtdsl/v4_app_compatibility.py",
                 "tests/v4_goal4751_app_compatibility_catalog_test.py",
-                "future/v4/evidence/v4_goal4751_app_compatibility_catalog_2026-06-26.json",
+                "tools/_archive/future/v4/evidence/v4_goal4751_app_compatibility_catalog_2026-06-26.json",
             ),
         ),
         V4Goal4758Requirement(
             requirement="Complete 10-app same-semantics NVIDIA RT-core V2.14/V3.0.2/V4.0 matrix",
             status="proved",
             evidence=(
-                "future/v4/evidence/v4_goal4756_serious_all30_generated_spatial_2026-06-26/",
-                "future/v4/evidence/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.json",
-                "future/v4/v4_goal4756_final_rt_core_matrix_release_readout_2026-06-26.md",
+                "tools/_archive/future/v4/evidence/v4_goal4756_serious_all30_generated_spatial_2026-06-26/",
+                "tools/_archive/future/v4/evidence/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.json",
+                "tools/_archive/future/v4/v4_goal4756_final_rt_core_matrix_release_readout_2026-06-26.md",
             ),
             limitation="Does not authorize broad all-benchmark speedup wording.",
         ),
@@ -103,8 +103,8 @@ def v4_goal4758_local_completion_audit(root: Path | None = None) -> dict[str, An
             evidence=(
                 "src/rtdsl/v4_cupy_certification.py",
                 "tests/v4_goal4649_cupy_certification_gate_test.py",
-                "future/v4/evidence/v4_goal4649_cupy_grouped_reduction_gate_2026-06-25/pod_live_summary.json",
-                "future/v4/tier2_operator_catalog.md",
+                "tools/_archive/future/v4/evidence/v4_goal4649_cupy_grouped_reduction_gate_2026-06-25/pod_live_summary.json",
+                "tools/_archive/future/v4/tier2_operator_catalog.md",
             ),
             limitation="Broad CuPy performance wording remains unauthorized; support is where explicitly measured/certified.",
         ),
@@ -116,7 +116,7 @@ def v4_goal4758_local_completion_audit(root: Path | None = None) -> dict[str, An
                 "src/rtdsl/v4_custom_predicate_early_exit.py",
                 "tests/v4_goal4650_fixed_numba_continuation_certification_test.py",
                 "tests/v4_goal4716_custom_predicate_early_exit_productization_test.py",
-                "future/v4/evidence/v4_goal4718_release_matrix_after_custom_predicate_2026-06-26.json",
+                "tools/_archive/future/v4/evidence/v4_goal4718_release_matrix_after_custom_predicate_2026-06-26.json",
             ),
             limitation="Arbitrary Numba ray-action callbacks remain V4.1/Tier-3 work.",
         ),
@@ -128,7 +128,7 @@ def v4_goal4758_local_completion_audit(root: Path | None = None) -> dict[str, An
                 "docs/current_v4_status.md",
                 "docs/app_level_benchmark_summary.md",
                 "docs/learn/performance_wording.md",
-                "future/v4/README.md",
+                "tools/_archive/future/v4/README.md",
                 "examples/README.md",
                 "tutorials/current/README.md",
             ),
@@ -156,16 +156,16 @@ def v4_goal4758_local_completion_audit(root: Path | None = None) -> dict[str, An
             status="proved",
             evidence=(
                 review_manifest,
-                "future/v4/v4_goal4759_final_review_evidence_manifest_2026-06-26.md",
+                "tools/_archive/future/v4/v4_goal4759_final_review_evidence_manifest_2026-06-26.md",
             ),
         ),
         V4Goal4758Requirement(
             requirement="Final release review evidence prepared",
             status="proved_external_review_open",
             evidence=(
-                "future/v4/v4_goal4757_final_v4_0_release_packet_after_goal4756_2026-06-26.md",
-                "future/v4/reviews/call_for_review_v4_goal4757_final_v4_0_release_after_goal4756_2026-06-26.md",
-                "future/v4/reviews/v4_goal4757_final_release_external_review_debt_2026-06-26.md",
+                "tools/_archive/future/v4/v4_goal4757_final_v4_0_release_packet_after_goal4756_2026-06-26.md",
+                "tools/_archive/future/v4/reviews/call_for_review_v4_goal4757_final_v4_0_release_after_goal4756_2026-06-26.md",
+                "tools/_archive/future/v4/reviews/v4_goal4757_final_release_external_review_debt_2026-06-26.md",
             ),
             limitation="Public tag remains unauthorized until external release verdicts are obtained.",
         ),

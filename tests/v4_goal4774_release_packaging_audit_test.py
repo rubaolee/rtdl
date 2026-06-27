@@ -35,13 +35,13 @@ class V4Goal4774ReleasePackagingAuditTest(unittest.TestCase):
         already_tracked_or_clean = set(audit["required_current_files_not_dirty"])
         included = candidates | already_tracked_or_clean
 
-        self.assertIn("future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md", included)
-        self.assertIn("future/v4/v4_goal4773_antigravity_review_intake_and_release_owner_status_2026-06-27.md", included)
+        self.assertIn("tools/_archive/future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md", included)
+        self.assertIn("tools/_archive/future/v4/v4_goal4773_antigravity_review_intake_and_release_owner_status_2026-06-27.md", included)
         self.assertIn("src/rtdsl/v4_goal4773_release_authorization_status.py", included)
         self.assertIn("tests/v4_goal4773_release_authorization_status_test.py", included)
 
     def test_existing_v4_wheel_candidates_do_not_package_history_or_docs(self) -> None:
-        wheels = sorted((ROOT / "dist").glob("goal*_v4_release_candidate/*.whl"))
+        wheels = sorted((ROOT / "tools" / "_archive" / "dist").glob("goal*_v4_release_candidate/*.whl"))
 
         self.assertGreaterEqual(len(wheels), 1)
         for wheel in wheels:
@@ -51,7 +51,7 @@ class V4Goal4774ReleasePackagingAuditTest(unittest.TestCase):
                     bad = [
                         name
                         for name in names
-                        if name.startswith(("docs/", "history/", "future/", "examples/", "tutorials/"))
+                        if name.startswith(("docs/", "tools/_archive/history/", "tools/_archive/future/", "examples/", "tutorials/"))
                         or "docs/reviews" in name
                         or "phoenix_v3" in name.lower()
                     ]

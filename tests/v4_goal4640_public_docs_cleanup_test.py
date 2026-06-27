@@ -34,11 +34,12 @@ PUBLIC_DOCS = (
     ROOT / "tutorials" / "current" / "README.md",
     ROOT / "tutorials" / "current" / "01_first_run.md",
     ROOT / "tutorials" / "current" / "02_hello_world.md",
-    ROOT / "tutorials" / "current" / "03_backend_choice.md",
-    ROOT / "tutorials" / "current" / "04_prepared_runtime.md",
-    ROOT / "tutorials" / "current" / "05_measurement_boundaries.md",
-    ROOT / "tutorials" / "current" / "06_benchmark_apps.md",
-    ROOT / "tutorials" / "current" / "07_partner_choice.md",
+    ROOT / "tutorials" / "current" / "03_sorting_rows.md",
+    ROOT / "tutorials" / "current" / "04_relations_and_operators.md",
+    ROOT / "tutorials" / "current" / "05_prepare_run_continue.md",
+    ROOT / "tutorials" / "current" / "06_measure_a_program.md",
+    ROOT / "tutorials" / "current" / "07_benchmark_apps.md",
+    ROOT / "tutorials" / "current" / "08_choose_a_partner.md",
     ROOT / "examples" / "README.md",
     ROOT / "examples" / "simple" / "README.md",
     ROOT / "examples" / "benchmark_apps" / "README.md",
@@ -83,7 +84,8 @@ PUBLIC_SURFACE_FORBIDDEN = (
     re.compile(r"\bClaude\b|\bGemini\b|\bAntigravity\b"),
     re.compile(r"release candidate", re.IGNORECASE),
     re.compile(r"docs/reviews", re.IGNORECASE),
-    re.compile(r"future/v4", re.IGNORECASE),
+    re.compile(r"tools/_archive", re.IGNORECASE),
+    re.compile(r"tools/_archive/future/v4", re.IGNORECASE),
     re.compile(r"(?<![\w/])history[\\/]", re.IGNORECASE),
     re.compile(r"(?<![\w/])future[\\/]", re.IGNORECASE),
 )
@@ -139,7 +141,18 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                     continue
                 with self.subTest(path=path.relative_to(ROOT).as_posix(), label=label, target=target):
                     self.assertFalse(
-                        clean_target.replace("\\", "/").lower().startswith(("history/", "../history/", "future/", "../future/")),
+                        clean_target.replace("\\", "/").lower().startswith(
+                            (
+                                "history/",
+                                "../history/",
+                                "future/",
+                                "../future/",
+                                "tools/_archive/history/",
+                                "../tools/_archive/history/",
+                                "tools/_archive/future/",
+                                "../tools/_archive/future/",
+                            )
+                        ),
                         target,
                     )
                     self.assertTrue((path.parent / clean_target).resolve().exists(), target)
@@ -196,6 +209,7 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
     def test_clean_v4_example_entrypoints_run_without_cuda(self) -> None:
         commands = (
             ["examples/simple/v4_frontdoor_quickstart.py"],
+            ["examples/simple/sorting_rows.py"],
             ["examples/simple/benchmark_app_recipes.py"],
             ["examples/simple/operator_callback_planning.py", "--case", "complex-callback"],
             ["examples/simple/custom_predicate_early_exit_planning.py"],
@@ -260,7 +274,7 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
         self.assertGreaterEqual(snippet_count, 10)
 
     def test_benchmark_app_tutorial_covers_all_promoted_apps(self) -> None:
-        tutorial = (ROOT / "tutorials" / "current" / "06_benchmark_apps.md").read_text(encoding="utf-8")
+        tutorial = (ROOT / "tutorials" / "current" / "07_benchmark_apps.md").read_text(encoding="utf-8")
         readme = (ROOT / "examples" / "benchmark_apps" / "README.md").read_text(encoding="utf-8")
 
         for app_name in BENCHMARK_APP_NAMES:

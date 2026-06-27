@@ -56,20 +56,25 @@ def check_ignored(root: Path, path: str) -> bool:
 
 
 def release_artifact_paths(root: Path) -> tuple[str, ...]:
+    def current_path(path: str) -> str:
+        if path.startswith(("future/", "history/", "dist/")):
+            return f"tools/_archive/{path}"
+        return path
+
     audit = validate_v4_goal4758_local_completion_audit(root)
     paths: set[str] = {
-        str(audit["package_wheel"]),
-        str(audit["package_build_log"]),
-        str(audit["wheel_install_log"]),
-        str(audit["wheel_import_log"]),
-        str(audit["wheel_smoke_summary"]),
-        str(audit["final_review_manifest"]),
+        current_path(str(audit["package_wheel"])),
+        current_path(str(audit["package_build_log"])),
+        current_path(str(audit["wheel_install_log"])),
+        current_path(str(audit["wheel_import_log"])),
+        current_path(str(audit["wheel_smoke_summary"])),
+        current_path(str(audit["final_review_manifest"])),
     }
 
     manifest_path = root / str(audit["final_review_manifest"])
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     for artifact in manifest["artifacts"]:
-        paths.add(str(artifact["path"]))
+        paths.add(current_path(str(artifact["path"])))
 
     return tuple(sorted(paths))
 

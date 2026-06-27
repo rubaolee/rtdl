@@ -10,7 +10,7 @@ V4_GOAL4677_AGGREGATE_FRONTIER_PROMOTION_STATUS = (
     "goal4677_promote_aggregate_frontier_device_columns_measured_route_no_release"
 )
 V4_GOAL4677_CANONICAL_EVIDENCE = (
-    "future/v4/evidence/v4_goal4676_aggregate_frontier_pod_benchmark_2026-06-25.json"
+    "tools/_archive/future/v4/evidence/v4_goal4676_aggregate_frontier_pod_benchmark_2026-06-25.json"
 )
 
 

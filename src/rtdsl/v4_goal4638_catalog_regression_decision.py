@@ -9,8 +9,8 @@ from typing import Any
 V4_GOAL4638_DECISION_STATUS = "goal4638_catalog_regression_gpu_after_aabb_passed_not_release"
 V4_GOAL4638_DECISION = "accept_catalog_regression_gpu_gate_after_aabb_not_release"
 V4_GOAL4638_EVIDENCE = (
-    "future/v4/evidence/v4_goal4638_catalog_regression_gpu_after_aabb_2026-06-25.json",
-    "future/v4/evidence/v4_goal4638_catalog_regression_gpu_after_aabb_2026-06-25.md",
+    "tools/_archive/future/v4/evidence/v4_goal4638_catalog_regression_gpu_after_aabb_2026-06-25.json",
+    "tools/_archive/future/v4/evidence/v4_goal4638_catalog_regression_gpu_after_aabb_2026-06-25.md",
 )
 
 

@@ -7,11 +7,12 @@ Read the lessons in order:
 
 1. [What RTDL Is](01_first_run.md)
 2. [Hello RTDL](02_hello_world.md)
-3. [Relations and Operators](03_backend_choice.md)
-4. [Prepare, Run, Continue](04_prepared_runtime.md)
-5. [Measure a Program](05_measurement_boundaries.md)
-6. [Build the Benchmark Apps](06_benchmark_apps.md)
-7. [Choose a Partner](07_partner_choice.md)
+3. [Sorting Rows](03_sorting_rows.md)
+4. [Relations and Operators](04_relations_and_operators.md)
+5. [Prepare, Run, Continue](05_prepare_run_continue.md)
+6. [Measure a Program](06_measure_a_program.md)
+7. [Build the Benchmark Apps](07_benchmark_apps.md)
+8. [Choose a Partner](08_choose_a_partner.md)
 
 By the end you should understand how to:
 

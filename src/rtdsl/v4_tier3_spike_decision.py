@@ -49,9 +49,9 @@ V4_GOAL4631_STAGES = (
         attempted=True,
         passed=False,
         evidence=(
-            "future/v4/evidence/v4_tier3_numba_ptx_probe_2026-06-24.json",
-            "future/v4/evidence/v4_tier3_numba_ptx_probe_2026-06-24.md",
-            "future/v4/tier3_numba_ptx_spike.md",
+            "tools/_archive/future/v4/evidence/v4_tier3_numba_ptx_probe_2026-06-24.json",
+            "tools/_archive/future/v4/evidence/v4_tier3_numba_ptx_probe_2026-06-24.md",
+            "tools/_archive/future/v4/tier3_numba_ptx_spike.md",
         ),
         interpretation=(
             "One scalar callback generated PTX in a pinned environment, but the protocol requires at least 20 attempts across at least 4 accepted variants for a passing Stage 1 gate."
@@ -63,9 +63,9 @@ V4_GOAL4631_STAGES = (
         attempted=True,
         passed=False,
         evidence=(
-            "future/v4/evidence/v4_tier3_optix_module_link_probe_2026-06-24.json",
-            "future/v4/evidence/v4_tier3_optix_module_link_probe_2026-06-24.md",
-            "future/v4/tier3_optix_module_link_spike.md",
+            "tools/_archive/future/v4/evidence/v4_tier3_optix_module_link_probe_2026-06-24.json",
+            "tools/_archive/future/v4/evidence/v4_tier3_optix_module_link_probe_2026-06-24.md",
+            "tools/_archive/future/v4/tier3_optix_module_link_spike.md",
         ),
         interpretation=(
             "Direct optixModuleCreate on bare Numba helper PTX failed with Invalid input / No functions with semantic types found; a real OptiX wrapper or direct-callable ABI spike is still required."
@@ -76,7 +76,7 @@ V4_GOAL4631_STAGES = (
         status="not_attempted",
         attempted=False,
         passed=False,
-        evidence=("future/v4/tier3_callback_spike_protocol_2026-06-24.md",),
+        evidence=("tools/_archive/future/v4/tier3_callback_spike_protocol_2026-06-24.md",),
         interpretation="Correctness parity inside traversal cannot start until Stage 2 links and launches.",
     ),
     V4Tier3SpikeStage(
@@ -84,7 +84,7 @@ V4_GOAL4631_STAGES = (
         status="not_attempted",
         attempted=False,
         passed=False,
-        evidence=("future/v4/tier3_callback_spike_protocol_2026-06-24.md",),
+        evidence=("tools/_archive/future/v4/tier3_callback_spike_protocol_2026-06-24.md",),
         interpretation="Overhead cannot be measured because no linked callback route launches.",
     ),
 )

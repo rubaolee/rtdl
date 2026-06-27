@@ -14,30 +14,30 @@ DEFAULT_MD = ROOT / "future" / "v4" / "v4_goal4759_final_review_evidence_manifes
 
 
 ARTIFACTS: tuple[tuple[str, str, str], ...] = (
-    ("goal4757_release_packet", "release_review", "future/v4/v4_goal4757_final_v4_0_release_packet_after_goal4756_2026-06-26.md"),
-    ("goal4757_call_for_review", "release_review", "future/v4/reviews/call_for_review_v4_goal4757_final_v4_0_release_after_goal4756_2026-06-26.md"),
-    ("goal4757_forward_message", "release_review", "future/v4/reviews/v4_goal4757_forward_message_to_external_reviewer_2026-06-26.txt"),
-    ("goal4757_external_review_debt", "release_review", "future/v4/reviews/v4_goal4757_final_release_external_review_debt_2026-06-26.md"),
-    ("goal4758_completion_audit", "completion_audit", "future/v4/v4_goal4758_local_completion_audit_2026-06-26.md"),
-    ("goal4756_matrix_analysis_json", "pod_matrix", "future/v4/evidence/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.json"),
-    ("goal4756_matrix_analysis_md", "pod_matrix", "future/v4/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.md"),
-    ("goal4756_matrix_readout", "pod_matrix", "future/v4/v4_goal4756_final_rt_core_matrix_release_readout_2026-06-26.md"),
-    ("goal4758_full_v4_gate_log", "local_validation", "future/v4/evidence/v4_goal4758_full_v4_unittest_discover_with_installed_wheel_script_gate_2026-06-26.log"),
-    ("goal4759_full_v4_gate_log", "local_validation", "future/v4/evidence/v4_goal4759_full_v4_unittest_discover_with_review_manifest_2026-06-26.log"),
-    ("goal4758_wheel", "package", "dist/goal4758_v4_release_candidate/rtdl_source_tree-4.0.0-py3-none-any.whl"),
-    ("goal4758_wheel_build_log", "package", "future/v4/evidence/v4_goal4758_package_wheel_build_2026-06-26.log"),
-    ("goal4758_wheel_install_smoke_summary", "package", "future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/summary.json"),
-    ("goal4769_barnes_hut_author_phase_report", "release_review_delta", "future/v4/v4_goal4769_rt_barneshut_author_phase_accounting_2026-06-26.md"),
-    ("goal4769_barnes_hut_author_phase_stdout", "release_review_delta", "future/v4/evidence/rt_barneshut_author_reproduction_2026-06-26/v4_goal4769_author_phase_print_false_10m_stdout.txt"),
-    ("goal4770_barnes_hut_delta_json", "release_review_delta", "future/v4/evidence/v4_goal4770_rt_barneshut_release_packet_delta_2026-06-26.json"),
-    ("goal4770_barnes_hut_delta_md", "release_review_delta", "future/v4/v4_goal4770_rt_barneshut_release_packet_delta_2026-06-26.md"),
-    ("goal4770_barnes_hut_delta_review_debt", "release_review_delta", "future/v4/reviews/v4_goal4770_rt_barneshut_release_packet_delta_review_debt_2026-06-26.md"),
+    ("goal4757_release_packet", "release_review", "tools/_archive/future/v4/v4_goal4757_final_v4_0_release_packet_after_goal4756_2026-06-26.md"),
+    ("goal4757_call_for_review", "release_review", "tools/_archive/future/v4/reviews/call_for_review_v4_goal4757_final_v4_0_release_after_goal4756_2026-06-26.md"),
+    ("goal4757_forward_message", "release_review", "tools/_archive/future/v4/reviews/v4_goal4757_forward_message_to_external_reviewer_2026-06-26.txt"),
+    ("goal4757_external_review_debt", "release_review", "tools/_archive/future/v4/reviews/v4_goal4757_final_release_external_review_debt_2026-06-26.md"),
+    ("goal4758_completion_audit", "completion_audit", "tools/_archive/future/v4/v4_goal4758_local_completion_audit_2026-06-26.md"),
+    ("goal4756_matrix_analysis_json", "pod_matrix", "tools/_archive/future/v4/evidence/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.json"),
+    ("goal4756_matrix_analysis_md", "pod_matrix", "tools/_archive/future/v4/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.md"),
+    ("goal4756_matrix_readout", "pod_matrix", "tools/_archive/future/v4/v4_goal4756_final_rt_core_matrix_release_readout_2026-06-26.md"),
+    ("goal4758_full_v4_gate_log", "local_validation", "tools/_archive/future/v4/evidence/v4_goal4758_full_v4_unittest_discover_with_installed_wheel_script_gate_2026-06-26.log"),
+    ("goal4759_full_v4_gate_log", "local_validation", "tools/_archive/future/v4/evidence/v4_goal4759_full_v4_unittest_discover_with_review_manifest_2026-06-26.log"),
+    ("goal4758_wheel", "package", "tools/_archive/dist/goal4758_v4_release_candidate/rtdl_source_tree-4.0.0-py3-none-any.whl"),
+    ("goal4758_wheel_build_log", "package", "tools/_archive/future/v4/evidence/v4_goal4758_package_wheel_build_2026-06-26.log"),
+    ("goal4758_wheel_install_smoke_summary", "package", "tools/_archive/future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/summary.json"),
+    ("goal4769_barnes_hut_author_phase_report", "release_review_delta", "tools/_archive/future/v4/v4_goal4769_rt_barneshut_author_phase_accounting_2026-06-26.md"),
+    ("goal4769_barnes_hut_author_phase_stdout", "release_review_delta", "tools/_archive/future/v4/evidence/rt_barneshut_author_reproduction_2026-06-26/v4_goal4769_author_phase_print_false_10m_stdout.txt"),
+    ("goal4770_barnes_hut_delta_json", "release_review_delta", "tools/_archive/future/v4/evidence/v4_goal4770_rt_barneshut_release_packet_delta_2026-06-26.json"),
+    ("goal4770_barnes_hut_delta_md", "release_review_delta", "tools/_archive/future/v4/v4_goal4770_rt_barneshut_release_packet_delta_2026-06-26.md"),
+    ("goal4770_barnes_hut_delta_review_debt", "release_review_delta", "tools/_archive/future/v4/reviews/v4_goal4770_rt_barneshut_release_packet_delta_review_debt_2026-06-26.md"),
     ("readme", "public_docs", "README.md"),
     ("current_v4_status", "public_docs", "docs/current_v4_status.md"),
     ("app_level_benchmark_summary", "public_docs", "docs/app_level_benchmark_summary.md"),
     ("performance_wording", "public_docs", "docs/learn/performance_wording.md"),
-    ("future_v4_readme", "public_docs", "future/v4/README.md"),
-    ("tier2_operator_catalog", "public_docs", "future/v4/tier2_operator_catalog.md"),
+    ("future_v4_readme", "public_docs", "tools/_archive/future/v4/README.md"),
+    ("tier2_operator_catalog", "public_docs", "tools/_archive/future/v4/tier2_operator_catalog.md"),
     ("goal4757_machine_gate", "machine_gates", "src/rtdsl/v4_goal4757_final_release_packet.py"),
     ("goal4758_machine_gate", "machine_gates", "src/rtdsl/v4_goal4758_local_completion_audit.py"),
     ("goal4758_installed_wheel_smoke_script", "machine_gates", "scripts/v4_goal4758_installed_wheel_smoke.py"),
@@ -75,8 +75,8 @@ def _artifact_record(artifact_id: str, category: str, relpath: str) -> dict[str,
 
 def build_manifest() -> dict[str, Any]:
     artifacts = [_artifact_record(*item) for item in ARTIFACTS]
-    matrix = json.loads((ROOT / "future/v4/evidence/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.json").read_text(encoding="utf-8"))
-    wheel_smoke = json.loads((ROOT / "future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/summary.json").read_text(encoding="utf-8"))
+    matrix = json.loads((ROOT / "tools/_archive/future/v4/evidence/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.json").read_text(encoding="utf-8"))
+    wheel_smoke = json.loads((ROOT / "tools/_archive/future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/summary.json").read_text(encoding="utf-8"))
 
     missing = [artifact["id"] for artifact in artifacts if not artifact["exists"]]
     empty = [artifact["id"] for artifact in artifacts if artifact["exists"] and artifact["size_bytes"] <= 0]

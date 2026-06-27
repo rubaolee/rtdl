@@ -1,0 +1,9 @@
+Could not find platform independent libraries <prefix>
+Could not find platform independent libraries <prefix>
+Looking in links: c:\Users\Lestat\AppData\Local\Temp\tmpjmvj3b7a
+Processing c:\users\lestat\appdata\local\temp\tmpjmvj3b7a\setuptools-65.5.0-py3-none-any.whl
+Processing c:\users\lestat\appdata\local\temp\tmpjmvj3b7a\pip-24.0-py3-none-any.whl
+Installing collected packages: setuptools, pip
+  WARNING: The scripts pip3.11.exe and pip3.exe are installed in 'C:\Users\Lestat\AppData\Roaming\Python\Python311\Scripts' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+Successfully installed pip-24.0 setuptools-65.5.0

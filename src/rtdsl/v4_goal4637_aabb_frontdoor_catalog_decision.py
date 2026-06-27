@@ -12,8 +12,8 @@ from .v4_operator_catalog import plan_v4_operator_request
 V4_GOAL4637_DECISION_STATUS = "goal4637_aabb_frontdoor_catalog_promoted_not_release"
 V4_GOAL4637_DECISION = "promote_aabb_index_to_measured_v4_frontdoor_catalog_not_release"
 V4_GOAL4637_EVIDENCE = (
-    "future/v4/evidence/v4_goal4636c_aabb_index_all_ops_pod_gate_2026-06-25/m30_all_ops.json",
-    "future/v4/v4_goal4636c_aabb_index_pod_gate_decision_2026-06-25.md",
+    "tools/_archive/future/v4/evidence/v4_goal4636c_aabb_index_all_ops_pod_gate_2026-06-25/m30_all_ops.json",
+    "tools/_archive/future/v4/v4_goal4636c_aabb_index_pod_gate_decision_2026-06-25.md",
 )
 
 

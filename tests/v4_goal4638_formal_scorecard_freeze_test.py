@@ -58,7 +58,7 @@ class V4Goal4638FormalScorecardFreezeTest(unittest.TestCase):
         self.assertEqual(8, len(floors))
         for row in floors:
             self.assertNotIn("X.XX", row["minimum_floor"])
-            self.assertTrue(row["canonical_source"].startswith("future/v4/"))
+            self.assertTrue(row["canonical_source"].startswith("tools/_archive/future/v4/"))
 
         self.assertIn(">=1.20x", floor_map["v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays"]["minimum_floor"])
         self.assertIn("geomean >=1.50x", floor_map["v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays"]["minimum_floor"])

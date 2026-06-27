@@ -43,7 +43,7 @@ class V4Goal4628SecondGateScorecardTest(unittest.TestCase):
         self.assertEqual(scorecard["fixed_radius_wrapper_prerequisite"], V4_GOAL4628_FIXED_RADIUS_PREREQUISITE)
         self.assertIn("src/rtdsl/v4_fixed_radius.py", scorecard["fixed_radius_wrapper_prerequisite_satisfied_by"])
         self.assertIn(
-            "future/v4/reviews/claude_v4_section8_device_array_frontdoor_amendment_closure_2026-06-24.md",
+            "tools/_archive/future/v4/reviews/claude_v4_section8_device_array_frontdoor_amendment_closure_2026-06-24.md",
             scorecard["fixed_radius_wrapper_prerequisite_satisfied_by"],
         )
 
