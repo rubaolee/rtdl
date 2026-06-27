@@ -1,0 +1,10 @@
+Processing c:\users\lestat\desktop\work\rtdl_v0_4_release_prep_review\dist\goal4758_v4_release_candidate\rtdl_source_tree-4.0.0-py3-none-any.whl
+Collecting numpy>=1.26 (from rtdl-source-tree==4.0.0)
+  Using cached numpy-2.4.6-cp311-cp311-win_amd64.whl.metadata (6.6 kB)
+Using cached numpy-2.4.6-cp311-cp311-win_amd64.whl (12.6 MB)
+Installing collected packages: numpy, rtdl-source-tree
+  Attempting uninstall: rtdl-source-tree
+    Found existing installation: rtdl-source-tree 4.0.0
+    Not uninstalling rtdl-source-tree at c:\users\lestat\desktop\work\rtdl_v0_4_release_prep_review\src, outside environment C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\future\v4\evidence\v4_goal4758_wheel_install_smoke_2026-06-26\.venv
+    Can't uninstall 'rtdl-source-tree'. No files were found to uninstall.
+Successfully installed numpy-2.4.6 rtdl-source-tree-4.0.0
