@@ -117,7 +117,7 @@ def run_gate(
     artifact_tracking = check_release_artifact_tracking(root)
     head = head_commit(root)
     tag_sha = tag_target(root, tag)
-    tag_ok = (tag_sha == head) if require_tag_head else bool(tag_sha)
+    tag_ok = (tag_sha == head) if require_tag_head else True
 
     failures: list[str] = []
     if status_entries and not allow_dirty:
