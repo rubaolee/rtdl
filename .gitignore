@@ -31,3 +31,8 @@ docs/reports/**/*_stream.json
 docs/reports/**/contact_broadphase_sweep/*.json
 docs/reports/**/contact_native_collect_long_repeat/*.json
 docs/reports/**/*_r[0-9]*.json
+
+# Local archive payloads are intentionally kept out of release commits. Keep a
+# tracked README/manifest next to each payload when a cleanup sweep moves files
+# here.
+/history/local_workspace_debris_2026-06-27/payload/**

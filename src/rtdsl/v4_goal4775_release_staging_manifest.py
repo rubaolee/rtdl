@@ -46,6 +46,7 @@ V3_HISTORY_MARKERS = (
 )
 
 STAGE_PREFIXES = (
+    ".gitignore",
     "README.md",
     "docs/README.md",
     "docs/current_v4_status.md",
@@ -59,6 +60,7 @@ STAGE_PREFIXES = (
     "future/README.md",
     "future/v4/",
     "history/v4_0_release_audit_2026-06-27/",
+    "history/local_workspace_debris_2026-06-27/README.md",
     "scripts/v4_",
     "scripts/rt_barneshut_author_contract_probe.py",
     "scripts/run_claude_v4_0_release_candidate_review_2026_06_24.ps1",

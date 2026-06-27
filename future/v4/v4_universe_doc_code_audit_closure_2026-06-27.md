@@ -2,7 +2,7 @@
 
 Date: 2026-06-27
 
-Status: `public_surface_clean__tracked_v4_code_gates_pass__local_debris_classified`
+Status: `public_surface_clean__tracked_v4_code_gates_pass__strict_release_blocked_by_local_debris`
 
 ## Scope
 
@@ -16,7 +16,14 @@ partitioned as:
 - `audit_provenance`: `future/`;
 - `history_archive`: `history/`;
 - local untracked debris: build output, raw evidence, local external checkout,
-  V3/Phoenix leftovers, and working review records.
+  and working review records.
+
+After this cleanup pass, untracked V3/Phoenix helper scripts, old local tests,
+paper-reproduction patches, and the local review helper were moved out of the
+current `scripts/`, `tests/`, and `tools/` front door into
+`history/local_workspace_debris_2026-06-27/payload/`. The payload is ignored by
+Git; the tracked README documents why it exists and why it is not part of the
+V4 user path.
 
 ## Files And Gates Added
 
@@ -26,7 +33,16 @@ partitioned as:
 
 The gate scans the current public surface for internal process leakage, old
 current-version wording, and misleading user-path language. It also records the
-tracked file buckets and classifies all untracked workspace debris.
+tracked file buckets, classifies untracked workspace debris, and now supports a
+strict release mode:
+
+```powershell
+py -3 scripts\v4_universe_audit.py --format json --strict-release
+```
+
+Strict mode fails if any local untracked debris remains. This prevents a future
+agent from saying "public clean" when the intended operation is actually
+"release from a clean tree."
 
 ## Findings
 
@@ -40,22 +56,25 @@ Public surface:
 
 Tracked repository:
 
-- tracked files: `27669`;
-- history archive files: `22045`;
-- audit provenance files: `1168`;
-- current code/gate files: `4313`;
+- tracked files: `27673`;
+- history archive files: `22046`;
+- audit provenance files: `1171`;
+- current code/gate files: `4356`;
 - public current files: `31`.
 
 Local workspace debris:
 
-- untracked files: `979`;
+- untracked files: `671`;
 - unknown untracked files: `0`;
-- all untracked files are classified as known local debris, including raw V4
-  evidence, local V3/Phoenix scripts/tests, local review working records, local
-  build output, and an external author-code checkout.
+- all untracked files are classified as known local debris: raw V4 evidence,
+  local V4 review working records, local build output, and an external
+  author-code checkout.
 
 This means the tracked V4 public release surface is clean, but the local
-workspace is still intentionally not a clean-room checkout.
+workspace is still intentionally not a clean-room checkout. Normal audit mode
+passes for public-surface truth; strict release mode fails until these 671
+remaining local files are removed, archived, or intentionally excluded by a
+separate release-packaging decision.
 
 ## Verification Commands
 
@@ -71,6 +90,20 @@ Result:
 ```text
 Ran 2 tests in 3.076s
 OK
+```
+
+Strict release debris gate:
+
+```powershell
+py -3 scripts\v4_universe_audit.py --format json --strict-release
+```
+
+Result:
+
+```text
+status: fail_local_debris
+untracked files: 671
+unknown untracked files: 0
 ```
 
 Public-current stale/process leakage scan:
@@ -133,15 +166,15 @@ The remaining issue is local workspace hygiene, not tracked V4 public-surface
 truth:
 
 - raw evidence and local review records should stay out of the user path;
-- V3/Phoenix local scripts/tests should either remain untracked local debris or
-  be intentionally archived under `history/` in a separate cleanup commit;
+- V3/Phoenix local scripts/tests have been moved under
+  `history/local_workspace_debris_2026-06-27/payload/`;
 - `dist/` and `external/` should not be included in V4 release commits.
 
 ## Goal-Level Decision Audit
 
 1. Was I foolish?
    - The earlier foolish path would be to claim "everything is clean" while
-     ignoring 979 untracked local files.
+     ignoring hundreds of untracked local files.
 
 2. What action would make this foolish?
    - Staging raw evidence, external checkouts, V3/Phoenix local debris, or
@@ -153,5 +186,7 @@ truth:
      document the remaining local debris honestly.
 
 4. Can I now take the path that solves the problem?
-   - Yes. The tracked V4 public surface is clean and gated. The next cleanup is
-     a deliberate local-debris/archive decision, not a release-claim decision.
+   - Yes. The tracked V4 public surface is clean and gated. Strict release mode
+     now blocks a final clean-tree release while local debris remains, so the
+     next cleanup is a deliberate local-debris/archive decision, not a
+     release-claim shortcut.

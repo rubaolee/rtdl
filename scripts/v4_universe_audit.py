@@ -38,12 +38,25 @@ PUBLIC_CODE_PREFIXES = (
 )
 
 CURRENT_CODE_PREFIXES = (
+    ".github/workflows/",
     "src/rtdsl/",
+    "src/native/",
     "scripts/",
     "tests/",
+    "tools/",
     "examples/v4/",
     "examples/current/research_benchmarks/",
 )
+
+ROOT_RELEASE_FILES = {
+    ".gitattributes",
+    ".gitignore",
+    "Makefile",
+    "VERSION",
+    "pyproject.toml",
+    "requirements.txt",
+    "run_review_tests.py",
+}
 
 ARCHIVE_PREFIXES = (
     "history/",
@@ -129,12 +142,16 @@ def _tracked_bucket(path: str) -> str:
         return "history_archive"
     if any(path.startswith(prefix) for prefix in AUDIT_PREFIXES):
         return "audit_provenance"
+    if path in ROOT_RELEASE_FILES:
+        return "current_code_or_gate"
     if any(path.startswith(prefix) for prefix in CURRENT_CODE_PREFIXES):
         return "current_code_or_gate"
     return "other_tracked"
 
 
 def _untracked_bucket(path: str) -> str:
+    if path.startswith("history/local_workspace_debris_2026-06-27/"):
+        return "local_history_archive_payload"
     if path.startswith("dist/") or path.startswith("build/"):
         return "local_build_output"
     if path.startswith("external/"):
@@ -181,7 +198,7 @@ def _scan_public(paths: list[str]) -> list[dict[str, str]]:
     return findings
 
 
-def run_audit() -> dict[str, Any]:
+def run_audit(*, strict_release: bool = False) -> dict[str, Any]:
     tracked = _git_lines("ls-files")
     untracked = _git_lines("ls-files", "--others", "--exclude-standard")
 
@@ -212,6 +229,8 @@ def run_audit() -> dict[str, Any]:
     status = "pass"
     if public_findings or tracked_docs_reviews or required_public_files or required_history_dirs:
         status = "fail_public_surface"
+    elif strict_release and untracked:
+        status = "fail_local_debris"
     elif unknown_untracked:
         status = "pass_with_unknown_untracked"
     elif untracked:
@@ -219,6 +238,7 @@ def run_audit() -> dict[str, Any]:
 
     return {
         "status": status,
+        "strict_release": strict_release,
         "tracked_file_count": len(tracked),
         "untracked_file_count": len(untracked),
         "tracked_bucket_counts": dict(sorted(tracked_buckets.items())),
@@ -235,8 +255,10 @@ def run_audit() -> dict[str, Any]:
         "unknown_untracked_count": len(unknown_untracked),
         "interpretation": (
             "Public V4 current surface must be clean. history/ is archival. "
-            "future/ is audit provenance. Known untracked raw evidence and old "
-            "Phoenix/V3 debris are local workspace cleanup items, not public V4 files."
+            "future/ is audit provenance. Known untracked raw evidence, review "
+            "working records, and local debris are not public V4 files. Use "
+            "--strict-release before a final tag/package gate to require a "
+            "debris-free local tree."
         ),
     }
 
@@ -290,9 +312,14 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--format", choices=("json", "md"), default="json")
     parser.add_argument("--write", type=Path)
+    parser.add_argument(
+        "--strict-release",
+        action="store_true",
+        help="fail when any untracked local debris remains",
+    )
     args = parser.parse_args()
 
-    result = run_audit()
+    result = run_audit(strict_release=args.strict_release)
     payload = json.dumps(result, indent=2, sort_keys=True) if args.format == "json" else _to_markdown(result)
     if args.write:
         args.write.parent.mkdir(parents=True, exist_ok=True)
