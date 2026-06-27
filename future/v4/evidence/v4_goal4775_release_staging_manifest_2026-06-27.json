@@ -1,6 +1,6 @@
 {
   "bucket_counts": {
-    "stage_for_v4_release_commit": 3
+    "stage_for_v4_release_commit": 1
   },
   "claude_required_for_staging_manifest": false,
   "clean_release_commit_required_before_tag": true,
@@ -74,6 +74,8 @@
     "future/v4/reviews/v4_gemini_full_coverage_review_debt_for_antigravity_2026-06-27.md",
     "future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md",
     "future/v4/v4_goal4773_antigravity_review_intake_and_release_owner_status_2026-06-27.md",
+    "future/v4/v4_goal4779_pre_release_items_1_to_5_completion_2026-06-27.md",
+    "future/v4/reviews/antigravity_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
     "future/v4/reviews/call_for_review_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
     "future/v4/reviews/forward_message_v4_pre_release_items_1_to_5_completion_2026-06-27.txt",
     "future/v4/evidence/v4_goal4774_release_packaging_audit_2026-06-27.json",
@@ -83,6 +85,7 @@
     "future/v4/v4_goal4775_release_stage_pathspec_2026-06-27.txt",
     "src/rtdsl/v4_goal4773_release_authorization_status.py",
     "src/rtdsl/v4_goal4774_release_packaging_audit.py",
+    "src/rtdsl/v4_goal4775_release_staging_manifest.py",
     "scripts/v4_goal4775_release_staging_manifest.py",
     "scripts/v4_release_clean_checkout_gate.py",
     "tests/v4_goal4773_release_authorization_status_test.py",
@@ -95,29 +98,15 @@
   "rows": [
     {
       "bucket": "stage_for_v4_release_commit",
-      "path": "future/v4/v4_goal4779_pre_release_items_1_to_5_completion_2026-06-27.md",
-      "reason": "current_v4_source_docs_tests_or_compact_evidence",
-      "status_code": " M"
-    },
-    {
-      "bucket": "stage_for_v4_release_commit",
-      "path": "src/rtdsl/v4_goal4775_release_staging_manifest.py",
-      "reason": "current_v4_source_docs_tests_or_compact_evidence",
-      "status_code": " M"
-    },
-    {
-      "bucket": "stage_for_v4_release_commit",
-      "path": "future/v4/reviews/antigravity_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
+      "path": "future/v4/v4_goal4780_final_tag_refresh_after_antigravity_pre_release_2026-06-27.md",
       "reason": "current_v4_source_docs_tests_or_compact_evidence",
       "status_code": "??"
     }
   ],
   "stage_for_v4_release_commit": [
-    "future/v4/v4_goal4779_pre_release_items_1_to_5_completion_2026-06-27.md",
-    "src/rtdsl/v4_goal4775_release_staging_manifest.py",
-    "future/v4/reviews/antigravity_v4_pre_release_items_1_to_5_completion_2026-06-27.md"
+    "future/v4/v4_goal4780_final_tag_refresh_after_antigravity_pre_release_2026-06-27.md"
   ],
-  "stage_for_v4_release_commit_count": 3,
+  "stage_for_v4_release_commit_count": 1,
   "status": "release_staging_manifest_created__pathspec_ready__tag_still_requires_clean_commit",
-  "total_dirty_file_entries": 3
+  "total_dirty_file_entries": 1
 }

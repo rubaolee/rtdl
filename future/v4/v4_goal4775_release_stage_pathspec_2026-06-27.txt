@@ -1,3 +1,1 @@
-future/v4/v4_goal4779_pre_release_items_1_to_5_completion_2026-06-27.md
-src/rtdsl/v4_goal4775_release_staging_manifest.py
-future/v4/reviews/antigravity_v4_pre_release_items_1_to_5_completion_2026-06-27.md
+future/v4/v4_goal4780_final_tag_refresh_after_antigravity_pre_release_2026-06-27.md
