@@ -12,7 +12,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-import rtdsl.v4 as v4
+import rtdsl.v4_maintainer as v4
 
 
 SCRIPT = ROOT / "scripts" / "v4_goal4703_specialized_tier3_reliability_matrix_pod.py"

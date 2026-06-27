@@ -12,7 +12,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-import rtdsl.v4 as v4
+import rtdsl.v4_maintainer as v4
 from rtdsl.v4_goal4687_tier3_wrapper_compile_probe import extract_numba_callback_symbol_from_ptx
 from rtdsl.v4_goal4687_tier3_wrapper_compile_probe import specialize_semantic_wrapper_source
 

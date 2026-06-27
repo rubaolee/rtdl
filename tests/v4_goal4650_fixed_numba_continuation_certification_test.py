@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from rtdsl import v4
+from rtdsl import v4_maintainer as v4
 from rtdsl import v4_operator_catalog as catalog
 from rtdsl.v4_numba_fixed_continuation_certification import (
     V4_GOAL4650_NUMBA_FIXED_CANDIDATE_ID,

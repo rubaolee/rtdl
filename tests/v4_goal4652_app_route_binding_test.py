@@ -10,7 +10,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from rtdsl import v4
+from rtdsl import v4_maintainer as v4
 from rtdsl import v4_app_route_binding as route_binding
 
 

@@ -63,10 +63,10 @@ Public surface:
 
 Tracked repository:
 
-- tracked files: `28344`;
+- tracked files: `28347`;
 - history archive files: `22046`;
-- maintainer provenance files: `1839`;
-- current code/gate files: `4355`;
+- maintainer provenance files: `1841`;
+- current code/gate files: `4356`;
 - public current files: `33`.
 
 Local workspace debris:
@@ -131,7 +131,7 @@ py -3 -m unittest tests.v4_universe_audit_test tests.v4_goal4640_public_docs_cle
 Result:
 
 ```text
-Ran 19 tests in 12.500s
+Ran 25 tests in 33.834s
 OK
 ```
 
@@ -158,8 +158,40 @@ The `rtdsl.v4` star-import surface is now constrained by
 `PUBLIC_API_SYMBOLS_V4`. Maintainer goal/protocol symbols remain reachable by
 direct name for existing internal gates, but they are no longer exported through
 `rtdsl.v4.__all__` or shown by `dir(rtdsl.v4)`. The public cleanup gate rejects
-any future `goal####`/audit/review symbol that re-enters the public star-import
-or interactive API.
+any future `goal####`/audit/review symbol that re-enters the public star-import,
+interactive API, or static source of `src/rtdsl/v4.py`.
+
+## Antigravity Public-Surface Blocker Response
+
+Antigravity then blocked the public-surface hardening because two issues were
+still real:
+
+- `src/rtdsl/v4.py` hid maintainer symbols from `__all__` and `dir()`, but IDEs
+  can still static-analyze import statements. A public entrypoint cannot import
+  internal goal/protocol modules and rely on runtime hiding.
+- `examples/v4/benchmark_app_recipes.py` was a validation-oriented JSON dumper,
+  not a human tutorial path for learning how benchmark apps map to V4 operators.
+
+The fixes are now concrete:
+
+- `src/rtdsl/v4.py` imports only public V4 API surfaces and contains no
+  `v4_goal`, `V4_GOAL`, numbered goal, review, audit, or maintainer-module
+  markers. The public test suite reads the source text directly so this cannot
+  regress behind `__all__` tricks.
+- `src/rtdsl/v4_maintainer.py` preserves the old internal compatibility exports
+  for existing maintainer tests and evidence gates. Internal users must opt into
+  the maintainer module; the user-facing module stays pristine.
+- `future/v4/examples/v4_specialized_tier3_scalar_callback_candidate_example.py`
+  now imports its non-public Tier-3 candidate planner from `rtdsl.v4_maintainer`.
+- `examples/v4/benchmark_app_recipes.py` now reads as idiomatic planner code:
+  it defines small app recipe builders, calls `rt.plan_operator_request_v4(...)`,
+  and prints human-readable steps for all 10 benchmark apps rather than dumping
+  CI JSON.
+
+This closes the two named Antigravity blockers without expanding any V4.0
+performance claim. The public API is clean for static analyzers, and the
+benchmark-app recipe file is again a teaching artifact instead of a test-harness
+payload.
 
 Full V4 discovery gate:
 
@@ -171,7 +203,7 @@ py -3 -m unittest discover -s tests -p "v4*_test.py"
 Result:
 
 ```text
-Ran 655 tests in 120.731s
+Ran 656 tests in 115.460s
 OK (skipped=1)
 ```
 

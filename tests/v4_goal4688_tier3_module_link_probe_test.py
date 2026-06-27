@@ -12,7 +12,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-import rtdsl.v4 as v4
+import rtdsl.v4_maintainer as v4
 from rtdsl.v4_goal4688_tier3_module_link_probe import compose_goal4688_combined_ptx
 
 

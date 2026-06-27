@@ -151,6 +151,22 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                 self.assertNotIn("AUDIT", symbol.upper())
                 self.assertNotIn("REVIEW", symbol.upper())
 
+    def test_public_v4_source_is_static_analysis_clean(self) -> None:
+        source = (ROOT / "src" / "rtdsl" / "v4.py").read_text(encoding="utf-8")
+
+        forbidden = (
+            "from .v4_goal",
+            "V4_GOAL",
+            "v4_goal",
+            "Goal",
+        )
+        for needle in forbidden:
+            with self.subTest(needle=needle):
+                self.assertNotIn(needle, source)
+
+        self.assertIn("PUBLIC_API_SYMBOLS_V4", source)
+        self.assertNotIn("v4_maintainer", source)
+
     def test_legacy_current_v3_status_is_not_in_public_docs(self) -> None:
         self.assertFalse((ROOT / "docs" / "current_v3_status.md").exists())
         self.assertTrue((ROOT / "docs" / "current_v4_status.md").exists())
@@ -178,15 +194,21 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                     text=True,
                     stdout=subprocess.PIPE,
                 )
+                if command[0].endswith("benchmark_app_recipes.py"):
+                    self.assertIn("RTDL V4 benchmark app recipes", proc.stdout)
+                    for app_name in BENCHMARK_APP_NAMES:
+                        self.assertIn(app_name, proc.stdout)
+                    self.assertIn("request: fixed_radius", proc.stdout)
+                    self.assertIn("surface: v4_ray_triangle_any_hit_flags_2d_device_arrays", proc.stdout)
+                    self.assertNotIn("json.dumps", (ROOT / command[0]).read_text(encoding="utf-8"))
+                    continue
+
                 payload = json.loads(proc.stdout)
                 self.assertIn(payload["status"], {"ok", "dry_run", "rejected_action_shaped_callback_deferred"})
                 if command[0].endswith("operator_callback_planning.py"):
                     self.assertEqual("rejected_action_shaped_callback_deferred", payload["status"])
                 if command[0].endswith("fixed_radius_torch_device_arrays.py"):
                     self.assertEqual(2, payload["copies"])
-                if command[0].endswith("benchmark_app_recipes.py"):
-                    self.assertEqual(10, payload["app_count"])
-                    self.assertEqual(BENCHMARK_APP_NAMES, tuple(row["app"] for row in payload["recipes"]))
                 self.assertFalse(_json_contains_forbidden_goal(payload))
                 self.assertFalse(payload["release_claim_authorized"])
                 self.assertFalse(payload["tier3_callback_claim_authorized"])

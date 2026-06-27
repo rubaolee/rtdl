@@ -10,7 +10,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-import rtdsl.v4 as v4
+import rtdsl.v4_maintainer as v4
 
 
 class V4Goal4676AggregateFrontierProtocolTest(unittest.TestCase):

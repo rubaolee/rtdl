@@ -11,7 +11,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from rtdsl.v4 import plan_v4_goal4698_specialized_tier3_compile
+from rtdsl.v4_maintainer import plan_v4_goal4698_specialized_tier3_compile
 
 
 SAMPLE_PTX = """
